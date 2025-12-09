@@ -3,31 +3,23 @@
 import { useState } from "react"
 import BookCover from "@/components/notebook/book-cover"
 import NotebookShell from "@/components/notebook/notebook-shell"
-import Link from "next/link"
+import LampGlow from "@/components/desktop/lamp-glow"
+import { AnimatePresence } from "framer-motion"
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
 
   const nickname = "Alex"
   const cleanDays = 37
 
   const handleOpenBook = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    setTimeout(() => {
+    if (!isOpen) {
       setIsOpen(true)
-      setIsAnimating(false)
-    }, 1500)
+    }
   }
 
   const handleCloseBook = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
     setIsOpen(false)
-    setTimeout(() => {
-      setIsAnimating(false)
-    }, 1500)
   }
 
   return (
@@ -42,26 +34,23 @@ export default function Home() {
 
       {/* Subtle vignette overlay for depth */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 pointer-events-none"
         style={{
           background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.3) 100%)",
         }}
       />
 
-      <Link
-        href="/colors"
-        className="fixed top-4 right-4 z-50 bg-stone-900/80 text-white px-4 py-2 rounded-lg hover:bg-stone-800 transition-colors text-sm font-medium backdrop-blur-sm"
-      >
-        Try Text Colors
-      </Link>
+      <LampGlow />
 
-      {/* Notebook container - centered with padding for scroll */}
+      {/* Notebook container */}
       <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12">
-        {!isOpen ? (
-          <BookCover onOpen={handleOpenBook} isAnimating={isAnimating} nickname={nickname} cleanDays={cleanDays} />
-        ) : (
-          <NotebookShell onClose={handleCloseBook} nickname={nickname} />
-        )}
+        <AnimatePresence mode="wait">
+          {!isOpen ? (
+            <BookCover key="cover" nickname={nickname} cleanDays={cleanDays} onOpen={handleOpenBook} />
+          ) : (
+            <NotebookShell key="shell" onClose={handleCloseBook} nickname={nickname} />
+          )}
+        </AnimatePresence>
       </div>
     </main>
   )

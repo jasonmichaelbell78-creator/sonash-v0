@@ -68,9 +68,9 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
   return (
     <motion.div
       className="relative"
-      initial={{ opacity: 0, scale: 0.8, rotateY: 180 }}
-      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
     >
       {/* Book shadow */}
       <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[95%] h-10 bg-black/40 blur-2xl rounded-full" />
