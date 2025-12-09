@@ -2,18 +2,29 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
 interface BookCoverProps {
   onOpen: () => void
-  isAnimating: boolean
+  isAnimating?: boolean
   nickname?: string
   cleanDays?: number
 }
 
-export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cleanDays = 0 }: BookCoverProps) {
+export default function BookCover({ onOpen, isAnimating = false, nickname = "Friend", cleanDays = 0 }: BookCoverProps) {
+  const [viewportWidth, setViewportWidth] = useState(0)
+
+  useEffect(() => {
+    setViewportWidth(window.innerWidth)
+  }, [])
+
+  const isMobile = viewportWidth > 0 && viewportWidth < 768
+  const bookWidth = isMobile ? Math.min(viewportWidth * 0.9, 600) : 600
+  const bookHeight = isMobile ? bookWidth * 1.42 : 850
+
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer flex items-center justify-center"
       onClick={onOpen}
       style={{
         perspective: "2000px",
@@ -21,8 +32,10 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
     >
       {/* Book shadow on table */}
       <motion.div
-        className="absolute -bottom-8 left-1/2 w-[90%] h-16"
+        className="absolute -bottom-8 left-1/2"
         style={{
+          width: "90%",
+          height: "64px",
           background: "radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 80%)",
           filter: "blur(20px)",
           transform: "translateX(-50%) scaleY(0.4)",
@@ -35,10 +48,8 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
       <motion.div
         className="absolute"
         style={{
-          width: "1200px",
-          height: "1700px",
-          maxWidth: "90vw",
-          maxHeight: "85vh",
+          width: bookWidth,
+          height: bookHeight,
           background: `linear-gradient(135deg, #f5f0e6 0%, #ebe5d9 50%, #e5dfd3 100%)`,
           borderRadius: "8px",
           boxShadow: "inset 0 0 20px rgba(0,0,0,0.1)",
@@ -66,10 +77,8 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
       <motion.div
         className="relative"
         style={{
-          width: "1200px",
-          height: "1700px",
-          maxWidth: "90vw",
-          maxHeight: "85vh",
+          width: bookWidth,
+          height: bookHeight,
           transformStyle: "preserve-3d",
           transformOrigin: "left center",
         }}
@@ -86,7 +95,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
           src="/images/notebook-cover-blank.png"
           alt="SoNash Recovery Notebook"
           fill
-          className="object-contain"
+          className="object-cover rounded-lg"
           style={{
             filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.4))",
             backfaceVisibility: "hidden",
@@ -94,14 +103,13 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
           priority
         />
 
-        {/* Text overlay on cover */}
         <motion.div
-          className="absolute inset-0 flex flex-col items-center pointer-events-none"
+          className="absolute flex flex-col items-center pointer-events-none"
           style={{
-            paddingTop: "8%",
-            paddingBottom: "8%",
-            paddingLeft: "18%",
-            paddingRight: "18%",
+            top: "12%",
+            bottom: "12%",
+            left: "18%",
+            right: "18%",
             backfaceVisibility: "hidden",
           }}
           animate={isAnimating ? { opacity: 0 } : { opacity: 1 }}
@@ -110,7 +118,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
           {/* Top section - Branding */}
           <div className="flex flex-col items-center">
             <h1
-              className="font-rocksalt text-2xl md:text-3xl leading-tight text-center"
+              className="font-rocksalt leading-tight text-center text-2xl md:text-3xl"
               style={{
                 color: "#e0d8cc",
                 textShadow: `
@@ -124,7 +132,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             </h1>
 
             <p
-              className="font-shortstack text-base md:text-lg tracking-wide mt-1"
+              className="font-shortstack tracking-wide mt-1 text-base md:text-lg"
               style={{
                 color: "#d4ccc0",
                 textShadow: `
@@ -141,7 +149,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
           {/* Middle section - Personalized title */}
           <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
             <h2
-              className="font-rocksalt text-lg md:text-xl leading-relaxed text-center"
+              className="font-rocksalt leading-relaxed text-center text-lg md:text-xl"
               style={{
                 color: "#e0d8cc",
                 textShadow: `
@@ -160,7 +168,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
           {/* Clean days counter */}
           <div className="flex flex-col items-center mt-auto">
             <p
-              className="font-shortstack text-sm md:text-base text-center leading-snug"
+              className="font-shortstack text-center leading-snug text-sm md:text-base"
               style={{
                 color: "#d4ccc0",
                 textShadow: `
