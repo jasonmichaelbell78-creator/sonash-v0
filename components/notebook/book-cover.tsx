@@ -84,11 +84,11 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             <h1
               className="font-rocksalt text-2xl md:text-3xl leading-tight text-center"
               style={{
-                color: "#3d2914",
+                color: "#e0d8cc",
                 textShadow: `
-                  1px 1px 0px rgba(0,0,0,0.5),
-                  2px 2px 3px rgba(0,0,0,0.3),
-                  -1px -1px 0px rgba(180,160,140,0.3)
+                  1px 1px 0px rgba(0,0,0,0.7),
+                  2px 2px 3px rgba(0,0,0,0.5),
+                  -1px -1px 0px rgba(255,255,255,0.2)
                 `,
               }}
             >
@@ -98,11 +98,11 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             <p
               className="font-shortstack text-base md:text-lg tracking-wide mt-1"
               style={{
-                color: "#4a3520",
+                color: "#d4ccc0",
                 textShadow: `
-                  1px 1px 0px rgba(0,0,0,0.4),
-                  2px 2px 2px rgba(0,0,0,0.25),
-                  -1px -1px 0px rgba(180,160,140,0.25)
+                  1px 1px 0px rgba(0,0,0,0.6),
+                  2px 2px 2px rgba(0,0,0,0.4),
+                  -1px -1px 0px rgba(255,255,255,0.2)
                 `,
               }}
             >
@@ -114,11 +114,11 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             <h2
               className="font-rocksalt text-lg md:text-xl leading-relaxed text-center"
               style={{
-                color: "#3d2914",
+                color: "#e0d8cc",
                 textShadow: `
-                  1px 1px 0px rgba(0,0,0,0.5),
-                  2px 2px 3px rgba(0,0,0,0.3),
-                  -1px -1px 0px rgba(180,160,140,0.3)
+                  1px 1px 0px rgba(0,0,0,0.7),
+                  2px 2px 3px rgba(0,0,0,0.5),
+                  -1px -1px 0px rgba(255,255,255,0.2)
                 `,
               }}
             >
@@ -132,11 +132,11 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             <p
               className="font-shortstack text-sm md:text-base text-center leading-snug"
               style={{
-                color: "#4a3520",
+                color: "#d4ccc0",
                 textShadow: `
-                  1px 1px 0px rgba(0,0,0,0.4),
-                  2px 2px 2px rgba(0,0,0,0.25),
-                  -1px -1px 0px rgba(180,160,140,0.25)
+                  1px 1px 0px rgba(0,0,0,0.6),
+                  2px 2px 2px rgba(0,0,0,0.4),
+                  -1px -1px 0px rgba(255,255,255,0.2)
                 `,
               }}
             >
@@ -150,11 +150,11 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             <p
               className="font-shortstack text-xs md:text-sm"
               style={{
-                color: "#4a3520",
+                color: "#d4ccc0",
                 textShadow: `
-                  1px 1px 0px rgba(0,0,0,0.4),
-                  2px 2px 2px rgba(0,0,0,0.25),
-                  -1px -1px 0px rgba(180,160,140,0.25)
+                  1px 1px 0px rgba(0,0,0,0.6),
+                  2px 2px 2px rgba(0,0,0,0.4),
+                  -1px -1px 0px rgba(255,255,255,0.2)
                 `,
               }}
             >

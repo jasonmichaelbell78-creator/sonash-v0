@@ -3,6 +3,7 @@
 import { useState } from "react"
 import BookCover from "@/components/notebook/book-cover"
 import NotebookShell from "@/components/notebook/notebook-shell"
+import Link from "next/link"
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
@@ -46,6 +47,13 @@ export default function Home() {
           background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.3) 100%)",
         }}
       />
+
+      <Link
+        href="/colors"
+        className="fixed top-4 right-4 z-50 bg-stone-900/80 text-white px-4 py-2 rounded-lg hover:bg-stone-800 transition-colors text-sm font-medium backdrop-blur-sm"
+      >
+        Try Text Colors
+      </Link>
 
       {/* Notebook container - centered with padding for scroll */}
       <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12">
