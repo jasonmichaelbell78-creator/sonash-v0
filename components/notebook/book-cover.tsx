@@ -73,17 +73,17 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
         <div
           className="absolute inset-0 flex flex-col items-center pointer-events-none"
           style={{
-            paddingTop: "15%",
+            paddingTop: "8%",
             paddingBottom: "8%",
             paddingLeft: "18%",
-            paddingRight: "22%",
+            paddingRight: "18%",
           }}
         >
           {/* Top section - Branding */}
           <div className="flex flex-col items-center">
             {/* SoNash title */}
             <h1
-              className="font-rocksalt text-4xl md:text-5xl leading-tight text-center"
+              className="font-rocksalt text-2xl md:text-3xl leading-tight text-center"
               style={{
                 color: "#3d2914",
                 textShadow: `
@@ -98,7 +98,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
 
             {/* Sober Nashville subtitle */}
             <p
-              className="font-shortstack text-xl md:text-2xl tracking-wide mt-1"
+              className="font-shortstack text-base md:text-lg tracking-wide mt-1"
               style={{
                 color: "#4a3520",
                 textShadow: `
@@ -112,10 +112,10 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             </p>
           </div>
 
-          {/* Middle section - Personalized title */}
-          <div className="flex flex-col items-center mt-auto">
+          {/* Middle section - Personalized title with -1% margin to shift slightly left */}
+          <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
             <h2
-              className="font-rocksalt text-2xl md:text-3xl leading-relaxed text-center"
+              className="font-rocksalt text-xl md:text-2xl leading-relaxed text-center"
               style={{
                 color: "#3d2914",
                 textShadow: `
@@ -127,14 +127,14 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             >
               {nickname}'s
               <br />
-              Recovery Notebook
+              <span className="text-lg md:text-xl">Recovery Notebook</span>
             </h2>
           </div>
 
           {/* Clean days counter */}
           <div className="flex flex-col items-center mt-auto">
             <p
-              className="font-shortstack text-xl md:text-2xl text-center leading-snug"
+              className="font-shortstack text-sm md:text-base text-center leading-snug"
               style={{
                 color: "#4a3520",
                 textShadow: `
@@ -153,7 +153,7 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
           {/* Bottom section - CTA */}
           <div className="flex items-center gap-2 mt-auto">
             <p
-              className="font-shortstack text-lg md:text-xl"
+              className="font-shortstack text-xs md:text-sm"
               style={{
                 color: "#4a3520",
                 textShadow: `
