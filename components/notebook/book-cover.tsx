@@ -81,7 +81,6 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
         >
           {/* Top section - Branding */}
           <div className="flex flex-col items-center">
-            {/* SoNash title */}
             <h1
               className="font-rocksalt text-2xl md:text-3xl leading-tight text-center"
               style={{
@@ -96,7 +95,6 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
               SoNash
             </h1>
 
-            {/* Sober Nashville subtitle */}
             <p
               className="font-shortstack text-base md:text-lg tracking-wide mt-1"
               style={{
@@ -112,10 +110,9 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             </p>
           </div>
 
-          {/* Middle section - Personalized title with -1% margin to shift slightly left */}
           <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
             <h2
-              className="font-rocksalt text-xl md:text-2xl leading-relaxed text-center"
+              className="font-rocksalt text-lg md:text-xl leading-relaxed text-center"
               style={{
                 color: "#3d2914",
                 textShadow: `
@@ -127,11 +124,10 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             >
               {nickname}'s
               <br />
-              <span className="text-lg md:text-xl">Recovery Notebook</span>
+              Recovery Notebook
             </h2>
           </div>
 
-          {/* Clean days counter */}
           <div className="flex flex-col items-center mt-auto">
             <p
               className="font-shortstack text-sm md:text-base text-center leading-snug"
@@ -150,7 +146,6 @@ export default function BookCover({ onOpen, isAnimating, nickname = "Friend", cl
             </p>
           </div>
 
-          {/* Bottom section - CTA */}
           <div className="flex items-center gap-2 mt-auto">
             <p
               className="font-shortstack text-xs md:text-sm"
