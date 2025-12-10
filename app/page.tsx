@@ -5,12 +5,11 @@ import BookCover from "@/components/notebook/book-cover"
 import NotebookShell from "@/components/notebook/notebook-shell"
 import LampGlow from "@/components/desktop/lamp-glow"
 import { AnimatePresence } from "framer-motion"
+import { useAuth } from "@/components/providers/auth-provider"
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
-
-  const nickname = "Alex"
-  const cleanDays = 37
+  const { profile } = useAuth()
 
   const handleOpenBook = () => {
     if (!isOpen) {
@@ -46,9 +45,13 @@ export default function Home() {
       <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 pr-12 md:pr-0">
         <AnimatePresence mode="wait">
           {!isOpen ? (
-            <BookCover key="cover" nickname={nickname} cleanDays={cleanDays} onOpen={handleOpenBook} />
+            <BookCover key="cover" onOpen={handleOpenBook} />
           ) : (
-            <NotebookShell key="shell" onClose={handleCloseBook} nickname={nickname} />
+            <NotebookShell
+              key="shell"
+              onClose={handleCloseBook}
+              nickname={profile?.nickname || "Friend"}
+            />
           )}
         </AnimatePresence>
       </div>

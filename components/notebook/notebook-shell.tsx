@@ -175,9 +175,23 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
         {showSettings && (
           <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
             <div className="space-y-3">
-              <p className="font-body text-amber-900/70 underline">Nickname & privacy</p>
-              <p className="font-body text-amber-900/70 underline">Home screen & favorites</p>
-              <p className="font-body text-amber-900/70 underline">Language & text size</p>
+              <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
+              <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
+              <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
+
+              <div className="pt-4 border-t border-amber-900/10">
+                <button
+                  onClick={async () => {
+                    const { signOut } = await import("firebase/auth")
+                    const { auth } = await import("@/lib/firebase")
+                    await signOut(auth)
+                    onClose() // Close the book
+                  }}
+                  className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
+                >
+                  Sign Out
+                </button>
+              </div>
             </div>
           </StickyNote>
         )}

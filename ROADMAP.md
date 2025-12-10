@@ -17,7 +17,25 @@ This roadmap describes:
 - The **phased feature plan**
 - The **data model & backend plan (Firebase)**
 - The **admin backend** for managing content
+- The **admin backend** for managing content
+- A **Quality & Validation Schedule** to ensure stability
 - Future, expansion-friendly **modules and ideas**
+
+---
+
+## 1. Quality & Validation Schedule
+
+**Strategy:** We will not wait until the end to test. We will use a "Continuous Analysis" approach using multiple coding sources.
+
+### Q1. Core Stability Check (End of Phase 3)
+- **Static Analysis:** Strict TypeScript checks (no `any`), Linting.
+- **Unit Tests:** Jest tests for `FirestoreService` and `AuthProvider`.
+- **Manual QA:** "Airplane Mode" test (checking graceful failure).
+
+### Q2. Security & Performance Audit (End of Phase 5)
+- **Security:** Firestore Rules audit, sensitive data check (localStorage).
+- **Performance:** Lighthouse audit (aiming for 90+ on mobile), Image optimization verification.
+- **Automated Testing:** Basic E2E flows (Sign In -> Check In -> Sign Out).
 
 ---
 
@@ -228,6 +246,11 @@ After first sign-in:
 
 **Tab:** Today
 
+### 6.0 Technical Hardening (Immediate)
+- **Error Handling:** Graceful UI fallback if data fails to load (no silent failures).
+- **Debounce:** Autosave triggers max once every 3-5 seconds to save quota.
+- **Data Integrity:** Strict TypeScript types for all log entries.
+
 ### 6.1 Layout (Open Notebook Spread)
 
 - **Header:**
@@ -241,6 +264,8 @@ After first sign-in:
   - Optional quick links:
     - “Need a spot-check?”
     - “Need a grounding exercise?”
+    - **New:** Motivation chips (e.g., “3 days strong!”).
+    - **New:** Visual trends (mini sparkline for mood).
 
 ### 6.2 Clean Time Tracker (Section A)
 
@@ -257,6 +282,7 @@ Tough day / slip log stored under `/users/{uid}/toughDays/{id}`.
 ### 6.3 Today’s Reading (Section B)
 
 - Source toggle: `AA` | `NA` | `COMMUNITY` (room for more).
+- **Persistence:** App remembers the last selected source.
 - Sticky note preview:
   - A short line or paraphrase for today’s reading.
 - “Open full reading” link:
@@ -510,6 +536,22 @@ Security:
 - Firestore rules: only that `uid` can read/write.
 - Optional app lock later.
 
+- Optional app lock later.
+
+### 10.5 Journal Reliability & Draft UX (New)
+
+- **Sync Status:** Visible indicator (cloud checkmark or "saved locally").
+- **Local-First Drafts:**
+  - Content saves to local storage immediately while typing.
+  - Prevents data loss if network fails or app closes.
+- **Prompt Memory:**
+  - If a user starts a "Review my day" prompt but navigates away, the draft state persists across modules until submitted or discarded.
+- **Security:**
+  - Sensitive journal data in localStorage must be encrypted or cleared on logout.
+- **Offline Support (Priority):**
+  - Enable Firestore offline persistence.
+  - UI indicator for "Syncing..." vs "Saved".
+
 ---
 
 ## 11. Steps & Recovery Work – Inventories & Story
@@ -623,6 +665,16 @@ Consent & anonymity are required for any content.
 
 - From a story or tape:
   - “Reflect in my journal” → creates Journal entry linked to that content.
+
+- From a story or tape:
+  - “Reflect in my journal” → creates Journal entry linked to that content.
+
+---
+
+## 13.5 Export & Data Portability (New)
+**Goal:** Allow users to safeguard their data.
+- **Export to JSON/CSV:** Full dump of user data.
+- **Generate Report:** PDF for sponsors (sharing selected entries only).
 
 ---
 
