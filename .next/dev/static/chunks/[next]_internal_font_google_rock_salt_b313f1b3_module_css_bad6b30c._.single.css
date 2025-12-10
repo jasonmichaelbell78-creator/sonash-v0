@@ -1,0 +1,30 @@
+/* [next]/internal/font/google/rock_salt_b313f1b3.module.css [app-client] (css) */
+@font-face {
+  font-family: Rock Salt;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../media/0734f9d08f734375-s.p.d16429e0.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Rock Salt Fallback;
+  src: local(Arial);
+  ascent-override: 112.52%;
+  descent-override: 54.63%;
+  line-gap-override: 2.22%;
+  size-adjust: 140.85%;
+}
+
+.rock_salt_b313f1b3-module__IYm84a__className {
+  font-family: Rock Salt, Rock Salt Fallback;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.rock_salt_b313f1b3-module__IYm84a__variable {
+  --font-rocksalt: "Rock Salt", "Rock Salt Fallback";
+}
+
+/*# sourceMappingURL=%5Bnext%5D_internal_font_google_rock_salt_b313f1b3_module_css_bad6b30c._.single.css.map*/

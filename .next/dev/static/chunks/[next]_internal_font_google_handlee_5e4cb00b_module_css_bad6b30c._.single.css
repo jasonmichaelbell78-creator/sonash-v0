@@ -1,0 +1,30 @@
+/* [next]/internal/font/google/handlee_5e4cb00b.module.css [app-client] (css) */
+@font-face {
+  font-family: Handlee;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../media/aaabf441c775f9b7-s.p.449f8a85.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Handlee Fallback;
+  src: local(Arial);
+  ascent-override: 103.58%;
+  descent-override: 44.47%;
+  line-gap-override: 0.0%;
+  size-adjust: 90.17%;
+}
+
+.handlee_5e4cb00b-module__b1QQba__className {
+  font-family: Handlee, Handlee Fallback;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.handlee_5e4cb00b-module__b1QQba__variable {
+  --font-handlee: "Handlee", "Handlee Fallback";
+}
+
+/*# sourceMappingURL=%5Bnext%5D_internal_font_google_handlee_5e4cb00b_module_css_bad6b30c._.single.css.map*/

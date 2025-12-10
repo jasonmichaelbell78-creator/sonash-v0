@@ -1,0 +1,30 @@
+/* [next]/internal/font/google/gochi_hand_179f1971.module.css [app-client] (css) */
+@font-face {
+  font-family: Gochi Hand;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../media/bb80282eab4f8549-s.p.42755a5e.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Gochi Hand Fallback;
+  src: local(Arial);
+  ascent-override: 82.14%;
+  descent-override: 43.44%;
+  line-gap-override: 0.0%;
+  size-adjust: 93.87%;
+}
+
+.gochi_hand_179f1971-module__sLOXYq__className {
+  font-family: Gochi Hand, Gochi Hand Fallback;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.gochi_hand_179f1971-module__sLOXYq__variable {
+  --font-gochi: "Gochi Hand", "Gochi Hand Fallback";
+}
+
+/*# sourceMappingURL=%5Bnext%5D_internal_font_google_gochi_hand_179f1971_module_css_bad6b30c._.single.css.map*/

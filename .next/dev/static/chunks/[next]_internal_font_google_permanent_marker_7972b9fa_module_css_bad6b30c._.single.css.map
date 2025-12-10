@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[next]/internal/font/google/permanent_marker_7972b9fa.module.css"],"sourcesContent":["/* latin */\n@font-face {\n  font-family: 'Permanent Marker';\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(@vercel/turbopack-next/internal/font/google/font?{%22url%22:%22https://fonts.gstatic.com/s/permanentmarker/v16/Fh4uPib9Iyv2ucM6pGQMWimMp004La2Cf5b6jlg.woff2%22,%22preload%22:true,%22has_size_adjust%22:true}) format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n@font-face {\n    font-family: 'Permanent Marker Fallback';\n    src: local(\"Arial\");\n    ascent-override: 97.58%;\ndescent-override: 27.92%;\nline-gap-override: 2.66%;\nsize-adjust: 113.69%;\n\n}\n.className {\n    font-family: 'Permanent Marker', 'Permanent Marker Fallback';\n    font-weight: 400;\nfont-style: normal;\n\n}\n.variable {\n    --font-marker: 'Permanent Marker', 'Permanent Marker Fallback';\n}\n"],"names":[],"mappings":"AACA;;;;;;;;;AAQA;;;;;;;;;AASA;;;;;;AAMA","ignoreList":[0]}}]
+}
