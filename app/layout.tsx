@@ -23,6 +23,7 @@ import {
   La_Belle_Aurore,
 } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { AuthProvider } from "@/components/providers/auth-provider"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -103,8 +104,10 @@ export default function RootLayout({
         ${laBelleAurore.variable}
       `}
       >
-        {children}
-        <Analytics />
+        <AuthProvider>
+          {children}
+          <Analytics />
+        </AuthProvider>
       </body>
     </html>
   )

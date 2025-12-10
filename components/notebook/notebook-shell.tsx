@@ -87,7 +87,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
       >
         {/* Spine */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-8 md:w-10 z-20 rounded-l-lg"
+          className="absolute left-0 top-0 bottom-0 w-4 md:w-10 z-20 rounded-l-lg"
           style={{
             background: `
               linear-gradient(90deg, rgba(60, 100, 115, 1) 0%, rgba(70, 115, 130, 1) 50%, rgba(50, 85, 100, 1) 100%)
@@ -106,7 +106,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
 
         {/* Page content area */}
         <div
-          className="absolute left-8 md:left-10 right-0 top-0 bottom-0 rounded-r-lg overflow-hidden"
+          className="absolute left-4 md:left-10 right-0 top-0 bottom-0 rounded-r-lg overflow-hidden"
           style={{
             background: `linear-gradient(135deg, #f5f0e6 0%, #ebe5d9 50%, #e5dfd3 100%)`,
           }}

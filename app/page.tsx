@@ -43,7 +43,7 @@ export default function Home() {
       <LampGlow />
 
       {/* Notebook container */}
-      <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12">
+      <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 pr-12 md:pr-0">
         <AnimatePresence mode="wait">
           {!isOpen ? (
             <BookCover key="cover" nickname={nickname} cleanDays={cleanDays} onOpen={handleOpenBook} />
