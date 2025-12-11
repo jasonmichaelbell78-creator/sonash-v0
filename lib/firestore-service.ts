@@ -72,25 +72,39 @@ const defaultDeps: FirestoreDependencies = {
 export const createFirestoreService = (overrides: Partial<FirestoreDependencies> = {}) => {
   const deps = { ...defaultDeps, ...overrides }
 
+  const ensureValidUser = (userId: string) => {
+    if (!userId?.trim()) {
+      throw new Error("User ID is required for Firestore operations.")
+    }
+  }
+
+  const rateLimitError = (limiter: typeof saveDailyLogLimiter, label: "Save" | "Read", userId: string) => {
+    if (limiter.canMakeRequest()) return null
+
+    const waitTime = Math.ceil(limiter.getTimeUntilNextRequest() / 1000)
+    deps.logger.warn(`${label} rate limit exceeded`, { userId: maskIdentifier(userId), waitTime })
+    return new Error(`Rate limit exceeded. Please wait ${waitTime} seconds before trying again.`)
+  }
+
+  const getValidatedDocRef = (userId: string, dateId: string) => {
+    const targetPath = buildPath.dailyLog(userId, dateId)
+    deps.validateUserDocumentPath(userId, targetPath)
+    return deps.doc(deps.db, targetPath)
+  }
+
   return {
     // Save or update a daily log entry
     async saveDailyLog(userId: string, data: Partial<DailyLog>) {
+      ensureValidUser(userId)
       deps.assertUserScope({ userId })
 
-      // Rate limiting: Prevent excessive saves
-      if (!saveDailyLogLimiter.canMakeRequest()) {
-        const waitTime = Math.ceil(saveDailyLogLimiter.getTimeUntilNextRequest() / 1000)
-        const error = new Error(`Rate limit exceeded. Please wait ${waitTime} seconds before saving again.`)
-        deps.logger.warn("Save rate limit exceeded", { userId: maskIdentifier(userId), waitTime })
-        throw error
-      }
+      const rateError = rateLimitError(saveDailyLogLimiter, "Save", userId)
+      if (rateError) throw rateError
 
       try {
         // Generate today's date string as ID (YYYY-MM-DD)
         const today = getTodayUtcDateId()
-        const targetPath = buildPath.dailyLog(userId, today)
-        deps.validateUserDocumentPath(userId, targetPath)
-        const docRef = deps.doc(deps.db, targetPath)
+        const docRef = getValidatedDocRef(userId, today)
 
         // Merge true allows us to update fields independently (e.g., autosave journal separate from check-in)
         await deps.setDoc(
@@ -110,20 +124,17 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
     // Get today's log if it exists
     async getTodayLog(userId: string): Promise<TodayLogResult> {
+      ensureValidUser(userId)
       deps.assertUserScope({ userId })
 
-      // Rate limiting for reads
-      if (!readLimiter.canMakeRequest()) {
-        const waitTime = Math.ceil(readLimiter.getTimeUntilNextRequest() / 1000)
-        deps.logger.warn("Read rate limit exceeded", { userId: maskIdentifier(userId), waitTime })
-        return { log: null, error: new Error(`Rate limit exceeded. Please wait ${waitTime} seconds.`) }
+      const rateError = rateLimitError(readLimiter, "Read", userId)
+      if (rateError) {
+        return { log: null, error: rateError }
       }
 
       try {
         const today = getTodayUtcDateId()
-        const targetPath = buildPath.dailyLog(userId, today)
-        deps.validateUserDocumentPath(userId, targetPath)
-        const docRef = deps.doc(deps.db, targetPath)
+        const docRef = getValidatedDocRef(userId, today)
         const docSnap = await deps.getDoc(docRef)
 
         if (docSnap.exists()) {
@@ -138,13 +149,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
     // Get history of logs
     async getHistory(userId: string): Promise<{ entries: DailyLog[]; error: unknown | null }> {
+      ensureValidUser(userId)
       deps.assertUserScope({ userId })
 
-      // Rate limiting for reads
-      if (!readLimiter.canMakeRequest()) {
-        const waitTime = Math.ceil(readLimiter.getTimeUntilNextRequest() / 1000)
-        deps.logger.warn("Read rate limit exceeded", { userId: maskIdentifier(userId), waitTime })
-        return { entries: [], error: new Error(`Rate limit exceeded. Please wait ${waitTime} seconds.`) }
+      const rateError = rateLimitError(readLimiter, "Read", userId)
+      if (rateError) {
+        return { entries: [], error: rateError }
       }
 
       try {
