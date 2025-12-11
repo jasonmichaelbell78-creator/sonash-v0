@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { FirestoreService, type DailyLog } from "@/lib/firestore-service"
 import { useAuth } from "@/components/providers/auth-provider"
+import { logger, maskIdentifier } from "@/lib/logger"
 
 export default function MoodSparkline() {
     const { user } = useAuth()
@@ -16,9 +17,15 @@ export default function MoodSparkline() {
             try {
                 const history = await FirestoreService.getHistory(user.uid)
                 // Get last 7 entries, reverse to make chronological
-                setLogs(history.slice(0, 7).reverse())
+                setLogs(history.entries.slice(0, 7).reverse())
+                if (history.error) {
+                    logger.warn("Mood sparkline history incomplete", {
+                        userId: maskIdentifier(user.uid),
+                        error: history.error,
+                    })
+                }
             } catch (error) {
-                console.error("Failed to load mood history", error)
+                logger.error("Failed to load mood history", { userId: maskIdentifier(user.uid), error })
             } finally {
                 setLoading(false)
             }

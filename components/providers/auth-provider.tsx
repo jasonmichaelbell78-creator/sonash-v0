@@ -5,6 +5,7 @@ import { auth } from "@/lib/firebase"
 import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth"
 import { FirestoreService, DailyLog } from "@/lib/firestore-service"
 import { UserProfile } from "@/lib/db/users"
+import { logger, maskIdentifier } from "@/lib/logger"
 
 interface AuthContextType {
     user: User | null
@@ -57,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 db: firebase.db,
             }))
             .catch((error) => {
-                console.error("Error loading Firestore modules:", error)
+                logger.error("Error loading Firestore modules", { error })
                 throw error
             })
 
@@ -90,7 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             setLoading(false)
                         },
                         (error) => {
-                            console.error("Error fetching user profile:", error)
+                            logger.error("Error fetching user profile", {
+                                userId: maskIdentifier(currentUser.uid),
+                                error,
+                            })
                             setProfileError("Failed to load profile")
                             setLoading(false)
                         }
@@ -100,11 +104,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     try {
                         await refreshTodayLog()
                     } catch (logError) {
-                        console.error("Error fetching today's log:", logError)
+                        logger.error("Error fetching today's log", {
+                            userId: maskIdentifier(currentUser.uid),
+                            error: logError,
+                        })
                         setTodayLogError("Failed to load today's log")
                     }
                 } catch (error) {
-                    console.error("Error setting up profile listener:", error)
+                    logger.error("Error setting up profile listener", {
+                        userId: maskIdentifier(currentUser.uid),
+                        error,
+                    })
                     setProfileError("Failed to start profile listener")
                     setLoading(false)
                 }
@@ -116,7 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 try {
                     await signInAnonymously(auth)
                 } catch (error) {
-                    console.error("Error starting anonymous session:", error)
+                    logger.error("Error starting anonymous session", { error })
                     setProfileError("Failed to start anonymous session")
                     setLoading(false)
                 }

@@ -1,5 +1,6 @@
 import { db } from "../firebase"
 import { collection, query, where, getDocs, doc, setDoc, orderBy, writeBatch } from "firebase/firestore"
+import { logger } from "../logger"
 
 export interface Meeting {
     id: string
@@ -17,7 +18,7 @@ export const MeetingsService = {
     async getMeetingsByDay(day: string): Promise<Meeting[]> {
         try {
             // Basic query index logic might be needed for compound queries (day + time)
-            // For now, sorting by time client-side might be safer until index is built, 
+            // For now, sorting by time client-side might be safer until index is built,
             // but let's try server-side sort if we can.
             const meetingsRef = collection(db, "meetings")
             const q = query(
@@ -32,7 +33,7 @@ export const MeetingsService = {
             // Sort by time explicitly
             return meetings.sort((a, b) => a.time.localeCompare(b.time))
         } catch (error) {
-            console.error("Error fetching meetings:", error)
+            logger.error("Error fetching meetings", { error, day })
             return []
         }
     },
@@ -51,7 +52,7 @@ export const MeetingsService = {
                 return a.time.localeCompare(b.time)
             })
         } catch (error) {
-            console.error("Error fetching all meetings:", error)
+            logger.error("Error fetching all meetings", { error })
             return []
         }
     },
@@ -67,7 +68,7 @@ export const MeetingsService = {
             await batch.commit()
             return true
         } catch (error) {
-            console.error("Error clearing meetings:", error)
+            logger.error("Error clearing meetings", { error })
             return false
         }
     },
@@ -108,10 +109,10 @@ export const MeetingsService = {
             })
 
             await batch.commit()
-            console.log("Meetings seeded successfully")
+            logger.info("Meetings seeded successfully")
             return true
         } catch (error) {
-            console.error("Error seeding meetings:", error)
+            logger.error("Error seeding meetings", { error })
             return false
         }
     }
