@@ -3,6 +3,48 @@ import { collection, query, where, getDocs, doc, setDoc, orderBy, writeBatch } f
 import { logger } from "../logger"
 import { DAY_ORDER } from "../constants"
 
+/**
+ * Parse time string to minutes since midnight for robust sorting
+ * Handles both 24-hour format ("07:00", "19:30") and 12-hour format ("7:00 AM", "7:30 PM")
+ */
+function timeToMinutes(timeStr: string): number {
+    try {
+        // Remove whitespace
+        const cleaned = timeStr.trim()
+
+        // Check if 12-hour format (contains AM/PM)
+        const is12Hour = /AM|PM/i.test(cleaned)
+
+        if (is12Hour) {
+            // Parse 12-hour format
+            const match = cleaned.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
+            if (!match) return 0
+
+            let hours = parseInt(match[1], 10)
+            const minutes = parseInt(match[2], 10)
+            const period = match[3].toUpperCase()
+
+            // Convert to 24-hour
+            if (period === 'PM' && hours !== 12) hours += 12
+            if (period === 'AM' && hours === 12) hours = 0
+
+            return hours * 60 + minutes
+        } else {
+            // Parse 24-hour format
+            const parts = cleaned.split(':')
+            if (parts.length !== 2) return 0
+
+            const hours = parseInt(parts[0], 10)
+            const minutes = parseInt(parts[1], 10)
+
+            if (isNaN(hours) || isNaN(minutes)) return 0
+            return hours * 60 + minutes
+        }
+    } catch {
+        return 0 // Fallback for invalid formats
+    }
+}
+
 export interface Meeting {
     id: string
     name: string
@@ -31,8 +73,8 @@ export const MeetingsService = {
             const snapshot = await getDocs(q)
             const meetings = snapshot.docs.map(d => d.data() as Meeting)
 
-            // Sort by time explicitly
-            return meetings.sort((a, b) => a.time.localeCompare(b.time))
+            // Sort by time using proper time parsing (handles both 24h and 12h formats)
+            return meetings.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time))
         } catch (error) {
             logger.error("Error fetching meetings", { error, day })
             return []
@@ -45,11 +87,11 @@ export const MeetingsService = {
             const meetingsRef = collection(db, "meetings")
             const snapshot = await getDocs(meetingsRef)
             const meetings = snapshot.docs.map(d => d.data() as Meeting)
-            // Sort by day then time using constants
+            // Sort by day then time (using proper time parsing)
             return meetings.sort((a, b) => {
                 const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0)
                 if (dayDiff !== 0) return dayDiff
-                return a.time.localeCompare(b.time)
+                return timeToMinutes(a.time) - timeToMinutes(b.time)
             })
         } catch (error) {
             logger.error("Error fetching all meetings", { error })

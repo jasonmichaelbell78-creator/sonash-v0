@@ -166,7 +166,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setTodayLog(null)
                 setTodayLogError(null)
                 setLoading(true)
-                await ensureAnonymousSession(auth, setProfileError, setLoading)
+                try {
+                    await ensureAnonymousSession(auth, setProfileError, setLoading)
+                } catch (error) {
+                    // ensureAnonymousSession already handles errors internally
+                    // This catch is just a safety net for unexpected errors
+                    logger.error("Unexpected error in anonymous session setup", { error })
+                    setLoading(false)
+                }
             }
         })
 

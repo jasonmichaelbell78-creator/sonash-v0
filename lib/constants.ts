@@ -71,3 +71,25 @@ export const RATE_LIMITS = {
     WINDOW_MS: 60000, // 1 minute
   },
 } as const
+
+/**
+ * Firestore collection paths
+ */
+export const FIRESTORE_COLLECTIONS = {
+  USERS: "users",
+  DAILY_LOGS: "daily_logs",
+  MEETINGS: "meetings",
+  CONTACTS: "contacts",
+  JOURNAL_ENTRIES: "journalEntries",
+} as const
+
+/**
+ * Helper functions for building Firestore paths
+ */
+export const buildPath = {
+  userDoc: (userId: string) => `${FIRESTORE_COLLECTIONS.USERS}/${userId}`,
+  dailyLog: (userId: string, dateId: string) =>
+    `${FIRESTORE_COLLECTIONS.USERS}/${userId}/${FIRESTORE_COLLECTIONS.DAILY_LOGS}/${dateId}`,
+  dailyLogsCollection: (userId: string) =>
+    `${FIRESTORE_COLLECTIONS.USERS}/${userId}/${FIRESTORE_COLLECTIONS.DAILY_LOGS}`,
+} as const

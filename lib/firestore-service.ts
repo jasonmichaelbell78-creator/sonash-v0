@@ -14,6 +14,7 @@ import {
 import { assertUserScope, validateUserDocumentPath } from "./security/firestore-validation"
 import { logger as defaultLogger, maskIdentifier } from "./logger"
 import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
+import { buildPath } from "./constants"
 
 // Types
 export interface DailyLog {
@@ -87,7 +88,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       try {
         // Generate today's date string as ID (YYYY-MM-DD)
         const today = getTodayUtcDateId()
-        const targetPath = `users/${userId}/daily_logs/${today}`
+        const targetPath = buildPath.dailyLog(userId, today)
         deps.validateUserDocumentPath(userId, targetPath)
         const docRef = deps.doc(deps.db, targetPath)
 
@@ -120,7 +121,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
       try {
         const today = getTodayUtcDateId()
-        const targetPath = `users/${userId}/daily_logs/${today}`
+        const targetPath = buildPath.dailyLog(userId, today)
         deps.validateUserDocumentPath(userId, targetPath)
         const docRef = deps.doc(deps.db, targetPath)
         const docSnap = await deps.getDoc(docRef)
@@ -147,7 +148,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       }
 
       try {
-        const collectionPath = `users/${userId}/daily_logs`
+        const collectionPath = buildPath.dailyLogsCollection(userId)
         deps.validateUserDocumentPath(userId, collectionPath)
         const logsRef = deps.collection(deps.db, collectionPath)
         const q = deps.query(logsRef, deps.orderBy("id", "desc"), deps.limit(30))
