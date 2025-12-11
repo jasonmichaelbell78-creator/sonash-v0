@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import SignInModal from "@/components/auth/sign-in-modal"
 import OnboardingWizard from "@/components/onboarding/onboarding-wizard"
@@ -22,7 +22,13 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
   const [showOnboarding, setShowOnboarding] = useState(false)
 
   useEffect(() => {
-    setViewportWidth(window.innerWidth)
+    if (typeof window === "undefined") return
+
+    const updateDimensions = () => setViewportWidth(window.innerWidth)
+    updateDimensions()
+
+    window.addEventListener("resize", updateDimensions)
+    return () => window.removeEventListener("resize", updateDimensions)
   }, [])
 
   const isMobile = viewportWidth > 0 && viewportWidth < 768
@@ -30,9 +36,26 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
   const bookHeight = isMobile ? bookWidth * 1.42 : 850
 
   // Calculate real clean days if available
-  const cleanDays = profile?.cleanStart
-    ? differenceInDays(new Date(), profile.cleanStart.toDate())
-    : 0
+  const cleanDays = useMemo(() => {
+    if (!profile?.cleanStart) return 0
+
+    try {
+      const rawDate = profile.cleanStart as unknown
+      const parsedDate =
+        typeof (rawDate as { toDate?: () => Date })?.toDate === "function"
+          ? (rawDate as { toDate: () => Date }).toDate()
+          : new Date(rawDate as string)
+
+      if (!(parsedDate instanceof Date) || Number.isNaN(parsedDate.getTime())) {
+        return 0
+      }
+
+      return Math.max(0, differenceInDays(new Date(), parsedDate))
+    } catch (error) {
+      console.error("Invalid cleanStart value", error)
+      return 0
+    }
+  }, [profile?.cleanStart])
 
   const displayNickname = profile?.nickname || "Friend"
   const isProfileComplete = !!profile?.cleanStart
@@ -98,11 +121,13 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             }}
           />
           {/* Page lines hint */}
-          <div className="absolute inset-0 p-8 pointer-events-none overflow-hidden rounded-lg">
-            {[...Array(30)].map((_, i) => (
-              <div key={i} className="w-full h-px bg-sky-200/20" style={{ marginBottom: "24px" }} />
-            ))}
-          </div>
+          <div
+            className="absolute inset-0 p-8 pointer-events-none overflow-hidden rounded-lg"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(to bottom, rgba(56, 189, 248, 0.2) 0px, rgba(56, 189, 248, 0.2) 1px, transparent 1px, transparent 25px)",
+            }}
+          />
         </motion.div>
 
         {/* The cover that opens */}
