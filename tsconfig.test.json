@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist-tests",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "target": "ES2019",
+    "esModuleInterop": true,
+    "allowJs": false
+  },
+  "include": [
+    "components/providers/auth-provider.tsx",
+    "lib/**/*.ts",
+    "tests/**/*.ts"
+  ]
+}

@@ -6,6 +6,7 @@ interface Tab {
   id: string
   label: string
   color: string
+  planned?: boolean
 }
 
 interface TabNavigationProps {
@@ -25,6 +26,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
             relative h-16 md:h-20 w-10 md:w-12 rounded-r-lg
             ${tab.color}
             ${activeTab === tab.id ? "w-12 md:w-14" : ""}
+            ${tab.planned ? "opacity-70" : ""}
             transition-all duration-200
             hover:w-12 md:hover:w-14
           `}
@@ -41,6 +43,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
             style={{ transform: "rotate(180deg)" }}
           >
             {tab.label}
+            {tab.planned ? "*" : ""}
           </span>
 
           {/* Tab edge effect */}

@@ -1,11 +1,11 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react"
-import { auth } from "@/lib/firebase"
+import { auth } from "../../lib/firebase"
 import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth"
-import { FirestoreService, DailyLog } from "@/lib/firestore-service"
-import { UserProfile } from "@/lib/db/users"
-import { logger, maskIdentifier } from "@/lib/logger"
+import { FirestoreService, DailyLog } from "../../lib/firestore-service"
+import { UserProfile } from "../../lib/db/users"
+import { logger, maskIdentifier } from "../../lib/logger"
 
 interface AuthContextType {
     user: User | null
@@ -29,6 +29,32 @@ const AuthContext = createContext<AuthContextType>({
     refreshTodayLog: async () => { },
 })
 
+export const refreshTodayLogForUser = async (
+    firestoreService: typeof FirestoreService,
+    userId: string,
+    setTodayLog: (log: DailyLog | null) => void,
+    setTodayLogError: (message: string | null) => void,
+) => {
+    const result = await firestoreService.getTodayLog(userId)
+    setTodayLog(result.log)
+    setTodayLogError(result.error ? "Failed to load today's log" : null)
+}
+
+export const ensureAnonymousSession = async (
+    authInstance: typeof auth,
+    setProfileError: (message: string | null) => void,
+    setLoading: (value: boolean) => void,
+    signIn: typeof signInAnonymously = signInAnonymously,
+) => {
+    try {
+        await signIn(authInstance)
+    } catch (error) {
+        logger.error("Error starting anonymous session", { error })
+        setProfileError("Failed to start anonymous session")
+        setLoading(false)
+    }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -40,9 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const refreshTodayLog = async () => {
         if (user) {
-            const result = await FirestoreService.getTodayLog(user.uid)
-            setTodayLog(result.log)
-            setTodayLogError(result.error ? "Failed to load today's log" : null)
+            await refreshTodayLogForUser(FirestoreService, user.uid, setTodayLog, setTodayLogError)
         }
     }
 
@@ -123,13 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setTodayLog(null)
                 setTodayLogError(null)
                 setLoading(true)
-                try {
-                    await signInAnonymously(auth)
-                } catch (error) {
-                    logger.error("Error starting anonymous session", { error })
-                    setProfileError("Failed to start anonymous session")
-                    setLoading(false)
-                }
+                await ensureAnonymousSession(auth, setProfileError, setLoading)
             }
         })
 

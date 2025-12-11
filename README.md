@@ -115,3 +115,24 @@ This app uses **Firebase Firestore** with a user-centric data model.
 ## Documentation
 
 - [ROADMAP.md](./ROADMAP.md) - Feature roadmap and development phases
+
+## Roadmap Module Mapping
+
+| Roadmap tab | Implementation | Status | Feature flag |
+| --- | --- | --- | --- |
+| Today | `components/notebook/pages/today-page.tsx` | Available | – |
+| Resources | `components/notebook/pages/resources-page.tsx` | Available | – |
+| Support | `components/notebook/pages/support-page.tsx` | Available | – |
+| Growth | `components/notebook/roadmap-modules.tsx` → `PlaceholderPage` | Planned | `NEXT_PUBLIC_ENABLE_GROWTH` |
+| Work | `components/notebook/roadmap-modules.tsx` → `PlaceholderPage` | Planned | `NEXT_PUBLIC_ENABLE_WORK` |
+| More | `components/notebook/roadmap-modules.tsx` → `PlaceholderPage` | Planned | `NEXT_PUBLIC_ENABLE_MORE` |
+
+Unavailable modules render as notebook stubs and can be toggled on by setting the related feature flag to `true` in the environment.
+
+## Quality Gates
+
+- **Static analysis**: `npm run lint`
+- **Unit tests**: `npm test` (runs Node's built-in test runner against FirestoreService and AuthProvider helpers)
+- **Data access rules**: client-side Firestore paths are validated via `lib/security/firestore-validation.ts`
+
+These checks align with the roadmap's Q1 stability goals and should be kept green before merging new work.

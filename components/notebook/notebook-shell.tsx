@@ -5,27 +5,29 @@ import { motion, AnimatePresence } from "framer-motion"
 import TabNavigation from "./tab-navigation"
 import BookmarkRibbon from "./bookmark-ribbon"
 import StickyNote from "./sticky-note"
-import TodayPage from "./pages/today-page"
-import ResourcesPage from "./pages/resources-page"
-import SupportPage from "./pages/support-page"
 import PlaceholderPage from "./pages/placeholder-page"
+import {
+  getModuleById,
+  moduleIsEnabled,
+  moduleIsStubbed,
+  notebookModules,
+  type NotebookModuleId,
+} from "./roadmap-modules"
 
 interface NotebookShellProps {
   onClose: () => void
   nickname: string
 }
 
-const tabs = [
-  { id: "today", label: "Today", color: "bg-sky-200" },
-  { id: "resources", label: "Resources", color: "bg-orange-200" },
-  { id: "support", label: "Support", color: "bg-green-200" },
-  { id: "growth", label: "Growth", color: "bg-yellow-200" },
-  { id: "work", label: "Work", color: "bg-purple-200" },
-  { id: "more", label: "More", color: "bg-pink-200" },
-]
-
 export default function NotebookShell({ onClose, nickname }: NotebookShellProps) {
-  const [activeTab, setActiveTab] = useState("today")
+  const tabs = notebookModules.map((module) => ({
+    id: module.id,
+    label: module.label,
+    color: module.color,
+    planned: moduleIsStubbed(module),
+  }))
+
+  const [activeTab, setActiveTab] = useState<NotebookModuleId>("today")
   const [showSettings, setShowSettings] = useState(false)
   const [direction, setDirection] = useState(0)
 
@@ -37,32 +39,22 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
   }
 
   const renderPage = () => {
-    switch (activeTab) {
-      case "today":
-        return <TodayPage nickname={nickname} />
-      case "resources":
-        return <ResourcesPage />
-      case "support":
-        return <SupportPage />
-      case "growth":
-        return (
-          <PlaceholderPage
-            title="Growth"
-            description="Step work, reflections, and personal development tools coming soon."
-          />
-        )
-      case "work":
-        return (
-          <PlaceholderPage
-            title="Work"
-            description="Employment resources, resume tools, and job search features coming soon."
-          />
-        )
-      case "more":
-        return <PlaceholderPage title="More" description="Additional features and settings coming soon." />
-      default:
-        return <TodayPage nickname={nickname} />
+    const module = getModuleById(activeTab) ?? notebookModules[0]
+
+    if (moduleIsEnabled(module)) {
+      return module.render({ nickname })
     }
+
+    const flagText = module.featureFlag
+      ? `Enable ${module.label} by setting ${module.featureFlag}=true.`
+      : "This section is planned on the roadmap."
+
+    return (
+      <PlaceholderPage
+        title={`${module.label} (stub)`}
+        description={`${module.description} ${flagText}`}
+      />
+    )
   }
 
   return (
