@@ -43,11 +43,12 @@ export const FirestoreService = {
       )
     } catch (error) {
       console.error("Failed to save daily log", error)
+      throw error
     }
   },
 
   // Get today's log if it exists
-  async getTodayLog(userId: string) {
+  async getTodayLog(userId: string): Promise<DailyLog | null> {
     try {
       const today = new Date().toISOString().split("T")[0]
       const docRef = doc(db, `users/${userId}/daily_logs/${today}`)
@@ -64,7 +65,7 @@ export const FirestoreService = {
   },
 
   // Get history of logs
-  async getHistory(userId: string) {
+  async getHistory(userId: string): Promise<DailyLog[]> {
     try {
       const logsRef = collection(db, `users/${userId}/daily_logs`)
       const q = query(logsRef, orderBy("id", "desc"), limit(30))

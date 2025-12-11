@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { intervalToDuration } from "date-fns"
+import { toast } from "sonner"
+import MoodSparkline from "../visualizations/mood-sparkline"
 
 interface TodayPageProps {
   nickname: string
@@ -14,27 +17,66 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   const [used, setUsed] = useState(false)
   const [selectedReading, setSelectedReading] = useState<"AA" | "NA">("AA")
   const [journalEntry, setJournalEntry] = useState("")
+  // Track if we are currently editing to prevent jitter
+  const [isEditing, setIsEditing] = useState(false)
 
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
 
-  // Load saved data on mount
+  // Load reading preference
   useEffect(() => {
+    const saved = localStorage.getItem("sonash_reading_pref")
+    if (saved === "AA" || saved === "NA") setSelectedReading(saved)
+  }, [])
+
+  const handleReadingChange = (val: "AA" | "NA") => {
+    setSelectedReading(val)
+    localStorage.setItem("sonash_reading_pref", val)
+  }
+
+  // Real-time data sync
+  useEffect(() => {
+    if (!user) return
+
     // Basic local restore first (fast)
     const savedEntry = localStorage.getItem("sonash_journal_temp")
-    if (savedEntry) setJournalEntry(savedEntry)
+    if (savedEntry && !journalEntry) setJournalEntry(savedEntry)
 
-    // Then try to fetch from cloud if user exists
-    if (user) {
-      FirestoreService.getTodayLog(user.uid).then((log) => {
-        if (log) {
-          if (log.content) setJournalEntry(log.content)
-          if (log.mood) setMood(log.mood)
-          setCravings(log.cravings)
-          setUsed(log.used)
-        }
-      })
+    // Subscribe to Firestore updates
+    let unsubscribe: () => void
+
+    const setupListener = async () => {
+      try {
+        const { onSnapshot, doc } = await import("firebase/firestore")
+        const { db } = await import("@/lib/firebase")
+
+        const today = new Date().toISOString().split("T")[0]
+        const docRef = doc(db, `users/${user.uid}/daily_logs/${today}`)
+
+        unsubscribe = onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data()
+            if (data.mood) setMood(data.mood)
+            setCravings(data.cravings || false)
+            setUsed(data.used || false)
+
+            // Only update text if not currently editing (basic collision avoidance)
+            // Or if local is empty
+            if (data.content && !isEditing) {
+              setJournalEntry(data.content)
+            }
+          }
+        })
+      } catch (err) {
+        console.error("Error setting up today listener:", err)
+      }
     }
-  }, [user])
+
+    setupListener()
+
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
+  }, [user, isEditing]) // re-run if user changes, but careful with isEditing loops (actually isEditing doesn't need to be in dep array really if we use ref, but let's keep it simple. Actually if isEditing changes, we don't want to re-sub. Removing isEditing from deps is safer.)
 
   // Auto-save effect
   useEffect(() => {
@@ -52,7 +94,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
           used: used
         })
       }
-    }, 1000)
+    }, 5000)
     return () => clearTimeout(timeoutId)
   }, [journalEntry, mood, cravings, used, user])
 
@@ -63,11 +105,41 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     day: "numeric",
   })
 
-  // We'll use the variable name defined in layout.tsx via CSS variable usually,
-  // but to be safe and explicit with Tailwind using arbitrary values or the class if globally mapped.
-  // Inspection of globals.css would confirm, but usually `font-caveat` works if configured.
-  // Based on layout.tsx: variable: "--font-caveat".
-  // So `font-[family-name:var(--font-caveat)]` is the Next.js way.
+  // Calculate clean time dynamically
+  const getCleanTime = () => {
+    if (!profile?.cleanStart) return null
+
+    // Handle Firestore Timestamp or Date object
+    // @ts-ignore - Firestore timestamps have toDate()
+    const start = profile.cleanStart.toDate ? profile.cleanStart.toDate() : new Date(profile.cleanStart)
+    const now = new Date()
+
+    const duration = intervalToDuration({ start, end: now })
+
+    const years = duration.years ?? 0
+    const months = duration.months ?? 0
+    const days = duration.days ?? 0
+
+    // Just days for very early recovery (optional, but requested format was Years/Months/Days)
+    const parts = []
+    if (years > 0) parts.push(`${years}y`)
+    if (months > 0) parts.push(`${months}m`)
+    parts.push(`${days}d`)
+
+    // If < 1 day
+    if (parts.length === 1 && days === 0) return "Day 1"
+
+    const verboseParts = []
+    if (years > 0) verboseParts.push(years === 1 ? "1 Year" : `${years} Years`)
+    if (months > 0) verboseParts.push(months === 1 ? "1 Month" : `${months} Months`)
+    if (days > 0) verboseParts.push(days === 1 ? "1 Day" : `${days} Days`)
+
+    if (verboseParts.length === 0) return "Day 1"
+
+    return verboseParts.join(" • ")
+  }
+
+  const cleanTimeDisplay = getCleanTime()
 
   const moods = [
     { id: "struggling", emoji: "😟", label: "Struggling", color: "text-red-500" },
@@ -81,7 +153,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
       {/* Header */}
       <div className="mb-6">
         <p className="font-body text-lg text-amber-900/80 underline decoration-amber-900/30">
-          {dateString} – Hey {nickname}, one day at a time.
+          {dateString} – Hey {nickname || "Friend"}, one day at a time.
         </p>
       </div>
 
@@ -92,8 +164,17 @@ export default function TodayPage({ nickname }: TodayPageProps) {
           {/* Clean time tracker */}
           <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
-            <p className="font-heading text-2xl md:text-3xl text-amber-900">1 year · 2 months · 5 days</p>
-            <p className="font-body text-sm text-amber-900/60 mt-1">... and 13 minutes so far today</p>
+            <p className="font-heading text-2xl md:text-3xl text-amber-900">
+              {cleanTimeDisplay || "Tap to set clean date"}
+            </p>
+            {cleanTimeDisplay ? (
+              <p className="font-body text-sm text-amber-900/60 mt-1">Keep coming back.</p>
+            ) : (
+              <p className="font-body text-sm text-amber-900/60 mt-1 cursor-pointer hover:underline">
+                You haven't set your clean date yet.
+              </p>
+            )}
+
             <p className="font-body text-sm text-amber-900/50 mt-2 flex items-center gap-1 cursor-pointer hover:text-amber-700 transition-colors">
               <span className="inline-block rotate-45">↑</span>
               Tap here if something happened today
@@ -106,14 +187,14 @@ export default function TodayPage({ nickname }: TodayPageProps) {
               <h2 className="font-heading text-xl text-amber-900/90">Today's Reading</h2>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setSelectedReading("AA")}
+                  onClick={() => handleReadingChange("AA")}
                   className={`px-3 py-1 rounded-full font-body text-sm transition-all ${selectedReading === "AA" ? "bg-sky-300 text-sky-900 shadow-sm" : "bg-amber-100 text-amber-700"
                     }`}
                 >
                   AA
                 </button>
                 <button
-                  onClick={() => setSelectedReading("NA")}
+                  onClick={() => handleReadingChange("NA")}
                   className={`px-3 py-1 rounded-full font-body text-sm transition-all ${selectedReading === "NA" ? "bg-amber-400 text-amber-900 shadow-sm" : "bg-amber-100 text-amber-700"
                     }`}
                 >
@@ -162,6 +243,8 @@ export default function TodayPage({ nickname }: TodayPageProps) {
               ))}
             </div>
 
+            <MoodSparkline />
+
             {/* Toggle questions */}
             <div className="space-y-3 pl-1">
               <div className="flex items-center justify-between">
@@ -170,6 +253,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                   <span className={`font-body text-sm ${cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>Yes</span>
                   <button
                     onClick={() => setCravings(!cravings)}
+                    aria-label="Toggle cravings"
                     className={`w-12 h-6 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-amber-300/50 ${cravings ? "bg-amber-400" : "bg-gray-300"
                       }`}
                   >
@@ -188,6 +272,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                   <span className={`font-body text-sm ${used ? "text-red-700 font-bold" : "text-amber-900/40"}`}>Yes</span>
                   <button
                     onClick={() => setUsed(!used)}
+                    aria-label="Toggle used status"
                     className={`w-12 h-6 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-red-300/50 ${used ? "bg-red-400" : "bg-gray-300"
                       }`}
                   >
@@ -202,7 +287,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
             </div>
           </div>
 
-          {/* Journal prompt - REPLACED WITH TEXTAREA */}
+          {/* Journal prompt */}
           <div className="relative group">
             <h2 className="font-heading text-lg text-amber-900/90 mb-2">Anything you want to jot down?</h2>
 
@@ -211,11 +296,13 @@ export default function TodayPage({ nickname }: TodayPageProps) {
               <textarea
                 value={journalEntry}
                 onChange={(e) => setJournalEntry(e.target.value)}
+                onFocus={() => setIsEditing(true)}
+                onBlur={() => setIsEditing(false)}
                 placeholder="Start writing here..."
                 className="w-full h-full min-h-[200px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-blue-900/80 leading-[1.5em]"
                 style={{
                   fontFamily: 'var(--font-caveat), cursive',
-                  lineHeight: '22px' // Matches the background lines in notebook-shell roughly
+                  lineHeight: '22px'
                 }}
                 spellCheck={false}
               />

@@ -184,6 +184,10 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
                   onClick={async () => {
                     const { signOut } = await import("firebase/auth")
                     const { auth } = await import("@/lib/firebase")
+
+                    // Clear local temp data for security
+                    localStorage.removeItem("sonash_journal_temp")
+
                     await signOut(auth)
                     onClose() // Close the book
                   }}

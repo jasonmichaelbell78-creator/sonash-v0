@@ -53,8 +53,23 @@ const laBelleAurore = La_Belle_Aurore({ weight: "400", subsets: ["latin"], varia
 
 export const metadata: Metadata = {
   title: "SoNash - Sober Nashville",
-  description: "Your personal recovery notebook for the Nashville community",
+  description: "Your personal recovery notebook for the Nashville community. Track your clean time, journal your thoughts, and stay connected.",
+  keywords: ["recovery", "sobriety", "journal", "nashville", "addiction", "sober", "clean time"],
+  authors: [{ name: "Jason Bell" }],
   generator: "v0.app",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://sonash.vercel.app",
+    title: "SoNash - Sober Nashville",
+    description: "Your personal recovery notebook for the Nashville community.",
+    siteName: "SoNash",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SoNash - Sober Nashville",
+    description: "Your personal recovery notebook for the Nashville community.",
+  },
   icons: {
     icon: [
       {
@@ -80,7 +95,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`
         font-sans antialiased

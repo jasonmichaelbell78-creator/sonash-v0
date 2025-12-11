@@ -53,8 +53,10 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
 
   return (
     <>
-      <div
-        className="relative cursor-pointer flex items-center justify-center"
+      <button
+        type="button"
+        aria-label="Open your recovery notebook"
+        className="relative cursor-pointer flex items-center justify-center bg-transparent border-none p-0 outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-lg"
         onClick={handleInteraction}
         style={{
           perspective: "2000px",
@@ -275,7 +277,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             }}
           />
         </motion.div>
-      </div>
+      </button>
 
       <AnimatePresence>
         {showSignIn && (

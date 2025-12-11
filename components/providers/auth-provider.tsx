@@ -36,32 +36,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        let profileUnsubscribe: (() => void) | null = null
+
+        const authUnsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser)
 
-            if (currentUser) {
-                // Fetch user profile
-                try {
-                    const userProfile = await getUserProfile(currentUser.uid)
-                    setProfile(userProfile)
+            // Clean up previous profile listener if any
+            if (profileUnsubscribe) {
+                profileUnsubscribe()
+                profileUnsubscribe = null
+            }
 
-                    // Also fetch today's log while we're at it
+            if (currentUser) {
+                try {
+                    // Dynamic import to keep bundle small if needed, consistent with other usage
+                    const { onSnapshot, doc } = await import("firebase/firestore")
+                    const { db } = await import("@/lib/firebase")
+
+                    // Subscribe to real-time profile updates
+                    profileUnsubscribe = onSnapshot(
+                        doc(db, "users", currentUser.uid),
+                        (docSnap) => {
+                            if (docSnap.exists()) {
+                                setProfile(docSnap.data() as UserProfile)
+                            } else {
+                                setProfile(null)
+                            }
+                            setLoading(false)
+                        },
+                        (error) => {
+                            console.error("Error fetching user profile:", error)
+                            setLoading(false)
+                        }
+                    )
+
+                    // Also fetch today's log (keeping this one-time for now, or could stream it too)
                     await refreshTodayLog()
                 } catch (error) {
-                    console.error("Error fetching user data:", error)
+                    console.error("Error setting up profile listener:", error)
+                    setLoading(false)
                 }
             } else {
                 setProfile(null)
                 setTodayLog(null)
-
-                // Removed auto-sign-in anonymous for now to force the clear "Sign In" flow we planned
-                // We can add it back if we want "Guest Mode" later
+                setLoading(false)
             }
-
-            setLoading(false)
         })
 
-        return () => unsubscribe()
+        return () => {
+            authUnsubscribe()
+            if (profileUnsubscribe) profileUnsubscribe()
+        }
     }, [])
 
     return (

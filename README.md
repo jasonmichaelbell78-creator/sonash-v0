@@ -12,6 +12,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 ## Current Features (MVP)
 
 ### Book Cover
+
 - Photo-realistic weathered blue leather notebook on wooden desk background
 - Dynamic personalized text with embossed effect:
   - "SoNash" branding
@@ -24,6 +25,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - Responsive sizing with 3x scale option
 
 ### Notebook Interior
+
 - Multi-page notebook shell with page flip animations
 - Lined paper texture with realistic styling
 - Bookmark ribbon navigation
@@ -77,6 +79,37 @@ Continue development at: **[v0.app/chat/hQzscrZHb69](https://v0.app/chat/hQzscrZ
 ## Deployment
 
 Live at: **[vercel.com/jason-bells-projects-70400dfc/sonash-v0](https://vercel.com/jason-bells-projects-70400dfc/sonash-v0)**
+
+## Setup & Installation
+
+1. **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/jasonmichaelbell78-creator/sonash-v0.git
+    cd sonash-v0
+    ```
+
+2. **Configure Environment:**
+    - Copy `.env.local.example` to `.env.local`
+    - Fill in your Firebase config values (Project Settings -> General -> Your Apps)
+
+3. **Install & Run:**
+
+    ```bash
+    npm install
+    npm run dev
+    ```
+
+## Data Architecture
+
+This app uses **Firebase Firestore** with a user-centric data model.
+
+- **User Profiles** (`/users/{uid}`):
+  - Contains `nickname`, `cleanStart` (Timestamp), and preferences.
+  - Security Rules: strictly `request.auth.uid == uid`.
+
+- **Daily Logs** (`/users/{uid}/daily_logs/{date}`):
+  - Store check-ins, mood, and journal entries.
 
 ## Documentation
 

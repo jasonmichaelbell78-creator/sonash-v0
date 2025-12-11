@@ -45,7 +45,6 @@ export default function SobrietyChip({ cleanDays }: SobrietyChipProps) {
         style={{
           filter: "drop-shadow(3px 5px 8px rgba(0,0,0,0.5))",
         }}
-        unoptimized
       />
     </div>
   )

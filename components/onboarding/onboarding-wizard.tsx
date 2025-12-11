@@ -17,16 +17,15 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     const [cleanDate, setCleanDate] = useState("")
     const [time, setTime] = useState("08:00") // default 8am
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const handleNext = async () => {
         if (!user) return
 
         setLoading(true)
+        setError(null)
         try {
             if (step === "welcome") {
-                // Just move to next step, we'll save everything at the end
-                // But maybe create the base profile doc now if it doesn't exist?
-                // Let's just create/update at the end for simplicity
                 setStep("clean-date")
             }
         } finally {
@@ -36,12 +35,25 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
     const handleFinish = async () => {
         if (!user) return
+
+        if (!cleanDate) {
+            setError("Please select a clean date.")
+            return
+        }
+
         setLoading(true)
+        setError(null)
 
         try {
             // Create timestamp from inputs
             // cleanDate is YYYY-MM-DD, time is HH:MM
-            const dateObj = new Date(`${cleanDate}T${time}:00`)
+            const dateString = `${cleanDate}T${time || "00:00"}:00`
+            const dateObj = new Date(dateString)
+
+            if (isNaN(dateObj.getTime())) {
+                throw new Error("Invalid date")
+            }
+
             // Convert to Firestore Timestamp (using firebase client SDK in calling code or here)
             // Actually we need to import Timestamp from firebase/firestore
             const { Timestamp } = await import("firebase/firestore")
@@ -50,7 +62,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             // Ensure profile exists or update it
             // We use createUserProfile if it's brand new, or updateUserProfile if partial
             // Let's safe-guard: try create, if fail (already exists), update.
-            // But our db util 'createUserProfile' overwrites? No, let's look at logic.
+            // But our db util 'createUserProfile' overwrittes? No, let's look at logic.
             // Actually let's just use updateUserProfile with merge, but we need ensure the doc exists?
             // Our createUserProfile does setDoc.
 
@@ -65,6 +77,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             onComplete()
         } catch (error) {
             console.error("Setup failed", error)
+            setError("Something went wrong saving your date. Please try again.")
         } finally {
             setLoading(false)
         }
@@ -124,60 +137,67 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                             </motion.div>
                         )}
 
-                        {step === "clean-date" && (
-                            <motion.div
-                                key="clean-date"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="space-y-6"
-                            >
-                                <h2 className="font-rocksalt text-2xl text-stone-800 text-center">Your Clean Date</h2>
-                                <p className="font-handlee text-lg text-stone-600 text-center">
-                                    When was your last drink or use? <br />
-                                    <span className="text-sm text-stone-400">(It's okay if it was today. We start from now.)</span>
-                                </p>
+                        <motion.div
+                            key="clean-date"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="space-y-6"
+                        >
+                            <h2 className="font-rocksalt text-2xl text-stone-800 text-center">Your Clean Date</h2>
+                            <p className="font-handlee text-lg text-stone-600 text-center">
+                                When was your last drink or use? <br />
+                                <span className="text-sm text-stone-400">(It's okay if it was today. We start from now.)</span>
+                            </p>
 
-                                <div className="space-y-4">
-                                    <div className="relative">
-                                        <Calendar className="absolute left-3 top-3 w-5 h-5 text-stone-400" />
-                                        <input
-                                            type="date"
-                                            value={cleanDate}
-                                            onChange={(e) => setCleanDate(e.target.value)}
-                                            className="w-full bg-white/50 border border-stone-300 rounded-lg py-3 pl-10 pr-4 font-handlee text-xl outline-none focus:border-blue-500"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center gap-4 justify-center">
-                                        <span className="font-handlee text-stone-500">at roughly</span>
-                                        <input
-                                            type="time"
-                                            value={time}
-                                            onChange={(e) => setTime(e.target.value)}
-                                            className="bg-white/50 border border-stone-300 rounded-lg py-2 px-4 font-handlee text-xl outline-none focus:border-blue-500"
-                                        />
-                                    </div>
+                            <div className="space-y-4">
+                                <div className="relative">
+                                    <Calendar className="absolute left-3 top-3 w-5 h-5 text-stone-400" />
+                                    <input
+                                        type="date"
+                                        value={cleanDate}
+                                        onChange={(e) => {
+                                            setCleanDate(e.target.value)
+                                            setError(null)
+                                        }}
+                                        className="w-full bg-white/50 border border-stone-300 rounded-lg py-3 pl-10 pr-4 font-handlee text-xl outline-none focus:border-blue-500"
+                                    />
                                 </div>
 
-                                <div className="flex justify-between pt-4 items-center">
-                                    <button
-                                        onClick={() => setStep("welcome")}
-                                        className="text-stone-500 font-handlee hover:text-stone-800"
-                                    >
-                                        Back
-                                    </button>
-
-                                    <button
-                                        onClick={handleFinish}
-                                        disabled={!cleanDate}
-                                        className="flex items-center gap-2 bg-stone-800 text-[#fcf8e3] px-6 py-3 rounded-full font-handlee text-lg hover:bg-stone-700 transition-colors disabled:opacity-50"
-                                    >
-                                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Start My Journal"}
-                                    </button>
+                                <div className="flex items-center gap-4 justify-center">
+                                    <span className="font-handlee text-stone-500">at roughly</span>
+                                    <input
+                                        type="time"
+                                        value={time}
+                                        onChange={(e) => setTime(e.target.value)}
+                                        className="bg-white/50 border border-stone-300 rounded-lg py-2 px-4 font-handlee text-xl outline-none focus:border-blue-500"
+                                    />
                                 </div>
-                            </motion.div>
-                        )}
+
+                                {error && (
+                                    <p className="text-red-500 font-handlee text-center text-sm bg-red-50 p-2 rounded transform rotate-1">
+                                        {error}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="flex justify-between pt-4 items-center">
+                                <button
+                                    onClick={() => setStep("welcome")}
+                                    className="text-stone-500 font-handlee hover:text-stone-800"
+                                >
+                                    Back
+                                </button>
+
+                                <button
+                                    onClick={handleFinish}
+                                    disabled={loading}
+                                    className="flex items-center gap-2 bg-stone-800 text-[#fcf8e3] px-6 py-3 rounded-full font-handlee text-lg hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Start My Journal"}
+                                </button>
+                            </div>
+                        </motion.div>
                     </AnimatePresence>
                 </div>
             </motion.div>

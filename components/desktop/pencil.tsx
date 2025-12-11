@@ -25,7 +25,6 @@ export default function Pencil() {
         style={{
           filter: "drop-shadow(3px 6px 8px rgba(0,0,0,0.5))",
         }}
-        unoptimized
       />
     </div>
   )
