@@ -117,6 +117,7 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
                             type="email"
                             placeholder="Email address"
                             required
+                            autoFocus
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full p-3 bg-white border-b-2 border-stone-200 focus:border-blue-400 outline-none font-handlee text-lg placeholder:text-stone-400 transition-colors"

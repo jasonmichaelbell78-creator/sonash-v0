@@ -10,6 +10,7 @@ import { z } from "zod"
 import { logger, maskIdentifier } from "../logger"
 import { assertUserScope, validateUserDocumentPath } from "../security/firestore-validation"
 import { isFirestoreTimestamp } from "../types/firebase-types"
+import { buildPath } from "../constants"
 
 export interface UserProfile {
     uid: string
@@ -65,8 +66,9 @@ const defaultPreferences = {
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
         assertUserScope({ userId: uid })
-        const docRef = doc(db, `users/${uid}`)
-        validateUserDocumentPath(uid, `users/${uid}`)
+        const userPath = buildPath.userDoc(uid)
+        const docRef = doc(db, userPath)
+        validateUserDocumentPath(uid, userPath)
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
@@ -94,8 +96,9 @@ export async function createUserProfile(uid: string, email: string | null, nickn
 
     try {
         assertUserScope({ userId: uid })
-        validateUserDocumentPath(uid, `users/${uid}`)
-        await setDoc(doc(db, `users/${uid}`), newUser)
+        const userPath = buildPath.userDoc(uid)
+        validateUserDocumentPath(uid, userPath)
+        await setDoc(doc(db, userPath), newUser)
         return newUser
     } catch (error) {
         logger.error("Error creating user profile", { userId: maskIdentifier(uid), error })
@@ -110,8 +113,9 @@ export async function updateUserProfile(uid: string, data: Partial<UserProfile>)
         // Validate input data
         const validatedData = PartialUserProfileUpdateSchema.parse(data)
 
-        const docRef = doc(db, `users/${uid}`)
-        validateUserDocumentPath(uid, `users/${uid}`)
+        const userPath = buildPath.userDoc(uid)
+        const docRef = doc(db, userPath)
+        validateUserDocumentPath(uid, userPath)
         await setDoc(
             docRef,
             {

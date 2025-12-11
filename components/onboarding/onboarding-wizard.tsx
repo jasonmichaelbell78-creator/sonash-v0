@@ -162,6 +162,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                                             setCleanDate(e.target.value)
                                             setError(null)
                                         }}
+                                        autoFocus
                                         className="w-full bg-white/50 border border-stone-300 rounded-lg py-3 pl-10 pr-4 font-handlee text-xl outline-none focus:border-blue-500"
                                     />
                                 </div>

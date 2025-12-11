@@ -11,7 +11,7 @@ import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
 import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils"
 import { toDate } from "@/lib/types/firebase-types"
-import { STORAGE_KEYS, READING_PREFS, DEBOUNCE_DELAYS } from "@/lib/constants"
+import { STORAGE_KEYS, READING_PREFS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 
 interface TodayPageProps {
   nickname: string
@@ -60,7 +60,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
         const { db } = await import("@/lib/firebase")
 
         const today = getTodayDateId()
-        const docRef = doc(db, `users/${user.uid}/daily_logs/${today}`)
+        const docRef = doc(db, buildPath.dailyLog(user.uid, today))
 
         if (isMounted) {
           unsubscribe = onSnapshot(
@@ -102,7 +102,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
       isMounted = false
       if (unsubscribe) unsubscribe()
     }
-  }, [user, journalEntry]) // Only user and journalEntry in deps
+  }, [user]) // Only user in deps - isEditingRef handles collision avoidance
 
   // Auto-save effect with proper debouncing
   useEffect(() => {
@@ -262,17 +262,19 @@ export default function TodayPage({ nickname }: TodayPageProps) {
           {/* Check-in */}
           <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
-            <div className="flex justify-between gap-2 mb-4">
+            <div className="flex justify-between gap-2 mb-4" role="group" aria-label="Mood selection">
               {moods.map((m) => (
                 <button
                   key={m.id}
                   onClick={() => setMood(m.id)}
+                  aria-label={`Set mood to ${m.label}`}
+                  aria-pressed={mood === m.id}
                   className={`flex flex-col items-center p-2 rounded-lg transition-all ${mood === m.id
                     ? "bg-amber-100 scale-110 shadow-sm ring-1 ring-amber-200"
                     : "hover:bg-amber-50"
                     }`}
                 >
-                  <span className="text-2xl md:text-3xl filter drop-shadow-sm">{m.emoji}</span>
+                  <span className="text-2xl md:text-3xl filter drop-shadow-sm" aria-hidden="true">{m.emoji}</span>
                   <span className="font-body text-xs text-amber-900/70 mt-1">{m.label}</span>
                 </button>
               ))}
