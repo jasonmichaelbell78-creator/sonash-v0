@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from "react"
 import { auth } from "../../lib/firebase"
 import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth"
 import { FirestoreService, DailyLog } from "../../lib/firestore-service"
@@ -51,6 +51,7 @@ export const ensureAnonymousSession = async (
     } catch (error) {
         logger.error("Error starting anonymous session", { error })
         setProfileError("Failed to start anonymous session")
+    } finally {
         setLoading(false)
     }
 }
@@ -64,11 +65,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [profileError, setProfileError] = useState<string | null>(null)
     const [profileNotFound, setProfileNotFound] = useState(false)
 
-    const refreshTodayLog = async () => {
+    // Use ref to track previous profile data to avoid unnecessary re-renders
+    const previousProfileRef = useRef<string | null>(null)
+
+    const refreshTodayLog = useCallback(async () => {
         if (user) {
             await refreshTodayLogForUser(FirestoreService, user.uid, setTodayLog, setTodayLogError)
         }
-    }
+    }, [user])
+
+    // Memoized snapshot handler with data diffing
+    const handleProfileSnapshot = useCallback((docSnap: any) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data() as UserProfile
+            const dataString = JSON.stringify(data)
+
+            // Only update state if data actually changed (reduces re-renders)
+            if (dataString !== previousProfileRef.current) {
+                previousProfileRef.current = dataString
+                setProfile(data)
+                setProfileNotFound(false)
+            }
+        } else {
+            if (previousProfileRef.current !== null) {
+                previousProfileRef.current = null
+                setProfile(null)
+                setProfileNotFound(true)
+            }
+        }
+        setLoading(false)
+    }, [])
+
+    const handleProfileError = useCallback((currentUserId: string) => (error: any) => {
+        logger.error("Error fetching user profile", {
+            userId: maskIdentifier(currentUserId),
+            error,
+        })
+        setProfileError("Failed to load profile")
+        setLoading(false)
+    }, [])
 
     useEffect(() => {
         let profileUnsubscribe: (() => void) | null = null
@@ -101,30 +136,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 try {
                     const { onSnapshot, doc, db } = await firestorePromise
 
-                    // Subscribe to real-time profile updates
+                    // Subscribe to real-time profile updates with memoized handler
                     profileUnsubscribe = onSnapshot(
                         doc(db, "users", currentUser.uid),
-                        (docSnap) => {
-                            if (docSnap.exists()) {
-                                setProfile(docSnap.data() as UserProfile)
-                                setProfileNotFound(false)
-                            } else {
-                                setProfile(null)
-                                setProfileNotFound(true)
-                            }
-                            setLoading(false)
-                        },
-                        (error) => {
-                            logger.error("Error fetching user profile", {
-                                userId: maskIdentifier(currentUser.uid),
-                                error,
-                            })
-                            setProfileError("Failed to load profile")
-                            setLoading(false)
-                        }
+                        handleProfileSnapshot,
+                        handleProfileError(currentUser.uid)
                     )
 
-                    // Also fetch today's log (keeping this one-time for now, or could stream it too)
+                    // Also fetch today's log
                     try {
                         await refreshTodayLog()
                     } catch (logError) {
@@ -155,7 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             authUnsubscribe()
             if (profileUnsubscribe) profileUnsubscribe()
         }
-    }, [])
+    }, [handleProfileSnapshot, handleProfileError, refreshTodayLog])
 
     return (
         <AuthContext.Provider value={{ user, profile, loading, todayLog, todayLogError, refreshTodayLog, profileError, profileNotFound }}>
