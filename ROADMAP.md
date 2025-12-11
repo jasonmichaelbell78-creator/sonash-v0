@@ -1,5 +1,6 @@
-# SoNash – Nashville Recovery Notebook  
-**Full Product & Development Roadmap (v2)**
+# SoNash – Nashville Recovery Notebook
+
+## Full Product & Development Roadmap (v2)
 
 ---
 
@@ -28,11 +29,13 @@ This roadmap describes:
 **Strategy:** We will not wait until the end to test. We will use a "Continuous Analysis" approach using multiple coding sources.
 
 ### Q1. Core Stability Check (End of Phase 3)
+
 - **Static Analysis:** Strict TypeScript checks (no `any`), Linting.
 - **Unit Tests:** Jest tests for `FirestoreService` and `AuthProvider`.
 - **Manual QA:** "Airplane Mode" test (checking graceful failure).
 
 ### Q2. Security & Performance Audit (End of Phase 5)
+
 - **Security:** Firestore Rules audit, sensitive data check (localStorage).
 - **Performance:** Lighthouse audit (aiming for 90+ on mobile), Image optimization verification.
 - **Automated Testing:** Basic E2E flows (Sign In -> Check In -> Sign Out).
@@ -247,6 +250,7 @@ After first sign-in:
 **Tab:** Today
 
 ### 6.0 Technical Hardening (Immediate)
+
 - **Error Handling:** Graceful UI fallback if data fails to load (no silent failures).
 - **Debounce:** Autosave triggers max once every 3-5 seconds to save quota.
 - **Data Integrity:** Strict TypeScript types for all log entries.
@@ -672,7 +676,9 @@ Consent & anonymity are required for any content.
 ---
 
 ## 13.5 Export & Data Portability (New)
+
 **Goal:** Allow users to safeguard their data.
+
 - **Export to JSON/CSV:** Full dump of user data.
 - **Generate Report:** PDF for sponsors (sharing selected entries only).
 
