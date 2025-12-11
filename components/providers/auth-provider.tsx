@@ -4,13 +4,15 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { auth } from "@/lib/firebase"
 import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth"
 import { FirestoreService, DailyLog } from "@/lib/firestore-service"
-import { getUserProfile, UserProfile } from "@/lib/db/users"
+import { UserProfile } from "@/lib/db/users"
 
 interface AuthContextType {
     user: User | null
     profile: UserProfile | null
     loading: boolean
     todayLog: DailyLog | null
+    profileError: string | null
+    profileNotFound: boolean
     refreshTodayLog: () => Promise<void>
 }
 
@@ -19,6 +21,8 @@ const AuthContext = createContext<AuthContextType>({
     profile: null,
     loading: true,
     todayLog: null,
+    profileError: null,
+    profileNotFound: false,
     refreshTodayLog: async () => { },
 })
 
@@ -27,6 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [profile, setProfile] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
     const [todayLog, setTodayLog] = useState<DailyLog | null>(null)
+    const [profileError, setProfileError] = useState<string | null>(null)
+    const [profileNotFound, setProfileNotFound] = useState(false)
 
     const refreshTodayLog = async () => {
         if (user) {
@@ -37,9 +43,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         let profileUnsubscribe: (() => void) | null = null
+        const firestorePromise = Promise.all([
+            import("firebase/firestore"),
+            import("@/lib/firebase"),
+        ])
+            .then(([firestore, firebase]) => ({
+                onSnapshot: firestore.onSnapshot,
+                doc: firestore.doc,
+                db: firebase.db,
+            }))
+            .catch((error) => {
+                console.error("Error loading Firestore modules:", error)
+                throw error
+            })
 
         const authUnsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser)
+            setProfileError(null)
+            setProfileNotFound(false)
 
             // Clean up previous profile listener if any
             if (profileUnsubscribe) {
@@ -49,9 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (currentUser) {
                 try {
-                    // Dynamic import to keep bundle small if needed, consistent with other usage
-                    const { onSnapshot, doc } = await import("firebase/firestore")
-                    const { db } = await import("@/lib/firebase")
+                    const { onSnapshot, doc, db } = await firestorePromise
 
                     // Subscribe to real-time profile updates
                     profileUnsubscribe = onSnapshot(
@@ -59,27 +78,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         (docSnap) => {
                             if (docSnap.exists()) {
                                 setProfile(docSnap.data() as UserProfile)
+                                setProfileNotFound(false)
                             } else {
                                 setProfile(null)
+                                setProfileNotFound(true)
                             }
                             setLoading(false)
                         },
                         (error) => {
                             console.error("Error fetching user profile:", error)
+                            setProfileError("Failed to load profile")
                             setLoading(false)
                         }
                     )
 
                     // Also fetch today's log (keeping this one-time for now, or could stream it too)
-                    await refreshTodayLog()
+                    try {
+                        await refreshTodayLog()
+                    } catch (logError) {
+                        console.error("Error fetching today's log:", logError)
+                    }
                 } catch (error) {
                     console.error("Error setting up profile listener:", error)
+                    setProfileError("Failed to start profile listener")
                     setLoading(false)
                 }
             } else {
                 setProfile(null)
                 setTodayLog(null)
-                setLoading(false)
+                setLoading(true)
+                try {
+                    await signInAnonymously(auth)
+                } catch (error) {
+                    console.error("Error starting anonymous session:", error)
+                    setProfileError("Failed to start anonymous session")
+                    setLoading(false)
+                }
             }
         })
 
@@ -90,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, profile, loading, todayLog, refreshTodayLog }}>
+        <AuthContext.Provider value={{ user, profile, loading, todayLog, refreshTodayLog, profileError, profileNotFound }}>
             {children}
         </AuthContext.Provider>
     )
