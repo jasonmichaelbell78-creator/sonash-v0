@@ -4,10 +4,15 @@ type LogLevel = "info" | "warn" | "error"
 
 const SENSITIVE_KEYS = ["token", "authorization", "password", "uid", "email", "auth", "idToken", "accessToken", "refreshToken"]
 
+// Environment detection
+const isDevelopment = process.env.NODE_ENV === 'development'
+const isTest = process.env.NODE_ENV === 'test'
+const isProduction = process.env.NODE_ENV === 'production'
+
 const redactValue = (value: unknown): unknown => {
   if (value === null || value === undefined) return value
   if (value instanceof Error) {
-    return { name: value.name, message: value.message }
+    return { name: value.name, message: value.message, stack: isDevelopment ? value.stack : undefined }
   }
 
   if (Array.isArray(value)) {
@@ -42,21 +47,34 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
   const payload: Record<string, unknown> = {
     level,
     message,
-    ...(
-      context
-        ? {
-            context: sanitizeContext(context),
-          }
-        : {}
-    ),
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    ...(context ? { context: sanitizeContext(context) } : {}),
   }
 
-  if (level === "info") {
-    console.log(payload)
-  } else if (level === "warn") {
-    console.warn(payload)
-  } else {
-    console.error(payload)
+  // Only log to console in development and test environments
+  if (isDevelopment || isTest) {
+    if (level === "info") {
+      console.log(payload)
+    } else if (level === "warn") {
+      console.warn(payload)
+    } else {
+      console.error(payload)
+    }
+  }
+
+  // In production, only log errors to console (and could send to external service)
+  if (isProduction && level === "error") {
+    console.error({
+      level: payload.level,
+      message: payload.message,
+      timestamp: payload.timestamp,
+      // Don't log full context in production console, but you could send it to Sentry/LogRocket
+    })
+
+    // TODO: Send to external logging service
+    // Example: Sentry.captureMessage(message, { level, extra: context })
+    // Example: LogRocket.error(message, context)
   }
 }
 

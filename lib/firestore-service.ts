@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore"
 import { assertUserScope, validateUserDocumentPath } from "./security/firestore-validation"
 import { logger as defaultLogger, maskIdentifier } from "./logger"
+import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
 
 // Types
 export interface DailyLog {
@@ -74,6 +75,15 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     // Save or update a daily log entry
     async saveDailyLog(userId: string, data: Partial<DailyLog>) {
       deps.assertUserScope({ userId })
+
+      // Rate limiting: Prevent excessive saves
+      if (!saveDailyLogLimiter.canMakeRequest()) {
+        const waitTime = Math.ceil(saveDailyLogLimiter.getTimeUntilNextRequest() / 1000)
+        const error = new Error(`Rate limit exceeded. Please wait ${waitTime} seconds before saving again.`)
+        deps.logger.warn("Save rate limit exceeded", { userId: maskIdentifier(userId), waitTime })
+        throw error
+      }
+
       try {
         // Generate today's date string as ID (YYYY-MM-DD)
         const today = getTodayUtcDateId()
@@ -100,6 +110,14 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     // Get today's log if it exists
     async getTodayLog(userId: string): Promise<TodayLogResult> {
       deps.assertUserScope({ userId })
+
+      // Rate limiting for reads
+      if (!readLimiter.canMakeRequest()) {
+        const waitTime = Math.ceil(readLimiter.getTimeUntilNextRequest() / 1000)
+        deps.logger.warn("Read rate limit exceeded", { userId: maskIdentifier(userId), waitTime })
+        return { log: null, error: new Error(`Rate limit exceeded. Please wait ${waitTime} seconds.`) }
+      }
+
       try {
         const today = getTodayUtcDateId()
         const targetPath = `users/${userId}/daily_logs/${today}`
@@ -120,6 +138,14 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     // Get history of logs
     async getHistory(userId: string): Promise<{ entries: DailyLog[]; error: unknown | null }> {
       deps.assertUserScope({ userId })
+
+      // Rate limiting for reads
+      if (!readLimiter.canMakeRequest()) {
+        const waitTime = Math.ceil(readLimiter.getTimeUntilNextRequest() / 1000)
+        deps.logger.warn("Read rate limit exceeded", { userId: maskIdentifier(userId), waitTime })
+        return { entries: [], error: new Error(`Rate limit exceeded. Please wait ${waitTime} seconds.`) }
+      }
+
       try {
         const collectionPath = `users/${userId}/daily_logs`
         deps.validateUserDocumentPath(userId, collectionPath)

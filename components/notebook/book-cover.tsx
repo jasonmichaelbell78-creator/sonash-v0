@@ -2,12 +2,22 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import dynamic from "next/dynamic"
 import { useEffect, useMemo, useState } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
-import SignInModal from "@/components/auth/sign-in-modal"
-import OnboardingWizard from "@/components/onboarding/onboarding-wizard"
 import { differenceInDays } from "date-fns"
 import { logger } from "@/lib/logger"
+
+// Code splitting: Lazy load heavy modal components
+const SignInModal = dynamic(() => import("@/components/auth/sign-in-modal"), {
+  loading: () => null, // No loading indicator needed for modals
+  ssr: false // Don't server-render modals
+})
+
+const OnboardingWizard = dynamic(() => import("@/components/onboarding/onboarding-wizard"), {
+  loading: () => null,
+  ssr: false
+})
 
 interface BookCoverProps {
   onOpen: () => void
