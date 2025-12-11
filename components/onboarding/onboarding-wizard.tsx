@@ -138,13 +138,14 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                             </motion.div>
                         )}
 
-                        <motion.div
-                            key="clean-date"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-6"
-                        >
+                        {step === "clean-date" && (
+                            <motion.div
+                                key="clean-date"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-6"
+                            >
                             <h2 className="font-rocksalt text-2xl text-stone-800 text-center">Your Clean Date</h2>
                             <p className="font-handlee text-lg text-stone-600 text-center">
                                 When was your last drink or use? <br />
@@ -199,6 +200,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                                 </button>
                             </div>
                         </motion.div>
+                        )}
                     </AnimatePresence>
                 </div>
             </motion.div>

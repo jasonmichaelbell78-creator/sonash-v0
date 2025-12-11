@@ -6,8 +6,10 @@ import {
     serverTimestamp,
     Timestamp,
 } from "firebase/firestore"
+import { z } from "zod"
 import { logger, maskIdentifier } from "../logger"
 import { assertUserScope, validateUserDocumentPath } from "../security/firestore-validation"
+import { isFirestoreTimestamp } from "../types/firebase-types"
 
 export interface UserProfile {
     uid: string
@@ -22,6 +24,36 @@ export interface UserProfile {
         simpleLanguage: boolean
     }
 }
+
+// Zod schema for validation
+const TimestampSchema = z.custom<Timestamp>((val) => {
+    return val === null || isFirestoreTimestamp(val)
+}, "Must be a valid Firestore Timestamp")
+
+const UserProfileSchema = z.object({
+    uid: z.string().min(1, "UID is required"),
+    email: z.string().email("Must be a valid email").nullable(),
+    nickname: z.string().min(1, "Nickname is required").max(50, "Nickname must be 50 characters or less"),
+    cleanStart: TimestampSchema.nullable(),
+    createdAt: TimestampSchema,
+    updatedAt: TimestampSchema,
+    preferences: z.object({
+        theme: z.literal("blue"),
+        largeText: z.boolean(),
+        simpleLanguage: z.boolean(),
+    }),
+})
+
+const PartialUserProfileUpdateSchema = z.object({
+    email: z.string().email().nullable().optional(),
+    nickname: z.string().min(1).max(50).optional(),
+    cleanStart: TimestampSchema.nullable().optional(),
+    preferences: z.object({
+        theme: z.literal("blue"),
+        largeText: z.boolean(),
+        simpleLanguage: z.boolean(),
+    }).partial().optional(),
+})
 
 // Default preferences
 const defaultPreferences = {
@@ -74,17 +106,28 @@ export async function createUserProfile(uid: string, email: string | null, nickn
 export async function updateUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
     try {
         assertUserScope({ userId: uid })
+
+        // Validate input data
+        const validatedData = PartialUserProfileUpdateSchema.parse(data)
+
         const docRef = doc(db, `users/${uid}`)
         validateUserDocumentPath(uid, `users/${uid}`)
         await setDoc(
             docRef,
             {
-                ...data,
+                ...validatedData,
                 updatedAt: serverTimestamp()
             },
             { merge: true }
         )
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            logger.error("Invalid user profile data", {
+                userId: maskIdentifier(uid),
+                errors: error.errors
+            })
+            throw new Error("Invalid user profile data: " + error.errors.map(e => e.message).join(", "))
+        }
         logger.error("Error updating user profile", { userId: maskIdentifier(uid), error })
         throw error
     }

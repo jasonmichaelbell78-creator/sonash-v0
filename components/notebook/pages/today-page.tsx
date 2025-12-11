@@ -1,13 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration } from "date-fns"
 import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 import MoodSparkline from "../visualizations/mood-sparkline"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
+import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils"
+import { toDate } from "@/lib/types/firebase-types"
+import { STORAGE_KEYS, READING_PREFS, DEBOUNCE_DELAYS } from "@/lib/constants"
 
 interface TodayPageProps {
   nickname: string
@@ -19,20 +23,23 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   const [used, setUsed] = useState(false)
   const [selectedReading, setSelectedReading] = useState<"AA" | "NA">("AA")
   const [journalEntry, setJournalEntry] = useState("")
-  // Track if we are currently editing to prevent jitter
-  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  // Use ref instead of state to prevent re-triggering effects
+  const isEditingRef = useRef(false)
 
   const { user, profile } = useAuth()
 
   // Load reading preference
   useEffect(() => {
-    const saved = localStorage.getItem("sonash_reading_pref")
-    if (saved === "AA" || saved === "NA") setSelectedReading(saved)
+    const saved = localStorage.getItem(STORAGE_KEYS.READING_PREF)
+    if (saved === READING_PREFS.AA || saved === READING_PREFS.NA) {
+      setSelectedReading(saved as "AA" | "NA")
+    }
   }, [])
 
   const handleReadingChange = (val: "AA" | "NA") => {
     setSelectedReading(val)
-    localStorage.setItem("sonash_reading_pref", val)
+    localStorage.setItem(STORAGE_KEYS.READING_PREF, val)
   }
 
   // Real-time data sync
@@ -40,34 +47,47 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     if (!user) return
 
     // Basic local restore first (fast)
-    const savedEntry = localStorage.getItem("sonash_journal_temp")
+    const savedEntry = localStorage.getItem(STORAGE_KEYS.JOURNAL_TEMP)
     if (savedEntry && !journalEntry) setJournalEntry(savedEntry)
 
     // Subscribe to Firestore updates
-    let unsubscribe: () => void
+    let unsubscribe: (() => void) | undefined
+    let isMounted = true
 
     const setupListener = async () => {
       try {
         const { onSnapshot, doc } = await import("firebase/firestore")
         const { db } = await import("@/lib/firebase")
 
-        const today = new Date().toISOString().split("T")[0]
+        const today = getTodayDateId()
         const docRef = doc(db, `users/${user.uid}/daily_logs/${today}`)
 
-        unsubscribe = onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data()
-            if (data.mood) setMood(data.mood)
-            setCravings(data.cravings || false)
-            setUsed(data.used || false)
+        if (isMounted) {
+          unsubscribe = onSnapshot(
+            docRef,
+            (docSnap) => {
+              if (!isMounted) return // Guard against late callbacks
 
-            // Only update text if not currently editing (basic collision avoidance)
-            // Or if local is empty
-            if (data.content && !isEditing) {
-              setJournalEntry(data.content)
+              if (docSnap.exists()) {
+                const data = docSnap.data()
+                if (data.mood) setMood(data.mood)
+                setCravings(data.cravings || false)
+                setUsed(data.used || false)
+
+                // Only update text if not currently editing (collision avoidance)
+                if (data.content && !isEditingRef.current) {
+                  setJournalEntry(data.content)
+                }
+              }
+            },
+            (error) => {
+              logger.error("Error in today listener", {
+                userId: maskIdentifier(user.uid),
+                error,
+              })
             }
-          }
-        })
+          )
+        }
       } catch (err) {
         logger.error("Error setting up today listener", {
           userId: maskIdentifier(user?.uid),
@@ -79,55 +99,54 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     setupListener()
 
     return () => {
+      isMounted = false
       if (unsubscribe) unsubscribe()
     }
-  }, [user, isEditing]) // re-run if user changes, but careful with isEditing loops (actually isEditing doesn't need to be in dep array really if we use ref, but let's keep it simple. Actually if isEditing changes, we don't want to re-sub. Removing isEditing from deps is safer.)
+  }, [user, journalEntry]) // Only user and journalEntry in deps
 
-  // Auto-save effect
+  // Auto-save effect with proper debouncing
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const persistEntry = async () => {
+    // Don't save if nothing to save
+    if (!user) return
+
+    const timeoutId = setTimeout(async () => {
+      setIsSaving(true)
+      try {
         // Always save locally first as backup
-        localStorage.setItem("sonash_journal_temp", journalEntry)
+        localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, journalEntry)
 
-        // Save to cloud if user is logged in
-        if (user) {
-          try {
-            await FirestoreService.saveDailyLog(user.uid, {
-              date: new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
-              content: journalEntry,
-              mood: mood,
-              cravings: cravings,
-              used: used
-            })
-          } catch (error) {
-            logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
-            toast.error("We couldn't save today's notes. Please check your connection.")
-          }
-        }
+        // Save to cloud
+        await FirestoreService.saveDailyLog(user.uid, {
+          date: formatDateForDisplay(),
+          content: journalEntry,
+          mood: mood,
+          cravings: cravings,
+          used: used,
+        })
+      } catch (error) {
+        logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
+        toast.error("We couldn't save today's notes. Please check your connection.")
+      } finally {
+        setIsSaving(false)
       }
+    }, DEBOUNCE_DELAYS.AUTO_SAVE)
 
-      void persistEntry()
-    }, 5000)
-    return () => clearTimeout(timeoutId)
+    return () => {
+      clearTimeout(timeoutId)
+    }
   }, [journalEntry, mood, cravings, used, user])
 
-  const today = new Date()
-  const dateString = today.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  })
+  const dateString = formatDateForDisplay()
 
   // Calculate clean time dynamically
   const getCleanTime = () => {
     if (!profile?.cleanStart) return null
 
     // Handle Firestore Timestamp or Date object
-    // @ts-ignore - Firestore timestamps have toDate()
-    const start = profile.cleanStart.toDate ? profile.cleanStart.toDate() : new Date(profile.cleanStart)
-    const now = new Date()
+    const start = toDate(profile.cleanStart)
+    if (!start) return null
 
+    const now = new Date()
     const duration = intervalToDuration({ start, end: now })
 
     const years = duration.years ?? 0
@@ -312,8 +331,8 @@ export default function TodayPage({ nickname }: TodayPageProps) {
               <textarea
                 value={journalEntry}
                 onChange={(e) => setJournalEntry(e.target.value)}
-                onFocus={() => setIsEditing(true)}
-                onBlur={() => setIsEditing(false)}
+                onFocus={() => (isEditingRef.current = true)}
+                onBlur={() => (isEditingRef.current = false)}
                 placeholder="Start writing here..."
                 className="w-full h-full min-h-[200px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-blue-900/80 leading-[1.5em]"
                 style={{
@@ -322,9 +341,18 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                 }}
                 spellCheck={false}
               />
-              {/* Optional: Save indicator */}
-              <div className="absolute -bottom-6 right-0 text-xs text-amber-900/40 font-body italic">
-                {journalEntry ? "Saved locally" : "Autosaves as you type"}
+              {/* Save indicator */}
+              <div className="absolute -bottom-6 right-0 text-xs font-body italic">
+                {isSaving ? (
+                  <span className="text-amber-600 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Saving...
+                  </span>
+                ) : journalEntry ? (
+                  <span className="text-amber-900/40">Saved</span>
+                ) : (
+                  <span className="text-amber-900/40">Autosaves as you type</span>
+                )}
               </div>
             </div>
           </div>
