@@ -1,6 +1,7 @@
 import { db } from "../firebase"
 import { collection, query, where, getDocs, doc, setDoc, orderBy, writeBatch } from "firebase/firestore"
 import { logger } from "../logger"
+import { DAY_ORDER } from "../constants"
 
 export interface Meeting {
     id: string
@@ -44,10 +45,9 @@ export const MeetingsService = {
             const meetingsRef = collection(db, "meetings")
             const snapshot = await getDocs(meetingsRef)
             const meetings = snapshot.docs.map(d => d.data() as Meeting)
-            // Sort by day then time
-            const dayOrder = { "Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7 }
+            // Sort by day then time using constants
             return meetings.sort((a, b) => {
-                const dayDiff = (dayOrder[a.day] || 0) - (dayOrder[b.day] || 0)
+                const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0)
                 if (dayDiff !== 0) return dayDiff
                 return a.time.localeCompare(b.time)
             })

@@ -1,12 +1,50 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
 
+    // Helper function to validate date ID format (YYYY-MM-DD)
+    function isValidDateFormat(dateId) {
+      return dateId.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    // Helper function to check if a date is within reasonable range
+    // Prevents writing to far future or ancient past dates
+    function isReasonableDate(dateId) {
+      // Extract year from YYYY-MM-DD format
+      let year = int(dateId.split('-')[0]);
+      let currentYear = int(request.time.toMillis() / 31536000000 + 1970); // Approximate current year
+
+      // Allow dates from 10 years ago to 1 year in the future
+      return year >= currentYear - 10 && year <= currentYear + 1;
+    }
+
+    // User profile access
+    match /users/{uid} {
+      // Users can only read and write their own profile
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid;
+
+      // Daily logs subcollection
       match /daily_logs/{logId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+        // Users can only read their own logs
+        allow read: if request.auth != null && request.auth.uid == uid;
+
+        // Users can only write logs with valid date IDs in reasonable range
+        allow write: if request.auth != null &&
+                        request.auth.uid == uid &&
+                        isValidDateFormat(logId) &&
+                        isReasonableDate(logId);
       }
+    }
+
+    // Meetings collection
+    match /meetings/{meetingId} {
+      // Anyone authenticated can read meetings
+      allow read: if request.auth != null;
+
+      // Only server-side operations can write meetings
+      // In production, this should be restricted to Cloud Functions
+      allow write: if false;
     }
   }
 }
