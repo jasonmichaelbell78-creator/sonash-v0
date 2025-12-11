@@ -23,12 +23,22 @@ export interface DailyLog {
   updatedAt?: Timestamp
 }
 
+const getTodayUtcDateId = () =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: "UTC",
+  }).format(new Date())
+
+export interface TodayLogResult {
+  log: DailyLog | null
+  error: unknown | null
+}
+
 export const FirestoreService = {
   // Save or update a daily log entry
   async saveDailyLog(userId: string, data: Partial<DailyLog>) {
     try {
       // Generate today's date string as ID (YYYY-MM-DD)
-      const today = new Date().toISOString().split("T")[0]
+      const today = getTodayUtcDateId()
       const docRef = doc(db, `users/${userId}/daily_logs/${today}`)
 
       // Merge true allows us to update fields independently (e.g., autosave journal separate from check-in)
@@ -48,19 +58,19 @@ export const FirestoreService = {
   },
 
   // Get today's log if it exists
-  async getTodayLog(userId: string): Promise<DailyLog | null> {
+  async getTodayLog(userId: string): Promise<TodayLogResult> {
     try {
-      const today = new Date().toISOString().split("T")[0]
+      const today = getTodayUtcDateId()
       const docRef = doc(db, `users/${userId}/daily_logs/${today}`)
       const docSnap = await getDoc(docRef)
 
       if (docSnap.exists()) {
-        return docSnap.data() as DailyLog
+        return { log: docSnap.data() as DailyLog, error: null }
       }
-      return null
+      return { log: null, error: null }
     } catch (error) {
       console.error("Failed to retrieve today's log", error)
-      return null
+      return { log: null, error }
     }
   },
 
