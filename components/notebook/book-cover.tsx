@@ -7,6 +7,7 @@ import { useAuth } from "@/components/providers/auth-provider"
 import SignInModal from "@/components/auth/sign-in-modal"
 import OnboardingWizard from "@/components/onboarding/onboarding-wizard"
 import { differenceInDays } from "date-fns"
+import { logger } from "@/lib/logger"
 
 interface BookCoverProps {
   onOpen: () => void
@@ -36,11 +37,11 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
   const bookHeight = isMobile ? bookWidth * 1.42 : 850
 
   // Calculate real clean days if available
-  const cleanDays = useMemo(() => {
-    if (!profile?.cleanStart) return 0
+    const cleanDays = useMemo(() => {
+        if (!profile?.cleanStart) return 0
 
-    try {
-      const rawDate = profile.cleanStart as unknown
+        try {
+            const rawDate = profile.cleanStart as unknown
       const parsedDate =
         typeof (rawDate as { toDate?: () => Date })?.toDate === "function"
           ? (rawDate as { toDate: () => Date }).toDate()
@@ -51,8 +52,8 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
       }
 
       return Math.max(0, differenceInDays(new Date(), parsedDate))
-    } catch (error) {
-      console.error("Invalid cleanStart value", error)
+        } catch (error) {
+      logger.warn("Invalid cleanStart value", { error })
       return 0
     }
   }, [profile?.cleanStart])

@@ -5,6 +5,7 @@ import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, create
 import { auth } from "@/lib/firebase"
 import { motion } from "framer-motion"
 import { X, Loader2 } from "lucide-react"
+import { logger } from "@/lib/logger"
 
 interface SignInModalProps {
     onClose: () => void
@@ -26,7 +27,7 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
             await signInWithPopup(auth, provider)
             onSuccess()
         } catch (err: any) {
-            console.error(err)
+            logger.error("Google sign-in failed", { error: err })
             setError("Failed to sign in with Google. Try again.")
         } finally {
             setLoading(false)
@@ -45,7 +46,7 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
             }
             onSuccess()
         } catch (err: any) {
-            console.error(err)
+            logger.error("Email authentication failed", { error: err })
             const msg = err.code === 'auth/invalid-credential'
                 ? "Invalid email or password."
                 : err.code === 'auth/email-already-in-use'

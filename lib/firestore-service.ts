@@ -11,6 +11,8 @@ import {
   serverTimestamp,
   type Timestamp,
 } from "firebase/firestore"
+import { assertUserScope, validateUserDocumentPath } from "./security/firestore-validation"
+import { logger, maskIdentifier } from "./logger"
 
 // Types
 export interface DailyLog {
@@ -36,10 +38,13 @@ export interface TodayLogResult {
 export const FirestoreService = {
   // Save or update a daily log entry
   async saveDailyLog(userId: string, data: Partial<DailyLog>) {
+    assertUserScope({ userId })
     try {
       // Generate today's date string as ID (YYYY-MM-DD)
       const today = getTodayUtcDateId()
-      const docRef = doc(db, `users/${userId}/daily_logs/${today}`)
+      const targetPath = `users/${userId}/daily_logs/${today}`
+      validateUserDocumentPath(userId, targetPath)
+      const docRef = doc(db, targetPath)
 
       // Merge true allows us to update fields independently (e.g., autosave journal separate from check-in)
       await setDoc(
@@ -52,16 +57,19 @@ export const FirestoreService = {
         { merge: true }
       )
     } catch (error) {
-      console.error("Failed to save daily log", error)
+      logger.error("Failed to save daily log", { userId: maskIdentifier(userId), error })
       throw error
     }
   },
 
   // Get today's log if it exists
   async getTodayLog(userId: string): Promise<TodayLogResult> {
+    assertUserScope({ userId })
     try {
       const today = getTodayUtcDateId()
-      const docRef = doc(db, `users/${userId}/daily_logs/${today}`)
+      const targetPath = `users/${userId}/daily_logs/${today}`
+      validateUserDocumentPath(userId, targetPath)
+      const docRef = doc(db, targetPath)
       const docSnap = await getDoc(docRef)
 
       if (docSnap.exists()) {
@@ -69,25 +77,32 @@ export const FirestoreService = {
       }
       return { log: null, error: null }
     } catch (error) {
-      console.error("Failed to retrieve today's log", error)
+      logger.error("Failed to retrieve today's log", { userId: maskIdentifier(userId), error })
       return { log: null, error }
     }
   },
 
   // Get history of logs
-  async getHistory(userId: string): Promise<DailyLog[]> {
+  async getHistory(userId: string): Promise<{ entries: DailyLog[]; error: unknown | null }> {
+    assertUserScope({ userId })
     try {
-      const logsRef = collection(db, `users/${userId}/daily_logs`)
+      const collectionPath = `users/${userId}/daily_logs`
+      validateUserDocumentPath(userId, collectionPath)
+      const logsRef = collection(db, collectionPath)
       const q = query(logsRef, orderBy("id", "desc"), limit(30))
       const querySnapshot = await getDocs(q)
 
-      return querySnapshot.docs.map((logDoc) => ({
-        ...logDoc.data(),
-        id: logDoc.id,
-      })) as DailyLog[]
+      return {
+        entries:
+          querySnapshot.docs.map((logDoc) => ({
+            ...logDoc.data(),
+            id: logDoc.id,
+          })) as DailyLog[],
+        error: null,
+      }
     } catch (error) {
-      console.error("Failed to load journal history", error)
-      return []
+      logger.error("Failed to load journal history", { userId: maskIdentifier(userId), error })
+      return { entries: [], error }
     }
   },
 }

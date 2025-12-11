@@ -6,6 +6,8 @@ import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration } from "date-fns"
 import { toast } from "sonner"
 import MoodSparkline from "../visualizations/mood-sparkline"
+import { AuthErrorBanner } from "@/components/status/auth-error-banner"
+import { logger, maskIdentifier } from "@/lib/logger"
 
 interface TodayPageProps {
   nickname: string
@@ -67,7 +69,10 @@ export default function TodayPage({ nickname }: TodayPageProps) {
           }
         })
       } catch (err) {
-        console.error("Error setting up today listener:", err)
+        logger.error("Error setting up today listener", {
+          userId: maskIdentifier(user?.uid),
+          error: err,
+        })
       }
     }
 
@@ -81,19 +86,28 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   // Auto-save effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      // Always save locally first as backup
-      localStorage.setItem("sonash_journal_temp", journalEntry)
+      const persistEntry = async () => {
+        // Always save locally first as backup
+        localStorage.setItem("sonash_journal_temp", journalEntry)
 
-      // Save to cloud if user is logged in
-      if (user) {
-        FirestoreService.saveDailyLog(user.uid, {
-          date: new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
-          content: journalEntry,
-          mood: mood,
-          cravings: cravings,
-          used: used
-        })
+        // Save to cloud if user is logged in
+        if (user) {
+          try {
+            await FirestoreService.saveDailyLog(user.uid, {
+              date: new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
+              content: journalEntry,
+              mood: mood,
+              cravings: cravings,
+              used: used
+            })
+          } catch (error) {
+            logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
+            toast.error("We couldn't save today's notes. Please check your connection.")
+          }
+        }
       }
+
+      void persistEntry()
     }, 5000)
     return () => clearTimeout(timeoutId)
   }, [journalEntry, mood, cravings, used, user])
@@ -156,6 +170,8 @@ export default function TodayPage({ nickname }: TodayPageProps) {
           {dateString} – Hey {nickname || "Friend"}, one day at a time.
         </p>
       </div>
+
+      <AuthErrorBanner />
 
       {/* Two column layout for larger screens */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">

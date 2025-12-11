@@ -25,6 +25,7 @@ import {
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import "./globals.css"
+import { Toaster } from "sonner"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -122,6 +123,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <Toaster closeButton richColors />
           <Analytics />
         </AuthProvider>
       </body>

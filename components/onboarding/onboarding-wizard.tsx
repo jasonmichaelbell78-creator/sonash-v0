@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
 import { createUserProfile, updateUserProfile } from "@/lib/db/users"
 import { Loader2, ArrowRight, Calendar } from "lucide-react"
+import { logger, maskIdentifier } from "@/lib/logger"
 
 interface OnboardingWizardProps {
     onComplete: () => void
@@ -76,7 +77,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
             onComplete()
         } catch (error) {
-            console.error("Setup failed", error)
+            logger.error("Setup failed", { userId: maskIdentifier(user?.uid), error })
             setError("Something went wrong saving your date. Please try again.")
         } finally {
             setLoading(false)

@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService, type DailyLog } from "@/lib/firestore-service"
 import { Loader2, AlertCircle } from "lucide-react"
+import { AuthErrorBanner } from "@/components/status/auth-error-banner"
+import { logger, maskIdentifier } from "@/lib/logger"
 
 export default function HistoryPage() {
     const { user } = useAuth()
@@ -19,12 +21,12 @@ export default function HistoryPage() {
         if (user) {
             setLoading(true)
             FirestoreService.getHistory(user.uid)
-                .then((data) => {
-                    setEntries(data)
-                    setError(null)
+                .then((result) => {
+                    setEntries(result.entries)
+                    setError(result.error ? "Could not load your journal history. Please try again." : null)
                 })
                 .catch((err) => {
-                    console.error("History fetch error:", err)
+                    logger.error("History fetch failed", { userId: maskIdentifier(user.uid), error: err })
                     setError("Could not load your journal history. Please try again.")
                 })
                 .finally(() => {
@@ -49,6 +51,8 @@ export default function HistoryPage() {
                     Back to Book
                 </Link>
             </div>
+
+            <AuthErrorBanner />
 
             {/* Error State */}
             {error && (

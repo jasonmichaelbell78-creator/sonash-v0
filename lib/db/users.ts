@@ -6,6 +6,8 @@ import {
     serverTimestamp,
     Timestamp,
 } from "firebase/firestore"
+import { logger, maskIdentifier } from "../logger"
+import { assertUserScope, validateUserDocumentPath } from "../security/firestore-validation"
 
 export interface UserProfile {
     uid: string
@@ -30,7 +32,9 @@ const defaultPreferences = {
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
+        assertUserScope({ userId: uid })
         const docRef = doc(db, `users/${uid}`)
+        validateUserDocumentPath(uid, `users/${uid}`)
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
@@ -38,7 +42,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
         }
         return null
     } catch (error) {
-        console.error("Error getting user profile:", error)
+        logger.error("Error getting user profile", { userId: maskIdentifier(uid), error })
         return null
     }
 }
@@ -57,17 +61,21 @@ export async function createUserProfile(uid: string, email: string | null, nickn
     }
 
     try {
+        assertUserScope({ userId: uid })
+        validateUserDocumentPath(uid, `users/${uid}`)
         await setDoc(doc(db, `users/${uid}`), newUser)
         return newUser
     } catch (error) {
-        console.error("Error creating user profile:", error)
+        logger.error("Error creating user profile", { userId: maskIdentifier(uid), error })
         throw error
     }
 }
 
 export async function updateUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
     try {
+        assertUserScope({ userId: uid })
         const docRef = doc(db, `users/${uid}`)
+        validateUserDocumentPath(uid, `users/${uid}`)
         await setDoc(
             docRef,
             {
@@ -77,7 +85,7 @@ export async function updateUserProfile(uid: string, data: Partial<UserProfile>)
             { merge: true }
         )
     } catch (error) {
-        console.error("Error updating user profile:", error)
+        logger.error("Error updating user profile", { userId: maskIdentifier(uid), error })
         throw error
     }
 }

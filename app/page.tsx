@@ -6,6 +6,7 @@ import NotebookShell from "@/components/notebook/notebook-shell"
 import LampGlow from "@/components/desktop/lamp-glow"
 import { AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
+import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
@@ -40,6 +41,10 @@ export default function Home() {
       />
 
       <LampGlow />
+
+      <div className="relative z-10 px-6 pt-6">
+        <AuthErrorBanner />
+      </div>
 
       {/* Notebook container */}
       <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 pr-12 md:pr-0">

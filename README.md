@@ -106,10 +106,11 @@ This app uses **Firebase Firestore** with a user-centric data model.
 
 - **User Profiles** (`/users/{uid}`):
   - Contains `nickname`, `cleanStart` (Timestamp), and preferences.
-  - Security Rules: strictly `request.auth.uid == uid`.
+  - Security Rules: strictly `request.auth.uid == uid` (see [`firestore.rules`](./firestore.rules)).
 
 - **Daily Logs** (`/users/{uid}/daily_logs/{date}`):
   - Store check-ins, mood, and journal entries.
+  - Guarded client-side via `lib/security/firestore-validation.ts` to mirror the deployed rules.
 
 ## Documentation
 
