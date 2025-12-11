@@ -11,6 +11,7 @@ interface AuthContextType {
     profile: UserProfile | null
     loading: boolean
     todayLog: DailyLog | null
+    todayLogError: string | null
     profileError: string | null
     profileNotFound: boolean
     refreshTodayLog: () => Promise<void>
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
     profile: null,
     loading: true,
     todayLog: null,
+    todayLogError: null,
     profileError: null,
     profileNotFound: false,
     refreshTodayLog: async () => { },
@@ -31,13 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [profile, setProfile] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
     const [todayLog, setTodayLog] = useState<DailyLog | null>(null)
+    const [todayLogError, setTodayLogError] = useState<string | null>(null)
     const [profileError, setProfileError] = useState<string | null>(null)
     const [profileNotFound, setProfileNotFound] = useState(false)
 
     const refreshTodayLog = async () => {
         if (user) {
-            const log = await FirestoreService.getTodayLog(user.uid)
-            setTodayLog(log)
+            const result = await FirestoreService.getTodayLog(user.uid)
+            setTodayLog(result.log)
+            setTodayLogError(result.error ? "Failed to load today's log" : null)
         }
     }
 
@@ -97,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         await refreshTodayLog()
                     } catch (logError) {
                         console.error("Error fetching today's log:", logError)
+                        setTodayLogError("Failed to load today's log")
                     }
                 } catch (error) {
                     console.error("Error setting up profile listener:", error)
@@ -106,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else {
                 setProfile(null)
                 setTodayLog(null)
+                setTodayLogError(null)
                 setLoading(true)
                 try {
                     await signInAnonymously(auth)
@@ -124,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, profile, loading, todayLog, refreshTodayLog, profileError, profileNotFound }}>
+        <AuthContext.Provider value={{ user, profile, loading, todayLog, todayLogError, refreshTodayLog, profileError, profileNotFound }}>
             {children}
         </AuthContext.Provider>
     )
