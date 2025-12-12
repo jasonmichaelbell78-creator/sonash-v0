@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, Home, Map, Calendar, Loader2, CheckCircle2 } from "lucide-react"
+import { MapPin, Home, Map, Calendar, Loader2, CheckCircle2, Locate, X } from "lucide-react"
 import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import { toast } from "sonner"
@@ -14,16 +14,31 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Navigation } from "lucide-react"
+import { useGeolocation } from "@/hooks/use-geolocation"
+import { calculateDistance, formatDistance, sortByDistance } from "@/lib/utils/distance"
 
 // Fellowship filter options
 const FELLOWSHIP_OPTIONS = ["All", "AA", "NA", "CA"] as const
 type FellowshipFilter = typeof FELLOWSHIP_OPTIONS[number]
 
+// Sort options
+type SortOption = "time" | "nearest"
+
 export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [viewMode, setViewMode] = useState<"today" | "all">("today")
   const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
+  const [sortBy, setSortBy] = useState<SortOption>("time")
   const [loading, setLoading] = useState(true)
+
+  // Geolocation hook for proximity features
+  const {
+    coordinates: userLocation,
+    status: locationStatus,
+    loading: locationLoading,
+    requestLocation,
+    clearLocation,
+  } = useGeolocation()
 
   // Determine today's day name for querying
   const todayName = useMemo(() => {
@@ -148,7 +163,7 @@ export default function ResourcesPage() {
     return h * 60 + m
   }
 
-  // Combined filtering: time (for today view) + fellowship
+  // Combined filtering: time (for today view) + fellowship + sorting
   const filteredMeetings = useMemo(() => {
     let result = meetings
 
@@ -167,8 +182,35 @@ export default function ResourcesPage() {
       })
     }
 
+    // Apply sorting
+    if (sortBy === "nearest" && userLocation) {
+      result = sortByDistance(result, userLocation, (m) => m.coordinates)
+    }
+    // Default sort by time is already applied by the service
+
     return result
-  }, [meetings, viewMode, fellowshipFilter])
+  }, [meetings, viewMode, fellowshipFilter, sortBy, userLocation])
+
+  // Helper to get distance for a meeting
+  const getMeetingDistance = (meeting: Meeting): string | null => {
+    if (!userLocation || !meeting.coordinates) return null
+    const distance = calculateDistance(userLocation, meeting.coordinates)
+    return formatDistance(distance)
+  }
+
+  // Handle "Nearest to me" button click
+  const handleNearestClick = () => {
+    if (locationStatus === "granted" && userLocation) {
+      // Already have location, just toggle sort
+      setSortBy(sortBy === "nearest" ? "time" : "nearest")
+    } else if (locationStatus === "denied") {
+      toast.error("Location access denied. Please enable location in your browser settings.")
+    } else {
+      // Request location and enable sort
+      requestLocation()
+      setSortBy("nearest")
+    }
+  }
 
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null)
 
@@ -220,8 +262,8 @@ export default function ResourcesPage() {
             </div>
           </div>
 
-          {/* Fellowship filter */}
-          <div className="flex gap-1.5 mb-4">
+          {/* Fellowship filter and location sort */}
+          <div className="flex flex-wrap items-center gap-1.5 mb-4">
             {FELLOWSHIP_OPTIONS.map((option) => (
               <button
                 key={option}
@@ -235,6 +277,41 @@ export default function ResourcesPage() {
                 {option}
               </button>
             ))}
+
+            {/* Divider */}
+            <div className="w-px h-5 bg-amber-200 mx-1" />
+
+            {/* Nearest to me button */}
+            <button
+              onClick={handleNearestClick}
+              disabled={locationLoading}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                sortBy === "nearest" && userLocation
+                  ? "bg-blue-600 text-white border-blue-600 font-medium"
+                  : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+              } ${locationLoading ? "opacity-50 cursor-wait" : ""}`}
+            >
+              {locationLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Locate className="w-3 h-3" />
+              )}
+              Nearest
+            </button>
+
+            {/* Clear location button (when location is active) */}
+            {sortBy === "nearest" && userLocation && (
+              <button
+                onClick={() => {
+                  clearLocation()
+                  setSortBy("time")
+                }}
+                className="text-xs p-1.5 rounded-full border border-amber-200 bg-white text-amber-600 hover:bg-amber-50 transition-all"
+                title="Clear location"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
           </div>
 
           {/* Hand-drawn map placeholder */}
@@ -314,27 +391,36 @@ export default function ResourcesPage() {
                     Clear Data (Dev)
                   </button>
                 </div>
-                {filteredMeetings.map((meeting) => (
-                  <button
-                    key={meeting.id}
-                    onClick={() => setSelectedMeeting(meeting)}
-                    className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
-                  >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
-                      {meeting.type}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-heading text-sm text-amber-900 truncate font-semibold">{meeting.name}</span>
-                        <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">{meeting.time}</span>
+                {filteredMeetings.map((meeting) => {
+                  const distance = getMeetingDistance(meeting)
+                  return (
+                    <button
+                      key={meeting.id}
+                      onClick={() => setSelectedMeeting(meeting)}
+                      className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
+                        {meeting.type}
                       </div>
-                      <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
-                        {viewMode === 'all' && <span className="font-medium text-amber-700">{meeting.day.substring(0, 3)} • </span>}
-                        <MapPin className="w-3 h-3" /> {meeting.neighborhood}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-heading text-sm text-amber-900 truncate font-semibold">{meeting.name}</span>
+                          <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">{meeting.time}</span>
+                        </div>
+                        <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
+                          {viewMode === 'all' && <span className="font-medium text-amber-700">{meeting.day.substring(0, 3)} • </span>}
+                          <MapPin className="w-3 h-3" /> {meeting.neighborhood}
+                        </p>
+                      </div>
+                      {/* Distance badge when location is available */}
+                      {distance && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
+                          {distance}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
               </>
             )}
           </div>
@@ -359,10 +445,20 @@ export default function ResourcesPage() {
           <div className="space-y-4 py-4">
             <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
               <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div>
+              <div className="flex-1">
                 <h4 className="font-medium text-amber-900 text-sm">Location</h4>
                 <p className="text-sm text-amber-800/80">{selectedMeeting?.address}</p>
-                <span className="text-xs font-medium text-amber-600 uppercase tracking-wider mt-1 block">{selectedMeeting?.neighborhood}</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">{selectedMeeting?.neighborhood}</span>
+                  {selectedMeeting && getMeetingDistance(selectedMeeting) && (
+                    <>
+                      <span className="text-amber-300">•</span>
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                        {getMeetingDistance(selectedMeeting)} away
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
