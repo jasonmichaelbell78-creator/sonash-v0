@@ -77,26 +77,10 @@
 @theme inline {
   --font-sans: "Geist", "Geist Fallback";
   --font-mono: "Geist Mono", "Geist Mono Fallback";
-  /* Header fonts */
+  /* Custom fonts - only load what's used */
   --font-caveat: var(--font-caveat);
-  --font-kalam: var(--font-kalam);
-  --font-marker: var(--font-marker);
-  --font-dancing: var(--font-dancing);
-  --font-satisfy: var(--font-satisfy);
-  --font-pacifico: var(--font-pacifico);
-  --font-amatic: var(--font-amatic);
   --font-rocksalt: var(--font-rocksalt);
-  --font-gloria: var(--font-gloria);
-  /* Body fonts */
-  --font-architects: var(--font-architects);
-  --font-coming: var(--font-coming);
   --font-handlee: var(--font-handlee);
-  --font-neucha: var(--font-neucha);
-  --font-shortstack: var(--font-shortstack);
-  --font-annie: var(--font-annie);
-  --font-gochi: var(--font-gochi);
-  --font-pangolin: var(--font-pangolin);
-  --font-labelle: var(--font-labelle);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -135,70 +119,23 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Added selected heading/body font classes */
+/* Selected heading/body font classes */
 .font-heading {
   font-family: var(--font-rocksalt), cursive;
 }
 .font-body {
-  font-family: var(--font-shortstack), cursive;
+  font-family: var(--font-handlee), cursive;
 }
 
-/* Header font utility classes */
+/* Font utility classes - only fonts that are loaded */
 .font-caveat {
   font-family: var(--font-caveat), cursive;
-}
-.font-kalam {
-  font-family: var(--font-kalam), cursive;
-}
-.font-marker {
-  font-family: var(--font-marker), cursive;
-}
-.font-dancing {
-  font-family: var(--font-dancing), cursive;
-}
-.font-satisfy {
-  font-family: var(--font-satisfy), cursive;
-}
-.font-pacifico {
-  font-family: var(--font-pacifico), cursive;
-}
-.font-amatic {
-  font-family: var(--font-amatic), cursive;
 }
 .font-rocksalt {
   font-family: var(--font-rocksalt), cursive;
 }
-.font-gloria {
-  font-family: var(--font-gloria), cursive;
-}
-
-/* Body font utility classes */
-.font-architects {
-  font-family: var(--font-architects), cursive;
-}
-.font-coming {
-  font-family: var(--font-coming), cursive;
-}
 .font-handlee {
   font-family: var(--font-handlee), cursive;
-}
-.font-neucha {
-  font-family: var(--font-neucha), cursive;
-}
-.font-shortstack {
-  font-family: var(--font-shortstack), cursive;
-}
-.font-annie {
-  font-family: var(--font-annie), cursive;
-}
-.font-gochi {
-  font-family: var(--font-gochi), cursive;
-}
-.font-pangolin {
-  font-family: var(--font-pangolin), cursive;
-}
-.font-labelle {
-  font-family: var(--font-labelle), cursive;
 }
 
 @layer base {

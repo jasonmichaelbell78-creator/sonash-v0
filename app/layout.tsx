@@ -6,6 +6,7 @@ import {
   Rock_Salt,
 } from "next/font/google"
 import { AuthProvider } from "@/components/providers/auth-provider"
+import { ErrorBoundary } from "@/components/providers/error-boundary"
 import "./globals.css"
 import { Toaster } from "sonner"
 
@@ -85,10 +86,12 @@ export default function RootLayout({
         ${rockSalt.variable}
       `}
       >
-        <AuthProvider>
-          {children}
-          <Toaster closeButton richColors />
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            {children}
+            <Toaster closeButton richColors />
+          </AuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

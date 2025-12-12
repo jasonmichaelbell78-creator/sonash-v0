@@ -21,7 +21,13 @@ export const assertUserScope = ({ userId, targetUserId, resource }: UserScopeOpt
 }
 
 export const validateUserDocumentPath = (userId: string, path: string) => {
-  if (!path.startsWith(`users/${userId}`)) {
+  const userPrefix = `users/${userId}`
+  // Path must be exactly "users/{userId}" or start with "users/{userId}/"
+  // This prevents prefix attacks like "users/user123evil" when userId is "user123"
+  const isExactMatch = path === userPrefix
+  const isSubpath = path.startsWith(`${userPrefix}/`)
+
+  if (!isExactMatch && !isSubpath) {
     throw new Error("Firestore access is limited to the signed-in user's document")
   }
 }
