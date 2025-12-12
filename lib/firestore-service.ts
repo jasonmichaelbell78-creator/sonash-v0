@@ -9,33 +9,21 @@ import {
   orderBy,
   limit,
   serverTimestamp,
-  type Timestamp,
 } from "firebase/firestore"
 import { assertUserScope, validateUserDocumentPath } from "./security/firestore-validation"
 import { logger as defaultLogger, maskIdentifier } from "./logger"
 import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
 import { buildPath } from "./constants"
+import type { DailyLog, DailyLogResult } from "./types/daily-log"
 
-// Types
-export interface DailyLog {
-  id?: string // Date string YYYY-MM-DD
-  date: string
-  content: string
-  mood: string | null
-  cravings: boolean
-  used: boolean
-  updatedAt?: Timestamp
-}
+// Re-export types for backwards compatibility
+export type { DailyLog }
+export type TodayLogResult = DailyLogResult
 
 const getTodayUtcDateId = () =>
   new Intl.DateTimeFormat("en-CA", {
     timeZone: "UTC",
   }).format(new Date())
-
-export interface TodayLogResult {
-  log: DailyLog | null
-  error: unknown | null
-}
 
 type FirestoreDependencies = {
   db: typeof defaultDb

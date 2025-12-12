@@ -26,6 +26,15 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   const [isSaving, setIsSaving] = useState(false)
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
+  // Track pending save data to avoid race conditions
+  const pendingSaveRef = useRef<{
+    journalEntry: string
+    mood: string | null
+    cravings: boolean
+    used: boolean
+  } | null>(null)
+  // Track if a save is already scheduled
+  const saveScheduledRef = useRef(false)
 
   const { user, profile } = useAuth()
 
@@ -104,37 +113,57 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     }
   }, [user]) // Only user in deps - isEditingRef handles collision avoidance
 
-  // Auto-save effect with proper debouncing
+  // Perform the actual save operation
+  const performSave = useCallback(async () => {
+    if (!user || !pendingSaveRef.current) return
+
+    const dataToSave = pendingSaveRef.current
+    pendingSaveRef.current = null
+    saveScheduledRef.current = false
+
+    setIsSaving(true)
+    try {
+      // Always save locally first as backup
+      localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry)
+
+      // Save to cloud
+      await FirestoreService.saveDailyLog(user.uid, {
+        date: formatDateForDisplay(),
+        content: dataToSave.journalEntry,
+        mood: dataToSave.mood,
+        cravings: dataToSave.cravings,
+        used: dataToSave.used,
+      })
+    } catch (error) {
+      logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
+      toast.error("We couldn't save today's notes. Please check your connection.")
+    } finally {
+      setIsSaving(false)
+    }
+  }, [user])
+
+  // Auto-save effect: marks data as dirty and schedules a save
+  // The timer only starts once per change batch, not reset on every keystroke
   useEffect(() => {
-    // Don't save if nothing to save
     if (!user) return
 
-    const timeoutId = setTimeout(async () => {
-      setIsSaving(true)
-      try {
-        // Always save locally first as backup
-        localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, journalEntry)
+    // Update the pending save data
+    pendingSaveRef.current = { journalEntry, mood, cravings, used }
 
-        // Save to cloud
-        await FirestoreService.saveDailyLog(user.uid, {
-          date: formatDateForDisplay(),
-          content: journalEntry,
-          mood: mood,
-          cravings: cravings,
-          used: used,
-        })
-      } catch (error) {
-        logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
-        toast.error("We couldn't save today's notes. Please check your connection.")
-      } finally {
-        setIsSaving(false)
-      }
+    // If a save is already scheduled, don't schedule another
+    // This prevents timer reset on every keystroke
+    if (saveScheduledRef.current) return
+
+    saveScheduledRef.current = true
+    const timeoutId = setTimeout(() => {
+      performSave()
     }, DEBOUNCE_DELAYS.AUTO_SAVE)
 
     return () => {
       clearTimeout(timeoutId)
+      saveScheduledRef.current = false
     }
-  }, [journalEntry, mood, cravings, used, user])
+  }, [journalEntry, mood, cravings, used, user, performSave])
 
   const dateString = formatDateForDisplay()
 

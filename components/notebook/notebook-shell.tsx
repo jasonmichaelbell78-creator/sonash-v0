@@ -35,7 +35,8 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
     const currentIndex = tabs.findIndex((t) => t.id === activeTab)
     const newIndex = tabs.findIndex((t) => t.id === tabId)
     setDirection(newIndex > currentIndex ? 1 : -1)
-    setActiveTab(tabId)
+    // Safe cast: tabs are derived from notebookModules, so tabId is always a valid NotebookModuleId
+    setActiveTab(tabId as NotebookModuleId)
   }
 
   const renderPage = () => {

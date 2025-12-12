@@ -5,6 +5,8 @@
  * For production, use Firebase App Check + Cloud Functions rate limiting
  */
 
+import { RATE_LIMITS } from "../constants"
+
 interface RateLimitConfig {
   maxCalls: number  // Maximum number of calls
   windowMs: number  // Time window in milliseconds
@@ -61,19 +63,20 @@ class RateLimiter {
 }
 
 // Export pre-configured rate limiters for common operations
+// Uses centralized constants from lib/constants.ts
 export const saveDailyLogLimiter = new RateLimiter({
-  maxCalls: 10,
-  windowMs: 60000, // 10 calls per minute
+  maxCalls: RATE_LIMITS.SAVE_DAILY_LOG.MAX_CALLS,
+  windowMs: RATE_LIMITS.SAVE_DAILY_LOG.WINDOW_MS,
 })
 
 export const authLimiter = new RateLimiter({
-  maxCalls: 5,
-  windowMs: 60000, // 5 calls per minute
+  maxCalls: RATE_LIMITS.AUTH.MAX_CALLS,
+  windowMs: RATE_LIMITS.AUTH.WINDOW_MS,
 })
 
 export const readLimiter = new RateLimiter({
-  maxCalls: 30,
-  windowMs: 60000, // 30 reads per minute
+  maxCalls: RATE_LIMITS.READ.MAX_CALLS,
+  windowMs: RATE_LIMITS.READ.WINDOW_MS,
 })
 
 // Export the class for custom rate limiters

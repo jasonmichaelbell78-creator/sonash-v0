@@ -19,6 +19,7 @@ import { onSnapshot, doc } from "firebase/firestore"
 import { db } from "../firebase"
 import { buildPath } from "../constants"
 import { logger, maskIdentifier } from "../logger"
+import { assertUserScope, validateUserDocumentPath } from "../security/firestore-validation"
 
 /**
  * Firestore adapter implementing the database interface
@@ -44,11 +45,14 @@ export class FirestoreAdapter implements IDatabaseWithRealtime {
 
   /**
    * Get historical log entries for a user
+   * @param userId - User ID
+   * @param _limit - Maximum entries (currently unused - FirestoreService uses fixed limit of 30)
    */
   async getHistory(
     userId: string,
-    limit: number = 30
+    _limit: number = 30
   ): Promise<OperationResult<DailyLog[]>> {
+    // TODO: Pass limit to FirestoreService when it supports configurable limits
     const result = await FirestoreService.getHistory(userId)
     return {
       data: result.entries,
@@ -65,8 +69,13 @@ export class FirestoreAdapter implements IDatabaseWithRealtime {
     onData: DatabaseListener<DailyLog>,
     onError: (error: Error) => void
   ): Promise<UnsubscribeFunction> {
+    // Security validation - ensure user can only subscribe to their own data
+    assertUserScope({ userId })
+    const docPath = buildPath.dailyLog(userId, dateId)
+    validateUserDocumentPath(userId, docPath)
+
     try {
-      const docRef = doc(db, buildPath.dailyLog(userId, dateId))
+      const docRef = doc(db, docPath)
 
       const unsubscribe = onSnapshot(
         docRef,
