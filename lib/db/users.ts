@@ -52,20 +52,6 @@ const TimestampSchema = z.custom<Timestamp>((val) => {
     return val === null || isFirestoreTimestamp(val)
 }, "Must be a valid Firestore Timestamp")
 
-const UserProfileSchema = z.object({
-    uid: z.string().min(1, "UID is required"),
-    email: z.string().email("Must be a valid email").nullable(),
-    nickname: z.string().min(1, "Nickname is required").max(50, "Nickname must be 50 characters or less"),
-    cleanStart: TimestampSchema.nullable(),
-    createdAt: TimestampSchema,
-    updatedAt: TimestampSchema,
-    preferences: z.object({
-        theme: z.literal("blue"),
-        largeText: z.boolean(),
-        simpleLanguage: z.boolean(),
-    }),
-})
-
 const PartialUserProfileUpdateSchema = z.object({
     email: z.string().email().nullable().optional(),
     nickname: z.string().min(1).max(50).optional(),

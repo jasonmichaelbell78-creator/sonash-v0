@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from "node:assert/strict"
 import { beforeEach, test } from "node:test"
 import { ensureAnonymousSession, refreshTodayLogForUser } from "../components/providers/auth-provider"

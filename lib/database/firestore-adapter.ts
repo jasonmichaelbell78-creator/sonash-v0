@@ -8,7 +8,6 @@
 
 import { FirestoreService } from "../firestore-service"
 import type {
-  IDatabase,
   IDatabaseWithRealtime,
   DailyLog,
   OperationResult,

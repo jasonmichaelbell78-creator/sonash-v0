@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from "node:assert/strict"
 import { test, describe } from "node:test"
 import { RateLimiter, type RateLimitConfig } from "../../lib/utils/rate-limiter"

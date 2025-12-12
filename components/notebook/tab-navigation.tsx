@@ -18,7 +18,7 @@ interface TabNavigationProps {
 export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavigationProps) {
   return (
     <div className="absolute right-0 top-8 bottom-8 w-8 md:w-10 flex flex-col justify-start gap-1 z-30 translate-x-full">
-      {tabs.map((tab, index) => (
+      {tabs.map((tab) => (
         <motion.button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
