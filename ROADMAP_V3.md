@@ -614,3 +614,333 @@ users/{uid}/prayersUser/{id}
 - *Implementation:* Firebase Remote Config OR direct Firestore catalog updates with admin-only access.
 
 ---
+
+### M7 — Fellowship Tools & Daily Practice
+
+> **Goal:** Complete the fellowship connection layer that makes the app useful for daily AA/NA participation. Focus on "how AA people actually stay sober" through meetings, sponsors, service, and milestones. Bridge the gap between personal introspection (M5/M6) and community connection.
+
+**Design Principles**
+- **Fellowship-first:** Prioritize features that connect users to people, meetings, and service.
+- **Complete existing stubs:** Finish the Support page (hardcoded contacts → Firestore-backed).
+- **Leverage existing infrastructure:** Build on Meeting Finder, clean time tracker, and user profile.
+- **One-tap actions:** Make sponsor calls, meeting check-ins, and emergency outreach instant.
+- **Sponsor-guided:** Remind users to involve their sponsor in step work and decisions.
+
+---
+
+#### Current App State (Implemented Features)
+
+**Already built:**
+- Clean time tracker with years/months/days calculation (Today page)
+- Meeting Finder with fellowship filter (AA/NA/CA), day/time filtering
+- Support circle UI (hardcoded contacts, needs Firestore backing)
+- Daily journal with auto-save
+- Mood check-in with sparkline visualization
+
+**Partially built:**
+- Daily readings (UI exists, placeholder content)
+- Support page (UI complete, no Firestore CRUD or `tel:` links)
+
+**Planned but not started:**
+- M5 Inventories Hub (105 SP)
+- M6 Prayers & Readings (63 SP)
+
+---
+
+#### Epic F1 — Sponsor & Support Network (Firestore-backed)
+
+*Complete the existing Support page stub*
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F1.1 | Define Firestore schema: `users/{uid}/contacts/{contactId}` with `name`, `role` (sponsor, friend, counselor, other), `phone?`, `email?`, `address?`, `tags[]`, `notes`, `isSOS` boolean | 2 |
+| F1.2 | Create contacts CRUD service with Zod validation | 2 |
+| F1.3 | Replace hardcoded Support page contacts with Firestore real-time listener | 2 |
+| F1.4 | Implement add/edit contact modal with form validation | 3 |
+| F1.5 | Wire up Call (`tel:`), Text (`sms:`), Email (`mailto:`) buttons with proper URI encoding | 2 |
+| F1.6 | Add "SOS quick contact" badge and one-tap emergency call to designated sponsor | 2 |
+| F1.7 | Implement "I need help now" flow with pre-written message templates ("Can you talk?", "I'm not okay.", "Call when you can") | 3 |
+| F1.8 | Add optional contact interaction log: `users/{uid}/contactLogs/{logId}` with `contactId`, `type` (called, no answer, left voicemail, texted), `timestamp`, `notes?` | 2 |
+| F1.9 | Write Firestore security rules for contacts (owner-only access) | 1 |
+
+**Subtotal: 19 SP**
+
+**Exit Criteria**
+- Users can add/edit/delete contacts with phone/email
+- Call/Text/Email buttons work on mobile and desktop
+- SOS contact designated and one-tap call functional
+- Interaction log saves reliably (optional feature)
+
+---
+
+#### Epic F2 — Meeting Attendance & Homegroup
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F2.1 | Define Firestore schema: `users/{uid}/meetingAttendance/{attendanceId}` with `meetingId`, `meetingName`, `date`, `notes?`, `createdAt` | 1 |
+| F2.2 | Add `homegroup` boolean and `isFavorite` boolean to meeting document schema (or user-specific: `users/{uid}/favoriteMeetings/{meetingId}`) | 2 |
+| F2.3 | Add "Check in" button on meeting detail modal (Resources page) that creates attendance record | 2 |
+| F2.4 | Create "My Meetings" section on Resources page showing favorites + homegroup designation | 3 |
+| F2.5 | Implement "My attendance history" view (list by date, searchable, filterable by meeting) | 3 |
+| F2.6 | Add attendance stats badge on Today page: "X meetings this week" with sparkline | 2 |
+| F2.7 | Add homegroup designation UI (star/badge on meeting card, "Set as homegroup" toggle) | 2 |
+
+**Subtotal: 15 SP**
+
+**Exit Criteria**
+- Users can mark meetings as favorites and designate one homegroup
+- Check-in button creates timestamped attendance record
+- Attendance history is searchable and accurate
+- Today page shows weekly meeting count
+
+---
+
+#### Epic F3 — Commitments & Service Tracker
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F3.1 | Define Firestore schema: `users/{uid}/commitments/{id}` with `type` (coffee, chairs, greeter, literature, secretary, treasurer, GSR, sponsor, other), `meetingId?`, `meetingName?`, `description`, `active`, `startDate`, `endDate?` | 2 |
+| F3.2 | Create commitments CRUD service with validation | 2 |
+| F3.3 | Create "My Commitments" section on Support page with active/inactive toggle | 3 |
+| F3.4 | Add commitment reminder on Today page: "You have X active commitments" | 1 |
+| F3.5 | Define Firestore schema: `users/{uid}/serviceLog/{id}` with `type` (call, ride, coffee date, sponsorship action, 12-step call, other), `description`, `date`, `personHelped?`, `notes` | 2 |
+| F3.6 | Create "Service log" form accessible from Support page or Today page | 3 |
+| F3.7 | Integrate service log with Morning Planning (M5.3.2): pre-fill "One person I can help today" from service log suggestions | 2 |
+| F3.8 | Add service stats: "X people helped this month" badge | 1 |
+
+**Subtotal: 16 SP**
+
+**Exit Criteria**
+- Users can add/edit/archive commitments
+- Service log entries save with timestamp and notes
+- Morning Planning integration works (when M5 is implemented)
+- Today page shows commitment and service reminders
+
+---
+
+#### Epic F4 — Step Progress Tracker
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F4.1 | Define Firestore schema: `users/{uid}/stepProgress/{stepNum}` (1-12) with `status` (not_started, in_progress, completed), `dateStarted?`, `dateCompleted?`, `notes`, `sharedWithSponsor` boolean | 2 |
+| F4.2 | Create "My Steps" overview page with 12 step cards, color-coded by status (gray → yellow → green) | 3 |
+| F4.3 | Add step detail view with notes field and "Share with sponsor" button (pre-fills email/text with step notes) | 3 |
+| F4.4 | Add "Current step" badge on Today page (shows highest in-progress or last completed + 1) | 1 |
+| F4.5 | Add link from Step 4 card to Inventories Hub (M5) when implemented | 1 |
+| F4.6 | Add sponsor guidance reminder modal on status change: "Discuss with sponsor before marking complete" | 1 |
+| F4.7 | Add step completion celebration animation (confetti or chip animation) | 2 |
+
+**Subtotal: 13 SP**
+
+**Exit Criteria**
+- Users can track status for all 12 steps
+- Step detail view allows notes and sharing
+- Completion requires confirmation modal with sponsor reminder
+- Today page shows current step in progress
+
+---
+
+#### Epic F5 — Milestones & Chips Enhancement
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F5.1 | Create chip visualization component (24h, 30d, 60d, 90d, 6mo, 9mo, 1yr, 18mo, multi-year chips with colors) | 3 |
+| F5.2 | Add "Next chip" countdown on Today page with days/hours remaining | 2 |
+| F5.3 | Implement "I got my chip today" celebration modal with date, meeting name, notes, share button | 3 |
+| F5.4 | Add chip earned detection: trigger modal automatically when clean time crosses milestone | 2 |
+| F5.5 | Add milestone celebration animation (chip flip animation, confetti) | 2 |
+| F5.6 | Create "My milestones" history view showing all earned chips with dates | 2 |
+| F5.7 | Add chip visualization to desktop components (replace or enhance existing sobriety-chip.tsx) | 2 |
+
+**Subtotal: 16 SP**
+
+**Exit Criteria**
+- Chip visualization shows accurate milestone progression
+- Next chip countdown displays on Today page
+- Celebration modal triggers at milestone crossings
+- Milestone history is accurate and shareable
+
+---
+
+#### Epic F6 — Relapse Prevention Plan Card
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F6.1 | Define Firestore schema: `users/{uid}/preventionPlan` (singleton doc) with `whenIFeelLike[]` (triggers), `iWill[]` (actions), `peopleToAvoid[]`, `placesToAvoid[]`, `emergencyContactIds[]`, `nearestMeetingId?`, `updatedAt` | 2 |
+| F6.2 | Create "My Prevention Plan" form with simple checklist + text fields | 3 |
+| F6.3 | Add "Emergency Plan" quick-access button on Today page (red/orange button: "I'm struggling" or SOS icon) | 2 |
+| F6.4 | Wire emergency button to show prevention plan modal + one-tap sponsor call + link to nearest meeting | 3 |
+| F6.5 | Add optional integration with meeting attendance: auto-populate "nearest meeting" based on recent attendance | 2 |
+
+**Subtotal: 12 SP**
+
+**Exit Criteria**
+- Users can create and edit prevention plan
+- Emergency button is prominent and accessible on Today page
+- Plan modal shows with immediate actions (call sponsor, nearest meeting)
+- Plan persists across sessions
+
+---
+
+#### Epic F7 — Daily Readings Integration
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| F7.1 | Implement link-only reading catalog using same pattern as M6 Prayers (displayMode: LINK_ONLY) | 2 |
+| F7.2 | Add readings catalog seed data: Daily Reflections (AA), Just for Today (NA), links to AA.org and NA.org | 2 |
+| F7.3 | Replace Today page reading placeholder with actual catalog lookup by date | 2 |
+| F7.4 | Add user notes field on Today page: "My takeaway today" (1-3 lines, saves to daily log) | 2 |
+| F7.5 | Add "Open full reading" button that opens official source link in new tab | 1 |
+
+**Subtotal: 9 SP**
+
+**Exit Criteria**
+- Daily reading shows correct link for today's date
+- User can add personal notes/takeaways
+- Links open correctly to official sources (AA.org, NA.org)
+- No copyrighted text reproduced in-app
+
+---
+
+#### M7 Summary
+
+| Epic | Story Points |
+|------|--------------|
+| F1 Sponsor & Support Network | 19 |
+| F2 Meeting Attendance & Homegroup | 15 |
+| F3 Commitments & Service | 16 |
+| F4 Step Progress Tracker | 13 |
+| F5 Milestones & Chips | 16 |
+| F6 Relapse Prevention Plan | 12 |
+| F7 Daily Readings Integration | 9 |
+| **Total** | **100 SP** |
+
+**Suggested phasing:**
+1. **Phase A (Quick Wins):** Epic F1 (Support Network) + F2 (Attendance) + F7 (Readings) → ~43 SP
+   - Completes existing stubs, high daily-use impact
+2. **Phase B (Milestones & Service):** Epic F5 (Chips) + F3 (Commitments) → ~32 SP
+   - High motivation value, leverages existing clean time tracker
+3. **Phase C (Step Work & Safety Net):** Epic F4 (Steps) + F6 (Prevention Plan) → ~25 SP
+   - Pairs with M5 (Inventories) when implemented
+
+**Exit Criteria**
+- Support page is fully functional with Firestore-backed contacts and tel:/sms:/mailto: links
+- Meeting attendance tracking works with favorites and homegroup
+- Chip milestones display accurately with countdown and celebration
+- Emergency prevention plan accessible in one tap from Today page
+- Daily readings integrate with official source links (no copyright violations)
+- All features follow privacy-first design (user-initiated sharing only)
+
+---
+
+#### M7 Technical Decisions
+
+**Data Model: Firestore**
+
+**Contacts (user-scoped)**
+```
+users/{uid}/contacts/{contactId}
+  - name: string
+  - role: "sponsor" | "friend" | "counselor" | "other"
+  - phone?: string
+  - email?: string
+  - address?: string
+  - tags: string[] (e.g., ["good in a crisis", "just to talk", "rides"])
+  - notes: string
+  - isSOS: boolean (emergency contact)
+  - createdAt: Timestamp
+  - updatedAt: Timestamp
+```
+
+**Meeting Attendance (user-scoped)**
+```
+users/{uid}/meetingAttendance/{attendanceId}
+  - meetingId: string (reference to meetings collection)
+  - meetingName: string (denormalized for history)
+  - date: string (YYYY-MM-DD)
+  - notes?: string
+  - createdAt: Timestamp
+```
+
+**Favorite Meetings (user-scoped)**
+```
+users/{uid}/favoriteMeetings/{meetingId}
+  - meetingId: string
+  - isFavorite: boolean
+  - isHomegroup: boolean
+  - addedAt: Timestamp
+```
+
+**Commitments (user-scoped)**
+```
+users/{uid}/commitments/{id}
+  - type: "coffee" | "chairs" | "greeter" | "literature" | "secretary" | "treasurer" | "GSR" | "sponsor" | "other"
+  - meetingId?: string
+  - meetingName?: string
+  - description: string
+  - active: boolean
+  - startDate: Timestamp
+  - endDate?: Timestamp
+```
+
+**Service Log (user-scoped)**
+```
+users/{uid}/serviceLog/{id}
+  - type: "call" | "ride" | "coffee_date" | "sponsorship" | "12_step_call" | "other"
+  - description: string
+  - date: string (YYYY-MM-DD)
+  - personHelped?: string
+  - notes?: string
+  - createdAt: Timestamp
+```
+
+**Step Progress (user-scoped)**
+```
+users/{uid}/stepProgress/{stepNum}
+  - stepNum: number (1-12)
+  - status: "not_started" | "in_progress" | "completed"
+  - dateStarted?: Timestamp
+  - dateCompleted?: Timestamp
+  - notes: string
+  - sharedWithSponsor: boolean
+  - updatedAt: Timestamp
+```
+
+**Prevention Plan (singleton doc)**
+```
+users/{uid}/preventionPlan
+  - whenIFeelLike: string[] (trigger situations)
+  - iWill: string[] (action items)
+  - peopleToAvoid: string[]
+  - placesToAvoid: string[]
+  - emergencyContactIds: string[] (references to contacts)
+  - nearestMeetingId?: string
+  - updatedAt: Timestamp
+```
+
+**URI Schemes for Mobile Actions**
+- Calling: `tel:+1234567890`
+- SMS: `sms:+1234567890?body=Hello`
+- Email: `mailto:email@example.com?subject=Subject&body=Body`
+- Maps: `https://www.google.com/maps/search/?api=1&query=address`
+
+**Security Rules Pattern**
+All collections under `users/{uid}/*` follow owner-only access:
+```
+match /users/{userId}/{document=**} {
+  allow read, write: if request.auth.uid == userId;
+}
+```
+
+**Integration Points with Existing Features**
+- **Today Page**: Add chip countdown, meeting count, commitment reminders, emergency button
+- **Resources Page**: Enhance with attendance check-in, favorites, homegroup badge
+- **Support Page**: Replace hardcoded contacts with Firestore CRUD
+- **Morning Planning (M5)**: Pre-fill "One person I can help" from service log
+
+**Dependencies**
+- Epic F4.5 (Step 4 → Inventories link) depends on M5.2.1 being implemented
+- Epic F3.7 (Service → Morning Planning) depends on M5.3.2 being implemented
+- Epic F7 (Daily Readings) uses same compliance pattern as M6 (link-only, no reproduced text)
+
+---
