@@ -32,3 +32,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# firebase
+.firebase
+.firebaserc
+firebase.json
+pnpm-workspace.yaml
+
+# data connect
+src/dataconnect-generated
+dataconnect/
+
