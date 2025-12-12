@@ -2,9 +2,6 @@
 
 *A digital recovery journal app for the Sober Nashville community*
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/jason-bells-projects-70400dfc/sonash-v0)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/hQzscrZHb69)
-
 ## Roadmap
 
 The canonical roadmap lives in:
@@ -84,7 +81,7 @@ Continue development at: **[v0.app/chat/hQzscrZHb69](https://v0.app/chat/hQzscrZ
 
 ## Deployment
 
-Live at: **[vercel.com/jason-bells-projects-70400dfc/sonash-v0](https://vercel.com/jason-bells-projects-70400dfc/sonash-v0)**
+Live at: **[sonash.app](https://sonash.app)**
 
 ## Setup & Installation
 

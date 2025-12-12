@@ -5,7 +5,6 @@ import {
   Handlee,
   Rock_Salt,
 } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import "./globals.css"
 import { Toaster } from "sonner"
@@ -41,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://sonash.vercel.app",
+    url: "https://sonash.app",
     title: "SoNash - Sober Nashville",
     description: "Your personal recovery notebook for the Nashville community.",
     siteName: "SoNash",
@@ -89,7 +88,6 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Toaster closeButton richColors />
-          <Analytics />
         </AuthProvider>
       </body>
     </html>

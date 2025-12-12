@@ -651,7 +651,7 @@ const firebaseConfig = {
 
 **Required Fix**:
 1. ✅ Verify API Key restrictions in Firebase Console:
-   - Restrict to your domain (sonash.vercel.app)
+   - Restrict to your domain (sonash.app)
    - Restrict to specific Firebase services
 
 2. ✅ Enable Firebase App Check:
