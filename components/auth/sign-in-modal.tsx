@@ -26,9 +26,10 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
             const provider = new GoogleAuthProvider()
             await signInWithPopup(auth, provider)
             onSuccess()
-        } catch (err: any) {
+        } catch (err) {
             logger.error("Google sign-in failed", { error: err })
-            setError(`Failed to sign in: ${err.message || "Unknown error"}`)
+            const errorMessage = err instanceof Error ? err.message : "Unknown error"
+            setError(`Failed to sign in: ${errorMessage}`)
         } finally {
             setLoading(false)
         }
@@ -45,11 +46,13 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
                 await signInWithEmailAndPassword(auth, email, password)
             }
             onSuccess()
-        } catch (err: any) {
+        } catch (err) {
             logger.error("Email authentication failed", { error: err })
-            const msg = err.code === 'auth/invalid-credential'
+            const hasCode = err && typeof err === 'object' && 'code' in err
+            const code = hasCode ? (err as { code: string }).code : ''
+            const msg = code === 'auth/invalid-credential'
                 ? "Invalid email or password."
-                : err.code === 'auth/email-already-in-use'
+                : code === 'auth/email-already-in-use'
                     ? "Email already in use."
                     : "Something went wrong."
             setError(msg)

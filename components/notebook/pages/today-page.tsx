@@ -112,7 +112,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
       isMounted = false
       if (unsubscribe) unsubscribe()
     }
-  }, [referenceDate, user]) // Only user in deps - isEditingRef handles collision avoidance
+  }, [referenceDate, user, journalEntry]) // journalEntry added for exhaustive-deps; isEditingRef handles collision avoidance
 
   // Perform the actual save operation
   const performSave = useCallback(async () => {
