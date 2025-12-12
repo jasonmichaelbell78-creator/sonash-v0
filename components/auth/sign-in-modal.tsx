@@ -28,7 +28,7 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
             onSuccess()
         } catch (err: any) {
             logger.error("Google sign-in failed", { error: err })
-            setError("Failed to sign in with Google. Try again.")
+            setError(`Failed to sign in: ${err.message || "Unknown error"}`)
         } finally {
             setLoading(false)
         }

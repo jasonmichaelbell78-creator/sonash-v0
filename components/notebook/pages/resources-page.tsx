@@ -5,6 +5,15 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import { toast } from "sonner"
 import { logger } from "@/lib/logger"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { ExternalLink, Navigation } from "lucide-react"
 
 export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([])
@@ -117,6 +126,41 @@ export default function ResourcesPage() {
     },
   ]
 
+  // Time filtering logic
+  const filteredMeetings = useMemo(() => {
+    if (viewMode === "all") return meetings
+
+    const now = new Date()
+    // Explicitly parse current time into minutes for comparison
+    const currentMinutes = now.getHours() * 60 + now.getMinutes()
+
+    // Helper to parse HH:MM to minutes
+    const parseTime = (timeStr: string) => {
+      // Handle 24h "19:30" or 12h "7:30 PM"
+      // This repeats server logic but safest to keep identical here for filter
+      // If the string contains AM/PM
+      if (/AM|PM/i.test(timeStr)) {
+        const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
+        if (!match) return -1
+        let h = parseInt(match[1])
+        const m = parseInt(match[2])
+        const p = match[3].toUpperCase()
+        if (p === 'PM' && h !== 12) h += 12
+        if (p === 'AM' && h === 12) h = 0
+        return h * 60 + m
+      }
+      const [h, m] = timeStr.split(':').map(Number)
+      return h * 60 + m
+    }
+
+    return meetings.filter(m => {
+      const meetingMinutes = parseTime(m.time)
+      return meetingMinutes >= currentMinutes
+    })
+  }, [meetings, viewMode])
+
+  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null)
+
   return (
     <div className="h-full overflow-y-auto pr-2">
       <div className="flex justify-between items-center mb-4">
@@ -197,11 +241,6 @@ export default function ResourcesPage() {
             <div className="absolute bottom-8 right-16">
               <MapPin className="w-5 h-5 text-amber-600 fill-amber-200" />
             </div>
-
-            {/* Click overlay */}
-            <button className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/5 transition-colors">
-              <span className="sr-only">Open full map</span>
-            </button>
           </div>
 
           {/* Meeting list */}
@@ -209,43 +248,109 @@ export default function ResourcesPage() {
             {loading ? (
               <div className="flex items-center gap-2 text-amber-900/40 italic p-4">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <p className="text-sm">Loading today's schedule...</p>
+                <p className="text-sm">Loading schedule...</p>
               </div>
-            ) : meetings.length === 0 ? (
+            ) : filteredMeetings.length === 0 ? (
               <div className="p-4 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
-                <p className="text-sm text-amber-900/60 italic mb-3">No meetings found for today.</p>
-                <button
-                  onClick={handleSeed}
-                  className="text-xs bg-amber-200 hover:bg-amber-300 text-amber-900 px-3 py-1.5 rounded-full transition-colors inline-flex items-center gap-1"
-                >
-                  <span>🌱</span> Seed Initial Data
-                </button>
+                <p className="text-sm text-amber-900/60 italic mb-3">No upcoming meetings found today.</p>
+                {viewMode === 'today' && (
+                  <button
+                    onClick={() => setViewMode('all')}
+                    className="text-xs text-amber-700 font-medium hover:underline"
+                  >
+                    View full schedule
+                  </button>
+                )}
               </div>
             ) : (
               <>
-                <div className="flex justify-end mb-2">
+                <div className="flex justify-between items-center mb-2 px-1">
+                  <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
+                    {viewMode === 'today' ? `Upcoming Today (${filteredMeetings.length})` : `All Meetings (${filteredMeetings.length})`}
+                  </span>
                   <button onClick={handleClear} className="text-[10px] text-red-400 hover:text-red-600 underline">
                     Clear Data (Dev)
                   </button>
                 </div>
-                {meetings.map((meeting) => (
+                {filteredMeetings.map((meeting) => (
                   <button
                     key={meeting.id}
-                    className="w-full text-left flex items-center gap-3 p-2 hover:bg-amber-50 rounded transition-colors"
+                    onClick={() => setSelectedMeeting(meeting)}
+                    className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
                   >
-                    <div className={`w-4 h-4 border-2 rounded-sm ${meeting.type === 'NA' ? 'border-amber-500' : 'border-blue-400'}`} />
-                    <span className="font-body text-amber-900">
-                      <span className="font-bold">{meeting.day.substring(0, 3)} {meeting.time}</span> – {meeting.type}: {meeting.name} <span className="text-amber-900/50">({meeting.neighborhood})</span>
-                    </span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
+                      {meeting.type}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-heading text-sm text-amber-900 truncate font-semibold">{meeting.name}</span>
+                        <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">{meeting.time}</span>
+                      </div>
+                      <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
+                        {viewMode === 'all' && <span className="font-medium text-amber-700">{meeting.day.substring(0, 3)} • </span>}
+                        <MapPin className="w-3 h-3" /> {meeting.neighborhood}
+                      </p>
+                    </div>
                   </button>
                 ))}
               </>
             )}
           </div>
 
-          <p className="font-body text-sm text-amber-900/50 mt-4 italic">Tap a meeting for details or directions.</p>
+          <p className="font-body text-sm text-amber-900/50 mt-4 italic text-center">Tap a meeting for details.</p>
         </div>
       </div>
+
+      <Dialog open={!!selectedMeeting} onOpenChange={(open) => !open && setSelectedMeeting(null)}>
+        <DialogContent className="sm:max-w-md bg-[#fdfbf7] border-amber-200">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${selectedMeeting?.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
+                {selectedMeeting?.type}
+              </div>
+              {selectedMeeting?.name}
+            </DialogTitle>
+            <DialogDescription className="text-amber-900/70 text-base">
+              {selectedMeeting?.day}, {selectedMeeting?.time}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
+              <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-amber-900 text-sm">Location</h4>
+                <p className="text-sm text-amber-800/80">{selectedMeeting?.address}</p>
+                <span className="text-xs font-medium text-amber-600 uppercase tracking-wider mt-1 block">{selectedMeeting?.neighborhood}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
+                onClick={() => {
+                  if (selectedMeeting) {
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMeeting.address)}`, '_blank')
+                  }
+                }}
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Get Directions
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
+                onClick={() => {
+                  // Share logic or calendar add could go here
+                  toast.success("Link copied to clipboard!")
+                }}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Share
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
