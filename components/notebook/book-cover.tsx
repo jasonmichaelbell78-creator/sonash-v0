@@ -64,7 +64,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
       logger.warn("Error calculating clean days", { error })
       return 0
     }
-  }, [profile?.cleanStart])
+  }, [profile])
 
   const displayNickname = profile?.nickname || "Friend"
   const isProfileComplete = !!profile?.cleanStart

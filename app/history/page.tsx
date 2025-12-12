@@ -18,25 +18,26 @@ export default function HistoryPage() {
     const [expandedId, setExpandedId] = useState<string | null>(null)
 
     useEffect(() => {
-        if (user) {
-            setLoading(true)
-            FirestoreService.getHistory(user.uid)
-                .then((result) => {
-                    setEntries(result.entries)
-                    setError(result.error ? "Could not load your journal history. Please try again." : null)
-                })
-                .catch((err) => {
-                    logger.error("History fetch failed", { userId: maskIdentifier(user.uid), error: err })
-                    setError("Could not load your journal history. Please try again.")
-                })
-                .finally(() => {
-                    setLoading(false)
-                })
-        } else {
-            // If no user yet (loading auth), keep loading or wait
-            // AuthProvider handles global loading, so we can wait.
-            if (!user) setLoading(false)
+        if (!user) {
+            setLoading(false)
+            return
         }
+
+        // Async function to load history
+        const loadHistory = async () => {
+            try {
+                const result = await FirestoreService.getHistory(user.uid)
+                setEntries(result.entries)
+                setError(result.error ? "Could not load your journal history. Please try again." : null)
+            } catch (err) {
+                logger.error("History fetch failed", { userId: maskIdentifier(user.uid), error: err })
+                setError("Could not load your journal history. Please try again.")
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadHistory()
     }, [user])
 
     return (

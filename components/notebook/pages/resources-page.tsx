@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, Home, Map, Calendar, Loader2, CheckCircle2, Locate, X } from "lucide-react"
+import { MapPin, Home, Map, Calendar, Loader2, Locate, X } from "lucide-react"
 import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import { toast } from "sonner"
