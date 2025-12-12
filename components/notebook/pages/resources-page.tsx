@@ -299,6 +299,7 @@ export default function ResourcesPage() {
                 }}
                 className="text-xs p-1.5 rounded-full border border-amber-200 bg-white text-amber-600 hover:bg-amber-50 transition-all"
                 title="Clear location"
+                aria-label="Clear location"
               >
                 <X className="w-3 h-3" />
               </button>
