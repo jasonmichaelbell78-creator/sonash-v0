@@ -48,7 +48,7 @@ function timeToMinutes(timeStr: string): number {
 export interface Meeting {
     id: string
     name: string
-    type: "AA" | "NA" | "Smart" | "Al-Anon"
+    type: "AA" | "NA" | "CA" | "Smart" | "Al-Anon"
     day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
     time: string // "07:00" 24h format
     address: string
