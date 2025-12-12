@@ -5,6 +5,7 @@ import {
     setDoc,
     serverTimestamp,
     Timestamp,
+    FieldValue,
 } from "firebase/firestore"
 import { z } from "zod"
 import { logger, maskIdentifier } from "../logger"
@@ -12,6 +13,9 @@ import { assertUserScope, validateUserDocumentPath } from "../security/firestore
 import { isFirestoreTimestamp } from "../types/firebase-types"
 import { buildPath } from "../constants"
 
+/**
+ * UserProfile as read from Firestore (timestamps are resolved)
+ */
 export interface UserProfile {
     uid: string
     email: string | null
@@ -19,6 +23,23 @@ export interface UserProfile {
     cleanStart: Timestamp | null
     createdAt: Timestamp
     updatedAt: Timestamp
+    preferences: {
+        theme: "blue"
+        largeText: boolean
+        simpleLanguage: boolean
+    }
+}
+
+/**
+ * UserProfile for writing to Firestore (timestamps use FieldValue sentinels)
+ */
+interface UserProfileWrite {
+    uid: string
+    email: string | null
+    nickname: string
+    cleanStart: Timestamp | null
+    createdAt: FieldValue
+    updatedAt: FieldValue
     preferences: {
         theme: "blue"
         largeText: boolean
@@ -82,24 +103,29 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function createUserProfile(uid: string, email: string | null, nickname?: string): Promise<UserProfile> {
-    const now = serverTimestamp() as Timestamp
-
-    const newUser: UserProfile = {
+    const newUserData: UserProfileWrite = {
         uid,
         email,
         nickname: nickname || email?.split("@")[0] || "Friend",
         cleanStart: null,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         preferences: defaultPreferences,
     }
 
     try {
         assertUserScope({ userId: uid })
         const userPath = buildPath.userDoc(uid)
+        const docRef = doc(db, userPath)
         validateUserDocumentPath(uid, userPath)
-        await setDoc(doc(db, userPath), newUser)
-        return newUser
+        await setDoc(docRef, newUserData)
+
+        // Fetch the created document to return resolved timestamps
+        const docSnap = await getDoc(docRef)
+        if (!docSnap.exists()) {
+            throw new Error("Failed to retrieve created user profile")
+        }
+        return docSnap.data() as UserProfile
     } catch (error) {
         logger.error("Error creating user profile", { userId: maskIdentifier(uid), error })
         throw error

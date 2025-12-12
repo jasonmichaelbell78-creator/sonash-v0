@@ -6,20 +6,10 @@
  * and improve testability by allowing mock implementations.
  */
 
-import type { Timestamp } from "firebase/firestore"
+import type { DailyLog } from "../types/daily-log"
 
-/**
- * Daily log entry structure
- */
-export interface DailyLog {
-  id?: string // Date string YYYY-MM-DD
-  date: string
-  content: string
-  mood: string | null
-  cravings: boolean
-  used: boolean
-  updatedAt?: Timestamp
-}
+// Re-export DailyLog for consumers of this module
+export type { DailyLog }
 
 /**
  * Result type for operations that may fail

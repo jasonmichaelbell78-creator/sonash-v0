@@ -64,11 +64,20 @@ export const DEBOUNCE_DELAYS = {
 
 /**
  * Rate limiting configuration
+ * All rate limits use a sliding window approach
  */
 export const RATE_LIMITS = {
   SAVE_DAILY_LOG: {
     MAX_CALLS: 10,
-    WINDOW_MS: 60000, // 1 minute
+    WINDOW_MS: 60000, // 10 calls per minute
+  },
+  AUTH: {
+    MAX_CALLS: 5,
+    WINDOW_MS: 60000, // 5 calls per minute
+  },
+  READ: {
+    MAX_CALLS: 30,
+    WINDOW_MS: 60000, // 30 reads per minute
   },
 } as const
 
