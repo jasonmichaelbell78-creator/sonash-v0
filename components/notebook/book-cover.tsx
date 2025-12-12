@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { differenceInDays } from "date-fns"
 import { logger } from "@/lib/logger"
+import { parseFirebaseTimestamp } from "@/lib/types/firebase-guards"
 
 // Code splitting: Lazy load heavy modal components
 const SignInModal = dynamic(() => import("@/components/auth/sign-in-modal"), {
@@ -47,23 +48,20 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
   const bookHeight = isMobile ? bookWidth * 1.42 : 850
 
   // Calculate real clean days if available
-    const cleanDays = useMemo(() => {
-        if (!profile?.cleanStart) return 0
+  const cleanDays = useMemo(() => {
+    if (!profile?.cleanStart) return 0
 
-        try {
-            const rawDate = profile.cleanStart as unknown
-      const parsedDate =
-        typeof (rawDate as { toDate?: () => Date })?.toDate === "function"
-          ? (rawDate as { toDate: () => Date }).toDate()
-          : new Date(rawDate as string)
+    try {
+      const parsedDate = parseFirebaseTimestamp(profile.cleanStart)
 
-      if (!(parsedDate instanceof Date) || Number.isNaN(parsedDate.getTime())) {
+      if (!parsedDate) {
+        logger.warn("Invalid cleanStart value - could not parse timestamp")
         return 0
       }
 
       return Math.max(0, differenceInDays(new Date(), parsedDate))
-        } catch (error) {
-      logger.warn("Invalid cleanStart value", { error })
+    } catch (error) {
+      logger.warn("Error calculating clean days", { error })
       return 0
     }
   }, [profile?.cleanStart])
