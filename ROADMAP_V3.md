@@ -360,3 +360,257 @@ The following inventory types are intentionally excluded:
 - Amends-readiness inventory
 
 These may be considered in future milestones based on user feedback.
+
+---
+
+### M6 — Prayers & Readings Module (AA-focused)
+
+> **Goal:** Add a Prayers & Readings feature that reproduces in-app only what we can safely ship, uses direct official links for AAWS/Grapevine-controlled text we won't reproduce, and supports user practice via Favorites, Copy/Share, and Daily Practice shortcuts.
+
+**Design Principles**
+- **Copyright compliance:** Never reproduce AAWS/Grapevine copyrighted text in-app without explicit license.
+- **Official sources:** Link directly to AA.org PDFs for Big Book prayers and AAWS literature.
+- **Public domain first:** Ship public-domain text (Serenity Prayer, Lord's Prayer, St. Francis) as in-app content.
+- **User control:** Allow user-entered text for custom prayers and personal wording preferences.
+- **Privacy-first:** Share/export only on explicit user action; include privacy reminders.
+- **Compliance by design:** Support remote toggle of displayMode without app update.
+
+---
+
+#### Content Policy Decisions (locked for v1)
+
+**A) Ship as in-app text (default)**
+
+1. **Serenity Prayer (short form)**
+   - Store as in-app text (typed by us, not copied from AA PDFs)
+   - Include optional "history" button linking to AA's official history page/PDF
+
+2. **Lord's Prayer**
+   - Include a public-domain translation (recommend KJV wording) OR ship as "user-entered text" with a default empty field for ultra-conservative posture
+
+3. **Prayer of St. Francis**
+   - Ship a public-domain version (or let user choose "my preferred wording")
+   - Optional AA-related "context link" if desired (not required)
+
+**B) Link-only (do not reproduce in-app without license)**
+
+4. **Third Step Prayer** → link to AA.org Big Book Chapter 5 PDF
+5. **Seventh Step Prayer** → link to AA.org Big Book Chapter 6 PDF
+6. **Step 11 passages** ("On awakening…", "When we retire at night…", "When agitated or doubtful…") → link to AA.org Big Book Chapter 6 PDF
+7. **A.A. Preamble** (Grapevine copyright) → link to AA.org Preamble PDF/page
+8. **Responsibility Statement / Declaration of Unity** → link-only (AAWS copyright notice on AA.org)
+
+**C) User-text-only (optional item)**
+
+9. **Set Aside Prayer**
+   - Default to user-text-only (common in fellowship culture but not AAWS canonical)
+   - Optional: provide a "Find online" button that opens the user's browser search, rather than shipping a third-party PDF link
+
+---
+
+#### Direct Links Library
+
+Store these raw URLs in seed data (shown in-app as "Open official source"):
+
+- **AA Big Book Chapter 5 PDF** (Third Step Prayer): https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf
+- **AA Big Book Chapter 6 PDF** (Seventh Step Prayer + Step 11 passages): https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf
+- **Origin of the Serenity Prayer** (AA official history page):
+  - https://www.aa.org/origin-serenity-prayer-historical-paper
+  - https://www.aa.org/sites/default/files/literature/assets/smf-129_en.pdf
+- **A.A. Preamble** (official PDF + page):
+  - https://www.aa.org/sites/default/files/literature/smf-92_en.pdf
+  - https://www.aa.org/aa-preamble
+- **Declaration of Unity page** (includes Responsibility Statement / Unity context): https://www.aa.org/a-declaration-of-unity
+
+---
+
+#### Product Scope
+
+**Routes (Next.js App Router)**
+- `/prayers` (hub)
+- `/prayers/[slug]` (detail)
+- Optional: `/settings/prayers` (display preferences, defaults)
+
+**Hub sections**
+- AA Step Prayers (Step 3, Step 7, Step 11 references)
+- Meeting Prayers (Serenity, Lord's Prayer, St. Francis)
+- My Custom (Set Aside + user-added items)
+
+**Detail view actions**
+- Read
+- Favorite
+- Copy
+- Share (Web Share API; fallback copy)
+- Email (`mailto:`)
+- Export PDF
+- If link-only: "Open official source"
+
+---
+
+#### Epic P1 — Prayers Catalog + Hub UI
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| P1.1 | Define Firestore schema: `prayersCatalog/{id}` with `slug`, `title`, `category`, `stepTags`, `displayMode`, `inAppText?`, `officialLink?`, `rightsNotes` | 2 |
+| P1.2 | Seed `prayersCatalog` with 9 items (Serenity, Lord's Prayer, St. Francis, Third Step, Seventh Step, Step 11 passages, Preamble, Responsibility Statement, Set Aside) | 2 |
+| P1.3 | Create `/prayers` hub page with sections: AA Step Prayers, Meeting Prayers, My Custom | 3 |
+| P1.4 | Build prayer card component with title, category, favorite indicator | 2 |
+| P1.5 | Implement favorites pin/unpin functionality | 2 |
+| P1.6 | Create `/prayers/[slug]` detail view with conditional rendering by `displayMode` | 3 |
+| P1.7 | Build "IN_APP_TEXT" display component (readable typography, optional history/context link) | 2 |
+| P1.8 | Build "LINK_ONLY" display component (official source button, context about copyright) | 2 |
+| P1.9 | Build "USER_TEXT_ONLY" display component (editable text area, friendly empty state) | 2 |
+
+**Subtotal: 20 SP**
+
+**Exit Criteria**
+- Users can browse, favorite, open detail, and see correct "in-app vs link-only" behavior
+- No AAWS/Grapevine copyrighted text stored in `inAppText` fields
+- Link-only items open AA.org PDFs correctly on mobile
+
+---
+
+#### Epic P2 — User Text + Preferences
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| P2.1 | Define Firestore schema: `users/{uid}/prayersUser/{id}` with `favorite`, `myText?`, `lastUsedAt?` | 1 |
+| P2.2 | Implement `myText` override for IN_APP_TEXT items ("My preferred wording" toggle) | 2 |
+| P2.3 | Implement `myText` requirement for USER_TEXT_ONLY items (show friendly empty state until user supplies text) | 2 |
+| P2.4 | Add "Privacy reminder" banner on share/export | 1 |
+| P2.5 | Create `/settings/prayers` page with display preferences (font size, theme) | 2 |
+| P2.6 | Implement user-added custom prayers (title, text, category) | 3 |
+
+**Subtotal: 11 SP**
+
+**Exit Criteria**
+- User text saves reliably to Firestore
+- No content is shared automatically
+- Users can add custom prayers to "My Custom" section
+
+---
+
+#### Epic P3 — Share / Email / PDF Export
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| P3.1 | Implement "Copy to clipboard" functionality | 1 |
+| P3.2 | Implement Web Share API with feature detection and fallback | 2 |
+| P3.3 | Implement `mailto:` email sharing with URL-encoded subject/body | 1 |
+| P3.4 | PDF export utility using `@react-pdf/renderer` (consistent layout, metadata) | 3 |
+| P3.5 | PDF export for IN_APP_TEXT items (include text + optional official source link) | 2 |
+| P3.6 | PDF export for LINK_ONLY items (context + official source link, NO copyrighted text) | 2 |
+| P3.7 | PDF export for USER_TEXT_ONLY items (user's text only) | 1 |
+
+**Subtotal: 12 SP**
+
+**Exit Criteria**
+- Each item can export/share in a predictable format across devices
+- PDF export doesn't include copyrighted excerpts for link-only items
+- Web Share fallback works on desktop browsers
+
+---
+
+#### Epic P4 — Compliance Toggles (future-proof for licensing)
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| P4.1 | Add admin-only flags in catalog: `displayMode` switch capability | 2 |
+| P4.2 | Add per-item boolean flags: `allowCopy`, `allowShare`, `allowPDF` | 1 |
+| P4.3 | Implement remote toggle logic (Firebase Remote Config or catalog update) | 2 |
+| P4.4 | Add optional "Report rights concern" link in detail view | 1 |
+| P4.5 | Write Firestore security rules: catalog is read-only for users, admin-write only | 1 |
+
+**Subtotal: 7 SP**
+
+**Exit Criteria**
+- You can remotely flip an item from IN_APP_TEXT → LINK_ONLY without app update
+- Security rules prevent unauthorized catalog modifications
+
+---
+
+#### Epic P5 — Testing & Documentation
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| P5.1 | Unit tests for prayers catalog CRUD service | 2 |
+| P5.2 | Unit tests for user text override functionality | 2 |
+| P5.3 | Integration tests for share/export (copy, mailto, PDF) | 3 |
+| P5.4 | QA checklist: verify no Big Book/AAWS text in inAppText fields | 1 |
+| P5.5 | QA checklist: verify link-only items open AA.org PDFs correctly on mobile | 1 |
+| P5.6 | User documentation for each prayer type and how to use features | 2 |
+| P5.7 | Developer documentation (data model, adding new prayers, compliance guidelines) | 2 |
+
+**Subtotal: 13 SP**
+
+**Exit Criteria**
+- All critical paths covered by tests
+- QA checklist completed and documented
+- User and developer documentation published
+
+---
+
+#### M6 Summary
+
+| Epic | Story Points |
+|------|--------------|
+| P1 Catalog + Hub UI | 20 |
+| P2 User Text + Preferences | 11 |
+| P3 Share / Email / PDF | 12 |
+| P4 Compliance Toggles | 7 |
+| P5 Testing & Docs | 13 |
+| **Total** | **63 SP** |
+
+**Suggested phasing:**
+1. **Phase A (MVP):** Epic P1 (Catalog + Hub) + P2.1-2.4 (User text basics) → ~27 SP
+2. **Phase B:** Epic P3 (Share/Export) + P2.5-2.6 (Preferences + Custom prayers) → ~17 SP
+3. **Phase C:** Epic P4 (Compliance) + Epic P5 (Testing/Docs) → ~20 SP
+
+**Exit Criteria**
+- All 9 prayer items functional with correct copyright compliance
+- Copy, share, email, and PDF export working for all item types
+- Remote compliance toggles functional
+- No copyrighted AA content in any in-app text field
+- Security rules deployed and tested
+
+---
+
+#### M6 Technical Decisions
+
+**Data Model: Firestore**
+
+**Catalog (global, read-only for users)**
+```
+prayersCatalog/{id}
+  - slug: string (URL-safe identifier)
+  - title: string
+  - category: "step_prayers" | "meeting_prayers" | "custom"
+  - stepTags?: number[] (e.g., [3, 7, 11])
+  - displayMode: "IN_APP_TEXT" | "LINK_ONLY" | "USER_TEXT_ONLY"
+  - inAppText?: string (only when IN_APP_TEXT)
+  - officialLink?: string (when LINK_ONLY)
+  - allowCopy: boolean (default true)
+  - allowShare: boolean (default true)
+  - allowPDF: boolean (default true)
+  - rightsNotes: string (internal compliance notes)
+  - createdAt: Timestamp
+  - updatedAt: Timestamp
+```
+
+**Per-user overrides**
+```
+users/{uid}/prayersUser/{id}
+  - favorite: boolean
+  - myText?: string (always allowed; especially for USER_TEXT_ONLY)
+  - lastUsedAt?: Timestamp
+```
+
+**PDF Library: `@react-pdf/renderer`**
+- *Rationale:* Same library used in M5 (Inventories Hub); consistent React component model; produces clean output; good TypeScript support.
+- *Trade-off:* Slightly larger bundle size vs. jspdf, but consistency and developer experience outweigh.
+
+**Compliance Strategy: Remote Config**
+- *Rationale:* Allow instant compliance changes (e.g., displayMode toggle) without app deployment.
+- *Implementation:* Firebase Remote Config OR direct Firestore catalog updates with admin-only access.
+
+---
