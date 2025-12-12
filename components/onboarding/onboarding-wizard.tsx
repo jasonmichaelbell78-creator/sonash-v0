@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
-import { createUserProfile, updateUserProfile } from "@/lib/db/users"
+import { createUserProfile, getUserProfile, updateUserProfile } from "@/lib/db/users"
 import { Loader2, ArrowRight, Calendar } from "lucide-react"
 import { logger, maskIdentifier } from "@/lib/logger"
 
@@ -60,19 +60,15 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             const { Timestamp } = await import("firebase/firestore")
             const cleanStart = Timestamp.fromDate(dateObj)
 
-            // Ensure profile exists or update it
-            // We use createUserProfile if it's brand new, or updateUserProfile if partial
-            // Let's safe-guard: try create, if fail (already exists), update.
-            // But our db util 'createUserProfile' overwrittes? No, let's look at logic.
-            // Actually let's just use updateUserProfile with merge, but we need ensure the doc exists?
-            // Our createUserProfile does setDoc.
+            const existingProfile = await getUserProfile(user.uid)
 
-            await createUserProfile(user.uid, user.email, nickname)
+            if (!existingProfile) {
+                await createUserProfile(user.uid, user.email, nickname)
+            }
 
-            // Update with clean date specifically
             await updateUserProfile(user.uid, {
                 cleanStart: cleanStart,
-                nickname: nickname // ensure nickname is set specific to input
+                nickname: nickname
             })
 
             onComplete()
