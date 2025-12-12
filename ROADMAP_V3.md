@@ -34,7 +34,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - Define success metrics and reporting cadence.
 - Establish owners (product/engineering) for each milestone.
 
-**Deliverables**
+#### Deliverables
 
 - Roadmap v3 published (this document).
 - Definitions of Done for each milestone.
@@ -44,13 +44,13 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 ### M1 — Stabilize & de-risk the foundation
 
-**Objectives**
+#### Objectives
 
 - Improve stability and reduce time-to-fix.
 - Establish consistent engineering practices and guardrails.
 - Eliminate critical production blockers identified in architectural review.
 
-**Key initiatives**
+#### Key initiatives
 
 - Testing strategy: unit/integration coverage for critical paths.
 - CI/CD hardening: linting, type checks, build verification.
@@ -59,7 +59,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - **Server-side security hardening** (4-week plan in docs/SERVER_SIDE_SECURITY.md).
 - **Account linking for anonymous users** (prevent data loss).
 
-**Priority Tasks (from Clean Architecture Refactor - Dec 2025)**
+#### Priority Tasks
 
 #### Week 1: Firebase App Check (Bot Protection)
 
@@ -110,7 +110,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - Document data migration process
 - **Exit:** Users can convert anonymous accounts to permanent ones
 
-**Additional Testing Improvements**
+#### Additional Testing Improvements
 
 - Increase test coverage from 10% to 60%+
 - Add React component tests using React Testing Library
@@ -118,42 +118,42 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - Add E2E tests for critical user flows (auth, journal entry, meeting finder)
 - Implement continuous integration for all tests
 
-**ESLint Warning Remediation (Code Quality)**
+#### ESLint Warning Remediation
 *See: docs/ESLINT_WARNINGS_PLAN.md for detailed plan*
 
 Current state: 0 errors ✅, 29 warnings
 
-**Phase 1: Quick Wins (30 minutes)**
+##### Phase
 
 - Fix 10 unused variable warnings
 - Prefix unused params with `_` or remove imports
 - Files: tab-navigation, firestore-adapter, db/meetings, db/users, scripts/seed-meetings, tests
 
-**Phase 2: Application Code Type Safety (1 hour)**
+##### Phase
 
 - Fix 3 `any` type warnings in application code
 - `sign-in-modal.tsx`: Use `FormEvent<HTMLFormElement>` (2 warnings)
 - `firebase-types.ts`: Change `any` → `unknown` (1 warning)
 
-**Phase 3: React Hooks Dependencies (15 minutes)**
+##### Phase
 
 - Fix exhaustive-deps warning in `today-page.tsx`
 - Add missing `journalEntry` dependency to useEffect
 
-**Phase 4: Test File Types (5 minutes - recommended)**
+##### Phase
 
 - Option A: Suppress `any` warnings in test files (pragmatic)
 - Option B: Properly type all test mocks (4 hours)
 - Recommendation: Option A - add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
 
-**ESLint Config Improvements**
+#### ESLint Config Improvements
 
 - Update `eslint.config.mjs` to enforce stricter rules for app code
 - Allow `any` in test files (acceptable technical debt)
 - Add pre-commit hook: `npm run lint && npm run type-check`
 - Update CI to fail on warnings: `--max-warnings 0`
 
-**Exit criteria**
+#### Exit criteria
 
 - Reduced production issues/regressions.
 - CI gates enforced and green by default.
@@ -167,13 +167,13 @@ Current state: 0 errors ✅, 29 warnings
 
 ### M2 — Architecture & refactoring for speed
 
-**Objectives**
+#### Objectives
 
 - Reduce coupling, clarify module boundaries.
 - Make the system easier to extend with fewer unintended side effects.
 - Improve architecture quality from 4.2/5 to 4.8+/5.
 
-**Key initiatives**
+#### Key initiatives
 
 - Refactor high-churn modules into well-defined components.
 - Improve state/data flow consistency.
@@ -183,13 +183,13 @@ Current state: 0 errors ✅, 29 warnings
 - **Component decomposition** (break down 300+ line components).
 - **Error handling standardization** (consistent patterns).
 
-**Architecture Quality Improvements (Target: 4.8/5)**
+#### Architecture Quality Improvements
 
 #### A1: Split AuthProvider into Focused Contexts
 
 **Current Issue:** AuthProvider has 7 state variables mixing auth, profile, and daily log concerns (195 lines, violates SRP)
 
-**Tasks:**
+##### Tasks
 
 - Create `AuthContext` (user, loading only)
 - Create `ProfileContext` (profile, profileError, profileNotFound)
@@ -202,7 +202,7 @@ Current state: 0 errors ✅, 29 warnings
 
 **Current Issue:** `book-cover.tsx` (337 lines), mixing animation + auth + routing + modals
 
-**Tasks:**
+##### Tasks
 
 - Extract `BookAnimation.tsx` (Framer Motion logic)
 - Extract `BookAuthGuard.tsx` (authentication checks)
@@ -215,7 +215,7 @@ Current state: 0 errors ✅, 29 warnings
 
 **Current Issue:** Inconsistent patterns (some throw, some return `{ error }`)
 
-**Tasks:**
+##### Tasks
 
 - Document error handling strategy (when to throw vs return)
 - Create `Result<T>` type for operations that can fail
@@ -228,7 +228,7 @@ Current state: 0 errors ✅, 29 warnings
 
 **Current Issue:** Direct image usage, no Next.js Image component optimization
 
-**Tasks:**
+##### Tasks
 
 - Audit all image usage in `components/` and `public/`
 - Replace `<img>` tags with Next.js `<Image>` component
@@ -241,7 +241,7 @@ Current state: 0 errors ✅, 29 warnings
 
 **Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion, Recharts)
 
-**Tasks:**
+##### Tasks
 
 - Install `@next/bundle-analyzer`
 - Run bundle analysis report
@@ -255,7 +255,7 @@ Current state: 0 errors ✅, 29 warnings
 
 **Current Issue:** `FirestoreAdapter` exists but not used consistently
 
-**Tasks:**
+##### Tasks
 
 - Update `AuthProvider` to use `FirestoreAdapter` instead of direct `FirestoreService`
 - Ensure all data access goes through adapter layer
@@ -263,7 +263,7 @@ Current state: 0 errors ✅, 29 warnings
 - Add adapter interface tests
 - **Benefit:** Consistent abstraction, easier to test, potential for future DB migration
 
-**Exit criteria**
+#### Exit criteria
 
 - Clearer ownership boundaries and faster onboarding.
 - Lower change failure rate for common modifications.
@@ -277,19 +277,19 @@ Current state: 0 errors ✅, 29 warnings
 
 ### M3 — Product experience improvements
 
-**Objectives**
+#### Objectives
 
 - Improve usability and user trust.
 - Tighten core workflows and reduce friction.
 
-**Key initiatives**
+#### Key initiatives
 
 - UX polish on key flows.
 - Documentation improvements (user + developer).
 - Performance improvements driven by profiling.
 - **Meeting Finder proximity feature** (see below).
 
-**Exit criteria**
+#### Exit criteria
 
 - Improved user satisfaction signals and funnel conversion (where applicable).
 - Measurable performance improvements.
@@ -330,18 +330,18 @@ Current state: 0 errors ✅, 29 warnings
 
 ### M4 — Expansion & follow-on capabilities
 
-**Objectives**
+#### Objectives
 
 - Enable new use cases without compromising stability.
 
-**Key initiatives**
+#### Key initiatives
 
 - Add prioritized feature set based on user feedback.
 - Integrations and extensibility (where applicable).
 - Operational automation (backups, migrations, monitoring).
 - **Inventories Hub foundation** (see M5 for full scope).
 
-**Exit criteria**
+#### Exit criteria
 
 - New features shipped with guardrails and metrics.
 - No significant regression in reliability/performance.
@@ -498,7 +498,7 @@ Current state: 0 errors ✅, 29 warnings
 3. **Phase C:** Remaining Daily Practice (5.3.2-4) + Hub UI (5.5) → ~29 SP
 4. **Phase D:** Full Export/Share (5.4.3-6) + Testing/Docs (5.6) → ~23 SP
 
-**Exit criteria**
+#### Exit criteria
 
 - All 8 inventory types functional with CRUD, search, and linking.
 - PDF export and share working for all entry types.
@@ -623,15 +623,15 @@ These may be considered in future milestones based on user feedback.
 
 **B) Link-only (do not reproduce in-app without license)**
 
-4. **Third Step Prayer** → link to AA.org Big Book Chapter 5 PDF
-5. **Seventh Step Prayer** → link to AA.org Big Book Chapter 6 PDF
-6. **Step 11 passages** ("On awakening…", "When we retire at night…", "When agitated or doubtful…") → link to AA.org Big Book Chapter 6 PDF
-7. **A.A. Preamble** (Grapevine copyright) → link to AA.org Preamble PDF/page
-8. **Responsibility Statement / Declaration of Unity** → link-only (AAWS copyright notice on AA.org)
+1. **Third Step Prayer** → link to AA.org Big Book Chapter 5 PDF
+2. **Seventh Step Prayer** → link to AA.org Big Book Chapter 6 PDF
+3. **Step 11 passages** ("On awakening…", "When we retire at night…", "When agitated or doubtful…") → link to AA.org Big Book Chapter 6 PDF
+4. **A.A. Preamble** (Grapevine copyright) → link to AA.org Preamble PDF/page
+5. **Responsibility Statement / Declaration of Unity** → link-only (AAWS copyright notice on AA.org)
 
 **C) User-text-only (optional item)**
 
-9. **Set Aside Prayer**
+1. **Set Aside Prayer**
    - Default to user-text-only (common in fellowship culture but not AAWS canonical)
    - Optional: provide a "Find online" button that opens the user's browser search, rather than shipping a third-party PDF link
 
