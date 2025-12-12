@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "eslint .",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "next start",
     "test": "npm run test:build && NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\"",
     "test:build": "tsc -p tsconfig.test.json"
@@ -43,13 +43,17 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.1",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint-config-next": "^16.0.10",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0"
   }
 }
