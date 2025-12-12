@@ -238,14 +238,14 @@
 - [ ] Standardize Firestore service methods to return `Result<T>`
 - [ ] Update `FirestoreService.saveDailyLog()` to use Result pattern
 - [ ] Update `FirestoreService.getTodayLog()` to use Result pattern
-- [ ] Update all database operations to use Result pattern
+- [ ] Update all database operations to use `Result<T>` pattern
 - [ ] Add error boundary usage documentation
 - [ ] Update all service method call sites to handle Result type
 - [ ] Write tests for error scenarios
 
 **Benefit:** Predictable error handling, easier debugging, type-safe error handling
 
-**Exit Criteria:** All services use Result<T> pattern consistently
+**Exit Criteria:** All services use `Result<T>` pattern consistently
 
 ---
 
@@ -336,7 +336,7 @@ By end of Week 12, verify:
 
 - [ ] Architecture quality ≥4.8/5 (from 4.2/5)
 - [ ] All components <150 lines (target: <100 for most)
-- [ ] Consistent error handling (Result<T> pattern everywhere)
+- [ ] Consistent error handling (`Result<T>` pattern everywhere)
 - [ ] Bundle size <200KB gzipped (initial load)
 - [ ] Re-render performance improved by 60%+ (via context splitting)
 - [ ] Test coverage ≥60%
