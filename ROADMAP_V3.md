@@ -45,16 +45,76 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 **Objectives**
 - Improve stability and reduce time-to-fix.
 - Establish consistent engineering practices and guardrails.
+- Eliminate critical production blockers identified in architectural review.
 
 **Key initiatives**
 - Testing strategy: unit/integration coverage for critical paths.
 - CI/CD hardening: linting, type checks, build verification.
 - Error handling normalization and logging.
 - Dependency review and security updates.
+- **Server-side security hardening** (4-week plan in docs/SERVER_SIDE_SECURITY.md).
+- **Account linking for anonymous users** (prevent data loss).
+
+**Priority Tasks (from Clean Architecture Refactor - Dec 2025)**
+
+#### Week 1: Firebase App Check (Bot Protection)
+- Install Firebase App Check SDK
+- Get reCAPTCHA v3 site key from Google
+- Add App Check initialization to client
+- Update Firestore rules to enforce App Check
+- Test with debug token in development
+- Deploy to production
+- **Exit:** Bots without valid App Check tokens rejected by Firebase
+
+#### Week 2: Cloud Functions Rate Limiting
+- Set up Firebase Functions project (`firebase init functions`)
+- Implement rate-limited Cloud Functions (see docs/SERVER_SIDE_SECURITY.md)
+- Add auth token verification in Cloud Functions
+- Deploy Cloud Functions to Firebase
+- Update client to use Cloud Functions for writes
+- Test rate limiting with burst requests
+- Monitor Cloud Functions metrics
+- **Exit:** Rate limits enforced server-side, impossible to bypass
+
+#### Week 3: Server-Side Validation & Authorization
+- Move validation logic to Cloud Functions
+- Add server-side Zod schema validation
+- Implement audit logging for security events
+- Add monitoring alerts (Sentry/LogRocket integration)
+- Test with malicious payloads
+- Document security model in SECURITY.md
+- **Exit:** All critical operations validated server-side
+
+#### Week 4: Monitoring & Billing Protection
+- Set up Firebase Performance Monitoring
+- Add Cloud Functions metrics dashboard
+- Configure billing alerts ($50, $100, $500 thresholds)
+- Set up security event logging
+- Create incident response runbook
+- Test alert triggers
+- **Exit:** Team is alerted before costs spiral, security events tracked
+
+#### Account Linking (Parallel Track)
+- Design account linking UX (email/password, Google, etc.)
+- Implement account linking UI
+- Test anonymous → permanent account migration
+- Document data migration process
+- **Exit:** Users can convert anonymous accounts to permanent ones
+
+**Additional Testing Improvements**
+- Increase test coverage from 10% to 60%+
+- Add React component tests using React Testing Library
+- Add integration tests for Firestore operations
+- Add E2E tests for critical user flows (auth, journal entry, meeting finder)
+- Implement continuous integration for all tests
 
 **Exit criteria**
 - Reduced production issues/regressions.
 - CI gates enforced and green by default.
+- **Firebase bill protected** (App Check + rate limiting prevents runaway costs).
+- **Data loss prevented** (account linking functional).
+- **Test coverage ≥60%** for critical paths.
+- **Security posture hardened** (server-side enforcement operational).
 
 ---
 
@@ -63,16 +123,93 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 **Objectives**
 - Reduce coupling, clarify module boundaries.
 - Make the system easier to extend with fewer unintended side effects.
+- Improve architecture quality from 4.2/5 to 4.8+/5.
 
 **Key initiatives**
 - Refactor high-churn modules into well-defined components.
 - Improve state/data flow consistency.
 - Standardize configuration and environment handling.
 - Establish patterns for new features (templates, examples).
+- **Context splitting** (split large providers).
+- **Component decomposition** (break down 300+ line components).
+- **Error handling standardization** (consistent patterns).
+
+**Architecture Quality Improvements (Target: 4.8/5)**
+
+#### A1: Split AuthProvider into Focused Contexts
+**Current Issue:** AuthProvider has 7 state variables mixing auth, profile, and daily log concerns (195 lines, violates SRP)
+
+**Tasks:**
+- Create `AuthContext` (user, loading only)
+- Create `ProfileContext` (profile, profileError, profileNotFound)
+- Create `DailyLogContext` (todayLog, todayLogError, refreshTodayLog)
+- Update components to use specific contexts
+- Test migration with existing components
+- **Benefit:** 60% reduction in unnecessary re-renders, clearer separation of concerns
+
+#### A2: Decompose Large Components
+**Current Issue:** `book-cover.tsx` (337 lines), mixing animation + auth + routing + modals
+
+**Tasks:**
+- Extract `BookAnimation.tsx` (Framer Motion logic)
+- Extract `BookAuthGuard.tsx` (authentication checks)
+- Extract `OnboardingFlow.tsx` (wizard logic)
+- Extract `CleanDaysCalculator.tsx` (date logic)
+- Refactor `book-cover.tsx` to compose smaller components
+- **Benefit:** Each component <100 lines, testable in isolation, reusable
+
+#### A3: Standardize Error Handling
+**Current Issue:** Inconsistent patterns (some throw, some return `{ error }`)
+
+**Tasks:**
+- Document error handling strategy (when to throw vs return)
+- Create `Result<T>` type for operations that can fail
+- Standardize Firestore service methods to return `Result<T>`
+- Add error boundary documentation
+- Update all service methods to follow pattern
+- **Benefit:** Predictable error handling, easier debugging
+
+#### A4: Image Optimization
+**Current Issue:** Direct image usage, no Next.js Image component optimization
+
+**Tasks:**
+- Audit all image usage in `components/` and `public/`
+- Replace `<img>` tags with Next.js `<Image>` component
+- Add responsive sizes for different breakpoints
+- Optimize background images (wood-table.jpg, etc.)
+- Add image loading placeholders
+- **Benefit:** Faster page loads, better Core Web Vitals
+
+#### A5: Bundle Size Analysis & Optimization
+**Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion, Recharts)
+
+**Tasks:**
+- Install `@next/bundle-analyzer`
+- Run bundle analysis report
+- Identify large dependencies
+- Add dynamic imports for heavy libraries
+- Code-split routes appropriately
+- Remove unused dependencies
+- **Benefit:** Faster initial load, improved Time to Interactive
+
+#### A6: Database Adapter Pattern Consistency
+**Current Issue:** `FirestoreAdapter` exists but not used consistently
+
+**Tasks:**
+- Update `AuthProvider` to use `FirestoreAdapter` instead of direct `FirestoreService`
+- Ensure all data access goes through adapter layer
+- Document adapter pattern in architecture docs
+- Add adapter interface tests
+- **Benefit:** Consistent abstraction, easier to test, potential for future DB migration
 
 **Exit criteria**
 - Clearer ownership boundaries and faster onboarding.
 - Lower change failure rate for common modifications.
+- **Architecture quality score: 4.8+/5**.
+- **All components <150 lines** (target: <100 for most).
+- **Consistent error handling** across all services.
+- **Bundle size optimized** (initial load <200KB gzipped).
+- **Re-render performance** improved by 60%+ via context splitting.
 
 ---
 
@@ -335,6 +472,17 @@ users/{uid}/
 - Developer Experience (local setup, scripts, templates)
 - Security hardening (secrets handling, dependency updates)
 - Documentation (architecture decision records, runbooks)
+
+### Technical Debt & Architecture Maintenance
+
+**From Clean Architecture Refactor (Dec 2025):**
+- Remove TODO comments (convert to GitHub issues)
+- Add JSDoc comments with rationale for magic numbers
+- Consistent naming conventions (`getTodayLog` vs `getHistory` → standardize)
+- Remove unused function parameters
+- Add accessibility (a11y) audit
+- Performance budget enforcement in CI
+- Security scanning in CI/CD pipeline
 
 ## Governance & cadence
 
