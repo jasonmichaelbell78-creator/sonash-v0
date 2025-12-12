@@ -119,29 +119,29 @@ export const MeetingsService = {
     async seedInitialMeetings() {
         const batch = writeBatch(db)
 
-        // A mix of meetings across the week
+        // A mix of meetings across the week with Nashville coordinates
         const seedData: Meeting[] = [
             // Mondays
-            { id: "mon_1", name: "East Side Early Risers", type: "AA", day: "Monday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville" },
-            { id: "mon_2", name: "Downtown Lunch Bunch", type: "NA", day: "Monday", time: "12:00", address: "456 Broadway", neighborhood: "Downtown" },
-            { id: "mon_3", name: "West End Serenity", type: "AA", day: "Monday", time: "19:00", address: "789 West End Ave", neighborhood: "West End" },
+            { id: "mon_1", name: "East Side Early Risers", type: "AA", day: "Monday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
+            { id: "mon_2", name: "Downtown Lunch Bunch", type: "NA", day: "Monday", time: "12:00", address: "456 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1627, lng: -86.7816 } },
+            { id: "mon_3", name: "West End Serenity", type: "AA", day: "Monday", time: "19:00", address: "789 West End Ave", neighborhood: "West End", coordinates: { lat: 36.1496, lng: -86.8140 } },
 
             // Tuesdays
-            { id: "tue_1", name: "Design for Living", type: "AA", day: "Tuesday", time: "18:30", address: "500 Woodland St", neighborhood: "East Nashville" },
-            { id: "tue_2", name: "Recovery First", type: "NA", day: "Tuesday", time: "20:00", address: "100 Demonbreun", neighborhood: "Gulch" },
+            { id: "tue_1", name: "Design for Living", type: "AA", day: "Tuesday", time: "18:30", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
+            { id: "tue_2", name: "Recovery First", type: "NA", day: "Tuesday", time: "20:00", address: "100 Demonbreun", neighborhood: "Gulch", coordinates: { lat: 36.1522, lng: -86.7870 } },
 
             // Wednesdays (Today in dev env usually)
-            { id: "wed_1", name: "Primary Purpose", type: "AA", day: "Wednesday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville" },
-            { id: "wed_2", name: "Mid-Day Reprieve", type: "AA", day: "Wednesday", time: "12:00", address: "Public Library", neighborhood: "Downtown" },
-            { id: "wed_3", name: "Freedom Group", type: "NA", day: "Wednesday", time: "19:30", address: "Community Center", neighborhood: "Germantown" },
-            { id: "wed_4", name: "Candlelight Meeting", type: "AA", day: "Wednesday", time: "22:00", address: "Old Church", neighborhood: "12 South" },
+            { id: "wed_1", name: "Primary Purpose", type: "AA", day: "Wednesday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
+            { id: "wed_2", name: "Mid-Day Reprieve", type: "AA", day: "Wednesday", time: "12:00", address: "Public Library", neighborhood: "Downtown", coordinates: { lat: 36.1619, lng: -86.7781 } },
+            { id: "wed_3", name: "Freedom Group", type: "NA", day: "Wednesday", time: "19:30", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1813, lng: -86.7949 } },
+            { id: "wed_4", name: "Candlelight Meeting", type: "AA", day: "Wednesday", time: "22:00", address: "Old Church", neighborhood: "12 South", coordinates: { lat: 36.1289, lng: -86.7874 } },
 
             // Thursdays
-            { id: "thu_1", name: "Big Book Study", type: "AA", day: "Thursday", time: "19:00", address: "University Center", neighborhood: "Belmont" },
+            { id: "thu_1", name: "Big Book Study", type: "AA", day: "Thursday", time: "19:00", address: "University Center", neighborhood: "Belmont", coordinates: { lat: 36.1320, lng: -86.7980 } },
 
             // Fridays
-            { id: "fri_1", name: "TGIF Group", type: "AA", day: "Friday", time: "18:00", address: "Coffee Shop Backroom", neighborhood: "Sylvan Park" },
-            { id: "fri_2", name: "Late Night NA", type: "NA", day: "Friday", time: "23:00", address: "Recovery Hall", neighborhood: "Antioch" },
+            { id: "fri_1", name: "TGIF Group", type: "AA", day: "Friday", time: "18:00", address: "Coffee Shop Backroom", neighborhood: "Sylvan Park", coordinates: { lat: 36.1375, lng: -86.8568 } },
+            { id: "fri_2", name: "Late Night NA", type: "NA", day: "Friday", time: "23:00", address: "Recovery Hall", neighborhood: "Antioch", coordinates: { lat: 36.0605, lng: -86.6717 } },
         ]
 
         try {
