@@ -3,6 +3,7 @@
 > **Status:** Canonical roadmap for this repository.
 >
 > This document **supersedes**:
+>
 > - `ROADMAP.md` (deprecated pointer)
 > - `ROADMAP_COMPARISON_ANALYSIS.md` (point-in-time analysis)
 > - `REFACTORING_ACTION_PLAN.md` (engineering implementation plan that supports this roadmap)
@@ -34,6 +35,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - Establish owners (product/engineering) for each milestone.
 
 **Deliverables**
+
 - Roadmap v3 published (this document).
 - Definitions of Done for each milestone.
 - Initial KPI dashboard or lightweight metrics doc.
@@ -43,11 +45,13 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 ### M1 — Stabilize & de-risk the foundation
 
 **Objectives**
+
 - Improve stability and reduce time-to-fix.
 - Establish consistent engineering practices and guardrails.
 - Eliminate critical production blockers identified in architectural review.
 
 **Key initiatives**
+
 - Testing strategy: unit/integration coverage for critical paths.
 - CI/CD hardening: linting, type checks, build verification.
 - Error handling normalization and logging.
@@ -58,6 +62,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 **Priority Tasks (from Clean Architecture Refactor - Dec 2025)**
 
 #### Week 1: Firebase App Check (Bot Protection)
+
 - Install Firebase App Check SDK
 - Get reCAPTCHA v3 site key from Google
 - Add App Check initialization to client
@@ -67,6 +72,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - **Exit:** Bots without valid App Check tokens rejected by Firebase
 
 #### Week 2: Cloud Functions Rate Limiting
+
 - Set up Firebase Functions project (`firebase init functions`)
 - Implement rate-limited Cloud Functions (see docs/SERVER_SIDE_SECURITY.md)
 - Add auth token verification in Cloud Functions
@@ -77,6 +83,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - **Exit:** Rate limits enforced server-side, impossible to bypass
 
 #### Week 3: Server-Side Validation & Authorization
+
 - Move validation logic to Cloud Functions
 - Add server-side Zod schema validation
 - Implement audit logging for security events
@@ -86,6 +93,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - **Exit:** All critical operations validated server-side
 
 #### Week 4: Monitoring & Billing Protection
+
 - Set up Firebase Performance Monitoring
 - Add Cloud Functions metrics dashboard
 - Configure billing alerts ($50, $100, $500 thresholds)
@@ -95,6 +103,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - **Exit:** Team is alerted before costs spiral, security events tracked
 
 #### Account Linking (Parallel Track)
+
 - Design account linking UX (email/password, Google, etc.)
 - Implement account linking UI
 - Test anonymous → permanent account migration
@@ -102,6 +111,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - **Exit:** Users can convert anonymous accounts to permanent ones
 
 **Additional Testing Improvements**
+
 - Increase test coverage from 10% to 60%+
 - Add React component tests using React Testing Library
 - Add integration tests for Firestore operations
@@ -114,31 +124,37 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 Current state: 0 errors ✅, 29 warnings
 
 **Phase 1: Quick Wins (30 minutes)**
+
 - Fix 10 unused variable warnings
 - Prefix unused params with `_` or remove imports
 - Files: tab-navigation, firestore-adapter, db/meetings, db/users, scripts/seed-meetings, tests
 
 **Phase 2: Application Code Type Safety (1 hour)**
+
 - Fix 3 `any` type warnings in application code
 - `sign-in-modal.tsx`: Use `FormEvent<HTMLFormElement>` (2 warnings)
 - `firebase-types.ts`: Change `any` → `unknown` (1 warning)
 
 **Phase 3: React Hooks Dependencies (15 minutes)**
+
 - Fix exhaustive-deps warning in `today-page.tsx`
 - Add missing `journalEntry` dependency to useEffect
 
 **Phase 4: Test File Types (5 minutes - recommended)**
+
 - Option A: Suppress `any` warnings in test files (pragmatic)
 - Option B: Properly type all test mocks (4 hours)
 - Recommendation: Option A - add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
 
 **ESLint Config Improvements**
+
 - Update `eslint.config.mjs` to enforce stricter rules for app code
 - Allow `any` in test files (acceptable technical debt)
 - Add pre-commit hook: `npm run lint && npm run type-check`
 - Update CI to fail on warnings: `--max-warnings 0`
 
 **Exit criteria**
+
 - Reduced production issues/regressions.
 - CI gates enforced and green by default.
 - **ESLint: 0 errors, 0 warnings** (or 15 if test files suppressed)
@@ -152,11 +168,13 @@ Current state: 0 errors ✅, 29 warnings
 ### M2 — Architecture & refactoring for speed
 
 **Objectives**
+
 - Reduce coupling, clarify module boundaries.
 - Make the system easier to extend with fewer unintended side effects.
 - Improve architecture quality from 4.2/5 to 4.8+/5.
 
 **Key initiatives**
+
 - Refactor high-churn modules into well-defined components.
 - Improve state/data flow consistency.
 - Standardize configuration and environment handling.
@@ -168,9 +186,11 @@ Current state: 0 errors ✅, 29 warnings
 **Architecture Quality Improvements (Target: 4.8/5)**
 
 #### A1: Split AuthProvider into Focused Contexts
+
 **Current Issue:** AuthProvider has 7 state variables mixing auth, profile, and daily log concerns (195 lines, violates SRP)
 
 **Tasks:**
+
 - Create `AuthContext` (user, loading only)
 - Create `ProfileContext` (profile, profileError, profileNotFound)
 - Create `DailyLogContext` (todayLog, todayLogError, refreshTodayLog)
@@ -179,9 +199,11 @@ Current state: 0 errors ✅, 29 warnings
 - **Benefit:** 60% reduction in unnecessary re-renders, clearer separation of concerns
 
 #### A2: Decompose Large Components
+
 **Current Issue:** `book-cover.tsx` (337 lines), mixing animation + auth + routing + modals
 
 **Tasks:**
+
 - Extract `BookAnimation.tsx` (Framer Motion logic)
 - Extract `BookAuthGuard.tsx` (authentication checks)
 - Extract `OnboardingFlow.tsx` (wizard logic)
@@ -190,9 +212,11 @@ Current state: 0 errors ✅, 29 warnings
 - **Benefit:** Each component <100 lines, testable in isolation, reusable
 
 #### A3: Standardize Error Handling
+
 **Current Issue:** Inconsistent patterns (some throw, some return `{ error }`)
 
 **Tasks:**
+
 - Document error handling strategy (when to throw vs return)
 - Create `Result<T>` type for operations that can fail
 - Standardize Firestore service methods to return `Result<T>`
@@ -201,9 +225,11 @@ Current state: 0 errors ✅, 29 warnings
 - **Benefit:** Predictable error handling, easier debugging
 
 #### A4: Image Optimization
+
 **Current Issue:** Direct image usage, no Next.js Image component optimization
 
 **Tasks:**
+
 - Audit all image usage in `components/` and `public/`
 - Replace `<img>` tags with Next.js `<Image>` component
 - Add responsive sizes for different breakpoints
@@ -212,9 +238,11 @@ Current state: 0 errors ✅, 29 warnings
 - **Benefit:** Faster page loads, better Core Web Vitals
 
 #### A5: Bundle Size Analysis & Optimization
+
 **Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion, Recharts)
 
 **Tasks:**
+
 - Install `@next/bundle-analyzer`
 - Run bundle analysis report
 - Identify large dependencies
@@ -224,9 +252,11 @@ Current state: 0 errors ✅, 29 warnings
 - **Benefit:** Faster initial load, improved Time to Interactive
 
 #### A6: Database Adapter Pattern Consistency
+
 **Current Issue:** `FirestoreAdapter` exists but not used consistently
 
 **Tasks:**
+
 - Update `AuthProvider` to use `FirestoreAdapter` instead of direct `FirestoreService`
 - Ensure all data access goes through adapter layer
 - Document adapter pattern in architecture docs
@@ -234,6 +264,7 @@ Current state: 0 errors ✅, 29 warnings
 - **Benefit:** Consistent abstraction, easier to test, potential for future DB migration
 
 **Exit criteria**
+
 - Clearer ownership boundaries and faster onboarding.
 - Lower change failure rate for common modifications.
 - **Architecture quality score: 4.8+/5**.
@@ -247,16 +278,19 @@ Current state: 0 errors ✅, 29 warnings
 ### M3 — Product experience improvements
 
 **Objectives**
+
 - Improve usability and user trust.
 - Tighten core workflows and reduce friction.
 
 **Key initiatives**
+
 - UX polish on key flows.
 - Documentation improvements (user + developer).
 - Performance improvements driven by profiling.
 - **Meeting Finder proximity feature** (see below).
 
 **Exit criteria**
+
 - Improved user satisfaction signals and funnel conversion (where applicable).
 - Measurable performance improvements.
 
@@ -267,6 +301,7 @@ Current state: 0 errors ✅, 29 warnings
 > **Goal:** Help users find the closest meetings to their current location.
 
 **Prerequisites**
+
 - Geocoding API key (Google Maps Geocoding API or similar)
 - One-time data migration to populate coordinates
 
@@ -285,6 +320,7 @@ Current state: 0 errors ✅, 29 warnings
 **Subtotal: 15 SP** (10 SP without interactive map)
 
 **Technical Notes**
+
 - Geocoding is a one-time batch operation; store coordinates permanently
 - Browser geolocation requires HTTPS and user permission
 - Haversine formula provides accurate distance for Nashville-scale distances
@@ -295,15 +331,18 @@ Current state: 0 errors ✅, 29 warnings
 ### M4 — Expansion & follow-on capabilities
 
 **Objectives**
+
 - Enable new use cases without compromising stability.
 
 **Key initiatives**
+
 - Add prioritized feature set based on user feedback.
 - Integrations and extensibility (where applicable).
 - Operational automation (backups, migrations, monitoring).
 - **Inventories Hub foundation** (see M5 for full scope).
 
 **Exit criteria**
+
 - New features shipped with guardrails and metrics.
 - No significant regression in reliability/performance.
 
@@ -314,6 +353,7 @@ Current state: 0 errors ✅, 29 warnings
 > **Goal:** Comprehensive inventory system supporting Step 4, Step 10/11, and daily practice journaling aligned with 12-step recovery principles.
 
 **Design Principles**
+
 - Calm, non-judgmental UX throughout.
 - AA-aligned wording/structure (NO copyrighted AA literature verbatim).
 - ONE canonical template per inventory type (no alternates).
@@ -323,6 +363,7 @@ Current state: 0 errors ✅, 29 warnings
 ---
 
 #### Epic 5.1 — Infrastructure & Data Model (Foundation)
+
 *Dependency: M2 complete (architecture patterns established)*
 
 | Ticket | Description | Est |
@@ -451,12 +492,14 @@ Current state: 0 errors ✅, 29 warnings
 | **Total** | **105 SP** |
 
 **Suggested phasing:**
+
 1. **Phase A (MVP):** Epic 5.1 + Resentments (5.2.1) + Spot-Check (5.3.1) + basic Export (5.4.1-2) → ~35 SP
 2. **Phase B:** Remaining Step 4 inventories (5.2.2-4) → ~18 SP
 3. **Phase C:** Remaining Daily Practice (5.3.2-4) + Hub UI (5.5) → ~29 SP
 4. **Phase D:** Full Export/Share (5.4.3-6) + Testing/Docs (5.6) → ~23 SP
 
 **Exit criteria**
+
 - All 8 inventory types functional with CRUD, search, and linking.
 - PDF export and share working for all entry types.
 - Security rules deployed and tested.
@@ -468,14 +511,17 @@ Current state: 0 errors ✅, 29 warnings
 #### M5 Technical Decisions
 
 **PDF Library: `@react-pdf/renderer`**
+
 - *Rationale:* React component model matches existing stack; produces clean, consistent output; good TypeScript support; active maintenance.
 - *Alternative considered:* `jspdf` — more flexible but requires manual layout; less ergonomic for React.
 
 **Linking Strategy: Dedicated collection (`inventoryLinks`)**
+
 - *Rationale:* Clean separation of concerns; efficient queries for "what's linked to X"; easier to add link metadata (e.g., link type, notes) later.
 - *Trade-off:* Extra writes/reads vs. embedded arrays; worth it for referential integrity.
 
 **Firestore Structure**
+
 ```
 users/{uid}/
   inventoryEntries/{entryId}
@@ -507,6 +553,7 @@ users/{uid}/
 ### Technical Debt & Architecture Maintenance
 
 **From Clean Architecture Refactor (Dec 2025):**
+
 - Remove TODO comments (convert to GitHub issues)
 - Add JSDoc comments with rationale for magic numbers
 - Consistent naming conventions (`getTodayLog` vs `getHistory` → standardize)
@@ -532,6 +579,7 @@ users/{uid}/
 ## Non-Goals (Explicitly Out of Scope for M5)
 
 The following inventory types are intentionally excluded:
+
 - Instincts inventory
 - Weekly/monthly periodic reviews
 - Values-based inventory
@@ -548,6 +596,7 @@ These may be considered in future milestones based on user feedback.
 > **Goal:** Add a Prayers & Readings feature that reproduces in-app only what we can safely ship, uses direct official links for AAWS/Grapevine-controlled text we won't reproduce, and supports user practice via Favorites, Copy/Share, and Daily Practice shortcuts.
 
 **Design Principles**
+
 - **Copyright compliance:** Never reproduce AAWS/Grapevine copyrighted text in-app without explicit license.
 - **Official sources:** Link directly to AA.org PDFs for Big Book prayers and AAWS literature.
 - **Public domain first:** Ship public-domain text (Serenity Prayer, Lord's Prayer, St. Francis) as in-app content.
@@ -592,31 +641,34 @@ These may be considered in future milestones based on user feedback.
 
 Store these raw URLs in seed data (shown in-app as "Open official source"):
 
-- **AA Big Book Chapter 5 PDF** (Third Step Prayer): https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf
-- **AA Big Book Chapter 6 PDF** (Seventh Step Prayer + Step 11 passages): https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf
+- **AA Big Book Chapter 5 PDF** (Third Step Prayer): <https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf>
+- **AA Big Book Chapter 6 PDF** (Seventh Step Prayer + Step 11 passages): <https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf>
 - **Origin of the Serenity Prayer** (AA official history page):
-  - https://www.aa.org/origin-serenity-prayer-historical-paper
-  - https://www.aa.org/sites/default/files/literature/assets/smf-129_en.pdf
+  - <https://www.aa.org/origin-serenity-prayer-historical-paper>
+  - <https://www.aa.org/sites/default/files/literature/assets/smf-129_en.pdf>
 - **A.A. Preamble** (official PDF + page):
-  - https://www.aa.org/sites/default/files/literature/smf-92_en.pdf
-  - https://www.aa.org/aa-preamble
-- **Declaration of Unity page** (includes Responsibility Statement / Unity context): https://www.aa.org/a-declaration-of-unity
+  - <https://www.aa.org/sites/default/files/literature/smf-92_en.pdf>
+  - <https://www.aa.org/aa-preamble>
+- **Declaration of Unity page** (includes Responsibility Statement / Unity context): <https://www.aa.org/a-declaration-of-unity>
 
 ---
 
 #### Product Scope
 
 **Routes (Next.js App Router)**
+
 - `/prayers` (hub)
 - `/prayers/[slug]` (detail)
 - Optional: `/settings/prayers` (display preferences, defaults)
 
 **Hub sections**
+
 - AA Step Prayers (Step 3, Step 7, Step 11 references)
 - Meeting Prayers (Serenity, Lord's Prayer, St. Francis)
 - My Custom (Set Aside + user-added items)
 
 **Detail view actions**
+
 - Read
 - Favorite
 - Copy
@@ -644,6 +696,7 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 **Subtotal: 20 SP**
 
 **Exit Criteria**
+
 - Users can browse, favorite, open detail, and see correct "in-app vs link-only" behavior
 - No AAWS/Grapevine copyrighted text stored in `inAppText` fields
 - Link-only items open AA.org PDFs correctly on mobile
@@ -664,6 +717,7 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 **Subtotal: 11 SP**
 
 **Exit Criteria**
+
 - User text saves reliably to Firestore
 - No content is shared automatically
 - Users can add custom prayers to "My Custom" section
@@ -685,6 +739,7 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 **Subtotal: 12 SP**
 
 **Exit Criteria**
+
 - Each item can export/share in a predictable format across devices
 - PDF export doesn't include copyrighted excerpts for link-only items
 - Web Share fallback works on desktop browsers
@@ -704,6 +759,7 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 **Subtotal: 7 SP**
 
 **Exit Criteria**
+
 - You can remotely flip an item from IN_APP_TEXT → LINK_ONLY without app update
 - Security rules prevent unauthorized catalog modifications
 
@@ -724,6 +780,7 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 **Subtotal: 13 SP**
 
 **Exit Criteria**
+
 - All critical paths covered by tests
 - QA checklist completed and documented
 - User and developer documentation published
@@ -742,11 +799,13 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 | **Total** | **63 SP** |
 
 **Suggested phasing:**
+
 1. **Phase A (MVP):** Epic P1 (Catalog + Hub) + P2.1-2.4 (User text basics) → ~27 SP
 2. **Phase B:** Epic P3 (Share/Export) + P2.5-2.6 (Preferences + Custom prayers) → ~17 SP
 3. **Phase C:** Epic P4 (Compliance) + Epic P5 (Testing/Docs) → ~20 SP
 
 **Exit Criteria**
+
 - All 9 prayer items functional with correct copyright compliance
 - Copy, share, email, and PDF export working for all item types
 - Remote compliance toggles functional
@@ -760,6 +819,7 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 **Data Model: Firestore**
 
 **Catalog (global, read-only for users)**
+
 ```
 prayersCatalog/{id}
   - slug: string (URL-safe identifier)
@@ -778,6 +838,7 @@ prayersCatalog/{id}
 ```
 
 **Per-user overrides**
+
 ```
 users/{uid}/prayersUser/{id}
   - favorite: boolean
@@ -786,10 +847,12 @@ users/{uid}/prayersUser/{id}
 ```
 
 **PDF Library: `@react-pdf/renderer`**
+
 - *Rationale:* Same library used in M5 (Inventories Hub); consistent React component model; produces clean output; good TypeScript support.
 - *Trade-off:* Slightly larger bundle size vs. jspdf, but consistency and developer experience outweigh.
 
 **Compliance Strategy: Remote Config**
+
 - *Rationale:* Allow instant compliance changes (e.g., displayMode toggle) without app deployment.
 - *Implementation:* Firebase Remote Config OR direct Firestore catalog updates with admin-only access.
 
@@ -800,6 +863,7 @@ users/{uid}/prayersUser/{id}
 > **Goal:** Complete the fellowship connection layer that makes the app useful for daily AA/NA participation. Focus on "how AA people actually stay sober" through meetings, sponsors, service, and milestones. Bridge the gap between personal introspection (M5/M6) and community connection.
 
 **Design Principles**
+
 - **Fellowship-first:** Prioritize features that connect users to people, meetings, and service.
 - **Complete existing stubs:** Finish the Support page (hardcoded contacts → Firestore-backed).
 - **Leverage existing infrastructure:** Build on Meeting Finder, clean time tracker, and user profile.
@@ -811,6 +875,7 @@ users/{uid}/prayersUser/{id}
 #### Current App State (Implemented Features)
 
 **Already built:**
+
 - Clean time tracker with years/months/days calculation (Today page)
 - Meeting Finder with fellowship filter (AA/NA/CA), day/time filtering
 - Support circle UI (hardcoded contacts, needs Firestore backing)
@@ -818,10 +883,12 @@ users/{uid}/prayersUser/{id}
 - Mood check-in with sparkline visualization
 
 **Partially built:**
+
 - Daily readings (UI exists, placeholder content)
 - Support page (UI complete, no Firestore CRUD or `tel:` links)
 
 **Planned but not started:**
+
 - M5 Inventories Hub (105 SP)
 - M6 Prayers & Readings (63 SP)
 
@@ -846,6 +913,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 19 SP**
 
 **Exit Criteria**
+
 - Users can add/edit/delete contacts with phone/email
 - Call/Text/Email buttons work on mobile and desktop
 - SOS contact designated and one-tap call functional
@@ -868,6 +936,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 15 SP**
 
 **Exit Criteria**
+
 - Users can mark meetings as favorites and designate one homegroup
 - Check-in button creates timestamped attendance record
 - Attendance history is searchable and accurate
@@ -891,6 +960,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 16 SP**
 
 **Exit Criteria**
+
 - Users can add/edit/archive commitments
 - Service log entries save with timestamp and notes
 - Morning Planning integration works (when M5 is implemented)
@@ -913,6 +983,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 13 SP**
 
 **Exit Criteria**
+
 - Users can track status for all 12 steps
 - Step detail view allows notes and sharing
 - Completion requires confirmation modal with sponsor reminder
@@ -935,6 +1006,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 16 SP**
 
 **Exit Criteria**
+
 - Chip visualization shows accurate milestone progression
 - Next chip countdown displays on Today page
 - Celebration modal triggers at milestone crossings
@@ -955,6 +1027,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 12 SP**
 
 **Exit Criteria**
+
 - Users can create and edit prevention plan
 - Emergency button is prominent and accessible on Today page
 - Plan modal shows with immediate actions (call sponsor, nearest meeting)
@@ -975,6 +1048,7 @@ users/{uid}/prayersUser/{id}
 **Subtotal: 9 SP**
 
 **Exit Criteria**
+
 - Daily reading shows correct link for today's date
 - User can add personal notes/takeaways
 - Links open correctly to official sources (AA.org, NA.org)
@@ -996,6 +1070,7 @@ users/{uid}/prayersUser/{id}
 | **Total** | **100 SP** |
 
 **Suggested phasing:**
+
 1. **Phase A (Quick Wins):** Epic F1 (Support Network) + F2 (Attendance) + F7 (Readings) → ~43 SP
    - Completes existing stubs, high daily-use impact
 2. **Phase B (Milestones & Service):** Epic F5 (Chips) + F3 (Commitments) → ~32 SP
@@ -1004,6 +1079,7 @@ users/{uid}/prayersUser/{id}
    - Pairs with M5 (Inventories) when implemented
 
 **Exit Criteria**
+
 - Support page is fully functional with Firestore-backed contacts and tel:/sms:/mailto: links
 - Meeting attendance tracking works with favorites and homegroup
 - Chip milestones display accurately with countdown and celebration
@@ -1018,6 +1094,7 @@ users/{uid}/prayersUser/{id}
 **Data Model: Firestore**
 
 **Contacts (user-scoped)**
+
 ```
 users/{uid}/contacts/{contactId}
   - name: string
@@ -1033,6 +1110,7 @@ users/{uid}/contacts/{contactId}
 ```
 
 **Meeting Attendance (user-scoped)**
+
 ```
 users/{uid}/meetingAttendance/{attendanceId}
   - meetingId: string (reference to meetings collection)
@@ -1043,6 +1121,7 @@ users/{uid}/meetingAttendance/{attendanceId}
 ```
 
 **Favorite Meetings (user-scoped)**
+
 ```
 users/{uid}/favoriteMeetings/{meetingId}
   - meetingId: string
@@ -1052,6 +1131,7 @@ users/{uid}/favoriteMeetings/{meetingId}
 ```
 
 **Commitments (user-scoped)**
+
 ```
 users/{uid}/commitments/{id}
   - type: "coffee" | "chairs" | "greeter" | "literature" | "secretary" | "treasurer" | "GSR" | "sponsor" | "other"
@@ -1064,6 +1144,7 @@ users/{uid}/commitments/{id}
 ```
 
 **Service Log (user-scoped)**
+
 ```
 users/{uid}/serviceLog/{id}
   - type: "call" | "ride" | "coffee_date" | "sponsorship" | "12_step_call" | "other"
@@ -1075,6 +1156,7 @@ users/{uid}/serviceLog/{id}
 ```
 
 **Step Progress (user-scoped)**
+
 ```
 users/{uid}/stepProgress/{stepNum}
   - stepNum: number (1-12)
@@ -1087,6 +1169,7 @@ users/{uid}/stepProgress/{stepNum}
 ```
 
 **Prevention Plan (singleton doc)**
+
 ```
 users/{uid}/preventionPlan
   - whenIFeelLike: string[] (trigger situations)
@@ -1099,6 +1182,7 @@ users/{uid}/preventionPlan
 ```
 
 **URI Schemes for Mobile Actions**
+
 - Calling: `tel:+1234567890`
 - SMS: `sms:+1234567890?body=Hello`
 - Email: `mailto:email@example.com?subject=Subject&body=Body`
@@ -1106,6 +1190,7 @@ users/{uid}/preventionPlan
 
 **Security Rules Pattern**
 All collections under `users/{uid}/*` follow owner-only access:
+
 ```
 match /users/{userId}/{document=**} {
   allow read, write: if request.auth.uid == userId;
@@ -1113,12 +1198,14 @@ match /users/{userId}/{document=**} {
 ```
 
 **Integration Points with Existing Features**
+
 - **Today Page**: Add chip countdown, meeting count, commitment reminders, emergency button
 - **Resources Page**: Enhance with attendance check-in, favorites, homegroup badge
 - **Support Page**: Replace hardcoded contacts with Firestore CRUD
 - **Morning Planning (M5)**: Pre-fill "One person I can help" from service log
 
 **Dependencies**
+
 - Epic F4.5 (Step 4 → Inventories link) depends on M5.2.1 being implemented
 - Epic F3.7 (Service → Morning Planning) depends on M5.3.2 being implemented
 - Epic F7 (Daily Readings) uses same compliance pattern as M6 (link-only, no reproduced text)
