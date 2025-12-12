@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
+    "incremental": false,
     "outDir": "dist-tests",
     "module": "commonjs",
     "moduleResolution": "node",
