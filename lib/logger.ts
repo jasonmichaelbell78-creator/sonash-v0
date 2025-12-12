@@ -9,6 +9,16 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 const isTest = process.env.NODE_ENV === 'test'
 const isProduction = process.env.NODE_ENV === 'production'
 
+/**
+ * Check if a string looks like a sensitive identifier (token, ID, key)
+ * These are typically long alphanumeric strings without spaces
+ */
+const looksLikeSensitiveId = (value: string): boolean => {
+  // Must be at least 12 chars and contain no spaces or common punctuation
+  // Matches: Firebase UIDs, API keys, tokens, etc.
+  return value.length >= 12 && /^[A-Za-z0-9_\-.:]+$/.test(value)
+}
+
 const redactValue = (value: unknown): unknown => {
   if (value === null || value === undefined) return value
   if (value instanceof Error) {
@@ -29,7 +39,12 @@ const redactValue = (value: unknown): unknown => {
   }
 
   if (typeof value === "string") {
-    return value.length > 12 ? `${value.slice(0, 4)}…[REDACTED]` : "[REDACTED]"
+    // Only redact strings that look like identifiers/tokens
+    // Preserve normal text like error messages, status strings, etc.
+    if (looksLikeSensitiveId(value)) {
+      return `${value.slice(0, 4)}…[REDACTED]`
+    }
+    return value
   }
 
   return value

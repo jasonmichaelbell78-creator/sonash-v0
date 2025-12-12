@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from "react"
 import { auth } from "../../lib/firebase"
 import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth"
+import type { DocumentSnapshot, FirestoreError } from "firebase/firestore"
 import { FirestoreService, DailyLog } from "../../lib/firestore-service"
 import { UserProfile } from "../../lib/db/users"
 import { logger, maskIdentifier } from "../../lib/logger"
@@ -75,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [user])
 
     // Memoized snapshot handler with data diffing
-    const handleProfileSnapshot = useCallback((docSnap: any) => {
+    const handleProfileSnapshot = useCallback((docSnap: DocumentSnapshot) => {
         if (docSnap.exists()) {
             const data = docSnap.data() as UserProfile
             const dataString = JSON.stringify(data)
@@ -96,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false)
     }, [])
 
-    const handleProfileError = useCallback((currentUserId: string) => (error: any) => {
+    const handleProfileError = useCallback((currentUserId: string) => (error: FirestoreError) => {
         logger.error("Error fetching user profile", {
             userId: maskIdentifier(currentUserId),
             error,
