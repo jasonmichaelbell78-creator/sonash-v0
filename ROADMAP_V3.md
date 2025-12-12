@@ -86,10 +86,41 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - UX polish on key flows.
 - Documentation improvements (user + developer).
 - Performance improvements driven by profiling.
+- **Meeting Finder proximity feature** (see below).
 
 **Exit criteria**
 - Improved user satisfaction signals and funnel conversion (where applicable).
 - Measurable performance improvements.
+
+---
+
+#### M3.1 — Meeting Finder: Proximity & Map Feature
+
+> **Goal:** Help users find the closest meetings to their current location.
+
+**Prerequisites**
+- Geocoding API key (Google Maps Geocoding API or similar)
+- One-time data migration to populate coordinates
+
+**Tickets**
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 3.1.1 | Create geocoding script to populate lat/lng for all 1,173 meeting addresses | 3 |
+| 3.1.2 | Add `coordinates: { lat, lng }` to Firestore meeting documents | 1 |
+| 3.1.3 | Implement browser geolocation hook with permission handling | 2 |
+| 3.1.4 | Add Haversine distance calculation utility | 1 |
+| 3.1.5 | Add "Nearest to me" sort option in Meeting Finder | 2 |
+| 3.1.6 | Display distance (miles) on meeting cards when location available | 1 |
+| 3.1.7 | (Optional) Interactive map view using Leaflet or Google Maps SDK | 5 |
+
+**Subtotal: 15 SP** (10 SP without interactive map)
+
+**Technical Notes**
+- Geocoding is a one-time batch operation; store coordinates permanently
+- Browser geolocation requires HTTPS and user permission
+- Haversine formula provides accurate distance for Nashville-scale distances
+- Consider caching user location to avoid repeated permission prompts
 
 ---
 

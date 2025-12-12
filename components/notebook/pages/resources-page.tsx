@@ -15,9 +15,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Navigation } from "lucide-react"
 
+// Fellowship filter options
+const FELLOWSHIP_OPTIONS = ["All", "AA", "NA", "CA"] as const
+type FellowshipFilter = typeof FELLOWSHIP_OPTIONS[number]
+
 export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [viewMode, setViewMode] = useState<"today" | "all">("today")
+  const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
   const [loading, setLoading] = useState(true)
 
   // Determine today's day name for querying
@@ -126,38 +131,44 @@ export default function ResourcesPage() {
     },
   ]
 
-  // Time filtering logic
-  const filteredMeetings = useMemo(() => {
-    if (viewMode === "all") return meetings
-
-    const now = new Date()
-    // Explicitly parse current time into minutes for comparison
-    const currentMinutes = now.getHours() * 60 + now.getMinutes()
-
-    // Helper to parse HH:MM to minutes
-    const parseTime = (timeStr: string) => {
-      // Handle 24h "19:30" or 12h "7:30 PM"
-      // This repeats server logic but safest to keep identical here for filter
-      // If the string contains AM/PM
-      if (/AM|PM/i.test(timeStr)) {
-        const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
-        if (!match) return -1
-        let h = parseInt(match[1])
-        const m = parseInt(match[2])
-        const p = match[3].toUpperCase()
-        if (p === 'PM' && h !== 12) h += 12
-        if (p === 'AM' && h === 12) h = 0
-        return h * 60 + m
-      }
-      const [h, m] = timeStr.split(':').map(Number)
+  // Helper to parse HH:MM to minutes
+  const parseTime = (timeStr: string) => {
+    // Handle 24h "19:30" or 12h "7:30 PM"
+    if (/AM|PM/i.test(timeStr)) {
+      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
+      if (!match) return -1
+      let h = parseInt(match[1])
+      const m = parseInt(match[2])
+      const p = match[3].toUpperCase()
+      if (p === 'PM' && h !== 12) h += 12
+      if (p === 'AM' && h === 12) h = 0
       return h * 60 + m
     }
+    const [h, m] = timeStr.split(':').map(Number)
+    return h * 60 + m
+  }
 
-    return meetings.filter(m => {
-      const meetingMinutes = parseTime(m.time)
-      return meetingMinutes >= currentMinutes
-    })
-  }, [meetings, viewMode])
+  // Combined filtering: time (for today view) + fellowship
+  const filteredMeetings = useMemo(() => {
+    let result = meetings
+
+    // Apply fellowship filter
+    if (fellowshipFilter !== "All") {
+      result = result.filter(m => m.type === fellowshipFilter)
+    }
+
+    // Apply time filter for "today" view only
+    if (viewMode === "today") {
+      const now = new Date()
+      const currentMinutes = now.getHours() * 60 + now.getMinutes()
+      result = result.filter(m => {
+        const meetingMinutes = parseTime(m.time)
+        return meetingMinutes >= currentMinutes
+      })
+    }
+
+    return result
+  }, [meetings, viewMode, fellowshipFilter])
 
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null)
 
@@ -189,7 +200,7 @@ export default function ResourcesPage() {
 
         {/* Right column - Meeting finder today */}
         <div ref={finderRef}>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <h2 className="font-heading text-xl text-amber-900">
               Meeting Finder
             </h2>
@@ -207,6 +218,23 @@ export default function ResourcesPage() {
                 All
               </button>
             </div>
+          </div>
+
+          {/* Fellowship filter */}
+          <div className="flex gap-1.5 mb-4">
+            {FELLOWSHIP_OPTIONS.map((option) => (
+              <button
+                key={option}
+                onClick={() => setFellowshipFilter(option)}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
+                  fellowshipFilter === option
+                    ? "bg-amber-600 text-white border-amber-600 font-medium"
+                    : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
           </div>
 
           {/* Hand-drawn map placeholder */}
@@ -252,21 +280,35 @@ export default function ResourcesPage() {
               </div>
             ) : filteredMeetings.length === 0 ? (
               <div className="p-4 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
-                <p className="text-sm text-amber-900/60 italic mb-3">No upcoming meetings found today.</p>
-                {viewMode === 'today' && (
-                  <button
-                    onClick={() => setViewMode('all')}
-                    className="text-xs text-amber-700 font-medium hover:underline"
-                  >
-                    View full schedule
-                  </button>
-                )}
+                <p className="text-sm text-amber-900/60 italic mb-3">
+                  No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found
+                  {viewMode === "today" ? " for today" : ""}.
+                </p>
+                <div className="flex gap-2 justify-center">
+                  {fellowshipFilter !== "All" && (
+                    <button
+                      onClick={() => setFellowshipFilter("All")}
+                      className="text-xs text-amber-700 font-medium hover:underline"
+                    >
+                      Show all fellowships
+                    </button>
+                  )}
+                  {viewMode === 'today' && (
+                    <button
+                      onClick={() => setViewMode('all')}
+                      className="text-xs text-amber-700 font-medium hover:underline"
+                    >
+                      View full schedule
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <>
                 <div className="flex justify-between items-center mb-2 px-1">
                   <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
-                    {viewMode === 'today' ? `Upcoming Today (${filteredMeetings.length})` : `All Meetings (${filteredMeetings.length})`}
+                    {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
+                    {viewMode === 'today' ? `Today (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
                   </span>
                   <button onClick={handleClear} className="text-[10px] text-red-400 hover:text-red-600 underline">
                     Clear Data (Dev)
