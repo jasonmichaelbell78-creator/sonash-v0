@@ -37,17 +37,17 @@ describe("date-utils", () => {
   test("parseDateId converts YYYY-MM-DD to Date", () => {
     const date = parseDateId("2025-12-11")
     assert.ok(date instanceof Date)
-    assert.equal(date.getUTCFullYear(), 2025)
-    assert.equal(date.getUTCMonth(), 11) // December (0-indexed)
-    assert.equal(date.getUTCDate(), 11)
+    assert.equal(date.getFullYear(), 2025)
+    assert.equal(date.getMonth(), 11) // December (0-indexed)
+    assert.equal(date.getDate(), 11)
   })
 
   test("parseDateId handles UTC correctly", () => {
     const date = parseDateId("2025-01-01")
-    // Should be midnight UTC
-    assert.equal(date.getUTCHours(), 0)
-    assert.equal(date.getUTCMinutes(), 0)
-    assert.equal(date.getUTCSeconds(), 0)
+    // Should be midnight local time
+    assert.equal(date.getHours(), 0)
+    assert.equal(date.getMinutes(), 0)
+    assert.equal(date.getSeconds(), 0)
   })
 
   test("isValidDateId accepts valid YYYY-MM-DD format", () => {
@@ -74,9 +74,7 @@ describe("date-utils", () => {
     assert.ok(!isNaN(parsed.getTime()))
 
     // Re-formatting should give same date ID
-    const roundtrip = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "UTC",
-    }).format(parsed)
+    const roundtrip = getTodayDateId(parsed)
     assert.equal(roundtrip, dateId)
   })
 })
