@@ -14,10 +14,10 @@ import { assertUserScope, validateUserDocumentPath } from "./security/firestore-
 import { logger as defaultLogger, maskIdentifier } from "./logger"
 import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
 import { buildPath } from "./constants"
-import type { DailyLog, DailyLogResult } from "./types/daily-log"
+import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
 
 // Re-export types for backwards compatibility
-export type { DailyLog }
+export type { DailyLog, DailyLogHistoryResult }
 export type TodayLogResult = DailyLogResult
 
 const getTodayUtcDateId = () =>
@@ -136,7 +136,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     // Get history of logs
-    async getHistory(userId: string): Promise<{ entries: DailyLog[]; error: unknown | null }> {
+    async getHistory(userId: string): Promise<DailyLogHistoryResult> {
       ensureValidUser(userId)
       deps.assertUserScope({ userId })
 
