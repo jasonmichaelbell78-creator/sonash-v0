@@ -7,21 +7,20 @@
 
 /**
  * Generates a consistent date ID for daily logs
- * Format: YYYY-MM-DD (UTC timezone)
+ * Format: YYYY-MM-DD (local timezone)
  *
  * This function is used as the document ID in Firestore daily_logs collection.
  * All components that interact with daily logs should use this function.
  *
- * @returns {string} Date string in YYYY-MM-DD format (UTC)
+ * @param {Date} referenceDate - Date instance to derive the ID from
+ * @returns {string} Date string in YYYY-MM-DD format (local timezone)
  *
  * @example
  * const dateId = getTodayDateId()
  * // Returns: "2025-12-11"
  */
-export function getTodayDateId(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "UTC",
-  }).format(new Date())
+export function getTodayDateId(referenceDate: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA").format(referenceDate)
 }
 
 /**
@@ -52,7 +51,8 @@ export function formatDateForDisplay(date: Date = new Date()): string {
  * const date = parseDateId("2025-12-11")
  */
 export function parseDateId(dateId: string): Date {
-  return new Date(dateId + "T00:00:00Z")
+  const [year, month, day] = dateId.split("-").map(Number)
+  return new Date(year, month - 1, day)
 }
 
 /**

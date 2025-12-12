@@ -1,10 +1,11 @@
 "use client"
 
-import { MapPin, Home, Map, Calendar, Loader2, CheckCircle2 } from "lucide-react"
+import { MapPin, Home, Map, Calendar, Loader2 } from "lucide-react"
 import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import { toast } from "sonner"
 import { logger } from "@/lib/logger"
+import { useAuth } from "@/components/providers/auth-provider"
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,8 @@ export default function ResourcesPage() {
   const [viewMode, setViewMode] = useState<"today" | "all">("today")
   const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
   const [loading, setLoading] = useState(true)
+  const { user, loading: authLoading } = useAuth()
+  const isDevMode = process.env.NODE_ENV === "development"
 
   // Determine today's day name for querying
   const todayName = useMemo(() => {
@@ -48,34 +51,22 @@ export default function ResourcesPage() {
         setLoading(false)
       }
     }
+
+    if (authLoading) return
+    if (!user) {
+      setMeetings([])
+      setLoading(false)
+      return
+    }
+
     fetchMeetings()
-  }, [todayName, viewMode])
+  }, [todayName, viewMode, user, authLoading])
 
   const finderRef = useRef<HTMLDivElement>(null)
 
-  // Dev util to seed data if empty
-  const handleSeed = async () => {
-    try {
-      setLoading(true)
-      const success = await MeetingsService.seedInitialMeetings()
-      if (success) {
-        toast.success("Meetings seeded successfully!", {
-          icon: <CheckCircle2 className="w-4 h-4 text-green-600" />
-        })
-        triggerRefresh()
-      } else {
-        toast.error("Failed to seed meetings.")
-      }
-    } catch (err) {
-      logger.error("Error seeding meetings", { error: err })
-      toast.error("An error occurred while seeding.")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // Dev util to clear data
   const handleClear = async () => {
+    if (!isDevMode) return
     if (!confirm("Are you sure you want to delete all meetings?")) return
     try {
       setLoading(true)
@@ -310,9 +301,11 @@ export default function ResourcesPage() {
                     {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
                     {viewMode === 'today' ? `Today (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
                   </span>
-                  <button onClick={handleClear} className="text-[10px] text-red-400 hover:text-red-600 underline">
-                    Clear Data (Dev)
-                  </button>
+                  {isDevMode && (
+                    <button onClick={handleClear} className="text-[10px] text-red-400 hover:text-red-600 underline">
+                      Clear Data (Dev)
+                    </button>
+                  )}
                 </div>
                 {filteredMeetings.map((meeting) => (
                   <button

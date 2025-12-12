@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration } from "date-fns"
@@ -37,6 +37,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   const saveScheduledRef = useRef(false)
 
   const { user, profile } = useAuth()
+  const referenceDate = useMemo(() => new Date(), [])
 
   // Load reading preference
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
         const { onSnapshot, doc } = await import("firebase/firestore")
         const { db } = await import("@/lib/firebase")
 
-        const today = getTodayDateId()
+        const today = getTodayDateId(referenceDate)
         const docRef = doc(db, buildPath.dailyLog(user.uid, today))
 
         if (isMounted) {
@@ -111,7 +112,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
       isMounted = false
       if (unsubscribe) unsubscribe()
     }
-  }, [user]) // Only user in deps - isEditingRef handles collision avoidance
+  }, [referenceDate, user]) // Only user in deps - isEditingRef handles collision avoidance
 
   // Perform the actual save operation
   const performSave = useCallback(async () => {
@@ -128,7 +129,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
 
       // Save to cloud
       await FirestoreService.saveDailyLog(user.uid, {
-        date: formatDateForDisplay(),
+        date: formatDateForDisplay(referenceDate),
         content: dataToSave.journalEntry,
         mood: dataToSave.mood,
         cravings: dataToSave.cravings,
@@ -140,7 +141,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     } finally {
       setIsSaving(false)
     }
-  }, [user])
+  }, [referenceDate, user])
 
   // Auto-save effect: marks data as dirty and schedules a save
   // The timer only starts once per change batch, not reset on every keystroke
@@ -165,7 +166,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     }
   }, [journalEntry, mood, cravings, used, user, performSave])
 
-  const dateString = formatDateForDisplay()
+  const dateString = formatDateForDisplay(referenceDate)
 
   // Calculate clean time dynamically
   const getCleanTime = () => {
