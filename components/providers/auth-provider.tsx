@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [profileNotFound, setProfileNotFound] = useState(false)
 
     // Use ref to track previous profile data to avoid unnecessary re-renders
-    const previousProfileRef = useRef<string | null>(null)
+    const previousProfileRef = useRef<UserProfile | null>(null)
 
     const refreshTodayLog = useCallback(async () => {
         if (user) {
@@ -75,15 +75,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [user])
 
-    // Memoized snapshot handler with data diffing
+    /**
+     * Shallow equality check for profile data
+     * Much faster than JSON.stringify (O(n) vs O(n*m) for nested objects)
+     */
+    const isProfileEqual = (a: UserProfile | null, b: UserProfile | null): boolean => {
+        if (a === b) return true
+        if (!a || !b) return false
+
+        // Compare top-level keys
+        const keysA = Object.keys(a) as Array<keyof UserProfile>
+        const keysB = Object.keys(b) as Array<keyof UserProfile>
+
+        if (keysA.length !== keysB.length) return false
+
+        // Shallow comparison (works for UserProfile since it's mostly primitives)
+        return keysA.every(key => a[key] === b[key])
+    }
+
+    // Memoized snapshot handler with efficient data diffing
     const handleProfileSnapshot = useCallback((docSnap: DocumentSnapshot) => {
         if (docSnap.exists()) {
             const data = docSnap.data() as UserProfile
-            const dataString = JSON.stringify(data)
 
             // Only update state if data actually changed (reduces re-renders)
-            if (dataString !== previousProfileRef.current) {
-                previousProfileRef.current = dataString
+            if (!isProfileEqual(data, previousProfileRef.current)) {
+                previousProfileRef.current = data
                 setProfile(data)
                 setProfileNotFound(false)
             }

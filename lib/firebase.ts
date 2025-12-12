@@ -43,7 +43,40 @@ if (typeof window !== 'undefined') {
   initializeFirebase()
 }
 
-// Export instances (will be undefined on server, initialized on client)
-export const app = _app!
-export const auth = _auth!
-export const db = _db!
+/**
+ * Get Firebase instances with runtime safety checks.
+ * This prevents crashes from accessing undefined instances on server-side.
+ *
+ * @throws {Error} If Firebase is not initialized (e.g., on server-side)
+ * @returns Firebase instances (app, auth, db)
+ */
+export const getFirebase = () => {
+  if (!_app || !_auth || !_db) {
+    throw new Error(
+      "Firebase not initialized. This usually means you're trying to access Firebase on the server. " +
+      "Ensure Firebase is only accessed in client components or after checking typeof window !== 'undefined'."
+    )
+  }
+  return { app: _app, auth: _auth, db: _db }
+}
+
+// Safe exports: These will work in most cases, but prefer getFirebase() for critical paths
+// For backward compatibility with existing code
+let app: FirebaseApp
+let auth: Auth
+let db: Firestore
+
+try {
+  const firebase = getFirebase()
+  app = firebase.app
+  auth = firebase.auth
+  db = firebase.db
+} catch {
+  // On server-side, these will be undefined
+  // Components should check typeof window before using
+  app = _app as FirebaseApp
+  auth = _auth as Auth
+  db = _db as Firestore
+}
+
+export { app, auth, db }
