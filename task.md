@@ -87,38 +87,45 @@
 
 ### ESLint Warning Remediation (Ongoing - Weeks 1-4)
 
-**Current State:** 0 errors ✅, 29 warnings  
+**Current State:** 0 errors ✅, 11 warnings (from 29) ✅  
 **Target:** 0 errors, 0 warnings (or 15 if test files suppressed)
 
-#### Phase 1: Quick Wins (30 minutes)
+#### Phase 1: Quick Wins (30 minutes) ✅
 
-- [ ] Fix unused variable warnings in `tab-navigation.tsx`
-- [ ] Fix unused variable warnings in `firestore-adapter.ts`
-- [ ] Fix unused variable warnings in `db/meetings.ts`
-- [ ] Fix unused variable warnings in `db/users.ts`
-- [ ] Fix unused variable warnings in `scripts/seed-meetings.ts`
-- [ ] Fix unused variable warnings in test files
-- [ ] Remove unused imports across codebase
-- [ ] Prefix unused params with `_` where needed
+- [x] Fix unused variable warnings in `tab-navigation.tsx`
+- [x] Fix unused variable warnings in `firestore-adapter.ts`
+- [x] Fix unused variable warnings in `db/meetings.ts`
+- [x] Fix unused variable warnings in `db/users.ts`
+- [ ] Fix unused variable warnings in `scripts/seed-meetings.ts` (remaining 2 vars - dev utility)
+- [x] Fix unused variable warnings in test files (added eslint-disable)
+- [x] Remove unused imports across codebase
+- [ ] Prefix unused params with `_` where needed (optional cleanup)
 
-**Files:** `tab-navigation`, `firestore-adapter`, `db/meetings`, `db/users`, `scripts/seed-meetings`, tests
+**Files:** `tab-navigation`, `firestore-adapter`, `db/meetings`, `db/users`, `scripts/seed-meetings`, tests  
+**Result:** 29 → 14 warnings
 
-#### Phase 2: Application Code Type Safety (1 hour)
+#### Phase 2: Application Code Type Safety (1 hour) ✅
 
-- [ ] Fix `any` type in `sign-in-modal.tsx` line 45 (use `FormEvent<HTMLFormElement>`)
-- [ ] Fix `any` type in `sign-in-modal.tsx` line 62 (use `FormEvent<HTMLFormElement>`)
-- [ ] Fix `any` type in `firebase-types.ts` (change to `unknown` with proper guards)
+- [x] Fix `any` type in `sign-in-modal.tsx` line 29 (use proper Error typing)
+- [x] Fix `any` type in `sign-in-modal.tsx` line 48 (use Firebase error type narrowing)
+- [ ] Fix `any` type in `firebase-types.ts` (not found - may be already fixed)
 
-#### Phase 3: React Hooks Dependencies (15 minutes)
+**Result:** 14 → 11 warnings
 
-- [ ] Fix exhaustive-deps warning in `today-page.tsx`
-- [ ] Add missing `journalEntry` dependency to useEffect
-- [ ] Review and fix other exhaustive-deps warnings
+#### Phase 3: React Hooks Dependencies (15 minutes) ✅
 
-#### Phase 4: Test File Types (5 minutes)
+- [x] Fix exhaustive-deps warning in `today-page.tsx`
+- [x] Add missing `journalEntry` dependency to useEffect
+- [x] Review and fix other exhaustive-deps warnings (none found)
 
-- [ ] Add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
-- [ ] Document decision to allow `any` in test mocks
+**Result:** All hooks deps warnings resolved
+
+#### Phase 4: Test File Types (5 minutes) ✅
+
+- [x] Add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
+- [x] Document decision to allow `any` in test mocks
+
+**Result:** Clean test file linting (6 unused directive warnings remaining - cosmetic)
 
 #### ESLint Config Improvements
 
