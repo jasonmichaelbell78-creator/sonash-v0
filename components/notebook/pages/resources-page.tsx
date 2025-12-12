@@ -4,6 +4,7 @@ import { MapPin, Home, Map, Calendar, Loader2, CheckCircle2 } from "lucide-react
 import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([])
@@ -27,6 +28,7 @@ export default function ResourcesPage() {
         }
         setMeetings(data)
       } catch (error) {
+        logger.error("Failed to load meetings", { error })
         toast.error("Failed to load meetings.")
       } finally {
         setLoading(false)
@@ -51,6 +53,7 @@ export default function ResourcesPage() {
         toast.error("Failed to seed meetings.")
       }
     } catch (err) {
+      logger.error("Error seeding meetings", { error: err })
       toast.error("An error occurred while seeding.")
     } finally {
       setLoading(false)
@@ -66,6 +69,7 @@ export default function ResourcesPage() {
       toast.success("All meetings deleted.")
       triggerRefresh()
     } catch (err) {
+      logger.error("Error clearing data", { error: err })
       toast.error("Failed to clear data.")
     }
   }
