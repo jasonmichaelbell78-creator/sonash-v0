@@ -5,6 +5,12 @@
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/jason-bells-projects-70400dfc/sonash-v0)
 [![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/hQzscrZHb69)
 
+## Roadmap
+
+The canonical roadmap lives in:
+
+- `ROADMAP_V3.md`
+
 ## Overview
 
 SoNash is a personalized digital recovery notebook that helps individuals track their sobriety journey. The app features a photo-realistic notebook interface that displays personalized information including the user's nickname, days clean, and provides an interactive journaling experience.

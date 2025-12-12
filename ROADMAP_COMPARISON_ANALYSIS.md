@@ -1,4 +1,18 @@
-# Roadmap Comparison Analysis
+# Roadmap Comparison Analysis (Archived)
+
+> **Status:** Archived / point-in-time reference (Dec 11, 2025)  
+> **Superseded by:** `ROADMAP_V3.md` (canonical)
+
+This document captured a comparison at a moment in time. Any actionable items have been integrated into the canonical roadmap.
+
+For the current plan, see:
+
+- `ROADMAP_V3.md`
+
+---
+---
+
+## Roadmap Comparison Analysis
 
 **Date**: December 11, 2025
 **Purpose**: Compare comprehensive recommendations from code review session against existing ROADMAP.md
@@ -113,6 +127,7 @@ The recommendations **complement** rather than conflict with the roadmap. Howeve
 
 **Current**: Today page with check-in, tracker, reading
 **Recommended Addition**:
+
 - Crisis SOS button (always visible)
 - "Need help right now?" card
 - Quick access to crisis contacts
@@ -165,11 +180,13 @@ The existing ROADMAP.md is **product/technical focused**. My recommendations inc
 ### Existing Quality Schedule (ROADMAP.md Section 1)
 
 **Q1 - End of Phase 3:**
+
 - Static analysis (strict TypeScript, linting)
 - Unit tests (FirestoreService, AuthProvider)
 - Manual QA (Airplane Mode test)
 
 **Q2 - End of Phase 5:**
+
 - Security: Firestore rules audit, localStorage check
 - Performance: Lighthouse 90+, image optimization
 - Automated testing: Basic E2E flows
@@ -461,12 +478,14 @@ Recommendations **enhance** rather than conflict with existing roadmap.
 ### Overall Assessment: Strong Foundation, Key Gaps
 
 The existing ROADMAP.md demonstrates:
+
 - ✅ **Deep user empathy** for people in early recovery
 - ✅ **Thoughtful feature design** covering core recovery needs
 - ✅ **Clear phased approach** to implementation
 - ✅ **Privacy-first architecture** with user-scoped data
 
 However, it is **missing critical safety features** that could be the difference between relapse and recovery:
+
 - 🔴 Crisis support (SOS button, text-based help)
 - 🔴 Offline-first architecture (for users with unstable access)
 - 🔴 Relapse recovery mode (non-shaming reset flow)

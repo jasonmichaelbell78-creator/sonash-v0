@@ -1,4 +1,16 @@
-# SoNash Refactoring Action Plan
+# SoNash Refactoring Action Plan (Supporting Doc)
+
+> **Status:** Supporting engineering execution plan  
+> **Canonical product/feature roadmap:** `ROADMAP_V3.md`
+
+This document is an implementation-focused plan that supports the canonical roadmap.
+If there is any conflict between this plan and `ROADMAP_V3.md`, follow `ROADMAP_V3.md`.
+
+---
+---
+
+## SoNash Refactoring Action Plan
+
 **Generated**: December 11, 2025
 **Based on**: CODE_ANALYSIS_REPORT.md
 
@@ -19,11 +31,13 @@ This document outlines the specific refactoring actions to be taken to address t
 **File**: `components/notebook/pages/today-page.tsx`
 
 **Changes**:
+
 - ✅ Replace timeout-based debounce with proper debounce hook
 - ✅ Use `useCallback` to stabilize save function
 - ✅ Add ref to track latest values without re-triggering effect
 
 **Implementation**:
+
 ```typescript
 // Create utility hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -51,11 +65,13 @@ useEffect(() => {
 **File**: `components/notebook/pages/today-page.tsx`
 
 **Changes**:
+
 - ✅ Track component mount state
 - ✅ Ensure cleanup happens even if setup fails
 - ✅ Add error handling
 
 **Implementation**:
+
 ```typescript
 useEffect(() => {
   let unsubscribe: (() => void) | undefined
@@ -98,11 +114,13 @@ useEffect(() => {
 **File**: `lib/utils/date-utils.ts` (NEW)
 
 **Changes**:
+
 - ✅ Create centralized date utility
 - ✅ Replace all date ID generation with this function
 - ✅ Add timezone documentation
 
 **Implementation**:
+
 ```typescript
 // lib/utils/date-utils.ts
 /**
@@ -130,6 +148,7 @@ export function formatDateForDisplay(date: Date): string {
 ```
 
 **Files to Update**:
+
 - ✅ `lib/firestore-service.ts` (already uses UTC)
 - ✅ `components/notebook/pages/today-page.tsx` (multiple locations)
 - ✅ `components/providers/auth-provider.tsx` (if needed)
@@ -141,11 +160,13 @@ export function formatDateForDisplay(date: Date): string {
 **File**: `components/notebook/pages/today-page.tsx`
 
 **Changes**:
+
 - ✅ Create proper Timestamp type
 - ✅ Add type guard function
 - ✅ Remove @ts-ignore
 
 **Implementation**:
+
 ```typescript
 // lib/types/firebase-types.ts (NEW)
 import { Timestamp } from "firebase/firestore"
@@ -181,11 +202,13 @@ const getCleanTime = () => {
 **File**: `lib/db/users.ts`
 
 **Changes**:
+
 - ✅ Create Zod schema for UserProfile
 - ✅ Validate before all database writes
 - ✅ Add proper error messages
 
 **Implementation**:
+
 ```typescript
 import { z } from "zod"
 
@@ -251,10 +274,12 @@ export async function updateUserProfile(
 **File**: `firestore.rules`
 
 **Changes**:
+
 - ✅ Add Firestore rule to validate date ID matches current date
 - ✅ Prevent writing to arbitrary past/future dates
 
 **Implementation**:
+
 ```firestore-rules
 rules_version = '2';
 service cloud.firestore {
@@ -303,22 +328,26 @@ service cloud.firestore {
 **File**: `app/layout.tsx`
 
 **Changes**:
+
 - ✅ Audit which fonts are actually used
 - ✅ Remove unused font imports
 - ✅ Add font-display: swap
 
 **Fonts Actually Used** (from grep analysis):
+
 - `Caveat` - journal entry text
 - `Handlee` - body text in modals
 - `Rock Salt` - headings in onboarding
 
 **Fonts to REMOVE** (16 fonts):
+
 - Kalam, Permanent_Marker, Dancing_Script, Satisfy, Pacifico
 - Amatic_SC, Gloria_Hallelujah, Architects_Daughter, Coming_Soon
 - Neucha, Short_Stack, Annie_Use_Your_Telescope, Gochi_Hand
 - Pangolin, La_Belle_Aurore, Geist, Geist_Mono
 
 **Implementation**:
+
 ```typescript
 // app/layout.tsx
 import {
@@ -357,6 +386,7 @@ className={`
 ```
 
 **Expected Impact**:
+
 - **Before**: ~400 KB fonts loaded
 - **After**: ~50 KB fonts loaded
 - **Savings**: 350 KB (~87% reduction)
@@ -370,6 +400,7 @@ className={`
 **File**: `components/onboarding/onboarding-wizard.tsx`
 
 **Implementation**:
+
 ```typescript
 <AnimatePresence mode="wait">
   {step === "welcome" && (
@@ -389,6 +420,7 @@ className={`
 **File**: `lib/logger.ts`
 
 **Implementation**:
+
 ```typescript
 const isDevelopment = process.env.NODE_ENV === 'development'
 const isTest = process.env.NODE_ENV === 'test'
@@ -423,6 +455,7 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
 **File**: `components/notebook/pages/today-page.tsx`
 
 **Implementation**:
+
 ```typescript
 const [isSaving, setIsSaving] = useState(false)
 
@@ -460,6 +493,7 @@ useEffect(() => {
 **File**: `components/providers/auth-provider.tsx`
 
 **Implementation**:
+
 ```typescript
 // Memoize snapshot handler
 const handleProfileSnapshot = useCallback((docSnap: DocumentSnapshot) => {
@@ -486,6 +520,7 @@ const handleProfileSnapshot = useCallback((docSnap: DocumentSnapshot) => {
 **File**: Various
 
 **Implementation**:
+
 ```typescript
 // components/notebook/book-cover.tsx
 import dynamic from 'next/dynamic'
@@ -508,6 +543,7 @@ const SignInModal = dynamic(
 **Implementation**: Use Firebase App Check + Cloud Functions
 
 **Step 1**: Enable Firebase App Check
+
 ```bash
 # Install Firebase App Check
 npm install firebase/app-check
@@ -526,6 +562,7 @@ if (typeof window !== 'undefined') {
 ```
 
 **Step 2**: Add client-side rate limiting
+
 ```typescript
 // lib/utils/rate-limiter.ts
 class RateLimiter {
@@ -564,6 +601,7 @@ async saveDailyLog(userId: string, data: Partial<DailyLog>) {
 **File**: `components/notebook/pages/today-page.tsx`
 
 **Implementation**:
+
 ```typescript
 const isEditingRef = useRef(false)
 
@@ -580,6 +618,7 @@ useEffect(() => {
 **File**: `lib/constants.ts` (NEW)
 
 **Implementation**:
+
 ```typescript
 export const STORAGE_KEYS = {
   JOURNAL_TEMP: 'sonash_journal_temp',
@@ -614,6 +653,7 @@ export const DAY_ORDER = {
 **File**: `package.json`
 
 **Command**:
+
 ```bash
 npm uninstall @radix-ui/react-accordion @radix-ui/react-alert-dialog @radix-ui/react-avatar @radix-ui/react-checkbox @radix-ui/react-collapsible @radix-ui/react-context-menu @radix-ui/react-dropdown-menu @radix-ui/react-hover-card @radix-ui/react-menubar @radix-ui/react-navigation-menu @radix-ui/react-popover @radix-ui/react-progress @radix-ui/react-radio-group @radix-ui/react-scroll-area @radix-ui/react-select @radix-ui/react-separator @radix-ui/react-slider @radix-ui/react-switch @radix-ui/react-tabs @radix-ui/react-toast @radix-ui/react-toggle @radix-ui/react-toggle-group
 ```
@@ -623,6 +663,7 @@ npm uninstall @radix-ui/react-accordion @radix-ui/react-alert-dialog @radix-ui/r
 #### 17-22. Other Phase 3 Items
 
 See CODE_ANALYSIS_REPORT.md for details on:
+
 - B-4: Fix meeting sort
 - B-5: Fix loading state edge case
 - P-4: Implement proper debouncing
@@ -635,6 +676,7 @@ See CODE_ANALYSIS_REPORT.md for details on:
 ### 23. Reduce Firebase Coupling (CQ-9)
 
 Create abstraction layer:
+
 ```typescript
 // lib/database/database-interface.ts
 export interface IDatabase {
@@ -660,14 +702,14 @@ export class FirestoreAdapter implements IDatabase {
 
 ## Testing Strategy
 
-### For Each Fix:
+### For Each Fix
 
 1. **Unit Test**: Test the specific function/component
 2. **Integration Test**: Test the feature end-to-end
 3. **Manual Test**: Verify in browser
 4. **Regression Test**: Ensure no existing features broke
 
-### Test Files to Create:
+### Test Files to Create
 
 ```
 tests/
@@ -704,7 +746,8 @@ Before deploying refactored code:
 
 ## Success Metrics
 
-### Before Refactoring:
+### Before Refactoring
+
 - Lighthouse Performance: ~70
 - Bundle Size: ~700 KB
 - First Contentful Paint: ~2.5s
@@ -712,7 +755,8 @@ Before deploying refactored code:
 - Test Coverage: ~15%
 - Known Bugs: 5 critical
 
-### After Refactoring (Target):
+### After Refactoring (Target)
+
 - Lighthouse Performance: 90+
 - Bundle Size: ~300 KB
 - First Contentful Paint: ~1.0s
