@@ -108,9 +108,40 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - Add E2E tests for critical user flows (auth, journal entry, meeting finder)
 - Implement continuous integration for all tests
 
+**ESLint Warning Remediation (Code Quality)**
+*See: docs/ESLINT_WARNINGS_PLAN.md for detailed plan*
+
+Current state: 0 errors ✅, 29 warnings
+
+**Phase 1: Quick Wins (30 minutes)**
+- Fix 10 unused variable warnings
+- Prefix unused params with `_` or remove imports
+- Files: tab-navigation, firestore-adapter, db/meetings, db/users, scripts/seed-meetings, tests
+
+**Phase 2: Application Code Type Safety (1 hour)**
+- Fix 3 `any` type warnings in application code
+- `sign-in-modal.tsx`: Use `FormEvent<HTMLFormElement>` (2 warnings)
+- `firebase-types.ts`: Change `any` → `unknown` (1 warning)
+
+**Phase 3: React Hooks Dependencies (15 minutes)**
+- Fix exhaustive-deps warning in `today-page.tsx`
+- Add missing `journalEntry` dependency to useEffect
+
+**Phase 4: Test File Types (5 minutes - recommended)**
+- Option A: Suppress `any` warnings in test files (pragmatic)
+- Option B: Properly type all test mocks (4 hours)
+- Recommendation: Option A - add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
+
+**ESLint Config Improvements**
+- Update `eslint.config.mjs` to enforce stricter rules for app code
+- Allow `any` in test files (acceptable technical debt)
+- Add pre-commit hook: `npm run lint && npm run type-check`
+- Update CI to fail on warnings: `--max-warnings 0`
+
 **Exit criteria**
 - Reduced production issues/regressions.
 - CI gates enforced and green by default.
+- **ESLint: 0 errors, 0 warnings** (or 15 if test files suppressed)
 - **Firebase bill protected** (App Check + rate limiting prevents runaway costs).
 - **Data loss prevented** (account linking functional).
 - **Test coverage ≥60%** for critical paths.
@@ -483,6 +514,7 @@ users/{uid}/
 - Add accessibility (a11y) audit
 - Performance budget enforcement in CI
 - Security scanning in CI/CD pipeline
+- **ESLint warning remediation** - Ongoing maintenance (see M1 for initial cleanup)
 
 ## Governance & cadence
 
