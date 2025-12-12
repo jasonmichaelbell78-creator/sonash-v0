@@ -2,23 +2,60 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to validate date ID format (YYYY-MM-DD)
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    // Validate date ID format (YYYY-MM-DD)
     function isValidDateFormat(dateId) {
       return dateId.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
     }
 
-    // Helper function to check if a date is within reasonable range
-    // Prevents writing to far future or ancient past dates
+    // Check if a date is within reasonable range (10 years past to 1 year future)
     function isReasonableDate(dateId) {
-      // Extract year from YYYY-MM-DD format
       let year = int(dateId.split('-')[0]);
-      let currentYear = int(request.time.toMillis() / 31536000000 + 1970); // Approximate current year
-
-      // Allow dates from 10 years ago to 1 year in the future
+      let currentYear = int(request.time.toMillis() / 31536000000 + 1970);
       return year >= currentYear - 10 && year <= currentYear + 1;
     }
 
-    // User profile access
+    // Validate inventory entry type
+    function isValidInventoryType(type) {
+      return type in [
+        'resentment',
+        'fear',
+        'relationship',
+        'harm',
+        'spotCheck',
+        'morning',
+        'nightReview',
+        'gratitude'
+      ];
+    }
+
+    // Validate required fields exist for inventory entries
+    function hasRequiredInventoryFields(data) {
+      return data.keys().hasAll(['type', 'data', 'createdAt', 'updatedAt'])
+             && isValidInventoryType(data.type);
+    }
+
+    // Validate inventory link structure
+    function isValidInventoryLink(data) {
+      return data.keys().hasAll(['fromId', 'toId', 'fromType', 'toType', 'createdAt'])
+             && isValidInventoryType(data.fromType)
+             && isValidInventoryType(data.toType);
+    }
+
+    // Size limits to prevent abuse
+    function isReasonableSize(data) {
+      // Limit individual string fields to 50KB
+      // Limit total document to ~500KB (Firestore max is 1MB)
+      return request.resource.data.size() < 500000;
+    }
+
+    // ============================================================
+    // USER DATA - STRICT OWNER-ONLY ACCESS
+    // ============================================================
+
     match /users/{uid} {
       // Users can only read and write their own profile
       allow read: if request.auth != null && request.auth.uid == uid;
@@ -26,25 +63,68 @@ service cloud.firestore {
 
       // Daily logs subcollection
       match /daily_logs/{logId} {
-        // Users can only read their own logs
         allow read: if request.auth != null && request.auth.uid == uid;
-
-        // Users can only write logs with valid date IDs in reasonable range
         allow write: if request.auth != null &&
                         request.auth.uid == uid &&
                         isValidDateFormat(logId) &&
-                        isReasonableDate(logId);
+                        isReasonableDate(logId) &&
+                        isReasonableSize(request.resource.data);
+      }
+
+      // Inventory entries subcollection (Step 4, Step 10/11, Daily Practice)
+      match /inventoryEntries/{entryId} {
+        // Owner-only read access
+        allow read: if request.auth != null && request.auth.uid == uid;
+
+        // Owner-only write with validation
+        allow create: if request.auth != null &&
+                         request.auth.uid == uid &&
+                         hasRequiredInventoryFields(request.resource.data) &&
+                         isReasonableSize(request.resource.data);
+
+        allow update: if request.auth != null &&
+                         request.auth.uid == uid &&
+                         hasRequiredInventoryFields(request.resource.data) &&
+                         isReasonableSize(request.resource.data) &&
+                         // Prevent changing the entry type after creation
+                         request.resource.data.type == resource.data.type;
+
+        allow delete: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Inventory links subcollection (cross-references between entries)
+      match /inventoryLinks/{linkId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+
+        allow create: if request.auth != null &&
+                         request.auth.uid == uid &&
+                         isValidInventoryLink(request.resource.data);
+
+        // Links are immutable once created (delete and recreate if needed)
+        allow update: if false;
+
+        allow delete: if request.auth != null && request.auth.uid == uid;
       }
     }
 
-    // Meetings collection
-    match /meetings/{meetingId} {
-      // Anyone authenticated can read meetings
-      allow read: if request.auth != null;
+    // ============================================================
+    // PUBLIC/SHARED DATA
+    // ============================================================
 
-      // Only server-side operations can write meetings
-      // In production, this should be restricted to Cloud Functions
+    // Meetings collection (public read, admin-only write)
+    match /meetings/{meetingId} {
+      allow read: if request.auth != null;
+      // Only Cloud Functions or admin SDK can write
       allow write: if false;
+    }
+
+    // ============================================================
+    // DENY ALL OTHER ACCESS
+    // ============================================================
+
+    // Catch-all: deny access to any other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
