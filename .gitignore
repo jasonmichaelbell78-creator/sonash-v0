@@ -33,6 +33,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# test coverage
+coverage/
+.nyc_output/
+
 # firebase
 .firebase
 .firebaserc
