@@ -1,7 +1,7 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
 import { getAuth, Auth } from "firebase/auth"
 import { getFirestore, Firestore } from "firebase/firestore"
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
 
 const validateEnv = (value: string | undefined, key: string) => {
   if (!value) {
@@ -50,7 +50,7 @@ const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
     }
 
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(siteKey),
+      provider: new ReCaptchaEnterpriseProvider(siteKey),
       isTokenAutoRefreshEnabled: true, // Auto-refresh tokens before expiry
     })
 
