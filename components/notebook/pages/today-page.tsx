@@ -24,8 +24,10 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   const [selectedReading, setSelectedReading] = useState<"AA" | "NA">("AA")
   const [journalEntry, setJournalEntry] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const [saveComplete, setSaveComplete] = useState(false)
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   // Track pending save data to avoid race conditions
   const pendingSaveRef = useRef<{
     journalEntry: string
@@ -87,6 +89,13 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                 // Only update text if not currently editing (collision avoidance)
                 if (data.content && !isEditingRef.current) {
                   setJournalEntry(data.content)
+                  // Position cursor at end of text on load
+                  setTimeout(() => {
+                    if (textareaRef.current) {
+                      const len = data.content.length
+                      textareaRef.current.setSelectionRange(len, len)
+                    }
+                  }, 0)
                 }
               }
             },
@@ -123,6 +132,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
     saveScheduledRef.current = false
 
     setIsSaving(true)
+    setSaveComplete(false)
     try {
       // Always save locally first as backup
       localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry)
@@ -139,6 +149,9 @@ export default function TodayPage({ nickname }: TodayPageProps) {
 
       // Save to cloud
       await FirestoreService.saveDailyLog(user.uid, saveData)
+      setSaveComplete(true)
+      // Hide "Saved" message after 2 seconds
+      setTimeout(() => setSaveComplete(false), 2000)
     } catch (error) {
       logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
       toast.error("We couldn't save today's notes. Please check your connection.")
@@ -321,7 +334,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
               <div className="flex items-center justify-between">
                 <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
                 <div className="flex items-center gap-2">
-                  <span className={`font-body text-sm ${cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>Yes</span>
+                  <span className={`font-body text-sm ${!cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
                   <button
                     onClick={() => setCravings(!cravings)}
                     aria-label="Toggle cravings"
@@ -333,14 +346,14 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                         }`}
                     />
                   </button>
-                  <span className={`font-body text-sm ${!cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
+                  <span className={`font-body text-sm ${cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>Yes</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="font-heading text-lg text-amber-900/80">Used?</span>
                 <div className="flex items-center gap-2">
-                  <span className={`font-body text-sm ${used ? "text-red-700 font-bold" : "text-amber-900/40"}`}>Yes</span>
+                  <span className={`font-body text-sm ${!used ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
                   <button
                     onClick={() => setUsed(!used)}
                     aria-label="Toggle used status"
@@ -352,7 +365,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                         }`}
                     />
                   </button>
-                  <span className={`font-body text-sm ${!used ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
+                  <span className={`font-body text-sm ${used ? "text-red-700 font-bold" : "text-amber-900/40"}`}>Yes</span>
                 </div>
               </div>
             </div>
@@ -365,10 +378,17 @@ export default function TodayPage({ nickname }: TodayPageProps) {
             <div className="relative min-h-[200px] w-full">
               {/* Textarea */}
               <textarea
+                ref={textareaRef}
                 value={journalEntry}
                 onChange={(e) => setJournalEntry(e.target.value)}
                 onFocus={() => (isEditingRef.current = true)}
                 onBlur={() => (isEditingRef.current = false)}
+                onKeyDown={(e) => {
+                  // Prevent Enter from resetting state
+                  if (e.key === 'Enter') {
+                    e.stopPropagation()
+                  }
+                }}
                 placeholder="Start writing here..."
                 className="w-full h-full min-h-[200px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-blue-900/80 leading-[1.5em]"
                 style={{
@@ -384,11 +404,9 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                     <Loader2 className="w-3 h-3 animate-spin" />
                     Saving...
                   </span>
-                ) : journalEntry ? (
-                  <span className="text-amber-900/40">Saved</span>
-                ) : (
-                  <span className="text-amber-900/40">Autosaves as you type</span>
-                )}
+                ) : saveComplete ? (
+                  <span className="text-green-600 font-bold">✓ Saved</span>
+                ) : null}
               </div>
             </div>
           </div>
