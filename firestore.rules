@@ -52,19 +52,24 @@ service cloud.firestore {
       return request.resource.data.size() < 500000;
     }
 
+    // Verify request has valid App Check token (bot protection)
+    function hasValidAppCheck() {
+      return request.auth != null && request.app != null;
+    }
+
     // ============================================================
     // USER DATA - STRICT OWNER-ONLY ACCESS
     // ============================================================
 
     match /users/{uid} {
-      // Users can only read and write their own profile
-      allow read: if request.auth != null && request.auth.uid == uid;
-      allow write: if request.auth != null && request.auth.uid == uid;
+      // Users can only read and write their own profile with valid App Check
+      allow read: if hasValidAppCheck() && request.auth.uid == uid;
+      allow write: if hasValidAppCheck() && request.auth.uid == uid;
 
       // Daily logs subcollection
       match /daily_logs/{logId} {
-        allow read: if request.auth != null && request.auth.uid == uid;
-        allow write: if request.auth != null &&
+        allow read: if hasValidAppCheck() && request.auth.uid == uid;
+        allow write: if hasValidAppCheck() &&
                         request.auth.uid == uid &&
                         isValidDateFormat(logId) &&
                         isReasonableDate(logId) &&
@@ -73,37 +78,37 @@ service cloud.firestore {
 
       // Inventory entries subcollection (Step 4, Step 10/11, Daily Practice)
       match /inventoryEntries/{entryId} {
-        // Owner-only read access
-        allow read: if request.auth != null && request.auth.uid == uid;
+        // Owner-only read access with App Check
+        allow read: if hasValidAppCheck() && request.auth.uid == uid;
 
-        // Owner-only write with validation
-        allow create: if request.auth != null &&
+        // Owner-only write with validation and App Check
+        allow create: if hasValidAppCheck() &&
                          request.auth.uid == uid &&
                          hasRequiredInventoryFields(request.resource.data) &&
                          isReasonableSize(request.resource.data);
 
-        allow update: if request.auth != null &&
+        allow update: if hasValidAppCheck() &&
                          request.auth.uid == uid &&
                          hasRequiredInventoryFields(request.resource.data) &&
                          isReasonableSize(request.resource.data) &&
                          // Prevent changing the entry type after creation
                          request.resource.data.type == resource.data.type;
 
-        allow delete: if request.auth != null && request.auth.uid == uid;
+        allow delete: if hasValidAppCheck() && request.auth.uid == uid;
       }
 
       // Inventory links subcollection (cross-references between entries)
       match /inventoryLinks/{linkId} {
-        allow read: if request.auth != null && request.auth.uid == uid;
+        allow read: if hasValidAppCheck() && request.auth.uid == uid;
 
-        allow create: if request.auth != null &&
+        allow create: if hasValidAppCheck() &&
                          request.auth.uid == uid &&
                          isValidInventoryLink(request.resource.data);
 
         // Links are immutable once created (delete and recreate if needed)
         allow update: if false;
 
-        allow delete: if request.auth != null && request.auth.uid == uid;
+        allow delete: if hasValidAppCheck() && request.auth.uid == uid;
       }
     }
 
@@ -111,9 +116,9 @@ service cloud.firestore {
     // PUBLIC/SHARED DATA
     // ============================================================
 
-    // Meetings collection (public read, admin-only write)
+    // Meetings collection (public read with App Check, admin-only write)
     match /meetings/{meetingId} {
-      allow read: if request.auth != null;
+      allow read: if hasValidAppCheck();
       // Only Cloud Functions or admin SDK can write
       allow write: if false;
     }
