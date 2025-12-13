@@ -40,7 +40,11 @@ const mockDeps = () => ({
   orderBy: (...args: any[]) => ({ orderArgs: args }),
   limit: (value: number) => ({ limit: value }),
   serverTimestamp: () => "timestamp",
-  logger: { error: () => undefined },
+  logger: { 
+    info: () => undefined,
+    warn: () => undefined, 
+    error: () => undefined 
+  },
 })
 
 beforeEach(() => {
