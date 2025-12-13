@@ -1,0 +1,160 @@
+/**
+ * Cloud Functions for SoNash Recovery Notebook
+ * 
+ * Server-side rate limiting and validation for critical operations
+ * Cannot be bypassed by client-side modifications
+ */
+
+import { setGlobalOptions } from "firebase-functions";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+
+// Initialize Firebase Admin SDK
+admin.initializeApp();
+
+// Global options: Limit concurrent instances to control costs
+setGlobalOptions({ maxInstances: 10 });
+
+// Rate limiter: 10 requests per minute per user
+// This runs in-memory and resets when function cold-starts
+// For production, consider using Firestore-based limiter
+const saveDailyLogLimiter = new RateLimiterMemory({
+    points: 10, // Number of requests
+    duration: 60, // Per 60 seconds
+});
+
+interface DailyLogData {
+    userId: string;
+    date: string;
+    content: string;
+    mood?: string | null;
+    cravings?: boolean;
+    used?: boolean;
+}
+
+/**
+ * Callable Function: Save Daily Log with Rate Limiting
+ * 
+ * Security Layers:
+ * 1. Authentication required (context.auth)
+ * 2. Rate limiting (10 req/min per user)
+ * 3. App Check verification (context.app)
+ * 4. Input validation
+ * 5. Authorization (user can only write own data)
+ * 6. Server-side timestamp (prevents clock manipulation)
+ */
+export const saveDailyLog = onCall<DailyLogData>(
+    {
+        // Enforce App Check for bot protection
+        consumeAppCheckToken: true,
+    },
+    async (request) => {
+        const { data, auth, app } = request;
+
+        // 1. Verify authentication
+        if (!auth) {
+            throw new HttpsError(
+                "unauthenticated",
+                "Must be authenticated to save journal"
+            );
+        }
+
+        const userId = auth.uid;
+
+        // 2. Check rate limit (server-side, cannot be bypassed)
+        try {
+            await saveDailyLogLimiter.consume(userId);
+        } catch (error) {
+            throw new HttpsError(
+                "resource-exhausted",
+                "Too many requests. Please wait 60 seconds before trying again.",
+                { retryAfter: 60 }
+            );
+        }
+
+        // 3. Verify App Check token (bot protection)
+        if (!app) {
+            throw new HttpsError(
+                "failed-precondition",
+                "App Check verification failed. Please refresh the page."
+            );
+        }
+
+        // 4. Validate input data
+        const { date, content, mood, cravings, used } = data;
+
+        if (!date || typeof date !== "string") {
+            throw new HttpsError(
+                "invalid-argument",
+                "Invalid date format"
+            );
+        }
+
+        if (typeof content !== "string") {
+            throw new HttpsError(
+                "invalid-argument",
+                "Content must be a string"
+            );
+        }
+
+        // Date format validation (YYYY-MM-DD or readable format)
+        if (!date.match(/^\d{4}-\d{2}-\d{2}$/) && !date.includes(",")) {
+            throw new HttpsError(
+                "invalid-argument",
+                "Invalid date format. Expected YYYY-MM-DD or readable format."
+            );
+        }
+
+        // Content length validation (max 50KB)
+        if (content.length > 50000) {
+            throw new HttpsError(
+                "invalid-argument",
+                "Content too large. Maximum 50KB."
+            );
+        }
+
+        // 5. Server-side authorization check
+        if (data.userId && data.userId !== userId) {
+            throw new HttpsError(
+                "permission-denied",
+                "Cannot write to another user's data"
+            );
+        }
+
+        // 6. Save to Firestore using Admin SDK (bypasses security rules)
+        try {
+            const docRef = admin
+                .firestore()
+                .collection("users")
+                .doc(userId)
+                .collection("daily_logs")
+                .doc(date);
+
+            await docRef.set(
+                {
+                    date,
+                    content,
+                    mood: mood || null,
+                    cravings: cravings || false,
+                    used: used || false,
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+            );
+
+            return {
+                success: true,
+                message: "Journal saved successfully",
+            };
+        } catch (error) {
+            // Log error for monitoring
+            console.error("Failed to save daily log:", error);
+
+            throw new HttpsError(
+                "internal",
+                "Failed to save journal. Please try again."
+            );
+        }
+    }
+);
