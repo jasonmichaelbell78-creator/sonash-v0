@@ -25,9 +25,21 @@ let _auth: Auth | undefined
 let _db: Firestore | undefined
 
 const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
-  // TEMPORARY: Skip App Check in development to test other functionality
-  if (process.env.NODE_ENV === "development") {
-    console.log("⚠️ App Check disabled in development mode")
+  // CRITICAL: Completely disable App Check in development to prevent 400 errors
+  // Firebase Functions v2 validates App Check tokens at the infrastructure level,
+  // even if consumeAppCheckToken is false. If the client initializes App Check
+  // but doesn't have valid tokens, all Cloud Function calls will fail with 400.
+  const isDevelopment =
+    process.env.NODE_ENV === "development" ||
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+
+  if (isDevelopment) {
+    console.log("⚠️ App Check completely disabled in development mode")
+    console.log(`   Environment: NODE_ENV=${process.env.NODE_ENV}`)
+    if (typeof window !== "undefined") {
+      console.log(`   Hostname: ${window.location.hostname}`)
+    }
     return
   }
 
