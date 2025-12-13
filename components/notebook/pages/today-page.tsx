@@ -381,7 +381,16 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                 ref={textareaRef}
                 value={journalEntry}
                 onChange={(e) => setJournalEntry(e.target.value)}
-                onFocus={() => (isEditingRef.current = true)}
+                onFocus={(e) => {
+                  isEditingRef.current = true
+                  // If there's existing content and cursor is not already at end, jump to end
+                  if (journalEntry && e.target.selectionStart !== journalEntry.length) {
+                    const len = journalEntry.length
+                    e.target.setSelectionRange(len, len)
+                    // Scroll to bottom
+                    e.target.scrollTop = e.target.scrollHeight
+                  }
+                }}
                 onBlur={() => (isEditingRef.current = false)}
                 onKeyDown={(e) => {
                   // Prevent Enter from resetting state

@@ -58,7 +58,7 @@ export const READING_PREFS = {
  * Debounce delays (in milliseconds)
  */
 export const DEBOUNCE_DELAYS = {
-  AUTO_SAVE: 5000, // 5 seconds
+  AUTO_SAVE: 1000, // 1 second - quick save for better UX
   SEARCH: 300, // 300ms
 } as const
 
