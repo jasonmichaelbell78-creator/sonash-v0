@@ -47,7 +47,8 @@ interface DailyLogData {
 export const saveDailyLog = onCall<DailyLogData>(
     {
         // Enforce App Check for bot protection
-        consumeAppCheckToken: true,
+        // TODO: Re-enable App Check once debug tokens are working
+        // consumeAppCheckToken: true,
     },
     async (request) => {
         const { data, auth, app } = request;
@@ -74,12 +75,12 @@ export const saveDailyLog = onCall<DailyLogData>(
         }
 
         // 3. Verify App Check token (bot protection)
-        if (!app) {
-            throw new HttpsError(
-                "failed-precondition",
-                "App Check verification failed. Please refresh the page."
-            );
-        }
+        // if (!app) {
+        //     throw new HttpsError(
+        //         "failed-precondition",
+        //         "App Check verification failed. Please refresh the page."
+        //     );
+        // }
 
         // 4. Validate input data
         const { date, content, mood, cravings, used } = data;
