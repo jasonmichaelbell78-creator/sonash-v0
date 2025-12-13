@@ -39,8 +39,6 @@ coverage/
 
 # firebase
 .firebase
-.firebaserc
-firebase.json
 pnpm-workspace.yaml
 
 # data connect
