@@ -25,6 +25,12 @@ let _auth: Auth | undefined
 let _db: Firestore | undefined
 
 const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
+  // TEMPORARY: Skip App Check in development to test other functionality
+  if (process.env.NODE_ENV === "development") {
+    console.log("⚠️ App Check disabled in development mode")
+    return
+  }
+
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
 
   if (!siteKey) {
