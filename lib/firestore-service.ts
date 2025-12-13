@@ -94,25 +94,69 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         // Call Cloud Function for server-side rate limiting and validation
         // This cannot be bypassed by client-side modifications
         const { getFunctions, httpsCallable } = await import("firebase/functions")
+        const { getAuth } = await import("firebase/auth")
+        
         const functions = getFunctions()
+        const auth = getAuth()
         const saveDailyLogFn = httpsCallable(functions, "saveDailyLog")
 
         // CRITICAL: Always use YYYY-MM-DD format for date (document ID format)
         const todayId = getTodayLocalDateId() // e.g., "2025-12-13"
 
+        // Pre-call validation to catch issues early
+        if (!auth.currentUser) {
+          deps.logger.error("Attempted save without authentication", {
+            userId: maskIdentifier(userId),
+          })
+          throw new Error("You must be signed in to save your journal.")
+        }
+
+        // Validate date format (YYYY-MM-DD)
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(todayId)) {
+          deps.logger.error("Invalid date format generated", {
+            userId: maskIdentifier(userId),
+            dateId: todayId,
+          })
+          throw new Error("Invalid date format. Please refresh and try again.")
+        }
+
+        // Validate content is a string
+        const content = data.content || ""
+        if (typeof content !== "string") {
+          deps.logger.error("Invalid content type", {
+            userId: maskIdentifier(userId),
+            contentType: typeof content,
+          })
+          throw new Error("Invalid journal content. Please refresh and try again.")
+        }
+
         const payload = {
           userId,
           date: todayId, // Use document ID format, not display format
-          content: data.content || "",
+          content,
           mood: data.mood || null,
           cravings: data.cravings ?? false,
           used: data.used ?? false,
         }
 
-        deps.logger.info("Calling Cloud Function", {
+        deps.logger.info("Calling Cloud Function saveDailyLog", {
           userId: maskIdentifier(userId),
+          authUser: maskIdentifier(auth.currentUser.uid),
+          functionName: "saveDailyLog",
           date: todayId,
-          hasContent: !!data.content,
+          contentLength: content.length,
+          hasContent: !!content,
+          hasMood: !!data.mood,
+          cravings: data.cravings ?? false,
+          used: data.used ?? false,
+          payload: {
+            userId: maskIdentifier(userId),
+            date: todayId,
+            contentLength: content.length,
+            mood: data.mood || null,
+            cravings: data.cravings ?? false,
+            used: data.used ?? false,
+          },
         })
 
         await saveDailyLogFn(payload)
@@ -123,7 +167,11 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       } catch (error: any) {
         // Handle specific Cloud Function errors with user-friendly messages
         if (error.code === "functions/resource-exhausted") {
-          deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
+          deps.logger.warn("Rate limit exceeded", { 
+            userId: maskIdentifier(userId),
+            errorCode: error.code,
+            errorMessage: error.message,
+          })
           throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
         }
 
@@ -131,26 +179,51 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           deps.logger.error("Invalid data sent to Cloud Function", {
             userId: maskIdentifier(userId),
             error: error.message,
+            errorCode: error.code,
+            errorDetails: error.details,
           })
           // Use the detailed error message from the Cloud Function
           throw new Error(error.message || "Invalid journal data. Please refresh and try again.")
         }
 
         if (error.code === "functions/unauthenticated") {
+          deps.logger.error("Authentication failed for Cloud Function", {
+            userId: maskIdentifier(userId),
+            errorCode: error.code,
+            errorMessage: error.message,
+          })
           throw new Error("Please sign in to save your journal.")
         }
 
         if (error.code === "functions/failed-precondition") {
+          deps.logger.error("App Check failed for Cloud Function", {
+            userId: maskIdentifier(userId),
+            errorCode: error.code,
+            errorMessage: error.message,
+          })
           throw new Error("Security check failed. Please refresh the page and try again.")
+        }
+
+        // Handle network/transient errors with retry suggestion
+        if (error.code === "functions/unavailable" || error.code === "functions/deadline-exceeded") {
+          deps.logger.warn("Cloud Function temporarily unavailable", {
+            userId: maskIdentifier(userId),
+            errorCode: error.code,
+            errorMessage: error.message,
+          })
+          throw new Error("Service temporarily unavailable. Please try again in a moment.")
         }
 
         // Generic error for unexpected failures
         deps.logger.error("Cloud Function call failed", {
           userId: maskIdentifier(userId),
           error,
-          code: error.code,
+          errorCode: error.code,
+          errorMessage: error.message,
+          errorDetails: error.details,
+          stack: error.stack,
         })
-        throw new Error("Couldn't save your journal right now. Please try again in a moment.")
+        throw new Error(`Couldn't save your journal right now. Please try again in a moment. (Error: ${error.code || 'unknown'})`)
       }
     },
 

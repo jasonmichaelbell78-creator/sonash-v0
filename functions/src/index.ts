@@ -87,7 +87,7 @@ export const saveDailyLog = onCall<DailyLogData>(
         if (!date || typeof date !== "string") {
             throw new HttpsError(
                 "invalid-argument",
-                "Invalid date format"
+                "Date is required and must be a string"
             );
         }
 
@@ -98,11 +98,20 @@ export const saveDailyLog = onCall<DailyLogData>(
             );
         }
 
-        // Date format validation (YYYY-MM-DD or readable format)
-        if (!date.match(/^\d{4}-\d{2}-\d{2}$/) && !date.includes(",")) {
+        // Date format validation: STRICTLY enforce YYYY-MM-DD format
+        // Removed support for readable format to prevent inconsistencies
+        if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            // Return more detailed error in development
+            const isDev = process.env.FUNCTIONS_EMULATOR === "true" || 
+                         process.env.NODE_ENV === "development";
+            
+            const errorMsg = isDev 
+                ? `Invalid date format. Expected YYYY-MM-DD but received: "${date}"`
+                : "Invalid date format. Expected YYYY-MM-DD.";
+            
             throw new HttpsError(
                 "invalid-argument",
-                "Invalid date format. Expected YYYY-MM-DD or readable format."
+                errorMsg
             );
         }
 
@@ -148,12 +157,28 @@ export const saveDailyLog = onCall<DailyLogData>(
                 message: "Journal saved successfully",
             };
         } catch (error) {
-            // Log error for monitoring
-            console.error("Failed to save daily log:", error);
+            // Log error for monitoring with more details
+            const isDev = process.env.FUNCTIONS_EMULATOR === "true" || 
+                         process.env.NODE_ENV === "development";
+            
+            if (isDev) {
+                console.error("Failed to save daily log:", {
+                    error,
+                    userId,
+                    date: data.date,
+                    contentLength: data.content?.length,
+                    errorMessage: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                });
+            } else {
+                console.error("Failed to save daily log:", error);
+            }
 
             throw new HttpsError(
                 "internal",
-                "Failed to save journal. Please try again."
+                isDev 
+                    ? `Failed to save journal: ${error instanceof Error ? error.message : 'Unknown error'}`
+                    : "Failed to save journal. Please try again."
             );
         }
     }
