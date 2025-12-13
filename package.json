@@ -7,8 +7,10 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "test": "npm run test:build && NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\"",
-    "test:build": "tsc -p tsconfig.test.json"
+    "test": "npm run test:build && cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\"",
+    "test:build": "tsc -p tsconfig.test.json",
+    "test:coverage": "npm run test:build && c8 --reporter=text --reporter=html cross-env NODE_ENV=test NEXT_PUBLIC_FIREBASE_API_KEY=test NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=test NEXT_PUBLIC_FIREBASE_PROJECT_ID=test NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=test NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=test NEXT_PUBLIC_FIREBASE_APP_ID=test node --test \"dist-tests/tests/**/*.test.js\"",
+    "test:coverage:report": "c8 report"
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
@@ -48,6 +50,8 @@
     "@types/node": "^22.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "c8": "^10.1.3",
+    "cross-env": "^10.1.0",
     "eslint-plugin-react-hooks": "^7.0.1",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
