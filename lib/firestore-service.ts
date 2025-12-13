@@ -20,10 +20,11 @@ import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/da
 export type { DailyLog, DailyLogHistoryResult }
 export type TodayLogResult = DailyLogResult
 
-const getTodayUtcDateId = () =>
-  new Intl.DateTimeFormat("en-CA", {
-    timeZone: "UTC",
-  }).format(new Date())
+// Get today's date ID in local timezone (YYYY-MM-DD format)
+// IMPORTANT: Must match the timezone used in the UI (formatDateForDisplay)
+// to prevent saving to wrong day
+const getTodayLocalDateId = () =>
+  new Intl.DateTimeFormat("en-CA").format(new Date())
 
 type FirestoreDependencies = {
   db: typeof defaultDb
@@ -90,8 +91,8 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       if (rateError) throw rateError
 
       try {
-        // Generate today's date string as ID (YYYY-MM-DD)
-        const today = getTodayUtcDateId()
+        // Generate today's date string as ID (YYYY-MM-DD) in local timezone
+        const today = getTodayLocalDateId()
         const docRef = getValidatedDocRef(userId, today)
 
         // Merge true allows us to update fields independently (e.g., autosave journal separate from check-in)
@@ -121,7 +122,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       }
 
       try {
-        const today = getTodayUtcDateId()
+        const today = getTodayLocalDateId()
         const docRef = getValidatedDocRef(userId, today)
         const docSnap = await deps.getDoc(docRef)
 
