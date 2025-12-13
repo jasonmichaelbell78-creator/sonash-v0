@@ -91,23 +91,40 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       if (rateError) throw rateError
 
       try {
-        // Generate today's date string as ID (YYYY-MM-DD) in local timezone
-        const today = getTodayLocalDateId()
-        const docRef = getValidatedDocRef(userId, today)
+        // Call Cloud Function for server-side rate limiting and validation
+        // This cannot be bypassed by client-side modifications
+        const { getFunctions, httpsCallable } = await import("firebase/functions")
+        const functions = getFunctions()
+        const saveDailyLogFn = httpsCallable(functions, "saveDailyLog")
 
-        // Merge true allows us to update fields independently (e.g., autosave journal separate from check-in)
-        await deps.setDoc(
-          docRef,
-          {
-            ...data,
-            id: today,
-            updatedAt: deps.serverTimestamp(),
-          },
-          { merge: true }
-        )
-      } catch (error) {
+        // Cloud Function expects: { userId, date, content, mood, cravings, used }
+        await saveDailyLogFn({
+          userId,
+          date: data.id || getTodayLocalDateId(),
+          content: data.content || "",
+          mood: data.mood || null,
+          cravings: data.cravings || false,
+          used: data.used || false,
+        })
+
+        deps.logger.info("Daily log saved via Cloud Function", { userId: maskIdentifier(userId) })
+      } catch (error: any) {
+        // Handle specific Cloud Function errors
+        if (error.code === "functions/resource-exhausted") {
+          deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
+          throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
+        }
+
+        if (error.code === "functions/unauthenticated") {
+          throw new Error("You must be signed in to save your journal.")
+        }
+
+        if (error.code === "functions/failed-precondition") {
+          throw new Error("Security verification failed. Please refresh the page and try again.")
+        }
+
         deps.logger.error("Failed to save daily log", { userId: maskIdentifier(userId), error })
-        throw error
+        throw new Error("Failed to save journal. Please try again.")
       }
     },
 
