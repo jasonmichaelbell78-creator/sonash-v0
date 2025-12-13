@@ -127,14 +127,18 @@ export default function TodayPage({ nickname }: TodayPageProps) {
       // Always save locally first as backup
       localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry)
 
-      // Save to cloud
-      await FirestoreService.saveDailyLog(user.uid, {
+      // DEBUG: Log what we're about to save
+      const saveData = {
         date: formatDateForDisplay(referenceDate),
         content: dataToSave.journalEntry,
         mood: dataToSave.mood,
         cravings: dataToSave.cravings,
         used: dataToSave.used,
-      })
+      }
+      console.log('💾 Attempting to save:', saveData)
+
+      // Save to cloud
+      await FirestoreService.saveDailyLog(user.uid, saveData)
     } catch (error) {
       logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
       toast.error("We couldn't save today's notes. Please check your connection.")
