@@ -51,7 +51,7 @@ export const saveDailyLog = onCall<DailyLogData>(
         // consumeAppCheckToken: true,
     },
     async (request) => {
-        const { data, auth, app } = request;
+        const { data, auth } = request;
 
         // 1. Verify authentication
         if (!auth) {
