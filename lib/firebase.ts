@@ -24,6 +24,43 @@ let _app: FirebaseApp | undefined
 let _auth: Auth | undefined
 let _db: Firestore | undefined
 
+const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+
+  if (!siteKey) {
+    const message =
+      "⚠️ App Check not configured: Missing NEXT_PUBLIC_RECAPTCHA_SITE_KEY. " +
+      "Requests to protected Firebase resources will fail."
+
+    if (process.env.NODE_ENV === "production") {
+      // In production we surface a hard error so deployments fail fast instead of silently
+      // sending unauthenticated requests that the backend will reject.
+      throw new Error(message)
+    }
+
+    console.warn(message)
+    return
+  }
+
+  try {
+    // Development: Set debug token to bypass reCAPTCHA during local testing
+    if (process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN) {
+      // @ts-expect-error - Firebase sets this globally for dev
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN
+    }
+
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(siteKey),
+      isTokenAutoRefreshEnabled: true, // Auto-refresh tokens before expiry
+    })
+
+    console.log("✅ Firebase App Check initialized")
+  } catch (error) {
+    console.error("⚠️ App Check initialization failed:", error)
+    // Non-fatal: App will work but without bot protection
+  }
+}
+
 // Only initialize Firebase on the client side
 const initializeFirebase = () => {
   if (typeof window === 'undefined') {
@@ -35,32 +72,14 @@ const initializeFirebase = () => {
 
   const config = getFirebaseConfig()
   _app = getApps().length === 0 ? initializeApp(config) : getApps()[0]
+
+  // Initialize App Check as early as possible so that subsequent Firestore/Functions
+  // requests automatically include the token. Delaying this caused 400/401 errors in
+  // production because the backend enforces App Check (`consumeAppCheckToken: true`).
+  initializeAppCheckIfConfigured(_app)
+
   _auth = getAuth(_app)
   _db = getFirestore(_app)
-
-  // Initialize App Check for bot protection
-  // Only runs on client-side in browser
-  if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
-    try {
-      // Development: Set debug token to bypass reCAPTCHA during local testing
-      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN) {
-        // @ts-ignore - Firebase sets this globally for dev
-        self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN
-      }
-
-      initializeAppCheck(_app, {
-        provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
-        isTokenAutoRefreshEnabled: true, // Auto-refresh tokens before expiry
-      })
-
-      console.log('✅ Firebase App Check initialized')
-    } catch (error) {
-      console.error('⚠️ App Check initialization failed:', error)
-      // Non-fatal: App will work but without bot protection
-    }
-  } else {
-    console.warn('⚠️ App Check not configured: Missing NEXT_PUBLIC_RECAPTCHA_SITE_KEY')
-  }
 }
 
 // Initialize on module load only if in browser
