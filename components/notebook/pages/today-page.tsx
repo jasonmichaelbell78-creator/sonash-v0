@@ -138,8 +138,8 @@ export default function TodayPage({ nickname }: TodayPageProps) {
       localStorage.setItem(STORAGE_KEYS.JOURNAL_TEMP, dataToSave.journalEntry)
 
       // DEBUG: Log what we're about to save
+      // Don't include date - firestore-service generates it in YYYY-MM-DD format
       const saveData = {
-        date: formatDateForDisplay(referenceDate),
         content: dataToSave.journalEntry,
         mood: dataToSave.mood,
         cravings: dataToSave.cravings,

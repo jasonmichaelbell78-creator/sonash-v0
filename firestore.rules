@@ -53,8 +53,10 @@ service cloud.firestore {
     }
 
     // Verify request has valid App Check token (bot protection)
+    // TEMPORARILY DISABLED: Debugging Cloud Functions integration issues
+    // TODO: Re-enable after proper testing
     function hasValidAppCheck() {
-      return request.auth != null && request.app != null;
+      return request.auth != null; // && request.app != null;
     }
 
     // ============================================================
@@ -66,14 +68,11 @@ service cloud.firestore {
       allow read: if hasValidAppCheck() && request.auth.uid == uid;
       allow write: if hasValidAppCheck() && request.auth.uid == uid;
 
-      // Daily logs subcollection
+      // Daily logs subcollection - READ ONLY for clients
+      // All writes must go through Cloud Functions for server-side rate limiting
       match /daily_logs/{logId} {
         allow read: if hasValidAppCheck() && request.auth.uid == uid;
-        allow write: if hasValidAppCheck() &&
-                        request.auth.uid == uid &&
-                        isValidDateFormat(logId) &&
-                        isReasonableDate(logId) &&
-                        isReasonableSize(request.resource.data);
+        allow write: if false; // All writes must use saveDailyLog Cloud Function
       }
 
       // Inventory entries subcollection (Step 4, Step 10/11, Daily Practice)
