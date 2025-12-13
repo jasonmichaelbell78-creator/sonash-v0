@@ -52,6 +52,10 @@ export const saveDailyLog = onCall<DailyLogData>(
     async (request) => {
         const { data, auth, app } = request;
 
+        // Development mode detection for detailed error messages
+        const isDev = process.env.FUNCTIONS_EMULATOR === "true" || 
+                     process.env.NODE_ENV === "development";
+
         // 1. Verify authentication
         if (!auth) {
             throw new HttpsError(
@@ -101,10 +105,6 @@ export const saveDailyLog = onCall<DailyLogData>(
         // Date format validation: STRICTLY enforce YYYY-MM-DD format
         // Removed support for readable format to prevent inconsistencies
         if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            // Return more detailed error in development
-            const isDev = process.env.FUNCTIONS_EMULATOR === "true" || 
-                         process.env.NODE_ENV === "development";
-            
             const errorMsg = isDev 
                 ? `Invalid date format. Expected YYYY-MM-DD but received: "${date}"`
                 : "Invalid date format. Expected YYYY-MM-DD.";
@@ -158,9 +158,6 @@ export const saveDailyLog = onCall<DailyLogData>(
             };
         } catch (error) {
             // Log error for monitoring with more details
-            const isDev = process.env.FUNCTIONS_EMULATOR === "true" || 
-                         process.env.NODE_ENV === "development";
-            
             if (isDev) {
                 console.error("Failed to save daily log:", {
                     error,

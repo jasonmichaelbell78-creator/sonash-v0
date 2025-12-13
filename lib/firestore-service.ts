@@ -104,7 +104,8 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         const todayId = getTodayLocalDateId() // e.g., "2025-12-13"
 
         // Pre-call validation to catch issues early
-        if (!auth.currentUser) {
+        const currentUser = auth.currentUser
+        if (!currentUser) {
           deps.logger.error("Attempted save without authentication", {
             userId: maskIdentifier(userId),
           })
@@ -141,7 +142,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
         deps.logger.info("Calling Cloud Function saveDailyLog", {
           userId: maskIdentifier(userId),
-          authUser: maskIdentifier(auth.currentUser.uid),
+          authUser: maskIdentifier(currentUser.uid),
           functionName: "saveDailyLog",
           date: todayId,
           contentLength: content.length,
