@@ -287,14 +287,24 @@ Current state: 0 errors ✅, 29 warnings
 
 > **Purpose:** Evaluate code health before building major features. Architecture work (M2) is **optional** — only address what's causing friction.
 
-**Questions to ask:**
+**Review Process (5-AI Method):**
+
+1. Submit codebase to 5 AI models: Gemini, Claude, ChatGPT, Jules, GitHub Copilot
+2. Each AI analyzes code for architecture issues, patterns, and recommendations
+3. Aggregate findings into consensus matrix (Critical/High/Medium/Low)
+4. Verify findings against actual code (filter false positives)
+5. Pull forward relevant M2 items based on verified consensus
+
+**Questions for AI reviewers:**
 
 1. Are any components becoming hard to modify? (If yes → decompose)
 2. Is state management causing bugs? (If yes → refactor contexts)
 3. Are there inconsistent patterns? (If yes → standardize)
+4. Are there performance concerns? (If yes → optimize)
+5. Are there security issues? (If yes → address immediately)
 
-**If answers are "no"** → Proceed to feature tracks (M5-M8)  
-**If answers are "yes"** → Pull forward relevant M2 items before continuing
+**If consensus is "no major issues"** → Proceed to feature tracks (M5-M8)  
+**If consensus identifies issues** → Pull forward relevant M2 items before continuing
 
 ---
 
