@@ -1336,3 +1336,177 @@ match /users/{userId}/{document=**} {
 - Epic F7 (Daily Readings) uses same compliance pattern as M6 (link-only, no reproduced text)
 
 ---
+
+### M8 — Speaker Tapes Library
+
+> **Goal:** Provide curated access to AA/NA speaker recordings using external links and an in-app audio player. Zero hosting costs by streaming from existing archives.
+
+**Design Principles**
+
+- **Zero egress costs:** Stream audio directly from external sources (Internet Archive, etc.)
+- **In-app experience:** Native audio player with playback controls, seeking, speed adjustment
+- **Curated catalog:** Quality-controlled list of speakers and talks, not user uploads
+- **Personal library:** Favorites, listen history, notes on individual talks
+- **Offline-ready (future):** Architecture supports future offline download feature
+- **Copyright-safe:** Only link to freely available recordings
+
+---
+
+#### Known External Sources
+
+| Source | URL Pattern | Notes |
+|--------|-------------|-------|
+| Internet Archive | `archive.org/download/{collection}/{file}.mp3` | Largest free collection, direct MP3 links |
+| AA.org Audio | `aa.org/sites/default/files/audio/*` | Official AA content |
+| XA Speakers | Various | Community curated collections |
+
+---
+
+#### Epic S1 — Speaker Catalog & Hub UI
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| S1.1 | Define Firestore schema: `speakerTapesCatalog/{id}` with `title`, `speaker`, `duration`, `externalUrl`, `category`, `tags[]`, `description?`, `recordingDate?`, `source` | 2 |
+| S1.2 | Seed initial catalog with 20-30 classic speakers (Dr. Bob, Bill W., Sandy B., etc.) | 3 |
+| S1.3 | Create `/speakers` hub page with categories: Founders, Popular, Step Talks, Topic-Based | 3 |
+| S1.4 | Build speaker card component with title, speaker name, duration, favorite indicator | 2 |
+| S1.5 | Create `/speakers/[id]` detail view with description and audio player | 3 |
+| S1.6 | Implement HTML5 audio player component with play/pause, seek, speed control (0.75x-2x) | 3 |
+| S1.7 | Add background audio support (continue playing when navigating away) | 2 |
+
+**Subtotal: 18 SP**
+
+**Exit Criteria**
+
+- Users can browse catalog by category
+- Audio plays directly from external sources
+- Player persists across navigation
+
+---
+
+#### Epic S2 — User Library Features
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| S2.1 | Define Firestore schema: `users/{uid}/speakerFavorites/{tapeId}` with `addedAt` | 1 |
+| S2.2 | Define Firestore schema: `users/{uid}/speakerHistory/{id}` with `tapeId`, `listenedAt`, `progress` (seconds), `completed` boolean | 2 |
+| S2.3 | Implement favorite/unfavorite functionality | 2 |
+| S2.4 | Track listen progress (save position every 30 seconds) | 2 |
+| S2.5 | Resume playback from saved position | 2 |
+| S2.6 | Create "My Library" section: Favorites, Recently Played, In Progress | 3 |
+| S2.7 | Add per-tape notes field: `users/{uid}/speakerNotes/{tapeId}` with `notes`, `updatedAt` | 2 |
+
+**Subtotal: 14 SP**
+
+**Exit Criteria**
+
+- Favorites persist across sessions
+- Listen progress saves and resumes
+- User can add personal notes to talks
+
+---
+
+#### Epic S3 — Discovery & Search
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| S3.1 | Implement search by speaker name and title | 2 |
+| S3.2 | Add filter by category (step talks, topics, founders, etc.) | 2 |
+| S3.3 | Add "Related talks" section on detail page | 2 |
+| S3.4 | Add "Featured speaker of the week" highlight on hub | 1 |
+| S3.5 | Implement "Random speaker" button for discovery | 1 |
+
+**Subtotal: 8 SP**
+
+---
+
+#### Epic S4 — Player Enhancements (Optional)
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| S4.1 | Mini player bar (shows at bottom while browsing other pages) | 3 |
+| S4.2 | Sleep timer (stop after X minutes) | 2 |
+| S4.3 | Queue/playlist functionality | 3 |
+| S4.4 | Share button (share link to external source) | 1 |
+
+**Subtotal: 9 SP**
+
+---
+
+#### M8 Summary
+
+| Epic | Story Points |
+|------|--------------|
+| S1 Catalog & Hub UI | 18 |
+| S2 User Library | 14 |
+| S3 Discovery & Search | 8 |
+| S4 Player Enhancements | 9 |
+| **Total** | **49 SP** |
+
+**Suggested phasing:**
+
+1. **Phase A (MVP):** Epic S1 (Catalog + Player) + S2.1-2.3 (Favorites) → ~23 SP
+2. **Phase B (Resume & History):** S2.4-2.7 (Progress tracking + Notes) → ~9 SP
+3. **Phase C (Polish):** Epic S3 (Discovery) + S4 (Player enhancements) → ~17 SP
+
+**Exit Criteria**
+
+- Catalog with 30+ curated speaker recordings
+- In-app audio player with external streaming
+- Favorites and listen history functional
+- Zero hosting/egress costs (all external URLs)
+
+---
+
+#### M8 Technical Decisions
+
+**Audio Streaming: External URLs + HTML5 Audio**
+
+- *Rationale:* Zero storage costs, leverage existing free archives
+- *Implementation:* `<audio src={externalUrl} />` with custom controls
+- *Fallback:* If URL fails, show "Open in browser" link
+
+**Data Model: Firestore**
+
+**Catalog (global, read-only for users)**
+
+```
+speakerTapesCatalog/{id}
+  - title: string
+  - speaker: string
+  - duration: string ("45:23")
+  - durationSeconds: number (for sorting/filtering)
+  - externalUrl: string (direct MP3 link)
+  - source: "internet_archive" | "aa_org" | "other"
+  - category: "founders" | "step_talks" | "topics" | "popular" | "other"
+  - tags: string[] (e.g., ["step-1", "newcomers", "relapse"])
+  - description?: string
+  - recordingDate?: string (YYYY or YYYY-MM-DD)
+  - createdAt: Timestamp
+  - updatedAt: Timestamp
+```
+
+**User data (user-scoped)**
+
+```
+users/{uid}/speakerFavorites/{tapeId}
+  - addedAt: Timestamp
+
+users/{uid}/speakerHistory/{id}
+  - tapeId: string
+  - listenedAt: Timestamp
+  - progress: number (seconds)
+  - completed: boolean
+
+users/{uid}/speakerNotes/{tapeId}
+  - notes: string
+  - updatedAt: Timestamp
+```
+
+**CORS Considerations**
+
+- Most archive.org files allow cross-origin audio
+- If CORS blocked, fallback to iframe embed or "Open in new tab"
+- Test each source during catalog seeding
+
+---
