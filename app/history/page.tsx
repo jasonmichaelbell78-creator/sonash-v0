@@ -8,6 +8,7 @@ import { FirestoreService, type DailyLog } from "@/lib/firestore-service"
 import { Loader2, AlertCircle } from "lucide-react"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default function HistoryPage() {
     const { user } = useAuth()
@@ -70,9 +71,10 @@ export default function HistoryPage() {
                         <Loader2 className="w-8 h-8 animate-spin text-amber-900/30" />
                     </div>
                 ) : entries.length === 0 && !error ? (
-                    <div className="text-center py-12 text-amber-900/40 font-handwriting text-xl">
-                        <p>No entries yet. Write something in your notebook!</p>
-                    </div>
+                    <EmptyState
+                        type="history"
+                        action={{ label: "Write in your notebook", href: "/" }}
+                    />
                 ) : (
                     entries.map((entry) => (
                         <motion.div

@@ -140,9 +140,9 @@ export async function updateUserProfile(uid: string, data: Partial<UserProfile>)
         if (error instanceof z.ZodError) {
             logger.error("Invalid user profile data", {
                 userId: maskIdentifier(uid),
-                errors: error.errors
+                errors: error.issues
             })
-            throw new Error("Invalid user profile data: " + error.errors.map(e => e.message).join(", "))
+            throw new Error("Invalid user profile data: " + error.issues.map(e => e.message).join(", "))
         }
         logger.error("Error updating user profile", { userId: maskIdentifier(uid), error })
         throw error
