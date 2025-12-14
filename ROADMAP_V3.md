@@ -244,7 +244,7 @@ Current state: 0 errors ✅, 29 warnings
 | Task | Description | Est |
 |------|-------------|-----|
 | **Sober Living Finder** | Search listings by area | 5h |
-| **Support Circle** | Add/manage contacts (sponsor, friends, counselor) | 5h |
+| **Support Circle (Basic)** | Basic contacts CRUD only. Advanced features (SOS, interaction log) → M7 | 5h |
 | History search/filter | Find past journal entries | 3h |
 | Mood trends viz | Full mood visualization chart | 3h |
 | Clean time celebrations | Milestone animations (30/60/90 days) | 3h |
@@ -265,6 +265,36 @@ Current state: 0 errors ✅, 29 warnings
 - Sober living finder with search
 - History page has search/filter
 - Skeleton loaders on all pages
+- Admin panel with Meetings + Sober Living tabs functional
+
+#### Admin Foundation (~15h)
+
+> Build admin infrastructure now since Meetings already exists. Add tabs incrementally as features launch.
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Admin auth guard | `/admin` route with Firebase Custom Claims check | 2h |
+| Admin layout | Tab navigation component | 2h |
+| CRUD components | Reusable table + form modal | 6h |
+| Meetings tab | CRUD for existing meetings collection | 3h |
+| Sober Living tab | CRUD for sober living listings | 2h |
+
+*Additional tabs added as M6-M8 features launch (Prayers, Speakers, Readings)*
+
+---
+
+### 🔄 Architecture Review Checkpoint: Post-M1.5
+
+> **Purpose:** Evaluate code health before building major features. Architecture work (M2) is **optional** — only address what's causing friction.
+
+**Questions to ask:**
+
+1. Are any components becoming hard to modify? (If yes → decompose)
+2. Is state management causing bugs? (If yes → refactor contexts)
+3. Are there inconsistent patterns? (If yes → standardize)
+
+**If answers are "no"** → Proceed to feature tracks (M5-M8)  
+**If answers are "yes"** → Pull forward relevant M2 items before continuing
 
 ---
 
@@ -279,7 +309,9 @@ Current state: 0 errors ✅, 29 warnings
 
 ---
 
-### M2 — Architecture & refactoring for speed
+### M2 — Architecture & Refactoring (OPTIONAL — As Needed)
+
+> **Note:** This milestone is a **menu of options**, not a required gate. Pull forward items only when code friction is causing problems. Review checkpoints throughout the roadmap will prompt evaluation.
 
 #### Objectives
 
@@ -489,7 +521,7 @@ Current state: 0 errors ✅, 29 warnings
 
 #### Epic 5.1 — Infrastructure & Data Model (Foundation)
 
-*Dependency: M2 complete (architecture patterns established)*
+*Optional: Review M2 architecture patterns if experiencing code friction*
 
 | Ticket | Description | Est |
 |--------|-------------|-----|
