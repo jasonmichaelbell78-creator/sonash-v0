@@ -41,6 +41,7 @@ export default function SobrietyChip({ cleanDays }: SobrietyChipProps) {
         src={chipUrl || "/placeholder.svg"}
         alt={`${milestone.label} Sobriety Chip`}
         fill
+        sizes="150px"
         className="object-contain"
         style={{
           filter: "drop-shadow(3px 5px 8px rgba(0,0,0,0.5))",

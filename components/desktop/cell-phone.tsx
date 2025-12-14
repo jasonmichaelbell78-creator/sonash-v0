@@ -19,6 +19,7 @@ export default function CellPhone() {
         src="/images/cell-phone.jpg"
         alt="Cell Phone"
         fill
+        sizes="80px"
         className="object-contain"
         style={{
           filter: "drop-shadow(2px 4px 8px rgba(0,0,0,0.4))",

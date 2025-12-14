@@ -39,11 +39,10 @@ export default function ColorSampler() {
             <button
               key={color.hex}
               onClick={() => setSelectedColor(color)}
-              className={`flex items-center gap-4 p-3 rounded-lg transition-all ${
-                selectedColor.hex === color.hex
+              className={`flex items-center gap-4 p-3 rounded-lg transition-all ${selectedColor.hex === color.hex
                   ? "bg-stone-700 ring-2 ring-amber-500"
                   : "bg-stone-800 hover:bg-stone-700"
-              }`}
+                }`}
             >
               <div className="w-10 h-10 rounded-lg border-2 border-stone-600" style={{ backgroundColor: color.hex }} />
               <div className="text-left">
@@ -62,6 +61,7 @@ export default function ColorSampler() {
             src="/images/notebook-cover-blank.png"
             alt="Notebook preview"
             fill
+            sizes="500px"
             className="object-contain"
             style={{
               filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.5))",

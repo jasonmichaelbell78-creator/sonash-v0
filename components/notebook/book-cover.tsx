@@ -161,6 +161,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             src="/images/notebook-cover-blank.png"
             alt="SoNash Recovery Notebook"
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover rounded-lg"
             style={{
               filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.4))",

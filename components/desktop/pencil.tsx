@@ -21,6 +21,7 @@ export default function Pencil() {
         src={pencilUrl || "/placeholder.svg"}
         alt="Pencil"
         fill
+        sizes="400px"
         className="object-contain"
         style={{
           filter: "drop-shadow(3px 6px 8px rgba(0,0,0,0.5))",
