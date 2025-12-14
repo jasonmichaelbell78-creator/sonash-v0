@@ -42,6 +42,8 @@ export function MeetingsTab() {
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState("")
     const [dayFilter, setDayFilter] = useState<string>("all")
+    const [typeFilter, setTypeFilter] = useState<string>("all")
+    const [timeFilter, setTimeFilter] = useState<string>("all")
 
     // Modal state
     const [modalMode, setModalMode] = useState<ModalMode>("closed")
@@ -85,8 +87,18 @@ export function MeetingsTab() {
             m.address.toLowerCase().includes(search.toLowerCase()) ||
             m.neighborhood.toLowerCase().includes(search.toLowerCase())
         const matchesDay = dayFilter === "all" || m.day === dayFilter
-        return matchesSearch && matchesDay
+        const matchesType = typeFilter === "all" || m.type === typeFilter
+        const matchesTime = timeFilter === "all" || getTimeSlot(m.time) === timeFilter
+        return matchesSearch && matchesDay && matchesType && matchesTime
     })
+
+    // Helper to categorize time into slots
+    function getTimeSlot(time: string): string {
+        const hour = parseInt(time.split(":")[0], 10)
+        if (hour < 12) return "morning"
+        if (hour < 17) return "afternoon"
+        return "evening"
+    }
 
     // Open add modal
     const handleAdd = () => {
@@ -169,6 +181,26 @@ export function MeetingsTab() {
                         {DAYS.map(day => (
                             <option key={day} value={day}>{day}</option>
                         ))}
+                    </select>
+                    <select
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                        className="border border-gray-300 rounded-lg px-4 py-2"
+                    >
+                        <option value="all">All Types</option>
+                        {TYPES.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={timeFilter}
+                        onChange={(e) => setTimeFilter(e.target.value)}
+                        className="border border-gray-300 rounded-lg px-4 py-2"
+                    >
+                        <option value="all">All Times</option>
+                        <option value="morning">Morning (before 12pm)</option>
+                        <option value="afternoon">Afternoon (12-5pm)</option>
+                        <option value="evening">Evening (after 5pm)</option>
                     </select>
                 </div>
                 <button

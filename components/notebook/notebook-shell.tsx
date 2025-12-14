@@ -82,7 +82,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
 
       {/* Main notebook container */}
       <div
-        className="relative w-[360px] h-[520px] md:w-[800px] md:h-[560px] rounded-lg overflow-visible"
+        className="relative w-[360px] max-w-[calc(100vw-2rem)] h-[520px] md:w-[800px] md:max-w-none md:h-[560px] rounded-lg overflow-hidden"
         style={{
           boxShadow: `
             0 25px 50px -12px rgba(0, 0, 0, 0.5),

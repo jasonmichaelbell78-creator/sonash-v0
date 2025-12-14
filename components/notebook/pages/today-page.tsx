@@ -256,11 +256,6 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                 You haven't set your clean date yet.
               </p>
             )}
-
-            <p className="font-body text-sm text-amber-900/50 mt-2 flex items-center gap-1 cursor-pointer hover:text-amber-700 transition-colors">
-              <span className="inline-block rotate-45">↑</span>
-              Tap here if something happened today
-            </p>
           </div>
 
           {/* Today's reading */}
@@ -297,9 +292,14 @@ export default function TodayPage({ nickname }: TodayPageProps) {
               <p className="font-heading text-lg text-amber-900 text-center mb-3 pt-2">
                 Serenity is found in the moment.
               </p>
-              <button className="block mx-auto bg-amber-200 hover:bg-amber-300 px-4 py-2 rounded font-body text-amber-900 text-sm transition-colors">
-                Open full reading
-              </button>
+              <a
+                href={selectedReading === "AA" ? "https://www.aa.org/daily-reflections" : "https://na.org/daily-meditations/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mx-auto bg-amber-200 hover:bg-amber-300 px-4 py-2 rounded font-body text-amber-900 text-sm transition-colors text-center"
+              >
+                Open full reading ↗
+              </a>
             </div>
           </div>
         </div>
