@@ -56,10 +56,17 @@ meetings/{id}                   → Authenticated read, no write
 ```
 
 ### Layer 4: Application Security
-- **Input validation**: Zod schemas on client
+- **Input validation**: Zod schemas on client AND server (Cloud Functions)
 - **Path validation**: `validateUserDocumentPath()` prevents traversal
 - **User scope**: `assertUserScope()` enforces ownership
-- **Rate limiting**: Client-side (see limitations)
+- **Rate limiting**: Server-side via Cloud Functions (10 req/min per user)
+- **App Check**: reCAPTCHA v3 verification blocks bots
+
+### Layer 5: Monitoring & Audit
+- **Sentry**: Error monitoring for client and Cloud Functions
+- **Audit logging**: Security events logged to GCP Cloud Logging
+- **Event types**: AUTH_FAILURE, RATE_LIMIT_EXCEEDED, APP_CHECK_FAILURE, VALIDATION_FAILURE, AUTHORIZATION_FAILURE
+- **Related docs**: [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md)
 
 ### Layer 5: Data at Rest
 - **Encryption**: Google encrypts all Firestore data at rest
@@ -110,10 +117,13 @@ async function linkAnonymousAccount(email: string, password: string) {
 
 ### What We Implement
 - ✅ Owner-only Firestore rules
-- ✅ Input validation
+- ✅ Input validation (client + server)
 - ✅ PII redaction in logs
 - ✅ Document size limits
-- ⚠️ Client-side rate limiting (bypassable)
+- ✅ Server-side rate limiting (Cloud Functions)
+- ✅ Firebase App Check (reCAPTCHA v3)
+- ✅ Sentry error monitoring
+- ✅ Security audit logging
 - ❌ End-to-end encryption (not implemented)
 - ❌ Client-side encryption (not implemented)
 
@@ -272,16 +282,29 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 | Transport | ✅ Secure | No action needed |
 | At-rest encryption | ✅ Secure | No action needed |
 | Auth | ⚠️ Anonymous only | Add account linking |
-| Firestore rules | ✅ Updated | Deploy to production |
-| Rate limiting | ⚠️ Client-side | Add Cloud Functions rate limiting |
+| Firestore rules | ✅ Deployed | Maintained |
+| Rate limiting | ✅ Server-side | Deployed via Cloud Functions |
+| App Check | ✅ Enabled | reCAPTCHA v3 active |
+| Error monitoring | ✅ Sentry | Client + Functions |
+| Audit logging | ✅ Enabled | GCP Cloud Logging |
+| Billing alerts | ⚠️ Manual | See BILLING_ALERTS_SETUP.md |
 | Data export | ❌ Missing | Implement before launch |
 | Data deletion | ❌ Missing | Implement before launch |
-| App Check | ❌ Not enabled | Enable in Firebase console |
 | Privacy policy | ❌ Missing | Create before launch |
 
-**Bottom line:** The foundation is solid. Priority actions are:
-1. Deploy updated Firestore rules
-2. Implement account linking
-3. Add data export/delete
-4. Enable App Check
-5. Create privacy policy
+**Bottom line:** Security posture significantly improved. Priority actions now:
+1. ✅ ~~Deploy Cloud Functions rate limiting~~ Done
+2. ✅ ~~Enable App Check~~ Done
+3. ✅ ~~Add monitoring (Sentry)~~ Done
+4. ⚠️ Configure billing alerts (see [BILLING_ALERTS_SETUP.md](./BILLING_ALERTS_SETUP.md))
+5. Implement account linking
+6. Add data export/delete
+7. Create privacy policy
+
+---
+
+## Related Documentation
+
+- [SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Implementation details
+- [BILLING_ALERTS_SETUP.md](./BILLING_ALERTS_SETUP.md) - GCP billing configuration
+- [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md) - Response procedures

@@ -7,6 +7,7 @@ import type { DocumentSnapshot, FirestoreError } from "firebase/firestore"
 import { FirestoreService, DailyLog } from "../../lib/firestore-service"
 import { UserProfile } from "../../lib/db/users"
 import { logger, maskIdentifier } from "../../lib/logger"
+import { shouldShowLinkPrompt } from "../../lib/auth/account-linking"
 
 interface AuthContextType {
     user: User | null
@@ -16,6 +17,8 @@ interface AuthContextType {
     todayLogError: string | null
     profileError: string | null
     profileNotFound: boolean
+    isAnonymous: boolean
+    showLinkPrompt: boolean
     refreshTodayLog: () => Promise<void>
 }
 
@@ -27,6 +30,8 @@ const AuthContext = createContext<AuthContextType>({
     todayLogError: null,
     profileError: null,
     profileNotFound: false,
+    isAnonymous: false,
+    showLinkPrompt: false,
     refreshTodayLog: async () => { },
 })
 
@@ -201,8 +206,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [handleProfileSnapshot, handleProfileError, refreshTodayLog])
 
+    // Computed values for account linking
+    const isAnonymous = user?.isAnonymous ?? false
+    const showLinkPrompt = shouldShowLinkPrompt(user)
+
     return (
-        <AuthContext.Provider value={{ user, profile, loading, todayLog, todayLogError, refreshTodayLog, profileError, profileNotFound }}>
+        <AuthContext.Provider value={{ user, profile, loading, todayLog, todayLogError, refreshTodayLog, profileError, profileNotFound, isAnonymous, showLinkPrompt }}>
             {children}
         </AuthContext.Provider>
     )

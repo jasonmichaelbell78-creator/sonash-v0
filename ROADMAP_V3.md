@@ -86,28 +86,28 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 - [x] Move validation logic to Cloud Functions
 - [x] Add server-side Zod schema validation
-- [ ] Implement audit logging for security events
-- [ ] Add monitoring alerts (Sentry/LogRocket integration)
+- [x] Implement audit logging for security events
+- [x] Add monitoring alerts (Sentry/LogRocket integration)
 - [x] Test with malicious payloads
-- [ ] Document security model in SECURITY.md
+- [x] Document security model in SECURITY.md
 - [x] **Exit:** All critical operations validated server-side
 
 #### Week 4: Monitoring & Billing Protection
 
-- Set up Firebase Performance Monitoring
-- Add Cloud Functions metrics dashboard
-- Configure billing alerts ($50, $100, $500 thresholds)
-- Set up security event logging
-- Create incident response runbook
-- Test alert triggers
+- [ ] Set up Firebase Performance Monitoring
+- [ ] Add Cloud Functions metrics dashboard
+- [ ] Configure billing alerts ($50, $100, $500 thresholds) - see docs/BILLING_ALERTS_SETUP.md
+- [x] Set up security event logging
+- [x] Create incident response runbook
+- [ ] Test alert triggers
 - **Exit:** Team is alerted before costs spiral, security events tracked
 
 #### Account Linking (Parallel Track)
 
-- Design account linking UX (email/password, Google, etc.)
-- Implement account linking UI
-- Test anonymous → permanent account migration
-- Document data migration process
+- [x] Design account linking UX (email/password, Google, etc.)
+- [x] Implement account linking UI
+- [ ] Test anonymous → permanent account migration
+- [ ] Document data migration process
 - **Exit:** Users can convert anonymous accounts to permanent ones
 
 #### Additional Testing Improvements

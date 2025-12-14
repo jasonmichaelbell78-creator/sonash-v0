@@ -2,10 +2,13 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import dynamic from "next/dynamic"
 import TabNavigation from "./tab-navigation"
 import BookmarkRibbon from "./bookmark-ribbon"
 import StickyNote from "./sticky-note"
 import PlaceholderPage from "./pages/placeholder-page"
+import { useAuth } from "@/components/providers/auth-provider"
+import { Shield, AlertTriangle } from "lucide-react"
 import {
   getModuleById,
   moduleIsEnabled,
@@ -14,12 +17,19 @@ import {
   type NotebookModuleId,
 } from "./roadmap-modules"
 
+// Lazy load the modal
+const AccountLinkModal = dynamic(() => import("@/components/auth/account-link-modal"), {
+  loading: () => null,
+  ssr: false
+})
+
 interface NotebookShellProps {
   onClose: () => void
   nickname: string
 }
 
 export default function NotebookShell({ onClose, nickname }: NotebookShellProps) {
+  const { isAnonymous, showLinkPrompt, profile } = useAuth()
   const tabs = notebookModules.map((module) => ({
     id: module.id,
     label: module.label,
@@ -29,6 +39,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
 
   const [activeTab, setActiveTab] = useState<NotebookModuleId>("today")
   const [showSettings, setShowSettings] = useState(false)
+  const [showAccountLink, setShowAccountLink] = useState(false)
   const [direction, setDirection] = useState(0)
 
   const handleTabChange = (tabId: string) => {
@@ -168,6 +179,47 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
         {showSettings && (
           <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
             <div className="space-y-3">
+              {/* Account Security Section */}
+              {isAnonymous && (
+                <div className={`p-3 rounded-lg border ${showLinkPrompt ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}`}>
+                  <div className="flex items-start gap-2">
+                    {showLinkPrompt ? (
+                      <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <p className={`font-handlee text-sm ${showLinkPrompt ? 'text-amber-800' : 'text-blue-800'}`}>
+                        {showLinkPrompt
+                          ? "Your journal is at risk! Link your account to keep your entries safe."
+                          : "Your account is anonymous. Link it to keep your data safe."}
+                      </p>
+                      <button
+                        onClick={() => {
+                          setShowSettings(false)
+                          setShowAccountLink(true)
+                        }}
+                        className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? 'text-amber-700 hover:text-amber-900' : 'text-blue-700 hover:text-blue-900'}`}
+                      >
+                        Secure My Account →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Show linked account info */}
+              {!isAnonymous && profile?.email && (
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    <p className="font-handlee text-sm text-green-800">
+                      Signed in as {profile.email}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
               <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
               <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
@@ -193,6 +245,17 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
           </StickyNote>
         )}
       </AnimatePresence>
+
+      {/* Account Link Modal */}
+      <AnimatePresence>
+        {showAccountLink && (
+          <AccountLinkModal
+            onClose={() => setShowAccountLink(false)}
+            onSuccess={() => setShowAccountLink(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }
+
