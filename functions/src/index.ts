@@ -9,12 +9,16 @@ import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { RateLimiterMemory } from "rate-limiter-flexible";
+import { dailyLogSchema } from "./schemas";
+import { ZodError } from "zod";
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();
 
 // Global options: Limit concurrent instances to control costs
 setGlobalOptions({ maxInstances: 10 });
+
+
 
 // Rate limiter: 10 requests per minute per user
 // This runs in-memory and resets when function cold-starts
@@ -47,17 +51,17 @@ interface DailyLogData {
 export const saveDailyLog = onCall<DailyLogData>(
     {
         // Enforce App Check for bot protection
-        // TODO: Re-enable App Check once debug tokens are working
-        // consumeAppCheckToken: true,
+        // Enforce App Check for bot protection
+        // consumeAppCheckToken: true, // TODO: Re-enable after debugging token issues
     },
     async (request) => {
-        const { data, auth } = request;
+        const { data, app, auth } = request;
 
-        // 1. Verify authentication
+        // 1. Authenticate user
         if (!auth) {
             throw new HttpsError(
                 "unauthenticated",
-                "Must be authenticated to save journal"
+                "You must be signed in to call this function."
             );
         }
 
@@ -75,45 +79,30 @@ export const saveDailyLog = onCall<DailyLogData>(
         }
 
         // 3. Verify App Check token (bot protection)
-        // if (!app) {
-        //     throw new HttpsError(
-        //         "failed-precondition",
-        //         "App Check verification failed. Please refresh the page."
-        //     );
-        // }
-
-        // 4. Validate input data
-        const { date, content, mood, cravings, used } = data;
-
-        if (!date || typeof date !== "string") {
+        if (!app) {
             throw new HttpsError(
-                "invalid-argument",
-                "Invalid date format"
+                "failed-precondition",
+                "App Check verification failed. Please refresh the page."
             );
         }
 
-        if (typeof content !== "string") {
-            throw new HttpsError(
-                "invalid-argument",
-                "Content must be a string"
-            );
+        // 4. Validate input data using Zod
+        let validatedData;
+        try {
+            validatedData = dailyLogSchema.parse(data);
+        } catch (error) {
+            if (error instanceof ZodError) {
+                // Return the first validation error message
+                throw new HttpsError(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    "invalid-argument",
+                    "Validation failed: " + (error as any).errors.map((e: { message: string }) => e.message).join(", ")
+                );
+            }
+            throw error;
         }
 
-        // Date format validation (YYYY-MM-DD or readable format)
-        if (!date.match(/^\d{4}-\d{2}-\d{2}$/) && !date.includes(",")) {
-            throw new HttpsError(
-                "invalid-argument",
-                "Invalid date format. Expected YYYY-MM-DD or readable format."
-            );
-        }
-
-        // Content length validation (max 50KB)
-        if (content.length > 50000) {
-            throw new HttpsError(
-                "invalid-argument",
-                "Content too large. Maximum 50KB."
-            );
-        }
+        const { date, content, mood, cravings, used } = validatedData;
 
         // 5. Server-side authorization check
         if (data.userId && data.userId !== userId) {

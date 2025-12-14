@@ -63,34 +63,34 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 #### Week 1: Firebase App Check (Bot Protection)
 
-- Install Firebase App Check SDK
-- Get reCAPTCHA v3 site key from Google
-- Add App Check initialization to client
-- Update Firestore rules to enforce App Check
-- Test with debug token in development
-- Deploy to production
-- **Exit:** Bots without valid App Check tokens rejected by Firebase
+- [x] Install Firebase App Check SDK
+- [x] Get reCAPTCHA v3 site key from Google
+- [x] Add App Check initialization to client
+- [x] Update Firestore rules to enforce App Check
+- [x] Test with debug token in development
+- [x] Deploy to production
+- [x] **Exit:** Bots without valid App Check tokens rejected by Firebase
 
 #### Week 2: Cloud Functions Rate Limiting
 
-- Set up Firebase Functions project (`firebase init functions`)
-- Implement rate-limited Cloud Functions (see docs/SERVER_SIDE_SECURITY.md)
-- Add auth token verification in Cloud Functions
-- Deploy Cloud Functions to Firebase
-- Update client to use Cloud Functions for writes
-- Test rate limiting with burst requests
-- Monitor Cloud Functions metrics
-- **Exit:** Rate limits enforced server-side, impossible to bypass
+- [x] Set up Firebase Functions project (`firebase init functions`)
+- [x] Implement rate-limited Cloud Functions (see docs/SERVER_SIDE_SECURITY.md)
+- [x] Add auth token verification in Cloud Functions
+- [x] Deploy Cloud Functions to Firebase
+- [x] Update client to use Cloud Functions for writes
+- [x] Test rate limiting with burst requests
+- [x] Monitor Cloud Functions metrics
+- [x] **Exit:** Rate limits enforced server-side, impossible to bypass
 
 #### Week 3: Server-Side Validation & Authorization
 
-- Move validation logic to Cloud Functions
-- Add server-side Zod schema validation
-- Implement audit logging for security events
-- Add monitoring alerts (Sentry/LogRocket integration)
-- Test with malicious payloads
-- Document security model in SECURITY.md
-- **Exit:** All critical operations validated server-side
+- [x] Move validation logic to Cloud Functions
+- [x] Add server-side Zod schema validation
+- [ ] Implement audit logging for security events
+- [ ] Add monitoring alerts (Sentry/LogRocket integration)
+- [x] Test with malicious payloads
+- [ ] Document security model in SECURITY.md
+- [x] **Exit:** All critical operations validated server-side
 
 #### Week 4: Monitoring & Billing Protection
 

@@ -29,19 +29,6 @@ const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
   // Firebase Functions v2 validates App Check tokens at the infrastructure level,
   // even if consumeAppCheckToken is false. If the client initializes App Check
   // but doesn't have valid tokens, all Cloud Function calls will fail with 400.
-  const isDevelopment =
-    process.env.NODE_ENV === "development" ||
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-
-  if (isDevelopment) {
-    console.log("⚠️ App Check completely disabled in development mode")
-    console.log(`   Environment: NODE_ENV=${process.env.NODE_ENV}`)
-    if (typeof window !== "undefined") {
-      console.log(`   Hostname: ${window.location.hostname}`)
-    }
-    return
-  }
 
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
 
@@ -62,11 +49,11 @@ const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
 
   try {
     // Development: Set debug token to bypass reCAPTCHA during local testing
-    if (process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN) {
-      // @ts-expect-error - Firebase sets this globally for dev
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN
-    }
+    // @ts-expect-error - Firebase sets this globally for dev
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN;
 
+    // Initialize App Check
+    // Reverting to Enterprise Provider as the key is confirmed Enterprise.
     initializeAppCheck(app, {
       provider: new ReCaptchaEnterpriseProvider(siteKey),
       isTokenAutoRefreshEnabled: true, // Auto-refresh tokens before expiry
