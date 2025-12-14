@@ -141,6 +141,28 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - [ ] Investigate suppressHydrationWarning root cause
 
 ---
+
+#### 📦 5-AI Dependency Health Review (2025-12-14)
+
+> Verified against actual package.json files
+
+##### 🟠 High (Verified Issues)
+
+- [ ] Pin "latest" tags → specific versions (3 packages)
+  - `@emotion/is-prop-valid`, `framer-motion`, `next-themes`
+- [ ] Align Zod versions: app (3.25.76) → functions (4.1.13)
+- [ ] Downgrade Node.js 24 → 22 in functions
+- [ ] Upgrade functions ESLint 8.9.0 → 9.x
+- [ ] Align TypeScript versions (5.9.3 vs 5.7.3)
+
+##### 🟡 Medium (If Time Permits)
+
+- [ ] Verify React 19.2.0 CVE externally (may be hallucinated)
+- [ ] Update eslint-config-next to match Next.js version
+- [ ] Replace Moment.js with date-fns (if in use)
+
+---
+
 #### Additional Testing Improvements
 
 - Increase test coverage from 10% to 60%+
