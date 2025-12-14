@@ -165,6 +165,67 @@ Current state: 0 errors ✅, 29 warnings
 
 ---
 
+### M1.5 — Quick Wins & UI Polish (NEW)
+
+> **Goal:** Deliver visible improvements before deeper refactoring.
+> **Duration:** 1-2 weeks
+
+#### Objectives
+
+- Ship user-visible improvements quickly
+- Complete existing UI shells (settings)
+- Add high-value features without major architecture changes
+
+#### UI Improvements (~10h)
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Image optimization | Add `sizes` prop to Next.js images | 1h |
+| Skeleton loaders | Loading states for notebook pages | 2h |
+| Empty states | Compassionate messaging for no entries | 2h |
+| Animation polish | Refine transitions, add reduce-motion | 2h |
+| Dark mode prep | Add CSS variables for theming | 2h |
+
+#### Feature Additions (~20h)
+
+| Task | Description | Est |
+|------|-------------|-----|
+| **Sober Living Finder** | Search listings by area | 5h |
+| **Support Circle** | Add/manage contacts (sponsor, friends, counselor) | 5h |
+| History search/filter | Find past journal entries | 3h |
+| Mood trends viz | Full mood visualization chart | 3h |
+| Clean time celebrations | Milestone animations (30/60/90 days) | 3h |
+| Meeting favorites | Star/save favorite meetings | 2h |
+
+#### Settings (Make Functional) (~5h)
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Nickname editing | "Nickname & privacy" works | 1h |
+| Text size | "Language & text size" works | 2h |
+| Home screen | "Home screen & favorites" works | 2h |
+
+#### Exit Criteria
+
+- All settings menu items functional
+- Support circle with working contacts CRUD
+- Sober living finder with search
+- History page has search/filter
+- Skeleton loaders on all pages
+
+---
+
+### 🔄 Review Checkpoint: Post-M1.5
+
+> Quality gate before architecture work
+
+- [ ] **Internal Code Review** — Self-review all new components
+- [ ] **Technical Debt Log** — Document any shortcuts taken
+- [ ] **External Review Opportunity** — Consider peer review if available
+- [ ] **Identify Refactor Candidates** — Components needing cleanup in M2
+
+---
+
 ### M2 — Architecture & refactoring for speed
 
 #### Objectives
@@ -272,6 +333,17 @@ Current state: 0 errors ✅, 29 warnings
 - **Consistent error handling** across all services.
 - **Bundle size optimized** (initial load <200KB gzipped).
 - **Re-render performance** improved by 60%+ via context splitting.
+
+---
+
+### 🔄 Review Checkpoint: Post-M2
+
+> Quality gate before product experience work
+
+- [ ] **Full Architecture Review** — Assess refactoring quality
+- [ ] **Performance Audit** — Measure actual render improvements
+- [ ] **Dependency Audit** — Update outdated packages
+- [ ] **External Code Review** — Consider peer/expert review
 
 ---
 
