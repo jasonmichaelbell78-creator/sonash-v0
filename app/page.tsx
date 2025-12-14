@@ -23,7 +23,7 @@ export default function Home() {
   }
 
   return (
-    <main className="fixed inset-0 overflow-auto">
+    <main className="fixed inset-0 overflow-y-auto overflow-x-hidden">
       {/* Wood table background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -47,7 +47,7 @@ export default function Home() {
       </div>
 
       {/* Notebook container */}
-      <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 pr-12 md:pr-0">
+      <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 px-4 md:px-0">
         <AnimatePresence mode="wait">
           {!isOpen ? (
             <BookCover key="cover" onOpen={handleOpenBook} />

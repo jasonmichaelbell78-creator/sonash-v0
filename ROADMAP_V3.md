@@ -281,6 +281,33 @@ Current state: 0 errors ✅, 29 warnings
 
 *Additional tabs added as M6-M8 features launch (Prayers, Speakers, Readings)*
 
+#### Dec 14 Feature Ideas (~25h)
+
+> User-requested improvements from Dec 14 session.
+
+##### Today Page
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Daily Quote Sticky Note | Admin-managed inspirational quotes, cycles daily | 3h |
+| Direct Reading Links | AA/NA buttons → direct external links (no toggle) | 1h |
+| Mobile scroll fix | Fix horizontal scroll on narrow viewports | 2h |
+
+##### Meeting Finder
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Neighborhood Picker | Replace faux map with Nashville neighborhood selector | 3h |
+| Interactive Map | Leaflet/OpenStreetMap with plotted meeting markers | 8h |
+| Fix "Nearest" sorting | Geocode meetings, calculate actual distances | 4h |
+
+##### My Journal Hub
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Hub redesign | Central hub for journal entries, step work, inventories | 6h |
+| Enhanced security | Encryption or additional access controls for sensitive data | 4h |
+
 ---
 
 ### 🔄 Architecture Review Checkpoint: Post-M1.5

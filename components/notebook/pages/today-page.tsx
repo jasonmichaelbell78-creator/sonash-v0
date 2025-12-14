@@ -21,7 +21,6 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
   const [cravings, setCravings] = useState(false)
   const [used, setUsed] = useState(false)
-  const [selectedReading, setSelectedReading] = useState<"AA" | "NA">("AA")
   const [journalEntry, setJournalEntry] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [saveComplete, setSaveComplete] = useState(false)
@@ -40,19 +39,6 @@ export default function TodayPage({ nickname }: TodayPageProps) {
 
   const { user, profile } = useAuth()
   const referenceDate = useMemo(() => new Date(), [])
-
-  // Load reading preference
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.READING_PREF)
-    if (saved === READING_PREFS.AA || saved === READING_PREFS.NA) {
-      setSelectedReading(saved as "AA" | "NA")
-    }
-  }, [])
-
-  const handleReadingChange = (val: "AA" | "NA") => {
-    setSelectedReading(val)
-    localStorage.setItem(STORAGE_KEYS.READING_PREF, val)
-  }
 
   // Real-time data sync
   useEffect(() => {
@@ -258,47 +244,42 @@ export default function TodayPage({ nickname }: TodayPageProps) {
             )}
           </div>
 
-          {/* Today's reading */}
-          <div>
-            <div className="flex items-center gap-4 mb-3">
-              <h2 className="font-heading text-xl text-amber-900/90">Today's Reading</h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleReadingChange("AA")}
-                  className={`px-3 py-1 rounded-full font-body text-sm transition-all ${selectedReading === "AA" ? "bg-sky-300 text-sky-900 shadow-sm" : "bg-amber-100 text-amber-700"
-                    }`}
-                >
-                  AA
-                </button>
-                <button
-                  onClick={() => handleReadingChange("NA")}
-                  className={`px-3 py-1 rounded-full font-body text-sm transition-all ${selectedReading === "NA" ? "bg-amber-400 text-amber-900 shadow-sm" : "bg-amber-100 text-amber-700"
-                    }`}
-                >
-                  NA
-                </button>
-              </div>
-            </div>
+          {/* Daily Inspiration (admin-managed quotes in future) */}
+          <div
+            className="bg-amber-100 p-4 rounded-sm relative transition-transform hover:scale-[1.02]"
+            style={{
+              boxShadow: "2px 2px 8px rgba(0,0,0,0.15)",
+              transform: "rotate(-1deg)",
+            }}
+          >
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-400/80 shadow-inner backdrop-blur-sm" />
+            <p className="font-heading text-lg text-amber-900 text-center pt-2">
+              Serenity is found in the moment.
+            </p>
+            <p className="font-body text-xs text-amber-700/60 text-center mt-2 italic">
+              Daily inspiration
+            </p>
+          </div>
 
-            {/* Sticky note style reading card */}
-            <div
-              className="bg-amber-100 p-4 rounded-sm relative transition-transform hover:scale-[1.02] cursor-pointer"
-              style={{
-                boxShadow: "2px 2px 8px rgba(0,0,0,0.15)",
-                transform: "rotate(-1deg)",
-              }}
-            >
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-400/80 shadow-inner backdrop-blur-sm" />
-              <p className="font-heading text-lg text-amber-900 text-center mb-3 pt-2">
-                Serenity is found in the moment.
-              </p>
+          {/* Today's Reading - Direct external links */}
+          <div>
+            <h2 className="font-heading text-xl text-amber-900/90 mb-3">Today's Reading</h2>
+            <div className="flex gap-3">
               <a
-                href={selectedReading === "AA" ? "https://www.aa.org/daily-reflections" : "https://na.org/daily-meditations/"}
+                href="https://www.aa.org/daily-reflections"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block mx-auto bg-amber-200 hover:bg-amber-300 px-4 py-2 rounded font-body text-amber-900 text-sm transition-colors text-center"
+                className="flex-1 bg-sky-100 hover:bg-sky-200 text-sky-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
               >
-                Open full reading ↗
+                AA Daily Reflection ↗
+              </a>
+              <a
+                href="https://na.org/daily-meditations/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
+              >
+                NA Daily Meditation ↗
               </a>
             </div>
           </div>
