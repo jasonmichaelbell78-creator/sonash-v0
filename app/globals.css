@@ -37,6 +37,17 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Notebook theme - warm, paper-like light mode */
+  --notebook-bg: #f5f0e6;
+  --notebook-paper: #fffef9;
+  --notebook-text: #3d2914;
+  --notebook-text-muted: rgba(61, 41, 20, 0.6);
+  --notebook-accent: #b8860b;
+  --notebook-accent-hover: #d4a017;
+  --notebook-border: rgba(61, 41, 20, 0.15);
+  --notebook-shadow: rgba(0, 0, 0, 0.08);
+  --notebook-ink: #1a365d;
 }
 
 .dark {
@@ -72,6 +83,17 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* Notebook theme - warm, leather-like dark mode */
+  --notebook-bg: #1a1513;
+  --notebook-paper: #242019;
+  --notebook-text: #e8dcc8;
+  --notebook-text-muted: rgba(232, 220, 200, 0.6);
+  --notebook-accent: #d4a017;
+  --notebook-accent-hover: #e8b634;
+  --notebook-border: rgba(232, 220, 200, 0.15);
+  --notebook-shadow: rgba(0, 0, 0, 0.3);
+  --notebook-ink: #93c5fd;
 }
 
 @theme inline {
@@ -123,6 +145,7 @@
 .font-heading {
   font-family: var(--font-rocksalt), cursive;
 }
+
 .font-body {
   font-family: var(--font-handlee), cursive;
 }
@@ -131,9 +154,11 @@
 .font-caveat {
   font-family: var(--font-caveat), cursive;
 }
+
 .font-rocksalt {
   font-family: var(--font-rocksalt), cursive;
 }
+
 .font-handlee {
   font-family: var(--font-handlee), cursive;
 }
@@ -142,6 +167,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
