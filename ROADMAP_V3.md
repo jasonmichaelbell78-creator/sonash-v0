@@ -120,9 +120,9 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 ##### 🔴 Critical (Before M1.5)
 
-- [ ] Re-enable App Check in `firestore.rules` (`request.app != null`)
-- [ ] Re-enable `consumeAppCheckToken: true` in Cloud Functions
-- [ ] Deploy: `firebase deploy --only firestore:rules,functions`
+- [x] Re-enable App Check in `firestore.rules` (`request.app != null`)
+- [x] Re-enable `consumeAppCheckToken: true` in Cloud Functions
+- [x] Deploy: `firebase deploy --only firestore:rules,functions`
 
 ##### 🟠 High (Pre-M1.5 Quality Gate)
 
@@ -273,10 +273,10 @@ Current state: 0 errors ✅, 29 warnings
 
 | Task | Description | Est |
 |------|-------------|-----|
-| Admin auth guard | `/admin` route with Firebase Custom Claims check | 2h |
-| Admin layout | Tab navigation component | 2h |
-| CRUD components | Reusable table + form modal | 6h |
-| Meetings tab | CRUD for existing meetings collection | 3h |
+| Admin auth guard | `/admin` route with Firebase Custom Claims check | ✅ Done |
+| Admin layout | Tab navigation component | ✅ Done |
+| CRUD components | Reusable table + form modal | ✅ Done |
+| Meetings tab | CRUD for existing meetings collection | ✅ Done |
 | Sober Living tab | CRUD for sober living listings | 2h |
 
 *Additional tabs added as M6-M8 features launch (Prayers, Speakers, Readings)*
@@ -289,9 +289,9 @@ Current state: 0 errors ✅, 29 warnings
 
 | Task | Description | Est |
 |------|-------------|-----|
-| Daily Quote Sticky Note | Admin-managed inspirational quotes, cycles daily | 3h |
-| Direct Reading Links | AA/NA buttons → direct external links (no toggle) | 1h |
-| Mobile scroll fix | Fix horizontal scroll on narrow viewports | 2h |
+| Daily Quote Sticky Note | Admin-managed inspirational quotes, cycles daily | [/] Front |
+| Direct Reading Links | AA/NA buttons → direct external links (no toggle) | ✅ Done |
+| Mobile scroll fix | Fix horizontal scroll on narrow viewports | ✅ Done |
 
 ##### Meeting Finder
 
