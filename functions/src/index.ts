@@ -65,6 +65,7 @@ interface DailyLogData {
 export const saveDailyLog = onCall<DailyLogData>(
     {
         // Enforce App Check for bot protection
+        // IAM role 'firebaseappcheck.tokenVerifier' added to service account
         enforceAppCheck: true,
         consumeAppCheckToken: true,
     },
