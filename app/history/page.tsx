@@ -5,10 +5,11 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService, type DailyLog } from "@/lib/firestore-service"
-import { Loader2, AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
 import { EmptyState } from "@/components/ui/empty-state"
+import { HistoryPageSkeleton } from "@/components/ui/skeleton"
 
 export default function HistoryPage() {
     const { user } = useAuth()
@@ -67,9 +68,7 @@ export default function HistoryPage() {
             {/* Content */}
             <div className="max-w-md mx-auto space-y-4">
                 {loading ? (
-                    <div className="flex justify-center py-12">
-                        <Loader2 className="w-8 h-8 animate-spin text-amber-900/30" />
-                    </div>
+                    <HistoryPageSkeleton />
                 ) : entries.length === 0 && !error ? (
                     <EmptyState
                         type="history"
