@@ -53,10 +53,8 @@ service cloud.firestore {
     }
 
     // Verify request has valid App Check token (bot protection)
-    // TEMPORARILY DISABLED: Debugging Cloud Functions integration issues
-    // TODO: Re-enable after proper testing
     function hasValidAppCheck() {
-      return request.auth != null; // && request.app != null;
+      return request.auth != null && request.app != null;
     }
 
     // ============================================================

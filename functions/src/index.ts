@@ -63,8 +63,8 @@ interface DailyLogData {
 export const saveDailyLog = onCall<DailyLogData>(
     {
         // Enforce App Check for bot protection
-        // Enforce App Check for bot protection
-        // consumeAppCheckToken: true, // TODO: Re-enable after debugging token issues
+        enforceAppCheck: true,
+        consumeAppCheckToken: true,
     },
     async (request) => {
         const { data, app, auth } = request;
