@@ -45,3 +45,4 @@ pnpm-workspace.yaml
 src/dataconnect-generated
 dataconnect/
 
+firebase-service-account.json

@@ -113,9 +113,10 @@ service cloud.firestore {
     // PUBLIC/SHARED DATA
     // ============================================================
 
-    // Meetings collection (public read with App Check, admin-only write)
+    // Meetings collection (public read with App Check, admin full access)
     match /meetings/{meetingId} {
-      allow read: if hasValidAppCheck();
+      // Public read with App Check, OR admin read without App Check
+      allow read: if hasValidAppCheck() || (request.auth != null && request.auth.token.admin == true);
       // Admin users can write (requires admin custom claim)
       allow write: if request.auth != null && request.auth.token.admin == true;
     }

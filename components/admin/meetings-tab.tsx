@@ -61,9 +61,16 @@ export function MeetingsTab() {
         setLoading(true)
         try {
             const meetingsRef = collection(db, "meetings")
-            const q = query(meetingsRef, orderBy("day"), orderBy("time"))
-            const snapshot = await getDocs(q)
+            // Fetch all, sort client-side to avoid needing composite index
+            const snapshot = await getDocs(meetingsRef)
             const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Meeting))
+            // Sort by day then time client-side
+            const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            data.sort((a, b) => {
+                const dayDiff = dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day)
+                if (dayDiff !== 0) return dayDiff
+                return a.time.localeCompare(b.time)
+            })
             setMeetings(data)
         } catch (error) {
             console.error("Error fetching meetings:", error)
@@ -197,9 +204,9 @@ export function MeetingsTab() {
                                 <td className="px-4 py-3 text-sm">{meeting.name}</td>
                                 <td className="px-4 py-3 text-sm">
                                     <span className={`px-2 py-1 rounded text-xs font-medium ${meeting.type === "AA" ? "bg-blue-100 text-blue-700" :
-                                            meeting.type === "NA" ? "bg-green-100 text-green-700" :
-                                                meeting.type === "CA" ? "bg-purple-100 text-purple-700" :
-                                                    "bg-gray-100 text-gray-700"
+                                        meeting.type === "NA" ? "bg-green-100 text-green-700" :
+                                            meeting.type === "CA" ? "bg-purple-100 text-purple-700" :
+                                                "bg-gray-100 text-gray-700"
                                         }`}>
                                         {meeting.type}
                                     </span>

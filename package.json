@@ -54,6 +54,7 @@
     "c8": "^10.1.3",
     "cross-env": "^10.1.0",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "firebase-admin": "^13.6.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",

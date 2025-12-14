@@ -2,16 +2,18 @@
  * Set Admin Claim Script
  * 
  * Run this once to make your account an admin:
- *   npx ts-node --skip-project scripts/set-admin-claim.ts your-email@gmail.com
+ *   npx tsx scripts/set-admin-claim.ts your-email@gmail.com
  * 
  * Requires Firebase Admin SDK service account key.
  */
 
-import * as admin from "firebase-admin"
-import { getAuth } from "firebase-admin/auth"
+import admin from "firebase-admin"
+import { readFileSync } from "fs"
+import { join } from "path"
 
 // Initialize Firebase Admin
-const serviceAccount = require("../firebase-service-account.json")
+const serviceAccountPath = join(process.cwd(), "firebase-service-account.json")
+const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf-8"))
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -19,7 +21,7 @@ admin.initializeApp({
 
 async function setAdminClaim(email: string) {
     try {
-        const auth = getAuth()
+        const auth = admin.auth()
 
         // Find user by email
         const user = await auth.getUserByEmail(email)
@@ -29,6 +31,7 @@ async function setAdminClaim(email: string) {
 
         console.log(`✅ Admin claim set for ${email} (uid: ${user.uid})`)
         console.log("   User must sign out and sign back in for changes to take effect.")
+        process.exit(0)
 
     } catch (error) {
         if ((error as { code?: string }).code === "auth/user-not-found") {
@@ -44,8 +47,8 @@ async function setAdminClaim(email: string) {
 const email = process.argv[2]
 
 if (!email) {
-    console.log("Usage: npx ts-node --skip-project scripts/set-admin-claim.ts <email>")
-    console.log("Example: npx ts-node --skip-project scripts/set-admin-claim.ts admin@example.com")
+    console.log("Usage: npx tsx scripts/set-admin-claim.ts <email>")
+    console.log("Example: npx tsx scripts/set-admin-claim.ts admin@example.com")
     process.exit(1)
 }
 

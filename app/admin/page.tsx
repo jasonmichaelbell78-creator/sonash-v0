@@ -31,14 +31,15 @@ export default function AdminPage() {
 
         // Listen for auth state
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            if (!firebaseUser) {
+            // No user or anonymous user = show login
+            if (!firebaseUser || firebaseUser.isAnonymous) {
                 setState("login")
                 setUser(null)
                 return
             }
 
-            // Check for admin claim
-            const tokenResult = await firebaseUser.getIdTokenResult()
+            // Force token refresh to get latest claims
+            const tokenResult = await firebaseUser.getIdTokenResult(true)
             const isAdmin = tokenResult.claims.admin === true
 
             if (isAdmin) {
