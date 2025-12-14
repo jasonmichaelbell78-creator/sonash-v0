@@ -96,7 +96,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 - [ ] Set up Firebase Performance Monitoring
 - [ ] Add Cloud Functions metrics dashboard
-- [ ] Configure billing alerts ($50, $100, $500 thresholds) - see docs/BILLING_ALERTS_SETUP.md
+- [x] Configure billing alerts ($50, $100, $500 thresholds) - see docs/BILLING_ALERTS_SETUP.md
 - [x] Set up security event logging
 - [x] Create incident response runbook
 - [ ] Test alert triggers

@@ -17,7 +17,8 @@ export function AuthErrorBanner({ className }: AuthErrorBannerProps) {
   const messages = useMemo(() => {
     const list: string[] = []
     if (profileError) list.push(profileError)
-    if (todayLogError) list.push(todayLogError)
+    // Only show today log error if we have a profile - new users have no logs (expected)
+    if (todayLogError && !profileNotFound) list.push(todayLogError)
     if (profileNotFound) list.push("We couldn't find your profile. Complete onboarding to continue.")
     return list
   }, [profileError, profileNotFound, todayLogError])

@@ -178,7 +178,16 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           return { log: docSnap.data() as DailyLog, error: null }
         }
         return { log: null, error: null }
-      } catch (error) {
+      } catch (error: unknown) {
+        // Permission denied is expected for new anonymous users without a profile
+        const isPermissionDenied = error instanceof Error &&
+          (error.message.includes("permission-denied") || error.message.includes("Missing or insufficient permissions"))
+
+        if (isPermissionDenied) {
+          // Don't log as error - this is expected for new users
+          return { log: null, error: null }
+        }
+
         deps.logger.error("Failed to retrieve today's log", { userId: maskIdentifier(userId), error })
         return { log: null, error }
       }
