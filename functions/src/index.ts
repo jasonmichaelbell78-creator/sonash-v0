@@ -21,8 +21,10 @@ import { ZodError } from "zod";
 import { initSentry, logSecurityEvent } from "./security-logger";
 
 // Initialize Sentry for error monitoring (runs once at cold start)
-const SENTRY_DSN = process.env.SENTRY_DSN || "https://dc518f8a952cfa6e675707388fdd7801@o4510530873589760.ingest.us.sentry.io/4510530875097088";
-initSentry(SENTRY_DSN);
+const SENTRY_DSN = process.env.SENTRY_DSN;
+if (SENTRY_DSN) {
+    initSentry(SENTRY_DSN);
+}
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();
