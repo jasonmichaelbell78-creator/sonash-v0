@@ -106,10 +106,41 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 - [x] Design account linking UX (email/password, Google, etc.)
 - [x] Implement account linking UI
-- [ ] Test anonymous → permanent account migration
-- [ ] Document data migration process
+- [x] Test anonymous → permanent account migration
+- [x] Document data migration process
+- [x] GDPR data export and account deletion
 - **Exit:** Users can convert anonymous accounts to permanent ones
 
+---
+
+#### 🔄 5-AI Code Review Quality Gate (2025-12-13)
+
+> Based on aggregated review from Gemini, Claude, ChatGPT, Jules, and GitHub Copilot.
+> See: [implementation_plan.md](file:///C:/Users/jason/.gemini/antigravity/brain/43f579b5-9d21-4a66-ad7b-562182fe794c/implementation_plan.md)
+
+##### 🔴 Critical (Before M1.5)
+
+- [ ] Re-enable App Check in `firestore.rules` (`request.app != null`)
+- [ ] Re-enable `consumeAppCheckToken: true` in Cloud Functions
+- [ ] Deploy: `firebase deploy --only firestore:rules,functions`
+
+##### 🟠 High (Pre-M1.5 Quality Gate)
+
+- [ ] Remove hardcoded Sentry DSN fallback in functions/src/index.ts
+- [ ] Remove debug console.logs in lib/firestore-service.ts
+- [ ] Fix package.json version (16.0.7 → actual Next.js version)
+- [ ] Implement distributed rate limiting (RateLimiterFirestore)
+- [ ] Complete `useAuth` → focused hooks migration
+
+##### 🟡 Medium (M1.5 or M2)
+
+- [ ] Fix `isProfileEqual` for nested objects in profile-context.tsx
+- [ ] DailyLogContext: change from fetch to onSnapshot listener
+- [ ] Add geocoding to seed-meetings.ts for "Nearest" feature
+- [ ] ESLint rules: change warn → error
+- [ ] Investigate suppressHydrationWarning root cause
+
+---
 #### Additional Testing Improvements
 
 - Increase test coverage from 10% to 60%+
