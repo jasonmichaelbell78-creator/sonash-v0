@@ -9,6 +9,7 @@ import StickyNote from "./sticky-note"
 import PlaceholderPage from "./pages/placeholder-page"
 import { useAuth } from "@/components/providers/auth-provider"
 import { Shield, AlertTriangle } from "lucide-react"
+import { DataManagementSection } from "@/components/settings/data-management-section"
 import {
   getModuleById,
   moduleIsEnabled,
@@ -223,6 +224,11 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
               <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
               <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
               <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
+
+              {/* Privacy & Data Section */}
+              <div className="pt-4 border-t border-amber-900/10">
+                <DataManagementSection onAccountDeleted={onClose} />
+              </div>
 
               <div className="pt-4 border-t border-amber-900/10">
                 <button

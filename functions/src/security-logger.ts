@@ -15,7 +15,13 @@ export type SecurityEventType =
     | "VALIDATION_FAILURE"
     | "AUTHORIZATION_FAILURE"
     | "SAVE_SUCCESS"
-    | "SAVE_FAILURE";
+    | "SAVE_FAILURE"
+    | "DATA_EXPORT_REQUESTED"
+    | "DATA_EXPORT_SUCCESS"
+    | "DATA_EXPORT_FAILURE"
+    | "ACCOUNT_DELETE_REQUESTED"
+    | "ACCOUNT_DELETE_SUCCESS"
+    | "ACCOUNT_DELETE_FAILURE";
 
 // Severity levels (aligned with GCP Cloud Logging)
 export type Severity = "INFO" | "WARNING" | "ERROR";
@@ -114,12 +120,18 @@ function getSeverityForType(type: SecurityEventType): Severity {
         case "AUTH_FAILURE":
         case "RATE_LIMIT_EXCEEDED":
         case "APP_CHECK_FAILURE":
+        case "ACCOUNT_DELETE_REQUESTED":
             return "WARNING";
         case "AUTHORIZATION_FAILURE":
         case "SAVE_FAILURE":
+        case "DATA_EXPORT_FAILURE":
+        case "ACCOUNT_DELETE_FAILURE":
             return "ERROR";
         case "VALIDATION_FAILURE":
         case "SAVE_SUCCESS":
+        case "DATA_EXPORT_REQUESTED":
+        case "DATA_EXPORT_SUCCESS":
+        case "ACCOUNT_DELETE_SUCCESS":
             return "INFO";
         default:
             return "INFO";
