@@ -82,7 +82,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
 
       {/* Main notebook container */}
       <div
-        className="relative w-[360px] max-w-[calc(100vw-2rem)] h-[520px] md:w-[800px] md:max-w-none md:h-[560px] rounded-lg overflow-visible"
+        className="relative w-[340px] h-[520px] md:w-[800px] md:h-[560px] rounded-lg overflow-visible"
         style={{
           boxShadow: `
             0 25px 50px -12px rgba(0, 0, 0, 0.5),
@@ -142,7 +142,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeTab}
-              className="absolute inset-0 p-6 pl-16 pr-12"
+              className="absolute inset-0 p-4 pl-8 pr-4 md:p-6 md:pl-16 md:pr-12"
               initial={{
                 rotateY: direction > 0 ? 90 : -90,
                 opacity: 0,

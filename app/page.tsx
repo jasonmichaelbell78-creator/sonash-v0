@@ -46,8 +46,8 @@ export default function Home() {
         <AuthErrorBanner />
       </div>
 
-      {/* Notebook container */}
-      <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 px-4 md:px-0">
+      {/* Notebook container - asymmetrical padding to account for tabs on right */}
+      <div className="relative z-10 min-h-full w-full flex items-center justify-center py-12 pl-4 pr-14 md:px-0">
         <AnimatePresence mode="wait">
           {!isOpen ? (
             <BookCover key="cover" onOpen={handleOpenBook} />

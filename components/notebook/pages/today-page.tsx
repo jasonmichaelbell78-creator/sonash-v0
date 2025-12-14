@@ -279,7 +279,7 @@ export default function TodayPage({ nickname }: TodayPageProps) {
                 rel="noopener noreferrer"
                 className="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
               >
-                NA Daily Meditation ↗
+                NA Just For Today ↗
               </a>
             </div>
           </div>
