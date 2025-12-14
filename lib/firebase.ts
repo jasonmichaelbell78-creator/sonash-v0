@@ -58,8 +58,6 @@ const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
       provider: new ReCaptchaEnterpriseProvider(siteKey),
       isTokenAutoRefreshEnabled: true, // Auto-refresh tokens before expiry
     })
-
-    console.log("✅ Firebase App Check initialized")
   } catch (error) {
     console.error("⚠️ App Check initialization failed:", error)
     // Non-fatal: App will work but without bot protection
