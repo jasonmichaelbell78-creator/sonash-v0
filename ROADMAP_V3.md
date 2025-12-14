@@ -1510,3 +1510,143 @@ users/{uid}/speakerNotes/{tapeId}
 - Test each source during catalog seeding
 
 ---
+
+### Admin Panel — Content Management (Foundation)
+
+> **Goal:** Single-page admin dashboard with tabs for managing all catalog content. Expandable as new features launch.
+
+**Design Principles**
+
+- **Single page, tabbed interface:** One `/admin` route with tabs for each content type
+- **Role-based access:** Admin-only via Firebase Custom Claims
+- **Reusable patterns:** Same CRUD form pattern for all content types
+- **Expandable:** Add new tabs as M5-M8 features launch
+- **Validation:** Real-time validation before save
+- **Preview:** Test audio URLs, view formatted content before publish
+
+---
+
+#### Security: Admin Access Control
+
+**Firebase Custom Claims Setup**
+
+```typescript
+// Set admin claim (run once via Firebase Admin SDK or Cloud Function)
+await admin.auth().setCustomUserClaims(uid, { admin: true })
+
+// Check in app
+const isAdmin = user?.customClaims?.admin === true
+```
+
+**Firestore Rules**
+
+```
+// Admin-writeable catalogs
+match /speakerTapesCatalog/{id} {
+  allow read: if true;
+  allow write: if request.auth.token.admin == true;
+}
+
+match /prayersCatalog/{id} {
+  allow read: if true;
+  allow write: if request.auth.token.admin == true;
+}
+```
+
+---
+
+#### Epic A1 — Admin Foundation
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| A1.1 | Create `/admin` route with auth guard (redirect non-admins) | 2 |
+| A1.2 | Set up Firebase Custom Claims for admin role | 1 |
+| A1.3 | Build admin layout with tab navigation component | 2 |
+| A1.4 | Create reusable CRUD table component (list view with search, sort, delete) | 3 |
+| A1.5 | Create reusable form modal component (add/edit with validation) | 3 |
+| A1.6 | Add confirmation dialog for delete actions | 1 |
+
+**Subtotal: 12 SP**
+
+---
+
+#### Epic A2 — Content Tabs (add as features launch)
+
+| Ticket | Description | Est | Depends On |
+|--------|-------------|-----|------------|
+| A2.1 | Meetings tab: CRUD for `meetings` collection | 3 | Existing |
+| A2.2 | Speaker Tapes tab: CRUD for `speakerTapesCatalog` + audio URL test | 3 | M8 |
+| A2.3 | Prayers tab: CRUD for `prayersCatalog` + displayMode toggle | 3 | M6 |
+| A2.4 | Sober Living tab: CRUD for sober living listings | 3 | M1.5 |
+| A2.5 | Daily Readings tab: CRUD for readings catalog | 2 | M7 |
+
+**Subtotal: 14 SP** (build incrementally as features ship)
+
+---
+
+#### Epic A3 — Quality of Life
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| A3.1 | Bulk import from CSV/JSON | 3 |
+| A3.2 | Export catalog to CSV | 2 |
+| A3.3 | Audit log (who changed what, when) | 3 |
+| A3.4 | "Duplicate" action for quick item creation | 1 |
+
+**Subtotal: 9 SP** (optional, add later)
+
+---
+
+#### Admin Panel Summary
+
+| Epic | Story Points |
+|------|--------------|
+| A1 Foundation | 12 |
+| A2 Content Tabs | 14 |
+| A3 Quality of Life | 9 |
+| **Total** | **35 SP** |
+
+**Suggested phasing:**
+
+1. **Phase A (Foundation):** Epic A1 + Meetings tab (A2.1) → ~15 SP
+2. **Phase B (As features launch):** Add tabs for each new catalog → ~2-3 SP each
+3. **Phase C (Polish):** Bulk import/export, audit log → ~9 SP
+
+**Exit Criteria**
+
+- Admin can add/edit/delete all catalog content via web UI
+- Non-admins cannot access `/admin` route
+- All forms validate before save
+- Changes reflect immediately in user-facing app
+
+---
+
+#### Admin Panel UI Mockup
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🔧 Admin Dashboard                    [Your Name] [Logout] │
+├─────────────────────────────────────────────────────────────┤
+│  [Meetings] [Speakers] [Prayers] [Sober Living] [Readings]  │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Speaker Tapes                              [+ Add New]     │
+│  ─────────────────────────────────────────────────────────  │
+│  🔍 Search...                         [Category ▼] [Sort ▼] │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 📼 Sandy B. - Steps 1-3              45:23          │   │
+│  │    Category: Step Talks | Source: Internet Archive  │   │
+│  │    [▶ Test] [✏️ Edit] [🗑️ Delete]                   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 📼 Dr. Bob's Last Major Talk         52:10          │   │
+│  │    Category: Founders | Source: AA.org              │   │
+│  │    [▶ Test] [✏️ Edit] [🗑️ Delete]                   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  Showing 1-10 of 47                    [< Prev] [Next >]   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
