@@ -1569,21 +1569,37 @@ match /users/{userId}/{document=**} {
 
 | Ticket | Description | Est |
 |--------|-------------|-----|
-| S1.1 | Define Firestore schema: `speakerTapesCatalog/{id}` with `title`, `speaker`, `duration`, `externalUrl`, `category`, `tags[]`, `description?`, `recordingDate?`, `source` | 2 |
+| S1.1 | Define Firestore schema: `speakerTapesCatalog/{id}` with `title`, `speaker`, `duration`, `externalUrl`, `category`, `tags[]`, `description?`, `recordingDate?`, `source`, `searchKeywords[]`, `isActive` | 2 |
 | S1.2 | Seed initial catalog with 20-30 classic speakers (Dr. Bob, Bill W., Sandy B., etc.) | 3 |
 | S1.3 | Create `/speakers` hub page with categories: Founders, Popular, Step Talks, Topic-Based | 3 |
 | S1.4 | Build speaker card component with title, speaker name, duration, favorite indicator | 2 |
 | S1.5 | Create `/speakers/[id]` detail view with description and audio player | 3 |
 | S1.6 | Implement HTML5 audio player component with play/pause, seek, speed control (0.75x-2x) | 3 |
 | S1.7 | Add background audio support (continue playing when navigating away) | 2 |
+| S1.8 | **Admin: Speaker Tapes tab in admin panel** - CRUD for catalog entries with all fields | 4 |
+| S1.9 | **Admin: Tag management** - Create/edit/merge tags, bulk apply to multiple tapes | 3 |
+| S1.10 | **Admin: Search keywords** - Add custom search terms per tape (synonyms, topics, related terms) | 2 |
+| S1.11 | **Admin: URL validation** - Verify external URLs are reachable, flag broken links | 2 |
+| S1.12 | **Admin: Batch import** - CSV upload for bulk catalog additions | 3 |
 
-**Subtotal: 18 SP**
+**Subtotal: 32 SP** (was 18 SP before admin integration)
+
+**Admin Panel Vision**
+
+> Since audio is hosted externally (zero storage cost), all metadata management flows through admin:
+> - Add new tapes with external URL + all metadata
+> - **Tags**: Step-related (Step 1, Step 4, etc.), Topics (Fear, Resentment, Service, Sponsorship), Era (Founders, Classic, Modern)
+> - **Search keywords**: Alternative terms users might search ("AA speaker", "sobriety story", etc.)
+> - **Validation**: Mark tapes inactive if URL breaks; bulk URL check
+> - **Batch import**: Add many tapes at once from curated lists
 
 **Exit Criteria**
 
 - Users can browse catalog by category
 - Audio plays directly from external sources
 - Player persists across navigation
+- **Admin can add/edit/remove tapes with full tagging**
+- **Admin can manage search keywords for discoverability**
 
 ---
 
@@ -1640,15 +1656,15 @@ match /users/{userId}/{document=**} {
 
 | Epic | Story Points |
 |------|--------------|
-| S1 Catalog & Hub UI | 18 |
+| S1 Catalog & Hub UI + **Admin** | **32** |
 | S2 User Library | 14 |
 | S3 Discovery & Search | 8 |
 | S4 Player Enhancements | 9 |
-| **Total** | **49 SP** |
+| **Total** | **63 SP** |
 
 **Suggested phasing:**
 
-1. **Phase A (MVP):** Epic S1 (Catalog + Player) + S2.1-2.3 (Favorites) → ~23 SP
+1. **Phase A (MVP + Admin):** Epic S1 (Catalog + Player + Admin CRUD) + S2.1-2.3 (Favorites) → ~37 SP
 2. **Phase B (Resume & History):** S2.4-2.7 (Progress tracking + Notes) → ~9 SP
 3. **Phase C (Polish):** Epic S3 (Discovery) + S4 (Player enhancements) → ~17 SP
 
@@ -1658,6 +1674,7 @@ match /users/{userId}/{document=**} {
 - In-app audio player with external streaming
 - Favorites and listen history functional
 - Zero hosting/egress costs (all external URLs)
+- **Admin panel for full catalog management with tagging and search keywords**
 
 ---
 
