@@ -76,9 +76,11 @@
 
 ---
 
-## Enhancements to Planned Features
+## Enhancements to Planned Features (Category 2: Overlap/Expanded)
 
-These would expand scope of already-planned work. Check if you want the enhancement included:
+These expand scope of already-planned work. Check if you want the enhancement included:
+
+### Core Feature Enhancements
 
 | Add | Feature | Enhancement | Comments |
 |:---:|---------|-------------|----------|
@@ -88,6 +90,63 @@ These would expand scope of already-planned work. Check if you want the enhancem
 | [ ] | **M7 F4 Step Progress** | Add "Revisiting" state, multiple passes/versioning | |
 | [ ] | **M5 5.2 Step 4 Inventories** | Add views by column/person, status flags, chunking | |
 | [ ] | **M7 F1 Sponsor Network** | Add sponsor profile, sponsorship agreement, playbooks | |
+
+### Onboarding & Personalization
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Onboarding paths** | Add role-based tracks: newcomer / sponsor / sober living resident | |
+| [ ] | **One Day at a Time card** | More dynamic daily themes/slogans beyond static quote | |
+
+### Crisis & Prevention
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Craving interrupter** | Add grounding tools, breathwork, urge surfing to Prevention Plan | |
+| [ ] | **Emergency contact blast** | Multi-contact broadcast with location (vs single SOS) | |
+
+### Step Work Expansions
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Step 1 tools** | Add consequences timeline template to M5 inventories | |
+| [ ] | **Step 3 / God Box** | Formalize God Box as distinct feature in M6 | |
+| [ ] | **Step 5 "burn after sharing"** | Add secure delete / self-destruct option for Step 5 content | |
+
+### Spiritual & Prayer
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Two-way prayer journal** | Add "My thoughts" vs "guidance received" journaling to M6 | |
+
+### Community & Sponsorship
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Buddy pairing** | Add "accountability partner" as contact role in M7 F1 | |
+| [ ] | **Sponsor/sponsee linking** | Formalize with permission model for shared visibility | |
+
+### Tracking & Analytics
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Mood correlations** | Add correlations with meetings/sleep to mood tracker | |
+| [ ] | **Spiritual condition tracker** | Add separate willingness/humility scale beyond mood | |
+
+### Privacy & Security
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Granular sharing controls** | More fine-grained per-contact visibility settings | |
+| [ ] | **Encryption + device lock** | Formalize requirements for M5 sensitive data | |
+| [ ] | **Burn/self-destruct messaging** | Step 5 specific secure delete implementation | |
+
+### Accessibility
+
+| Add | Feature | Enhancement | Comments |
+|:---:|---------|-------------|----------|
+| [ ] | **Notification customizer** | Fine-grained reminder schedules beyond basic | |
+| [ ] | **Cognitive accessibility** | Add ADHD-friendly modes to M1.5 text size work | |
 
 ---
 
