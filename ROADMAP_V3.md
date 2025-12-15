@@ -525,6 +525,56 @@ Current state: 0 errors ✅, 29 warnings
 
 ---
 
+#### M3.2 — Virtual Meetings Directory
+
+> **Goal:** Help users find and join virtual AA/NA/CA meetings with direct links.
+
+**Why Virtual Matters**
+- Accessibility for rural users, disabled, or those without transportation
+- "Meeting right now" emergency access
+- Time-zone aware for travelers
+- Growing post-COVID adoption of hybrid meetings
+
+**Data Sources to Research**
+- AA Intergroup online meeting lists
+- NA World Services virtual meeting list
+- Online Intergroup of AA (https://aa-intergroup.org)
+- InTheRooms.com, 24/7 Sober AA Discord, etc.
+
+**Tickets**
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 3.2.1 | Define Firestore schema for virtual meetings: `virtualMeetings/{id}` with `name`, `fellowship`, `platform` (Zoom/Google Meet/other), `meetingUrl`, `password?`, `schedule` (days, time, timezone), `format`, `isVerified`, `lastVerifiedAt` | 2 |
+| 3.2.2 | Create admin tab for virtual meeting CRUD with URL validation | 3 |
+| 3.2.3 | Build virtual meeting card component with "Join Now" button | 2 |
+| 3.2.4 | Implement time-zone display and "Happening Now" badge | 2 |
+| 3.2.5 | Add "Starting Soon" filter (meetings within next hour) | 2 |
+| 3.2.6 | Add virtual meetings section to Resources page (separate tab or toggle) | 3 |
+| 3.2.7 | Seed initial virtual meetings data (research + curate 50-100 quality links) | 4 |
+| 3.2.8 | Add "Report broken link" button with admin notification | 2 |
+| 3.2.9 | (Optional) Calendar integration for recurring virtual meetings | 3 |
+
+**Subtotal: 23 SP** (20 SP without calendar integration)
+
+**Technical Notes**
+
+- Store meeting times in UTC, display in user's local timezone
+- Zoom/Google Meet links can be validated with regex patterns
+- Consider periodic link verification (admin-triggered or automated)
+- Password field should be displayed only after "Join" clicked (reduce scraping)
+- May want to require user confirmation before external redirect
+
+**Risks and Mitigations**
+
+| Risk | Mitigation |
+|------|------------|
+| Link rot (meetings change URLs) | "Report broken" + `lastVerifiedAt` + periodic admin review |
+| Zoom-bombing concerns | Don't publicly expose passwords; require sign-in to view |
+| Data sourcing | Start with well-known stable meetings; grow from user suggestions |
+
+---
+
 ### M4 — Expansion & follow-on capabilities
 
 #### Objectives
