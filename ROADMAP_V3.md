@@ -1899,24 +1899,27 @@ match /prayersCatalog/{id} {
 
 **Total Estimate: ~20 SP**
 
----│                                                             │
-│  Speaker Tapes                              [+ Add New]     │
-│  ─────────────────────────────────────────────────────────  │
-│  🔍 Search...                         [Category ▼] [Sort ▼] │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ 📼 Sandy B. - Steps 1-3              45:23          │   │
-│  │    Category: Step Talks | Source: Internet Archive  │   │
-│  │    [▶ Test] [✏️ Edit] [🗑️ Delete]                   │   │
-│  └─────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ 📼 Dr. Bob's Last Major Talk         52:10          │   │
-│  │    Category: Founders | Source: AA.org              │   │
-│  │    [▶ Test] [✏️ Edit] [🗑️ Delete]                   │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  Showing 1-10 of 47                    [< Prev] [Next >]   │
-└─────────────────────────────────────────────────────────────┘
-```
+---
+
+### M11 — User Documentation & Education
+
+> **Goal:** Decrease time-to-value for newcomers and answer "How do I do X?" without support tickets.
+
+#### Epic 11.1 — Help Center & Guides
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 11.1.1 | **Starter's Guide**: "First 7 Days" automated walkthrough | 5 |
+| 11.1.2 | **Feature Tours**: Dismissible tooltips for complex tools (Inventories, Dashboard) | 4 |
+| 11.1.3 | **Knowledge Base**: Searchable FAQs (How to export data, How privacy works) | 3 |
+| 11.1.4 | **Video Tutorials**: Short 30s clips for key actions (embedded in "Empty States") | 3 |
+
+#### Epic 11.2 — In-App Education
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 11.2.1 | **"Why this matters" tooltips**: Contextual recovery education on form fields | 2 |
+| 11.2.2 | **Glossary**: Searchable dictionary of terms (linked from text) | 3 |
+| 11.2.3 | **Meeting Etiquette Guide**: "What to expect" content for newcomers | 2 |
+
+**Total Estimate: ~22 SP**
 
 ---
