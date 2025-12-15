@@ -261,6 +261,22 @@ Current state: 0 errors ✅, 29 warnings
 | Text size | "Language & text size" works | 2h |
 | Home screen | "Home screen & favorites" works | 2h |
 
+#### Voice-to-Text Global Adoption (~4h)
+
+> **Component exists but unused**: `components/ui/voice-text-area.tsx` is fully built but not wired into any forms.
+
+| Task | Description | Est |
+|------|-------------|-----|
+| Daily journal | Replace `<textarea>` with `<VoiceTextArea>` in journal entry form | 0.5h |
+| Spot-check inventory | Enable voice in M5 quick capture flows | 0.5h |
+| Contact notes | Voice-to-text for contact and interaction notes | 0.5h |
+| Morning/Night review | Voice-to-text for text fields in M5 daily flows | 0.5h |
+| Step 4 inventories | Voice-to-text for resentment/fear/harm notes | 0.5h |
+| Quick-add contact | Voice-to-text for name entry (helpful while at meeting) | 0.5h |
+| Voice toggle in settings | Allow users to disable voice button globally if desired | 1h |
+
+**Note**: VoiceTextArea uses Web Speech API (browser-native). Works on Chrome, Edge, Safari. May not work on all browsers.
+
 #### Exit Criteria
 
 - All settings menu items functional
