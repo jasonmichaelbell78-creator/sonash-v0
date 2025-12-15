@@ -747,6 +747,35 @@ users/{uid}/
 - Security hardening (secrets handling, dependency updates)
 - Documentation (architecture decision records, runbooks)
 
+---
+
+## Parallel Tracks (Business)
+
+### 💰 Monetization Strategy Research
+
+> **Status**: 🔬 Research Phase  
+> **Document**: [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md)
+
+Research initiative to define sustainable monetization without compromising recovery mission.
+
+**Research Areas:**
+- Monetization models (freemium, subscription, donations, B2B)
+- Ethics and recovery community perception
+- Legal/compliance (HIPAA, subscription laws, app store rules)
+- Market research (competitor pricing, willingness to pay)
+- Cost analysis (Firebase costs at scale, break-even analysis)
+- Technical implementation (RevenueCat, Stripe, entitlements)
+
+**Key Decisions Required:**
+- [ ] Core mission: Charity/ministry vs sustainable business?
+- [ ] Which features must always be free?
+- [ ] Target price point and model
+- [ ] B2B opportunity (sober living, treatment centers)?
+
+**Approach:** Multi-AI aggregated research (same methodology as Feature Ideas analysis)
+
+---
+
 ### Technical Debt & Architecture Maintenance
 
 **From Clean Architecture Refactor (Dec 2025):**
