@@ -1176,7 +1176,7 @@ users/{uid}/prayersUser/{id}
 
 | Ticket | Description | Est |
 |--------|-------------|-----|
-| F1.1 | Define Firestore schema: `users/{uid}/contacts/{contactId}` with `name`, `role` (sponsor, friend, counselor, other), `phone?`, `email?`, `address?`, `tags[]`, `notes`, `isSOS` boolean | 2 |
+| F1.1 | Define Firestore schema: `users/{uid}/contacts/{contactId}` with `name`, `role` (sponsor, friend, counselor, other), `phone?`, `email?`, `address?`, `tags[]`, `notes`, `isSOS` boolean, `metAt?` (meeting name), `metDate?` | 2 |
 | F1.2 | Create contacts CRUD service with Zod validation | 2 |
 | F1.3 | Replace hardcoded Support page contacts with Firestore real-time listener | 2 |
 | F1.4 | Implement add/edit contact modal with form validation | 3 |
@@ -1185,15 +1185,30 @@ users/{uid}/prayersUser/{id}
 | F1.7 | Implement "I need help now" flow with pre-written message templates ("Can you talk?", "I'm not okay.", "Call when you can") | 3 |
 | F1.8 | Add optional contact interaction log: `users/{uid}/contactLogs/{logId}` with `contactId`, `type` (called, no answer, left voicemail, texted), `timestamp`, `notes?` | 2 |
 | F1.9 | Write Firestore security rules for contacts (owner-only access) | 1 |
+| F1.10 | **Quick-add contact mode** - Minimal friction "I just met someone" flow: just name + phone, optional meeting context, fills out later | 3 |
+| F1.11 | **Floating quick-add button** - Accessible from Support page and Meeting Finder for instant capture | 2 |
+| F1.12 | **"Met at" context** - Auto-suggest recent/favorite meeting names, auto-fill current date | 1 |
 
-**Subtotal: 19 SP**
+**Subtotal: 25 SP**
+
+**Quick-Add Vision (Newcomer Focus)**
+
+> Newcomers are told "get phone numbers" constantly in early recovery. The app should make this **frictionless**:
+> - One-tap "+" button always visible on Support page
+> - Quick-add form: just **Name** + **Phone** (required), everything else optional
+> - "Where did you meet?" dropdown with recent meetings pre-filled
+> - Date auto-filled to today
+> - Can flesh out details (role, notes, email) later
+> - Celebrates: "Great! You now have X numbers. Keep building your network!"
 
 **Exit Criteria**
 
 - Users can add/edit/delete contacts with phone/email
+- **Quick-add captures name + phone in under 10 seconds**
 - Call/Text/Email buttons work on mobile and desktop
 - SOS contact designated and one-tap call functional
 - Interaction log saves reliably (optional feature)
+- "Met at" context helps users remember who's who
 
 ---
 
