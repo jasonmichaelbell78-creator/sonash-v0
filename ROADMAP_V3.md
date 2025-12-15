@@ -1871,7 +1871,35 @@ match /prayersCatalog/{id} {
 ├─────────────────────────────────────────────────────────────┤
 │  [Meetings] [Speakers] [Prayers] [Sober Living] [Readings]  │
 ├─────────────────────────────────────────────────────────────┤
-│                                                             │
+```
+
+---
+
+### M10 — Monetization & Premium Features (Post-Growth)
+
+> **Goal:** Create sustainable revenue stream by gating advanced Growth Tab features while keeping core recovery tools free. (See `docs/MONETIZATION_RESEARCH.md`)
+
+**Strategy:**
+- **Free:** Meetings, Today (Sobriety), Support Network, Basic Journaling
+- **Premium:** Growth Dashboard (Charts), Advanced Inventories (Step 4), Cloud Sync (future)
+
+#### Epic 10.1 — Infrastructure
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 10.1.1 | Integrate RevenueCat SDK (handles IAP for iOS/Android) | 5 |
+| 10.1.2 | Create `PremiumGate` component to wrap advanced features | 3 |
+| 10.1.3 | Implement entitlement check hook `usePremium()` | 2 |
+
+#### Epic 10.2 — User Experience
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 10.2.1 | Design & build Paywall screen (unlock benefits list) | 5 |
+| 10.2.2 | Build "Manage Subscription" settings page | 3 |
+| 10.2.3 | Add lock icon decorators to premium nav items | 2 |
+
+**Total Estimate: ~20 SP**
+
+---│                                                             │
 │  Speaker Tapes                              [+ Add New]     │
 │  ─────────────────────────────────────────────────────────  │
 │  🔍 Search...                         [Category ▼] [Sort ▼] │

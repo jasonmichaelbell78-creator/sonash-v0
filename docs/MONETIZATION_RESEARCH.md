@@ -94,79 +94,76 @@ What's the technical implementation for each monetization model in a Next.js + F
 
 ---
 
-## Phase 2: Analysis Categories
+## Phase 2: Analysis Framework (Completed)
 
-After gathering AI responses, categorize findings into:
+> **Analysis Source**: `docs/Monetization_Research_Phase1_Results.md` (Multi-AI aggregation)
 
 ### A. Monetization Models Comparison
 
-| Model | Revenue Potential | Ethical Fit | Technical Complexity | User Friction |
-|-------|------------------|-------------|---------------------|---------------|
-| Freemium | | | | |
-| Subscription | | | | |
-| One-time purchase | | | | |
-| Tip jar/donations | | | | |
-| B2B licensing | | | | |
-| Hybrid | | | | |
+| Model | Revenue Potential | Ethical Fit (Recovery) | Technical Complexity | User Friction | Verdict |
+|-------|------------------|------------------------|---------------------|---------------|---------|
+| **Freemium** | High Vol / Low Margin | **High** - if core is free | Med (IAP + entitlements) | Low entry / High upgrade | **Strong Contender** |
+| **Subscription** | High LTV / Predictable | Med - Churn/Cancel risks | High (StoreKit/Auth) | Med - "Subscription fatigue" | **Industry Standard** |
+| **One-time** | Low LTV / Front-loaded | **High** - Sensitive/Transparent | Low | High entry ("Stocker shock") | Good supplementary |
+| **Donation** | Very Low / Unpredictable | **Highest** - "7th Tradition" | Low (Stripe/IAP) | Zero | **Not scalable alone** |
+| **B2B Licensing** | High Contract Value | High - Subsidizes users | High (Teams/Reporting) | Zero for end-user | **Strong Parallel Track** |
 
 ### B. Feature Gating Matrix
 
 | Feature | Must Be Free | Could Be Premium | Notes |
 |---------|--------------|------------------|-------|
-| Crisis/SOS tools | | | |
-| Meeting finder | | | |
-| Basic journaling | | | |
-| Step 4 inventories | | | |
-| Speaker tapes | | | |
-| PDF export | | | |
-| Cloud sync | | | |
-| Advanced analytics | | | |
+| **Crisis/SOS tools** | ✅ YES | ❌ NO | **Ethical Hard Line**: Never paywall safety. |
+| **Meeting finder** | ✅ YES | ❌ NO | Core utility; paywalling reduces accuracy/value. |
+| **Basic journaling** | ✅ YES | ❌ NO | "Meeting in your pocket" must remain accessible. |
+| **Step 4 inventories** | ✅ Basic templates | ✅ "Power Tools" | Deep structured wizards, pattern analysis, export. |
+| **Speaker tapes** | ✅ Streaming | ✅ Offline/Notes | Hosting cost is low (external), value is organization. |
+| **Data Features** | ✅ Export | ✅ Cloud Sync | "Data hostage" dynamics kill trust; sync cost justifies fee. |
+| **Analytics** | ✅ Basic streaks | ✅ Deep Trends | Advanced correlations (Mood vs Sleep vs Meetings). |
 
-### C. Legal Checklist
+### C. Legal Checklist & Compliance (US)
 
-- [ ] HIPAA applicability determined
-- [ ] Privacy policy updated for payments
-- [ ] Terms of service for subscriptions
-- [ ] App Store compliance (Apple/Google)
-- [ ] Subscription disclosure requirements
-- [ ] Refund policy defined
-- [ ] Tax registration requirements
+- [ ] **HIPAA Applicability**: Likely **NO** for B2C (unless acting as "Business Associate" for treatment center).
+- [ ] **Data Sensitivity**: Treat as **SUD Restricted** (42 CFR Part 2 conceptual equivalent) even if not legally bound.
+- [ ] **Store Compliance**: Must use IAP (Apple/Google) for digital features; strictly no "web-pay-only" tricks.
+- [ ] **Privacy Policy**: Must explicitly state "No data sharing with ad networks" (FTC Health Breach Risk).
+- [ ] **Cancellation**: "Click-to-cancel" must be as easy as signup (ROSCA/State laws).
+- [ ] **Terms**: Include "Not medical advice" and "No outcome guarantees" disclaimers.
 
-### D. Cost/Revenue Projections
+### D. Cost/Revenue Projections (Estimates)
 
-| User Scale | Monthly Costs | Required Revenue | Price Point Analysis |
-|------------|---------------|------------------|---------------------|
-| 100 users | | | |
-| 1,000 users | | | |
-| 10,000 users | | | |
-| 100,000 users | | | |
+| User Scale | Monthly Costs (Est) | Required Revenue | Break-even Analysis |
+|------------|---------------------|------------------|---------------------|
+| **100 users** | ~$0 (Free tiers) | $0 | **Funded by Dev** |
+| **1,000 users** | <$50 (Firestore) | $50 | ~5 subs @ $9.99/mo |
+| **10,000 users** | ~$200 (DB+Functions) | $200 | ~20 subs @ $9.99/mo |
+| **100k users** | ~$800 (mostly DB/Net) | $800 | **Highly Profitable** (if audio is external URL) |
 
----
-
-## Phase 3: Decision Framework
-
-Questions to answer before choosing a model:
-
-1. **Core mission**: Is this a charity/ministry or a business?
-2. **Target audience**: Can your users afford subscriptions?
-3. **Competitive positioning**: Premium quality or accessible for all?
-4. **Sustainability**: What revenue is needed to maintain and improve?
-5. **Growth**: How does monetization affect user acquisition?
+> **Note on Audio**: If we host files, 100k users = ~$350/mo bandwidth. If we use external URLs (YouTube/Archive.org links), bandwidth is $0 for us.
 
 ---
 
-## Phase 4: Implementation Roadmap
+## Phase 3: Decision Framework (Completed)
 
-Once model is chosen, create implementation tickets:
+### Key Strategy Decisions (Dec 15, 2025)
 
-- [ ] Choose payment provider (RevenueCat, Stripe, etc.)
-- [ ] Define premium feature set
-- [ ] Design paywall UI/UX
-- [ ] Implement entitlement system
-- [ ] Create subscription management UI
-- [ ] Handle edge cases (grace period, refunds, etc.)
-- [ ] Analytics for conversion tracking
-- [ ] A/B testing framework for pricing
+1.  **Gating Strategy**: **Growth Tab features are PREMIUM.**
+    *   *Free Core*: Meetings, Today (Sobriety), Support Network.
+    *   *Premium*: Analytics, Advanced Inventories, Growth Dashboard charts.
+2.  **Timing**: Monetization logic implementation happens **AFTER** Growth Tab features are built.
+    *   *Reasoning*: Build value first, then gate it. Avoids slowing down feature dev with entitlement logic early on.
+3.  **Model**: implies **Freemium** (Free Core + Paid Growth Tab upgrades).
+
+---
+
+## Phase 4: Implementation Roadmap (Post-Growth Tab)
+
+Once Growth Tab features are ready:
+
+- [ ] Select Payment Provider (RevenueCat recommended for simplicity)
+- [ ] Create "Growth Plan" entitlement
+- [ ] Wrap Growth Tab components in `<PremiumGate>` component
+- [ ] Build "Upgrade to Unlock Insights" paywall screen
+- [ ] Connect to App Store / Play Store IAP
 
 ---
 
