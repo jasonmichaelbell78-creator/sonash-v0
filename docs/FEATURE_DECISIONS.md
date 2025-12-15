@@ -150,18 +150,56 @@ These expand scope of already-planned work. Check if you want the enhancement in
 
 ---
 
-## Already Confirmed Out of Scope
+## Out of Scope (Category 4) - Review for Spin-offs
 
-These are **not recommended** based on analysis. Only revisit if your thinking has changed:
+These are **not recommended** as originally proposed. Check "Revisit" if you want to discuss a modified version or spin-off idea. Add notes in Comments.
 
-| Revisit? | Feature | Reason Out of Scope |
-|:--------:|---------|---------------------|
-| [ ] | Social feeds / forums | Moderation burden, liability |
-| [ ] | Sponsor matching platform | Safety, verification complexity |
-| [ ] | Court card verification | Legal/privacy risk |
-| [ ] | Annotated literature reader | AAWS copyright |
-| [ ] | Sober living operations | B2B product, different business |
-| [ ] | Crisis intervention for suicidal ideation | Requires professional expertise |
+### Social/Community Platform Features
+
+| Revisit? | Feature | Reason | Comments / Spin-off Idea |
+|:--------:|---------|--------|--------------------------|
+| [ ] | Private recovery feed + moderated forums | Moderation burden, duty of care, liability | |
+| [ ] | Topic-based rooms for specific needs | Same as above | |
+| [ ] | Burning Desire instant support circle | Moderation + crisis escalation complexity | |
+| [ ] | Homegroup spaces / virtual homegroup | Becomes social platform; scope creep | |
+| [ ] | Ride share board / carpool organizer | Liability, safety, identity exposure | |
+| [ ] | Recovery-only verification | Privacy/equity concerns | |
+| [ ] | Community challenges (opt-in) | Requires moderation infrastructure | |
+
+### Safety/Liability Concerns
+
+| Revisit? | Feature | Reason | Comments / Spin-off Idea |
+|:--------:|---------|--------|--------------------------|
+| [ ] | Safety escalation path (suicidal ideation) | Requires professional crisis intervention; creates duty of care | |
+| [ ] | Court card / attendance verification | High privacy/legal risk | |
+| [ ] | Sponsor matching (mutual consent) | Safety, verification, boundary complexity | |
+
+### Copyright/Legal
+
+| Revisit? | Feature | Reason | Comments / Spin-off Idea |
+|:--------:|---------|--------|--------------------------|
+| [ ] | Annotated literature reader | AAWS/Grapevine copyright restrictions | |
+| [ ] | Book page finder with excerpts | Copyright concerns for excerpts | |
+
+### Different Product (B2B) - Could be separate product
+
+| Revisit? | Feature | Reason | Comments / Spin-off Idea |
+|:--------:|---------|--------|--------------------------|
+| [ ] | House rules quick reference | Sober living ops; B2B product | |
+| [ ] | Chore rotation + completion | Sober living ops; B2B product | |
+| [ ] | Curfew reminders | Location privacy; sober living ops | |
+| [ ] | House meetings notes | Sober living ops; B2B product | |
+| [ ] | IOP/PHP schedule integration | Treatment center ops; health data | |
+
+### Complex/Defer Indefinitely
+
+| Revisit? | Feature | Reason | Comments / Spin-off Idea |
+|:--------:|---------|--------|--------------------------|
+| [ ] | Sponsor dashboard (multi-sponsee) | Complex permissions; effectively collaboration software | |
+| [ ] | Sponsee tree / lineage visualizer | Privacy + ego dynamics concerns | |
+| [ ] | Spiritual growth quests | Risk of being "cringe" or competitive | |
+| [ ] | Wearable integration | Platform-specific complexity; privacy | |
+| [ ] | Beyond-one-fellowship planner | Scope creep into therapy/other pathways | |
 
 ---
 
