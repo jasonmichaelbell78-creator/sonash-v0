@@ -1,8 +1,11 @@
-"use client"
+
+import dynamic from "next/dynamic"
 
 import { MapPin, Home, Map, Calendar, Loader2, Locate, X } from "lucide-react"
 import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
+import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living"
+import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data"
 import { toast } from "sonner"
 import { logger } from "@/lib/logger"
 import { useAuth } from "@/components/providers/auth-provider"
@@ -25,10 +28,20 @@ type FellowshipFilter = typeof FELLOWSHIP_OPTIONS[number]
 // Sort options
 type SortOption = "time" | "nearest"
 
+const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
+  ssr: false,
+  loading: () => <div className="h-[400px] w-full bg-amber-50 animate-pulse rounded-lg flex items-center justify-center text-amber-900/40">Loading Map...</div>
+})
+
 export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([])
+  const [soberHomes, setSoberHomes] = useState<SoberLivingHome[]>([])
+  const [resourceType, setResourceType] = useState<"meetings" | "sober-living">("meetings")
   const [viewMode, setViewMode] = useState<"today" | "all">("today")
+  const [displayMode, setDisplayMode] = useState<"list" | "map">("list")
   const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
+  const [genderFilter, setGenderFilter] = useState<"All" | "Men" | "Women">("All")
+  const [neighborhoodFilter, setNeighborhoodFilter] = useState("All")
   const [sortBy, setSortBy] = useState<SortOption>("time")
   const [loading, setLoading] = useState(true)
   const { user, loading: authLoading } = useAuth()
@@ -67,30 +80,49 @@ export default function ResourcesPage() {
       }
     }
 
+    const fetchSoberHomes = async () => {
+      setLoading(true)
+      try {
+        const data = await SoberLivingService.getAllHomes()
+        setSoberHomes(data)
+      } catch (error) {
+        logger.error("Failed to load sober homes", { error })
+      } finally {
+        setLoading(false)
+      }
+    }
+
     if (authLoading) return
+    /*
     if (!user) {
       setMeetings([])
       setLoading(false)
       return
     }
+    */
 
-    fetchMeetings()
-  }, [todayName, viewMode, user, authLoading])
+    if (resourceType === "meetings") {
+      fetchMeetings()
+    } else {
+      fetchSoberHomes()
+    }
+  }, [todayName, viewMode, user, authLoading, resourceType])
 
   const finderRef = useRef<HTMLDivElement>(null)
 
-  // Dev util to clear data
-  const handleClear = async () => {
-    if (!isDevMode) return
-    if (!confirm("Are you sure you want to delete all meetings?")) return
+  // Data reset handler (Public for prototype phase)
+  const handleReset = async () => {
+    if (!confirm("Delete all data and reset to 'Nashville Demo Set'? (Fixes neighborhood list)")) return
     try {
       setLoading(true)
       await MeetingsService.clearAllMeetings()
-      toast.success("All meetings deleted.")
+      await MeetingsService.seedInitialMeetings()
+      await SoberLivingService.seedInitialHomes(INITIAL_SOBER_LIVING_HOMES)
+      toast.success("Data reset to Nashville Demo.")
       triggerRefresh()
     } catch (err) {
-      logger.error("Error clearing data", { error: err })
-      toast.error("Failed to clear data.")
+      logger.error("Error resetting data", { error: err })
+      toast.error("Failed to reset data.")
     }
   }
 
@@ -103,10 +135,13 @@ export default function ResourcesPage() {
     setLoading(false)
   }
 
-  const handleResourceClick = (title: string) => {
-    if (title === "Meeting Finder") {
+  const handleResourceClick = (title: string, id: string) => {
+    if (id === "meetings") {
+      setResourceType("meetings")
       finderRef.current?.scrollIntoView({ behavior: "smooth" })
-      toast.info("Showing today's meetings below.")
+    } else if (id === "sober-living") {
+      setResourceType("sober-living")
+      finderRef.current?.scrollIntoView({ behavior: "smooth" })
     } else {
       toast("Feature coming soon!", {
         description: `${title} is under construction.`
@@ -116,21 +151,25 @@ export default function ResourcesPage() {
 
   const resources = [
     {
+      id: "meetings",
       icon: MapPin,
       title: "Meeting Finder",
       description: "Find AA, NA, and support meetings by time and neighborhood.",
     },
     {
+      id: "sober-living",
       icon: Home,
       title: "Sober Living Finder",
       description: "Sober homes and halfway houses with basic info and contacts.",
     },
     {
+      id: "map",
       icon: Map,
       title: "Local Resource Map",
       description: "Detox, rehabs, clinics, pharmacies, food, IDs, bus stations.",
     },
     {
+      id: "events",
       icon: Calendar,
       title: "Nashville Sober Events",
       description: "Cookouts, game nights, sober concerts and more.",
@@ -177,10 +216,47 @@ export default function ResourcesPage() {
     if (sortBy === "nearest" && userLocation) {
       result = sortByDistance(result, userLocation, (m) => m.coordinates)
     }
-    // Default sort by time is already applied by the service
+
+    // Apply neighborhood filter (last, effectively)
+    if (neighborhoodFilter !== "All") {
+      result = result.filter(m => m.neighborhood === neighborhoodFilter)
+    }
 
     return result
-  }, [meetings, viewMode, fellowshipFilter, sortBy, userLocation])
+  }, [meetings, viewMode, fellowshipFilter, sortBy, userLocation, neighborhoodFilter])
+
+  // Filtered Sober Living Homes
+  const filteredSoberHomes = useMemo(() => {
+    let result = soberHomes
+
+    // Apply gender filter
+    if (genderFilter !== "All") {
+      result = result.filter(h => h.gender === genderFilter)
+    }
+
+    // Apply sorting
+    if (sortBy === "nearest" && userLocation) {
+      result = sortByDistance(result, userLocation, (h) => h.coordinates)
+    }
+
+    // Apply neighborhood filter
+    if (neighborhoodFilter !== "All") {
+      result = result.filter(h => h.neighborhood === neighborhoodFilter)
+    }
+
+    return result
+  }, [soberHomes, genderFilter, sortBy, userLocation, neighborhoodFilter])
+
+  const currentData = resourceType === "meetings" ? filteredMeetings : filteredSoberHomes
+
+  // Get unique neighborhoods from the current data (or all data?) 
+  const availableNeighborhoods = useMemo(() => {
+    // Use all items from ACTIVE type to populate the list
+    const sourceData = resourceType === "meetings" ? meetings : soberHomes
+    // @ts-ignore - access safe property
+    const unique = Array.from(new Set(sourceData.map(item => item.neighborhood))).filter(Boolean).sort()
+    return unique
+  }, [meetings, soberHomes, resourceType])
 
   // Helper to get distance for a meeting
   const getMeetingDistance = (meeting: Meeting): string | null => {
@@ -217,7 +293,7 @@ export default function ResourcesPage() {
           {resources.map((resource, index) => (
             <button
               key={index}
-              onClick={() => handleResourceClick(resource.title)}
+              onClick={() => handleResourceClick(resource.title, resource.id)}
               className="w-full text-left p-4 border border-amber-200/50 rounded-lg hover:bg-amber-50 transition-colors group shadow-sm"
             >
               <div className="flex items-start gap-3">
@@ -233,125 +309,145 @@ export default function ResourcesPage() {
 
         {/* Right column - Meeting finder today */}
         <div ref={finderRef}>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-heading text-xl text-amber-900">
-              Meeting Finder
-            </h2>
-            <div className="flex gap-2 bg-amber-100/50 p-1 rounded-lg">
-              <button
-                onClick={() => setViewMode("today")}
-                className={`text-xs px-3 py-1 rounded-md transition-all ${viewMode === "today" ? "bg-white shadow-sm text-amber-900 font-medium" : "text-amber-900/50 hover:text-amber-900"}`}
-              >
-                Today
-              </button>
-              <button
-                onClick={() => setViewMode("all")}
-                className={`text-xs px-3 py-1 rounded-md transition-all ${viewMode === "all" ? "bg-white shadow-sm text-amber-900 font-medium" : "text-amber-900/50 hover:text-amber-900"}`}
-              >
-                All
-              </button>
-            </div>
-          </div>
+          <h2 className="font-heading text-xl text-amber-900">
+            {resourceType === "meetings" ? "Meeting Finder" : "Sober Living Finder"}
+          </h2>
 
-          {/* Fellowship filter and location sort */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-4">
-            {FELLOWSHIP_OPTIONS.map((option) => (
-              <button
-                key={option}
-                onClick={() => setFellowshipFilter(option)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-                  fellowshipFilter === option
-                    ? "bg-amber-600 text-white border-amber-600 font-medium"
-                    : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                }`}
-              >
-                {option}
-              </button>
-            ))}
 
-            {/* Divider */}
-            <div className="w-px h-5 bg-amber-200 mx-1" />
+          {/* Filters */}
+          <div className="space-y-3 mb-4">
+            {/* Row 1: Type-Specific Filters */}
+            <div className="flex flex-wrap items-center gap-2">
+              {resourceType === "meetings" ? (
+                <>
+                  <div className="flex bg-amber-100/50 p-1 rounded-full border border-amber-200/50">
+                    {FELLOWSHIP_OPTIONS.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => setFellowshipFilter(option)}
+                        className={`text-xs px-3 py-1.5 rounded-full transition-all ${fellowshipFilter === option
+                          ? "bg-amber-600 text-white shadow-sm font-medium"
+                          : "text-amber-800 hover:text-amber-900"
+                          }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
 
-            {/* Nearest to me button */}
-            <button
-              onClick={handleNearestClick}
-              disabled={locationLoading}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
-                sortBy === "nearest" && userLocation
-                  ? "bg-blue-600 text-white border-blue-600 font-medium"
-                  : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-              } ${locationLoading ? "opacity-50 cursor-wait" : ""}`}
-            >
-              {locationLoading ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
+                  {/* Time View Toggle */}
+                  <div className="flex bg-amber-100/50 p-1 rounded-full border border-amber-200/50">
+                    <button
+                      onClick={() => setViewMode("today")}
+                      className={`text-xs px-3 py-1.5 rounded-full transition-all ${viewMode === "today" ? "bg-white shadow-sm text-amber-900 font-medium" : "text-amber-800/60 hover:text-amber-900"}`}
+                    >
+                      Today
+                    </button>
+                    <button
+                      onClick={() => setViewMode("all")}
+                      className={`text-xs px-3 py-1.5 rounded-full transition-all ${viewMode === "all" ? "bg-white shadow-sm text-amber-900 font-medium" : "text-amber-800/60 hover:text-amber-900"}`}
+                    >
+                      All
+                    </button>
+                  </div>
+                </>
               ) : (
-                <Locate className="w-3 h-3" />
+                // Sober Living Filters (Gender)
+                <div className="flex bg-amber-100/50 p-1 rounded-full border border-amber-200/50">
+                  {["All", "Men", "Women"].map((option) => (
+                    <button
+                      key={option}
+                      // @ts-ignore
+                      onClick={() => setGenderFilter(option)}
+                      className={`text-xs px-3 py-1.5 rounded-full transition-all ${genderFilter === option
+                        ? "bg-amber-600 text-white shadow-sm font-medium"
+                        : "text-amber-800 hover:text-amber-900"
+                        }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               )}
-              Nearest
-            </button>
+            </div>
 
-            {/* Clear location button (when location is active) */}
-            {sortBy === "nearest" && userLocation && (
-              <button
-                onClick={() => {
-                  clearLocation()
-                  setSortBy("time")
-                }}
-                className="text-xs p-1.5 rounded-full border border-amber-200 bg-white text-amber-600 hover:bg-amber-50 transition-all"
-                title="Clear location"
-                aria-label="Clear location"
-              >
-                <X className="w-3 h-3" />
-              </button>
+            {/* Row 2: Location & Sort - Only for Meetings */
+              resourceType === "meetings" && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Neighborhood Picker */}
+                  <div className="relative flex-1 min-w-[140px]">
+                    <select
+                      value={neighborhoodFilter}
+                      onChange={(e) => setNeighborhoodFilter(e.target.value)}
+                      className="w-full text-xs h-8 pl-8 pr-4 appearance-none content-center rounded-full border border-amber-200 bg-white text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-300/50"
+                    >
+                      <option value="All">📍 All Neighborhoods</option>
+                      {availableNeighborhoods.map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                    <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600 pointer-events-none" />
+                  </div>
+
+                  {/* Nearest Button */}
+                  <button
+                    onClick={handleNearestClick}
+                    disabled={locationLoading}
+                    className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${sortBy === "nearest" && userLocation
+                      ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
+                      : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                      } ${locationLoading ? "opacity-50" : ""}`}
+                  >
+                    {locationLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Locate className="w-3 h-3" />}
+                    Nearest
+                  </button>
+
+                  {/* Map Toggle */}
+                  <button
+                    onClick={() => setDisplayMode(displayMode === "list" ? "map" : "list")}
+                    className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${displayMode === "map"
+                      ? "bg-amber-600 text-white border-amber-600 font-medium shadow-sm"
+                      : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                      }`}
+                  >
+                    {displayMode === "list" ? <Map className="w-3 h-3" /> : <Calendar className="w-3 h-3" />}
+                    {displayMode === "list" ? "Map" : "List"}
+                  </button>
+                </div>
+              )}
+
+            {/* Active Filters Summary (if complex) */}
+            {neighborhoodFilter !== "All" && (
+              <div className="flex items-center gap-2 px-1">
+                <span className="text-[10px] text-amber-900/40">Filtered by:</span>
+                <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium flex items-center gap-1">
+                  📍 {neighborhoodFilter}
+                  <button onClick={() => setNeighborhoodFilter("All")} className="hover:text-amber-950"><X className="w-3 h-3" /></button>
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Hand-drawn map placeholder */}
-          <div
-            className="relative w-full h-40 mb-4 rounded-lg overflow-hidden border border-amber-200/50 bg-gradient-to-br from-[#f5f0e6] to-[#ebe5d9]"
-          >
-            {/* Stylized map lines */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100">
-              {/* Roads */}
-              <path
-                d="M20,50 Q60,30 100,50 T180,50"
-                stroke="#9ca3af"
-                strokeWidth="2"
-                fill="none"
-                strokeDasharray="4,2"
-              />
-              <path d="M50,20 Q70,50 50,80" stroke="#9ca3af" strokeWidth="2" fill="none" strokeDasharray="4,2" />
-              <path d="M100,10 L100,90" stroke="#9ca3af" strokeWidth="1.5" fill="none" strokeDasharray="3,2" />
-              <path d="M150,30 Q130,50 150,70" stroke="#9ca3af" strokeWidth="2" fill="none" strokeDasharray="4,2" />
 
-              {/* River */}
-              <path d="M0,60 Q50,70 100,55 T200,65" stroke="#93c5fd" strokeWidth="4" fill="none" opacity="0.6" />
-            </svg>
 
-            {/* Map pins */}
-            <div className="absolute top-6 left-16">
-              <MapPin className="w-5 h-5 text-amber-600 fill-amber-200" />
-            </div>
-            <div className="absolute top-12 left-1/2 -translate-x-1/2">
-              <MapPin className="w-5 h-5 text-amber-600 fill-amber-200" />
-            </div>
-            <div className="absolute bottom-8 right-16">
-              <MapPin className="w-5 h-5 text-amber-600 fill-amber-200" />
-            </div>
-          </div>
-
-          {/* Meeting list */}
+          {/* Meeting content (List or Map) */}
           <div className="space-y-2">
             {loading ? (
               <div className="flex items-center gap-2 text-amber-900/40 italic p-4">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <p className="text-sm">Loading schedule...</p>
               </div>
-            ) : filteredMeetings.length === 0 ? (
+            ) : currentData.length === 0 ? (
               <div className="p-4 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
                 <p className="text-sm text-amber-900/60 italic mb-3">
-                  No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found
-                  {viewMode === "today" ? " for today" : ""}.
+                  {resourceType === "meetings" ? (
+                    <>
+                      No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found
+                      {viewMode === "today" ? " for today" : ""}.
+                    </>
+                  ) : (
+                    <>No sober living homes found.</>
+                  )}
                 </p>
                 <div className="flex gap-2 justify-center">
                   {fellowshipFilter !== "All" && (
@@ -372,20 +468,39 @@ export default function ResourcesPage() {
                   )}
                 </div>
               </div>
+            ) : displayMode === "map" ? (
+              <div className="animate-in fade-in zoom-in-95 duration-300">
+                <div className="flex justify-between items-center mb-2 px-1">
+                  <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
+                    Map View ({currentData.length})
+                  </span>
+                </div>
+                <MeetingMap meetings={filteredMeetings} userLocation={userLocation} />
+              </div>
             ) : (
+              // List View
               <>
                 <div className="flex justify-between items-center mb-2 px-1">
                   <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
-                    {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
-                    {viewMode === 'today' ? `Today (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
+                    {resourceType === "meetings" ? (
+                      <>
+                        {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
+                        {viewMode === 'today' ? `Today (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
+                      </>
+                    ) : (
+                      <>
+                        {genderFilter !== "All" ? `${genderFilter} ` : ""}
+                        Homes ({filteredSoberHomes.length})
+                      </>
+                    )}
                   </span>
-                  {isDevMode && (
-                    <button onClick={handleClear} className="text-[10px] text-red-400 hover:text-red-600 underline">
-                      Clear Data (Dev)
-                    </button>
-                  )}
+                  {/* Both types support Reset currently? Or just meetings? MeetingsService supports clear. SoberLivingService supports it too. */}
+                  <button onClick={handleReset} className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1">
+                    <Loader2 className="w-3 h-3" /> Reset Data
+                  </button>
                 </div>
-                {filteredMeetings.map((meeting) => {
+
+                {resourceType === "meetings" && filteredMeetings.map((meeting) => {
                   const distance = getMeetingDistance(meeting)
                   return (
                     <button
@@ -415,11 +530,52 @@ export default function ResourcesPage() {
                     </button>
                   )
                 })}
+
+                {resourceType === "sober-living" && filteredSoberHomes.map((home) => (
+                  <div
+                    key={home.id}
+                    className="w-full text-left flex items-start gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all"
+                  >
+                    {home.heroImage ? (
+                      <div className="w-12 h-12 rounded-lg bg-gray-100 bg-cover bg-center shrink-0 border border-amber-100" style={{ backgroundImage: `url(${home.heroImage})` }} />
+                    ) : (
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 
+                          ${home.gender === 'Men' ? 'border-blue-200 bg-blue-50 text-blue-700' :
+                          home.gender === 'Women' ? 'border-pink-200 bg-pink-50 text-pink-700' :
+                            'border-purple-200 bg-purple-50 text-purple-700'}`}>
+                        {home.gender === 'Men' ? 'M' : home.gender === 'Women' ? 'W' : 'C'}
+                      </div>
+                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <h3 className="font-heading text-sm text-amber-900 font-semibold truncate">{home.name}</h3>
+                      </div>
+                      <p className="text-xs text-amber-900/60 flex items-center gap-1 mb-1.5">
+                        <MapPin className="w-3 h-3" /> {home.neighborhood || home.address}
+                      </p>
+                      <div className="flex gap-2">
+                        {home.website && (
+                          <a href={home.website} target="_blank" rel="noopener noreferrer" className="text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-1 rounded-full hover:bg-amber-100">
+                            Website
+                          </a>
+                        )}
+                        {home.phone && (
+                          <a href={`tel:${home.phone}`} className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full hover:bg-green-100 flex items-center gap-1">
+                            Call
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </>
             )}
           </div>
 
-          <p className="font-body text-sm text-amber-900/50 mt-4 italic text-center">Tap a meeting for details.</p>
+          <p className="font-body text-sm text-amber-900/50 mt-4 italic text-center">
+            {resourceType === "meetings" ? "Tap a meeting for details." : "Tap a home for details."}
+          </p>
         </div>
       </div>
 
@@ -483,6 +639,7 @@ export default function ResourcesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
     </div>
   )
 }

@@ -1,0 +1,22 @@
+{
+    "name": "SoNash - Sober Nashville",
+    "short_name": "SoNash",
+    "description": "Nashville's sober community in your pocket.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f5f0e6",
+    "theme_color": "#f5f0e6",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/pwa-icon.jpg",
+            "sizes": "192x192 512x512",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "/pwa-icon.jpg",
+            "sizes": "any",
+            "type": "image/jpeg"
+        }
+    ]
+}

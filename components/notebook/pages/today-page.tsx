@@ -12,12 +12,15 @@ import { logger, maskIdentifier } from "@/lib/logger"
 import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils"
 import { toDate } from "@/lib/types/firebase-types"
 import { STORAGE_KEYS, READING_PREFS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
+import { NotebookModuleId } from "../roadmap-modules"
+import { DailyQuoteCard } from "../features/daily-quote-card"
 
 interface TodayPageProps {
   nickname: string
+  onNavigate: (id: NotebookModuleId) => void
 }
 
-export default function TodayPage({ nickname }: TodayPageProps) {
+export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
   const [cravings, setCravings] = useState(false)
   const [used, setUsed] = useState(false)
@@ -217,10 +220,19 @@ export default function TodayPage({ nickname }: TodayPageProps) {
   return (
     <div className="h-full overflow-y-auto pr-2 pb-8 scrollbar-hide">
       {/* Header */}
-      <div className="mb-6">
-        <p className="font-body text-lg text-amber-900/80 underline decoration-amber-900/30">
-          {dateString} – Hey {nickname || "Friend"}, one day at a time.
-        </p>
+      <div className="mb-6 pt-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="font-heading text-xl md:text-2xl text-amber-900 font-bold mb-1">
+              {dateString}
+            </p>
+            <p className="font-handlee text-amber-900/60 text-sm">
+              One day at a time, {nickname || "friend"}.
+            </p>
+          </div>
+          {/* Spacer for bookmark ribbon */}
+          <div className="w-10"></div>
+        </div>
       </div>
 
       <AuthErrorBanner />
@@ -244,22 +256,9 @@ export default function TodayPage({ nickname }: TodayPageProps) {
             )}
           </div>
 
-          {/* Daily Inspiration (admin-managed quotes in future) */}
-          <div
-            className="bg-amber-100 p-4 rounded-sm relative transition-transform hover:scale-[1.02]"
-            style={{
-              boxShadow: "2px 2px 8px rgba(0,0,0,0.15)",
-              transform: "rotate(-1deg)",
-            }}
-          >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-400/80 shadow-inner backdrop-blur-sm" />
-            <p className="font-heading text-lg text-amber-900 text-center pt-2">
-              Serenity is found in the moment.
-            </p>
-            <p className="font-body text-xs text-amber-700/60 text-center mt-2 italic">
-              Daily inspiration
-            </p>
-          </div>
+
+          {/* Daily Inspiration (from DB) */}
+          <DailyQuoteCard />
 
           {/* Today's Reading - Direct external links */}
           <div>
@@ -401,11 +400,13 @@ export default function TodayPage({ nickname }: TodayPageProps) {
             </div>
           </div>
 
-          {/* Navigation hint */}
           <div className="flex items-center justify-between pt-4">
-            <a href="/history" className="font-heading text-amber-900/60 hover:text-amber-900 text-sm border-b border-amber-900/30 hover:border-amber-900 transition-colors">
+            <button
+              onClick={() => onNavigate('history')}
+              className="font-heading text-amber-900/60 hover:text-amber-900 text-sm border-b border-amber-900/30 hover:border-amber-900 transition-colors"
+            >
               My Journal History →
-            </a>
+            </button>
             <p className="font-body text-sm text-amber-900/50 text-right">Swipe left for more →</p>
           </div>
         </div>

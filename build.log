@@ -1,0 +1,49 @@
+
+> my-v0-project@0.1.0 build
+> next build
+
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+ ΓÜá Invalid next.config.mjs options detected: 
+ ΓÜá     Unrecognized key(s) in object: 'turbopack' at "experimental"
+ ΓÜá See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\jason\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\jason\Workspace\dev-projects\sonash-v0\package-lock.json
+
+   Γû▓ Next.js 16.0.7 (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ? turbopack (invalid experimental key)
+
+   Creating an optimized production build ...
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./Workspace/dev-projects/sonash-v0/components/admin/admin-tabs.tsx:11:5
+Parsing ecmascript source code failed
+   9 |
+  10 | import { MeetingsTab } from "./meetings-tab"
+> 11 |     )
+     |     ^
+  12 | }
+  13 |
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./Workspace/dev-projects/sonash-v0/components/admin/admin-tabs.tsx [Client Component Browser]
+    ./Workspace/dev-projects/sonash-v0/app/admin/page.tsx [Client Component Browser]
+    ./Workspace/dev-projects/sonash-v0/app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Workspace/dev-projects/sonash-v0/components/admin/admin-tabs.tsx [Client Component SSR]
+    ./Workspace/dev-projects/sonash-v0/app/admin/page.tsx [Client Component SSR]
+    ./Workspace/dev-projects/sonash-v0/app/admin/page.tsx [Server Component]
+
+
+    at <unknown> (./Workspace/dev-projects/sonash-v0/components/admin/admin-tabs.tsx:11:5)

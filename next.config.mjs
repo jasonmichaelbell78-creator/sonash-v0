@@ -10,8 +10,9 @@ dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   images: {
-    // defaults
+    unoptimized: true,
   },
   experimental: {
     turbopack: {

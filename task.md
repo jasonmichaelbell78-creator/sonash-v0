@@ -2,11 +2,16 @@
 
 **Last Updated:** 2025-12-12  
 **Source:** ROADMAP_V3.md (Canonical Roadmap)  
-**Current Focus:** M1 (Stabilize & De-Risk Foundation) + M2 (Architecture Quality)
+**Current Focus:** Finish M1 & Polish UI
 
 ---
 
-## M1 — Stabilize & De-Risk the Foundation (Weeks 1-4)
+## ⏳ In Progress
+
+- [x] **Daily Inspiration Logic:**
+    - [x] Admin Tab for CRUD
+    - [x] Quote Rotation Logic
+    - [x] Display on Today Page
 
 ### Week 1: Firebase App Check (Bot Protection)
 
@@ -63,6 +68,7 @@
 - [ ] Set up security event logging (Firestore or Cloud Logging)
 - [ ] Create incident response runbook (docs/INCIDENT_RESPONSE.md)
 - [ ] Test alert triggers with simulated high usage
+- [x] Admin-managed daily quotes
 - [ ] Document monitoring procedures for team
 
 **Exit Criteria:** Team is alerted before costs spiral, security events tracked

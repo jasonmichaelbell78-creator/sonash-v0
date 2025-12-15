@@ -116,6 +116,7 @@ export function MeetingsTab() {
             time: meeting.time,
             address: meeting.address,
             neighborhood: meeting.neighborhood,
+            coordinates: meeting.coordinates || { lat: 0, lng: 0 },
         })
         setEditingMeeting(meeting)
         setModalMode("edit")
@@ -203,6 +204,20 @@ export function MeetingsTab() {
                         <option value="evening">Evening (after 5pm)</option>
                     </select>
                 </div>
+                <button
+                    onClick={async () => {
+                        if (confirm("Reset all matching data to original demo set? This deletes all current meetings.")) {
+                            setLoading(true)
+                            await import("@/lib/db/meetings").then(m => m.MeetingsService.clearAllMeetings())
+                            await import("@/lib/db/meetings").then(m => m.MeetingsService.seedInitialMeetings())
+                            await fetchMeetings()
+                            setLoading(false)
+                        }
+                    }}
+                    className="bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300 px-4 py-2 rounded-lg transition-colors mr-2"
+                >
+                    ⚠️ Reset Data
+                </button>
                 <button
                     onClick={handleAdd}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
@@ -352,6 +367,49 @@ export function MeetingsTab() {
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                                     placeholder="e.g., East Nashville"
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={formData.coordinates?.lat || ""}
+                                        onChange={(e) => {
+                                            const val = e.target.value === "" ? 0 : parseFloat(e.target.value);
+                                            setFormData({
+                                                ...formData,
+                                                coordinates: {
+                                                    lat: val,
+                                                    lng: formData.coordinates?.lng || 0
+                                                }
+                                            });
+                                        }}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                        placeholder="36.1627"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={formData.coordinates?.lng || ""}
+                                        onChange={(e) => {
+                                            const val = e.target.value === "" ? 0 : parseFloat(e.target.value);
+                                            setFormData({
+                                                ...formData,
+                                                coordinates: {
+                                                    lat: formData.coordinates?.lat || 0,
+                                                    lng: val
+                                                }
+                                            });
+                                        }}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                        placeholder="-86.7816"
+                                    />
+                                </div>
                             </div>
                         </div>
 

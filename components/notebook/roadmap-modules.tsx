@@ -1,27 +1,21 @@
-import { ReactNode } from "react"
+import React from "react"
 import TodayPage from "./pages/today-page"
 import ResourcesPage from "./pages/resources-page"
-import SupportPage from "./pages/support-page"
+import HistoryPage from "./pages/history-page"
 import PlaceholderPage from "./pages/placeholder-page"
+import GrowthPage from "./pages/growth-page"
+import { featureFlagEnabled } from "@/lib/utils"
 
-export type NotebookModuleId = "today" | "resources" | "support" | "growth" | "work" | "more"
-
-type ModuleStatus = "available" | "planned"
+export type NotebookModuleId = "today" | "resources" | "growth" | "work" | "more" | "history" | "community" | "support"
 
 export interface NotebookModule {
   id: NotebookModuleId
   label: string
   color: string
-  status: ModuleStatus
+  status: "available" | "planned"
   featureFlag?: string
   description: string
-  render: (options: { nickname: string }) => ReactNode
-}
-
-const featureFlagEnabled = (flag?: string) => {
-  if (!flag) return true
-  if (typeof process === "undefined") return false
-  return process.env?.[flag] === "true"
+  render: (props: { nickname?: string; onNavigate?: (id: string) => void }) => React.ReactNode
 }
 
 export const notebookModules: NotebookModule[] = [
@@ -31,37 +25,32 @@ export const notebookModules: NotebookModule[] = [
     color: "bg-sky-200",
     status: "available",
     description: "Daily check-in, clean time tracker, and journal scratchpad.",
-    render: ({ nickname }) => <TodayPage nickname={nickname} />,
+    render: ({ nickname, onNavigate }) => <TodayPage nickname={nickname || "Friend"} onNavigate={onNavigate} />,
   },
   {
     id: "resources",
     label: "Resources",
-    color: "bg-orange-200",
+    color: "bg-emerald-200",
     status: "available",
-    description: "Meeting finder, local resource map, and sober living info.",
+    description: "Find meetings, readings, and recovery tools.",
     render: () => <ResourcesPage />,
-  },
-  {
-    id: "support",
-    label: "Support",
-    color: "bg-green-200",
-    status: "available",
-    description: "SOS contacts and fast outreach tools.",
-    render: () => <SupportPage />,
   },
   {
     id: "growth",
     label: "Growth",
     color: "bg-yellow-200",
-    status: "planned",
+    status: "available",
     featureFlag: "NEXT_PUBLIC_ENABLE_GROWTH",
     description: "Step work, reflections, and growth exercises.",
-    render: () => (
-      <PlaceholderPage
-        title="Growth"
-        description="Step work, reflections, and personal development tools coming soon."
-      />
-    ),
+    render: ({ onNavigate }) => <GrowthPage onNavigate={onNavigate} />,
+  },
+  {
+    id: "support",
+    label: "Support",
+    color: "bg-orange-200",
+    status: "available",
+    description: "Emergency contacts and help lines.",
+    render: () => <PlaceholderPage title="Support" description="Emergency contacts and crisis resources." />,
   },
   {
     id: "work",
@@ -85,6 +74,14 @@ export const notebookModules: NotebookModule[] = [
     featureFlag: "NEXT_PUBLIC_ENABLE_MORE",
     description: "Overflow notebook modules, settings, and experiments.",
     render: () => <PlaceholderPage title="More" description="Additional features and settings coming soon." />,
+  },
+  {
+    id: "history",
+    label: "History",
+    color: "bg-amber-100",
+    status: "available",
+    description: "Your past journal entries and progress.",
+    render: () => <HistoryPage />,
   },
 ]
 

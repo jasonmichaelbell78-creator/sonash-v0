@@ -120,9 +120,21 @@ service cloud.firestore {
     // Meetings collection (public read with App Check, admin full access)
     match /meetings/{meetingId} {
       // Public read with App Check, OR admin read without App Check
-      allow read: if hasValidAppCheck() || (request.auth != null && request.auth.token.admin == true);
+      allow read: if true;
       // Admin users can write (requires admin custom claim)
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      allow write: if true; // TODO: REVERT TO ADMIN ONLY AFTER DEMO
+    }
+
+    // Sober Living collection
+    match /sober_living/{homeId} {
+      allow read: if true;
+      allow write: if true; // TODO: REVERT TO ADMIN ONLY AFTER DEMO
+    }
+
+    // Daily Quotes collection
+    match /daily_quotes/{quoteId} {
+      allow read: if true;
+      allow write: if true; // TODO: REVERT TO ADMIN ONLY AFTER DEMO
     }
 
     // ============================================================

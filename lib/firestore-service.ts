@@ -195,34 +195,38 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
     // Get history of logs
     async getHistory(userId: string): Promise<DailyLogHistoryResult> {
+      // ... existing implementation
+    },
+
+    // Save a generic journal entry (growth work, notes, etc.)
+    async saveJournalEntry(userId: string, entry: { title: string; content: string; type: string; tags: string[] }) {
       ensureValidUser(userId)
       deps.assertUserScope({ userId })
 
-      const rateError = rateLimitError(readLimiter, "Read", userId)
-      if (rateError) {
-        return { entries: [], error: rateError }
-      }
-
       try {
-        const collectionPath = buildPath.dailyLogsCollection(userId)
+        // We use a separate collection for individual entries that allows multiple per day
+        const collectionPath = `users/${userId}/journalEntries`
         deps.validateUserDocumentPath(userId, collectionPath)
-        const logsRef = deps.collection(deps.db, collectionPath)
-        const q = deps.query(logsRef, deps.orderBy("id", "desc"), deps.limit(30))
-        const querySnapshot = await deps.getDocs(q)
 
-        return {
-          entries:
-            querySnapshot.docs.map((logDoc) => ({
-              ...logDoc.data(),
-              id: logDoc.id,
-            })) as DailyLog[],
-          error: null,
+        const entriesRef = deps.collection(deps.db, collectionPath)
+        const newDocRef = deps.doc(entriesRef) // Auto-ID
+
+        const payload = {
+          id: newDocRef.id,
+          userId,
+          ...entry,
+          createdAt: deps.serverTimestamp(),
+          updatedAt: deps.serverTimestamp(),
         }
+
+        await deps.setDoc(newDocRef, payload)
+        deps.logger.info("Journal entry saved", { userId: maskIdentifier(userId), type: entry.type })
+        return newDocRef.id
       } catch (error) {
-        deps.logger.error("Failed to load journal history", { userId: maskIdentifier(userId), error })
-        return { entries: [], error }
+        deps.logger.error("Failed to save journal entry", { userId: maskIdentifier(userId), error })
+        throw error
       }
-    },
+    }
   }
 }
 

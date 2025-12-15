@@ -121,27 +121,41 @@ export const MeetingsService = {
 
         // A mix of meetings across the week with Nashville coordinates
         const seedData: Meeting[] = [
-            // Mondays
+            // MONDAYS
             { id: "mon_1", name: "East Side Early Risers", type: "AA", day: "Monday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
             { id: "mon_2", name: "Downtown Lunch Bunch", type: "NA", day: "Monday", time: "12:00", address: "456 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1627, lng: -86.7816 } },
             { id: "mon_3", name: "West End Serenity", type: "AA", day: "Monday", time: "19:00", address: "789 West End Ave", neighborhood: "West End", coordinates: { lat: 36.1496, lng: -86.8140 } },
+            { id: "mon_4", name: "Madison Recovery", type: "NA", day: "Monday", time: "19:30", address: "500 Gallatin Pike", neighborhood: "Madison", coordinates: { lat: 36.2510, lng: -86.7130 } },
+            { id: "mon_5", name: "Green Hills Women", type: "AA", day: "Monday", time: "18:00", address: "2000 Hillsboro Rd", neighborhood: "Green Hills", coordinates: { lat: 36.1050, lng: -86.8150 } },
 
-            // Tuesdays
+            // TUESDAYS
             { id: "tue_1", name: "Design for Living", type: "AA", day: "Tuesday", time: "18:30", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
             { id: "tue_2", name: "Recovery First", type: "NA", day: "Tuesday", time: "20:00", address: "100 Demonbreun", neighborhood: "Gulch", coordinates: { lat: 36.1522, lng: -86.7870 } },
+            { id: "tue_3", name: "Sylvan Park Study", type: "AA", day: "Tuesday", time: "19:00", address: "4200 Murphy Rd", neighborhood: "Sylvan Park", coordinates: { lat: 36.1380, lng: -86.8450 } },
+            { id: "tue_4", name: "Antioch New Life", type: "NA", day: "Tuesday", time: "19:00", address: "5000 Bell Rd", neighborhood: "Antioch", coordinates: { lat: 36.0500, lng: -86.6600 } },
 
-            // Wednesdays (Today in dev env usually)
+            // WEDNESDAYS
             { id: "wed_1", name: "Primary Purpose", type: "AA", day: "Wednesday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
             { id: "wed_2", name: "Mid-Day Reprieve", type: "AA", day: "Wednesday", time: "12:00", address: "Public Library", neighborhood: "Downtown", coordinates: { lat: 36.1619, lng: -86.7781 } },
             { id: "wed_3", name: "Freedom Group", type: "NA", day: "Wednesday", time: "19:30", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1813, lng: -86.7949 } },
             { id: "wed_4", name: "Candlelight Meeting", type: "AA", day: "Wednesday", time: "22:00", address: "Old Church", neighborhood: "12 South", coordinates: { lat: 36.1289, lng: -86.7874 } },
+            { id: "wed_5", name: "Belmont Book Study", type: "AA", day: "Wednesday", time: "18:00", address: "1900 Belmont Blvd", neighborhood: "Belmont", coordinates: { lat: 36.1325, lng: -86.7950 } },
 
-            // Thursdays
+            // THURSDAYS
             { id: "thu_1", name: "Big Book Study", type: "AA", day: "Thursday", time: "19:00", address: "University Center", neighborhood: "Belmont", coordinates: { lat: 36.1320, lng: -86.7980 } },
+            { id: "thu_2", name: "Nations Newcomers", type: "NA", day: "Thursday", time: "18:30", address: "5000 Centennial Blvd", neighborhood: "The Nations", coordinates: { lat: 36.1600, lng: -86.8450 } },
+            { id: "thu_3", name: "Downtown Speaker", type: "AA", day: "Thursday", time: "20:00", address: "111 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1600, lng: -86.7750 } },
 
-            // Fridays
+            // FRIDAYS
             { id: "fri_1", name: "TGIF Group", type: "AA", day: "Friday", time: "18:00", address: "Coffee Shop Backroom", neighborhood: "Sylvan Park", coordinates: { lat: 36.1375, lng: -86.8568 } },
             { id: "fri_2", name: "Late Night NA", type: "NA", day: "Friday", time: "23:00", address: "Recovery Hall", neighborhood: "Antioch", coordinates: { lat: 36.0605, lng: -86.6717 } },
+            { id: "fri_3", name: "East Side Social", type: "AA", day: "Friday", time: "19:00", address: "900 Gallatin Ave", neighborhood: "East Nashville", coordinates: { lat: 36.1850, lng: -86.7550 } },
+
+            // WEEKENDS
+            { id: "sat_1", name: "Weekend Warriors", type: "AA", day: "Saturday", time: "10:00", address: "Centennial Park", neighborhood: "West End", coordinates: { lat: 36.1480, lng: -86.8150 } },
+            { id: "sat_2", name: "Saturday Night Live", type: "NA", day: "Saturday", time: "20:00", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
+            { id: "sun_1", name: "Spiritual Breakfast", type: "AA", day: "Sunday", time: "09:00", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1780, lng: -86.7900 } },
+            { id: "sun_2", name: "Sunday Serenity", type: "AA", day: "Sunday", time: "18:00", address: "2000 Hillsboro Rd", neighborhood: "Green Hills", coordinates: { lat: 36.1050, lng: -86.8150 } },
         ]
 
         try {

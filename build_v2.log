@@ -1,0 +1,37 @@
+
+> my-v0-project@0.1.0 build
+> next build
+
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+ ΓÜá Invalid next.config.mjs options detected: 
+ ΓÜá     Unrecognized key(s) in object: 'turbopack' at "experimental"
+ ΓÜá See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\jason\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\jason\Workspace\dev-projects\sonash-v0\package-lock.json
+
+   Γû▓ Next.js 16.0.7 (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ? turbopack (invalid experimental key)
+
+   Creating an optimized production build ...
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöä add secrets lifecycle management: https://dotenvx.com/ops
+ Γ£ô Compiled successfully in 2.5s
+   Running TypeScript ...
+Failed to compile.
+
+./app/admin/page.tsx:173:18
+Type error: Type '{}' is missing the following properties from type 'AdminTabsProps': activeTab, setActiveTab
+
+  171 |             {/* Main content */}
+  172 |             <main className="max-w-7xl mx-auto px-6 py-8">
+> 173 |                 <AdminTabs />
+      |                  ^
+  174 |             </main>
+  175 |         </div>
+  176 |     )
+Next.js build worker exited with code: 1 and signal: null

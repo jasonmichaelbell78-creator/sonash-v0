@@ -70,6 +70,19 @@ export const metadata: Metadata = {
   },
 }
 
+import type { Viewport } from "next"
+import { InstallPrompt } from "@/components/pwa/install-prompt"
+
+export const viewport: Viewport = {
+  themeColor: "#f5f0e6",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
+
+// ... existing metadata ...
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -77,6 +90,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body
         suppressHydrationWarning
         className={`
@@ -89,6 +105,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <AuthProvider>
             {children}
+            <InstallPrompt />
             <Toaster closeButton richColors />
           </AuthProvider>
         </ErrorBoundary>

@@ -1,0 +1,958 @@
+{
+  "3534 West End Ave, Nashville, TN": {
+    "lat": 36.1457424,
+    "lng": -86.8109666
+  },
+  "2122 Utopia Avenue, Nashville, TN": {
+    "lat": 36.1279974,
+    "lng": -86.756395
+  },
+  "110 S Main St, Dickson, TN": {
+    "lat": 36.0755288,
+    "lng": -87.3898288
+  },
+  "3511 Gallatin Pike, Nashville, TN": {
+    "lat": 36.21112,
+    "lng": -86.7330642
+  },
+  "115 N Greenwood St, Lebanon, TN": {
+    "lat": 36.2089232,
+    "lng": -86.2959068
+  },
+  "1113 S High Street, Columbia, TN": {
+    "lat": 35.610421,
+    "lng": -87.0376993
+  },
+  "101 Dow Drive, Shelbyville, TN": {
+    "lat": 35.5045,
+    "lng": -86.48115
+  },
+  "Zoom, Nashville, TN": {
+    "lat": 36.0792619,
+    "lng": -86.883734
+  },
+  "525 New Shackle Island Rd, Hendersonville, TN": {
+    "lat": 36.3341063,
+    "lng": -86.6180561
+  },
+  "600 West End Dr, Lafayette, TN": {
+    "lat": 36.526782,
+    "lng": -86.036027
+  },
+  "634 Lehman St, Woodbury, TN": {
+    "lat": 35.8245125,
+    "lng": -86.0775733
+  },
+  "3534 West End Avenue, Nashville, TN": {
+    "lat": 36.1457424,
+    "lng": -86.8109666
+  },
+  "1909 County Hospital Rd, Nashville, TN": {
+    "lat": 36.1925312,
+    "lng": -86.8347275
+  },
+  "209 Ward Circle, Brentwood, TN": {
+    "lat": 36.0317498,
+    "lng": -86.8009878
+  },
+  "530 Shoal Circle, Lawrenceburg, TN": {
+    "lat": 35.2317029,
+    "lng": -87.3300241
+  },
+  "202 South 2nd Street, Pulaski, TN": {
+    "lat": 35.1980685,
+    "lng": -87.03245
+  },
+  "102 Harris St, Madison, TN": {
+    "lat": 36.2582206,
+    "lng": -86.71241
+  },
+  "200 Court Street, Hohenwald, TN": {
+    "lat": 35.545627,
+    "lng": -87.554066
+  },
+  "678 Brook Hollow Road, Nashville, TN": {
+    "lat": 36.115182,
+    "lng": -86.887757
+  },
+  "311 W 7th St, Columbia, TN": {
+    "lat": 35.6150213,
+    "lng": -87.0384118
+  },
+  "2007 Acklen Ave, Nashville, TN": {
+    "lat": 36.1355817,
+    "lng": -86.800347
+  },
+  "512 North 6th Ave, Lewisburg, TN": {
+    "lat": 35.4542641,
+    "lng": -86.794995
+  },
+  "2022 E Main St, Murfreesboro, TN": {
+    "lat": 35.8406125,
+    "lng": -86.3577199
+  },
+  "522 Castle Heights Ave, Lebanon, TN": {
+    "lat": 36.1999062,
+    "lng": -86.309064
+  },
+  "2128 11th Ave North, Nashville, TN": {
+    "lat": 36.1877719,
+    "lng": -86.8067161
+  },
+  "712 S CONGRESS BLVD, Smithville, TN": {
+    "lat": 35.953231,
+    "lng": -85.8123058
+  },
+  "265 W Thompson Ln, Murfreesboro, TN": {
+    "lat": 35.9110992,
+    "lng": -86.3909951
+  },
+  "212 Waterloo Street, Lawrenceburg, TN": {
+    "lat": 35.2412843,
+    "lng": -87.3364153
+  },
+  "2200 West End Avenue, Nashville, TN": {
+    "lat": 36.149377,
+    "lng": -86.803654
+  },
+  "703 S. Broadway, Portland, TN": {
+    "lat": 36.5595846,
+    "lng": -86.5093703
+  },
+  "2122 Utopia Ave, Nashville, TN": {
+    "lat": 36.1279974,
+    "lng": -86.756395
+  },
+  "313 N. Collins St, Tullahoma, TN": {
+    "lat": 35.3602906,
+    "lng": -86.2189055
+  },
+  "2708 Jefferson Street, Nashville, TN": {
+    "lat": 36.1679611,
+    "lng": -86.8189776
+  },
+  "404 East Main Street, Murfreesboro, TN": {
+    "lat": 35.8453568,
+    "lng": -86.3863808
+  },
+  "185 Mason Circle, La Vergne, TN": {
+    "lat": 36.0247999,
+    "lng": -86.5710412
+  },
+  "404 East Main St, Murfreesboro, TN": {
+    "lat": 35.8453568,
+    "lng": -86.3863808
+  },
+  "200 Morgan Ave N, Fayetteville, TN": {
+    "lat": 35.1543416,
+    "lng": -86.5802502
+  },
+  "2704 Torbett Street, Nashville, TN": {
+    "lat": 36.1574179,
+    "lng": -86.8169151
+  },
+  "5216 Nashville Hwy, Chapel Hill, TN": {
+    "lat": 35.6392629,
+    "lng": -86.6899661
+  },
+  "145 E Smith St, Gallatin, TN": {
+    "lat": 36.3874557,
+    "lng": -86.4450309
+  },
+  "211 N. 11th Street, Nashville, TN": {
+    "lat": 36.1787133,
+    "lng": -86.7497351
+  },
+  "2846 Lebanon Pike, Nashville, TN": {
+    "lat": 36.1674517,
+    "lng": -86.6598322
+  },
+  "745 S. Church St, Murfreesboro, TN": {
+    "lat": 35.8391476,
+    "lng": -86.3923608
+  },
+  "1308 E Main St, Waverly, TN": {
+    "lat": 36.08573,
+    "lng": -87.756652
+  },
+  "301 E Main St, Decherd, TN": {
+    "lat": 35.210285,
+    "lng": -86.076958
+  },
+  "404 E Main St, Murfreesboro, TN": {
+    "lat": 35.8453568,
+    "lng": -86.3863808
+  },
+  "3710 Franklin Pike, Nashville, TN": {
+    "lat": 36.0442722,
+    "lng": -86.78159
+  },
+  "205 Belinda Drive, Hermitage, TN": {
+    "lat": 36.2043456,
+    "lng": -86.6133003
+  },
+  "1215 Gallatin Ave, Nashville, TN": {
+    "lat": 36.1913873,
+    "lng": -86.7440688
+  },
+  "103 College Avenue, Centerville, TN": {
+    "lat": 35.778675,
+    "lng": -87.464921
+  },
+  "1101 Jackson St, Manchester, TN": {
+    "lat": 35.472795,
+    "lng": -86.079259
+  },
+  "5710 Knob Rd, Nashville, TN": {
+    "lat": 36.138369,
+    "lng": -86.8649492
+  },
+  "141 Church St, Dowelltown, TN": {
+    "lat": 36.0134145,
+    "lng": -85.943239
+  },
+  "631 Dickerson Road, Nashville, TN": {
+    "lat": 36.2977578,
+    "lng": -86.7370545
+  },
+  "712 S. Congress Blvd, Smithville, TN": {
+    "lat": 35.953231,
+    "lng": -85.8123058
+  },
+  "313 Collins St, Tullahoma, TN": {
+    "lat": 35.3602906,
+    "lng": -86.2189055
+  },
+  "404 E. Main St, Murfreesboro, TN": {
+    "lat": 35.8453568,
+    "lng": -86.3863808
+  },
+  "433 Nissan Drive, Smyrna, TN": {
+    "lat": 35.9931879,
+    "lng": -86.4928302
+  },
+  "172 West Main St, Hendersonville, TN": {
+    "lat": 36.305334,
+    "lng": -86.6175
+  },
+  "149 West Main St, Gallatin, TN": {
+    "lat": 36.3876373,
+    "lng": -86.4487116
+  },
+  "700 Arlington St, Erin, TN": {
+    "lat": 36.3106186,
+    "lng": -87.7192795
+  },
+  "508 South Main St, Springfield, TN": {
+    "lat": 36.5089759,
+    "lng": -86.8849237
+  },
+  "974 Pomona Road, Dickson, TN": {
+    "lat": 36.0329136,
+    "lng": -87.3507523
+  },
+  "934 43rd Ave N, Nashville, TN": {
+    "lat": 36.1599296,
+    "lng": -86.8386562
+  },
+  "640 N Washington Ave, Cookeville, TN": {
+    "lat": 36.1708028,
+    "lng": -85.4977463
+  },
+  "202 23rd Ave N, Nashville, TN": {
+    "lat": 36.1510074,
+    "lng": -86.8060611
+  },
+  "5925 Obrien Ave, Nashville, TN": {
+    "lat": 36.1499844,
+    "lng": -86.8637852
+  },
+  "409 Franklin Rd, Brentwood, TN": {
+    "lat": 36.0357111,
+    "lng": -86.7873574
+  },
+  "298 Fitzhugh Blvd, Smyrna, TN": {
+    "lat": 36.0007082,
+    "lng": -86.5077529
+  },
+  "274 Mallory Station Rd, Franklin, TN": {
+    "lat": 35.9561345,
+    "lng": -86.8282307
+  },
+  "208 Donelson Pike, Nashville, TN": {
+    "lat": 36.1613739,
+    "lng": -86.6643421
+  },
+  "251 Water St, Pulaski, TN": {
+    "lat": 35.1916322,
+    "lng": -87.0316434
+  },
+  "801 N Maney Ave, Murfreesboro, TN": {
+    "lat": 35.853203,
+    "lng": -86.385614
+  },
+  "211 N 11th St, Nashville, TN": {
+    "lat": 36.1787133,
+    "lng": -86.7497351
+  },
+  "103 Country Club Dr, Hendersonville, TN": {
+    "lat": 36.3163395,
+    "lng": -86.585227
+  },
+  "121 Davidson Rd, Nashville, TN": {
+    "lat": 36.1153484,
+    "lng": -86.8640305
+  },
+  "407 Park Ave, Lebanon, TN": {
+    "lat": 36.2071956,
+    "lng": -86.2848141
+  },
+  "329 Franklin Rd, Brentwood, TN": {
+    "lat": 36.0357111,
+    "lng": -86.7873574
+  },
+  "313 N Collins St, Tullahoma, TN": {
+    "lat": 35.3602906,
+    "lng": -86.2189055
+  },
+  "951 Clark St, Clarksville, TN": {
+    "lat": 36.523206,
+    "lng": -87.344975
+  },
+  "2229 West Ave, Crossville, TN": {
+    "lat": 35.9678678,
+    "lng": -85.0454666
+  },
+  "440 College St, Lewisburg, TN": {
+    "lat": 35.4541185,
+    "lng": -86.7919417
+  },
+  "1113 S High St, Columbia, TN": {
+    "lat": 35.610421,
+    "lng": -87.0376993
+  },
+  "421 Highland View Dr, Hermitage, TN": {
+    "lat": 36.2074279,
+    "lng": -86.6094451
+  },
+  "165 E Bledsoe St, Gallatin, TN": {
+    "lat": 36.3866945,
+    "lng": -86.4439351
+  },
+  "206 S College St, Lebanon, TN": {
+    "lat": 36.2041047,
+    "lng": -86.2903815
+  },
+  "105 Edgewood Ave, McMinnville, TN": {
+    "lat": 35.6988387,
+    "lng": -85.7947351
+  },
+  "122 S Madison Ave, Cookeville, TN": {
+    "lat": 36.1608777,
+    "lng": -85.5008545
+  },
+  "101 S Poplar St, Paris, TN": {
+    "lat": 36.301152,
+    "lng": -88.325249
+  },
+  "676 S Main St, Ashland City, TN": {
+    "lat": 36.2689886,
+    "lng": -87.0591184
+  },
+  "435 Molloy Ln, Murfreesboro, TN": {
+    "lat": 35.8430002,
+    "lng": -86.4139576
+  },
+  "8221 Concord Rd, Brentwood, TN": {
+    "lat": 35.9948326,
+    "lng": -86.7834788
+  },
+  "3005 Parkfield Loop S, Spring Hill, TN": {
+    "lat": 35.7394114,
+    "lng": -86.8834092
+  },
+  "479 Thompson Rd, Pegram, TN": {
+    "lat": 36.099873,
+    "lng": -87.0527027
+  },
+  "1267 N Rutherford Blvd, Murfreesboro, TN": {
+    "lat": 35.8477194,
+    "lng": -86.3533194
+  },
+  "1777 S Berrys Chapel Rd, Franklin, TN": {
+    "lat": 35.9632893,
+    "lng": -86.8540933
+  },
+  "209 Ward Cir, Brentwood, TN": {
+    "lat": 36.0317498,
+    "lng": -86.8009878
+  },
+  "3425 N Mt Juliet Rd, Mt. Juliet, TN": {
+    "lat": 36.2169847,
+    "lng": -86.5149574
+  },
+  "215 Foster St, Clarksville, TN": {
+    "lat": 36.5300531,
+    "lng": -87.3569804
+  },
+  "801 Jones St, Old Hickory, TN": {
+    "lat": 36.262831,
+    "lng": -86.645379
+  },
+  "417 Welshwood Dr #103, Nashville, TN": {
+    "lat": 36.082422,
+    "lng": -86.7288091
+  },
+  "3441 Lebanon Pike, Hermitage, TN": {
+    "lat": 36.1895066,
+    "lng": -86.6272947
+  },
+  "100 S College St, Smithville, TN": {
+    "lat": 35.9602376,
+    "lng": -85.8147689
+  },
+  "233 W Gaines St, Lawrenceburg, TN": {
+    "lat": 35.2428094,
+    "lng": -87.3370477
+  },
+  "3301 Sango Rd, Clarksville, TN": {
+    "lat": 36.506975,
+    "lng": -87.224117
+  },
+  "304 W Main St, Lebanon, TN": {
+    "lat": 36.208493,
+    "lng": -86.296944
+  },
+  "4101 Harding Pike, Nashville, TN": {
+    "lat": 36.0945095,
+    "lng": -86.8814546
+  },
+  "506 Fair St, Franklin, TN": {
+    "lat": 35.924699,
+    "lng": -86.8724038
+  },
+  "300 E Main St, Waverly, TN": {
+    "lat": 36.082707,
+    "lng": -87.789231
+  },
+  "800 Bellevue Rd, Nashville, TN": {
+    "lat": 36.0697899,
+    "lng": -86.940869
+  },
+  "710 E Main St, Gallatin, TN": {
+    "lat": 36.3999318,
+    "lng": -86.4260583
+  },
+  "1301 Franklin Rd, Brentwood, TN": {
+    "lat": 36.0357111,
+    "lng": -86.7873574
+  },
+  "4715 Harding Pike, Nashville, TN": {
+    "lat": 36.0945095,
+    "lng": -86.8814546
+  },
+  "15354 Old Hickory Blvd, Nashville, TN": {
+    "lat": 36.0164887,
+    "lng": -86.6812378
+  },
+  "5120 Franklin Pike, Nashville, TN": {
+    "lat": 36.0591191,
+    "lng": -86.7714197
+  },
+  "65 TN-100, Centerville, TN": {
+    "lat": 35.7918516,
+    "lng": -87.4417671
+  },
+  "600 Woodland St, Nashville, TN": {
+    "lat": 36.1723784,
+    "lng": -86.7613886
+  },
+  "2640 Buckner Rd, Thompson Station, TN": {
+    "lat": 35.7833473,
+    "lng": -86.9037121
+  },
+  "5001 Trotwood Ave, Columbia, TN": {
+    "lat": 35.5918378,
+    "lng": -87.0946791
+  },
+  "316 Nashville Hwy, Chapel Hill, TN": {
+    "lat": 35.6236123,
+    "lng": -86.6944868
+  },
+  "106 Washington St E, Fayetteville, TN": {
+    "lat": 35.1539902,
+    "lng": -86.5700981
+  },
+  "75 McCrary Rd, Gladeville, TN": {
+    "lat": 36.1108797,
+    "lng": -86.4151993
+  },
+  "506 Hester Dr, White House, TN": {
+    "lat": 36.4644704,
+    "lng": -86.6846298
+  },
+  "215 E Main St, Livingston, TN": {
+    "lat": 36.3835591,
+    "lng": -85.3204263
+  },
+  "33 Burton Hills Blvd, Nashville, TN": {
+    "lat": 36.092957,
+    "lng": -86.822014
+  },
+  "409 S Russell St, Portland, TN": {
+    "lat": 36.5790291,
+    "lng": -86.508483
+  },
+  "605 Wilson Pike, Brentwood, TN": {
+    "lat": 36.0152052,
+    "lng": -86.7816725
+  },
+  "184 Akersville Rd, Lafayette, TN": {
+    "lat": 36.5344902,
+    "lng": -86.0266929
+  },
+  "832 Jones Creek Rd, Dickson, TN": {
+    "lat": 36.0946554,
+    "lng": -87.3580256
+  },
+  "678 Brook Hollow Rd, Nashville, TN": {
+    "lat": 36.115182,
+    "lng": -86.887757
+  },
+  "4726 Traders Way, Thompson Station, TN": {
+    "lat": 35.7847916,
+    "lng": -86.915602
+  },
+  "2572 Murfreesboro Pike, Nashville, TN": {
+    "lat": 36.0758544,
+    "lng": -86.6398105
+  },
+  "100 S Jefferson St, Winchester, TN": {
+    "lat": 35.185686,
+    "lng": -86.111924
+  },
+  "516 Franklin Rd, Brentwood, TN": {
+    "lat": 36.0357111,
+    "lng": -86.7873574
+  },
+  "200 E Cedar St, Goodlettsville, TN": {
+    "lat": 36.324352,
+    "lng": -86.709078
+  },
+  "3201 Hillsboro Pike, Nashville, TN": {
+    "lat": 36.1176585,
+    "lng": -86.8101661
+  },
+  "392 Harding Pl, Nashville, TN": {
+    "lat": 36.0927682,
+    "lng": -86.6833717
+  },
+  "508 Main St, Nashville, TN": {
+    "lat": 36.1728695,
+    "lng": -86.7650344
+  },
+  "5050 Linbar Dr, Nashville, TN": {
+    "lat": 36.0813072,
+    "lng": -86.700529
+  },
+  "3015 Nolensville Pk, Nashville, TN": {
+    "lat": 36.0523605,
+    "lng": -86.7145011
+  },
+  "381 W Main St, Hendersonville, TN": {
+    "lat": 36.303405,
+    "lng": -86.6270255
+  },
+  "4122 Gallatin Pike, Nashville, TN": {
+    "lat": 36.2229909,
+    "lng": -86.7258864
+  },
+  "2517b Nolensville Pk, Nashville, TN": {
+    "lat": 36.0523605,
+    "lng": -86.7145011
+  },
+  "4813 Nolensville Pk, Nashville, TN": {
+    "lat": 36.0523605,
+    "lng": -86.7145011
+  },
+  "907 Madison Square, Madison, TN": {
+    "lat": 36.2559342,
+    "lng": -86.7159377
+  },
+  "2300 Ridgecrest Dr, Nashville, TN": {
+    "lat": 36.205988,
+    "lng": -86.714838
+  },
+  "421 N Washington Ave, Cookeville, TN": {
+    "lat": 36.1677949,
+    "lng": -85.4982658
+  },
+  "1607 Whatley St, Columbia, TN": {
+    "lat": 35.6024099,
+    "lng": -87.0327431
+  },
+  "1958 Main St, Dunlap, TN": {
+    "lat": 35.378035,
+    "lng": -85.383991
+  },
+  "7475 Cockrill Bend Blvd, Nashville, TN": {
+    "lat": 36.1853646,
+    "lng": -86.901767
+  },
+  "745 S Church St, Murfreesboro, TN": {
+    "lat": 35.8391476,
+    "lng": -86.3923608
+  },
+  "106 N Anderson St, Tullahoma, TN": {
+    "lat": 35.3686972,
+    "lng": -86.2080725
+  },
+  "101 Legends Club Ln, Franklin, TN": {
+    "lat": 35.9496003,
+    "lng": -86.8440826
+  },
+  "773 E McMurry Blvd, Hartsville, TN": {
+    "lat": 36.388411,
+    "lng": -86.1395664
+  },
+  "17 E Maple St, Sparta, TN": {
+    "lat": 35.9250599,
+    "lng": -85.4639887
+  },
+  "8568 Horton Hwy, College Grove, TN": {
+    "lat": 35.7878785,
+    "lng": -86.674943
+  },
+  "280 Dunbar Cave Rd, Clarksville, TN": {
+    "lat": 36.5492514,
+    "lng": -87.2735466
+  },
+  "1307 Fort Campbell Blvd, Clarksville, TN": {
+    "lat": 36.5614463,
+    "lng": -87.400116
+  },
+  "205 Belinda Dr, Hermitage, TN": {
+    "lat": 36.2043456,
+    "lng": -86.6133003
+  },
+  "7675 Hwy 70 S, Nashville, TN": {
+    "lat": 36.0804099,
+    "lng": -86.9551157
+  },
+  "1335 Donelson Pkwy, Dover, TN": {
+    "lat": 36.481049,
+    "lng": -87.884657
+  },
+  "1212 Saturn Dr, Nashville, TN": {
+    "lat": 36.1227315,
+    "lng": -86.7002536
+  },
+  "115 Guffey St, Celina, TN": {
+    "lat": 36.5480629,
+    "lng": -85.5058129
+  },
+  "40 E Walnut St, Erin, TN": {
+    "lat": 36.3185052,
+    "lng": -87.6970195
+  },
+  "1601 Eastland Ave, Nashville, TN": {
+    "lat": 36.1836671,
+    "lng": -86.7405536
+  },
+  "5291 Main St, Spring Hill, TN": {
+    "lat": 35.7525395,
+    "lng": -86.9294096
+  },
+  "600 N Brittain St, Shelbyville, TN": {
+    "lat": 35.4869117,
+    "lng": -86.4584945
+  },
+  "335 Oak St, Kingston Springs, TN": {
+    "lat": 36.0999738,
+    "lng": -87.1137408
+  },
+  "604 US-70, Pegram, TN": {
+    "lat": 36.1054227,
+    "lng": -87.060003
+  },
+  "3541 Old Clarksville Pike, Joelton, TN": {
+    "lat": 36.3137246,
+    "lng": -86.8674401
+  },
+  "2905 N Mt Juliet Rd, Mt. Juliet, TN": {
+    "lat": 36.2090097,
+    "lng": -86.5163206
+  },
+  "93 St Bedes Dr, Manchester, TN": {
+    "lat": 35.4831054,
+    "lng": -86.0765915
+  },
+  "311 Hassell St, Waynesboro, TN": {
+    "lat": 35.3151,
+    "lng": -87.761637
+  },
+  "3644 US-31W, White House, TN": {
+    "lat": 36.4974739,
+    "lng": -86.6408269
+  },
+  "7107 Westview Dr, Fairview, TN": {
+    "lat": 35.9434706,
+    "lng": -87.1474546
+  },
+  "315 E Main St, Murfreesboro, TN": {
+    "lat": 35.8457499,
+    "lng": -86.3885106
+  },
+  "704 Hartsville Pike, Gallatin, TN": {
+    "lat": 36.3905284,
+    "lng": -86.4293739
+  },
+  "455 Broadmoor Dr, Nashville, TN": {
+    "lat": 36.2302112,
+    "lng": -86.7386976
+  },
+  "2520 Lebanon Pike, Nashville, TN": {
+    "lat": 36.1695535,
+    "lng": -86.6790098
+  },
+  "3601 Hillsboro Pike, Nashville, TN": {
+    "lat": 36.1176585,
+    "lng": -86.8101661
+  },
+  "907 Sycamore St, Lafayette, TN": {
+    "lat": 36.530417,
+    "lng": -86.033413
+  },
+  "650 E Main St, Hendersonville, TN": {
+    "lat": 36.3240996,
+    "lng": -86.5682851
+  },
+  "1725 Columbia Ave Suite 100, Franklin, TN": {
+    "lat": 35.9009986,
+    "lng": -86.8735884
+  },
+  "212 N Mulberry St, Dickson, TN": {
+    "lat": 36.0766565,
+    "lng": -87.3897171
+  },
+  "2001 Fairview Blvd, Fairview, TN": {
+    "lat": 35.940201,
+    "lng": -87.15372
+  },
+  "Vanderbilt University, Nashville, TN": {
+    "lat": 36.1438011,
+    "lng": -86.8028189
+  },
+  "86 Vaughn Rd, Nashville, TN": {
+    "lat": 36.0503399,
+    "lng": -86.9024856
+  },
+  "2827 Main St, Pikeville, TN": {
+    "lat": 35.6016679,
+    "lng": -85.1907231
+  },
+  "219b Dunbar Cave Rd, Clarksville, TN": {
+    "lat": 36.5492514,
+    "lng": -87.2735466
+  },
+  "2014 Quail Hollow Cir, Franklin, TN": {
+    "lat": 35.9145193,
+    "lng": -86.8166249
+  },
+  "2718 Church St, Burns, TN": {
+    "lat": 36.0505446,
+    "lng": -87.3131445
+  },
+  "1701 17th Ave S, Nashville, TN": {
+    "lat": 36.1381356,
+    "lng": -86.7955651
+  },
+  "419 Woodland St, Nashville, TN": {
+    "lat": 36.1714151,
+    "lng": -86.7660839
+  },
+  "608 Main St N, Carthage, TN": {
+    "lat": 36.2557796,
+    "lng": -85.9513145
+  },
+  "1531 Hunt Club Blvd #300, Gallatin, TN": {
+    "lat": 36.3357486,
+    "lng": -86.5406288
+  },
+  "2901 Glencliff Rd, Nashville, TN": {
+    "lat": 36.1111694,
+    "lng": -86.7208312
+  },
+  "190 Graylynn Dr, Nashville, TN": {
+    "lat": 36.1677654,
+    "lng": -86.6751861
+  },
+  "52 Smith Ave, Hohenwald, TN": {
+    "lat": 35.5509019,
+    "lng": -87.5527921
+  },
+  "200 5th Ave W, Springfield, TN": {
+    "lat": 36.509391,
+    "lng": -86.886298
+  },
+  "235 Indian Lake Rd, Hendersonville, TN": {
+    "lat": 36.292238,
+    "lng": -86.5967388
+  },
+  "512 Rosebank Ave, Nashville, TN": {
+    "lat": 36.1866668,
+    "lng": -86.7176218
+  },
+  "11 Music Cir N, Nashville, TN": {
+    "lat": 36.150633,
+    "lng": -86.789889
+  },
+  "7224 Old Burkitt Rd, Nashville, TN": {
+    "lat": 35.991859,
+    "lng": -86.6819587
+  },
+  "200 E Main St, Murfreesboro, TN": {
+    "lat": 35.845744,
+    "lng": -86.390038
+  },
+  "4321 Carothers Pkwy, Franklin, TN": {
+    "lat": 35.9163458,
+    "lng": -86.8202183
+  },
+  "3530 US-79, Paris, TN": {
+    "lat": 36.319808,
+    "lng": -88.2786187
+  },
+  "104 Belle Meade Blvd, Belle Meade, TN": {
+    "lat": 36.1185256,
+    "lng": -86.8547701
+  },
+  "407 N Water Ave, Gallatin, TN": {
+    "lat": 36.393559,
+    "lng": -86.446744
+  },
+  "5800 Hillsboro Pike, Nashville, TN": {
+    "lat": 36.0776723,
+    "lng": -86.8361632
+  },
+  "1380 W Ellington Pkwy, Lewisburg, TN": {
+    "lat": 35.472816,
+    "lng": -86.8014823
+  },
+  "7260 Nolensville Rd, Nolensville, TN": {
+    "lat": 35.9458103,
+    "lng": -86.6656009
+  },
+  "6300 Charlotte Ave, Nashville, TN": {
+    "lat": 36.1533571,
+    "lng": -86.8209046
+  },
+  "1216 Hadley Ave, Old Hickory, TN": {
+    "lat": 36.2588081,
+    "lng": -86.6479217
+  },
+  "290 Fountainhead Rd, Portland, TN": {
+    "lat": 36.550764,
+    "lng": -86.496617
+  },
+  "108 Ward Ave E, Carthage, TN": {
+    "lat": 36.2527866,
+    "lng": -85.9486575
+  },
+  "203 E Lane St, Shelbyville, TN": {
+    "lat": 35.4894599,
+    "lng": -86.4315487
+  },
+  "100 Cumberland Blvd, Huntland, TN": {
+    "lat": 35.056545,
+    "lng": -86.25797
+  },
+  "45 S Poplar St, Monterey, TN": {
+    "lat": 36.1486301,
+    "lng": -85.2695635
+  },
+  "900 Glendale Ln, Nashville, TN": {
+    "lat": 36.09254,
+    "lng": -86.787362
+  },
+  "3001 Belmont Blvd, Nashville, TN": {
+    "lat": 36.1194788,
+    "lng": -86.7958009
+  },
+  "405 Murfreesboro Rd, Franklin, TN": {
+    "lat": 35.9193689,
+    "lng": -86.8631109
+  },
+  "7105 Crossroads Blvd, Brentwood, TN": {
+    "lat": 35.959161,
+    "lng": -86.819997
+  },
+  "9100 Crockett Rd, Brentwood, TN": {
+    "lat": 35.9784808,
+    "lng": -86.7701481
+  },
+  "1215 Hillsboro Rd, Franklin, TN": {
+    "lat": 35.9513198,
+    "lng": -86.8840404
+  },
+  "7109 TN-25, Cross Plains, TN": {
+    "lat": 36.5514996,
+    "lng": -86.7381036
+  },
+  "111 General Rice St, Dover, TN": {
+    "lat": 36.4833162,
+    "lng": -87.843742
+  },
+  "3906 Franklin Pike, Nashville, TN": {
+    "lat": 36.0442722,
+    "lng": -86.78159
+  },
+  "117 4th Ave N, Franklin, TN": {
+    "lat": 35.9251039,
+    "lng": -86.8712665
+  },
+  "3900 West End Ave, Nashville, TN": {
+    "lat": 36.1457424,
+    "lng": -86.8109666
+  },
+  "700 Bresslyn Rd, Nashville, TN": {
+    "lat": 36.1079036,
+    "lng": -86.8865636
+  },
+  "320 Oakley St, Livingston, TN": {
+    "lat": 36.3874543,
+    "lng": -85.3215532
+  },
+  "6401 Harding Pike, Nashville, TN": {
+    "lat": 36.0945095,
+    "lng": -86.8814546
+  },
+  "1001 Chapman's Crossings, Spring Hill, TN": {
+    "lat": 35.7535684,
+    "lng": -86.8729183
+  },
+  "3511 Belmont Blvd, Nashville, TN": {
+    "lat": 36.1117565,
+    "lng": -86.8002822
+  },
+  "1625 Rebecca St, Nashville, TN": {
+    "lat": 36.196059,
+    "lng": -86.7271174
+  },
+  "124 N Holly St, Monterey, TN": {
+    "lat": 36.148201,
+    "lng": -85.267397
+  },
+  "3501 Central Ave, Nashville, TN": {
+    "lat": 36.1381362,
+    "lng": -86.8235196
+  },
+  "2624 Morena Street, Nashville, TN": {
+    "lat": 36.163322,
+    "lng": -86.8161963
+  },
+  "101 King St, Nolensville, TN": {
+    "lat": 35.952863,
+    "lng": -86.670682
+  }
+}

@@ -1,58 +1,55 @@
 "use client"
 
-/**
- * Admin Tabs Component
- * 
- * Tabbed interface for managing different content types.
- * New tabs added as features launch.
- */
-
-import { useState } from "react"
 import { MeetingsTab } from "./meetings-tab"
+import { SoberLivingTab } from "./sober-living-tab"
+import { QuotesTab } from "./quotes-tab"
+import { UsersTab } from "./users-tab"
+import { Home, Users, BookOpen, Settings, Quote } from "lucide-react"
 
-type TabId = "meetings" | "sober-living"
-
-interface Tab {
-    id: TabId
-    label: string
-    icon: string
+interface AdminTabsProps {
+    activeTab: string
+    setActiveTab: (tab: string) => void
 }
 
-const tabs: Tab[] = [
-    { id: "meetings", label: "Meetings", icon: "📍" },
-    { id: "sober-living", label: "Sober Living", icon: "🏠" },
-]
-
-export function AdminTabs() {
-    const [activeTab, setActiveTab] = useState<TabId>("meetings")
+export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
+    const tabs = [
+        { id: "meetings", label: "Meetings", icon: Users },
+        { id: "sober-living", label: "Sober Living", icon: Home },
+        { id: "quotes", label: "Daily Quotes", icon: Quote },
+        { id: "users", label: "Users", icon: Users }, // Keeping users tab for now
+        // { id: "readings", label: "Readings", icon: BookOpen },
+        // { id: "settings", label: "Settings", icon: Settings },
+    ]
 
     return (
-        <div>
-            {/* Tab navigation */}
-            <div className="flex border-b border-gray-200 mb-6">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                                ? "border-blue-500 text-blue-600"
-                                : "border-transparent text-gray-500 hover:text-gray-700"
-                            }`}
-                    >
-                        <span className="mr-2">{tab.icon}</span>
-                        {tab.label}
-                    </button>
-                ))}
+        <div className="space-y-6">
+            {/* Tab Navigation */}
+            <div className="flex gap-2 border-b border-amber-200/60 pb-1 overflow-x-auto">
+                {tabs.map((tab) => {
+                    const Icon = tab.icon
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap
+                ${activeTab === tab.id
+                                    ? "bg-[#fdfbf7] text-amber-900 border border-amber-200 border-b-transparent -mb-[1px] relative z-10"
+                                    : "text-amber-900/50 hover:text-amber-800 hover:bg-amber-100/50"
+                                }`}
+                        >
+                            <Icon className="w-4 h-4" />
+                            {tab.label}
+                        </button>
+                    )
+                })}
             </div>
 
-            {/* Tab content */}
-            <div>
+            {/* Tab Content */}
+            <div className="min-h-[400px]">
                 {activeTab === "meetings" && <MeetingsTab />}
-                {activeTab === "sober-living" && (
-                    <div className="text-gray-500 text-center py-12">
-                        Sober Living tab coming soon
-                    </div>
-                )}
+                {activeTab === "sober-living" && <SoberLivingTab />}
+                {activeTab === "quotes" && <QuotesTab />}
+                {activeTab === "users" && <UsersTab />}
             </div>
         </div>
     )

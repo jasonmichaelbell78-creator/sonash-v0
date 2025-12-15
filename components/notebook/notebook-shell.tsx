@@ -8,8 +8,9 @@ import BookmarkRibbon from "./bookmark-ribbon"
 import StickyNote from "./sticky-note"
 import PlaceholderPage from "./pages/placeholder-page"
 import { useAuth } from "@/components/providers/auth-provider"
-import { Shield, AlertTriangle } from "lucide-react"
+import { Shield, AlertTriangle, Plus } from "lucide-react"
 import { DataManagementSection } from "@/components/settings/data-management-section"
+import JournalModal from "./journal-modal"
 import {
   getModuleById,
   moduleIsEnabled,
@@ -41,7 +42,10 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
   const [activeTab, setActiveTab] = useState<NotebookModuleId>("today")
   const [showSettings, setShowSettings] = useState(false)
   const [showAccountLink, setShowAccountLink] = useState(false)
+  const [showJournalModal, setShowJournalModal] = useState(false) // NEW STATE
   const [direction, setDirection] = useState(0)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   const handleTabChange = (tabId: string) => {
     const currentIndex = tabs.findIndex((t) => t.id === activeTab)
@@ -51,11 +55,33 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
     setActiveTab(tabId as NotebookModuleId)
   }
 
+  const handleSwipe = (event: any, info: any) => {
+    const SWIPE_THRESHOLD = 50
+    const { offset, velocity } = info
+
+    // Calculate current index
+    const currentIndex = tabs.findIndex((t) => t.id === activeTab)
+
+    // Swipe Left (drag x < 0) -> Next Tab
+    if (offset.x < -30 || velocity.x < -300) {
+      if (currentIndex < tabs.length - 1) {
+        handleTabChange(tabs[currentIndex + 1].id)
+      }
+    }
+    // Swipe Right (drag x > 0) -> Previous Tab
+    else if (offset.x > 30 || velocity.x > 300) {
+      if (currentIndex > 0) {
+        handleTabChange(tabs[currentIndex - 1].id)
+      }
+    }
+  }
+
   const renderPage = () => {
     const module = getModuleById(activeTab) ?? notebookModules[0]
 
     if (moduleIsEnabled(module)) {
-      return module.render({ nickname })
+      // Pass handleTabChange as onNavigate
+      return module.render({ nickname, onNavigate: handleTabChange })
     }
 
     const flagText = module.featureFlag
@@ -142,7 +168,27 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeTab}
-              className="absolute inset-0 p-4 pl-8 pr-4 md:p-6 md:pl-16 md:pr-12"
+              className="absolute inset-0 p-4 pl-8 pr-4 md:p-6 md:pl-16 md:pr-12 touch-pan-y"
+              onTouchStart={(e) => {
+                setTouchEnd(null)
+                setTouchStart(e.targetTouches[0].clientX)
+              }}
+              onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
+              onTouchEnd={() => {
+                if (!touchStart || !touchEnd) return
+                const distance = touchStart - touchEnd
+                const isLeftSwipe = distance > 50
+                const isRightSwipe = distance < -50
+
+                const currentIndex = tabs.findIndex((t) => t.id === activeTab)
+
+                if (isLeftSwipe && currentIndex < tabs.length - 1) {
+                  handleTabChange(tabs[currentIndex + 1].id)
+                }
+                if (isRightSwipe && currentIndex > 0) {
+                  handleTabChange(tabs[currentIndex - 1].id)
+                }
+              }}
               initial={{
                 rotateY: direction > 0 ? 90 : -90,
                 opacity: 0,
@@ -158,110 +204,134 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
                 originX: direction > 0 ? 0 : 1,
               }}
               transition={{
-                duration: 0.5,
-                ease: [0.4, 0, 0.2, 1],
+                duration: 0.3,
+                ease: "easeOut",
               }}
               style={{ transformStyle: "preserve-3d" }}
             >
               {renderPage()}
-            </motion.div>
           </AnimatePresence>
-        </div>
 
-        {/* Tab navigation */}
-        <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+        </motion.div>
+      </AnimatePresence>
+    </div>
 
-        {/* Bookmark ribbon for settings */}
-        <BookmarkRibbon onClick={() => setShowSettings(true)} />
-      </div>
+        {/* Tab navigation */ }
+  <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
 
-      {/* Settings sticky note overlay */}
-      <AnimatePresence>
-        {showSettings && (
-          <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
-            <div className="space-y-3">
-              {/* Account Security Section */}
-              {isAnonymous && (
-                <div className={`p-3 rounded-lg border ${showLinkPrompt ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}`}>
-                  <div className="flex items-start gap-2">
-                    {showLinkPrompt ? (
-                      <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                    ) : (
-                      <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    )}
-                    <div>
-                      <p className={`font-handlee text-sm ${showLinkPrompt ? 'text-amber-800' : 'text-blue-800'}`}>
-                        {showLinkPrompt
-                          ? "Your journal is at risk! Link your account to keep your entries safe."
-                          : "Your account is anonymous. Link it to keep your data safe."}
-                      </p>
-                      <button
-                        onClick={() => {
-                          setShowSettings(false)
-                          setShowAccountLink(true)
-                        }}
-                        className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? 'text-amber-700 hover:text-amber-900' : 'text-blue-700 hover:text-blue-900'}`}
-                      >
-                        Secure My Account →
-                      </button>
-                    </div>
-                  </div>
+  {/* Bookmark ribbon for settings */ }
+  <BookmarkRibbon onClick={() => setShowSettings(true)} />
+
+  {/* UNIVERSAL FAB */ }
+  <motion.button
+    whileHover={{ scale: 1.1 }}
+    whileTap={{ scale: 0.9 }}
+    onClick={() => setShowJournalModal(true)}
+    className="absolute bottom-6 right-6 md:bottom-8 md:right-12 z-50 bg-amber-500 text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-amber-600 border-2 border-white"
+  >
+    <Plus className="w-6 h-6" />
+  </motion.button>
+      </div >
+
+    {/* Settings sticky note overlay */ }
+    <AnimatePresence>
+  {
+    showSettings && (
+      <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
+        <div className="space-y-3">
+          {/* Account Security Section */}
+          {isAnonymous && (
+            <div className={`p-3 rounded-lg border ${showLinkPrompt ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}`}>
+              <div className="flex items-start gap-2">
+                {showLinkPrompt ? (
+                  <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <p className={`font-handlee text-sm ${showLinkPrompt ? 'text-amber-800' : 'text-blue-800'}`}>
+                    {showLinkPrompt
+                      ? "Your journal is at risk! Link your account to keep your entries safe."
+                      : "Your account is anonymous. Link it to keep your data safe."}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowSettings(false)
+                      setShowAccountLink(true)
+                    }}
+                    className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? 'text-amber-700 hover:text-amber-900' : 'text-blue-700 hover:text-blue-900'}`}
+                  >
+                    Secure My Account →
+                  </button>
                 </div>
-              )}
-
-              {/* Show linked account info */}
-              {!isAnonymous && profile?.email && (
-                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-green-600" />
-                    <p className="font-handlee text-sm text-green-800">
-                      Signed in as {profile.email}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
-              <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
-              <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
-
-              {/* Privacy & Data Section */}
-              <div className="pt-4 border-t border-amber-900/10">
-                <DataManagementSection onAccountDeleted={onClose} />
-              </div>
-
-              <div className="pt-4 border-t border-amber-900/10">
-                <button
-                  onClick={async () => {
-                    const { signOut } = await import("firebase/auth")
-                    const { auth } = await import("@/lib/firebase")
-
-                    // Clear local temp data for security
-                    localStorage.removeItem("sonash_journal_temp")
-
-                    await signOut(auth)
-                    onClose() // Close the book
-                  }}
-                  className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
-                >
-                  Sign Out
-                </button>
               </div>
             </div>
-          </StickyNote>
-        )}
-      </AnimatePresence>
+          )}
 
-      {/* Account Link Modal */}
-      <AnimatePresence>
-        {showAccountLink && (
-          <AccountLinkModal
-            onClose={() => setShowAccountLink(false)}
-            onSuccess={() => setShowAccountLink(false)}
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
+          {/* Show linked account info */}
+          {!isAnonymous && profile?.email && (
+            <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-600" />
+                <p className="font-handlee text-sm text-green-800">
+                  Signed in as {profile.email}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
+          <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
+          <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
+
+          {/* Privacy & Data Section */}
+          <div className="pt-4 border-t border-amber-900/10">
+            <DataManagementSection onAccountDeleted={onClose} />
+          </div>
+
+          <div className="pt-4 border-t border-amber-900/10">
+            <button
+              onClick={async () => {
+                const { signOut } = await import("firebase/auth")
+                const { auth } = await import("@/lib/firebase")
+
+                // Clear local temp data for security
+                localStorage.removeItem("sonash_journal_temp")
+
+                await signOut(auth)
+                onClose() // Close the book
+              }}
+              className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </StickyNote>
+    )
+  }
+      </AnimatePresence >
+
+    {/* Account Link Modal */ }
+    <AnimatePresence>
+  {
+    showAccountLink && (
+      <AccountLinkModal
+        onClose={() => setShowAccountLink(false)}
+        onSuccess={() => setShowAccountLink(false)}
+      />
+    )
+  }
+      </AnimatePresence >
+
+    {/* Journal Modal Overlay */ }
+    <AnimatePresence>
+  {
+    showJournalModal && (
+      <JournalModal onClose={() => setShowJournalModal(false)} />
+    )
+  }
+      </AnimatePresence >
+    </motion.div >
   )
 }
-
