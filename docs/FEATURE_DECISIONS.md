@@ -23,6 +23,7 @@
 | Add | Defer | Reject | Feature | Effort | Milestone | Comments |
 |:---:|:-----:|:------:|---------|--------|-----------|----------|
 | [ ] | [ ] | [ ] | **"I made it through today" button** - End-of-day celebration | 2 SP | M1.5 | |
+| [ ] | [ ] | [ ] | **Sobriety clock with MINUTES** - Add minutes display for newcomers (feasibility check) | 2 SP | M7 F5 | Important for early recovery |
 | [ ] | [ ] | [ ] | **"Meetings starting soon" filter** - Within 1 hour | 3 SP | M3.1 | |
 | [ ] | [ ] | [ ] | **Sober fun ideas generator** - Random activities for boredom | 3 SP | M1.5 | |
 | [ ] | [ ] | [ ] | **"Too Tired" Mode** - Reduce night review to 3 questions | 3 SP | M5 | |
