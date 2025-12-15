@@ -1272,20 +1272,41 @@ users/{uid}/prayersUser/{id}
 | Ticket | Description | Est |
 |--------|-------------|-----|
 | F5.1 | Create chip visualization component (24h, 30d, 60d, 90d, 6mo, 9mo, 1yr, 18mo, multi-year chips with colors) | 3 |
-| F5.2 | Add "Next chip" countdown on Today page with days/hours remaining | 2 |
+| F5.2 | Add "Next chip" countdown on Today page with days/hours/minutes remaining | 2 |
 | F5.3 | Implement "I got my chip today" celebration modal with date, meeting name, notes, share button | 3 |
-| F5.4 | Add chip earned detection: trigger modal automatically when clean time crosses milestone | 2 |
-| F5.5 | Add milestone celebration animation (chip flip animation, confetti) | 2 |
-| F5.6 | Create "My milestones" history view showing all earned chips with dates | 2 |
+| F5.4 | Add chip earned detection: trigger celebration automatically when clean time crosses milestone | 2 |
+| F5.5 | **Create milestone celebration video/animation** - Full-screen celebratory experience with chip reveal, sound effects, confetti (like gaming achievement unlocks) | 5 |
+| F5.6 | Create "My Chips" gallery page - Chips/coins scattered on table surface (like notebook cover aesthetic), tap to view details/date earned | 4 |
 | F5.7 | Add chip visualization to desktop components (replace or enhance existing sobriety-chip.tsx) | 2 |
+| F5.8 | Add optional "Share my milestone" to social/text with generated image | 2 |
 
-**Subtotal: 16 SP**
+**Subtotal: 23 SP**
+
+**Celebration Animation Vision**
+
+> When a milestone is reached, trigger a **full-screen celebration experience**:
+> - Chip appears with flip/spin animation
+> - Confetti burst or visual effects
+> - Optional sound effect (toggleable in settings)
+> - "X days clean!" typography reveal
+> - Shareable screenshot/image generation
+> - Inspired by gaming achievement unlocks, not clinical
+
+**Chip Gallery Vision**
+
+> "My Chips" page styled like the notebook cover aesthetic:
+> - Chips scattered casually on a wooden table/surface
+> - Each chip shows the milestone (30 days, 1 year, etc.)
+> - Tap chip to see: date earned, meeting where picked up (if logged), notes
+> - Empty positions for chips not yet earned (subtle, not shaming)
+> - Premium feel, not a boring list
 
 **Exit Criteria**
 
 - Chip visualization shows accurate milestone progression
-- Next chip countdown displays on Today page
-- Celebration modal triggers at milestone crossings
+- Next chip countdown displays on Today page (with minutes for early recovery)
+- Celebration animation triggers at milestone crossings
+- "My Chips" gallery provides premium, visual experience
 - Milestone history is accurate and shareable
 
 ---
