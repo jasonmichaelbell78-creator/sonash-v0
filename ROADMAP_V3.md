@@ -623,6 +623,18 @@ Current state: 0 errors ✅, 29 warnings
 - Step 10 Spot-Check must be extremely fast (30–90 seconds).
 - User-initiated export/share only (privacy-first).
 
+**UX Patterns (from Design Analysis)**
+
+> Apply these patterns across all M5 features:
+
+| Pattern | Implementation |
+|---------|----------------|
+| **Tiered depth** | Quick-tap yes/no for tired users; tap to expand for detailed journaling |
+| **One-screen overview** | Today's completion status visible at glance with "Done for today" state |
+| **Low-friction capture** | "Fast-add" mode (minimal fields) vs "Deep-edit" mode (full structured layout) |
+| **Smart reminders** | Time to user habits (e.g., 15-30 min before bedtime for Night Review) |
+| **"Talk to a person" nudges** | When distress detected (high craving, repeated resentments), prompt: "Consider calling your sponsor" |
+
 ---
 
 #### Epic 5.1 — Infrastructure & Data Model (Foundation)
@@ -812,6 +824,16 @@ users/{uid}/
 - Developer Experience (local setup, scripts, templates)
 - Security hardening (secrets handling, dependency updates)
 - Documentation (architecture decision records, runbooks)
+
+### Future UX Patterns (from Design Analysis)
+
+> These patterns should be considered for future milestones:
+
+| Pattern | Priority | Notes |
+|---------|----------|-------|
+| **Offline-first** | M9 | Checklists/inventories work without connection, sync later. Critical for meetings with poor connectivity. |
+| **Tradition guardrails** | M7+ | Recurring prompts about anonymity and not speaking for fellowships in any community feature |
+| **Simple visual indicators** | All | Progress rings, counters over complex dashboards. Keep UI scannable. |
 
 ---
 
