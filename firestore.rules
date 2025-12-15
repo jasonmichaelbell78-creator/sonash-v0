@@ -53,12 +53,9 @@ service cloud.firestore {
     }
 
     // Verify request has valid App Check token (bot protection)
-    // Note: request.app is unreliable with debug tokens, so we make it optional for now
-    // In production with real reCAPTCHA tokens, request.app will be populated
+    // Requires both authentication AND valid App Check token
     function hasValidAppCheck() {
-      return request.auth != null;
-      // TODO: Re-enable once App Check debug tokens work reliably
-      // return request.auth != null && request.app != null;
+      return request.auth != null && request.app != null;
     }
 
     // ============================================================
@@ -117,24 +114,24 @@ service cloud.firestore {
     // PUBLIC/SHARED DATA
     // ============================================================
 
-    // Meetings collection (public read with App Check, admin full access)
+    // Meetings collection (public read, admin-only write)
     match /meetings/{meetingId} {
-      // Public read with App Check, OR admin read without App Check
+      // Public read access for meeting finder
       allow read: if true;
-      // Admin users can write (requires admin custom claim)
-      allow write: if true; // TODO: REVERT TO ADMIN ONLY AFTER DEMO
+      // Admin users only can write (requires admin custom claim)
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
 
-    // Sober Living collection
+    // Sober Living collection (public read, admin-only write)
     match /sober_living/{homeId} {
       allow read: if true;
-      allow write: if true; // TODO: REVERT TO ADMIN ONLY AFTER DEMO
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
 
-    // Daily Quotes collection
+    // Daily Quotes collection (public read, admin-only write)
     match /daily_quotes/{quoteId} {
       allow read: if true;
-      allow write: if true; // TODO: REVERT TO ADMIN ONLY AFTER DEMO
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
 
     // ============================================================

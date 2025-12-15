@@ -47,12 +47,12 @@ export const exportUserData = onCall(
             const profileDoc = await db.collection("users").doc(userId).get();
             const profile = profileDoc.exists ? (profileDoc.data() ?? null) : null;
 
-            // Get all daily logs
+            // Get all daily logs (order by date, not 'id' which doesn't exist)
             const logsSnapshot = await db
                 .collection("users")
                 .doc(userId)
                 .collection("daily_logs")
-                .orderBy("id", "desc")
+                .orderBy("date", "desc")
                 .get();
 
             const dailyLogs = logsSnapshot.docs.map((doc) => ({
@@ -127,23 +127,34 @@ export const deleteUserAccount = onCall(
         try {
             const db = admin.firestore();
 
-            // Delete all daily logs
+            // Delete all daily logs (chunked for >500 documents)
             const logsSnapshot = await db
                 .collection("users")
                 .doc(userId)
                 .collection("daily_logs")
                 .get();
 
-            const batch = db.batch();
-            logsSnapshot.docs.forEach((doc) => {
-                batch.delete(doc.ref);
-            });
+            // Firestore batch limit is 500, use 450 for safety margin
+            const BATCH_SIZE = 450;
+            const docs = logsSnapshot.docs;
 
-            // Delete user profile
-            batch.delete(db.collection("users").doc(userId));
+            for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+                const chunk = docs.slice(i, i + BATCH_SIZE);
+                const batch = db.batch();
+                chunk.forEach((doc) => {
+                    batch.delete(doc.ref);
+                });
+                // Include profile deletion in the last batch
+                if (i + BATCH_SIZE >= docs.length) {
+                    batch.delete(db.collection("users").doc(userId));
+                }
+                await batch.commit();
+            }
 
-            // Execute batch delete
-            await batch.commit();
+            // If no logs existed, still delete the profile
+            if (docs.length === 0) {
+                await db.collection("users").doc(userId).delete();
+            }
 
             // Delete Firebase Auth account
             await admin.auth().deleteUser(userId);

@@ -49,8 +49,12 @@ const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
 
   try {
     // Development: Set debug token to bypass reCAPTCHA during local testing
-    // @ts-expect-error - Firebase sets this globally for dev
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN;
+    // SECURITY: Only set in development to prevent production token bypass
+    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN) {
+      // @ts-expect-error - Firebase sets this globally for dev
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN;
+      console.warn('⚠️ App Check debug token enabled - DEVELOPMENT ONLY');
+    }
 
     // Initialize App Check
     // Reverting to Enterprise Provider as the key is confirmed Enterprise.

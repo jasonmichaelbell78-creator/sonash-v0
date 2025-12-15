@@ -36,11 +36,13 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS
+- **Framework**: Next.js 16 (App Router) - Experimental
+- **React**: 19.2.0 - Experimental  
+- **Styling**: Tailwind CSS v4
 - **Animations**: Framer Motion
 - **Fonts**: Caveat (handwriting), EB Garamond (serif)
 - **UI Components**: shadcn/ui
+- **Backend**: Firebase (Auth, Firestore, Cloud Functions, App Check)
 
 ## Project Structure
 

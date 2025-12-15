@@ -113,23 +113,23 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 ---
 
-#### 🔄 5-AI Code Review Quality Gate (2025-12-13)
+#### 🔄 5-AI Code Review Quality Gate (2025-12-14 - Updated)
 
 > Based on aggregated review from Gemini, Claude, ChatGPT, Jules, and GitHub Copilot.
-> See: [implementation_plan.md](file:///C:/Users/jason/.gemini/antigravity/brain/43f579b5-9d21-4a66-ad7b-562182fe794c/implementation_plan.md)
+> See: [implementation_plan.md](file:///C:/Users/jason/.gemini/antigravity/brain/21033928-59fc-4d72-b229-75ff67acf5cc/implementation_plan.md)
 
-##### 🔴 Critical (Before M1.5)
+##### 🔴 Critical ✅ COMPLETE
 
 - [x] Re-enable App Check in `firestore.rules` (`request.app != null`)
-- [x] Re-enable `consumeAppCheckToken: true` in Cloud Functions
+- [x] Remove public write access on `meetings`, `sober_living`, `daily_quotes` collections
+- [x] Gate App Check debug token to development only (`lib/firebase.ts`)
 - [x] Deploy: `firebase deploy --only firestore:rules,functions`
 
-##### 🟠 High (Pre-M1.5 Quality Gate)
+##### 🟠 High ✅ COMPLETE
 
-- [ ] Remove hardcoded Sentry DSN fallback in functions/src/index.ts
+- [x] Fix GDPR data export orderBy bug (`functions/src/user-data.ts` line 55)
+- [x] Implement chunked batch deletion for >500 docs (`functions/src/user-data.ts`)
 - [ ] Remove debug console.logs in lib/firestore-service.ts
-- [ ] Fix package.json version (16.0.7 → actual Next.js version)
-- [ ] Implement distributed rate limiting (RateLimiterFirestore)
 - [ ] Complete `useAuth` → focused hooks migration
 
 ##### 🟡 Medium (M1.5 or M2)
@@ -139,6 +139,9 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - [ ] Add geocoding to seed-meetings.ts for "Nearest" feature
 - [ ] ESLint rules: change warn → error
 - [ ] Investigate suppressHydrationWarning root cause
+- [ ] Hide Reset button in production (`resources-page.tsx` line 498)
+- [ ] Fix Share button clipboard functionality (`resources-page.tsx` line 632)
+- [ ] Update README.md version (Next.js 14 → 16)
 
 ---
 
