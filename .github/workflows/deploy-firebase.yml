@@ -44,15 +44,16 @@ jobs:
           chmod 600 $HOME/gcloud-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-key.json" >> $GITHUB_ENV
 
+      - name: Authenticate with Google Cloud
+        run: |
+          gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
+          gcloud config set project sonash-app
+
       - name: Deploy Cloud Functions
-        run: firebase deploy --only functions --non-interactive
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: firebase deploy --only functions --non-interactive --project sonash-app
 
       - name: Deploy Firestore Rules
-        run: firebase deploy --only firestore:rules --non-interactive
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: firebase deploy --only firestore:rules --non-interactive --project sonash-app
 
       - name: Deployment Summary
         if: success()
