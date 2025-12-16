@@ -36,13 +36,20 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router) - Experimental
-- **React**: 19.2.0 - Experimental  
+- **Framework**: Next.js 16.0.7 (App Router with SSR)
+- **React**: 19.2.0 (Release Candidate)
 - **Styling**: Tailwind CSS v4
-- **Animations**: Framer Motion
-- **Fonts**: Caveat (handwriting), EB Garamond (serif)
-- **UI Components**: shadcn/ui
-- **Backend**: Firebase (Auth, Firestore, Cloud Functions, App Check)
+- **Animations**: Framer Motion v12
+- **Fonts**: Caveat (handwriting), Handlee, Rock Salt (via next/font/google)
+- **UI Components**: shadcn/ui + Radix UI primitives
+- **Backend**:
+  - Firebase Auth (Anonymous, Email/Password, Google OAuth)
+  - Firestore (Real-time database)
+  - Cloud Functions v2 (Server-side operations)
+  - Firebase App Check (reCAPTCHA Enterprise for bot protection)
+- **Validation**: Zod schemas (client & server)
+- **Error Monitoring**: Sentry (optional)
+- **Testing**: Node.js built-in test runner + c8 coverage
 
 ## Project Structure
 
@@ -87,23 +94,87 @@ Live at: **[sonash.app](https://sonash.app)**
 
 ## Setup & Installation
 
-1. **Clone the repository:**
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Firebase CLI (`npm install -g firebase-tools`)
+- Firebase project with Firestore, Auth, and Cloud Functions enabled
 
-    ```bash
-    git clone https://github.com/jasonmichaelbell78-creator/sonash-v0.git
-    cd sonash-v0
-    ```
+### 1. Clone the Repository
 
-2. **Configure Environment:**
-    - Copy `.env.local.example` to `.env.local`
-    - Fill in your Firebase config values (Project Settings -> General -> Your Apps)
+```bash
+git clone https://github.com/jasonmichaelbell78-creator/sonash-v0.git
+cd sonash-v0
+```
 
-3. **Install & Run:**
+### 2. Install Dependencies
 
-    ```bash
-    npm install
-    npm run dev
-    ```
+```bash
+npm install
+cd functions && npm install && cd ..
+```
+
+### 3. Configure Environment Variables
+
+Create `.env.local` in the project root:
+
+```bash
+# Firebase SDK Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# Firebase App Check (Bot Protection)
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+
+# App Check Debug Token (Development Only - DO NOT use in production)
+NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
+
+# Error Monitoring (Optional)
+NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
+NEXT_PUBLIC_SENTRY_ENABLED=false
+```
+
+**Get these values from:**
+- Firebase Console → Project Settings → General → Your Apps
+- App Check → reCAPTCHA Enterprise
+
+### 4. Run with Firebase Emulators (Recommended for Development)
+
+```bash
+# Start Firebase emulators (Firestore, Auth, Functions)
+firebase emulators:start
+
+# In a new terminal, start Next.js dev server
+npm run dev
+```
+
+**Note:** Emulators run on `localhost:4000` (Emulator UI), `localhost:8080` (Firestore), `localhost:9099` (Auth), `localhost:5001` (Functions)
+
+### 5. Run Without Emulators (Uses Production Firebase)
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000`
+
+### 6. Deploy Cloud Functions (Production)
+
+```bash
+cd functions
+npm run build
+firebase deploy --only functions
+```
+
+### 7. Deploy Firestore Security Rules
+
+```bash
+firebase deploy --only firestore:rules
+```
 
 ## Data Architecture
 

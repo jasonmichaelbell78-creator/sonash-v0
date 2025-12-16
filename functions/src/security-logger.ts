@@ -1,11 +1,12 @@
 /**
  * Security Event Logger for Cloud Functions
- * 
+ *
  * Logs security-related events in structured JSON format for GCP Cloud Logging.
  * Events are searchable via GCP Logs Explorer.
  */
 
 import * as Sentry from "@sentry/node";
+import { createHash } from "crypto";
 
 // Security event types
 export type SecurityEventType =
@@ -36,17 +37,22 @@ interface SecurityEvent {
     timestamp: string;
 }
 
-// Simple hash function for user IDs (privacy protection)
+/**
+ * Cryptographic hash function for user IDs (GDPR/HIPAA compliant)
+ * Uses SHA-256 for irreversible hashing while maintaining log correlation
+ *
+ * @param userId - The user ID to hash
+ * @returns First 12 chars of SHA-256 hash (sufficient for uniqueness, ~68 bits of entropy)
+ */
 function hashUserId(userId: string): string {
-    // Use first 8 chars of a simple hash for log correlation
-    // Not cryptographically secure, but sufficient for log grouping
-    let hash = 0;
-    for (let i = 0; i < userId.length; i++) {
-        const char = userId.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(16).substring(0, 8);
+    // Use SHA-256 for cryptographically secure, one-way hashing
+    // Truncate to 12 chars for readability while maintaining collision resistance
+    // (2^48 possible values = ~281 trillion combinations)
+    const hash = createHash("sha256")
+        .update(userId)
+        .digest("hex");
+
+    return hash.substring(0, 12);
 }
 
 /**

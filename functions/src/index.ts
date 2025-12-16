@@ -15,10 +15,10 @@
 import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { RateLimiterMemory } from "rate-limiter-flexible";
 import { dailyLogSchema } from "./schemas";
 import { ZodError } from "zod";
 import { initSentry, logSecurityEvent } from "./security-logger";
+import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
 // Initialize Sentry for error monitoring (runs once at cold start)
 const SENTRY_DSN = process.env.SENTRY_DSN;
@@ -32,14 +32,11 @@ admin.initializeApp();
 // Global options: Limit concurrent instances to control costs
 setGlobalOptions({ maxInstances: 10 });
 
-
-
-// Rate limiter: 10 requests per minute per user
-// This runs in-memory and resets when function cold-starts
-// For production, consider using Firestore-based limiter
-const saveDailyLogLimiter = new RateLimiterMemory({
-    points: 10, // Number of requests
-    duration: 60, // Per 60 seconds
+// Firestore-based rate limiter: Persists across function instances and cold starts
+// Prevents bypass through horizontal scaling or cold start resets
+const saveDailyLogLimiter = new FirestoreRateLimiter({
+    points: 10,    // Max 10 requests
+    duration: 60,  // Per 60 seconds
 });
 
 interface DailyLogData {
@@ -88,19 +85,23 @@ export const saveDailyLog = onCall<DailyLogData>(
         const userId = auth.uid;
 
         // 2. Check rate limit (server-side, cannot be bypassed)
+        // Uses Firestore for persistence across function instances
         try {
-            await saveDailyLogLimiter.consume(userId);
-        } catch (_rateLimitError) {
+            await saveDailyLogLimiter.consume(userId, "saveDailyLog");
+        } catch (rateLimitError) {
+            const errorMessage = rateLimitError instanceof Error
+                ? rateLimitError.message
+                : "Rate limit exceeded (10 req/min)";
+
             logSecurityEvent(
                 "RATE_LIMIT_EXCEEDED",
                 "saveDailyLog",
-                "Rate limit exceeded (10 req/min)",
+                errorMessage,
                 { userId }
             );
             throw new HttpsError(
                 "resource-exhausted",
-                "Too many requests. Please wait 60 seconds before trying again.",
-                { retryAfter: 60 }
+                errorMessage
             );
         }
 
@@ -205,3 +206,16 @@ export const saveDailyLog = onCall<DailyLogData>(
 
 // Export user data management functions (GDPR compliance)
 export { exportUserData, deleteUserAccount } from "./user-data";
+
+// Export admin functions (server-side validation & authorization)
+export {
+    adminSaveMeeting,
+    adminDeleteMeeting,
+    adminSaveSoberLiving,
+    adminDeleteSoberLiving,
+    adminSaveQuote,
+    adminDeleteQuote,
+} from "./admin";
+
+// Export rate limiter cleanup function (should be run daily via Cloud Scheduler)
+export { cleanupOldRateLimits } from "./firestore-rate-limiter";

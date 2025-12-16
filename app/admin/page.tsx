@@ -33,9 +33,21 @@ export default function AdminPage() {
                 return
             }
 
-            // Force allow for demo
-            setUser(firebaseUser)
-            setState("authenticated")
+            // Verify admin claim
+            try {
+                const tokenResult = await firebaseUser.getIdTokenResult()
+                if (tokenResult.claims.admin === true) {
+                    setUser(firebaseUser)
+                    setState("authenticated")
+                } else {
+                    setUser(firebaseUser)
+                    setState("not-admin")
+                }
+            } catch (err) {
+                console.error("Error verifying admin claim:", err)
+                setError("Failed to verify admin privileges")
+                setState("login")
+            }
         })
 
         return () => unsubscribe()
