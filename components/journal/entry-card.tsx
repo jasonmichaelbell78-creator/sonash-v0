@@ -76,7 +76,7 @@ export function EntryCard({ entry, onClick }: EntryCardProps) {
                         </div>
                     </div>
                 )
-            case 'spot-check':
+            case 'spot-check': {
                 const feelings = entry.data.feelings?.join(", ") || "No feelings listed"
                 return (
                     <div className="space-y-1">
@@ -93,6 +93,7 @@ export function EntryCard({ entry, onClick }: EntryCardProps) {
                         )}
                     </div>
                 )
+            }
             case 'night-review':
                 return (
                     <div className="space-y-1 text-slate-300">
@@ -110,7 +111,7 @@ export function EntryCard({ entry, onClick }: EntryCardProps) {
                         )}
                     </div>
                 )
-            case 'gratitude':
+            case 'gratitude': {
                 // Assuming data is string or object? Let's handle simple string for now based on previous simple tool usage
                 // Wait, gratitude is usually part of night review or a separate thing.
                 // The firestore service used `type: 'gratitude'` but structure `data: { items: ... }` or just text?
@@ -121,6 +122,7 @@ export function EntryCard({ entry, onClick }: EntryCardProps) {
                         {content}
                     </div>
                 )
+            }
             default:
                 return null
         }

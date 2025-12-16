@@ -288,7 +288,7 @@ export default function ResourcesPage() {
   const availableNeighborhoods = useMemo(() => {
     // Use all items from ACTIVE type to populate the list
     const sourceData = resourceType === "meetings" ? meetings : soberHomes
-    // @ts-ignore - access safe property
+    // @ts-expect-error - accessing neighborhood property which exists on both Meeting and SoberHome types
     const unique = Array.from(new Set(sourceData.map(item => item.neighborhood))).filter(Boolean).sort()
     return unique
   }, [meetings, soberHomes, resourceType])
@@ -435,7 +435,7 @@ export default function ResourcesPage() {
                   {["All", "Men", "Women"].map((option) => (
                     <button
                       key={option}
-                      // @ts-ignore
+                      // @ts-expect-error - option is "All" | "Men" | "Women" which are valid values for setGenderFilter
                       onClick={() => setGenderFilter(option)}
                       className={`text-xs px-3 py-1.5 rounded-md transition-all ${genderFilter === option
                         ? "bg-amber-600 text-white shadow-sm font-medium"
