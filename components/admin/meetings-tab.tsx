@@ -14,14 +14,12 @@ import { useState, useEffect } from "react"
 import {
     collection,
     getDocs,
-    doc,
-    setDoc,
-    deleteDoc,
     query,
     orderBy
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Meeting } from "@/lib/db/meetings"
+import { getFunctions, httpsCallable } from "firebase/functions"
 
 type ModalMode = "closed" | "add" | "edit"
 
@@ -122,34 +120,41 @@ export function MeetingsTab() {
         setModalMode("edit")
     }
 
-    // Save meeting (add or update)
+    // Save meeting (add or update) - via Cloud Function
     const handleSave = async () => {
         setSaving(true)
         try {
-            const id = editingMeeting?.id || `meeting_${Date.now()}`
-            await setDoc(doc(db, "meetings", id), {
-                id,
+            const functions = getFunctions()
+            const saveMeeting = httpsCallable(functions, "adminSaveMeeting")
+
+            const meetingData = {
+                ...(editingMeeting?.id ? { id: editingMeeting.id } : {}),
                 ...formData,
-            })
+            }
+
+            await saveMeeting({ meeting: meetingData })
             await fetchMeetings()
             setModalMode("closed")
         } catch (error) {
             console.error("Error saving meeting:", error)
-            alert("Failed to save meeting")
+            alert("Failed to save meeting. " + (error instanceof Error ? error.message : ""))
         }
         setSaving(false)
     }
 
-    // Delete meeting
+    // Delete meeting - via Cloud Function
     const handleDelete = async () => {
         if (!deleteId) return
         try {
-            await deleteDoc(doc(db, "meetings", deleteId))
+            const functions = getFunctions()
+            const deleteMeeting = httpsCallable(functions, "adminDeleteMeeting")
+
+            await deleteMeeting({ meetingId: deleteId })
             await fetchMeetings()
             setDeleteId(null)
         } catch (error) {
             console.error("Error deleting meeting:", error)
-            alert("Failed to delete meeting")
+            alert("Failed to delete meeting. " + (error instanceof Error ? error.message : ""))
         }
     }
 

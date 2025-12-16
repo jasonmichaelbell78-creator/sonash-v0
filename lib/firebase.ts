@@ -111,11 +111,11 @@ export const getFirebase = () => {
   return { app: _app, auth: _auth, db: _db }
 }
 
-// Safe exports: These will work in most cases, but prefer getFirebase() for critical paths
-// For backward compatibility with existing code
-let app: FirebaseApp
-let auth: Auth
-let db: Firestore
+// Safe exports: Use getFirebase() for guaranteed initialization
+// These may be undefined on server-side - components must check typeof window
+let app: FirebaseApp | undefined
+let auth: Auth | undefined
+let db: Firestore | undefined
 
 try {
   const firebase = getFirebase()
@@ -124,10 +124,10 @@ try {
   db = firebase.db
 } catch {
   // On server-side, these will be undefined
-  // Components should check typeof window before using
-  app = _app as FirebaseApp
-  auth = _auth as Auth
-  db = _db as Firestore
+  // Components MUST check typeof window !== 'undefined' before using
+  app = _app
+  auth = _auth
+  db = _db
 }
 
 export { app, auth, db }

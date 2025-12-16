@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // Removed 'output: export' to enable SSR and API routes for Firebase integration
   images: {
     unoptimized: true,
   },
