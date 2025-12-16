@@ -42,7 +42,7 @@ export function QuotesTab() {
         try {
             const data = await QuotesService.getAllQuotes()
             setQuotes(data)
-        } catch (error) {
+        } catch (_error) {
             toast.error("Failed to load quotes")
         } finally {
             setLoading(false)
@@ -64,7 +64,7 @@ export function QuotesTab() {
             setEditingQuote(null)
             setFormData({})
             fetchQuotes()
-        } catch (error) {
+        } catch (_error) {
             toast.error("Failed to save quote")
         }
     }
@@ -75,7 +75,7 @@ export function QuotesTab() {
             await QuotesService.deleteQuote(id)
             toast.success("Quote deleted")
             fetchQuotes()
-        } catch (error) {
+        } catch (_error) {
             toast.error("Failed to delete quote")
         }
     }
@@ -95,7 +95,7 @@ export function QuotesTab() {
             }
             toast.success("Quotes seeded!")
             fetchQuotes()
-        } catch (err) {
+        } catch (_err) {
             toast.error("Failed to seed")
         } finally {
             setLoading(false)

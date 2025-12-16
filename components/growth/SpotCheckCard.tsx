@@ -18,9 +18,7 @@ import { toast } from "sonner"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { Mic, MicOff } from "lucide-react"
 
-interface SpotCheckCardProps extends HTMLMotionProps<"button"> {
-    // Allows passing animation variants from parent
-}
+type SpotCheckCardProps = HTMLMotionProps<"button">
 
 export default function SpotCheckCard({ className, ...props }: SpotCheckCardProps) {
     const [isOpen, setIsOpen] = useState(false)

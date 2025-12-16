@@ -121,7 +121,7 @@ async function processLine(line: string, index: number): Promise<Meeting | null>
     if (time.toLowerCase().includes("pm") || time.toLowerCase().includes("am")) {
         // Basic converter
         const [timePart, modifier] = time.split(' ');
-        let [hours, minutes] = timePart.split(':');
+        const [hours, minutes] = timePart.split(':');
         if (modifier.toLowerCase() === 'pm' && hours !== '12') hours = String(parseInt(hours) + 12);
         if (modifier.toLowerCase() === 'am' && hours === '12') hours = '00';
         time24 = `${hours.padStart(2, '0')}:${(minutes || '00')}`;

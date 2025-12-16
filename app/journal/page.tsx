@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
+import { FirestoreService, type DailyLog } from "@/lib/firestore-service"
 import { Loader2 } from "lucide-react"
 import { JournalSidebar, JournalFilterType } from "@/components/journal/journal-sidebar"
 import { EntryFeed } from "@/components/journal/entry-feed"
@@ -25,14 +25,14 @@ export default function JournalPage() {
                     FirestoreService.getInventoryEntries(user.uid, 50)
                 ])
 
-                const logs = logsRes.entries.flatMap((log: any) => {
+                const logs = logsRes.entries.flatMap((log: DailyLog & { dateId?: string }) => {
                     const entries: JournalEntry[] = []
 
                     // 1. The Daily Check-in (Mood/Stats)
                     entries.push({
                         id: `${log.id}_checkin`,
                         type: 'daily-log',
-                        date: new Date(log.dateId + 'T12:00:00'),
+                        date: new Date((log.dateId || log.date) + 'T12:00:00'),
                         data: log
                     })
 
@@ -41,7 +41,7 @@ export default function JournalPage() {
                         entries.push({
                             id: `${log.id}_notepad`,
                             type: 'notepad',
-                            date: new Date(log.dateId + 'T12:05:00'), // Slightly after check-in
+                            date: new Date((log.dateId || log.date) + 'T12:05:00'), // Slightly after check-in
                             data: { ...log, type: 'notepad' } // Pass data but override type for rendering
                         })
                     }
@@ -49,11 +49,11 @@ export default function JournalPage() {
                     return entries
                 }) as JournalEntry[]
 
-                const inventory = inventoryRes.entries.map((item: any) => ({
+                const inventory = inventoryRes.entries.map((item: { id: string; type?: string; createdAt?: { toDate: () => Date }; data?: Record<string, unknown> }) => ({
                     id: item.id,
-                    type: item.type, // 'spot-check' | 'night-review' | 'gratitude'
+                    type: item.type || 'unknown', // 'spot-check' | 'night-review' | 'gratitude'
                     date: item.createdAt?.toDate() || new Date(),
-                    data: item.data
+                    data: item.data || {}
                 })) as JournalEntry[]
 
                 // Merge and sort

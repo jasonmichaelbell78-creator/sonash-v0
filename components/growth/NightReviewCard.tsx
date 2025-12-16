@@ -18,7 +18,7 @@ import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { Mic, MicOff } from "lucide-react"
 import { toast } from "sonner"
 
-interface NightReviewCardProps extends HTMLMotionProps<"button"> { }
+type NightReviewCardProps = HTMLMotionProps<"button">
 
 // --- CONSTANTS ---
 

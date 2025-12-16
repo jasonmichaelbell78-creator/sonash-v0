@@ -15,9 +15,7 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 
-interface GratitudeCardProps extends HTMLMotionProps<"button"> {
-    // Allows passing animation variants from parent
-}
+type GratitudeCardProps = HTMLMotionProps<"button">
 
 type GratitudeItem = {
     id: string
