@@ -14,17 +14,12 @@ import { assertUserScope, validateUserDocumentPath } from "./security/firestore-
 import { logger as defaultLogger, maskIdentifier } from "./logger"
 import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
 import { buildPath } from "./constants"
+import { getTodayDateId } from "./utils/date-utils"
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
 
 // Re-export types for backwards compatibility
 export type { DailyLog, DailyLogHistoryResult }
 export type TodayLogResult = DailyLogResult
-
-// Get today's date ID in local timezone (YYYY-MM-DD format)
-// IMPORTANT: Must match the timezone used in the UI (formatDateForDisplay)
-// to prevent saving to wrong day
-const getTodayLocalDateId = () =>
-  new Intl.DateTimeFormat("en-CA").format(new Date())
 
 type FirestoreDependencies = {
   db: typeof defaultDb
@@ -98,7 +93,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         const saveDailyLogFn = httpsCallable(functions, "saveDailyLog")
 
         // CRITICAL: Always use YYYY-MM-DD format for date (document ID format)
-        const todayId = getTodayLocalDateId() // e.g., "2025-12-13"
+        const todayId = getTodayDateId() // e.g., "2025-12-13"
 
         const payload = {
           userId,
@@ -170,7 +165,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       }
 
       try {
-        const today = getTodayLocalDateId()
+        const today = getTodayDateId()
         const docRef = getValidatedDocRef(userId, today)
         const docSnap = await deps.getDoc(docRef)
 
@@ -279,7 +274,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           tags: entry.tags || [],
           createdAt: deps.serverTimestamp(),
           updatedAt: deps.serverTimestamp(), // Required by security rules
-          dateId: getTodayLocalDateId(), // For easy querying by day
+          dateId: getTodayDateId(), // For easy querying by day
         }
 
         await deps.setDoc(newDocRef, payload)
