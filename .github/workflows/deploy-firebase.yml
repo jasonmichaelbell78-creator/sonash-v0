@@ -36,7 +36,9 @@ jobs:
 
       - name: Setup Firebase Service Account
         run: |
+          # Create secure temporary file for service account credentials
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/gcloud-key.json
+          chmod 600 $HOME/gcloud-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-key.json" >> $GITHUB_ENV
 
       - name: Deploy Cloud Functions
@@ -54,19 +56,16 @@ jobs:
         run: |
           echo "✅ Deployment completed successfully!"
           echo ""
-          echo "📦 Deployed Cloud Functions:"
-          echo "  - adminSaveMeeting"
-          echo "  - adminDeleteMeeting"
-          echo "  - adminSaveSoberLiving"
-          echo "  - adminDeleteSoberLiving"
-          echo "  - adminSaveQuote"
-          echo "  - adminDeleteQuote"
-          echo "  - saveDailyLog"
-          echo "  - cleanupOldRateLimits"
-          echo "  - exportUserData"
-          echo "  - deleteUserAccount"
+          echo "📦 Cloud Functions have been deployed"
+          echo "🔒 Firestore security rules have been deployed"
           echo ""
-          echo "🔒 Deployed Firestore Rules:"
-          echo "  - User data protection (owner-only access)"
-          echo "  - Rate limits collection (Cloud Functions only)"
-          echo "  - Public collections (meetings, sober_living, daily_quotes)"
+          echo "ℹ️  View deployed functions at: https://console.firebase.google.com/project/sonash-app/functions"
+          echo "ℹ️  View Firestore rules at: https://console.firebase.google.com/project/sonash-app/firestore/rules"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Cleanup credentials
+        if: always()
+        run: |
+          # Remove service account credentials file
+          rm -f $HOME/gcloud-key.json
