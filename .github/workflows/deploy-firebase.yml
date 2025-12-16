@@ -61,8 +61,6 @@ jobs:
           echo ""
           echo "ℹ️  View deployed functions at: https://console.firebase.google.com/project/sonash-app/functions"
           echo "ℹ️  View Firestore rules at: https://console.firebase.google.com/project/sonash-app/firestore/rules"
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Cleanup credentials
         if: always()
