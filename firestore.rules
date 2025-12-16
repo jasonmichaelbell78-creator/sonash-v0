@@ -6,18 +6,6 @@ service cloud.firestore {
     // HELPER FUNCTIONS
     // ============================================================
 
-    // Validate date ID format (YYYY-MM-DD)
-    function isValidDateFormat(dateId) {
-      return dateId.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
-    }
-
-    // Check if a date is within reasonable range (10 years past to 1 year future)
-    function isReasonableDate(dateId) {
-      let year = int(dateId.split('-')[0]);
-      let currentYear = int(request.time.toMillis() / 31536000000 + 1970);
-      return year >= currentYear - 10 && year <= currentYear + 1;
-    }
-
     // Validate inventory entry type
     function isValidInventoryType(type) {
       return type in [
@@ -46,7 +34,7 @@ service cloud.firestore {
     }
 
     // Size limits to prevent abuse
-    function isReasonableSize(data) {
+    function isReasonableSize() {
       // Limit individual string fields to 50KB
       // Limit total document to ~500KB (Firestore max is 1MB)
       return request.resource.data.size() < 500000;
@@ -82,12 +70,12 @@ service cloud.firestore {
         allow create: if hasValidAppCheck() &&
                          request.auth.uid == uid &&
                          hasRequiredInventoryFields(request.resource.data) &&
-                         isReasonableSize(request.resource.data);
+                         isReasonableSize();
 
         allow update: if hasValidAppCheck() &&
                          request.auth.uid == uid &&
                          hasRequiredInventoryFields(request.resource.data) &&
-                         isReasonableSize(request.resource.data) &&
+                         isReasonableSize() &&
                          // Prevent changing the entry type after creation
                          request.resource.data.type == resource.data.type;
 
