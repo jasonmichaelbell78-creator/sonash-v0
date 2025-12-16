@@ -12,6 +12,7 @@ export default [
       "dist-tests/**",
       "src/dataconnect-generated/**",
       "*.config.mjs",
+      "functions/**",
     ],
   },
   {
