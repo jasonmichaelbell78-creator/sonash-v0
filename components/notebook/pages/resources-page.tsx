@@ -288,7 +288,6 @@ export default function ResourcesPage() {
   const availableNeighborhoods = useMemo(() => {
     // Use all items from ACTIVE type to populate the list
     const sourceData = resourceType === "meetings" ? meetings : soberHomes
-    // @ts-expect-error - accessing neighborhood property which exists on both Meeting and SoberHome types
     const unique = Array.from(new Set(sourceData.map(item => item.neighborhood))).filter(Boolean).sort()
     return unique
   }, [meetings, soberHomes, resourceType])
