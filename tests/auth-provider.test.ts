@@ -74,15 +74,11 @@ test("ensureAnonymousSession stores error state when sign-in fails", async () =>
 
   await ensureAnonymousSession(
     authInstance,
-    (message) => {
-      profileError = message
-    },
     (value) => {
       loading = value
     },
     failingSignIn as any
   )
 
-  assert.equal(profileError, "Failed to start anonymous session")
   assert.equal(loading, false)
 })

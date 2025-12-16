@@ -46,13 +46,30 @@ export function DailyLogProvider({ children, user }: DailyLogProviderProps) {
 
     // Fetch today's log when user changes
     useEffect(() => {
-        if (user) {
-            refreshTodayLog()
-        } else {
-            setTodayLog(null)
-            setTodayLogError(null)
+        let isMounted = true
+        
+        const loadLog = async () => {
+            if (!user) {
+                if (isMounted) {
+                    setTodayLog(null)
+                    setTodayLogError(null)
+                }
+                return
+            }
+
+            const result = await FirestoreService.getTodayLog(user.uid)
+            if (isMounted) {
+                setTodayLog(result.log)
+                setTodayLogError(result.error ? "Failed to load today's log" : null)
+            }
         }
-    }, [user, refreshTodayLog])
+        
+        loadLog()
+        
+        return () => {
+            isMounted = false
+        }
+    }, [user])
 
     return (
         <DailyLogContext.Provider value={{ todayLog, todayLogError, refreshTodayLog }}>

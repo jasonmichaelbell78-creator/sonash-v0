@@ -4,24 +4,33 @@ import { useState, useEffect } from "react"
 import { Download, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
-export function InstallPrompt() {
-    const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
-    const [isVisible, setIsVisible] = useState(false)
-    const [isIOS, setIsIOS] = useState(false)
+interface BeforeInstallPromptEvent extends Event {
+    prompt: () => Promise<void>
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
 
-    useEffect(() => {
-        // Check if iOS
+export function InstallPrompt() {
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+    const [isVisible, setIsVisible] = useState(false)
+    // Detect iOS during state initialization
+    const [isIOS] = useState(() => {
+        if (typeof window === 'undefined') return false
         const userAgent = window.navigator.userAgent.toLowerCase()
         const isIosDevice = /iphone|ipad|ipod/.test(userAgent)
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        return isIosDevice && !isStandalone
+    })
 
-        if (isIosDevice && !isStandalone) {
-            setIsIOS(true)
-            // Delay showing it slightly so they see the app first
-            setTimeout(() => setIsVisible(true), 3000)
+    useEffect(() => {
+        // Show prompt after delay for iOS devices
+        if (isIOS) {
+            const timer = setTimeout(() => setIsVisible(true), 3000)
+            return () => clearTimeout(timer)
         }
+    }, [isIOS])
 
-        const handler = (e: any) => {
+    useEffect(() => {
+        const handler = (e: BeforeInstallPromptEvent) => {
             // Prevent the mini-infobar from appearing on mobile
             e.preventDefault()
             // Stash the event so it can be triggered later.
@@ -30,9 +39,9 @@ export function InstallPrompt() {
             setIsVisible(true)
         }
 
-        window.addEventListener("beforeinstallprompt", handler)
+        window.addEventListener("beforeinstallprompt", handler as EventListener)
 
-        return () => window.removeEventListener("beforeinstallprompt", handler)
+        return () => window.removeEventListener("beforeinstallprompt", handler as EventListener)
     }, [])
 
     const handleInstallClick = async () => {
