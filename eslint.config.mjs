@@ -7,12 +7,14 @@ export default [
   ...tseslint.configs.recommended,
   {
     ignores: [
-      "node_modules/**",
-      ".next/**",
-      "dist-tests/**",
-      "src/dataconnect-generated/**",
-      "*.config.mjs",
-      "functions/**",
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'dist-tests/**',
+      'coverage/**',
+      'src/dataconnect-generated/**',
+      '*.config.mjs',
+      'functions/**',
     ],
   },
   {
