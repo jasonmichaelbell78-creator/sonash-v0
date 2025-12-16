@@ -204,9 +204,6 @@ export const saveDailyLog = onCall<DailyLogData>(
     }
 );
 
-// Export user data management functions (GDPR compliance)
-export { exportUserData, deleteUserAccount } from "./user-data";
-
 // Export admin functions (server-side validation & authorization)
 export {
     adminSaveMeeting,
