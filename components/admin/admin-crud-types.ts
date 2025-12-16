@@ -38,7 +38,7 @@ export interface CrudService<T> {
     seed?: () => Promise<void>
 }
 
-/  Cloud Functions operations (alternative to service)
+// Cloud Functions operations (alternative to service)
 export interface CloudFunctionsConfig {
     saveFunctionName: string
     deleteFunctionName: string

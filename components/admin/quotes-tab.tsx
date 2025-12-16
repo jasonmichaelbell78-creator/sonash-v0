@@ -37,11 +37,11 @@ function QuotesForm({
             <div className="space-y-2">
                 <Label>Quote Text</Label>
                 <Textarea
-                    value={formData.text || ' ''}
-                onChange={e => setFormData({ ...formData, text: e.target.value })}
-                className="bg-white"
-                placeholder="Serenity is..."
-        />
+                    value={formData.text || ''}
+                    onChange={e => setFormData({ ...formData, text: e.target.value })}
+                    className="bg-white"
+                    placeholder="Serenity is..."
+                />
             </div>
             <div className="space-y-2">
                 <Label>Author</Label>
@@ -82,13 +82,21 @@ async function seedQuotes() {
     }
 }
 
+// Adapter to make QuotesService match CrudService interface
+const quotesServiceAdapter = {
+    getAll: () => QuotesService.getAllQuotes(),
+    add: (data: Omit<Quote, 'id'>) => QuotesService.addQuote(data).then(() => { }),
+    update: (id: string, data: Partial<Quote>) => QuotesService.updateQuote(id, data),
+    delete: (id: string) => QuotesService.deleteQuote(id),
+}
+
 // Configuration for quotes
 const quotesConfig: AdminCrudConfig<Quote> = {
     entityName: "Quote",
     entityNamePlural: "Quotes",
 
-    // Use direct Firestore service
-    service: QuotesService,
+    // Use adapter for direct Firestore service
+    service: quotesServiceAdapter,
 
     // Table columns
     columns: [
