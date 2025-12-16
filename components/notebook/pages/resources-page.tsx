@@ -2,8 +2,9 @@
 import dynamic from "next/dynamic"
 
 import { MapPin, Home, Map, Calendar, Loader2, Locate, X, Clock } from "lucide-react"
-import { useState, useEffect, useMemo, useRef } from "react"
-import { MeetingsService, type Meeting } from "@/lib/db/meetings"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
+import { MeetingsService, type Meeting, type MeetingsPaginatedResult } from "@/lib/db/meetings"
+import type { QueryDocumentSnapshot } from "firebase/firestore"
 import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living"
 import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data"
 import { toast } from "sonner"
@@ -48,6 +49,11 @@ export default function ResourcesPage() {
   const { user, loading: authLoading } = useAuth()
   const isDevMode = process.env.NODE_ENV === "development"
 
+  // Pagination state for "View All" mode
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null)
+  const [hasMore, setHasMore] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
   // Geolocation hook for proximity features
   const {
     coordinates: userLocation,
@@ -62,17 +68,42 @@ export default function ResourcesPage() {
     return selectedDate.toLocaleDateString("en-US", { weekday: "long" })
   }, [selectedDate])
 
+  // Load more meetings for infinite scroll (View All mode)
+  const loadMoreMeetings = useCallback(async () => {
+    if (!hasMore || isLoadingMore || viewMode !== "all") return
+
+    setIsLoadingMore(true)
+    try {
+      const result = await MeetingsService.getAllMeetingsPaginated(50, lastDoc || undefined)
+      setMeetings(prev => [...prev, ...result.meetings])
+      setLastDoc(result.lastDoc)
+      setHasMore(result.hasMore)
+    } catch (error) {
+      logger.error("Failed to load more meetings", { error })
+      toast.error("Failed to load more meetings")
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [hasMore, isLoadingMore, lastDoc, viewMode])
+
   useEffect(() => {
     const fetchMeetings = async () => {
       setLoading(true)
       try {
         let data: Meeting[] = []
         if (viewMode === "date") {
+          // Date-specific view: Efficient, fetch only that day
           data = await MeetingsService.getMeetingsByDay(queryDayName)
+          setMeetings(data)
+          setHasMore(false)
+          setLastDoc(null)
         } else {
-          data = await MeetingsService.getAllMeetings()
+          // View All mode: Use pagination
+          const result = await MeetingsService.getAllMeetingsPaginated(50)
+          setMeetings(result.meetings)
+          setLastDoc(result.lastDoc)
+          setHasMore(result.hasMore)
         }
-        setMeetings(data)
       } catch (error) {
         logger.error("Failed to load meetings", { error })
         toast.error("Failed to load meetings.")
@@ -587,7 +618,7 @@ export default function ResourcesPage() {
                     {home.heroImage ? (
                       <div className="w-12 h-12 rounded-lg bg-gray-100 bg-cover bg-center shrink-0 border border-amber-100" style={{ backgroundImage: `url(${home.heroImage})` }} />
                     ) : (
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0
                           ${home.gender === 'Men' ? 'border-blue-200 bg-blue-50 text-blue-700' :
                           home.gender === 'Women' ? 'border-pink-200 bg-pink-50 text-pink-700' :
                             'border-purple-200 bg-purple-50 text-purple-700'}`}>
@@ -617,6 +648,31 @@ export default function ResourcesPage() {
                     </div>
                   </div>
                 ))}
+
+                {/* Infinite Scroll: Load More Button (View All mode only) */}
+                {resourceType === "meetings" && viewMode === "all" && !loading && (
+                  <>
+                    {isLoadingMore && (
+                      <div className="flex items-center justify-center gap-2 py-4 text-amber-900/60">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="text-sm">Loading more meetings...</span>
+                      </div>
+                    )}
+                    {hasMore && !isLoadingMore && (
+                      <button
+                        onClick={loadMoreMeetings}
+                        className="w-full py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-medium text-sm transition-colors border border-amber-200"
+                      >
+                        Load More Meetings ({meetings.length} loaded)
+                      </button>
+                    )}
+                    {!hasMore && meetings.length > 0 && (
+                      <div className="text-center py-4 text-xs text-amber-900/40 italic">
+                        All meetings loaded ({meetings.length} total)
+                      </div>
+                    )}
+                  </>
+                )}
               </>
             )}
           </div>

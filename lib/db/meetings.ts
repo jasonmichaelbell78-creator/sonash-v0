@@ -1,5 +1,5 @@
 import { db } from "../firebase"
-import { collection, query, where, getDocs, doc, writeBatch } from "firebase/firestore"
+import { collection, query, where, getDocs, doc, writeBatch, limit, startAfter, orderBy, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore"
 import { logger } from "../logger"
 import { DAY_ORDER } from "../constants"
 
@@ -56,6 +56,13 @@ export interface Meeting {
     coordinates?: { lat: number; lng: number }
 }
 
+export interface MeetingsPaginatedResult {
+    meetings: Meeting[]
+    lastDoc: QueryDocumentSnapshot | null
+    hasMore: boolean
+    totalFetched: number
+}
+
 export const MeetingsService = {
     // Get meetings for a specific day
     async getMeetingsByDay(day: string): Promise<Meeting[]> {
@@ -81,7 +88,7 @@ export const MeetingsService = {
         }
     },
 
-    // Get all meetings (for the list view)
+    // Get all meetings (for the list view) - DEPRECATED: Use getAllMeetingsPaginated for better performance
     async getAllMeetings(): Promise<Meeting[]> {
         try {
             const meetingsRef = collection(db, "meetings")
@@ -96,6 +103,54 @@ export const MeetingsService = {
         } catch (error) {
             logger.error("Error fetching all meetings", { error })
             return []
+        }
+    },
+
+    // Get all meetings with pagination (RECOMMENDED for "View All" mode)
+    async getAllMeetingsPaginated(
+        pageSize: number = 50,
+        lastDocument?: QueryDocumentSnapshot
+    ): Promise<MeetingsPaginatedResult> {
+        try {
+            const meetingsRef = collection(db, "meetings")
+
+            // Build query with ordering (needed for pagination cursors)
+            // Note: We can't sort by multiple fields in Firestore query without a composite index
+            // So we'll fetch sorted by document ID and do secondary sorting client-side
+            let q = query(meetingsRef, orderBy("__name__"), limit(pageSize))
+
+            // If continuing from previous page, start after the last document
+            if (lastDocument) {
+                q = query(meetingsRef, orderBy("__name__"), startAfter(lastDocument), limit(pageSize))
+            }
+
+            const snapshot = await getDocs(q)
+            const meetings = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Meeting))
+
+            // Client-side sort by day and time (since Firestore can't do multi-field sorting without index)
+            meetings.sort((a, b) => {
+                const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0)
+                if (dayDiff !== 0) return dayDiff
+                return timeToMinutes(a.time) - timeToMinutes(b.time)
+            })
+
+            const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null
+            const hasMore = snapshot.docs.length === pageSize
+
+            return {
+                meetings,
+                lastDoc,
+                hasMore,
+                totalFetched: meetings.length
+            }
+        } catch (error) {
+            logger.error("Error fetching paginated meetings", { error })
+            return {
+                meetings: [],
+                lastDoc: null,
+                hasMore: false,
+                totalFetched: 0
+            }
         }
     },
 
