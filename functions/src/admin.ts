@@ -112,7 +112,7 @@ export const adminSaveMeeting = onCall<{ meeting: any }>(
                 "ADMIN_ACTION",
                 "adminSaveMeeting",
                 "Meeting saved by admin",
-                { userId: request.auth?.uid, meetingId: id, severity: "INFO" }
+                { userId: request.auth?.uid, severity: "INFO", metadata: { meetingId: id } }
             );
 
             return { success: true, id };
@@ -121,7 +121,7 @@ export const adminSaveMeeting = onCall<{ meeting: any }>(
                 "ADMIN_ERROR",
                 "adminSaveMeeting",
                 "Failed to save meeting",
-                { userId: request.auth?.uid, error: String(error), captureToSentry: true }
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to save meeting");
         }
@@ -155,7 +155,7 @@ export const adminDeleteMeeting = onCall<{ meetingId: string }>(
                 "ADMIN_ACTION",
                 "adminDeleteMeeting",
                 "Meeting deleted by admin",
-                { userId: request.auth?.uid, meetingId, severity: "INFO" }
+                { userId: request.auth?.uid, severity: "INFO", metadata: { meetingId } }
             );
 
             return { success: true };
@@ -164,7 +164,7 @@ export const adminDeleteMeeting = onCall<{ meetingId: string }>(
                 "ADMIN_ERROR",
                 "adminDeleteMeeting",
                 "Failed to delete meeting",
-                { userId: request.auth?.uid, meetingId, error: String(error), captureToSentry: true }
+                { userId: request.auth?.uid, metadata: { meetingId, error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to delete meeting");
         }
@@ -213,7 +213,7 @@ export const adminSaveSoberLiving = onCall<{ home: any }>(
                 "ADMIN_ACTION",
                 "adminSaveSoberLiving",
                 "Sober living home saved by admin",
-                { userId: request.auth?.uid, homeId: id, severity: "INFO" }
+                { userId: request.auth?.uid, severity: "INFO", metadata: { homeId: id } }
             );
 
             return { success: true, id };
@@ -222,7 +222,7 @@ export const adminSaveSoberLiving = onCall<{ home: any }>(
                 "ADMIN_ERROR",
                 "adminSaveSoberLiving",
                 "Failed to save sober living home",
-                { userId: request.auth?.uid, error: String(error), captureToSentry: true }
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to save sober living home");
         }
@@ -256,7 +256,7 @@ export const adminDeleteSoberLiving = onCall<{ homeId: string }>(
                 "ADMIN_ACTION",
                 "adminDeleteSoberLiving",
                 "Sober living home deleted by admin",
-                { userId: request.auth?.uid, homeId, severity: "INFO" }
+                { userId: request.auth?.uid, severity: "INFO", metadata: { homeId } }
             );
 
             return { success: true };
@@ -265,7 +265,7 @@ export const adminDeleteSoberLiving = onCall<{ homeId: string }>(
                 "ADMIN_ERROR",
                 "adminDeleteSoberLiving",
                 "Failed to delete sober living home",
-                { userId: request.auth?.uid, homeId, error: String(error), captureToSentry: true }
+                { userId: request.auth?.uid, metadata: { homeId, error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to delete sober living home");
         }
@@ -314,7 +314,7 @@ export const adminSaveQuote = onCall<{ quote: any }>(
                 "ADMIN_ACTION",
                 "adminSaveQuote",
                 "Quote saved by admin",
-                { userId: request.auth?.uid, quoteId: id, severity: "INFO" }
+                { userId: request.auth?.uid, severity: "INFO", metadata: { quoteId: id } }
             );
 
             return { success: true, id };
@@ -323,7 +323,7 @@ export const adminSaveQuote = onCall<{ quote: any }>(
                 "ADMIN_ERROR",
                 "adminSaveQuote",
                 "Failed to save quote",
-                { userId: request.auth?.uid, error: String(error), captureToSentry: true }
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to save quote");
         }
@@ -357,7 +357,7 @@ export const adminDeleteQuote = onCall<{ quoteId: string }>(
                 "ADMIN_ACTION",
                 "adminDeleteQuote",
                 "Quote deleted by admin",
-                { userId: request.auth?.uid, quoteId, severity: "INFO" }
+                { userId: request.auth?.uid, severity: "INFO", metadata: { quoteId } }
             );
 
             return { success: true };
@@ -366,7 +366,7 @@ export const adminDeleteQuote = onCall<{ quoteId: string }>(
                 "ADMIN_ERROR",
                 "adminDeleteQuote",
                 "Failed to delete quote",
-                { userId: request.auth?.uid, quoteId, error: String(error), captureToSentry: true }
+                { userId: request.auth?.uid, metadata: { quoteId, error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to delete quote");
         }
