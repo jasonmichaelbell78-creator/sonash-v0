@@ -11,7 +11,7 @@ export default function BookmarkRibbon({ onClick }: BookmarkRibbonProps) {
   return (
     <motion.button
       onClick={onClick}
-      className="absolute top-0 right-16 md:right-24 z-40 w-8 md:w-10 cursor-pointer"
+      className="absolute top-0 right-2 z-40 w-8 md:w-10 cursor-pointer"
       whileHover={{ y: 4 }}
       whileTap={{ scale: 0.95 }}
     >

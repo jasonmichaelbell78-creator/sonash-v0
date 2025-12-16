@@ -12,7 +12,7 @@ import { logger, maskIdentifier } from "@/lib/logger"
 import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils"
 import { toDate } from "@/lib/types/firebase-types"
 import { STORAGE_KEYS, READING_PREFS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
-import { NotebookModuleId } from "../roadmap-modules"
+import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 
 interface TodayPageProps {
@@ -351,11 +351,30 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             </div>
           </div>
 
-          {/* Journal prompt */}
+          {/* Recovery Notepad */}
           <div className="relative group">
-            <h2 className="font-heading text-lg text-amber-900/90 mb-2">Anything you want to jot down?</h2>
+            <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
 
-            <div className="relative min-h-[200px] w-full">
+            <div className="relative min-h-[300px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
+              style={{ backgroundColor: '#fdfbf7' }}
+            >
+              {/* Topbinding/Yellow Header */}
+              <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
+                <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
+              </div>
+
+              {/* Lined Paper Background */}
+              <div className="absolute inset-0 top-12 pointer-events-none"
+                style={{
+                  backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
+                  backgroundSize: '100% 2rem',
+                  marginTop: '0.5rem'
+                }}
+              />
+
+              {/* Red Margin Line */}
+              <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
+
               {/* Textarea */}
               <textarea
                 ref={textareaRef}
@@ -363,31 +382,26 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 onChange={(e) => setJournalEntry(e.target.value)}
                 onFocus={(e) => {
                   isEditingRef.current = true
-                  // If there's existing content and cursor is not already at end, jump to end
                   if (journalEntry && e.target.selectionStart !== journalEntry.length) {
                     const len = journalEntry.length
                     e.target.setSelectionRange(len, len)
-                    // Scroll to bottom
                     e.target.scrollTop = e.target.scrollHeight
                   }
                 }}
                 onBlur={() => (isEditingRef.current = false)}
                 onKeyDown={(e) => {
-                  // Prevent Enter from resetting state
-                  if (e.key === 'Enter') {
-                    e.stopPropagation()
-                  }
+                  if (e.key === 'Enter') e.stopPropagation()
                 }}
-                placeholder="Start writing here..."
-                className="w-full h-full min-h-[200px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-blue-900/80 leading-[1.5em]"
+                placeholder="Jot down numbers, thoughts, or reminders..."
+                className="w-full h-full min-h-[250px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
                 style={{
-                  fontFamily: 'var(--font-caveat), cursive',
-                  lineHeight: '22px'
+                  fontFamily: 'var(--font-handlee), cursive',
+                  lineHeight: '2rem'
                 }}
                 spellCheck={false}
               />
               {/* Save indicator */}
-              <div className="absolute -bottom-6 right-0 text-xs font-body italic">
+              <div className="absolute bottom-2 right-4 text-xs font-body italic">
                 {isSaving ? (
                   <span className="text-amber-600 flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" />

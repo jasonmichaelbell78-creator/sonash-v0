@@ -27,6 +27,10 @@ interface Meeting {
     time: string
     address: string
     neighborhood: string
+    coordinates?: {
+        lat: number
+        lng: number
+    }
 }
 
 function parseTime(timeStr: string): string {
@@ -43,6 +47,11 @@ function parseTime(timeStr: string): string {
 
     return `${hours.toString().padStart(2, '0')}:${minutes}`
 }
+
+// Load Geocoding Cache
+const cachePath = join(process.cwd(), "geocoding_cache.json")
+const geocodingCache: Record<string, { lat: number, lng: number }> =
+    JSON.parse(readFileSync(cachePath, "utf-8"))
 
 async function importMeetings() {
     const csvPath = join(process.cwd(), "SoNash_Meetings__cleaned.csv")
@@ -72,15 +81,27 @@ async function importMeetings() {
 
         const [fellowship, day, time, name, location, address, region] = cols
 
+        // Construct cache key: "Address, City, TN"
+        const cacheKey = `${address}, ${region}, TN`
+        const coordinates = geocodingCache[cacheKey] || geocodingCache[`${address}, ${region}`]
+
+        if (!coordinates) {
+            // console.warn(`Missing coordinates for: ${cacheKey}`)
+        }
+
         const meetingId = `csv_${i}`
         const meeting: Meeting = {
             id: meetingId,
+            name: name,
             type: fellowship,
             day: day,
             time: parseTime(time),
-            name: name,
             address: location ? `${location}, ${address}` : address,
             neighborhood: region
+        }
+
+        if (coordinates) {
+            meeting.coordinates = { lat: coordinates.lat, lng: coordinates.lng }
         }
 
         const docRef = db.collection("meetings").doc(meetingId)

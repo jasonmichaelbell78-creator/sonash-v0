@@ -27,11 +27,11 @@
 | [ ] | [ ] | [ ] | **"Meetings starting soon" filter** - Within 1 hour | 3 SP | M3.1 | |
 | [ ] | [ ] | [ ] | **Sober fun ideas generator** - Random activities for boredom | 3 SP | M1.5 | |
 | [ ] | [ ] | [ ] | **"Too Tired" Mode** - Reduce night review to 3 questions | 3 SP | M5 | |
-| [ ] | [ ] | [ ] | **HALT check** - Hungry/Angry/Lonely/Tired assessment | 4 SP | M5/M7 | |
+| [x] | [ ] | [ ] | **HALT check** - Hungry/Angry/Lonely/Tired assessment | 4 SP | M5/M7 | User initiated button first |
 | [ ] | [ ] | [ ] | **Stage-of-recovery selector** - Adjusts app emphasis | 4 SP | M1.5 | |
-| [ ] | [ ] | [ ] | **God Box digital** - "Turn it over" surrender practice | 4 SP | M6 | |
+| [ ] | [x] | [ ] | **God Box digital** - "Turn it over" surrender practice | 4 SP | M6 | Defer at best, maybe never |
 | [ ] | [ ] | [ ] | **Meeting notes capture** - "What did you commit to?" | 4 SP | M7 F2 | |
-| [ ] | [ ] | [ ] | **Meeting etiquette guide** - First-meeting anxiety reducer | 4 SP | Onboarding | |
+| [x] | [ ] | [ ] | **Meeting etiquette guide** - First-meeting anxiety reducer | 4 SP | M1.5 | Combine with Glossay in "Recovery Library" |
 | [ ] | [ ] | [ ] | **Auto-Carry-Forward Nudges** - Midday reminder for morning items | 4 SP | M5 | |
 | [ ] | [ ] | [ ] | **Multiple sobriety dates** - Separate counters per substance | 5 SP | Profile | |
 | [ ] | [ ] | [ ] | **Disguised app icon + name** - Privacy layer | 5 SP | M1.5 | |
@@ -45,14 +45,14 @@
 |:---:|:-----:|:------:|---------|--------|-----------|----------|
 | [ ] | [ ] | [ ] | **Craving countdown timer** - "Ride it out" with prompts | 6 SP | M7 F6 | |
 | [ ] | [ ] | [ ] | **Tone/language settings** - Firm vs gentle prompts | 6 SP | M1.5 | |
-| [ ] | [ ] | [ ] | **Recovery glossary** - Terms, slogans, abbreviations | 6 SP | M6 | |
+| [x] | [ ] | [ ] | **Recovery glossary** - Terms, slogans, abbreviations | 6 SP | M1.5 | Combine with etiquette in "Recovery Library" |
 | [ ] | [ ] | [ ] | **Complacency detector** - Engagement drop triggers nudge | 6 SP | M7 | |
 | [ ] | [ ] | [ ] | **Principle-based badges** - Honesty/service vs streaks | 6 SP | M7 F5 | |
 | [ ] | [ ] | [ ] | **Micro-Inventory Mode** - 60-90 sec quick capture | 6 SP | M5 | |
 | [ ] | [ ] | [ ] | **Sponsor availability toggle** - "Available for calls" | 6 SP | M7 F1 | |
-| [ ] | [ ] | [ ] | **If-Then Smart Prompts** - Dynamic suggestions from answers | 8 SP | M5 | |
+| [x] | [ ] | [ ] | **If-Then Smart Prompts** - Dynamic suggestions from answers | 8 SP | M5 | |
 | [ ] | [ ] | [ ] | **Pattern Spotlight** - Surface recurring inventory themes | 8 SP | M5 | |
-| [ ] | [ ] | [ ] | **Second-Cycle Mode** - Show old notes for repeat passes | 8 SP | M7 F4 | |
+| [x] | [ ] | [ ] | **Second-Cycle Mode** - Show old notes for repeat passes | 8 SP | M7 F4 | |
 | [ ] | [ ] | [ ] | **Sponsor Office Hours** - Availability scheduling | 8 SP | M7 F1 | |
 | [ ] | [ ] | [ ] | **Milestone prep prompts** - Coaching before hard dates | 8 SP | M7 F5 | |
 | [ ] | [ ] | [ ] | **Calendar sync** - Export meetings to Google/Apple | 8 SP | M7 F2 | |
@@ -102,8 +102,8 @@ These expand scope of already-planned work. Check if you want the enhancement in
 
 | Add | Feature | Enhancement | Comments |
 |:---:|---------|-------------|----------|
-| [ ] | **Craving interrupter** | Add grounding tools, breathwork, urge surfing to Prevention Plan | |
-| [ ] | **Emergency contact blast** | Multi-contact broadcast with location (vs single SOS) | |
+| [ ] | [ ] | [ ] | **Craving interrupter** - Add grounding tools, breathwork | | |
+| [ ] | [ ] | [x] | **Emergency contact blast** - Multi-contact broadcast | | | Reject |
 
 ### Step Work Expansions
 
@@ -220,18 +220,18 @@ These are **not recommended** as originally proposed. Check "Revisit" if you wan
 If you want to rank your top picks, list them here:
 
 **Top 5 Must-Haves:**
-1. 
-2. 
-3. 
-4. 
-5. 
+1.
+2.
+3.
+4.
+5.
 
 **Top 5 Nice-to-Haves:**
-1. 
-2. 
-3. 
-4. 
-5. 
+1.
+2.
+3.
+4.
+5.
 
 ---
 

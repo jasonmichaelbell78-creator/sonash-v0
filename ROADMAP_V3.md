@@ -175,6 +175,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - Implement continuous integration for all tests
 
 #### ESLint Warning Remediation
+
 *See: docs/ESLINT_WARNINGS_PLAN.md for detailed plan*
 
 Current state: 0 errors ✅, 29 warnings
@@ -252,6 +253,7 @@ Current state: 0 errors ✅, 29 warnings
 | Mood trends viz | Full mood visualization chart | 3h |
 | Clean time celebrations | Milestone animations (30/60/90 days) | 3h |
 | Meeting favorites | Star/save favorite meetings | 2h |
+| **Recovery Library MVP** | Static content for "Meeting Etiquette" & "Glossary" | 3h |
 
 #### Settings (Make Functional) (~5h)
 
@@ -546,16 +548,22 @@ Current state: 0 errors ✅, 29 warnings
 > **Goal:** Help users find and join virtual AA/NA/CA meetings with direct links.
 
 **Why Virtual Matters**
+
 - Accessibility for rural users, disabled, or those without transportation
 - "Meeting right now" emergency access
 - Time-zone aware for travelers
 - Growing post-COVID adoption of hybrid meetings
 
 **Data Sources to Research**
+
 - AA Intergroup online meeting lists
 - NA World Services virtual meeting list
-- Online Intergroup of AA (https://aa-intergroup.org)
+- Online Intergroup of AA (<https://aa-intergroup.org>)
 - InTheRooms.com, 24/7 Sober AA Discord, etc.
+
+**Research Spike**
+
+- [ ] **Research:** Analyze reliability and scrapability of online meeting lists (AA Intergroup/World Services).
 
 **Tickets**
 
@@ -635,6 +643,12 @@ Current state: 0 errors ✅, 29 warnings
 | **Smart reminders** | Time to user habits (e.g., 15-30 min before bedtime for Night Review) |
 | **"Talk to a person" nudges** | When distress detected (high craving, repeated resentments), prompt: "Consider calling your sponsor" |
 
+**Research Spikes**
+
+- [ ] **Research:** Client-side encryption (Web Crypto API) for secure sensitive data.
+- [ ] **Research:** PDF layout engines for complex multi-page reports.
+- [ ] **Research:** Psychology of "Safe Prompts" (avoiding nag fatigue in depression states).
+
 ---
 
 #### Epic 5.1 — Infrastructure & Data Model (Foundation)
@@ -704,6 +718,9 @@ Current state: 0 errors ✅, 29 warnings
 | 5.3.4a | Simple list by date: `items[{text, why?}]` | 2 |
 | 5.3.4b | "Why it matters" toggle per item | 1 |
 | 5.3.4c | List/detail views | 2 |
+| **5.3.5 — HALT Check (User-Initiated)** | | |
+| 5.3.5a | 4-question quick inventory (Hungry, Angry, Lonely, Tired) | 2 |
+| 5.3.5b | One-tap "I need a HALT check" button on dashboard | 1 |
 
 **Subtotal: 26 SP**
 
@@ -754,6 +771,17 @@ Current state: 0 errors ✅, 29 warnings
 
 ---
 
+#### Epic 5.7 — Smart Prompts & Intelligence
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 5.7.1 | **If-Then Engine**: "If Angry > 7, suggest Spot Check". "If Resentment count > 3, suggest Sponsor Call". | 5 |
+| 5.7.2 | **Contextual Nudges**: Subtle suggestions based on recent activity (or inactivity). | 3 |
+
+**Subtotal: 8 SP**
+
+---
+
 #### M5 Summary
 
 | Epic | Story Points |
@@ -764,7 +792,8 @@ Current state: 0 errors ✅, 29 warnings
 | 5.4 Export & Share | 11 |
 | 5.5 Hub UI | 15 |
 | 5.6 Testing & Docs | 11 |
-| **Total** | **105 SP** |
+| 5.7 Smart Prompts | 8 |
+| **Total** | **116 SP** |
 
 **Suggested phasing:**
 
@@ -847,6 +876,7 @@ users/{uid}/
 Research initiative to define sustainable monetization without compromising recovery mission.
 
 **Research Areas:**
+
 - Monetization models (freemium, subscription, donations, B2B)
 - Ethics and recovery community perception
 - Legal/compliance (HIPAA, subscription laws, app store rules)
@@ -855,6 +885,7 @@ Research initiative to define sustainable monetization without compromising reco
 - Technical implementation (RevenueCat, Stripe, entitlements)
 
 **Key Decisions Required:**
+
 - [ ] Core mission: Charity/ministry vs sustainable business?
 - [ ] Which features must always be free?
 - [ ] Target price point and model
@@ -917,6 +948,10 @@ These may be considered in future milestones based on user feedback.
 - **User control:** Allow user-entered text for custom prayers and personal wording preferences.
 - **Privacy-first:** Share/export only on explicit user action; include privacy reminders.
 - **Compliance by design:** Support remote toggle of displayMode without app update.
+
+**Research Spike**
+
+- [ ] **Research:** Exact copyright status of specific prayers/texts in target countries.
 
 ---
 
@@ -1206,6 +1241,11 @@ users/{uid}/prayersUser/{id}
 - M5 Inventories Hub (105 SP)
 - M6 Prayers & Readings (63 SP)
 
+**Research Spikes**
+
+- [ ] **Research:** Mobile URI scheme (`tel:`, `sms:`) reliability across browsers.
+- [ ] **Research:** Gamification vs. Recovery Mental Models (alternatives to "streaks").
+
 ---
 
 #### Epic F1 — Sponsor & Support Network (Firestore-backed)
@@ -1232,6 +1272,7 @@ users/{uid}/prayersUser/{id}
 **Quick-Add Vision (Newcomer Focus)**
 
 > Newcomers are told "get phone numbers" constantly in early recovery. The app should make this **frictionless**:
+>
 > - One-tap "+" button always visible on Support page
 > - Quick-add form: just **Name** + **Phone** (required), everything else optional
 > - "Where did you meet?" dropdown with recent meetings pre-filled
@@ -1308,6 +1349,7 @@ users/{uid}/prayersUser/{id}
 | F4.5 | Add link from Step 4 card to Inventories Hub (M5) when implemented | 1 |
 | F4.6 | Add sponsor guidance reminder modal on status change: "Discuss with sponsor before marking complete" | 1 |
 | F4.7 | Add step completion celebration animation (confetti or chip animation) | 2 |
+| F4.8 | **Second-Cycle Mode**: Support for doing steps again (versioning previous Step 4s). | 3 |
 
 **Subtotal: 13 SP**
 
@@ -1338,6 +1380,7 @@ users/{uid}/prayersUser/{id}
 **Celebration Animation Vision**
 
 > When a milestone is reached, trigger a **full-screen celebration experience**:
+>
 > - Chip appears with flip/spin animation
 > - Confetti burst or visual effects
 > - Optional sound effect (toggleable in settings)
@@ -1348,6 +1391,7 @@ users/{uid}/prayersUser/{id}
 **Chip Gallery Vision**
 
 > "My Chips" page styled like the notebook cover aesthetic:
+>
 > - Chips scattered casually on a wooden table/surface
 > - Each chip shows the milestone (30 days, 1 year, etc.)
 > - Tap chip to see: date earned, meeting where picked up (if logged), notes
@@ -1575,6 +1619,10 @@ match /users/{userId}/{document=**} {
 - **Offline-ready (future):** Architecture supports future offline download feature
 - **Copyright-safe:** Only link to freely available recordings
 
+**Research Spike**
+
+- [ ] **Research:** Audio streaming legalities (hotlinking vs hosting) and bandwidth policies.
+
 ---
 
 #### Known External Sources
@@ -1609,6 +1657,7 @@ match /users/{userId}/{document=**} {
 **Admin Panel Vision**
 
 > Since audio is hosted externally (zero storage cost), all metadata management flows through admin:
+>
 > - Add new tapes with external URL + all metadata
 > - **Tags**: Step-related (Step 1, Step 4, etc.), Topics (Fear, Resentment, Service, Sponsorship), Era (Founders, Classic, Modern)
 > - **Search keywords**: Alternative terms users might search ("AA speaker", "sobriety story", etc.)
@@ -1879,11 +1928,17 @@ match /prayersCatalog/{id} {
 
 > **Goal:** Create sustainable revenue stream by gating advanced Growth Tab features while keeping core recovery tools free. (See `docs/MONETIZATION_RESEARCH.md`)
 
+**Research Phase:**
+
+- [ ] **Research:** Clinical/B2B Market Needs (Sober Living/Treatment Center requirements).
+
 **Strategy:**
+
 - **Free:** Meetings, Today (Sobriety), Support Network, Basic Journaling
 - **Premium:** Growth Dashboard (Charts), Advanced Inventories (Step 4), Cloud Sync (future)
 
 #### Epic 10.1 — Infrastructure
+
 | Ticket | Description | Est |
 |--------|-------------|-----|
 | 10.1.1 | Integrate RevenueCat SDK (handles IAP for iOS/Android) | 5 |
@@ -1891,6 +1946,7 @@ match /prayersCatalog/{id} {
 | 10.1.3 | Implement entitlement check hook `usePremium()` | 2 |
 
 #### Epic 10.2 — User Experience
+
 | Ticket | Description | Est |
 |--------|-------------|-----|
 | 10.2.1 | Design & build Paywall screen (unlock benefits list) | 5 |
@@ -1901,11 +1957,12 @@ match /prayersCatalog/{id} {
 
 ---
 
-### M11 — User Documentation & Education
+### M11 — Recovery Library & Education
 
 > **Goal:** Decrease time-to-value for newcomers and answer "How do I do X?" without support tickets.
 
 #### Epic 11.1 — Help Center & Guides
+
 | Ticket | Description | Est |
 |--------|-------------|-----|
 | 11.1.1 | **Starter's Guide**: "First 7 Days" automated walkthrough | 5 |
@@ -1914,6 +1971,7 @@ match /prayersCatalog/{id} {
 | 11.1.4 | **Video Tutorials**: Short 30s clips for key actions (embedded in "Empty States") | 3 |
 
 #### Epic 11.2 — In-App Education
+
 | Ticket | Description | Est |
 |--------|-------------|-----|
 | 11.2.1 | **"Why this matters" tooltips**: Contextual recovery education on form fields | 2 |

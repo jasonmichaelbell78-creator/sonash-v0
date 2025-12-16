@@ -194,8 +194,101 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     // Get history of logs
+    // Get history of logs
     async getHistory(userId: string): Promise<DailyLogHistoryResult> {
-      // ... existing implementation
+      ensureValidUser(userId)
+      deps.assertUserScope({ userId })
+
+      try {
+        const logsRef = deps.collection(deps.db, buildPath.dailyLogsCollection(userId))
+        const q = deps.query(logsRef, deps.orderBy("dateId", "desc"), deps.limit(30))
+        const snapshot = await deps.getDocs(q)
+
+        const entries = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as DailyLog))
+
+        return { entries, error: null }
+      } catch (error) {
+        deps.logger.error("Failed to fetch history", { userId: maskIdentifier(userId), error })
+        return { entries: [], error }
+      }
+    },
+
+    // Get inventory entries history
+    async getInventoryEntries(userId: string, limitCount = 50) {
+      ensureValidUser(userId)
+      deps.assertUserScope({ userId })
+
+      try {
+        const entriesRef = deps.collection(deps.db, buildPath.inventoryEntries(userId))
+        const q = deps.query(entriesRef, deps.orderBy("createdAt", "desc"), deps.limit(limitCount))
+        const snapshot = await deps.getDocs(q)
+
+        const entries = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+
+        return { entries, error: null }
+      } catch (error) {
+        deps.logger.error("Failed to fetch inventory entries", { userId: maskIdentifier(userId), error })
+        return { entries: [], error }
+      }
+    },
+
+    // Save an inventory entry (Spot Check, Night Review, etc.)
+    async saveInventoryEntry(userId: string, entry: {
+      type: 'spot-check' | 'night-review' | 'gratitude';
+      data: Record<string, any>;
+      tags?: string[];
+    }) {
+      ensureValidUser(userId)
+      deps.assertUserScope({ userId })
+
+      try {
+        const collectionPath = `users/${userId}/inventoryEntries`
+        deps.validateUserDocumentPath(userId, collectionPath)
+
+        const entriesRef = deps.collection(deps.db, collectionPath)
+        const newDocRef = deps.doc(entriesRef) // Auto-ID
+
+
+        // Helper to remove undefined values (Firestore doesn't support them)
+        const sanitizeData = (data: any): any => {
+          if (Array.isArray(data)) {
+            return data.map(sanitizeData)
+          }
+          if (data !== null && typeof data === 'object') {
+            return Object.entries(data).reduce((acc, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = sanitizeData(value)
+              }
+              return acc
+            }, {} as Record<string, any>)
+          }
+          return data
+        }
+
+        const payload = {
+          id: newDocRef.id,
+          userId,
+          type: entry.type,
+          data: sanitizeData(entry.data),
+          tags: entry.tags || [],
+          createdAt: deps.serverTimestamp(),
+          updatedAt: deps.serverTimestamp(), // Required by security rules
+          dateId: getTodayLocalDateId(), // For easy querying by day
+        }
+
+        await deps.setDoc(newDocRef, payload)
+        deps.logger.info("Inventory entry saved", { userId: maskIdentifier(userId), type: entry.type })
+        return newDocRef.id
+      } catch (error) {
+        deps.logger.error("Failed to save inventory entry", { userId: maskIdentifier(userId), error })
+        throw error
+      }
     },
 
     // Save a generic journal entry (growth work, notes, etc.)

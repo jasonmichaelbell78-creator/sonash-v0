@@ -6,17 +6,9 @@ import PlaceholderPage from "./pages/placeholder-page"
 import GrowthPage from "./pages/growth-page"
 import { featureFlagEnabled } from "@/lib/utils"
 
-export type NotebookModuleId = "today" | "resources" | "growth" | "work" | "more" | "history" | "community" | "support"
+import { NotebookModule, NotebookModuleId } from "./notebook-types"
 
-export interface NotebookModule {
-  id: NotebookModuleId
-  label: string
-  color: string
-  status: "available" | "planned"
-  featureFlag?: string
-  description: string
-  render: (props: { nickname?: string; onNavigate?: (id: string) => void }) => React.ReactNode
-}
+export type { NotebookModule, NotebookModuleId }
 
 export const notebookModules: NotebookModule[] = [
   {
@@ -25,7 +17,7 @@ export const notebookModules: NotebookModule[] = [
     color: "bg-sky-200",
     status: "available",
     description: "Daily check-in, clean time tracker, and journal scratchpad.",
-    render: ({ nickname, onNavigate }) => <TodayPage nickname={nickname || "Friend"} onNavigate={onNavigate} />,
+    render: ({ nickname, onNavigate }) => <TodayPage nickname={nickname || "Friend"} onNavigate={onNavigate ? (id) => onNavigate(id) : () => { }} />,
   },
   {
     id: "resources",
@@ -40,7 +32,6 @@ export const notebookModules: NotebookModule[] = [
     label: "Growth",
     color: "bg-yellow-200",
     status: "available",
-    featureFlag: "NEXT_PUBLIC_ENABLE_GROWTH",
     description: "Step work, reflections, and growth exercises.",
     render: ({ onNavigate }) => <GrowthPage onNavigate={onNavigate} />,
   },
@@ -77,7 +68,7 @@ export const notebookModules: NotebookModule[] = [
   },
   {
     id: "history",
-    label: "History",
+    label: "Journal",
     color: "bg-amber-100",
     status: "available",
     description: "Your past journal entries and progress.",
@@ -87,7 +78,9 @@ export const notebookModules: NotebookModule[] = [
 
 export const getModuleById = (id: NotebookModuleId) => notebookModules.find((module) => module.id === id)
 
-export const moduleIsEnabled = (module: NotebookModule) =>
-  module.status === "available" || featureFlagEnabled(module.featureFlag)
+export const moduleIsEnabled = (module: NotebookModule) => {
+  const enabled = module.status === "available" || (module.featureFlag ? featureFlagEnabled(module.featureFlag) : false)
+  return enabled
+}
 
 export const moduleIsStubbed = (module: NotebookModule) => !moduleIsEnabled(module)

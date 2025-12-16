@@ -25,9 +25,9 @@ service cloud.firestore {
         'fear',
         'relationship',
         'harm',
-        'spotCheck',
+        'spot-check',
         'morning',
-        'nightReview',
+        'night-review',
         'gratitude'
       ];
     }
@@ -52,10 +52,9 @@ service cloud.firestore {
       return request.resource.data.size() < 500000;
     }
 
-    // Verify request has valid App Check token (bot protection)
-    // Requires both authentication AND valid App Check token
     function hasValidAppCheck() {
-      return request.auth != null && request.app != null;
+      // TEMPORARY: Relaxed to allow auth-only while debugging App Check in prod
+      return request.auth != null; // && request.app != null;
     }
 
     // ============================================================

@@ -210,127 +210,126 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
               style={{ transformStyle: "preserve-3d" }}
             >
               {renderPage()}
+
+            </motion.div>
           </AnimatePresence>
+        </div>
 
-        </motion.div>
-      </AnimatePresence>
-    </div>
+        {/* Tab navigation */}
+        <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
 
-        {/* Tab navigation */ }
-  <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+        {/* Bookmark ribbon for settings */}
+        <BookmarkRibbon onClick={() => setShowSettings(true)} />
 
-  {/* Bookmark ribbon for settings */ }
-  <BookmarkRibbon onClick={() => setShowSettings(true)} />
-
-  {/* UNIVERSAL FAB */ }
-  <motion.button
-    whileHover={{ scale: 1.1 }}
-    whileTap={{ scale: 0.9 }}
-    onClick={() => setShowJournalModal(true)}
-    className="absolute bottom-6 right-6 md:bottom-8 md:right-12 z-50 bg-amber-500 text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-amber-600 border-2 border-white"
-  >
-    <Plus className="w-6 h-6" />
-  </motion.button>
+        {/* UNIVERSAL FAB */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowJournalModal(true)}
+          className="absolute bottom-6 right-6 md:bottom-8 md:right-12 z-50 bg-amber-500 text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-amber-600 border-2 border-white"
+        >
+          <Plus className="w-6 h-6" />
+        </motion.button>
       </div >
 
-    {/* Settings sticky note overlay */ }
-    <AnimatePresence>
-  {
-    showSettings && (
-      <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
-        <div className="space-y-3">
-          {/* Account Security Section */}
-          {isAnonymous && (
-            <div className={`p-3 rounded-lg border ${showLinkPrompt ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}`}>
-              <div className="flex items-start gap-2">
-                {showLinkPrompt ? (
-                  <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                ) : (
-                  <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+      {/* Settings sticky note overlay */}
+      <AnimatePresence>
+        {
+          showSettings && (
+            <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
+              <div className="space-y-3">
+                {/* Account Security Section */}
+                {isAnonymous && (
+                  <div className={`p-3 rounded-lg border ${showLinkPrompt ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}`}>
+                    <div className="flex items-start gap-2">
+                      {showLinkPrompt ? (
+                        <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      )}
+                      <div>
+                        <p className={`font-handlee text-sm ${showLinkPrompt ? 'text-amber-800' : 'text-blue-800'}`}>
+                          {showLinkPrompt
+                            ? "Your journal is at risk! Link your account to keep your entries safe."
+                            : "Your account is anonymous. Link it to keep your data safe."}
+                        </p>
+                        <button
+                          onClick={() => {
+                            setShowSettings(false)
+                            setShowAccountLink(true)
+                          }}
+                          className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? 'text-amber-700 hover:text-amber-900' : 'text-blue-700 hover:text-blue-900'}`}
+                        >
+                          Secure My Account →
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )}
-                <div>
-                  <p className={`font-handlee text-sm ${showLinkPrompt ? 'text-amber-800' : 'text-blue-800'}`}>
-                    {showLinkPrompt
-                      ? "Your journal is at risk! Link your account to keep your entries safe."
-                      : "Your account is anonymous. Link it to keep your data safe."}
-                  </p>
+
+                {/* Show linked account info */}
+                {!isAnonymous && profile?.email && (
+                  <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-green-600" />
+                      <p className="font-handlee text-sm text-green-800">
+                        Signed in as {profile.email}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
+                <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
+                <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
+
+                {/* Privacy & Data Section */}
+                <div className="pt-4 border-t border-amber-900/10">
+                  <DataManagementSection onAccountDeleted={onClose} />
+                </div>
+
+                <div className="pt-4 border-t border-amber-900/10">
                   <button
-                    onClick={() => {
-                      setShowSettings(false)
-                      setShowAccountLink(true)
+                    onClick={async () => {
+                      const { signOut } = await import("firebase/auth")
+                      const { auth } = await import("@/lib/firebase")
+
+                      // Clear local temp data for security
+                      localStorage.removeItem("sonash_journal_temp")
+
+                      await signOut(auth)
+                      onClose() // Close the book
                     }}
-                    className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? 'text-amber-700 hover:text-amber-900' : 'text-blue-700 hover:text-blue-900'}`}
+                    className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
                   >
-                    Secure My Account →
+                    Sign Out
                   </button>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Show linked account info */}
-          {!isAnonymous && profile?.email && (
-            <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-green-600" />
-                <p className="font-handlee text-sm text-green-800">
-                  Signed in as {profile.email}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
-          <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
-          <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
-
-          {/* Privacy & Data Section */}
-          <div className="pt-4 border-t border-amber-900/10">
-            <DataManagementSection onAccountDeleted={onClose} />
-          </div>
-
-          <div className="pt-4 border-t border-amber-900/10">
-            <button
-              onClick={async () => {
-                const { signOut } = await import("firebase/auth")
-                const { auth } = await import("@/lib/firebase")
-
-                // Clear local temp data for security
-                localStorage.removeItem("sonash_journal_temp")
-
-                await signOut(auth)
-                onClose() // Close the book
-              }}
-              className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </StickyNote>
-    )
-  }
+            </StickyNote>
+          )
+        }
       </AnimatePresence >
 
-    {/* Account Link Modal */ }
-    <AnimatePresence>
-  {
-    showAccountLink && (
-      <AccountLinkModal
-        onClose={() => setShowAccountLink(false)}
-        onSuccess={() => setShowAccountLink(false)}
-      />
-    )
-  }
+      {/* Account Link Modal */}
+      <AnimatePresence>
+        {
+          showAccountLink && (
+            <AccountLinkModal
+              onClose={() => setShowAccountLink(false)}
+              onSuccess={() => setShowAccountLink(false)}
+            />
+          )
+        }
       </AnimatePresence >
 
-    {/* Journal Modal Overlay */ }
-    <AnimatePresence>
-  {
-    showJournalModal && (
-      <JournalModal onClose={() => setShowJournalModal(false)} />
-    )
-  }
+      {/* Journal Modal Overlay */}
+      <AnimatePresence>
+        {
+          showJournalModal && (
+            <JournalModal onClose={() => setShowJournalModal(false)} />
+          )
+        }
       </AnimatePresence >
     </motion.div >
   )

@@ -51,6 +51,16 @@ function MapController({ center, meetings }: { center: { lat: number; lng: numbe
     return null
 }
 
+// Custom User Icon (Red)
+const userIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
 interface MeetingMapProps {
     meetings: Meeting[]
     userLocation: { lat: number; lng: number } | null
@@ -75,7 +85,7 @@ export default function MeetingMap({ meetings, userLocation }: MeetingMapProps) 
                 center={[center.lat, center.lng]}
                 zoom={13}
                 style={{ height: "100%", width: "100%" }}
-                scrollWheelZoom={false}
+                scrollWheelZoom={true}
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -84,14 +94,21 @@ export default function MeetingMap({ meetings, userLocation }: MeetingMapProps) 
 
                 <MapController center={userLocation} meetings={validMeetings} />
 
-                {/* User Location Marker (Blue Circle) */}
+
+
+                // ... inside component ...
+
+                {/* User Location Marker (Red with Circle) */}
                 {userLocation && (
                     <Circle
                         center={[userLocation.lat, userLocation.lng]}
                         radius={500}
-                        pathOptions={{ color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.1 }}
+                        pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.1 }}
                     >
-                        <Marker position={[userLocation.lat, userLocation.lng]}>
+                        <Marker
+                            position={[userLocation.lat, userLocation.lng]}
+                            icon={userIcon}
+                        >
                             <Popup>You are here</Popup>
                         </Marker>
                     </Circle>

@@ -1,7 +1,7 @@
 
 import dynamic from "next/dynamic"
 
-import { MapPin, Home, Map, Calendar, Loader2, Locate, X } from "lucide-react"
+import { MapPin, Home, Map, Calendar, Loader2, Locate, X, Clock } from "lucide-react"
 import { useState, useEffect, useMemo, useRef } from "react"
 import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living"
@@ -37,7 +37,8 @@ export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([])
   const [soberHomes, setSoberHomes] = useState<SoberLivingHome[]>([])
   const [resourceType, setResourceType] = useState<"meetings" | "sober-living">("meetings")
-  const [viewMode, setViewMode] = useState<"today" | "all">("today")
+  const [viewMode, setViewMode] = useState<"date" | "all">("date") // Changed 'today' to 'date'
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date()) // New state
   const [displayMode, setDisplayMode] = useState<"list" | "map">("list")
   const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
   const [genderFilter, setGenderFilter] = useState<"All" | "Men" | "Women">("All")
@@ -56,18 +57,18 @@ export default function ResourcesPage() {
     clearLocation,
   } = useGeolocation()
 
-  // Determine today's day name for querying
-  const todayName = useMemo(() => {
-    return new Date().toLocaleDateString("en-US", { weekday: "long" })
-  }, [])
+  // Determine query day name from selectedDate
+  const queryDayName = useMemo(() => {
+    return selectedDate.toLocaleDateString("en-US", { weekday: "long" })
+  }, [selectedDate])
 
   useEffect(() => {
     const fetchMeetings = async () => {
       setLoading(true)
       try {
         let data: Meeting[] = []
-        if (viewMode === "today") {
-          data = await MeetingsService.getMeetingsByDay(todayName)
+        if (viewMode === "date") {
+          data = await MeetingsService.getMeetingsByDay(queryDayName)
         } else {
           data = await MeetingsService.getAllMeetings()
         }
@@ -93,20 +94,13 @@ export default function ResourcesPage() {
     }
 
     if (authLoading) return
-    /*
-    if (!user) {
-      setMeetings([])
-      setLoading(false)
-      return
-    }
-    */
 
     if (resourceType === "meetings") {
       fetchMeetings()
     } else {
       fetchSoberHomes()
     }
-  }, [todayName, viewMode, user, authLoading, resourceType])
+  }, [queryDayName, viewMode, user, authLoading, resourceType])
 
   const finderRef = useRef<HTMLDivElement>(null)
 
@@ -128,8 +122,8 @@ export default function ResourcesPage() {
 
   const triggerRefresh = async () => {
     setLoading(true)
-    const data = viewMode === "today"
-      ? await MeetingsService.getMeetingsByDay(todayName)
+    const data = viewMode === "date"
+      ? await MeetingsService.getMeetingsByDay(queryDayName)
       : await MeetingsService.getAllMeetings()
     setMeetings(data)
     setLoading(false)
@@ -141,6 +135,7 @@ export default function ResourcesPage() {
       finderRef.current?.scrollIntoView({ behavior: "smooth" })
     } else if (id === "sober-living") {
       setResourceType("sober-living")
+      setDisplayMode("list")
       finderRef.current?.scrollIntoView({ behavior: "smooth" })
     } else {
       toast("Feature coming soon!", {
@@ -202,14 +197,23 @@ export default function ResourcesPage() {
       result = result.filter(m => m.type === fellowshipFilter)
     }
 
-    // Apply time filter for "today" view only
-    if (viewMode === "today") {
+    // Apply time filter for "date" view only
+    if (viewMode === "date") {
+      // If selected date is TODAY, filter by current time.
+      // If it's a future date, show all meetings for that day.
       const now = new Date()
-      const currentMinutes = now.getHours() * 60 + now.getMinutes()
-      result = result.filter(m => {
-        const meetingMinutes = parseTime(m.time)
-        return meetingMinutes >= currentMinutes
-      })
+      const isToday = selectedDate.getDate() === now.getDate() &&
+        selectedDate.getMonth() === now.getMonth() &&
+        selectedDate.getFullYear() === now.getFullYear()
+
+      if (isToday) {
+        const currentMinutes = now.getHours() * 60 + now.getMinutes()
+        result = result.filter(m => {
+          const meetingMinutes = parseTime(m.time)
+          return meetingMinutes >= currentMinutes // Only future meetings today
+        })
+      }
+      // If future/past date, we don't filter by time, just show the day's schedule (which is already fetched by queryDayName)
     }
 
     // Apply sorting
@@ -279,6 +283,27 @@ export default function ResourcesPage() {
     }
   }
 
+  // Handle Time Jump
+  const handleTimeJump = (timeStr: string) => {
+    if (!timeStr) return
+    const targetMinutes = parseTime(timeStr)
+    const targetMeeting = meetings.find(m => parseTime(m.time) >= targetMinutes)
+
+    if (targetMeeting) {
+      // We need a way to scroll to it. We will use a simple ID approach.
+      // We will assume meeting cards have ID `meeting-{id}`
+      const element = document.getElementById(`meeting-${targetMeeting.id}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        toast.success(`Jumped to ${timeStr}`)
+      } else {
+        toast("Meeting not visible in current list.")
+      }
+    } else {
+      toast("No meetings found after " + timeStr)
+    }
+  }
+
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null)
 
   return (
@@ -315,19 +340,23 @@ export default function ResourcesPage() {
 
 
           {/* Filters */}
-          <div className="space-y-3 mb-4">
-            {/* Row 1: Type-Specific Filters */}
-            <div className="flex flex-wrap items-center gap-2">
+          {/* Unified Filter Toolbar */}
+          {/* Unified Filter Toolbar */}
+          <div className="flex flex-col gap-3 mb-4 p-3 bg-white rounded-xl border border-amber-200 shadow-sm">
+            {/* Top Row: Primary Controls (Fellowship + Date + Time) */}
+            <div className="flex flex-wrap items-center gap-2 justify-between">
+
               {resourceType === "meetings" ? (
-                <>
-                  <div className="flex bg-amber-100/50 p-1 rounded-full border border-amber-200/50">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Fellowship Pills */}
+                  <div className="flex bg-amber-50/80 p-1 rounded-lg border border-amber-200/50">
                     {FELLOWSHIP_OPTIONS.map((option) => (
                       <button
                         key={option}
                         onClick={() => setFellowshipFilter(option)}
-                        className={`text-xs px-3 py-1.5 rounded-full transition-all ${fellowshipFilter === option
+                        className={`text-xs px-2.5 py-1 rounded-md transition-all ${fellowshipFilter === option
                           ? "bg-amber-600 text-white shadow-sm font-medium"
-                          : "text-amber-800 hover:text-amber-900"
+                          : "text-amber-800 hover:bg-amber-100/50"
                           }`}
                       >
                         {option}
@@ -335,33 +364,51 @@ export default function ResourcesPage() {
                     ))}
                   </div>
 
-                  {/* Time View Toggle */}
-                  <div className="flex bg-amber-100/50 p-1 rounded-full border border-amber-200/50">
-                    <button
-                      onClick={() => setViewMode("today")}
-                      className={`text-xs px-3 py-1.5 rounded-full transition-all ${viewMode === "today" ? "bg-white shadow-sm text-amber-900 font-medium" : "text-amber-800/60 hover:text-amber-900"}`}
-                    >
-                      Today
-                    </button>
-                    <button
-                      onClick={() => setViewMode("all")}
-                      className={`text-xs px-3 py-1.5 rounded-full transition-all ${viewMode === "all" ? "bg-white shadow-sm text-amber-900 font-medium" : "text-amber-800/60 hover:text-amber-900"}`}
-                    >
-                      All
-                    </button>
+                  <div className="h-4 w-px bg-amber-200/50 hidden sm:block"></div>
+
+                  {/* Date Picker */}
+                  <div className="flex items-center bg-amber-50/80 px-2 py-1 rounded-lg border border-amber-200/50">
+                    <Calendar className="w-3.5 h-3.5 text-amber-500 mr-2" />
+                    <input
+                      type="date"
+                      value={selectedDate.toISOString().split('T')[0]}
+                      onChange={(e) => {
+                        if (e.target.valueAsDate) {
+                          setSelectedDate(e.target.valueAsDate)
+                          setViewMode('date')
+                        }
+                      }}
+                      className="bg-transparent border-none text-xs text-amber-900 font-medium w-[110px] focus:outline-none cursor-pointer"
+                    />
                   </div>
-                </>
+
+                  {/* Time Jump */}
+                  <div className="flex items-center bg-amber-50/80 px-2 py-1 rounded-lg border border-amber-200/50">
+                    <Clock className="w-3.5 h-3.5 text-amber-500 mr-2" />
+                    <select
+                      onChange={(e) => handleTimeJump(e.target.value)}
+                      className="bg-transparent border-none text-xs text-amber-900 font-medium focus:outline-none cursor-pointer w-[90px]"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>Jump to...</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="17:00">5:00 PM</option>
+                      <option value="19:00">7:00 PM</option>
+                      <option value="21:00">9:00 PM</option>
+                    </select>
+                  </div>
+                </div>
               ) : (
-                // Sober Living Filters (Gender)
-                <div className="flex bg-amber-100/50 p-1 rounded-full border border-amber-200/50">
+                <div className="flex bg-white/50 p-1 rounded-lg border border-amber-200/30">
                   {["All", "Men", "Women"].map((option) => (
                     <button
                       key={option}
                       // @ts-ignore
                       onClick={() => setGenderFilter(option)}
-                      className={`text-xs px-3 py-1.5 rounded-full transition-all ${genderFilter === option
+                      className={`text-xs px-3 py-1.5 rounded-md transition-all ${genderFilter === option
                         ? "bg-amber-600 text-white shadow-sm font-medium"
-                        : "text-amber-800 hover:text-amber-900"
+                        : "text-amber-800 hover:bg-amber-100/50"
                         }`}
                     >
                       {option}
@@ -371,50 +418,50 @@ export default function ResourcesPage() {
               )}
             </div>
 
-            {/* Row 2: Location & Sort - Only for Meetings */
-              resourceType === "meetings" && (
-                <div className="flex flex-wrap items-center gap-2">
-                  {/* Neighborhood Picker */}
-                  <div className="relative flex-1 min-w-[140px]">
-                    <select
-                      value={neighborhoodFilter}
-                      onChange={(e) => setNeighborhoodFilter(e.target.value)}
-                      className="w-full text-xs h-8 pl-8 pr-4 appearance-none content-center rounded-full border border-amber-200 bg-white text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-300/50"
-                    >
-                      <option value="All">📍 All Neighborhoods</option>
-                      {availableNeighborhoods.map((n) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                    <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600 pointer-events-none" />
-                  </div>
-
-                  {/* Nearest Button */}
-                  <button
-                    onClick={handleNearestClick}
-                    disabled={locationLoading}
-                    className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${sortBy === "nearest" && userLocation
-                      ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
-                      : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                      } ${locationLoading ? "opacity-50" : ""}`}
+            {/* Bottom Row: Location & Display Mode */}
+            {resourceType === "meetings" && (
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Neighborhood Picker */}
+                <div className="relative flex-1 min-w-[140px]">
+                  <select
+                    value={neighborhoodFilter}
+                    onChange={(e) => setNeighborhoodFilter(e.target.value)}
+                    className="w-full text-xs h-8 pl-8 pr-4 appearance-none content-center rounded-full border border-amber-200 bg-white text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-300/50"
                   >
-                    {locationLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Locate className="w-3 h-3" />}
-                    Nearest
-                  </button>
-
-                  {/* Map Toggle */}
-                  <button
-                    onClick={() => setDisplayMode(displayMode === "list" ? "map" : "list")}
-                    className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${displayMode === "map"
-                      ? "bg-amber-600 text-white border-amber-600 font-medium shadow-sm"
-                      : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                      }`}
-                  >
-                    {displayMode === "list" ? <Map className="w-3 h-3" /> : <Calendar className="w-3 h-3" />}
-                    {displayMode === "list" ? "Map" : "List"}
-                  </button>
+                    <option value="All">📍 All Neighborhoods</option>
+                    {availableNeighborhoods.map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600 pointer-events-none" />
                 </div>
-              )}
+
+                {/* Nearest Button */}
+                <button
+                  onClick={handleNearestClick}
+                  disabled={locationLoading}
+                  className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${sortBy === "nearest" && userLocation
+                    ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
+                    : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                    } ${locationLoading ? "opacity-50" : ""}`}
+                >
+                  {locationLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Locate className="w-3 h-3" />}
+                  Nearest
+                </button>
+
+                {/* Map Toggle */}
+                <button
+                  onClick={() => setDisplayMode(displayMode === "list" ? "map" : "list")}
+                  className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${displayMode === "map"
+                    ? "bg-amber-600 text-white border-amber-600 font-medium shadow-sm"
+                    : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                    }`}
+                >
+                  {displayMode === "list" ? <Map className="w-3 h-3" /> : <Calendar className="w-3 h-3" />}
+                  {displayMode === "list" ? "Map" : "List"}
+                </button>
+              </div>
+            )}
 
             {/* Active Filters Summary (if complex) */}
             {neighborhoodFilter !== "All" && (
@@ -443,7 +490,7 @@ export default function ResourcesPage() {
                   {resourceType === "meetings" ? (
                     <>
                       No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found
-                      {viewMode === "today" ? " for today" : ""}.
+                      {viewMode === "date" ? " on this date" : ""}.
                     </>
                   ) : (
                     <>No sober living homes found.</>
@@ -458,7 +505,7 @@ export default function ResourcesPage() {
                       Show all fellowships
                     </button>
                   )}
-                  {viewMode === 'today' && (
+                  {viewMode === 'date' && (
                     <button
                       onClick={() => setViewMode('all')}
                       className="text-xs text-amber-700 font-medium hover:underline"
@@ -485,7 +532,7 @@ export default function ResourcesPage() {
                     {resourceType === "meetings" ? (
                       <>
                         {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
-                        {viewMode === 'today' ? `Today (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
+                        {viewMode === 'date' ? `${selectedDate.toLocaleDateString()} (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
                       </>
                     ) : (
                       <>
@@ -505,6 +552,7 @@ export default function ResourcesPage() {
                   return (
                     <button
                       key={meeting.id}
+                      id={`meeting-${meeting.id}`}
                       onClick={() => setSelectedMeeting(meeting)}
                       className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
                     >

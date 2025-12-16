@@ -101,4 +101,8 @@ export const buildPath = {
     `${FIRESTORE_COLLECTIONS.USERS}/${userId}/${FIRESTORE_COLLECTIONS.DAILY_LOGS}/${dateId}`,
   dailyLogsCollection: (userId: string) =>
     `${FIRESTORE_COLLECTIONS.USERS}/${userId}/${FIRESTORE_COLLECTIONS.DAILY_LOGS}`,
+  inventoryEntry: (userId: string, entryId: string) =>
+    `${FIRESTORE_COLLECTIONS.USERS}/${userId}/inventoryEntries/${entryId}`,
+  inventoryEntries: (userId: string) =>
+    `${FIRESTORE_COLLECTIONS.USERS}/${userId}/inventoryEntries`,
 } as const
