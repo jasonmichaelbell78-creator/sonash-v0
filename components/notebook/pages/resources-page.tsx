@@ -721,7 +721,11 @@ export default function ResourcesPage() {
                 className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
                 onClick={() => {
                   if (selectedMeeting) {
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMeeting.address)}`, '_blank')
+                    // Use coordinates if available for precise navigation, fallback to address search
+                    const mapsUrl = selectedMeeting.coordinates
+                      ? `https://www.google.com/maps/dir/?api=1&destination=${selectedMeeting.coordinates.lat},${selectedMeeting.coordinates.lng}`
+                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMeeting.address)}`
+                    window.open(mapsUrl, '_blank')
                   }
                 }}
               >

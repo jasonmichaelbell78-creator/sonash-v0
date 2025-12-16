@@ -14,6 +14,7 @@ import {
     GoogleAuthProvider,
     linkWithCredential,
     linkWithPopup,
+    signInWithPopup,
     AuthError,
 } from "firebase/auth";
 import { auth } from "../firebase";
@@ -240,6 +241,38 @@ export async function linkWithGoogle(): Promise<LinkResult> {
         if (authError.code === "auth/popup-closed-by-user") {
             // User cancelled - not an error, just log for debugging
             logger.info("Google linking popup closed by user", {});
+        } else if (authError.code === "auth/credential-already-in-use") {
+            // Google account is already linked to another user (e.g., on a different device)
+            // Instead of showing an error, sign in to that existing account
+            logger.info("Google account already linked, signing in to existing account", {
+                anonymousUserId: maskIdentifier(currentUser.uid),
+            });
+
+            try {
+                // Sign in with Google to the existing account
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+
+                logger.info("Signed in to existing Google account", {
+                    userId: maskIdentifier(result.user.uid),
+                });
+
+                return { success: true, user: result.user };
+            } catch (signInError) {
+                logger.error("Failed to sign in to existing Google account", {
+                    errorCode: (signInError as AuthError).code,
+                });
+
+                return {
+                    success: false,
+                    error: {
+                        code: "sign-in-failed",
+                        message: "Failed to sign in to existing account",
+                        userMessage: "Unable to sign in. Please try refreshing the page and signing in directly.",
+                        recoverable: true,
+                    },
+                };
+            }
         } else {
             logger.error("Failed to link account with Google", {
                 userId: maskIdentifier(currentUser.uid),

@@ -200,7 +200,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex-1 overflow-y-auto px-6">
+                <div className="flex-1 overflow-y-auto pl-6 pr-8">
                     <div className="pb-6">
                         <AnimatePresence mode="wait">
                             {/* Step 1: Actions (Reverted to Checklist) */}
