@@ -84,7 +84,8 @@ export const MeetingsService = {
             return meetings.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time))
         } catch (error) {
             logger.error("Error fetching meetings", { error, day })
-            return []
+            // Throw instead of returning empty array so UI can show proper error message
+            throw new Error(`Failed to load meetings for ${day}. Please check your connection and try again.`)
         }
     },
 
@@ -102,7 +103,8 @@ export const MeetingsService = {
             })
         } catch (error) {
             logger.error("Error fetching all meetings", { error })
-            return []
+            // Throw instead of returning empty array so UI can show proper error message
+            throw new Error("Failed to load meetings. Please check your connection and try again.")
         }
     },
 
@@ -145,12 +147,8 @@ export const MeetingsService = {
             }
         } catch (error) {
             logger.error("Error fetching paginated meetings", { error })
-            return {
-                meetings: [],
-                lastDoc: null,
-                hasMore: false,
-                totalFetched: 0
-            }
+            // Throw instead of returning empty result so UI can show proper error message
+            throw new Error("Failed to load meetings. Please check your connection and try again.")
         }
     },
 
