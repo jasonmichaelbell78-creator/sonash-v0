@@ -11,7 +11,7 @@ import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
 import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils"
 import { toDate } from "@/lib/types/firebase-types"
-import { STORAGE_KEYS, READING_PREFS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
+import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 

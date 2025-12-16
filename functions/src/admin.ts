@@ -5,7 +5,7 @@
  * Prevents client-side manipulation and bypassing security rules
  */
 
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { z } from "zod";
 import { logSecurityEvent } from "./security-logger";
@@ -45,10 +45,39 @@ const QuoteSchema = z.object({
     type: z.string().max(100).optional(),
 });
 
+// Request data types
+type MeetingData = z.infer<typeof MeetingSchema>;
+type SoberLivingData = z.infer<typeof SoberLivingSchema>;
+type QuoteData = z.infer<typeof QuoteSchema>;
+
+interface SaveMeetingRequest {
+    meeting: MeetingData;
+}
+
+interface DeleteMeetingRequest {
+    meetingId: string;
+}
+
+interface SaveSoberLivingRequest {
+    home: SoberLivingData;
+}
+
+interface DeleteSoberLivingRequest {
+    homeId: string;
+}
+
+interface SaveQuoteRequest {
+    quote: QuoteData;
+}
+
+interface DeleteQuoteRequest {
+    quoteId: string;
+}
+
 /**
  * Helper: Verify user has admin claim
  */
-function requireAdmin(request: any) {
+function requireAdmin(request: CallableRequest) {
     if (!request.auth) {
         logSecurityEvent(
             "AUTH_FAILURE",
@@ -72,7 +101,7 @@ function requireAdmin(request: any) {
 /**
  * Admin: Save Meeting
  */
-export const adminSaveMeeting = onCall<{ meeting: any }>(
+export const adminSaveMeeting = onCall<SaveMeetingRequest>(
     {
         enforceAppCheck: true,
         consumeAppCheckToken: true,
@@ -131,7 +160,7 @@ export const adminSaveMeeting = onCall<{ meeting: any }>(
 /**
  * Admin: Delete Meeting
  */
-export const adminDeleteMeeting = onCall<{ meetingId: string }>(
+export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(
     {
         enforceAppCheck: true,
         consumeAppCheckToken: true,
@@ -174,7 +203,7 @@ export const adminDeleteMeeting = onCall<{ meetingId: string }>(
 /**
  * Admin: Save Sober Living Home
  */
-export const adminSaveSoberLiving = onCall<{ home: any }>(
+export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(
     {
         enforceAppCheck: true,
         consumeAppCheckToken: true,
@@ -232,7 +261,7 @@ export const adminSaveSoberLiving = onCall<{ home: any }>(
 /**
  * Admin: Delete Sober Living Home
  */
-export const adminDeleteSoberLiving = onCall<{ homeId: string }>(
+export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(
     {
         enforceAppCheck: true,
         consumeAppCheckToken: true,
@@ -275,7 +304,7 @@ export const adminDeleteSoberLiving = onCall<{ homeId: string }>(
 /**
  * Admin: Save Quote
  */
-export const adminSaveQuote = onCall<{ quote: any }>(
+export const adminSaveQuote = onCall<SaveQuoteRequest>(
     {
         enforceAppCheck: true,
         consumeAppCheckToken: true,
@@ -333,7 +362,7 @@ export const adminSaveQuote = onCall<{ quote: any }>(
 /**
  * Admin: Delete Quote
  */
-export const adminDeleteQuote = onCall<{ quoteId: string }>(
+export const adminDeleteQuote = onCall<DeleteQuoteRequest>(
     {
         enforceAppCheck: true,
         consumeAppCheckToken: true,
