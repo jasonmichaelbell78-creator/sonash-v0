@@ -52,6 +52,14 @@ jobs:
       - name: Deploy Cloud Functions
         run: firebase deploy --only functions --non-interactive --project sonash-app
 
+      - name: Cleanup Old Functions
+        run: |
+          firebase functions:delete exportUserData deleteUserAccount \
+            --project sonash-app \
+            --force \
+            --non-interactive
+        continue-on-error: true  # Don't fail deployment if functions don't exist
+
       - name: Deploy Firestore Rules
         run: firebase deploy --only firestore:rules --non-interactive --project sonash-app
 
