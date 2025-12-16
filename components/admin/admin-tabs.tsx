@@ -4,7 +4,7 @@ import { MeetingsTab } from "./meetings-tab"
 import { SoberLivingTab } from "./sober-living-tab"
 import { QuotesTab } from "./quotes-tab"
 import { UsersTab } from "./users-tab"
-import { Home, Users, BookOpen, Settings, Quote } from "lucide-react"
+import { Home, Users, Quote } from "lucide-react"
 
 interface AdminTabsProps {
     activeTab: string
