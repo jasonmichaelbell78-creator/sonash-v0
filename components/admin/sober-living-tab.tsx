@@ -74,13 +74,21 @@ function SoberLivingForm({
     )
 }
 
+// Adapter to make SoberLivingService match CrudService interface
+const soberLivingServiceAdapter = {
+    getAll: () => SoberLivingService.getAllHomes(),
+    add: (data: Omit<SoberLivingHome, 'id'>) => SoberLivingService.addHome(data).then(() => { }),
+    update: (id: string, data: Partial<SoberLivingHome>) => SoberLivingService.updateHome(id, data),
+    delete: (id: string) => SoberLivingService.deleteHome(id),
+}
+
 // Configuration for sober living homes
 const soberLivingConfig: AdminCrudConfig<SoberLivingHome> = {
     entityName: "Sober Living Home",
     entityNamePlural: "Sober Living Homes",
 
-    // Use direct Firestore service
-    service: SoberLivingService,
+    // Use adapted Firestore service
+    service: soberLivingServiceAdapter,
 
     // Table columns
     columns: [
@@ -89,8 +97,8 @@ const soberLivingConfig: AdminCrudConfig<SoberLivingHome> = {
             label: "Gender",
             render: (home) => (
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 ${home.gender === 'Men' ? 'border-blue-200 bg-blue-50 text-blue-700' :
-                        home.gender === 'Women' ? 'border-pink-200 bg-pink-50 text-pink-700' :
-                            'border-purple-200 bg-purple-50 text-purple-700'
+                    home.gender === 'Women' ? 'border-pink-200 bg-pink-50 text-pink-700' :
+                        'border-purple-200 bg-purple-50 text-purple-700'
                     }`}>
                     {home.gender === 'Men' ? 'M' : home.gender === 'Women' ? 'W' : 'C'}
                 </div>

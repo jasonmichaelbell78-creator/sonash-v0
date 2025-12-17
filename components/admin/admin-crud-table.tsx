@@ -23,7 +23,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
     // Modal state
     const [modalMode, setModalMode] = useState<"closed" | "add" | "edit">("closed")
     const [editingItem, setEditingItem] = useState<T | null>(null)
-    const [formData, setFormData] = useState<Partial<T>>(config.emptyFormData)
+    const [formData, setFormData] = useState<Partial<T>>(config.emptyFormData as Partial<T>)
     const [saving, setSaving] = useState(false)
 
     // Delete confirmation
@@ -97,7 +97,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
 
     // Open add modal
     const handleAdd = () => {
-        setFormData(config.emptyFormData)
+        setFormData(config.emptyFormData as Partial<T>)
         setEditingItem(null)
         setModalMode("add")
     }
@@ -148,7 +148,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
 
             await fetchItems()
             setModalMode("closed")
-            setFormData(config.emptyFormData)
+            setFormData(config.emptyFormData as Partial<T>)
             setEditingItem(null)
         } catch (error) {
             console.error(`Error saving ${config.entityName}:`, error)
