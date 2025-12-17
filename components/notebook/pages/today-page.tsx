@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
-import { intervalToDuration } from "date-fns"
+import { intervalToDuration, subDays, startOfDay, format } from "date-fns"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, TrendingUp } from "lucide-react"
 import MoodSparkline from "../visualizations/mood-sparkline"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
@@ -28,6 +28,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [journalEntry, setJournalEntry] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [saveComplete, setSaveComplete] = useState(false)
+  const [weekStats, setWeekStats] = useState({ daysLogged: 0, streak: 0 })
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -265,9 +266,9 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
             {cleanTimeDisplay ? (
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
                 {cleanTimeDisplay.map((part, index) => (
-                  <span key={index}>
+                  <span key={index} className="text-center">
                     <span className={`font-heading ${part.size} text-amber-900 font-bold`}>
                       {part.text}
                     </span>
@@ -278,7 +279,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 ))}
               </div>
             ) : (
-              <p className="font-heading text-2xl md:text-3xl text-amber-900">
+              <p className="font-heading text-2xl md:text-3xl text-amber-900 text-center">
                 Tap to set clean date
               </p>
             )}
@@ -448,14 +449,26 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               </div>
             </div>
           </div>
+between pt-4">
+            {/* Quick Stats Summary */}
+            <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-amber-600" />
+                <div className="font-body text-amber-900/70">
+                  <span className="font-semibold text-amber-900">{weekStats.daysLogged}/7</span> days logged
+                </div>
+              </div>
+              {weekStats.streak > 0 && (
+                <>
+                  <span className="text-amber-300">•</span>
+                  <div className="font-body text-amber-900/70">
+                    <span className="font-semibold text-amber-900">{weekStats.streak}</span> day streak
+                  </div>
+                </>
+              )}
+            </div>
 
-          <div className="flex items-center justify-between pt-4">
-            <button
-              onClick={() => onNavigate('history')}
-              className="font-heading text-amber-900/60 hover:text-amber-900 text-sm border-b border-amber-900/30 hover:border-amber-900 transition-colors"
-            >
-              My Journal History →
-            </button>
+          <div className="flex items-center justify-end pt-4">
             <p className="font-body text-sm text-amber-900/50 text-right">Swipe left for more →</p>
           </div>
         </div>
