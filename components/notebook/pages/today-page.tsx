@@ -207,21 +207,19 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         size: "text-2xl md:text-3xl" 
       })
     }
-    if (days > 0 || (years === 0 && months === 0)) {
+    if (days > 0) {
       parts.push({ 
         text: days === 1 ? "1 Day" : `${days} Days`, 
         size: "text-xl md:text-2xl" 
       })
     }
     
-    // Always show minutes for users with less than 1 day clean
-    if (years === 0 && months === 0 && days === 0) {
-      const totalMinutes = hours * 60 + minutes
-      parts.push({ 
-        text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`, 
-        size: "text-lg md:text-xl" 
-      })
-    }
+    // Always show minutes for ALL users
+    const totalMinutes = hours * 60 + minutes
+    parts.push({ 
+      text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`, 
+      size: "text-lg md:text-xl" 
+    })
 
     if (parts.length === 0) return null
 
