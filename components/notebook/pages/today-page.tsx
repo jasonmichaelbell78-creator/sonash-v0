@@ -14,7 +14,6 @@ import { toDate } from "@/lib/types/firebase-types"
 import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
-import CompactDailyQuote from "@/components/widgets/compact-daily-quote"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
 
 interface TodayPageProps {
@@ -232,9 +231,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               One day at a time, {nickname || "friend"}.
             </p>
           </div>
-          {/* Top-right compact widgets */}
-          <div className="flex flex-col gap-1.5 items-end">
-            <CompactDailyQuote />
+          {/* Top-right widget - Next Closest Meeting */}
+          <div className="flex items-end">
             <CompactMeetingCountdown />
           </div>
         </div>
