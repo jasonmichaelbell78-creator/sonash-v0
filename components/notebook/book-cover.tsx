@@ -185,12 +185,10 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             transition={{ duration: 0.3 }}
           >
             {/* Top-right widgets - Quote Card + Meeting Countdown */}
-            {user && isProfileComplete && (
-              <div className="absolute top-0 right-0 w-48 md:w-56 space-y-2.5 pointer-events-auto">
-                <DailyQuoteCard />
-                <MeetingCountdown />
-              </div>
-            )}
+            <div className="absolute top-0 right-0 w-48 md:w-56 space-y-2.5 pointer-events-auto">
+              <DailyQuoteCard />
+              <MeetingCountdown />
+            </div>
 
             {/* Top section - Branding */}
             <div className="flex flex-col items-center">
