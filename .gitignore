@@ -48,4 +48,7 @@ pnpm-workspace.yaml
 src/dataconnect-generated
 dataconnect/
 
+# MCP configuration (contains tokens)
+.vscode/mcp.json
+
 firebase-service-account.json

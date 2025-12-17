@@ -175,7 +175,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
   const dateString = formatDateForDisplay(referenceDate)
 
-  // Calculate clean time dynamically
+  // Calculate clean time dynamically with minutes
   const getCleanTime = () => {
     if (!profile?.cleanStart) return null
 
@@ -189,24 +189,43 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     const years = duration.years ?? 0
     const months = duration.months ?? 0
     const days = duration.days ?? 0
+    const hours = duration.hours ?? 0
+    const minutes = duration.minutes ?? 0
 
-    // Just days for very early recovery (optional, but requested format was Years/Months/Days)
     const parts = []
-    if (years > 0) parts.push(`${years}y`)
-    if (months > 0) parts.push(`${months}m`)
-    parts.push(`${days}d`)
+    
+    // Build parts with graduated text sizes
+    if (years > 0) {
+      parts.push({ 
+        text: years === 1 ? "1 Year" : `${years} Years`, 
+        size: "text-3xl md:text-4xl" 
+      })
+    }
+    if (months > 0) {
+      parts.push({ 
+        text: months === 1 ? "1 Month" : `${months} Months`, 
+        size: "text-2xl md:text-3xl" 
+      })
+    }
+    if (days > 0 || (years === 0 && months === 0)) {
+      parts.push({ 
+        text: days === 1 ? "1 Day" : `${days} Days`, 
+        size: "text-xl md:text-2xl" 
+      })
+    }
+    
+    // Always show minutes for users with less than 1 day clean
+    if (years === 0 && months === 0 && days === 0) {
+      const totalMinutes = hours * 60 + minutes
+      parts.push({ 
+        text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`, 
+        size: "text-lg md:text-xl" 
+      })
+    }
 
-    // If < 1 day
-    if (parts.length === 1 && days === 0) return "Day 1"
+    if (parts.length === 0) return null
 
-    const verboseParts = []
-    if (years > 0) verboseParts.push(years === 1 ? "1 Year" : `${years} Years`)
-    if (months > 0) verboseParts.push(months === 1 ? "1 Month" : `${months} Months`)
-    if (days > 0) verboseParts.push(days === 1 ? "1 Day" : `${days} Days`)
-
-    if (verboseParts.length === 0) return "Day 1"
-
-    return verboseParts.join(" • ")
+    return parts
   }
 
   const cleanTimeDisplay = getCleanTime()
@@ -247,9 +266,24 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           {/* Clean time tracker */}
           <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
-            <p className="font-heading text-2xl md:text-3xl text-amber-900">
-              {cleanTimeDisplay || "Tap to set clean date"}
-            </p>
+            {cleanTimeDisplay ? (
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                {cleanTimeDisplay.map((part, index) => (
+                  <span key={index}>
+                    <span className={`font-heading ${part.size} text-amber-900 font-bold`}>
+                      {part.text}
+                    </span>
+                    {index < cleanTimeDisplay.length - 1 && (
+                      <span className="text-amber-900/40 mx-1">•</span>
+                    )}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="font-heading text-2xl md:text-3xl text-amber-900">
+                Tap to set clean date
+              </p>
+            )}
             {cleanTimeDisplay ? (
               <p className="font-body text-sm text-amber-900/60 mt-1">Keep coming back.</p>
             ) : (
