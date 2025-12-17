@@ -5,7 +5,7 @@ import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration, subDays, startOfDay, format } from "date-fns"
 import { toast } from "sonner"
-import { Loader2, TrendingUp } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import MoodSparkline from "../visualizations/mood-sparkline"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
@@ -240,7 +240,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     <div className="h-full overflow-y-auto pr-2 pb-8 scrollbar-hide">
       {/* Header */}
       <div className="mb-6 pt-2">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start gap-3">
           <div>
             <p className="font-heading text-xl md:text-2xl text-amber-900 font-bold mb-1">
               {dateString}
@@ -318,6 +318,21 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               </a>
             </div>
           </div>
+
+          {/* Quick Stats Summary */}
+          <div>
+            <h2 className="font-heading text-xl text-amber-900/90 mb-3">Weekly Stats</h2>
+            <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-body text-amber-900/70">Days logged this week</span>
+                <span className="font-heading text-3xl text-amber-900 font-bold">{weekStats.daysLogged} / 7</span>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-amber-100">
+                <span className="font-body text-amber-900/70">Current streak</span>
+                <span className="font-heading text-3xl text-amber-900 font-bold">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right column */}
@@ -391,7 +406,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           <div className="relative group">
             <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
 
-            <div className="relative min-h-[300px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
+            <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
               style={{ backgroundColor: '#fdfbf7' }}
             >
               {/* Topbinding/Yellow Header */}
@@ -429,7 +444,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                   if (e.key === 'Enter') e.stopPropagation()
                 }}
                 placeholder="Jot down numbers, thoughts, or reminders..."
-                className="w-full h-full min-h-[250px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
+                className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
                 style={{
                   fontFamily: 'var(--font-handlee), cursive',
                   lineHeight: '2rem'
@@ -449,29 +464,12 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               </div>
             </div>
           </div>
-between pt-4">
-            {/* Quick Stats Summary */}
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-amber-600" />
-                <div className="font-body text-amber-900/70">
-                  <span className="font-semibold text-amber-900">{weekStats.daysLogged}/7</span> days logged
-                </div>
-              </div>
-              {weekStats.streak > 0 && (
-                <>
-                  <span className="text-amber-300">•</span>
-                  <div className="font-body text-amber-900/70">
-                    <span className="font-semibold text-amber-900">{weekStats.streak}</span> day streak
-                  </div>
-                </>
-              )}
-            </div>
-
-          <div className="flex items-center justify-end pt-4">
-            <p className="font-body text-sm text-amber-900/50 text-right">Swipe left for more →</p>
-          </div>
         </div>
+      </div>
+
+      {/* Bottom navigation hint */}
+      <div className="flex items-center justify-center pt-8">
+        <p className="font-body text-sm text-amber-900/50 text-center">Swipe left for more →</p>
       </div>
     </div>
   )

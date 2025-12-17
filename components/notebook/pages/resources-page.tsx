@@ -369,22 +369,26 @@ export default function ResourcesPage() {
           </h2>
 
 
-          {/* Filters */}
-          {/* Unified Filter Toolbar */}
-          {/* Unified Filter Toolbar */}
-          <div className="flex flex-col gap-3 mb-4 p-3 bg-white rounded-xl border border-amber-200 shadow-sm">
-            {/* Top Row: Primary Controls (Fellowship + Date + Time) */}
-            <div className="flex flex-wrap items-center gap-2 justify-between">
-
+          {/* Simplified Filters */}
+          <div className="space-y-3 mb-4">
+            {/* View All Meetings Link */}
+            <a
+              href="/meetings/all"
+              className="block text-center text-sm text-blue-600 hover:text-blue-800 hover:underline font-medium"
+            >
+              View All Meetings with Map & Advanced Filters →
+            </a>
+            
+            <div className="flex flex-col sm:flex-row gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm">
               {resourceType === "meetings" ? (
-                <div className="flex items-center gap-2 flex-wrap">
+                <>
                   {/* Fellowship Pills */}
-                  <div className="flex bg-amber-50/80 p-1 rounded-lg border border-amber-200/50">
+                  <div className="flex bg-amber-50/80 p-1 rounded-lg border border-amber-200/50 flex-1">
                     {FELLOWSHIP_OPTIONS.map((option) => (
                       <button
                         key={option}
                         onClick={() => setFellowshipFilter(option)}
-                        className={`text-xs px-2.5 py-1 rounded-md transition-all ${fellowshipFilter === option
+                        className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${fellowshipFilter === option
                           ? "bg-amber-600 text-white shadow-sm font-medium"
                           : "text-amber-800 hover:bg-amber-100/50"
                           }`}
@@ -394,41 +398,19 @@ export default function ResourcesPage() {
                     ))}
                   </div>
 
-                  <div className="h-4 w-px bg-amber-200/50 hidden sm:block"></div>
-
-                  {/* Date Picker */}
-                  <div className="flex items-center bg-amber-50/80 px-2 py-1 rounded-lg border border-amber-200/50">
-                    <Calendar className="w-3.5 h-3.5 text-amber-500 mr-2" />
-                    <input
-                      type="date"
-                      value={selectedDate.toISOString().split('T')[0]}
-                      onChange={(e) => {
-                        if (e.target.valueAsDate) {
-                          setSelectedDate(e.target.valueAsDate)
-                          setViewMode('date')
-                        }
-                      }}
-                      className="bg-transparent border-none text-xs text-amber-900 font-medium w-[110px] focus:outline-none cursor-pointer"
-                    />
-                  </div>
-
-                  {/* Time Jump */}
-                  <div className="flex items-center bg-amber-50/80 px-2 py-1 rounded-lg border border-amber-200/50">
-                    <Clock className="w-3.5 h-3.5 text-amber-500 mr-2" />
-                    <select
-                      onChange={(e) => handleTimeJump(e.target.value)}
-                      className="bg-transparent border-none text-xs text-amber-900 font-medium focus:outline-none cursor-pointer w-[90px]"
-                      defaultValue=""
-                    >
-                      <option value="" disabled>Jump to...</option>
-                      <option value="6:00 AM">6:00 AM</option>
-                      <option value="12:00 PM">12:00 PM</option>
-                      <option value="17:00">5:00 PM</option>
-                      <option value="19:00">7:00 PM</option>
-                      <option value="21:00">9:00 PM</option>
-                    </select>
-                  </div>
-                </div>
+                  {/* Nearest Button */}
+                  <button
+                    onClick={handleNearestClick}
+                    disabled={locationLoading}
+                    className={`px-4 py-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${sortBy === "nearest" && userLocation
+                      ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
+                      : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                      } ${locationLoading ? "opacity-50" : ""}`}
+                  >
+                    {locationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Locate className="w-4 h-4" />}
+                    Nearby
+                  </button>
+                </>
               ) : (
                 <div className="flex bg-white/50 p-1 rounded-lg border border-amber-200/30">
                   {["All", "Men", "Women"].map((option) => (
@@ -436,7 +418,7 @@ export default function ResourcesPage() {
                       key={option}
                       // @ts-expect-error - option is "All" | "Men" | "Women" which are valid values for setGenderFilter
                       onClick={() => setGenderFilter(option)}
-                      className={`text-xs px-3 py-1.5 rounded-md transition-all ${genderFilter === option
+                      className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${genderFilter === option
                         ? "bg-amber-600 text-white shadow-sm font-medium"
                         : "text-amber-800 hover:bg-amber-100/50"
                         }`}
@@ -447,62 +429,6 @@ export default function ResourcesPage() {
                 </div>
               )}
             </div>
-
-            {/* Bottom Row: Location & Display Mode */}
-            {resourceType === "meetings" && (
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Neighborhood Picker */}
-                <div className="relative flex-1 min-w-[140px]">
-                  <select
-                    value={neighborhoodFilter}
-                    onChange={(e) => setNeighborhoodFilter(e.target.value)}
-                    className="w-full text-xs h-8 pl-8 pr-4 appearance-none content-center rounded-full border border-amber-200 bg-white text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-300/50"
-                  >
-                    <option value="All">📍 All Neighborhoods</option>
-                    {availableNeighborhoods.map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600 pointer-events-none" />
-                </div>
-
-                {/* Nearest Button */}
-                <button
-                  onClick={handleNearestClick}
-                  disabled={locationLoading}
-                  className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${sortBy === "nearest" && userLocation
-                    ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
-                    : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                    } ${locationLoading ? "opacity-50" : ""}`}
-                >
-                  {locationLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Locate className="w-3 h-3" />}
-                  Nearest
-                </button>
-
-                {/* Map Toggle */}
-                <button
-                  onClick={() => setDisplayMode(displayMode === "list" ? "map" : "list")}
-                  className={`h-8 px-3 rounded-full border text-xs flex items-center gap-1.5 transition-all ${displayMode === "map"
-                    ? "bg-amber-600 text-white border-amber-600 font-medium shadow-sm"
-                    : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                    }`}
-                >
-                  {displayMode === "list" ? <Map className="w-3 h-3" /> : <Calendar className="w-3 h-3" />}
-                  {displayMode === "list" ? "Map" : "List"}
-                </button>
-              </div>
-            )}
-
-            {/* Active Filters Summary (if complex) */}
-            {neighborhoodFilter !== "All" && (
-              <div className="flex items-center gap-2 px-1">
-                <span className="text-[10px] text-amber-900/40">Filtered by:</span>
-                <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium flex items-center gap-1">
-                  📍 {neighborhoodFilter}
-                  <button onClick={() => setNeighborhoodFilter("All")} className="hover:text-amber-950"><X className="w-3 h-3" /></button>
-                </span>
-              </div>
-            )}
           </div>
 
 
@@ -577,7 +503,7 @@ export default function ResourcesPage() {
                   </button>
                 </div>
 
-                {resourceType === "meetings" && filteredMeetings.map((meeting) => {
+                {resourceType === "meetings" && filteredMeetings.slice(0, 10).map((meeting) => {
                   const distance = getMeetingDistance(meeting)
                   return (
                     <button
@@ -608,6 +534,16 @@ export default function ResourcesPage() {
                     </button>
                   )
                 })}
+                
+                {/* Show "View More" link if there are more than 10 meetings */}
+                {resourceType === "meetings" && filteredMeetings.length > 10 && (
+                  <a
+                    href="/meetings/all"
+                    className="block w-full py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-medium text-sm transition-colors border border-amber-200 text-center"
+                  >
+                    View All {filteredMeetings.length} Meetings with Map →
+                  </a>
+                )}
 
                 {resourceType === "sober-living" && filteredSoberHomes.map((home) => (
                   <div
@@ -648,30 +584,7 @@ export default function ResourcesPage() {
                   </div>
                 ))}
 
-                {/* Infinite Scroll: Load More Button (View All mode only) */}
-                {resourceType === "meetings" && viewMode === "all" && !loading && (
-                  <>
-                    {isLoadingMore && (
-                      <div className="flex items-center justify-center gap-2 py-4 text-amber-900/60">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-sm">Loading more meetings...</span>
-                      </div>
-                    )}
-                    {hasMore && !isLoadingMore && (
-                      <button
-                        onClick={loadMoreMeetings}
-                        className="w-full py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-medium text-sm transition-colors border border-amber-200"
-                      >
-                        Load More Meetings ({meetings.length} loaded)
-                      </button>
-                    )}
-                    {!hasMore && meetings.length > 0 && (
-                      <div className="text-center py-4 text-xs text-amber-900/40 italic">
-                        All meetings loaded ({meetings.length} total)
-                      </div>
-                    )}
-                  </>
-                )}
+
               </>
             )}
           </div>
