@@ -136,7 +136,7 @@ export default function AllMeetingsPage() {
 
     // Sort
     if (sortBy === "nearest" && userLocation) {
-      filtered = sortByDistance(filtered, userLocation)
+      filtered = sortByDistance(filtered, userLocation, (m) => m.coordinates)
     } else {
       // Sort by time
       filtered = [...filtered].sort((a, b) => parseTime(a.time) - parseTime(b.time))
