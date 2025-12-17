@@ -27,7 +27,7 @@ export default function GrowthPage({ onNavigate }: GrowthPageProps) {
     }
 
     return (
-        <div className="h-full flex flex-col gap-6 overflow-y-auto pb-20 pr-2 no-scrollbar">
+        <div className="h-full flex flex-col gap-6 overflow-y-auto pb-20 pr-4 no-scrollbar">
 
             {/* Header */}
             <div className="flex flex-col gap-1">

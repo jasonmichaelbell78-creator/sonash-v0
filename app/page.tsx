@@ -26,7 +26,7 @@ export default function Home() {
     <main className="fixed inset-0 overflow-y-auto overflow-x-hidden">
       {/* Wood table background */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url('/images/wood-table.jpg')`,
         }}
@@ -34,7 +34,7 @@ export default function Home() {
 
       {/* Subtle vignette overlay for depth */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="fixed inset-0 min-h-screen pointer-events-none"
         style={{
           background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.3) 100%)",
         }}
