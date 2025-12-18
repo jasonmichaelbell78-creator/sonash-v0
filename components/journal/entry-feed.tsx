@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { EntryCard, JournalEntry } from "./entry-card"
+import { EntryCard } from "./entry-card"
+import { EntryDetailDialog } from "./entry-detail-dialog"
+import { JournalEntry } from "@/types/journal"
 import { JournalFilterType } from "./journal-sidebar"
-import { format, isSameDay } from "date-fns"
+import { format } from "date-fns"
 
 interface EntryFeedProps {
     entries: JournalEntry[]
@@ -27,17 +28,41 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                 if (!searchQuery) return true
 
                 const query = searchQuery.toLowerCase()
-                const dataString = JSON.stringify(entry.data).toLowerCase()
-                return dataString.includes(query)
+
+                if (entry.type === 'mood') {
+                    const moodMatch = entry.data.mood.toLowerCase().includes(query)
+                    const noteMatch = entry.data.note?.toLowerCase().includes(query) || false
+                    return moodMatch || noteMatch
+                }
+
+                if (entry.type === 'gratitude') {
+                    return entry.data.items.some(item => item.toLowerCase().includes(query))
+                }
+
+                if (entry.type === 'inventory') {
+                    const resentments = entry.data.resentments.toLowerCase().includes(query)
+                    const dishonesty = entry.data.dishonesty.toLowerCase().includes(query)
+                    const apologies = entry.data.apologies.toLowerCase().includes(query)
+                    const successes = entry.data.successes.toLowerCase().includes(query)
+                    return resentments || dishonesty || apologies || successes
+                }
+
+                if (entry.type === 'free-write' || entry.type === 'meeting-note' || entry.type === 'spot-check') {
+                    const titleMatch = entry.data.title.toLowerCase().includes(query)
+                    const contentMatch = entry.data.content.toLowerCase().includes(query)
+                    return titleMatch || contentMatch
+                }
+
+                return false
             })
-            .sort((a, b) => b.date.getTime() - a.date.getTime())
+            .sort((a, b) => b.createdAt - a.createdAt)
     }, [entries, filter, searchQuery])
 
     // Group by Date for display
     const groupedEntries = useMemo(() => {
         const groups: { [key: string]: JournalEntry[] } = {}
         filteredEntries.forEach(entry => {
-            const dateKey = format(entry.date, "yyyy-MM-dd")
+            const dateKey = entry.dateLabel // Use pre-computed label
             if (!groups[dateKey]) groups[dateKey] = []
             groups[dateKey].push(entry)
         })
@@ -85,6 +110,7 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                                     <EntryCard
                                         key={entry.id}
                                         entry={entry}
+                                        index={0}
                                         onClick={() => setSelectedEntry(entry)}
                                     />
                                 ))}
@@ -101,13 +127,45 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                         <div className="flex items-center justify-between border-b pb-4">
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 capitalize">{selectedEntry.type.replace('-', ' ')}</h3>
-                                <p className="text-sm text-slate-500">{format(selectedEntry.date, "PPP p")}</p>
+                                <p className="text-sm text-slate-500">{new Date(selectedEntry.createdAt).toLocaleString()}</p>
                             </div>
                             <button onClick={() => setSelectedEntry(null)} className="text-slate-400 hover:text-slate-600">✕</button>
                         </div>
-                        <div className="text-slate-700 leading-relaxed whitespace-pre-wrap">
-                            {/* Render logic can be reused or simplified here */}
-                            {JSON.stringify(selectedEntry.data, null, 2)}
+                        <div className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">
+                            {selectedEntry.type === 'mood' && (
+                                <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
+                                    <span className="text-4xl block mb-2">{selectedEntry.data.mood}</span>
+                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Feeling (Intensity: {selectedEntry.data.intensity}/10)</span>
+                                    {selectedEntry.data.note && <p className="mt-2 text-sm text-slate-600">{selectedEntry.data.note}</p>}
+                                </div>
+                            )}
+
+                            {selectedEntry.type === 'gratitude' && (
+                                <div>
+                                    <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
+                                    <ul className="list-disc pl-5">
+                                        {selectedEntry.data.items.map((item, i) => (
+                                            <li key={i}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {selectedEntry.type === 'inventory' && (
+                                <div className="space-y-4">
+                                    <div><span className="font-bold">Resentments:</span> {selectedEntry.data.resentments}</div>
+                                    <div><span className="font-bold">Dishonesty:</span> {selectedEntry.data.dishonesty}</div>
+                                    <div><span className="font-bold">Apologies:</span> {selectedEntry.data.apologies}</div>
+                                    <div><span className="font-bold">Successes:</span> {selectedEntry.data.successes}</div>
+                                </div>
+                            )}
+
+                            {(selectedEntry.type === 'free-write' || selectedEntry.type === 'meeting-note' || selectedEntry.type === 'spot-check') && (
+                                <>
+                                    {selectedEntry.data.title && <h4 className="font-bold text-xl mb-2 font-heading">{selectedEntry.data.title}</h4>}
+                                    {selectedEntry.data.content}
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

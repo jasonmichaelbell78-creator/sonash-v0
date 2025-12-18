@@ -2,138 +2,35 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ============================================================
-    // HELPER FUNCTIONS
-    // ============================================================
-
-    // Validate inventory entry type
-    function isValidInventoryType(type) {
-      return type in [
-        'resentment',
-        'fear',
-        'relationship',
-        'harm',
-        'spot-check',
-        'morning',
-        'night-review',
-        'gratitude'
-      ];
+    // Helper function to check if user is signed in
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Validate required fields exist for inventory entries
-    function hasRequiredInventoryFields(data) {
-      return data.keys().hasAll(['type', 'data', 'createdAt', 'updatedAt'])
-             && isValidInventoryType(data.type);
+    // Helper to check if user owns the document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Validate inventory link structure
-    function isValidInventoryLink(data) {
-      return data.keys().hasAll(['fromId', 'toId', 'fromType', 'toType', 'createdAt'])
-             && isValidInventoryType(data.fromType)
-             && isValidInventoryType(data.toType);
-    }
+    // THE JOURNAL COLLECTION
+    // Path: /users/{userId}/journal/{entryId}
+    match /users/{userId}/journal/{entryId} {
+      
+      // 1. READ: Only the owner can read their own journal
+      allow read: if isOwner(userId);
 
-    // Size limits to prevent abuse
-    function isReasonableSize() {
-      // Limit individual string fields to 50KB
-      // Limit total document to ~500KB (Firestore max is 1MB)
-      return request.resource.data.size() < 500000;
-    }
+      // 2. CREATE: Owner can write, provided the data matches their ID
+      allow create: if isOwner(userId) 
+                    && request.resource.data.userId == userId;
 
-    function hasValidAppCheck() {
-      // TEMPORARY: Relaxed to allow auth-only while debugging App Check in prod
-      return request.auth != null; // && request.app != null;
-    }
+      // 3. UPDATE: Owner can edit (for "Strikethroughs" or Soft Deletes)
+      // We block them from changing the 'userId' or 'createdAt' fields
+      allow update: if isOwner(userId)
+                    && request.resource.data.userId == userId
+                    && request.resource.data.createdAt == resource.data.createdAt;
 
-    // ============================================================
-    // USER DATA - STRICT OWNER-ONLY ACCESS
-    // ============================================================
-
-    match /users/{uid} {
-      // Users can only read and write their own profile with valid App Check
-      allow read: if hasValidAppCheck() && request.auth.uid == uid;
-      allow write: if hasValidAppCheck() && request.auth.uid == uid;
-
-      // Daily logs subcollection - READ ONLY for clients
-      // All writes must go through Cloud Functions for server-side rate limiting
-      match /daily_logs/{logId} {
-        allow read: if hasValidAppCheck() && request.auth.uid == uid;
-        allow write: if false; // All writes must use saveDailyLog Cloud Function
-      }
-
-      // Inventory entries subcollection (Step 4, Step 10/11, Daily Practice)
-      match /inventoryEntries/{entryId} {
-        // Owner-only read access with App Check
-        allow read: if hasValidAppCheck() && request.auth.uid == uid;
-
-        // Owner-only write with validation and App Check
-        allow create: if hasValidAppCheck() &&
-                         request.auth.uid == uid &&
-                         hasRequiredInventoryFields(request.resource.data) &&
-                         isReasonableSize();
-
-        allow update: if hasValidAppCheck() &&
-                         request.auth.uid == uid &&
-                         hasRequiredInventoryFields(request.resource.data) &&
-                         isReasonableSize() &&
-                         // Prevent changing the entry type after creation
-                         request.resource.data.type == resource.data.type;
-
-        allow delete: if hasValidAppCheck() && request.auth.uid == uid;
-      }
-
-      // Inventory links subcollection (cross-references between entries)
-      match /inventoryLinks/{linkId} {
-        allow read: if hasValidAppCheck() && request.auth.uid == uid;
-
-        allow create: if hasValidAppCheck() &&
-                         request.auth.uid == uid &&
-                         isValidInventoryLink(request.resource.data);
-
-        // Links are immutable once created (delete and recreate if needed)
-        allow update: if false;
-
-        allow delete: if hasValidAppCheck() && request.auth.uid == uid;
-      }
-    }
-
-    // ============================================================
-    // PUBLIC/SHARED DATA
-    // ============================================================
-
-    // Meetings collection (public read, admin-only write)
-    match /meetings/{meetingId} {
-      // Public read access for meeting finder
-      allow read: if true;
-      // Admin users only can write (requires admin custom claim)
-      allow write: if request.auth != null && request.auth.token.admin == true;
-    }
-
-    // Sober Living collection (public read, admin-only write)
-    match /sober_living/{homeId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
-    }
-
-    // Daily Quotes collection (public read, admin-only write)
-    match /daily_quotes/{quoteId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
-    }
-
-    // Rate Limiting collection (Cloud Functions only via Admin SDK)
-    // Clients cannot read or write - used for server-side rate limiting
-    match /rate_limits/{limitId} {
-      allow read, write: if false;
-    }
-
-    // ============================================================
-    // DENY ALL OTHER ACCESS
-    // ============================================================
-
-    // Catch-all: deny access to any other collections
-    match /{document=**} {
-      allow read, write: if false;
+      // 4. DELETE: We technically allow it, but the UI will prefer "Soft Delete"
+      allow delete: if isOwner(userId);
     }
   }
 }
