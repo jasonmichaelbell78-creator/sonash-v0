@@ -2,7 +2,24 @@
 
 This directory contains historical documents, completed analysis reports, and deprecated files from the SoNash project.
 
-## Archive Date: December 17, 2025
+## Archive Date: December 18, 2025
+
+### Most Recent Archive (handoffs-2025-12/)
+
+**Purpose:** Consolidated all December 2025 handoff documents into single directory
+
+- **AI_HANDOFF-2025-12-17.md** - Handoff from Dec 17 (journal system overhaul, 33 new files)
+- **HANDOFF-2025-12-17.md** - Alternative handoff format from same session
+- **AI_HANDOFF-2025-12-16.md** - Handoff from Dec 16 (49 commits ago, superseded)
+- **AI_HANDOFF_2025_12_15.md** - Handoff from Dec 15 (feature analysis)
+
+**Status:** Superseded by `AI_HANDOFF.md` in root directory (active handoff)
+
+---
+
+## Previous Archives
+
+### Archive Date: December 17, 2025
 
 ### Archived Items
 

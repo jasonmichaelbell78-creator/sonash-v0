@@ -1,5 +1,7 @@
 # SoNash Testing Checklist
 
+**Last Updated:** December 18, 2025
+
 ## Test Results Summary
 
 **Automated Tests:** ✅ 89/91 passing (97.8%)
@@ -9,6 +11,11 @@
 - ✅ Logger with PII redaction
 - ✅ Rate limiter
 - ⚠️ 2 Firebase initialization failures (require emulator setup)
+
+**Recent Improvements:**
+- ✅ Debug console.logs removed from firestore-service.ts (commit 251c7c5)
+- ✅ Toast error notifications added to 6 journal components (commit 39818ac)
+- ✅ Firestore composite index verified (isSoftDeleted + createdAt)
 
 ---
 
@@ -38,6 +45,37 @@
 ---
 
 ## 2. Core Features Testing
+
+### Journal Page (New System - Dec 2025)
+
+**Entry Creation:**
+- [x] Floating pen button opens entry creator menu
+- [x] Mood form saves successfully
+- [x] Gratitude form saves successfully
+- [x] Inventory form saves (simple 4-question version)
+- [x] Free-write form saves successfully
+- [x] Toast error notifications appear on failures (not silent console errors)
+
+**Timeline Display:**
+- [x] Timeline loads all entries (no pagination)
+- [x] Entries grouped by "Today", "Yesterday", "Older"
+- [x] Entry cards show type, date, preview text
+- [x] Click entry card opens detail view
+
+**Ribbon Navigation:**
+- [x] Ribbon shows all entry types
+- [x] Clicking ribbon filters timeline by type
+- [x] "All" button shows all entries
+
+**Lock Screen:**
+- [x] Anonymous users see lock screen
+- [x] "Unlock" button triggers anonymous auth
+- [x] After auth, journal becomes accessible
+
+**Known Issues:**
+- ⚠️ Simple inventory form needs replacement with full NightReviewCard (4 steps)
+- ⚠️ Deep Search page not yet built (mood/craving separation)
+- ⚠️ Recovery Notepad not integrated with journal system
 
 ### Today Page (Daily Journal)
 - [ ] Opens on click

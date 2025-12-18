@@ -129,7 +129,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 - [x] Fix GDPR data export orderBy bug (`functions/src/user-data.ts` line 55)
 - [x] Implement chunked batch deletion for >500 docs (`functions/src/user-data.ts`)
-- [ ] Remove debug console.logs in lib/firestore-service.ts
+- [x] Remove debug console.logs in lib/firestore-service.ts (commit 251c7c5)
 - [ ] Complete `useAuth` → focused hooks migration
 
 ##### 🟡 Medium (M1.5 or M2)
@@ -323,6 +323,9 @@ Current state: 0 errors ✅, 29 warnings
 | Fix "Nearest" sorting | Geocode meetings, calculate actual distances | 4h |
 
 ##### My Journal Hub
+
+> **Status:** ✅ Basic journal system implemented (Dec 2025) with Timeline, Entry Forms, and Ribbon Nav.  
+> **Next:** Unify with UNIFIED_JOURNAL_ARCHITECTURE.md (dual-write migration, Deep Search, Recovery Notepad integration).
 
 | Task | Description | Est |
 |------|-------------|-----|
