@@ -710,23 +710,29 @@ function generateSearchableText(entry: JournalEntry): string {
 
 ---
 
-## 📝 Open Questions for User
+## ✅ Decisions Made
 
-1. **Night Review Form:** Full 4-step version or simplified? (Current simple inventory is faster but less comprehensive)
+**Date:** December 18, 2025
 
-2. **Timeline vs Search Balance:** Should timeline show ALL entries or just "highlight" entries? (Could get cluttered with check-ins)
+1. **Night Review Form:** ✅ **Full 4-step version** - Use EXACTLY the NightReviewCard from growth page, save all data (actions, traits, reflections, gratitude)
 
-3. **Privacy Default:** Should entries be private by default? (More secure but less shareable)
+2. **Timeline vs Search Balance:** ✅ **Option C - Group by day** in Timeline for clean overview, BUT Deep Search allows separation for mood tracking, craving analysis, etc.
 
-4. **Export Frequency:** Weekly summaries auto-generated? Or only on-demand?
+3. **Privacy Default:** ✅ **ON by default** - Entries are private unless user explicitly makes them shareable
 
-5. **Mobile vs Desktop:** Different UIs for mobile search page? (Less screen space for filters)
+4. **Export Frequency:** ✅ **Hybrid** - Auto-generate weekly summaries, store in Reports section, user downloads on-demand
 
-6. **Sponsor Access:** Built-in sponsor portal or just export/share links?
+5. **Mobile vs Desktop:** ✅ **Different layouts (Option B)** - Enhanced web functionality with desktop-specific features, mobile gets optimized simplified UI
 
-7. **Data Retention:** Keep entries forever or archive after X years?
+6. **Sponsor Access:** ✅ **Share links first** - Start with export/share functionality, add sponsor portal in Phase 2 if requested
+
+7. **Data Retention:** ✅ **Forever + User Choice** - Keep all entries, allow users to manually archive/delete if desired
 
 ---
+
+## 🖥️ Enhanced Web Functionality Brainstorm
+
+**Goal:** Leverage desktop screen space and capabilities for power-user features unavailable on mobile
 
 ## ✅ Next Steps
 

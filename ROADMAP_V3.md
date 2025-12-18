@@ -543,7 +543,160 @@ Current state: 0 errors ✅, 29 warnings
 
 ---
 
-#### M3.2 — Virtual Meetings Directory
+#### M3.2 — My Recovery Calendar (Appointments & Meetings)
+
+> **Goal:** Centralized calendar for tracking all recovery-related appointments with notifications and calendar view integration.
+
+**Why This Matters**
+
+- Newcomers are told "90 meetings in 90 days" - need tracking and reminders
+- Therapy, sponsor meetings, court dates, and 12-step meetings all in one view
+- Native calendar integration and notifications prevent missed appointments
+- Visual month/week view shows commitment to recovery at a glance
+
+**Key Features**
+
+- **Appointment Types:**
+  - 12-Step Meetings (link to existing meetings collection)
+  - Sponsor Meetings (one-on-one check-ins)
+  - Therapy/Counselor Sessions
+  - Court Dates / Probation Check-ins
+  - Sober Living House Meetings
+  - Treatment Program Sessions
+  - IOP (Intensive Outpatient Program)
+  - Custom (other recovery-related appointments)
+
+- **Calendar Views:**
+  - Month view with color-coded appointment types
+  - Week view with time slots
+  - Day view with detailed schedule
+  - List view (upcoming appointments)
+
+- **Notifications:**
+  - Customizable reminders (30 min, 1 hour, 1 day before)
+  - "Meeting starting soon" notifications
+  - Push notifications via Firebase Cloud Messaging
+  - Email reminders (optional)
+
+- **Integration:**
+  - Export to Google Calendar, Apple Calendar, Outlook
+  - Import from external calendars
+  - Link to meeting attendance tracking (M7.F2)
+  - Auto-populate from Meeting Finder favorites
+
+**Tickets**
+
+| Ticket | Description | Est |
+|--------|-------------|-----|
+| 3.2.1 | Define Firestore schema: `users/{uid}/recoveryCalendar/{eventId}` with `title`, `type`, `startTime`, `endTime`, `location?`, `meetingId?`, `contactId?`, `notes`, `reminderMinutes[]`, `recurringRule?`, `createdAt` | 2 |
+| 3.2.2 | Create calendar event CRUD service with validation | 2 |
+| 3.2.3 | Build `/calendar` route with month/week/day/list view toggle | 5 |
+| 3.2.4 | Implement month view component with color-coded events | 4 |
+| 3.2.5 | Implement week view with time slots and drag-to-reschedule | 5 |
+| 3.2.6 | Implement day view with detailed schedule | 3 |
+| 3.2.7 | Build event detail modal with edit/delete functionality | 3 |
+| 3.2.8 | Implement "Add Event" form with recurring event support (daily, weekly, monthly) | 4 |
+| 3.2.9 | Add quick-add from Meeting Finder ("Add to my calendar" button on meeting cards) | 2 |
+| 3.2.10 | Implement Firebase Cloud Messaging notification service | 4 |
+| 3.2.11 | Add notification permission request and settings UI | 2 |
+| 3.2.12 | Build notification scheduler (Cloud Function to check upcoming events and send reminders) | 5 |
+| 3.2.13 | Implement iCal export functionality (.ics file generation) | 3 |
+| 3.2.14 | Add Google Calendar sync (OAuth + Calendar API integration) | 5 |
+| 3.2.15 | Add calendar widget to Today page showing "Next 3 appointments" | 2 |
+| 3.2.16 | Write Firestore security rules for calendar events (owner-only access) | 1 |
+| 3.2.17 | Add attendance logging integration (check-in after event completes) | 2 |
+| 3.2.18 | Implement recurring event instance management (skip, reschedule single occurrence) | 3 |
+
+**Subtotal: 57 SP**
+
+**Data Model**
+
+```typescript
+interface RecoveryCalendarEvent {
+  id: string;
+  userId: string;
+  title: string;
+  type: 'meeting' | 'sponsor' | 'therapy' | 'court' | 'sober_living' | 'treatment' | 'iop' | 'custom';
+  startTime: Timestamp;
+  endTime: Timestamp;
+  location?: string;
+  address?: string;
+  meetingId?: string; // Reference to meetings collection
+  contactId?: string; // Reference to contacts (sponsor, therapist)
+  notes?: string;
+  reminderMinutes: number[]; // [30, 1440] = 30 min and 1 day before
+  notificationsSent?: Timestamp[];
+  recurringRule?: {
+    frequency: 'daily' | 'weekly' | 'monthly';
+    interval: number; // every N days/weeks/months
+    daysOfWeek?: number[]; // [0-6] for weekly
+    endDate?: Timestamp;
+    endAfterOccurrences?: number;
+  };
+  parentEventId?: string; // For recurring event instances
+  attended?: boolean;
+  attendedAt?: Timestamp;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+```
+
+**UI Patterns**
+
+- **Color Coding:**
+  - 🟢 Meetings (green)
+  - 🔵 Therapy/Counselor (blue)
+  - 🟣 Sponsor Meetings (purple)
+  - 🟡 Court/Probation (yellow)
+  - 🟠 Treatment/IOP (orange)
+  - ⚪ Custom (gray)
+
+- **Today Page Widget:**
+  ```
+  📅 My Calendar
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Today, 6:00 PM  • AA Meeting (Homegroup)
+  Tomorrow, 2:00 PM • Therapy Session
+  Thu Dec 19, 10:00 AM • Sponsor Coffee
+  
+  [View Full Calendar →]
+  ```
+
+- **Notification Example:**
+  ```
+  🔔 Reminder: AA Meeting in 30 minutes
+  Your homegroup meeting starts at 6:00 PM
+  Location: First Presbyterian Church
+  [View] [Directions]
+  ```
+
+**Suggested Phasing:**
+
+1. **Phase A (MVP):** Tickets 3.2.1-3.2.9 (Basic calendar with month/week/day views, CRUD, quick-add) → ~30 SP
+2. **Phase B (Notifications):** Tickets 3.2.10-3.2.12 (FCM notifications and reminders) → ~11 SP
+3. **Phase C (Integration):** Tickets 3.2.13-3.2.18 (Export, sync, attendance, recurring) → ~16 SP
+
+**Exit Criteria**
+
+- Users can add/edit/delete recovery appointments
+- Calendar displays in month, week, and day views
+- Color-coded by appointment type
+- Notifications sent at configured reminder times
+- Quick-add from Meeting Finder works
+- iCal export functional
+- Recurring events create instances correctly
+- Today page shows next 3 appointments
+- Integration with attendance tracking (M7)
+
+**Research Spikes**
+
+- [ ] **Research:** Firebase Cloud Messaging reliability for time-sensitive notifications
+- [ ] **Research:** Google Calendar API quotas and OAuth flow complexity
+- [ ] **Research:** Recurring event edge cases (timezone changes, DST, skip patterns)
+
+---
+
+#### M3.3 — Virtual Meetings Directory
 
 > **Goal:** Help users find and join virtual AA/NA/CA meetings with direct links.
 
@@ -569,15 +722,15 @@ Current state: 0 errors ✅, 29 warnings
 
 | Ticket | Description | Est |
 |--------|-------------|-----|
-| 3.2.1 | Define Firestore schema for virtual meetings: `virtualMeetings/{id}` with `name`, `fellowship`, `platform` (Zoom/Google Meet/other), `meetingUrl`, `password?`, `schedule` (days, time, timezone), `format`, `isVerified`, `lastVerifiedAt` | 2 |
-| 3.2.2 | Create admin tab for virtual meeting CRUD with URL validation | 3 |
-| 3.2.3 | Build virtual meeting card component with "Join Now" button | 2 |
-| 3.2.4 | Implement time-zone display and "Happening Now" badge | 2 |
-| 3.2.5 | Add "Starting Soon" filter (meetings within next hour) | 2 |
-| 3.2.6 | Add virtual meetings section to Resources page (separate tab or toggle) | 3 |
-| 3.2.7 | Seed initial virtual meetings data (research + curate 50-100 quality links) | 4 |
-| 3.2.8 | Add "Report broken link" button with admin notification | 2 |
-| 3.2.9 | (Optional) Calendar integration for recurring virtual meetings | 3 |
+| 3.3.1 | Define Firestore schema for virtual meetings: `virtualMeetings/{id}` with `name`, `fellowship`, `platform` (Zoom/Google Meet/other), `meetingUrl`, `password?`, `schedule` (days, time, timezone), `format`, `isVerified`, `lastVerifiedAt` | 2 |
+| 3.3.2 | Create admin tab for virtual meeting CRUD with URL validation | 3 |
+| 3.3.3 | Build virtual meeting card component with "Join Now" button | 2 |
+| 3.3.4 | Implement time-zone display and "Happening Now" badge | 2 |
+| 3.3.5 | Add "Starting Soon" filter (meetings within next hour) | 2 |
+| 3.3.6 | Add virtual meetings section to Resources page (separate tab or toggle) | 3 |
+| 3.3.7 | Seed initial virtual meetings data (research + curate 50-100 quality links) | 4 |
+| 3.3.8 | Add "Report broken link" button with admin notification | 2 |
+| 3.3.9 | (Optional) Calendar integration for recurring virtual meetings (links to M3.2 Recovery Calendar) | 3 |
 
 **Subtotal: 23 SP** (20 SP without calendar integration)
 
@@ -916,9 +1069,10 @@ Research initiative to define sustainable monetization without compromising reco
 
 ## How to use this roadmap
 
-- Product priorities map to **Milestones (M1–M5)**.
+- Product priorities map to **Milestones (M1–M11+)**.
 - **M5 (Inventories Hub)** is a major feature milestone with detailed epics and tickets.
 - Engineering work items live in `REFACTORING_ACTION_PLAN.md` (implementation details) and issues/PRs.
+- **Desktop/web enhancements** detailed in `WEB_ENHANCEMENTS_ROADMAP.md` (15 power-user features, page-specific enhancements, performance/accessibility/security).
 - If a conflict exists, **this document is the source of truth**.
 
 ## Non-Goals (Explicitly Out of Scope for M5)
