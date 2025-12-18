@@ -116,11 +116,6 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           userId: maskIdentifier(userId),
         })
       } catch (error: any) {
-        console.error("🔥 DEBUG: Cloud Function Error Object:", error);
-        console.error("🔥 DEBUG: Error Code:", error.code);
-        console.error("🔥 DEBUG: Error Message:", error.message);
-        console.error("🔥 DEBUG: Error Details:", error.details);
-
         // Handle specific Cloud Function errors with user-friendly messages
         if (error.code === "functions/resource-exhausted") {
           deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
