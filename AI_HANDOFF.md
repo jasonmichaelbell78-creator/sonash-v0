@@ -364,11 +364,21 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 - **GitHub:** https://github.com/jasonmichaelbell78-creator/sonash-v0
 - **Branch:** `main`
 - **Last Commits:**
+  - `771493b` - Library analysis with Context7 documentation
+  - `eda51c4` - Archive old handoffs and create status documents
   - `ed051e1` - Recovery Calendar + web enhancements doc move
   - `40828d5` - Web enhancements roadmap
   - `3f2537e` - Unified journal architecture
   - `39818ac` - Toast notifications
   - `251c7c5` - Debug logs removed
+
+### Documentation
+
+- **Library Analysis:** `docs/LIBRARY_ANALYSIS.md` - Context7 documentation for all dependencies
+- **Unified Journal Architecture:** `docs/UNIFIED_JOURNAL_ARCHITECTURE.md`
+- **Web Enhancements Roadmap:** `WEB_ENHANCEMENTS_ROADMAP.md`
+- **Product Roadmap:** `ROADMAP_V3.md`
+- **Project Status:** `PROJECT_STATUS.md`
 
 ### Firebase
 
