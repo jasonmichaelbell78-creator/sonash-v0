@@ -1,0 +1,42 @@
+# Handoff Guide: Journal System Overhaul
+
+**Date:** December 17, 2025
+**Branch:** `main` (Feature branch `feature/journal-system-overhaul` has been merged)
+
+## 🟢 Current Status
+
+- **Journal System:** The new Journal UI, including the `JournalHub`, `Timeline`, and `RibbonNav`, is fully implemented and migrated to `/journal`.
+- **Entry Creation:** The "New Entry" flow is complete.
+  - **Menu:** `EntryCreatorMenu` works via the Floating Pen.
+  - **Forms:** Mood, Gratitude, Inventory, and Free Write forms are fully functional and integrated.
+- **Bug Fix:** The `RibbonNav` crash (duplicate component) has been resolved.
+
+## 🛑 Critical Action Required (Blocker)
+
+**The app is currently functional but data is hidden.**
+Firestore requires a composite index to valid the query used by the Timeline (`isSoftDeleted` + `createdAt`).
+
+1. **Open DevTools:** Go to the browser console.
+2. **Find Error:** Look for `FirebaseError: The query requires an index...`
+3. **Create Index:** Click the link provided in the error message.
+4. **Wait:** It may take 5-10 minutes for the index to build.
+5. **Refresh:** Once built, your journal entries will appear.
+
+## 📋 Next Steps (Tomorrow)
+
+1. **Verify Timeline:**
+    - Confirm entries appear after index creation.
+    - Check that "Today", "Yesterday", and "Older" grouping works.
+2. **Verify Ribbon Filtering:**
+    - Click "Daily", "Gratitude", "Inventory" ribbons.
+    - Ensure the Timeline filters to show only the selected entry types.
+3. **Full Flow Testing:**
+    - Log out and Log in (Anonymous auth).
+    - Create one of *every* entry type.
+    - Verify they save and appear correctly.
+
+## 📂 Key Files
+
+- `components/journal/journal-hub.tsx` (Main Orchestrator)
+- `components/journal/timeline.tsx` (Display & Filtering)
+- `hooks/use-journal.ts` (Data Logic)
