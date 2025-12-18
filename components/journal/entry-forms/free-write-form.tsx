@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
 import { useJournal } from "@/hooks/use-journal"
+import { toast } from "sonner"
 
 interface FreeWriteFormProps {
     onClose: () => void
@@ -31,6 +32,7 @@ export function FreeWriteForm({ onClose, onSuccess }: FreeWriteFormProps) {
             onClose()
         } catch (error) {
             console.error("Failed to add note entry:", error)
+            toast.error("Failed to save note. Please try again.")
         } finally {
             setIsSubmitting(false)
         }

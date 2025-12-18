@@ -16,6 +16,7 @@ import { GratitudeForm } from "./entry-forms/gratitude-form"
 import { InventoryForm } from "./entry-forms/inventory-form"
 import { FreeWriteForm } from "./entry-forms/free-write-form"
 import { JournalEntryType } from "@/types/journal"
+import { toast } from "sonner"
 
 
 export default function JournalHub() {
@@ -29,6 +30,7 @@ export default function JournalHub() {
             await signInAnonymously(auth)
         } catch (error) {
             console.error("Failed to sign in anonymously", error)
+            toast.error("Failed to unlock journal. Please try again.")
         }
     }
 

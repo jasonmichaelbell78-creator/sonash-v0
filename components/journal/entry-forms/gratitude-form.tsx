@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { X, Save, Plus, Trash2 } from "lucide-react"
 import { useJournal } from "@/hooks/use-journal"
+import { toast } from "sonner"
 
 interface GratitudeFormProps {
     onClose: () => void
@@ -45,6 +46,7 @@ export function GratitudeForm({ onClose, onSuccess }: GratitudeFormProps) {
             onClose()
         } catch (error) {
             console.error("Failed to add gratitude entry:", error)
+            toast.error("Failed to save gratitude list. Please try again.")
         } finally {
             setIsSubmitting(false)
         }

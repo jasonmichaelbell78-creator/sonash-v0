@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
 import { useJournal } from "@/hooks/use-journal"
+import { toast } from "sonner"
 
 interface MoodFormProps {
     onClose: () => void
@@ -38,7 +39,7 @@ export function MoodForm({ onClose, onSuccess }: MoodFormProps) {
             onClose()
         } catch (error) {
             console.error("Failed to add mood entry:", error)
-            // Ideally show toast error here
+            toast.error("Failed to save mood entry. Please try again.")
         } finally {
             setIsSubmitting(false)
         }

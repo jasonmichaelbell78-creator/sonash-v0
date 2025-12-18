@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
 import { useJournal } from "@/hooks/use-journal"
+import { toast } from "sonner"
 
 interface InventoryFormProps {
     onClose: () => void
@@ -38,6 +39,7 @@ export function InventoryForm({ onClose, onSuccess }: InventoryFormProps) {
             onClose()
         } catch (error) {
             console.error("Failed to add inventory entry:", error)
+            toast.error("Failed to save inventory. Please try again.")
         } finally {
             setIsSubmitting(false)
         }
