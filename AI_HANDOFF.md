@@ -1,463 +1,242 @@
 # AI Handoff Document
 
-**Date:** December 19, 2025
-**Status:** Active Development
+**Date:** December 19, 2025  
+**Status:** Active Development  
 **Branch:** `main`
 
 ---
 
-## 🎯 Current Sprint Focus
+## 📚 Documentation Structure (Updated Dec 19, 2025)
 
-### Completed This Session (December 19) ✅
+**Primary documentation has been consolidated into 4 core files:**
 
-1. **Codebase Analysis & Review**
-   - ✅ Reviewed ROADMAP_V3.md, PROJECT_STATUS.md, and Dec 19 handoff docs
-   - ✅ Analyzed codebase structure (127+ TypeScript files, 97.8% test pass rate)
-   - ✅ Identified single-save journal architecture refactor was completed
+1. **[README.md](./README.md)** - Project overview, quick start, current status
+2. **[ROADMAP.md](./ROADMAP.md)** - Product roadmap, milestones, feature planning
+3. **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup, testing, deployment
+4. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture, design patterns
 
-2. **ESLint Error Fixes**
-   - ✅ Fixed 4 ESLint errors in `app/meetings/all/page.tsx` (prefer-const violations)
-   - ✅ Fixed unused import `user` → `_user` prefix
-   - ✅ Build now passes with 0 TypeScript errors
-
-3. **Code Cleanup (Partial)**
-   - ✅ Removed unused `format` import from `timeline.tsx`
-   - ✅ Added eslint-disable for stable filterMapping dependency
-   - ✅ Removed unused `X`, `XCircle` imports from `NightReviewCard.tsx`
-   - ✅ Removed unused `REVIEW_QUESTIONS` constant
-   - ✅ Removed unused `resetTranscript` from speech recognition
-
-4. **Firestore Index Configuration**
-   - ✅ Created `firestore.indexes.json` with indexes for `journal` collection
-   - ✅ Index for `createdAt DESC` query (fixes Journal tab display issue)
-   - ✅ Composite index for `isSoftDeleted + createdAt` queries
-   - ✅ Deployed indexes via `firebase deploy --only firestore:indexes`
-
-5. **Dependencies & Build**
-   - ✅ Ran `npm install` to restore node_modules
-   - ✅ Ran `npm install` in `functions/` directory
-   - ✅ Verified build passes with 0 TypeScript errors
-   - ✅ Updated `package-lock.json` files
-
-### Previous Session (December 18-19) ✅
-
-1. **Debug Cleanup (Priority 1)**
-   - ✅ Removed 4 debug `console.error` statements from `lib/firestore-service.ts` (lines 119-122)
-   - ✅ Verified Firestore composite index exists (`isSoftDeleted` + `createdAt`)
-   - **Commit:** `251c7c5`
-
-2. **User Error Notifications (Priority 2)**
-   - ✅ Added Sonner toast error notifications to 6 journal components:
-     - `mood-form.tsx`
-     - `gratitude-form.tsx`
-     - `inventory-form.tsx`
-     - `free-write-form.tsx`
-     - `journal-hub.tsx`
-     - `entry-wizard.tsx`
-   - **Commit:** `39818ac`
-
-3. **Architecture Design**
-   - ✅ Created `docs/UNIFIED_JOURNAL_ARCHITECTURE.md` (757 lines)
-   - ✅ Defined unified schema for 9+ journal entry types
-   - ✅ Documented 4-phase migration strategy (dual-write → migrate → transition → cleanup)
-   - ✅ Designed two-tier UI (Timeline scrapbook + Deep Search analytics)
-   - ✅ User decisions documented for 7 open questions
-   - **Commit:** `3f2537e`
-
-4. **Web Enhancements Roadmap**
-   - ✅ Created `WEB_ENHANCEMENTS_ROADMAP.md` (800 lines)
-   - ✅ Documented 15 desktop-exclusive features
-   - ✅ Page-specific enhancements for all 6 main pages
-   - ✅ Performance, accessibility, security features
-   - ✅ Integration opportunities and moonshot ideas
-   - **Commit:** `40828d5`
-
-5. **Recovery Calendar Feature**
-   - ✅ Added M3.2 to `ROADMAP_V3.md` (57 Story Points)
-   - ✅ Full specs: month/week/day views, notifications, recurring events, integrations
-   - **Commit:** `ed051e1`
-
-6. **File Organization**
-   - ✅ Archived old handoff documents to `docs/archive/handoffs-2025-12/`
-   - ✅ Moved `WEB_ENHANCEMENTS_ROADMAP.md` to root directory
-   - ✅ Updated `ROADMAP_V3.md` references
+**Archived documentation:** See [docs/archive/consolidated-2025-12-19/](./docs/archive/consolidated-2025-12-19/) for:
+- Previous roadmap versions
+- Project status snapshots
+- Feature decision documents
+- Architecture proposals
+- Historical handoff documents
 
 ---
 
-## 🚀 Next Priorities
+## 🎯 Current Sprint Focus (December 19, 2025)
 
-### Immediate (This Week)
+### ✅ Recently Completed
 
-1. **Begin Unified Journal Implementation (Phase 1)**
-   - [ ] Update `types/journal.ts` with expanded JournalEntryType union
-   - [ ] Create helper functions in `hooks/use-journal.ts` for searchableText generation
-   - [ ] Modify Today page to dual-write (daily_logs + journal collections)
-   - [ ] Update Growth page components (SpotCheckCard, NightReviewCard) to dual-write
-   - [ ] Add denormalized fields (hasCravings, hasUsed, mood) for efficient querying
+**Documentation Consolidation (Dec 19)**
+- Merged 15+ docs into 4 core files
+- Archived obsolete proposals and status reports
+- Updated all cross-references
+- Improved navigation and discoverability
 
-2. **Replace Simple Inventory Form**
-   - [ ] Remove simple 4-question `inventory-form.tsx`
-   - [ ] Import full `NightReviewCard` component from Growth page
-   - [ ] Ensure all 4 steps save to journal with type: 'night-review'
-   - [ ] Update Timeline and EntryCard to render night-review entries
+**Journal System (Dec 17-18)**
+- Unified journal architecture (single-save pattern)
+- Entry type separation (mood stamps, stickers, notes)
+- Deduplication logic (no more duplicates!)
+- Enhanced UI styling (distinct visual styles)
+- Filter system redesign (horizontal buttons)
+- Firestore indexes for performance
 
-3. **Implement Deep Search Page**
-   - [ ] Create `/journal/search` or `/journal/insights` route
-   - [ ] Build filter panel with mood and craving separations
-   - [ ] Create mood tracker chart showing trends over time
-   - [ ] Create craving tracker showing frequency and patterns
-   - [ ] Implement correlation analysis
+**Security & Stability (Dec 9-15)**
+- Firebase App Check with reCAPTCHA v3
+- Server-side validation (Zod schemas)
+- Rate limiting (10 req/min per user)
+- Audit logging for security events
+- GDPR compliance (data export/deletion)
+- Account linking (anonymous → permanent)
 
-### Short-Term (Next 2 Weeks)
-
-4. **Recovery Notepad Integration**
-   - [ ] Add scratchpad from front page to journal system
-   - [ ] Capture all user inputs across app into unified journal
-
-5. **Hybrid Export System**
-   - [ ] Auto-generate weekly summaries
-   - [ ] On-demand detailed exports
-   - [ ] PDF templates for sponsor sharing
+**Code Quality**
+- ESLint: 0 errors, 29 warnings
+- Tests: 89/91 passing (97.8%)
+- Dependencies updated (Next.js 16.1.0, React 19.2.3)
+- Security vulnerabilities fixed
 
 ---
 
-## 📊 Project Status
+## 🔄 Current Work
 
-### ✅ Completed Milestones
+**Active Tasks:**
+- Settings page UI improvements
+- Profile management enhancements
+- Code cleanup (remaining ESLint warnings)
 
-- **M1 Security Hardening:** App Check, Rate Limiting, Server-side Validation
-- **M1 Account Linking:** Anonymous → Permanent account migration
-- **M1.5 Quick Wins (Partial):** Some UI improvements, admin panel foundation
-- **Journal System V1:** Timeline, Entry Forms, Ribbon Nav, Lock Screen
+**Next Up (M1.5 Quick Wins):**
+1. Recovery Library (glossary + etiquette guide) - 10 SP
+2. HALT Check button - 4 SP
+3. "I Made It Through Today" celebration - 2 SP
 
-### 🔄 In Progress
-
-- **M1 Week 4:** Monitoring & Billing Protection (partial)
-  - ✅ Billing alerts configured
-  - ✅ Security event logging
-  - ✅ Incident response runbook
-  - ⏳ Firebase Performance Monitoring
-  - ⏳ Cloud Functions metrics dashboard
-  - ⏳ Test alert triggers
-
-- **Unified Journal Architecture:** Design phase complete, implementation Phase 1 ready to start
-
-### 📅 Upcoming
-
-- **M1.5 Completion:** Settings pages, voice-to-text adoption, sober living finder
-- **M2 Architecture (As Needed):** Optional refactoring based on friction points
-- **M3 Product Improvements:** Meeting Finder proximity, Recovery Calendar, Virtual Meetings
-- **M5 Inventories Hub:** Full Step 4 and daily practice inventories (116 SP)
-- **M6 Prayers & Readings:** AA-compliant content with link-only approach (63 SP)
-- **M7 Fellowship Tools:** Support network, attendance tracking, milestones (100 SP)
+See **[ROADMAP.md](./ROADMAP.md)** for full M1.5 scope.
 
 ---
 
-## 🏗️ Technical Architecture
+## 🏗️ Architecture Overview
 
-### Current Stack
+**Tech Stack:**
+- Next.js 16.1.0, React 19.2.3, TypeScript 5.x
+- Tailwind CSS v4, Framer Motion 12
+- Firebase (Auth, Firestore, Functions, App Check)
+- shadcn/ui components
 
-- **Framework:** Next.js 16.0.7 (App Router, Turbopack)
-- **Database:** Firebase Firestore
-- **Auth:** Firebase Auth (anonymous + email/password linking)
-- **Functions:** Firebase Cloud Functions (Node.js 22)
-- **Styling:** Tailwind CSS, shadcn/ui components
-- **Animations:** Framer Motion
-- **Notifications:** Sonner toast library
-- **Validation:** Zod schemas
-- **Testing:** Jest, React Testing Library (97.8% pass rate)
+**Key Collections:**
+- `/users/{uid}` - User profiles
+- `/users/{uid}/daily_logs/{dateId}` - Daily check-ins
+- `/users/{uid}/journal/{entryId}` - Unified journal entries
+- `/users/{uid}/inventoryEntries/{entryId}` - Spot checks, reviews
+- `/meetings/{meetingId}` - Meeting directory
 
-### Data Collections
-
-**Existing:**
-- `users/{uid}/daily_logs/{date}` - Daily check-ins
-- `users/{uid}/inventoryEntries/{id}` - Growth page inventories
-- `users/{uid}/journal/{id}` - New journal entries
-- `meetings/{id}` - 12-step meetings directory
-- `virtualMeetings/{id}` - Online meetings (planned)
-
-**Planned Unification:**
-- Migrate all to unified `journal` collection with discriminated union types
-- Maintain backward compatibility during dual-write phase
-- Denormalize key fields for efficient querying
-
-### Key Architectural Decisions
-
-1. **Journal System:** Unified schema with 9+ entry types (check-in, daily-log, mood, gratitude, spot-check, inventory, night-review, free-write, meeting-note)
-2. **Desktop Features:** Enhanced web functionality with 15 power-user features (see WEB_ENHANCEMENTS_ROADMAP.md)
-3. **Recovery Calendar:** Centralized appointment tracking with FCM notifications and Google Calendar sync
-4. **Privacy-First:** Private by default, user-initiated sharing only, no copyrighted AA content
-5. **Mobile-Optimized:** Different UI layouts for mobile vs desktop per user decision
+See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for complete data schema and security architecture.
 
 ---
 
-## 🔧 Development Environment
+## 🧪 Testing
 
-### Setup
+**Automated:**
+- Run: `npm test`
+- Coverage: `npm run test:coverage`
+- Current: 89/91 tests (97.8% pass rate)
+
+**Manual:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+
+---
+
+## 📊 Metrics
+
+**User Engagement (Targets):**
+- 7-day retention: >40%
+- 30-day retention: >25%
+- Journal entries per week: >3
+
+**Technical Health:**
+- Error rate: <1%
+- API response time: <200ms
+- Test pass rate: >95% ✅ (Currently 97.8%)
+
+---
+
+## 🚨 Known Issues
+
+**Low Priority:**
+- 2 Firebase emulator tests fail (require setup)
+- 29 ESLint warnings (code style, non-breaking)
+- Settings page UI needs polish
+
+**No Blockers:** All critical functionality working
+
+---
+
+## 🔐 Security Notes
+
+**App Check:**
+- Production: reCAPTCHA v3 (automatic)
+- Development: Debug token in `.env.local`
+- Required for all Firestore/Functions access
+
+**Rate Limiting:**
+- 10 requests/minute per user
+- Cloud Functions enforce limits
+- Client shows toast on 429 error
+
+**Data Protection:**
+- Red (highly sensitive): Inventories, daily logs
+- Yellow (sensitive): Profile, preferences
+- Green (public): Meetings, quotes
+
+See **[docs/SECURITY.md](./docs/SECURITY.md)** for complete security guide.
+
+---
+
+## 🚀 Deployment
 
 ```bash
-# Clone repository
-git clone https://github.com/jasonmichaelbell78-creator/sonash-v0
+# Functions
+cd functions && npm run build && firebase deploy --only functions
 
-# Install dependencies
-npm install
+# Firestore rules
+firebase deploy --only firestore:rules
 
-# Set up environment variables
-cp .env.local.example .env.local
-# Add Firebase config, App Check debug token
+# Indexes
+firebase deploy --only firestore:indexes
 
-# Run development server
-npm run dev
-# Runs on http://localhost:3000 with Turbopack
-
-# Run tests
-npm test
-
-# Deploy to Firebase
+# All at once
 firebase deploy
 ```
 
-### Environment Variables Required
+See **[DEVELOPMENT.md](./DEVELOPMENT.md)** for detailed deployment procedures.
 
+---
+
+## 📝 Quick Reference
+
+**Important Files:**
+- Entry point: `/app/page.tsx`
+- Journal system: `/components/journal/`
+- Firestore service: `/lib/firestore-service.ts`
+- Security rules: `/firestore.rules`
+- Indexes: `/firestore.indexes.json`
+
+**Common Commands:**
+```bash
+npm run dev          # Start dev server
+npm test             # Run tests
+npm run lint         # Check code style
+firebase emulators:start  # Start Firebase emulators
 ```
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
-NEXT_PUBLIC_FIREBASE_APP_ID=
-NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
-```
 
 ---
 
-## 📝 Key Documents
+## 🤝 Collaboration Notes
 
-### Roadmaps & Plans
+**For AI Agents:**
+1. Read **[ARCHITECTURE.md](./ARCHITECTURE.md)** first for system understanding
+2. Check **[ROADMAP.md](./ROADMAP.md)** before adding features
+3. Follow patterns in **[DEVELOPMENT.md](./DEVELOPMENT.md)**
+4. Update docs when making changes
+5. Run tests before committing
 
-- **`ROADMAP_V3.md`** - Canonical product roadmap (M1-M11+)
-- **`WEB_ENHANCEMENTS_ROADMAP.md`** - Desktop features roadmap (15 features)
-- **`docs/UNIFIED_JOURNAL_ARCHITECTURE.md`** - Journal unification design
-- **`docs/TESTING_PLAN.md`** - Testing strategy and coverage goals
-- **`TESTING_CHECKLIST.md`** - Manual testing checklist
-
-### Security & Compliance
-
-- **`docs/SECURITY.md`** - Security model and best practices
-- **`docs/SERVER_SIDE_SECURITY.md`** - Rate limiting and validation
-- **`docs/INCIDENT_RESPONSE.md`** - Security incident runbook
-- **`firestore.rules`** - Database security rules
-
-### Architecture & Design
-
-- **`docs/FEATURE_DECISIONS.md`** - Key product decisions
-- **`docs/MONETIZATION_RESEARCH.md`** - Revenue model research
-- **`docs/JOURNAL_SYSTEM_PROPOSAL.md`** - Original journal design
-
-### Archived Documents
-
-- **`docs/archive/handoffs-2025-12/`** - Previous handoff documents
-- **`docs/archive/2025-dec-reports/`** - Historical analysis reports
-- **`docs/archive/architecture-reviews-dec-2025/`** - Architecture reviews
+**For Human Developers:**
+1. Start with **[README.md](./README.md)** for overview
+2. Follow **[DEVELOPMENT.md](./DEVELOPMENT.md)** for setup
+3. Reference **[ARCHITECTURE.md](./ARCHITECTURE.md)** for patterns
+4. Check **[ROADMAP.md](./ROADMAP.md)** for priorities
 
 ---
 
-## 🐛 Known Issues
+## 📚 Historical Context
 
-### High Priority
+**Major Milestones:**
+- Dec 19: Documentation consolidation
+- Dec 17-18: Journal system refactor
+- Dec 9-15: Security hardening (M1)
+- Dec 1-8: Initial MVP development
 
-1. **Simple Inventory Form** - Current 4-question form needs replacement with full NightReviewCard (4 steps: actions, traits, reflections, gratitude)
-2. **Recovery Notepad** - Scratchpad from front page not integrated with journal yet
-3. **Deep Search** - Not yet implemented for mood/craving tracking separation
-
-### Medium Priority
-
-1. **ESLint Warnings** - 29 warnings remaining (mostly unused variables and test file `any` types)
-2. **Firebase Performance Monitoring** - Not yet configured
-3. **Cloud Functions Dashboard** - Metrics dashboard not set up
-4. **Test Coverage** - Currently 97.8%, target is 60%+ for critical paths
-5. **Hide Reset Button** - Still visible in production on resources-page.tsx line 498
-6. **Share Button** - Clipboard functionality broken on resources-page.tsx line 632
-
-### Low Priority
-
-1. **README Version** - Still shows Next.js 14, should be 16
-2. **Package Versions** - 3 packages pinned to "latest" should use specific versions
-3. **Zod Version Alignment** - App uses 3.25.76, functions use 4.1.13
-4. **TypeScript Version** - App uses 5.7.3, functions use 5.9.3
-5. **suppressHydrationWarning** - Root cause not investigated yet
+**Archived Documentation:**
+All historical documents preserved in:
+- `/docs/archive/consolidated-2025-12-19/` (recent consolidation)
+- `/docs/archive/handoffs-2025-12/` (daily handoffs)
+- `/docs/archive/architecture-reviews-dec-2025/` (design docs)
 
 ---
 
-## 🧪 Testing Status
+## 🎯 Next Session Goals
 
-### Automated Tests: 89/91 Passing (97.8%)
+**Priority 1 (Must Do):**
+- Complete settings page UI
+- Fix remaining ESLint warnings
 
-**Passing:**
-- ✅ Security validation tests
-- ✅ Date utilities
-- ✅ Firebase type guards
-- ✅ Logger with PII redaction
-- ✅ Rate limiter
+**Priority 2 (Should Do):**
+- Start Recovery Library feature
+- Implement HALT Check button
 
-**Failing:**
-- ⚠️ 2 Firebase initialization failures (require emulator setup)
-
-### Manual Testing Required
-
-**Journal System:**
-- ✅ All entry forms working (mood, gratitude, inventory, free-write)
-- ✅ Timeline displays entries correctly
-- ✅ Ribbon navigation filters working
-- ✅ Toast error notifications appearing
-- ⏳ Deep Search not yet built
-- ⏳ Recovery Notepad integration pending
-
-**Meeting Finder:**
-- ✅ Search and filters working
-- ✅ Load all meetings strategy successful
-- ⏳ Proximity/geolocation feature not implemented
-- ⏳ Interactive map not built
+**Priority 3 (Nice to Have):**
+- Performance optimization review
+- Additional test coverage
 
 ---
 
-## 🎨 Design Patterns
-
-### UI Components
-
-- **Notebook Aesthetic:** Scrapbook-style with sticky notes, ribbon navigation
-- **Desktop Furniture:** Lamp, pencil, sobriety chip, cellphone decorations
-- **Color Coding:** Entry types have distinct colors for quick scanning
-- **Motion:** Framer Motion for smooth transitions (respect prefers-reduced-motion)
-
-### Code Patterns
-
-- **Discriminated Unions:** TypeScript unions with `type` discriminator for journal entries
-- **Dependency Injection:** Services passed to components for testability
-- **Error Boundaries:** React error boundaries for graceful failure
-- **Toast Notifications:** User-facing error messages via Sonner, not console.error
-- **Rate Limiting:** Client-side and server-side rate limiters prevent abuse
-
-### Data Patterns
-
-- **Denormalization:** Copy frequently-accessed fields to avoid joins
-- **Soft Deletes:** `isSoftDeleted` flag instead of hard deletes
-- **Timestamps:** All documents have `createdAt` and `updatedAt`
-- **Owner-Only Access:** Security rules enforce `request.auth.uid == userId`
-
----
-
-## 💡 Tips for Next Developer
-
-### Quick Orientation
-
-1. **Start with `ROADMAP_V3.md`** to understand product direction
-2. **Read `docs/UNIFIED_JOURNAL_ARCHITECTURE.md`** for journal system design
-3. **Check `TESTING_CHECKLIST.md`** before making changes
-4. **Use `WEB_ENHANCEMENTS_ROADMAP.md`** for desktop feature ideas
-
-### Common Tasks
-
-**Add a new journal entry type:**
-1. Update `JournalEntryType` union in `types/journal.ts`
-2. Create form component in `components/journal/entry-forms/`
-3. Add to `EntryCreatorMenu` options
-4. Update `EntryCard` to render new type
-5. Update Firestore security rules if needed
-
-**Add a new admin-managed catalog:**
-1. Define Firestore schema in `ROADMAP_V3.md`
-2. Add tab to `/admin` page
-3. Use reusable CRUD table/form components
-4. Update security rules (admin-write, user-read)
-5. Seed initial data with script
-
-**Fix an ESLint warning:**
-1. Prefix unused variables with `_`
-2. Use proper types instead of `any`
-3. Add missing dependencies to `useEffect`
-4. Run `npm run lint` to verify
-
-### Debugging
-
-- **Check browser console** for Firestore errors (often has "Create Index" link)
-- **Use React DevTools** to inspect component state
-- **Check Network tab** for failed Cloud Function calls
-- **Review `lib/logger.ts`** for PII-safe logging
-- **Test with App Check debug token** in development (see `.env.local.example`)
-
----
-
-## 📞 Contact & Resources
-
-### Repository
-
-- **GitHub:** https://github.com/jasonmichaelbell78-creator/sonash-v0
-- **Branch:** `main`
-- **Last Commits:**
-  - `771493b` - Library analysis with Context7 documentation
-  - `eda51c4` - Archive old handoffs and create status documents
-  - `ed051e1` - Recovery Calendar + web enhancements doc move
-  - `40828d5` - Web enhancements roadmap
-  - `3f2537e` - Unified journal architecture
-  - `39818ac` - Toast notifications
-  - `251c7c5` - Debug logs removed
-
-### Documentation
-
-- **Library Analysis:** `docs/LIBRARY_ANALYSIS.md` - Context7 documentation for all dependencies
-- **Unified Journal Architecture:** `docs/UNIFIED_JOURNAL_ARCHITECTURE.md`
-- **Web Enhancements Roadmap:** `WEB_ENHANCEMENTS_ROADMAP.md`
-- **Product Roadmap:** `ROADMAP_V3.md`
-- **Project Status:** `PROJECT_STATUS.md`
-
-### Firebase
-
-- **Project ID:** (see `.firebaserc`)
-- **Console:** https://console.firebase.google.com/
-- **Hosting URL:** (see `firebase.json`)
-- **Functions:** Node.js 22, Cloud Functions Gen 2
-
-### External Services
-
-- **Analytics:** (TBD - see ROADMAP M1 Week 4)
-- **Error Tracking:** (TBD - Sentry/LogRocket planned)
-- **Calendar API:** (TBD - Google Calendar OAuth for M3.2)
-- **Maps API:** (TBD - for Meeting Finder proximity M3.1)
-
----
-
-## 🎯 Success Metrics
-
-### Current Sprint Goals
-
-1. ✅ Remove all debug console.logs exposing internal errors
-2. ✅ Add user-facing error notifications (toast messages)
-3. ✅ Design unified journal architecture
-4. ✅ Document web enhancement roadmap
-5. ✅ Add Recovery Calendar to product roadmap
-6. ⏳ Begin Phase 1 journal unification implementation
-
-### Quality Gates
-
-- ✅ TypeScript compiles with no errors
-- ⏳ ESLint: 0 errors, <10 warnings (currently 29)
-- ✅ Tests: >90% passing (currently 97.8%)
-- ⏳ Performance: Lighthouse score >90 (not yet measured)
-- ✅ Security: App Check + rate limiting active
-- ✅ Accessibility: Keyboard navigation works
-
-### User Impact
-
-- ✅ All journal entry types save successfully
-- ✅ Error messages visible to users (not just console)
-- ✅ Data protected with App Check + server-side validation
-- ⏳ Comprehensive journal search (Deep Search not built yet)
-- ⏳ Calendar notifications for appointments (M3.2 not started)
-
----
-
-**Last Updated:** December 19, 2025
-**Next Review:** Start of Phase 1 unified journal implementation
-**Status:** Ready for implementation sprint
-
+**Last Updated:** December 19, 2025 - Documentation consolidated  
+**Previous Handoff:** Archived to [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](./docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)

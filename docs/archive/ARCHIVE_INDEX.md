@@ -2,6 +2,31 @@
 
 This directory contains historical documents, completed analysis reports, and deprecated files from the SoNash project.
 
+---
+
+## 🗂️ Archive Organization
+
+### December 19, 2025 - Documentation Consolidation
+
+**Location:** `/docs/archive/consolidated-2025-12-19/`
+
+**Purpose:** Major documentation consolidation - merged 15+ scattered files into 4 core documents
+
+**Archived Documents:**
+- ROADMAP_V3.md (2,141 lines) → Merged into [/ROADMAP.md](../../ROADMAP.md)
+- WEB_ENHANCEMENTS_ROADMAP.md (801 lines) → Merged into [/ROADMAP.md](../../ROADMAP.md)
+- PROJECT_STATUS.md (495 lines) → Historical snapshot
+- AI_HANDOFF.md (464 lines) → Replaced with streamlined version
+- FEATURE_DECISIONS.md (239 lines) → Merged into [/ROADMAP.md](../../ROADMAP.md)
+- JOURNAL_SYSTEM_PROPOSAL.md (625 lines) → Implementation complete
+- UNIFIED_JOURNAL_ARCHITECTURE.md (757 lines) → Merged into [/ARCHITECTURE.md](../../ARCHITECTURE.md)
+
+**Impact:** Reduced active documentation from 20+ files to 10 files (50% reduction)
+
+**Details:** See [consolidated-2025-12-19/ARCHIVE_INDEX.md](./consolidated-2025-12-19/ARCHIVE_INDEX.md)
+
+---
+
 ## Archive Date: December 18, 2025
 
 ### Most Recent Archive (handoffs-2025-12/)

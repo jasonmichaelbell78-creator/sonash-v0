@@ -1,16 +1,17 @@
 # SoNash - Sober Nashville Recovery Notebook
 
-*A digital recovery journal app for the Sober Nashville community*
+*A privacy-first digital recovery journal for the recovery community*
 
-## Roadmap
+## 📖 Documentation
 
-The canonical roadmap lives in:
-
-- `ROADMAP_V3.md`
+- **[ROADMAP.md](./ROADMAP.md)** - Product roadmap and feature planning
+- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
+- **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing checklist
 
 ## Overview
 
-SoNash is a personalized digital recovery notebook that helps individuals track their sobriety journey. The app features a photo-realistic notebook interface that displays personalized information including the user's nickname, days clean, and provides an interactive journaling experience.
+SoNash is a personalized digital recovery notebook that helps individuals track their sobriety journey with secure, real-time data synchronization. The app features a photo-realistic notebook interface, unified journal system, and privacy-first design.
 
 ## Current Features (MVP)
 
@@ -36,20 +37,12 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.0.7 (App Router with SSR)
-- **React**: 19.2.0 (Release Candidate)
-- **Styling**: Tailwind CSS v4
-- **Animations**: Framer Motion v12
-- **Fonts**: Caveat (handwriting), Handlee, Rock Salt (via next/font/google)
-- **UI Components**: shadcn/ui + Radix UI primitives
-- **Backend**:
-  - Firebase Auth (Anonymous, Email/Password, Google OAuth)
-  - Firestore (Real-time database)
-  - Cloud Functions v2 (Server-side operations)
-  - Firebase App Check (reCAPTCHA Enterprise for bot protection)
-- **Validation**: Zod schemas (client & server)
-- **Error Monitoring**: Sentry (optional)
-- **Testing**: Node.js built-in test runner + c8 coverage
+- **Frontend**: Next.js 16.1 (App Router), React 19.2.3, TypeScript 5.x
+- **Styling**: Tailwind CSS v4, Framer Motion 12, shadcn/ui
+- **Backend**: Firebase (Auth, Firestore, Cloud Functions v2, App Check)
+- **Security**: reCAPTCHA v3, App Check, Firestore Rules, Rate Limiting
+- **Testing**: Node test runner, c8 coverage (97.8% passing)
+- **Monitoring**: Sentry (optional)
 
 ## Project Structure
 
@@ -73,108 +66,47 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
     └── images/                 # Static assets
 \`\`\`
 
-## Development
+## Core Features
 
-This repository syncs automatically with [v0.app](https://v0.app) deployments.
+### ✅ Current (MVP)
+- **Book Cover**: Photo-realistic notebook with personalized sobriety counter
+- **Today Tab**: Mood tracking, craving/used logging, recovery notepad
+- **Journal System**: Unified timeline with entry types (stamps, stickers, notes)
+- **Growth Tab**: Spot checks, night reviews, gratitude lists
+- **Meetings**: Directory with search and fellowship filters
+- **Security**: App Check, rate limiting, encrypted storage, GDPR compliance
 
-### Local Development
+### 🔄 In Progress
+- Settings page UI improvements
+- Enhanced profile management
+- Recovery library (glossary + etiquette guide)
 
-\`\`\`bash
-npm install
-npm run dev
-\`\`\`
+### 📋 Planned (2026)
+- Meeting proximity detection and maps
+- Nightly inventory tools (10th step)
+- Sponsor connection and support network
+- Speaker recordings library
+- See **[ROADMAP.md](./ROADMAP.md)** for full roadmap
 
-### Continue Building
+## Project Status
 
-Continue development at: **[v0.app/chat/hQzscrZHb69](https://v0.app/chat/hQzscrZHb69)**
+**Last Updated:** December 19, 2025  
+**Current Focus:** M1 Foundation (security) + M1.5 Quick Wins
 
-## Deployment
+### Recent Completions
+- ✅ Security hardening (App Check, rate limiting, audit logging)
+- ✅ Journal system consolidation (single-save architecture)
+- ✅ Entry type separation (mood stamps, stickers, notes)
+- ✅ Firestore indexes for performance
+- ✅ Dependencies updated (Next.js 16.1.0, React 19.2.3)
+- ✅ 97.8% test pass rate (89/91 tests)
 
-Live at: **[sonash.app](https://sonash.app)**
+### Current Sprint
+- 🔄 Settings page improvements
+- 🔄 Recovery library implementation
+- 🔄 Code quality refinement
 
-## Setup & Installation
-
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Firebase CLI (`npm install -g firebase-tools`)
-- Firebase project with Firestore, Auth, and Cloud Functions enabled
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/jasonmichaelbell78-creator/sonash-v0.git
-cd sonash-v0
-```
-
-### 2. Install Dependencies
-
-```bash
-npm install
-cd functions && npm install && cd ..
-```
-
-### 3. Configure Environment Variables
-
-Create `.env.local` in the project root:
-
-```bash
-# Firebase SDK Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-# Firebase App Check (Bot Protection)
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
-
-# App Check Debug Token (Development Only - DO NOT use in production)
-NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
-
-# Error Monitoring (Optional)
-NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
-NEXT_PUBLIC_SENTRY_ENABLED=false
-```
-
-**Get these values from:**
-- Firebase Console → Project Settings → General → Your Apps
-- App Check → reCAPTCHA Enterprise
-
-### 4. Run with Firebase Emulators (Recommended for Development)
-
-```bash
-# Start Firebase emulators (Firestore, Auth, Functions)
-firebase emulators:start
-
-# In a new terminal, start Next.js dev server
-npm run dev
-```
-
-**Note:** Emulators run on `localhost:4000` (Emulator UI), `localhost:8080` (Firestore), `localhost:9099` (Auth), `localhost:5001` (Functions)
-
-### 5. Run Without Emulators (Uses Production Firebase)
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000`
-
-### 6. Deploy Cloud Functions (Production)
-
-```bash
-cd functions
-npm run build
-firebase deploy --only functions
-```
-
-### 7. Deploy Firestore Security Rules
-
-```bash
-firebase deploy --only firestore:rules
-```
+See **[AI_HANDOFF.md](./AI_HANDOFF.md)** for detailed development status.
 
 ## Data Architecture
 
@@ -225,3 +157,55 @@ Unavailable modules render as notebook stubs and can be toggled on by setting th
 - **Data access rules**: client-side Firestore paths are validated via `lib/security/firestore-validation.ts`
 
 These checks align with the roadmap's Q1 stability goals and should be kept green before merging new work.
+Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Lint code
+npm run lint
+```
+
+**Test Status:** 89/91 passing (97.8%)
+
+See **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** for manual QA checklist.
+
+---
+
+## Contributing
+
+1. Check **[ROADMAP.md](./ROADMAP.md)** for planned features
+2. Review **[ARCHITECTURE.md](./ARCHITECTURE.md)** for design patterns
+3. Follow code style in **[DEVELOPMENT.md](./DEVELOPMENT.md)**
+4. Ensure tests pass before submitting PR
+5. Update documentation for new features
+
+---
+
+## Security
+
+This app handles sensitive recovery data. See **[docs/SECURITY.md](./docs/SECURITY.md)** for:
+- Data classification (Red/Yellow/Green)
+- Security layers (TLS, App Check, Auth, Rules)
+- Privacy protections (GDPR, data export/deletion)
+- Incident response procedures
+
+**Report security issues:** jason@sonash.app (not via public GitHub Issues)
+
+---
+
+## License
+
+Proprietary - All rights reserved
+
+---
+
+## Contact
+
+- **Developer:** Jason Bell
+- **Email:** jason@sonash.app
+- **Repository:** [github.com/jasonmichaelbell78-creator/sonash-v0](https://github.com/jasonmichaelbell78-creator/sonash-v0)

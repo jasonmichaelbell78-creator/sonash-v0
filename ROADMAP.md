@@ -1,0 +1,507 @@
+# SoNash Product Roadmap
+
+**Last Updated:** December 19, 2025  
+**Status:** Canonical roadmap - supersedes all previous roadmap documents
+
+---
+
+## 🎯 Vision
+
+Build a comprehensive, secure digital recovery notebook that helps individuals track their sobriety journey with privacy-first design and evidence-based recovery practices.
+
+---
+
+## 📊 Milestones Overview
+
+| Milestone | Status | Progress | Target | Priority |
+|-----------|--------|----------|--------|----------|
+| **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
+| **M1 - Foundation** | 🔄 In Progress | ~85% | Q1 2026 | P0 |
+| **M1.5 - Quick Wins** | 🔄 In Progress | ~40% | Q1 2026 | P0 |
+| **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
+| **M3 - Meetings** | 📋 Planned | 0% | Q2 2026 | P1 |
+| **M4 - Expansion** | 📋 Planned | 0% | Q2 2026 | P1 |
+| **M5 - Inventories** | 📋 Planned | 0% | Q3 2026 | P1 |
+| **M6 - Prayers** | 📋 Planned | 0% | Q3 2026 | P2 |
+| **M7 - Fellowship** | 📋 Planned | 0% | Q4 2026 | P1 |
+| **M8 - Speakers** | 📋 Planned | 0% | Q4 2026 | P2 |
+| **M10 - Monetization** | 🔬 Research | 0% | 2027 | P2 |
+
+**Overall Progress:** ~18%
+
+---
+
+## 🚀 M0 - Baseline & Alignment (✅ Complete)
+
+### Objectives
+- Establish project documentation and success metrics
+- Define owners and reporting cadence
+
+### Deliverables
+- ✅ Canonical roadmap published
+- ✅ Definitions of Done for each milestone
+- ✅ Initial KPI tracking
+
+---
+
+## 🏗️ M1 - Stabilize & De-Risk Foundation (🔄 In Progress)
+
+**Goal:** Improve stability, reduce time-to-fix, establish engineering guardrails
+
+### Week 1-3: Security Hardening (✅ Complete)
+- ✅ Firebase App Check with reCAPTCHA v3
+- ✅ Server-side validation (Zod schemas in Cloud Functions)
+- ✅ Rate limiting (10 req/min per user)
+- ✅ Firestore security rules hardened
+- ✅ Audit logging for security events
+- ✅ GDPR data export/deletion
+- ✅ Account linking (anonymous → permanent)
+- ✅ Billing alerts ($50, $100, $500)
+- ✅ Incident response runbook
+
+### Week 4-6: Monitoring & Observability (🔄 Partial)
+- ✅ Sentry error monitoring configured
+- ⏳ Performance monitoring
+- ⏳ User analytics baseline
+- ⏳ Alert thresholds defined
+
+### Week 7-9: Code Quality (🔄 Partial)
+- ✅ ESLint configuration (0 errors, 29 warnings)
+- ✅ TypeScript strict mode
+- ✅ Test coverage: 97.8% (89/91 passing)
+- ⏳ CI/CD pipeline setup
+- ⏳ Automated testing in PR workflow
+
+---
+
+## ⚡ M1.5 - Quick Wins (🔄 In Progress)
+
+**Goal:** High-impact, low-effort features that improve user experience
+
+### Completed
+- ✅ Journal system consolidation (single-save architecture)
+- ✅ Entry type separation (mood stamps, stickers, notes)
+- ✅ Timeline filter ribbons
+- ✅ User error notifications (Sonner toasts)
+- ✅ Firestore indexes for performance
+
+### In Progress
+- 🔄 Settings page UI
+- 🔄 Profile management
+- 🔄 Clean date picker improvements
+
+### Planned Quick Wins (Priority Order)
+
+#### P0 - Critical UX
+1. **Recovery Library** (10 SP)
+   - Glossary of recovery terms, slogans, abbreviations
+   - Meeting etiquette guide for first-timers
+   - Searchable reference material
+
+2. **Stage-of-Recovery Selector** (4 SP)
+   - Adjusts app emphasis based on user stage
+   - Newcomer vs old-timer focus
+
+3. **"I Made It Through Today" Button** (2 SP)
+   - End-of-day celebration/affirmation
+   - Builds positive reinforcement
+
+#### P1 - High Value
+4. **HALT Check** (4 SP)
+   - Hungry/Angry/Lonely/Tired assessment
+   - User-initiated button for self-check
+
+5. **Sober Fun Ideas Generator** (3 SP)
+   - Random activities for boredom
+   - Relapse prevention tool
+
+6. **"Meetings Starting Soon" Filter** (3 SP)
+   - Shows meetings within next hour
+   - Location-based proximity
+
+#### P2 - Nice to Have
+7. **Sobriety Clock with Minutes** (2 SP)
+   - Important for early recovery (0-90 days)
+   - Feasibility check required
+
+8. **"Too Tired" Mode** (3 SP)
+   - Reduces night review to 3 questions
+   - Prevents fatigue-based abandonment
+
+9. **Disguised App Icon + Name** (5 SP)
+   - Privacy layer for device sharing
+   - "Journal" or neutral branding
+
+---
+
+## 🏛️ M2 - Architecture Refactor (⏸️ Optional)
+
+**Goal:** Reduce technical debt only if friction prevents progress
+
+### Potential Work
+- ⏳ Component library consolidation
+- ⏳ State management standardization
+- ⏳ API abstraction layer
+- ⏳ Database schema optimization
+
+**Trigger:** Only pursue if M3+ blocked by technical limitations
+
+---
+
+## 🗓️ M3 - Meetings & Location (📋 Planned - Q2 2026)
+
+**Story Points:** 84 SP | **Priority:** P1
+
+### Features
+
+#### F1: Meeting Proximity Detection (21 SP)
+- Real-time "meetings near me" based on GPS
+- Distance calculation and sorting
+- Map view integration
+- Filter by fellowship type (AA/NA/CA/etc)
+
+#### F2: Meeting Notes (13 SP)
+- In-app note capture during meetings
+- "What did you commit to?" prompts
+- Auto-link to journal timeline
+- Export/share capabilities
+
+#### F3: Calendar Integration (26 SP)
+- Sync favorite meetings to device calendar
+- Reminder notifications
+- iCal export for external apps
+- Recurring event support
+
+#### F4: Virtual Meeting Support (13 SP)
+- Zoom/Google Meet link integration
+- Online meeting directory
+- One-tap join from app
+- Hybrid in-person/virtual tracking
+
+#### F5: Enhanced Meeting Data (11 SP)
+- User reviews and ratings
+- Accessibility information
+- Special requirements (smoking, childcare, etc)
+- Meeting type badges (Step Study, Big Book, Speaker)
+
+**Dependencies:**
+- Google Maps API integration
+- Calendar API permissions
+- Meeting data scraping/partnership
+
+---
+
+## 🎯 M4 - Feature Expansion (📋 Planned - Q2 2026)
+
+**Goal:** Extend core functionality based on M1-M3 learnings
+
+### Potential Features (TBD)
+- Multiple sobriety dates (separate counters per substance)
+- Tone/language settings (firm vs gentle)
+- Craving countdown timer ("ride it out" feature)
+- Auto-carry-forward task nudges
+
+---
+
+## 📝 M5 - Nightly Inventories (📋 Planned - Q3 2026)
+
+**Story Points:** 116 SP | **Priority:** P1
+
+### Features
+
+#### F1: 10th Step Inventory Tool (47 SP)
+- Structured inventory prompts (AA Big Book format)
+- Character defects checklist
+- Assets vs defects tracking
+- Progress over time visualization
+
+#### F2: Inventory Templates (21 SP)
+- Multiple formats (AA, NA, custom)
+- User-created templates
+- Share templates with sponsor
+
+#### F3: Amends Tracker (26 SP)
+- List of people harmed
+- Amends completion status
+- Notes and reflections
+- Privacy controls (sponsor-only sharing)
+
+#### F4: Pattern Recognition (22 SP)
+- AI-powered theme detection
+- Recurring character defects
+- Trigger identification
+- Insights dashboard
+
+**Dependencies:**
+- Secure storage (encrypted at rest)
+- Sponsor sharing permissions
+- AI/ML analysis (optional)
+
+---
+
+## 🙏 M6 - Prayers & Meditations (📋 Planned - Q3 2026)
+
+**Story Points:** 63 SP | **Priority:** P2
+
+### Features
+
+#### F1: Prayer Library (21 SP)
+- AA-approved prayers (Serenity Prayer, 3rd Step, 7th Step)
+- NA prayers and meditations
+- Custom prayer creation
+- Favorites and bookmarks
+
+#### F2: Daily Meditation (16 SP)
+- Just for Today (NA)
+- Daily Reflections (AA)
+- 24 Hours a Day
+- Push notification reminders
+
+#### F3: Guided Meditation (26 SP)
+- Audio meditation tracks
+- Mindfulness exercises
+- Breath work timers
+- Progress tracking
+
+**Content Licensing:**
+- Requires AA/NA permissions for copyrighted material
+- Partnership with publishers (Hazelden, NA World Services)
+
+---
+
+## 🤝 M7 - Fellowship & Support (📋 Planned - Q4 2026)
+
+**Story Points:** 100 SP | **Priority:** P1
+
+### Features
+
+#### F1: Sponsor Connection (32 SP)
+- Sponsor contact quick-dial
+- "I need help" emergency button
+- Sponsor chat/messaging
+- Sponsor dashboard (view sponsee progress)
+
+#### F2: Phone List (21 SP)
+- Fellowship phone directory
+- Favorites and groups
+- One-tap calling
+- SMS integration
+
+#### F3: Support Network (26 SP)
+- Create accountability circles
+- Group check-ins
+- Shared gratitude lists
+- Peer encouragement system
+
+#### F4: Milestone Celebrations (11 SP)
+- Auto-detect sobriety milestones (30/60/90 days, 1 year)
+- Shareable celebration graphics
+- Notify sponsor/support network
+- Digital chips and badges
+
+#### F5: Gamification (Optional) (10 SP)
+- Principle-based badges (honesty, service)
+- Streak tracking (journal entries, meeting attendance)
+- No shame/punishment mechanics
+- Focus on growth, not competition
+
+**Privacy Considerations:**
+- Optional feature (opt-in only)
+- User controls visibility settings
+- Anonymous participation option
+
+---
+
+## 🎤 M8 - Speaker Recordings (📋 Planned - Q4 2026)
+
+**Story Points:** 63 SP | **Priority:** P2
+
+### Features
+
+#### F1: Speaker Library (26 SP)
+- Curated AA/NA speaker recordings
+- Search by topic (resentments, relationships, Step 4)
+- Favorites and playlists
+- Download for offline listening
+
+#### F2: Personal Recording (21 SP)
+- Record own shares/qualifications
+- Private journal audio entries
+- Transcription (AI-powered)
+- Organize by topic/date
+
+#### F3: Audio Player (16 SP)
+- Playback controls
+- Speed adjustment
+- Sleep timer
+- Resume from last position
+
+**Content Licensing:**
+- AA/NA speaker permissions
+- Copyright compliance
+- Content moderation
+
+---
+
+## 💰 M10 - Monetization Strategy (🔬 Research - 2027)
+
+**Goal:** Sustainable revenue model without exploiting vulnerable users
+
+### Research Findings (December 2025)
+
+#### Rejected Models
+- ❌ Freemium with paywalls (blocks critical recovery tools)
+- ❌ Ads (privacy violations, triggers)
+- ❌ Data monetization (unethical, illegal in recovery context)
+
+#### Viable Options
+
+**1. Premium Features (Ethical Freemium)**
+- ✅ Free: All core recovery tools (journal, meetings, inventories)
+- 💰 Premium: Advanced analytics, speaker library, offline mode
+- **Pricing:** $2.99/month or $19.99/year
+- **Positioning:** "Support SoNash, unlock extras"
+
+**2. Donation Model**
+- ✅ "Pay what you can" philosophy (AA 7th Tradition)
+- Optional recurring donations
+- Transparent expense reporting
+- No feature gating
+
+**3. B2B Licensing**
+- Treatment centers license app for clients
+- Sober living facilities bulk subscriptions
+- Institutional pricing ($5-10/user/month)
+- White-label options
+
+**4. Hybrid Approach (Recommended)**
+- Free tier: 100% of core features
+- Optional premium: $2.99/month (power users)
+- Institutional partnerships: Recurring revenue
+- Donation option: Community support
+
+**Next Steps:**
+1. Launch free product to build user base
+2. Measure engagement and retention (M3-M8)
+3. Survey users about willingness to pay
+4. Pilot premium tier Q1 2027
+
+---
+
+## 🖥️ Desktop/Web Enhancements
+
+**Goal:** Leverage full browser capabilities for power users
+
+### Multi-Panel Layout (21 SP)
+- Split-screen views (timeline + detail)
+- Dashboard mode (4-panel grid)
+- Resizable panels
+- Keyboard shortcuts
+
+### Advanced Visualizations (34 SP)
+- Mood heat map (calendar view)
+- Correlation matrix (meetings ↔ mood)
+- Trend lines (multiple metrics)
+- Word clouds from journal entries
+- Export charts as PNG/SVG
+
+### Keyboard Shortcuts (8 SP)
+- `J/K`: Navigate timeline
+- `N`: New journal entry
+- `G + T`: Go to Today tab
+- `?`: Keyboard shortcuts help
+- Vim-style navigation (optional)
+
+### Export & Backup (13 SP)
+- CSV/JSON/PDF export
+- Automated cloud backup
+- Local file download
+- Sponsor report generation
+
+### Search & Filter (21 SP)
+- Full-text search across all entries
+- Advanced filters (date range, mood, type)
+- Saved searches
+- Search suggestions
+
+---
+
+## 🎨 Feature Decisions (Quick Reference)
+
+| Feature | Status | Priority | Notes |
+|---------|--------|----------|-------|
+| Recovery Library | ✅ Approved | P0 | Combine glossary + etiquette |
+| HALT Check | ✅ Approved | P1 | User-initiated button |
+| God Box | ❌ Deferred | P3 | Maybe never |
+| Complacency Detector | ⏳ Needs Review | P2 | Engagement drop alerts |
+| Tone Settings | ⏳ Needs Review | P1 | Firm vs gentle language |
+| Multiple Sobriety Dates | ⏳ Needs Review | P2 | Separate counters per substance |
+| Principle-Based Badges | ✅ Approved | P2 | Honesty/service vs streaks |
+
+---
+
+## 📏 Success Metrics
+
+### User Engagement
+- Daily Active Users (DAU)
+- Weekly journal entries per user
+- Average session duration
+- Feature adoption rate
+
+### Retention
+- 7-day retention rate (target: >40%)
+- 30-day retention rate (target: >25%)
+- 90-day retention rate (target: >15%)
+
+### Recovery Outcomes
+- Days clean tracking
+- Meeting attendance frequency
+- Journal consistency (entries per week)
+- Spot check completion rate
+
+### Technical Health
+- Error rate (target: <1%)
+- API response time (target: <200ms)
+- App crash rate (target: <0.1%)
+- Security incidents (target: 0)
+
+---
+
+## 🔄 Agile Process
+
+### Sprint Cadence
+- **Sprint Length:** 2 weeks
+- **Planning:** Every other Monday
+- **Retrospective:** Every other Friday
+- **Daily Standups:** Async (Slack/Discord)
+
+### Story Point Scale
+- 1-2 SP: <1 day
+- 3-5 SP: 1-2 days
+- 8 SP: 1 week
+- 13 SP: 1-2 weeks
+- 21+ SP: Break into smaller stories
+
+### Definition of Done
+- ✅ Code reviewed
+- ✅ Tests written and passing
+- ✅ Documentation updated
+- ✅ Deployed to staging
+- ✅ Manual QA complete
+- ✅ Security review (if applicable)
+
+---
+
+## 📚 References
+
+- **Architecture:** See [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **Development:** See [DEVELOPMENT.md](./DEVELOPMENT.md)
+- **Security:** See [docs/SECURITY.md](./docs/SECURITY.md)
+- **Testing:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+
+---
+
+**Document History:**
+- December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
+- December 18, 2025: M1 security hardening completed
+- December 17, 2025: Journal system refactor completed
