@@ -51,11 +51,64 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
                         </div>
                     )}
 
-                    {(entry.type === 'free-write' || entry.type === 'meeting-note' || entry.type === 'spot-check') && (
+                    {(entry.type === 'free-write' || entry.type === 'meeting-note') && (
                         <>
                             {entry.data.title && <h4 className="font-bold text-xl mb-2 font-heading">{entry.data.title}</h4>}
                             {entry.data.content}
                         </>
+                    )}
+
+                    {entry.type === 'spot-check' && (
+                        <div className="space-y-3">
+                            <div>
+                                <span className="font-bold">Feelings:</span>
+                                <span className="ml-2">{entry.data.feelings?.join(', ') || 'None'}</span>
+                            </div>
+                            {entry.data.absolutes?.length > 0 && (
+                                <div>
+                                    <span className="font-bold">Was I:</span>
+                                    <span className="ml-2">{entry.data.absolutes.join(', ')}</span>
+                                </div>
+                            )}
+                            {entry.data.action && (
+                                <div>
+                                    <span className="font-bold">Next Right Action:</span>
+                                    <p className="mt-1">{entry.data.action}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {entry.type === 'night-review' && (
+                        <div className="space-y-4">
+                            {entry.data.step4_gratitude && (
+                                <div>
+                                    <span className="font-bold">Gratitude:</span>
+                                    <p className="mt-1">{entry.data.step4_gratitude}</p>
+                                </div>
+                            )}
+                            {entry.data.step4_surrender && (
+                                <div>
+                                    <span className="font-bold">Surrender:</span>
+                                    <p className="mt-1">{entry.data.step4_surrender}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {entry.type === 'check-in' && (
+                        <div className="space-y-2">
+                            {entry.data.mood && <div><span className="font-bold">Mood:</span> {entry.data.mood}</div>}
+                            <div><span className="font-bold">Cravings:</span> {entry.data.cravings ? 'Yes' : 'No'}</div>
+                            <div><span className="font-bold">Used:</span> {entry.data.used ? 'Yes' : 'No'}</div>
+                        </div>
+                    )}
+
+                    {entry.type === 'daily-log' && (
+                        <div>
+                            <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>
+                            <p>{entry.data.content}</p>
+                        </div>
                     )}
                 </div>
             </div>

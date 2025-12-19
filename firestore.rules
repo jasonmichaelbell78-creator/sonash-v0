@@ -12,25 +12,71 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // THE JOURNAL COLLECTION
-    // Path: /users/{userId}/journal/{entryId}
-    match /users/{userId}/journal/{entryId} {
-      
-      // 1. READ: Only the owner can read their own journal
+    // ==========================================
+    // USER PROFILE DOCUMENT
+    // Path: /users/{userId}
+    // ==========================================
+    match /users/{userId} {
       allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+                    && request.resource.data.uid == userId;
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == userId;
+      allow delete: if false;
+    }
 
-      // 2. CREATE: Owner can write, provided the data matches their ID
+    // ==========================================
+    // DAILY LOGS (Legacy collection)
+    // Path: /users/{userId}/daily_logs/{logId}
+    // ==========================================
+    match /users/{userId}/daily_logs/{logId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // ==========================================
+    // INVENTORY ENTRIES (Spot checks, Night reviews, Gratitude)
+    // Path: /users/{userId}/inventoryEntries/{entryId}
+    // ==========================================
+    match /users/{userId}/inventoryEntries/{entryId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // ==========================================
+    // JOURNAL (Unified journal collection)
+    // Path: /users/{userId}/journal/{entryId}
+    // ==========================================
+    match /users/{userId}/journal/{entryId} {
+      allow read: if isOwner(userId);
       allow create: if isOwner(userId) 
                     && request.resource.data.userId == userId;
-
-      // 3. UPDATE: Owner can edit (for "Strikethroughs" or Soft Deletes)
-      // We block them from changing the 'userId' or 'createdAt' fields
       allow update: if isOwner(userId)
                     && request.resource.data.userId == userId
                     && request.resource.data.createdAt == resource.data.createdAt;
-
-      // 4. DELETE: We technically allow it, but the UI will prefer "Soft Delete"
       allow delete: if isOwner(userId);
+    }
+
+    // ==========================================
+    // MEETINGS (Public read for meeting finder)
+    // Path: /meetings/{meetingId}
+    // ==========================================
+    match /meetings/{meetingId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Admin only via Firebase console
+    }
+
+    // ==========================================
+    // QUOTES (Public read for daily inspiration)
+    // Path: /quotes/{quoteId}
+    // ==========================================
+    match /quotes/{quoteId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Admin only
     }
   }
 }

@@ -15,6 +15,7 @@ import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
+import { useJournal } from "@/hooks/use-journal"
 
 interface TodayPageProps {
   nickname: string
@@ -43,6 +44,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const saveScheduledRef = useRef(false)
 
   const { user, profile } = useAuth()
+  const { addEntry } = useJournal()
   const referenceDate = useMemo(() => new Date(), [])
 
   // Real-time data sync
@@ -138,8 +140,32 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       }
       console.log('💾 Attempting to save:', saveData)
 
-      // Save to cloud
+      // Save to cloud (legacy collection)
       await FirestoreService.saveDailyLog(user.uid, saveData)
+
+      // DUAL-WRITE: Also save to unified journal collection
+      try {
+        // Check-in entry (mood, cravings, used)
+        if (dataToSave.mood || dataToSave.cravings || dataToSave.used) {
+          await addEntry('check-in', {
+            mood: dataToSave.mood,
+            cravings: dataToSave.cravings,
+            used: dataToSave.used,
+          })
+        }
+
+        // Daily-log entry (notepad content)
+        if (dataToSave.journalEntry.trim()) {
+          await addEntry('daily-log', {
+            content: dataToSave.journalEntry,
+            wordCount: dataToSave.journalEntry.split(/\s+/).filter(Boolean).length,
+          })
+        }
+      } catch (journalErr) {
+        // Log but don't fail - journal is secondary during dual-write phase
+        logger.error('Journal dual-write failed', { userId: maskIdentifier(user.uid), error: journalErr })
+      }
+
       setSaveComplete(true)
       // Hide "Saved" message after 2 seconds
       setTimeout(() => setSaveComplete(false), 2000)
@@ -149,7 +175,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     } finally {
       setIsSaving(false)
     }
-  }, [referenceDate, user])
+  }, [referenceDate, user, addEntry])
 
   // Auto-save effect: marks data as dirty and schedules a save
   // The timer only starts once per change batch, not reset on every keystroke
@@ -194,32 +220,32 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     const minutes = duration.minutes ?? 0
 
     const parts = []
-    
+
     // Build parts with graduated text sizes
     if (years > 0) {
-      parts.push({ 
-        text: years === 1 ? "1 Year" : `${years} Years`, 
-        size: "text-3xl md:text-4xl" 
+      parts.push({
+        text: years === 1 ? "1 Year" : `${years} Years`,
+        size: "text-3xl md:text-4xl"
       })
     }
     if (months > 0) {
-      parts.push({ 
-        text: months === 1 ? "1 Month" : `${months} Months`, 
-        size: "text-2xl md:text-3xl" 
+      parts.push({
+        text: months === 1 ? "1 Month" : `${months} Months`,
+        size: "text-2xl md:text-3xl"
       })
     }
     if (days > 0) {
-      parts.push({ 
-        text: days === 1 ? "1 Day" : `${days} Days`, 
-        size: "text-xl md:text-2xl" 
+      parts.push({
+        text: days === 1 ? "1 Day" : `${days} Days`,
+        size: "text-xl md:text-2xl"
       })
     }
-    
+
     // Always show minutes for ALL users
     const totalMinutes = hours * 60 + minutes
-    parts.push({ 
-      text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`, 
-      size: "text-lg md:text-xl" 
+    parts.push({
+      text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`,
+      size: "text-lg md:text-xl"
     })
 
     if (parts.length === 0) return null

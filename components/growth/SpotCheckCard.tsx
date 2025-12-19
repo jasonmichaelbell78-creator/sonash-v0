@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { useJournal } from "@/hooks/use-journal"
 import { toast } from "sonner"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { Mic, MicOff } from "lucide-react"
@@ -28,6 +29,7 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
     const [action, setAction] = useState("")
     const [isSaving, setIsSaving] = useState(false)
     const { user } = useAuth()
+    const { addEntry } = useJournal()
 
     // Speech
     const { isListening, transcript, startListening, stopListening, resetTranscript, hasSupport } = useSpeechRecognition()
@@ -66,8 +68,20 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
                 },
                 tags: [...selectedFeelings, ...absolutes]
             })
+
+            // DUAL-WRITE: Also save to unified journal collection
+            try {
+                await addEntry('spot-check', {
+                    feelings: selectedFeelings,
+                    absolutes: absolutes,
+                    action: action,
+                })
+            } catch (journalErr) {
+                console.warn('Journal dual-write failed:', journalErr)
+            }
+
             setIsOpen(false)
-            // Optional: Toast success
+            toast.success("Spot check saved.")
         } catch (error) {
             console.error("Failed to save spot check", error)
         } finally {

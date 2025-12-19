@@ -87,13 +87,52 @@ export function EntryCard({ entry, index, onClick }: EntryCardProps) {
                     </div>
                 )}
 
-                {(entry.type === 'free-write' || entry.type === 'meeting-note' || entry.type === 'spot-check') && (
+                {(entry.type === 'free-write' || entry.type === 'meeting-note') && (
                     <>
                         <h3 className="font-heading text-lg mb-2 text-[var(--journal-text)]">{entry.data.title}</h3>
                         <p className="leading-relaxed whitespace-pre-wrap font-handlee text-[var(--journal-text)] line-clamp-4">
                             {entry.data.content}
                         </p>
                     </>
+                )}
+
+                {entry.type === 'spot-check' && (
+                    <div className="w-full">
+                        <h3 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Spot Check</h3>
+                        <div className="text-sm font-handlee text-[var(--journal-text)]">
+                            {entry.data.feelings?.slice(0, 3).join(', ')}
+                        </div>
+                        {entry.data.action && (
+                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">{entry.data.action}</p>
+                        )}
+                    </div>
+                )}
+
+                {entry.type === 'night-review' && (
+                    <div className="w-full text-center py-2">
+                        <h3 className="font-heading text-lg text-[var(--journal-text)]">Night Review</h3>
+                        <div className="text-xs text-slate-500 font-sans mt-1">Click to review</div>
+                    </div>
+                )}
+
+                {entry.type === 'check-in' && (
+                    <div className="w-full">
+                        <h3 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Daily Check-In</h3>
+                        <div className="flex gap-2 text-sm">
+                            {entry.data.mood && <span>Mood: {entry.data.mood}</span>}
+                            {entry.data.cravings && <span className="text-amber-600">Cravings</span>}
+                            {entry.data.used && <span className="text-red-600">Used</span>}
+                        </div>
+                    </div>
+                )}
+
+                {entry.type === 'daily-log' && (
+                    <div className="w-full">
+                        <h3 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Recovery Notes</h3>
+                        <p className="leading-relaxed whitespace-pre-wrap font-handlee text-[var(--journal-text)] line-clamp-4">
+                            {entry.data.content}
+                        </p>
+                    </div>
                 )}
 
                 {entry.type === 'inventory' && (

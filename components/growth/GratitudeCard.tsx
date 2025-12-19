@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { useJournal } from "@/hooks/use-journal"
+import { toast } from "sonner"
 
 type GratitudeCardProps = HTMLMotionProps<"button">
 
@@ -31,6 +33,7 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
     const [showWhy, setShowWhy] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const { user } = useAuth()
+    const { addEntry } = useJournal()
 
     const handleAddItem = () => {
         if (!currentText.trim()) return
@@ -77,6 +80,17 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
                 },
                 tags: ['gratitude', ...items.map(i => i.text)] // Simplified tags
             })
+
+            // DUAL-WRITE: Also save to unified journal collection
+            try {
+                await addEntry('gratitude', {
+                    items: items.map(i => i.text + (i.why ? ` (${i.why})` : ''))
+                })
+            } catch (journalErr) {
+                console.warn('Journal dual-write failed:', journalErr)
+            }
+
+            toast.success("Gratitude list saved.")
             setIsOpen(false)
         } catch (error) {
             console.error("Failed to save gratitude list", error)
