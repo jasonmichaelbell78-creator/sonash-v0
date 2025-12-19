@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
     collection,
     query,
-    where,
     orderBy,
     onSnapshot,
     addDoc,
@@ -38,6 +37,68 @@ export const getRelativeDateLabel = (dateString: string) => {
     });
 };
 
+// Generate searchable text from entry data for full-text search
+export function generateSearchableText(type: JournalEntryType, data: any): string {
+    const parts: string[] = [];
+
+    switch (type) {
+        case 'daily-log':
+            parts.push(data.content || '');
+            break;
+        case 'gratitude':
+            parts.push(...(data.items || []));
+            break;
+        case 'spot-check':
+            parts.push(data.action || '');
+            parts.push(...(data.feelings || []));
+            parts.push(...(data.absolutes || []));
+            break;
+        case 'night-review':
+            parts.push(data.step4_gratitude || '');
+            parts.push(data.step4_surrender || '');
+            if (data.step3_reflections) {
+                Object.values(data.step3_reflections).forEach((v: any) => parts.push(String(v || '')));
+            }
+            break;
+        case 'free-write':
+        case 'meeting-note':
+            parts.push(data.title || '', data.content || '');
+            break;
+        case 'mood':
+            parts.push(data.note || '');
+            break;
+        case 'inventory':
+            parts.push(data.resentments || '', data.dishonesty || '', data.apologies || '', data.successes || '');
+            break;
+    }
+
+    return parts.filter(Boolean).join(' ').toLowerCase().trim();
+}
+
+// Generate auto-tags from entry type and data
+export function generateTags(type: JournalEntryType, data: any): string[] {
+    const tags: string[] = [type];
+
+    // Mood-based tags
+    if (data.mood) tags.push(`mood-${data.mood}`);
+
+    // Status tags
+    if (data.cravings) tags.push('cravings');
+    if (data.used) tags.push('relapse');
+
+    // Feeling tags (from spot-check)
+    if (data.feelings && Array.isArray(data.feelings)) {
+        tags.push(...data.feelings.map((f: string) => f.toLowerCase()));
+    }
+
+    // Absolute tags (from spot-check)
+    if (data.absolutes && Array.isArray(data.absolutes)) {
+        tags.push(...data.absolutes.map((a: string) => a.toLowerCase()));
+    }
+
+    return [...new Set(tags)]; // Deduplicate
+}
+
 export function useJournal() {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [loading, setLoading] = useState(true);
@@ -56,10 +117,11 @@ export function useJournal() {
                 return;
             }
 
-            // QUERY: Get all entries for this user, ordered by newest first
+            // QUERY: Get entries for this user, ordered by newest first
+            // Note: Using simple query without where clause to avoid composite index requirement
+            // Client-side will filter out soft-deleted entries
             const q = query(
                 collection(db, `users/${user.uid}/journal`),
-                where('isSoftDeleted', '==', false), // Hide "crumpled" pages
                 orderBy('createdAt', 'desc')
             );
 
@@ -69,6 +131,9 @@ export function useJournal() {
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
+                    // Filter out soft-deleted entries client-side
+                    if (data.isSoftDeleted) return;
+
                     fetchedEntries.push({
                         id: doc.id,
                         ...data,
@@ -102,8 +167,9 @@ export function useJournal() {
         return () => unsubscribeAuth();
     }, []);
 
-    // ACTION: Tuck Away (Save) a new entry
-    const addEntry = async (
+    // ACTION: Tuck Away (Save) a new entry with metadata
+    // Memoized to prevent infinite re-renders when used in component useCallback deps
+    const addEntry = useCallback(async (
         type: JournalEntryType,
         data: any,
         isPrivate: boolean = true
@@ -114,6 +180,18 @@ export function useJournal() {
         const today = new Date();
         const dateLabel = today.toLocaleDateString('en-CA'); // "YYYY-MM-DD" local
 
+        // Generate searchable text
+        const searchableText = generateSearchableText(type, data);
+
+        // Generate auto-tags
+        const tags = generateTags(type, data);
+
+        // Denormalized fields for efficient querying
+        const denormalized: Record<string, any> = {};
+        if ('cravings' in data) denormalized.hasCravings = data.cravings;
+        if ('used' in data) denormalized.hasUsed = data.used;
+        if ('mood' in data) denormalized.mood = data.mood;
+
         await addDoc(collection(db, `users/${user.uid}/journal`), {
             userId: user.uid,
             type,
@@ -121,13 +199,17 @@ export function useJournal() {
             dateLabel,
             isPrivate,
             isSoftDeleted: false,
+            searchableText,
+            tags,
+            ...denormalized,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
         });
-    };
+    }, []);
 
     // ACTION: Crumple Page (Soft Delete)
-    const crumplePage = async (entryId: string) => {
+    // Memoized to prevent infinite re-renders
+    const crumplePage = useCallback(async (entryId: string) => {
         const user = auth.currentUser;
         if (!user) return;
 
@@ -136,7 +218,7 @@ export function useJournal() {
             isSoftDeleted: true,
             updatedAt: serverTimestamp()
         });
-    };
+    }, []);
 
     return {
         entries,        // Raw list

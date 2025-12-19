@@ -1,0 +1,29 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "journal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "journal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isSoftDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

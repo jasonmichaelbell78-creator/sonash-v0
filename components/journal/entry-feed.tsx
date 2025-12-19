@@ -47,10 +47,35 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                     return resentments || dishonesty || apologies || successes
                 }
 
-                if (entry.type === 'free-write' || entry.type === 'meeting-note' || entry.type === 'spot-check') {
+                if (entry.type === 'free-write' || entry.type === 'meeting-note') {
                     const titleMatch = entry.data.title.toLowerCase().includes(query)
                     const contentMatch = entry.data.content.toLowerCase().includes(query)
                     return titleMatch || contentMatch
+                }
+
+                if (entry.type === 'spot-check') {
+                    const feelingsMatch = entry.data.feelings?.some(f => f.toLowerCase().includes(query)) || false
+                    const actionMatch = entry.data.action?.toLowerCase().includes(query) || false
+                    return feelingsMatch || actionMatch
+                }
+
+                if (entry.type === 'night-review') {
+                    const gratMatch = entry.data.step4_gratitude?.toLowerCase().includes(query) || false
+                    const surrMatch = entry.data.step4_surrender?.toLowerCase().includes(query) || false
+                    return gratMatch || surrMatch
+                }
+
+                if (entry.type === 'check-in') {
+                    return entry.data.mood?.toLowerCase().includes(query) || false
+                }
+
+                if (entry.type === 'daily-log') {
+                    return entry.data.content?.toLowerCase().includes(query) || false
+                }
+
+                // Fall through for searchableText if available
+                if ('searchableText' in entry && entry.searchableText) {
+                    return entry.searchableText.includes(query)
                 }
 
                 return false
@@ -160,11 +185,40 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                                 </div>
                             )}
 
-                            {(selectedEntry.type === 'free-write' || selectedEntry.type === 'meeting-note' || selectedEntry.type === 'spot-check') && (
+                            {(selectedEntry.type === 'free-write' || selectedEntry.type === 'meeting-note') && (
                                 <>
                                     {selectedEntry.data.title && <h4 className="font-bold text-xl mb-2 font-heading">{selectedEntry.data.title}</h4>}
                                     {selectedEntry.data.content}
                                 </>
+                            )}
+
+                            {selectedEntry.type === 'spot-check' && (
+                                <div className="space-y-2">
+                                    <div><span className="font-bold">Feelings:</span> {selectedEntry.data.feelings?.join(', ')}</div>
+                                    {selectedEntry.data.action && <div><span className="font-bold">Action:</span> {selectedEntry.data.action}</div>}
+                                </div>
+                            )}
+
+                            {selectedEntry.type === 'night-review' && (
+                                <div className="space-y-2">
+                                    {selectedEntry.data.step4_gratitude && <div><span className="font-bold">Gratitude:</span> {selectedEntry.data.step4_gratitude}</div>}
+                                    {selectedEntry.data.step4_surrender && <div><span className="font-bold">Surrender:</span> {selectedEntry.data.step4_surrender}</div>}
+                                </div>
+                            )}
+
+                            {selectedEntry.type === 'check-in' && (
+                                <div className="space-y-2">
+                                    {selectedEntry.data.mood && <div><span className="font-bold">Mood:</span> {selectedEntry.data.mood}</div>}
+                                    <div><span className="font-bold">Cravings:</span> {selectedEntry.data.cravings ? 'Yes' : 'No'}</div>
+                                    <div><span className="font-bold">Used:</span> {selectedEntry.data.used ? 'Yes' : 'No'}</div>
+                                </div>
+                            )}
+
+                            {selectedEntry.type === 'daily-log' && (
+                                <div>
+                                    <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>
+                                    {selectedEntry.data.content}
+                                </div>
                             )}
                         </div>
                     </div>
