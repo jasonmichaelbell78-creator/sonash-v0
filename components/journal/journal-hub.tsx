@@ -15,6 +15,7 @@ import { MoodForm } from "./entry-forms/mood-form"
 import { GratitudeForm } from "./entry-forms/gratitude-form"
 import { InventoryForm } from "./entry-forms/inventory-form"
 import { FreeWriteForm } from "./entry-forms/free-write-form"
+import { DailyLogForm } from "./entry-forms/daily-log-form"
 import { JournalEntryType } from "@/types/journal"
 import { toast } from "sonner"
 
@@ -103,6 +104,13 @@ export default function JournalHub() {
 
             {activeEntryType === 'inventory' && (
                 <InventoryForm
+                    onClose={() => setActiveEntryType(null)}
+                    onSuccess={() => setActiveEntryType(null)}
+                />
+            )}
+
+            {activeEntryType === 'daily-log' && (
+                <DailyLogForm
                     onClose={() => setActiveEntryType(null)}
                     onSuccess={() => setActiveEntryType(null)}
                 />

@@ -146,6 +146,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
         if (!user) return
         setIsSaving(true)
         try {
+            // Save to inventory entries (existing)
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'night-review',
                 data: {
@@ -157,6 +158,19 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                     timestamp: new Date()
                 }
             })
+
+            // Also save to journal collection for timeline display
+            await FirestoreService.saveNotebookJournalEntry(user.uid, {
+                type: 'night-review',
+                data: {
+                    actions,
+                    traits,
+                    reflections: reflectionAnswers,
+                    gratitude,
+                    surrender
+                }
+            })
+
             toast.success("Night Review saved.")
             setOpen(false)
             // Reset form? Optional.

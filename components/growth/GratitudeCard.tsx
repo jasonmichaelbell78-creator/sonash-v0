@@ -70,6 +70,7 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
 
         setIsSaving(true)
         try {
+            // Save to inventory entries (existing)
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'gratitude',
                 data: {
@@ -77,6 +78,16 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
                 },
                 tags: ['gratitude', ...items.map(i => i.text)] // Simplified tags
             })
+
+            // Also save to journal collection for timeline display
+            await FirestoreService.saveNotebookJournalEntry(user.uid, {
+                type: 'gratitude',
+                data: {
+                    items: items.map(i => i.text),
+                    itemsWithWhy: items
+                }
+            })
+
             setIsOpen(false)
         } catch (error) {
             console.error("Failed to save gratitude list", error)

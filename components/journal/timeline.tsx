@@ -3,7 +3,7 @@
 import * as React from "react"
 import { EntryCard } from "./entry-card"
 import { JournalEntry, JournalEntryType } from "@/types/journal"
-import { format } from "date-fns"
+import { startOfDay, subDays } from "date-fns"
 import { useJournal, getRelativeDateLabel } from "@/hooks/use-journal"
 import { Loader2 } from "lucide-react"
 import { EntryDetailDialog } from "./entry-detail-dialog"
@@ -19,16 +19,22 @@ export function Timeline({ filter }: { filter?: string | null }) {
     const filterMapping: Record<string, JournalEntryType[]> = {
         'crisis': ['spot-check'],
         'gratitude': ['gratitude'],
-        'daily': ['mood'],
+        'daily': ['mood', 'daily-log'],
         'notes': ['free-write', 'meeting-note'],
-        'inventory': ['inventory']
+        'inventory': ['inventory', 'night-review']
     }
 
     const filteredEntries = React.useMemo(() => {
-        if (!filter) return entries
+        const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
+        const recentEntries = entries.filter((entry) => {
+            const date = entry.createdAt ? startOfDay(new Date(entry.createdAt)) : startOfDay(new Date(entry.dateLabel))
+            return date >= sevenDaysAgo
+        })
+
+        if (!filter) return recentEntries
         const targetTypes = filterMapping[filter]
-        if (!targetTypes) return entries
-        return entries.filter(e => targetTypes.includes(e.type))
+        if (!targetTypes) return recentEntries
+        return recentEntries.filter(e => targetTypes.includes(e.type))
     }, [entries, filter])
 
     // Grouping Logic (Re-implemented here to support dynamic filtering)
@@ -83,14 +89,16 @@ export function Timeline({ filter }: { filter?: string | null }) {
                         </div>
 
                         <div className="pl-4 border-l-2 border-[var(--journal-line)]/50 ml-4 space-y-4">
-                            {entries.map((entry, idx) => (
-                                <EntryCard
-                                    key={entry.id}
-                                    entry={entry}
-                                    index={idx}
-                                    onClick={() => setSelectedEntry(entry)}
-                                />
-                            ))}
+                            {entries
+                                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                                .map((entry, idx) => (
+                                    <EntryCard
+                                        key={entry.id}
+                                        entry={entry}
+                                        index={idx}
+                                        onClick={() => setSelectedEntry(entry)}
+                                    />
+                                ))}
                         </div>
                     </div>
                 )

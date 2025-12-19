@@ -57,6 +57,7 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
 
         setIsSaving(true)
         try {
+            // Save to inventory entries (existing)
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: "spot-check",
                 data: {
@@ -66,6 +67,17 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
                 },
                 tags: [...selectedFeelings, ...absolutes]
             })
+
+            // Also save to journal collection for timeline display
+            await FirestoreService.saveNotebookJournalEntry(user.uid, {
+                type: 'spot-check',
+                data: {
+                    feelings: selectedFeelings,
+                    absolutes: absolutes,
+                    action: action
+                }
+            })
+
             setIsOpen(false)
             // Optional: Toast success
         } catch (error) {

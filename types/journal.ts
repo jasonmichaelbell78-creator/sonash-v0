@@ -3,8 +3,10 @@ export type JournalEntryType =
     | 'gratitude'
     | 'inventory'
     | 'spot-check'
+    | 'night-review'
     | 'free-write'
-    | 'meeting-note';
+    | 'meeting-note'
+    | 'daily-log';
 
 // Base interface for ALL entries
 interface BaseEntry {
@@ -15,6 +17,17 @@ interface BaseEntry {
     dateLabel: string; // "2024-12-17" (For easy grouping by day)
     isPrivate: boolean; // The "Lock" toggle
     isSoftDeleted: boolean; // For "Crumpled Page" recovery
+}
+
+// 0. Daily Check-in (mirrors notebook Today page)
+export interface DailyLogEntry extends BaseEntry {
+    type: 'daily-log';
+    data: {
+        cravings?: boolean | null;
+        used?: boolean | null;
+        mood?: string | null;
+        note?: string;
+    };
 }
 
 // 1. The Mood Stamp (The square card)
@@ -46,9 +59,31 @@ export interface InventoryEntry extends BaseEntry {
     };
 }
 
-// 4. The "Catch-All" (Generic Note)
+// 4. Spot Check Entry
+export interface SpotCheckEntry extends BaseEntry {
+    type: 'spot-check';
+    data: {
+        feelings: string[];
+        absolutes: string[];
+        action: string;
+    };
+}
+
+// 5. Night Review Entry
+export interface NightReviewEntry extends BaseEntry {
+    type: 'night-review';
+    data: {
+        actions?: Record<string, boolean>;
+        traits?: Record<string, 'positive' | 'negative' | null>;
+        reflections?: Record<string, string>;
+        gratitude?: string;
+        surrender?: string;
+    };
+}
+
+// 6. The "Catch-All" (Generic Note)
 export interface NoteEntry extends BaseEntry {
-    type: 'free-write' | 'meeting-note' | 'spot-check';
+    type: 'free-write' | 'meeting-note';
     data: {
         title: string;
         content: string;
@@ -57,4 +92,4 @@ export interface NoteEntry extends BaseEntry {
 }
 
 // The Union Type (This is the magic part)
-export type JournalEntry = MoodEntry | GratitudeEntry | InventoryEntry | NoteEntry;
+export type JournalEntry = MoodEntry | GratitudeEntry | InventoryEntry | SpotCheckEntry | NightReviewEntry | NoteEntry | DailyLogEntry;

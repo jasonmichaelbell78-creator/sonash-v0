@@ -15,8 +15,8 @@ export interface DailyLog {
   date: string // Human-readable date for display
   content: string // Journal entry text
   mood: string | null // Mood identifier (e.g., "great", "struggling")
-  cravings: boolean // Whether user experienced cravings
-  used: boolean // Whether user used substances
+  cravings: boolean | null // Whether user experienced cravings
+  used: boolean | null // Whether user used substances
   updatedAt?: Timestamp // Last update timestamp from Firestore
 }
 

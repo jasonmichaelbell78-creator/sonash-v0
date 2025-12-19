@@ -57,6 +57,17 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
                             {entry.data.content}
                         </>
                     )}
+
+                    {entry.type === 'daily-log' && (
+                        <div className="space-y-3">
+                            <div className="flex flex-wrap gap-2 text-xs uppercase tracking-widest text-slate-500 font-bold">
+                                <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">Mood: {entry.data.mood || 'n/a'}</span>
+                                <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">Cravings: {entry.data.cravings === null ? 'n/a' : entry.data.cravings ? 'yes' : 'no'}</span>
+                                <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">Used: {entry.data.used === null ? 'n/a' : entry.data.used ? 'yes' : 'no'}</span>
+                            </div>
+                            {entry.data.note && <p className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">{entry.data.note}</p>}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -2,15 +2,22 @@
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Smile, Heart, CheckSquare, PenTool } from "lucide-react"
+import { X, Smile, Heart, CheckSquare, PenTool, SunMedium } from "lucide-react"
 
 interface EntryCreatorMenuProps {
     isOpen: boolean
     onClose: () => void
-    onSelectType: (type: 'mood' | 'gratitude' | 'inventory' | 'free-write') => void
+    onSelectType: (type: 'mood' | 'gratitude' | 'inventory' | 'free-write' | 'daily-log') => void
 }
 
 const menuItems = [
+    {
+        id: 'daily-log',
+        label: 'Daily Check-in',
+        icon: SunMedium,
+        color: 'var(--journal-ribbon-red)',
+        description: 'Mood, cravings/used, and a quick note.'
+    },
     {
         id: 'mood',
         label: 'Mood Check-in',

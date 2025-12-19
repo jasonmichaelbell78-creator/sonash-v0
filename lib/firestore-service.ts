@@ -95,13 +95,24 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         // CRITICAL: Always use YYYY-MM-DD format for date (document ID format)
         const todayId = getTodayDateId() // e.g., "2025-12-13"
 
-        const payload = {
+        const payload: Record<string, any> = {
           userId,
           date: todayId, // Use document ID format, not display format
           content: data.content || "",
           mood: data.mood || null,
-          cravings: data.cravings ?? false,
-          used: data.used ?? false,
+          cravings: data.cravings,
+          used: data.used,
+        }
+
+        // The Cloud Function may reject nulls; omit fields when neutral
+        if (payload.cravings === null || payload.cravings === undefined) {
+          delete payload.cravings
+        }
+        if (payload.used === null || payload.used === undefined) {
+          delete payload.used
+        }
+        if (payload.mood === null || payload.mood === undefined) {
+          delete payload.mood
         }
 
         deps.logger.info("Calling Cloud Function", {
@@ -307,6 +318,49 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         return newDocRef.id
       } catch (error) {
         deps.logger.error("Failed to save journal entry", { userId: maskIdentifier(userId), error })
+        throw error
+      }
+    },
+
+    // Save a journal entry from notebook inputs (mood, cravings, used, notes, etc.)
+    async saveNotebookJournalEntry(userId: string, entry: {
+      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude';
+      data: Record<string, any>;
+      isPrivate?: boolean;
+    }) {
+      ensureValidUser(userId)
+      deps.assertUserScope({ userId })
+
+      try {
+        const { addDoc } = await import("firebase/firestore")
+        const collectionPath = `users/${userId}/journal`
+        deps.validateUserDocumentPath(userId, collectionPath)
+
+        const entriesRef = deps.collection(deps.db, collectionPath)
+        const today = getTodayDateId()
+
+        const payload = {
+          userId,
+          type: entry.type,
+          dateLabel: today,
+          isPrivate: entry.isPrivate ?? true,
+          isSoftDeleted: false,
+          data: entry.data,
+          createdAt: deps.serverTimestamp(),
+          updatedAt: deps.serverTimestamp(),
+        }
+
+        const docRef = await addDoc(entriesRef, payload)
+        deps.logger.info("Notebook journal entry saved", { 
+          userId: maskIdentifier(userId), 
+          type: entry.type 
+        })
+        return docRef.id
+      } catch (error) {
+        deps.logger.error("Failed to save notebook journal entry", { 
+          userId: maskIdentifier(userId), 
+          error 
+        })
         throw error
       }
     }

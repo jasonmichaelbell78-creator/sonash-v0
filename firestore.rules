@@ -32,5 +32,24 @@ service cloud.firestore {
       // 4. DELETE: We technically allow it, but the UI will prefer "Soft Delete"
       allow delete: if isOwner(userId);
     }
+
+    // INVENTORY ENTRIES COLLECTION
+    // Path: /users/{userId}/inventoryEntries/{entryId}
+    match /users/{userId}/inventoryEntries/{entryId} {
+      
+      // 1. READ: Only the owner can read their own inventory entries
+      allow read: if isOwner(userId);
+
+      // 2. CREATE: Owner can write, provided the data matches their ID
+      allow create: if isOwner(userId) 
+                    && request.resource.data.userId == userId;
+
+      // 3. UPDATE: Owner can edit their entries
+      allow update: if isOwner(userId)
+                    && request.resource.data.userId == userId;
+
+      // 4. DELETE: Owner can delete
+      allow delete: if isOwner(userId);
+    }
   }
 }

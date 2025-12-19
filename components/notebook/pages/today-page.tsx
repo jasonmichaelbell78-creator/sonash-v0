@@ -15,6 +15,8 @@ import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
+import { db } from "@/lib/firebase"
+import { addDoc, collection, serverTimestamp } from "firebase/firestore"
 
 interface TodayPageProps {
   nickname: string
@@ -23,11 +25,12 @@ interface TodayPageProps {
 
 export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
-  const [cravings, setCravings] = useState(false)
-  const [used, setUsed] = useState(false)
+  const [cravings, setCravings] = useState<boolean | null>(null)
+  const [used, setUsed] = useState<boolean | null>(null)
   const [journalEntry, setJournalEntry] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [saveComplete, setSaveComplete] = useState(false)
+  const [hasTouched, setHasTouched] = useState(false)
   const [weekStats, setWeekStats] = useState({ daysLogged: 0, streak: 0 })
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
@@ -36,14 +39,82 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const pendingSaveRef = useRef<{
     journalEntry: string
     mood: string | null
-    cravings: boolean
-    used: boolean
+    cravings: boolean | null
+    used: boolean | null
   } | null>(null)
   // Track if a save is already scheduled
   const saveScheduledRef = useRef(false)
+  // Track last journal content to detect meaningful changes
+  const lastJournalContentRef = useRef<string>("")
+  // Prevent concurrent journal saves
+  const journalSaveInProgressRef = useRef(false)
 
   const { user, profile } = useAuth()
   const referenceDate = useMemo(() => new Date(), [])
+
+  const createJournalDailyLog = useCallback(async (data: { journalEntry: string; mood: string | null; cravings: boolean | null; used: boolean | null }) => {
+    if (!user) return
+
+    // Create content signature to check for meaningful changes
+    const currentContent = JSON.stringify({
+      mood: data.mood,
+      cravings: data.cravings,
+      used: data.used,
+      note: data.journalEntry
+    })
+
+    // Only create journal entry if content has meaningfully changed AND we're not already saving
+    if (currentContent === lastJournalContentRef.current || journalSaveInProgressRef.current) {
+      return
+    }
+
+    journalSaveInProgressRef.current = true
+
+    try {
+      // Save mood as separate stamp entry
+      if (data.mood) {
+        await FirestoreService.saveNotebookJournalEntry(user.uid, {
+          type: 'mood',
+          data: {
+            mood: data.mood,
+            intensity: 5,
+          },
+        })
+      }
+
+      // Save cravings/used as separate check-in sticker
+      if (data.cravings !== null || data.used !== null) {
+        await FirestoreService.saveNotebookJournalEntry(user.uid, {
+          type: 'daily-log',
+          data: {
+            cravings: data.cravings ?? null,
+            used: data.used ?? null,
+          },
+        })
+      }
+
+      // Save notes as separate sticky note entry
+      if (data.journalEntry && data.journalEntry.trim()) {
+        await FirestoreService.saveNotebookJournalEntry(user.uid, {
+          type: 'free-write',
+          data: {
+            title: 'Recovery Notepad',
+            content: data.journalEntry,
+          },
+        })
+      }
+
+      // Update last saved content only after successful save
+      lastJournalContentRef.current = currentContent
+    } catch (error) {
+      logger.error("Failed to create journal entries", {
+        userId: maskIdentifier(user.uid),
+        error,
+      })
+    } finally {
+      journalSaveInProgressRef.current = false
+    }
+  }, [user])
 
   // Real-time data sync
   useEffect(() => {
@@ -73,9 +144,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
               if (docSnap.exists()) {
                 const data = docSnap.data()
-                if (data.mood) setMood(data.mood)
-                setCravings(data.cravings || false)
-                setUsed(data.used || false)
+                // Do not pre-fill mood/cravings/used; keep neutral by default
 
                 // Only update text if not currently editing (collision avoidance)
                 if (data.content && !isEditingRef.current) {
@@ -138,8 +207,9 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       }
       console.log('💾 Attempting to save:', saveData)
 
-      // Save to cloud
+      // Save to cloud (daily_logs collection - for Today tab persistence)
       await FirestoreService.saveDailyLog(user.uid, saveData)
+      
       setSaveComplete(true)
       // Hide "Saved" message after 2 seconds
       setTimeout(() => setSaveComplete(false), 2000)
@@ -149,12 +219,12 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     } finally {
       setIsSaving(false)
     }
-  }, [referenceDate, user])
+  }, [user])
 
   // Auto-save effect: marks data as dirty and schedules a save
   // The timer only starts once per change batch, not reset on every keystroke
   useEffect(() => {
-    if (!user) return
+    if (!user || !hasTouched) return
 
     // Update the pending save data
     pendingSaveRef.current = { journalEntry, mood, cravings, used }
@@ -172,7 +242,45 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       clearTimeout(timeoutId)
       saveScheduledRef.current = false
     }
-  }, [journalEntry, mood, cravings, used, user, performSave])
+  }, [journalEntry, mood, cravings, used, user, performSave, hasTouched])
+
+  // Separate effect to save to journal when mood, cravings, or used changes
+  // This runs independently of the auto-save for notes
+  useEffect(() => {
+    if (!user || !hasTouched) return
+    if (!mood && cravings === null && used === null) return // Nothing selected yet
+
+    // Debounce journal saves separately to avoid duplicates during rapid changes
+    const journalTimeoutId = setTimeout(() => {
+      createJournalDailyLog({
+        journalEntry,
+        mood,
+        cravings,
+        used
+      })
+    }, 2000) // Longer delay for journal saves
+
+    return () => clearTimeout(journalTimeoutId)
+  }, [mood, cravings, used, user, hasTouched, journalEntry, createJournalDailyLog])
+
+  // Reset toggles to neutral when tab/page loses visibility or on unmount
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        setMood(null)
+        setCravings(null)
+        setUsed(null)
+        setHasTouched(false)
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibility)
+
+    return () => {
+      handleVisibility()
+      document.removeEventListener("visibilitychange", handleVisibility)
+    }
+  }, [])
 
   const dateString = formatDateForDisplay(referenceDate)
 
@@ -344,7 +452,10 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               {moods.map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => setMood(m.id)}
+                  onClick={() => {
+                    setMood(m.id)
+                    setHasTouched(true)
+                  }}
                   aria-label={`Set mood to ${m.label}`}
                   aria-pressed={mood === m.id}
                   className={`flex flex-col items-center p-2 rounded-lg transition-all ${mood === m.id
@@ -360,46 +471,71 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
             <MoodSparkline />
 
-            {/* Toggle questions */}
-            <div className="space-y-3 pl-1">
-              <div className="flex items-center justify-between">
-                <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
-                <div className="flex items-center gap-2">
-                  <span className={`font-body text-sm ${!cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
-                  <button
-                    onClick={() => setCravings(!cravings)}
-                    aria-label="Toggle cravings"
-                    className={`w-12 h-6 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-amber-300/50 ${cravings ? "bg-amber-400" : "bg-gray-300"
+            {/* Toggle questions - Only show after mood is selected */}
+            {mood && (
+              <div className="space-y-3 pl-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => { setCravings(false); setHasTouched(true) }}
+                      aria-label="No cravings"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === false 
+                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm" 
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
                       }`}
-                  >
-                    <div
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${cravings ? "translate-x-6" : "translate-x-0"
-                        }`}
-                    />
-                  </button>
-                  <span className={`font-body text-sm ${cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>Yes</span>
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={() => { setCravings(true); setHasTouched(true) }}
+                      aria-label="Yes cravings"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === true 
+                        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-sm" 
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      Yes
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-between">
-                <span className="font-heading text-lg text-amber-900/80">Used?</span>
-                <div className="flex items-center gap-2">
-                  <span className={`font-body text-sm ${!used ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
-                  <button
-                    onClick={() => setUsed(!used)}
-                    aria-label="Toggle used status"
-                    className={`w-12 h-6 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-red-300/50 ${used ? "bg-red-400" : "bg-gray-300"
+                <div className="flex items-center justify-between">
+                  <span className="font-heading text-lg text-amber-900/80">Used?</span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => { setUsed(false); setHasTouched(true) }}
+                      aria-label="No used"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === false 
+                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm" 
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
                       }`}
-                  >
-                    <div
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${used ? "translate-x-6" : "translate-x-0"
-                        }`}
-                    />
-                  </button>
-                  <span className={`font-body text-sm ${used ? "text-red-700 font-bold" : "text-amber-900/40"}`}>Yes</span>
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={() => { setUsed(true); setHasTouched(true) }}
+                      aria-label="Yes used"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === true 
+                        ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-sm" 
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      Yes
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Message when mood not selected */}
+            {!mood && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-900/70 font-body text-center">
+                  👆 Select your mood above to continue check-in
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Recovery Notepad */}
@@ -430,7 +566,10 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               <textarea
                 ref={textareaRef}
                 value={journalEntry}
-                onChange={(e) => setJournalEntry(e.target.value)}
+                onChange={(e) => {
+                  setJournalEntry(e.target.value)
+                  setHasTouched(true)
+                }}
                 onFocus={(e) => {
                   isEditingRef.current = true
                   if (journalEntry && e.target.selectionStart !== journalEntry.length) {
@@ -462,6 +601,10 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                   <span className="text-green-600 font-bold">✓ Saved</span>
                 ) : null}
               </div>
+            </div>
+
+            <div className="flex justify-end">
+              <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
             </div>
           </div>
         </div>

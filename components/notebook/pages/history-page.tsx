@@ -1,15 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
-import { Calendar, Clock, ChevronRight, Zap, Moon, Heart, Loader2 } from "lucide-react"
-import { format } from "date-fns"
-import { toDate } from "@/lib/types/firebase-types"
+import { useMemo } from "react"
+import { Calendar, Clock, Zap, Moon, Heart, Loader2, NotebookPen } from "lucide-react"
+import { format, startOfDay, subDays } from "date-fns"
+import { useJournal } from "@/hooks/use-journal"
 
 type HistoryItem = {
     id: string
-    type: 'daily-log' | 'spot-check' | 'night-review' | 'gratitude'
+    type: 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'inventory' | 'mood'
     date: Date
     title: string
     preview: string
@@ -18,99 +16,90 @@ type HistoryItem = {
 }
 
 export default function HistoryPage() {
-    const { user } = useAuth()
-    const [loading, setLoading] = useState(true)
-    const [items, setItems] = useState<HistoryItem[]>([])
+    const { entries, loading } = useJournal()
 
-    useEffect(() => {
-        if (!user) return
+    const items = useMemo<HistoryItem[]>(() => {
+        const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
 
-        const fetchData = async () => {
-            setLoading(true)
-            try {
-                // Fetch both streams in parallel
-                const [logsResult, inventoryResult] = await Promise.all([
-                    FirestoreService.getHistory(user.uid),
-                    FirestoreService.getInventoryEntries(user.uid)
-                ])
+        return entries
+            .filter(entry => {
+                const [y, m, d] = entry.dateLabel.split('-').map(Number)
+                const entryDate = startOfDay(new Date(y, m - 1, d))
+                return entryDate >= sevenDaysAgo
+            })
+            .map((entry) => {
+                const date = entry.createdAt ? new Date(entry.createdAt) : new Date(entry.dateLabel + "T12:00:00")
 
-                const combined: HistoryItem[] = []
+                if (entry.type === 'daily-log') {
+                    const cravingText = entry.data.cravings === null ? "Cravings: n/a" : entry.data.cravings ? "Cravings: yes" : "Cravings: no"
+                    const usedText = entry.data.used === null ? "Used: n/a" : entry.data.used ? "Used: yes" : "Used: no"
+                    const moodText = entry.data.mood ? `Mood: ${entry.data.mood}` : "Mood not set"
+                    const noteText = entry.data.note ? `Note: ${entry.data.note.slice(0, 80)}` : ""
+                    const preview = [moodText, cravingText, usedText, noteText].filter(Boolean).join(" • ")
 
-                // Process Daily Logs
-                logsResult.entries.forEach(log => {
-                    const dateStr = log.date || (log as any).dateId // fallback
-                    if (!dateStr) return
-
-                    const dateParts = dateStr.split('-').map(Number)
-                    const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], 9, 0)
-
-                    combined.push({
-                        id: `daily-${log.date}`, // use date as ID suffix since it's the doc ID
-                        type: 'daily-log',
-                        date: date,
+                    return {
+                        id: `daily-${entry.dateLabel}`,
+                        type: 'daily-log' as const,
+                        date,
                         title: "Daily Check-in",
-                        preview: log.content || `Mood: ${log.mood || 'Not recorded'}`,
+                        preview,
                         icon: Calendar,
                         color: "text-amber-600"
-                    })
-                })
-
-                // Process Inventory Entries
-                inventoryResult.entries.forEach((entry: any) => {
-                    const date = (entry.createdAt ? toDate(entry.createdAt) : null) || new Date()
-                    let title = "Entry"
-                    let preview = "..."
-                    let icon = Zap
-                    let color = "text-amber-600"
-
-                    if (entry.type === 'spot-check') {
-                        title = "Spot Check"
-                        icon = Zap
-                        color = "text-orange-500"
-                        const data = entry.data || {}
-                        preview = data.action || (data.absolutes || []).join(', ') || "No action recorded"
-                    } else if (entry.type === 'night-review') {
-                        title = "Night Review"
-                        icon = Moon
-                        color = "text-indigo-500"
-                        const data = entry.data || {}
-                        if (data.version === 2 || data.gratitude) {
-                            preview = data.gratitude ? `Grateful for: ${data.gratitude}` : (data.surrender ? `Surrendered: ${data.surrender}` : "Nightly inventory completed")
-                        } else {
-                            preview = data.tomorrowPlan ? `Plan: ${data.tomorrowPlan}` : "Review completed"
-                        }
-                    } else if (entry.type === 'gratitude') {
-                        title = "Gratitude List"
-                        icon = Heart
-                        color = "text-emerald-500"
-                        const data = entry.data || {}
-                        const count = (data.items || []).length
-                        preview = `${count} things to be grateful for`
                     }
+                }
 
-                    combined.push({
-                        id: `inv-${entry.id}`,
+                if (entry.type === 'mood') {
+                    return {
+                        id: entry.id,
+                        type: 'mood' as const,
+                        date,
+                        title: "Mood",
+                        preview: entry.data.note || entry.data.mood,
+                        icon: NotebookPen,
+                        color: "text-amber-700"
+                    }
+                }
+
+                if (entry.type === 'gratitude') {
+                    return {
+                        id: entry.id,
+                        type: 'gratitude' as const,
+                        date,
+                        title: "Gratitude",
+                        preview: `${entry.data.items.length} gratitude items`,
+                        icon: Heart,
+                        color: "text-emerald-500"
+                    }
+                }
+
+                if (entry.type === 'inventory' || entry.type === 'night-review' || entry.type === 'spot-check') {
+                    const data = (entry as any).data || {}
+                    const preview = data.gratitude || data.action || data.resentments || data.note || "Review completed"
+                    const icon = entry.type === 'spot-check' ? Zap : entry.type === 'night-review' ? Moon : Calendar
+                    const color = entry.type === 'spot-check' ? "text-orange-500" : entry.type === 'night-review' ? "text-indigo-500" : "text-amber-600"
+                    return {
+                        id: entry.id,
                         type: entry.type,
-                        date: date,
-                        title,
+                        date,
+                        title: entry.type === 'spot-check' ? "Spot Check" : entry.type === 'night-review' ? "Night Review" : "Inventory",
                         preview,
                         icon,
                         color
-                    })
-                })
+                    }
+                }
 
-                // Sort by date desc
-                combined.sort((a, b) => b.date.getTime() - a.date.getTime())
-                setItems(combined)
-            } catch (error) {
-                console.error("Failed to load history", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchData()
-    }, [user])
+                return {
+                    id: entry.id,
+                    type: entry.type,
+                    date,
+                    title: "Entry",
+                    preview: (entry as any).data?.content || "",
+                    icon: NotebookPen,
+                    color: "text-amber-600"
+                }
+            })
+            .sort((a, b) => b.date.getTime() - a.date.getTime())
+    }, [entries])
 
     return (
         <div className="h-full flex flex-col">
@@ -138,7 +127,7 @@ export default function HistoryPage() {
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-2 mb-1">
                                         <entry.icon className={`w-3.5 h-3.5 ${entry.color}`} />
-                                        <span className={`font-heading font-bold ${entry.color.replace('text-', 'text-opacity-80-')}`}>{entry.title}</span>
+                                        <span className="font-heading font-bold text-amber-900/80">{entry.title}</span>
                                     </div>
                                     <div className="flex items-center gap-1 text-[10px] text-amber-900/40">
                                         <Clock className="w-3 h-3" />
