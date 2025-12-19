@@ -19,9 +19,9 @@ export function Timeline({ filter }: { filter?: string | null }) {
     const filterMapping: Record<string, JournalEntryType[]> = {
         'crisis': ['spot-check'],
         'gratitude': ['gratitude'],
-        'daily': ['mood'],
+        'daily': ['mood', 'check-in', 'daily-log'],  // Added check-in and daily-log
         'notes': ['free-write', 'meeting-note'],
-        'inventory': ['inventory']
+        'inventory': ['inventory', 'night-review']  // Added night-review
     }
 
     const filteredEntries = React.useMemo(() => {

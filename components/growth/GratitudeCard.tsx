@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
 import { useJournal } from "@/hooks/use-journal"
 import { toast } from "sonner"
 
@@ -73,27 +72,16 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
 
         setIsSaving(true)
         try {
-            await FirestoreService.saveInventoryEntry(user.uid, {
-                type: 'gratitude',
-                data: {
-                    items: items
-                },
-                tags: ['gratitude', ...items.map(i => i.text)] // Simplified tags
+            // Save to unified journal collection
+            await addEntry('gratitude', {
+                items: items.map(i => i.text + (i.why ? ` (${i.why})` : ''))
             })
-
-            // DUAL-WRITE: Also save to unified journal collection
-            try {
-                await addEntry('gratitude', {
-                    items: items.map(i => i.text + (i.why ? ` (${i.why})` : ''))
-                })
-            } catch (journalErr) {
-                console.warn('Journal dual-write failed:', journalErr)
-            }
 
             toast.success("Gratitude list saved.")
             setIsOpen(false)
         } catch (error) {
             console.error("Failed to save gratitude list", error)
+            toast.error("Failed to save gratitude list.")
         } finally {
             setIsSaving(false)
         }

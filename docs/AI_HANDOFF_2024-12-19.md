@@ -1,35 +1,96 @@
 # AI Handoff Document - December 19, 2024
 
-## Session Summary
+## Session 2 Summary (Evening)
 
-Completed **Unified Journal Phase 1** implementation with dual-write architecture and fixed critical Firestore security rules that were blocking user onboarding.
+Refactored from dual-write to **single-save architecture**. Entries now save ONLY to `journal` collection. Fixed cravings/used UI and auto-save behavior. **Journal tab display issue remains unresolved**.
 
 ---
 
-## What Was Completed
+## What Was Completed (Session 2)
 
-### 1. Unified Journal Dual-Write System
+### 1. Single Journal Save Architecture
 
-Implemented the first phase of the unified journal system. All new journal entries are now written to both legacy collections AND the new unified `journal` collection.
+Removed dual-write - all entries now save ONLY to the `journal` collection.
 
-| Component | Entry Type | Dual-Writes To |
-|-----------|------------|----------------|
-| `TodayPage.tsx` | `check-in`, `daily-log` | `daily_logs` + `journal` |
-| `SpotCheckCard.tsx` | `spot-check` | `inventoryEntries` + `journal` |
-| `NightReviewCard.tsx` | `night-review` | `inventoryEntries` + `journal` |
-| `GratitudeCard.tsx` | `gratitude` | `inventoryEntries` + `journal` |
+| Component | Entry Type | Now Saves To |
+|-----------|------------|--------------|
+| `TodayPage.tsx` | `check-in`, `daily-log` | `journal` only |
+| `SpotCheckCard.tsx` | `spot-check` | `journal` only |
+| `NightReviewCard.tsx` | `night-review` | `journal` only |
+| `GratitudeCard.tsx` | `gratitude` | `journal` only |
 
-**Key Files Modified:**
+### 2. Cravings/Used UI Redesigned
 
-- `types/journal.ts` - Added new entry types and denormalized fields
-- `hooks/use-journal.ts` - Added `generateSearchableText()` and `generateTags()` helpers
-- `components/journal/entry-card.tsx` - Updated rendering for new types
-- `components/journal/entry-detail-dialog.tsx` - Updated detail view for new types
-- `components/journal/entry-feed.tsx` - Updated search filter logic
+- Changed from toggle sliders to **active Yes/No buttons**
+- Both start as **unselected (gray)** - user must actively choose
+- Only saves when user explicitly interacts
 
-### 2. Firestore Security Rules Fixed
+### 3. Auto-Save On Mount Fixed
 
-Updated `firestore.rules` with comprehensive access rules:
+- Added `hasUserInteractedRef` flag to prevent auto-save on page navigation
+- Now only saves after user actually clicks or types
+
+### 4. Timeline Filter Updated
+
+Added new entry types to `timeline.tsx` filter mapping:
+
+- `daily`: now includes `check-in`, `daily-log`
+- `inventory`: now includes `night-review`
+
+### 5. Migration Script Created
+
+New file: `scripts/migrate-to-journal.ts`
+
+- Migrates data from `daily_logs` and `inventoryEntries` to `journal`
+- Uses Firebase Admin SDK
+- Run with: `npx ts-node scripts/migrate-to-journal.ts`
+
+---
+
+## Open Issue: Journal Tab Not Displaying Entries
+
+**Status:** UNRESOLVED
+
+Data IS saving correctly to Firestore `journal` collection (visible in console logs and Firebase Console). However, entries do not appear in the Journal tab.
+
+**Debugging Done:**
+
+- Removed `where` clause to avoid composite index requirement
+- Simplified query to just `orderBy('createdAt', 'desc')`
+- Added client-side filter for soft-deleted entries
+- Query still fails silently
+
+**Suspected Cause:**
+The `orderBy('createdAt', 'desc')` query requires an index on the `createdAt` field in the `journal` subcollection. Firestore may not be auto-creating this index.
+
+**Next Steps to Try:**
+
+1. Check Firebase Console for index creation prompts
+2. Manually create index: `users/{userId}/journal` → `createdAt DESC`
+3. Add explicit error logging to the `onSnapshot` callback
+4. Test with a completely fresh user account
+
+---
+
+## Files Modified in Session 2
+
+```
+components/growth/GratitudeCard.tsx      - Removed FirestoreService, single journal save
+components/growth/NightReviewCard.tsx    - Removed FirestoreService, single journal save
+components/growth/SpotCheckCard.tsx      - Removed FirestoreService, single journal save
+components/journal/timeline.tsx          - Added new entry types to filter mapping
+components/notebook/pages/today-page.tsx - New button UI, hasUserInteractedRef, single save
+hooks/use-journal.ts                     - Simplified query, removed where clause
+scripts/migrate-to-journal.ts            - NEW: Migration script for legacy data
+```
+
+---
+
+## Session 1 Summary (Morning)
+
+Completed **Unified Journal Phase 1** implementation with dual-write architecture and fixed critical Firestore security rules.
+
+### Firestore Security Rules
 
 ```
 /users/{userId}                           - Owner read/create/update
@@ -40,70 +101,14 @@ Updated `firestore.rules` with comprehensive access rules:
 /quotes/{quoteId}                         - Signed-in read only
 ```
 
-**Deployed:** Yes, via `firebase deploy --only firestore:rules`
-
----
-
-## Current State
-
-- **Build Status:** ✅ Passing (`npm run build` succeeds)
-- **Tests:** 89/91 passing (2 pre-existing failures require Firebase emulator)
-- **Git:** Committed and pushed to `main` as `bb7d45c`
-
----
-
-## What Needs Testing
-
-Manual testing recommended:
-
-1. **Onboarding Flow** - Create a new account, verify profile creation works
-2. **Check-in** - Complete a morning check-in, verify it appears in the Journal
-3. **Spot Check** - Save a spot check, verify dual-write to Journal
-4. **Night Review** - Complete a night review, verify dual-write to Journal
-5. **Gratitude** - Add gratitude items, verify dual-write to Journal
-6. **Journal Page** - Verify new entry types display correctly with proper formatting
-
----
-
-## Next Steps (Phase 2+)
-
-Refer to `docs/UNIFIED_JOURNAL_ARCHITECTURE.md` for the full roadmap:
-
-1. **Phase 2: Enhanced Timeline**
-   - Unified timeline view in Journal page
-   - Advanced filtering by entry type
-   - Date range picker
-
-2. **Phase 3: Migration Script**
-   - Backfill historical data from legacy collections to `journal`
-   - Verify data integrity
-
-3. **Phase 4: Transition**
-   - Update read paths to use `journal` collection
-   - Deprecate legacy reads
-
-4. **Phase 5: Cleanup**
-   - Remove dual-write logic
-   - Archive legacy collections
-
 ---
 
 ## Known Issues
 
-1. **Pre-existing test failures** - 2 tests in `auth-provider.test.js` and `firestore-service.test.js` fail without Firebase emulator
-2. **next.config.mjs warnings** - Unrecognized `turbopack.root` key generates warnings but doesn't block builds
-3. **Multiple lockfiles** - Both `pnpm-lock.yaml` and `package-lock.json` exist, may cause workspace detection issues
-
----
-
-## Important Files
-
-| File | Purpose |
-|------|---------|
-| `docs/UNIFIED_JOURNAL_ARCHITECTURE.md` | Full architecture and migration plan |
-| `firestore.rules` | Current Firestore security rules |
-| `hooks/use-journal.ts` | Journal hook with `addEntry()` function |
-| `types/journal.ts` | TypeScript types for journal entries |
+1. **Journal tab not displaying entries** - See Open Issue above
+2. **Pre-existing test failures** - 2 tests require Firebase emulator
+3. **next.config.mjs warnings** - `turbopack` key generates warnings
+4. **Multiple lockfiles** - Both `pnpm-lock.yaml` and `package-lock.json` exist
 
 ---
 
@@ -113,5 +118,6 @@ Refer to `docs/UNIFIED_JOURNAL_ARCHITECTURE.md` for the full roadmap:
 npm run dev          # Start dev server
 npm run build        # Verify build
 npm test             # Run tests
-firebase deploy --only firestore:rules  # Deploy rules
+npx ts-node scripts/migrate-to-journal.ts  # Run migration
+firebase deploy --only firestore:rules     # Deploy rules
 ```

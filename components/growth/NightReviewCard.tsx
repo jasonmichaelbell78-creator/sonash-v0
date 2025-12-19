@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { useJournal } from "@/hooks/use-journal"
 import { Mic, MicOff } from "lucide-react"
@@ -148,34 +147,17 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
         if (!user) return
         setIsSaving(true)
         try {
-            await FirestoreService.saveInventoryEntry(user.uid, {
-                type: 'night-review',
-                data: {
-                    step1_actions: actions,
-                    step2_traits: traits,
-                    step3_reflections: reflectionAnswers,
-                    step4_gratitude: gratitude,
-                    step4_surrender: surrender,
-                    timestamp: new Date()
-                }
+            // Save to unified journal collection
+            await addEntry('night-review', {
+                step1_actions: actions,
+                step2_traits: traits,
+                step3_reflections: reflectionAnswers,
+                step4_gratitude: gratitude,
+                step4_surrender: surrender,
             })
-
-            // DUAL-WRITE: Also save to unified journal collection
-            try {
-                await addEntry('night-review', {
-                    step1_actions: actions,
-                    step2_traits: traits,
-                    step3_reflections: reflectionAnswers,
-                    step4_gratitude: gratitude,
-                    step4_surrender: surrender,
-                })
-            } catch (journalErr) {
-                console.warn('Journal dual-write failed:', journalErr)
-            }
 
             toast.success("Night Review saved.")
             setOpen(false)
-            // Reset form? Optional.
         } catch (error) {
             console.error("Save error:", error)
             toast.error("Failed to save.")

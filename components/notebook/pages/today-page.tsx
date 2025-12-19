@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration, subDays, startOfDay, format } from "date-fns"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
@@ -24,8 +23,8 @@ interface TodayPageProps {
 
 export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
-  const [cravings, setCravings] = useState(false)
-  const [used, setUsed] = useState(false)
+  const [cravings, setCravings] = useState<boolean | null>(null)
+  const [used, setUsed] = useState<boolean | null>(null)
   const [journalEntry, setJournalEntry] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [saveComplete, setSaveComplete] = useState(false)
@@ -37,11 +36,13 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const pendingSaveRef = useRef<{
     journalEntry: string
     mood: string | null
-    cravings: boolean
-    used: boolean
+    cravings: boolean | null
+    used: boolean | null
   } | null>(null)
   // Track if a save is already scheduled
   const saveScheduledRef = useRef(false)
+  // Track if user has interacted - prevents save on mount
+  const hasUserInteractedRef = useRef(false)
 
   const { user, profile } = useAuth()
   const { addEntry } = useJournal()
@@ -76,8 +77,9 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               if (docSnap.exists()) {
                 const data = docSnap.data()
                 if (data.mood) setMood(data.mood)
-                setCravings(data.cravings || false)
-                setUsed(data.used || false)
+                // Preserve null state if values don't exist in old data
+                if (data.cravings !== undefined) setCravings(data.cravings)
+                if (data.used !== undefined) setUsed(data.used)
 
                 // Only update text if not currently editing (collision avoidance)
                 if (data.content && !isEditingRef.current) {
@@ -140,30 +142,25 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       }
       console.log('💾 Attempting to save:', saveData)
 
-      // Save to cloud (legacy collection)
-      await FirestoreService.saveDailyLog(user.uid, saveData)
+      // Save check-in entry only when user has actively chosen values
+      // mood OR (cravings is explicitly set AND used is explicitly set)
+      const hasCheckInData = dataToSave.mood !== null ||
+        (dataToSave.cravings !== null && dataToSave.used !== null)
 
-      // DUAL-WRITE: Also save to unified journal collection
-      try {
-        // Check-in entry (mood, cravings, used)
-        if (dataToSave.mood || dataToSave.cravings || dataToSave.used) {
-          await addEntry('check-in', {
-            mood: dataToSave.mood,
-            cravings: dataToSave.cravings,
-            used: dataToSave.used,
-          })
-        }
+      if (hasCheckInData) {
+        await addEntry('check-in', {
+          mood: dataToSave.mood,
+          cravings: dataToSave.cravings ?? false,
+          used: dataToSave.used ?? false,
+        })
+      }
 
-        // Daily-log entry (notepad content)
-        if (dataToSave.journalEntry.trim()) {
-          await addEntry('daily-log', {
-            content: dataToSave.journalEntry,
-            wordCount: dataToSave.journalEntry.split(/\s+/).filter(Boolean).length,
-          })
-        }
-      } catch (journalErr) {
-        // Log but don't fail - journal is secondary during dual-write phase
-        logger.error('Journal dual-write failed', { userId: maskIdentifier(user.uid), error: journalErr })
+      // Save daily-log entry (notepad content)
+      if (dataToSave.journalEntry.trim()) {
+        await addEntry('daily-log', {
+          content: dataToSave.journalEntry,
+          wordCount: dataToSave.journalEntry.split(/\s+/).filter(Boolean).length,
+        })
       }
 
       setSaveComplete(true)
@@ -188,6 +185,9 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     // If a save is already scheduled, don't schedule another
     // This prevents timer reset on every keystroke
     if (saveScheduledRef.current) return
+
+    // Don't save if user hasn't interacted yet (prevents save on mount)
+    if (!hasUserInteractedRef.current) return
 
     saveScheduledRef.current = true
     const timeoutId = setTimeout(() => {
@@ -370,7 +370,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               {moods.map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => setMood(m.id)}
+                  onClick={() => { hasUserInteractedRef.current = true; setMood(m.id) }}
                   aria-label={`Set mood to ${m.label}`}
                   aria-pressed={mood === m.id}
                   className={`flex flex-col items-center p-2 rounded-lg transition-all ${mood === m.id
@@ -386,43 +386,61 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
             <MoodSparkline />
 
-            {/* Toggle questions */}
+            {/* Active selection buttons */}
             <div className="space-y-3 pl-1">
               <div className="flex items-center justify-between">
                 <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
                 <div className="flex items-center gap-2">
-                  <span className={`font-body text-sm ${!cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
                   <button
-                    onClick={() => setCravings(!cravings)}
-                    aria-label="Toggle cravings"
-                    className={`w-12 h-6 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-amber-300/50 ${cravings ? "bg-amber-400" : "bg-gray-300"
+                    onClick={() => { hasUserInteractedRef.current = true; setCravings(false) }}
+                    aria-label="No cravings"
+                    aria-pressed={cravings === false}
+                    className={`px-4 py-1.5 rounded-lg font-body text-sm transition-all ${cravings === false
+                      ? "bg-green-100 text-green-800 ring-2 ring-green-400 font-bold"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                       }`}
                   >
-                    <div
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${cravings ? "translate-x-6" : "translate-x-0"
-                        }`}
-                    />
+                    No
                   </button>
-                  <span className={`font-body text-sm ${cravings ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>Yes</span>
+                  <button
+                    onClick={() => { hasUserInteractedRef.current = true; setCravings(true) }}
+                    aria-label="Yes cravings"
+                    aria-pressed={cravings === true}
+                    className={`px-4 py-1.5 rounded-lg font-body text-sm transition-all ${cravings === true
+                      ? "bg-amber-200 text-amber-900 ring-2 ring-amber-400 font-bold"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                      }`}
+                  >
+                    Yes
+                  </button>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="font-heading text-lg text-amber-900/80">Used?</span>
                 <div className="flex items-center gap-2">
-                  <span className={`font-body text-sm ${!used ? "text-amber-900 font-bold" : "text-amber-900/40"}`}>No</span>
                   <button
-                    onClick={() => setUsed(!used)}
-                    aria-label="Toggle used status"
-                    className={`w-12 h-6 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-red-300/50 ${used ? "bg-red-400" : "bg-gray-300"
+                    onClick={() => { hasUserInteractedRef.current = true; setUsed(false) }}
+                    aria-label="Did not use"
+                    aria-pressed={used === false}
+                    className={`px-4 py-1.5 rounded-lg font-body text-sm transition-all ${used === false
+                      ? "bg-green-100 text-green-800 ring-2 ring-green-400 font-bold"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                       }`}
                   >
-                    <div
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${used ? "translate-x-6" : "translate-x-0"
-                        }`}
-                    />
+                    No
                   </button>
-                  <span className={`font-body text-sm ${used ? "text-red-700 font-bold" : "text-amber-900/40"}`}>Yes</span>
+                  <button
+                    onClick={() => { hasUserInteractedRef.current = true; setUsed(true) }}
+                    aria-label="Used"
+                    aria-pressed={used === true}
+                    className={`px-4 py-1.5 rounded-lg font-body text-sm transition-all ${used === true
+                      ? "bg-red-200 text-red-900 ring-2 ring-red-400 font-bold"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                      }`}
+                  >
+                    Yes
+                  </button>
                 </div>
               </div>
             </div>
@@ -456,7 +474,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               <textarea
                 ref={textareaRef}
                 value={journalEntry}
-                onChange={(e) => setJournalEntry(e.target.value)}
+                onChange={(e) => { hasUserInteractedRef.current = true; setJournalEntry(e.target.value) }}
                 onFocus={(e) => {
                   isEditingRef.current = true
                   if (journalEntry && e.target.selectionStart !== journalEntry.length) {

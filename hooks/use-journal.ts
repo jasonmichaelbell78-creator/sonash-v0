@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import {
     collection,
     query,
-    where,
     orderBy,
     onSnapshot,
     addDoc,
@@ -118,10 +117,11 @@ export function useJournal() {
                 return;
             }
 
-            // QUERY: Get all entries for this user, ordered by newest first
+            // QUERY: Get entries for this user, ordered by newest first
+            // Note: Using simple query without where clause to avoid composite index requirement
+            // Client-side will filter out soft-deleted entries
             const q = query(
                 collection(db, `users/${user.uid}/journal`),
-                where('isSoftDeleted', '==', false), // Hide "crumpled" pages
                 orderBy('createdAt', 'desc')
             );
 
@@ -131,6 +131,9 @@ export function useJournal() {
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
+                    // Filter out soft-deleted entries client-side
+                    if (data.isSoftDeleted) return;
+
                     fetchedEntries.push({
                         id: doc.id,
                         ...data,

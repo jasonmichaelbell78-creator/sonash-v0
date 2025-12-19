@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
 import { useJournal } from "@/hooks/use-journal"
 import { toast } from "sonner"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
@@ -59,31 +58,18 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
 
         setIsSaving(true)
         try {
-            await FirestoreService.saveInventoryEntry(user.uid, {
-                type: "spot-check",
-                data: {
-                    feelings: selectedFeelings,
-                    absolutes: absolutes,
-                    action: action
-                },
-                tags: [...selectedFeelings, ...absolutes]
+            // Save to unified journal collection
+            await addEntry('spot-check', {
+                feelings: selectedFeelings,
+                absolutes: absolutes,
+                action: action,
             })
-
-            // DUAL-WRITE: Also save to unified journal collection
-            try {
-                await addEntry('spot-check', {
-                    feelings: selectedFeelings,
-                    absolutes: absolutes,
-                    action: action,
-                })
-            } catch (journalErr) {
-                console.warn('Journal dual-write failed:', journalErr)
-            }
 
             setIsOpen(false)
             toast.success("Spot check saved.")
         } catch (error) {
             console.error("Failed to save spot check", error)
+            toast.error("Failed to save spot check.")
         } finally {
             setIsSaving(false)
         }
