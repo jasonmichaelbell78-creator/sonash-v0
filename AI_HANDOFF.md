@@ -31,6 +31,13 @@
    - ✅ Created `firestore.indexes.json` with indexes for `journal` collection
    - ✅ Index for `createdAt DESC` query (fixes Journal tab display issue)
    - ✅ Composite index for `isSoftDeleted + createdAt` queries
+   - ✅ Deployed indexes via `firebase deploy --only firestore:indexes`
+
+5. **Dependencies & Build**
+   - ✅ Ran `npm install` to restore node_modules
+   - ✅ Ran `npm install` in `functions/` directory
+   - ✅ Verified build passes with 0 TypeScript errors
+   - ✅ Updated `package-lock.json` files
 
 ### Previous Session (December 18-19) ✅
 
@@ -450,7 +457,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 
 ---
 
-**Last Updated:** December 18, 2025  
-**Next Review:** Start of Phase 1 unified journal implementation  
+**Last Updated:** December 19, 2025
+**Next Review:** Start of Phase 1 unified journal implementation
 **Status:** Ready for implementation sprint
 
