@@ -26,7 +26,7 @@ const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
 function parseTime(timeStr: string): number {
   const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i)
   if (!match) return 0
-  let [, hours, minutes, meridiem] = match
+  const [, hours, minutes, meridiem] = match
   let h = parseInt(hours)
   const m = parseInt(minutes)
   if (meridiem.toUpperCase() === 'PM' && h !== 12) h += 12
@@ -44,7 +44,7 @@ export default function AllMeetingsPage() {
   const [neighborhoodFilter, setNeighborhoodFilter] = useState("All")
   const [sortBy, setSortBy] = useState<SortOption>("time")
   const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
 
   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null)
   const [hasMore, setHasMore] = useState(false)
