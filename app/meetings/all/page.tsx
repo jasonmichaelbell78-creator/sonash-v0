@@ -22,16 +22,27 @@ const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
   loading: () => <div className="h-[500px] w-full bg-amber-50 animate-pulse rounded-lg flex items-center justify-center text-amber-900/40">Loading Map...</div>
 })
 
-// Helper to parse time string like "6:00 PM" to minutes since midnight
+// Helper to parse time string like "6:00 PM" or "18:00" to minutes since midnight
 function parseTime(timeStr: string): number {
-  const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i)
-  if (!match) return 0
-  const [, hours, minutes, meridiem] = match
-  let h = parseInt(hours)
-  const m = parseInt(minutes)
-  if (meridiem.toUpperCase() === 'PM' && h !== 12) h += 12
-  if (meridiem.toUpperCase() === 'AM' && h === 12) h = 0
-  return h * 60 + m
+  // Try 12-hour format first (e.g., "6:00 PM")
+  const match12h = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i)
+  if (match12h) {
+    const [, hours, minutes, meridiem] = match12h
+    let h = parseInt(hours)
+    const m = parseInt(minutes)
+    if (meridiem.toUpperCase() === 'PM' && h !== 12) h += 12
+    if (meridiem.toUpperCase() === 'AM' && h === 12) h = 0
+    return h * 60 + m
+  }
+
+  // Try 24-hour format (e.g., "18:00" or "6:00")
+  const match24h = timeStr.match(/(\d{1,2}):(\d{2})/)
+  if (match24h) {
+    const [, hours, minutes] = match24h
+    return parseInt(hours) * 60 + parseInt(minutes)
+  }
+
+  return 0
 }
 
 export default function AllMeetingsPage() {
@@ -91,23 +102,12 @@ export default function AllMeetingsPage() {
           setHasMore(false)
           setLastDoc(null)
         } else {
-          // "All" view: Load ALL meetings at once for better filtering UX
-          // Don't use pagination - load everything
-          const allMeetings: Meeting[] = []
-          let currentLastDoc: QueryDocumentSnapshot | undefined = undefined
-          let currentHasMore = true
-          
-          // Keep fetching until we have all meetings
-          while (currentHasMore) {
-            const result = await MeetingsService.getAllMeetingsPaginated(100, currentLastDoc)
-            allMeetings.push(...result.meetings)
-            currentLastDoc = result.lastDoc || undefined
-            currentHasMore = result.hasMore
-          }
-          
-          setMeetings(allMeetings)
-          setHasMore(false)
-          setLastDoc(null)
+          // "All" view: Load initial batch with pagination
+          // User can click "Load More" for additional meetings
+          const result = await MeetingsService.getAllMeetingsPaginated(100)
+          setMeetings(result.meetings)
+          setLastDoc(result.lastDoc)
+          setHasMore(result.hasMore)
         }
       } catch (error) {
         logger.error("Failed to fetch meetings", { error })
@@ -193,8 +193,8 @@ export default function AllMeetingsPage() {
       <div className="bg-white border-b border-amber-200 shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
-            <button 
-              onClick={() => router.back()} 
+            <button
+              onClick={() => router.back()}
               className="flex items-center gap-2 text-amber-900 hover:text-amber-700 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />

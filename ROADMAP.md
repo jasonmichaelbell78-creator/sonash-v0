@@ -171,6 +171,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ⏳ State management standardization
 - ⏳ API abstraction layer
 - ⏳ Database schema optimization
+- ⏳ Admin route middleware (server-side protection for `/admin/*`)
 
 **Trigger:** Only pursue if M3+ blocked by technical limitations
 

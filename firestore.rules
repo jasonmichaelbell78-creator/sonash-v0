@@ -12,44 +12,94 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // THE JOURNAL COLLECTION
-    // Path: /users/{userId}/journal/{entryId}
-    match /users/{userId}/journal/{entryId} {
-      
-      // 1. READ: Only the owner can read their own journal
-      allow read: if isOwner(userId);
+    // ============================================
+    // USER PROFILE DOCUMENTS
+    // Path: /users/{userId}
+    // ============================================
+    match /users/{userId} {
+      // Users can read/write their own profile
+      allow read, write: if isOwner(userId);
+    }
 
-      // 2. CREATE: Owner can write, provided the data matches their ID
+    // ============================================
+    // JOURNAL COLLECTION (Unified Journal System)
+    // Path: /users/{userId}/journal/{entryId}
+    // ============================================
+    match /users/{userId}/journal/{entryId} {
+      allow read: if isOwner(userId);
       allow create: if isOwner(userId) 
                     && request.resource.data.userId == userId;
-
-      // 3. UPDATE: Owner can edit (for "Strikethroughs" or Soft Deletes)
-      // We block them from changing the 'userId' or 'createdAt' fields
       allow update: if isOwner(userId)
                     && request.resource.data.userId == userId
                     && request.resource.data.createdAt == resource.data.createdAt;
-
-      // 4. DELETE: We technically allow it, but the UI will prefer "Soft Delete"
       allow delete: if isOwner(userId);
     }
 
+    // ============================================
+    // DAILY LOGS COLLECTION (Legacy + Cloud Functions)
+    // Path: /users/{userId}/daily_logs/{dateId}
+    // ============================================
+    match /users/{userId}/daily_logs/{dateId} {
+      allow read: if isOwner(userId);
+      // Writes go through Cloud Function (saveDailyLog)
+      // But allow direct writes for backwards compatibility
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================================
     // INVENTORY ENTRIES COLLECTION
     // Path: /users/{userId}/inventoryEntries/{entryId}
+    // ============================================
     match /users/{userId}/inventoryEntries/{entryId} {
-      
-      // 1. READ: Only the owner can read their own inventory entries
       allow read: if isOwner(userId);
-
-      // 2. CREATE: Owner can write, provided the data matches their ID
       allow create: if isOwner(userId) 
                     && request.resource.data.userId == userId;
-
-      // 3. UPDATE: Owner can edit their entries
       allow update: if isOwner(userId)
                     && request.resource.data.userId == userId;
-
-      // 4. DELETE: Owner can delete
       allow delete: if isOwner(userId);
+    }
+
+    // ============================================
+    // JOURNAL ENTRIES COLLECTION (Legacy)
+    // Path: /users/{userId}/journalEntries/{entryId}
+    // ============================================
+    match /users/{userId}/journalEntries/{entryId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================================
+    // PUBLIC COLLECTIONS (Read-only, Admin writes via Cloud Functions)
+    // ============================================
+    
+    // Meetings - Public read, admin-only write via Cloud Functions
+    match /meetings/{meetingId} {
+      allow read: if true;  // Public access for meeting finder
+      allow write: if false; // All writes via adminSaveMeeting/adminDeleteMeeting
+    }
+
+    // Sober Living Homes - Public read, admin-only write via Cloud Functions
+    match /sober_living/{homeId} {
+      allow read: if true;  // Public access for finder
+      allow write: if false; // All writes via adminSaveSoberLiving/adminDeleteSoberLiving
+    }
+
+    // Daily Quotes - Public read, admin-only write via Cloud Functions
+    match /daily_quotes/{quoteId} {
+      allow read: if true;  // Public access for quote widget
+      allow write: if false; // All writes via adminSaveQuote/adminDeleteQuote
+    }
+
+    // ============================================
+    // INTERNAL COLLECTIONS (Cloud Functions only)
+    // ============================================
+    
+    // Rate Limits - Used by Cloud Functions for rate limiting
+    match /rate_limits/{docId} {
+      allow read, write: if false; // Only Cloud Functions (Admin SDK)
     }
   }
 }

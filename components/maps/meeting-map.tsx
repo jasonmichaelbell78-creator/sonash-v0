@@ -94,10 +94,6 @@ export default function MeetingMap({ meetings, userLocation }: MeetingMapProps) 
 
                 <MapController center={userLocation} meetings={validMeetings} />
 
-
-
-                // ... inside component ...
-
                 {/* User Location Marker (Red with Circle) */}
                 {userLocation && (
                     <Circle
