@@ -59,6 +59,8 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ Billing alerts ($50, $100, $500)
 - ✅ Incident response runbook
 
+**Documentation:** See [docs/SECURITY.md](./docs/SECURITY.md), [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md), [docs/SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)
+
 ### Week 4-6: Monitoring & Observability (🔄 Partial)
 - ✅ Sentry error monitoring configured
 - ⏳ Performance monitoring
@@ -72,6 +74,8 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ⏳ CI/CD pipeline setup
 - ⏳ Automated testing in PR workflow
 
+**Testing Guide:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md), [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)
+
 ---
 
 ## ⚡ M1.5 - Quick Wins (🔄 In Progress)
@@ -84,6 +88,8 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ Timeline filter ribbons
 - ✅ User error notifications (Sonner toasts)
 - ✅ Firestore indexes for performance
+
+**Documentation:** See [docs/JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md) for complete changelog
 
 ### In Progress
 - 🔄 Settings page UI
@@ -347,6 +353,8 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Goal:** Sustainable revenue model without exploiting vulnerable users
 
+**Detailed Research:** See [docs/MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)
+
 ### Research Findings (December 2025)
 
 #### Rejected Models
@@ -494,10 +502,25 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 ## 📚 References
 
-- **Architecture:** See [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **Development:** See [DEVELOPMENT.md](./DEVELOPMENT.md)
-- **Security:** See [docs/SECURITY.md](./docs/SECURITY.md)
-- **Testing:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+### Core Documentation
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
+- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
+- **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
+- **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
+
+### Detailed Documentation (in /docs)
+- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections
+- **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident procedures
+- **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue model research and recommendations (M10)
+- **[JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md)** - December 2025 journal refactor changelog
+- **[TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing strategy and multi-phase fixes
+- **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud Functions security patterns
+- **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent collaboration guide
+- **[LIBRARY_ANALYSIS.md](./docs/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
+- **[firestore-rules.md](./docs/firestore-rules.md)** - Firestore security rules documentation
+
+### Archived Documentation
+- **[docs/archive/](./docs/archive/)** - Historical documents, proposals, and status reports
 
 ---
 
