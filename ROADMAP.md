@@ -34,10 +34,12 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ## 🚀 M0 - Baseline & Alignment (✅ Complete)
 
 ### Objectives
+
 - Establish project documentation and success metrics
 - Define owners and reporting cadence
 
 ### Deliverables
+
 - ✅ Canonical roadmap published
 - ✅ Definitions of Done for each milestone
 - ✅ Initial KPI tracking
@@ -49,6 +51,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Goal:** Improve stability, reduce time-to-fix, establish engineering guardrails
 
 ### Week 1-3: Security Hardening (✅ Complete)
+
 - ✅ Firebase App Check with reCAPTCHA v3
 - ✅ Server-side validation (Zod schemas in Cloud Functions)
 - ✅ Rate limiting (10 req/min per user)
@@ -62,12 +65,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Documentation:** See [docs/SECURITY.md](./docs/SECURITY.md), [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md), [docs/SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)
 
 ### Week 4-6: Monitoring & Observability (🔄 Partial)
+
 - ✅ Sentry error monitoring configured
 - ⏳ Performance monitoring
 - ⏳ User analytics baseline
 - ⏳ Alert thresholds defined
 
 ### Week 7-9: Code Quality (🔄 Partial)
+
 - ✅ ESLint configuration (0 errors, 29 warnings)
 - ✅ TypeScript strict mode
 - ✅ Test coverage: 97.8% (89/91 passing)
@@ -83,6 +88,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Goal:** High-impact, low-effort features that improve user experience
 
 ### Completed
+
 - ✅ Journal system consolidation (single-save architecture)
 - ✅ Entry type separation (mood stamps, stickers, notes)
 - ✅ Timeline filter ribbons
@@ -92,6 +98,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Documentation:** See [docs/JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md) for complete changelog
 
 ### In Progress
+
 - 🔄 Settings page UI
 - 🔄 Profile management
 - 🔄 Clean date picker improvements
@@ -99,44 +106,58 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Planned Quick Wins (Priority Order)
 
 #### P0 - Critical UX
+
 1. **Recovery Library** (10 SP)
    - Glossary of recovery terms, slogans, abbreviations
    - Meeting etiquette guide for first-timers
    - Searchable reference material
 
-2. **Stage-of-Recovery Selector** (4 SP)
+2. **Expanded Onboarding Wizard** (8-13 SP)
+   - Program selection (AA/NA/CA/Smart Recovery)
+   - Sobriety/clean date setup with guidance
+   - Stage-of-recovery assessment
+   - Notification preferences
+   - Privacy walkthrough (what data is collected)
+   - Home screen customization (choose visible widgets)
+   - Sponsor contact setup (optional)
+   - Skip option for returning users
+
+3. **Stage-of-Recovery Selector** (4 SP)
    - Adjusts app emphasis based on user stage
    - Newcomer vs old-timer focus
 
-3. **"I Made It Through Today" Button** (2 SP)
+4. **"I Made It Through Today" Button** (2 SP)
    - End-of-day celebration/affirmation
    - Builds positive reinforcement
 
 #### P1 - High Value
-4. **HALT Check** (4 SP)
+
+5. **HALT Check** (4 SP)
    - Hungry/Angry/Lonely/Tired assessment
    - User-initiated button for self-check
 
-5. **Sober Fun Ideas Generator** (3 SP)
+6. **Sober Fun Ideas Generator** (3 SP)
    - Random activities for boredom
    - Relapse prevention tool
 
-6. **"Meetings Starting Soon" Filter** (3 SP)
+7. **"Meetings Starting Soon" Filter** (3 SP)
    - Shows meetings within next hour
    - Location-based proximity
 
 #### P2 - Nice to Have
-7. **Sobriety Clock with Minutes** (2 SP)
+
+8. **Sobriety Clock with Minutes** (2 SP)
    - Important for early recovery (0-90 days)
    - Feasibility check required
 
-8. **"Too Tired" Mode** (3 SP)
+9. **"Too Tired" Mode** (3 SP)
    - Reduces night review to 3 questions
    - Prevents fatigue-based abandonment
 
-9. **Disguised App Icon + Name** (5 SP)
-   - Privacy layer for device sharing
-   - "Journal" or neutral branding
+10. **Disguised App Icon + Name** (5 SP)
+
+- Privacy layer for device sharing
+- "Journal" or neutral branding
 
 ---
 
@@ -145,6 +166,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Goal:** Reduce technical debt only if friction prevents progress
 
 ### Potential Work
+
 - ⏳ Component library consolidation
 - ⏳ State management standardization
 - ⏳ API abstraction layer
@@ -161,36 +183,42 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Features
 
 #### F1: Meeting Proximity Detection (21 SP)
+
 - Real-time "meetings near me" based on GPS
 - Distance calculation and sorting
 - Map view integration
 - Filter by fellowship type (AA/NA/CA/etc)
 
 #### F2: Meeting Notes (13 SP)
+
 - In-app note capture during meetings
 - "What did you commit to?" prompts
 - Auto-link to journal timeline
 - Export/share capabilities
 
 #### F3: Calendar Integration (26 SP)
+
 - Sync favorite meetings to device calendar
 - Reminder notifications
 - iCal export for external apps
 - Recurring event support
 
 #### F4: Virtual Meeting Support (13 SP)
+
 - Zoom/Google Meet link integration
 - Online meeting directory
 - One-tap join from app
 - Hybrid in-person/virtual tracking
 
 #### F5: Enhanced Meeting Data (11 SP)
+
 - User reviews and ratings
 - Accessibility information
 - Special requirements (smoking, childcare, etc)
 - Meeting type badges (Step Study, Big Book, Speaker)
 
 **Dependencies:**
+
 - Google Maps API integration
 - Calendar API permissions
 - Meeting data scraping/partnership
@@ -202,6 +230,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Goal:** Extend core functionality based on M1-M3 learnings
 
 ### Potential Features (TBD)
+
 - Multiple sobriety dates (separate counters per substance)
 - Tone/language settings (firm vs gentle)
 - Craving countdown timer ("ride it out" feature)
@@ -216,29 +245,34 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Features
 
 #### F1: 10th Step Inventory Tool (47 SP)
+
 - Structured inventory prompts (AA Big Book format)
 - Character defects checklist
 - Assets vs defects tracking
 - Progress over time visualization
 
 #### F2: Inventory Templates (21 SP)
+
 - Multiple formats (AA, NA, custom)
 - User-created templates
 - Share templates with sponsor
 
 #### F3: Amends Tracker (26 SP)
+
 - List of people harmed
 - Amends completion status
 - Notes and reflections
 - Privacy controls (sponsor-only sharing)
 
 #### F4: Pattern Recognition (22 SP)
+
 - AI-powered theme detection
 - Recurring character defects
 - Trigger identification
 - Insights dashboard
 
 **Dependencies:**
+
 - Secure storage (encrypted at rest)
 - Sponsor sharing permissions
 - AI/ML analysis (optional)
@@ -252,24 +286,28 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Features
 
 #### F1: Prayer Library (21 SP)
+
 - AA-approved prayers (Serenity Prayer, 3rd Step, 7th Step)
 - NA prayers and meditations
 - Custom prayer creation
 - Favorites and bookmarks
 
 #### F2: Daily Meditation (16 SP)
+
 - Just for Today (NA)
 - Daily Reflections (AA)
 - 24 Hours a Day
 - Push notification reminders
 
 #### F3: Guided Meditation (26 SP)
+
 - Audio meditation tracks
 - Mindfulness exercises
 - Breath work timers
 - Progress tracking
 
 **Content Licensing:**
+
 - Requires AA/NA permissions for copyrighted material
 - Partnership with publishers (Hazelden, NA World Services)
 
@@ -282,36 +320,42 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Features
 
 #### F1: Sponsor Connection (32 SP)
+
 - Sponsor contact quick-dial
 - "I need help" emergency button
 - Sponsor chat/messaging
 - Sponsor dashboard (view sponsee progress)
 
 #### F2: Phone List (21 SP)
+
 - Fellowship phone directory
 - Favorites and groups
 - One-tap calling
 - SMS integration
 
 #### F3: Support Network (26 SP)
+
 - Create accountability circles
 - Group check-ins
 - Shared gratitude lists
 - Peer encouragement system
 
 #### F4: Milestone Celebrations (11 SP)
+
 - Auto-detect sobriety milestones (30/60/90 days, 1 year)
 - Shareable celebration graphics
 - Notify sponsor/support network
 - Digital chips and badges
 
 #### F5: Gamification (Optional) (10 SP)
+
 - Principle-based badges (honesty, service)
 - Streak tracking (journal entries, meeting attendance)
 - No shame/punishment mechanics
 - Focus on growth, not competition
 
 **Privacy Considerations:**
+
 - Optional feature (opt-in only)
 - User controls visibility settings
 - Anonymous participation option
@@ -325,24 +369,28 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Features
 
 #### F1: Speaker Library (26 SP)
+
 - Curated AA/NA speaker recordings
 - Search by topic (resentments, relationships, Step 4)
 - Favorites and playlists
 - Download for offline listening
 
 #### F2: Personal Recording (21 SP)
+
 - Record own shares/qualifications
 - Private journal audio entries
 - Transcription (AI-powered)
 - Organize by topic/date
 
 #### F3: Audio Player (16 SP)
+
 - Playback controls
 - Speed adjustment
 - Sleep timer
 - Resume from last position
 
 **Content Licensing:**
+
 - AA/NA speaker permissions
 - Copyright compliance
 - Content moderation
@@ -358,6 +406,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ### Research Findings (December 2025)
 
 #### Rejected Models
+
 - ❌ Freemium with paywalls (blocks critical recovery tools)
 - ❌ Ads (privacy violations, triggers)
 - ❌ Data monetization (unethical, illegal in recovery context)
@@ -365,30 +414,35 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 #### Viable Options
 
 **1. Premium Features (Ethical Freemium)**
+
 - ✅ Free: All core recovery tools (journal, meetings, inventories)
 - 💰 Premium: Advanced analytics, speaker library, offline mode
 - **Pricing:** $2.99/month or $19.99/year
 - **Positioning:** "Support SoNash, unlock extras"
 
 **2. Donation Model**
+
 - ✅ "Pay what you can" philosophy (AA 7th Tradition)
 - Optional recurring donations
 - Transparent expense reporting
 - No feature gating
 
 **3. B2B Licensing**
+
 - Treatment centers license app for clients
 - Sober living facilities bulk subscriptions
 - Institutional pricing ($5-10/user/month)
 - White-label options
 
 **4. Hybrid Approach (Recommended)**
+
 - Free tier: 100% of core features
 - Optional premium: $2.99/month (power users)
 - Institutional partnerships: Recurring revenue
 - Donation option: Community support
 
 **Next Steps:**
+
 1. Launch free product to build user base
 2. Measure engagement and retention (M3-M8)
 3. Survey users about willingness to pay
@@ -401,12 +455,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 **Goal:** Leverage full browser capabilities for power users
 
 ### Multi-Panel Layout (21 SP)
+
 - Split-screen views (timeline + detail)
 - Dashboard mode (4-panel grid)
 - Resizable panels
 - Keyboard shortcuts
 
 ### Advanced Visualizations (34 SP)
+
 - Mood heat map (calendar view)
 - Correlation matrix (meetings ↔ mood)
 - Trend lines (multiple metrics)
@@ -414,6 +470,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - Export charts as PNG/SVG
 
 ### Keyboard Shortcuts (8 SP)
+
 - `J/K`: Navigate timeline
 - `N`: New journal entry
 - `G + T`: Go to Today tab
@@ -421,12 +478,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - Vim-style navigation (optional)
 
 ### Export & Backup (13 SP)
+
 - CSV/JSON/PDF export
 - Automated cloud backup
 - Local file download
 - Sponsor report generation
 
 ### Search & Filter (21 SP)
+
 - Full-text search across all entries
 - Advanced filters (date range, mood, type)
 - Saved searches
@@ -451,23 +510,27 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ## 📏 Success Metrics
 
 ### User Engagement
+
 - Daily Active Users (DAU)
 - Weekly journal entries per user
 - Average session duration
 - Feature adoption rate
 
 ### Retention
+
 - 7-day retention rate (target: >40%)
 - 30-day retention rate (target: >25%)
 - 90-day retention rate (target: >15%)
 
 ### Recovery Outcomes
+
 - Days clean tracking
 - Meeting attendance frequency
 - Journal consistency (entries per week)
 - Spot check completion rate
 
 ### Technical Health
+
 - Error rate (target: <1%)
 - API response time (target: <200ms)
 - App crash rate (target: <0.1%)
@@ -478,12 +541,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ## 🔄 Agile Process
 
 ### Sprint Cadence
+
 - **Sprint Length:** 2 weeks
 - **Planning:** Every other Monday
 - **Retrospective:** Every other Friday
 - **Daily Standups:** Async (Slack/Discord)
 
 ### Story Point Scale
+
 - 1-2 SP: <1 day
 - 3-5 SP: 1-2 days
 - 8 SP: 1 week
@@ -491,6 +556,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - 21+ SP: Break into smaller stories
 
 ### Definition of Done
+
 - ✅ Code reviewed
 - ✅ Tests written and passing
 - ✅ Documentation updated
@@ -503,12 +569,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 ## 📚 References
 
 ### Core Documentation
+
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
 
 ### Detailed Documentation (in /docs)
+
 - **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections
 - **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident procedures
 - **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue model research and recommendations (M10)
@@ -520,11 +588,13 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - **[firestore-rules.md](./docs/firestore-rules.md)** - Firestore security rules documentation
 
 ### Archived Documentation
+
 - **[docs/archive/](./docs/archive/)** - Historical documents, proposals, and status reports
 
 ---
 
 **Document History:**
+
 - December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
 - December 18, 2025: M1 security hardening completed
 - December 17, 2025: Journal system refactor completed
