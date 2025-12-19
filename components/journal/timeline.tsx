@@ -3,7 +3,6 @@
 import * as React from "react"
 import { EntryCard } from "./entry-card"
 import { JournalEntry, JournalEntryType } from "@/types/journal"
-import { format } from "date-fns"
 import { useJournal, getRelativeDateLabel } from "@/hooks/use-journal"
 import { Loader2 } from "lucide-react"
 import { EntryDetailDialog } from "./entry-detail-dialog"
@@ -29,6 +28,8 @@ export function Timeline({ filter }: { filter?: string | null }) {
         const targetTypes = filterMapping[filter]
         if (!targetTypes) return entries
         return entries.filter(e => targetTypes.includes(e.type))
+    // filterMapping is stable (defined inline but constant)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [entries, filter])
 
     // Grouping Logic (Re-implemented here to support dynamic filtering)
