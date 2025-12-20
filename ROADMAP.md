@@ -80,6 +80,34 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ⏳ Automated testing in PR workflow
 - ⏳ Client-side rate limiting in firestore-service.ts (prevent abuse of write operations)
 
+### Week 10-12: Code Remediation (📋 Planned)
+
+*Based on December 2025 multi-model code analysis (6 AI reviewers)*
+
+#### Critical Security Fixes
+
+- ⏳ Close Firestore rules bypass for `daily_logs` (remove direct client write)
+- ⏳ Fix rate limiter fail-open vulnerability (change to fail-closed)
+- ⏳ Protect admin reset functionality (add admin claim check)
+- ⏳ Refactor SSR unsafe exports in `lib/firebase.ts`
+
+#### High-Priority Bug Fixes
+
+- ⏳ Date handling standardization (unified `getDateId()` utility)
+- ⏳ Listener memory leak prevention (proper cleanup with refs)
+- ⏳ useEffect dependency optimization (remove isEditing from deps)
+- ⏳ Auto-save race condition fix (proper debouncing)
+- ⏳ Resources page auth race condition (gate on auth readiness)
+- ⏳ Add pagination to large queries (limit meetings, journal)
+
+#### Code Quality Improvements
+
+- ⏳ Refactor monolithic components (TodayPage, ResourcesPage)
+- ⏳ App Check debug token production guard
+- ⏳ Onboarding AnimatePresence fix
+
+**Analysis Report:** See [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
+
 **Testing Guide:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md), [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)
 
 ---

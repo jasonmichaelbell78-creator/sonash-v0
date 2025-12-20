@@ -1,6 +1,6 @@
 # AI Handoff Document
 
-**Date:** December 19, 2025  
+**Date:** December 20, 2025  
 **Status:** Active Development  
 **Branch:** `main`
 
@@ -53,14 +53,25 @@
 **Code Quality**
 - ESLint: 0 errors, 29 warnings
 - Tests: 89/91 passing (97.8%)
-- Dependencies updated (Next.js 16.1.0, React 19.2.3)
+- Dependencies updated (Next.js 16.1.0, React 19.2.3) - verified Dec 20
 - Security vulnerabilities fixed
 
 ---
 
 ## 🔄 Current Work
 
-**Active Tasks:**
+**Code Remediation (M1 Week 10-12) - Priority:**
+
+Based on December 2025 multi-model code analysis:
+
+1. 🔴 Close Firestore rules bypass for `daily_logs`
+2. 🔴 Fix rate limiter fail-open vulnerability
+3. 🔴 Protect admin reset functionality
+4. 🟡 Date handling standardization
+5. 🟡 Listener memory leak prevention
+6. 🟡 Add pagination to large queries
+
+**Active Tasks (Parallel):**
 - Settings page UI improvements
 - Profile management enhancements
 - Code cleanup (remaining ESLint warnings)
@@ -70,7 +81,7 @@
 2. HALT Check button - 4 SP
 3. "I Made It Through Today" celebration - 2 SP
 
-See **[ROADMAP.md](./ROADMAP.md)** for full M1.5 scope.
+See **[ROADMAP.md](./ROADMAP.md)** for full scope.
 
 ---
 
