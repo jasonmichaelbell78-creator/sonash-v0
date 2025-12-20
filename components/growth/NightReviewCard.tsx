@@ -452,7 +452,27 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                             <Button
                                 variant="outline"
                                 onClick={() => {
-                                    const shareText = `Nightly Inventory\n\nActions: ${Object.entries(actions).filter(([_, v]) => v).map(([k]) => ACTIONS.find(a => a.id === k)?.label).join(", ")}\n\nTraits: ${Object.entries(traits).map(([k, v]) => `${TRAIT_PAIRS.find(p => p.id === k)?.left}/${TRAIT_PAIRS.find(p => p.id === k)?.right}: ${v}`).join(", ")}\n\nReflections: ${Object.values(reflectionAnswers).join("\n")}\n\nGratitude: ${gratitude}\n\nSurrender: ${surrender}`
+                                    // Build share text with null checks
+                                    const actionsList = Object.entries(actions)
+                                        .filter(([_, v]) => v)
+                                        .map(([k]) => ACTIONS.find(a => a.id === k)?.label)
+                                        .filter(Boolean)
+                                        .join(", ") || "None"
+
+                                    const traitsList = Object.entries(traits)
+                                        .filter(([_, v]) => v !== null)
+                                        .map(([k, v]) => {
+                                            const pair = TRAIT_PAIRS.find(p => p.id === k)
+                                            return pair ? `${pair.left}/${pair.right}: ${v}` : null
+                                        })
+                                        .filter(Boolean)
+                                        .join(", ") || "None"
+
+                                    const reflectionsList = Object.values(reflectionAnswers)
+                                        .filter(v => v && v.trim())
+                                        .join("\n") || "None"
+
+                                    const shareText = `Nightly Inventory\n\nActions: ${actionsList}\n\nTraits: ${traitsList}\n\nReflections: ${reflectionsList}\n\nGratitude: ${gratitude || "None"}\n\nSurrender: ${surrender || "None"}`
 
                                     if (navigator.share) {
                                         navigator.share({

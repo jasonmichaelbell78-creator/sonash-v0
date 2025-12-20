@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { toast } from "sonner"
 
 type GratitudeCardProps = HTMLMotionProps<"button">
 
@@ -88,9 +89,11 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
                 }
             })
 
+            toast.success("Gratitude list saved!")
             setIsOpen(false)
         } catch (error) {
             console.error("Failed to save gratitude list", error)
+            toast.error("Failed to save. Please try again.")
         } finally {
             setIsSaving(false)
         }
@@ -209,7 +212,9 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
                                         </div>
                                         <button
                                             onClick={() => removeItem(item.id)}
-                                            className="opacity-0 group-hover:opacity-100 p-1 text-emerald-900/30 hover:text-red-500 transition-all"
+                                            onKeyDown={(e) => e.key === 'Enter' && removeItem(item.id)}
+                                            aria-label={`Remove ${item.text}`}
+                                            className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 text-emerald-900/30 hover:text-red-500 focus:text-red-500 transition-all focus:outline-none focus:ring-2 focus:ring-red-500/50 rounded"
                                         >
                                             <X className="w-4 h-4" />
                                         </button>

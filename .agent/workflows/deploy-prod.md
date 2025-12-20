@@ -2,6 +2,8 @@
 description: Deploy the application to Firebase Hosting and Cloud Functions
 ---
 
+# Deploy to Production
+
 This workflow automates the deployment process for the Sonash application.
 
 1. **Check Git Status**

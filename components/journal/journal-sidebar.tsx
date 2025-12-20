@@ -50,11 +50,11 @@ export function JournalSidebar({ activeFilter, onFilterChange, className }: Jour
                 <h2 className="mb-2 px-4 text-xs font-semibold tracking-tight text-slate-500 uppercase">
                     Steps (Coming Soon)
                 </h2>
-                <div className="space-y-1 opacity-50 pointer-events-none">
-                    <Button variant="ghost" className="w-full justify-start font-normal">
+                <div className="space-y-1">
+                    <Button variant="ghost" className="w-full justify-start font-normal" disabled aria-disabled="true">
                         Step 4 Inventory
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start font-normal">
+                    <Button variant="ghost" className="w-full justify-start font-normal" disabled aria-disabled="true">
                         Step 8/9 Amends
                     </Button>
                 </div>

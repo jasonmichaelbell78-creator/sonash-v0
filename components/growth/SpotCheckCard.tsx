@@ -78,10 +78,11 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
                 }
             })
 
+            toast.success("Spot check saved!")
             setIsOpen(false)
-            // Optional: Toast success
         } catch (error) {
             console.error("Failed to save spot check", error)
+            toast.error("Failed to save. Please try again.")
         } finally {
             setIsSaving(false)
         }
@@ -106,11 +107,15 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
     // Reset wizard when closing
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open)
-        setIsOpen(open)
         if (!open) {
+            // Stop any active speech recognition
+            if (isListening) {
+                stopListening()
+                resetTranscript()
+            }
             setTimeout(() => {
                 setStep(1)
-                setSelectedFeelings([]) // Reset feelings
+                setSelectedFeelings([])
                 setAbsolutes([])
                 setAction("")
             }, 300)

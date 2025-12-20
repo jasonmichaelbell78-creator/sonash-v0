@@ -226,6 +226,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setShowJournalModal(true)}
+          aria-label="Open journal"
           className="absolute bottom-6 right-6 md:bottom-8 md:right-12 z-50 bg-amber-500 text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-amber-600 border-2 border-white"
         >
           <Plus className="w-6 h-6" />
@@ -279,21 +280,28 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
                   </div>
                 )}
 
-                <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Nickname & privacy</p>
-                <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Home screen & favorites</p>
-                <p className="font-body text-amber-900/70 underline cursor-pointer hover:text-amber-900">Language & text size</p>
+                <p className="font-body text-amber-900/40">Nickname & privacy (coming soon)</p>
+                <p className="font-body text-amber-900/40">Home screen & favorites (coming soon)</p>
+                <p className="font-body text-amber-900/40">Language & text size (coming soon)</p>
 
                 <div className="pt-4 border-t border-amber-900/10">
                   <button
                     onClick={async () => {
-                      const { signOut } = await import("firebase/auth")
-                      const { auth } = await import("@/lib/firebase")
+                      try {
+                        const { signOut } = await import("firebase/auth")
+                        const { auth } = await import("@/lib/firebase")
 
-                      // Clear local temp data for security
-                      localStorage.removeItem("sonash_journal_temp")
+                        // Clear local temp data for security
+                        localStorage.removeItem("sonash_journal_temp")
 
-                      await signOut(auth)
-                      onClose() // Close the book
+                        await signOut(auth)
+                        onClose() // Close the book
+                      } catch (error) {
+                        console.error("Sign out failed:", error)
+                        // Import toast dynamically to avoid issues
+                        const { toast } = await import("sonner")
+                        toast.error("Failed to sign out. Please try again.")
+                      }
                     }}
                     className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
                   >
