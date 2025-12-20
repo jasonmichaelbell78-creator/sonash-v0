@@ -317,7 +317,8 @@ export default function ResourcesPage() {
   const handleTimeJump = (timeStr: string) => {
     if (!timeStr) return
     const targetMinutes = parseTime(timeStr)
-    const targetMeeting = meetings.find(m => parseTime(m.time) >= targetMinutes)
+    // Search filtered meetings to only target visible items
+    const targetMeeting = filteredMeetings.find(m => parseTime(m.time) >= targetMinutes)
 
     if (targetMeeting) {
       // We need a way to scroll to it. We will use a simple ID approach.
@@ -378,7 +379,7 @@ export default function ResourcesPage() {
             >
               View All Meetings with Map & Advanced Filters →
             </a>
-            
+
             <div className="flex flex-col sm:flex-row gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm">
               {resourceType === "meetings" ? (
                 <>
@@ -534,7 +535,7 @@ export default function ResourcesPage() {
                     </button>
                   )
                 })}
-                
+
                 {/* Show "View More" link if there are more than 10 meetings */}
                 {resourceType === "meetings" && filteredMeetings.length > 10 && (
                   <a

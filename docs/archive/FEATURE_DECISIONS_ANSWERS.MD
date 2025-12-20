@@ -186,34 +186,14 @@ These are **not recommended** as originally proposed. Check "Revisit" if you wan
 
 ## Quick Notes Section
 
-*Add any thoughts, questions, or ideas here while reviewing:*
-
-```
-- 
-- 
-- 
-```
+*Decision notes captured during feature review - no outstanding items.*
 
 ---
 
-## Priority Rankings (Optional)
+## Priority Rankings
 
-If you want to rank your top picks, list them here:
-
-**Top 5 Must-Haves:**
-1. 
-2. 
-3. 
-4. 
-5. 
-
-**Top 5 Nice-to-Haves:**
-1. 
-2. 
-3. 
-4. 
-5. 
+*Rankings to be completed when features are ready for implementation. See ROADMAP.md for current priorities.*
 
 ---
 
-*When ready, share this file with Antigravity and I'll update the roadmap accordingly!*
+*When ready to add new features, share updates with Antigravity to update the roadmap accordingly.*

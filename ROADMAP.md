@@ -78,6 +78,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ Test coverage: 97.8% (89/91 passing)
 - ⏳ CI/CD pipeline setup
 - ⏳ Automated testing in PR workflow
+- ⏳ Client-side rate limiting in firestore-service.ts (prevent abuse of write operations)
 
 **Testing Guide:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md), [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)
 
