@@ -1,3 +1,9 @@
+# Feature Decisions & Answers
+
+*Archived decisions from feature review sessions. See ROADMAP.md for current priorities.*
+
+---
+
 ## Quick Wins (≤5 SP) - Easy to Add
 
 | Add | Defer | Reject | Feature | Effort | Milestone | Comments |
@@ -7,11 +13,11 @@
 | [x] | [ ] | [ ] | **"Meetings starting soon" filter** - Within 1 hour | 3 SP | M3.1 | |
 | [ ] | [x] | [ ] | **Sober fun ideas generator** - Random activities for boredom | 3 SP | M1.5 | |
 | [ ] | [ ] | [x] | **"Too Tired" Mode** - Reduce night review to 3 questions | 3 SP | M5 | |
-| [ ] | [x] | [ ] | **HALT check** - Hungry/Angry/Lonely/Tired assessment | 4 SP | M5/M7 | |"EXPLAIN"
+| [ ] | [x] | [ ] | **HALT check** - Hungry/Angry/Lonely/Tired assessment | 4 SP | M5/M7 | Needs explanation |
 | [ ] | [x] | [ ] | **Stage-of-recovery selector** - Adjusts app emphasis | 4 SP | M1.5 | |
-| [ ] | [ ] | [ ] | **God Box digital** - "Turn it over" surrender practice | 4 SP | M6 | |"EXPLAIN"
+| [ ] | [ ] | [ ] | **God Box digital** - "Turn it over" surrender practice | 4 SP | M6 | Needs explanation |
 | [ ] | [x] | [ ] | **Meeting notes capture** - "What did you commit to?" | 4 SP | M7 F2 | |
-| [x] | [ ] | [ ] | **Meeting etiquette guide** - First-meeting anxiety reducer | 4 SP | Onboarding | |"DO WE NEED A GUIDES SECTION OR WOULD THIS BE IN THE STARTER KIT"
+| [x] | [ ] | [ ] | **Meeting etiquette guide** - First-meeting anxiety reducer | 4 SP | Onboarding | Consider guides section or starter kit |
 | [ ] | [x] | [ ] | **Auto-Carry-Forward Nudges** - Midday reminder for morning items | 4 SP | M5 | |
 | [ ] | [ ] | [x] | **Multiple sobriety dates** - Separate counters per substance | 5 SP | Profile | |
 | [ ] | [x] | [ ] | **Disguised app icon + name** - Privacy layer | 5 SP | M1.5 | |
@@ -25,19 +31,19 @@
 |:---:|:-----:|:------:|---------|--------|-----------|----------|
 | [ ] | [ ] | [x] | **Craving countdown timer** - "Ride it out" with prompts | 6 SP | M7 F6 | |
 | [ ] | [ ] | [x] | **Tone/language settings** - Firm vs gentle prompts | 6 SP | M1.5 | |
-| [x] | [ ] | [ ] | **Recovery glossary** - Terms, slogans, abbreviations | 6 SP | M6 | |"I FEEL WE ARE LEADING DOWN A PATH OF EITHER GUIDES OR HOW-TOS POSSIBLY, WHAT DO YOU THINK AND WHERE COULD THESE GO?"
+| [x] | [ ] | [ ] | **Recovery glossary** - Terms, slogans, abbreviations | 6 SP | M6 | Consider guides/how-tos section |
 | [x] | [ ] | [ ] | **Complacency detector** - Engagement drop triggers nudge | 6 SP | M7 | |
 | [ ] | [x] | [ ] | **Principle-based badges** - Honesty/service vs streaks | 6 SP | M7 F5 | |
 | [ ] | [ ] | [x] | **Micro-Inventory Mode** - 60-90 sec quick capture | 6 SP | M5 | |
-| [ ] | [x] | [ ] | **Sponsor availability toggle** - "Available for calls" | 6 SP | M7 F1 | |"WAY DOWN THE LINE ONLY IF WE EXPAND TO A SPONSOR FORWARD AREA OF THE APP"
-| [ ] | [x] | [ ] | **If-Then Smart Prompts** - Dynamic suggestions from answers | 8 SP | M5 | |"HOW WOULD THIS LOOK?"
+| [ ] | [x] | [ ] | **Sponsor availability toggle** - "Available for calls" | 6 SP | M7 F1 | Only if sponsor area expands |
+| [ ] | [x] | [ ] | **If-Then Smart Prompts** - Dynamic suggestions from answers | 8 SP | M5 | Needs design exploration |
 | [ ] | [x] | [ ] | **Pattern Spotlight** - Surface recurring inventory themes | 8 SP | M5 | |
-| [ ] | [x] | [ ] | **Second-Cycle Mode** - Show old notes for repeat passes | 8 SP | M7 F4 | |"EXPLAIN"
+| [ ] | [x] | [ ] | **Second-Cycle Mode** - Show old notes for repeat passes | 8 SP | M7 F4 | Needs explanation |
 | [ ] | [ ] | [x] | **Sponsor Office Hours** - Availability scheduling | 8 SP | M7 F1 | |
 | [ ] | [x] | [ ] | **Milestone prep prompts** - Coaching before hard dates | 8 SP | M7 F5 | |
 | [x] | [ ] | [ ] | **Calendar sync** - Export meetings to Google/Apple | 8 SP | M7 F2 | |
 | [x] | [ ] | [ ] | **Annual recovery review** - Year-end summary | 8 SP | M7/M9 | |
-| [x] | [ ] | [ ] | **Legacy builder** - Speaker share outlines | 8 SP | M8/M9 | |"
+| [x] | [ ] | [ ] | **Legacy builder** - Speaker share outlines | 8 SP | M8/M9 | |
 
 ---
 
@@ -83,7 +89,7 @@ These expand scope of already-planned work. Check if you want the enhancement in
 | Add | Feature | Enhancement | Comments |
 |:---:|---------|-------------|----------|
 | [x] | **Craving interrupter** | Add grounding tools, breathwork, urge surfing to Prevention Plan | |
-| [ ] | **Emergency contact blast** | Multi-contact broadcast with location (vs single SOS) | |"EXPLAIN"
+| [ ] | **Emergency contact blast** | Multi-contact broadcast with location (vs single SOS) | Needs explanation |
 
 ### Step Work Expansions
 
@@ -91,7 +97,7 @@ These expand scope of already-planned work. Check if you want the enhancement in
 |:---:|---------|-------------|----------|
 | [x] | **Step 1 tools** | Add consequences timeline template to M5 inventories | |
 | [x] | **Step 3 / God Box** | Formalize God Box as distinct feature in M6 | |
-| [x] | **Step 5 "burn after sharing"** | Add secure delete / self-destruct option for Step 5 content | |"AS AN OPTION"
+| [x] | **Step 5 "burn after sharing"** | Add secure delete / self-destruct option for Step 5 content | As an option |
 
 ### Spiritual & Prayer
 
@@ -104,7 +110,7 @@ These expand scope of already-planned work. Check if you want the enhancement in
 | Add | Feature | Enhancement | Comments |
 |:---:|---------|-------------|----------|
 | [x] | **Buddy pairing** | Add "accountability partner" as contact role in M7 F1 | |
-| [x] | **Sponsor/sponsee linking** | Formalize with permission model for shared visibility | |"ONCE THE SPONSOR SIDE IS UP"
+| [x] | **Sponsor/sponsee linking** | Formalize with permission model for shared visibility | Once sponsor side is up |
 
 ### Tracking & Analytics
 
@@ -169,15 +175,15 @@ These are **not recommended** as originally proposed. Check "Revisit" if you wan
 | [ ] | Chore rotation + completion | Sober living ops; B2B product | |
 | [ ] | Curfew reminders | Location privacy; sober living ops | |
 | [ ] | House meetings notes | Sober living ops; B2B product | |
-| [ ] | IOP/PHP schedule integration | Treatment center ops; health data | |"MAYBE IF THERE'S B2B INTEGRATION DOWN THE ROAD - MARK B2B POSSIBILITIES FOR RESEARCH"
+| [ ] | IOP/PHP schedule integration | Treatment center ops; health data | B2B research candidate |
 
 ### Complex/Defer Indefinitely
 
 | Revisit? | Feature | Reason | Comments / Spin-off Idea |
 |:--------:|---------|--------|--------------------------|
-| [x] | Sponsor dashboard (multi-sponsee) | Complex permissions; effectively collaboration software | |"BUILD OUT ONCE SPONSOR SIDE IS UP - MAY TAKE A DIFFERENT FORM"
+| [x] | Sponsor dashboard (multi-sponsee) | Complex permissions; effectively collaboration software | Build once sponsor side is up |
 
-| [x] | Sponsee tree / lineage visualizer | Privacy + ego dynamics concerns | |"BUILD OUT ONCE SPONSOR SIDE IS UP - MAY TAKE A DIFFERENT FORM"
+| [x] | Sponsee tree / lineage visualizer | Privacy + ego dynamics concerns | Build once sponsor side is up |
 | [ ] | Spiritual growth quests | Risk of being "cringe" or competitive | |
 | [ ] | Wearable integration | Platform-specific complexity; privacy | |
 | [ ] | Beyond-one-fellowship planner | Scope creep into therapy/other pathways | |
