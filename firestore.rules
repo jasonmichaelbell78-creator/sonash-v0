@@ -36,14 +36,16 @@ service cloud.firestore {
     }
 
     // ============================================
-    // DAILY LOGS COLLECTION (Legacy + Cloud Functions)
+    // DAILY LOGS COLLECTION (Cloud Functions ONLY)
     // Path: /users/{userId}/daily_logs/{dateId}
     // ============================================
     match /users/{userId}/daily_logs/{dateId} {
       allow read: if isOwner(userId);
-      // Writes go through Cloud Function (saveDailyLog)
-      // But allow direct writes for backwards compatibility
-      allow create, update: if isOwner(userId);
+      // SECURITY: All writes MUST go through Cloud Function (saveDailyLog)
+      // Cloud Function enforces: rate limiting, Zod validation, App Check
+      // Direct client writes are BLOCKED to prevent bypassing security controls
+      allow create, update: if false;
+      // Keep delete for GDPR data deletion compliance
       allow delete: if isOwner(userId);
     }
 

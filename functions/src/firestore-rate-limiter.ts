@@ -80,10 +80,13 @@ export class FirestoreRateLimiter {
             if (error instanceof Error && error.message.includes("Rate limit exceeded")) {
                 throw error; // Re-throw rate limit errors
             }
-            // Log other errors but don't block the request
-            console.error("Rate limiter error:", error);
-            // In case of Firestore errors, we fail open (allow the request)
-            // This prevents Firestore outages from breaking the entire app
+            // SECURITY: Fail-closed strategy
+            // During Firestore outages or errors, DENY requests rather than allowing
+            // unrestricted access. This prevents abuse during infrastructure issues.
+            console.error("Rate limiter error (request DENIED for safety):", error);
+            throw new Error(
+                "Service temporarily unavailable due to high demand. Please try again in a few moments."
+            );
         }
     }
 

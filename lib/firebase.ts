@@ -111,24 +111,49 @@ export const getFirebase = () => {
   return { app: _app, auth: _auth, db: _db }
 }
 
-// Exports with type assertions for backward compatibility
-// These use unsafe type assertions to avoid breaking 50+ files
-// Components should check typeof window before using, or use getFirebase() for safety
-let app: FirebaseApp
-let auth: Auth
-let db: Firestore
+/**
+ * Create a proxy that throws helpful errors when Firebase is accessed on server.
+ * This prevents silent crashes from accessing undefined properties.
+ */
+const createServerGuard = <T extends object>(name: string): T => {
+  return new Proxy({} as T, {
+    get(_, prop) {
+      throw new Error(
+        `Cannot access Firebase ${name}.${String(prop)} on server-side. ` +
+        `Use 'use client' directive or check typeof window !== 'undefined' before importing.`
+      );
+    }
+  });
+};
 
-try {
-  const firebase = getFirebase()
-  app = firebase.app
-  auth = firebase.auth
-  db = firebase.db
-} catch {
-  // On server-side, these will be undefined at runtime
-  // But we use type assertions to maintain backward compatibility
-  app = _app as FirebaseApp
-  auth = _auth as Auth
-  db = _db as Firestore
+// Exports with SSR safety
+// In browser: real Firebase instances
+// On server: proxy objects that throw helpful errors instead of crashing silently
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
+
+if (typeof window !== 'undefined') {
+  // Client-side: use real Firebase instances
+  try {
+    const firebase = getFirebase();
+    app = firebase.app;
+    auth = firebase.auth;
+    db = firebase.db;
+  } catch (e) {
+    // If getFirebase fails on client (shouldn't happen), create guards
+    console.error('Firebase initialization failed on client:', e);
+    app = createServerGuard<FirebaseApp>('app');
+    auth = createServerGuard<Auth>('auth');
+    db = createServerGuard<Firestore>('db');
+  }
+} else {
+  // Server-side: provide helpful error proxies instead of undefined
+  // This prevents "Cannot read property X of undefined" crashes
+  app = createServerGuard<FirebaseApp>('app');
+  auth = createServerGuard<Auth>('auth');
+  db = createServerGuard<Firestore>('db');
 }
 
-export { app, auth, db }
+export { app, auth, db };
+

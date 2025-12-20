@@ -498,10 +498,12 @@ export default function ResourcesPage() {
                       </>
                     )}
                   </span>
-                  {/* Both types support Reset currently? Or just meetings? MeetingsService supports clear. SoberLivingService supports it too. */}
-                  <button onClick={handleReset} className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1">
-                    <Loader2 className="w-3 h-3" /> Reset Data
-                  </button>
+                  {/* SECURITY: Reset button only visible in development mode */}
+                  {isDevMode && (
+                    <button onClick={handleReset} className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1">
+                      <Loader2 className="w-3 h-3" /> Reset Data (Dev)
+                    </button>
+                  )}
                 </div>
 
                 {resourceType === "meetings" && filteredMeetings.slice(0, 10).map((meeting) => {
