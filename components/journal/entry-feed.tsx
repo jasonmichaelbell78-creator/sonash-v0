@@ -70,11 +70,11 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                 }
 
                 if (entry.type === 'daily-log') {
-                    return entry.data.content?.toLowerCase().includes(query) || false
+                    return entry.data.note?.toLowerCase().includes(query) || false
                 }
 
                 // Fall through for searchableText if available
-                if ('searchableText' in entry && entry.searchableText) {
+                if ('searchableText' in entry && typeof entry.searchableText === 'string') {
                     return entry.searchableText.includes(query)
                 }
 
@@ -217,7 +217,7 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                             {selectedEntry.type === 'daily-log' && (
                                 <div>
                                     <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>
-                                    {selectedEntry.data.content}
+                                    {selectedEntry.data.note}
                                 </div>
                             )}
                         </div>

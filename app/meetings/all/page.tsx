@@ -194,7 +194,7 @@ export default function AllMeetingsPage() {
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/')}
               className="flex items-center gap-2 text-amber-900 hover:text-amber-700 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />

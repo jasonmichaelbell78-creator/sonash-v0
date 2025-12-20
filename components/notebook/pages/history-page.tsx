@@ -7,7 +7,7 @@ import { useJournal } from "@/hooks/use-journal"
 
 type HistoryItem = {
     id: string
-    type: 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'inventory' | 'mood'
+    type: 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'inventory' | 'mood' | 'check-in' | 'meeting-note'
     date: Date
     title: string
     preview: string
@@ -106,6 +106,13 @@ export default function HistoryPage() {
             <div className="mb-4">
                 <h1 className="font-heading text-2xl text-amber-900">My Journal</h1>
                 <p className="font-body text-amber-900/60 text-sm">Your recovery journey, one day at a time.</p>
+                <a
+                    href="/journal"
+                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-amber-700 hover:text-amber-900 font-medium transition-colors"
+                >
+                    <NotebookPen className="w-4 h-4" />
+                    View Full Journal →
+                </a>
             </div>
 
             <div className="flex-1 -mr-4 pr-4 overflow-y-auto custom-scrollbar">

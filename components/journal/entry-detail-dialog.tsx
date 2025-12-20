@@ -51,11 +51,19 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
                         </div>
                     )}
 
-                    {(entry.type === 'free-write' || entry.type === 'meeting-note' || entry.type === 'spot-check') && (
+                    {(entry.type === 'free-write' || entry.type === 'meeting-note') && (
                         <>
                             {entry.data.title && <h4 className="font-bold text-xl mb-2 font-heading">{entry.data.title}</h4>}
                             {entry.data.content}
                         </>
+                    )}
+
+                    {entry.type === 'spot-check' && (
+                        <div className="space-y-2">
+                            <div><span className="font-bold">Feelings:</span> {entry.data.feelings?.join(', ')}</div>
+                            <div><span className="font-bold">Absolutes:</span> {entry.data.absolutes?.join(', ')}</div>
+                            {entry.data.action && <div><span className="font-bold">Action:</span> {entry.data.action}</div>}
+                        </div>
                     )}
 
                     {entry.type === 'daily-log' && (

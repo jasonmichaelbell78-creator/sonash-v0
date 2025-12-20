@@ -324,7 +324,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
     // Save a journal entry from notebook inputs (mood, cravings, used, notes, etc.)
     async saveNotebookJournalEntry(userId: string, entry: {
-      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude';
+      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory';
       data: Record<string, any>;
       isPrivate?: boolean;
     }) {
@@ -351,15 +351,15 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         }
 
         const docRef = await addDoc(entriesRef, payload)
-        deps.logger.info("Notebook journal entry saved", { 
-          userId: maskIdentifier(userId), 
-          type: entry.type 
+        deps.logger.info("Notebook journal entry saved", {
+          userId: maskIdentifier(userId),
+          type: entry.type
         })
         return docRef.id
       } catch (error) {
-        deps.logger.error("Failed to save notebook journal entry", { 
-          userId: maskIdentifier(userId), 
-          error 
+        deps.logger.error("Failed to save notebook journal entry", {
+          userId: maskIdentifier(userId),
+          error
         })
         throw error
       }

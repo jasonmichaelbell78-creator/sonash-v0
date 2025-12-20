@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Lock, Compass, Loader2 } from "lucide-react"
+import { Lock, Compass, Loader2, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { JournalLayout } from "./journal-layout"
 import { Timeline } from "./timeline"
 import { FloatingPen } from "./floating-pen"
@@ -53,6 +54,15 @@ export default function JournalHub() {
                 activeTab={activeFilter}
                 onTabChange={(tab) => setActiveFilter(activeFilter === tab ? null : tab)}
             />
+            {/* Back Button */}
+            <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-[var(--journal-text)] opacity-60 hover:opacity-100 transition-opacity mb-4"
+            >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm font-medium">Back to Notebook</span>
+            </Link>
+
             {/* Header */}
             <header className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--journal-line)]/50">
                 <div>

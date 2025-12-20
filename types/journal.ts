@@ -6,7 +6,8 @@ export type JournalEntryType =
     | 'night-review'
     | 'free-write'
     | 'meeting-note'
-    | 'daily-log';
+    | 'daily-log'
+    | 'check-in';
 
 // Base interface for ALL entries
 interface BaseEntry {
@@ -78,6 +79,10 @@ export interface NightReviewEntry extends BaseEntry {
         reflections?: Record<string, string>;
         gratitude?: string;
         surrender?: string;
+        // Legacy fields from migration (step4_ prefix)
+        step4_gratitude?: string;
+        step4_surrender?: string;
+        step3_reflections?: Record<string, string>;
     };
 }
 
@@ -91,5 +96,15 @@ export interface NoteEntry extends BaseEntry {
     };
 }
 
+// 7. Check-In Entry (from daily_logs migration)
+export interface CheckInEntry extends BaseEntry {
+    type: 'check-in';
+    data: {
+        mood?: string | null;
+        cravings?: boolean;
+        used?: boolean;
+    };
+}
+
 // The Union Type (This is the magic part)
-export type JournalEntry = MoodEntry | GratitudeEntry | InventoryEntry | SpotCheckEntry | NightReviewEntry | NoteEntry | DailyLogEntry;
+export type JournalEntry = MoodEntry | GratitudeEntry | InventoryEntry | SpotCheckEntry | NightReviewEntry | NoteEntry | DailyLogEntry | CheckInEntry;
