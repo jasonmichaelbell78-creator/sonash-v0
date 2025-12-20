@@ -1,3 +1,23 @@
+/**
+ * Firestore Service Module
+ * 
+ * Provides a centralized interface for all Firestore database operations.
+ * Implements security validation, rate limiting, and Cloud Function integration.
+ * 
+ * @module lib/firestore-service
+ * 
+ * @example
+ * import { FirestoreService } from '@/lib/firestore-service'
+ * 
+ * // Save daily log via Cloud Function
+ * await FirestoreService.saveDailyLog(userId, { content: 'Today was...', mood: 'hopeful' })
+ * 
+ * // Get today's log
+ * const { log, error } = await FirestoreService.getTodayLog(userId)
+ * 
+ * @see {@link lib/security/firestore-validation} for security utilities
+ * @see {@link lib/utils/rate-limiter} for rate limiting configuration
+ */
 import { db as defaultDb } from "./firebase"
 import {
   collection,
@@ -53,6 +73,13 @@ const defaultDeps: FirestoreDependencies = {
   logger: defaultLogger,
 }
 
+/**
+ * Factory function to create a Firestore service instance.
+ * Allows dependency injection for testing.
+ * 
+ * @param overrides - Optional dependency overrides for testing
+ * @returns Firestore service instance with all database operations
+ */
 export const createFirestoreService = (overrides: Partial<FirestoreDependencies> = {}) => {
   const deps = { ...defaultDeps, ...overrides }
 
