@@ -104,9 +104,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 #### Code Quality Improvements
 
-- ⏳ Refactor monolithic components (TodayPage, ResourcesPage)
+- ⏳ Refactor monolithic components (TodayPage, ResourcesPage) - *Deferred to Phase 4 backlog*
 - ✅ App Check debug token production guard (in `lib/firebase.ts`)
-- ⏳ Onboarding AnimatePresence fix
+- ✅ Onboarding AnimatePresence fix - *Verified correct Dec 20: all steps wrapped in conditionals*
 
 **Analysis Report:** See [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
 
