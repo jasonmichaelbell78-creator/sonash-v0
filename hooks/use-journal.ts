@@ -7,7 +7,8 @@ import {
     addDoc,
     updateDoc,
     doc,
-    serverTimestamp
+    serverTimestamp,
+    limit
 } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
@@ -120,9 +121,11 @@ export function useJournal() {
             // QUERY: Get entries for this user, ordered by newest first
             // Note: Using simple query without where clause to avoid composite index requirement
             // Client-side will filter out soft-deleted entries
+            // PERFORMANCE: Limit to 100 entries initially to prevent unbounded fetches
             const q = query(
                 collection(db, `users/${user.uid}/journal`),
-                orderBy('createdAt', 'desc')
+                orderBy('createdAt', 'desc'),
+                limit(100)
             );
 
             // REAL-TIME LISTENER
