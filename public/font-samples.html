@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Comparison - SoNash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Caveat:wght@400;500;600;700&family=Coming+Soon&family=Handlee&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Neucha&family=Patrick+Hand&family=Permanent+Marker&family=Rock+Salt&family=Shadows+Into+Light&family=Sue+Ellen+Francisco&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #f5f0e6 0%, #ebe5d9 50%, #e5dfd3 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            font-family: system-ui, sans-serif;
+        }
+        h1 {
+            font-family: 'Rock Salt', cursive;
+            text-align: center;
+            color: #44403c;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #78716c;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            background: #44403c;
+            color: #f5f0e6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: 600;
+        }
+        .font-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .font-name {
+            font-family: system-ui;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a8a29e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .font-name span {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.65rem;
+        }
+        .sample { margin-bottom: 0.5rem; color: #44403c; }
+        .sample-sm { font-size: 1rem; }
+        .sample-md { font-size: 1.5rem; }
+        .sample-lg { font-size: 2rem; }
+        .sample-xl { font-size: 2.5rem; }
+        
+        /* Current Fonts */
+        .font-caveat { font-family: 'Caveat', cursive; }
+        .font-handlee { font-family: 'Handlee', cursive; }
+        .font-rocksalt { font-family: 'Rock Salt', cursive; }
+        
+        /* Alternatives */
+        .font-patrick { font-family: 'Patrick Hand', cursive; }
+        .font-kalam { font-family: 'Kalam', cursive; }
+        .font-indie { font-family: 'Indie Flower', cursive; }
+        .font-shadows { font-family: 'Shadows Into Light', cursive; }
+        .font-marker { font-family: 'Permanent Marker', cursive; }
+        .font-neucha { font-family: 'Neucha', cursive; }
+        .font-coming { font-family: 'Coming Soon', cursive; }
+        .font-amatic { font-family: 'Amatic SC', cursive; }
+        .font-sue { font-family: 'Sue Ellen Francisco', cursive; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>📚 Font Samples</h1>
+    <p class="subtitle">SoNash Font Comparison Sheet</p>
+
+    <div class="section-title">✓ Currently Used in SoNash</div>
+    <div class="grid">
+        <div class="font-card">
+            <div class="font-name">Caveat <span>font-body</span></div>
+            <div class="sample sample-sm font-caveat">One day at a time. (16px)</div>
+            <div class="sample sample-md font-caveat">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-caveat">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-caveat">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Handlee <span>font-handlee</span></div>
+            <div class="sample sample-sm font-handlee">One day at a time. (16px)</div>
+            <div class="sample sample-md font-handlee">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-handlee">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-handlee">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Rock Salt <span>font-rocksalt / headings</span></div>
+            <div class="sample sample-sm font-rocksalt">One day at a time. (16px)</div>
+            <div class="sample sample-md font-rocksalt">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-rocksalt">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-rocksalt">Welcome home (40px)</div>
+        </div>
+    </div>
+
+    <div class="section-title">⟳ Similar Alternatives - Casual Script (like Caveat)</div>
+    <div class="grid">
+        <div class="font-card">
+            <div class="font-name">Patrick Hand <span>friendlier</span></div>
+            <div class="sample sample-sm font-patrick">One day at a time. (16px)</div>
+            <div class="sample sample-md font-patrick">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-patrick">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-patrick">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Indie Flower <span>playful</span></div>
+            <div class="sample sample-sm font-indie">One day at a time. (16px)</div>
+            <div class="sample sample-md font-indie">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-indie">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-indie">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Shadows Into Light <span>elegant</span></div>
+            <div class="sample sample-sm font-shadows">One day at a time. (16px)</div>
+            <div class="sample sample-md font-shadows">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-shadows">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-shadows">Welcome home (40px)</div>
+        </div>
+    </div>
+
+    <div class="section-title">⟳ Similar Alternatives - Neat Handwriting (like Handlee)</div>
+    <div class="grid">
+        <div class="font-card">
+            <div class="font-name">Kalam <span>clean</span></div>
+            <div class="sample sample-sm font-kalam">One day at a time. (16px)</div>
+            <div class="sample sample-md font-kalam">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-kalam">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-kalam">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Neucha <span>casual crisp</span></div>
+            <div class="sample sample-sm font-neucha">One day at a time. (16px)</div>
+            <div class="sample sample-md font-neucha">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-neucha">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-neucha">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Coming Soon <span>casual print</span></div>
+            <div class="sample sample-sm font-coming">One day at a time. (16px)</div>
+            <div class="sample sample-md font-coming">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-coming">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-coming">Welcome home (40px)</div>
+        </div>
+    </div>
+
+    <div class="section-title">⟳ Similar Alternatives - Rough/Marker (like Rock Salt)</div>
+    <div class="grid">
+        <div class="font-card">
+            <div class="font-name">Permanent Marker <span>bold marker</span></div>
+            <div class="sample sample-sm font-marker">One day at a time. (16px)</div>
+            <div class="sample sample-md font-marker">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-marker">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-marker">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Amatic SC <span>tall thin</span></div>
+            <div class="sample sample-sm font-amatic">One day at a time. (16px)</div>
+            <div class="sample sample-md font-amatic">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-amatic">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-amatic">Welcome home (40px)</div>
+        </div>
+        <div class="font-card">
+            <div class="font-name">Sue Ellen Francisco <span>messy artist</span></div>
+            <div class="sample sample-sm font-sue">One day at a time. (16px)</div>
+            <div class="sample sample-md font-sue">Progress not perfection (24px)</div>
+            <div class="sample sample-lg font-sue">Keep coming back (32px)</div>
+            <div class="sample sample-xl font-sue">Welcome home (40px)</div>
+        </div>
+    </div>
+
+</body>
+</html>

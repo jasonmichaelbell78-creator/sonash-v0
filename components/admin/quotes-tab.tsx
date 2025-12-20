@@ -11,17 +11,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Quote as QuoteIcon, Calendar as CalendarIcon } from "lucide-react"
+import { recoverySlogans } from "@/data/slogans"
 
-// Initial seed data
-const SEED_QUOTES = [
-    { text: "Serenity is not freedom from the storm, but peace amid the storm.", author: "Unknown" },
-    { text: "One day at a time.", author: "Recovery Slogan", source: "Traditional" },
-    { text: "Recovery is about progression, not perfection.", author: "Unknown" },
-    { text: "The only way out is through.", author: "Robert Frost" },
-    { text: "We are people who normally would not mix.", author: "Alcoholics Anonymous", source: "Big Book p. 17" },
-    { text: "Faith is doing the footwork and letting go of the results.", author: "Unknown" },
-    { text: "Humility is not thinking less of yourself, but thinking of yourself less.", author: "C.S. Lewis" },
-]
+// Initial seed data - uses first 20 slogans from comprehensive list
+const SEED_QUOTES = recoverySlogans.slice(0, 20).map(s => ({
+    text: s.text,
+    author: s.author,
+    source: s.source
+}))
 
 // Quotes Form component
 function QuotesForm({

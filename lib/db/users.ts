@@ -28,6 +28,11 @@ export interface UserProfile {
         largeText: boolean
         simpleLanguage: boolean
     }
+    // Onboarding expansion fields (optional)
+    hasSponsor?: 'yes' | 'no' | 'looking' | null
+    tourCompleted?: boolean
+    accountLinkPromptCount?: number
+    lastLinkPromptDate?: Timestamp | null
 }
 
 /**
@@ -61,6 +66,11 @@ const PartialUserProfileUpdateSchema = z.object({
         largeText: z.boolean(),
         simpleLanguage: z.boolean(),
     }).partial().optional(),
+    // Onboarding expansion fields
+    hasSponsor: z.enum(['yes', 'no', 'looking']).nullable().optional(),
+    tourCompleted: z.boolean().optional(),
+    accountLinkPromptCount: z.number().int().min(0).optional(),
+    lastLinkPromptDate: TimestampSchema.nullable().optional(),
 })
 
 // Default preferences

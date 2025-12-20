@@ -1,6 +1,6 @@
 import React from "react"
 
-export type NotebookModuleId = "today" | "resources" | "growth" | "work" | "more" | "history" | "community" | "support"
+export type NotebookModuleId = "today" | "resources" | "growth" | "library" | "work" | "more" | "history" | "community" | "support"
 
 export interface NotebookModule {
     id: NotebookModuleId

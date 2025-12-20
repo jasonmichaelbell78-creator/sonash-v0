@@ -102,6 +102,11 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - 🔄 Settings page UI
 - 🔄 Profile management
 - 🔄 Clean date picker improvements
+- 🔄 **The Library Tab** (10 SP) - Content hub consolidating:
+  - Glossary (searchable recovery terms)
+  - Meeting Etiquette guide
+  - Quick Links (AA/NA sites, hotlines)
+  - Prayers (public domain)
 
 ### Planned Quick Wins (Priority Order)
 

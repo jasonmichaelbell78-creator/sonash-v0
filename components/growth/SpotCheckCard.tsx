@@ -139,8 +139,8 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
                         <Zap className="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 className="font-bold text-amber-900">Spot Check</h3>
-                        <p className="text-xs text-amber-900/60 leading-tight mt-1">
+                        <h3 className="font-heading text-amber-900">Spot Check</h3>
+                        <p className="font-body text-xs text-amber-900/60 leading-tight mt-1">
                             Agitated? Pause and check exactly why.
                         </p>
                     </div>

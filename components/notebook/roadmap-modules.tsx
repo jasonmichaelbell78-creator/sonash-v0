@@ -4,6 +4,7 @@ import ResourcesPage from "./pages/resources-page"
 import HistoryPage from "./pages/history-page"
 import PlaceholderPage from "./pages/placeholder-page"
 import GrowthPage from "./pages/growth-page"
+import LibraryPage from "./pages/library-page"
 import { featureFlagEnabled } from "@/lib/utils"
 
 import { NotebookModule, NotebookModuleId } from "./notebook-types"
@@ -34,6 +35,14 @@ export const notebookModules: NotebookModule[] = [
     status: "available",
     description: "Step work, reflections, and growth exercises.",
     render: ({ onNavigate }) => <GrowthPage onNavigate={onNavigate} />,
+  },
+  {
+    id: "library",
+    label: "Library",
+    color: "bg-rose-200",
+    status: "available",
+    description: "Glossary, meeting etiquette, prayers, and quick links.",
+    render: () => <LibraryPage />,
   },
   {
     id: "support",

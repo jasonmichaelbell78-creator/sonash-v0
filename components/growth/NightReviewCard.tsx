@@ -188,18 +188,20 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                 <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`relative p-6 rounded-2xl border border-indigo-500/50 bg-indigo-950 hover:bg-indigo-900 transition-all text-left group overflow-hidden shadow-lg shadow-indigo-900/20 ${className}`}
+                    className={`col-span-1 bg-white p-4 rounded-xl border border-amber-900/10 shadow-sm flex flex-col items-start gap-3 relative overflow-hidden group text-left ${className}`}
                     {...props}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-indigo-500/20 rounded-xl">
-                                <Moon className="w-6 h-6 text-indigo-300" />
-                            </div>
-                        </div>
-                        <h3 className="text-xl font-bold text-indigo-50 mb-1">Nightly Inventory</h3>
-                        <p className="text-indigo-200 text-sm">Review, reset, and rest well.</p>
+                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Moon className="w-16 h-16 text-purple-500" />
+                    </div>
+                    <div className="p-2 bg-purple-100 rounded-lg text-purple-700">
+                        <Moon className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h3 className="font-heading text-amber-900">Nightly Inventory</h3>
+                        <p className="font-body text-xs text-amber-900/60 leading-tight mt-1">
+                            Review, reset, and rest well.
+                        </p>
                     </div>
                 </motion.button>
             </DialogTrigger>

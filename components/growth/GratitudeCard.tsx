@@ -109,8 +109,8 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
                         <Heart className="w-5 h-5" />
                     </div>
                     <div className="text-left flex-1">
-                        <h3 className="font-bold text-emerald-900">Gratitude List</h3>
-                        <p className="text-xs text-emerald-900/60">Shift your perspective.</p>
+                        <h3 className="font-heading text-emerald-900">Gratitude List</h3>
+                        <p className="font-body text-xs text-emerald-900/60">Shift your perspective.</p>
                     </div>
                     <Plus className="w-5 h-5 text-emerald-900/30 group-hover:text-emerald-900 transition-colors" />
                 </motion.button>
