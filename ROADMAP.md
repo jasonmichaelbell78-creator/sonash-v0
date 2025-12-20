@@ -84,12 +84,12 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 *Based on December 2025 multi-model code analysis (6 AI reviewers)*
 
-#### Critical Security Fixes
+#### Critical Security Fixes (✅ Complete - Dec 20, 2025)
 
-- ⏳ Close Firestore rules bypass for `daily_logs` (remove direct client write)
-- ⏳ Fix rate limiter fail-open vulnerability (change to fail-closed)
-- ⏳ Protect admin reset functionality (add admin claim check)
-- ⏳ Refactor SSR unsafe exports in `lib/firebase.ts`
+- ✅ Close Firestore rules bypass for `daily_logs` (remove direct client write)
+- ✅ Fix rate limiter fail-open vulnerability (change to fail-closed)
+- ✅ Protect admin reset functionality (dev-only mode)
+- ✅ Refactor SSR unsafe exports in `lib/firebase.ts` (proxy guards)
 
 #### High-Priority Bug Fixes
 
