@@ -86,7 +86,7 @@ export function Timeline({ filter }: { filter?: string | null }) {
                         </div>
 
                         <div className="pl-4 border-l-2 border-[var(--journal-line)]/50 ml-4 space-y-4">
-                            {entries
+                            {[...entries]
                                 .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
                                 .map((entry, idx) => (
                                     <EntryCard

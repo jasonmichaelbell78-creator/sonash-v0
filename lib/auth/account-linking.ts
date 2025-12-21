@@ -25,7 +25,7 @@ import { logger, maskIdentifier } from "../logger";
  * Result type for account linking operations
  */
 export type LinkResult =
-    | { success: true; user: User }
+    | { success: true; user: User; warning?: string }
     | { success: false; error: LinkError };
 
 /**
@@ -177,6 +177,58 @@ export async function linkWithEmail(
         return { success: true, user: result.user };
     } catch (error) {
         const authError = error as AuthError;
+
+        // Handle existing email - offer migration
+        if (authError.code === "auth/email-already-in-use") {
+            logger.info("Email already in use, attempting migration", {
+                anonymousUserId: maskIdentifier(currentUser.uid),
+            });
+
+            try {
+                // Step 1: Sign in with email/password to get target UID
+                const { signInWithCredential } = await import("firebase/auth");
+                const signInCredential = EmailAuthProvider.credential(email, password);
+                const signInResult = await signInWithCredential(auth, signInCredential);
+                const targetUid = signInResult.user.uid;
+                const anonymousUid = currentUser.uid;
+
+                logger.info("Signed in to existing email account", {
+                    userId: maskIdentifier(targetUid),
+                });
+
+                // Step 2: Migrate anonymous data
+                const { getFunctions, httpsCallable } = await import("firebase/functions");
+                const functions = getFunctions();
+                const migrateData = httpsCallable(functions, "migrateAnonymousUserData");
+
+                const migrationResult = await migrateData({
+                    anonymousUid,
+                    targetUid,
+                });
+
+                logger.info("Migration successful", {
+                    migratedItems: (migrationResult.data as { migratedItems: unknown }).migratedItems,
+                });
+
+                return { success: true, user: signInResult.user };
+            } catch (migrationError) {
+                logger.error("Migration or sign-in failed", {
+                    error: String(migrationError),
+                });
+
+                return {
+                    success: false,
+                    error: {
+                        code: "migration-failed",
+                        message: "Failed to migrate data",
+                        userMessage: "This email is already registered. Your anonymous data could not be merged. Please sign in directly.",
+                        recoverable: true,
+                    },
+                };
+            }
+        }
+
+        // Other errors
         logger.error("Failed to link account with email", {
             userId: maskIdentifier(currentUser.uid),
             errorCode: authError.code,
@@ -242,22 +294,54 @@ export async function linkWithGoogle(): Promise<LinkResult> {
             // User cancelled - not an error, just log for debugging
             logger.info("Google linking popup closed by user", {});
         } else if (authError.code === "auth/credential-already-in-use") {
-            // Google account is already linked to another user (e.g., on a different device)
-            // Instead of showing an error, sign in to that existing account
-            logger.info("Google account already linked, signing in to existing account", {
+            // Google account is already linked to another user
+            // BEFORE switching accounts, migrate anonymous data
+            logger.info("Google account already linked, migrating data before sign-in", {
                 anonymousUserId: maskIdentifier(currentUser.uid),
             });
 
             try {
-                // Sign in with Google to the existing account
+                // Step 1: Sign in with Google to get the target user ID
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
+                const targetUid = result.user.uid;
+                const anonymousUid = currentUser.uid;
 
                 logger.info("Signed in to existing Google account", {
-                    userId: maskIdentifier(result.user.uid),
+                    userId: maskIdentifier(targetUid),
                 });
 
-                return { success: true, user: result.user };
+                // Step 2: Migrate anonymous data to target account
+                const { getFunctions, httpsCallable } = await import("firebase/functions");
+                const functions = getFunctions();
+                const migrateData = httpsCallable(functions, "migrateAnonymousUserData");
+
+                try {
+                    const migrationResult = await migrateData({
+                        anonymousUid,
+                        targetUid,
+                    });
+
+                    logger.info("Migration successful", {
+                        anonymousUid: maskIdentifier(anonymousUid),
+                        targetUid: maskIdentifier(targetUid),
+                        migratedItems: (migrationResult.data as { migratedItems: unknown }).migratedItems,
+                    });
+
+                    // Success! Data preserved
+                    return { success: true, user: result.user };
+                } catch (migrationError) {
+                    logger.error("Migration failed", {
+                        error: String(migrationError),
+                    });
+
+                    // Migration failed - stay signed into target account but warn user
+                    return {
+                        success: true,
+                        user: result.user,
+                        warning: "Some data may not have transferred. Please check your journal.",
+                    };
+                }
             } catch (signInError) {
                 logger.error("Failed to sign in to existing Google account", {
                     errorCode: (signInError as AuthError).code,

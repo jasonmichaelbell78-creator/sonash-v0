@@ -4,12 +4,12 @@ import {
     query,
     orderBy,
     onSnapshot,
-    addDoc,
     updateDoc,
     doc,
     serverTimestamp,
     limit
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, auth } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
 
@@ -195,19 +195,35 @@ export function useJournal() {
         if ('used' in data) denormalized.hasUsed = data.used;
         if ('mood' in data) denormalized.mood = data.mood;
 
-        await addDoc(collection(db, `users/${user.uid}/journal`), {
-            userId: user.uid,
-            type,
-            data,
-            dateLabel,
-            isPrivate,
-            isSoftDeleted: false,
-            searchableText,
-            tags,
-            ...denormalized,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-        });
+        // Call Cloud Function instead of direct Firestore write
+        // This ensures rate limiting, App Check, and validation are enforced server-side
+        const functions = getFunctions();
+        const saveJournalEntry = httpsCallable(functions, 'saveJournalEntry');
+
+        try {
+            await saveJournalEntry({
+                type,
+                data,
+                dateLabel,
+                isPrivate,
+                searchableText,
+                tags,
+                ...denormalized,
+            });
+        } catch (error: unknown) {
+            // Handle rate limiting and App Check errors with user-friendly messages
+            if (error && typeof error === 'object' && 'code' in error) {
+                const code = (error as { code: string }).code;
+                if (code === 'functions/resource-exhausted') {
+                    throw new Error('Too many requests. Please wait a moment and try again.');
+                }
+                if (code === 'functions/failed-precondition') {
+                    throw new Error('Security verification failed. Please refresh the page.');
+                }
+            }
+            // Re-throw original error if not a known error type
+            throw error;
+        }
     }, []);
 
     // ACTION: Crumple Page (Soft Delete)

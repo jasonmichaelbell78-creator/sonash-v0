@@ -27,16 +27,16 @@ service cloud.firestore {
     }
 
     // ============================================
-    // JOURNAL COLLECTION (Unified Journal System)
+    // JOURNAL COLLECTION (Cloud Functions ONLY)
     // Path: /users/{userId}/journal/{entryId}
     // ============================================
     match /users/{userId}/journal/{entryId} {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId) 
-                    && request.resource.data.userId == userId;
-      allow update: if isOwner(userId)
-                    && request.resource.data.userId == userId
-                    && request.resource.data.createdAt == resource.data.createdAt;
+      // SECURITY: All writes MUST go through Cloud Function (saveJournalEntry)
+      // Cloud Function enforces: rate limiting, Zod validation, App Check
+      // Direct client writes are BLOCKED to prevent bypassing security controls
+      allow create, update: if false;
+      // Keep delete for GDPR data deletion compliance
       allow delete: if isOwner(userId);
     }
 

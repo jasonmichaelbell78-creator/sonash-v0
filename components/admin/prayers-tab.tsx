@@ -54,9 +54,12 @@ export default function PrayersTab() {
 
     async function loadPrayers() {
         setLoading(true)
-        const data = await getAllPrayers(true) // Include inactive
-        setPrayers(data)
-        setLoading(false)
+        try {
+            const data = await getAllPrayers(true) // Include inactive
+            setPrayers(data)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -103,11 +106,12 @@ export default function PrayersTab() {
                 await addPrayer(formData)
                 toast.success("Prayer added!")
             }
-            setDialogOpen(false)
-            loadPrayers()
         } catch (error) {
             console.error(error)
             toast.error("Failed to save prayer")
+        } finally {
+            setDialogOpen(false)
+            void loadPrayers()
         }
     }
 
@@ -117,21 +121,23 @@ export default function PrayersTab() {
         try {
             await deletePrayer(id)
             toast.success("Prayer deleted!")
-            loadPrayers()
         } catch (error) {
             console.error(error)
             toast.error("Failed to delete prayer")
+        } finally {
+            void loadPrayers()
         }
     }
 
     async function handleToggleActive(id: string, isActive: boolean) {
         try {
             await togglePrayerActive(id, !isActive)
-            loadPrayers()
             toast.success(isActive ? "Prayer hidden" : "Prayer activated")
         } catch (error) {
             console.error(error)
             toast.error("Failed to update prayer")
+        } finally {
+            void loadPrayers()
         }
     }
 

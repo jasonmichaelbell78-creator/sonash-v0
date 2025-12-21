@@ -134,16 +134,19 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 #### Critical Security Fixes (Week 13 - Immediate)
 
-- ❌ **Journal Collection Security Gap** (JULES #3)
+- ✅ **Journal Collection Security Gap** (JULES #3) - ✅ **FIXED (Verified Dec 21, 2025)**
   - **Issue:** `journal` collection allows direct client writes while `daily_logs` properly blocks them
   - **Impact:** Bypasses rate limiting and App Check completely
   - **Fix:** Block direct writes in `firestore.rules:35-40`, create `saveJournalEntry` Cloud Function
-  - **Priority:** IMMEDIATE - Security bypass
+  - **Status:** Verified complete - identical security to daily_logs
+  - **Priority:** ~~IMMEDIATE~~ COMPLETE
 
-- ❌ **Account Linking Data Loss** (CODEX #5)
+- ✅ **Account Linking Data Loss** (CODEX #5) - ✅ **FIXED Dec 21, 2025**
   - **Issue:** When credential-already-in-use, signs into existing account WITHOUT migrating anonymous data
   - **Impact:** Users lose anonymous journal data
-  - **Fix:** Block auto-signin, implement data migration or warn user
+  - **Fix:** ✅ Implemented data migration Cloud Function with smart conflict resolution
+  - **Status:** Deployed to production (sonash-app)
+  - **Future Enhancement:** Full conflict resolution UI (see M1.5 Planned)
 
 #### High-Priority Fixes (Week 13-14)
 

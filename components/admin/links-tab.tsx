@@ -58,9 +58,12 @@ export default function LinksTab() {
 
     async function loadLinks() {
         setLoading(true)
-        const data = await getAllQuickLinks(true) // Include inactive
-        setLinks(data)
-        setLoading(false)
+        try {
+            const data = await getAllQuickLinks(true) // Include inactive
+            setLinks(data)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -109,11 +112,12 @@ export default function LinksTab() {
                 await addQuickLink(formData)
                 toast.success("Link added!")
             }
-            setDialogOpen(false)
-            loadLinks()
         } catch (error) {
             console.error(error)
             toast.error("Failed to save link")
+        } finally {
+            setDialogOpen(false)
+            void loadLinks()
         }
     }
 
@@ -123,21 +127,23 @@ export default function LinksTab() {
         try {
             await deleteQuickLink(id)
             toast.success("Link deleted!")
-            loadLinks()
         } catch (error) {
             console.error(error)
             toast.error("Failed to delete link")
+        } finally {
+            void loadLinks()
         }
     }
 
     async function handleToggleActive(id: string, isActive: boolean) {
         try {
             await toggleQuickLinkActive(id, !isActive)
-            loadLinks()
             toast.success(isActive ? "Link hidden" : "Link activated")
         } catch (error) {
             console.error(error)
             toast.error("Failed to update link")
+        } finally {
+            void loadLinks()
         }
     }
 
