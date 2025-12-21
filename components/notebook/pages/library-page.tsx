@@ -41,7 +41,7 @@ export default function LibraryPage() {
                                     <div className="flex items-start gap-3">
                                         <section.icon className="w-6 h-6 text-amber-800 flex-shrink-0 mt-0.5" />
                                         <div className="flex-1">
-                                            <h3 className="font-heading text-lg text-amber-900 group-hover:text-amber-700">{section.title}</h3>
+                                            <h3 className="font-heading-alt text-lg text-amber-900 group-hover:text-amber-700">{section.title}</h3>
                                             <p className="font-body text-sm text-amber-900/60">{section.description}</p>
                                         </div>
                                         <ChevronRight className="w-5 h-5 text-amber-400 group-hover:text-amber-600 mt-1" />
@@ -101,7 +101,7 @@ function GlossarySection() {
 
     return (
         <div className="flex-1 flex flex-col overflow-hidden">
-            <h2 className="font-heading text-xl text-amber-900 mb-1">📖 Glossary</h2>
+            <h2 className="font-heading-alt text-xl text-amber-900 mb-1">📖 Glossary</h2>
             <p className="font-body text-xs text-amber-600 mb-3">{glossaryData.length} terms</p>
 
             {/* Search */}
@@ -135,7 +135,7 @@ function GlossarySection() {
                 {filtered.map((item, i) => (
                     <div key={i} className="bg-white/60 border border-amber-100 rounded-lg p-3">
                         <div className="flex items-start justify-between">
-                            <h4 className="font-heading text-amber-900">{item.term}</h4>
+                            <h4 className="font-heading-alt text-amber-900">{item.term}</h4>
                             <span className="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded capitalize">{item.category}</span>
                         </div>
                         <p className="font-body text-sm text-amber-800/70 mt-1">{item.definition}</p>
@@ -153,11 +153,11 @@ function GlossarySection() {
 function EtiquetteSection() {
     return (
         <div className="flex-1 overflow-y-auto pr-2">
-            <h2 className="font-heading text-xl text-amber-900 mb-4">🤝 Meeting Etiquette</h2>
+            <h2 className="font-heading-alt text-xl text-amber-900 mb-4">🤝 Meeting Etiquette</h2>
 
             <div className="space-y-4">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-heading text-blue-900 mb-2">Your First Meeting</h3>
+                    <h3 className="font-heading-alt text-blue-900 mb-2">Your First Meeting</h3>
                     <ul className="font-body text-sm text-blue-800/80 space-y-2">
                         <li>• Arrive 5-10 minutes early if possible</li>
                         <li>• You don't have to speak if you don't want to</li>
@@ -167,7 +167,7 @@ function EtiquetteSection() {
                 </div>
 
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <h3 className="font-heading text-amber-900 mb-2">Open vs Closed Meetings</h3>
+                    <h3 className="font-heading-alt text-amber-900 mb-2">Open vs Closed Meetings</h3>
                     <ul className="font-body text-sm text-amber-800/80 space-y-2">
                         <li><strong>Open:</strong> Anyone can attend (family, friends, curious)</li>
                         <li><strong>Closed:</strong> Only for those who identify as having a desire to stop drinking/using</li>
@@ -175,7 +175,7 @@ function EtiquetteSection() {
                 </div>
 
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h3 className="font-heading text-green-900 mb-2">Sharing Tips</h3>
+                    <h3 className="font-heading-alt text-green-900 mb-2">Sharing Tips</h3>
                     <ul className="font-body text-sm text-green-800/80 space-y-2">
                         <li>• Keep shares focused on your experience</li>
                         <li>• Avoid giving direct advice ("You should...")</li>
@@ -185,7 +185,7 @@ function EtiquetteSection() {
                 </div>
 
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                    <h3 className="font-heading text-purple-900 mb-2">Common Formats</h3>
+                    <h3 className="font-heading-alt text-purple-900 mb-2">Common Formats</h3>
                     <ul className="font-body text-sm text-purple-800/80 space-y-2">
                         <li><strong>Speaker:</strong> One person shares their story (15-30 min)</li>
                         <li><strong>Discussion:</strong> Topic-based group share</li>
@@ -213,11 +213,11 @@ const linksData = [
 function LinksSection() {
     return (
         <div className="flex-1 overflow-y-auto pr-2">
-            <h2 className="font-heading text-xl text-amber-900 mb-4">🔗 Quick Links</h2>
+            <h2 className="font-heading-alt text-xl text-amber-900 mb-4">🔗 Quick Links</h2>
 
             <div className="space-y-4">
                 <div>
-                    <h3 className="font-heading text-sm text-amber-600 uppercase tracking-wide mb-2">Official Resources</h3>
+                    <h3 className="font-heading-alt text-sm text-amber-600 uppercase tracking-wide mb-2">Official Resources</h3>
                     <div className="space-y-2">
                         {linksData.filter(l => l.category === "official").map((link, i) => (
                             <a
@@ -228,7 +228,7 @@ function LinksSection() {
                                 className="block bg-white/60 border border-amber-100 rounded-lg p-3 hover:bg-amber-50 hover:border-amber-300 transition-colors"
                             >
                                 <div className="flex items-center justify-between">
-                                    <span className="font-heading text-amber-900">{link.title}</span>
+                                    <span className="font-heading-alt text-amber-900">{link.title}</span>
                                     <span className="text-amber-400">↗</span>
                                 </div>
                                 <p className="font-body text-xs text-amber-700/60">{link.description}</p>
@@ -238,7 +238,7 @@ function LinksSection() {
                 </div>
 
                 <div>
-                    <h3 className="font-heading text-sm text-blue-600 uppercase tracking-wide mb-2">Online Meetings</h3>
+                    <h3 className="font-heading-alt text-sm text-blue-600 uppercase tracking-wide mb-2">Online Meetings</h3>
                     <div className="space-y-2">
                         {linksData.filter(l => l.category === "online").map((link, i) => (
                             <a
@@ -249,7 +249,7 @@ function LinksSection() {
                                 className="block bg-blue-50/60 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:border-blue-300 transition-colors"
                             >
                                 <div className="flex items-center justify-between">
-                                    <span className="font-heading text-blue-900">{link.title}</span>
+                                    <span className="font-heading-alt text-blue-900">{link.title}</span>
                                     <span className="text-blue-400">↗</span>
                                 </div>
                                 <p className="font-body text-xs text-blue-700/60">{link.description}</p>
@@ -259,7 +259,7 @@ function LinksSection() {
                 </div>
 
                 <div>
-                    <h3 className="font-heading text-sm text-red-600 uppercase tracking-wide mb-2">Crisis Hotlines</h3>
+                    <h3 className="font-heading-alt text-sm text-red-600 uppercase tracking-wide mb-2">Crisis Hotlines</h3>
                     <div className="space-y-2">
                         {linksData.filter(l => l.category === "crisis").map((link, i) => (
                             <a
@@ -268,7 +268,7 @@ function LinksSection() {
                                 className="block bg-red-50/60 border border-red-200 rounded-lg p-3 hover:bg-red-100 hover:border-red-300 transition-colors"
                             >
                                 <div className="flex items-center justify-between">
-                                    <span className="font-heading text-red-900">{link.title}</span>
+                                    <span className="font-heading-alt text-red-900">{link.title}</span>
                                     <span className="text-red-400">📞</span>
                                 </div>
                                 <p className="font-body text-xs text-red-700/60">{link.description}</p>
@@ -319,7 +319,7 @@ function PrayersSection() {
 
     return (
         <div className="flex-1 overflow-y-auto pr-2">
-            <h2 className="font-heading text-xl text-amber-900 mb-3">🙏 Prayers</h2>
+            <h2 className="font-heading-alt text-xl text-amber-900 mb-3">🙏 Prayers</h2>
 
             {/* Filter tabs */}
             <div className="flex gap-2 mb-4 flex-wrap">
@@ -340,7 +340,7 @@ function PrayersSection() {
                 {filtered.map((prayer, i) => (
                     <div key={i} className="bg-white/70 border border-purple-100 rounded-xl p-4">
                         <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-heading text-purple-900">{prayer.title}</h3>
+                            <h3 className="font-heading-alt text-purple-900">{prayer.title}</h3>
                             <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded capitalize">{prayer.category}</span>
                         </div>
                         <p className="font-handlee text-purple-800/80 leading-relaxed whitespace-pre-line">{prayer.text}</p>
