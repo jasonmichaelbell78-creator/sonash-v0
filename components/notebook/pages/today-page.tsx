@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
+import { useCelebration } from "@/components/celebrations/celebration-provider"
 import { FirestoreService } from "@/lib/firestore-service"
-import { intervalToDuration, subDays, startOfDay, format } from "date-fns"
+import { intervalToDuration, subDays, startOfDay, format, differenceInDays } from "date-fns"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import MoodSparkline from "../visualizations/mood-sparkline"
@@ -48,8 +49,11 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const lastJournalContentRef = useRef<string>("")
   // Prevent concurrent journal saves
   const journalSaveInProgressRef = useRef(false)
+  // Track if we've already celebrated this session to avoid duplicates
+  const celebratedThisSessionRef = useRef(false)
 
   const { user, profile } = useAuth()
+  const { celebrate } = useCelebration()
   const referenceDate = useMemo(() => new Date(), [])
 
   const createJournalDailyLog = useCallback(async (data: { journalEntry: string; mood: string | null; cravings: boolean | null; used: boolean | null }) => {
@@ -210,6 +214,12 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       // Save to cloud (daily_logs collection - for Today tab persistence)
       await FirestoreService.saveDailyLog(user.uid, saveData)
 
+      // Celebrate daily check-in completion (only once per session)
+      if (!celebratedThisSessionRef.current && dataToSave.mood && (dataToSave.cravings !== null || dataToSave.used !== null)) {
+        celebrate('daily-complete')
+        celebratedThisSessionRef.current = true
+      }
+
       setSaveComplete(true)
       // Hide "Saved" message after 2 seconds
       setTimeout(() => setSaveComplete(false), 2000)
@@ -287,6 +297,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     if (!user) return
 
     async function calculateWeeklyStats() {
+      if (!user) return // Guard against null user
+
       try {
         const { collection, query, where, getDocs, orderBy } = await import("firebase/firestore")
 
@@ -336,6 +348,42 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
     calculateWeeklyStats()
   }, [user])
+
+  // Check for milestone celebrations based on clean time
+  useEffect(() => {
+    if (!profile?.cleanStart) return
+
+    const start = toDate(profile.cleanStart)
+    if (!start) return
+
+    const now = new Date()
+    const totalDays = differenceInDays(now, start)
+
+    // Define milestones with their day counts
+    const milestones = [
+      { days: 7, type: 'seven-days' as const },
+      { days: 30, type: 'thirty-days' as const },
+      { days: 60, type: 'sixty-days' as const },
+      { days: 90, type: 'ninety-days' as const },
+      { days: 180, type: 'six-months' as const },
+      { days: 365, type: 'one-year' as const },
+    ]
+
+    // Check each milestone
+    for (const milestone of milestones) {
+      if (totalDays === milestone.days) {
+        const milestoneKey = `milestone_${milestone.days}_${user?.uid}`
+        const hasShown = localStorage.getItem(milestoneKey)
+
+        if (!hasShown) {
+          // Celebrate this milestone!
+          celebrate(milestone.type, { daysClean: milestone.days })
+          localStorage.setItem(milestoneKey, new Date().toISOString())
+        }
+        break // Only celebrate one milestone at a time
+      }
+    }
+  }, [profile, celebrate, user])
 
 
   const dateString = formatDateForDisplay(referenceDate)

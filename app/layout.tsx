@@ -6,6 +6,7 @@ import {
 } from "next/font/google"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { ErrorBoundary } from "@/components/providers/error-boundary"
+import { CelebrationProvider } from "@/components/celebrations/celebration-provider"
 import "./globals.css"
 import { Toaster } from "sonner"
 
@@ -96,9 +97,11 @@ export default function RootLayout({
       >
         <ErrorBoundary>
           <AuthProvider>
-            {children}
-            <InstallPrompt />
-            <Toaster closeButton richColors />
+            <CelebrationProvider>
+              {children}
+              <InstallPrompt />
+              <Toaster closeButton richColors />
+            </CelebrationProvider>
           </AuthProvider>
         </ErrorBoundary>
       </body>
