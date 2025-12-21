@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "noEmit": false,
     "incremental": false,
     "outDir": "dist-tests",
