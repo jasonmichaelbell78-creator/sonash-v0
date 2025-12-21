@@ -29,7 +29,7 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-[#fdfbf7] border-amber-200">
         <DialogHeader>
-          <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2">
+          <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2 pt-1">
             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
               {meeting.type}
             </div>
