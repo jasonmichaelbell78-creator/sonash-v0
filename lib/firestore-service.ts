@@ -168,25 +168,25 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         if (err.code === "functions/invalid-argument") {
           deps.logger.error("Invalid data sent to Cloud Function", {
             userId: maskIdentifier(userId),
-            error: error.message,
+            error: err.message,
           })
           // Use the detailed error message from the Cloud Function
-          throw new Error(error.message || "Invalid journal data. Please refresh and try again.")
+          throw new Error(err.message || "Invalid journal data. Please refresh and try again.")
         }
 
-        if (error.code === "functions/unauthenticated") {
+        if (err.code === "functions/unauthenticated") {
           throw new Error("Please sign in to save your journal.")
         }
 
-        if (error.code === "functions/failed-precondition") {
-          throw new Error(`Security check failed (App Check): ${error.message}`)
+        if (err.code === "functions/failed-precondition") {
+          throw new Error(`Security check failed (App Check): ${err.message}`)
         }
 
         // Generic error for unexpected failures
         deps.logger.error("Cloud Function call failed", {
           userId: maskIdentifier(userId),
-          error,
-          code: error.code,
+          error: err,
+          code: err.code,
         })
         throw new Error("Couldn't save your journal right now. Please try again in a moment.")
       }

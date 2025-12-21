@@ -54,6 +54,7 @@ export interface Meeting {
     address: string
     neighborhood: string
     coordinates?: { lat: number; lng: number }
+    [key: string]: unknown
 }
 
 export interface MeetingsPaginatedResult {

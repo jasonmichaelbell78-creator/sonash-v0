@@ -7,6 +7,7 @@ export interface GlossaryTerm {
     definition: string
     category: 'acronyms' | 'clinical' | 'culture' | 'slang'
     createdAt?: Timestamp
+    [key: string]: unknown
 }
 
 const COLLECTION = "glossary"

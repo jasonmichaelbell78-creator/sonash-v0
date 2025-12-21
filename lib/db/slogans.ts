@@ -9,6 +9,7 @@ export interface Slogan {
     scheduledDate?: string // YYYY-MM-DD format for specific date assignment
     scheduledTimeOfDay?: 'morning' | 'afternoon' | 'evening' // Optional: specific time of day
     createdAt?: Timestamp
+    [key: string]: unknown
 }
 
 const COLLECTION_NAME = "slogans"

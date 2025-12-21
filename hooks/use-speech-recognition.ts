@@ -1,47 +1,8 @@
+/// <reference path="../web-speech-api.d.ts" />
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
-
-interface SpeechRecognition extends EventTarget {
-    continuous: boolean
-    interimResults: boolean
-    lang: string
-    start: () => void
-    stop: () => void
-    onresult: (event: SpeechRecognitionEvent) => void
-    onend: () => void
-    onerror: (event: SpeechRecognitionErrorEvent) => void
-}
-
-interface SpeechRecognitionEvent extends Event {
-    resultIndex: number
-    results: SpeechRecognitionResultList
-}
-
-interface SpeechRecognitionResultList {
-    length: number
-    item(index: number): SpeechRecognitionResult
-    [index: number]: SpeechRecognitionResult
-}
-
-interface SpeechRecognitionResult {
-    isFinal: boolean
-    [index: number]: SpeechRecognitionAlternative
-}
-
-interface SpeechRecognitionAlternative {
-    transcript: string
-    confidence: number
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-    error: string
-}
-
-interface SpeechRecognitionConstructor {
-    new(): SpeechRecognition
-}
 
 interface UseSpeechRecognitionReturn {
     isListening: boolean
@@ -58,11 +19,11 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     // Detect speech recognition support during state initialization
     const [hasSupport] = useState(() => {
         if (typeof window === "undefined") return false
-        const WindowWithSpeech = window as Window & {
+        const win = window as typeof window & {
             SpeechRecognition?: SpeechRecognitionConstructor
             webkitSpeechRecognition?: SpeechRecognitionConstructor
         }
-        const SpeechRecognition = WindowWithSpeech.SpeechRecognition || WindowWithSpeech.webkitSpeechRecognition
+        const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition
         return !!SpeechRecognition
     })
 
@@ -71,11 +32,11 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
 
     useEffect(() => {
         if (typeof window !== "undefined" && hasSupport) {
-            const WindowWithSpeech = window as Window & {
+            const win = window as typeof window & {
                 SpeechRecognition?: SpeechRecognitionConstructor
                 webkitSpeechRecognition?: SpeechRecognitionConstructor
             }
-            const SpeechRecognition = WindowWithSpeech.SpeechRecognition || WindowWithSpeech.webkitSpeechRecognition
+            const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition()
                 recognition.continuous = true

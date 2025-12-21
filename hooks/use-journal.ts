@@ -44,32 +44,32 @@ export function generateSearchableText(type: JournalEntryType, data: Record<stri
 
     switch (type) {
         case 'daily-log':
-            parts.push(data.content || '');
+            parts.push(String(data.content || ''));
             break;
         case 'gratitude':
-            parts.push(...(data.items || []));
+            parts.push(...(data.items as string[] || []));
             break;
         case 'spot-check':
-            parts.push(data.action || '');
-            parts.push(...(data.feelings || []));
-            parts.push(...(data.absolutes || []));
+            parts.push(String(data.action || ''));
+            parts.push(...(data.feelings as string[] || []));
+            parts.push(...(data.absolutes as string[] || []));
             break;
         case 'night-review':
-            parts.push(data.step4_gratitude || '');
-            parts.push(data.step4_surrender || '');
+            parts.push(String(data.step4_gratitude || ''));
+            parts.push(String(data.step4_surrender || ''));
             if (data.step3_reflections) {
-                Object.values(data.step3_reflections).forEach((v: unknown) => parts.push(String(v || '')));
+                Object.values(data.step3_reflections as Record<string, unknown>).forEach((v: unknown) => parts.push(String(v || '')));
             }
             break;
         case 'free-write':
         case 'meeting-note':
-            parts.push(data.title || '', data.content || '');
+            parts.push(String(data.title || ''), String(data.content || ''));
             break;
         case 'mood':
-            parts.push(data.note || '');
+            parts.push(String(data.note || ''));
             break;
         case 'inventory':
-            parts.push(data.resentments || '', data.dishonesty || '', data.apologies || '', data.successes || '');
+            parts.push(String(data.resentments || ''), String(data.dishonesty || ''), String(data.apologies || ''), String(data.successes || ''));
             break;
     }
 
