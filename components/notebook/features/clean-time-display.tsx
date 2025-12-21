@@ -73,9 +73,17 @@ export function CleanTimeDisplay({ cleanStart }: CleanTimeDisplayProps) {
         })
     }
 
-    const totalMinutes = hours * 60 + minutes
+    // Show hours if user has less than a day
+    if (years === 0 && months === 0 && days === 0 && hours > 0) {
+        parts.push({
+            text: hours === 1 ? "1 Hour" : `${hours} Hours`,
+            size: "text-xl md:text-2xl"
+        })
+    }
+
+    const minutesOnly = hours * 60 + minutes
     parts.push({
-        text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`,
+        text: minutesOnly === 1 ? "1 Minute" : `${minutesOnly} Minutes`,
         size: "text-lg md:text-xl"
     })
 
