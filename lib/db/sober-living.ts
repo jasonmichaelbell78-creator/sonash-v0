@@ -12,6 +12,7 @@ export interface SoberLivingHome {
     neighborhood?: string
     coordinates?: { lat: number; lng: number }
     notes?: string
+    [key: string]: unknown
 }
 
 const COLLECTION = "sober_living"

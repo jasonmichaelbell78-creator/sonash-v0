@@ -18,13 +18,11 @@ export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextArea
         React.useEffect(() => {
             // Check for browser support
             if (typeof window !== "undefined") {
-                type WindowWithSpeechRecognition = {
-                    SpeechRecognition?: typeof window.SpeechRecognition
-                    webkitSpeechRecognition?: typeof window.SpeechRecognition
+                const win = window as typeof window & {
+                    SpeechRecognition?: SpeechRecognitionConstructor
+                    webkitSpeechRecognition?: SpeechRecognitionConstructor
                 }
-                const SpeechRecognition =
-                    (window as unknown as WindowWithSpeechRecognition).SpeechRecognition || 
-                    (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition
+                const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition
 
                 if (SpeechRecognition) {
                     const recognition = new SpeechRecognition()

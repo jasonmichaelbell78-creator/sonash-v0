@@ -9,16 +9,9 @@
 import { useEffect, useState } from "react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import { SlogansService } from "@/lib/db/slogans"
+import { SlogansService, Slogan } from "@/lib/db/slogans"
 import { Lightbulb, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
-
-interface Slogan {
-    id: string
-    text: string
-    author: string
-    source?: string
-}
 
 export default function DailySloganWidget() {
     const [slogan, setSlogan] = useState<Slogan | null>(null)

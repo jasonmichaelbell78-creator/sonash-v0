@@ -22,11 +22,11 @@ export interface ColumnConfig<T> {
 }
 
 // Filter configuration
-export interface FilterConfig {
+export interface FilterConfig<T = unknown> {
     key: string
     label: string
     options: Array<{ value: string; label: string }>
-    getValue?: <T>(item: T) => string
+    getValue?: (item: T) => string
 }
 
 // Service interface for CRUD operations
@@ -58,7 +58,7 @@ export interface AdminCrudConfig<T extends BaseEntity> {
     // Table configuration
     columns: ColumnConfig<T>[]
     searchFields: Array<keyof T>
-    filters?: FilterConfig[]
+    filters?: FilterConfig<T>[]
 
     // Form component
     FormComponent: React.ComponentType<{

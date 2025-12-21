@@ -56,13 +56,14 @@ export default function LinksTab() {
         isActive: true
     })
 
+    async function loadLinks() {
+        setLoading(true)
+        const data = await getAllQuickLinks(true) // Include inactive
+        setLinks(data)
+        setLoading(false)
+    }
+
     useEffect(() => {
-        async function loadLinks() {
-            setLoading(true)
-            const data = await getAllQuickLinks(true) // Include inactive
-            setLinks(data)
-            setLoading(false)
-        }
         loadLinks()
     }, [])
 
@@ -207,7 +208,7 @@ export default function LinksTab() {
                                 <Label htmlFor="category">Category *</Label>
                                 <Select
                                     value={formData.category}
-                                    onValueChange={(value: string) => setFormData({ ...formData, category: value })}
+                                    onValueChange={(value) => setFormData({ ...formData, category: value as QuickLink['category'] })}
                                 >
                                     <SelectTrigger>
                                         <SelectValue />

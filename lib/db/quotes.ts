@@ -10,6 +10,7 @@ export interface Quote {
     scheduledDate?: string // YYYY-MM-DD
     scheduledTimeOfDay?: 'morning' | 'afternoon' | 'evening' // Optional: specific time of day
     createdAt?: Timestamp
+    [key: string]: unknown
 }
 
 const COLLECTION = "daily_quotes"
