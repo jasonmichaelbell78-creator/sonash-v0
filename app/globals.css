@@ -170,6 +170,8 @@
   /* Improved spacing for Rock Salt */
   line-height: 1.4;
   /* Better vertical spacing */
+  padding-left: 0.15em;
+  /* Prevent left edge clipping due to letter-spacing */
 }
 
 .font-body {

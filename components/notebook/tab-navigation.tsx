@@ -39,7 +39,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
           whileTap={{ scale: 0.95 }}
         >
           <span
-            className="font-body text-xs md:text-sm text-amber-900/70 rotate-180 block"
+            className="font-body text-xs md:text-sm text-amber-900/70 rotate-180 block px-1 md:px-2 py-1"
             style={{ transform: "rotate(180deg)" }}
           >
             {tab.label}
