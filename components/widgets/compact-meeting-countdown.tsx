@@ -150,10 +150,10 @@ export default function CompactMeetingCountdown() {
         }, 60000)
 
         return () => clearInterval(interval)
-    }, [userLocation, locationStatus, nextMeeting]) // Re-run when location changes
+    }, [userLocation, locationStatus, nextMeeting]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        updateTimeUntil()
+        updateTimeUntil() // eslint-disable-line react-hooks/set-state-in-effect
     }, [nextMeeting]) // eslint-disable-line react-hooks/exhaustive-deps
 
     function formatTime(time24: string): string {

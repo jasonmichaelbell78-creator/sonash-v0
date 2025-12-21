@@ -20,7 +20,7 @@ if (!getApps().length) {
             credential: cert(serviceAccount)
         });
         console.log("Firebase Admin Initialized");
-    } catch (_e) {
+    } catch {
         console.error("Error initializing Firebase Admin. Make sure firebase-service-account.json exists.");
         process.exit(1);
     }
@@ -45,7 +45,7 @@ if (fs.existsSync(CACHE_FILE)) {
     try {
         geocodingCache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
         console.log(`Loaded ${Object.keys(geocodingCache).length} cached locations.`);
-    } catch (_err) {
+    } catch {
         console.warn("Failed to load cache, starting fresh.");
     }
 }
