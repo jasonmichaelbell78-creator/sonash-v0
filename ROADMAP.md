@@ -170,6 +170,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ❌ **Daily Log History Ordering** - ✅ **VERIFIED CORRECT Dec 21, 2025**
   - Reviewed alignment of dateId vs date field
   - Status: Already working correctly, no action needed
+
+- ❌ **Account Linking Production Errors** - 🐛 **DISCOVERED Dec 21, 2025**
+  - Google OAuth fails with COOP (Cross-Origin-Opener-Policy) errors
+  - Email/password linking fails with 400 Bad Request
+  - Impact: Users cannot link accounts, migration function untested
+  - Fix: Update Firebase Hosting headers in `firebase.json`
+  - Priority: HIGH - blocks account linking feature
+
 - ❌ **Missing Rate Limiting** - saveInventoryEntry, getHistory, getInventoryEntries
 - ❌ **Onboarding Overwrites Profiles** - Check existing profile before recreate
 - ❌ **Composite Indexes Missing** - Library queries need indexes

@@ -35,6 +35,20 @@
 - Full security: rate limiting (5 req/5min), App Check, audit logging
 - **Status:** ✅ Deployed to production (us-central1)
 
+### 🔄 Active Tasks
+
+**Production Testing & Bug Discovery (Dec 21)**
+- Attempted manual testing of account linking migration
+- **Discovered:** Google OAuth COOP errors preventing popup auth
+- **Discovered:** Email/password linking returning 400 Bad Request
+- **Impact:** Cannot test migration function in production
+- **Next:** Fix Firebase Hosting headers, debug auth errors
+
+**Code Quality & Security (Dec 21)**
+- All quick wins completed and deployed ✅
+- All security verifications complete ✅
+- Zero critical issues remaining ✅
+
 **Code Quality Quick Wins (Dec 21)**
 - Fixed timeline array mutation (immutability)
 - Added error handling try/finally blocks (links-tab, prayers-tab)
