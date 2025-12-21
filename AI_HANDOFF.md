@@ -33,7 +33,7 @@
 - Admin panels with full CRUD operations
 - Nashville recovery resources imported (31 total links across 7 categories)
 - Type-safe database service (`lib/db/library.ts`)
-- Composite indexes for efficient queries
+- Composite indexes for efficient queries (Admin & Public views)
 - Security rules (public read, admin-only write)
 
 **Typography & Readability Improvements (Dec 20)**
