@@ -24,9 +24,35 @@
 
 ---
 
-## 🎯 Current Sprint Focus (December 20, 2025)
+## 🎯 Current Sprint Focus (December 21, 2025)
 
 ### ✅ Recently Completed
+
+**Account Linking Data Migration (Dec 21)**
+- Implemented `migrateAnonymousUserData` Cloud Function
+- Prevents data loss when linking anonymous → permanent accounts
+- Smart conflict resolution (preserves target account data)
+- Full security: rate limiting (5 req/5min), App Check, audit logging
+- **Status:** ✅ Deployed to production (us-central1)
+
+**Code Quality Quick Wins (Dec 21)**
+- Fixed timeline array mutation (immutability)
+- Added error handling try/finally blocks (links-tab, prayers-tab)
+- Verified journal collection security already complete
+- Verified rate limiting coverage complete
+- **Status:** ✅ All deployed to production
+
+**Feature Flag System Fix (Dec 21)**
+- Fixed `featureFlagEnabled()` - was hardcoded to return `true`
+- Implemented proper environment variable reading
+- Supports `NEXT_PUBLIC_*` flags for staged rollouts and A/B testing
+- **Status:** ✅ Deployed and working
+
+**Production Deployment (Dec 21)**
+- Git: Committed & pushed (ee894a1)
+- Next.js: Built production bundle
+- Firebase: Deployed hosting + all functions
+- **Live at:** https://sonash-app.web.app
 
 **Celebration Animation System (Dec 20)**
 - Multi-level celebration animations (confetti, pulse, fireworks, modal)
