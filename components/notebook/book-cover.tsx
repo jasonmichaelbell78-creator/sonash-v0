@@ -187,7 +187,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             {/* Top section - Branding */}
             <div className="flex flex-col items-center">
               <h1
-                className="font-rocksalt leading-tight text-center text-2xl md:text-3xl"
+                className="font-rocksalt leading-tight text-center text-4xl md:text-5xl"
                 style={{
                   color: "#e0d8cc",
                   textShadow: `
@@ -201,7 +201,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
               </h1>
 
               <p
-                className="font-shortstack tracking-wide mt-1 text-base md:text-lg"
+                className="font-shortstack tracking-wide mt-2 text-xl md:text-2xl"
                 style={{
                   color: "#d4ccc0",
                   textShadow: `
@@ -219,7 +219,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             {user ? (
               <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
                 <h2
-                  className="font-rocksalt leading-relaxed text-center text-lg md:text-xl"
+                  className="font-rocksalt leading-relaxed text-center text-2xl md:text-3xl"
                   style={{
                     color: "#e0d8cc",
                     textShadow: `
@@ -237,7 +237,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             ) : (
               <div className="flex flex-col items-center mt-auto px-4 text-center">
                 <p
-                  className="font-handlee text-xl text-[#e0d8cc] mb-2"
+                  className="font-handlee text-2xl text-[#e0d8cc] mb-2"
                   style={{
                     textShadow: "1px 1px 0 rgba(0,0,0,0.5)"
                   }}
@@ -252,7 +252,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
               {user ? (
                 isProfileComplete ? (
                   <p
-                    className="font-shortstack text-center leading-snug text-sm md:text-base"
+                    className="font-shortstack text-center leading-snug text-lg md:text-xl"
                     style={{
                       color: "#d4ccc0",
                       textShadow: `
@@ -268,7 +268,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
                   </p>
                 ) : (
                   <div
-                    className="font-permanent-marker text-amber-200 text-lg bg-black/30 px-6 py-2 rounded-full border border-amber-200/40 animate-pulse"
+                    className="font-permanent-marker text-amber-200 text-2xl bg-black/30 px-8 py-3 rounded-full border border-amber-200/40 animate-pulse"
                     style={{ backdropFilter: "blur(2px)" }}
                   >
                     Finish Setup
@@ -276,7 +276,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
                 )
               ) : (
                 <div
-                  className="font-permanent-marker text-white text-lg bg-black/20 px-6 py-2 rounded-full border border-white/20"
+                  className="font-permanent-marker text-white text-2xl bg-black/20 px-8 py-3 rounded-full border border-white/20"
                   style={{ backdropFilter: "blur(2px)" }}
                 >
                   Tap to Start
@@ -288,7 +288,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             {user && (
               <div className="flex items-center gap-2 mt-auto">
                 <p
-                  className="font-shortstack text-xs md:text-sm"
+                  className="font-shortstack text-base md:text-lg"
                   style={{
                     color: "#d4ccc0",
                     textShadow: `

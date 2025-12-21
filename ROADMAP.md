@@ -136,6 +136,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ Timeline filter ribbons
 - ✅ User error notifications (Sonner toasts)
 - ✅ Firestore indexes for performance
+- ✅ UI Polish (Notebook Cover typography, Recovery Prayers formatting)
 
 **Documentation:** See [docs/JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md) for complete changelog
 

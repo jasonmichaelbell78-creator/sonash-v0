@@ -46,6 +46,8 @@
 - Weekly stats calculation implemented
 - React duplicate key error resolved
 - 38% font bundle reduction (removed Caveat)
+- Increased typography scale on Notebook Cover (Title, Stats, Actions)
+- Fixed markdown lint errors in Recovery Prayers documentation
 
 **Documentation Consolidation (Dec 19)**
 - Merged 15+ docs into 4 core files
