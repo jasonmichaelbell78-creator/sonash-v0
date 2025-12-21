@@ -282,6 +282,62 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     }
   }, [])
 
+  // Calculate weekly stats (days logged and streak)
+  useEffect(() => {
+    if (!user) return
+
+    async function calculateWeeklyStats() {
+      try {
+        const { collection, query, where, getDocs, orderBy } = await import("firebase/firestore")
+
+        // Get last 7 days of logs
+        const sevenDaysAgo = subDays(startOfDay(new Date()), 7)
+        const sevenDaysAgoId = format(sevenDaysAgo, 'yyyy-MM-dd')
+
+        const logsRef = collection(db, `users/${user.uid}/daily_logs`)
+        const q = query(
+          logsRef,
+          where('date', '>=', sevenDaysAgoId),
+          orderBy('date', 'desc')
+        )
+
+        const snapshot = await getDocs(q)
+        const logs = snapshot.docs.map(doc => ({
+          date: doc.data().date,
+          ...doc.data()
+        }))
+
+        // Count unique days with logs in last 7 days
+        const uniqueDays = new Set(logs.map(log => log.date))
+        const daysLogged = uniqueDays.size
+
+        // Calculate current streak (consecutive days from today backwards)
+        let streak = 0
+        let checkDate = new Date()
+
+        while (true) {
+          const dateId = format(startOfDay(checkDate), 'yyyy-MM-dd')
+          if (uniqueDays.has(dateId)) {
+            streak++
+            checkDate = subDays(checkDate, 1)
+          } else {
+            break
+          }
+        }
+
+        setWeekStats({ daysLogged, streak })
+      } catch (error) {
+        logger.error("Failed to calculate weekly stats", {
+          userId: maskIdentifier(user.uid),
+          error
+        })
+      }
+    }
+
+    calculateWeeklyStats()
+  }, [user])
+
+
   const dateString = formatDateForDisplay(referenceDate)
 
   // Calculate clean time dynamically with minutes
