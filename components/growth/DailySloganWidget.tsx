@@ -25,29 +25,28 @@ export default function DailySloganWidget() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        async function fetchDailySlogan() {
+            try {
+                // Fetch all slogans
+                const slogansRef = collection(db, "slogans")
+                const snapshot = await getDocs(slogansRef)
+                const slogans = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Slogan))
+
+                if (slogans.length === 0) {
+                    setLoading(false)
+                    return
+                }
+
+                // Use hybrid 3x daily rotation (scheduled + time of day)
+                const currentSlogan = SlogansService.getSloganForNow(slogans)
+                setSlogan(currentSlogan)
+            } catch (error) {
+                console.error("Error fetching daily slogan:", error)
+            }
+            setLoading(false)
+        }
         fetchDailySlogan()
     }, [])
-
-    const fetchDailySlogan = async () => {
-        try {
-            // Fetch all slogans
-            const slogansRef = collection(db, "slogans")
-            const snapshot = await getDocs(slogansRef)
-            const slogans = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Slogan))
-
-            if (slogans.length === 0) {
-                setLoading(false)
-                return
-            }
-
-            // Use hybrid 3x daily rotation (scheduled + time of day)
-            const currentSlogan = SlogansService.getSloganForNow(slogans)
-            setSlogan(currentSlogan)
-        } catch (error) {
-            console.error("Error fetching daily slogan:", error)
-        }
-        setLoading(false)
-    }
 
     if (loading) {
         return (

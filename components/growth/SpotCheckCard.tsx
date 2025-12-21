@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, type HTMLMotionProps } from "framer-motion"
-import { Zap, X, ChevronRight, Check } from "lucide-react"
+import { Zap, ChevronRight, Check } from "lucide-react"
 import {
     Dialog,
     DialogContent,

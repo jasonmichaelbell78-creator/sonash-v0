@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, type HTMLMotionProps, AnimatePresence } from "framer-motion"
-import { Heart, Plus, X, Save, ArrowRight, Check } from "lucide-react"
+import { Heart, Plus, X, Save, Check } from "lucide-react"
 import {
     Dialog,
     DialogContent,

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Zap, Moon, Heart, Book, List, AlertCircle, Plus, Mic } from "lucide-react"
+import { Book, List } from "lucide-react"
 import SpotCheckCard from "@/components/growth/SpotCheckCard"
 import NightReviewCard from "@/components/growth/NightReviewCard"
 import GratitudeCard from "@/components/growth/GratitudeCard"
@@ -11,7 +11,7 @@ interface GrowthPageProps {
     onNavigate?: (moduleId: string) => void
 }
 
-export default function GrowthPage({ onNavigate }: GrowthPageProps) {
+export default function GrowthPage({ onNavigate: _onNavigate }: GrowthPageProps) {
     const containerVariants = {
         hidden: { opacity: 0 },
         show: {

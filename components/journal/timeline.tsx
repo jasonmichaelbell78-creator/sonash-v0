@@ -8,21 +8,18 @@ import { useJournal, getRelativeDateLabel } from "@/hooks/use-journal"
 import { Loader2 } from "lucide-react"
 import { EntryDetailDialog } from "./entry-detail-dialog"
 
-
-
+// Map ribbon IDs to Entry Types
+const filterMapping: Record<string, JournalEntryType[]> = {
+    'crisis': ['spot-check'],
+    'gratitude': ['gratitude'],
+    'daily': ['mood', 'daily-log'],
+    'notes': ['free-write', 'meeting-note'],
+    'inventory': ['inventory', 'night-review']
+}
 
 export function Timeline({ filter }: { filter?: string | null }) {
     const { entries, loading } = useJournal()
     const [selectedEntry, setSelectedEntry] = React.useState<JournalEntry | null>(null)
-
-    // Map ribbon IDs to Entry Types
-    const filterMapping: Record<string, JournalEntryType[]> = {
-        'crisis': ['spot-check'],
-        'gratitude': ['gratitude'],
-        'daily': ['mood', 'daily-log'],
-        'notes': ['free-write', 'meeting-note'],
-        'inventory': ['inventory', 'night-review']
-    }
 
     const filteredEntries = React.useMemo(() => {
         const sevenDaysAgo = startOfDay(subDays(new Date(), 7))

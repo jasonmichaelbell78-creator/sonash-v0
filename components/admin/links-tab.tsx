@@ -57,15 +57,14 @@ export default function LinksTab() {
     })
 
     useEffect(() => {
+        async function loadLinks() {
+            setLoading(true)
+            const data = await getAllQuickLinks(true) // Include inactive
+            setLinks(data)
+            setLoading(false)
+        }
         loadLinks()
     }, [])
-
-    async function loadLinks() {
-        setLoading(true)
-        const data = await getAllQuickLinks(true) // Include inactive
-        setLinks(data)
-        setLoading(false)
-    }
 
     function handleEdit(link: QuickLink) {
         setEditingLink(link)
@@ -208,7 +207,7 @@ export default function LinksTab() {
                                 <Label htmlFor="category">Category *</Label>
                                 <Select
                                     value={formData.category}
-                                    onValueChange={(value: any) => setFormData({ ...formData, category: value })}
+                                    onValueChange={(value: string) => setFormData({ ...formData, category: value })}
                                 >
                                     <SelectTrigger>
                                         <SelectValue />

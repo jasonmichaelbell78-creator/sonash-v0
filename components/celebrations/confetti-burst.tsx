@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 import { CELEBRATION_COLORS } from './types'
 
 interface ConfettiPiece {
@@ -13,6 +13,8 @@ interface ConfettiPiece {
     size: number
     velocityX: number
     shape: 'circle' | 'square' | 'rectangle'
+    finalRotation: number
+    animationDuration: number
 }
 
 interface ConfettiBurstProps {
@@ -26,15 +28,11 @@ export function ConfettiBurst({
     duration = 4,
     colors = Object.values(CELEBRATION_COLORS)
 }: ConfettiBurstProps) {
-    const [pieces, setPieces] = useState<ConfettiPiece[]>([])
-    const isInitialized = useRef(false)
-
-    useEffect(() => {
-        // Only initialize once to prevent infinite loop
-        if (isInitialized.current || typeof window === 'undefined') return
-        isInitialized.current = true
-
-        const newPieces = Array.from({ length: intensity }, (_, i) => {
+    // Use lazy initialization to avoid setState in effect
+    const [pieces] = useState<ConfettiPiece[]>(() => {
+        if (typeof window === 'undefined') return []
+        
+        return Array.from({ length: intensity }, (_, i) => {
             const shapes: ('circle' | 'square' | 'rectangle')[] = ['circle', 'square', 'rectangle']
             return {
                 id: i,
@@ -45,10 +43,11 @@ export function ConfettiBurst({
                 size: Math.random() * 8 + 4, // 4-12px
                 velocityX: (Math.random() - 0.5) * 300, // Horizontal spread
                 shape: shapes[Math.floor(Math.random() * shapes.length)],
+                finalRotation: Math.random() * 360 + (Math.random() * 720 + 360), // Pre-calculate final rotation
+                animationDuration: duration + Math.random() * 2, // Pre-calculate animation duration
             }
         })
-        setPieces(newPieces)
-    }, []) // Empty dependency array - only run once
+    })
 
 
     if (typeof window === 'undefined') return null
@@ -73,12 +72,12 @@ export function ConfettiBurst({
                     }}
                     animate={{
                         y: window.innerHeight + 100,
-                        rotate: piece.rotation + (Math.random() * 720 + 360), // 1-3 full rotations
+                        rotate: piece.finalRotation, // Use pre-calculated value
                         opacity: [1, 1, 0.8, 0],
                         x: piece.x + piece.velocityX,
                     }}
                     transition={{
-                        duration: duration + Math.random() * 2, // Stagger completion
+                        duration: piece.animationDuration, // Use pre-calculated value
                         ease: [0.25, 0.1, 0.25, 1], // Custom easing for natural fall
                         opacity: {
                             times: [0, 0.7, 0.9, 1],

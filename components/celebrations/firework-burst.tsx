@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 
 interface Spark {
     id: number
@@ -27,15 +27,11 @@ export function FireworkBurst({
     count = 5,
     colors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6']
 }: FireworkBurstProps) {
-    const [fireworks, setFireworks] = useState<Firework[]>([])
-    const isInitialized = useRef(false)
+    // Use lazy initialization to avoid calling Math.random during render
+    const [fireworks] = useState<Firework[]>(() => {
+        if (typeof window === 'undefined') return []
 
-    useEffect(() => {
-        // Only initialize once to prevent infinite loop
-        if (isInitialized.current || typeof window === 'undefined') return
-        isInitialized.current = true
-
-        const createFirework = (id: number, delay: number): Firework => {
+        const createFirework = (id: number): Firework => {
             const sparkCount = 24 // Number of sparks per firework
             const sparks = Array.from({ length: sparkCount }, (_, i) => ({
                 id: i,
@@ -53,12 +49,8 @@ export function FireworkBurst({
             }
         }
 
-        const newFireworks = Array.from({ length: count }, (_, i) =>
-            createFirework(i, i * 0.3)
-        )
-
-        setFireworks(newFireworks)
-    }, []) // Empty dependency array - only run once
+        return Array.from({ length: count }, (_, i) => createFirework(i))
+    })
 
     if (typeof window === 'undefined') return null
 

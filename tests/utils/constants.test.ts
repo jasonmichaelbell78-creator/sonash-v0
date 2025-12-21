@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it } from "node:test"
 import assert from "node:assert"
 import { buildPath, FIRESTORE_COLLECTIONS, RATE_LIMITS } from "../../lib/constants"

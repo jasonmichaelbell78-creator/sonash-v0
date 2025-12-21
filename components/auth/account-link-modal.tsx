@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { X, Loader2, Shield, CheckCircle } from "lucide-react"
-import { linkWithEmail, linkWithGoogle, LinkError } from "@/lib/auth/account-linking"
+import { linkWithEmail, linkWithGoogle } from "@/lib/auth/account-linking"
 
 interface AccountLinkModalProps {
     onClose: () => void

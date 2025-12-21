@@ -10,7 +10,7 @@ import { ReactNode } from "react"
 // Base entity must have an id
 export interface BaseEntity {
     id: string
-    [key: string]: any
+    [key: string]: unknown
 }
 
 // Column definition for table display
@@ -26,7 +26,7 @@ export interface FilterConfig {
     key: string
     label: string
     options: Array<{ value: string; label: string }>
-    getValue?: (item: any) => string
+    getValue?: <T>(item: T) => string
 }
 
 // Service interface for CRUD operations

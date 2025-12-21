@@ -25,7 +25,7 @@ export function MilestoneModal({
     message,
     daysClean,
     onClose,
-    intensity = 'high'
+    _intensity = 'high'
 }: MilestoneModalProps) {
     const Icon = daysClean && daysClean >= 365
         ? MILESTONE_ICONS.year

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence, type HTMLMotionProps } from "framer-motion"
-import { Moon, Save, ChevronRight, ChevronLeft, Check, X, XCircle } from "lucide-react"
+import { Moon, Save, ChevronRight, ChevronLeft, Check } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -71,13 +71,6 @@ const REFLECTIONS = [
     { id: 'apology', label: 'To whom do I owe an apology?' },
 ]
 
-const REVIEW_QUESTIONS = [
-    { id: 'resentful', label: 'Resentful?', subtext: 'Holding onto anger?' },
-    { id: 'selfish', label: 'Selfish?', subtext: 'Thinking only of myself?' },
-    { id: 'dishonest', label: 'Dishonest?', subtext: 'Lying or hiding truth?' },
-    { id: 'afraid', label: 'Afraid?', subtext: 'Living in fear?' },
-]
-
 export default function NightReviewCard({ className, ...props }: NightReviewCardProps) {
     const [open, setOpen] = useState(false) // Was isOpen, changed to open to match Dialog usage typical patterns if needed, but keeping isOpen internal variable name consistent. Wait, previous code used isOpen. Dialog expects 'open'.
     // Let's stick to 'open' state variable name if passed to Dialog open={open}
@@ -98,7 +91,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
     const [surrender, setSurrender] = useState("")
 
     // Speech Recognition
-    const { isListening, transcript, startListening, stopListening, resetTranscript, hasSupport } = useSpeechRecognition()
+    const { isListening, transcript, startListening, stopListening, hasSupport } = useSpeechRecognition()
     const [activeSpeechField, setActiveSpeechField] = useState<string | null>(null)
     const textBeforeSpeakingRef = useRef<string>("")
 

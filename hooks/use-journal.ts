@@ -39,7 +39,7 @@ export const getRelativeDateLabel = (dateString: string) => {
 };
 
 // Generate searchable text from entry data for full-text search
-export function generateSearchableText(type: JournalEntryType, data: any): string {
+export function generateSearchableText(type: JournalEntryType, data: Record<string, unknown>): string {
     const parts: string[] = [];
 
     switch (type) {
@@ -58,7 +58,7 @@ export function generateSearchableText(type: JournalEntryType, data: any): strin
             parts.push(data.step4_gratitude || '');
             parts.push(data.step4_surrender || '');
             if (data.step3_reflections) {
-                Object.values(data.step3_reflections).forEach((v: any) => parts.push(String(v || '')));
+                Object.values(data.step3_reflections).forEach((v: unknown) => parts.push(String(v || '')));
             }
             break;
         case 'free-write':
@@ -77,7 +77,7 @@ export function generateSearchableText(type: JournalEntryType, data: any): strin
 }
 
 // Generate auto-tags from entry type and data
-export function generateTags(type: JournalEntryType, data: any): string[] {
+export function generateTags(type: JournalEntryType, data: Record<string, unknown>): string[] {
     const tags: string[] = [type];
 
     // Mood-based tags
@@ -174,7 +174,7 @@ export function useJournal() {
     // Memoized to prevent infinite re-renders when used in component useCallback deps
     const addEntry = useCallback(async (
         type: JournalEntryType,
-        data: any,
+        data: Record<string, unknown>,
         isPrivate: boolean = true
     ) => {
         const user = auth.currentUser;
@@ -190,7 +190,7 @@ export function useJournal() {
         const tags = generateTags(type, data);
 
         // Denormalized fields for efficient querying
-        const denormalized: Record<string, any> = {};
+        const denormalized: Record<string, unknown> = {};
         if ('cravings' in data) denormalized.hasCravings = data.cravings;
         if ('used' in data) denormalized.hasUsed = data.used;
         if ('mood' in data) denormalized.mood = data.mood;

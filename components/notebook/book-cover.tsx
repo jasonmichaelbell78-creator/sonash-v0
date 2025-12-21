@@ -8,8 +8,6 @@ import { useAuth } from "@/components/providers/auth-provider"
 import { differenceInDays } from "date-fns"
 import { logger } from "@/lib/logger"
 import { parseFirebaseTimestamp } from "@/lib/types/firebase-guards"
-import DailyQuoteCard from "@/components/widgets/daily-quote-card"
-import MeetingCountdown from "@/components/widgets/meeting-countdown"
 
 // Code splitting: Lazy load heavy modal components
 const SignInModal = dynamic(() => import("@/components/auth/sign-in-modal"), {

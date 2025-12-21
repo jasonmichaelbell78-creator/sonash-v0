@@ -1,6 +1,5 @@
 
 import * as fs from 'fs';
-import * as path from 'path';
 import * as readline from 'readline';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -21,7 +20,7 @@ if (!getApps().length) {
             credential: cert(serviceAccount)
         });
         console.log("Firebase Admin Initialized");
-    } catch (e) {
+    } catch {
         console.error("Error initializing Firebase Admin. Make sure firebase-service-account.json exists.");
         process.exit(1);
     }
@@ -46,7 +45,7 @@ if (fs.existsSync(CACHE_FILE)) {
     try {
         geocodingCache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
         console.log(`Loaded ${Object.keys(geocodingCache).length} cached locations.`);
-    } catch (err) {
+    } catch {
         console.warn("Failed to load cache, starting fresh.");
     }
 }
@@ -66,8 +65,8 @@ async function getCoordinates(address: string): Promise<{ lat: number, lng: numb
         const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_MAPS_KEY}`;
         try {
             const res = await fetch(url);
-            const data: any = await res.json();
-            if (data.status === 'OK' && data.results[0]) {
+            const data: { status: string; results?: Array<{ geometry: { location: { lat: number; lng: number } } }> } = await res.json();
+            if (data.status === 'OK' && data.results && data.results[0]) {
                 const loc = data.results[0].geometry.location;
                 geocodingCache[address] = loc;
                 return loc;
@@ -83,7 +82,7 @@ async function getCoordinates(address: string): Promise<{ lat: number, lng: numb
         try {
             await new Promise(r => setTimeout(r, NOMINATIM_DELAY_MS)); // Rate limit
             const res = await fetch(url, { headers: { 'User-Agent': 'SonashApp/1.0' } });
-            const data: any = await res.json();
+            const data: Array<{ lat: string; lon: string }> = await res.json();
             if (data && data.length > 0) {
                 const loc = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
                 geocodingCache[address] = loc;

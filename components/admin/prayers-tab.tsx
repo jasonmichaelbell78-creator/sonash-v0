@@ -53,15 +53,14 @@ export default function PrayersTab() {
     })
 
     useEffect(() => {
+        async function loadPrayers() {
+            setLoading(true)
+            const data = await getAllPrayers(true) // Include inactive
+            setPrayers(data)
+            setLoading(false)
+        }
         loadPrayers()
     }, [])
-
-    async function loadPrayers() {
-        setLoading(true)
-        const data = await getAllPrayers(true) // Include inactive
-        setPrayers(data)
-        setLoading(false)
-    }
 
     function handleEdit(prayer: Prayer) {
         setEditingPrayer(prayer)
@@ -194,7 +193,7 @@ export default function PrayersTab() {
                                 <Label htmlFor="category">Category *</Label>
                                 <Select
                                     value={formData.category}
-                                    onValueChange={(value: any) => setFormData({ ...formData, category: value })}
+                                    onValueChange={(value: string) => setFormData({ ...formData, category: value })}
                                 >
                                     <SelectTrigger>
                                         <SelectValue />

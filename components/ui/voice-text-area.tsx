@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Mic, MicOff, Loader2 } from "lucide-react"
+import { Mic, MicOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface VoiceTextAreaProps
@@ -10,16 +10,21 @@ export interface VoiceTextAreaProps
 }
 
 export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextAreaProps>(
-    ({ className, onTranscript, onChange, value, ...props }, ref) => {
+    ({ className, onTranscript: _onTranscript, onChange, value, ...props }, ref) => {
         const [isListening, setIsListening] = React.useState(false)
         const [isSupported, setIsSupported] = React.useState(true)
-        const recognitionRef = React.useRef<any>(null)
+        const recognitionRef = React.useRef<SpeechRecognition | null>(null)
 
         React.useEffect(() => {
             // Check for browser support
             if (typeof window !== "undefined") {
+                type WindowWithSpeechRecognition = {
+                    SpeechRecognition?: typeof window.SpeechRecognition
+                    webkitSpeechRecognition?: typeof window.SpeechRecognition
+                }
                 const SpeechRecognition =
-                    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+                    (window as unknown as WindowWithSpeechRecognition).SpeechRecognition || 
+                    (window as unknown as WindowWithSpeechRecognition).webkitSpeechRecognition
 
                 if (SpeechRecognition) {
                     const recognition = new SpeechRecognition()
@@ -31,7 +36,7 @@ export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextArea
 
                     recognition.onend = () => setIsListening(false)
 
-                    recognition.onresult = (event: any) => {
+                    recognition.onresult = (event: SpeechRecognitionEvent) => {
                         let finalTranscript = ""
 
                         // Build transcript from results
