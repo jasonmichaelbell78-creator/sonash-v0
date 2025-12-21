@@ -155,13 +155,17 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         })
       } catch (error: unknown) {
         // Handle specific Cloud Function errors with user-friendly messages
-        const errorCode = (error as { code?: string }).code
-        if (errorCode === "functions/resource-exhausted") {
+        interface CloudFunctionError {
+          code?: string
+          message?: string
+        }
+        const err = error as CloudFunctionError
+        if (err.code === "functions/resource-exhausted") {
           deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
           throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
         }
 
-        if (error.code === "functions/invalid-argument") {
+        if (err.code === "functions/invalid-argument") {
           deps.logger.error("Invalid data sent to Cloud Function", {
             userId: maskIdentifier(userId),
             error: error.message,
