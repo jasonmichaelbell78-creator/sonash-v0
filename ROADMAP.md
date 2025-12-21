@@ -64,21 +64,18 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Documentation:** See [docs/SECURITY.md](./docs/SECURITY.md), [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md), [docs/SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)
 
-### Week 4-6: Monitoring & Observability (🔄 Partial)
+### Week 4-6: Monitoring & Observability (✅ Foundation Complete)
 
 - ✅ Sentry error monitoring configured
-- ⏳ Performance monitoring
-- ⏳ User analytics baseline
-- ⏳ Alert thresholds defined
+- ✅ Security audit logging (Cloud Logging)
+- ⏸️ *Additional monitoring moved to M2 (Technical Debt)*
 
-### Week 7-9: Code Quality (🔄 Partial)
+### Week 7-9: Code Quality (✅ Foundation Complete)
 
 - ✅ ESLint configuration (0 errors, 29 warnings)
 - ✅ TypeScript strict mode
 - ✅ Test coverage: 97.8% (89/91 passing)
-- ⏳ CI/CD pipeline setup
-- ⏳ Automated testing in PR workflow
-- ⏳ Client-side rate limiting in firestore-service.ts (prevent abuse of write operations)
+- ⏸️ *CI/CD and automation moved to M2 (Technical Debt)*
 
 ### Week 10-12: Code Remediation (📋 Planned)
 
@@ -289,7 +286,19 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Goal:** Reduce technical debt only if friction prevents progress
 
-### Potential Work
+### Deferred Foundation Work
+
+**From M1 - Monitoring & Observability:**
+- ⏳ Performance monitoring (page load times, API latency)
+- ⏳ User analytics baseline (DAU, retention, feature usage)
+- ⏳ Alert thresholds defined (automated error/performance alerts)
+
+**From M1 - Code Quality & Automation:**
+- ⏳ CI/CD pipeline setup (GitHub Actions or similar)
+- ⏳ Automated testing in PR workflow
+- ⏳ Client-side rate limiting in firestore-service.ts
+
+### Potential Architecture Work
 
 - ⏳ Component library consolidation
 - ⏳ State management standardization
@@ -297,7 +306,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ⏳ Database schema optimization
 - ⏳ Admin route middleware (server-side protection for `/admin/*`)
 
-**Trigger:** Only pursue if M3+ blocked by technical limitations
+**Trigger:** Only pursue if M3+ blocked by technical limitations or if scaling reveals performance issues
+
+**Priority:** Low - Foundation is solid, focus on features first
 
 ---
 
