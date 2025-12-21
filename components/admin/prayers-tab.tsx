@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -52,16 +52,16 @@ export default function PrayersTab() {
         isActive: true
     })
 
-    async function loadPrayers() {
+    const loadPrayers = useCallback(async () => {
         setLoading(true)
         const data = await getAllPrayers(true) // Include inactive
         setPrayers(data)
         setLoading(false)
-    }
+    }, [])
 
     useEffect(() => {
         loadPrayers()
-    }, [])
+    }, [loadPrayers])
 
     function handleEdit(prayer: Prayer) {
         setEditingPrayer(prayer)

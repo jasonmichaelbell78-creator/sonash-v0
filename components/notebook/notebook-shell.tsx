@@ -55,27 +55,6 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
     setActiveTab(tabId as NotebookModuleId)
   }
 
-  const _handleSwipe = (_event: unknown, _info: unknown) => {
-    const _SWIPE_THRESHOLD = 50
-    const { offset, velocity } = _info as { offset: { x: number }; velocity: { x: number } }
-
-    // Calculate current index
-    const currentIndex = tabs.findIndex((t) => t.id === activeTab)
-
-    // Swipe Left (drag x < 0) -> Next Tab
-    if (offset.x < -30 || velocity.x < -300) {
-      if (currentIndex < tabs.length - 1) {
-        handleTabChange(tabs[currentIndex + 1].id)
-      }
-    }
-    // Swipe Right (drag x > 0) -> Previous Tab
-    else if (offset.x > 30 || velocity.x > 300) {
-      if (currentIndex > 0) {
-        handleTabChange(tabs[currentIndex - 1].id)
-      }
-    }
-  }
-
   const renderPage = () => {
     const module = getModuleById(activeTab) ?? notebookModules[0]
 

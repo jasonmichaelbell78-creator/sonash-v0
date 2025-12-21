@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 import { CELEBRATION_COLORS } from './types'
 
 interface ConfettiPiece {
@@ -28,15 +28,11 @@ export function ConfettiBurst({
     duration = 4,
     colors = Object.values(CELEBRATION_COLORS)
 }: ConfettiBurstProps) {
-    const [pieces, setPieces] = useState<ConfettiPiece[]>([])
-    const isInitialized = useRef(false)
-
-    useEffect(() => {
-        // Only initialize once to prevent infinite loop
-        if (isInitialized.current || typeof window === 'undefined') return
-        isInitialized.current = true
-
-        const newPieces = Array.from({ length: intensity }, (_, i) => {
+    // Use lazy initialization to avoid setState in effect
+    const [pieces] = useState<ConfettiPiece[]>(() => {
+        if (typeof window === 'undefined') return []
+        
+        return Array.from({ length: intensity }, (_, i) => {
             const shapes: ('circle' | 'square' | 'rectangle')[] = ['circle', 'square', 'rectangle']
             return {
                 id: i,
@@ -51,8 +47,7 @@ export function ConfettiBurst({
                 animationDuration: duration + Math.random() * 2, // Pre-calculate animation duration
             }
         })
-        setPieces(newPieces)
-    }, []) // Empty dependency array - only run once
+    })
 
 
     if (typeof window === 'undefined') return null

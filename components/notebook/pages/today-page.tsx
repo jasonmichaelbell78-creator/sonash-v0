@@ -17,7 +17,6 @@ import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
 import { db } from "@/lib/firebase"
-import { serverTimestamp } from "firebase/firestore"
 
 interface TodayPageProps {
   nickname: string
@@ -229,7 +228,7 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
     } finally {
       setIsSaving(false)
     }
-  }, [user])
+  }, [user, celebrate])
 
   // Auto-save effect: marks data as dirty and schedules a save
   // The timer only starts once per change batch, not reset on every keystroke

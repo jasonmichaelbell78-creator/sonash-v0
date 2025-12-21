@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { collection, getDocs } from "firebase/firestore"
 import { getFunctions, httpsCallable } from "firebase/functions"
 import { db } from "@/lib/firebase"
@@ -39,12 +39,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
         }
     }, [config.filters])
 
-    // Fetch data
-    useEffect(() => {
-        fetchItems()
-    }, [])
-
-    const fetchItems = async () => {
+    const fetchItems = useCallback(async () => {
         setLoading(true)
         try {
             let data: T[]
@@ -66,7 +61,12 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
             console.error(`Error fetching ${config.entityNamePlural}:`, error)
         }
         setLoading(false)
-    }
+    }, [config.service, config.collectionName, config.entityNamePlural])
+
+    // Fetch data
+    useEffect(() => {
+        fetchItems()
+    }, [fetchItems])
 
     // Filter items
     const filteredItems = items.filter(item => {

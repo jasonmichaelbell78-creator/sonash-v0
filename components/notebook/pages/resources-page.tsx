@@ -39,11 +39,11 @@ export default function ResourcesPage() {
   const [soberHomes, setSoberHomes] = useState<SoberLivingHome[]>([])
   const [resourceType, setResourceType] = useState<"meetings" | "sober-living">("meetings")
   const [viewMode, setViewMode] = useState<"date" | "all">("date") // Changed 'today' to 'date'
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date()) // New state
+  const [selectedDate] = useState<Date>(new Date()) // New state
   const [displayMode, setDisplayMode] = useState<"list" | "map">("list")
   const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
   const [genderFilter, setGenderFilter] = useState<"All" | "Men" | "Women">("All")
-  const [neighborhoodFilter, setNeighborhoodFilter] = useState("All")
+  const [neighborhoodFilter] = useState("All")
   const [sortBy, setSortBy] = useState<SortOption>("time")
   const [loading, setLoading] = useState(true)
   const { user, loading: authLoading } = useAuth()
@@ -60,7 +60,6 @@ export default function ResourcesPage() {
     status: locationStatus,
     loading: locationLoading,
     requestLocation,
-    clearLocation,
   } = useGeolocation()
 
   // Determine query day name from selectedDate
@@ -69,7 +68,7 @@ export default function ResourcesPage() {
   }, [selectedDate])
 
   // Load more meetings for infinite scroll (View All mode)
-  const loadMoreMeetings = useCallback(async () => {
+  const _loadMoreMeetings = useCallback(async () => {
     if (!hasMore || isLoadingMore || viewMode !== "all") return
 
     setIsLoadingMore(true)
@@ -258,7 +257,7 @@ export default function ResourcesPage() {
     }
 
     return result
-  }, [meetings, viewMode, fellowshipFilter, sortBy, userLocation, neighborhoodFilter])
+  }, [meetings, viewMode, fellowshipFilter, sortBy, userLocation, neighborhoodFilter, selectedDate])
 
   // Filtered Sober Living Homes
   const filteredSoberHomes = useMemo(() => {
@@ -285,7 +284,7 @@ export default function ResourcesPage() {
   const currentData = resourceType === "meetings" ? filteredMeetings : filteredSoberHomes
 
   // Get unique neighborhoods from the current data (or all data?) 
-  const availableNeighborhoods = useMemo(() => {
+  const _availableNeighborhoods = useMemo(() => {
     // Use all items from ACTIVE type to populate the list
     const sourceData = resourceType === "meetings" ? meetings : soberHomes
     const unique = Array.from(new Set(sourceData.map(item => item.neighborhood))).filter(Boolean).sort()
@@ -314,7 +313,7 @@ export default function ResourcesPage() {
   }
 
   // Handle Time Jump
-  const handleTimeJump = (timeStr: string) => {
+  const _handleTimeJump = (timeStr: string) => {
     if (!timeStr) return
     const targetMinutes = parseTime(timeStr)
     // Search filtered meetings to only target visible items

@@ -6,7 +6,7 @@
  * (morning/afternoon/evening) with support for scheduled slogans
  */
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { SlogansService } from "@/lib/db/slogans"
@@ -24,7 +24,7 @@ export default function DailySloganWidget() {
     const [slogan, setSlogan] = useState<Slogan | null>(null)
     const [loading, setLoading] = useState(true)
 
-    const fetchDailySlogan = async () => {
+    const fetchDailySlogan = useCallback(async () => {
         try {
             // Fetch all slogans
             const slogansRef = collection(db, "slogans")
@@ -43,11 +43,11 @@ export default function DailySloganWidget() {
             console.error("Error fetching daily slogan:", error)
         }
         setLoading(false)
-    }
+    }, [])
 
     useEffect(() => {
         fetchDailySlogan()
-    }, [])
+    }, [fetchDailySlogan])
 
     if (loading) {
         return (

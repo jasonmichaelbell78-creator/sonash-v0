@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Clock } from "lucide-react"
 import { MeetingsService, Meeting } from "@/lib/db/meetings"
 import { useGeolocation } from "@/hooks/use-geolocation"
@@ -27,7 +27,7 @@ export default function CompactMeetingCountdown() {
         timeout: 5000
     })
 
-    function updateTimeUntil() {
+    const updateTimeUntil = useCallback(() => {
         if (!nextMeeting) return
 
         const now = new Date()
@@ -55,7 +55,7 @@ export default function CompactMeetingCountdown() {
         } else {
             setTimeUntil(`tmrw`)
         }
-    }
+    }, [nextMeeting])
 
     useEffect(() => {
         async function findNextMeeting() {
@@ -150,11 +150,11 @@ export default function CompactMeetingCountdown() {
         }, 60000)
 
         return () => clearInterval(interval)
-    }, [userLocation, locationStatus]) // Re-run when location changes
+    }, [userLocation, locationStatus, updateTimeUntil]) // Re-run when location changes
 
     useEffect(() => {
         updateTimeUntil()
-    }, [nextMeeting])
+    }, [updateTimeUntil])
 
     function formatTime(time24: string): string {
         const [hours, minutes] = time24.split(':').map(Number)
