@@ -25,7 +25,7 @@ export function EntryWizard({ type, onClose }: EntryWizardProps) {
     const handleSubmit = async () => {
         setSubmitting(true)
         try {
-            let data: any = {}
+            let data: Record<string, unknown> = {}
 
             if (type === 'mood') {
                 data = { mood, intensity, note }

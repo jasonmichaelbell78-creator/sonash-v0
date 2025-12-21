@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { Calendar, Clock, Zap, Moon, Heart, Loader2, NotebookPen } from "lucide-react"
+import { Calendar, Clock, Zap, Moon, Heart, Loader2, NotebookPen, LucideIcon } from "lucide-react"
 import { format, startOfDay, subDays } from "date-fns"
 import { useJournal } from "@/hooks/use-journal"
 
@@ -11,7 +11,7 @@ type HistoryItem = {
     date: Date
     title: string
     preview: string
-    icon: any
+    icon: LucideIcon
     color: string
 }
 
@@ -73,8 +73,8 @@ export default function HistoryPage() {
                 }
 
                 if (entry.type === 'inventory' || entry.type === 'night-review' || entry.type === 'spot-check') {
-                    const data = (entry as any).data || {}
-                    const preview = data.gratitude || data.action || data.resentments || data.note || "Review completed"
+                    const data = (entry as { data?: Record<string, unknown> }).data || {}
+                    const preview = (data.gratitude as string) || (data.action as string) || (data.resentments as string) || (data.note as string) || "Review completed"
                     const icon = entry.type === 'spot-check' ? Zap : entry.type === 'night-review' ? Moon : Calendar
                     const color = entry.type === 'spot-check' ? "text-orange-500" : entry.type === 'night-review' ? "text-indigo-500" : "text-amber-600"
                     return {
@@ -93,7 +93,7 @@ export default function HistoryPage() {
                     type: entry.type,
                     date,
                     title: "Entry",
-                    preview: (entry as any).data?.content || "",
+                    preview: ((entry as { data?: Record<string, unknown> }).data?.content as string) || "",
                     icon: NotebookPen,
                     color: "text-amber-600"
                 }

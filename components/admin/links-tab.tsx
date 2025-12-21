@@ -207,7 +207,7 @@ export default function LinksTab() {
                                 <Label htmlFor="category">Category *</Label>
                                 <Select
                                     value={formData.category}
-                                    onValueChange={(value: any) => setFormData({ ...formData, category: value })}
+                                    onValueChange={(value: string) => setFormData({ ...formData, category: value })}
                                 >
                                     <SelectTrigger>
                                         <SelectValue />

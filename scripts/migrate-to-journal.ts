@@ -136,7 +136,7 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
 /**
  * Generate searchable text from entry data
  */
-function generateSearchableText(type: string, data: any): string {
+function generateSearchableText(type: string, data: Record<string, unknown>): string {
     const parts: string[] = [];
 
     switch (type) {
@@ -149,7 +149,7 @@ function generateSearchableText(type: string, data: any): string {
             parts.push(data.step4_gratitude || '');
             parts.push(data.step4_surrender || '');
             if (data.step3_reflections) {
-                Object.values(data.step3_reflections).forEach((v: any) => parts.push(String(v || '')));
+                Object.values(data.step3_reflections).forEach((v: unknown) => parts.push(String(v || '')));
             }
             break;
         case 'gratitude':

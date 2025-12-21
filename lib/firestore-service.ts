@@ -122,7 +122,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         // CRITICAL: Always use YYYY-MM-DD format for date (document ID format)
         const todayId = getTodayDateId() // e.g., "2025-12-13"
 
-        const payload: Record<string, any> = {
+        const payload: Record<string, unknown> = {
           userId,
           date: todayId, // Use document ID format, not display format
           content: data.content || "",
@@ -153,9 +153,10 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         deps.logger.info("Daily log saved via Cloud Function", {
           userId: maskIdentifier(userId),
         })
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Handle specific Cloud Function errors with user-friendly messages
-        if (error.code === "functions/resource-exhausted") {
+        const errorCode = (error as { code?: string }).code
+        if (errorCode === "functions/resource-exhausted") {
           deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
           throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
         }
@@ -269,7 +270,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     // Save an inventory entry (Spot Check, Night Review, etc.)
     async saveInventoryEntry(userId: string, entry: {
       type: 'spot-check' | 'night-review' | 'gratitude';
-      data: Record<string, any>;
+      data: Record<string, unknown>;
       tags?: string[];
     }) {
       ensureValidUser(userId)
@@ -284,17 +285,17 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
 
         // Helper to remove undefined values (Firestore doesn't support them)
-        const sanitizeData = (data: any): any => {
+        const sanitizeData = (data: unknown): unknown => {
           if (Array.isArray(data)) {
             return data.map(sanitizeData)
           }
           if (data !== null && typeof data === 'object') {
-            return Object.entries(data).reduce((acc, [key, value]) => {
+            return Object.entries(data as Record<string, unknown>).reduce((acc: Record<string, unknown>, [key, value]) => {
               if (value !== undefined) {
                 acc[key] = sanitizeData(value)
               }
               return acc
-            }, {} as Record<string, any>)
+            }, {} as Record<string, unknown>)
           }
           return data
         }
@@ -352,7 +353,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     // Save a journal entry from notebook inputs (mood, cravings, used, notes, etc.)
     async saveNotebookJournalEntry(userId: string, entry: {
       type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory';
-      data: Record<string, any>;
+      data: Record<string, unknown>;
       isPrivate?: boolean;
     }) {
       ensureValidUser(userId)

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion"
-import { Smile, Heart, ClipboardList, PenTool, Coffee, CheckCircle2 } from "lucide-react"
+import { Smile, Heart, ClipboardList, PenTool, Coffee, CheckCircle2, LucideIcon } from "lucide-react"
 import { JournalEntryType } from "@/types/journal"
 
 interface EntryMenuProps {
@@ -8,7 +8,7 @@ interface EntryMenuProps {
     onClose: () => void
 }
 
-const MENU_ITEMS: { type: JournalEntryType; label: string; icon: any; color: string }[] = [
+const MENU_ITEMS: { type: JournalEntryType; label: string; icon: LucideIcon; color: string }[] = [
     { type: 'mood', label: 'Mood Check', icon: Smile, color: 'text-amber-500' },
     { type: 'gratitude', label: 'Gratitude List', icon: Heart, color: 'text-rose-500' },
     { type: 'inventory', label: 'Nightly Inventory', icon: ClipboardList, color: 'text-indigo-500' },

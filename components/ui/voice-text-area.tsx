@@ -13,13 +13,14 @@ export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextArea
     ({ className, onTranscript: _onTranscript, onChange, value, ...props }, ref) => {
         const [isListening, setIsListening] = React.useState(false)
         const [isSupported, setIsSupported] = React.useState(true)
-        const recognitionRef = React.useRef<any>(null)
+        const recognitionRef = React.useRef<SpeechRecognition | null>(null)
 
         React.useEffect(() => {
             // Check for browser support
             if (typeof window !== "undefined") {
                 const SpeechRecognition =
-                    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+                    (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || 
+                    (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
 
                 if (SpeechRecognition) {
                     const recognition = new SpeechRecognition()
@@ -31,7 +32,7 @@ export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextArea
 
                     recognition.onend = () => setIsListening(false)
 
-                    recognition.onresult = (event: any) => {
+                    recognition.onresult = (event: SpeechRecognitionEvent) => {
                         let finalTranscript = ""
 
                         // Build transcript from results
