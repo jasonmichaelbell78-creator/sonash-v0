@@ -243,7 +243,27 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
    - Sponsor contact setup (optional)
    - Skip option for returning users
 
-3. **Stage-of-Recovery Selector** (4 SP)
+3. **Sponsor Personalization System** (8-13 SP)
+   - **Leverages:** `hasSponsor` data from onboarding
+   - **Sponsor Contact Management:**
+     - Add sponsor name, phone, email
+     - Quick-dial from app
+     - Track last contact date
+     - Set reminder frequency
+   - **Personalized Prompts:**
+     - "Have you called your sponsor today?" (if `hasSponsor === 'yes'`)
+     - "Consider finding a sponsor" nudges (if `hasSponsor === 'no'`)
+     - Meeting etiquette tips for sponsor-seekers (if `hasSponsor === 'looking'`)
+   - **Step Work Integration:**
+     - Encourage sponsor involvement for Step 4-9
+     - "Share with sponsor" quick action for inventory entries
+   - **Analytics Tracking:**
+     - Sponsor contact frequency
+     - Retention comparison (sponsored vs non-sponsored users)
+     - Feature usage by sponsor status
+   - **Why:** Fulfills onboarding promise of personalization, proven retention booster
+
+4. **Stage-of-Recovery Selector** (4 SP)
    - Adjusts app emphasis based on user stage
    - Newcomer vs old-timer focus
 
