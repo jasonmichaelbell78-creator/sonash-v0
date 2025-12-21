@@ -257,7 +257,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
    - Hungry/Angry/Lonely/Tired assessment
    - User-initiated button for self-check
 
-6. **Sober Fun Ideas Generator** (3 SP)
+6. **User Documentation & Help System** (5-8 SP)
+   - Getting started guide for new users
+   - Feature explanations (daily check-in, journal, growth tools)
+   - Recovery program primer (12 steps overview)
+   - FAQ section (account, privacy, data)
+   - In-app tooltips for key features
+   - Optional: Interactive tutorial/walkthrough on first launch
+   - **Why:** Reduces confusion, improves onboarding, helps users get value faster
+
+7. **Sober Fun Ideas Generator** (3 SP)
    - Random activities for boredom
    - Relapse prevention tool
 
