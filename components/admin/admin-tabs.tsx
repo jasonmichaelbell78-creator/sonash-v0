@@ -5,8 +5,10 @@ import { SoberLivingTab } from "./sober-living-tab"
 import { QuotesTab } from "./quotes-tab"
 import { GlossaryTab } from "./glossary-tab"
 import { SlogansTab } from "./slogans-tab"
+import LinksTab from "./links-tab"
+import PrayersTab from "./prayers-tab"
 import { UsersTab } from "./users-tab"
-import { Home, Users, Quote, Book, Lightbulb } from "lucide-react"
+import { Home, Users, Quote, Book, Lightbulb, Link, Heart } from "lucide-react"
 
 interface AdminTabsProps {
     activeTab: string
@@ -19,6 +21,8 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
         { id: "sober-living", label: "Sober Living", icon: Home },
         { id: "quotes", label: "Daily Quotes", icon: Quote },
         { id: "slogans", label: "Slogans", icon: Lightbulb },
+        { id: "links", label: "Quick Links", icon: Link },
+        { id: "prayers", label: "Prayers", icon: Heart },
         { id: "glossary", label: "Glossary", icon: Book },
         { id: "users", label: "Users", icon: Users },
     ]
@@ -52,10 +56,11 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
                 {activeTab === "sober-living" && <SoberLivingTab />}
                 {activeTab === "quotes" && <QuotesTab />}
                 {activeTab === "slogans" && <SlogansTab />}
+                {activeTab === "links" && <LinksTab />}
+                {activeTab === "prayers" && <PrayersTab />}
                 {activeTab === "glossary" && <GlossaryTab />}
                 {activeTab === "users" && <UsersTab />}
             </div>
         </div>
     )
 }
-
