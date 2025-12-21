@@ -324,20 +324,22 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     }
 
 
-    // Show hours if user has less than a day
-    if (years === 0 && months === 0 && days === 0 && hours > 0) {
+
+    // Always show hours if > 0
+    if (hours > 0) {
       parts.push({
         text: hours === 1 ? "1 Hour" : `${hours} Hours`,
         size: "text-xl md:text-2xl"
       })
     }
 
-    // Always show minutes for ALL users
-    const minutesOnly = hours * 60 + minutes
-    parts.push({
-      text: minutesOnly === 1 ? "1 Minute" : `${minutesOnly} Minutes`,
-      size: "text-lg md:text-xl"
-    })
+    // Always show minutes (just minutes, not hours converted to minutes)
+    if (minutes > 0) {
+      parts.push({
+        text: minutes === 1 ? "1 Minute" : `${minutes} Minutes`,
+        size: "text-lg md:text-xl"
+      })
+    }
 
     if (parts.length === 0) return null
 
