@@ -1,4 +1,3 @@
-/// <reference path="../web-speech-api.d.ts" />
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
