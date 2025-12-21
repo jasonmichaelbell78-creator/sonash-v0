@@ -209,7 +209,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
       // Save to cloud (daily_logs collection - for Today tab persistence)
       await FirestoreService.saveDailyLog(user.uid, saveData)
-      
+
       setSaveComplete(true)
       // Hide "Saved" message after 2 seconds
       setTimeout(() => setSaveComplete(false), 2000)
@@ -302,32 +302,32 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     const minutes = duration.minutes ?? 0
 
     const parts = []
-    
+
     // Build parts with graduated text sizes
     if (years > 0) {
-      parts.push({ 
-        text: years === 1 ? "1 Year" : `${years} Years`, 
-        size: "text-3xl md:text-4xl" 
+      parts.push({
+        text: years === 1 ? "1 Year" : `${years} Years`,
+        size: "text-3xl md:text-4xl"
       })
     }
     if (months > 0) {
-      parts.push({ 
-        text: months === 1 ? "1 Month" : `${months} Months`, 
-        size: "text-2xl md:text-3xl" 
+      parts.push({
+        text: months === 1 ? "1 Month" : `${months} Months`,
+        size: "text-2xl md:text-3xl"
       })
     }
     if (days > 0) {
-      parts.push({ 
-        text: days === 1 ? "1 Day" : `${days} Days`, 
-        size: "text-xl md:text-2xl" 
+      parts.push({
+        text: days === 1 ? "1 Day" : `${days} Days`,
+        size: "text-xl md:text-2xl"
       })
     }
-    
+
     // Always show minutes for ALL users
     const totalMinutes = hours * 60 + minutes
-    parts.push({ 
-      text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`, 
-      size: "text-lg md:text-xl" 
+    parts.push({
+      text: totalMinutes === 1 ? "1 Minute" : `${totalMinutes} Minutes`,
+      size: "text-lg md:text-xl"
     })
 
     if (parts.length === 0) return null
@@ -377,7 +377,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
                 {cleanTimeDisplay.map((part, index) => (
                   <span key={index} className="text-center">
-                    <span className={`font-heading ${part.size} text-amber-900 font-bold`}>
+                    <span className={`font-heading-alt ${part.size} text-amber-900`}>
                       {part.text}
                     </span>
                     {index < cleanTimeDisplay.length - 1 && (
@@ -433,11 +433,11 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-body text-amber-900/70">Days logged this week</span>
-                <span className="font-heading text-3xl text-amber-900 font-bold">{weekStats.daysLogged} / 7</span>
+                <span className="data-display text-3xl text-amber-900">{weekStats.daysLogged} / 7</span>
               </div>
               <div className="flex items-center justify-between pt-3 border-t border-amber-100">
                 <span className="font-body text-amber-900/70">Current streak</span>
-                <span className="font-heading text-3xl text-amber-900 font-bold">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
+                <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
               </div>
             </div>
           </div>
@@ -480,20 +480,20 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                     <button
                       onClick={() => { setCravings(false); setHasTouched(true) }}
                       aria-label="No cravings"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === false 
-                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm" 
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === false
+                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm"
                         : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
-                      }`}
+                        }`}
                     >
                       No
                     </button>
                     <button
                       onClick={() => { setCravings(true); setHasTouched(true) }}
                       aria-label="Yes cravings"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === true 
-                        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-sm" 
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === true
+                        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-sm"
                         : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
-                      }`}
+                        }`}
                     >
                       Yes
                     </button>
@@ -506,20 +506,20 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                     <button
                       onClick={() => { setUsed(false); setHasTouched(true) }}
                       aria-label="No used"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === false 
-                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm" 
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === false
+                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm"
                         : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
-                      }`}
+                        }`}
                     >
                       No
                     </button>
                     <button
                       onClick={() => { setUsed(true); setHasTouched(true) }}
                       aria-label="Yes used"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === true 
-                        ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-sm" 
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === true
+                        ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-sm"
                         : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
-                      }`}
+                        }`}
                     >
                       Yes
                     </button>
