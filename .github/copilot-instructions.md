@@ -5,9 +5,7 @@
 
 ## Project Overview
 
-SoNash is a privacy-first digital recovery journal built with Next.js 16.1, React 19, TypeScript 5, and Firebase. It helps individuals in recovery track their sobriety journey with secure, real-time data synchronization. The app features a photo-realistic notebook interface, unified journal system, and privacy-first design with comprehensive security measures (App Check, reCAPTCHA v3, Firestore Rules, rate limiting).
-
-**Tech Stack:** Next.js 16.1 (App Router), React 19.2, TypeScript 5.x, Tailwind CSS v4, Framer Motion 12, Firebase 12.7 (Firestore, Auth, Cloud Functions v2, App Check)
+SoNash is a privacy-first recovery journal built with Next.js 16.1 (App Router), React 19, TypeScript 5, and Firebase (Firestore, Auth, Cloud Functions v2, App Check). Uses Tailwind CSS v4 for styling.
 
 ## Critical: Build & Test Commands
 
@@ -65,101 +63,38 @@ npx tsc --noEmit
 
 ### Building
 
-**CRITICAL BUILD ISSUE:** The build currently fails in restricted network environments due to Google Fonts fetching (Handlee and Rock Salt fonts). This is a known limitation when building without internet access.
-
-**Workaround if build fails with font errors:**
-1. Check if you have internet access to fonts.googleapis.com
-2. In CI environments with network restrictions, font fetching will fail
-3. This is expected behavior - the app uses Next.js font optimization
+**CRITICAL BUILD ISSUE:** Build fails in restricted networks due to Google Fonts (Handlee, Rock Salt). Requires internet to fonts.googleapis.com.
 
 ```bash
-# Build Next.js app (requires internet for Google Fonts)
-npm run build
-
-# Output directory: out/ (static export)
+npm run build  # Output: out/ (static export for Firebase Hosting)
 ```
-
-**Build Configuration:**
-- `next.config.mjs` sets `output: 'export'` for static Firebase Hosting deployment
-- Images are unoptimized (`images.unoptimized: true`)
-- Environment variables loaded from `.env.local` (gitignored)
 
 ### Development Server
 
 ```bash
-# Start Next.js dev server
-npm run dev
+npm run dev  # http://localhost:3000
 
-# Runs on http://localhost:3000
+# With Firebase Emulators (optional):
+firebase emulators:start  # Terminal 1, UI at localhost:4000
+npm run dev               # Terminal 2
 ```
-
-**With Firebase Emulators (Recommended for full local development):**
-
-```bash
-# Terminal 1: Start Firebase emulators
-firebase emulators:start
-
-# Terminal 2: Start Next.js dev server
-npm run dev
-```
-
-**Emulator Ports:**
-- Emulator UI: `localhost:4000`
-- Firestore: `localhost:8080`
-- Auth: `localhost:9099`
-- Functions: `localhost:5001`
 
 ## Environment Variables
 
-**REQUIRED:** Create `.env.local` in project root (see `.env.local.example`):
-
-```bash
-# Firebase SDK (required for build & runtime)
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-# App Check (required for production Cloud Functions access)
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
-
-# Development only (NEVER in production)
-NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
-
-# Optional monitoring
-NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
-NEXT_PUBLIC_SENTRY_ENABLED=false
-```
-
-**For Testing:** Tests require test values for Firebase env vars (see `package.json` test script for exact values)
+**REQUIRED:** Create `.env.local` (see `.env.local.example` for all vars). Must include Firebase config, App Check keys, optional Sentry DSN.
 
 ## Cloud Functions
 
-### Building Functions
-
 ```bash
-cd functions
-npm install
-npm run build
-# Output: functions/lib/
-```
+# Build functions
+cd functions && npm install && npm run build && cd ..
 
-**Node Version Warning:** Functions specify Node 22 in engines but work with Node 20+ (you'll see engine warnings, safe to ignore)
-
-### Deploying Functions
-
-```bash
-# Deploy all functions
+# Deploy
 firebase deploy --only functions
-
-# Deploy specific function
-firebase deploy --only functions:functionName
-
-# Deploy with Firestore rules
-firebase deploy --only functions,firestore:rules
+firebase deploy --only functions,firestore:rules  # With rules
 ```
+
+**Note:** Functions specify Node 22 but work with Node 20+ (warnings are safe to ignore)
 
 ## CI/CD Workflows
 
@@ -183,145 +118,54 @@ Runs on push to `main` and all PRs:
 
 ### Deploy Workflow (.github/workflows/deploy-firebase.yml)
 
-Runs on push to `main` branch:
-
-1. Install Firebase CLI globally
-2. Install & build Cloud Functions (`cd functions && npm ci && npm run build`)
-3. Authenticate with service account (`FIREBASE_SERVICE_ACCOUNT` secret)
-4. Deploy functions: `firebase deploy --only functions`
-5. Cleanup old functions (exportUserData, deleteUserAccount)
-6. Deploy Firestore rules: `firebase deploy --only firestore:rules`
+Runs on push to `main`: builds & deploys Cloud Functions and Firestore rules using `FIREBASE_SERVICE_ACCOUNT` secret.
 
 ## Project Structure
 
 ### Key Directories
 
-```
-sonash-v0/
-├── app/                    # Next.js App Router pages
-│   ├── page.tsx           # Homepage (book cover)
-│   ├── layout.tsx         # Root layout with fonts
-│   ├── globals.css        # Global styles & design tokens
-│   ├── admin/             # Admin panel
-│   ├── journal/           # Journal page
-│   └── meetings/          # Meetings directory
-│
-├── components/
-│   ├── notebook/          # Main notebook UI
-│   │   ├── book-cover.tsx
-│   │   ├── notebook-shell.tsx
-│   │   └── pages/         # Notebook pages (today, resources, support)
-│   ├── journal/           # Journal system components
-│   ├── growth/            # Growth tab tools (spot checks, night reviews)
-│   ├── auth/              # Authentication modals
-│   └── ui/                # shadcn/ui components
-│
-├── lib/                   # Core utilities
-│   ├── firebase.ts        # Firebase initialization
-│   ├── firestore-service.ts  # Firestore operations (PRIMARY DATA ACCESS)
-│   ├── logger.ts          # Logging with PII redaction
-│   ├── auth/              # Auth helpers
-│   ├── database/          # Database utilities
-│   └── security/          # Security validation
-│
-├── functions/             # Cloud Functions
-│   ├── src/
-│   │   ├── index.ts       # Function exports
-│   │   └── journal/       # Journal functions
-│   └── package.json       # Separate deps from root
-│
-├── tests/                 # Unit tests (Node test runner)
-├── scripts/               # Utility scripts (seed data, migrations)
-├── docs/                  # Documentation
-├── firestore.rules        # Security rules (CRITICAL - must deploy with functions)
-├── firestore.indexes.json # Database indexes
-└── tsconfig.json          # TypeScript config (strict mode)
-```
+- `app/` - Next.js pages (page.tsx, layout.tsx, globals.css, admin/, journal/, meetings/)
+- `components/` - UI components (notebook/, journal/, growth/, auth/, ui/)
+- `lib/` - Core utilities (firebase.ts, firestore-service.ts, logger.ts, auth/, security/)
+- `functions/` - Cloud Functions (separate package.json)
+- `tests/` - Unit tests (Node test runner)
+- Configuration: `next.config.mjs`, `tsconfig.json`, `eslint.config.mjs`, `firebase.json`, `firestore.rules`
 
 ### Critical Files
 
-**Configuration:**
-- `next.config.mjs` - Next.js config (static export for Firebase Hosting)
-- `tsconfig.json` - TypeScript (strict mode, paths alias `@/*`)
-- `tsconfig.test.json` - Test-specific TypeScript (commonjs output to dist-tests/)
-- `eslint.config.mjs` - ESLint (flat config, TypeScript + React Hooks rules)
-- `firebase.json` - Firebase hosting/functions/rules config
-- `firestore.rules` - Security rules (deploy with `firebase deploy --only firestore:rules`)
-- `firestore.indexes.json` - Composite indexes for queries
-
-**Documentation (READ BEFORE CHANGES):**
-- `README.md` - Project overview
-- `DEVELOPMENT.md` - Developer setup guide
-- `ARCHITECTURE.md` - Technical architecture
-- `TESTING_CHECKLIST.md` - Manual QA checklist
+- `firestore.rules` - Security rules (MUST deploy with functions)
+- `firestore.indexes.json` - Composite indexes
+- `tsconfig.test.json` - Test config (commonjs output to dist-tests/)
+- Documentation: `README.md`, `DEVELOPMENT.md`, `ARCHITECTURE.md`
 
 ## Architecture & Patterns
 
 ### Data Access
 
-**PRIMARY:** All Firestore operations go through `lib/firestore-service.ts` (FirestoreService class)
+ALL Firestore operations via `lib/firestore-service.ts`:
+- `/users/{uid}` - User profiles (owner-only)
+- `/users/{uid}/journal/{entryId}` - Unified journal timeline
+- `/users/{uid}/daily_logs/{dateId}` - Daily logs (Cloud Functions only)
+- `/meetings/{meetingId}` - Meeting directory (read-only)
 
-**Key Collections:**
-- `/users/{uid}` - User profiles (owner-only access)
-- `/users/{uid}/journal/{entryId}` - Unified journal (all entry types)
-- `/users/{uid}/daily_logs/{dateId}` - Daily logs (Cloud Functions only for writes)
-- `/users/{uid}/inventoryEntries/{entryId}` - Structured inventories
-- `/meetings/{meetingId}` - Meeting directory (read-only for users)
+### Security Layers
 
-### Security Layers (In Order)
+TLS → App Check (reCAPTCHA v3) → Firebase Auth → Firestore Rules (`firestore.rules`) → Client Validation (`lib/security/`) → Rate Limiting (10 req/min) → Audit Logging
 
-1. **TLS 1.3** - Transport encryption
-2. **App Check** - reCAPTCHA v3 bot protection (required in production)
-3. **Firebase Auth** - JWT tokens, anonymous + email/Google auth
-4. **Firestore Rules** - Server-side authorization (`firestore.rules`)
-5. **Client Validation** - `lib/security/firestore-validation.ts`
-6. **Rate Limiting** - Cloud Functions enforce 10 req/min per user
-7. **Audit Logging** - Security events logged to GCP
+### Patterns
 
-### Component Patterns
+- Use `lib/firestore-service.ts` for ALL Firestore operations
+- Custom hooks: `useAuth`, `useJournal`, `useGeolocation`
+- State: React Context (AuthContext), real-time Firestore listeners
+- Styling: Tailwind CSS v4, tokens in `app/globals.css`
 
-**Hooks:** Use custom hooks for Firebase operations (`useAuth`, `useJournal`, `useGeolocation`)
+## Common Issues & Fixes
 
-**State Management:**
-- React Context for global state (AuthContext)
-- Real-time listeners for Firestore data (automatic sync)
-- Optimistic UI updates
-
-**Styling:** Tailwind CSS v4, design tokens in `app/globals.css`
-
-## Common Pitfalls & Workarounds
-
-### 1. ESLint Errors in compact-meeting-countdown.tsx
-
-**Issue:** 6 ESLint errors about `updateTimeUntil` being accessed before declaration
-
-**Fix Required:** Move `updateTimeUntil` function declaration before the useEffect that calls it
-
-### 2. Test Failures with Firebase
-
-**Issue:** Tests fail if Firebase env vars not set
-
-**Workaround:** Tests require mock env vars (see package.json test script)
-
-### 3. Build Fails with Google Fonts Error
-
-**Issue:** `Failed to fetch 'Handlee' from Google Fonts`
-
-**Cause:** Network restrictions blocking fonts.googleapis.com
-
-**Workaround:** Build requires internet access. In restricted CI environments, this is expected. Consider pre-downloading fonts or using system fonts as fallback.
-
-### 4. Node Engine Warnings in functions/
-
-**Issue:** `npm warn EBADENGINE Unsupported engine { required: { node: '22' }, current: { node: 'v20.19.6' } }`
-
-**Safe to Ignore:** Functions work with Node 20+ despite requiring Node 22. This is a soft requirement.
-
-### 5. Test Pattern Requires Compilation
-
-**Issue:** Running tests directly fails because tests are TypeScript
-
-**Solution:** ALWAYS run `npm test` (not `node --test`), which compiles first via `test:build` script
+1. **ESLint errors in compact-meeting-countdown.tsx**: 6 errors - move `updateTimeUntil` function before the useEffect that calls it
+2. **Build fails with Google Fonts error**: Requires internet access to fonts.googleapis.com (expected in restricted CI environments)
+3. **Tests fail**: ALWAYS run `npm test` (not `node --test`) - requires TypeScript compilation first via `test:build`
+4. **Node engine warnings in functions/**: Safe to ignore - functions work with Node 20+ despite requiring Node 22
+5. **Firebase test failures**: Expected without emulator - tests need mock env vars (see package.json)
 
 ## Validation Steps
 
@@ -334,40 +178,18 @@ Before submitting a PR:
 5. **Functions:** `cd functions && npm run build` - Must compile
 6. **Manual Test:** Start dev server, verify app loads and basic functionality works
 
-## Additional Notes
+## Quick Reference
 
-### Firestore Indexes
+**Firestore Indexes:** `firebase deploy --only firestore:indexes` (required before first query)
 
-**CRITICAL:** Deploy indexes before querying: `firebase deploy --only firestore:indexes`
+**Feature Flags:** Set in `.env.local`: `NEXT_PUBLIC_ENABLE_GROWTH`, `NEXT_PUBLIC_ENABLE_WORK`, `NEXT_PUBLIC_ENABLE_MORE`
 
-Indexes defined in `firestore.indexes.json`:
-- `journal` collection: `createdAt DESC`
-- `journal` collection: `isSoftDeleted ASC, createdAt DESC`
+**Common Errors:**
+- "App Check token not found" → Expected in dev without debug token
+- "Firebase not initialized" → Missing `.env.local`
+- "Permission denied" → Check Firestore rules / auth state
 
-### Feature Flags
-
-Feature flags in `.env.local`:
-- `NEXT_PUBLIC_ENABLE_GROWTH` - Growth tab
-- `NEXT_PUBLIC_ENABLE_WORK` - Work tab  
-- `NEXT_PUBLIC_ENABLE_MORE` - More tab
-
-### Debugging
-
-**Firebase Emulator UI:** http://localhost:4000 (when emulators running)
-
-**Common Console Errors:**
-- "App Check token not found" - Expected in development without debug token
-- "Firebase not initialized" - Missing env vars
-- "Permission denied" - Check Firestore rules or auth state
-
-### Scripts
-
-Utility scripts in `scripts/`:
-- `seed-meetings.ts` - Seed meeting data
-- `set-admin-claim.ts` - Grant admin privileges
-- `migrate-to-journal.ts` - Data migration script
-
-Run with: `npx tsx scripts/script-name.ts`
+**Utility Scripts:** Run with `npx tsx scripts/script-name.ts` (e.g., `seed-meetings.ts`, `set-admin-claim.ts`)
 
 ## Trust These Instructions
 
