@@ -24,9 +24,27 @@
 
 ---
 
-## 🎯 Current Sprint Focus (December 19, 2025)
+## 🎯 Current Sprint Focus (December 20, 2025)
 
 ### ✅ Recently Completed
+
+**Library Content Management System (Dec 20)**
+- Complete Firestore-backed CMS for Quick Links & Prayers
+- Admin panels with full CRUD operations
+- Nashville recovery resources imported (31 total links across 7 categories)
+- Type-safe database service (`lib/db/library.ts`)
+- Composite indexes for efficient queries
+- Security rules (public read, admin-only write)
+
+**Typography & Readability Improvements (Dec 20)**
+- Strategic font switching (Rock Salt → Handlee for data/numbers)
+- CSS utility classes for readability
+- Fixed text clipping issues
+- Improved mobile tab visibility
+- Hours always displayed separately in clean time
+- Weekly stats calculation implemented
+- React duplicate key error resolved
+- 38% font bundle reduction (removed Caveat)
 
 **Documentation Consolidation (Dec 19)**
 - Merged 15+ docs into 4 core files
@@ -82,12 +100,11 @@ All 19 items from the 6-model AI code analysis have been addressed:
 
 **See:** [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
 
-**Active Tasks (Parallel):**
-- Settings page UI improvements
-- Profile management enhancements
+**Active Tasks:**
+- Update library-page.tsx to use Firestore data (currently hardcoded)
 
 **Next Up (M1.5 Quick Wins):**
-1. Recovery Library (glossary + etiquette guide) - 10 SP
+1. ~~Recovery Library (glossary + etiquette guide)~~ ✅ COMPLETE + enhanced with CMS
 2. HALT Check button - 4 SP
 3. "I Made It Through Today" celebration - 2 SP
 
@@ -109,6 +126,8 @@ See **[ROADMAP.md](./ROADMAP.md)** for full scope.
 - `/users/{uid}/journal/{entryId}` - Unified journal entries
 - `/users/{uid}/inventoryEntries/{entryId}` - Spot checks, reviews
 - `/meetings/{meetingId}` - Meeting directory
+- `/quick_links/{linkId}` - Recovery resource links (admin-managed)
+- `/prayers/{prayerId}` - Recovery prayers (admin-managed)
 
 See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for complete data schema and security architecture.
 
@@ -259,5 +278,5 @@ All historical documents preserved in:
 
 ---
 
-**Last Updated:** December 19, 2025 - Documentation consolidated  
+**Last Updated:** December 20, 2025 - Library CMS + Typography improvements  
 **Previous Handoff:** Archived to [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](./docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)
