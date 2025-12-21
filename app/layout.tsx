@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import {
-  Caveat,
   Handlee,
   Rock_Salt,
 } from "next/font/google"
@@ -11,13 +10,7 @@ import "./globals.css"
 import { Toaster } from "sonner"
 
 // Only load fonts that are actually used in the application
-// Performance optimization: Reduced from 20+ fonts to 3 essential fonts
-const caveat = Caveat({
-  subsets: ["latin"],
-  variable: "--font-caveat",
-  display: 'swap' // Improve performance with font-display: swap
-})
-
+// Performance optimization: Reduced from 20+ fonts to 2 essential fonts
 const handlee = Handlee({
   weight: "400",
   subsets: ["latin"],
@@ -97,7 +90,6 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`
         font-sans antialiased
-        ${caveat.variable}
         ${handlee.variable}
         ${rockSalt.variable}
       `}

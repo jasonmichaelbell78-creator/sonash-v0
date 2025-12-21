@@ -11,14 +11,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Quote as QuoteIcon, Calendar as CalendarIcon } from "lucide-react"
-import { recoverySlogans } from "@/data/slogans"
+import { newRecoveryQuotes } from "@/data/recovery-quotes"
 
-// Initial seed data - uses first 20 slogans from comprehensive list
-const SEED_QUOTES = recoverySlogans.slice(0, 20).map(s => ({
-    text: s.text,
-    author: s.author,
-    source: s.source
+// Seed data - 48 unique recovery quotes from recovery_quotes_50.md (deduplicated)
+const SEED_QUOTES = newRecoveryQuotes.map(q => ({
+    text: q.text,
+    author: q.author,
+    source: q.source
 }))
+
 
 // Quotes Form component
 function QuotesForm({
@@ -66,7 +67,21 @@ function QuotesForm({
                     onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })}
                     className="bg-white"
                 />
-                <p className="text-[10px] text-gray-500">If set, this quote will ALWAYS appear on this date, overriding the rotation.</p>
+                <p className="text-[10px] text-gray-500">If set, this quote will appear on this specific date.</p>
+            </div>
+            <div className="space-y-2">
+                <Label>Time of Day (Optional)</Label>
+                <select
+                    value={formData.scheduledTimeOfDay || ''}
+                    onChange={e => setFormData({ ...formData, scheduledTimeOfDay: e.target.value as 'morning' | 'afternoon' | 'evening' | undefined || undefined })}
+                    className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
+                >
+                    <option value="">Any time</option>
+                    <option value="morning">Morning (12 AM - 12 PM)</option>
+                    <option value="afternoon">Afternoon (12 PM - 6 PM)</option>
+                    <option value="evening">Evening (6 PM - 12 AM)</option>
+                </select>
+                <p className="text-[10px] text-gray-500">Requires a scheduled date. Allows you to show different quotes for morning/afternoon/evening.</p>
             </div>
         </div>
     )

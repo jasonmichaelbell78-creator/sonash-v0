@@ -86,7 +86,7 @@ export function CleanTimeDisplay({ cleanStart }: CleanTimeDisplayProps) {
             <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
                 {parts.map((part, index) => (
                     <span key={index} className="text-center">
-                        <span className={`font-heading ${part.size} text-amber-900 font-bold`}>
+                        <span className={`font-heading-alt ${part.size} text-amber-900`}>
                             {part.text}
                         </span>
                         {index < parts.length - 1 && (

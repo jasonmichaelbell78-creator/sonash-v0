@@ -78,7 +78,7 @@ export default function CompactMeetingCountdown() {
                 if (!selectedMeeting) {
                     const tomorrow = days[(now.getDay() + 1) % 7]
                     const tomorrowsMeetings = await MeetingsService.getMeetingsByDay(tomorrow)
-                    
+
                     if (tomorrowsMeetings.length > 0) {
                         // Same proximity logic for tomorrow
                         if (userLocation && locationStatus === "granted") {
@@ -202,12 +202,12 @@ export default function CompactMeetingCountdown() {
                     <div className="font-handlee text-base font-bold leading-tight group-hover:underline">
                         {nextMeeting.name}
                     </div>
-                    <div className="font-handlee text-sm text-amber-900/70">
+                    <div className="time-display text-sm text-amber-900/70">
                         {formatTime(nextMeeting.time)} {timeUntil && `• ${timeUntil}`}
                     </div>
                 </div>
             </div>
-            
+
             <MeetingDetailsDialog
                 meeting={nextMeeting}
                 open={showDialog}

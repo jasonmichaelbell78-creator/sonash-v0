@@ -5,6 +5,7 @@ import { Zap, Moon, Heart, Book, List, AlertCircle, Plus, Mic } from "lucide-rea
 import SpotCheckCard from "@/components/growth/SpotCheckCard"
 import NightReviewCard from "@/components/growth/NightReviewCard"
 import GratitudeCard from "@/components/growth/GratitudeCard"
+import DailySloganWidget from "@/components/growth/DailySloganWidget"
 
 interface GrowthPageProps {
     onNavigate?: (moduleId: string) => void
@@ -36,6 +37,9 @@ export default function GrowthPage({ onNavigate }: GrowthPageProps) {
                     Maintenance is the key to progress.
                 </p>
             </div>
+
+            {/* Daily Slogan */}
+            <DailySloganWidget />
 
             <motion.div
                 variants={containerVariants}
