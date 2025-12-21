@@ -56,16 +56,16 @@ export default function LinksTab() {
         isActive: true
     })
 
-    useEffect(() => {
-        loadLinks()
-    }, [])
-
     async function loadLinks() {
         setLoading(true)
         const data = await getAllQuickLinks(true) // Include inactive
         setLinks(data)
         setLoading(false)
     }
+
+    useEffect(() => {
+        loadLinks()
+    }, [])
 
     function handleEdit(link: QuickLink) {
         setEditingLink(link)

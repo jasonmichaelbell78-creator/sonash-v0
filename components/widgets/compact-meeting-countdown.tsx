@@ -27,6 +27,36 @@ export default function CompactMeetingCountdown() {
         timeout: 5000
     })
 
+    function updateTimeUntil() {
+        if (!nextMeeting) return
+
+        const now = new Date()
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        const today = days[now.getDay()]
+
+        const [hours, minutes] = nextMeeting.time.split(':').map(Number)
+        const meetingDate = new Date()
+
+        // If meeting is tomorrow
+        if (nextMeeting.day !== today) {
+            meetingDate.setDate(meetingDate.getDate() + 1)
+        }
+
+        meetingDate.setHours(hours, minutes, 0, 0)
+
+        const diff = meetingDate.getTime() - now.getTime()
+        const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
+        const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+
+        if (hoursUntil === 0) {
+            setTimeUntil(`${minutesUntil}m`)
+        } else if (hoursUntil < 24) {
+            setTimeUntil(`${hoursUntil}h ${minutesUntil}m`)
+        } else {
+            setTimeUntil(`tmrw`)
+        }
+    }
+
     useEffect(() => {
         async function findNextMeeting() {
             try {
@@ -125,36 +155,6 @@ export default function CompactMeetingCountdown() {
     useEffect(() => {
         updateTimeUntil()
     }, [nextMeeting])
-
-    function updateTimeUntil() {
-        if (!nextMeeting) return
-
-        const now = new Date()
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        const today = days[now.getDay()]
-
-        const [hours, minutes] = nextMeeting.time.split(':').map(Number)
-        const meetingDate = new Date()
-
-        // If meeting is tomorrow
-        if (nextMeeting.day !== today) {
-            meetingDate.setDate(meetingDate.getDate() + 1)
-        }
-
-        meetingDate.setHours(hours, minutes, 0, 0)
-
-        const diff = meetingDate.getTime() - now.getTime()
-        const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
-        const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-        if (hoursUntil === 0) {
-            setTimeUntil(`${minutesUntil}m`)
-        } else if (hoursUntil < 24) {
-            setTimeUntil(`${hoursUntil}h ${minutesUntil}m`)
-        } else {
-            setTimeUntil(`tmrw`)
-        }
-    }
 
     function formatTime(time24: string): string {
         const [hours, minutes] = time24.split(':').map(Number)

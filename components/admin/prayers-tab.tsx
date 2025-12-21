@@ -52,16 +52,16 @@ export default function PrayersTab() {
         isActive: true
     })
 
-    useEffect(() => {
-        loadPrayers()
-    }, [])
-
     async function loadPrayers() {
         setLoading(true)
         const data = await getAllPrayers(true) // Include inactive
         setPrayers(data)
         setLoading(false)
     }
+
+    useEffect(() => {
+        loadPrayers()
+    }, [])
 
     function handleEdit(prayer: Prayer) {
         setEditingPrayer(prayer)

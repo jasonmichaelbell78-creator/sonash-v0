@@ -13,6 +13,8 @@ interface ConfettiPiece {
     size: number
     velocityX: number
     shape: 'circle' | 'square' | 'rectangle'
+    finalRotation: number
+    animationDuration: number
 }
 
 interface ConfettiBurstProps {
@@ -45,6 +47,8 @@ export function ConfettiBurst({
                 size: Math.random() * 8 + 4, // 4-12px
                 velocityX: (Math.random() - 0.5) * 300, // Horizontal spread
                 shape: shapes[Math.floor(Math.random() * shapes.length)],
+                finalRotation: Math.random() * 360 + (Math.random() * 720 + 360), // Pre-calculate final rotation
+                animationDuration: duration + Math.random() * 2, // Pre-calculate animation duration
             }
         })
         setPieces(newPieces)
@@ -73,12 +77,12 @@ export function ConfettiBurst({
                     }}
                     animate={{
                         y: window.innerHeight + 100,
-                        rotate: piece.rotation + (Math.random() * 720 + 360), // 1-3 full rotations
+                        rotate: piece.finalRotation, // Use pre-calculated value
                         opacity: [1, 1, 0.8, 0],
                         x: piece.x + piece.velocityX,
                     }}
                     transition={{
-                        duration: duration + Math.random() * 2, // Stagger completion
+                        duration: piece.animationDuration, // Use pre-calculated value
                         ease: [0.25, 0.1, 0.25, 1], // Custom easing for natural fall
                         opacity: {
                             times: [0, 0.7, 0.9, 1],

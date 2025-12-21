@@ -24,10 +24,6 @@ export default function DailySloganWidget() {
     const [slogan, setSlogan] = useState<Slogan | null>(null)
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        fetchDailySlogan()
-    }, [])
-
     const fetchDailySlogan = async () => {
         try {
             // Fetch all slogans
@@ -48,6 +44,10 @@ export default function DailySloganWidget() {
         }
         setLoading(false)
     }
+
+    useEffect(() => {
+        fetchDailySlogan()
+    }, [])
 
     if (loading) {
         return (
