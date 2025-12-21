@@ -60,7 +60,9 @@ export default function PrayersTab() {
     }
 
     useEffect(() => {
-        loadPrayers()
+        void (async () => {
+            await loadPrayers()
+        })()
     }, [])
 
     function handleEdit(prayer: Prayer) {

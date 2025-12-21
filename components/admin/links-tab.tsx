@@ -64,7 +64,9 @@ export default function LinksTab() {
     }
 
     useEffect(() => {
-        loadLinks()
+        void (async () => {
+            await loadLinks()
+        })()
     }, [])
 
     function handleEdit(link: QuickLink) {
