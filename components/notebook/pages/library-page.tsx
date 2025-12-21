@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { Book, Users, Link2, Heart, Search, ArrowLeft, ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Book, Users, Link2, Heart, Search, ArrowLeft, ChevronRight, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { getAllQuickLinks, getAllPrayers, QuickLink, Prayer } from "@/lib/db/library"
 
 type LibrarySection = "home" | "glossary" | "etiquette" | "links" | "prayers"
 
@@ -199,123 +200,121 @@ function EtiquetteSection() {
 }
 
 // ====== LINKS SECTION ======
-const linksData = [
-    { title: "AA.org", url: "https://www.aa.org", description: "Official AA website", category: "official" },
-    { title: "NA.org", url: "https://www.na.org", description: "Official NA website", category: "official" },
-    { title: "SMART Recovery", url: "https://www.smartrecovery.org", description: "Science-based recovery", category: "official" },
-    { title: "InTheRooms", url: "https://www.intherooms.com", description: "Free online meetings 24/7", category: "online" },
-    { title: "AA Online Intergroup", url: "https://aa-intergroup.org", description: "24/7 online AA meetings", category: "online" },
-    { title: "Virtual NA", url: "https://virtual-na.org", description: "24/7 online NA meetings", category: "online" },
-    { title: "988 Suicide & Crisis", url: "tel:988", description: "Call or text 988", category: "crisis" },
-    { title: "SAMHSA Helpline", url: "tel:1-800-662-4357", description: "1-800-662-HELP (24/7)", category: "crisis" },
-]
-
 function LinksSection() {
+    const [links, setLinks] = useState<QuickLink[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchLinks() {
+            try {
+                // Fetch public links (isActive=true)
+                const data = await getAllQuickLinks(false)
+                setLinks(data)
+            } catch (error) {
+                console.error("Failed to load links:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchLinks()
+    }, [])
+
+    if (loading) {
+        return (
+            <div className="flex-1 flex items-center justify-center text-amber-500">
+                <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading links...
+            </div>
+        )
+    }
+
+    const renderLinkGroup = (title: string, category: string, color: "amber" | "blue" | "red" | "emerald" | "purple", icon: string = "↗") => {
+        const filtered = links.filter(l => l.category === category)
+        if (filtered.length === 0) return null
+
+        const colors = {
+            amber: { title: "text-amber-600", bg: "bg-white/60", border: "border-amber-100", hover: "hover:bg-amber-50 hover:border-amber-300", text: "text-amber-900", desc: "text-amber-700/60", icon: "text-amber-400" },
+            blue: { title: "text-blue-600", bg: "bg-blue-50/60", border: "border-blue-100", hover: "hover:bg-blue-100 hover:border-blue-300", text: "text-blue-900", desc: "text-blue-700/60", icon: "text-blue-400" },
+            red: { title: "text-red-600", bg: "bg-red-50/60", border: "border-red-200", hover: "hover:bg-red-100 hover:border-red-300", text: "text-red-900", desc: "text-red-700/60", icon: "text-red-400" },
+            emerald: { title: "text-emerald-600", bg: "bg-emerald-50/60", border: "border-emerald-100", hover: "hover:bg-emerald-100 hover:border-emerald-300", text: "text-emerald-900", desc: "text-emerald-700/60", icon: "text-emerald-400" },
+            purple: { title: "text-purple-600", bg: "bg-purple-50/60", border: "border-purple-100", hover: "hover:bg-purple-100 hover:border-purple-300", text: "text-purple-900", desc: "text-purple-700/60", icon: "text-purple-400" },
+        }
+
+        const style = colors[color]
+
+        return (
+            <div>
+                <h3 className={`font-heading-alt text-sm uppercase tracking-wide mb-2 ${style.title}`}>{title}</h3>
+                <div className="space-y-2">
+                    {filtered.map((link) => (
+                        <a
+                            key={link.id}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`block ${style.bg} border ${style.border} rounded-lg p-3 ${style.hover} transition-colors`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className={`font-heading-alt ${style.text}`}>{link.title}</span>
+                                <span className={style.icon}>{icon}</span>
+                            </div>
+                            {link.description && <p className={`font-body text-xs ${style.desc}`}>{link.description}</p>}
+                        </a>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="flex-1 overflow-y-auto pr-2">
             <h2 className="font-heading-alt text-xl text-amber-900 mb-4">🔗 Quick Links</h2>
 
-            <div className="space-y-4">
-                <div>
-                    <h3 className="font-heading-alt text-sm text-amber-600 uppercase tracking-wide mb-2">Official Resources</h3>
-                    <div className="space-y-2">
-                        {linksData.filter(l => l.category === "official").map((link, i) => (
-                            <a
-                                key={i}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block bg-white/60 border border-amber-100 rounded-lg p-3 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="font-heading-alt text-amber-900">{link.title}</span>
-                                    <span className="text-amber-400">↗</span>
-                                </div>
-                                <p className="font-body text-xs text-amber-700/60">{link.description}</p>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
-                <div>
-                    <h3 className="font-heading-alt text-sm text-blue-600 uppercase tracking-wide mb-2">Online Meetings</h3>
-                    <div className="space-y-2">
-                        {linksData.filter(l => l.category === "online").map((link, i) => (
-                            <a
-                                key={i}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block bg-blue-50/60 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 hover:border-blue-300 transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="font-heading-alt text-blue-900">{link.title}</span>
-                                    <span className="text-blue-400">↗</span>
-                                </div>
-                                <p className="font-body text-xs text-blue-700/60">{link.description}</p>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
-                <div>
-                    <h3 className="font-heading-alt text-sm text-red-600 uppercase tracking-wide mb-2">Crisis Hotlines</h3>
-                    <div className="space-y-2">
-                        {linksData.filter(l => l.category === "crisis").map((link, i) => (
-                            <a
-                                key={i}
-                                href={link.url}
-                                className="block bg-red-50/60 border border-red-200 rounded-lg p-3 hover:bg-red-100 hover:border-red-300 transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="font-heading-alt text-red-900">{link.title}</span>
-                                    <span className="text-red-400">📞</span>
-                                </div>
-                                <p className="font-body text-xs text-red-700/60">{link.description}</p>
-                            </a>
-                        ))}
-                    </div>
-                </div>
+            <div className="space-y-6">
+                {renderLinkGroup("Official Resources", "official", "amber")}
+                {renderLinkGroup("Local Resources", "local", "emerald")}
+                {renderLinkGroup("Online Meetings", "online", "blue")}
+                {renderLinkGroup("Crisis Hotlines", "crisis", "red", "📞")}
+                {renderLinkGroup("Treatment & Housing", "treatment", "purple")}
+                {renderLinkGroup("Other Resources", "harm-reduction", "amber")}
             </div>
         </div>
     )
 }
 
 // ====== PRAYERS SECTION ======
-const prayersData = [
-    {
-        title: "Serenity Prayer",
-        text: "God, grant me the serenity to accept the things I cannot change, courage to change the things I can, and wisdom to know the difference.",
-        category: "morning"
-    },
-    {
-        title: "Third Step Prayer",
-        text: "God, I offer myself to Thee—to build with me and to do with me as Thou wilt. Relieve me of the bondage of self, that I may better do Thy will. Take away my difficulties, that victory over them may bear witness to those I would help of Thy Power, Thy Love, and Thy Way of life. May I do Thy will always!",
-        category: "step"
-    },
-    {
-        title: "Seventh Step Prayer",
-        text: "My Creator, I am now willing that you should have all of me, good and bad. I pray that you now remove from me every single defect of character which stands in the way of my usefulness to you and my fellows. Grant me strength, as I go out from here, to do your bidding. Amen.",
-        category: "step"
-    },
-    {
-        title: "Eleventh Step Prayer (St. Francis)",
-        text: "Lord, make me a channel of thy peace—that where there is hatred, I may bring love—that where there is wrong, I may bring the spirit of forgiveness—that where there is discord, I may bring harmony—that where there is error, I may bring truth—that where there is doubt, I may bring faith—that where there is despair, I may bring hope—that where there are shadows, I may bring light—that where there is sadness, I may bring joy.",
-        category: "morning"
-    },
-    {
-        title: "Evening/Night Review",
-        text: "God, forgive me where I have been resentful, selfish, dishonest, or afraid today. Help me to not keep anything to myself but to discuss it all openly with another person—and make amends quickly if I have harmed anyone. Help me to be more loving and tolerant tomorrow than I was today. Amen.",
-        category: "evening"
-    },
-]
-
 function PrayersSection() {
+    const [prayers, setPrayers] = useState<Prayer[]>([])
+    const [loading, setLoading] = useState(true)
     const [activeCategory, setActiveCategory] = useState<string>("all")
 
+    useEffect(() => {
+        async function fetchPrayers() {
+            try {
+                const data = await getAllPrayers(false)
+                setPrayers(data)
+            } catch (error) {
+                console.error("Failed to load prayers:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchPrayers()
+    }, [])
+
+    if (loading) {
+        return (
+            <div className="flex-1 flex items-center justify-center text-purple-500">
+                <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading prayers...
+            </div>
+        )
+    }
+
     const filtered = activeCategory === "all"
-        ? prayersData
-        : prayersData.filter(p => p.category === activeCategory)
+        ? prayers
+        : prayers.filter(p => p.category === activeCategory)
+
+    // Get unique categories from data
+    const categories = ["all", ...Array.from(new Set(prayers.map(p => p.category)))]
 
     return (
         <div className="flex-1 overflow-y-auto pr-2">
@@ -323,7 +322,7 @@ function PrayersSection() {
 
             {/* Filter tabs */}
             <div className="flex gap-2 mb-4 flex-wrap">
-                {["all", "morning", "evening", "step"].map((cat) => (
+                {categories.map((cat) => (
                     <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
@@ -337,8 +336,8 @@ function PrayersSection() {
 
             {/* Prayer cards */}
             <div className="space-y-4">
-                {filtered.map((prayer, i) => (
-                    <div key={i} className="bg-white/70 border border-purple-100 rounded-xl p-4">
+                {filtered.map((prayer) => (
+                    <div key={prayer.id} className="bg-white/70 border border-purple-100 rounded-xl p-4">
                         <div className="flex items-start justify-between mb-2">
                             <h3 className="font-heading-alt text-purple-900">{prayer.title}</h3>
                             <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded capitalize">{prayer.category}</span>
