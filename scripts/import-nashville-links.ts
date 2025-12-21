@@ -1,9 +1,12 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 // Initialize Firebase Admin
 if (getApps().length === 0) {
-    const serviceAccount = require('../firebase-service-account.json')
+    const serviceAccountPath = join(process.cwd(), 'firebase-service-account.json')
+    const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf-8'))
     initializeApp({
         credential: cert(serviceAccount)
     })
