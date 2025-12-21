@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, ReactNode } from "react"
+import { useState, useEffect } from "react"
 import { collection, getDocs } from "firebase/firestore"
 import { getFunctions, httpsCallable } from "firebase/functions"
 import { db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
-import { Loader2, Plus, Pencil, Trash2, Search } from "lucide-react"
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Loader2, Plus, Search } from "lucide-react"
 import type { AdminCrudConfig, BaseEntity } from "./admin-crud-types"
 
 interface AdminCrudTableProps<T extends BaseEntity> {

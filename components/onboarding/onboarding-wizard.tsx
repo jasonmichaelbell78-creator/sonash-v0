@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
 import { createUserProfile, getUserProfile, updateUserProfile } from "@/lib/db/users"
-import { Loader2, ArrowRight, Calendar, Users, BookOpen, MapPin, Sprout, ChevronLeft, ChevronRight } from "lucide-react"
+import { Loader2, ArrowRight, Calendar, BookOpen, MapPin, Sprout, ChevronLeft, ChevronRight } from "lucide-react"
 import { logger, maskIdentifier } from "@/lib/logger"
 
 interface OnboardingWizardProps {

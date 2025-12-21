@@ -5,7 +5,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from "react-le
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { Meeting } from "@/lib/db/meetings"
-import { ExternalLink, Navigation } from "lucide-react"
 
 // Fix Leaflet default icon not found
 const fixLeafletIcon = () => {
@@ -26,7 +25,7 @@ function MapController({ center, meetings }: { center: { lat: number; lng: numbe
 
         // If we have meetings, fit bounds to them
         if (meetings.length > 0) {
-            const bounds = L.latLngBounds(meetings.map(m => [m.coordinates?.lat || 0, m.coordinates?.lng || 0]))
+            const _bounds = L.latLngBounds(meetings.map(m => [m.coordinates?.lat || 0, m.coordinates?.lng || 0]))
 
             // Filter out 0/0 coordinates
             const validPoints = meetings

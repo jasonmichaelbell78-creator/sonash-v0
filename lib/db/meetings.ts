@@ -1,5 +1,5 @@
 import { db } from "../firebase"
-import { collection, query, where, getDocs, doc, writeBatch, limit, startAfter, orderBy, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore"
+import { collection, query, where, getDocs, doc, writeBatch, limit, startAfter, orderBy, QueryDocumentSnapshot } from "firebase/firestore"
 import { logger } from "../logger"
 import { DAY_ORDER } from "../constants"
 

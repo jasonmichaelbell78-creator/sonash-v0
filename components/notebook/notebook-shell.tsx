@@ -55,9 +55,9 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
     setActiveTab(tabId as NotebookModuleId)
   }
 
-  const handleSwipe = (event: any, info: any) => {
-    const SWIPE_THRESHOLD = 50
-    const { offset, velocity } = info
+  const _handleSwipe = (_event: unknown, _info: unknown) => {
+    const _SWIPE_THRESHOLD = 50
+    const { offset, velocity } = _info as { offset: { x: number }; velocity: { x: number } }
 
     // Calculate current index
     const currentIndex = tabs.findIndex((t) => t.id === activeTab)

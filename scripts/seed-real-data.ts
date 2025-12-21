@@ -1,6 +1,5 @@
 
 import * as fs from 'fs';
-import * as path from 'path';
 import * as readline from 'readline';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -21,7 +20,7 @@ if (!getApps().length) {
             credential: cert(serviceAccount)
         });
         console.log("Firebase Admin Initialized");
-    } catch (e) {
+    } catch (_e) {
         console.error("Error initializing Firebase Admin. Make sure firebase-service-account.json exists.");
         process.exit(1);
     }
@@ -46,7 +45,7 @@ if (fs.existsSync(CACHE_FILE)) {
     try {
         geocodingCache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
         console.log(`Loaded ${Object.keys(geocodingCache).length} cached locations.`);
-    } catch (err) {
+    } catch (_err) {
         console.warn("Failed to load cache, starting fresh.");
     }
 }

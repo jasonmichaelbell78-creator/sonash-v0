@@ -17,14 +17,14 @@ import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
 import { db } from "@/lib/firebase"
-import { addDoc, collection, serverTimestamp } from "firebase/firestore"
+import { serverTimestamp } from "firebase/firestore"
 
 interface TodayPageProps {
   nickname: string
   onNavigate: (id: NotebookModuleId) => void
 }
 
-export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
+export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
   const [cravings, setCravings] = useState<boolean | null>(null)
   const [used, setUsed] = useState<boolean | null>(null)

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Mic, MicOff, Loader2 } from "lucide-react"
+import { Mic, MicOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface VoiceTextAreaProps
@@ -10,7 +10,7 @@ export interface VoiceTextAreaProps
 }
 
 export const VoiceTextArea = React.forwardRef<HTMLTextAreaElement, VoiceTextAreaProps>(
-    ({ className, onTranscript, onChange, value, ...props }, ref) => {
+    ({ className, onTranscript: _onTranscript, onChange, value, ...props }, ref) => {
         const [isListening, setIsListening] = React.useState(false)
         const [isSupported, setIsSupported] = React.useState(true)
         const recognitionRef = React.useRef<any>(null)

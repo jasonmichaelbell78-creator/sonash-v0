@@ -1,7 +1,7 @@
 
 import dynamic from "next/dynamic"
 
-import { MapPin, Home, Map, Calendar, Loader2, Locate, X, Clock } from "lucide-react"
+import { MapPin, Home, Map, Calendar, Loader2, Locate } from "lucide-react"
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { MeetingsService, type Meeting, type MeetingsPaginatedResult } from "@/lib/db/meetings"
 import type { QueryDocumentSnapshot } from "firebase/firestore"

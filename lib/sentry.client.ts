@@ -56,7 +56,7 @@ export function initSentryClient(): void {
                 event.breadcrumbs = event.breadcrumbs.map(breadcrumb => {
                     if (breadcrumb.data) {
                         // Remove any potential PII fields
-                        const { email, name, phone, ...safeData } = breadcrumb.data as Record<string, unknown>;
+                        const { email: _email, name: _name, phone: _phone, ...safeData } = breadcrumb.data as Record<string, unknown>;
                         breadcrumb.data = safeData;
                     }
                     return breadcrumb;

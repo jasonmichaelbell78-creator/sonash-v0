@@ -9,7 +9,7 @@
  *   npx ts-node scripts/migrate-to-journal.ts
  */
 
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
 // Initialize Firebase Admin (uses service account or emulator)

@@ -16,13 +16,13 @@ function envDefaults() {
 
 let todayLog: any
 let todayLogError: string | null
-let profileError: string | null
+let _profileError: string | null
 let loading: boolean
 
 beforeEach(() => {
   todayLog = null
   todayLogError = null
-  profileError = null
+  _profileError = null
   loading = true
 })
 

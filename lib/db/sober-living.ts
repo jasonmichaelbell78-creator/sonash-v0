@@ -52,7 +52,7 @@ export const SoberLivingService = {
             const ref = doc(collection(db, COLLECTION)) // Auto ID
             // If home.id is generic "temp", ignore it. Or use it? 
             // Better to let Firestore generate IDs for new collection
-            const { id, ...data } = home
+            const { id: _id, ...data } = home
             batch.set(ref, data)
         })
 
