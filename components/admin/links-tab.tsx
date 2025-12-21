@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -56,16 +56,15 @@ export default function LinksTab() {
         isActive: true
     })
 
-    const loadLinks = useCallback(async () => {
-        setLoading(true)
-        const data = await getAllQuickLinks(true) // Include inactive
-        setLinks(data)
-        setLoading(false)
-    }, [])
-
     useEffect(() => {
+        async function loadLinks() {
+            setLoading(true)
+            const data = await getAllQuickLinks(true) // Include inactive
+            setLinks(data)
+            setLoading(false)
+        }
         loadLinks()
-    }, [loadLinks])
+    }, [])
 
     function handleEdit(link: QuickLink) {
         setEditingLink(link)

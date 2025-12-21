@@ -3,7 +3,7 @@ import dynamic from "next/dynamic"
 
 import { MapPin, Home, Map, Calendar, Loader2, Locate } from "lucide-react"
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
-import { MeetingsService, type Meeting, type MeetingsPaginatedResult } from "@/lib/db/meetings"
+import { MeetingsService, type Meeting } from "@/lib/db/meetings"
 import type { QueryDocumentSnapshot } from "firebase/firestore"
 import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living"
 import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data"
