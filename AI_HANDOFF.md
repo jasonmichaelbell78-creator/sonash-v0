@@ -166,12 +166,60 @@ See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for complete data schema and securi
 
 ## 🚨 Known Issues
 
-**Low Priority:**
-- 2 Firebase emulator tests fail (require setup)
-- 29 ESLint warnings (code style, non-breaking)
-- Settings page UI needs polish
+**Multi-AI Code Review Completed:** December 21, 2025  
+**Sources:** 5 AI models (CODEX, GEMINI, JULES, CLAUDE, CLAUDE CODE) + baseline  
+**Total Issues Identified:** 95 → **71 TRUE OPEN** (after verification)  
+**Report:** See artifacts - `AUTHORITATIVE_ISSUE_REPORT.md`
 
-**No Blockers:** All critical functionality working
+### CRITICAL (1)
+
+**🚨 Journal Collection Security Gap**
+- **Source:** JULES #3, verified in firestore.rules
+- **Files:** `firestore.rules:35-40`
+- **Issue:** `journal` collection allows direct client writes while `daily_logs` properly blocks them
+- **Impact:** Bypasses rate limiting and App Check completely
+- **Fix:** Block direct writes, create `saveJournalEntry` Cloud Function (mirror `saveDailyLog`)
+- **Priority:** IMMEDIATE
+
+### HIGH PRIORITY (14)
+
+1. **Account Linking Data Loss** - Users lose anonymous data when credential exists
+2. **Test Assertions Broken** - Tests mock Firestore but implementation uses Cloud Functions
+3. **Feature Flags Non-functional** - `featureFlagEnabled()` always returns true
+4. **Daily Log History Ordering** - Query uses `dateId`, function stores `date`
+5. **Anonymous Session Error Handling** - No retry logic or user feedback
+6. **Timeline Array Mutation** - `entries.sort()` mutates array
+7. **Error Handling Missing** - links-tab, prayers-tab need try/finally
+8. **Missing Rate Limiting** - saveInventoryEntry, getHistory, getInventoryEntries
+9. **Onboarding Overwrites Profiles** - No check for existing profile
+10. **Ribbon Nav Active State** - Use `null` instead of `""`
+11. **Milestone Logic Bug** - Use `>=` instead of `===`
+12. **Composite Indexes Missing** - Library queries need indexes
+13. **Entry Card Null Checks** - Missing checks for mood/items
+14. **History Page Undefined Items** - Need type guards
+
+### MEDIUM PRIORITY (32)
+
+- Firestore rules overly permissive for user profiles
+- Delete operations without GDPR audit logging
+- Date validation missing in Cloud Function
+- localStorage unencrypted for journal data
+- Inefficient meeting sorting (parseTime regex)
+- Nested context providers cause re-renders
+- Monolithic components remain (ResourcesPage, AllMeetingsPage)
+- TypeScript strict flags missing (noUncheckedIndexedAccess)
+- useAuth deprecated but still used
+- _[See full report for complete list]_
+
+### LOW PRIORITY (24)
+
+- Debug console.log statements in production code
+- Console logs expose configuration
+- README lacks setup instructions
+- Duplicate comments, naming inconsistencies
+- _[See full report for complete list]_
+
+**No Blockers:** All critical functionality working, but security gap must be fixed before production deployment.
 
 ---
 
@@ -270,21 +318,27 @@ All historical documents preserved in:
 
 ## 🎯 Next Session Goals
 
-**Priority 1 - CRITICAL CODE FIXES (Morning):**
-1. Migration script idempotency (DATA LOSS RISK)
-2. Timeline array mutation bug (`timeline.tsx`)
-3. Error handling in `links-tab.tsx`, `prayers-tab.tsx`
-4. Ribbon nav active state bug
-5. Remove debug console.log
+**Priority 1 - CRITICAL SECURITY (Immediate):**
+1. **Journal Security Gap** - Block direct writes to `journal` collection, create `saveJournalEntry` Cloud Function
+2. **Account Linking Data Loss** - Prevent anonymous data loss when credentials exist
 
-**Priority 2 - After Fixes:**
-- Implement Step 1 Worksheet component (see `implementation_plan.md`)
+**Priority 2 - HIGH IMPACT (This Week):**
+3. Test assertions fix - Rewrite tests to mock Cloud Functions
+4. Feature flag system - Fix `featureFlagEnabled()` always-returns-true bug
+5. Timeline array mutation - One-line fix (`[...entries].sort()`)
+6. Error handling - Add try/finally to links-tab, prayers-tab
+7. Daily log history ordering - Align dateId vs date field
 
-**Priority 3 (Should Do):**
-- HALT Check button
-- Firestore composite indexes
+**Priority 3 - CODE QUALITY (Next Week):**
+8. Composite indexes for library queries
+9. Missing rate limiting for inventory operations
+10. TypeScript strict flags (noUncheckedIndexedAccess)
+
+**See:** `AUTHORITATIVE_ISSUE_REPORT.md` in artifacts for complete 71-issue list
+
+**Estimated Effort:** Priority 1-2 = ~30-40 hours
 
 ---
 
-**Last Updated:** December 20, 2025 - Celebration system + Code review + Step 1 Worksheet planning  
+**Last Updated:** December 21, 2025 - Multi-AI code review aggregation (5 models, 71 issues identified)  
 **Previous Handoff:** Archived to [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](./docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)

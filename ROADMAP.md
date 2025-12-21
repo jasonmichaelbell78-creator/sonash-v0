@@ -123,6 +123,69 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Testing Guide:** See [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md), [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)
 
+### Week 13+: Multi-AI Security Review Remediation (🔄 In Progress - Dec 21, 2025)
+
+*Based on December 21, 2025 multi-AI code review (5 models: CODEX, GEMINI, JULES, CLAUDE, CLAUDE CODE)*
+
+**Analysis Results:**
+- **Total Issues Identified:** 95 → **71 TRUE OPEN** (after verification)
+- **Sources:** 5 new AI models + baseline 6-model aggregation
+- **Report:** See artifacts - `AUTHORITATIVE_ISSUE_REPORT.md`
+
+#### Critical Security Fixes (Week 13 - Immediate)
+
+- ❌ **Journal Collection Security Gap** (JULES #3)
+  - **Issue:** `journal` collection allows direct client writes while `daily_logs` properly blocks them
+  - **Impact:** Bypasses rate limiting and App Check completely
+  - **Fix:** Block direct writes in `firestore.rules:35-40`, create `saveJournalEntry` Cloud Function
+  - **Priority:** IMMEDIATE - Security bypass
+
+- ❌ **Account Linking Data Loss** (CODEX #5)
+  - **Issue:** When credential-already-in-use, signs into existing account WITHOUT migrating anonymous data
+  - **Impact:** Users lose anonymous journal data
+  - **Fix:** Block auto-signin, implement data migration or warn user
+
+#### High-Priority Fixes (Week 13-14)
+
+- ❌ **Test Assertions Don't Match Implementation** (CLAUDE CODE #1)
+  - Tests mock direct Firestore but implementation uses Cloud Functions
+  - Impact: False confidence - tests pass but don't reflect actual behavior
+  - Fix: Rewrite tests to mock `httpsCallable`
+
+- ❌ **Feature Flag System Non-Functional** (CLAUDE CODE #3)
+  - `featureFlagEnabled()` always returns true
+  - Impact: Cannot gate features, staged rollouts impossible
+  - Fix: Implement proper environment variable reading
+
+- ❌ **Timeline Array Mutation** - One-line fix (`[...entries].sort()`)
+- ❌ **Error Handling Missing** - Add try/finally to links-tab, prayers-tab
+- ❌ **Daily Log History Ordering** - Align dateId vs date field
+- ❌ **Missing Rate Limiting** - saveInventoryEntry, getHistory, getInventoryEntries
+- ❌ **Onboarding Overwrites Profiles** - Check existing profile before recreate
+- ❌ **Composite Indexes Missing** - Library queries need indexes
+
+#### Medium Priority (Week 15-16)
+
+- Firestore rules overly permissive for user profiles
+- Delete operations without GDPR audit logging
+- Date validation missing in Cloud Function
+- localStorage unencrypted for journal data
+- Inefficient meeting sorting (parseTime regex)
+- Nested context providers cause re-renders
+- Monolithic components remain (ResourcesPage, AllMeetingsPage)
+- TypeScript strict flags missing (noUncheckedIndexedAccess)
+- useAuth deprecated but still used
+- *[32 total medium priority issues - see report for complete list]*
+
+#### Low Priority (Week 17+)
+
+- Debug console.log statements in production code
+- Console logs expose configuration
+- README lacks setup instructions
+- *[24 total low priority issues - see report for complete list]*
+
+**Total Remediation Estimate:** ~110-120 hours across all priorities
+
 ---
 
 ## ⚡ M1.5 - Quick Wins (🔄 In Progress)
