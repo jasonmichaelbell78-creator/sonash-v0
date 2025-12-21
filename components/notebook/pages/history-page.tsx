@@ -38,7 +38,7 @@ export default function HistoryPage() {
                     const preview = [moodText, cravingText, usedText, noteText].filter(Boolean).join(" • ")
 
                     return {
-                        id: `daily-${entry.dateLabel}`,
+                        id: entry.id, // Use actual Firestore ID, not synthetic date-based ID
                         type: 'daily-log' as const,
                         date,
                         title: "Daily Check-in",
