@@ -102,7 +102,7 @@ All 19 items from the 6-model AI code analysis have been addressed:
 **See:** [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
 
 **Active Tasks:**
-- Update library-page.tsx to use Firestore data (currently hardcoded)
+- None (current sprint complete)
 
 **Next Up (M1.5 Quick Wins):**
 1. ~~Recovery Library (glossary + etiquette guide)~~ ✅ COMPLETE + enhanced with CMS
@@ -270,7 +270,6 @@ All historical documents preserved in:
 - Fix remaining ESLint warnings
 
 **Priority 2 (Should Do):**
-- Start Recovery Library feature
 - Implement HALT Check button
 
 **Priority 3 (Nice to Have):**
