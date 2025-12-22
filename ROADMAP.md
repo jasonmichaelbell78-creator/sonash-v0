@@ -326,7 +326,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
 
-**Phase 1 Prompt:** See [SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)
+**Phase 1 Prompt:** See [SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)
 
 ### Current Admin Infrastructure
 
@@ -869,7 +869,7 @@ All admin Cloud Functions MUST:
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
 - **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
-- **[SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)** - Phase 1 implementation prompt
+- **[SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)** - Phase 1 implementation prompt
 
 ### Detailed Documentation (in /docs)
 
@@ -891,6 +891,7 @@ All admin Cloud Functions MUST:
 
 **Document History:**
 
+- December 22, 2025: Updated Phase 1 prompt to v1.3 (fail-closed middleware, nodejs runtime, bounded queries, invalid date guards)
 - December 22, 2025: Updated M1.6 to v1.2 spec (server-side middleware, Sentry API in Cloud Function, throttled lastActive, robust job wrapper)
 - December 22, 2025: Updated M1.6 to v1.1 spec (hybrid Sentry/GCP approach, explicit security requirements)
 - December 22, 2025: Added M1.6 Admin Panel Enhancement milestone (5 phases)
