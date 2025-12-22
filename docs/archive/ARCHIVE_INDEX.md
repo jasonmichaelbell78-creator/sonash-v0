@@ -6,6 +6,24 @@ This directory contains historical documents, completed analysis reports, and de
 
 ## 🗂️ Archive Organization
 
+### December 22, 2025 - Phase 1 Prompt v1.3 Update
+
+**Archived Document:**
+- `SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md` - Phase 1 prompt v1.2
+
+**Reason:** Superseded by v1.3 with additional robustness improvements:
+- Explicit fail-closed middleware behavior with `cache: 'no-store'`
+- API route specifies `export const runtime = 'nodejs'` for Firebase Admin SDK
+- Firebase Admin SDK init has try/catch for JSON parsing with clear error message
+- Admin jobs query bounded with `.orderBy("name").limit(100)`
+- `formatTimeAgo` guards against invalid dates with `Number.isNaN()`
+- `lastActive` removes localStorage key on failure to allow retry
+- Expanded verification checklist and troubleshooting sections
+
+**Replacement:** [/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](../../SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)
+
+---
+
 ### December 22, 2025 - Admin Panel Enhancement v1.2 Update
 
 **Archived Documents:**
@@ -24,7 +42,7 @@ This directory contains historical documents, completed analysis reports, and de
 
 **Replacement:**
 - [/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](../../SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
-- [/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](../../SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)
+- [/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](../../SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)
 
 ---
 
