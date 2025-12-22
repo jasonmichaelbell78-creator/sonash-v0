@@ -324,7 +324,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Goal:** Operational monitoring and system visibility for admins
 
-**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md](./SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)
+**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)
 
 ### Current Admin Infrastructure
 
@@ -336,7 +336,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 | Cloud Functions auth (`requireAdmin()`) | ✅ Exists |
 | Firestore rules (`isAdmin()`) | ✅ Exists |
 | Sentry integration | ✅ Exists |
-| `logSecurityEvent()` | ✅ Exists |
+| `logSecurityEvent()` → GCP Cloud Logging | ✅ Exists |
+
+### Security Requirements (v1.1)
+
+All admin Cloud Functions MUST:
+- Call `requireAdmin(request)` as first operation
+- Enforce App Check (`enforceAppCheck: true`)
+- Return only non-sensitive aggregated data
+- Hash/redact user identifiers in responses
+- Log admin actions via `logSecurityEvent()` to GCP Cloud Logging (immutable)
 
 ### Phase 1: Dashboard + Foundations (🔄 In Progress)
 
@@ -347,6 +356,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - [ ] Recent signups list
 - [ ] Background jobs status overview
 - [ ] `lastActive` timestamp tracking on users
+- [ ] Firestore rules for `/_health` and `/admin_jobs`
 
 **New Components:**
 - `components/admin/dashboard-tab.tsx` - Dashboard UI
@@ -364,41 +374,47 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - [ ] Activity timeline (daily logs, journal entries)
 - [ ] Account actions (disable, export data)
 - [ ] Admin notes field
+- [ ] All admin actions logged to GCP Cloud Logging
 
 ### Phase 3: Background Jobs Monitoring (📋 Planned)
 
 **Priority:** Medium | **Effort:** Low | **Value:** Medium
 
 - [ ] Jobs registry in Firestore (`admin_jobs` collection)
-- [ ] Job wrapper for status tracking
+- [ ] Job wrapper for status tracking (with `logSecurityEvent()`)
 - [ ] Jobs tab UI
 - [ ] Manual trigger capability
 - [ ] Schedule `cleanupOldRateLimits` in Cloud Scheduler
 
 ### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
 
-**Priority:** High | **Effort:** Medium | **Value:** High
+**Priority:** High | **Effort:** Low-Medium | **Value:** High
 
-- [ ] Fetch recent errors from Sentry API
-- [ ] Plain English error translation layer
-- [ ] Errors tab UI with filtering
-- [ ] Link errors to affected users
+**Approach:** Hybrid summary + deep links (don't rebuild Sentry UI)
+
+- [ ] Error summary card on Dashboard (count + trend)
+- [ ] Errors tab with recent errors in plain English
+- [ ] Deep links to Sentry for each error
+- [ ] User ID correlation (link to user detail if available)
 
 **Environment Variables Required:** `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
 
-### Phase 5: System Logs (📋 Planned)
+### Phase 5: System Logs - GCP Integration (📋 Planned)
 
-**Priority:** Medium | **Effort:** Higher | **Value:** Medium
+**Priority:** Medium | **Effort:** Low | **Value:** Medium
 
-- [ ] Write security events to Firestore (`admin_logs` collection)
-- [ ] Logs tab with search and filtering
-- [ ] Auto-cleanup of logs older than 7 days
-- [ ] Log level filtering (info, warn, error)
+**Approach:** Recent events + deep links (don't rebuild GCP logging UI)
+
+- [ ] Recent security events display (from existing `logSecurityEvent()`)
+- [ ] Deep link to GCP Cloud Logging Console (pre-filtered)
+- [ ] Verify log retention configured (90+ days)
+- [ ] Optional: Log sink for long-term archival
+
+**Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant) — no Firestore `admin_logs` collection.
 
 ### New Firestore Collections
 
 ```
-/admin_logs/{auto-id}     - Security and audit logs
 /admin_jobs/{jobId}       - Background job registry
 /_health/ping             - Health check document
 ```
@@ -842,7 +858,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
-- **[SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md](./SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)** - Admin panel enhancement specification (M1.6)
+- **[SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
 
 ### Detailed Documentation (in /docs)
 
@@ -864,6 +880,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Document History:**
 
+- December 22, 2025: Updated M1.6 to v1.1 spec (hybrid Sentry/GCP approach, explicit security requirements)
 - December 22, 2025: Added M1.6 Admin Panel Enhancement milestone (5 phases)
 - December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
 - December 18, 2025: M1 security hardening completed
