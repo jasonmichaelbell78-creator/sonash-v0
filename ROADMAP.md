@@ -324,7 +324,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Goal:** Operational monitoring and system visibility for admins
 
-**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)
+**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
+
+**Phase 1 Prompt:** See [SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)
 
 ### Current Admin Infrastructure
 
@@ -337,8 +339,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 | Firestore rules (`isAdmin()`) | ✅ Exists |
 | Sentry integration | ✅ Exists |
 | `logSecurityEvent()` → GCP Cloud Logging | ✅ Exists |
+| Server-side admin route protection | ⚠️ Missing (Phase 1) |
 
-### Security Requirements (v1.1)
+### Security Requirements (v1.2)
 
 All admin Cloud Functions MUST:
 - Call `requireAdmin(request)` as first operation
@@ -346,19 +349,25 @@ All admin Cloud Functions MUST:
 - Return only non-sensitive aggregated data
 - Hash/redact user identifiers in responses
 - Log admin actions via `logSecurityEvent()` to GCP Cloud Logging (immutable)
+- **Keep API tokens server-side only** (never expose to client)
 
 ### Phase 1: Dashboard + Foundations (🔄 In Progress)
 
 **Priority:** High | **Effort:** Medium | **Value:** High
 
+- [ ] Server-side middleware with session verification + admin claim check
 - [ ] System health at a glance (Firestore, Auth, Functions status)
 - [ ] Active user metrics (24h, 7d, 30d)
 - [ ] Recent signups list
 - [ ] Background jobs status overview
-- [ ] `lastActive` timestamp tracking on users
+- [ ] Throttled `lastActive` timestamp tracking (15 min via localStorage)
 - [ ] Firestore rules for `/_health` and `/admin_jobs`
 
-**New Components:**
+**New Files:**
+- `middleware.ts` - Server-side admin route protection
+- `lib/firebase-admin.ts` - Firebase Admin SDK initialization
+- `app/api/auth/verify-admin/route.ts` - Session verification API
+- `app/unauthorized/page.tsx` - Unauthorized access page
 - `components/admin/dashboard-tab.tsx` - Dashboard UI
 
 **Cloud Functions:**
@@ -390,14 +399,15 @@ All admin Cloud Functions MUST:
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High
 
-**Approach:** Hybrid summary + deep links (don't rebuild Sentry UI)
+**Approach:** Hybrid summary + deep links via Cloud Function (token never exposed to client)
 
+- [ ] `adminGetSentryErrorSummary` Cloud Function (server-side API call)
 - [ ] Error summary card on Dashboard (count + trend)
 - [ ] Errors tab with recent errors in plain English
 - [ ] Deep links to Sentry for each error
 - [ ] User ID correlation (link to user detail if available)
 
-**Environment Variables Required:** `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
+**Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
 
 ### Phase 5: System Logs - GCP Integration (📋 Planned)
 
@@ -858,7 +868,8 @@ All admin Cloud Functions MUST:
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
-- **[SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
+- **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
+- **[SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)** - Phase 1 implementation prompt
 
 ### Detailed Documentation (in /docs)
 
@@ -880,6 +891,7 @@ All admin Cloud Functions MUST:
 
 **Document History:**
 
+- December 22, 2025: Updated M1.6 to v1.2 spec (server-side middleware, Sentry API in Cloud Function, throttled lastActive, robust job wrapper)
 - December 22, 2025: Updated M1.6 to v1.1 spec (hybrid Sentry/GCP approach, explicit security requirements)
 - December 22, 2025: Added M1.6 Admin Panel Enhancement milestone (5 phases)
 - December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
