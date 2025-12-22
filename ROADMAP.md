@@ -1,6 +1,6 @@
 # SoNash Product Roadmap
 
-**Last Updated:** December 19, 2025  
+**Last Updated:** December 22, 2025  
 **Status:** Canonical roadmap - supersedes all previous roadmap documents
 
 ---
@@ -18,6 +18,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
 | **M1 - Foundation** | 🔄 In Progress | ~85% | Q1 2026 | P0 |
 | **M1.5 - Quick Wins** | 🔄 In Progress | ~40% | Q1 2026 | P0 |
+| **M1.6 - Admin Panel** | 🔄 In Progress | ~10% | Q1 2026 | P1 |
 | **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
 | **M3 - Meetings** | 📋 Planned | 0% | Q2 2026 | P1 |
 | **M4 - Expansion** | 📋 Planned | 0% | Q2 2026 | P1 |
@@ -316,6 +317,100 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 - Privacy layer for device sharing
 - "Journal" or neutral branding
+
+---
+
+## 🖥️ M1.6 - Admin Panel Enhancement (🔄 In Progress)
+
+**Goal:** Operational monitoring and system visibility for admins
+
+**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md](./SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)
+
+### Current Admin Infrastructure
+
+| Component | Status |
+|-----------|--------|
+| Admin route (`/app/admin/`) | ✅ Exists |
+| Tab navigation (8 tabs) | ✅ Exists |
+| `AdminCrudTable<T>` component | ✅ Exists |
+| Cloud Functions auth (`requireAdmin()`) | ✅ Exists |
+| Firestore rules (`isAdmin()`) | ✅ Exists |
+| Sentry integration | ✅ Exists |
+| `logSecurityEvent()` | ✅ Exists |
+
+### Phase 1: Dashboard + Foundations (🔄 In Progress)
+
+**Priority:** High | **Effort:** Medium | **Value:** High
+
+- [ ] System health at a glance (Firestore, Auth, Functions status)
+- [ ] Active user metrics (24h, 7d, 30d)
+- [ ] Recent signups list
+- [ ] Background jobs status overview
+- [ ] `lastActive` timestamp tracking on users
+
+**New Components:**
+- `components/admin/dashboard-tab.tsx` - Dashboard UI
+
+**Cloud Functions:**
+- `adminHealthCheck` - Tests Firestore/Auth connectivity
+- `adminGetDashboardStats` - Returns user counts, signups, job statuses
+
+### Phase 2: Enhanced User Lookup (📋 Planned)
+
+**Priority:** High | **Effort:** Medium | **Value:** High
+
+- [ ] Search users by email, UID, or nickname
+- [ ] User detail drawer with full profile
+- [ ] Activity timeline (daily logs, journal entries)
+- [ ] Account actions (disable, export data)
+- [ ] Admin notes field
+
+### Phase 3: Background Jobs Monitoring (📋 Planned)
+
+**Priority:** Medium | **Effort:** Low | **Value:** Medium
+
+- [ ] Jobs registry in Firestore (`admin_jobs` collection)
+- [ ] Job wrapper for status tracking
+- [ ] Jobs tab UI
+- [ ] Manual trigger capability
+- [ ] Schedule `cleanupOldRateLimits` in Cloud Scheduler
+
+### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
+
+**Priority:** High | **Effort:** Medium | **Value:** High
+
+- [ ] Fetch recent errors from Sentry API
+- [ ] Plain English error translation layer
+- [ ] Errors tab UI with filtering
+- [ ] Link errors to affected users
+
+**Environment Variables Required:** `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
+
+### Phase 5: System Logs (📋 Planned)
+
+**Priority:** Medium | **Effort:** Higher | **Value:** Medium
+
+- [ ] Write security events to Firestore (`admin_logs` collection)
+- [ ] Logs tab with search and filtering
+- [ ] Auto-cleanup of logs older than 7 days
+- [ ] Log level filtering (info, warn, error)
+
+### New Firestore Collections
+
+```
+/admin_logs/{auto-id}     - Security and audit logs
+/admin_jobs/{jobId}       - Background job registry
+/_health/ping             - Health check document
+```
+
+### Success Metrics
+
+| Metric | Target |
+|--------|--------|
+| Time to identify issue | < 2 minutes |
+| Dashboard load time | < 3 seconds |
+| Error visibility | 100% of Cloud Function errors |
+| Job failure detection | < 1 hour after failure |
 
 ---
 
@@ -747,6 +842,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
+- **[SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md](./SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)** - Admin panel enhancement specification (M1.6)
 
 ### Detailed Documentation (in /docs)
 
@@ -768,6 +864,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Document History:**
 
+- December 22, 2025: Added M1.6 Admin Panel Enhancement milestone (5 phases)
 - December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
 - December 18, 2025: M1 security hardening completed
 - December 17, 2025: Journal system refactor completed
