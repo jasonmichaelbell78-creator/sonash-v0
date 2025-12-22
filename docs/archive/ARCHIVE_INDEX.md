@@ -6,17 +6,25 @@ This directory contains historical documents, completed analysis reports, and de
 
 ## 🗂️ Archive Organization
 
-### December 22, 2025 - Admin Panel Enhancement Spec Update
+### December 22, 2025 - Admin Panel Enhancement v1.2 Update
 
-**Archived Document:** `SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md`
+**Archived Documents:**
+- `SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md` - Initial spec
+- `SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md` - First revision
+- `SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md` - Old Phase 1 prompt (for v1.1)
 
-**Reason:** Superseded by v1.1 which incorporated Qodo PR review feedback:
-- Switched to GCP Cloud Logging for audit trails (removed Firestore `admin_logs` collection)
-- Hybrid Sentry approach for errors (summary + deep links instead of custom UI)
-- Hybrid GCP approach for logs (recent events + deep links instead of custom UI)
-- Added explicit security requirements for Cloud Functions
+**Reason:** Superseded by v1.2 which incorporated additional Qodo security review feedback:
+- Sentry API moved to Cloud Function (`adminGetSentryErrorSummary`) - token never exposed to client
+- Proper server-side middleware with session verification + admin claim check
+- Job wrapper uses `set({merge:true})` to prevent first-run failures
+- Nested try/catch in job wrapper to preserve original errors
+- Throttled `lastActive` updates (15 min via localStorage) to reduce Firestore costs
+- Fixed GCP logging query URL (filter by log name, not function name)
+- Added Sentry API error handling
 
-**Replacement:** [/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](../../SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)
+**Replacement:**
+- [/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](../../SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
+- [/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](../../SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)
 
 ---
 
