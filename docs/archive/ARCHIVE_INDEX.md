@@ -6,6 +6,20 @@ This directory contains historical documents, completed analysis reports, and de
 
 ## 🗂️ Archive Organization
 
+### December 22, 2025 - Admin Panel Enhancement Spec Update
+
+**Archived Document:** `SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md`
+
+**Reason:** Superseded by v1.1 which incorporated Qodo PR review feedback:
+- Switched to GCP Cloud Logging for audit trails (removed Firestore `admin_logs` collection)
+- Hybrid Sentry approach for errors (summary + deep links instead of custom UI)
+- Hybrid GCP approach for logs (recent events + deep links instead of custom UI)
+- Added explicit security requirements for Cloud Functions
+
+**Replacement:** [/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](../../SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)
+
+---
+
 ### December 19, 2025 - Documentation Consolidation
 
 **Location:** `/docs/archive/consolidated-2025-12-19/`
