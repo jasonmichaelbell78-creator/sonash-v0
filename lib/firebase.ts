@@ -37,11 +37,7 @@ const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
       "⚠️ App Check not configured: Missing NEXT_PUBLIC_RECAPTCHA_SITE_KEY. " +
       "Requests to protected Firebase resources will fail."
 
-    if (process.env.NODE_ENV === "production") {
-      // In production we surface a hard error so deployments fail fast instead of silently
-      // sending unauthenticated requests that the backend will reject.
-      throw new Error(message)
-    }
+    // Note: Changed to always warn instead of throw to allow app to function without App Check
 
     console.warn(message)
     return
