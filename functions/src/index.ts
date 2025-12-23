@@ -560,6 +560,10 @@ export {
     adminDeleteQuote,
     adminHealthCheck,
     adminGetDashboardStats,
+    adminSearchUsers,
+    adminGetUserDetail,
+    adminUpdateUser,
+    adminDisableUser,
 } from "./admin";
 
 // Export rate limiter cleanup function (should be run daily via Cloud Scheduler)

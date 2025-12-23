@@ -548,3 +548,386 @@ export const adminGetDashboardStats = onCall(
         }
     }
 );
+
+/**
+ * Admin: Search Users
+ * Search users by email, UID, or nickname
+ */
+interface SearchUsersRequest {
+    query: string;
+    limit?: number;
+}
+
+export const adminSearchUsers = onCall<SearchUsersRequest>(
+    async (request) => {
+        requireAdmin(request);
+
+        const { query, limit = 20 } = request.data;
+
+        if (!query || query.trim().length === 0) {
+            throw new HttpsError("invalid-argument", "Search query is required");
+        }
+
+        logSecurityEvent(
+            "ADMIN_ACTION",
+            "adminSearchUsers",
+            `Admin searched for users: ${query}`,
+            { userId: request.auth?.uid, metadata: { query } }
+        );
+
+        try {
+            const results: Array<{
+                uid: string;
+                email: string | null;
+                nickname: string;
+                disabled: boolean;
+                lastActive: string | null;
+                createdAt: string | null;
+            }> = [];
+
+            const searchQuery = query.trim().toLowerCase();
+            const db = admin.firestore();
+
+            // Search by UID (exact match)
+            if (searchQuery.length >= 20) {
+                try {
+                    const userDoc = await db.collection("users").doc(query).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data()!;
+                        const authUser = await admin.auth().getUser(query);
+                        results.push({
+                            uid: userDoc.id,
+                            email: authUser.email || null,
+                            nickname: userData.nickname || "Anonymous",
+                            disabled: authUser.disabled || false,
+                            lastActive: userData.lastActive?.toDate().toISOString() || null,
+                            createdAt: userData.createdAt?.toDate().toISOString() || null,
+                        });
+                    }
+                } catch {
+                    // Not a valid UID, continue to other searches
+                }
+            }
+
+            // Search by email
+            if (searchQuery.includes("@")) {
+                try {
+                    const authUser = await admin.auth().getUserByEmail(query);
+                    const userDoc = await db.collection("users").doc(authUser.uid).get();
+                    const userData = userDoc.exists ? userDoc.data()! : {};
+
+                    if (!results.find(u => u.uid === authUser.uid)) {
+                        results.push({
+                            uid: authUser.uid,
+                            email: authUser.email || null,
+                            nickname: userData.nickname || "Anonymous",
+                            disabled: authUser.disabled || false,
+                            lastActive: userData.lastActive?.toDate().toISOString() || null,
+                            createdAt: userData.createdAt?.toDate().toISOString() || null,
+                        });
+                    }
+                } catch {
+                    // User not found by email
+                }
+            }
+
+            // Search by nickname (partial match)
+            const nicknameResults = await db.collection("users")
+                .where("nickname", ">=", searchQuery)
+                .where("nickname", "<=", searchQuery + "\uf8ff")
+                .limit(limit)
+                .get();
+
+            for (const doc of nicknameResults.docs) {
+                if (results.find(u => u.uid === doc.id)) continue;
+
+                const userData = doc.data();
+                try {
+                    const authUser = await admin.auth().getUser(doc.id);
+                    results.push({
+                        uid: doc.id,
+                        email: authUser.email || null,
+                        nickname: userData.nickname || "Anonymous",
+                        disabled: authUser.disabled || false,
+                        lastActive: userData.lastActive?.toDate().toISOString() || null,
+                        createdAt: userData.createdAt?.toDate().toISOString() || null,
+                    });
+                } catch {
+                    // Auth user not found, skip
+                }
+            }
+
+            return {
+                results: results.slice(0, limit),
+                total: results.length,
+            };
+        } catch (error) {
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminSearchUsers",
+                "Failed to search users",
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to search users");
+        }
+    }
+);
+
+/**
+ * Admin: Get User Detail
+ * Returns detailed user profile and activity timeline
+ */
+interface GetUserDetailRequest {
+    uid: string;
+    activityLimit?: number;
+}
+
+export const adminGetUserDetail = onCall<GetUserDetailRequest>(
+    async (request) => {
+        requireAdmin(request);
+
+        const { uid, activityLimit = 30 } = request.data;
+
+        if (!uid) {
+            throw new HttpsError("invalid-argument", "User ID is required");
+        }
+
+        logSecurityEvent(
+            "ADMIN_ACTION",
+            "adminGetUserDetail",
+            `Admin viewed user detail: ${uid}`,
+            { userId: request.auth?.uid, metadata: { targetUid: uid } }
+        );
+
+        try {
+            const db = admin.firestore();
+
+            // Get user auth data
+            const authUser = await admin.auth().getUser(uid);
+
+            // Get user profile
+            const userDoc = await db.collection("users").doc(uid).get();
+            if (!userDoc.exists) {
+                throw new HttpsError("not-found", "User not found");
+            }
+
+            const userData = userDoc.data()!;
+
+            // Get journal entries (last N)
+            const journalSnapshot = await db.collection(`users/${uid}/journal`)
+                .where("isSoftDeleted", "==", false)
+                .orderBy("createdAt", "desc")
+                .limit(activityLimit)
+                .get();
+
+            const journalEntries = journalSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    type: "journal",
+                    date: data.createdAt?.toDate().toISOString() || null,
+                    dateLabel: data.dateLabel || null,
+                    entryType: data.type || "unknown",
+                    mood: data.mood || null,
+                    hasCravings: data.hasCravings || false,
+                    hasUsed: data.hasUsed || false,
+                };
+            });
+
+            // Get daily logs (last N)
+            const dailyLogsSnapshot = await db.collection(`users/${uid}/daily_logs`)
+                .orderBy("date", "desc")
+                .limit(activityLimit)
+                .get();
+
+            const dailyLogs = dailyLogsSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    type: "daily_log",
+                    date: data.updatedAt?.toDate().toISOString() || null,
+                    dateLabel: data.date || null,
+                    mood: data.mood || null,
+                    cravings: data.cravings || false,
+                    used: data.used || false,
+                };
+            });
+
+            // Merge and sort activity by date
+            const recentActivity = [...journalEntries, ...dailyLogs]
+                .sort((a, b) => {
+                    const dateA = a.date ? new Date(a.date).getTime() : 0;
+                    const dateB = b.date ? new Date(b.date).getTime() : 0;
+                    return dateB - dateA;
+                })
+                .slice(0, activityLimit);
+
+            // Get inventory count
+            const inventorySnapshot = await db.collection(`users/${uid}/inventoryEntries`)
+                .count()
+                .get();
+
+            return {
+                profile: {
+                    uid: authUser.uid,
+                    email: authUser.email || null,
+                    emailVerified: authUser.emailVerified,
+                    disabled: authUser.disabled,
+                    createdAt: authUser.metadata.creationTime,
+                    lastSignIn: authUser.metadata.lastSignInTime,
+                    provider: authUser.providerData[0]?.providerId || "anonymous",
+                    nickname: userData.nickname || "Anonymous",
+                    soberDate: userData.soberDate?.toDate().toISOString() || null,
+                    lastActive: userData.lastActive?.toDate().toISOString() || null,
+                    adminNotes: userData.adminNotes || null,
+                    isAdmin: userData.isAdmin || false,
+                },
+                stats: {
+                    totalJournalEntries: journalSnapshot.size,
+                    totalCheckIns: dailyLogsSnapshot.size,
+                    totalInventory: inventorySnapshot.data().count,
+                },
+                recentActivity,
+            };
+        } catch (error) {
+            if (error instanceof HttpsError) throw error;
+
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminGetUserDetail",
+                "Failed to get user detail",
+                { userId: request.auth?.uid, metadata: { error: String(error), targetUid: uid }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to get user detail");
+        }
+    }
+);
+
+/**
+ * Admin: Update User
+ * Allows admin to update specific user fields
+ */
+interface UpdateUserRequest {
+    uid: string;
+    updates: {
+        adminNotes?: string;
+        nickname?: string;
+    };
+}
+
+export const adminUpdateUser = onCall<UpdateUserRequest>(
+    async (request) => {
+        requireAdmin(request);
+
+        const { uid, updates } = request.data;
+
+        if (!uid) {
+            throw new HttpsError("invalid-argument", "User ID is required");
+        }
+
+        if (!updates || Object.keys(updates).length === 0) {
+            throw new HttpsError("invalid-argument", "No updates provided");
+        }
+
+        logSecurityEvent(
+            "ADMIN_ACTION",
+            "adminUpdateUser",
+            `Admin updated user: ${uid}`,
+            { userId: request.auth?.uid, metadata: { targetUid: uid, updates } }
+        );
+
+        try {
+            const db = admin.firestore();
+            const userRef = db.collection("users").doc(uid);
+
+            const allowedUpdates: Record<string, unknown> = {};
+
+            if (updates.adminNotes !== undefined) {
+                allowedUpdates.adminNotes = updates.adminNotes;
+            }
+
+            if (updates.nickname !== undefined) {
+                allowedUpdates.nickname = updates.nickname;
+            }
+
+            allowedUpdates.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
+            await userRef.update(allowedUpdates);
+
+            return { success: true, message: "User updated successfully" };
+        } catch (error) {
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminUpdateUser",
+                "Failed to update user",
+                { userId: request.auth?.uid, metadata: { error: String(error), targetUid: uid }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to update user");
+        }
+    }
+);
+
+/**
+ * Admin: Disable/Enable User
+ * Disables or enables a user account
+ */
+interface DisableUserRequest {
+    uid: string;
+    disabled: boolean;
+    reason?: string;
+}
+
+export const adminDisableUser = onCall<DisableUserRequest>(
+    async (request) => {
+        requireAdmin(request);
+
+        const { uid, disabled, reason } = request.data;
+
+        if (!uid) {
+            throw new HttpsError("invalid-argument", "User ID is required");
+        }
+
+        logSecurityEvent(
+            "ADMIN_ACTION",
+            "adminDisableUser",
+            `Admin ${disabled ? "disabled" : "enabled"} user: ${uid}`,
+            {
+                userId: request.auth?.uid,
+                metadata: { targetUid: uid, disabled, reason },
+                severity: "WARNING"
+            }
+        );
+
+        try {
+            // Update Firebase Auth
+            await admin.auth().updateUser(uid, { disabled });
+
+            // Revoke refresh tokens if disabling
+            if (disabled) {
+                await admin.auth().revokeRefreshTokens(uid);
+            }
+
+            // Update Firestore user document
+            const db = admin.firestore();
+            await db.collection("users").doc(uid).update({
+                disabled,
+                disabledReason: reason || null,
+                disabledAt: disabled ? admin.firestore.FieldValue.serverTimestamp() : null,
+                disabledBy: request.auth?.uid || null,
+            });
+
+            return {
+                success: true,
+                message: `User ${disabled ? "disabled" : "enabled"} successfully`
+            };
+        } catch (error) {
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminDisableUser",
+                "Failed to disable/enable user",
+                { userId: request.auth?.uid, metadata: { error: String(error), targetUid: uid }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to update user status");
+        }
+    }
+);
