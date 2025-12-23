@@ -17,6 +17,12 @@ import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
 import { db } from "@/lib/firebase"
+import { TodayPageSkeleton } from "./today-page-skeleton"
+import { CheckInProgress } from "../features/check-in-progress"
+import { QuickActionsFab } from "../features/quick-actions-fab"
+import { EnhancedMoodSelector } from "../features/enhanced-mood-selector"
+import { SmartPrompt } from "../features/smart-prompt"
+import { OfflineIndicator } from "@/components/status/offline-indicator"
 
 interface TodayPageProps {
   nickname: string
