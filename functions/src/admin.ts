@@ -383,10 +383,6 @@ export const adminDeleteQuote = onCall<DeleteQuoteRequest>(
  * Tests connectivity to core Firebase services
  */
 export const adminHealthCheck = onCall(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
@@ -443,10 +439,6 @@ export const adminHealthCheck = onCall(
  * Returns system metrics for the admin dashboard
  */
 export const adminGetDashboardStats = onCall(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
