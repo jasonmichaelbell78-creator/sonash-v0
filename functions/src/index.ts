@@ -558,6 +558,8 @@ export {
     adminDeleteSoberLiving,
     adminSaveQuote,
     adminDeleteQuote,
+    adminHealthCheck,
+    adminGetDashboardStats,
 } from "./admin";
 
 // Export rate limiter cleanup function (should be run daily via Cloud Scheduler)
