@@ -29,7 +29,7 @@ interface TodayPageProps {
   onNavigate: (id: NotebookModuleId) => void
 }
 
-export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPageProps) {
+export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
   const [cravings, setCravings] = useState<boolean | null>(null)
   const [used, setUsed] = useState<boolean | null>(null)
@@ -38,6 +38,10 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
   const [saveComplete, setSaveComplete] = useState(false)
   const [hasTouched, setHasTouched] = useState(false)
   const [weekStats, setWeekStats] = useState({ daysLogged: 0, streak: 0 })
+  const [isLoading, setIsLoading] = useState(true)
+  const [showQuickMoodPrompt, setShowQuickMoodPrompt] = useState(false)
+  const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(new Set())
+
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -68,6 +72,38 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
     tired: false,
   })
   const [haltSubmitted, setHaltSubmitted] = useState(false)
+
+  // Calculate check-in progress
+  const checkInSteps = useMemo(() => {
+    const steps = [
+      { id: "mood", label: "Mood", completed: mood !== null },
+      { id: "check", label: "Check", completed: cravings !== null && used !== null },
+      { id: "halt", label: "HALT", completed: haltSubmitted || Object.values(haltCheck).some(v => v) },
+    ]
+    const currentStep = steps.filter(s => s.completed).length
+    return { steps, currentStep, totalSteps: steps.length }
+  }, [mood, cravings, used, haltCheck, haltSubmitted])
+
+  // Smart prompt: Check-in reminder
+  const showCheckInReminder = useMemo(() => {
+    if (dismissedPrompts.has('check-in-reminder')) return false
+    const now = new Date()
+    const hour = now.getHours()
+    // Show reminder between 6 PM and 10 PM if not checked in
+    return hour >= 18 && hour < 22 && !mood && !hasTouched
+  }, [mood, hasTouched, dismissedPrompts])
+
+  // Smart prompt: HALT suggestion when struggling
+  const showHaltSuggestion = useMemo(() => {
+    if (dismissedPrompts.has('halt-suggestion')) return false
+    return mood === 'struggling' && !haltSubmitted && !Object.values(haltCheck).some(v => v)
+  }, [mood, haltCheck, haltSubmitted, dismissedPrompts])
+
+  // Smart prompt: No cravings streak celebration
+  const showNoCravingsStreak = useMemo(() => {
+    if (dismissedPrompts.has('no-cravings-streak')) return false
+    return weekStats.streak >= 7 && cravings === null && mood !== null
+  }, [weekStats.streak, cravings, mood, dismissedPrompts])
 
   const createJournalDailyLog = useCallback(async (data: { journalEntry: string; mood: string | null; cravings: boolean | null; used: boolean | null }) => {
     if (!user) return
@@ -219,6 +255,25 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
       toast.error("Couldn't save HALT check. Please try again.")
     }
   }, [user, haltCheck, celebrate])
+
+  // Initial loading state management
+  useEffect(() => {
+    if (user && profile) {
+      // Set loading to false after a brief delay to show skeleton
+      const timer = setTimeout(() => setIsLoading(false), 500)
+      return () => clearTimeout(timer)
+    }
+  }, [user, profile])
+
+  // Quick mood handler for FAB
+  const handleQuickMood = useCallback(() => {
+    setShowQuickMoodPrompt(true)
+    // Auto-scroll to mood selector
+    setTimeout(() => {
+      const moodSection = document.querySelector('[aria-label="Mood selection"]')
+      moodSection?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
+  }, [])
 
   // Real-time data sync
   useEffect(() => {
@@ -562,15 +617,20 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
 
   const cleanTimeDisplay = getCleanTime()
 
-  const moods = [
-    { id: "struggling", emoji: "😟", label: "Struggling", color: "text-red-500" },
-    { id: "okay", emoji: "😐", label: "Okay", color: "text-orange-500" },
-    { id: "hopeful", emoji: "🙂", label: "Hopeful", color: "text-lime-500" },
-    { id: "great", emoji: "😊", label: "Great", color: "text-green-500" },
-  ]
+  // Show loading skeleton
+  if (isLoading) {
+    return <TodayPageSkeleton />
+  }
 
   return (
-    <div className="h-full overflow-y-auto pr-2 pb-8 scrollbar-hide">
+    <>
+      {/* Offline indicator */}
+      <OfflineIndicator />
+
+      {/* Quick actions FAB */}
+      <QuickActionsFab onNavigate={onNavigate} onQuickMood={handleQuickMood} />
+
+      <div className="h-full overflow-y-auto pr-2 pb-8 scrollbar-hide">
       {/* Header */}
       <div className="mb-6 pt-2">
         <div className="flex justify-between items-start gap-3">
@@ -590,6 +650,51 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
       </div>
 
       <AuthErrorBanner />
+
+      {/* Smart Prompts */}
+      {showCheckInReminder && (
+        <SmartPrompt
+          type="check-in-reminder"
+          message="Evening check-in time! How was your day?"
+          action={{
+            label: "Check in now",
+            onClick: handleQuickMood
+          }}
+          onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('check-in-reminder'))}
+        />
+      )}
+
+      {showHaltSuggestion && (
+        <SmartPrompt
+          type="halt-suggestion"
+          message="You're struggling today. A quick HALT check might help identify what you need."
+          action={{
+            label: "Do HALT check",
+            onClick: () => {
+              const haltSection = document.querySelector('h2:has-text("HALT Check")')?.parentElement
+              haltSection?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+          }}
+          onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('halt-suggestion'))}
+        />
+      )}
+
+      {showNoCravingsStreak && (
+        <SmartPrompt
+          type="no-cravings-streak"
+          message={`🎉 Amazing! You've logged ${weekStats.streak} days in a row. Your consistency is inspiring!`}
+          onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('no-cravings-streak'))}
+        />
+      )}
+
+      {/* Check-in Progress */}
+      {hasTouched && checkInSteps.currentStep < checkInSteps.totalSteps && (
+        <CheckInProgress
+          currentStep={checkInSteps.currentStep}
+          totalSteps={checkInSteps.totalSteps}
+          steps={checkInSteps.steps}
+        />
+      )}
 
       {/* Two column layout for larger screens */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -728,41 +833,30 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
           {/* Check-in */}
           <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
-            <div className="flex justify-between gap-2 mb-4" role="group" aria-label="Mood selection">
-              {moods.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => {
-                    setMood(m.id)
-                    setHasTouched(true)
-                  }}
-                  aria-label={`Set mood to ${m.label}`}
-                  aria-pressed={mood === m.id}
-                  className={`flex flex-col items-center p-2 rounded-lg transition-all ${mood === m.id
-                    ? "bg-amber-100 scale-110 shadow-sm ring-1 ring-amber-200"
-                    : "hover:bg-amber-50"
-                    }`}
-                >
-                  <span className="text-2xl md:text-3xl filter drop-shadow-sm" aria-hidden="true">{m.emoji}</span>
-                  <span className="font-body text-xs text-amber-900/70 mt-1">{m.label}</span>
-                </button>
-              ))}
-            </div>
+            <EnhancedMoodSelector
+              value={mood}
+              onChange={(newMood) => {
+                setMood(newMood)
+                setHasTouched(true)
+                setShowQuickMoodPrompt(false)
+              }}
+              showKeyboardShortcuts={true}
+            />
 
             <MoodSparkline />
 
             {/* Toggle questions - Only show after mood is selected */}
             {mood && (
-              <div className="space-y-3 pl-1">
+              <div className="space-y-3 pl-1 animate-in slide-in-from-top duration-300">
                 <div className="flex items-center justify-between">
                   <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => { setCravings(false); setHasTouched(true) }}
                       aria-label="No cravings"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === false
-                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === false
+                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
                         }`}
                     >
                       No
@@ -770,9 +864,9 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
                     <button
                       onClick={() => { setCravings(true); setHasTouched(true) }}
                       aria-label="Yes cravings"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${cravings === true
-                        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-sm"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === true
+                        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
                         }`}
                     >
                       Yes
@@ -786,9 +880,9 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
                     <button
                       onClick={() => { setUsed(false); setHasTouched(true) }}
                       aria-label="No used"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === false
-                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-sm"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === false
+                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
                         }`}
                     >
                       No
@@ -796,9 +890,9 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
                     <button
                       onClick={() => { setUsed(true); setHasTouched(true) }}
                       aria-label="Yes used"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${used === true
-                        ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-sm"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200"
+                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === true
+                        ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-md scale-105"
+                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
                         }`}
                     >
                       Yes
@@ -918,5 +1012,6 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
         <p className="font-body text-sm text-amber-900/50 text-center">Swipe left for more →</p>
       </div>
     </div>
+    </>
   )
 }
