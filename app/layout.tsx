@@ -1,10 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-// Temporarily disabled Google Fonts for build - fonts will load from CDN in browser
-// import {
-//   Handlee,
-//   Rock_Salt,
-// } from "next/font/google"
+import {
+  Handlee,
+  Rock_Salt,
+} from "next/font/google"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { ErrorBoundary } from "@/components/providers/error-boundary"
 import { CelebrationProvider } from "@/components/celebrations/celebration-provider"
@@ -13,14 +12,19 @@ import { Toaster } from "sonner"
 
 // Only load fonts that are actually used in the application
 // Performance optimization: Reduced from 20+ fonts to 2 essential fonts
-// Temporarily using CSS variables without next/font for build
-const handlee = {
+const handlee = Handlee({
+  weight: "400",
+  subsets: ["latin"],
   variable: "--font-handlee",
-}
+  display: 'swap'
+})
 
-const rockSalt = {
+const rockSalt = Rock_Salt({
+  weight: "400",
+  subsets: ["latin"],
   variable: "--font-rocksalt",
-}
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
   title: "SoNash - Sober Nashville",
