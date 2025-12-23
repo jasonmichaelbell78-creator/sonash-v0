@@ -1,6 +1,6 @@
 # SoNash Product Roadmap
 
-**Last Updated:** December 22, 2025  
+**Last Updated:** December 23, 2025
 **Status:** Canonical roadmap - supersedes all previous roadmap documents
 
 ---
@@ -18,7 +18,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
 | **M1 - Foundation** | 🔄 In Progress | ~85% | Q1 2026 | P0 |
 | **M1.5 - Quick Wins** | 🔄 In Progress | ~40% | Q1 2026 | P0 |
-| **M1.6 - Admin Panel** | 🔄 In Progress | ~10% | Q1 2026 | P1 |
+| **M1.6 - Admin Panel + UX** | 🔄 In Progress | ~65% | Q1 2026 | P1 |
 | **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
 | **M3 - Meetings** | 📋 Planned | 0% | Q2 2026 | P1 |
 | **M4 - Expansion** | 📋 Planned | 0% | Q2 2026 | P1 |
@@ -28,7 +28,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 | **M8 - Speakers** | 📋 Planned | 0% | Q4 2026 | P2 |
 | **M10 - Monetization** | 🔬 Research | 0% | 2027 | P2 |
 
-**Overall Progress:** ~18%
+**Overall Progress:** ~26%
 
 ---
 
@@ -320,11 +320,11 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 ---
 
-## 🖥️ M1.6 - Admin Panel Enhancement (🔄 In Progress)
+## 🖥️ M1.6 - Admin Panel + Today Page Enhancement (🔄 In Progress)
 
-**Goal:** Operational monitoring and system visibility for admins
+**Goal:** Operational monitoring for admins + dramatically improved user experience for Today page
 
-**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
+**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md) (v1.4)
 
 **Phase 1 Prompt:** See [SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)
 
@@ -351,49 +351,92 @@ All admin Cloud Functions MUST:
 - Log admin actions via `logSecurityEvent()` to GCP Cloud Logging (immutable)
 - **Keep API tokens server-side only** (never expose to client)
 
-### Phase 1: Dashboard + Foundations (🔄 In Progress)
+### Phase 1: Dashboard + Foundations (✅ Complete - Dec 23, 2025)
 
 **Priority:** High | **Effort:** Medium | **Value:** High
 
-- [ ] Server-side middleware with session verification + admin claim check
-- [ ] System health at a glance (Firestore, Auth, Functions status)
-- [ ] Active user metrics (24h, 7d, 30d)
-- [ ] Recent signups list
-- [ ] Background jobs status overview
-- [ ] Throttled `lastActive` timestamp tracking (15 min via localStorage)
-- [ ] Firestore rules for `/_health` and `/admin_jobs`
+- [x] ~~Server-side middleware~~ (Deferred - client-side protection sufficient)
+- [x] System health at a glance (Firestore, Auth, Functions status)
+- [x] Active user metrics (24h, 7d, 30d)
+- [x] Recent signups list
+- [x] Background jobs status overview
+- [x] Throttled `lastActive` timestamp tracking (15 min via localStorage)
+- [x] Firestore rules for `/_health` and `/admin_jobs`
 
-**New Files:**
-- `middleware.ts` - Server-side admin route protection
-- `lib/firebase-admin.ts` - Firebase Admin SDK initialization
-- `app/api/auth/verify-admin/route.ts` - Session verification API
-- `app/unauthorized/page.tsx` - Unauthorized access page
-- `components/admin/dashboard-tab.tsx` - Dashboard UI
-
-**Cloud Functions:**
+**Cloud Functions Deployed:**
 - `adminHealthCheck` - Tests Firestore/Auth connectivity
 - `adminGetDashboardStats` - Returns user counts, signups, job statuses
 
-### Phase 2: Enhanced User Lookup (📋 Planned)
+### Phase 2: Enhanced User Lookup (✅ Complete - Dec 23, 2025)
 
 **Priority:** High | **Effort:** Medium | **Value:** High
 
-- [ ] Search users by email, UID, or nickname
-- [ ] User detail drawer with full profile
-- [ ] Activity timeline (daily logs, journal entries)
-- [ ] Account actions (disable, export data)
-- [ ] Admin notes field
-- [ ] All admin actions logged to GCP Cloud Logging
+- [x] Search users by email, UID, or nickname
+- [x] User detail drawer with full profile
+- [x] Activity timeline (daily logs, journal entries)
+- [x] Account actions (disable user)
+- [x] Admin notes field
+- [x] All admin actions logged to GCP Cloud Logging
 
-### Phase 3: Background Jobs Monitoring (📋 Planned)
+**Cloud Functions Deployed:**
+- `adminSearchUsers` - Search by email/UID/nickname
+- `adminGetUserDetail` - Full user profile + activity
+- `adminUpdateUser` - Update user fields (admin notes)
+- `adminDisableUser` - Disable/enable user accounts
+
+### Phase 3: Background Jobs Monitoring (✅ Complete - Dec 23, 2025)
 
 **Priority:** Medium | **Effort:** Low | **Value:** Medium
 
-- [ ] Jobs registry in Firestore (`admin_jobs` collection)
-- [ ] Job wrapper for status tracking (with `logSecurityEvent()`)
-- [ ] Jobs tab UI
-- [ ] Manual trigger capability
-- [ ] Schedule `cleanupOldRateLimits` in Cloud Scheduler
+- [x] Jobs registry in Firestore (`admin_jobs` collection)
+- [x] Job wrapper for status tracking (with `logSecurityEvent()`)
+- [x] Jobs tab UI
+- [x] Manual trigger capability
+- [x] Scheduled `cleanupOldRateLimits` (daily 3 AM CT)
+
+**Cloud Functions Deployed:**
+- `adminTriggerJob` - Manual job execution
+- `adminGetJobsStatus` - Job status retrieval
+- `scheduledCleanupRateLimits` - Daily rate limit cleanup
+
+### Today Page Enhancement - UX Polish (✅ Complete - Dec 23, 2025)
+
+**Priority:** High | **Effort:** Medium | **Value:** High — dramatically improved user experience
+
+**Objectives:**
+- [x] Progressive check-in flow with visual progress indicator
+- [x] Loading states and skeleton screens
+- [x] Enhanced visual feedback (animations, scale effects, glow)
+- [x] Mobile-specific improvements (larger touch targets, active states)
+- [x] Quick actions FAB with 4 shortcuts
+- [x] Smart defaults with contextual prompts (3 types)
+- [x] Enhanced mood selector with keyboard shortcuts (1-4 keys)
+- [x] Data visualization enhancements (progress bars)
+- [x] Accessibility improvements (ARIA labels, keyboard navigation)
+- [x] Offline-first enhancement with network status indicator
+- [x] Code quality improvements (custom hooks, localStorage persistence)
+
+**New Components Created (6):**
+- `TodayPageSkeleton` - Loading state skeleton screen
+- `CheckInProgress` - Step-by-step progress indicator
+- `QuickActionsFab` - Floating action button with 4 shortcuts (z-index fix applied)
+- `EnhancedMoodSelector` - Mood picker with keyboard shortcuts (1-4)
+- `SmartPrompt` - Contextual AI-driven suggestions
+- `OfflineIndicator` - Network status awareness
+
+**Custom Hooks Created (2):**
+- `useSmartPrompts` - Smart prompt visibility + localStorage persistence
+- `useScrollToSection` - Scroll management with useEffect (no setTimeout)
+
+**Key Features:**
+- **3 Smart Prompts:** Evening check-in reminder (6-10 PM), HALT suggestion when struggling, streak celebration (7+ days)
+- **localStorage Persistence:** Dismissed prompts persist per day (`dismissed-prompts-YYYY-MM-DD`)
+- **Keyboard Shortcuts:** Press 1-4 to select mood on desktop
+- **Code Quality:** Fixed critical Qodo bug (invalid `:has-text()` selector), extracted hooks for separation of concerns
+
+**Files Changed:**
+- 8 new files (6 components + 2 hooks)
+- 1 major refactor (`components/notebook/pages/today-page.tsx`)
 
 ### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
 
@@ -421,6 +464,47 @@ All admin Cloud Functions MUST:
 - [ ] Optional: Log sink for long-term archival
 
 **Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant) — no Firestore `admin_logs` collection.
+
+### Phase 6: Customizable Quick Actions (📋 Planned)
+
+**Priority:** Medium | **Effort:** Medium | **Value:** High — personalized user experience
+
+**Approach:** User-configurable FAB with Firestore preferences
+
+**Objectives:**
+- [ ] Settings panel for Quick Actions customization (More tab → Settings)
+- [ ] Action selection (choose which actions to show)
+- [ ] Action ordering (drag-and-drop reordering)
+- [ ] Custom phone numbers (sponsor, support contacts)
+- [ ] Save preferences to user profile (Firestore)
+- [ ] Fallback to sensible defaults for new users
+
+**Use Cases:**
+1. **Power User:** Removes "Quick Mood" (doesn't use it), adds custom sponsor phone
+2. **Minimalist:** Shows only 2 actions (Call Sponsor, Community)
+3. **Meeting-Focused:** Reorders to prioritize Community at top
+4. **Contact-Heavy:** Adds multiple phone numbers (sponsor, accountability partner, hotline)
+
+**New Files:**
+- `components/settings/quick-actions-settings.tsx` - Settings panel UI
+- `lib/quick-actions-config.ts` - Default actions + validation
+
+**Modified Files:**
+- `components/notebook/features/quick-actions-fab.tsx` - Load user preferences
+- `firestore.rules` - Allow user to read/write `users/{uid}/preferences/quickActions`
+
+**Technical Details:**
+- **Data Model:** `QuickActionsPreferences` in `/users/{uid}/preferences`
+- **Action Types:** navigation (NotebookModuleId), phone (tel: link), custom (URL)
+- **Max Actions:** 6 (performance limit)
+- **Drag-and-Drop:** Using `@dnd-kit/core`
+- **Phone Validation:** Standard phone number format checking
+
+**Future Enhancements:**
+- Action templates (e.g., "Meeting-Focused", "Contact-Heavy")
+- Share action configurations with other users
+- Analytics on most-used actions
+- Suggested actions based on usage patterns
 
 ### New Firestore Collections
 
@@ -925,6 +1009,7 @@ All admin Cloud Functions MUST:
 
 **Document History:**
 
+- December 23, 2025: M1.6 updated to v1.4 - Phases 1-3 complete, Today Page Enhancement complete (all 10 UX improvements), added Phase 6 (Customizable Quick Actions). Renamed to "M1.6 - Admin Panel + Today Page Enhancement". Progress updated to ~65%. Overall roadmap progress: ~26%.
 - December 22, 2025: Updated Phase 1 prompt to v1.3 (fail-closed middleware, nodejs runtime, bounded queries, invalid date guards)
 - December 22, 2025: Updated M1.6 to v1.2 spec (server-side middleware, Sentry API in Cloud Function, throttled lastActive, robust job wrapper)
 - December 22, 2025: Updated M1.6 to v1.1 spec (hybrid Sentry/GCP approach, explicit security requirements)
