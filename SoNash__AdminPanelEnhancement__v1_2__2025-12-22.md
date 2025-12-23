@@ -28,8 +28,8 @@
 - ✅ **Phase 3: Background Jobs Monitoring** - Job tracking, manual triggers, scheduled execution
 
 **Remaining Phases:**
-- ⏳ **Phase 4: Error Tracking** - Sentry integration (planned)
-- ⏳ **Phase 5: Logs Tab** - GCP Cloud Logging integration (planned)
+- 📋 **Phase 4: Error Tracking** - Sentry integration (deferred - see `docs/SENTRY_INTEGRATION_GUIDE.md`)
+- 📋 **Phase 5: Logs Tab** - GCP Cloud Logging integration (planned for later)
 
 **Key Achievements:**
 - 8 new Cloud Functions deployed (adminHealthCheck, adminGetDashboardStats, adminSearchUsers, adminGetUserDetail, adminUpdateUser, adminDisableUser, adminTriggerJob, adminGetJobsStatus)
