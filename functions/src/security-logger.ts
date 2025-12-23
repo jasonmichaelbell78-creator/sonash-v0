@@ -26,7 +26,8 @@ export type SecurityEventType =
     | "DATA_MIGRATION_SUCCESS"
     | "DATA_MIGRATION_FAILURE"
     | "ADMIN_ACTION"
-    | "ADMIN_ERROR";
+    | "ADMIN_ERROR"
+    | "HEALTH_CHECK_FAILURE";
 
 
 // Severity levels (aligned with GCP Cloud Logging)
@@ -139,6 +140,7 @@ function getSeverityForType(type: SecurityEventType): Severity {
         case "ACCOUNT_DELETE_FAILURE":
         case "DATA_MIGRATION_FAILURE":
         case "ADMIN_ERROR":
+        case "HEALTH_CHECK_FAILURE":
             return "ERROR";
         case "VALIDATION_FAILURE":
         case "SAVE_SUCCESS":
