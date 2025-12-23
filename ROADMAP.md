@@ -538,6 +538,32 @@ All admin Cloud Functions MUST:
 - Craving countdown timer ("ride it out" feature)
 - Auto-carry-forward task nudges
 
+### HALT Check Enhancements
+*Building on the basic HALT check feature from M1.5*
+
+**Phase 2: Analytics & Insights**
+- Pattern detection: "You often feel tired on Mondays"
+- Weekly/monthly HALT summaries with visualization
+- Correlation analysis with mood and usage patterns
+- Trend graphs showing HALT frequency over time
+
+**Phase 3: Smart Features**
+- Predictive alerts: "You usually feel lonely at this time"
+- Context-aware suggestions based on historical patterns
+- Reminder system for regular HALT checks (customizable schedule)
+- Integration with meeting finder when lonely detected
+- Integration with sponsor contact when angry/lonely
+
+**Phase 4: Community & AI**
+- Anonymous aggregate insights: "Others often feel the same today"
+- AI-powered coping strategy recommendations
+- Guided meditation/breathing exercises for anger/stress
+- Connection to support community during vulnerability
+- Emergency escalation for critical patterns
+
+**Story Points:** 26-34 SP (distributed across phases)  
+**Priority:** P2 (nice-to-have, builds on core feature)
+
 ---
 
 ## 📝 M5 - Nightly Inventories (📋 Planned - Q3 2026)

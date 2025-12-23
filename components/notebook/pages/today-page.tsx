@@ -55,6 +55,13 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
   const { celebrate } = useCelebration()
   const referenceDate = useMemo(() => new Date(), [])
   const [hasCelebratedToday, setHasCelebratedToday] = useState(false)
+  const [haltCheck, setHaltCheck] = useState({
+    hungry: false,
+    angry: false,
+    lonely: false,
+    tired: false,
+  })
+  const [haltSubmitted, setHaltSubmitted] = useState(false)
 
   const createJournalDailyLog = useCallback(async (data: { journalEntry: string; mood: string | null; cravings: boolean | null; used: boolean | null }) => {
     if (!user) return
@@ -151,6 +158,61 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
       toast.error("Couldn't save your celebration, but you still made it through!")
     }
   }, [user, hasCelebratedToday, celebrate, referenceDate])
+
+  // Handler for HALT check toggle
+  const handleHaltToggle = (key: 'hungry' | 'angry' | 'lonely' | 'tired') => {
+    setHaltCheck(prev => ({ ...prev, [key]: !prev[key] }))
+    setHaltSubmitted(false) // Reset submitted state when user changes selection
+  }
+
+  // Handler for HALT check submission
+  const handleHaltSubmit = useCallback(async () => {
+    if (!user) return
+
+    const checkedItems = Object.entries(haltCheck)
+      .filter(([_, checked]) => checked)
+      .map(([key]) => key)
+
+    if (checkedItems.length === 0) {
+      toast.info("No items selected - you're doing great!")
+      return
+    }
+
+    try {
+      await FirestoreService.saveNotebookJournalEntry(user.uid, {
+        type: 'check-in',
+        data: {
+          checkType: 'halt',
+          hungry: haltCheck.hungry,
+          angry: haltCheck.angry,
+          lonely: haltCheck.lonely,
+          tired: haltCheck.tired,
+          checkedCount: checkedItems.length,
+        },
+      })
+
+      celebrate('halt-check')
+      const suggestions: Record<string, string> = {
+        hungry: "eat something healthy",
+        angry: "talk to someone or journal",
+        lonely: "reach out to a friend",
+        tired: "rest and recharge",
+      }
+      const tips = checkedItems.map(item => suggestions[item]).join(", ")
+      toast.success(`HALT check complete! Remember to ${tips}.`)
+
+      setHaltSubmitted(true)
+      setTimeout(() => {
+        setHaltCheck({ hungry: false, angry: false, lonely: false, tired: false })
+      }, 2000)
+    } catch (error) {
+      logger.error("Failed to save HALT check", {
+        userId: maskIdentifier(user.uid),
+        error
+      })
+      toast.error("Couldn't save HALT check. Please try again.")
+    }
+  }, [user, haltCheck, celebrate])
 
   // Real-time data sync
   useEffect(() => {
@@ -597,6 +659,58 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
                 <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
               </div>
             </div>
+          </div>
+
+          {/* HALT Check */}
+          <div>
+            <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
+            <p className="text-sm font-body text-amber-900/60 mb-3">
+              Quick self-assessment to identify vulnerability
+            </p>
+
+            <div className="bg-white/50 rounded-lg p-4 space-y-3">
+              {[
+                { key: 'hungry' as const, label: 'Hungry?', icon: '🍽️', tip: 'When did you last eat? Grab a healthy snack.' },
+                { key: 'angry' as const, label: 'Angry?', icon: '😤', tip: "What's bothering you? Call your sponsor." },
+                { key: 'lonely' as const, label: 'Lonely?', icon: '🤝', tip: 'Reach out to someone. Attend a meeting.' },
+                { key: 'tired' as const, label: 'Tired?', icon: '😴', tip: 'How much sleep did you get? Take a break.' },
+              ].map(({ key, label, icon, tip }) => (
+                <div key={key} className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id={`halt-${key}`}
+                    checked={haltCheck[key]}
+                    onChange={() => handleHaltToggle(key)}
+                    className="mt-1 w-5 h-5 text-blue-600 rounded border-amber-300 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor={`halt-${key}`} className="font-handlee text-lg text-amber-900 flex items-center gap-2 cursor-pointer">
+                      <span>{icon}</span>
+                      <span>{label}</span>
+                    </label>
+                    {haltCheck[key] && (
+                      <p className="text-sm text-blue-700 italic mt-1 font-body">
+                        💡 {tip}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleHaltSubmit}
+              disabled={Object.values(haltCheck).every(v => !v)}
+              className="mt-3 w-full py-3 bg-blue-500 text-white rounded-lg font-handlee text-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
+            >
+              Complete HALT Check
+            </button>
+
+            {haltSubmitted && (
+              <p className="text-xs text-green-600 text-center mt-2 font-body">
+                ✓ Saved to journal
+              </p>
+            )}
           </div>
 
           {/* "I Made It Through Today" Button */}
