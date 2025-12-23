@@ -566,6 +566,7 @@ export {
     adminDisableUser,
     adminTriggerJob,
     adminGetJobsStatus,
+    adminGetSentryErrorSummary,
 } from "./admin";
 
 // Export scheduled jobs
