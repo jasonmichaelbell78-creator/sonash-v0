@@ -671,8 +671,19 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           action={{
             label: "Do HALT check",
             onClick: () => {
-              const haltSection = document.querySelector('h2:has-text("HALT Check")')?.parentElement
-              haltSection?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              try {
+                // Find HALT Check heading by text content
+                const headings = Array.from(document.querySelectorAll('h2'))
+                const haltHeading = headings.find(h => h.textContent?.includes('HALT Check'))
+                const haltSection = haltHeading?.parentElement
+
+                if (haltSection) {
+                  haltSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+              } catch (error) {
+                // Gracefully degrade - log error but don't crash UI
+                console.warn('Could not scroll to HALT section:', error)
+              }
             }
           }}
           onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('halt-suggestion'))}
