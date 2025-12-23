@@ -10,7 +10,8 @@ import LinksTab from "./links-tab"
 import PrayersTab from "./prayers-tab"
 import { UsersTab } from "./users-tab"
 import { JobsTab } from "./jobs-tab"
-import { LayoutDashboard, Home, Users, Quote, Book, Lightbulb, Link, Heart, Clock } from "lucide-react"
+import { ErrorsTab } from "./errors-tab"
+import { LayoutDashboard, Home, Users, Quote, Book, Lightbulb, Link, Heart, Clock, AlertTriangle } from "lucide-react"
 
 interface AdminTabsProps {
     activeTab: string
@@ -22,6 +23,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
         { id: "users", label: "Users", icon: Users },
         { id: "jobs", label: "Jobs", icon: Clock },
+        { id: "errors", label: "Errors", icon: AlertTriangle },
         { id: "meetings", label: "Meetings", icon: Home },
         { id: "sober-living", label: "Sober Living", icon: Home },
         { id: "quotes", label: "Daily Quotes", icon: Quote },
@@ -59,6 +61,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
                 {activeTab === "dashboard" && <DashboardTab />}
                 {activeTab === "users" && <UsersTab />}
                 {activeTab === "jobs" && <JobsTab />}
+                {activeTab === "errors" && <ErrorsTab />}
                 {activeTab === "meetings" && <MeetingsTab />}
                 {activeTab === "sober-living" && <SoberLivingTab />}
                 {activeTab === "quotes" && <QuotesTab />}

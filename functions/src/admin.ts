@@ -98,6 +98,22 @@ function requireAdmin(request: CallableRequest) {
     }
 }
 
+function sanitizeSentryTitle(title: string) {
+    const redactedEmail = title.replace(
+        /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,
+        "[redacted-email]"
+    );
+    const redactedPhone = redactedEmail.replace(
+        /\b(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
+        "[redacted-phone]"
+    );
+    const redactedTokens = redactedPhone.replace(
+        /\b[a-f0-9]{32,}\b/gi,
+        "[redacted-token]"
+    );
+    return redactedTokens;
+}
+
 /**
  * Admin: Save Meeting
  */
@@ -1066,6 +1082,121 @@ export const adminGetJobsStatus = onCall(
                 { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
             );
             throw new HttpsError("internal", "Failed to get jobs status");
+        }
+    }
+);
+
+interface SentryIssueSummary {
+    title: string;
+    count: number;
+    lastSeen: string | null;
+    firstSeen: string | null;
+    shortId: string;
+    level: string | null;
+    status: string | null;
+    permalink: string;
+}
+
+export const adminGetSentryErrorSummary = onCall(
+    async (request) => {
+        requireAdmin(request);
+
+        logSecurityEvent(
+            "ADMIN_ACTION",
+            "adminGetSentryErrorSummary",
+            "Admin requested Sentry error summary",
+            { userId: request.auth?.uid, severity: "INFO" }
+        );
+
+        const sentryToken = process.env.SENTRY_API_TOKEN;
+        const sentryOrg = process.env.SENTRY_ORG;
+        const sentryProject = process.env.SENTRY_PROJECT;
+
+        if (!sentryToken || !sentryOrg || !sentryProject) {
+            throw new HttpsError("failed-precondition", "Sentry integration is not configured");
+        }
+
+        const headers = {
+            Authorization: `Bearer ${sentryToken}`,
+            "Content-Type": "application/json",
+        };
+
+        try {
+            const statsUrl = new URL(`https://sentry.io/api/0/organizations/${sentryOrg}/events-stats/`);
+            statsUrl.searchParams.set("project", sentryProject);
+            statsUrl.searchParams.set("interval", "1h");
+            statsUrl.searchParams.set("statsPeriod", "48h");
+
+            const statsResponse = await fetch(statsUrl.toString(), { headers });
+            if (!statsResponse.ok) {
+                throw new Error(`Sentry stats API failed: ${statsResponse.status}`);
+            }
+
+            const statsPayload = await statsResponse.json();
+            const statsData: Array<[number, number | number[]]> = Array.isArray(statsPayload?.data)
+                ? statsPayload.data
+                : [];
+            const buckets = statsData.map((entry) => {
+                const rawValue = entry[1];
+                if (Array.isArray(rawValue)) {
+                    return Number(rawValue[0] ?? 0);
+                }
+                return Number(rawValue ?? 0);
+            });
+            const last24h = buckets.slice(-24).reduce((sum, value) => sum + value, 0);
+            const prev24h = buckets.slice(-48, -24).reduce((sum, value) => sum + value, 0);
+            const trendPct = prev24h === 0 ? (last24h === 0 ? 0 : 100) : ((last24h - prev24h) / prev24h) * 100;
+
+            const issuesUrl = new URL(`https://sentry.io/api/0/projects/${sentryOrg}/${sentryProject}/issues/`);
+            issuesUrl.searchParams.set("limit", "20");
+            issuesUrl.searchParams.set("sort", "freq");
+            issuesUrl.searchParams.set("statsPeriod", "24h");
+
+            const issuesResponse = await fetch(issuesUrl.toString(), { headers });
+            if (!issuesResponse.ok) {
+                throw new Error(`Sentry issues API failed: ${issuesResponse.status}`);
+            }
+
+            const issuesPayload: Array<{
+                title?: string;
+                count?: string;
+                lastSeen?: string;
+                firstSeen?: string;
+                shortId?: string;
+                level?: string;
+                status?: string;
+                permalink?: string;
+            }> = await issuesResponse.json();
+
+            const issues: SentryIssueSummary[] = issuesPayload.map((issue) => ({
+                title: sanitizeSentryTitle(issue.title || "Unknown error"),
+                count: Number(issue.count || 0),
+                lastSeen: issue.lastSeen || null,
+                firstSeen: issue.firstSeen || null,
+                shortId: issue.shortId || "N/A",
+                level: issue.level || null,
+                status: issue.status || null,
+                permalink: issue.permalink || `https://sentry.io/organizations/${sentryOrg}/issues/`,
+            }));
+
+            return {
+                summary: {
+                    totalEvents24h: last24h,
+                    totalEventsPrev24h: prev24h,
+                    trendPct: Number(trendPct.toFixed(1)),
+                    issueCount: issues.length,
+                },
+                issues,
+                generatedAt: new Date().toISOString(),
+            };
+        } catch (error) {
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminGetSentryErrorSummary",
+                "Failed to fetch Sentry error summary",
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to fetch Sentry error summary");
         }
     }
 );
