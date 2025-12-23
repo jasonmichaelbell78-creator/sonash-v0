@@ -60,12 +60,6 @@ interface DailyLogData {
  * 6. Server-side timestamp (prevents clock manipulation)
  */
 export const saveDailyLog = onCall<DailyLogData>(
-    {
-        // Enforce App Check for bot protection
-        // IAM role 'firebaseappcheck.tokenVerifier' added to service account
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         const { data, app, auth } = request;
 
@@ -235,11 +229,6 @@ interface JournalEntryData {
  * 6. Server-side timestamp (prevents clock manipulation)
  */
 export const saveJournalEntry = onCall<JournalEntryData>(
-    {
-        // Enforce App Check for bot protection
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         const { data, app, auth } = request;
 
@@ -413,10 +402,6 @@ interface MigrationData {
  * 6. Audit logging
  */
 export const migrateAnonymousUserData = onCall<MigrationData>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         const { data, app, auth } = request;
 

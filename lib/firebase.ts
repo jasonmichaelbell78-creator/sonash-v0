@@ -1,7 +1,6 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
 import { getAuth, Auth } from "firebase/auth"
 import { getFirestore, Firestore } from "firebase/firestore"
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
 
 const validateEnv = (value: string | undefined, key: string) => {
   if (!value) {
@@ -24,45 +23,7 @@ let _app: FirebaseApp | undefined
 let _auth: Auth | undefined
 let _db: Firestore | undefined
 
-const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
-  // CRITICAL: Completely disable App Check in development to prevent 400 errors
-  // Firebase Functions v2 validates App Check tokens at the infrastructure level,
-  // even if consumeAppCheckToken is false. If the client initializes App Check
-  // but doesn't have valid tokens, all Cloud Function calls will fail with 400.
 
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-
-  if (!siteKey) {
-    const message =
-      "⚠️ App Check not configured: Missing NEXT_PUBLIC_RECAPTCHA_SITE_KEY. " +
-      "Requests to protected Firebase resources will fail."
-
-    // Note: Changed to always warn instead of throw to allow app to function without App Check
-
-    console.warn(message)
-    return
-  }
-
-  try {
-    // Development: Set debug token to bypass reCAPTCHA during local testing
-    // SECURITY: Only set in development to prevent production token bypass
-    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN) {
-      // @ts-expect-error - Firebase sets this globally for dev
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN;
-      console.warn('⚠️ App Check debug token enabled - DEVELOPMENT ONLY');
-    }
-
-    // Initialize App Check
-    // Reverting to Enterprise Provider as the key is confirmed Enterprise.
-    initializeAppCheck(app, {
-      provider: new ReCaptchaEnterpriseProvider(siteKey),
-      isTokenAutoRefreshEnabled: true, // Auto-refresh tokens before expiry
-    })
-  } catch (error) {
-    console.error("⚠️ App Check initialization failed:", error)
-    // Non-fatal: App will work but without bot protection
-  }
-}
 
 // Only initialize Firebase on the client side
 const initializeFirebase = () => {
@@ -75,11 +36,6 @@ const initializeFirebase = () => {
 
   const config = getFirebaseConfig()
   _app = getApps().length === 0 ? initializeApp(config) : getApps()[0]
-
-  // Initialize App Check as early as possible so that subsequent Firestore/Functions
-  // requests automatically include the token. Delaying this caused 400/401 errors in
-  // production because the backend enforces App Check (`consumeAppCheckToken: true`).
-  initializeAppCheckIfConfigured(_app)
 
   _auth = getAuth(_app)
   _db = getFirestore(_app)

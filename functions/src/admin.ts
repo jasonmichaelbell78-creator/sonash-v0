@@ -102,10 +102,6 @@ function requireAdmin(request: CallableRequest) {
  * Admin: Save Meeting
  */
 export const adminSaveMeeting = onCall<SaveMeetingRequest>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
@@ -161,10 +157,6 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(
  * Admin: Delete Meeting
  */
 export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
@@ -204,10 +196,6 @@ export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(
  * Admin: Save Sober Living Home
  */
 export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
@@ -262,10 +250,6 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(
  * Admin: Delete Sober Living Home
  */
 export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
@@ -305,10 +289,6 @@ export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(
  * Admin: Save Quote
  */
 export const adminSaveQuote = onCall<SaveQuoteRequest>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
@@ -363,10 +343,6 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(
  * Admin: Delete Quote
  */
 export const adminDeleteQuote = onCall<DeleteQuoteRequest>(
-    {
-        enforceAppCheck: true,
-        consumeAppCheckToken: true,
-    },
     async (request) => {
         requireAdmin(request);
 
