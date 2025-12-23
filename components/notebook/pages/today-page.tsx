@@ -605,8 +605,8 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
               onClick={handleMadeItThrough}
               disabled={hasCelebratedToday}
               className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday
-                  ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:scale-105 active:scale-95'
+                ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:shadow-xl active:scale-95'
                 }`}
             >
               {hasCelebratedToday ? (
