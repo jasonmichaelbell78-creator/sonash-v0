@@ -4,14 +4,14 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/components/providers/auth-provider"
 import { createUserProfile, getUserProfile, updateUserProfile } from "@/lib/db/users"
-import { Loader2, ArrowRight, Calendar, BookOpen, MapPin, Sprout, ChevronLeft, ChevronRight } from "lucide-react"
+import { Loader2, ArrowRight, Calendar, BookOpen, MapPin, Sprout, ChevronLeft, ChevronRight, Home, Library, Settings, Shield } from "lucide-react"
 import { logger, maskIdentifier } from "@/lib/logger"
 
 interface OnboardingWizardProps {
     onComplete: () => void
 }
 
-type OnboardingStep = "welcome" | "clean-date" | "sponsor" | "tour"
+type OnboardingStep = "welcome" | "clean-date" | "sponsor" | "privacy" | "tour"
 type SponsorStatus = 'yes' | 'no' | 'looking' | null
 
 export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
@@ -27,22 +27,40 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
     const tourSlides = [
         {
+            icon: Home,
+            title: "Today Tab",
+            description: "Your daily check-in hub. Track mood, cravings, and add recovery notes each day.",
+            color: "text-blue-600"
+        },
+        {
             icon: BookOpen,
-            title: "Your Journal",
-            description: "Track your daily progress, moods, and reflections in your private recovery journal.",
+            title: "Journal Tab",
+            description: "View your complete recovery timeline with mood stamps, stickers, and personal reflections.",
             color: "text-amber-600"
         },
         {
             icon: MapPin,
-            title: "Find Meetings",
-            description: "Discover AA, NA, and CA meetings near you with our meeting finder.",
-            color: "text-blue-600"
+            title: "Meetings Tab",
+            description: "Find AA, NA, and CA meetings near you. Save favorites and get directions.",
+            color: "text-emerald-600"
         },
         {
             icon: Sprout,
-            title: "Growth Tools",
-            description: "Work through step exercises, spot checks, and nightly reviews at your own pace.",
+            title: "Growth Tab",
+            description: "Work through step exercises, nightly inventories, and personal growth tools.",
             color: "text-green-600"
+        },
+        {
+            icon: Library,
+            title: "Library Tab",
+            description: "Access recovery glossary, meeting etiquette, prayers, and helpful resources.",
+            color: "text-purple-600"
+        },
+        {
+            icon: Settings,
+            title: "Settings",
+            description: "Manage your profile, clean date, and account preferences anytime.",
+            color: "text-stone-600"
         }
     ]
 
@@ -57,6 +75,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             } else if (step === "clean-date") {
                 setStep("sponsor")
             } else if (step === "sponsor") {
+                setStep("privacy")
+            } else if (step === "privacy") {
                 setStep("tour")
             }
         } finally {
@@ -67,11 +87,14 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     const handleBack = () => {
         if (step === "clean-date") setStep("welcome")
         else if (step === "sponsor") setStep("clean-date")
-        else if (step === "tour") setStep("sponsor")
+        else if (step === "privacy") setStep("sponsor")
+        else if (step === "tour") setStep("privacy")
     }
 
     const handleSkip = () => {
         if (step === "sponsor") {
+            setStep("privacy")
+        } else if (step === "privacy") {
             setStep("tour")
         } else if (step === "tour") {
             handleFinish()
@@ -142,11 +165,11 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
                 {/* Progress indicator */}
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                    {(["welcome", "clean-date", "sponsor", "tour"] as OnboardingStep[]).map((s, i) => (
+                    {(["welcome", "clean-date", "sponsor", "privacy", "tour"] as OnboardingStep[]).map((s, i) => (
                         <div
                             key={s}
                             className={`w-2 h-2 rounded-full transition-colors ${step === s ? "bg-stone-800" :
-                                    (["welcome", "clean-date", "sponsor", "tour"].indexOf(step) > i ? "bg-stone-400" : "bg-stone-300")
+                                (["welcome", "clean-date", "sponsor", "privacy", "tour"].indexOf(step) > i ? "bg-stone-400" : "bg-stone-300")
                                 }`}
                         />
                     ))}
@@ -281,8 +304,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                                             key={option.value}
                                             onClick={() => setHasSponsor(option.value)}
                                             className={`w-full py-3 px-4 rounded-lg font-handlee text-lg transition-all border-2 ${hasSponsor === option.value
-                                                    ? "bg-stone-800 text-[#fcf8e3] border-stone-800"
-                                                    : "bg-white/50 text-stone-700 border-stone-300 hover:border-stone-500"
+                                                ? "bg-stone-800 text-[#fcf8e3] border-stone-800"
+                                                : "bg-white/50 text-stone-700 border-stone-300 hover:border-stone-500"
                                                 }`}
                                         >
                                             {option.label}
@@ -316,7 +339,82 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                             </motion.div>
                         )}
 
-                        {/* Step 4: Tour */}
+                        {/* Step 4: Privacy Walkthrough */}
+                        {step === "privacy" && (
+                            <motion.div
+                                key="privacy"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-6"
+                            >
+                                <div className="text-center space-y-4">
+                                    <Shield className="w-12 h-12 mx-auto text-blue-600" />
+                                    <h2 className="font-rocksalt text-2xl text-stone-800">Your Privacy Matters</h2>
+                                    <p className="font-handlee text-lg text-stone-600">
+                                        Here's what you should know about your data:
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3 bg-white/50 rounded-xl p-5">
+                                    <div className="flex gap-3">
+                                        <div className="text-2xl">📝</div>
+                                        <div>
+                                            <h3 className="font-handlee font-bold text-stone-800">What We Collect</h3>
+                                            <p className="font-handlee text-sm text-stone-600">
+                                                Email, journal entries, check-ins, and your clean date. That's it.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="text-2xl">🔒</div>
+                                        <div>
+                                            <h3 className="font-handlee font-bold text-stone-800">What We Don't Share</h3>
+                                            <p className="font-handlee text-sm text-stone-600">
+                                                Your data is private and encrypted. We never sell or share your personal information.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <div className="text-2xl">✨</div>
+                                        <div>
+                                            <h3 className="font-handlee font-bold text-stone-800">Your Rights</h3>
+                                            <p className="font-handlee text-sm text-stone-600">
+                                                Export or delete your data anytime from Settings. You're in control.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-4 items-center">
+                                    <button
+                                        onClick={handleBack}
+                                        className="text-stone-500 font-handlee hover:text-stone-800"
+                                    >
+                                        Back
+                                    </button>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={handleSkip}
+                                            className="text-stone-400 font-handlee hover:text-stone-600 text-sm"
+                                        >
+                                            Skip
+                                        </button>
+                                        <button
+                                            onClick={handleNext}
+                                            disabled={loading}
+                                            className="flex items-center gap-2 bg-stone-800 text-[#fcf8e3] px-6 py-3 rounded-full font-handlee text-lg hover:bg-stone-700 transition-colors disabled:opacity-50"
+                                        >
+                                            Next <ArrowRight className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Step 5: Tour */}
                         {step === "tour" && (
                             <motion.div
                                 key="tour"
