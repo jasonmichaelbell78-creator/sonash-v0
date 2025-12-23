@@ -53,7 +53,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 ### Week 1-3: Security Hardening (✅ Complete)
 
-- ✅ Firebase App Check with reCAPTCHA v3
+- ⏸️ Firebase App Check with reCAPTCHA v3 *(deferred - blocking users, see [recaptcha_removal_guide.md](./recaptcha_removal_guide.md))*
 - ✅ Server-side validation (Zod schemas in Cloud Functions)
 - ✅ Rate limiting (10 req/min per user)
 - ✅ Firestore security rules hardened
@@ -455,6 +455,14 @@ All admin Cloud Functions MUST:
 - ⏳ CI/CD pipeline setup (GitHub Actions or similar)
 - ⏳ Automated testing in PR workflow
 - ⏳ Client-side rate limiting in firestore-service.ts
+
+**From M1 - Security Hardening:**
+- ⏳ Firebase App Check with reCAPTCHA *(deferred due to authentication blocking issues)*
+- See [recaptcha_removal_guide.md](./recaptcha_removal_guide.md) for:
+  - Complete removal instructions (Firebase Console, Google Cloud, codebase)
+  - Fresh implementation guide (8 phases with detailed steps)
+  - Troubleshooting and rollback plans
+- **Priority:** P2 - Implement after M3+ unless bot abuse becomes significant
 
 ### Potential Architecture Work
 
