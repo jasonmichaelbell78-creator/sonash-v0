@@ -13,6 +13,7 @@ export type CelebrationType =
     | 'meeting-attended'
     | 'inventory-complete'
     | 'halt-check'
+    | 'made-it-through-today' // User celebrated making it through a tough day
     | 'seven-days'  // 1 week clean
     | 'thirty-days' // 1 month clean
     | 'sixty-days'  // 2 months clean
@@ -42,6 +43,7 @@ export const CELEBRATION_INTENSITY_MAP: Record<CelebrationType, CelebrationInten
     'meeting-attended': 'subtle',
     'inventory-complete': 'subtle',
     'halt-check': 'subtle',
+    'made-it-through-today': 'medium',
     'seven-days': 'medium',
     'thirty-days': 'high',
     'sixty-days': 'high',
@@ -62,6 +64,7 @@ export const CELEBRATION_MESSAGES: Record<CelebrationType, string> = {
     'meeting-attended': 'Meeting attendance recorded 📝',
     'inventory-complete': 'Inventory complete! Well done! ✅',
     'halt-check': 'Self-check completed 💚',
+    'made-it-through-today': 'You did it! One day at a time. 💪',
     'seven-days': '7 days clean! One week strong! 💪',
     'thirty-days': '30 days clean! One month milestone! 🌙',
     'sixty-days': '60 days clean! Two months strong! ⭐',

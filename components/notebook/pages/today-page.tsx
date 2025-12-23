@@ -54,6 +54,7 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
   const { user, profile } = useAuth()
   const { celebrate } = useCelebration()
   const referenceDate = useMemo(() => new Date(), [])
+  const [hasCelebratedToday, setHasCelebratedToday] = useState(false)
 
   const createJournalDailyLog = useCallback(async (data: { journalEntry: string; mood: string | null; cravings: boolean | null; used: boolean | null }) => {
     if (!user) return
@@ -118,6 +119,38 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
       journalSaveInProgressRef.current = false
     }
   }, [user])
+
+  // Handler for "I Made It Through Today" button
+  const handleMadeItThrough = useCallback(async () => {
+    if (!user || hasCelebratedToday) return
+
+    try {
+      // Trigger celebration animation
+      celebrate('made-it-through-today')
+
+      // Save to journal
+      await FirestoreService.saveNotebookJournalEntry(user.uid, {
+        type: 'free-write',
+        data: {
+          title: 'I Made It Through Today!',
+          content: 'Celebrated making it through a difficult day',
+        },
+      })
+
+      // Mark as celebrated and persist to localStorage
+      setHasCelebratedToday(true)
+      const celebrationKey = `made-it-through-${getTodayDateId(referenceDate)}`
+      localStorage.setItem(celebrationKey, new Date().toISOString())
+
+      toast.success("🎉 You did it! One day at a time.")
+    } catch (error) {
+      logger.error("Failed to save celebration", {
+        userId: maskIdentifier(user.uid),
+        error
+      })
+      toast.error("Couldn't save your celebration, but you still made it through!")
+    }
+  }, [user, hasCelebratedToday, celebrate, referenceDate])
 
   // Real-time data sync
   useEffect(() => {
@@ -348,6 +381,16 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
     calculateWeeklyStats()
   }, [user])
 
+  // Check if already celebrated today (prevent spam)
+  useEffect(() => {
+    if (!user) return
+    const celebrationKey = `made-it-through-${getTodayDateId(referenceDate)}`
+    const hasCelebrated = localStorage.getItem(celebrationKey)
+    if (hasCelebrated) {
+      setHasCelebratedToday(true)
+    }
+  }, [user, referenceDate])
+
   // Check for milestone celebrations based on clean time
   useEffect(() => {
     if (!profile?.cleanStart) return
@@ -554,6 +597,32 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
                 <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
               </div>
             </div>
+          </div>
+
+          {/* "I Made It Through Today" Button */}
+          <div>
+            <button
+              onClick={handleMadeItThrough}
+              disabled={hasCelebratedToday}
+              className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday
+                  ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:scale-105 active:scale-95'
+                }`}
+            >
+              {hasCelebratedToday ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span>✓</span>
+                  <span>Celebrated!</span>
+                </span>
+              ) : (
+                <span>🎉 I Made It Through Today!</span>
+              )}
+            </button>
+            {!hasCelebratedToday && (
+              <p className="text-xs font-body text-amber-900/60 text-center mt-2">
+                Tap to celebrate making it through a tough day
+              </p>
+            )}
           </div>
         </div>
 
