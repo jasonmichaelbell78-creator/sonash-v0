@@ -1,5 +1,6 @@
 "use client"
 
+import { DashboardTab } from "./dashboard-tab"
 import { MeetingsTab } from "./meetings-tab"
 import { SoberLivingTab } from "./sober-living-tab"
 import { QuotesTab } from "./quotes-tab"
@@ -8,7 +9,7 @@ import { SlogansTab } from "./slogans-tab"
 import LinksTab from "./links-tab"
 import PrayersTab from "./prayers-tab"
 import { UsersTab } from "./users-tab"
-import { Home, Users, Quote, Book, Lightbulb, Link, Heart } from "lucide-react"
+import { LayoutDashboard, Home, Users, Quote, Book, Lightbulb, Link, Heart } from "lucide-react"
 
 interface AdminTabsProps {
     activeTab: string
@@ -17,6 +18,7 @@ interface AdminTabsProps {
 
 export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
     const tabs = [
+        { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
         { id: "meetings", label: "Meetings", icon: Users },
         { id: "sober-living", label: "Sober Living", icon: Home },
         { id: "quotes", label: "Daily Quotes", icon: Quote },
@@ -52,6 +54,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
 
             {/* Tab Content */}
             <div className="min-h-[400px]">
+                {activeTab === "dashboard" && <DashboardTab />}
                 {activeTab === "meetings" && <MeetingsTab />}
                 {activeTab === "sober-living" && <SoberLivingTab />}
                 {activeTab === "quotes" && <QuotesTab />}

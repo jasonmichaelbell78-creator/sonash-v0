@@ -21,7 +21,7 @@ export default function AdminPage() {
     const [state, setState] = useState<AdminState>("loading")
     const [user, setUser] = useState<User | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState("meetings")
+    const [activeTab, setActiveTab] = useState("dashboard")
 
     useEffect(() => {
         // Listen for auth state
