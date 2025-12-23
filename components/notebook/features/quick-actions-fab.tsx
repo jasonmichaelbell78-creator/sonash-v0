@@ -34,10 +34,10 @@ export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProp
     },
     {
       icon: MapPin,
-      label: "Find Meeting",
+      label: "Community",
       color: "bg-green-500 hover:bg-green-600",
       onClick: () => {
-        onNavigate("meetings")
+        onNavigate("community")
         setIsOpen(false)
       }
     },
