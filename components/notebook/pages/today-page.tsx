@@ -646,6 +646,76 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
             </div>
           </div>
 
+          {/* Recovery Notepad */}
+          <div className="relative group">
+            <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
+
+            <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
+              style={{ backgroundColor: '#fdfbf7' }}
+            >
+              {/* Topbinding/Yellow Header */}
+              <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
+                <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
+              </div>
+
+              {/* Lined Paper Background */}
+              <div className="absolute inset-0 top-12 pointer-events-none"
+                style={{
+                  backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
+                  backgroundSize: '100% 2rem',
+                  marginTop: '0.5rem'
+                }}
+              />
+
+              {/* Red Margin Line */}
+              <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
+
+              {/* Textarea */}
+              <textarea
+                ref={textareaRef}
+                value={journalEntry}
+                onChange={(e) => {
+                  setJournalEntry(e.target.value)
+                  setHasTouched(true)
+                }}
+                onFocus={(e) => {
+                  isEditingRef.current = true
+                  if (journalEntry && e.target.selectionStart !== journalEntry.length) {
+                    const len = journalEntry.length
+                    e.target.setSelectionRange(len, len)
+                    e.target.scrollTop = e.target.scrollHeight
+                  }
+                }}
+                onBlur={() => (isEditingRef.current = false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.stopPropagation()
+                }}
+                placeholder="Jot down numbers, thoughts, or reminders..."
+                className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
+                style={{
+                  fontFamily: 'var(--font-handlee), cursive',
+                  lineHeight: '2rem'
+                }}
+                spellCheck={false}
+              />
+              {/* Save indicator */}
+              <div className="absolute bottom-2 right-4 text-xs font-body italic">
+                {isSaving ? (
+                  <span className="text-amber-600 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Saving...
+                  </span>
+                ) : saveComplete ? (
+                  <span className="text-green-600 font-bold">✓ Saved</span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
+            </div>
+          </div>
+
           {/* Quick Stats Summary */}
           <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Weekly Stats</h2>
@@ -659,84 +729,6 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
                 <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
               </div>
             </div>
-          </div>
-
-          {/* HALT Check */}
-          <div>
-            <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
-            <p className="text-sm font-body text-amber-900/60 mb-3">
-              Quick self-assessment to identify vulnerability
-            </p>
-
-            <div className="bg-white/50 rounded-lg p-4 space-y-3">
-              {[
-                { key: 'hungry' as const, label: 'Hungry?', icon: '🍽️', tip: 'When did you last eat? Grab a healthy snack.' },
-                { key: 'angry' as const, label: 'Angry?', icon: '😤', tip: "What's bothering you? Call your sponsor." },
-                { key: 'lonely' as const, label: 'Lonely?', icon: '🤝', tip: 'Reach out to someone. Attend a meeting.' },
-                { key: 'tired' as const, label: 'Tired?', icon: '😴', tip: 'How much sleep did you get? Take a break.' },
-              ].map(({ key, label, icon, tip }) => (
-                <div key={key} className="flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    id={`halt-${key}`}
-                    checked={haltCheck[key]}
-                    onChange={() => handleHaltToggle(key)}
-                    className="mt-1 w-5 h-5 text-blue-600 rounded border-amber-300 focus:ring-blue-500 cursor-pointer"
-                  />
-                  <div className="flex-1">
-                    <label htmlFor={`halt-${key}`} className="font-handlee text-lg text-amber-900 flex items-center gap-2 cursor-pointer">
-                      <span>{icon}</span>
-                      <span>{label}</span>
-                    </label>
-                    {haltCheck[key] && (
-                      <p className="text-sm text-blue-700 italic mt-1 font-body">
-                        💡 {tip}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={handleHaltSubmit}
-              disabled={Object.values(haltCheck).every(v => !v)}
-              className="mt-3 w-full py-3 bg-blue-500 text-white rounded-lg font-handlee text-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
-            >
-              Complete HALT Check
-            </button>
-
-            {haltSubmitted && (
-              <p className="text-xs text-green-600 text-center mt-2 font-body">
-                ✓ Saved to journal
-              </p>
-            )}
-          </div>
-
-          {/* "I Made It Through Today" Button */}
-          <div>
-            <button
-              onClick={handleMadeItThrough}
-              disabled={hasCelebratedToday}
-              className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday
-                ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:shadow-xl active:scale-95'
-                }`}
-            >
-              {hasCelebratedToday ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span>✓</span>
-                  <span>Celebrated!</span>
-                </span>
-              ) : (
-                <span>🎉 I Made It Through Today!</span>
-              )}
-            </button>
-            {!hasCelebratedToday && (
-              <p className="text-xs font-body text-amber-900/60 text-center mt-2">
-                Tap to celebrate making it through a tough day
-              </p>
-            )}
           </div>
         </div>
 
@@ -835,74 +827,82 @@ export default function TodayPage({ nickname, onNavigate: _onNavigate }: TodayPa
             )}
           </div>
 
-          {/* Recovery Notepad */}
-          <div className="relative group">
-            <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
+          {/* HALT Check */}
+          <div>
+            <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
+            <p className="text-sm font-body text-amber-900/60 mb-3">
+              Quick self-assessment to identify vulnerability
+            </p>
 
-            <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
-              style={{ backgroundColor: '#fdfbf7' }}
+            <div className="bg-white/50 rounded-lg p-4 space-y-3">
+              {[
+                { key: 'hungry' as const, label: 'Hungry?', icon: '🍽️', tip: 'When did you last eat? Grab a healthy snack.' },
+                { key: 'angry' as const, label: 'Angry?', icon: '😤', tip: "What's bothering you? Call your sponsor." },
+                { key: 'lonely' as const, label: 'Lonely?', icon: '🤝', tip: 'Reach out to someone. Attend a meeting.' },
+                { key: 'tired' as const, label: 'Tired?', icon: '😴', tip: 'How much sleep did you get? Take a break.' },
+              ].map(({ key, label, icon, tip }) => (
+                <div key={key} className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id={`halt-${key}`}
+                    checked={haltCheck[key]}
+                    onChange={() => handleHaltToggle(key)}
+                    className="mt-1 w-5 h-5 text-blue-600 rounded border-amber-300 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor={`halt-${key}`} className="font-handlee text-lg text-amber-900 flex items-center gap-2 cursor-pointer">
+                      <span>{icon}</span>
+                      <span>{label}</span>
+                    </label>
+                    {haltCheck[key] && (
+                      <p className="text-sm text-blue-700 italic mt-1 font-body">
+                        💡 {tip}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleHaltSubmit}
+              disabled={Object.values(haltCheck).every(v => !v)}
+              className="mt-3 w-full py-3 bg-blue-500 text-white rounded-lg font-handlee text-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
             >
-              {/* Topbinding/Yellow Header */}
-              <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
-                <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
-              </div>
+              Complete HALT Check
+            </button>
 
-              {/* Lined Paper Background */}
-              <div className="absolute inset-0 top-12 pointer-events-none"
-                style={{
-                  backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
-                  backgroundSize: '100% 2rem',
-                  marginTop: '0.5rem'
-                }}
-              />
+            {haltSubmitted && (
+              <p className="text-xs text-green-600 text-center mt-2 font-body">
+                ✓ Saved to journal
+              </p>
+            )}
+          </div>
 
-              {/* Red Margin Line */}
-              <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
-
-              {/* Textarea */}
-              <textarea
-                ref={textareaRef}
-                value={journalEntry}
-                onChange={(e) => {
-                  setJournalEntry(e.target.value)
-                  setHasTouched(true)
-                }}
-                onFocus={(e) => {
-                  isEditingRef.current = true
-                  if (journalEntry && e.target.selectionStart !== journalEntry.length) {
-                    const len = journalEntry.length
-                    e.target.setSelectionRange(len, len)
-                    e.target.scrollTop = e.target.scrollHeight
-                  }
-                }}
-                onBlur={() => (isEditingRef.current = false)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') e.stopPropagation()
-                }}
-                placeholder="Jot down numbers, thoughts, or reminders..."
-                className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
-                style={{
-                  fontFamily: 'var(--font-handlee), cursive',
-                  lineHeight: '2rem'
-                }}
-                spellCheck={false}
-              />
-              {/* Save indicator */}
-              <div className="absolute bottom-2 right-4 text-xs font-body italic">
-                {isSaving ? (
-                  <span className="text-amber-600 flex items-center gap-1">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Saving...
-                  </span>
-                ) : saveComplete ? (
-                  <span className="text-green-600 font-bold">✓ Saved</span>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
-            </div>
+          {/* "I Made It Through Today" Button */}
+          <div>
+            <button
+              onClick={handleMadeItThrough}
+              disabled={hasCelebratedToday}
+              className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday
+                ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:shadow-xl active:scale-95'
+                }`}
+            >
+              {hasCelebratedToday ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span>✓</span>
+                  <span>Celebrated!</span>
+                </span>
+              ) : (
+                <span>🎉 I Made It Through Today!</span>
+              )}
+            </button>
+            {!hasCelebratedToday && (
+              <p className="text-xs font-body text-amber-900/60 text-center mt-2">
+                Tap to celebrate making it through a tough day
+              </p>
+            )}
           </div>
         </div>
       </div>
