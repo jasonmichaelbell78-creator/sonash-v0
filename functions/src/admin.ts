@@ -931,3 +931,141 @@ export const adminDisableUser = onCall<DisableUserRequest>(
         }
     }
 );
+
+/**
+ * Admin: Trigger Background Job
+ * Allows admin to manually trigger a background job
+ */
+interface TriggerJobRequest {
+    jobId: string;
+}
+
+export const adminTriggerJob = onCall<TriggerJobRequest>(
+    async (request) => {
+        requireAdmin(request);
+
+        const { jobId } = request.data;
+
+        if (!jobId) {
+            throw new HttpsError("invalid-argument", "Job ID is required");
+        }
+
+        logSecurityEvent(
+            "ADMIN_ACTION",
+            "adminTriggerJob",
+            `Admin manually triggered job: ${jobId}`,
+            {
+                userId: request.auth?.uid,
+                metadata: { jobId },
+                severity: "INFO"
+            }
+        );
+
+        try {
+            // Import job runner dynamically to avoid circular dependencies
+            const { runJob } = await import("./jobs.js");
+            const { cleanupOldRateLimits } = await import("./firestore-rate-limiter.js");
+
+            // Map job IDs to their implementations
+            const jobMap: Record<string, { name: string; fn: () => Promise<void> }> = {
+                cleanupOldRateLimits: {
+                    name: "Cleanup Rate Limits",
+                    fn: async () => {
+                        await cleanupOldRateLimits();
+                    },
+                },
+            };
+
+            const job = jobMap[jobId];
+            if (!job) {
+                throw new HttpsError("not-found", `Job not found: ${jobId}`);
+            }
+
+            // Run the job with tracking
+            await runJob(jobId, job.name, job.fn);
+
+            return {
+                success: true,
+                message: `Job ${jobId} completed successfully`,
+            };
+        } catch (error) {
+            // If error is already an HttpsError, rethrow it
+            if (error instanceof HttpsError) throw error;
+
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminTriggerJob",
+                "Failed to trigger job",
+                {
+                    userId: request.auth?.uid,
+                    metadata: { error: String(error), jobId },
+                    captureToSentry: true
+                }
+            );
+
+            throw new HttpsError("internal", `Failed to run job: ${error instanceof Error ? error.message : "Unknown error"}`);
+        }
+    }
+);
+
+/**
+ * Admin: Get All Jobs Status
+ * Returns status of all registered background jobs
+ */
+export const adminGetJobsStatus = onCall(
+    async (request) => {
+        requireAdmin(request);
+
+        try {
+            const db = admin.firestore();
+
+            // Get all job documents from admin_jobs collection
+            const jobsSnapshot = await db.collection("admin_jobs").get();
+
+            const jobs = jobsSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    name: data.name || doc.id,
+                    lastRunStatus: data.lastRunStatus || "never",
+                    lastRun: data.lastRun?.toDate().toISOString() || null,
+                    lastSuccessRun: data.lastSuccessRun?.toDate().toISOString() || null,
+                    lastRunDuration: data.lastRunDuration || null,
+                    lastError: data.lastError || null,
+                };
+            });
+
+            // Add any registered jobs that haven't run yet
+            const registeredJobs = [
+                {
+                    id: "cleanupOldRateLimits",
+                    name: "Cleanup Rate Limits",
+                    schedule: "Daily at 3 AM CT",
+                    description: "Removes expired rate limit documents",
+                },
+            ];
+
+            const allJobs = registeredJobs.map(registered => {
+                const existingJob = jobs.find(j => j.id === registered.id);
+                return {
+                    ...registered,
+                    lastRunStatus: existingJob?.lastRunStatus || "never",
+                    lastRun: existingJob?.lastRun || null,
+                    lastSuccessRun: existingJob?.lastSuccessRun || null,
+                    lastRunDuration: existingJob?.lastRunDuration || null,
+                    lastError: existingJob?.lastError || null,
+                };
+            });
+
+            return { jobs: allJobs };
+        } catch (error) {
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminGetJobsStatus",
+                "Failed to get jobs status",
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to get jobs status");
+        }
+    }
+);

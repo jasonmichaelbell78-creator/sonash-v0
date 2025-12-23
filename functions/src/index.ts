@@ -564,7 +564,9 @@ export {
     adminGetUserDetail,
     adminUpdateUser,
     adminDisableUser,
+    adminTriggerJob,
+    adminGetJobsStatus,
 } from "./admin";
 
-// Export rate limiter cleanup function (should be run daily via Cloud Scheduler)
-export { cleanupOldRateLimits } from "./firestore-rate-limiter";
+// Export scheduled jobs
+export { scheduledCleanupRateLimits } from "./jobs";
