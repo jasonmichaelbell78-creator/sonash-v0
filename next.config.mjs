@@ -14,11 +14,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    turbopack: {
-      root: __dirname,
-    },
-  },
   // Environment variables are loaded from .env.local (gitignored)
   // Do NOT hardcode secrets here - they end up in git history
 }
