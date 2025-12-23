@@ -23,6 +23,8 @@ import { QuickActionsFab } from "../features/quick-actions-fab"
 import { EnhancedMoodSelector } from "../features/enhanced-mood-selector"
 import { SmartPrompt } from "../features/smart-prompt"
 import { OfflineIndicator } from "@/components/status/offline-indicator"
+import { useSmartPrompts } from "../hooks/use-smart-prompts"
+import { useScrollToSection } from "../hooks/use-scroll-to-section"
 
 interface TodayPageProps {
   nickname: string
@@ -40,7 +42,6 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [weekStats, setWeekStats] = useState({ daysLogged: 0, streak: 0 })
   const [isLoading, setIsLoading] = useState(true)
   const [showQuickMoodPrompt, setShowQuickMoodPrompt] = useState(false)
-  const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(new Set())
 
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
@@ -73,6 +74,29 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   })
   const [haltSubmitted, setHaltSubmitted] = useState(false)
 
+  // Smart prompts with localStorage persistence
+  const {
+    showCheckInReminder,
+    showHaltSuggestion,
+    showNoCravingsStreak,
+    dismissPrompt,
+  } = useSmartPrompts({
+    mood,
+    cravings,
+    used,
+    hasTouched,
+    haltCheck,
+    haltSubmitted,
+    weekStats,
+  })
+
+  // Auto-scroll to mood selector when quick mood is triggered
+  useScrollToSection({
+    shouldScroll: showQuickMoodPrompt,
+    target: { type: 'aria-label', value: 'Mood selection' },
+    delay: 100,
+  })
+
   // Calculate check-in progress
   const checkInSteps = useMemo(() => {
     const steps = [
@@ -83,27 +107,6 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     const currentStep = steps.filter(s => s.completed).length
     return { steps, currentStep, totalSteps: steps.length }
   }, [mood, cravings, used, haltCheck, haltSubmitted])
-
-  // Smart prompt: Check-in reminder
-  const showCheckInReminder = useMemo(() => {
-    if (dismissedPrompts.has('check-in-reminder')) return false
-    const now = new Date()
-    const hour = now.getHours()
-    // Show reminder between 6 PM and 10 PM if not checked in
-    return hour >= 18 && hour < 22 && !mood && !hasTouched
-  }, [mood, hasTouched, dismissedPrompts])
-
-  // Smart prompt: HALT suggestion when struggling
-  const showHaltSuggestion = useMemo(() => {
-    if (dismissedPrompts.has('halt-suggestion')) return false
-    return mood === 'struggling' && !haltSubmitted && !Object.values(haltCheck).some(v => v)
-  }, [mood, haltCheck, haltSubmitted, dismissedPrompts])
-
-  // Smart prompt: No cravings streak celebration
-  const showNoCravingsStreak = useMemo(() => {
-    if (dismissedPrompts.has('no-cravings-streak')) return false
-    return weekStats.streak >= 7 && cravings === null && mood !== null
-  }, [weekStats.streak, cravings, mood, dismissedPrompts])
 
   const createJournalDailyLog = useCallback(async (data: { journalEntry: string; mood: string | null; cravings: boolean | null; used: boolean | null }) => {
     if (!user) return
@@ -268,11 +271,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   // Quick mood handler for FAB
   const handleQuickMood = useCallback(() => {
     setShowQuickMoodPrompt(true)
-    // Auto-scroll to mood selector
-    setTimeout(() => {
-      const moodSection = document.querySelector('[aria-label="Mood selection"]')
-      moodSection?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }, 100)
+    // Auto-scroll handled by useScrollToSection hook
   }, [])
 
   // Real-time data sync
@@ -660,7 +659,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             label: "Check in now",
             onClick: handleQuickMood
           }}
-          onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('check-in-reminder'))}
+          onDismiss={() => dismissPrompt('check-in-reminder')}
         />
       )}
 
@@ -671,11 +670,22 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           action={{
             label: "Do HALT check",
             onClick: () => {
-              const haltSection = document.querySelector('h2:has-text("HALT Check")')?.parentElement
-              haltSection?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              try {
+                // Find HALT Check heading by text content
+                const headings = Array.from(document.querySelectorAll('h2'))
+                const haltHeading = headings.find(h => h.textContent?.includes('HALT Check'))
+                const haltSection = haltHeading?.parentElement
+
+                if (haltSection) {
+                  haltSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+              } catch (error) {
+                // Gracefully degrade - log error but don't crash UI
+                console.warn('Could not scroll to HALT section:', error)
+              }
             }
           }}
-          onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('halt-suggestion'))}
+          onDismiss={() => dismissPrompt('halt-suggestion')}
         />
       )}
 
@@ -683,7 +693,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         <SmartPrompt
           type="no-cravings-streak"
           message={`🎉 Amazing! You've logged ${weekStats.streak} days in a row. Your consistency is inspiring!`}
-          onDismiss={() => setDismissedPrompts(prev => new Set(prev).add('no-cravings-streak'))}
+          onDismiss={() => dismissPrompt('no-cravings-streak')}
         />
       )}
 
