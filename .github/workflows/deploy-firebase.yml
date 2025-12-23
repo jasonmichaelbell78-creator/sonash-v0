@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - claude/repo-review-p2Vfn
+      - claude/review-repo-status-YtuyB
   workflow_dispatch:
 
 jobs:
