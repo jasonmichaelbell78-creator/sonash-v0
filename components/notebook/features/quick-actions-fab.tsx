@@ -9,6 +9,11 @@ interface QuickActionsFabProps {
   onQuickMood?: () => void
 }
 
+// TODO: Make action buttons customizable by user (save preferences to profile/localStorage)
+// - Allow users to choose which actions to show
+// - Allow users to reorder actions
+// - Allow users to add custom phone numbers (sponsor, etc.)
+// - Consider settings panel in More tab
 export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProps) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -53,7 +58,7 @@ export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProp
   ]
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 md:bottom-8 md:right-8">
+    <div className="fixed bottom-6 right-6 z-[60] md:bottom-8 md:right-8">
       {/* Action buttons */}
       <div className={`flex flex-col-reverse gap-3 mb-3 transition-all duration-300 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
         {actions.map((action, index) => (
