@@ -1,8 +1,9 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
-import { auth } from "@/lib/firebase"
+import { auth, db } from "@/lib/firebase"
 import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth"
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore"
 import { logger } from "@/lib/logger"
 import { shouldShowLinkPrompt } from "@/lib/auth/account-linking"
 
@@ -63,6 +64,18 @@ export function AuthProvider({ children, onUserChange }: AuthProviderProps) {
                 await ensureAnonymousSession(auth, setLoading)
             } else {
                 setLoading(false)
+
+                // Update lastActive timestamp for non-anonymous users
+                if (!currentUser.isAnonymous) {
+                    try {
+                        await updateDoc(doc(db, "users", currentUser.uid), {
+                            lastActive: serverTimestamp()
+                        })
+                    } catch (error) {
+                        // Silently fail - this is not critical
+                        logger.warn("Failed to update lastActive timestamp", { error })
+                    }
+                }
             }
         })
 

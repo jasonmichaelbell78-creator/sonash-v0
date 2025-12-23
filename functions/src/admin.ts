@@ -377,3 +377,182 @@ export const adminDeleteQuote = onCall<DeleteQuoteRequest>(
         }
     }
 );
+
+/**
+ * Admin: Health Check
+ * Tests connectivity to core Firebase services
+ */
+export const adminHealthCheck = onCall(
+    {
+        enforceAppCheck: true,
+        consumeAppCheckToken: true,
+    },
+    async (request) => {
+        requireAdmin(request);
+
+        const health = {
+            firestore: false,
+            auth: false,
+            timestamp: new Date().toISOString(),
+        };
+
+        // Test Firestore connectivity
+        try {
+            await admin.firestore()
+                .collection("_health")
+                .doc("ping")
+                .set({ lastCheck: admin.firestore.FieldValue.serverTimestamp() });
+            health.firestore = true;
+        } catch (error) {
+            logSecurityEvent(
+                "HEALTH_CHECK_FAILURE",
+                "adminHealthCheck",
+                "Firestore health check failed",
+                { userId: request.auth?.uid, metadata: { error: String(error) } }
+            );
+        }
+
+        // Test Auth connectivity
+        try {
+            await admin.auth().getUser(request.auth?.uid || "");
+            health.auth = true;
+        } catch (error) {
+            // This is expected to fail if UID is invalid, but it tests connectivity
+            if (request.auth?.uid) {
+                try {
+                    await admin.auth().getUser(request.auth.uid);
+                    health.auth = true;
+                } catch {
+                    // Auth service is down
+                    logSecurityEvent(
+                        "HEALTH_CHECK_FAILURE",
+                        "adminHealthCheck",
+                        "Auth health check failed",
+                        { userId: request.auth?.uid, metadata: { error: String(error) } }
+                    );
+                }
+            }
+        }
+
+        return health;
+    }
+);
+
+/**
+ * Admin: Get Dashboard Stats
+ * Returns system metrics for the admin dashboard
+ */
+export const adminGetDashboardStats = onCall(
+    {
+        enforceAppCheck: true,
+        consumeAppCheckToken: true,
+    },
+    async (request) => {
+        requireAdmin(request);
+
+        try {
+            const now = new Date();
+            const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+            // Get total users count
+            const usersSnapshot = await admin.firestore()
+                .collection("users")
+                .count()
+                .get();
+            const totalUsers = usersSnapshot.data().count;
+
+            // Get active users by lastActive timestamp
+            const activeUsers24h = await admin.firestore()
+                .collection("users")
+                .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(yesterday))
+                .count()
+                .get();
+
+            const activeUsers7d = await admin.firestore()
+                .collection("users")
+                .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+                .count()
+                .get();
+
+            const activeUsers30d = await admin.firestore()
+                .collection("users")
+                .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+                .count()
+                .get();
+
+            // Get recent signups (last 10)
+            const recentSignupsSnapshot = await admin.firestore()
+                .collection("users")
+                .orderBy("createdAt", "desc")
+                .limit(10)
+                .get();
+
+            const recentSignups = recentSignupsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                nickname: doc.data().nickname || "Anonymous",
+                createdAt: doc.data().createdAt?.toDate().toISOString() || null,
+                authProvider: doc.data().authProvider || "unknown",
+            }));
+
+            // Get recent logs (last 10 from admin_logs if it exists)
+            let recentLogs: Array<{ id: string; event: string; level: string; timestamp: string; details: string }> = [];
+            try {
+                const logsSnapshot = await admin.firestore()
+                    .collection("admin_logs")
+                    .orderBy("timestamp", "desc")
+                    .limit(10)
+                    .get();
+
+                recentLogs = logsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    event: doc.data().event || "",
+                    level: doc.data().level || "info",
+                    timestamp: doc.data().timestamp?.toDate().toISOString() || new Date().toISOString(),
+                    details: doc.data().details || "",
+                }));
+            } catch {
+                // admin_logs collection doesn't exist yet - that's okay
+            }
+
+            // Get background jobs status (if admin_jobs exists)
+            let jobStatuses: Array<{ id: string; name: string; lastRunStatus: string; lastRun: string | null }> = [];
+            try {
+                const jobsSnapshot = await admin.firestore()
+                    .collection("admin_jobs")
+                    .get();
+
+                jobStatuses = jobsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    name: doc.data().name || doc.id,
+                    lastRunStatus: doc.data().lastRunStatus || "unknown",
+                    lastRun: doc.data().lastRun?.toDate().toISOString() || null,
+                }));
+            } catch {
+                // admin_jobs collection doesn't exist yet - that's okay
+            }
+
+            return {
+                activeUsers: {
+                    last24h: activeUsers24h.data().count,
+                    last7d: activeUsers7d.data().count,
+                    last30d: activeUsers30d.data().count,
+                },
+                totalUsers,
+                recentSignups,
+                recentLogs,
+                jobStatuses,
+                generatedAt: new Date().toISOString(),
+            };
+        } catch (error) {
+            logSecurityEvent(
+                "ADMIN_ERROR",
+                "adminGetDashboardStats",
+                "Failed to get dashboard stats",
+                { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
+            );
+            throw new HttpsError("internal", "Failed to get dashboard stats");
+        }
+    }
+);
