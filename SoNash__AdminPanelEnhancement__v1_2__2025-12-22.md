@@ -1,9 +1,9 @@
 # SoNash Admin Panel Enhancement
 
-**Version:** v1.3
+**Version:** v1.4
 **Created:** 2025-12-22
 **Updated:** 2025-12-23
-**Status:** Phases 1-3 Complete ✅
+**Status:** Phases 1-3 + Today Page Enhancement Complete ✅
 **Owner:** Jason
 **Location:** `/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md`
 
@@ -17,6 +17,7 @@
 | v1.1 | 2025-12-22 | Incorporated Qodo PR review: switched to GCP Logging for audit trails, hybrid Sentry approach for errors, added explicit security requirements |
 | v1.2 | 2025-12-22 | Security hardening from Qodo review: (1) Move Sentry API to Cloud Function to prevent token exposure, (2) Proper middleware with session verification + admin claim check, (3) Use `set({merge:true})` in job wrapper to prevent first-run failures, (4) Add error handling in job wrapper, (5) Throttle lastActive updates, (6) Fix GCP logging query URL, (7) Add Sentry API error handling |
 | v1.3 | 2025-12-23 | **Implementation Complete for Phases 1-3:** Dashboard with health checks and user metrics, Enhanced Users Tab with search/detail/admin actions, Background Jobs Monitoring with manual triggers. All Cloud Functions deployed and tested. Deferred server-side middleware (client-side protection sufficient). |
+| v1.4 | 2025-12-23 | **Today Page Enhancement Complete:** All 10 UX improvements implemented (loading states, progress tracking, smart prompts with localStorage persistence, quick actions FAB, keyboard shortcuts 1-4, offline support, Qodo code review fixes). Added Phase 6 spec for customizable Quick Actions. |
 
 ---
 
@@ -26,10 +27,12 @@
 - ✅ **Phase 1: Dashboard + Foundations** - System health, user metrics, recent signups
 - ✅ **Phase 2: Enhanced User Lookup** - Search, detail drawer, activity timeline, admin actions
 - ✅ **Phase 3: Background Jobs Monitoring** - Job tracking, manual triggers, scheduled execution
+- ✅ **Today Page Enhancement - UX Polish** - All 10 UX improvements implemented (loading states, progress tracking, smart prompts, quick actions, keyboard shortcuts, offline support)
 
 **Remaining Phases:**
 - 📋 **Phase 4: Error Tracking** - Sentry integration (deferred - see `docs/SENTRY_INTEGRATION_GUIDE.md`)
 - 📋 **Phase 5: Logs Tab** - GCP Cloud Logging integration (planned for later)
+- 📋 **Phase 6: Customizable Quick Actions** - User-configurable action buttons (planned)
 
 **Key Achievements:**
 - 8 new Cloud Functions deployed (adminHealthCheck, adminGetDashboardStats, adminSearchUsers, adminGetUserDetail, adminUpdateUser, adminDisableUser, adminTriggerJob, adminGetJobsStatus)
@@ -543,6 +546,180 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 
 ---
 
+## Today Page Enhancement - UX Polish
+
+**Status:** ✅ COMPLETE (2025-12-23)
+**Priority:** High
+**Effort:** Medium
+**Value:** High — dramatically improved user experience
+
+### Objectives
+
+- [x] Progressive check-in flow with visual progress indicator
+- [x] Loading states and skeleton screens
+- [x] Enhanced visual feedback (animations, scale effects, glow)
+- [x] Mobile-specific improvements (larger touch targets, active states)
+- [x] Quick actions FAB with 4 shortcuts
+- [x] Smart defaults with contextual prompts (3 types)
+- [x] Enhanced mood selector with keyboard shortcuts (1-4 keys)
+- [x] Data visualization enhancements (progress bars)
+- [x] Accessibility improvements (ARIA labels, keyboard navigation)
+- [x] Offline-first enhancement with network status indicator
+- [x] Code quality improvements (custom hooks, localStorage persistence)
+
+### New Components Created
+
+| Component | Purpose | Location |
+|-----------|---------|----------|
+| `TodayPageSkeleton` | Loading state skeleton screen | `components/notebook/pages/today-page-skeleton.tsx` |
+| `CheckInProgress` | Step-by-step progress indicator | `components/notebook/features/check-in-progress.tsx` |
+| `QuickActionsFab` | Floating action button with 4 shortcuts | `components/notebook/features/quick-actions-fab.tsx` |
+| `EnhancedMoodSelector` | Mood picker with keyboard shortcuts | `components/notebook/features/enhanced-mood-selector.tsx` |
+| `SmartPrompt` | Contextual AI-driven suggestions | `components/notebook/features/smart-prompt.tsx` |
+| `OfflineIndicator` | Network status awareness | `components/status/offline-indicator.tsx` |
+
+### Custom Hooks Created
+
+| Hook | Purpose | Location |
+|------|---------|----------|
+| `useSmartPrompts` | Smart prompt visibility + localStorage persistence | `components/notebook/hooks/use-smart-prompts.ts` |
+| `useScrollToSection` | Scroll management with useEffect (no setTimeout) | `components/notebook/hooks/use-scroll-to-section.ts` |
+
+### Modified Files
+
+| File | Changes |
+|------|---------|
+| `components/notebook/pages/today-page.tsx` | Full integration of all 10 UX improvements |
+
+### Features Implemented
+
+#### 1. Progressive Check-In Flow
+- **What:** Visual progress indicator showing completion of Mood → Check → HALT
+- **Why:** Users can see their progress through the check-in process
+- **How:** `CheckInProgress` component with animated progress bar
+- **Impact:** Reduces abandonment, encourages completion
+
+#### 2. Loading States & Skeleton Screens
+- **What:** Professional skeleton screen while data loads
+- **Why:** No more blank screen flash on page load
+- **How:** `TodayPageSkeleton` component matching page layout
+- **Impact:** Perceived performance improvement
+
+#### 3. Enhanced Visual Feedback
+- **What:** Animations, scale effects, glow on interactions
+- **Why:** User actions feel responsive and engaging
+- **How:** CSS `animate-in`, `slide-in-from-top`, `active:scale-95`, glow effects
+- **Impact:** More polished, modern feel
+
+#### 4. Mobile-Specific Improvements
+- **What:** Larger touch targets, active states, better spacing
+- **Why:** Mobile is primary platform for recovery app
+- **How:** Responsive sizing, touch-optimized button sizes
+- **Impact:** Easier to use on phone
+
+#### 5. Quick Actions FAB
+- **What:** Floating action button with 4 shortcuts: Quick Mood, Call Sponsor, Community, Resources
+- **Why:** Fast access to most-used actions
+- **How:** `QuickActionsFab` component with staggered animations
+- **Impact:** Reduces navigation clicks by 2-3 steps
+- **Z-Index Fix:** Set to `z-[60]` to appear above journal pen button
+
+#### 6. Smart Defaults & Contextual Prompts
+- **What:** 3 types of context-aware suggestions:
+  1. Evening check-in reminder (6-10 PM)
+  2. HALT suggestion when struggling
+  3. No-cravings streak celebration (7+ days)
+- **Why:** Nudge users toward beneficial actions at the right time
+- **How:** `SmartPrompt` component + `useSmartPrompts` hook
+- **Persistence:** Dismissed prompts saved to localStorage per day
+- **Impact:** Proactive support without being annoying
+
+#### 7. Keyboard Shortcuts
+- **What:** Press 1-4 keys to select mood on desktop
+- **Why:** Power users can check in faster
+- **How:** `EnhancedMoodSelector` with keypress event listener
+- **Impact:** 3-second check-in for keyboard users
+
+#### 8. Data Visualization
+- **What:** Progress bars, completion indicators
+- **Why:** Visual feedback on streaks and progress
+- **How:** Gradient progress bars with animations
+- **Impact:** Motivational visual cues
+
+#### 9. Accessibility
+- **What:** ARIA labels, keyboard navigation, focus management
+- **Why:** Inclusive design for all users
+- **How:** Proper semantic HTML + ARIA attributes
+- **Impact:** Screen reader compatible
+
+#### 10. Offline-First Enhancement
+- **What:** Network status indicator, auto-sync on reconnection
+- **Why:** Works even with poor mobile connection
+- **How:** `OfflineIndicator` component with online/offline event listeners
+- **Impact:** Reliable in any network condition
+
+### Code Quality Improvements (Qodo Review)
+
+#### Critical Bug Fixes
+- **Invalid CSS Selector:** Replaced non-standard `:has-text()` with standard DOM query
+  - **Before:** `document.querySelector('h2:has-text("HALT Check")')`
+  - **After:** `Array.from(document.querySelectorAll('h2')).find(h => h.textContent?.includes('HALT Check'))`
+  - **Impact:** Prevents DOMException runtime errors
+
+#### Architectural Improvements
+- **Custom Hook Extraction:** Created `useSmartPrompts` hook
+  - Extracted 30+ lines of prompt logic from TodayPage
+  - Better separation of concerns
+  - Easier to test
+
+- **localStorage Persistence:** Dismissed prompts persist per day
+  - Key format: `dismissed-prompts-YYYY-MM-DD`
+  - Prevents re-showing dismissed prompts after page refresh
+
+- **useEffect Pattern:** Replaced setTimeout with proper React hooks
+  - Created `useScrollToSection` hook
+  - Proper cleanup and state management
+  - No memory leaks
+
+### Verification Checklist
+
+- [x] All 6 new components created and exported
+- [x] All 2 custom hooks created and working
+- [x] TypeScript compilation passes with no errors
+- [x] Keyboard shortcuts work (1-4 for moods)
+- [x] Smart prompts show at correct times
+- [x] Dismissed prompts persist after page refresh
+- [x] Quick actions FAB appears above journal button
+- [x] Loading skeleton displays on initial load
+- [x] Offline indicator shows network status
+- [x] Progressive check-in flow tracks completion
+- [x] All animations smooth and performant
+- [x] Mobile touch targets appropriately sized
+- [x] No console errors or warnings
+- [x] Code review feedback addressed (Qodo)
+- [x] All changes committed and pushed
+
+### Files Changed
+
+**New Files (8):**
+- `components/notebook/pages/today-page-skeleton.tsx`
+- `components/notebook/features/check-in-progress.tsx`
+- `components/notebook/features/quick-actions-fab.tsx`
+- `components/notebook/features/enhanced-mood-selector.tsx`
+- `components/notebook/features/smart-prompt.tsx`
+- `components/status/offline-indicator.tsx`
+- `components/notebook/hooks/use-smart-prompts.ts`
+- `components/notebook/hooks/use-scroll-to-section.ts`
+
+**Modified Files (1):**
+- `components/notebook/pages/today-page.tsx` (major refactor)
+
+### Future Enhancements (Planned)
+
+See **Phase 6: Customizable Quick Actions** below for planned user customization features.
+
+---
+
 ## Phase 4: Error Tracking (Sentry Integration)
 
 **Status:** ⏳ Planned  
@@ -752,6 +929,182 @@ const GCP_LOGS_URL = `https://console.cloud.google.com/logs/query;query=${encode
 - [ ] Deep link opens GCP Console with correct filter
 - [ ] Log retention configured in GCP (90+ days)
 - [ ] Structured logging includes all required fields
+
+---
+
+## Phase 6: Customizable Quick Actions
+
+**Status:** 📋 Planned
+**Priority:** Medium
+**Effort:** Medium
+**Value:** High — personalized user experience
+
+### Approach: User-Configurable FAB
+
+Allow users to customize the Quick Actions FAB to suit their individual recovery needs.
+
+### Objectives
+
+- [ ] Settings panel for Quick Actions customization
+- [ ] Action selection (choose which actions to show)
+- [ ] Action ordering (drag-and-drop reordering)
+- [ ] Custom phone numbers (sponsor, support contacts)
+- [ ] Save preferences to user profile (Firestore)
+- [ ] Fallback to sensible defaults for new users
+
+### Use Cases
+
+1. **Power User:** Removes "Quick Mood" (doesn't use it), adds custom sponsor phone
+2. **Minimalist:** Shows only 2 actions (Call Sponsor, Community)
+3. **Meeting-Focused:** Reorders to prioritize Community at top
+4. **Contact-Heavy:** Adds multiple phone numbers (sponsor, accountability partner, hotline)
+
+### New Files
+
+| File | Type | Purpose |
+|------|------|---------|
+| `components/settings/quick-actions-settings.tsx` | Component | Settings panel for Quick Actions |
+| `lib/quick-actions-config.ts` | Utility | Default actions + validation |
+
+### Modified Files
+
+| File | Changes |
+|------|---------|
+| `components/notebook/features/quick-actions-fab.tsx` | Load user preferences, render custom actions |
+| `firestore.rules` | Allow user to read/write `users/{uid}/preferences/quickActions` |
+
+### Data Model
+
+**User Preferences** (`/users/{uid}/preferences`)
+
+```typescript
+interface QuickActionsPreferences {
+  enabled: boolean; // Show/hide the FAB entirely
+  actions: Array<{
+    id: string; // "quick-mood" | "call-sponsor" | "community" | "resources" | custom
+    type: "navigation" | "phone" | "custom";
+    label: string;
+    icon: string; // lucide icon name
+    color: string; // "bg-blue-500 hover:bg-blue-600"
+    // For navigation
+    navigateTo?: NotebookModuleId;
+    // For phone
+    phoneNumber?: string;
+    // For custom
+    url?: string;
+    order: number;
+  }>;
+  maxActions: number; // Limit to 6 for performance
+}
+```
+
+### Default Actions
+
+```typescript
+// lib/quick-actions-config.ts
+export const DEFAULT_QUICK_ACTIONS = [
+  {
+    id: "quick-mood",
+    type: "navigation",
+    label: "Quick Mood",
+    icon: "Zap",
+    color: "bg-yellow-500 hover:bg-yellow-600",
+    order: 0,
+  },
+  {
+    id: "call-sponsor",
+    type: "phone",
+    label: "Call Sponsor",
+    icon: "Phone",
+    color: "bg-blue-500 hover:bg-blue-600",
+    phoneNumber: "", // User must configure
+    order: 1,
+  },
+  {
+    id: "community",
+    type: "navigation",
+    label: "Community",
+    icon: "MapPin",
+    color: "bg-green-500 hover:bg-green-600",
+    navigateTo: "community",
+    order: 2,
+  },
+  {
+    id: "resources",
+    type: "navigation",
+    label: "Resources",
+    icon: "Heart",
+    color: "bg-red-500 hover:bg-red-600",
+    navigateTo: "resources",
+    order: 3,
+  },
+];
+```
+
+### Settings Panel UI
+
+**Location:** More tab → Settings → Quick Actions
+
+**Sections:**
+1. **Enable/Disable:** Toggle to show/hide FAB
+2. **Active Actions:** List of enabled actions with:
+   - Drag handle for reordering
+   - Edit button (change label, phone number)
+   - Remove button
+3. **Available Actions:** Gallery of actions to add
+4. **Custom Action:** Add button to create custom action (phone or URL)
+
+### Implementation Steps
+
+1. **Data Layer:**
+   - Define `QuickActionsPreferences` type
+   - Create Firestore rules for preferences
+   - Add default preferences on user creation
+
+2. **Settings UI:**
+   - Create `quick-actions-settings.tsx` component
+   - Implement drag-and-drop with `@dnd-kit/core`
+   - Add form for editing phone numbers
+   - Add validation (max 6 actions, phone format)
+
+3. **FAB Integration:**
+   - Modify `QuickActionsFab` to load from Firestore
+   - Handle loading state (show defaults while loading)
+   - Handle errors (fallback to defaults)
+
+4. **Phone Number Management:**
+   - Add phone input with validation
+   - Option to add multiple contacts (sponsor, accountability partner)
+   - Tel: link generation
+
+5. **Testing:**
+   - Test with 0 actions (hide FAB)
+   - Test with max actions (6)
+   - Test drag-and-drop
+   - Test custom phone numbers
+   - Test deep links
+
+### Verification Checklist
+
+- [ ] Settings panel renders in More tab
+- [ ] User can enable/disable FAB
+- [ ] User can add/remove actions
+- [ ] User can reorder actions (drag-and-drop)
+- [ ] User can edit phone numbers
+- [ ] User can add custom actions (phone or URL)
+- [ ] Preferences save to Firestore
+- [ ] FAB reflects saved preferences
+- [ ] Defaults work for new users
+- [ ] Validation prevents > 6 actions
+- [ ] Phone number validation works
+- [ ] Changes sync across devices (Firestore realtime)
+
+### Future Enhancements
+
+- [ ] Action templates (e.g., "Meeting-Focused", "Contact-Heavy")
+- [ ] Share action configurations with other users
+- [ ] Analytics on most-used actions
+- [ ] Suggested actions based on usage patterns
 
 ---
 

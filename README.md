@@ -80,24 +80,41 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - Settings page UI improvements
 - Enhanced profile management
 - Recovery library (glossary + etiquette guide)
-- **Admin Panel Enhancement** (Phases 1-3 Complete):
-  - ✅ Dashboard with system health checks and user metrics
-  - ✅ Enhanced user management (search, detail view, admin actions)
-  - ✅ Background jobs monitoring with manual triggers
+
+### ✅ Recently Completed (December 2025)
+- **Admin Panel Enhancement** (Phases 1-3):
+  - Dashboard with system health checks and user metrics
+  - Enhanced user management (search, detail view, admin actions)
+  - Background jobs monitoring with manual triggers
+- **Today Page UX Overhaul** (All 10 improvements):
+  - Progressive check-in flow with visual progress tracking
+  - Loading states and professional skeleton screens
+  - Enhanced visual feedback (animations, glow effects)
+  - Quick Actions FAB with 4 customizable shortcuts
+  - Smart contextual prompts (evening reminder, HALT suggestion, streak celebration)
+  - Keyboard shortcuts (press 1-4 to select mood)
+  - Offline-first support with network status indicator
+  - Accessibility improvements (ARIA labels, screen reader support)
+  - Code quality: custom hooks (useSmartPrompts, useScrollToSection)
+  - localStorage persistence for dismissed prompts
 
 ### 📋 Planned (2026)
+- **Customizable Quick Actions FAB**: User-configurable action buttons, drag-and-drop ordering, custom phone numbers
+- **Sentry Error Tracking Integration**: Error dashboard with plain-English translations
 - Meeting proximity detection and maps
 - Nightly inventory tools (10th step)
 - Sponsor connection and support network
 - Speaker recordings library
-- See **[ROADMAP.md](./ROADMAP.md)** for full roadmap
+- See **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** for full roadmap
 
 ## Project Status
 
-**Last Updated:** December 19, 2025  
-**Current Focus:** M1 Foundation (security) + M1.5 Quick Wins
+**Last Updated:** December 23, 2025
+**Current Focus:** UX Polish + Admin Operations
 
 ### Recent Completions
+- ✅ Today Page UX Overhaul (10 improvements: loading states, smart prompts, quick actions, keyboard shortcuts)
+- ✅ Admin Panel Enhancement (Phases 1-3: Dashboard, Users, Jobs)
 - ✅ Security hardening (App Check, rate limiting, audit logging)
 - ✅ Journal system consolidation (single-save architecture)
 - ✅ Entry type separation (mood stamps, stickers, notes)
