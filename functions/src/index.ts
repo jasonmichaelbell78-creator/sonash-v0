@@ -450,33 +450,50 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
         }
 
         try {
-            // Migrate data using batch writes
-            const batch = db.batch();
+            // Batch chunking to handle >500 operations (Firestore limit)
+            const BATCH_LIMIT = 499; // Stay under 500 to be safe
+            let batch = db.batch();
+            let operationCount = 0;
             let totalDocs = 0;
+            const batches: FirebaseFirestore.WriteBatch[] = [batch];
+
+            // Helper function to add operation to batch with chunking
+            const addToBatch = async (
+                ref: FirebaseFirestore.DocumentReference,
+                data: FirebaseFirestore.DocumentData,
+                options?: FirebaseFirestore.SetOptions
+            ) => {
+                if (operationCount >= BATCH_LIMIT) {
+                    // Current batch is full, create a new one
+                    batch = db.batch();
+                    batches.push(batch);
+                    operationCount = 0;
+                }
+                batch.set(ref, data, options || {});
+                operationCount++;
+                totalDocs++;
+            };
 
             // Migrate journal entries
             const journalSnapshot = await db.collection(`users/${data.anonymousUid}/journal`).get();
-            journalSnapshot.forEach((doc) => {
+            for (const doc of journalSnapshot.docs) {
                 const targetRef = db.doc(`users/${data.targetUid}/journal/${doc.id}`);
-                batch.set(targetRef, doc.data(), { merge: true });
-                totalDocs++;
-            });
+                await addToBatch(targetRef, doc.data(), { merge: true });
+            }
 
             // Migrate daily logs
             const dailyLogsSnapshot = await db.collection(`users/${data.anonymousUid}/daily_logs`).get();
-            dailyLogsSnapshot.forEach((doc) => {
+            for (const doc of dailyLogsSnapshot.docs) {
                 const targetRef = db.doc(`users/${data.targetUid}/daily_logs/${doc.id}`);
-                batch.set(targetRef, doc.data(), { merge: true });
-                totalDocs++;
-            });
+                await addToBatch(targetRef, doc.data(), { merge: true });
+            }
 
             // Migrate inventory entries
             const inventorySnapshot = await db.collection(`users/${data.anonymousUid}/inventoryEntries`).get();
-            inventorySnapshot.forEach((doc) => {
+            for (const doc of inventorySnapshot.docs) {
                 const targetRef = db.doc(`users/${data.targetUid}/inventoryEntries/${doc.id}`);
-                batch.set(targetRef, doc.data(), { merge: true });
-                totalDocs++;
-            });
+                await addToBatch(targetRef, doc.data(), { merge: true });
+            }
 
             // Merge user profile metadata with smart conflict resolution
             // STRATEGY: Prefer target account data (usually more accurate)
@@ -505,11 +522,14 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
                 //     mergeData.someField = anonymousProfile.someField;
                 // }
 
-                batch.set(targetProfileRef, mergeData, { merge: true });
+                await addToBatch(targetProfileRef, mergeData, { merge: true });
             }
 
-            // Execute batch write atomically
-            await batch.commit();
+            // Execute all batches sequentially
+            // Note: Not fully atomic across batches, but better than failing entirely
+            for (let i = 0; i < batches.length; i++) {
+                await batches[i].commit();
+            }
 
             logSecurityEvent("DATA_MIGRATION_SUCCESS", "migrateAnonymousUserData",
                 `Migrated ${totalDocs} documents successfully`,
