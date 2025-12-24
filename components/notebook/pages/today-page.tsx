@@ -699,8 +699,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
         {/* Two column layout for larger screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          {/* Left column (top items) - Order 1 on mobile */}
-          <div className="space-y-6 order-1 md:order-none">
+          {/* Left column - Use flex to control order on mobile */}
+          <div className="flex flex-col gap-6 order-1 md:order-none">
             {/* Clean time tracker */}
             <div>
               <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
@@ -757,10 +757,80 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 </a>
               </div>
             </div>
+
+            {/* Recovery Notepad - Order 4 on mobile (after check-in column), natural order on desktop */}
+            <div className="relative group order-4 md:order-none">
+              <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
+
+              <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
+                style={{ backgroundColor: '#fdfbf7' }}
+              >
+                {/* Topbinding/Yellow Header */}
+                <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
+                  <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
+                </div>
+
+                {/* Lined Paper Background */}
+                <div className="absolute inset-0 top-12 pointer-events-none"
+                  style={{
+                    backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
+                    backgroundSize: '100% 2rem',
+                    marginTop: '0.5rem'
+                  }}
+                />
+
+                {/* Red Margin Line */}
+                <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
+
+                {/* Textarea */}
+                <textarea
+                  ref={textareaRef}
+                  value={journalEntry}
+                  onChange={(e) => {
+                    setJournalEntry(e.target.value)
+                    setHasTouched(true)
+                  }}
+                  onFocus={(e) => {
+                    isEditingRef.current = true
+                    if (journalEntry && e.target.selectionStart !== journalEntry.length) {
+                      const len = journalEntry.length
+                      e.target.setSelectionRange(len, len)
+                      e.target.scrollTop = e.target.scrollHeight
+                    }
+                  }}
+                  onBlur={() => (isEditingRef.current = false)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') e.stopPropagation()
+                  }}
+                  placeholder="Jot down numbers, thoughts, or reminders..."
+                  className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
+                  style={{
+                    fontFamily: 'var(--font-handlee), cursive',
+                    lineHeight: '2rem'
+                  }}
+                  spellCheck={false}
+                />
+                {/* Save indicator */}
+                <div className="absolute bottom-2 right-4 text-xs font-body italic">
+                  {isSaving ? (
+                    <span className="text-amber-600 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Saving...
+                    </span>
+                  ) : saveComplete ? (
+                    <span className="text-green-600 font-bold">✓ Saved</span>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
+              </div>
+            </div>
           </div>
 
           {/* Check-in column - Order 2 on mobile (before notepad) */}
-          <div className="space-y-6 order-2 md:order-none">
+          <div className="flex flex-col gap-6 order-2 md:order-none">
             {/* Check-in */}
             <div>
               <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
@@ -933,78 +1003,6 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                   <span className="font-body text-amber-900/70">Current streak</span>
                   <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Recovery Notepad - Order 3 on mobile (last), Order 1 on desktop (left column) */}
-          <div className="order-3 md:order-1">
-            <div className="relative group">
-              <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
-
-              <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
-                style={{ backgroundColor: '#fdfbf7' }}
-              >
-                {/* Topbinding/Yellow Header */}
-                <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
-                  <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
-                </div>
-
-                {/* Lined Paper Background */}
-                <div className="absolute inset-0 top-12 pointer-events-none"
-                  style={{
-                    backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
-                    backgroundSize: '100% 2rem',
-                    marginTop: '0.5rem'
-                  }}
-                />
-
-                {/* Red Margin Line */}
-                <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
-
-                {/* Textarea */}
-                <textarea
-                  ref={textareaRef}
-                  value={journalEntry}
-                  onChange={(e) => {
-                    setJournalEntry(e.target.value)
-                    setHasTouched(true)
-                  }}
-                  onFocus={(e) => {
-                    isEditingRef.current = true
-                    if (journalEntry && e.target.selectionStart !== journalEntry.length) {
-                      const len = journalEntry.length
-                      e.target.setSelectionRange(len, len)
-                      e.target.scrollTop = e.target.scrollHeight
-                    }
-                  }}
-                  onBlur={() => (isEditingRef.current = false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') e.stopPropagation()
-                  }}
-                  placeholder="Jot down numbers, thoughts, or reminders..."
-                  className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
-                  style={{
-                    fontFamily: 'var(--font-handlee), cursive',
-                    lineHeight: '2rem'
-                  }}
-                  spellCheck={false}
-                />
-                {/* Save indicator */}
-                <div className="absolute bottom-2 right-4 text-xs font-body italic">
-                  {isSaving ? (
-                    <span className="text-amber-600 flex items-center gap-1">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Saving...
-                    </span>
-                  ) : saveComplete ? (
-                    <span className="text-green-600 font-bold">✓ Saved</span>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
               </div>
             </div>
           </div>
