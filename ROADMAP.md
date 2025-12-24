@@ -438,10 +438,11 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Status:** Addressed via `getTodayDateId()` standardization in Week 10-12
   - **Cross-reference:** Week 10-12 High-Priority Bug Fixes
 
-- ⏳ **M13: Duplicate Zod Schemas** (functions/src/schemas.ts, functions/src/admin.ts:14-46)
+- ✅ **M13: Duplicate Zod Schemas** (functions/src/schemas.ts, functions/src/admin.ts:14-46)
   - **Issue:** Zod validation schemas duplicated between files
   - **Impact:** Schema changes must be made in multiple places; validation inconsistencies
   - **Fix:** Consolidate all schemas in `schemas.ts` and import
+  - **Status:** COMPLETED - Moved admin schemas (meeting, soberLiving, quote) to schemas.ts
   - **Reports:** R6 (1 model)
   - **Effort:** 1 hour
 
@@ -543,19 +544,19 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ Already Fixed (Pre-review): 5 issues (C4, H7, H8, M7, M12)
 - ✅ Completed Dec 24 (P0): 4 issues (C1, C2, C5, M6)
 - ✅ Completed Dec 24 (P1): 6 issues (H1, H2, H3, H4, H5, H6)
-- ✅ Completed Dec 24 (P2): 7 issues (M4, M5, M9, L1, L2, L4, L6)
+- ✅ Completed Dec 24 (P2): 8 issues (M4, M5, M9, M13, L1, L2, L4, L6)
 - ⚠️ False Positives: 5 issues (C1, C2, C5, L7, L8 - AI models had outdated knowledge or incorrect analysis)
 - ⏸️ Deferred: 1 issue (C3 - App Check)
-- ⏳ Planned: 14 medium/low priority issues
+- ⏳ Planned: 13 medium/low priority issues
 - ℹ️ Documentation Only: 1 issue (M15)
 
 **Actual Time Spent:**
 - P0 (Immediate): ✅ COMPLETE - 30 min (false positives + dependency cleanup)
 - P1 (Short-term): ✅ COMPLETE - ~7.5 hours (6 issues: H1=2h, H2=0.5h, H3=2h, H4=2h, H5=1h, H6=1h)
-- P2 (Medium-term): 🔄 IN PROGRESS - ~2.5 hours spent (7 issues: M4=20min, M5=20min, M9=30min, L1=5min, L2=5min, L4=5min, L6=5min)
-  - ⏳ Remaining: ~14 hours (14 issues remaining: M1, M2, M3, M10, M11, M13, M14, M16, M17, L3, L5, L9, L10, L11)
+- P2 (Medium-term): 🔄 IN PROGRESS - ~3.5 hours spent (8 issues: M4=20min, M5=20min, M9=30min, M13=1h, L1=5min, L2=5min, L4=5min, L6=5min)
+  - ⏳ Remaining: ~13 hours (13 issues remaining: M1, M2, M3, M10, M11, M14, M16, M17, L3, L5, L9, L10, L11)
 - P3 (Low priority): ⏳ PLANNED - Included in P2 breakdown above
-- **Total Completed: ~10.5 hours (13 real issues + 5 false positives)** | **Total Remaining: ~14 hours** (down from ~32-46 hours)
+- **Total Completed: ~11.5 hours (14 real issues + 5 false positives)** | **Total Remaining: ~13 hours** (down from ~32-46 hours)
 
 ---
 

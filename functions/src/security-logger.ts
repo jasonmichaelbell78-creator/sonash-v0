@@ -25,6 +25,7 @@ export type SecurityEventType =
     | "ACCOUNT_DELETE_FAILURE"
     | "DATA_MIGRATION_SUCCESS"
     | "DATA_MIGRATION_FAILURE"
+    | "PARTIAL_MIGRATION_FAILURE"
     | "ADMIN_ACTION"
     | "ADMIN_ERROR"
     | "HEALTH_CHECK_FAILURE"
@@ -141,6 +142,7 @@ function getSeverityForType(type: SecurityEventType): Severity {
         case "DATA_EXPORT_FAILURE":
         case "ACCOUNT_DELETE_FAILURE":
         case "DATA_MIGRATION_FAILURE":
+        case "PARTIAL_MIGRATION_FAILURE":
         case "ADMIN_ERROR":
         case "HEALTH_CHECK_FAILURE":
             return "ERROR";

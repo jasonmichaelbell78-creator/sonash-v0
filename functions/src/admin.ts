@@ -9,46 +9,14 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import * as admin from "firebase-admin";
 import { z } from "zod";
 import { logSecurityEvent } from "./security-logger";
-
-// Validation schemas
-const MeetingSchema = z.object({
-    id: z.string().optional(),
-    name: z.string().min(1).max(200),
-    type: z.enum(["AA", "NA", "CA", "Smart", "Al-Anon"]),
-    day: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
-    time: z.string().regex(/^\d{2}:\d{2}$/), // HH:MM format
-    address: z.string().min(1).max(500),
-    neighborhood: z.string().min(1).max(100),
-    coordinates: z.object({
-        lat: z.number().min(-90).max(90),
-        lng: z.number().min(-180).max(180),
-    }).optional(),
-});
-
-const SoberLivingSchema = z.object({
-    id: z.string().optional(),
-    name: z.string().min(1).max(200),
-    address: z.string().min(1).max(500),
-    neighborhood: z.string().min(1).max(100),
-    phone: z.string().max(20).optional(),
-    gender: z.enum(["Men", "Women", "Both"]).optional(),
-    coordinates: z.object({
-        lat: z.number().min(-90).max(90),
-        lng: z.number().min(-180).max(180),
-    }).optional(),
-});
-
-const QuoteSchema = z.object({
-    id: z.string().optional(),
-    text: z.string().min(1).max(1000),
-    author: z.string().max(200).optional(),
-    type: z.string().max(100).optional(),
-});
-
-// Request data types
-type MeetingData = z.infer<typeof MeetingSchema>;
-type SoberLivingData = z.infer<typeof SoberLivingSchema>;
-type QuoteData = z.infer<typeof QuoteSchema>;
+import {
+    meetingSchema,
+    soberLivingSchema,
+    quoteSchema,
+    type MeetingData,
+    type SoberLivingData,
+    type QuoteData
+} from "./schemas";
 
 interface SaveMeetingRequest {
     meeting: MeetingData;
@@ -124,7 +92,7 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(
         // Validate input
         let validated;
         try {
-            validated = MeetingSchema.parse(request.data.meeting);
+            validated = meetingSchema.parse(request.data.meeting);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 throw new HttpsError(
@@ -218,7 +186,7 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(
         // Validate input
         let validated;
         try {
-            validated = SoberLivingSchema.parse(request.data.home);
+            validated = soberLivingSchema.parse(request.data.home);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 throw new HttpsError(
@@ -311,7 +279,7 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(
         // Validate input
         let validated;
         try {
-            validated = QuoteSchema.parse(request.data.quote);
+            validated = quoteSchema.parse(request.data.quote);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 throw new HttpsError(

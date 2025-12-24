@@ -62,7 +62,7 @@ export class FirestoreRateLimiter {
                     const secondsUntilReset = Math.ceil((oldestTimestamp + this.config.duration * 1000 - now) / 1000);
 
                     // SECURITY: Log detailed info server-side, but don't reveal timing to client
-                    console.warn(`Rate limit exceeded for ${identifier}:`, {
+                    console.warn(`Rate limit exceeded for ${docId}:`, {
                         requests: timestamps.length,
                         limit: this.config.points,
                         secondsUntilReset,

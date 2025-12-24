@@ -41,3 +41,46 @@ export const inventoryEntrySchema = z.object({
 });
 
 export type InventoryEntryInput = z.infer<typeof inventoryEntrySchema>;
+
+// Schema for admin meeting validation
+export const meetingSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1).max(200),
+    type: z.enum(["AA", "NA", "CA", "Smart", "Al-Anon"]),
+    day: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
+    time: z.string().regex(/^\d{2}:\d{2}$/), // HH:MM format
+    address: z.string().min(1).max(500),
+    neighborhood: z.string().min(1).max(100),
+    coordinates: z.object({
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+    }).optional(),
+});
+
+export type MeetingData = z.infer<typeof meetingSchema>;
+
+// Schema for admin sober living validation
+export const soberLivingSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1).max(200),
+    address: z.string().min(1).max(500),
+    neighborhood: z.string().min(1).max(100),
+    phone: z.string().max(20).optional(),
+    gender: z.enum(["Men", "Women", "Both"]).optional(),
+    coordinates: z.object({
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+    }).optional(),
+});
+
+export type SoberLivingData = z.infer<typeof soberLivingSchema>;
+
+// Schema for admin quote validation
+export const quoteSchema = z.object({
+    id: z.string().optional(),
+    text: z.string().min(1).max(1000),
+    author: z.string().max(200).optional(),
+    type: z.string().max(100).optional(),
+});
+
+export type QuoteData = z.infer<typeof quoteSchema>;
