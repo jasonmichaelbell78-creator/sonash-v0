@@ -25,8 +25,6 @@ function MapController({ center, meetings }: { center: { lat: number; lng: numbe
 
         // If we have meetings, fit bounds to them
         if (meetings.length > 0) {
-            const _bounds = L.latLngBounds(meetings.map(m => [m.coordinates?.lat || 0, m.coordinates?.lng || 0]))
-
             // Filter out 0/0 coordinates
             const validPoints = meetings
                 .filter(m => m.coordinates && m.coordinates.lat !== 0)
