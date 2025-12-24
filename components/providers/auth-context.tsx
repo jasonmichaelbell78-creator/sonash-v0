@@ -36,12 +36,39 @@ export const ensureAnonymousSession = async (
     setLoading: (value: boolean) => void,
     signIn: typeof signInAnonymously = signInAnonymously,
 ) => {
-    try {
-        await signIn(authInstance)
-    } catch (error) {
-        logger.error("Error starting anonymous session", { error })
-    } finally {
-        setLoading(false)
+    const MAX_RETRIES = 3;
+    const BASE_DELAY = 1000; // 1 second
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            await signIn(authInstance);
+            setLoading(false);
+            return; // Success!
+        } catch (error) {
+            logger.error(`Error starting anonymous session (attempt ${attempt + 1}/${MAX_RETRIES + 1})`, { error });
+
+            // If this was the last attempt, give up
+            if (attempt === MAX_RETRIES) {
+                setLoading(false);
+                // Show user-facing error
+                const errorMessage = error instanceof Error
+                    ? error.message
+                    : "Unable to connect to authentication service";
+                logger.error("Failed to start anonymous session after retries", {
+                    error: errorMessage,
+                    attempts: MAX_RETRIES + 1
+                });
+
+                // You could also throw here to let the caller handle it,
+                // or set an error state if you add that to the component
+                return;
+            }
+
+            // Wait before retrying (exponential backoff)
+            const delay = BASE_DELAY * Math.pow(2, attempt);
+            logger.info(`Retrying anonymous sign-in in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
     }
 }
 
