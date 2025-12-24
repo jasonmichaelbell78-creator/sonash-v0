@@ -705,10 +705,38 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
                 await addToBatch(targetProfileRef, mergeData, { merge: true });
             }
 
-            // Execute all batches sequentially
-            // Note: Not fully atomic across batches, but better than failing entirely
-            for (let i = 0; i < batches.length; i++) {
-                await batches[i].commit();
+            // Execute all batches sequentially with error tracking
+            // Note: Not fully atomic across batches - if a later batch fails,
+            // earlier batches cannot be rolled back (Firestore limitation).
+            // We track partial success to provide detailed error information.
+            let committedBatches = 0;
+            try {
+                for (let i = 0; i < batches.length; i++) {
+                    await batches[i].commit();
+                    committedBatches++;
+                }
+            } catch (batchError) {
+                // Partial migration occurred - some batches succeeded, others failed
+                logSecurityEvent("PARTIAL_MIGRATION_FAILURE", "migrateAnonymousUserData",
+                    `Migration partially failed: ${committedBatches}/${batches.length} batches committed`,
+                    {
+                        metadata: {
+                            anonymousUid: data.anonymousUid,
+                            targetUid: data.targetUid,
+                            totalBatches: batches.length,
+                            successfulBatches: committedBatches,
+                            failedAtBatch: committedBatches + 1,
+                            error: String(batchError),
+                        },
+                        captureToSentry: true
+                    }
+                );
+
+                // Throw with detailed information about partial success
+                throw new HttpsError(
+                    "internal",
+                    `Migration partially completed: ${committedBatches}/${batches.length} batches succeeded. Some data may not have been transferred.`
+                );
             }
 
             logSecurityEvent("DATA_MIGRATION_SUCCESS", "migrateAnonymousUserData",
