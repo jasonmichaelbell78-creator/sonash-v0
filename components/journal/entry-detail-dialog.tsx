@@ -23,15 +23,15 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
                     </button>
                 </div>
                 <div className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">
-                    {entry.type === 'mood' && (
+                    {entry.type === 'mood' && entry.data && (
                         <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
-                            <span className="text-4xl block mb-2">{entry.data.mood}</span>
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Feeling (Intensity: {entry.data.intensity}/10)</span>
-                            {entry.data.note && <p className="mt-2 text-sm text-slate-600">{entry.data.note}</p>}
+                            <span className="text-4xl block mb-2">{entry.data?.mood ?? '😐'}</span>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Feeling (Intensity: {entry.data?.intensity ?? 5}/10)</span>
+                            {entry.data?.note && <p className="mt-2 text-sm text-slate-600">{entry.data.note}</p>}
                         </div>
                     )}
 
-                    {entry.type === 'gratitude' && (
+                    {entry.type === 'gratitude' && entry.data?.items && (
                         <div>
                             <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
                             <ul className="list-disc pl-5">
@@ -42,27 +42,27 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
                         </div>
                     )}
 
-                    {entry.type === 'inventory' && (
+                    {entry.type === 'inventory' && entry.data && (
                         <div className="space-y-4">
-                            <div><span className="font-bold">Resentments:</span> {entry.data.resentments}</div>
-                            <div><span className="font-bold">Dishonesty:</span> {entry.data.dishonesty}</div>
-                            <div><span className="font-bold">Apologies:</span> {entry.data.apologies}</div>
-                            <div><span className="font-bold">Successes:</span> {entry.data.successes}</div>
+                            <div><span className="font-bold">Resentments:</span> {entry.data?.resentments ?? 'N/A'}</div>
+                            <div><span className="font-bold">Dishonesty:</span> {entry.data?.dishonesty ?? 'N/A'}</div>
+                            <div><span className="font-bold">Apologies:</span> {entry.data?.apologies ?? 'N/A'}</div>
+                            <div><span className="font-bold">Successes:</span> {entry.data?.successes ?? 'N/A'}</div>
                         </div>
                     )}
 
-                    {(entry.type === 'free-write' || entry.type === 'meeting-note') && (
+                    {(entry.type === 'free-write' || entry.type === 'meeting-note') && entry.data && (
                         <>
-                            {entry.data.title && <h4 className="font-bold text-xl mb-2 font-heading">{entry.data.title}</h4>}
-                            {entry.data.content}
+                            {entry.data?.title && <h4 className="font-bold text-xl mb-2 font-heading">{entry.data.title}</h4>}
+                            {entry.data?.content ?? ''}
                         </>
                     )}
 
-                    {entry.type === 'spot-check' && (
+                    {entry.type === 'spot-check' && entry.data && (
                         <div className="space-y-2">
-                            <div><span className="font-bold">Feelings:</span> {entry.data.feelings?.join(', ')}</div>
-                            <div><span className="font-bold">Absolutes:</span> {entry.data.absolutes?.join(', ')}</div>
-                            {entry.data.action && <div><span className="font-bold">Action:</span> {entry.data.action}</div>}
+                            <div><span className="font-bold">Feelings:</span> {entry.data?.feelings?.join(', ') ?? 'N/A'}</div>
+                            <div><span className="font-bold">Absolutes:</span> {entry.data?.absolutes?.join(', ') ?? 'N/A'}</div>
+                            {entry.data?.action && <div><span className="font-bold">Action:</span> {entry.data.action}</div>}
                         </div>
                     )}
 
