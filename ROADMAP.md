@@ -438,6 +438,47 @@ All admin Cloud Functions MUST:
 - 8 new files (6 components + 2 hooks)
 - 1 major refactor (`components/notebook/pages/today-page.tsx`)
 
+### Today Page Mobile Layout Reordering (📋 HIGH PRIORITY - Next Up)
+
+**Priority:** High | **Effort:** Low-Medium | **Value:** High — improves mobile UX flow
+
+**Objective:** Reorder Today page components on mobile to follow a more logical progression from quick info to detailed reflection.
+
+**Current Mobile Order:**
+1. Check-In (mood, cravings, used)
+2. HALT Check
+3. "I Made It Through Today" button
+4. Weekly Stats
+5. Time Tracker
+6. Daily Quote
+7. Today's Reading
+8. Recovery Notepad
+
+**Desired Mobile Order:**
+1. **Time Tracker** (clean time display)
+2. **Daily Quote** (inspiration)
+3. **Today's Reading** (external links)
+4. **Check-In** (mood, cravings, used)
+5. **HALT Check** (self-assessment)
+6. **"I Made It Through Today"** (celebration button)
+7. **Weekly Stats** (progress summary)
+8. **Recovery Notepad** (free-form journaling)
+
+**Rationale:**
+- Start with quick, passive content (tracker, quote, reading)
+- Move to active engagement (check-in, HALT)
+- End with reflection tools (notepad)
+- Maintains 2-column desktop grid layout
+
+**Technical Approach:**
+- Use CSS flexbox with `order` property on mobile
+- Preserve `md:grid md:grid-cols-2` on desktop
+- Individual `order-X` classes per component (avoid wrapper divs that create layout gaps)
+- Test thoroughly to prevent desktop layout regression
+
+**Previous Attempt:** Dec 23, 2025 - Caused desktop layout gaps, reverted
+**Next Attempt:** Use more conservative approach with minimal DOM changes
+
 ### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High
