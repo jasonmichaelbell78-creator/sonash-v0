@@ -39,7 +39,7 @@ export function EnhancedMoodSelector({ value, onChange, showKeyboardShortcuts = 
   }, [showKeyboardShortcuts, onChange])
 
   return (
-    <div className="overflow-visible p-2 -m-2">
+    <div className="overflow-visible p-4 -m-4">
       <div className="flex justify-between gap-2 mb-2 overflow-visible" role="group" aria-label="Mood selection">
         {moods.map((m) => {
           const isSelected = value === m.id
