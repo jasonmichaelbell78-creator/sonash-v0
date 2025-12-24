@@ -63,11 +63,28 @@ export const DEBOUNCE_DELAYS = {
 } as const
 
 /**
+ * Firestore query limits
+ */
+export const QUERY_LIMITS = {
+  HISTORY_MAX: 30, // Max history entries to fetch
+  JOURNAL_MAX: 100, // Max journal entries to fetch
+  INVENTORY_MAX: 50, // Max inventory entries to fetch
+} as const
+
+/**
  * Rate limiting configuration
  * All rate limits use a sliding window approach
  */
 export const RATE_LIMITS = {
   SAVE_DAILY_LOG: {
+    MAX_CALLS: 10,
+    WINDOW_MS: 60000, // 10 calls per minute
+  },
+  SAVE_JOURNAL: {
+    MAX_CALLS: 10,
+    WINDOW_MS: 60000, // 10 calls per minute
+  },
+  SAVE_INVENTORY: {
     MAX_CALLS: 10,
     WINDOW_MS: 60000, // 10 calls per minute
   },
@@ -79,6 +96,16 @@ export const RATE_LIMITS = {
     MAX_CALLS: 30,
     WINDOW_MS: 60000, // 30 reads per minute
   },
+} as const
+
+/**
+ * Timeout values (in milliseconds)
+ */
+export const TIMEOUTS = {
+  NETWORK_REQUEST: 5000, // 5 seconds for network requests
+  DEBOUNCE_SHORT: 300, // 300ms for search/filter debounce
+  DEBOUNCE_MEDIUM: 1000, // 1 second for auto-save
+  RETRY_DELAY_BASE: 1000, // Base delay for exponential backoff (1s, 2s, 4s...)
 } as const
 
 /**
