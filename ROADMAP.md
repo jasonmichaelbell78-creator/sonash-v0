@@ -419,17 +419,19 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Reports:** R6 (1 model)
   - **Effort:** 30 minutes
 
-- ⏳ **M10: Cloud Functions Excluded from ESLint** (eslint.config.mjs:17)
+- ✅ **M10: Cloud Functions Excluded from ESLint** (eslint.config.mjs:17)
   - **Issue:** `functions/**` directory excluded from linting
   - **Impact:** Security-critical backend code not linted; bugs undetected
   - **Fix:** Create separate ESLint config for functions or include in main config
+  - **Status:** COMPLETED - Removed from ignore list, backend now linted
   - **Reports:** R6 (1 model)
   - **Effort:** 1 hour
 
-- ⏳ **M11: generateSearchableText XSS Risk** (hooks/use-journal.ts:42-77)
+- ✅ **M11: generateSearchableText XSS Risk** (hooks/use-journal.ts:42-77)
   - **Issue:** Concatenates user input without sanitization; stored XSS if rendered in admin panel
   - **Impact:** Potential stored XSS if searchable text displayed without escaping
   - **Fix:** Sanitize input or ensure all rendering uses proper escaping
+  - **Status:** COMPLETED - Created sanitizeForSearch() function to strip HTML/JS
   - **Reports:** R6 (1 model)
   - **Effort:** 1 hour
 
@@ -460,10 +462,11 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Action:** Documentation issue, not a vulnerability
   - **Reports:** R4 (1 model)
 
-- ⏳ **M16: getUserProfile Returns Null for Both Not-Found and Error** (lib/db/users.ts:83-99)
+- ✅ **M16: getUserProfile Returns Null for Both Not-Found and Error** (lib/db/users.ts:83-99)
   - **Issue:** Function returns `null` for both "profile not found" and "error fetching profile"
   - **Impact:** Real errors silently swallowed; network errors appear same as new users
   - **Fix:** Return discriminated union type `ProfileResult`
+  - **Status:** COMPLETED - Created ProfileResult type with success/not-found/error cases
   - **Reports:** R5 (1 model)
   - **Effort:** 1 hour
 
@@ -488,8 +491,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Effort:** 5 minutes
   - **Status:** COMPLETED - Removed duplicate comment
 
-- ⏳ **L5: Record<string, any> Loses Type Safety** (functions/src/admin.ts:492, functions/src/index.ts:492)
+- ✅ **L5: Record<string, any> Loses Type Safety** (functions/src/admin.ts:492, functions/src/index.ts:492)
   - **Fix:** Define `MigrationMergeData` interface
+  - **Status:** COMPLETED - Created MigrationMergeData interface for type-safe migration
   - **Effort:** 30 minutes
 
 - ❌ **L8: Dead getMoodEmoji Function** (components/journal/entry-card.tsx:39-46)
@@ -524,9 +528,10 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Effort:** 30 minutes
   - **Status:** FALSE POSITIVE - These types serve different purposes (legacy vs new journal system) and must coexist during migration
 
-- ⏳ **L9: Magic Numbers Throughout** (multiple files)
+- ✅ **L9: Magic Numbers Throughout** (multiple files)
   - **Issue:** `limit(100)`, `limit(30)`, `points: 10`, `duration: 60`, `timeout: 5000`
   - **Fix:** Extract to named constants in `lib/constants.ts`
+  - **Status:** COMPLETED - Created QUERY_LIMITS and TIMEOUTS constants
   - **Effort:** 1 hour
 
 **Documentation** (2-4 hr effort)
@@ -544,19 +549,20 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ Already Fixed (Pre-review): 5 issues (C4, H7, H8, M7, M12)
 - ✅ Completed Dec 24 (P0): 4 issues (C1, C2, C5, M6)
 - ✅ Completed Dec 24 (P1): 6 issues (H1, H2, H3, H4, H5, H6)
-- ✅ Completed Dec 24 (P2): 8 issues (M4, M5, M9, M13, L1, L2, L4, L6)
+- ✅ Completed Dec 24 (P2): 13 issues (M4, M5, M9, M10, M11, M13, M16, L1, L2, L4, L5, L6, L9)
 - ⚠️ False Positives: 5 issues (C1, C2, C5, L7, L8 - AI models had outdated knowledge or incorrect analysis)
 - ⏸️ Deferred: 1 issue (C3 - App Check)
-- ⏳ Planned: 13 medium/low priority issues
+- ⏳ Planned: 8 medium/low priority issues remaining
 - ℹ️ Documentation Only: 1 issue (M15)
 
 **Actual Time Spent:**
 - P0 (Immediate): ✅ COMPLETE - 30 min (false positives + dependency cleanup)
 - P1 (Short-term): ✅ COMPLETE - ~7.5 hours (6 issues: H1=2h, H2=0.5h, H3=2h, H4=2h, H5=1h, H6=1h)
-- P2 (Medium-term): 🔄 IN PROGRESS - ~3.5 hours spent (8 issues: M4=20min, M5=20min, M9=30min, M13=1h, L1=5min, L2=5min, L4=5min, L6=5min)
-  - ⏳ Remaining: ~13 hours (13 issues remaining: M1, M2, M3, M10, M11, M14, M16, M17, L3, L5, L9, L10, L11)
+- P2 (Medium-term): 🔄 IN PROGRESS - ~7 hours spent (13 issues completed)
+  - Completed: M4, M5, M9, M10, M11, M13, M16, L1, L2, L4, L5, L6, L9
+  - ⏳ Remaining: ~9 hours (8 issues: M1, M2, M3, M14, M17, L3, L10, L11)
 - P3 (Low priority): ⏳ PLANNED - Included in P2 breakdown above
-- **Total Completed: ~11.5 hours (14 real issues + 5 false positives)** | **Total Remaining: ~13 hours** (down from ~32-46 hours)
+- **Total Completed: ~15 hours (19 real issues + 5 false positives)** | **Total Remaining: ~9 hours** (down from ~32-46 hours)
 
 ---
 
