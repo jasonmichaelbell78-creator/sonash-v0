@@ -35,6 +35,7 @@ import { logger as defaultLogger, maskIdentifier } from "./logger"
 import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
 import { buildPath, QUERY_LIMITS } from "./constants"
 import { getTodayDateId } from "./utils/date-utils"
+import { retryCloudFunction } from "./utils/retry"
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
 
 // Re-export types for backwards compatibility
@@ -148,7 +149,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           hasContent: !!data.content,
         })
 
-        await saveDailyLogFn(payload)
+        // Retry Cloud Function call with exponential backoff for network failures
+        await retryCloudFunction(
+          saveDailyLogFn,
+          payload,
+          { maxRetries: 3, functionName: 'saveDailyLog' }
+        )
 
         deps.logger.info("Daily log saved via Cloud Function", {
           userId: maskIdentifier(userId),

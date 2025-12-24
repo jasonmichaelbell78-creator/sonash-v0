@@ -16,9 +16,9 @@ import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema } from "./schemas";
-import { ZodError } from "zod";
 import { initSentry, logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
+import { withSecurityChecks } from "./security-wrapper";
 
 // Type-safe interface for migration merge data
 interface MigrationMergeData {
@@ -58,152 +58,73 @@ interface DailyLogData {
 
 /**
  * Callable Function: Save Daily Log with Rate Limiting
- * 
- * Security Layers:
- * 1. Authentication required (context.auth)
+ *
+ * Security Layers (handled by withSecurityChecks):
+ * 1. Authentication required
  * 2. Rate limiting (10 req/min per user)
- * 3. App Check verification (context.app)
- * 4. Input validation
+ * 3. App Check verification
+ * 4. Zod input validation
  * 5. Authorization (user can only write own data)
  * 6. Server-side timestamp (prevents clock manipulation)
  */
 export const saveDailyLog = onCall<DailyLogData>(
-    async (request) => {
-        const { data, app, auth } = request;
+    async (request) => withSecurityChecks(
+        request,
+        {
+            functionName: 'saveDailyLog',
+            rateLimiter: saveDailyLogLimiter,
+            validationSchema: dailyLogSchema,
+        },
+        async ({ data, userId }) => {
+            const { date, content, mood, cravings, used } = data;
 
-        // 1. Authenticate user
-        if (!auth) {
-            logSecurityEvent(
-                "AUTH_FAILURE",
-                "saveDailyLog",
-                "Unauthenticated request attempted"
-            );
-            throw new HttpsError(
-                "unauthenticated",
-                "You must be signed in to call this function."
-            );
-        }
+            // Save to Firestore using Admin SDK (bypasses security rules)
+            try {
+                const docRef = admin
+                    .firestore()
+                    .collection("users")
+                    .doc(userId)
+                    .collection("daily_logs")
+                    .doc(date);
 
-        const userId = auth.uid;
-
-        // 2. Check rate limit (server-side, cannot be bypassed)
-        // Uses Firestore for persistence across function instances
-        try {
-            await saveDailyLogLimiter.consume(userId, "saveDailyLog");
-        } catch (rateLimitError) {
-            const errorMessage = rateLimitError instanceof Error
-                ? rateLimitError.message
-                : "Rate limit exceeded (10 req/min)";
-
-            logSecurityEvent(
-                "RATE_LIMIT_EXCEEDED",
-                "saveDailyLog",
-                errorMessage,
-                { userId }
-            );
-            throw new HttpsError(
-                "resource-exhausted",
-                errorMessage
-            );
-        }
-
-        // 3. Verify App Check token (bot protection)
-        if (!app) {
-            logSecurityEvent(
-                "APP_CHECK_FAILURE",
-                "saveDailyLog",
-                "App Check token missing or invalid",
-                { userId }
-            );
-            throw new HttpsError(
-                "failed-precondition",
-                "App Check verification failed. Please refresh the page."
-            );
-        }
-
-        // 4. Validate input data using Zod
-        let validatedData;
-        try {
-            validatedData = dailyLogSchema.parse(data);
-        } catch (error) {
-            if (error instanceof ZodError) {
-                const errorMessages = error.issues.map((e) => e.message).join(", ");
-                logSecurityEvent(
-                    "VALIDATION_FAILURE",
-                    "saveDailyLog",
-                    `Zod validation failed: ${errorMessages}`,
-                    { userId, metadata: { issues: error.issues } }
+                await docRef.set(
+                    {
+                        date,
+                        content,
+                        mood: mood || null,
+                        cravings: cravings || false,
+                        used: used || false,
+                        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
                 );
+
+                logSecurityEvent(
+                    "SAVE_SUCCESS",
+                    "saveDailyLog",
+                    "Journal saved successfully",
+                    { userId, severity: "INFO" }
+                );
+
+                return {
+                    success: true,
+                    message: "Journal saved successfully",
+                };
+            } catch (error) {
+                logSecurityEvent(
+                    "SAVE_FAILURE",
+                    "saveDailyLog",
+                    "Failed to save to Firestore",
+                    { userId, metadata: { error: String(error) }, captureToSentry: true }
+                );
+
                 throw new HttpsError(
-                    "invalid-argument",
-                    "Validation failed: " + errorMessages
+                    "internal",
+                    "Failed to save journal. Please try again."
                 );
             }
-            throw error;
         }
-
-        const { date, content, mood, cravings, used } = validatedData;
-
-        // 5. Server-side authorization check
-        if (data.userId && data.userId !== userId) {
-            logSecurityEvent(
-                "AUTHORIZATION_FAILURE",
-                "saveDailyLog",
-                "Attempted to write to another user's data",
-                { userId, metadata: { attemptedUserId: data.userId } }
-            );
-            throw new HttpsError(
-                "permission-denied",
-                "Cannot write to another user's data"
-            );
-        }
-
-        // 6. Save to Firestore using Admin SDK (bypasses security rules)
-        try {
-            const docRef = admin
-                .firestore()
-                .collection("users")
-                .doc(userId)
-                .collection("daily_logs")
-                .doc(date);
-
-            await docRef.set(
-                {
-                    date,
-                    content,
-                    mood: mood || null,
-                    cravings: cravings || false,
-                    used: used || false,
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                },
-                { merge: true }
-            );
-
-            logSecurityEvent(
-                "SAVE_SUCCESS",
-                "saveDailyLog",
-                "Journal saved successfully",
-                { userId, severity: "INFO" }
-            );
-
-            return {
-                success: true,
-                message: "Journal saved successfully",
-            };
-        } catch (error) {
-            logSecurityEvent(
-                "SAVE_FAILURE",
-                "saveDailyLog",
-                "Failed to save to Firestore",
-                { userId, metadata: { error: String(error) }, captureToSentry: true }
-            );
-
-            throw new HttpsError(
-                "internal",
-                "Failed to save journal. Please try again."
-            );
-        }
-    }
+    )
 );
 
 // Initialize rate limiter for journal entries
@@ -227,160 +148,82 @@ interface JournalEntryData {
 
 /**
  * Callable Function: Save Journal Entry with Rate Limiting
- * 
- * Security Layers:
- * 1. Authentication required (context.auth)
+ *
+ * Security Layers (handled by withSecurityChecks):
+ * 1. Authentication required
  * 2. Rate limiting (10 req/min per user)
- * 3. App Check verification (context.app)
- * 4. Input validation (Zod schema)
+ * 3. App Check verification
+ * 4. Zod input validation
  * 5. Authorization (user can only write own data)
  * 6. Server-side timestamp (prevents clock manipulation)
  */
 export const saveJournalEntry = onCall<JournalEntryData>(
-    async (request) => {
-        const { data, app, auth } = request;
+    async (request) => withSecurityChecks(
+        request,
+        {
+            functionName: 'saveJournalEntry',
+            rateLimiter: saveJournalEntryLimiter,
+            validationSchema: journalEntrySchema,
+        },
+        async ({ data, userId }) => {
+            const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
 
-        // 1. Authenticate user
-        if (!auth) {
-            logSecurityEvent(
-                "AUTH_FAILURE",
-                "saveJournalEntry",
-                "Unauthenticated request attempted"
-            );
-            throw new HttpsError(
-                "unauthenticated",
-                "You must be signed in to call this function."
-            );
-        }
+            // Save to Firestore using Admin SDK (bypasses security rules)
+            try {
+                const docRef = admin
+                    .firestore()
+                    .collection("users")
+                    .doc(userId)
+                    .collection("journal")
+                    .doc(); // Auto-generate ID
 
-        const userId = auth.uid;
+                const journalEntry: Record<string, unknown> = {
+                    userId,
+                    type,
+                    data: entryData,
+                    dateLabel,
+                    isPrivate: isPrivate !== undefined ? isPrivate : true,
+                    isSoftDeleted: false,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                };
 
-        // 2. Check rate limit (server-side, cannot be bypassed)
-        try {
-            await saveJournalEntryLimiter.consume(userId, "saveJournalEntry");
-        } catch (rateLimitError) {
-            const errorMessage = rateLimitError instanceof Error
-                ? rateLimitError.message
-                : "Rate limit exceeded (10 req/min)";
+                // Add optional fields if present
+                if (searchableText) journalEntry.searchableText = searchableText;
+                if (tags) journalEntry.tags = tags;
+                if (hasCravings !== undefined) journalEntry.hasCravings = hasCravings;
+                if (hasUsed !== undefined) journalEntry.hasUsed = hasUsed;
+                if (mood !== undefined) journalEntry.mood = mood;
 
-            logSecurityEvent(
-                "RATE_LIMIT_EXCEEDED",
-                "saveJournalEntry",
-                errorMessage,
-                { userId }
-            );
-            throw new HttpsError(
-                "resource-exhausted",
-                errorMessage
-            );
-        }
+                await docRef.set(journalEntry);
 
-        // 3. Verify App Check token (bot protection)
-        if (!app) {
-            logSecurityEvent(
-                "APP_CHECK_FAILURE",
-                "saveJournalEntry",
-                "App Check token missing or invalid",
-                { userId }
-            );
-            throw new HttpsError(
-                "failed-precondition",
-                "App Check verification failed. Please refresh the page."
-            );
-        }
-
-        // 4. Validate input data using Zod
-        let validatedData;
-        try {
-            validatedData = journalEntrySchema.parse(data);
-        } catch (error) {
-            if (error instanceof ZodError) {
-                const errorMessages = error.issues.map((e) => e.message).join(", ");
                 logSecurityEvent(
-                    "VALIDATION_FAILURE",
+                    "SAVE_SUCCESS",
                     "saveJournalEntry",
-                    `Zod validation failed: ${errorMessages}`,
-                    { userId, metadata: { issues: error.issues } }
+                    "Journal entry saved successfully",
+                    { userId, severity: "INFO" }
                 );
+
+                return {
+                    success: true,
+                    message: "Journal entry saved successfully",
+                    entryId: docRef.id,
+                };
+            } catch (error) {
+                logSecurityEvent(
+                    "SAVE_FAILURE",
+                    "saveJournalEntry",
+                    "Failed to save to Firestore",
+                    { userId, metadata: { error: String(error) }, captureToSentry: true }
+                );
+
                 throw new HttpsError(
-                    "invalid-argument",
-                    "Validation failed: " + errorMessages
+                    "internal",
+                    "Failed to save journal entry. Please try again."
                 );
             }
-            throw error;
         }
-
-        const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = validatedData;
-
-        // 5. Server-side authorization check
-        if (data.userId && data.userId !== userId) {
-            logSecurityEvent(
-                "AUTHORIZATION_FAILURE",
-                "saveJournalEntry",
-                "Attempted to write to another user's data",
-                { userId, metadata: { attemptedUserId: data.userId } }
-            );
-            throw new HttpsError(
-                "permission-denied",
-                "Cannot write to another user's data"
-            );
-        }
-
-        // 6. Save to Firestore using Admin SDK (bypasses security rules)
-        try {
-            const docRef = admin
-                .firestore()
-                .collection("users")
-                .doc(userId)
-                .collection("journal")
-                .doc(); // Auto-generate ID
-
-            const journalEntry: Record<string, unknown> = {
-                userId,
-                type,
-                data: entryData,
-                dateLabel,
-                isPrivate: isPrivate !== undefined ? isPrivate : true,
-                isSoftDeleted: false,
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-            };
-
-            // Add optional fields if present
-            if (searchableText) journalEntry.searchableText = searchableText;
-            if (tags) journalEntry.tags = tags;
-            if (hasCravings !== undefined) journalEntry.hasCravings = hasCravings;
-            if (hasUsed !== undefined) journalEntry.hasUsed = hasUsed;
-            if (mood !== undefined) journalEntry.mood = mood;
-
-            await docRef.set(journalEntry);
-
-            logSecurityEvent(
-                "SAVE_SUCCESS",
-                "saveJournalEntry",
-                "Journal entry saved successfully",
-                { userId, severity: "INFO" }
-            );
-
-            return {
-                success: true,
-                message: "Journal entry saved successfully",
-                entryId: docRef.id,
-            };
-        } catch (error) {
-            logSecurityEvent(
-                "SAVE_FAILURE",
-                "saveJournalEntry",
-                "Failed to save to Firestore",
-                { userId, metadata: { error: String(error) }, captureToSentry: true }
-            );
-
-            throw new HttpsError(
-                "internal",
-                "Failed to save journal entry. Please try again."
-            );
-        }
-    }
+    )
 );
 
 
@@ -396,7 +239,7 @@ const saveInventoryEntryLimiter = new FirestoreRateLimiter({
  * Saves spot-check, night-review, and gratitude inventory entries
  * with server-side validation and rate limiting.
  *
- * Security Layers:
+ * Security Layers (handled by withSecurityChecks):
  * 1. Authentication required
  * 2. Rate limiting (10 req/min)
  * 3. App Check verification
@@ -405,162 +248,88 @@ const saveInventoryEntryLimiter = new FirestoreRateLimiter({
  * 6. Audit logging
  */
 export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
-    async (request) => {
-        const { data, app, auth } = request;
+    async (request) => withSecurityChecks(
+        request,
+        {
+            functionName: 'saveInventoryEntry',
+            rateLimiter: saveInventoryEntryLimiter,
+            validationSchema: inventoryEntrySchema,
+        },
+        async ({ data, userId }) => {
+            const { type, data: entryData, tags } = data;
 
-        // 1. Authentication check
-        if (!auth) {
-            logSecurityEvent(
-                "AUTH_FAILURE",
-                "saveInventoryEntry",
-                "Unauthenticated request"
-            );
-            throw new HttpsError(
-                "unauthenticated",
-                "You must be signed in to save inventory entries."
-            );
-        }
+            // Helper to remove undefined values (Firestore doesn't support them)
+            const sanitizeData = (data: unknown): unknown => {
+                if (Array.isArray(data)) {
+                    return data.map(sanitizeData);
+                }
+                if (data !== null && typeof data === 'object') {
+                    return Object.entries(data as Record<string, unknown>).reduce(
+                        (acc: Record<string, unknown>, [key, value]) => {
+                            if (value !== undefined) {
+                                acc[key] = sanitizeData(value);
+                            }
+                            return acc;
+                        },
+                        {} as Record<string, unknown>
+                    );
+                }
+                return data;
+            };
 
-        const userId = auth.uid;
+            // Save to Firestore using Admin SDK (bypasses security rules)
+            try {
+                const docRef = admin
+                    .firestore()
+                    .collection("users")
+                    .doc(userId)
+                    .collection("inventoryEntries")
+                    .doc(); // Auto-generate ID
 
-        // 2. Rate limit check (10 req/min)
-        try {
-            await saveInventoryEntryLimiter.consume(userId, "saveInventoryEntry");
-        } catch (rateLimitError) {
-            const errorMessage = rateLimitError instanceof Error
-                ? rateLimitError.message
-                : "Too many requests. Please try again later.";
-            logSecurityEvent(
-                "RATE_LIMIT_EXCEEDED",
-                "saveInventoryEntry",
-                errorMessage,
-                { userId }
-            );
-            throw new HttpsError("resource-exhausted", errorMessage);
-        }
+                // Get today's date in YYYY-MM-DD format (UTC)
+                const now = new Date();
+                const dateId = now.toISOString().split('T')[0];
 
-        // 3. Verify App Check token (bot protection)
-        if (!app) {
-            logSecurityEvent(
-                "APP_CHECK_FAILURE",
-                "saveInventoryEntry",
-                "App Check token missing or invalid",
-                { userId }
-            );
-            throw new HttpsError(
-                "failed-precondition",
-                "App Check verification failed. Please refresh the page."
-            );
-        }
+                const inventoryEntry: Record<string, unknown> = {
+                    id: docRef.id,
+                    userId,
+                    type,
+                    data: sanitizeData(entryData),
+                    tags: tags || [],
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    dateId, // For easy querying by day
+                };
 
-        // 4. Validate input data using Zod
-        let validatedData;
-        try {
-            validatedData = inventoryEntrySchema.parse(data);
-        } catch (error) {
-            if (error instanceof ZodError) {
-                const errorMessages = error.issues.map((e) => e.message).join(", ");
+                await docRef.set(inventoryEntry);
+
                 logSecurityEvent(
-                    "VALIDATION_FAILURE",
+                    "SAVE_SUCCESS",
                     "saveInventoryEntry",
-                    `Zod validation failed: ${errorMessages}`,
-                    { userId, metadata: { issues: error.issues } }
+                    "Inventory entry saved successfully",
+                    { userId, severity: "INFO", metadata: { type } }
                 );
+
+                return {
+                    success: true,
+                    message: "Inventory entry saved successfully",
+                    entryId: docRef.id,
+                };
+            } catch (error) {
+                logSecurityEvent(
+                    "SAVE_FAILURE",
+                    "saveInventoryEntry",
+                    "Failed to save to Firestore",
+                    { userId, metadata: { error: String(error) }, captureToSentry: true }
+                );
+
                 throw new HttpsError(
-                    "invalid-argument",
-                    "Validation failed: " + errorMessages
+                    "internal",
+                    "Failed to save inventory entry. Please try again."
                 );
             }
-            throw error;
         }
-
-        const { type, data: entryData, tags, userId: requestUserId } = validatedData;
-
-        // 5. Server-side authorization check
-        if (requestUserId && requestUserId !== userId) {
-            logSecurityEvent(
-                "AUTHORIZATION_FAILURE",
-                "saveInventoryEntry",
-                "Attempted to write to another user's data",
-                { userId, metadata: { attemptedUserId: requestUserId } }
-            );
-            throw new HttpsError(
-                "permission-denied",
-                "Cannot write to another user's data"
-            );
-        }
-
-        // Helper to remove undefined values (Firestore doesn't support them)
-        const sanitizeData = (data: unknown): unknown => {
-            if (Array.isArray(data)) {
-                return data.map(sanitizeData);
-            }
-            if (data !== null && typeof data === 'object') {
-                return Object.entries(data as Record<string, unknown>).reduce(
-                    (acc: Record<string, unknown>, [key, value]) => {
-                        if (value !== undefined) {
-                            acc[key] = sanitizeData(value);
-                        }
-                        return acc;
-                    },
-                    {} as Record<string, unknown>
-                );
-            }
-            return data;
-        };
-
-        // 6. Save to Firestore using Admin SDK (bypasses security rules)
-        try {
-            const docRef = admin
-                .firestore()
-                .collection("users")
-                .doc(userId)
-                .collection("inventoryEntries")
-                .doc(); // Auto-generate ID
-
-            // Get today's date in YYYY-MM-DD format (UTC)
-            const now = new Date();
-            const dateId = now.toISOString().split('T')[0];
-
-            const inventoryEntry: Record<string, unknown> = {
-                id: docRef.id,
-                userId,
-                type,
-                data: sanitizeData(entryData),
-                tags: tags || [],
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                dateId, // For easy querying by day
-            };
-
-            await docRef.set(inventoryEntry);
-
-            logSecurityEvent(
-                "SAVE_SUCCESS",
-                "saveInventoryEntry",
-                "Inventory entry saved successfully",
-                { userId, severity: "INFO", metadata: { type } }
-            );
-
-            return {
-                success: true,
-                message: "Inventory entry saved successfully",
-                entryId: docRef.id,
-            };
-        } catch (error) {
-            logSecurityEvent(
-                "SAVE_FAILURE",
-                "saveInventoryEntry",
-                "Failed to save to Firestore",
-                { userId, metadata: { error: String(error) }, captureToSentry: true }
-            );
-
-            throw new HttpsError(
-                "internal",
-                "Failed to save inventory entry. Please try again."
-            );
-        }
-    }
+    )
 );
 
 

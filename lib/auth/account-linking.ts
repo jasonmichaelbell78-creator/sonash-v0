@@ -20,6 +20,7 @@ import {
 import { auth } from "../firebase";
 import { updateUserProfile } from "../db/users";
 import { logger, maskIdentifier } from "../logger";
+import { retryCloudFunction } from "../utils/retry";
 
 /**
  * Result type for account linking operations
@@ -201,10 +202,12 @@ export async function linkWithEmail(
                 const functions = getFunctions();
                 const migrateData = httpsCallable(functions, "migrateAnonymousUserData");
 
-                const migrationResult = await migrateData({
-                    anonymousUid,
-                    targetUid,
-                });
+                // Retry migration with exponential backoff for network failures
+                const migrationResult = await retryCloudFunction(
+                    migrateData,
+                    { anonymousUid, targetUid },
+                    { maxRetries: 3, functionName: 'migrateAnonymousUserData' }
+                );
 
                 logger.info("Migration successful", {
                     migratedItems: (migrationResult.data as { migratedItems: unknown }).migratedItems,

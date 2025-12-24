@@ -13,6 +13,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, auth } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
 import { QUERY_LIMITS } from '@/lib/constants';
+import { retryCloudFunction } from '@/lib/utils/retry';
 
 // Helper to check for "Today" and "Yesterday"
 export const getRelativeDateLabel = (dateString: string) => {
@@ -232,15 +233,20 @@ export function useJournal() {
             const functions = getFunctions();
             const saveJournalEntry = httpsCallable(functions, 'saveJournalEntry');
 
-            await saveJournalEntry({
-                type,
-                data,
-                dateLabel,
-                isPrivate,
-                searchableText,
-                tags,
-                ...denormalized,
-            });
+            // Retry Cloud Function call with exponential backoff for network failures
+            await retryCloudFunction(
+                saveJournalEntry,
+                {
+                    type,
+                    data,
+                    dateLabel,
+                    isPrivate,
+                    searchableText,
+                    tags,
+                    ...denormalized,
+                },
+                { maxRetries: 3, functionName: 'saveJournalEntry' }
+            );
 
             return { success: true };
         } catch (error: unknown) {
