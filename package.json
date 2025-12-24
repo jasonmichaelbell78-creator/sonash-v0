@@ -13,7 +13,6 @@
     "test:coverage:report": "c8 report"
   },
   "dependencies": {
-    "@dataconnect/generated": "file:src/dataconnect-generated",
     "@emotion/is-prop-valid": "^1.4.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -32,11 +31,11 @@
     "framer-motion": "^12.23.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.454.0",
-    "next": "^16.1.0",
+    "next": "^16.1.1",
     "next-themes": "^0.4.6",
-    "react": "19.2.0",
+    "react": "19.2.3",
     "react-day-picker": "9.8.0",
-    "react-dom": "19.2.0",
+    "react-dom": "19.2.3",
     "react-hook-form": "^7.60.0",
     "react-leaflet": "^5.0.0",
     "react-resizable-panels": "^2.1.7",
@@ -46,7 +45,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.21.0",
     "vaul": "^1.1.2",
-    "zod": "^4.1.13"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

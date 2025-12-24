@@ -272,6 +272,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     // Save an inventory entry (Spot Check, Night Review, etc.)
+    // UPDATED: Now uses Cloud Function for server-side validation and rate limiting
     async saveInventoryEntry(userId: string, entry: {
       type: 'spot-check' | 'night-review' | 'gratitude';
       data: Record<string, unknown>;
@@ -281,45 +282,31 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       deps.assertUserScope({ userId })
 
       try {
-        const collectionPath = `users/${userId}/inventoryEntries`
-        deps.validateUserDocumentPath(userId, collectionPath)
+        // Call Cloud Function instead of direct Firestore write
+        // This provides rate limiting (10 req/min) and server-side validation
+        const { getFunctions, httpsCallable } = await import("firebase/functions")
+        const functions = getFunctions()
+        const saveInventoryFn = httpsCallable(functions, "saveInventoryEntry")
 
-        const entriesRef = deps.collection(deps.db, collectionPath)
-        const newDocRef = deps.doc(entriesRef) // Auto-ID
-
-
-        // Helper to remove undefined values (Firestore doesn't support them)
-        const sanitizeData = (data: unknown): unknown => {
-          if (Array.isArray(data)) {
-            return data.map(sanitizeData)
-          }
-          if (data !== null && typeof data === 'object') {
-            return Object.entries(data as Record<string, unknown>).reduce((acc: Record<string, unknown>, [key, value]) => {
-              if (value !== undefined) {
-                acc[key] = sanitizeData(value)
-              }
-              return acc
-            }, {} as Record<string, unknown>)
-          }
-          return data
-        }
-
-        const payload = {
-          id: newDocRef.id,
-          userId,
+        const result = await saveInventoryFn({
+          userId, // Will be validated server-side
           type: entry.type,
-          data: sanitizeData(entry.data),
+          data: entry.data,
           tags: entry.tags || [],
-          createdAt: deps.serverTimestamp(),
-          updatedAt: deps.serverTimestamp(), // Required by security rules
-          dateId: getTodayDateId(), // For easy querying by day
-        }
+        })
 
-        await deps.setDoc(newDocRef, payload)
-        deps.logger.info("Inventory entry saved", { userId: maskIdentifier(userId), type: entry.type })
-        return newDocRef.id
+        const response = result.data as { success: boolean; entryId: string }
+        deps.logger.info("Inventory entry saved via Cloud Function", {
+          userId: maskIdentifier(userId),
+          type: entry.type,
+          entryId: response.entryId
+        })
+        return response.entryId
       } catch (error) {
-        deps.logger.error("Failed to save inventory entry", { userId: maskIdentifier(userId), error })
+        deps.logger.error("Failed to save inventory entry", {
+          userId: maskIdentifier(userId),
+          error
+        })
         throw error
       }
     },

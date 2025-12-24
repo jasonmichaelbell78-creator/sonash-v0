@@ -24,6 +24,14 @@ export default function AdminPage() {
     const [activeTab, setActiveTab] = useState("dashboard")
 
     useEffect(() => {
+        // Mobile detection - block admin panel on mobile devices
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+            || window.innerWidth < 768;
+        if (isMobile) {
+            setState("mobile");
+            return;
+        }
+
         // Listen for auth state
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             // No user or anonymous user = show login

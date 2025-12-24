@@ -55,15 +55,16 @@ service cloud.firestore {
     }
 
     // ============================================
-    // INVENTORY ENTRIES COLLECTION
+    // INVENTORY ENTRIES COLLECTION (Cloud Functions ONLY)
     // Path: /users/{userId}/inventoryEntries/{entryId}
     // ============================================
     match /users/{userId}/inventoryEntries/{entryId} {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId) 
-                    && request.resource.data.userId == userId;
-      allow update: if isOwner(userId)
-                    && request.resource.data.userId == userId;
+      // SECURITY: All writes MUST go through Cloud Function (saveInventoryEntry)
+      // Cloud Function enforces: rate limiting, Zod validation, App Check
+      // Direct client writes are BLOCKED to prevent bypassing security controls
+      allow create, update: if false;
+      // Keep delete for GDPR data deletion compliance
       allow delete: if isOwner(userId);
     }
 

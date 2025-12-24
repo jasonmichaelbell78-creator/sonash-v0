@@ -205,6 +205,347 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Total Remediation Estimate:** ~110-120 hours across all priorities
 
+### Week 14+: Consolidated 6-AI Code Review Remediation (🔄 In Progress - Dec 23-24, 2025)
+
+*Based on December 23-24, 2025 consolidated multi-AI code review (6 models: Claude Code, Codex, Jules, Kimi K2, Claude, Claude Opus 4.5)*
+
+**Analysis Results:**
+- **Total Raw Findings:** 85 → **~42 Deduplicated Issues**
+- **Consensus Score:** 6.3/10
+- **Report:** See [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)
+
+**Priority Distribution:**
+- Critical: 5 issues (build blockers + security bypasses)
+- High: 8 issues (data loss risks + performance)
+- Medium: 17 issues (code quality + architecture)
+- Low: 10 issues (cleanup + documentation)
+
+#### P0 - Immediate Blockers (Week 14 - Critical)
+
+**Package Version Fixes** (5 min effort)
+- ❌ **C1: Next.js 16.1.0 Does Not Exist** - ✅ **FALSE POSITIVE - COMPLETED Dec 24, 2025**
+  - **Issue:** Review claimed Next.js 16.x doesn't exist; latest stable is 15.x
+  - **Reality:** Next.js 16.1.0 DOES exist (latest is 16.1.1)
+  - **Fix Applied:** Updated to `"next": "^16.1.1"`
+  - **Reports:** All 6 AI models flagged this (all models had outdated knowledge)
+  - **Status:** Packages verified via npm registry, updated to latest patch version
+
+- ❌ **C2: Zod 4.1.13 Does Not Exist** - ✅ **FALSE POSITIVE - COMPLETED Dec 24, 2025**
+  - **Issue:** Review claimed Zod 4.x doesn't exist; latest stable is 3.23.x
+  - **Reality:** Zod 4.1.13 DOES exist (latest is 4.2.1)
+  - **Fix Applied:** Updated to `"zod": "^4.2.1"`
+  - **Reports:** R6 only (single source, incorrect information)
+  - **Status:** Packages verified via npm registry, updated to latest patch version
+
+- 🔄 **C5: React 19 is Release Candidate** - ✅ **FALSE POSITIVE - COMPLETED Dec 24, 2025**
+  - **Issue:** Review claimed React 19.2.0 was RC status as of late 2024
+  - **Reality:** React 19 IS STABLE (latest is 19.2.3)
+  - **Fix Applied:** Updated to `"react": "19.2.3"`, `"react-dom": "19.2.3"`
+  - **Reports:** All 6 AI models flagged this (all models had outdated knowledge)
+  - **Status:** All package versions verified and updated
+
+**Security Bypasses** (2-4 hr effort)
+- ✅ **C4: Journal Collection Bypasses Cloud Functions** - ✅ **ALREADY FIXED**
+  - **Status:** Verified fixed in Week 13 (identical to daily_logs security)
+  - **Cross-reference:** Week 13+ Critical Security Fixes
+
+- ⏸️ **C3: App Check Not Initialized on Client** (lib/firebase.ts)
+  - **Issue:** Cloud Functions enforce App Check, but client never initializes it
+  - **Impact:** All callable functions fail with "App Check verification failed"
+  - **Fix:** Initialize App Check with reCAPTCHA v3 provider
+  - **Status:** Deferred - see M1 Week 1-3 and [recaptcha_removal_guide.md](./recaptcha_removal_guide.md)
+  - **Reports:** R2, R4, R6 (3 models)
+  - **Priority:** P2 - implement after M3+ unless bot abuse becomes significant
+
+#### P1 - Short-Term Fixes (Week 14-15 - High Priority)
+
+**Data Integrity & Migration** (3-4 hr effort)
+- ✅ **H1: Migration Batch Exceeds 500-Operation Limit** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** `migrateAnonymousUserData` aggregates all user documents into single batch
+  - **Impact:** Users with >500 documents experienced failed migrations, data loss
+  - **Fix Applied:** Implemented batch chunking with 499-operation limit per batch
+  - **Implementation:** Changed `forEach` to `for...of`, added `addToBatch` helper that creates new batch when limit reached
+  - **Trade-off:** Not fully atomic across batches (sequential commits), but better than complete failure
+  - **Reports:** R3, R5 (2 models)
+  - **Status:** Supports unlimited document migration, prevents data loss for power users
+
+- ✅ **H4: No Rollback for Migration Failures** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** Batch writes have no rollback mechanism if partially failed
+  - **Impact:** Data corruption or loss during account linking on network failures
+  - **Fix Applied:** Added partial success tracking with detailed error reporting
+  - **Implementation:**
+    * Track successful batch count before each commit
+    * Log PARTIAL_MIGRATION_FAILURE with batch details to Sentry
+    * Return user-facing error: "Migration partially completed: X/Y batches succeeded"
+    * Client-side already shows: "Some data may not have transferred. Please check your journal."
+  - **Limitation:** True rollback impossible (Firestore doesn't support transactions >500 ops)
+  - **Reports:** R6 only
+  - **Status:** Best-effort solution given Firestore constraints; provides visibility into partial migrations
+
+**Error Handling & UX** (3-4 hr effort)
+- ✅ **H5: Auth Error Leaves Indefinite Loading** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** If anonymous sign-in fails repeatedly, UI shows indefinite loading
+  - **Impact:** Users stuck on loading screen if Firebase auth fails
+  - **Fix Applied:** Added retry mechanism with exponential backoff
+  - **Implementation:**
+    * 3 retries with 1s, 2s, 4s delays (exponential backoff)
+    * User-facing error messages after max retries
+    * Detailed logging for each attempt
+    * Sets loading=false after final failure
+  - **Reports:** R5, R6 (2 models)
+  - **Status:** Users no longer stuck on indefinite loading
+
+- ✅ **H6: Silent Data Loss in addEntry** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** `addEntry` catches errors but doesn't notify components of failures
+  - **Impact:** Users believe entries are saved when they may have failed
+  - **Fix Applied:** Changed return type to `Promise<{ success: boolean; error?: string }>`
+  - **Implementation:**
+    * Returns `{ success: true }` on successful save
+    * Returns `{ success: false, error: "message" }` on failure
+    * User-friendly error messages for rate limiting & App Check failures
+    * Components can now show appropriate feedback to users
+  - **Reports:** R6 (1 model)
+  - **Status:** Users now receive clear feedback about save success/failure
+
+**Performance & Memory** (1-2 hr effort)
+- ✅ **H7: Journal Snapshot Listener Memory Leak** - ✅ **ALREADY FIXED**
+  - **Status:** Fixed in Week 10-12 via `isMounted` pattern
+  - **Cross-reference:** Week 10-12 High-Priority Bug Fixes
+
+- ✅ **H8: Journal Query Has No Pagination** - ✅ **ALREADY FIXED**
+  - **Status:** Fixed in Week 10-12 (pagination added, limit 100)
+  - **Cross-reference:** Week 10-12 High-Priority Bug Fixes
+
+**Security Gaps** (2-3 hr effort)
+- ✅ **H3: Inventory Bypasses Rate Limiting** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** Inventory entries written directly from client using `setDoc`
+  - **Impact:** Unprotected against rapid write attacks
+  - **Fix Applied:** Created `saveInventoryEntry` Cloud Function with full security stack
+  - **Implementation:**
+    * Created `inventoryEntrySchema` in functions/src/schemas.ts
+    * Created Cloud Function with rate limiting (10 req/min), Zod validation, App Check
+    * Updated client-side to call Cloud Function via `httpsCallable`
+    * Updated Firestore rules: `allow create, update: if false` (blocks direct writes)
+    * Security layers now consistent: daily_logs, journal, inventory all use Cloud Functions
+  - **Reports:** R3, R5 (2 models)
+  - **Cross-reference:** Week 13+ Missing Rate Limiting
+  - **Status:** Inventory entries now have same security as journal & daily logs
+
+**Admin Panel Issues** (30 min effort)
+- ✅ **H2: Admin Mobile Detection Logic Missing** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** Admin page defines `mobile` state but no detection logic in useEffect
+  - **Impact:** Desktop-only security restriction ineffective
+  - **Fix Applied:** Added mobile detection at start of useEffect
+  - **Implementation:**
+    * User agent regex: `/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)`
+    * Window width check: `window.innerWidth < 768`
+    * Sets state to "mobile" and returns early before auth check
+  - **Reports:** R4 only
+  - **Status:** Desktop-only restriction now enforced properly
+
+#### P2 - Medium-Term Improvements (Week 15-17 - Code Quality)
+
+**Architecture & Maintainability** (6-8 hr effort)
+- ⏳ **M1: Cloud Functions Code Duplication** (functions/src/index.ts)
+  - **Issue:** `saveDailyLog`, `saveJournalEntry`, `migrateAnonymousUserData` have identical boilerplate
+  - **Impact:** Maintenance burden, inconsistent behavior risk
+  - **Fix:** Extract `withSecurityChecks()` wrapper function
+  - **Reports:** R1, R3 (2 models)
+  - **Effort:** 2 hours
+  - **Milestone:** M2 (Architecture Refactor) or M1 cleanup
+
+- ⏳ **M2: FirestoreService is a God Object** (lib/firestore-service.ts)
+  - **Issue:** 300-400+ line file manages all Firestore operations (daily logs, journal, inventory, history)
+  - **Impact:** Hard to test, maintain, and extend; security models obscured
+  - **Fix:** Split into `DailyLogService`, `JournalService`, `InventoryService`
+  - **Reports:** R3, R5, R6 (3 models)
+  - **Effort:** 4 hours
+  - **Milestone:** M2 (Architecture Refactor)
+
+**Error Handling Consistency** (4-6 hr effort)
+- ⏳ **M3: Error Handling Gaps in Contexts** (multiple context files)
+  - **Issue:** Various contexts lack proper error handling (daily-log-context, profile-context, use-journal)
+  - **Impact:** Users see stale data with no feedback; unhandled rejections
+  - **Fix:** Implement consistent error state pattern across all contexts
+  - **Reports:** R1, R2, R4, R5, R6 (5 models - high consensus)
+  - **Effort:** 4 hours
+  - **Priority:** MEDIUM - UX quality
+
+**Bug Fixes** (3-4 hr effort)
+- ⏳ **M4: Meeting Countdown Date Calculation Wrong** (components/widgets/compact-meeting-countdown.tsx:40-56)
+  - **Issue:** Only handles "today" or "tomorrow"; meetings 2+ days away show incorrect countdown
+  - **Impact:** Incorrect time remaining for future meetings
+  - **Fix:** Proper day-of-week calculation with wrap-around
+  - **Reports:** R5 (1 model)
+  - **Effort:** 1 hour
+
+- ⏳ **M5: Missing Null Guards on entry.data** (components/journal/entry-detail-dialog.tsx, entry-feed.tsx)
+  - **Issue:** Direct access to nested properties without null/undefined checks
+  - **Impact:** Application crashes with incomplete or corrupted data
+  - **Fix:** Add optional chaining `entry.data?.mood ?? '😐'`
+  - **Reports:** R5 (1 model)
+  - **Effort:** 2 hours
+
+**Dependencies & Configuration** (1-2 hr effort)
+- ✅ **M6: @dataconnect/generated Path Missing** - ✅ **COMPLETED Dec 24, 2025**
+  - **Issue:** Dependency references `file:src/dataconnect-generated` which doesn't exist
+  - **Impact:** npm install fails for new developers
+  - **Fix Applied:** Removed unused dependency from package.json
+  - **Verification:** Directory doesn't exist, not used in codebase (only in package.json)
+  - **Reports:** R5 (1 model)
+  - **Status:** Dependency removed, npm install successful
+
+- ✅ **M7: Rate Limiter Fail-Closed Strategy** - ✅ **ALREADY FIXED**
+  - **Status:** Fixed in Week 10-12 (changed from fail-open to fail-closed)
+  - **Cross-reference:** Week 10-12 Critical Security Fixes
+
+- ⏳ **M8: Bundle Size with 34 Dependencies** (package.json:16-49)
+  - **Issue:** Heavy libraries (Firebase, Framer Motion, Recharts, React Leaflet)
+  - **Impact:** Slower initial page load, increased bandwidth for mobile users
+  - **Fix:** Audit dependencies, remove unused packages, implement code splitting
+  - **Reports:** R4 (1 model)
+  - **Effort:** 2 hours
+  - **Note:** Code splitting already partially done in Week 10-12
+  - **Milestone:** M2 (Performance optimization)
+
+**Security Hardening** (2-3 hr effort)
+- ⏳ **M9: Rate Limiter Reveals Timing Info** (functions/src/firestore-rate-limiter.ts:64-67)
+  - **Issue:** Error messages reveal exact limits and retry timing
+  - **Impact:** Helps attackers optimize abuse timing
+  - **Fix:** Generic error message + server-side logging only
+  - **Reports:** R6 (1 model)
+  - **Effort:** 30 minutes
+
+- ⏳ **M10: Cloud Functions Excluded from ESLint** (eslint.config.mjs:17)
+  - **Issue:** `functions/**` directory excluded from linting
+  - **Impact:** Security-critical backend code not linted; bugs undetected
+  - **Fix:** Create separate ESLint config for functions or include in main config
+  - **Reports:** R6 (1 model)
+  - **Effort:** 1 hour
+
+- ⏳ **M11: generateSearchableText XSS Risk** (hooks/use-journal.ts:42-77)
+  - **Issue:** Concatenates user input without sanitization; stored XSS if rendered in admin panel
+  - **Impact:** Potential stored XSS if searchable text displayed without escaping
+  - **Fix:** Sanitize input or ensure all rendering uses proper escaping
+  - **Reports:** R6 (1 model)
+  - **Effort:** 1 hour
+
+**Data Handling** (2-3 hr effort)
+- ✅ **M12: Date Timezone Handling Inconsistent** - ✅ **ALREADY ADDRESSED**
+  - **Status:** Addressed via `getTodayDateId()` standardization in Week 10-12
+  - **Cross-reference:** Week 10-12 High-Priority Bug Fixes
+
+- ⏳ **M13: Duplicate Zod Schemas** (functions/src/schemas.ts, functions/src/admin.ts:14-46)
+  - **Issue:** Zod validation schemas duplicated between files
+  - **Impact:** Schema changes must be made in multiple places; validation inconsistencies
+  - **Fix:** Consolidate all schemas in `schemas.ts` and import
+  - **Reports:** R6 (1 model)
+  - **Effort:** 1 hour
+
+- ⏳ **M14: No Retry Logic for Cloud Functions** (lib/firestore-service.ts:151)
+  - **Issue:** Cloud Function calls have no retry logic; single network blip causes failure
+  - **Impact:** Poor UX on unreliable networks; perceived app instability
+  - **Fix:** Implement retry with exponential backoff for transient failures
+  - **Reports:** R6 (1 model)
+  - **Effort:** 2 hours
+
+**Expected Behavior (Documentation Only)**
+- ℹ️ **M15: Client-Side Validation Bypassable** (lib/security/firestore-validation.ts)
+  - **Note:** Expected behavior in defense-in-depth model
+  - **Status:** Server-side enforcement via Cloud Functions and Firestore rules is the actual security boundary
+  - **Action:** Documentation issue, not a vulnerability
+  - **Reports:** R4 (1 model)
+
+- ⏳ **M16: getUserProfile Returns Null for Both Not-Found and Error** (lib/db/users.ts:83-99)
+  - **Issue:** Function returns `null` for both "profile not found" and "error fetching profile"
+  - **Impact:** Real errors silently swallowed; network errors appear same as new users
+  - **Fix:** Return discriminated union type `ProfileResult`
+  - **Reports:** R5 (1 model)
+  - **Effort:** 1 hour
+
+- ⏳ **M17: Onboarding Wizard is 515 Lines** (components/onboarding/onboarding-wizard.tsx)
+  - **Issue:** Single component with 5 different step views embedded inline
+  - **Impact:** Reduced maintainability, harder to test individual steps
+  - **Fix:** Extract each step into own component (WelcomeStep, CleanDateStep, etc.)
+  - **Reports:** R1 (1 model)
+  - **Effort:** 3 hours
+  - **Priority:** LOW - works fine, refactor when needed
+
+#### P3 - Low Priority Cleanup (Week 17+ - Polish)
+
+**Code Cleanup** (1-2 hr effort)
+- ⏳ **L1: Unused `_bounds` Variable** (components/maps/meeting-map.tsx:28)
+  - **Fix:** Remove unused variable entirely
+  - **Effort:** 5 minutes
+
+- ⏳ **L2: Duplicate Comment** (lib/firestore-service.ts:229-230)
+  - **Fix:** Remove duplicate `// Get history of logs` comment
+  - **Effort:** 5 minutes
+
+- ⏳ **L5: Record<string, any> Loses Type Safety** (functions/src/admin.ts:492, functions/src/index.ts:492)
+  - **Fix:** Define `MigrationMergeData` interface
+  - **Effort:** 30 minutes
+
+- ⏳ **L8: Dead getMoodEmoji Function** (components/journal/entry-card.tsx:39-46)
+  - **Fix:** Remove unused function
+  - **Effort:** 5 minutes
+
+**Performance Optimizations** (1-2 hr effort)
+- ⏳ **L3: Leaflet Icons from External CDN** (components/maps/meeting-map.tsx:13-16)
+  - **Issue:** Loading marker icons from CDN on every component mount
+  - **Impact:** Slower rendering, dependency on external CDN
+  - **Fix:** Bundle icons locally or use inline SVG
+  - **Effort:** 1 hour
+
+- ⏳ **L4: Unused rate-limiter-flexible Dependency** (functions/package.json:21)
+  - **Issue:** Package listed but custom `FirestoreRateLimiter` used instead
+  - **Impact:** Bloated function deployment size
+  - **Fix:** Remove unused dependency
+  - **Effort:** 5 minutes
+
+**Configuration Updates** (30 min effort)
+- ⏳ **L6: TypeScript Target es2017 Outdated** (functions/tsconfig.json:11)
+  - **Issue:** Target is `es2017`, but Node 22 supports ES2022+
+  - **Fix:** Update target to `es2022`
+  - **Effort:** 5 minutes
+
+- ⏳ **L7: Duplicate Type Definitions** (types/journal.ts, lib/types/daily-log.ts)
+  - **Issue:** `DailyLog` and `DailyLogEntry` similar but different
+  - **Fix:** Consolidate or add documentation explaining when to use each
+  - **Effort:** 30 minutes
+
+- ⏳ **L9: Magic Numbers Throughout** (multiple files)
+  - **Issue:** `limit(100)`, `limit(30)`, `points: 10`, `duration: 60`, `timeout: 5000`
+  - **Fix:** Extract to named constants in `lib/constants.ts`
+  - **Effort:** 1 hour
+
+**Documentation** (2-4 hr effort)
+- ⏳ **L10: Missing README and Documentation** (repository root)
+  - **Issue:** No comprehensive README, setup instructions, or architecture overview
+  - **Fix:**
+    - Add comprehensive README.md with setup instructions
+    - Create ARCHITECTURE.md explaining split context pattern
+    - Add JSDoc comments to Cloud Functions
+  - **Reports:** R1, R5, R6 (3 models)
+  - **Effort:** 4 hours
+  - **Priority:** LOW - internal project
+
+**Status Summary:**
+- ✅ Already Fixed (Pre-review): 5 issues (C4, H7, H8, M7, M12)
+- ✅ Completed Dec 24 (P0): 4 issues (C1, C2, C5, M6)
+- ✅ Completed Dec 24 (P1): 6 issues (H1, H2, H3, H4, H5, H6)
+- ⚠️ False Positives: 3 issues (C1, C2, C5 - AI models had outdated knowledge)
+- ⏸️ Deferred: 1 issue (C3 - App Check)
+- ⏳ Planned: 21 medium/low priority issues
+- ℹ️ Documentation Only: 1 issue (M15)
+
+**Actual Time Spent:**
+- P0 (Immediate): ✅ COMPLETE - 30 min (false positives + dependency cleanup)
+- P1 (Short-term): ✅ COMPLETE - ~7.5 hours (6 issues: H1=2h, H2=0.5h, H3=2h, H4=2h, H5=1h, H6=1h)
+- P2 (Medium-term): ⏳ PLANNED - ~24-34 hours (21 issues remaining)
+- P3 (Low priority): ⏳ PLANNED - ~8-12 hours (included in P2)
+- **Total Completed: ~8 hours** | **Total Remaining: ~32-46 hours** (down from ~48-69 hours)
+
 ---
 
 ## ⚡ M1.5 - Quick Wins (🔄 In Progress)
@@ -1027,6 +1368,7 @@ All admin Cloud Functions MUST:
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
+- **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report (M1 Week 14+)
 - **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
 - **[SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)** - Phase 1 implementation prompt
 
@@ -1050,6 +1392,7 @@ All admin Cloud Functions MUST:
 
 **Document History:**
 
+- December 24, 2025: Added Week 14+ Consolidated 6-AI Code Review Remediation section - Integrated findings from 6-model consolidated review (Claude Code, Codex, Jules, Kimi K2, Claude, Claude Opus 4.5). 42 deduplicated issues organized by priority (P0-P3): 9 critical/high priority issues requiring action, 5 already fixed, 1 deferred (App Check), 22 medium/low priority planned. Estimated remediation: ~48-69 hours. Report: [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md). M1 progress remains ~85% (new findings extend completion timeline).
 - December 23, 2025: M1.6 updated to v1.4 - Phases 1-3 complete, Today Page Enhancement complete (all 10 UX improvements), added Phase 6 (Customizable Quick Actions). Renamed to "M1.6 - Admin Panel + Today Page Enhancement". Progress updated to ~65%. Overall roadmap progress: ~26%.
 - December 22, 2025: Updated Phase 1 prompt to v1.3 (fail-closed middleware, nodejs runtime, bounded queries, invalid date guards)
 - December 22, 2025: Updated M1.6 to v1.2 spec (server-side middleware, Sentry API in Cloud Function, throttled lastActive, robust job wrapper)

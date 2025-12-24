@@ -176,31 +176,36 @@ export function useJournal() {
         type: JournalEntryType,
         data: Record<string, unknown>,
         isPrivate: boolean = true
-    ) => {
-        const user = auth.currentUser;
-        if (!user) throw new Error("Must be signed in to write in journal.");
-
-        const today = new Date();
-        const dateLabel = today.toLocaleDateString('en-CA'); // "YYYY-MM-DD" local
-
-        // Generate searchable text
-        const searchableText = generateSearchableText(type, data);
-
-        // Generate auto-tags
-        const tags = generateTags(type, data);
-
-        // Denormalized fields for efficient querying
-        const denormalized: Record<string, unknown> = {};
-        if ('cravings' in data) denormalized.hasCravings = data.cravings;
-        if ('used' in data) denormalized.hasUsed = data.used;
-        if ('mood' in data) denormalized.mood = data.mood;
-
-        // Call Cloud Function instead of direct Firestore write
-        // This ensures rate limiting, App Check, and validation are enforced server-side
-        const functions = getFunctions();
-        const saveJournalEntry = httpsCallable(functions, 'saveJournalEntry');
-
+    ): Promise<{ success: boolean; error?: string }> => {
         try {
+            const user = auth.currentUser;
+            if (!user) {
+                return {
+                    success: false,
+                    error: "Must be signed in to write in journal."
+                };
+            }
+
+            const today = new Date();
+            const dateLabel = today.toLocaleDateString('en-CA'); // "YYYY-MM-DD" local
+
+            // Generate searchable text
+            const searchableText = generateSearchableText(type, data);
+
+            // Generate auto-tags
+            const tags = generateTags(type, data);
+
+            // Denormalized fields for efficient querying
+            const denormalized: Record<string, unknown> = {};
+            if ('cravings' in data) denormalized.hasCravings = data.cravings;
+            if ('used' in data) denormalized.hasUsed = data.used;
+            if ('mood' in data) denormalized.mood = data.mood;
+
+            // Call Cloud Function instead of direct Firestore write
+            // This ensures rate limiting, App Check, and validation are enforced server-side
+            const functions = getFunctions();
+            const saveJournalEntry = httpsCallable(functions, 'saveJournalEntry');
+
             await saveJournalEntry({
                 type,
                 data,
@@ -210,19 +215,27 @@ export function useJournal() {
                 tags,
                 ...denormalized,
             });
+
+            return { success: true };
         } catch (error: unknown) {
             // Handle rate limiting and App Check errors with user-friendly messages
+            let errorMessage = 'Failed to save entry. Please try again.';
+
             if (error && typeof error === 'object' && 'code' in error) {
                 const code = (error as { code: string }).code;
                 if (code === 'functions/resource-exhausted') {
-                    throw new Error('Too many requests. Please wait a moment and try again.');
+                    errorMessage = 'Too many requests. Please wait a moment and try again.';
+                } else if (code === 'functions/failed-precondition') {
+                    errorMessage = 'Security verification failed. Please refresh the page.';
                 }
-                if (code === 'functions/failed-precondition') {
-                    throw new Error('Security verification failed. Please refresh the page.');
-                }
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
             }
-            // Re-throw original error if not a known error type
-            throw error;
+
+            return {
+                success: false,
+                error: errorMessage
+            };
         }
     }, []);
 
