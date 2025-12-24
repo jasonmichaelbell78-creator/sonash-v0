@@ -227,7 +227,6 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     // Get history of logs
-    // Get history of logs
     async getHistory(userId: string): Promise<DailyLogHistoryResult> {
       ensureValidUser(userId)
       deps.assertUserScope({ userId })

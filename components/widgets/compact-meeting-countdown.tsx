@@ -37,9 +37,23 @@ export default function CompactMeetingCountdown() {
         const [hours, minutes] = nextMeeting.time.split(':').map(Number)
         const meetingDate = new Date()
 
-        // If meeting is tomorrow
-        if (nextMeeting.day !== today) {
+        // Calculate days until meeting (with wrap-around)
+        const todayIndex = now.getDay()
+        const meetingDayIndex = days.indexOf(nextMeeting.day)
+
+        if (meetingDayIndex === -1) {
+            // Invalid day name, default to tomorrow
             meetingDate.setDate(meetingDate.getDate() + 1)
+        } else if (meetingDayIndex === todayIndex) {
+            // Meeting is today, no date adjustment
+            // (keep current date)
+        } else {
+            // Calculate days until meeting with week wrap-around
+            let daysUntil = meetingDayIndex - todayIndex
+            if (daysUntil < 0) {
+                daysUntil += 7 // Wrap to next week
+            }
+            meetingDate.setDate(meetingDate.getDate() + daysUntil)
         }
 
         meetingDate.setHours(hours, minutes, 0, 0)

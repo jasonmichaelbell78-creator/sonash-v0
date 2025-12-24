@@ -29,26 +29,26 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
                 const query = searchQuery.toLowerCase()
 
                 if (entry.type === 'mood') {
-                    const moodMatch = entry.data.mood.toLowerCase().includes(query)
-                    const noteMatch = entry.data.note?.toLowerCase().includes(query) || false
+                    const moodMatch = entry.data?.mood?.toLowerCase().includes(query) || false
+                    const noteMatch = entry.data?.note?.toLowerCase().includes(query) || false
                     return moodMatch || noteMatch
                 }
 
                 if (entry.type === 'gratitude') {
-                    return entry.data.items.some(item => item.toLowerCase().includes(query))
+                    return entry.data?.items?.some(item => item.toLowerCase().includes(query)) || false
                 }
 
                 if (entry.type === 'inventory') {
-                    const resentments = entry.data.resentments.toLowerCase().includes(query)
-                    const dishonesty = entry.data.dishonesty.toLowerCase().includes(query)
-                    const apologies = entry.data.apologies.toLowerCase().includes(query)
-                    const successes = entry.data.successes.toLowerCase().includes(query)
+                    const resentments = entry.data?.resentments?.toLowerCase().includes(query) || false
+                    const dishonesty = entry.data?.dishonesty?.toLowerCase().includes(query) || false
+                    const apologies = entry.data?.apologies?.toLowerCase().includes(query) || false
+                    const successes = entry.data?.successes?.toLowerCase().includes(query) || false
                     return resentments || dishonesty || apologies || successes
                 }
 
                 if (entry.type === 'free-write' || entry.type === 'meeting-note') {
-                    const titleMatch = entry.data.title.toLowerCase().includes(query)
-                    const contentMatch = entry.data.content.toLowerCase().includes(query)
+                    const titleMatch = entry.data?.title?.toLowerCase().includes(query) || false
+                    const contentMatch = entry.data?.content?.toLowerCase().includes(query) || false
                     return titleMatch || contentMatch
                 }
 

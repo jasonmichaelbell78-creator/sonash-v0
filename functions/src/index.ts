@@ -466,15 +466,15 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             throw error;
         }
 
-        const { type, data: entryData, tags } = validatedData;
+        const { type, data: entryData, tags, userId: requestUserId } = validatedData;
 
         // 5. Server-side authorization check
-        if (data.userId && data.userId !== userId) {
+        if (requestUserId && requestUserId !== userId) {
             logSecurityEvent(
                 "AUTHORIZATION_FAILURE",
                 "saveInventoryEntry",
                 "Attempted to write to another user's data",
-                { userId, metadata: { attemptedUserId: data.userId } }
+                { userId, metadata: { attemptedUserId: requestUserId } }
             );
             throw new HttpsError(
                 "permission-denied",
