@@ -39,8 +39,8 @@ export function EnhancedMoodSelector({ value, onChange, showKeyboardShortcuts = 
   }, [showKeyboardShortcuts, onChange])
 
   return (
-    <div>
-      <div className="flex justify-between gap-2 mb-2" role="group" aria-label="Mood selection">
+    <div className="overflow-visible p-2 -m-2">
+      <div className="flex justify-between gap-2 mb-2 overflow-visible" role="group" aria-label="Mood selection">
         {moods.map((m) => {
           const isSelected = value === m.id
           const isHovered = hoveredMood === m.id
@@ -53,13 +53,12 @@ export function EnhancedMoodSelector({ value, onChange, showKeyboardShortcuts = 
               onMouseLeave={() => setHoveredMood(null)}
               aria-label={`Set mood to ${m.label}`}
               aria-pressed={isSelected}
-              className={`relative flex flex-col items-center p-3 rounded-lg transition-all duration-200 ${
-                isSelected
+              className={`relative flex flex-col items-center p-3 rounded-lg transition-all duration-200 ${isSelected
                   ? `${m.bg} scale-110 shadow-lg ring-2 ${m.ring}`
                   : isHovered
-                  ? `${m.bg} scale-105`
-                  : "hover:bg-amber-50/50"
-              }`}
+                    ? `${m.bg} scale-105`
+                    : "hover:bg-amber-50/50"
+                }`}
             >
               {/* Glow effect for selected mood */}
               {isSelected && (
