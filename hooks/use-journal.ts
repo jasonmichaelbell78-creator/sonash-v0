@@ -12,6 +12,8 @@ import {
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, auth } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
+import { QUERY_LIMITS } from '@/lib/constants';
+import { retryCloudFunction } from '@/lib/utils/retry';
 
 // Helper to check for "Today" and "Yesterday"
 export const getRelativeDateLabel = (dateString: string) => {
@@ -38,38 +40,63 @@ export const getRelativeDateLabel = (dateString: string) => {
     });
 };
 
+// Sanitize text to prevent XSS in searchable content
+// Strips HTML tags and dangerous characters while preserving readable text
+function sanitizeForSearch(text: string): string {
+    return text
+        // Remove HTML tags
+        .replace(/<[^>]*>/g, '')
+        // Remove script/style content
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+        // Remove potentially dangerous patterns (event handlers, javascript:, data:)
+        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/javascript:/gi, '')
+        .replace(/data:text\/html/gi, '')
+        // Normalize whitespace
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 // Generate searchable text from entry data for full-text search
+// SECURITY: All text is sanitized to prevent stored XSS if rendered in admin panels
 export function generateSearchableText(type: JournalEntryType, data: Record<string, unknown>): string {
     const parts: string[] = [];
 
     switch (type) {
         case 'daily-log':
-            parts.push(String(data.content || ''));
+            parts.push(sanitizeForSearch(String(data.content || '')));
             break;
         case 'gratitude':
-            parts.push(...(data.items as string[] || []));
+            (data.items as string[] || []).forEach(item => parts.push(sanitizeForSearch(item)));
             break;
         case 'spot-check':
-            parts.push(String(data.action || ''));
-            parts.push(...(data.feelings as string[] || []));
-            parts.push(...(data.absolutes as string[] || []));
+            parts.push(sanitizeForSearch(String(data.action || '')));
+            (data.feelings as string[] || []).forEach(f => parts.push(sanitizeForSearch(f)));
+            (data.absolutes as string[] || []).forEach(a => parts.push(sanitizeForSearch(a)));
             break;
         case 'night-review':
-            parts.push(String(data.step4_gratitude || ''));
-            parts.push(String(data.step4_surrender || ''));
+            parts.push(sanitizeForSearch(String(data.step4_gratitude || '')));
+            parts.push(sanitizeForSearch(String(data.step4_surrender || '')));
             if (data.step3_reflections) {
-                Object.values(data.step3_reflections as Record<string, unknown>).forEach((v: unknown) => parts.push(String(v || '')));
+                Object.values(data.step3_reflections as Record<string, unknown>).forEach((v: unknown) =>
+                    parts.push(sanitizeForSearch(String(v || '')))
+                );
             }
             break;
         case 'free-write':
         case 'meeting-note':
-            parts.push(String(data.title || ''), String(data.content || ''));
+            parts.push(sanitizeForSearch(String(data.title || '')));
+            parts.push(sanitizeForSearch(String(data.content || '')));
             break;
         case 'mood':
-            parts.push(String(data.note || ''));
+            parts.push(sanitizeForSearch(String(data.note || '')));
             break;
         case 'inventory':
-            parts.push(String(data.resentments || ''), String(data.dishonesty || ''), String(data.apologies || ''), String(data.successes || ''));
+            parts.push(sanitizeForSearch(String(data.resentments || '')));
+            parts.push(sanitizeForSearch(String(data.dishonesty || '')));
+            parts.push(sanitizeForSearch(String(data.apologies || '')));
+            parts.push(sanitizeForSearch(String(data.successes || '')));
             break;
     }
 
@@ -125,7 +152,7 @@ export function useJournal() {
             const q = query(
                 collection(db, `users/${user.uid}/journal`),
                 orderBy('createdAt', 'desc'),
-                limit(100)
+                limit(QUERY_LIMITS.JOURNAL_MAX)
             );
 
             // REAL-TIME LISTENER
@@ -206,15 +233,20 @@ export function useJournal() {
             const functions = getFunctions();
             const saveJournalEntry = httpsCallable(functions, 'saveJournalEntry');
 
-            await saveJournalEntry({
-                type,
-                data,
-                dateLabel,
-                isPrivate,
-                searchableText,
-                tags,
-                ...denormalized,
-            });
+            // Retry Cloud Function call with exponential backoff for network failures
+            await retryCloudFunction(
+                saveJournalEntry,
+                {
+                    type,
+                    data,
+                    dateLabel,
+                    isPrivate,
+                    searchableText,
+                    tags,
+                    ...denormalized,
+                },
+                { maxRetries: 3, functionName: 'saveJournalEntry' }
+            );
 
             return { success: true };
         } catch (error: unknown) {

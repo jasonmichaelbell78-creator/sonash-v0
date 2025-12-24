@@ -52,6 +52,12 @@ interface UserProfileWrite {
     }
 }
 
+// Discriminated union for getUserProfile result
+export type ProfileResult =
+    | { success: true; profile: UserProfile }
+    | { success: false; reason: "not-found" }
+    | { success: false; reason: "error"; error: unknown }
+
 // Zod schema for validation
 const TimestampSchema = z.custom<Timestamp>((val) => {
     return val === null || isFirestoreTimestamp(val)
@@ -80,7 +86,7 @@ const defaultPreferences = {
     simpleLanguage: false,
 }
 
-export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+export async function getUserProfile(uid: string): Promise<ProfileResult> {
     try {
         assertUserScope({ userId: uid })
         const userPath = buildPath.userDoc(uid)
@@ -89,12 +95,12 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-            return docSnap.data() as UserProfile
+            return { success: true, profile: docSnap.data() as UserProfile }
         }
-        return null
+        return { success: false, reason: "not-found" }
     } catch (error) {
         logger.error("Error getting user profile", { userId: maskIdentifier(uid), error })
-        return null
+        return { success: false, reason: "error", error }
     }
 }
 

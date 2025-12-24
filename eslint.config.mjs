@@ -14,7 +14,7 @@ export default [
       'coverage/**',
       'src/dataconnect-generated/**',
       '*.config.mjs',
-      'functions/**',
+      // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
   {

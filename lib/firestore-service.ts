@@ -33,8 +33,9 @@ import {
 import { assertUserScope, validateUserDocumentPath } from "./security/firestore-validation"
 import { logger as defaultLogger, maskIdentifier } from "./logger"
 import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
-import { buildPath } from "./constants"
+import { buildPath, QUERY_LIMITS } from "./constants"
 import { getTodayDateId } from "./utils/date-utils"
+import { retryCloudFunction } from "./utils/retry"
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
 
 // Re-export types for backwards compatibility
@@ -148,7 +149,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           hasContent: !!data.content,
         })
 
-        await saveDailyLogFn(payload)
+        // Retry Cloud Function call with exponential backoff for network failures
+        await retryCloudFunction(
+          saveDailyLogFn,
+          payload,
+          { maxRetries: 3, functionName: 'saveDailyLog' }
+        )
 
         deps.logger.info("Daily log saved via Cloud Function", {
           userId: maskIdentifier(userId),
@@ -233,7 +239,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
       try {
         const logsRef = deps.collection(deps.db, buildPath.dailyLogsCollection(userId))
-        const q = deps.query(logsRef, deps.orderBy("dateId", "desc"), deps.limit(30))
+        const q = deps.query(logsRef, deps.orderBy("dateId", "desc"), deps.limit(QUERY_LIMITS.HISTORY_MAX))
         const snapshot = await deps.getDocs(q)
 
         const entries = snapshot.docs.map(doc => ({
@@ -255,7 +261,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
       try {
         const entriesRef = deps.collection(deps.db, buildPath.inventoryEntries(userId))
-        const q = deps.query(entriesRef, deps.orderBy("createdAt", "desc"), deps.limit(limitCount))
+        const q = deps.query(entriesRef, deps.orderBy("createdAt", "desc"), deps.limit(limitCount || QUERY_LIMITS.INVENTORY_MAX))
         const snapshot = await deps.getDocs(q)
 
         const entries = snapshot.docs.map(doc => ({

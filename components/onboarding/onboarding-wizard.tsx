@@ -124,9 +124,10 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             const { Timestamp } = await import("firebase/firestore")
             const cleanStart = Timestamp.fromDate(dateObj)
 
-            const existingProfile = await getUserProfile(user.uid)
+            const profileResult = await getUserProfile(user.uid)
 
-            if (!existingProfile) {
+            // Create profile if it doesn't exist (not-found) or on error (defensive)
+            if (!profileResult.success) {
                 await createUserProfile(user.uid, user.email, nickname)
             }
 
