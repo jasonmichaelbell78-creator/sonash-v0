@@ -30,3 +30,14 @@ export const journalEntrySchema = z.object({
 });
 
 export type JournalEntryInput = z.infer<typeof journalEntrySchema>;
+
+// Schema for inventory entry validation
+// Supports spot-check, night-review, and gratitude entries
+export const inventoryEntrySchema = z.object({
+    type: z.enum(['spot-check', 'night-review', 'gratitude']),
+    data: z.record(z.string(), z.unknown()), // Flexible object structure per inventory type
+    tags: z.array(z.string()).optional().default([]),
+    userId: z.string().optional(), // Optional in data because we get it from auth context
+});
+
+export type InventoryEntryInput = z.infer<typeof inventoryEntrySchema>;

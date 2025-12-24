@@ -15,7 +15,7 @@
 import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { dailyLogSchema, journalEntrySchema } from "./schemas";
+import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema } from "./schemas";
 import { ZodError } from "zod";
 import { initSentry, logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
@@ -370,6 +370,186 @@ export const saveJournalEntry = onCall<JournalEntryData>(
             throw new HttpsError(
                 "internal",
                 "Failed to save journal entry. Please try again."
+            );
+        }
+    }
+);
+
+
+// Initialize rate limiter for inventory entries
+const saveInventoryEntryLimiter = new FirestoreRateLimiter({
+    points: 10,    // Max 10 inventory entries
+    duration: 60,  // Per minute (same as journal/daily log)
+});
+
+/**
+ * Callable Function: Save Inventory Entry
+ *
+ * Saves spot-check, night-review, and gratitude inventory entries
+ * with server-side validation and rate limiting.
+ *
+ * Security Layers:
+ * 1. Authentication required
+ * 2. Rate limiting (10 req/min)
+ * 3. App Check verification
+ * 4. Zod schema validation
+ * 5. Authorization (write own data only)
+ * 6. Audit logging
+ */
+export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
+    async (request) => {
+        const { data, app, auth } = request;
+
+        // 1. Authentication check
+        if (!auth) {
+            logSecurityEvent(
+                "AUTH_FAILURE",
+                "saveInventoryEntry",
+                "Unauthenticated request"
+            );
+            throw new HttpsError(
+                "unauthenticated",
+                "You must be signed in to save inventory entries."
+            );
+        }
+
+        const userId = auth.uid;
+
+        // 2. Rate limit check (10 req/min)
+        try {
+            await saveInventoryEntryLimiter.consume(userId, "saveInventoryEntry");
+        } catch (rateLimitError) {
+            const errorMessage = rateLimitError instanceof Error
+                ? rateLimitError.message
+                : "Too many requests. Please try again later.";
+            logSecurityEvent(
+                "RATE_LIMIT_EXCEEDED",
+                "saveInventoryEntry",
+                errorMessage,
+                { userId }
+            );
+            throw new HttpsError("resource-exhausted", errorMessage);
+        }
+
+        // 3. Verify App Check token (bot protection)
+        if (!app) {
+            logSecurityEvent(
+                "APP_CHECK_FAILURE",
+                "saveInventoryEntry",
+                "App Check token missing or invalid",
+                { userId }
+            );
+            throw new HttpsError(
+                "failed-precondition",
+                "App Check verification failed. Please refresh the page."
+            );
+        }
+
+        // 4. Validate input data using Zod
+        let validatedData;
+        try {
+            validatedData = inventoryEntrySchema.parse(data);
+        } catch (error) {
+            if (error instanceof ZodError) {
+                const errorMessages = error.issues.map((e) => e.message).join(", ");
+                logSecurityEvent(
+                    "VALIDATION_FAILURE",
+                    "saveInventoryEntry",
+                    `Zod validation failed: ${errorMessages}`,
+                    { userId, metadata: { issues: error.issues } }
+                );
+                throw new HttpsError(
+                    "invalid-argument",
+                    "Validation failed: " + errorMessages
+                );
+            }
+            throw error;
+        }
+
+        const { type, data: entryData, tags } = validatedData;
+
+        // 5. Server-side authorization check
+        if (data.userId && data.userId !== userId) {
+            logSecurityEvent(
+                "AUTHORIZATION_FAILURE",
+                "saveInventoryEntry",
+                "Attempted to write to another user's data",
+                { userId, metadata: { attemptedUserId: data.userId } }
+            );
+            throw new HttpsError(
+                "permission-denied",
+                "Cannot write to another user's data"
+            );
+        }
+
+        // Helper to remove undefined values (Firestore doesn't support them)
+        const sanitizeData = (data: unknown): unknown => {
+            if (Array.isArray(data)) {
+                return data.map(sanitizeData);
+            }
+            if (data !== null && typeof data === 'object') {
+                return Object.entries(data as Record<string, unknown>).reduce(
+                    (acc: Record<string, unknown>, [key, value]) => {
+                        if (value !== undefined) {
+                            acc[key] = sanitizeData(value);
+                        }
+                        return acc;
+                    },
+                    {} as Record<string, unknown>
+                );
+            }
+            return data;
+        };
+
+        // 6. Save to Firestore using Admin SDK (bypasses security rules)
+        try {
+            const docRef = admin
+                .firestore()
+                .collection("users")
+                .doc(userId)
+                .collection("inventoryEntries")
+                .doc(); // Auto-generate ID
+
+            // Get today's date in YYYY-MM-DD format (UTC)
+            const now = new Date();
+            const dateId = now.toISOString().split('T')[0];
+
+            const inventoryEntry: Record<string, unknown> = {
+                id: docRef.id,
+                userId,
+                type,
+                data: sanitizeData(entryData),
+                tags: tags || [],
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                dateId, // For easy querying by day
+            };
+
+            await docRef.set(inventoryEntry);
+
+            logSecurityEvent(
+                "SAVE_SUCCESS",
+                "saveInventoryEntry",
+                "Inventory entry saved successfully",
+                { userId, severity: "INFO", metadata: { type } }
+            );
+
+            return {
+                success: true,
+                message: "Inventory entry saved successfully",
+                entryId: docRef.id,
+            };
+        } catch (error) {
+            logSecurityEvent(
+                "SAVE_FAILURE",
+                "saveInventoryEntry",
+                "Failed to save to Firestore",
+                { userId, metadata: { error: String(error) }, captureToSentry: true }
+            );
+
+            throw new HttpsError(
+                "internal",
+                "Failed to save inventory entry. Please try again."
             );
         }
     }
