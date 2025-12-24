@@ -20,6 +20,14 @@ import { ZodError } from "zod";
 import { initSentry, logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
+// Type-safe interface for migration merge data
+interface MigrationMergeData {
+    migratedFrom: string;
+    migratedAt: admin.firestore.FieldValue;
+    soberDate?: admin.firestore.Timestamp;
+    // Future fields can be added here as needed
+}
+
 // Initialize Sentry for error monitoring (runs once at cold start)
 const SENTRY_DSN = process.env.SENTRY_DSN;
 if (SENTRY_DSN) {
@@ -686,7 +694,7 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
                 const targetProfileDoc = await targetProfileRef.get();
                 const targetProfile = targetProfileDoc.data();
 
-                const mergeData: Record<string, any> = {
+                const mergeData: MigrationMergeData = {
                     // Always add migration metadata
                     migratedFrom: data.anonymousUid,
                     migratedAt: admin.firestore.FieldValue.serverTimestamp(),
