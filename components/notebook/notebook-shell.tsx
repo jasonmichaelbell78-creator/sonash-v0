@@ -8,9 +8,9 @@ import BookmarkRibbon from "./bookmark-ribbon"
 import StickyNote from "./sticky-note"
 import PlaceholderPage from "./pages/placeholder-page"
 import { useAuth } from "@/components/providers/auth-provider"
-import { Shield, AlertTriangle, Plus } from "lucide-react"
+import { Shield, AlertTriangle } from "lucide-react"
 
-import JournalModal from "./journal-modal"
+
 import {
   getModuleById,
   moduleIsEnabled,
@@ -42,7 +42,6 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
   const [activeTab, setActiveTab] = useState<NotebookModuleId>("today")
   const [showSettings, setShowSettings] = useState(false)
   const [showAccountLink, setShowAccountLink] = useState(false)
-  const [showJournalModal, setShowJournalModal] = useState(false) // NEW STATE
   const [direction, setDirection] = useState(0)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
@@ -200,17 +199,8 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
         {/* Bookmark ribbon for settings */}
         <BookmarkRibbon onClick={() => setShowSettings(true)} />
 
-        {/* UNIVERSAL FAB */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setShowJournalModal(true)}
-          aria-label="Open journal"
-          className="absolute bottom-6 right-6 md:bottom-8 md:right-12 z-50 bg-amber-500 text-white p-3 md:p-4 rounded-full shadow-lg hover:bg-amber-600 border-2 border-white"
-        >
-          <Plus className="w-6 h-6" />
-        </motion.button>
       </div >
+
 
       {/* Settings sticky note overlay */}
       <AnimatePresence>
@@ -305,14 +295,6 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
         }
       </AnimatePresence >
 
-      {/* Journal Modal Overlay */}
-      <AnimatePresence>
-        {
-          showJournalModal && (
-            <JournalModal onClose={() => setShowJournalModal(false)} />
-          )
-        }
-      </AnimatePresence >
     </motion.div >
   )
 }

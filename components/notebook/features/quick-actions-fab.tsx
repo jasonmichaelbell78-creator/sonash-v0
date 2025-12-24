@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Phone, MapPin, Heart, Zap, X } from "lucide-react"
+import { Phone, MapPin, Heart, Zap, X, Book } from "lucide-react"
 import { NotebookModuleId } from "../notebook-types"
 
 interface QuickActionsFabProps {
@@ -47,6 +47,15 @@ export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProp
       }
     },
     {
+      icon: Book,
+      label: "Journal",
+      color: "bg-amber-500 hover:bg-amber-600",
+      onClick: () => {
+        onNavigate("history")
+        setIsOpen(false)
+      }
+    },
+    {
       icon: Heart,
       label: "Resources",
       color: "bg-red-500 hover:bg-red-600",
@@ -81,11 +90,10 @@ export function QuickActionsFab({ onNavigate, onQuickMood }: QuickActionsFabProp
       {/* Main FAB button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-full shadow-lg transition-all transform hover:scale-110 active:scale-95 flex items-center justify-center ${
-          isOpen
-            ? "bg-gray-600 hover:bg-gray-700 rotate-45"
-            : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-        }`}
+        className={`w-14 h-14 rounded-full shadow-lg transition-all transform hover:scale-110 active:scale-95 flex items-center justify-center ${isOpen
+          ? "bg-gray-600 hover:bg-gray-700 rotate-45"
+          : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+          }`}
         aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
       >
         {isOpen ? (
