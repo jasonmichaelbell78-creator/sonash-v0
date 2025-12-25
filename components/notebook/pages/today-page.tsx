@@ -31,6 +31,13 @@ interface TodayPageProps {
   onNavigate: (id: NotebookModuleId) => void
 }
 
+/**
+ * Render the Today page UI including the recovery notepad, mood check-in, HALT check, clean-time tracker, weekly stats, and related prompts and controls.
+ *
+ * @param nickname - User display name shown in the page greeting (falls back to "friend" when empty)
+ * @param onNavigate - Callback invoked to navigate to a NotebookModuleId (used by the quick actions FAB)
+ * @returns The Today page React element containing all interactive controls and layout for daily check-ins and notes
+ */
 export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const [mood, setMood] = useState<string | null>(null)
   const [cravings, setCravings] = useState<boolean | null>(null)
