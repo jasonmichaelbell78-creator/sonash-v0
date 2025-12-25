@@ -706,8 +706,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
         {/* Two column layout for larger screens, single column with custom order on mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 md:auto-rows-min">
-          {/* Clean time tracker - Order 1 on mobile, Col 1 Row 1 on desktop */}
-          <div className="order-1 md:col-start-1 md:row-start-1">
+          {/* Clean time tracker - Order 1 on mobile, Col 1 on desktop */}
+          <div className="order-1 md:col-start-1">
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
             {cleanTimeDisplay ? (
               <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
@@ -736,13 +736,13 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* Daily Inspiration (from DB) - Order 2 on mobile, Col 1 Row 2 on desktop */}
-          <div className="order-2 md:col-start-1 md:row-start-2">
+          {/* Daily Inspiration (from DB) - Order 2 on mobile, Col 1 on desktop */}
+          <div className="order-2 md:col-start-1">
             <DailyQuoteCard />
           </div>
 
-          {/* Today's Reading - Direct external links - Order 3 on mobile, Col 1 Row 3 on desktop */}
-          <div className="order-3 md:col-start-1 md:row-start-3">
+          {/* Today's Reading - Direct external links - Order 3 on mobile, Col 1 on desktop */}
+          <div className="order-3 md:col-start-1">
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Today's Reading</h2>
             <div className="flex gap-3">
               <a
@@ -764,8 +764,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             </div>
           </div>
 
-          {/* Recovery Notepad - Order 8 on mobile (appears last), Col 1 Row 4 on desktop */}
-          <div className="order-8 md:col-start-1 md:row-start-4">
+          {/* Recovery Notepad - Order 8 on mobile (appears last), Col 1 on desktop */}
+          <div className="order-8 md:col-start-1">
             <div className="relative group">
               <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
 
@@ -836,8 +836,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             </div>
           </div>
 
-          {/* Check-in - Order 4 on mobile, Col 2 Row 1 on desktop */}
-          <div className="order-4 md:col-start-2 md:row-start-1">
+          {/* Check-in - Order 4 on mobile, Col 2 on desktop */}
+          <div className="order-4 md:col-start-2">
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
             <EnhancedMoodSelector
               value={mood}
@@ -918,8 +918,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* HALT Check - Order 5 on mobile, Col 2 Row 2 on desktop */}
-          <div className="order-5 md:col-start-2 md:row-start-2">
+          {/* HALT Check - Order 5 on mobile, Col 2 on desktop */}
+          <div className="order-5 md:col-start-2">
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
             <p className="text-sm font-body text-amber-900/60 mb-3">
               Quick self-assessment to identify vulnerability
@@ -970,8 +970,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* "I Made It Through Today" Button - Order 6 on mobile, Col 2 Row 3 on desktop */}
-          <div className="order-6 md:col-start-2 md:row-start-3">
+          {/* "I Made It Through Today" Button - Order 6 on mobile, Col 2 on desktop */}
+          <div className="order-6 md:col-start-2">
             <button
               onClick={handleMadeItThrough}
               disabled={hasCelebratedToday}
@@ -996,8 +996,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* Quick Stats Summary - Order 7 on mobile, Col 2 Row 4 on desktop */}
-          <div className="order-7 md:col-start-2 md:row-start-4">
+          {/* Quick Stats Summary - Order 7 on mobile, Col 2 on desktop */}
+          <div className="order-7 md:col-start-2">
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Weekly Stats</h2>
             <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
