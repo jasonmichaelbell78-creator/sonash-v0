@@ -40,7 +40,7 @@ export function EnhancedMoodSelector({ value, onChange, showKeyboardShortcuts = 
 
   return (
     <div className="overflow-visible px-8 -mx-8 py-4 -my-4">
-      <div className="flex justify-between gap-2 mb-2 overflow-visible" role="group" aria-label="Mood selection">
+      <div className="flex justify-between gap-1 mb-2 overflow-visible" role="group" aria-label="Mood selection">
         {moods.map((m) => {
           const isSelected = value === m.id
           const isHovered = hoveredMood === m.id
