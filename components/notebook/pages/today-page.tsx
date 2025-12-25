@@ -698,7 +698,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         )}
 
         {/* Two column layout for larger screens, single column with custom order on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 md:auto-rows-min">
           {/* Clean time tracker - Order 1 on mobile, Col 1 Row 1 on desktop */}
           <div className="order-1 md:col-start-1 md:row-start-1">
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
