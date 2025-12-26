@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useCelebration } from "@/components/celebrations/celebration-provider"
 import { FirestoreService } from "@/lib/firestore-service"
-import { intervalToDuration, subDays, startOfDay, format, differenceInDays } from "date-fns"
+import { intervalToDuration, subDays, startOfDay, format, differenceInDays, startOfWeek } from "date-fns"
 import { toast } from "sonner"
 import MoodSparkline from "../visualizations/mood-sparkline"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
@@ -472,14 +472,15 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       try {
         const { collection, query, where, getDocs, orderBy } = await import("firebase/firestore")
 
-        // Get last 7 days of logs
-        const sevenDaysAgo = subDays(startOfDay(new Date()), 7)
-        const sevenDaysAgoId = format(sevenDaysAgo, 'yyyy-MM-dd')
+        // Get start of current week (Sunday)
+        const now = new Date()
+        const weekStart = startOfWeek(now, { weekStartsOn: 0 }) // 0 = Sunday
+        const weekStartId = format(startOfDay(weekStart), 'yyyy-MM-dd')
 
         const logsRef = collection(db, `users/${user.uid}/daily_logs`)
         const q = query(
           logsRef,
-          where('date', '>=', sevenDaysAgoId),
+          where('date', '>=', weekStartId),
           orderBy('date', 'desc')
         )
 
@@ -489,7 +490,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           ...doc.data()
         }))
 
-        // Count unique days with logs in last 7 days
+        // Count unique days with logs in current week
         const uniqueDays = new Set(logs.map(log => log.date))
         const daysLogged = uniqueDays.size
 
