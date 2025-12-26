@@ -486,18 +486,53 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
         setIsLoading(true)
         try {
-            const entries = await FirestoreService.getInventoryEntries(user.uid, 1)
-            const stepWorksheet = entries.find((entry: { type: string }) => entry.type === 'step-1-worksheet')
+            const { entries, error } = await FirestoreService.getInventoryEntries(user.uid, 50)
 
-            if (stepWorksheet && stepWorksheet.data) {
-                const savedData = stepWorksheet.data as Step1Data
+            if (error) {
+                console.error('Failed to load saved worksheet:', error)
+                toast.error('Failed to load saved worksheet. Starting fresh.')
+                return
+            }
+
+            // Ensure entries is an array before processing
+            if (!Array.isArray(entries)) {
+                console.error('Invalid entries response:', entries)
+                return
+            }
+
+            // Find the most recent step-1-worksheet entry by sorting by updatedAt/createdAt
+            type InventoryEntry = {
+                id: string
+                type: string
+                data: Record<string, unknown>
+                createdAt?: { seconds: number } | number
+                updatedAt?: { seconds: number } | number
+            }
+
+            const toMillis = (timestamp?: { seconds: number } | number): number => {
+                if (!timestamp) return 0
+                return typeof timestamp === 'number' ? timestamp : timestamp.seconds * 1000
+            }
+
+            const typedEntries = entries as InventoryEntry[]
+            const stepWorksheets = typedEntries
+                .filter(entry => entry.type === 'step-1-worksheet')
+                .sort((a, b) =>
+                    toMillis(b.updatedAt ?? b.createdAt) - toMillis(a.updatedAt ?? a.createdAt)
+                )
+
+            const stepWorksheet = stepWorksheets[0]
+
+            if (stepWorksheet?.data) {
+                const savedData = stepWorksheet.data as unknown as Step1Data
                 setData(savedData)
                 setLastSavedData(savedData)
             }
         } catch (error) {
             console.error('Failed to load saved worksheet:', error)
-            // Don't show error to user - they can just start fresh
+            toast.error('Failed to load saved worksheet. Starting fresh.')
         } finally {
+            // Always reset loading state
             setIsLoading(false)
         }
     }, [user])
