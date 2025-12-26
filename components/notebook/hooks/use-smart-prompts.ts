@@ -4,7 +4,7 @@ import { getTodayDateId } from "@/lib/utils/date-utils"
 interface UseSmartPromptsProps {
   mood: string | null
   cravings: boolean | null
-  used: boolean | null
+  _used: boolean | null
   hasTouched: boolean
   haltCheck: {
     hungry: boolean
