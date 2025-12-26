@@ -74,6 +74,7 @@ export const saveDailyLog = onCall<DailyLogData>(
             functionName: 'saveDailyLog',
             rateLimiter: saveDailyLogLimiter,
             validationSchema: dailyLogSchema,
+            requireAppCheck: false, // TEMPORARY: Disabled while working out reCAPTCHA issues
         },
         async ({ data, userId }) => {
             const { date, content, mood, cravings, used } = data;
