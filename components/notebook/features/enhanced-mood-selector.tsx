@@ -8,15 +8,15 @@ interface EnhancedMoodSelectorProps {
   showKeyboardShortcuts?: boolean
 }
 
+const moods = [
+  { id: "struggling", emoji: "😟", label: "Struggling", color: "text-red-500", bg: "bg-red-50", ring: "ring-red-300", shortcut: "1" },
+  { id: "okay", emoji: "😐", label: "Okay", color: "text-orange-500", bg: "bg-orange-50", ring: "ring-orange-300", shortcut: "2" },
+  { id: "hopeful", emoji: "🙂", label: "Hopeful", color: "text-lime-500", bg: "bg-lime-50", ring: "ring-lime-300", shortcut: "3" },
+  { id: "great", emoji: "😊", label: "Great", color: "text-green-500", bg: "bg-green-50", ring: "ring-green-300", shortcut: "4" },
+]
+
 export function EnhancedMoodSelector({ value, onChange, showKeyboardShortcuts = true }: EnhancedMoodSelectorProps) {
   const [hoveredMood, setHoveredMood] = useState<string | null>(null)
-
-  const moods = [
-    { id: "struggling", emoji: "😟", label: "Struggling", color: "text-red-500", bg: "bg-red-50", ring: "ring-red-300", shortcut: "1" },
-    { id: "okay", emoji: "😐", label: "Okay", color: "text-orange-500", bg: "bg-orange-50", ring: "ring-orange-300", shortcut: "2" },
-    { id: "hopeful", emoji: "🙂", label: "Hopeful", color: "text-lime-500", bg: "bg-lime-50", ring: "ring-lime-300", shortcut: "3" },
-    { id: "great", emoji: "😊", label: "Great", color: "text-green-500", bg: "bg-green-50", ring: "ring-green-300", shortcut: "4" },
-  ]
 
   // Keyboard shortcuts for desktop
   useEffect(() => {

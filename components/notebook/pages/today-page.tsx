@@ -6,7 +6,6 @@ import { useCelebration } from "@/components/celebrations/celebration-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration, subDays, startOfDay, format, differenceInDays } from "date-fns"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
 import MoodSparkline from "../visualizations/mood-sparkline"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
@@ -15,10 +14,10 @@ import { toDate } from "@/lib/types/firebase-types"
 import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
+import { RecoveryNotepad } from "../features/recovery-notepad"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
 import { db } from "@/lib/firebase"
 import { TodayPageSkeleton } from "./today-page-skeleton"
-import { CheckInProgress } from "../features/check-in-progress"
 import { QuickActionsFab } from "../features/quick-actions-fab"
 import { EnhancedMoodSelector } from "../features/enhanced-mood-selector"
 import { SmartPrompt } from "../features/smart-prompt"
@@ -52,7 +51,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const desktopTextareaRef = useRef<HTMLTextAreaElement>(null)
+  const mobileTextareaRef = useRef<HTMLTextAreaElement>(null)
   // Track pending save data to avoid race conditions
   const pendingSaveRef = useRef<{
     journalEntry: string
@@ -105,7 +105,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   })
 
   // Calculate check-in progress
-  const checkInSteps = useMemo(() => {
+  const _checkInSteps = useMemo(() => {
     const steps = [
       { id: "mood", label: "Mood", completed: mood !== null },
       { id: "check", label: "Check", completed: cravings !== null && used !== null },
@@ -314,11 +314,14 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 // Only update text if not currently editing (collision avoidance)
                 if (data.content && !isEditingRef.current) {
                   setJournalEntry(data.content)
-                  // Position cursor at end of text on load
+                  // Position cursor at end of text on load for both textareas
                   setTimeout(() => {
-                    if (textareaRef.current) {
-                      const len = data.content.length
-                      textareaRef.current.setSelectionRange(len, len)
+                    const len = data.content.length
+                    if (desktopTextareaRef.current) {
+                      desktopTextareaRef.current.setSelectionRange(len, len)
+                    }
+                    if (mobileTextareaRef.current) {
+                      mobileTextareaRef.current.setSelectionRange(len, len)
                     }
                   }, 0)
                 }
@@ -704,11 +707,13 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           />
         )}
 
-        {/* Two column layout for larger screens, single column with custom order on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 md:auto-rows-min">
-          {/* Clean time tracker - Order 1 on mobile, Col 1 on desktop */}
-          <div className="order-1 md:col-start-1">
-            <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
+        {/* Two column layout for larger screens, single column on mobile */}
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+          {/* Left Column */}
+          <div className="w-full md:w-1/2 flex flex-col gap-6">
+            {/* Clean time tracker */}
+            <div>
+              <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
             {cleanTimeDisplay ? (
               <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
                 {cleanTimeDisplay.map((part, index) => (
@@ -734,16 +739,16 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 You haven't set your clean date yet.
               </p>
             )}
-          </div>
+            </div>
 
-          {/* Daily Inspiration (from DB) - Order 2 on mobile, Col 1 on desktop */}
-          <div className="order-2 md:col-start-1">
-            <DailyQuoteCard />
-          </div>
+            {/* Daily Inspiration (from DB) */}
+            <div>
+              <DailyQuoteCard />
+            </div>
 
-          {/* Today's Reading - Direct external links - Order 3 on mobile, Col 1 on desktop */}
-          <div className="order-3 md:col-start-1">
-            <h2 className="font-heading text-xl text-amber-900/90 mb-3">Today's Reading</h2>
+            {/* Today's Reading - Direct external links */}
+            <div>
+              <h2 className="font-heading text-xl text-amber-900/90 mb-3">Today's Reading</h2>
             <div className="flex gap-3">
               <a
                 href="https://www.aa.org/daily-reflections"
@@ -761,84 +766,28 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               >
                 NA Just For Today ↗
               </a>
+              </div>
+            </div>
+
+            {/* Recovery Notepad - DESKTOP ONLY (hidden on mobile) */}
+            <div className="hidden md:block">
+              <RecoveryNotepad
+                textareaRef={desktopTextareaRef}
+                journalEntry={journalEntry}
+                onJournalChange={setJournalEntry}
+                onTouched={() => setHasTouched(true)}
+                isEditingRef={isEditingRef}
+                isSaving={isSaving}
+                saveComplete={saveComplete}
+              />
             </div>
           </div>
 
-          {/* Recovery Notepad - Order 8 on mobile (appears last), Col 1 on desktop */}
-          <div className="order-8 md:col-start-1">
-            <div className="relative group">
-              <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
-
-              <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
-                style={{ backgroundColor: '#fdfbf7' }}
-              >
-                {/* Topbinding/Yellow Header */}
-                <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
-                  <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
-                </div>
-
-                {/* Lined Paper Background */}
-                <div className="absolute inset-0 top-12 pointer-events-none"
-                  style={{
-                    backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
-                    backgroundSize: '100% 2rem',
-                    marginTop: '0.5rem'
-                  }}
-                />
-
-                {/* Red Margin Line */}
-                <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
-
-                {/* Textarea */}
-                <textarea
-                  ref={textareaRef}
-                  value={journalEntry}
-                  onChange={(e) => {
-                    setJournalEntry(e.target.value)
-                    setHasTouched(true)
-                  }}
-                  onFocus={(e) => {
-                    isEditingRef.current = true
-                    if (journalEntry && e.target.selectionStart !== journalEntry.length) {
-                      const len = journalEntry.length
-                      e.target.setSelectionRange(len, len)
-                      e.target.scrollTop = e.target.scrollHeight
-                    }
-                  }}
-                  onBlur={() => (isEditingRef.current = false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') e.stopPropagation()
-                  }}
-                  placeholder="Jot down numbers, thoughts, or reminders..."
-                  className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
-                  style={{
-                    fontFamily: 'var(--font-handlee), cursive',
-                    lineHeight: '2rem'
-                  }}
-                  spellCheck={false}
-                />
-                {/* Save indicator */}
-                <div className="absolute bottom-2 right-4 text-xs font-body italic">
-                  {isSaving ? (
-                    <span className="text-amber-600 flex items-center gap-1">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Saving...
-                    </span>
-                  ) : saveComplete ? (
-                    <span className="text-green-600 font-bold">✓ Saved</span>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Check-in - Order 4 on mobile, Col 2 on desktop */}
-          <div className="order-4 md:col-start-2">
-            <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
+          {/* Right Column */}
+          <div className="w-full md:w-1/2 flex flex-col gap-6">
+            {/* Check-in */}
+            <div>
+              <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
             <EnhancedMoodSelector
               value={mood}
               onChange={(newMood) => {
@@ -918,8 +867,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* HALT Check - Order 5 on mobile, Col 2 on desktop */}
-          <div className="order-5 md:col-start-2">
+          {/* HALT Check */}
+          <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
             <p className="text-sm font-body text-amber-900/60 mb-3">
               Quick self-assessment to identify vulnerability
@@ -970,8 +919,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* "I Made It Through Today" Button - Order 6 on mobile, Col 2 on desktop */}
-          <div className="order-6 md:col-start-2">
+          {/* "I Made It Through Today" Button */}
+          <div>
             <button
               onClick={handleMadeItThrough}
               disabled={hasCelebratedToday}
@@ -996,8 +945,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             )}
           </div>
 
-          {/* Quick Stats Summary - Order 7 on mobile, Col 2 on desktop */}
-          <div className="order-7 md:col-start-2">
+          {/* Weekly Stats */}
+          <div>
             <h2 className="font-heading text-xl text-amber-900/90 mb-3">Weekly Stats</h2>
             <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
@@ -1010,6 +959,20 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               </div>
             </div>
           </div>
+
+          {/* Recovery Notepad - MOBILE ONLY (visible on mobile, hidden on desktop) */}
+          <div className="block md:hidden">
+            <RecoveryNotepad
+              textareaRef={mobileTextareaRef}
+              journalEntry={journalEntry}
+              onJournalChange={setJournalEntry}
+              onTouched={() => setHasTouched(true)}
+              isEditingRef={isEditingRef}
+              isSaving={isSaving}
+              saveComplete={saveComplete}
+            />
+          </div>
+        </div>
         </div>
         {/* Bottom navigation hint */}
         <div className="flex items-center justify-center pt-8">
