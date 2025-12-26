@@ -100,14 +100,14 @@ const initialData: Step1Data = {
     conclusion_q4: Array(15).fill(''),
 }
 
-export default function Step1WorksheetCard({ className, ...props }: Step1WorksheetCardProps) {
+export default function Step1WorksheetCard({ className: _className, ...props }: Step1WorksheetCardProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [section, setSection] = useState(1) // 1-4 for each concept section
     const [data, setData] = useState<Step1Data>(initialData)
     const [isSaving, setIsSaving] = useState(false)
     const { user } = useAuth()
 
-    const updateField = (field: keyof Step1Data, value: any) => {
+    const updateField = (field: keyof Step1Data, value: string | string[]) => {
         setData(prev => ({ ...prev, [field]: value }))
     }
 
@@ -128,7 +128,7 @@ export default function Step1WorksheetCard({ className, ...props }: Step1Workshe
 
         setIsSaving(true)
         try {
-            await FirestoreService.saveInventoryEntry({
+            await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'step-1-worksheet',
                 data: data,
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],

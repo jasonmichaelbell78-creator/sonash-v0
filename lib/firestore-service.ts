@@ -286,7 +286,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     // Save an inventory entry (Spot Check, Night Review, etc.)
     // UPDATED: Now uses Cloud Function for server-side validation and rate limiting
     async saveInventoryEntry(userId: string, entry: {
-      type: 'spot-check' | 'night-review' | 'gratitude';
+      type: 'spot-check' | 'night-review' | 'gratitude' | 'step-1-worksheet';
       data: Record<string, unknown>;
       tags?: string[];
     }) {
