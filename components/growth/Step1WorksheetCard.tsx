@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useCallback, useRef } from "react"
 import { motion, type HTMLMotionProps } from "framer-motion"
 import { BookOpen, ChevronLeft, ChevronRight, Save } from "lucide-react"
 import {
@@ -446,12 +446,19 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
     const [section, setSection] = useState(1) // 1-4 for each concept section
     const [data, setData] = useState<Step1Data>(initialData)
     const [isSaving, setIsSaving] = useState(false)
+    const [lastSavedData, setLastSavedData] = useState<Step1Data>(initialData)
     const { user } = useAuth()
+    const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-    const hasUnsavedChanges = useMemo(
-        () => JSON.stringify(data) !== JSON.stringify(initialData),
-        [data]
-    )
+    // Check if there's any actual content entered
+    const hasContent = useMemo(() => {
+        return Object.values(data).some(value => {
+            if (Array.isArray(value)) {
+                return value.some(item => item.trim() !== '')
+            }
+            return typeof value === 'string' && value.trim() !== ''
+        })
+    }, [data])
 
     const updateField = (field: keyof Step1Data, value: string) => {
         setData(prev => ({ ...prev, [field]: value }))
@@ -466,20 +473,59 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
         })
     }
 
+    // Auto-save function
+    const autoSave = useCallback(async () => {
+        if (!user || !hasContent || isSaving) return
+
+        // Don't save if data hasn't changed since last save
+        if (JSON.stringify(data) === JSON.stringify(lastSavedData)) return
+
+        setIsSaving(true)
+        try {
+            await FirestoreService.saveInventoryEntry(user.uid, {
+                type: 'step-1-worksheet',
+                data: data as unknown as Record<string, unknown>,
+                tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
+            })
+
+            setLastSavedData(data)
+            toast.success("Auto-saved", { duration: 2000 })
+        } catch (error) {
+            toast.error("Auto-save failed. Your work is still preserved locally.")
+            console.error("Auto-save error:", error)
+        } finally {
+            setIsSaving(false)
+        }
+    }, [user, data, hasContent, isSaving, lastSavedData])
+
+    // Debounced auto-save effect
+    useEffect(() => {
+        // Clear existing timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current)
+        }
+
+        // Only auto-save if dialog is open and there's content
+        if (isOpen && hasContent) {
+            saveTimeoutRef.current = setTimeout(() => {
+                autoSave()
+            }, 2000) // Save 2 seconds after last change
+        }
+
+        return () => {
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current)
+            }
+        }
+    }, [data, isOpen, hasContent, autoSave])
+
     const handleOpenChange = (open: boolean) => {
-        if (!open && hasUnsavedChanges) {
-            if (confirm("You have unsaved changes. Are you sure you want to close?")) {
-                setIsOpen(false)
-                setData(initialData)
-                setSection(1)
-            }
-        } else {
-            setIsOpen(open)
-            if (open) {
-                // Reset form state when opening
-                setSection(1)
-                setData({ ...initialData })
-            }
+        setIsOpen(open)
+        if (open) {
+            // Reset form state when opening
+            setSection(1)
+            setData({ ...initialData })
+            setLastSavedData({ ...initialData })
         }
     }
 
@@ -487,6 +533,11 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
         if (!user) {
             toast.error("You must be signed in to save")
             return
+        }
+
+        // Clear pending auto-save
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current)
         }
 
         setIsSaving(true)
@@ -497,9 +548,11 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
             })
 
+            setLastSavedData(data)
             toast.success("Step 1 worksheet saved successfully!")
             setIsOpen(false)
             setData(initialData)
+            setLastSavedData(initialData)
             setSection(1)
         } catch (error) {
             toast.error("Failed to save worksheet. Please try again.")
@@ -535,12 +588,28 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle className="font-heading text-2xl text-amber-900">
-                            Step 1 Worksheet
-                        </DialogTitle>
-                        <p className="text-sm text-amber-900/60">
-                            Section {section} of 4: {currentSection.title}
-                        </p>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <DialogTitle className="font-heading text-2xl text-amber-900">
+                                    Step 1 Worksheet
+                                </DialogTitle>
+                                <p className="text-sm text-amber-900/60">
+                                    Section {section} of 4: {currentSection.title}
+                                </p>
+                            </div>
+                            {isSaving && (
+                                <div className="text-xs text-green-600 flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
+                                    Saving...
+                                </div>
+                            )}
+                            {!isSaving && hasContent && (
+                                <div className="text-xs text-green-600/60 flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-600/60 rounded-full" />
+                                    Auto-save enabled
+                                </div>
+                            )}
+                        </div>
                     </DialogHeader>
 
                     <div className="space-y-6 py-4">

@@ -255,6 +255,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             functionName: 'saveInventoryEntry',
             rateLimiter: saveInventoryEntryLimiter,
             validationSchema: inventoryEntrySchema,
+            requireAppCheck: false, // TEMPORARY: Disabled while working out reCAPTCHA issues
         },
         async ({ data, userId }) => {
             const { type, data: entryData, tags } = data;
