@@ -490,14 +490,38 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
             if (error) {
                 console.error('Failed to load saved worksheet:', error)
+                toast.error('Failed to load saved worksheet. Starting fresh.')
                 return
             }
 
-            // Find the most recent step-1-worksheet entry
-            // Type assertion needed because Firestore spread returns unknown shape
-            type InventoryEntry = { id: string; type: string; data: Record<string, unknown> }
+            // Ensure entries is an array before processing
+            if (!Array.isArray(entries)) {
+                console.error('Invalid entries response:', entries)
+                return
+            }
+
+            // Find the most recent step-1-worksheet entry by sorting by updatedAt/createdAt
+            type InventoryEntry = {
+                id: string
+                type: string
+                data: Record<string, unknown>
+                createdAt?: { seconds: number } | number
+                updatedAt?: { seconds: number } | number
+            }
+
+            const toMillis = (timestamp?: { seconds: number } | number): number => {
+                if (!timestamp) return 0
+                return typeof timestamp === 'number' ? timestamp : timestamp.seconds * 1000
+            }
+
             const typedEntries = entries as InventoryEntry[]
-            const stepWorksheet = typedEntries.find(entry => entry.type === 'step-1-worksheet')
+            const stepWorksheets = typedEntries
+                .filter(entry => entry.type === 'step-1-worksheet')
+                .sort((a, b) =>
+                    toMillis(b.updatedAt ?? b.createdAt) - toMillis(a.updatedAt ?? a.createdAt)
+                )
+
+            const stepWorksheet = stepWorksheets[0]
 
             if (stepWorksheet?.data) {
                 const savedData = stepWorksheet.data as unknown as Step1Data
@@ -506,8 +530,9 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
             }
         } catch (error) {
             console.error('Failed to load saved worksheet:', error)
-            // Don't show error to user - they can just start fresh
+            toast.error('Failed to load saved worksheet. Starting fresh.')
         } finally {
+            // Always reset loading state
             setIsLoading(false)
         }
     }, [user])
