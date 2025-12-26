@@ -493,7 +493,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
         try {
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'step-1-worksheet',
-                data: data as Record<string, unknown>,
+                data: data as unknown as Record<string, unknown>,
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
             })
 

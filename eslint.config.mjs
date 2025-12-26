@@ -13,6 +13,7 @@ export default [
       'dist-tests/**',
       'coverage/**',
       'src/dataconnect-generated/**',
+      'functions/lib/**',
       '*.config.mjs',
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
