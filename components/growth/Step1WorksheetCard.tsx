@@ -486,11 +486,21 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
         setIsLoading(true)
         try {
-            const entries = await FirestoreService.getInventoryEntries(user.uid, 1)
-            const stepWorksheet = entries.find((entry: { type: string }) => entry.type === 'step-1-worksheet')
+            const { entries, error } = await FirestoreService.getInventoryEntries(user.uid, 50)
 
-            if (stepWorksheet && stepWorksheet.data) {
-                const savedData = stepWorksheet.data as Step1Data
+            if (error) {
+                console.error('Failed to load saved worksheet:', error)
+                return
+            }
+
+            // Find the most recent step-1-worksheet entry
+            // Type assertion needed because Firestore spread returns unknown shape
+            type InventoryEntry = { id: string; type: string; data: Record<string, unknown> }
+            const typedEntries = entries as InventoryEntry[]
+            const stepWorksheet = typedEntries.find(entry => entry.type === 'step-1-worksheet')
+
+            if (stepWorksheet?.data) {
+                const savedData = stepWorksheet.data as unknown as Step1Data
                 setData(savedData)
                 setLastSavedData(savedData)
             }
