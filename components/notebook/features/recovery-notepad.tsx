@@ -2,7 +2,7 @@ import { Loader2 } from "lucide-react"
 import { RefObject } from "react"
 
 interface RecoveryNotepadProps {
-  textareaRef: RefObject<HTMLTextAreaElement>
+  textareaRef: RefObject<HTMLTextAreaElement | null>
   journalEntry: string
   onJournalChange: (value: string) => void
   onTouched: () => void

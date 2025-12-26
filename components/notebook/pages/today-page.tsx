@@ -90,7 +90,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   } = useSmartPrompts({
     mood,
     cravings,
-    used,
+    _used: used,
     hasTouched,
     haltCheck,
     haltSubmitted,
