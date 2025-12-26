@@ -25,10 +25,10 @@ export function SmartPrompt({ type, message, action, onDismiss }: SmartPromptPro
 
   const styles = {
     "check-in-reminder": {
-      bg: "bg-blue-50",
-      border: "border-blue-200",
-      text: "text-blue-900",
-      icon: "text-blue-500"
+      bg: "bg-amber-50",
+      border: "border-amber-200",
+      text: "text-amber-900",
+      icon: "text-amber-500"
     },
     "halt-suggestion": {
       bg: "bg-amber-50",
