@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { getTodayDateId } from "@/lib/utils/date-utils"
 
 interface UseSmartPromptsProps {
@@ -34,16 +34,14 @@ interface SmartPromptState {
 export function useSmartPrompts({
   mood,
   cravings,
-  used,
+  _used,
   hasTouched,
   haltCheck,
   haltSubmitted,
   weekStats,
 }: UseSmartPromptsProps): SmartPromptState {
-  const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(new Set())
-
-  // Load dismissed prompts from localStorage on mount
-  useEffect(() => {
+  // Load dismissed prompts from localStorage on mount using lazy initializer
+  const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(() => {
     const today = getTodayDateId(new Date())
     const storageKey = `dismissed-prompts-${today}`
     const stored = localStorage.getItem(storageKey)
@@ -51,12 +49,13 @@ export function useSmartPrompts({
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as string[]
-        setDismissedPrompts(new Set(parsed))
+        return new Set(parsed)
       } catch (error) {
         console.warn("Failed to parse dismissed prompts from localStorage", error)
       }
     }
-  }, [])
+    return new Set()
+  })
 
   // Persist dismissed prompts to localStorage
   const dismissPrompt = (promptId: string) => {

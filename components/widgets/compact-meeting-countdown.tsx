@@ -32,7 +32,7 @@ export default function CompactMeetingCountdown() {
 
         const now = new Date()
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        const today = days[now.getDay()]
+        const _today = days[now.getDay()]
 
         const [hours, minutes] = nextMeeting.time.split(':').map(Number)
         const meetingDate = new Date()

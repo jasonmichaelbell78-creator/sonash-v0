@@ -6,7 +6,6 @@ import { useCelebration } from "@/components/celebrations/celebration-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 import { intervalToDuration, subDays, startOfDay, format, differenceInDays } from "date-fns"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
 import MoodSparkline from "../visualizations/mood-sparkline"
 import { AuthErrorBanner } from "@/components/status/auth-error-banner"
 import { logger, maskIdentifier } from "@/lib/logger"
@@ -15,10 +14,10 @@ import { toDate } from "@/lib/types/firebase-types"
 import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants"
 import { NotebookModuleId } from "../notebook-types"
 import { DailyQuoteCard } from "../features/daily-quote-card"
+import { RecoveryNotepad } from "../features/recovery-notepad"
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown"
 import { db } from "@/lib/firebase"
 import { TodayPageSkeleton } from "./today-page-skeleton"
-import { CheckInProgress } from "../features/check-in-progress"
 import { QuickActionsFab } from "../features/quick-actions-fab"
 import { EnhancedMoodSelector } from "../features/enhanced-mood-selector"
 import { SmartPrompt } from "../features/smart-prompt"
@@ -52,7 +51,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
   // Use ref instead of state to prevent re-triggering effects
   const isEditingRef = useRef(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const desktopTextareaRef = useRef<HTMLTextAreaElement>(null)
+  const mobileTextareaRef = useRef<HTMLTextAreaElement>(null)
   // Track pending save data to avoid race conditions
   const pendingSaveRef = useRef<{
     journalEntry: string
@@ -105,7 +105,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   })
 
   // Calculate check-in progress
-  const checkInSteps = useMemo(() => {
+  const _checkInSteps = useMemo(() => {
     const steps = [
       { id: "mood", label: "Mood", completed: mood !== null },
       { id: "check", label: "Check", completed: cravings !== null && used !== null },
@@ -314,11 +314,14 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 // Only update text if not currently editing (collision avoidance)
                 if (data.content && !isEditingRef.current) {
                   setJournalEntry(data.content)
-                  // Position cursor at end of text on load
+                  // Position cursor at end of text on load for both textareas
                   setTimeout(() => {
-                    if (textareaRef.current) {
-                      const len = data.content.length
-                      textareaRef.current.setSelectionRange(len, len)
+                    const len = data.content.length
+                    if (desktopTextareaRef.current) {
+                      desktopTextareaRef.current.setSelectionRange(len, len)
+                    }
+                    if (mobileTextareaRef.current) {
+                      mobileTextareaRef.current.setSelectionRange(len, len)
                     }
                   }, 0)
                 }
@@ -768,74 +771,15 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
             {/* Recovery Notepad - DESKTOP ONLY (hidden on mobile) */}
             <div className="hidden md:block">
-              <div className="relative group">
-              <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
-
-              <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
-                style={{ backgroundColor: '#fdfbf7' }}
-              >
-                {/* Topbinding/Yellow Header */}
-                <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
-                  <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
-                </div>
-
-                {/* Lined Paper Background */}
-                <div className="absolute inset-0 top-12 pointer-events-none"
-                  style={{
-                    backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
-                    backgroundSize: '100% 2rem',
-                    marginTop: '0.5rem'
-                  }}
-                />
-
-                {/* Red Margin Line */}
-                <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
-
-                {/* Textarea */}
-                <textarea
-                  ref={textareaRef}
-                  value={journalEntry}
-                  onChange={(e) => {
-                    setJournalEntry(e.target.value)
-                    setHasTouched(true)
-                  }}
-                  onFocus={(e) => {
-                    isEditingRef.current = true
-                    if (journalEntry && e.target.selectionStart !== journalEntry.length) {
-                      const len = journalEntry.length
-                      e.target.setSelectionRange(len, len)
-                      e.target.scrollTop = e.target.scrollHeight
-                    }
-                  }}
-                  onBlur={() => (isEditingRef.current = false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') e.stopPropagation()
-                  }}
-                  placeholder="Jot down numbers, thoughts, or reminders..."
-                  className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
-                  style={{
-                    fontFamily: 'var(--font-handlee), cursive',
-                    lineHeight: '2rem'
-                  }}
-                  spellCheck={false}
-                />
-                {/* Save indicator */}
-                <div className="absolute bottom-2 right-4 text-xs font-body italic">
-                  {isSaving ? (
-                    <span className="text-amber-600 flex items-center gap-1">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Saving...
-                    </span>
-                  ) : saveComplete ? (
-                    <span className="text-green-600 font-bold">✓ Saved</span>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
-                </div>
-              </div>
+              <RecoveryNotepad
+                textareaRef={desktopTextareaRef}
+                journalEntry={journalEntry}
+                onJournalChange={setJournalEntry}
+                onTouched={() => setHasTouched(true)}
+                isEditingRef={isEditingRef}
+                isSaving={isSaving}
+                saveComplete={saveComplete}
+              />
             </div>
           </div>
 
@@ -1018,75 +962,17 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
           {/* Recovery Notepad - MOBILE ONLY (visible on mobile, hidden on desktop) */}
           <div className="block md:hidden">
-            <div className="relative group">
-              <h2 className="font-heading text-lg text-amber-900/90 mb-2">Recovery Notepad</h2>
-
-              <div className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
-                style={{ backgroundColor: '#fdfbf7' }}
-              >
-                {/* Topbinding/Yellow Header */}
-                <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
-                  <span className="font-handlee text-yellow-800/60 text-sm font-bold tracking-widest uppercase">Quick Notes & Numbers</span>
-                </div>
-
-                {/* Lined Paper Background */}
-                <div className="absolute inset-0 top-12 pointer-events-none"
-                  style={{
-                    backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
-                    backgroundSize: '100% 2rem',
-                    marginTop: '0.5rem'
-                  }}
-                />
-
-                {/* Red Margin Line */}
-                <div className="absolute left-10 top-12 bottom-0 w-px bg-red-300/40 pointer-events-none" />
-
-                {/* Textarea */}
-                <textarea
-                  ref={textareaRef}
-                  value={journalEntry}
-                  onChange={(e) => {
-                    setJournalEntry(e.target.value)
-                    setHasTouched(true)
-                  }}
-                  onFocus={(e) => {
-                    isEditingRef.current = true
-                    if (journalEntry && e.target.selectionStart !== journalEntry.length) {
-                      const len = journalEntry.length
-                      e.target.setSelectionRange(len, len)
-                      e.target.scrollTop = e.target.scrollHeight
-                    }
-                  }}
-                  onBlur={() => (isEditingRef.current = false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') e.stopPropagation()
-                  }}
-                  placeholder="Jot down numbers, thoughts, or reminders..."
-                  className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
-                  style={{
-                    fontFamily: 'var(--font-handlee), cursive',
-                    lineHeight: '2rem'
-                  }}
-                  spellCheck={false}
-                />
-                {/* Save indicator */}
-                <div className="absolute bottom-2 right-4 text-xs font-body italic">
-                  {isSaving ? (
-                    <span className="text-amber-600 flex items-center gap-1">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Saving...
-                    </span>
-                  ) : saveComplete ? (
-                    <span className="text-green-600 font-bold">✓ Saved</span>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
-              </div>
-            </div>
+            <RecoveryNotepad
+              textareaRef={mobileTextareaRef}
+              journalEntry={journalEntry}
+              onJournalChange={setJournalEntry}
+              onTouched={() => setHasTouched(true)}
+              isEditingRef={isEditingRef}
+              isSaving={isSaving}
+              saveComplete={saveComplete}
+            />
           </div>
+        </div>
         </div>
         {/* Bottom navigation hint */}
         <div className="flex items-center justify-center pt-8">

@@ -18,19 +18,19 @@ import { AdminTabs } from "@/components/admin/admin-tabs"
 type AdminState = "loading" | "mobile" | "login" | "not-admin" | "authenticated"
 
 export default function AdminPage() {
-    const [state, setState] = useState<AdminState>("loading")
+    // Mobile detection - block admin panel on mobile devices
+    const [state, setState] = useState<AdminState>(() => {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+            || window.innerWidth < 768;
+        return isMobile ? "mobile" : "loading";
+    })
     const [user, setUser] = useState<User | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState("dashboard")
 
     useEffect(() => {
-        // Mobile detection - block admin panel on mobile devices
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-            || window.innerWidth < 768;
-        if (isMobile) {
-            setState("mobile");
-            return;
-        }
+        // Skip auth setup if mobile
+        if (state === "mobile") return;
 
         // Listen for auth state
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -59,7 +59,7 @@ export default function AdminPage() {
         })
 
         return () => unsubscribe()
-    }, [])
+    }, [state])
 
     const handleLogin = async () => {
         try {
