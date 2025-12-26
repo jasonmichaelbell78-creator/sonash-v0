@@ -472,27 +472,44 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       try {
         const { collection, query, where, getDocs, orderBy } = await import("firebase/firestore")
 
-        // Get start of current week (Sunday)
-        const now = new Date()
-        const weekStart = startOfWeek(now, { weekStartsOn: 0 }) // 0 = Sunday
-        const weekStartId = format(startOfDay(weekStart), 'yyyy-MM-dd')
+        // Get last 7 days of logs (rolling window)
+        const sevenDaysAgo = subDays(startOfDay(new Date()), 6) // 6 days ago + today = 7 days
+        const sevenDaysAgoId = format(sevenDaysAgo, 'yyyy-MM-dd')
+
+        console.log('📊 Weekly Stats Debug:', {
+          sevenDaysAgoId,
+          today: format(new Date(), 'yyyy-MM-dd'),
+          userId: user.uid
+        })
 
         const logsRef = collection(db, `users/${user.uid}/daily_logs`)
         const q = query(
           logsRef,
-          where('date', '>=', weekStartId),
+          where('date', '>=', sevenDaysAgoId),
           orderBy('date', 'desc')
         )
 
         const snapshot = await getDocs(q)
-        const logs = snapshot.docs.map(doc => ({
-          date: doc.data().date,
-          ...doc.data()
-        }))
+        console.log('📊 Query returned:', snapshot.size, 'documents')
 
-        // Count unique days with logs in current week
+        const logs = snapshot.docs.map(doc => {
+          const data = doc.data()
+          console.log('📊 Log entry:', { id: doc.id, date: data.date, hasContent: !!data.content })
+          return {
+            date: data.date,
+            ...data
+          }
+        })
+
+        // Count unique days with logs in last 7 days
         const uniqueDays = new Set(logs.map(log => log.date))
         const daysLogged = uniqueDays.size
+
+        console.log('📊 Weekly Stats Result:', {
+          uniqueDays: Array.from(uniqueDays),
+          daysLogged,
+          totalLogs: logs.length
+        })
 
         // Calculate current streak (consecutive days from today backwards)
         let streak = 0
@@ -508,8 +525,11 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           }
         }
 
+        console.log('📊 Streak calculated:', streak)
+
         setWeekStats({ daysLogged, streak })
       } catch (error) {
+        console.error('❌ Weekly stats error:', error)
         logger.error("Failed to calculate weekly stats", {
           userId: maskIdentifier(user.uid),
           error
