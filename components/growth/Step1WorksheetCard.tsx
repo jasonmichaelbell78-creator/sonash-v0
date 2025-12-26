@@ -446,9 +446,16 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
     const [section, setSection] = useState(1) // 1-4 for each concept section
     const [data, setData] = useState<Step1Data>(initialData)
     const [isSaving, setIsSaving] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [lastSavedData, setLastSavedData] = useState<Step1Data>(initialData)
     const { user } = useAuth()
-    const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const isOpenRef = useRef(false)
+
+    // Track dialog open state in ref to prevent race conditions
+    useEffect(() => {
+        isOpenRef.current = isOpen
+    }, [isOpen])
 
     // Check if there's any actual content entered
     const hasContent = useMemo(() => {
@@ -473,8 +480,32 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
         })
     }
 
+    // Load most recent saved worksheet
+    const loadSavedData = useCallback(async () => {
+        if (!user) return
+
+        setIsLoading(true)
+        try {
+            const entries = await FirestoreService.getInventoryEntries(user.uid, 1)
+            const stepWorksheet = entries.find((entry: { type: string }) => entry.type === 'step-1-worksheet')
+
+            if (stepWorksheet && stepWorksheet.data) {
+                const savedData = stepWorksheet.data as Step1Data
+                setData(savedData)
+                setLastSavedData(savedData)
+            }
+        } catch (error) {
+            console.error('Failed to load saved worksheet:', error)
+            // Don't show error to user - they can just start fresh
+        } finally {
+            setIsLoading(false)
+        }
+    }, [user])
+
     // Auto-save function
     const autoSave = useCallback(async () => {
+        // Prevent save after dialog closes (race condition protection)
+        if (!isOpenRef.current) return
         if (!user || !hasContent || isSaving) return
 
         // Don't save if data hasn't changed since last save
@@ -522,10 +553,14 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open)
         if (open) {
-            // Reset form state when opening
+            // Load saved data when opening (if exists)
             setSection(1)
-            setData({ ...initialData })
-            setLastSavedData({ ...initialData })
+            loadSavedData()
+        } else {
+            // Clear timeout when closing
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current)
+            }
         }
     }
 
@@ -550,10 +585,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
             setLastSavedData(data)
             toast.success("Step 1 worksheet saved successfully!")
-            setIsOpen(false)
-            setData(initialData)
-            setLastSavedData(initialData)
-            setSection(1)
+            // Keep the dialog open and preserve data so user can continue working
         } catch (error) {
             toast.error("Failed to save worksheet. Please try again.")
             console.error("Save error:", error)
@@ -597,14 +629,20 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
                                     Section {section} of 4: {currentSection.title}
                                 </p>
                             </div>
-                            {isSaving && (
-                                <div className="text-xs text-green-600 flex items-center gap-2">
+                            {isLoading && (
+                                <div className="text-xs text-blue-600 flex items-center gap-2" role="status" aria-live="polite">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                                    Loading...
+                                </div>
+                            )}
+                            {!isLoading && isSaving && (
+                                <div className="text-xs text-green-600 flex items-center gap-2" role="status" aria-live="polite" aria-atomic="true">
                                     <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
                                     Saving...
                                 </div>
                             )}
-                            {!isSaving && hasContent && (
-                                <div className="text-xs text-green-600/60 flex items-center gap-2">
+                            {!isLoading && !isSaving && hasContent && (
+                                <div className="text-xs text-green-600/60 flex items-center gap-2" role="status" aria-live="polite">
                                     <div className="w-2 h-2 bg-green-600/60 rounded-full" />
                                     Auto-save enabled
                                 </div>
