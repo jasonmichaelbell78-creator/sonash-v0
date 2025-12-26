@@ -20,6 +20,9 @@ type AdminState = "loading" | "mobile" | "login" | "not-admin" | "authenticated"
 export default function AdminPage() {
     // Mobile detection - block admin panel on mobile devices
     const [state, setState] = useState<AdminState>(() => {
+        // Only run mobile detection in browser (not during SSR)
+        if (typeof window === 'undefined') return "loading";
+
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
             || window.innerWidth < 768;
         return isMobile ? "mobile" : "loading";
@@ -29,6 +32,17 @@ export default function AdminPage() {
     const [activeTab, setActiveTab] = useState("dashboard")
 
     useEffect(() => {
+        // Check for mobile after mount (only if state is still loading from SSR)
+        if (state === "loading") {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                || window.innerWidth < 768;
+            if (isMobile) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
+                setState("mobile");
+                return;
+            }
+        }
+
         // Skip auth setup if mobile
         if (state === "mobile") return;
 
