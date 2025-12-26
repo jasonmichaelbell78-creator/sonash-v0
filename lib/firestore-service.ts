@@ -149,6 +149,9 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           hasContent: !!data.content,
         })
 
+        // Debug: Log the exact payload being sent
+        console.log('📤 Sending to Cloud Function:', JSON.stringify(payload, null, 2))
+
         // Retry Cloud Function call with exponential backoff for network failures
         await retryCloudFunction(
           saveDailyLogFn,
@@ -160,6 +163,10 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           userId: maskIdentifier(userId),
         })
       } catch (error: unknown) {
+        // Debug: Log the full error object
+        console.error('❌ Cloud Function error:', error)
+        console.error('Error details:', JSON.stringify(error, null, 2))
+
         // Handle specific Cloud Function errors with user-friendly messages
         interface CloudFunctionError {
           code?: string

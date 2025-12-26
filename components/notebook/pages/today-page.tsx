@@ -388,6 +388,12 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       // Hide "Saved" message after 2 seconds
       setTimeout(() => setSaveComplete(false), 2000)
     } catch (error) {
+      // Log detailed error information for debugging
+      console.error('❌ Save failed with error:', error)
+      if (error instanceof Error) {
+        console.error('Error message:', error.message)
+        console.error('Error stack:', error.stack)
+      }
       logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
       toast.error("We couldn't save today's notes. Please check your connection.")
     } finally {
