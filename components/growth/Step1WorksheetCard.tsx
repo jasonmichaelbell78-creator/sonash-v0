@@ -441,6 +441,16 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
     return null
 }
 
+/**
+ * Renders a trigger button and dialog for completing the Step 1 Worksheet (Powerlessness, Unmanageability).
+ *
+ * The component manages local form state, provides sectioned question UI, performs debounced auto-saves
+ * when the dialog is open and content is present, and offers a manual save action that persists the
+ * worksheet to Firestore for authenticated users.
+ *
+ * @param props - HTML button props forwarded to the trigger button; `className` is accepted but renamed internally.
+ * @returns A React element containing the worksheet trigger and controlled dialog UI.
+ */
 export default function Step1WorksheetCard({ className: _className, ...props }: Step1WorksheetCardProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [section, setSection] = useState(1) // 1-4 for each concept section
