@@ -492,9 +492,18 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         const snapshot = await getDocs(q)
         console.log('📊 Query returned:', snapshot.size, 'documents')
 
+        // DEBUG: Also fetch ALL logs to see what's in the database
+        const allLogsQuery = query(logsRef, orderBy('date', 'desc'))
+        const allLogsSnapshot = await getDocs(allLogsQuery)
+        console.log('📊 ALL logs in database:', allLogsSnapshot.size, 'total documents')
+        allLogsSnapshot.docs.slice(0, 10).forEach(doc => {
+          const data = doc.data()
+          console.log('📊 ALL logs entry:', { id: doc.id, date: data.date, hasContent: !!data.content, mood: data.mood, updatedAt: data.updatedAt })
+        })
+
         const logs = snapshot.docs.map(doc => {
           const data = doc.data()
-          console.log('📊 Log entry:', { id: doc.id, date: data.date, hasContent: !!data.content })
+          console.log('📊 Log entry (in range):', { id: doc.id, date: data.date, hasContent: !!data.content })
           return {
             date: data.date,
             ...data
