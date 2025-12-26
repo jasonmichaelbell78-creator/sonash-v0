@@ -6,6 +6,7 @@ import SpotCheckCard from "@/components/growth/SpotCheckCard"
 import NightReviewCard from "@/components/growth/NightReviewCard"
 import GratitudeCard from "@/components/growth/GratitudeCard"
 import DailySloganWidget from "@/components/growth/DailySloganWidget"
+import Step1WorksheetCard from "@/components/growth/Step1WorksheetCard"
 
 interface GrowthPageProps {
     onNavigate?: (moduleId: string) => void
@@ -80,6 +81,9 @@ export default function GrowthPage({ onNavigate: _onNavigate }: GrowthPageProps)
                     </div>
 
                     <div className="space-y-3">
+                        {/* Step 1 Worksheet */}
+                        <Step1WorksheetCard variants={itemVariants} />
+
                         {/* Step 4 Book */}
                         <motion.button
                             variants={itemVariants}
