@@ -548,10 +548,17 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
         setIsSaving(true)
         try {
+            // Save to inventoryEntries for structured storage
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'step-1-worksheet',
                 data: data as unknown as Record<string, unknown>,
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
+            })
+
+            // Also save to journal collection for timeline display
+            await FirestoreService.saveNotebookJournalEntry(user.uid, {
+                type: 'step-1-worksheet',
+                data: data as unknown as Record<string, unknown>
             })
 
             setLastSavedData(data)
@@ -612,10 +619,17 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
         setIsSaving(true)
         try {
+            // Save to inventoryEntries for structured storage
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'step-1-worksheet',
                 data: data as unknown as Record<string, unknown>,
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
+            })
+
+            // Also save to journal collection for timeline display
+            await FirestoreService.saveNotebookJournalEntry(user.uid, {
+                type: 'step-1-worksheet',
+                data: data as unknown as Record<string, unknown>
             })
 
             setLastSavedData(data)
@@ -719,8 +733,19 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
                             Previous
                         </Button>
 
-                        <div className="text-sm text-amber-900/60">
-                            {section} / 4
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="text-sm text-amber-900/60">
+                                {section} / 4
+                            </div>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsOpen(false)}
+                                className="text-xs text-amber-900/60 hover:text-amber-900"
+                            >
+                                Exit to Growth Page
+                            </Button>
                         </div>
 
                         {section < 4 ? (
