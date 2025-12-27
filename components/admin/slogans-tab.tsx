@@ -25,13 +25,12 @@ async function seedSlogans() {
 }
 
 // Form component
-function SloganForm({
+function SlogansForm({
     formData,
     setFormData
 }: {
     formData: Partial<Slogan>
     setFormData: (data: Partial<Slogan>) => void
-    isEditing: boolean
 }) {
     return (
         <div className="space-y-4 py-4">
@@ -127,7 +126,7 @@ const slogansConfig: AdminCrudConfig<Slogan> = {
 
     searchFields: ["text", "author", "source"],
 
-    FormComponent: SloganForm,
+    FormComponent: SlogansForm,
 
     emptyFormData: {
         text: "",

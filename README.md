@@ -144,9 +144,7 @@ This app uses **Firebase Firestore** with a user-centric data model.
 ## Documentation
 
 ### Product & Planning
-- [ROADMAP_V3.md](./ROADMAP_V3.md) - Canonical product roadmap
-- [WEB_ENHANCEMENTS_ROADMAP.md](./WEB_ENHANCEMENTS_ROADMAP.md) - Desktop features roadmap
-- [docs/FEATURE_DECISIONS.md](./docs/FEATURE_DECISIONS.md) - Key product decisions
+- [ROADMAP.md](./ROADMAP.md) - Canonical product roadmap (consolidated Dec 19, 2025)
 
 ### Technical Documentation
 - [docs/LIBRARY_ANALYSIS.md](./docs/LIBRARY_ANALYSIS.md) - **Context7 documentation for all dependencies (192,000+ code snippets)**
