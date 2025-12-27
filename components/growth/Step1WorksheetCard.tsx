@@ -441,6 +441,16 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
     return null
 }
 
+/**
+ * Renders a multi-section "Step 1 Worksheet" card that opens a modal for editing and saving worksheet data.
+ *
+ * The dialog presents four configured sections of questions, allows local editing across multiple input types,
+ * loads the user's most recent saved worksheet on open, autosaves changes after a short debounce while open,
+ * and persists explicit or automatic saves to Firestore (inventory entries and notebook journal). It also
+ * exposes navigation between sections and a manual "Save Worksheet" action.
+ *
+ * @returns The Step 1 Worksheet dialog element
+ */
 export default function Step1WorksheetCard({ className: _className, ...props }: Step1WorksheetCardProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [section, setSection] = useState(1) // 1-4 for each concept section
