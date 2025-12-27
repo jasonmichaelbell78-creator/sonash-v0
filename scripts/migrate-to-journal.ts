@@ -31,6 +31,17 @@ interface MigrationStats {
 async function migrateUserData(userId: string, stats: MigrationStats) {
     console.log(`\nMigrating user: ${userId}`);
 
+    // Check if user already migrated (idempotency check)
+    const existingJournalEntries = await db.collection(`users/${userId}/journal`)
+        .where('migratedFrom', 'in', ['daily_logs', 'inventoryEntries'])
+        .limit(1)
+        .get();
+
+    if (!existingJournalEntries.empty) {
+        console.log(`  ⏭️  Skipping user ${userId}: Already migrated`);
+        return;
+    }
+
     // 1. Migrate daily_logs
     const dailyLogsRef = db.collection(`users/${userId}/daily_logs`);
     const dailyLogsSnapshot = await dailyLogsRef.get();
@@ -61,6 +72,7 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
                     createdAt: data.createdAt || Timestamp.now(),
                     updatedAt: Timestamp.now(),
                     migratedFrom: 'daily_logs',
+                    migrationId: `daily_logs_${doc.id}`, // Unique identifier to prevent duplicates
                 });
                 stats.journalEntriesCreated++;
             }
@@ -82,6 +94,7 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
                     createdAt: data.createdAt || Timestamp.now(),
                     updatedAt: Timestamp.now(),
                     migratedFrom: 'daily_logs',
+                    migrationId: `daily_logs_content_${doc.id}`, // Unique identifier
                 });
                 stats.journalEntriesCreated++;
             }
@@ -101,12 +114,13 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
             const data = doc.data();
             const createdAt = data.createdAt || Timestamp.now();
 
-            // Convert timestamp to dateLabel
+            // Convert timestamp to dateLabel using UTC to prevent timezone issues
             let dateLabel: string;
             if (createdAt.toDate) {
-                dateLabel = createdAt.toDate().toLocaleDateString('en-CA');
+                const date = createdAt.toDate();
+                dateLabel = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
             } else {
-                dateLabel = new Date().toLocaleDateString('en-CA');
+                dateLabel = new Date().toISOString().split('T')[0];
             }
 
             const entryType = data.type; // spot-check, night-review, gratitude
@@ -123,6 +137,7 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
                 createdAt,
                 updatedAt: Timestamp.now(),
                 migratedFrom: 'inventoryEntries',
+                migrationId: `inventoryEntries_${doc.id}`, // Unique identifier
             });
 
             stats.journalEntriesCreated++;
@@ -141,19 +156,19 @@ function generateSearchableText(type: string, data: Record<string, unknown>): st
 
     switch (type) {
         case 'spot-check':
-            parts.push(data.action || '');
-            parts.push(...(data.feelings || []));
-            parts.push(...(data.absolutes || []));
+            if (typeof data.action === 'string') parts.push(data.action);
+            if (Array.isArray(data.feelings)) parts.push(...data.feelings.map(String));
+            if (Array.isArray(data.absolutes)) parts.push(...data.absolutes.map(String));
             break;
         case 'night-review':
-            parts.push(data.step4_gratitude || '');
-            parts.push(data.step4_surrender || '');
-            if (data.step3_reflections) {
+            if (typeof data.step4_gratitude === 'string') parts.push(data.step4_gratitude);
+            if (typeof data.step4_surrender === 'string') parts.push(data.step4_surrender);
+            if (data.step3_reflections && typeof data.step3_reflections === 'object') {
                 Object.values(data.step3_reflections).forEach((v: unknown) => parts.push(String(v || '')));
             }
             break;
         case 'gratitude':
-            parts.push(...(data.items || []));
+            if (Array.isArray(data.items)) parts.push(...data.items.map(String));
             break;
     }
 
@@ -173,17 +188,39 @@ async function runMigration() {
         errors: [],
     };
 
-    // Get all users
-    const usersRef = db.collection('users');
-    const usersSnapshot = await usersRef.get();
+    // Process users in batches to prevent memory exhaustion
+    const BATCH_SIZE = 100;
+    let lastDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+    let totalUsers = 0;
+    let hasMore = true;
 
-    console.log(`Found ${usersSnapshot.size} users to migrate`);
+    while (hasMore) {
+        // Get next batch of users
+        let query = db.collection('users').limit(BATCH_SIZE);
+        if (lastDoc) {
+            query = query.startAfter(lastDoc);
+        }
 
-    for (const userDoc of usersSnapshot.docs) {
-        await migrateUserData(userDoc.id, stats);
+        const usersSnapshot = await query.get();
+
+        if (usersSnapshot.empty) {
+            hasMore = false;
+            break;
+        }
+
+        console.log(`\nProcessing batch of ${usersSnapshot.size} users (total so far: ${totalUsers})...`);
+
+        for (const userDoc of usersSnapshot.docs) {
+            await migrateUserData(userDoc.id, stats);
+            totalUsers++;
+        }
+
+        lastDoc = usersSnapshot.docs[usersSnapshot.docs.length - 1];
+        hasMore = usersSnapshot.size === BATCH_SIZE;
     }
 
     console.log('\n=== Migration Complete ===');
+    console.log(`Total users processed: ${totalUsers}`);
     console.log(`Daily logs processed: ${stats.dailyLogsProcessed}`);
     console.log(`Inventory entries processed: ${stats.inventoryEntriesProcessed}`);
     console.log(`Journal entries created: ${stats.journalEntriesCreated}`);
