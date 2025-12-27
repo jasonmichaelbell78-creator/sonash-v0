@@ -19,7 +19,6 @@ function MeetingForm({
 }: {
     formData: Partial<Meeting>
     setFormData: (data: Partial<Meeting>) => void
-    isEditing: boolean
 }) {
     return (
         <div className="space-y-4 py-4">
@@ -167,9 +166,9 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
             label: "Type",
             render: (meeting) => (
                 <span className={`px-2 py-1 rounded text-xs font-medium ${meeting.type === "AA" ? "bg-blue-100 text-blue-700" :
-                        meeting.type === "NA" ? "bg-green-100 text-green-700" :
-                            meeting.type === "CA" ? "bg-purple-100 text-purple-700" :
-                                "bg-gray-100 text-gray-700"
+                    meeting.type === "NA" ? "bg-green-100 text-green-700" :
+                        meeting.type === "CA" ? "bg-purple-100 text-purple-700" :
+                            "bg-gray-100 text-gray-700"
                     }`}>
                     {meeting.type}
                 </span>
