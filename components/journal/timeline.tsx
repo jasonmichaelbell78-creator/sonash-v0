@@ -14,7 +14,8 @@ const filterMapping: Record<string, JournalEntryType[]> = {
     'gratitude': ['gratitude'],
     'daily': ['mood', 'daily-log'],
     'notes': ['free-write', 'meeting-note'],
-    'inventory': ['inventory', 'night-review']
+    'inventory': ['inventory', 'night-review'],
+    'stepwork': ['step-1-worksheet']
 }
 
 export function Timeline({ filter }: { filter?: string | null }) {

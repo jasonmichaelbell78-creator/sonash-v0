@@ -579,6 +579,144 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - P3 (Low priority): ⏳ PLANNED - Included in P2 breakdown above
 - **Total Completed: ~20 hours (22 real issues + 5 false positives)** | **Total Remaining: ~11 hours** (down from ~32-46 hours)
 
+### Week 18+: Gemini 2.0 Flash Thinking Aggregated Security Review (📋 Planned - Dec 27, 2025)
+
+*Based on December 27, 2025 AI aggregated code review (7 models: Gemini 2.0 Flash Thinking [Aggregator], Copilot, Jules, Gemini, Kimi K2, Claude Opus, Claude)*
+
+**Analysis Results:**
+- **Model:** Gemini 2.0 Flash Thinking (Aggregator)
+- **Total Raw Findings:** 46 → **9 Deduplicated Issues**
+- **Consensus Score:** 6.5/10 ("Ferrari with no brakes")
+- **Report:** See aggregated findings summary below
+
+**Key Insight:** Repository uses "bleeding edge" tech stack (Next.js 16, Firebase 12) which caused some AI models to flag as "non-existent" - these were FALSE POSITIVES. The architecture is sound but security configuration is critically flawed.
+
+**Priority Distribution:**
+- Critical: 2 issues (security bypasses)
+- High: 2 issues (XSS + hoisting bug)
+- Medium: 4 issues (error handling + accessibility + dependencies)
+- Low: 1 issue (debug logging)
+
+#### 🚨 P0 - CRITICAL Security Fixes (Week 18 - Immediate)
+
+**Security Configuration Lockdown** (1-2 hr effort)
+
+- ⏸️ **CRITICAL-1: Firebase App Check Explicitly Disabled** (functions/src/index.ts:258)
+  - **Issue:** `requireAppCheck: false` with comment "TEMPORARY: Disabled while working out reCAPTCHA issues"
+  - **Impact:** Bot protection completely disabled; attackers can script automated abuse
+  - **Fix:** Set `requireAppCheck: true` for all production deployments
+  - **Status:** ⏸️ DEFERRED - Cross-reference M1 Week 1-3 and M2 (see [recaptcha_removal_guide.md](./recaptcha_removal_guide.md))
+  - **Reports:** Gemini Aggregator Finding #1 (consensus: 6/7 models)
+  - **Cross-reference:** Week 14+ P0 C3 (same issue, previously identified)
+  - **Priority:** P2 - Implement after M3+ unless bot abuse becomes significant
+
+- ✅ **CRITICAL-2: Firestore Rules Allow Direct Client Writes** (firestore.rules)
+  - **Issue:** `allow create, update: if isOwner(userId)` permits direct writes to journal collection, bypassing Cloud Functions
+  - **Impact:** Malicious users can bypass Rate Limiting, Zod Validation, and Sanitization
+  - **Fix:** Change rules to `allow write: if false;` for journal collection
+  - **Status:** ✅ **ALREADY FIXED** - Verified in Week 13+ Critical Security Fixes
+  - **Reports:** Gemini Aggregator Finding #2 (consensus: 3/7 models)
+  - **Cross-reference:** Week 13+ Critical Security Fixes (JULES #3), Week 14+ P0 C4
+
+#### 🔴 P1 - HIGH Priority Fixes (Week 18-19 - Security & Reliability)
+
+**XSS Prevention** (2-3 hr effort)
+
+- ❌ **HIGH-1: Stored XSS in searchableText Field** (functions/src/index.ts, hooks/use-journal.ts)
+  - **Issue:** Client-side sanitization for searchableText; insufficient regex; server-side sanitization missing
+  - **Impact:** Malicious scripts could be injected and execute in Admin Dashboard or shared views
+  - **Fix:** Implement robust server-side sanitization (DOMPurify or sanitize-html) in Cloud Function
+  - **Reports:** Gemini Aggregator Finding #3
+  - **Cross-reference:** Week 14+ P2 M11 (already completed with sanitizeForSearch())
+  - **Status:** ✅ **ALREADY FIXED** - Created sanitizeForSearch() function to strip HTML/JS
+  - **Effort:** 0 hours (already complete)
+
+**Critical Bug Fixes** (1-2 hr effort)
+
+- ❌ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
+  - **Issue:** `updateTimeUntil()` called inside setInterval before defined; violates React rules
+  - **Impact:** Countdown timer may fail or throw runtime errors in strict mode
+  - **Fix:** Wrap updateTimeUntil in useCallback hook, define before useEffect
+  - **Reports:** Gemini Aggregator Finding #4 (identified by Copilot only)
+  - **Effort:** 1 hour
+  - **Priority:** HIGH - Core meeting-finder feature reliability
+
+#### 🟡 P2 - MEDIUM Priority Improvements (Week 19-20 - Code Quality)
+
+**Error Handling & UX** (3-4 hr effort)
+
+- ❌ **MEDIUM-1: Silent Auth Failures** (components/providers/auth-context.tsx)
+  - **Issue:** `ensureAnonymousSession` retries with exponential backoff but swallows final error
+  - **Impact:** Users with poor connections see "broken" app with no error message
+  - **Fix:** Surface final error to UI state (setAuthError) with "Connection Failed" banner and manual retry button
+  - **Reports:** Gemini Aggregator Finding #5
+  - **Cross-reference:** Week 14+ P1 H5 (similar issue, already completed)
+  - **Status:** ✅ **ALREADY FIXED** - Added retry mechanism with exponential backoff and user-facing errors
+  - **Effort:** 0 hours (already complete)
+
+**Data Integrity** (2-3 hr effort)
+
+- ❌ **MEDIUM-2: Meeting Pagination Sort Mismatch** (lib/db/meetings.ts)
+  - **Issue:** Sorts by Document ID (random string) for pagination, then client-side sorts by time
+  - **Impact:** Chronologically incorrect results across pages (7 AM on Page 2, 9 AM on Page 1)
+  - **Fix:** Create Firestore Composite Index on [day, time]; update query to orderBy('day').orderBy('time')
+  - **Reports:** Gemini Aggregator Finding #6
+  - **Effort:** 2 hours
+  - **Priority:** MEDIUM - UX quality for meeting finder
+
+**Accessibility** (30 min effort)
+
+- ❌ **MEDIUM-3: Accessibility Violation - Zoom Disabled** (app/layout.tsx)
+  - **Issue:** Viewport meta tag configured with `userScalable: false`
+  - **Impact:** Violates WCAG 2.1 Success Criterion 1.4.4; prevents users with visual impairments from zooming
+  - **Fix:** Remove `userScalable: false` and `maximumScale: 1`
+  - **Reports:** Gemini Aggregator Finding #7 (identified by Claude Opus only)
+  - **Effort:** 30 minutes
+  - **Priority:** MEDIUM - Accessibility compliance
+
+**Dependencies** (1-2 hr effort)
+
+- ❌ **MEDIUM-4: Zod Version Mismatch Between Client/Server** (functions/package.json vs package.json)
+  - **Issue:** Client uses zod v4.2.1, server uses v4.1.13; npm install timeouts due to complex peer dependencies
+  - **Impact:** Subtle validation bugs where payload passes on client but fails on server
+  - **Fix:** Synchronize zod versions; use `npm install --legacy-peer-deps` to resolve timeouts
+  - **Reports:** Gemini Aggregator Finding #8 (identified by Copilot and Kimi K2)
+  - **Effort:** 1 hour
+  - **Priority:** MEDIUM - Consistency and stability
+
+#### 🟢 P3 - LOW Priority Cleanup (Week 20+ - Polish)
+
+**Security Hardening** (1 hr effort)
+
+- ❌ **LOW-1: Debug Logging in Production** (lib/firestore-service.ts)
+  - **Issue:** console.log statements printing full payloads and error objects in production
+  - **Impact:** Sensitive user data (journal contents) leaked to browser console
+  - **Fix:** Wrap all console logs in `if (process.env.NODE_ENV === 'development')` check
+  - **Reports:** Gemini Aggregator Finding #9
+  - **Cross-reference:** Week 13+ Low Priority (debug logging cleanup)
+  - **Effort:** 1 hour
+  - **Priority:** LOW - Privacy hygiene
+
+**Status Summary:**
+- ⏸️ Deferred: 1 issue (CRITICAL-1 - App Check, cross-reference to existing work)
+- ✅ Already Fixed: 3 issues (CRITICAL-2, HIGH-1, MEDIUM-1)
+- ❌ New Work Needed: 5 issues (HIGH-2, MEDIUM-2, MEDIUM-3, MEDIUM-4, LOW-1)
+
+**Total Estimated Effort:**
+- ⏸️ Deferred: CRITICAL-1 (covered in M2 App Check work)
+- ✅ Already Fixed: 0 hours (3 issues pre-completed)
+- ❌ Remaining: ~7.5 hours (5 new issues)
+  - P1 (High): 1 hour (HIGH-2: Hoisting bug)
+  - P2 (Medium): 5.5 hours (MEDIUM-2=2h, MEDIUM-3=0.5h, MEDIUM-4=1h)
+  - P3 (Low): 1 hour (LOW-1: Debug logging)
+
+**Key Takeaway from Aggregator:**
+> "The SoNash codebase is a 'Ferrari with no brakes.' The engine (Next.js 15 + Firebase Architecture) is powerful and modern, but security configuration is critically flawed. Once specific configuration lines are fixed, codebase quality jumps from 6.5/10 to 8.5/10."
+
+**False Positives Identified:**
+- Next.js 16 and Firebase 12 flagged as "non-existent" by multiple models - INCORRECT, these are valid bleeding-edge versions
+- This highlights training data cutoff issues for late-2025 tech stacks
+
 ---
 
 ## ⚡ M1.5 - Quick Wins (🔄 In Progress)
@@ -1425,6 +1563,7 @@ All admin Cloud Functions MUST:
 
 **Document History:**
 
+- December 27, 2025: Added Week 18+ Gemini 2.0 Flash Thinking Aggregated Security Review - Integrated findings from 7-model aggregated review (Gemini 2.0 Flash Thinking as Aggregator, plus Copilot, Jules, Gemini, Kimi K2, Claude Opus, Claude). 9 deduplicated issues organized by priority: 2 critical (1 deferred, 1 already fixed), 2 high (1 already fixed, 1 new), 4 medium (1 already fixed, 3 new), 1 low (new). Only 5 issues require new work: ~7.5 hours total. Key insight: "Ferrari with no brakes" - modern architecture undermined by security configuration flaws. 3 findings already completed in prior weeks, demonstrating value of continuous code review. False positives identified: Next.js 16 and Firebase 12 flagged as non-existent by multiple models due to training data cutoff.
 - December 24, 2025: Added Week 14+ Consolidated 6-AI Code Review Remediation section - Integrated findings from 6-model consolidated review (Claude Code, Codex, Jules, Kimi K2, Claude, Claude Opus 4.5). 42 deduplicated issues organized by priority (P0-P3): 9 critical/high priority issues requiring action, 5 already fixed, 1 deferred (App Check), 22 medium/low priority planned. Estimated remediation: ~48-69 hours. Report: [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md). M1 progress remains ~85% (new findings extend completion timeline).
 - December 23, 2025: M1.6 updated to v1.4 - Phases 1-3 complete, Today Page Enhancement complete (all 10 UX improvements), added Phase 6 (Customizable Quick Actions). Renamed to "M1.6 - Admin Panel + Today Page Enhancement". Progress updated to ~65%. Overall roadmap progress: ~26%.
 - December 22, 2025: Updated Phase 1 prompt to v1.3 (fail-closed middleware, nodejs runtime, bounded queries, invalid date guards)
