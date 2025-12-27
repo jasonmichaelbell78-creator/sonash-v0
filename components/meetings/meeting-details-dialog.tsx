@@ -25,6 +25,18 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
 
   const distance = getMeetingDistance()
 
+  const getFullAddress = () => {
+    const parts = [
+      meeting.address,
+      meeting.city || "Nashville",
+      meeting.state || "TN",
+      meeting.zip
+    ].filter(Boolean)
+    return parts.join(", ")
+  }
+
+  const fullAddress = getFullAddress()
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-[#fdfbf7] border-amber-200">
@@ -45,6 +57,9 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
             <div className="flex-1">
               <h4 className="font-medium text-amber-900 text-sm">Location</h4>
               <p className="text-sm text-amber-800/80">{meeting.address}</p>
+              <p className="text-xs text-amber-800/60 mt-0.5">
+                {[meeting.city || "Nashville", meeting.state || "TN", meeting.zip].filter(Boolean).join(", ")}
+              </p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">{meeting.neighborhood}</span>
                 {distance && (
@@ -63,10 +78,12 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
               variant="outline"
               className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
               onClick={() => {
-                // Use coordinates if available for precise navigation, fallback to address search
-                const mapsUrl = meeting.coordinates
+                // Use coordinates if available and NOT (0,0)
+                const hasValidCoords = meeting.coordinates && (meeting.coordinates.lat !== 0 || meeting.coordinates.lng !== 0)
+
+                const mapsUrl = hasValidCoords && meeting.coordinates
                   ? `https://www.google.com/maps/dir/?api=1&destination=${meeting.coordinates.lat},${meeting.coordinates.lng}`
-                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(meeting.address)}`
+                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`
                 window.open(mapsUrl, '_blank')
               }}
             >
@@ -77,8 +94,8 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
               variant="outline"
               className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
               onClick={() => {
-                // Create shareable link
-                const shareText = `${meeting.name} - ${meeting.day} at ${meeting.time}\n${meeting.address}`
+                // Create shareable link with FULL address
+                const shareText = `${meeting.name} - ${meeting.day} at ${meeting.time}\n${fullAddress}`
                 if (navigator.share) {
                   navigator.share({
                     title: meeting.name,
