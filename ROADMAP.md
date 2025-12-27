@@ -679,10 +679,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Accessibility** (30 min effort)
 
-- ❌ **MEDIUM-3: Accessibility Violation - Zoom Disabled** (app/layout.tsx)
-  - **Issue:** Viewport meta tag configured with `userScalable: false`
+- ✅ **MEDIUM-3: Accessibility Violation - Zoom Disabled** (app/layout.tsx)
+  - **Issue:** Viewport meta tag configured with `userScalable: false` and `maximumScale: 1`
   - **Impact:** Violates WCAG 2.1 Success Criterion 1.4.4; prevents users with visual impairments from zooming
   - **Fix:** Remove `userScalable: false` and `maximumScale: 1`
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Removed `maximumScale: 1` restriction from viewport config
+    * Removed `userScalable: false` restriction
+    * Added comment explaining WCAG 2.1 compliance requirement
+    * Users can now pinch-to-zoom on mobile and use browser zoom controls
   - **Reports:** Gemini Aggregator Finding #7 (identified by Claude Opus only)
   - **Effort:** 30 minutes
   - **Priority:** MEDIUM - Accessibility compliance
@@ -712,14 +718,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Status Summary:**
 - ⏸️ Deferred: 1 issue (CRITICAL-1 - App Check, cross-reference to existing work)
-- ✅ Already Fixed: 5 issues (CRITICAL-2, HIGH-1, HIGH-2, MEDIUM-1, MEDIUM-2)
-- ❌ New Work Needed: 3 issues (MEDIUM-3, MEDIUM-4, LOW-1)
+- ✅ Already Fixed: 6 issues (CRITICAL-2, HIGH-1, HIGH-2, MEDIUM-1, MEDIUM-2, MEDIUM-3)
+- ❌ New Work Needed: 2 issues (MEDIUM-4, LOW-1)
 
 **Total Estimated Effort:**
 - ⏸️ Deferred: CRITICAL-1 (covered in M2 App Check work)
-- ✅ Already Fixed: 3 hours (5 issues: 3 pre-completed + HIGH-2 + MEDIUM-2 just completed)
-- ❌ Remaining: ~2.5 hours (3 issues)
-  - P2 (Medium): 1.5 hours (MEDIUM-3=0.5h, MEDIUM-4=1h)
+- ✅ Already Fixed: 3.5 hours (6 issues: 3 pre-completed + HIGH-2 + MEDIUM-2 + MEDIUM-3 just completed)
+- ❌ Remaining: ~2 hours (2 issues)
+  - P2 (Medium): 1 hour (MEDIUM-4: Zod version sync)
   - P3 (Low): 1 hour (LOW-1: Debug logging)
 
 **Key Takeaway from Aggregator:**
@@ -743,6 +749,11 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ User error notifications (Sonner toasts)
 - ✅ Firestore indexes for performance
 - ✅ UI Polish (Notebook Cover typography, Recovery Prayers formatting)
+- ✅ The Library Tab (Content hub: Glossary, Etiquette, Quick Links, Prayers)
+- ✅ HALT Check (Basic Implementation)
+- ✅ "I Made It Through Today" Button
+- ✅ Sobriety Clock (Minutes display)
+
 
 **Documentation:** See [docs/JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md) for complete changelog
 
@@ -751,22 +762,13 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - 🔄 Settings page UI
 - 🔄 Profile management
 - 🔄 Clean date picker improvements
-- ✅ **The Library Tab** (10 SP) - Content hub consolidating:
-  - ✅ Glossary (searchable recovery terms)
-  - ✅ Meeting Etiquette guide
-  - ✅ Quick Links (AA/NA sites, hotlines)
-  - ✅ Prayers (CMS-managed)
+
 
 ### Planned Quick Wins (Priority Order)
 
 #### P0 - Critical UX
 
-1. **Recovery Library** (✅ Complete)
-   - ✅ Glossary of recovery terms, slogans, abbreviations
-   - ✅ Meeting etiquette guide for first-timers
-   - ✅ Searchable reference material
-
-2. **Expanded Onboarding Wizard** (8-13 SP)
+1. **Expanded Onboarding Wizard** (8-13 SP)
    - Program selection (AA/NA/CA/Smart Recovery)
    - Sobriety/clean date setup with guidance
    - Stage-of-recovery assessment
@@ -776,7 +778,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
    - Sponsor contact setup (optional)
    - Skip option for returning users
 
-3. **Sponsor Personalization System** (8-13 SP)
+2. **Sponsor Personalization System** (8-13 SP)
    - **Leverages:** `hasSponsor` data from onboarding
    - **Sponsor Contact Management:**
      - Add sponsor name, phone, email
@@ -796,21 +798,13 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
      - Feature usage by sponsor status
    - **Why:** Fulfills onboarding promise of personalization, proven retention booster
 
-4. **Stage-of-Recovery Selector** (4 SP)
+3. **Stage-of-Recovery Selector** (4 SP)
    - Adjusts app emphasis based on user stage
    - Newcomer vs old-timer focus
 
-4. **"I Made It Through Today" Button** (2 SP)
-   - End-of-day celebration/affirmation
-   - Builds positive reinforcement
-
 #### P1 - High Value
 
-5. **HALT Check** (4 SP)
-   - Hungry/Angry/Lonely/Tired assessment
-   - User-initiated button for self-check
-
-6. **User Documentation & Help System** (5-8 SP)
+4. **User Documentation & Help System** (5-8 SP)
    - Getting started guide for new users
    - Feature explanations (daily check-in, journal, growth tools)
    - Recovery program primer (12 steps overview)
@@ -819,25 +813,21 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
    - Optional: Interactive tutorial/walkthrough on first launch
    - **Why:** Reduces confusion, improves onboarding, helps users get value faster
 
-7. **Sober Fun Ideas Generator** (3 SP)
+5. **Sober Fun Ideas Generator** (3 SP)
    - Random activities for boredom
    - Relapse prevention tool
 
-7. **"Meetings Starting Soon" Filter** (3 SP)
+6. **"Meetings Starting Soon" Filter** (3 SP)
    - Shows meetings within next hour
    - Location-based proximity
 
 #### P2 - Nice to Have
 
-8. **Sobriety Clock with Minutes** (2 SP)
-   - Important for early recovery (0-90 days)
-   - Feasibility check required
-
-9. **"Too Tired" Mode** (3 SP)
+7. **"Too Tired" Mode** (3 SP)
    - Reduces night review to 3 questions
    - Prevents fatigue-based abandonment
 
-10. **Disguised App Icon + Name** (5 SP)
+8. **Disguised App Icon + Name** (5 SP)
 
 - Privacy layer for device sharing
 - "Journal" or neutral branding
@@ -962,23 +952,13 @@ All admin Cloud Functions MUST:
 - 8 new files (6 components + 2 hooks)
 - 1 major refactor (`components/notebook/pages/today-page.tsx`)
 
-### Today Page Mobile Layout Reordering (📋 HIGH PRIORITY - Next Up)
+### Today Page Mobile Layout Reordering (✅ Complete)
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High — improves mobile UX flow
 
 **Objective:** Reorder Today page components on mobile to follow a more logical progression from quick info to detailed reflection.
 
 **Current Mobile Order:**
-1. Check-In (mood, cravings, used)
-2. HALT Check
-3. "I Made It Through Today" button
-4. Weekly Stats
-5. Time Tracker
-6. Daily Quote
-7. Today's Reading
-8. Recovery Notepad
-
-**Desired Mobile Order:**
 1. **Time Tracker** (clean time display)
 2. **Daily Quote** (inspiration)
 3. **Today's Reading** (external links)
@@ -988,20 +968,7 @@ All admin Cloud Functions MUST:
 7. **Weekly Stats** (progress summary)
 8. **Recovery Notepad** (free-form journaling)
 
-**Rationale:**
-- Start with quick, passive content (tracker, quote, reading)
-- Move to active engagement (check-in, HALT)
-- End with reflection tools (notepad)
-- Maintains 2-column desktop grid layout
-
-**Technical Approach:**
-- Use CSS flexbox with `order` property on mobile
-- Preserve `md:grid md:grid-cols-2` on desktop
-- Individual `order-X` classes per component (avoid wrapper divs that create layout gaps)
-- Test thoroughly to prevent desktop layout regression
-
-**Previous Attempt:** Dec 23, 2025 - Caused desktop layout gaps, reverted
-**Next Attempt:** Use more conservative approach with minimal DOM changes
+**Status:** Verified - Codebase implementation matches desired mobile order through logical column grouping.
 
 ### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
 
