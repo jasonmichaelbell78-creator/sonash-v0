@@ -32,6 +32,8 @@ export function EntryCard({ entry, index, onClick }: EntryCardProps) {
                 return "bg-indigo-50 w-full shadow-md p-6 border-l-4 border-indigo-500"
             case "daily-log":
                 return "bg-gradient-to-br from-sky-50 to-sky-100 w-full max-w-xs p-4 rounded-2xl shadow-md border-2 border-sky-200/50 rotate-[1deg]"
+            case "step-1-worksheet":
+                return "bg-green-50 w-full shadow-md p-6 border-l-4 border-green-500 rotate-[0.5deg]"
             default:
                 return "bg-white w-full shadow-md p-4 rotate-[-0.5deg]"
         }
@@ -177,6 +179,38 @@ export function EntryCard({ entry, index, onClick }: EntryCardProps) {
                         <h3 className="font-heading text-lg text-[var(--journal-text)]">Nightly Inventory</h3>
                         <div className="text-xs text-slate-500 font-sans mt-1">Click to review</div>
                     </div>
+                )}
+
+                {entry.type === 'step-1-worksheet' && (
+                    (() => {
+                        const worksheetSections = [
+                            { key: 'powerlessnessOverAmount', label: 'Powerlessness over Amount' },
+                            { key: 'powerlessnessOverBadResults', label: 'Powerlessness over Bad Results' },
+                            { key: 'unmanageability', label: 'Unmanageability' },
+                            { key: 'conclusionsAndAcceptance', label: 'Conclusions & Acceptance' },
+                        ];
+                        const entryData = entry.data as Record<string, unknown>;
+
+                        return (
+                            <div className="w-full space-y-2">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-2xl">📗</span>
+                                    <h3 className="font-heading text-lg text-green-900">Step 1 Worksheet</h3>
+                                </div>
+                                <div className="text-sm text-green-800/80 space-y-1">
+                                    {worksheetSections.map(section => (
+                                        <div className="flex items-center gap-2" key={section.key}>
+                                            <span className="text-xs w-3">{entryData[section.key] ? '✓' : ''}</span>
+                                            <span>{section.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="text-xs text-green-700 font-sans mt-3 pt-3 border-t border-green-200">
+                                    Click to review your Step 1 work
+                                </div>
+                            </div>
+                        );
+                    })()
                 )}
             </div>
         </motion.div>
