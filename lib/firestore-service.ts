@@ -149,9 +149,14 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           hasContent: !!data.content,
         })
 
-        // Debug: Log the exact payload being sent (development only)
+        // Debug: Log sanitized payload (development only)
+        // Mask content field to prevent sensitive journal data from leaking
         if (process.env.NODE_ENV === 'development') {
-          console.log('📤 Sending to Cloud Function:', JSON.stringify(payload, null, 2))
+          const sanitizedPayload = {
+            ...payload,
+            content: payload.content ? `(${(payload.content as string).length} chars)` : '(empty)'
+          }
+          console.log('📤 Sending to Cloud Function:', JSON.stringify(sanitizedPayload, null, 2))
         }
 
         // Retry Cloud Function call with exponential backoff for network failures
@@ -165,10 +170,18 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           userId: maskIdentifier(userId),
         })
       } catch (error: unknown) {
-        // Debug: Log the full error object (development only)
+        // Debug: Log structured error details (development only)
         if (process.env.NODE_ENV === 'development') {
           console.error('❌ Cloud Function error:', error)
-          console.error('Error details:', JSON.stringify(error, null, 2))
+          // Properly serialize error object by extracting non-enumerable properties
+          const err = error as Error
+          console.error('Error details:', JSON.stringify({
+            message: err.message,
+            name: err.name,
+            stack: err.stack,
+            cause: err.cause,
+            code: (error as { code?: string }).code,
+          }, null, 2))
         }
 
         // Handle specific Cloud Function errors with user-friendly messages

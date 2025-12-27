@@ -93,7 +93,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "day",
+          "fieldPath": "dayIndex",
           "order": "ASCENDING"
         },
         {
