@@ -182,33 +182,35 @@ export function EntryCard({ entry, index, onClick }: EntryCardProps) {
                 )}
 
                 {entry.type === 'step-1-worksheet' && (
-                    <div className="w-full space-y-2">
-                        <div className="flex items-center gap-2 mb-3">
-                            <span className="text-2xl">📗</span>
-                            <h3 className="font-heading text-lg text-green-900">Step 1 Worksheet</h3>
-                        </div>
-                        <div className="text-sm text-green-800/80 space-y-1">
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs">✓</span>
-                                <span>Powerlessness over Amount</span>
+                    (() => {
+                        const worksheetSections = [
+                            { key: 'powerlessnessOverAmount', label: 'Powerlessness over Amount' },
+                            { key: 'powerlessnessOverBadResults', label: 'Powerlessness over Bad Results' },
+                            { key: 'unmanageability', label: 'Unmanageability' },
+                            { key: 'conclusionsAndAcceptance', label: 'Conclusions & Acceptance' },
+                        ];
+                        const entryData = entry.data as Record<string, unknown>;
+
+                        return (
+                            <div className="w-full space-y-2">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-2xl">📗</span>
+                                    <h3 className="font-heading text-lg text-green-900">Step 1 Worksheet</h3>
+                                </div>
+                                <div className="text-sm text-green-800/80 space-y-1">
+                                    {worksheetSections.map(section => (
+                                        <div className="flex items-center gap-2" key={section.key}>
+                                            <span className="text-xs w-3">{entryData[section.key] ? '✓' : ''}</span>
+                                            <span>{section.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="text-xs text-green-700 font-sans mt-3 pt-3 border-t border-green-200">
+                                    Click to review your Step 1 work
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs">✓</span>
-                                <span>Powerlessness over Bad Results</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs">✓</span>
-                                <span>Unmanageability</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs">✓</span>
-                                <span>Conclusions & Acceptance</span>
-                            </div>
-                        </div>
-                        <div className="text-xs text-green-700 font-sans mt-3 pt-3 border-t border-green-200">
-                            Click to review your Step 1 work
-                        </div>
-                    </div>
+                        );
+                    })()
                 )}
             </div>
         </motion.div>
