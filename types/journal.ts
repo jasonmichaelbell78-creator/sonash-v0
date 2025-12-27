@@ -7,7 +7,8 @@ export type JournalEntryType =
     | 'free-write'
     | 'meeting-note'
     | 'daily-log'
-    | 'check-in';
+    | 'check-in'
+    | 'step-1-worksheet';
 
 // Base interface for ALL entries
 interface BaseEntry {
@@ -106,5 +107,11 @@ export interface CheckInEntry extends BaseEntry {
     };
 }
 
+// 8. Step 1 Worksheet Entry
+export interface Step1WorksheetEntry extends BaseEntry {
+    type: 'step-1-worksheet';
+    data: Record<string, unknown>; // Complex nested structure from worksheet
+}
+
 // The Union Type (This is the magic part)
-export type JournalEntry = MoodEntry | GratitudeEntry | InventoryEntry | SpotCheckEntry | NightReviewEntry | NoteEntry | DailyLogEntry | CheckInEntry;
+export type JournalEntry = MoodEntry | GratitudeEntry | InventoryEntry | SpotCheckEntry | NightReviewEntry | NoteEntry | DailyLogEntry | CheckInEntry | Step1WorksheetEntry;
