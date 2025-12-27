@@ -355,7 +355,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
     // Save a journal entry from notebook inputs (mood, cravings, used, notes, etc.)
     async saveNotebookJournalEntry(userId: string, entry: {
-      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory';
+      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory' | 'step-1-worksheet';
       data: Record<string, unknown>;
       isPrivate?: boolean;
     }) {
