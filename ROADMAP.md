@@ -633,10 +633,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Critical Bug Fixes** (1-2 hr effort)
 
-- ❌ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
+- ✅ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
   - **Issue:** `updateTimeUntil()` called inside setInterval before defined; violates React rules
   - **Impact:** Countdown timer may fail or throw runtime errors in strict mode
   - **Fix:** Wrap updateTimeUntil in useCallback hook, define before useEffect
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Wrapped `updateTimeUntil` in `useCallback` with `nextMeeting` dependency
+    * Updated both useEffect dependency arrays to include `updateTimeUntil`
+    * Removed eslint-disable comments - now follows React Hook rules
+    * Tests passing (92/93), lint clean (1 expected warning)
   - **Reports:** Gemini Aggregator Finding #4 (identified by Copilot only)
   - **Effort:** 1 hour
   - **Priority:** HIGH - Core meeting-finder feature reliability
@@ -699,15 +705,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Status Summary:**
 - ⏸️ Deferred: 1 issue (CRITICAL-1 - App Check, cross-reference to existing work)
-- ✅ Already Fixed: 3 issues (CRITICAL-2, HIGH-1, MEDIUM-1)
-- ❌ New Work Needed: 5 issues (HIGH-2, MEDIUM-2, MEDIUM-3, MEDIUM-4, LOW-1)
+- ✅ Already Fixed: 4 issues (CRITICAL-2, HIGH-1, HIGH-2, MEDIUM-1)
+- ❌ New Work Needed: 4 issues (MEDIUM-2, MEDIUM-3, MEDIUM-4, LOW-1)
 
 **Total Estimated Effort:**
 - ⏸️ Deferred: CRITICAL-1 (covered in M2 App Check work)
-- ✅ Already Fixed: 0 hours (3 issues pre-completed)
-- ❌ Remaining: ~7.5 hours (5 new issues)
-  - P1 (High): 1 hour (HIGH-2: Hoisting bug)
-  - P2 (Medium): 5.5 hours (MEDIUM-2=2h, MEDIUM-3=0.5h, MEDIUM-4=1h)
+- ✅ Already Fixed: 1 hour (4 issues: 3 pre-completed + HIGH-2 just completed)
+- ❌ Remaining: ~5.5 hours (4 issues)
+  - P2 (Medium): 4.5 hours (MEDIUM-2=2h, MEDIUM-3=0.5h, MEDIUM-4=1h)
   - P3 (Low): 1 hour (LOW-1: Debug logging)
 
 **Key Takeaway from Aggregator:**
