@@ -162,7 +162,6 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
                 stats.journalEntriesCreated++;
             }
 
-            stats.journalEntriesCreated++;
             stats.inventoryEntriesProcessed++;
         } catch (error) {
             stats.errors.push(`inventoryEntries/${doc.id}: ${error}`);
@@ -175,22 +174,25 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
  */
 function generateSearchableText(type: string, data: Record<string, unknown>): string {
     const parts: string[] = [];
+    const isPrimitive = (val: unknown): val is string | number => typeof val === 'string' || typeof val === 'number';
 
     switch (type) {
         case 'spot-check':
             if (typeof data.action === 'string') parts.push(data.action);
-            if (Array.isArray(data.feelings)) parts.push(...data.feelings.map(String));
-            if (Array.isArray(data.absolutes)) parts.push(...data.absolutes.map(String));
+            if (Array.isArray(data.feelings)) parts.push(...data.feelings.filter(isPrimitive).map(String));
+            if (Array.isArray(data.absolutes)) parts.push(...data.absolutes.filter(isPrimitive).map(String));
             break;
         case 'night-review':
             if (typeof data.step4_gratitude === 'string') parts.push(data.step4_gratitude);
             if (typeof data.step4_surrender === 'string') parts.push(data.step4_surrender);
-            if (data.step3_reflections && typeof data.step3_reflections === 'object') {
-                Object.values(data.step3_reflections).forEach((v: unknown) => parts.push(String(v || '')));
+            if (data.step3_reflections && typeof data.step3_reflections === 'object' && data.step3_reflections !== null) {
+                Object.values(data.step3_reflections).forEach((v: unknown) => {
+                    if (isPrimitive(v)) parts.push(String(v || ''));
+                });
             }
             break;
         case 'gratitude':
-            if (Array.isArray(data.items)) parts.push(...data.items.map(String));
+            if (Array.isArray(data.items)) parts.push(...data.items.filter(isPrimitive).map(String));
             break;
     }
 

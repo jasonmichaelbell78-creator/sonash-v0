@@ -52,7 +52,10 @@ export interface Meeting {
     day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
     dayIndex: number // 0=Sunday, 1=Monday, ..., 6=Saturday (for proper week-order sorting)
     time: string // "07:00" 24h format
-    address: string
+    address: string // Street address (e.g. "123 Main St")
+    city?: string // Default: "Nashville"
+    state?: string // Default: "TN"
+    zip?: string
     neighborhood: string
     coordinates?: { lat: number; lng: number }
     [key: string]: unknown

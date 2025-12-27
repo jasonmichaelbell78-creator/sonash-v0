@@ -74,20 +74,19 @@ async function migrateLibraryContent() {
         const linksRef = db.collection('quick_links')
 
         for (const link of existingLinks) {
-            // Check if link already exists
-            const existing = await linksRef
-                .where('title', '==', link.title)
-                .where('category', '==', link.category)
-                .limit(1)
-                .get()
+            // Use deterministic ID for robust idempotency
+            const docId = `link-${link.category}-${link.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, '')
+            const docRef = linksRef.doc(docId)
 
-            if (!existing.empty) {
+            const existing = await docRef.get()
+
+            if (existing.exists) {
                 console.log(`  ⏭️  Skipped: ${link.title} (already exists)`)
                 linksSkipped++
                 continue
             }
 
-            await linksRef.add({
+            await docRef.set({
                 ...link,
                 isActive: true,
                 createdAt: new Date(),
@@ -104,19 +103,19 @@ async function migrateLibraryContent() {
         const prayersRef = db.collection('prayers')
 
         for (const prayer of existingPrayers) {
-            // Check if prayer already exists
-            const existing = await prayersRef
-                .where('title', '==', prayer.title)
-                .limit(1)
-                .get()
+            // Use deterministic ID for robust idempotency
+            const docId = `prayer-${prayer.category}-${prayer.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, '')
+            const docRef = prayersRef.doc(docId)
 
-            if (!existing.empty) {
+            const existing = await docRef.get()
+
+            if (existing.exists) {
                 console.log(`  ⏭️  Skipped: ${prayer.title} (already exists)`)
                 prayersSkipped++
                 continue
             }
 
-            await prayersRef.add({
+            await docRef.set({
                 ...prayer,
                 isActive: true,
                 createdAt: new Date(),
