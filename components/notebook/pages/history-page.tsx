@@ -1,13 +1,13 @@
 "use client"
 
 import { useMemo } from "react"
-import { Calendar, Clock, Zap, Moon, Heart, Loader2, NotebookPen, LucideIcon } from "lucide-react"
+import { Calendar, Clock, Zap, Moon, Heart, Loader2, NotebookPen, LucideIcon, BookOpen } from "lucide-react"
 import { format, startOfDay, subDays } from "date-fns"
 import { useJournal } from "@/hooks/use-journal"
 
 type HistoryItem = {
     id: string
-    type: 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'inventory' | 'mood' | 'check-in' | 'meeting-note'
+    type: 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'inventory' | 'mood' | 'check-in' | 'meeting-note' | 'step-1-worksheet'
     date: Date
     title: string
     preview: string
@@ -85,6 +85,19 @@ export default function HistoryPage() {
                         preview,
                         icon,
                         color
+                    }
+                }
+
+                // Check for step-1-worksheet with type guard
+                if ((entry as { type: string }).type === 'step-1-worksheet') {
+                    return {
+                        id: entry.id,
+                        type: 'step-1-worksheet' as const,
+                        date,
+                        title: "Step 1 Worksheet",
+                        preview: "Powerlessness • Unmanageability • Acceptance",
+                        icon: BookOpen,
+                        color: "text-green-600"
                     }
                 }
 
