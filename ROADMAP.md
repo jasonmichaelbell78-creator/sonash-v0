@@ -662,10 +662,17 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Data Integrity** (2-3 hr effort)
 
-- ❌ **MEDIUM-2: Meeting Pagination Sort Mismatch** (lib/db/meetings.ts)
+- ✅ **MEDIUM-2: Meeting Pagination Sort Mismatch** (lib/db/meetings.ts, firestore.indexes.json)
   - **Issue:** Sorts by Document ID (random string) for pagination, then client-side sorts by time
   - **Impact:** Chronologically incorrect results across pages (7 AM on Page 2, 9 AM on Page 1)
   - **Fix:** Create Firestore Composite Index on [day, time]; update query to orderBy('day').orderBy('time')
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Added composite index in `firestore.indexes.json` for meetings collection [day, time]
+    * Updated `getAllMeetingsPaginated()` to use server-side orderBy('day', 'asc'), orderBy('time', 'asc') 
+    * Pagination cursors now match time-sorted results (no more random ID ordering)
+    * Still uses client-side sort for week order (Sun->Sat) since day field is string not numeric
+    * Requires index deployment: `firebase deploy --only firestore:indexes`
   - **Reports:** Gemini Aggregator Finding #6
   - **Effort:** 2 hours
   - **Priority:** MEDIUM - UX quality for meeting finder
@@ -705,14 +712,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Status Summary:**
 - ⏸️ Deferred: 1 issue (CRITICAL-1 - App Check, cross-reference to existing work)
-- ✅ Already Fixed: 4 issues (CRITICAL-2, HIGH-1, HIGH-2, MEDIUM-1)
-- ❌ New Work Needed: 4 issues (MEDIUM-2, MEDIUM-3, MEDIUM-4, LOW-1)
+- ✅ Already Fixed: 5 issues (CRITICAL-2, HIGH-1, HIGH-2, MEDIUM-1, MEDIUM-2)
+- ❌ New Work Needed: 3 issues (MEDIUM-3, MEDIUM-4, LOW-1)
 
 **Total Estimated Effort:**
 - ⏸️ Deferred: CRITICAL-1 (covered in M2 App Check work)
-- ✅ Already Fixed: 1 hour (4 issues: 3 pre-completed + HIGH-2 just completed)
-- ❌ Remaining: ~5.5 hours (4 issues)
-  - P2 (Medium): 4.5 hours (MEDIUM-2=2h, MEDIUM-3=0.5h, MEDIUM-4=1h)
+- ✅ Already Fixed: 3 hours (5 issues: 3 pre-completed + HIGH-2 + MEDIUM-2 just completed)
+- ❌ Remaining: ~2.5 hours (3 issues)
+  - P2 (Medium): 1.5 hours (MEDIUM-3=0.5h, MEDIUM-4=1h)
   - P3 (Low): 1 hour (LOW-1: Debug logging)
 
 **Key Takeaway from Aggregator:**

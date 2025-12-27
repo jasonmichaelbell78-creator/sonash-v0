@@ -117,20 +117,34 @@ export const MeetingsService = {
         try {
             const meetingsRef = collection(db, "meetings")
 
-            // Build query with ordering (needed for pagination cursors)
-            // Note: We can't sort by multiple fields in Firestore query without a composite index
-            // So we'll fetch sorted by document ID and do secondary sorting client-side
-            let q = query(meetingsRef, orderBy("__name__"), limit(pageSize))
+            // Build query with server-side ordering by day and time
+            // This requires a composite index on [day, time] defined in firestore.indexes.json
+            // This ensures pagination cursors match the visual sort order (no more chronological mismatch!)
+            let q = query(
+                meetingsRef,
+                orderBy("day", "asc"),
+                orderBy("time", "asc"),
+                limit(pageSize)
+            )
 
             // If continuing from previous page, start after the last document
             if (lastDocument) {
-                q = query(meetingsRef, orderBy("__name__"), startAfter(lastDocument), limit(pageSize))
+                q = query(
+                    meetingsRef,
+                    orderBy("day", "asc"),
+                    orderBy("time", "asc"),
+                    startAfter(lastDocument),
+                    limit(pageSize)
+                )
             }
 
             const snapshot = await getDocs(q)
             const meetings = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Meeting))
 
-            // Client-side sort by day and time (since Firestore can't do multi-field sorting without index)
+            // Note: Meetings are now already sorted by Firestore query (day, then time)
+            // However, the day field is a string ("Monday", "Tuesday", etc.), not in week order
+            // So we still need client-side sort to arrange days in week order (Sun->Sat)
+            // But now pagination cursors match the time-sorted results
             meetings.sort((a, b) => {
                 const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0)
                 if (dayDiff !== 0) return dayDiff
