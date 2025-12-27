@@ -79,16 +79,6 @@
       ]
     },
     {
-      "collectionGroup": "daily_logs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "date",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "meetings",
       "queryScope": "COLLECTION",
       "fields": [

@@ -27,17 +27,16 @@ async function migrateMeetings() {
     console.log('🚀 Starting migration: Adding dayIndex to meetings...\n');
 
     // Initialize Firebase Admin SDK
-    // NOTE: You'll need to set GOOGLE_APPLICATION_CREDENTIALS environment variable
-    // or provide serviceAccountKey.json in the project root
+    // Using firebase-service-account.json from project root
     try {
-        const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
+        const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
         initializeApp({
             credential: cert(serviceAccountPath),
         });
         console.log('✅ Firebase Admin initialized\n');
     } catch (error) {
-        console.error('❌ Failed to initialize Firebase Admin. Make sure serviceAccountKey.json exists.');
-        console.error('   Download it from Firebase Console > Project Settings > Service Accounts\n');
+        console.error('❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists.');
+        console.error('   This file should be in the project root.\n');
         process.exit(1);
     }
 
