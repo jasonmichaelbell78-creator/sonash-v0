@@ -665,13 +665,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ **MEDIUM-2: Meeting Pagination Sort Mismatch** (lib/db/meetings.ts, firestore.indexes.json)
   - **Issue:** Sorts by Document ID (random string) for pagination, then client-side sorts by time
   - **Impact:** Chronologically incorrect results across pages (7 AM on Page 2, 9 AM on Page 1)
-  - **Fix:** Create Firestore Composite Index on [day, time]; update query to orderBy('day').orderBy('time')
+  - **Fix:** Create Firestore Composite Index on [dayIndex, time]; update query to orderBy('dayIndex').orderBy('time')
   - **Status:** ✅ **COMPLETED Dec 27, 2025**
   - **Implementation:**
-    * Added composite index in `firestore.indexes.json` for meetings collection [day, time]
-    * Updated `getAllMeetingsPaginated()` to use server-side orderBy('day', 'asc'), orderBy('time', 'asc') 
+    * Added dayIndex field via migration script (scripts/migrate-meetings-dayindex.ts)
+    * Added composite index in `firestore.indexes.json` for meetings collection [dayIndex, time]
+    * Updated `getAllMeetingsPaginated()` to use server-side orderBy('dayIndex', 'asc'), orderBy('time', 'asc') 
     * Pagination cursors now match time-sorted results (no more random ID ordering)
-    * Still uses client-side sort for week order (Sun->Sat) since day field is string not numeric
+    * Server-side sorting by numeric dayIndex provides correct week order (Sunday=0 to Saturday=6)
     * Requires index deployment: `firebase deploy --only firestore:indexes`
   - **Reports:** Gemini Aggregator Finding #6
   - **Effort:** 2 hours

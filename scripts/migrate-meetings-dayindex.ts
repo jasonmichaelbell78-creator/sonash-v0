@@ -11,16 +11,18 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as path from 'path';
+import * as fs from 'fs';
 
 // Day name to index mapping (0=Sunday, 1=Monday, ..., 6=Saturday)
+// Day name to index mapping (0=Sunday, 1=Monday, ..., 6=Saturday)
 const DAY_TO_INDEX: Record<string, number> = {
-    'Sunday': 0,
-    'Monday': 1,
-    'Tuesday': 2,
-    'Wednesday': 3,
-    'Thursday': 4,
-    'Friday': 5,
-    'Saturday': 6,
+    'sunday': 0,
+    'monday': 1,
+    'tuesday': 2,
+    'wednesday': 3,
+    'thursday': 4,
+    'friday': 5,
+    'saturday': 6,
 };
 
 async function migrateMeetings() {
@@ -30,8 +32,9 @@ async function migrateMeetings() {
     // Using firebase-service-account.json from project root
     try {
         const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
+        const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
         initializeApp({
-            credential: cert(serviceAccountPath),
+            credential: cert(serviceAccount),
         });
         console.log('✅ Firebase Admin initialized\n');
     } catch (error) {
@@ -81,7 +84,7 @@ async function migrateMeetings() {
             }
 
             // Get dayIndex from day name
-            const dayIndex = DAY_TO_INDEX[data.day];
+            const dayIndex = DAY_TO_INDEX[data.day.toLowerCase()];
             if (dayIndex === undefined) {
                 errorCount++;
                 console.error(`❌ Error ${doc.id}: Invalid day name "${data.day}"`);
@@ -89,15 +92,16 @@ async function migrateMeetings() {
             }
 
             // Add to batch
+            // Add to batch
             batch.update(doc.ref, { dayIndex });
             operationCount++;
-            successCount++;
 
             console.log(`✅ Queued ${doc.id}: ${data.day} → dayIndex: ${dayIndex}`);
 
             // Commit batch if we've reached the limit
             if (operationCount >= batchSize) {
                 await batch.commit();
+                successCount += operationCount;
                 console.log(`\n💾 Committed batch of ${operationCount} updates\n`);
                 batch = db.batch();
                 operationCount = 0;
@@ -107,6 +111,7 @@ async function migrateMeetings() {
         // Commit any remaining operations
         if (operationCount > 0) {
             await batch.commit();
+            successCount += operationCount;
             console.log(`\n💾 Committed final batch of ${operationCount} updates\n`);
         }
 

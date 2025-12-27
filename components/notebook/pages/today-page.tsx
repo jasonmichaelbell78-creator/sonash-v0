@@ -83,6 +83,15 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   })
   const [haltSubmitted, setHaltSubmitted] = useState(false)
 
+  // Cleanup autosave timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (saveCompleteTimeoutRef.current) {
+        clearTimeout(saveCompleteTimeoutRef.current)
+      }
+    }
+  }, [])
+
   // Smart prompts with localStorage persistence
   const {
     showCheckInReminder,

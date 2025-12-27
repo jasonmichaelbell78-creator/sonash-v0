@@ -102,6 +102,7 @@ export default function CompactMeetingCountdown() {
     const [timeUntil, setTimeUntil] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [showDialog, setShowDialog] = useState(false)
+    const [refreshKey, setRefreshKey] = useState(0)
     const { coordinates: userLocation, status: locationStatus } = useGeolocation({
         enableHighAccuracy: false, // Faster, less battery drain
         timeout: 5000
@@ -201,7 +202,7 @@ export default function CompactMeetingCountdown() {
         }
 
         findNextMeeting()
-    }, [userLocation, locationStatus, nextMeeting === null]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [userLocation, locationStatus, refreshKey])
 
     // Timer effect
     useEffect(() => {
@@ -212,6 +213,7 @@ export default function CompactMeetingCountdown() {
             if (newTimeUntil === null) {
                 // Meeting passed! Trigger re-fetch
                 setNextMeeting(null)
+                setRefreshKey(k => k + 1)
             } else {
                 setTimeUntil(newTimeUntil)
             }
