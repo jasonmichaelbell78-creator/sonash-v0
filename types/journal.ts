@@ -108,9 +108,17 @@ export interface CheckInEntry extends BaseEntry {
 }
 
 // 8. Step 1 Worksheet Entry
+export interface Step1WorksheetData {
+    powerlessnessOverAmount?: boolean;
+    powerlessnessOverBadResults?: boolean;
+    unmanageability?: boolean;
+    conclusionsAndAcceptance?: boolean;
+    // Add other fields from the worksheet as they are defined
+}
+
 export interface Step1WorksheetEntry extends BaseEntry {
     type: 'step-1-worksheet';
-    data: Record<string, unknown>; // Complex nested structure from worksheet
+    data: Step1WorksheetData; // Complex nested structure from worksheet
 }
 
 // The Union Type (This is the magic part)
