@@ -73,6 +73,11 @@ export default function CompactMeetingCountdown() {
     }, [nextMeeting]) // Dependency: re-create function when nextMeeting changes
 
     useEffect(() => {
+        /**
+         * Finds and sets the next meeting to display, prioritizing nearby meetings when the user's location is available.
+         *
+         * Filters upcoming meetings for the current day (after the current time). If location access is granted, prefers meetings within MAX_DISTANCE_MILES and selects the nearest; otherwise selects the soonest meeting today. If no meeting remains today, repeats the same selection logic for tomorrow. Updates component state via `setNextMeeting` and clears the loading state with `setLoading(false)`. On error, logs the error and clears the loading state.
+         */
         async function findNextMeeting() {
             try {
                 // Get all meetings for today
@@ -171,6 +176,12 @@ export default function CompactMeetingCountdown() {
         updateTimeUntil()
     }, [updateTimeUntil])
 
+    /**
+     * Format a 24-hour "HH:MM" time string into a 12-hour clock with AM/PM.
+     *
+     * @param time24 - Time in 24-hour "HH:MM" format
+     * @returns The time formatted as `h:MM AM` or `h:MM PM` (12-hour clock)
+     */
     function formatTime(time24: string): string {
         const [hours, minutes] = time24.split(':').map(Number)
         const period = hours >= 12 ? 'PM' : 'AM'
