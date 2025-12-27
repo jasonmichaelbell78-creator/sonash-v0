@@ -71,8 +71,8 @@ export const viewport: Viewport = {
   themeColor: "#f5f0e6",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Removed maximumScale and userScalable restrictions to comply with WCAG 2.1 (1.4.4)
+  // Users with visual impairments must be able to zoom the interface
 }
 
 // ... existing metadata ...

@@ -50,6 +50,7 @@ export interface Meeting {
     name: string
     type: "AA" | "NA" | "CA" | "Smart" | "Al-Anon"
     day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
+    dayIndex: number // 0=Sunday, 1=Monday, ..., 6=Saturday (for proper week-order sorting)
     time: string // "07:00" 24h format
     address: string
     neighborhood: string
@@ -117,25 +118,34 @@ export const MeetingsService = {
         try {
             const meetingsRef = collection(db, "meetings")
 
-            // Build query with ordering (needed for pagination cursors)
-            // Note: We can't sort by multiple fields in Firestore query without a composite index
-            // So we'll fetch sorted by document ID and do secondary sorting client-side
-            let q = query(meetingsRef, orderBy("__name__"), limit(pageSize))
+            // Build query with server-side ordering by dayIndex and time
+            // dayIndex is numeric (0=Sunday, 1=Monday, ..., 6=Saturday) for proper week-order sorting
+            // This requires a composite index on [dayIndex, time] defined in firestore.indexes.json
+            let q = query(
+                meetingsRef,
+                orderBy("dayIndex", "asc"),
+                orderBy("time", "asc"),
+                limit(pageSize)
+            )
 
             // If continuing from previous page, start after the last document
             if (lastDocument) {
-                q = query(meetingsRef, orderBy("__name__"), startAfter(lastDocument), limit(pageSize))
+                q = query(
+                    meetingsRef,
+                    orderBy("dayIndex", "asc"),
+                    orderBy("time", "asc"),
+                    startAfter(lastDocument),
+                    limit(pageSize)
+                )
             }
 
             const snapshot = await getDocs(q)
             const meetings = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Meeting))
 
-            // Client-side sort by day and time (since Firestore can't do multi-field sorting without index)
-            meetings.sort((a, b) => {
-                const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0)
-                if (dayDiff !== 0) return dayDiff
-                return timeToMinutes(a.time) - timeToMinutes(b.time)
-            })
+            // CRITICAL: Do NOT re-sort client-side in paginated queries!
+            // Re-sorting breaks cursor-based pagination because the UI order diverges from
+            // the server's cursor order, causing skipped or duplicated items across pages.
+            // The query already returns meetings in correct week-order (Sun->Sat) via dayIndex.
 
             const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null
             const hasMore = snapshot.docs.length === pageSize
@@ -175,41 +185,41 @@ export const MeetingsService = {
 
         // A mix of meetings across the week with Nashville coordinates
         const seedData: Meeting[] = [
-            // MONDAYS
-            { id: "mon_1", name: "East Side Early Risers", type: "AA", day: "Monday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
-            { id: "mon_2", name: "Downtown Lunch Bunch", type: "NA", day: "Monday", time: "12:00", address: "456 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1627, lng: -86.7816 } },
-            { id: "mon_3", name: "West End Serenity", type: "AA", day: "Monday", time: "19:00", address: "789 West End Ave", neighborhood: "West End", coordinates: { lat: 36.1496, lng: -86.8140 } },
-            { id: "mon_4", name: "Madison Recovery", type: "NA", day: "Monday", time: "19:30", address: "500 Gallatin Pike", neighborhood: "Madison", coordinates: { lat: 36.2510, lng: -86.7130 } },
-            { id: "mon_5", name: "Green Hills Women", type: "AA", day: "Monday", time: "18:00", address: "2000 Hillsboro Rd", neighborhood: "Green Hills", coordinates: { lat: 36.1050, lng: -86.8150 } },
+            // MONDAYS (dayIndex=1)
+            { id: "mon_1", name: "East Side Early Risers", type: "AA", day: "Monday", dayIndex: 1, time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
+            { id: "mon_2", name: "Downtown Lunch Bunch", type: "NA", day: "Monday", dayIndex: 1, time: "12:00", address: "456 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1627, lng: -86.7816 } },
+            { id: "mon_3", name: "West End Serenity", type: "AA", day: "Monday", dayIndex: 1, time: "19:00", address: "789 West End Ave", neighborhood: "West End", coordinates: { lat: 36.1496, lng: -86.8140 } },
+            { id: "mon_4", name: "Madison Recovery", type: "NA", day: "Monday", dayIndex: 1, time: "19:30", address: "500 Gallatin Pike", neighborhood: "Madison", coordinates: { lat: 36.2510, lng: -86.7130 } },
+            { id: "mon_5", name: "Green Hills Women", type: "AA", day: "Monday", dayIndex: 1, time: "18:00", address: "2000 Hillsboro Rd", neighborhood: "Green Hills", coordinates: { lat: 36.1050, lng: -86.8150 } },
 
-            // TUESDAYS
-            { id: "tue_1", name: "Design for Living", type: "AA", day: "Tuesday", time: "18:30", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
-            { id: "tue_2", name: "Recovery First", type: "NA", day: "Tuesday", time: "20:00", address: "100 Demonbreun", neighborhood: "Gulch", coordinates: { lat: 36.1522, lng: -86.7870 } },
-            { id: "tue_3", name: "Sylvan Park Study", type: "AA", day: "Tuesday", time: "19:00", address: "4200 Murphy Rd", neighborhood: "Sylvan Park", coordinates: { lat: 36.1380, lng: -86.8450 } },
-            { id: "tue_4", name: "Antioch New Life", type: "NA", day: "Tuesday", time: "19:00", address: "5000 Bell Rd", neighborhood: "Antioch", coordinates: { lat: 36.0500, lng: -86.6600 } },
+            // TUESDAYS (dayIndex=2)
+            { id: "tue_1", name: "Design for Living", type: "AA", day: "Tuesday", dayIndex: 2, time: "18:30", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
+            { id: "tue_2", name: "Recovery First", type: "NA", day: "Tuesday", dayIndex: 2, time: "20:00", address: "100 Demonbreun", neighborhood: "Gulch", coordinates: { lat: 36.1522, lng: -86.7870 } },
+            { id: "tue_3", name: "Sylvan Park Study", type: "AA", day: "Tuesday", dayIndex: 2, time: "19:00", address: "4200 Murphy Rd", neighborhood: "Sylvan Park", coordinates: { lat: 36.1380, lng: -86.8450 } },
+            { id: "tue_4", name: "Antioch New Life", type: "NA", day: "Tuesday", dayIndex: 2, time: "19:00", address: "5000 Bell Rd", neighborhood: "Antioch", coordinates: { lat: 36.0500, lng: -86.6600 } },
 
-            // WEDNESDAYS
-            { id: "wed_1", name: "Primary Purpose", type: "AA", day: "Wednesday", time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
-            { id: "wed_2", name: "Mid-Day Reprieve", type: "AA", day: "Wednesday", time: "12:00", address: "Public Library", neighborhood: "Downtown", coordinates: { lat: 36.1619, lng: -86.7781 } },
-            { id: "wed_3", name: "Freedom Group", type: "NA", day: "Wednesday", time: "19:30", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1813, lng: -86.7949 } },
-            { id: "wed_4", name: "Candlelight Meeting", type: "AA", day: "Wednesday", time: "22:00", address: "Old Church", neighborhood: "12 South", coordinates: { lat: 36.1289, lng: -86.7874 } },
-            { id: "wed_5", name: "Belmont Book Study", type: "AA", day: "Wednesday", time: "18:00", address: "1900 Belmont Blvd", neighborhood: "Belmont", coordinates: { lat: 36.1325, lng: -86.7950 } },
+            // WEDNESDAYS (dayIndex=3)
+            { id: "wed_1", name: "Primary Purpose", type: "AA", day: "Wednesday", dayIndex: 3, time: "07:00", address: "123 Main St", neighborhood: "East Nashville", coordinates: { lat: 36.1745, lng: -86.7679 } },
+            { id: "wed_2", name: "Mid-Day Reprieve", type: "AA", day: "Wednesday", dayIndex: 3, time: "12:00", address: "Public Library", neighborhood: "Downtown", coordinates: { lat: 36.1619, lng: -86.7781 } },
+            { id: "wed_3", name: "Freedom Group", type: "NA", day: "Wednesday", dayIndex: 3, time: "19:30", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1813, lng: -86.7949 } },
+            { id: "wed_4", name: "Candlelight Meeting", type: "AA", day: "Wednesday", dayIndex: 3, time: "22:00", address: "Old Church", neighborhood: "12 South", coordinates: { lat: 36.1289, lng: -86.7874 } },
+            { id: "wed_5", name: "Belmont Book Study", type: "AA", day: "Wednesday", dayIndex: 3, time: "18:00", address: "1900 Belmont Blvd", neighborhood: "Belmont", coordinates: { lat: 36.1325, lng: -86.7950 } },
 
-            // THURSDAYS
-            { id: "thu_1", name: "Big Book Study", type: "AA", day: "Thursday", time: "19:00", address: "University Center", neighborhood: "Belmont", coordinates: { lat: 36.1320, lng: -86.7980 } },
-            { id: "thu_2", name: "Nations Newcomers", type: "NA", day: "Thursday", time: "18:30", address: "5000 Centennial Blvd", neighborhood: "The Nations", coordinates: { lat: 36.1600, lng: -86.8450 } },
-            { id: "thu_3", name: "Downtown Speaker", type: "AA", day: "Thursday", time: "20:00", address: "111 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1600, lng: -86.7750 } },
+            // THURSDAYS (dayIndex=4)
+            { id: "thu_1", name: "Big Book Study", type: "AA", day: "Thursday", dayIndex: 4, time: "19:00", address: "University Center", neighborhood: "Belmont", coordinates: { lat: 36.1320, lng: -86.7980 } },
+            { id: "thu_2", name: "Nations Newcomers", type: "NA", day: "Thursday", dayIndex: 4, time: "18:30", address: "5000 Centennial Blvd", neighborhood: "The Nations", coordinates: { lat: 36.1600, lng: -86.8450 } },
+            { id: "thu_3", name: "Downtown Speaker", type: "AA", day: "Thursday", dayIndex: 4, time: "20:00", address: "111 Broadway", neighborhood: "Downtown", coordinates: { lat: 36.1600, lng: -86.7750 } },
 
-            // FRIDAYS
-            { id: "fri_1", name: "TGIF Group", type: "AA", day: "Friday", time: "18:00", address: "Coffee Shop Backroom", neighborhood: "Sylvan Park", coordinates: { lat: 36.1375, lng: -86.8568 } },
-            { id: "fri_2", name: "Late Night NA", type: "NA", day: "Friday", time: "23:00", address: "Recovery Hall", neighborhood: "Antioch", coordinates: { lat: 36.0605, lng: -86.6717 } },
-            { id: "fri_3", name: "East Side Social", type: "AA", day: "Friday", time: "19:00", address: "900 Gallatin Ave", neighborhood: "East Nashville", coordinates: { lat: 36.1850, lng: -86.7550 } },
+            // FRIDAYS (dayIndex=5)
+            { id: "fri_1", name: "TGIF Group", type: "AA", day: "Friday", dayIndex: 5, time: "18:00", address: "Coffee Shop Backroom", neighborhood: "Sylvan Park", coordinates: { lat: 36.1375, lng: -86.8568 } },
+            { id: "fri_2", name: "Late Night NA", type: "NA", day: "Friday", dayIndex: 5, time: "23:00", address: "Recovery Hall", neighborhood: "Antioch", coordinates: { lat: 36.0605, lng: -86.6717 } },
+            { id: "fri_3", name: "East Side Social", type: "AA", day: "Friday", dayIndex: 5, time: "19:00", address: "900 Gallatin Ave", neighborhood: "East Nashville", coordinates: { lat: 36.1850, lng: -86.7550 } },
 
-            // WEEKENDS
-            { id: "sat_1", name: "Weekend Warriors", type: "AA", day: "Saturday", time: "10:00", address: "Centennial Park", neighborhood: "West End", coordinates: { lat: 36.1480, lng: -86.8150 } },
-            { id: "sat_2", name: "Saturday Night Live", type: "NA", day: "Saturday", time: "20:00", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
-            { id: "sun_1", name: "Spiritual Breakfast", type: "AA", day: "Sunday", time: "09:00", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1780, lng: -86.7900 } },
-            { id: "sun_2", name: "Sunday Serenity", type: "AA", day: "Sunday", time: "18:00", address: "2000 Hillsboro Rd", neighborhood: "Green Hills", coordinates: { lat: 36.1050, lng: -86.8150 } },
+            // WEEKENDS (dayIndex: Saturday=6, Sunday=0)
+            { id: "sat_1", name: "Weekend Warriors", type: "AA", day: "Saturday", dayIndex: 6, time: "10:00", address: "Centennial Park", neighborhood: "West End", coordinates: { lat: 36.1480, lng: -86.8150 } },
+            { id: "sat_2", name: "Saturday Night Live", type: "NA", day: "Saturday", dayIndex: 6, time: "20:00", address: "500 Woodland St", neighborhood: "East Nashville", coordinates: { lat: 36.1750, lng: -86.7660 } },
+            { id: "sun_1", name: "Spiritual Breakfast", type: "AA", day: "Sunday", dayIndex: 0, time: "09:00", address: "Community Center", neighborhood: "Germantown", coordinates: { lat: 36.1780, lng: -86.7900 } },
+            { id: "sun_2", name: "Sunday Serenity", type: "AA", day: "Sunday", dayIndex: 0, time: "18:00", address: "2000 Hillsboro Rd", neighborhood: "Green Hills", coordinates: { lat: 36.1050, lng: -86.8150 } },
         ]
 
         try {
