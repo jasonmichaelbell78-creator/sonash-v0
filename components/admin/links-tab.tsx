@@ -61,6 +61,10 @@ export default function LinksTab() {
         try {
             const data = await getAllQuickLinks(true) // Include inactive
             setLinks(data)
+        } catch (error) {
+            console.error('Failed to load links:', error)
+            toast.error('Failed to load links. Please refresh the page.')
+            setLinks([]) // Set empty array to show UI
         } finally {
             setLoading(false)
         }

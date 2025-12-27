@@ -373,7 +373,9 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         cravings: dataToSave.cravings,
         used: dataToSave.used,
       }
-      console.log('💾 Attempting to save:', saveData)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('💾 Attempting to save:', saveData)
+      }
 
       // Save to cloud (daily_logs collection - for Today tab persistence)
       await FirestoreService.saveDailyLog(user.uid, saveData)
@@ -389,10 +391,12 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       setTimeout(() => setSaveComplete(false), 2000)
     } catch (error) {
       // Log detailed error information for debugging
-      console.error('❌ Save failed with error:', error)
-      if (error instanceof Error) {
-        console.error('Error message:', error.message)
-        console.error('Error stack:', error.stack)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Save failed with error:', error)
+        if (error instanceof Error) {
+          console.error('Error message:', error.message)
+          console.error('Error stack:', error.stack)
+        }
       }
       logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error })
       toast.error("We couldn't save today's notes. Please check your connection.")
@@ -476,11 +480,13 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         const sevenDaysAgo = subDays(startOfDay(new Date()), 6) // 6 days ago + today = 7 days
         const sevenDaysAgoId = format(sevenDaysAgo, 'yyyy-MM-dd')
 
-        console.log('📊 Weekly Stats Debug:', {
-          sevenDaysAgoId,
-          today: format(new Date(), 'yyyy-MM-dd'),
-          userId: user.uid
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📊 Weekly Stats Debug:', {
+            sevenDaysAgoId,
+            today: format(new Date(), 'yyyy-MM-dd'),
+            userId: user.uid
+          })
+        }
 
         const logsRef = collection(db, `users/${user.uid}/daily_logs`)
         const q = query(
@@ -490,20 +496,25 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         )
 
         const snapshot = await getDocs(q)
-        console.log('📊 Query returned:', snapshot.size, 'documents')
 
-        // DEBUG: Also fetch ALL logs to see what's in the database
-        const allLogsQuery = query(logsRef, orderBy('date', 'desc'))
-        const allLogsSnapshot = await getDocs(allLogsQuery)
-        console.log('📊 ALL logs in database:', allLogsSnapshot.size, 'total documents')
-        allLogsSnapshot.docs.slice(0, 10).forEach(doc => {
-          const data = doc.data()
-          console.log('📊 ALL logs entry:', { id: doc.id, date: data.date, hasContent: !!data.content, mood: data.mood, updatedAt: data.updatedAt })
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📊 Query returned:', snapshot.size, 'documents')
+
+          // DEBUG: Also fetch ALL logs to see what's in the database
+          const allLogsQuery = query(logsRef, orderBy('date', 'desc'))
+          const allLogsSnapshot = await getDocs(allLogsQuery)
+          console.log('📊 ALL logs in database:', allLogsSnapshot.size, 'total documents')
+          allLogsSnapshot.docs.slice(0, 10).forEach(doc => {
+            const data = doc.data()
+            console.log('📊 ALL logs entry:', { id: doc.id, date: data.date, hasContent: !!data.content, mood: data.mood, updatedAt: data.updatedAt })
+          })
+        }
 
         const logs = snapshot.docs.map(doc => {
           const data = doc.data()
-          console.log('📊 Log entry (in range):', { id: doc.id, date: data.date, hasContent: !!data.content })
+          if (process.env.NODE_ENV === 'development') {
+            console.log('📊 Log entry (in range):', { id: doc.id, date: data.date, hasContent: !!data.content })
+          }
           return {
             date: data.date,
             ...data
@@ -514,11 +525,13 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         const uniqueDays = new Set(logs.map(log => log.date))
         const daysLogged = uniqueDays.size
 
-        console.log('📊 Weekly Stats Result:', {
-          uniqueDays: Array.from(uniqueDays),
-          daysLogged,
-          totalLogs: logs.length
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📊 Weekly Stats Result:', {
+            uniqueDays: Array.from(uniqueDays),
+            daysLogged,
+            totalLogs: logs.length
+          })
+        }
 
         // Calculate current streak (consecutive days from today backwards)
         let streak = 0
@@ -534,11 +547,15 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
           }
         }
 
-        console.log('📊 Streak calculated:', streak)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📊 Streak calculated:', streak)
+        }
 
         setWeekStats({ daysLogged, streak })
       } catch (error) {
-        console.error('❌ Weekly stats error:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Weekly stats error:', error)
+        }
         logger.error("Failed to calculate weekly stats", {
           userId: maskIdentifier(user.uid),
           error
@@ -750,31 +767,31 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             {/* Clean time tracker */}
             <div>
               <h2 className="font-heading text-xl text-amber-900/90 mb-2">Tracker – Clean time</h2>
-            {cleanTimeDisplay ? (
-              <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
-                {cleanTimeDisplay.map((part, index) => (
-                  <span key={index} className="text-center">
-                    <span className={`font-heading-alt ${part.size} text-amber-900`}>
-                      {part.text}
+              {cleanTimeDisplay ? (
+                <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
+                  {cleanTimeDisplay.map((part, index) => (
+                    <span key={index} className="text-center">
+                      <span className={`font-heading-alt ${part.size} text-amber-900`}>
+                        {part.text}
+                      </span>
+                      {index < cleanTimeDisplay.length - 1 && (
+                        <span className="text-amber-900/40 mx-1">•</span>
+                      )}
                     </span>
-                    {index < cleanTimeDisplay.length - 1 && (
-                      <span className="text-amber-900/40 mx-1">•</span>
-                    )}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="font-heading text-2xl md:text-3xl text-amber-900 text-center">
-                Tap to set clean date
-              </p>
-            )}
-            {cleanTimeDisplay ? (
-              <p className="font-body text-sm text-amber-900/60 mt-1">Keep coming back.</p>
-            ) : (
-              <p className="font-body text-sm text-amber-900/60 mt-1 cursor-pointer hover:underline">
-                You haven't set your clean date yet.
-              </p>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <p className="font-heading text-2xl md:text-3xl text-amber-900 text-center">
+                  Tap to set clean date
+                </p>
+              )}
+              {cleanTimeDisplay ? (
+                <p className="font-body text-sm text-amber-900/60 mt-1">Keep coming back.</p>
+              ) : (
+                <p className="font-body text-sm text-amber-900/60 mt-1 cursor-pointer hover:underline">
+                  You haven't set your clean date yet.
+                </p>
+              )}
             </div>
 
             {/* Daily Inspiration (from DB) */}
@@ -785,23 +802,23 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             {/* Today's Reading - Direct external links */}
             <div>
               <h2 className="font-heading text-xl text-amber-900/90 mb-3">Today's Reading</h2>
-            <div className="flex gap-3">
-              <a
-                href="https://www.aa.org/daily-reflections"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-sky-100 hover:bg-sky-200 text-sky-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
-              >
-                AA Daily Reflection ↗
-              </a>
-              <a
-                href="https://na.org/daily-meditations/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
-              >
-                NA Just For Today ↗
-              </a>
+              <div className="flex gap-3">
+                <a
+                  href="https://www.aa.org/daily-reflections"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-sky-100 hover:bg-sky-200 text-sky-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
+                >
+                  AA Daily Reflection ↗
+                </a>
+                <a
+                  href="https://na.org/daily-meditations/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 px-4 py-3 rounded-lg font-body text-center transition-colors shadow-sm"
+                >
+                  NA Just For Today ↗
+                </a>
               </div>
             </div>
 
@@ -824,191 +841,191 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             {/* Check-in */}
             <div>
               <h2 className="font-heading text-xl text-amber-900/90 mb-3">Check-In: How are you doing today?</h2>
-            <EnhancedMoodSelector
-              value={mood}
-              onChange={(newMood) => {
-                setMood(newMood)
-                setHasTouched(true)
-                setShowQuickMoodPrompt(false)
-              }}
-              showKeyboardShortcuts={true}
-            />
+              <EnhancedMoodSelector
+                value={mood}
+                onChange={(newMood) => {
+                  setMood(newMood)
+                  setHasTouched(true)
+                  setShowQuickMoodPrompt(false)
+                }}
+                showKeyboardShortcuts={true}
+              />
 
-            <MoodSparkline />
+              <MoodSparkline />
 
-            {/* Toggle questions - Only show after mood is selected */}
-            {mood && (
-              <div className="space-y-3 pl-1 animate-in slide-in-from-top duration-300">
-                <div className="flex items-center justify-between">
-                  <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => { setCravings(false); setHasTouched(true) }}
-                      aria-label="No cravings"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === false
-                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                    >
-                      No
-                    </button>
-                    <button
-                      onClick={() => { setCravings(true); setHasTouched(true) }}
-                      aria-label="Yes cravings"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === true
-                        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                    >
-                      Yes
-                    </button>
+              {/* Toggle questions - Only show after mood is selected */}
+              {mood && (
+                <div className="space-y-3 pl-1 animate-in slide-in-from-top duration-300">
+                  <div className="flex items-center justify-between">
+                    <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => { setCravings(false); setHasTouched(true) }}
+                        aria-label="No cravings"
+                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === false
+                          ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
+                          : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
+                          }`}
+                      >
+                        No
+                      </button>
+                      <button
+                        onClick={() => { setCravings(true); setHasTouched(true) }}
+                        aria-label="Yes cravings"
+                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === true
+                          ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
+                          : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
+                          }`}
+                      >
+                        Yes
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="font-heading text-lg text-amber-900/80">Used?</span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => { setUsed(false); setHasTouched(true) }}
+                        aria-label="No used"
+                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === false
+                          ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
+                          : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
+                          }`}
+                      >
+                        No
+                      </button>
+                      <button
+                        onClick={() => { setUsed(true); setHasTouched(true) }}
+                        aria-label="Yes used"
+                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === true
+                          ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-md scale-105"
+                          : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
+                          }`}
+                      >
+                        Yes
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="font-heading text-lg text-amber-900/80">Used?</span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => { setUsed(false); setHasTouched(true) }}
-                      aria-label="No used"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === false
-                        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                    >
-                      No
-                    </button>
-                    <button
-                      onClick={() => { setUsed(true); setHasTouched(true) }}
-                      aria-label="Yes used"
-                      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === true
-                        ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-md scale-105"
-                        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                    >
-                      Yes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Message when mood not selected */}
-            {!mood && (
-              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className="text-sm text-amber-900/70 font-body text-center">
-                  👆 Select your mood above to continue check-in
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* HALT Check */}
-          <div>
-            <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
-            <p className="text-sm font-body text-amber-900/60 mb-3">
-              Quick self-assessment to identify vulnerability
-            </p>
-
-            <div className="bg-white/50 rounded-lg p-4 space-y-3">
-              {[
-                { key: 'hungry' as const, label: 'Hungry?', icon: '🍽️', tip: 'When did you last eat? Grab a healthy snack.' },
-                { key: 'angry' as const, label: 'Angry?', icon: '😤', tip: "What's bothering you. Call your sponsor." },
-                { key: 'lonely' as const, label: 'Lonely?', icon: '🤝', tip: 'Reach out to someone. Attend a meeting.' },
-                { key: 'tired' as const, label: 'Tired?', icon: '😴', tip: 'How much sleep did you get? Take a break.' },
-              ].map(({ key, label, icon, tip }) => (
-                <div key={key} className="flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    id={`halt-${key}`}
-                    checked={haltCheck[key]}
-                    onChange={() => handleHaltToggle(key)}
-                    className="mt-1 w-5 h-5 text-blue-600 rounded border-amber-300 focus:ring-blue-500 cursor-pointer"
-                  />
-                  <div className="flex-1">
-                    <label htmlFor={`halt-${key}`} className="font-handlee text-lg text-amber-900 flex items-center gap-2 cursor-pointer">
-                      <span>{icon}</span>
-                      <span>{label}</span>
-                    </label>
-                    {haltCheck[key] && (
-                      <p className="text-sm text-blue-700 italic mt-1 font-body">
-                        💡 {tip}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={handleHaltSubmit}
-              disabled={Object.values(haltCheck).every(v => !v)}
-              className="mt-3 w-full py-3 bg-blue-500 text-white rounded-lg font-handlee text-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
-            >
-              Complete HALT Check
-            </button>
-
-            {haltSubmitted && (
-              <p className="text-xs text-green-600 text-center mt-2 font-body">
-                ✓ Saved to journal
-              </p>
-            )}
-          </div>
-
-          {/* "I Made It Through Today" Button */}
-          <div>
-            <button
-              onClick={handleMadeItThrough}
-              disabled={hasCelebratedToday}
-              className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday
-                ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:shadow-xl active:scale-95'
-                }`}
-            >
-              {hasCelebratedToday ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span>✓</span>
-                  <span>Celebrated!</span>
-                </span>
-              ) : (
-                <span>🎉 I Made It Through Today!</span>
               )}
-            </button>
-            {!hasCelebratedToday && (
-              <p className="text-xs font-body text-amber-900/60 text-center mt-2">
-                Tap to celebrate making it through a tough day
-              </p>
-            )}
-          </div>
 
-          {/* Weekly Stats */}
-          <div>
-            <h2 className="font-heading text-xl text-amber-900/90 mb-3">Weekly Stats</h2>
-            <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-body text-amber-900/70">Check-ins this week</span>
-                <span className="data-display text-3xl text-amber-900">{weekStats.daysLogged} / 7</span>
+              {/* Message when mood not selected */}
+              {!mood && (
+                <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-900/70 font-body text-center">
+                    👆 Select your mood above to continue check-in
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* HALT Check */}
+            <div>
+              <h2 className="font-heading text-xl text-amber-900/90 mb-2">HALT Check</h2>
+              <p className="text-sm font-body text-amber-900/60 mb-3">
+                Quick self-assessment to identify vulnerability
+              </p>
+
+              <div className="bg-white/50 rounded-lg p-4 space-y-3">
+                {[
+                  { key: 'hungry' as const, label: 'Hungry?', icon: '🍽️', tip: 'When did you last eat? Grab a healthy snack.' },
+                  { key: 'angry' as const, label: 'Angry?', icon: '😤', tip: "What's bothering you. Call your sponsor." },
+                  { key: 'lonely' as const, label: 'Lonely?', icon: '🤝', tip: 'Reach out to someone. Attend a meeting.' },
+                  { key: 'tired' as const, label: 'Tired?', icon: '😴', tip: 'How much sleep did you get? Take a break.' },
+                ].map(({ key, label, icon, tip }) => (
+                  <div key={key} className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id={`halt-${key}`}
+                      checked={haltCheck[key]}
+                      onChange={() => handleHaltToggle(key)}
+                      className="mt-1 w-5 h-5 text-blue-600 rounded border-amber-300 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <div className="flex-1">
+                      <label htmlFor={`halt-${key}`} className="font-handlee text-lg text-amber-900 flex items-center gap-2 cursor-pointer">
+                        <span>{icon}</span>
+                        <span>{label}</span>
+                      </label>
+                      {haltCheck[key] && (
+                        <p className="text-sm text-blue-700 italic mt-1 font-body">
+                          💡 {tip}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between pt-3 border-t border-amber-100">
-                <span className="font-body text-amber-900/70">Current streak</span>
-                <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
+
+              <button
+                onClick={handleHaltSubmit}
+                disabled={Object.values(haltCheck).every(v => !v)}
+                className="mt-3 w-full py-3 bg-blue-500 text-white rounded-lg font-handlee text-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
+              >
+                Complete HALT Check
+              </button>
+
+              {haltSubmitted && (
+                <p className="text-xs text-green-600 text-center mt-2 font-body">
+                  ✓ Saved to journal
+                </p>
+              )}
+            </div>
+
+            {/* "I Made It Through Today" Button */}
+            <div>
+              <button
+                onClick={handleMadeItThrough}
+                disabled={hasCelebratedToday}
+                className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday
+                  ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:shadow-xl active:scale-95'
+                  }`}
+              >
+                {hasCelebratedToday ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span>✓</span>
+                    <span>Celebrated!</span>
+                  </span>
+                ) : (
+                  <span>🎉 I Made It Through Today!</span>
+                )}
+              </button>
+              {!hasCelebratedToday && (
+                <p className="text-xs font-body text-amber-900/60 text-center mt-2">
+                  Tap to celebrate making it through a tough day
+                </p>
+              )}
+            </div>
+
+            {/* Weekly Stats */}
+            <div>
+              <h2 className="font-heading text-xl text-amber-900/90 mb-3">Weekly Stats</h2>
+              <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-body text-amber-900/70">Check-ins this week</span>
+                  <span className="data-display text-3xl text-amber-900">{weekStats.daysLogged} / 7</span>
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t border-amber-100">
+                  <span className="font-body text-amber-900/70">Current streak</span>
+                  <span className="data-display text-3xl text-amber-900">{weekStats.streak} {weekStats.streak === 1 ? 'day' : 'days'}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Recovery Notepad - MOBILE ONLY (visible on mobile, hidden on desktop) */}
-          <div className="block md:hidden">
-            <RecoveryNotepad
-              textareaRef={mobileTextareaRef}
-              journalEntry={journalEntry}
-              onJournalChange={setJournalEntry}
-              onTouched={() => setHasTouched(true)}
-              isEditingRef={isEditingRef}
-              isSaving={isSaving}
-              saveComplete={saveComplete}
-            />
+            {/* Recovery Notepad - MOBILE ONLY (visible on mobile, hidden on desktop) */}
+            <div className="block md:hidden">
+              <RecoveryNotepad
+                textareaRef={mobileTextareaRef}
+                journalEntry={journalEntry}
+                onJournalChange={setJournalEntry}
+                onTouched={() => setHasTouched(true)}
+                isEditingRef={isEditingRef}
+                isSaving={isSaving}
+                saveComplete={saveComplete}
+              />
+            </div>
           </div>
-        </div>
         </div>
         {/* Bottom navigation hint */}
         <div className="flex items-center justify-center pt-8">
