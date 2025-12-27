@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Clock } from "lucide-react"
 import { MeetingsService, Meeting } from "@/lib/db/meetings"
 import { useGeolocation } from "@/hooks/use-geolocation"
@@ -26,60 +26,6 @@ export default function CompactMeetingCountdown() {
         enableHighAccuracy: false, // Faster, less battery drain
         timeout: 5000
     })
-
-    // Wrap in useCallback to prevent redefinition on every render and ensure stable reference
-    const updateTimeUntil = useCallback(() => {
-        if (!nextMeeting) return
-
-        const now = new Date()
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
-        // Validate day field
-        const meetingDayIndex = days.indexOf(nextMeeting.day)
-        if (meetingDayIndex === -1) {
-            // Invalid day name - return early and clear display
-            setTimeUntil(null)
-            return
-        }
-
-        // Validate time field
-        const [hours, minutes] = nextMeeting.time.split(':').map(Number)
-        if (!Number.isFinite(hours) || !Number.isFinite(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-            // Invalid time format - return early and clear display
-            setTimeUntil(null)
-            return
-        }
-
-        const meetingDate = new Date()
-        const todayIndex = now.getDay()
-
-        // Calculate days until meeting (with wrap-around)
-        if (meetingDayIndex === todayIndex) {
-            // Meeting is today, no date adjustment
-            // (keep current date)
-        } else {
-            // Calculate days until meeting with week wrap-around
-            let daysUntil = meetingDayIndex - todayIndex
-            if (daysUntil < 0) {
-                daysUntil += 7 // Wrap to next week
-            }
-            meetingDate.setDate(meetingDate.getDate() + daysUntil)
-        }
-
-        meetingDate.setHours(hours, minutes, 0, 0)
-
-        const diff = meetingDate.getTime() - now.getTime()
-        const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
-        const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-        if (hoursUntil === 0) {
-            setTimeUntil(`${minutesUntil}m`)
-        } else if (hoursUntil < 24) {
-            setTimeUntil(`${hoursUntil}h ${minutesUntil}m`)
-        } else {
-            setTimeUntil(`tmrw`)
-        }
-    }, [nextMeeting]) // Dependency: re-create function when nextMeeting changes
 
     useEffect(() => {
         async function findNextMeeting() {
@@ -159,6 +105,14 @@ export default function CompactMeetingCountdown() {
                 }
 
                 setNextMeeting(selectedMeeting)
+
+                // Set initial timeUntil immediately to avoid cascade
+                if (selectedMeeting) {
+                    setTimeUntil(getCountdownString(selectedMeeting))
+                } else {
+                    setTimeUntil(null)
+                }
+
                 setLoading(false)
             } catch (error) {
                 console.error("Error finding next meeting:", error)
@@ -167,18 +121,18 @@ export default function CompactMeetingCountdown() {
         }
 
         findNextMeeting()
+    }, [userLocation, locationStatus])
 
-        // Update every minute
+    // Timer effect - only handles updates via interval
+    useEffect(() => {
+        if (!nextMeeting) return
+
         const interval = setInterval(() => {
-            updateTimeUntil()
+            setTimeUntil(getCountdownString(nextMeeting))
         }, 60000)
 
         return () => clearInterval(interval)
-    }, [userLocation, locationStatus, updateTimeUntil])
-
-    useEffect(() => {
-        updateTimeUntil()
-    }, [updateTimeUntil])
+    }, [nextMeeting])
 
     function formatTime(time24: string): string {
         const [hours, minutes] = time24.split(':').map(Number)
@@ -240,4 +194,48 @@ export default function CompactMeetingCountdown() {
             />
         </>
     )
+}
+
+// Helper function logic extracted from previous updateTimeUntil
+function getCountdownString(meeting: Meeting): string | null {
+    const now = new Date()
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    // Validate day field
+    const meetingDayIndex = days.indexOf(meeting.day)
+    if (meetingDayIndex === -1) return null
+
+    // Validate time field
+    const [hours, minutes] = meeting.time.split(':').map(Number)
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        return null
+    }
+
+    const meetingDate = new Date()
+    const todayIndex = now.getDay()
+
+    // Calculate days until meeting (with wrap-around)
+    if (meetingDayIndex === todayIndex) {
+        // Meeting is today, no date adjustment
+    } else {
+        let daysUntil = meetingDayIndex - todayIndex
+        if (daysUntil < 0) {
+            daysUntil += 7 // Wrap to next week
+        }
+        meetingDate.setDate(meetingDate.getDate() + daysUntil)
+    }
+
+    meetingDate.setHours(hours, minutes, 0, 0)
+
+    const diff = meetingDate.getTime() - now.getTime()
+    const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
+    const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+
+    if (hoursUntil === 0) {
+        return `${minutesUntil}m`
+    } else if (hoursUntil < 24) {
+        return `${hoursUntil}h ${minutesUntil}m`
+    } else {
+        return `tmrw`
+    }
 }

@@ -37,6 +37,7 @@ async function migrateMeetings() {
     } catch (error) {
         console.error('❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists.');
         console.error('   This file should be in the project root.\n');
+        console.error('Error details:', error);
         process.exit(1);
     }
 

@@ -105,7 +105,14 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
   }
 
   return {
-    // Save or update a daily log entry
+    /**
+     * Save/Update a daily log entry via Cloud Function
+     * Enforces server-side validation and rate limiting.
+     * 
+     * @param userId - ID of the user owning the log
+     * @param data - Partial log data to save
+     * @throws {Error} If validation fails or rate limit exceeded
+     */
     async saveDailyLog(userId: string, data: Partial<DailyLog>) {
       ensureValidUser(userId)
       deps.assertUserScope({ userId })
@@ -223,6 +230,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     // Get today's log if it exists
+    /**
+     * Retrieve the daily log for the current date
+     * 
+     * @param userId - ID of the user
+     * @returns Object containing the log (if found) or error
+     */
     async getTodayLog(userId: string): Promise<TodayLogResult> {
       ensureValidUser(userId)
       deps.assertUserScope({ userId })

@@ -66,7 +66,11 @@ export interface MeetingsPaginatedResult {
 }
 
 export const MeetingsService = {
-    // Get meetings for a specific day
+    /**
+     * Get meetings for a specific day
+     * @param day - Full day name (e.g., "Monday")
+     * @returns Array of meetings sorted by time
+     */
     async getMeetingsByDay(day: string): Promise<Meeting[]> {
         try {
             // Basic query index logic might be needed for compound queries (day + time)
@@ -91,7 +95,11 @@ export const MeetingsService = {
         }
     },
 
-    // Get all meetings (for the list view) - DEPRECATED: Use getAllMeetingsPaginated for better performance
+    /**
+     * Get all meetings (DEPRECATED)
+     * Use getAllMeetingsPaginated for better performance on large datasets.
+     * @deprecated
+     */
     async getAllMeetings(): Promise<Meeting[]> {
         try {
             const meetingsRef = collection(db, "meetings")
@@ -110,7 +118,14 @@ export const MeetingsService = {
         }
     },
 
-    // Get all meetings with pagination (RECOMMENDED for "View All" mode)
+    /**
+     * Get all meetings with pagination (RECOMMENDED)
+     * Queries Firestore using a composite index on [dayIndex, time] for correct week-order sorting.
+     * 
+     * @param pageSize - Number of items to fetch (default 50)
+     * @param lastDocument - Last document from previous page (for cursor pagination)
+     * @returns Paginated result with meetings and cursor
+     */
     async getAllMeetingsPaginated(
         pageSize: number = 50,
         lastDocument?: QueryDocumentSnapshot
@@ -163,7 +178,10 @@ export const MeetingsService = {
         }
     },
 
-    // Dev util to clear meetings
+    /**
+     * Dev utility to clear all meetings from the database
+     * @returns true if successful
+     */
     async clearAllMeetings() {
         try {
             const batch = writeBatch(db)
@@ -179,7 +197,11 @@ export const MeetingsService = {
         }
     },
 
-    // Seed the database with some sample Nashville meetings (Mock Data)
+    /**
+     * Seed the database with sample Nashville meetings
+     * Contains a mix of AA/NA meetings across the week with coordinates.
+     * @returns true if successful
+     */
     async seedInitialMeetings() {
         const batch = writeBatch(db)
 
