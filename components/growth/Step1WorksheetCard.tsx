@@ -537,7 +537,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
         }
     }, [user])
 
-    // Auto-save function
+    // Auto-save function (saves draft to inventoryEntries only)
     const autoSave = useCallback(async () => {
         // Prevent save after dialog closes (race condition protection)
         if (!isOpenRef.current) return
@@ -548,17 +548,12 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
 
         setIsSaving(true)
         try {
-            // Save to inventoryEntries for structured storage
+            // Auto-save ONLY to inventoryEntries for draft preservation
+            // Journal writes are deferred to manual save to avoid timeline spam
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'step-1-worksheet',
                 data: data as unknown as Record<string, unknown>,
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
-            })
-
-            // Also save to journal collection for timeline display
-            await FirestoreService.saveNotebookJournalEntry(user.uid, {
-                type: 'step-1-worksheet',
-                data: data as unknown as Record<string, unknown>
             })
 
             setLastSavedData(data)
@@ -618,29 +613,54 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
         }
 
         setIsSaving(true)
+        let journalSaved = false
+        let inventorySaved = false
+
         try {
-            // Save to inventoryEntries for structured storage
+            // Write to journal first (simpler operation, less likely to fail)
+            // This ensures timeline visibility even if inventory write fails
+            await FirestoreService.saveNotebookJournalEntry(user.uid, {
+                type: 'step-1-worksheet',
+                data: data as unknown as Record<string, unknown>
+            })
+            journalSaved = true
+
+            // Then save to inventoryEntries for structured storage
             await FirestoreService.saveInventoryEntry(user.uid, {
                 type: 'step-1-worksheet',
                 data: data as unknown as Record<string, unknown>,
                 tags: ['step-work', 'step-1', 'powerlessness', 'unmanageability'],
             })
-
-            // Also save to journal collection for timeline display
-            await FirestoreService.saveNotebookJournalEntry(user.uid, {
-                type: 'step-1-worksheet',
-                data: data as unknown as Record<string, unknown>
-            })
+            inventorySaved = true
 
             setLastSavedData(data)
             toast.success("Step 1 worksheet saved successfully!")
             // Keep the dialog open and preserve data so user can continue working
         } catch (error) {
-            toast.error("Failed to save worksheet. Please try again.")
-            console.error("Save error:", error)
+            // Provide specific error messages for partial failures
+            if (journalSaved && !inventorySaved) {
+                toast.error("Saved to journal but failed to save full worksheet. Please try again.")
+            } else if (!journalSaved) {
+                toast.error("Failed to save worksheet. Please try again.")
+            }
+            console.error("Save error:", { error, journalSaved, inventorySaved })
         } finally {
             setIsSaving(false)
         }
+    }
+
+    const handleExit = () => {
+        // Check for unsaved changes
+        const hasUnsavedChanges = JSON.stringify(data) !== JSON.stringify(lastSavedData)
+
+        if (hasUnsavedChanges && hasContent) {
+            const confirmed = window.confirm(
+                "You have unsaved changes. Your work has been auto-saved as a draft, but it won't appear in your journal until you manually save. Exit anyway?"
+            )
+            if (!confirmed) return
+        }
+
+        setIsOpen(false)
     }
 
     const currentSection = FORM_SECTIONS[section - 1]
@@ -741,7 +761,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setIsOpen(false)}
+                                onClick={handleExit}
                                 className="text-xs text-amber-900/60 hover:text-amber-900"
                             >
                                 Exit to Growth Page
