@@ -31,16 +31,9 @@ interface MigrationStats {
 async function migrateUserData(userId: string, stats: MigrationStats) {
     console.log(`\nMigrating user: ${userId}`);
 
-    // Check if user already migrated (idempotency check)
-    const existingJournalEntries = await db.collection(`users/${userId}/journal`)
-        .where('migratedFrom', 'in', ['daily_logs', 'inventoryEntries'])
-        .limit(1)
-        .get();
-
-    if (!existingJournalEntries.empty) {
-        console.log(`  ⏭️  Skipping user ${userId}: Already migrated`);
-        return;
-    }
+    // We no longer skip the user entirely if they have *some* migrated entries.
+    // Instead, we check each entry individually for 'migrationId'.
+    // This allows resuming a partial migration.
 
     // 1. Migrate daily_logs
     const dailyLogsRef = db.collection(`users/${userId}/daily_logs`);
@@ -53,50 +46,68 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
 
             // Create check-in entry if has mood/cravings/used
             if (data.mood || data.cravings || data.used) {
-                await db.collection(`users/${userId}/journal`).add({
-                    userId,
-                    type: 'check-in',
-                    data: {
+                // Idempotency check 
+                const migrationId = `daily_logs_${doc.id}`;
+                const existingEntry = await db.collection(`users/${userId}/journal`)
+                    .where('migrationId', '==', migrationId)
+                    .limit(1)
+                    .get();
+
+                if (existingEntry.empty) {
+                    await db.collection(`users/${userId}/journal`).doc(migrationId).set({
+                        userId,
+                        type: 'check-in',
+                        data: {
+                            mood: data.mood || null,
+                            cravings: data.cravings || false,
+                            used: data.used || false,
+                        },
+                        dateLabel,
+                        isPrivate: true,
+                        isSoftDeleted: false,
+                        searchableText: '',
+                        tags: ['check-in', data.mood ? `mood-${data.mood}` : null].filter(Boolean),
+                        hasCravings: data.cravings || false,
+                        hasUsed: data.used || false, // duplicate field for query convenience
                         mood: data.mood || null,
-                        cravings: data.cravings || false,
-                        used: data.used || false,
-                    },
-                    dateLabel,
-                    isPrivate: true,
-                    isSoftDeleted: false,
-                    searchableText: '',
-                    tags: ['check-in', data.mood ? `mood-${data.mood}` : null].filter(Boolean),
-                    hasCravings: data.cravings || false,
-                    hasUsed: data.used || false,
-                    mood: data.mood || null,
-                    createdAt: data.createdAt || Timestamp.now(),
-                    updatedAt: Timestamp.now(),
-                    migratedFrom: 'daily_logs',
-                    migrationId: `daily_logs_${doc.id}`, // Unique identifier to prevent duplicates
-                });
-                stats.journalEntriesCreated++;
+                        createdAt: data.createdAt || Timestamp.now(),
+                        updatedAt: Timestamp.now(),
+                        migratedFrom: 'daily_logs',
+                        migrationId,
+                    }, { merge: true });
+                    stats.journalEntriesCreated++;
+                }
             }
 
             // Create daily-log entry if has content
             if (data.content && data.content.trim()) {
-                await db.collection(`users/${userId}/journal`).add({
-                    userId,
-                    type: 'daily-log',
-                    data: {
-                        content: data.content,
-                        wordCount: data.content.split(/\s+/).filter(Boolean).length,
-                    },
-                    dateLabel,
-                    isPrivate: true,
-                    isSoftDeleted: false,
-                    searchableText: data.content.toLowerCase(),
-                    tags: ['daily-log'],
-                    createdAt: data.createdAt || Timestamp.now(),
-                    updatedAt: Timestamp.now(),
-                    migratedFrom: 'daily_logs',
-                    migrationId: `daily_logs_content_${doc.id}`, // Unique identifier
-                });
-                stats.journalEntriesCreated++;
+                // Idempotency check
+                const migrationId = `daily_logs_content_${doc.id}`;
+                const existingEntry = await db.collection(`users/${userId}/journal`)
+                    .where('migrationId', '==', migrationId)
+                    .limit(1)
+                    .get();
+
+                if (existingEntry.empty) {
+                    await db.collection(`users/${userId}/journal`).doc(migrationId).set({
+                        userId,
+                        type: 'daily-log',
+                        data: {
+                            content: data.content,
+                            wordCount: data.content.split(/\s+/).filter(Boolean).length,
+                        },
+                        dateLabel,
+                        isPrivate: true,
+                        isSoftDeleted: false,
+                        searchableText: data.content.toLowerCase(),
+                        tags: ['daily-log'],
+                        createdAt: data.createdAt || Timestamp.now(),
+                        updatedAt: Timestamp.now(),
+                        migratedFrom: 'daily_logs',
+                        migrationId,
+                    }, { merge: true });
+                    stats.journalEntriesCreated++;
+                }
             }
 
             stats.dailyLogsProcessed++;
@@ -125,20 +136,31 @@ async function migrateUserData(userId: string, stats: MigrationStats) {
 
             const entryType = data.type; // spot-check, night-review, gratitude
 
-            await db.collection(`users/${userId}/journal`).add({
-                userId,
-                type: entryType,
-                data: data.data || {},
-                dateLabel,
-                isPrivate: true,
-                isSoftDeleted: false,
-                searchableText: generateSearchableText(entryType, data.data || {}),
-                tags: [entryType, ...(data.tags || [])],
-                createdAt,
-                updatedAt: Timestamp.now(),
-                migratedFrom: 'inventoryEntries',
-                migrationId: `inventoryEntries_${doc.id}`, // Unique identifier
-            });
+            // Idempotency check
+            const migrationId = `inventoryEntries_${doc.id}`;
+            const existingEntry = await db.collection(`users/${userId}/journal`)
+                .where('migrationId', '==', migrationId)
+                .limit(1)
+                .get();
+
+            if (existingEntry.empty) {
+                await db.collection(`users/${userId}/journal`).doc(migrationId).set({
+                    userId,
+                    type: entryType,
+                    data: data.data || {},
+                    dateLabel,
+                    isPrivate: true,
+                    isSoftDeleted: false,
+                    searchableText: generateSearchableText(entryType, data.data || {}),
+                    tags: [entryType, ...(data.tags || [])],
+                    createdAt,
+                    updatedAt: Timestamp.now(),
+                    migratedFrom: 'inventoryEntries',
+                    migrationId,
+                }, { merge: true });
+
+                stats.journalEntriesCreated++;
+            }
 
             stats.journalEntriesCreated++;
             stats.inventoryEntriesProcessed++;
@@ -211,8 +233,13 @@ async function runMigration() {
         console.log(`\nProcessing batch of ${usersSnapshot.size} users (total so far: ${totalUsers})...`);
 
         for (const userDoc of usersSnapshot.docs) {
-            await migrateUserData(userDoc.id, stats);
-            totalUsers++;
+            try {
+                await migrateUserData(userDoc.id, stats);
+                totalUsers++;
+            } catch (error) {
+                console.error(`❌ Error migrating user ${userDoc.id}:`, error);
+                // Continue to next user
+            }
         }
 
         lastDoc = usersSnapshot.docs[usersSnapshot.docs.length - 1];

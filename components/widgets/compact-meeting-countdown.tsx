@@ -9,6 +9,86 @@ import { MeetingDetailsDialog } from "@/components/meetings/meeting-details-dial
 
 const MAX_DISTANCE_MILES = 10
 
+// Helper function to compute countdown string given a Meeting object
+function getCountdownString(meeting: Meeting): string | null {
+    const now = new Date()
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    // Validate day field
+    const meetingDayIndex = days.indexOf(meeting.day)
+    if (meetingDayIndex === -1) return null
+
+    // Validate time field
+    const [hours, minutes] = meeting.time.split(':').map(Number)
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        return null
+    }
+
+    const meetingDate = new Date()
+    const todayIndex = now.getDay()
+
+    // Calculate days until meeting (with wrap-around)
+    if (meetingDayIndex === todayIndex) {
+        // Meeting is today, no date adjustment
+    } else {
+        let daysUntil = meetingDayIndex - todayIndex
+        if (daysUntil < 0) {
+            daysUntil += 7 // Wrap to next week
+        }
+        meetingDate.setDate(meetingDate.getDate() + daysUntil)
+    }
+
+    meetingDate.setHours(hours, minutes, 0, 0)
+
+    const diff = meetingDate.getTime() - now.getTime()
+
+    // If meeting is in the past, return null
+    if (diff <= 0) return null
+
+    const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
+    const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+
+    if (hoursUntil === 0) {
+        return `${minutesUntil}m`
+    } else if (hoursUntil < 24) {
+        return `${hoursUntil}h ${minutesUntil}m`
+    } else {
+        const daysUntil = Math.ceil(diff / (1000 * 60 * 60 * 24))
+        return daysUntil === 1 ? `tmrw` : `${daysUntil}d`
+    }
+}
+
+const parseMinutesSinceMidnight = (timeStr: string): number | null => {
+    const t = timeStr.trim()
+
+    // 24-hour format: "HH:mm"
+    const m24 = t.match(/^(\d{1,2}):(\d{2})$/)
+    if (m24) {
+        const h = Number(m24[1])
+        const m = Number(m24[2])
+        if (Number.isFinite(h) && Number.isFinite(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+            return h * 60 + m
+        }
+        return null
+    }
+
+    // 12-hour format: "h:mm AM/PM"
+    const m12 = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)
+    if (m12) {
+        let h = Number(m12[1])
+        const m = Number(m12[2])
+        const period = m12[3].toUpperCase()
+
+        if (!Number.isFinite(h) || !Number.isFinite(m) || h < 1 || h > 12 || m < 0 || m > 59) return null
+        if (period === "AM") h = h === 12 ? 0 : h
+        if (period === "PM") h = h === 12 ? 12 : h + 12
+
+        return h * 60 + m
+    }
+
+    return null
+}
+
 /**
  * Next Closest Meeting Widget
  * Shows the soonest meeting within 10 miles (if geolocation enabled)
@@ -42,8 +122,8 @@ export default function CompactMeetingCountdown() {
 
                 // Filter to upcoming meetings only (haven't started yet)
                 const upcomingToday = todaysMeetings.filter(meeting => {
-                    const meetingTime = meeting.time.split(':')
-                    const meetingMinutes = parseInt(meetingTime[0]) * 60 + parseInt(meetingTime[1])
+                    const meetingMinutes = parseMinutesSinceMidnight(meeting.time)
+                    if (meetingMinutes === null) return false
                     return meetingMinutes > currentMinutes
                 })
 
@@ -106,7 +186,7 @@ export default function CompactMeetingCountdown() {
 
                 setNextMeeting(selectedMeeting)
 
-                // Set initial timeUntil immediately to avoid cascade
+                // Set initial timeUntil immediately
                 if (selectedMeeting) {
                     setTimeUntil(getCountdownString(selectedMeeting))
                 } else {
@@ -121,15 +201,26 @@ export default function CompactMeetingCountdown() {
         }
 
         findNextMeeting()
-    }, [userLocation, locationStatus])
+    }, [userLocation, locationStatus, nextMeeting === null]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Timer effect - only handles updates via interval
+    // Timer effect
     useEffect(() => {
         if (!nextMeeting) return
 
-        const interval = setInterval(() => {
-            setTimeUntil(getCountdownString(nextMeeting))
-        }, 60000)
+        const updateTimer = () => {
+            const newTimeUntil = getCountdownString(nextMeeting)
+            if (newTimeUntil === null) {
+                // Meeting passed! Trigger re-fetch
+                setNextMeeting(null)
+            } else {
+                setTimeUntil(newTimeUntil)
+            }
+        }
+
+        updateTimer() // Initial call
+
+        // Update every 30 seconds for better granularity without excessive overhead
+        const interval = setInterval(updateTimer, 30000)
 
         return () => clearInterval(interval)
     }, [nextMeeting])
@@ -194,48 +285,4 @@ export default function CompactMeetingCountdown() {
             />
         </>
     )
-}
-
-// Helper function logic extracted from previous updateTimeUntil
-function getCountdownString(meeting: Meeting): string | null {
-    const now = new Date()
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
-    // Validate day field
-    const meetingDayIndex = days.indexOf(meeting.day)
-    if (meetingDayIndex === -1) return null
-
-    // Validate time field
-    const [hours, minutes] = meeting.time.split(':').map(Number)
-    if (!Number.isFinite(hours) || !Number.isFinite(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        return null
-    }
-
-    const meetingDate = new Date()
-    const todayIndex = now.getDay()
-
-    // Calculate days until meeting (with wrap-around)
-    if (meetingDayIndex === todayIndex) {
-        // Meeting is today, no date adjustment
-    } else {
-        let daysUntil = meetingDayIndex - todayIndex
-        if (daysUntil < 0) {
-            daysUntil += 7 // Wrap to next week
-        }
-        meetingDate.setDate(meetingDate.getDate() + daysUntil)
-    }
-
-    meetingDate.setHours(hours, minutes, 0, 0)
-
-    const diff = meetingDate.getTime() - now.getTime()
-    const hoursUntil = Math.floor(diff / (1000 * 60 * 60))
-    const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-    if (hoursUntil === 0) {
-        return `${minutesUntil}m`
-    } else if (hoursUntil < 24) {
-        return `${hoursUntil}h ${minutesUntil}m`
-    } else {
-        return `tmrw`
-    }
 }

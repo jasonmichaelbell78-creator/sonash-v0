@@ -15,10 +15,12 @@ const TYPES = ["AA", "NA", "CA", "Smart", "Al-Anon"] as const
 // Meeting form component
 function MeetingForm({
     formData,
-    setFormData
+    setFormData,
+    _isEditing
 }: {
     formData: Partial<Meeting>
     setFormData: (data: Partial<Meeting>) => void
+    _isEditing?: boolean
 }) {
     return (
         <div className="space-y-4 py-4">

@@ -76,7 +76,7 @@ function SlogansForm({
                 <Label>Time of Day (Optional)</Label>
                 <select
                     value={formData.scheduledTimeOfDay || ''}
-                    onChange={e => setFormData({ ...formData, scheduledTimeOfDay: e.target.value as 'morning' | 'afternoon' | 'evening' | undefined || undefined })}
+                    onChange={e => setFormData({ ...formData, scheduledTimeOfDay: e.target.value ? e.target.value as 'morning' | 'afternoon' | 'evening' : undefined })}
                     className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
                 >
                     <option value="">Any time</option>

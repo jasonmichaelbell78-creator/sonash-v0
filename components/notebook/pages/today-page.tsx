@@ -68,6 +68,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   const journalSaveInProgressRef = useRef(false)
   // Track if we've already celebrated this session to avoid duplicates
   const celebratedThisSessionRef = useRef(false)
+  // Track save completion timeout for cleanup
+  const saveCompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const { user, profile } = useAuth()
   const { celebrate } = useCelebration()
@@ -386,9 +388,14 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         celebratedThisSessionRef.current = true
       }
 
+
       setSaveComplete(true)
       // Hide "Saved" message after 2 seconds
-      setTimeout(() => setSaveComplete(false), 2000)
+      if (saveCompleteTimeoutRef.current) clearTimeout(saveCompleteTimeoutRef.current)
+      saveCompleteTimeoutRef.current = setTimeout(() => {
+        setSaveComplete(false)
+        saveCompleteTimeoutRef.current = null
+      }, 2000)
     } catch (error) {
       // Log detailed error information for debugging
       if (process.env.NODE_ENV === 'development') {
@@ -860,6 +867,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                     <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
                     <div className="flex items-center gap-3">
                       <button
+                        type="button"
                         onClick={() => { setCravings(false); setHasTouched(true) }}
                         aria-label="No cravings"
                         className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === false
@@ -870,6 +878,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                         No
                       </button>
                       <button
+                        type="button"
                         onClick={() => { setCravings(true); setHasTouched(true) }}
                         aria-label="Yes cravings"
                         className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${cravings === true
@@ -886,6 +895,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                     <span className="font-heading text-lg text-amber-900/80">Used?</span>
                     <div className="flex items-center gap-3">
                       <button
+                        type="button"
                         onClick={() => { setUsed(false); setHasTouched(true) }}
                         aria-label="No used"
                         className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === false
@@ -896,6 +906,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                         No
                       </button>
                       <button
+                        type="button"
                         onClick={() => { setUsed(true); setHasTouched(true) }}
                         aria-label="Yes used"
                         className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${used === true
@@ -958,6 +969,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               </div>
 
               <button
+                type="button"
                 onClick={handleHaltSubmit}
                 disabled={Object.values(haltCheck).every(v => !v)}
                 className="mt-3 w-full py-3 bg-blue-500 text-white rounded-lg font-handlee text-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
@@ -975,6 +987,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             {/* "I Made It Through Today" Button */}
             <div>
               <button
+                type="button"
                 onClick={handleMadeItThrough}
                 disabled={hasCelebratedToday}
                 className={`w-full py-6 px-4 rounded-xl font-heading text-2xl transition-all shadow-lg ${hasCelebratedToday

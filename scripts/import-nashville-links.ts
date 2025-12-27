@@ -61,34 +61,35 @@ async function importNashvilleLinks() {
         let skippedCount = 0
 
         for (const link of nashvilleLinks) {
-            // Check if this link already exists (idempotency check)
-            // Use title + category as unique identifier
-            const existingLinks = await linksRef
-                .where('title', '==', link.title)
-                .where('category', '==', link.category)
-                .limit(1)
-                .get()
+            // Use deterministic ID for idempotency (avoid composite index requirement)
+            const docId = `${link.category}__${link.title}`.toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
+                .replace(/(^-|-$)/g, "")     // Trim leading/trailing hyphens
 
-            if (!existingLinks.empty) {
+            const docRef = linksRef.doc(docId)
+            const existingDoc = await docRef.get()
+
+            if (existingDoc.exists) {
                 console.log(`  ⏭️  Skipped: ${link.title} (already exists)`)
                 skippedCount++
                 continue
             }
 
-            await linksRef.add({
+            await docRef.set({
                 ...link,
                 isActive: true,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 source: 'import-nashville-links', // Track import source
-            })
+            }, { merge: true })
             console.log(`  ✅ Added: ${link.title} (${link.category})`)
             addedCount++
         }
 
         console.log(`\n🎉 Import complete!`)
-        console.log(`\nTotal links added: ${addedCount}`)
-        console.log(`Total links skipped: ${skippedCount}`)
+        console.log(`\nTotal links processed: ${nashvilleLinks.length}`)
+        console.log(`Links added: ${addedCount}`)
+        console.log(`Links skipped: ${skippedCount}`)
         console.log(`\nBreakdown by category:`)
         const categoryCounts = nashvilleLinks.reduce((acc, link) => {
             acc[link.category] = (acc[link.category] || 0) + 1
