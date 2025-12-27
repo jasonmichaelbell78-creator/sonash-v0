@@ -70,26 +70,61 @@ function MeetingForm({
                 />
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <input
-                    type="text"
-                    value={formData.address || ""}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    placeholder="Full address"
-                />
-            </div>
+            <div className="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <h3 className="text-sm font-medium text-gray-900">Location Details</h3>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Neighborhood</label>
-                <input
-                    type="text"
-                    value={formData.neighborhood || ""}
-                    onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    placeholder="e.g., East Nashville"
-                />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                    <input
+                        type="text"
+                        value={formData.address || ""}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        placeholder="123 Main St"
+                    />
+                </div>
+
+                <div className="grid grid-cols-6 gap-3">
+                    <div className="col-span-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <input
+                            type="text"
+                            value={formData.city || "Nashville"}
+                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        />
+                    </div>
+                    <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                        <input
+                            type="text"
+                            value={formData.state || "TN"}
+                            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Zip</label>
+                        <input
+                            type="text"
+                            value={formData.zip || ""}
+                            onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                            placeholder="37209"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Neighborhood</label>
+                    <input
+                        type="text"
+                        value={formData.neighborhood || ""}
+                        onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        placeholder="e.g., East Nashville"
+                    />
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -98,16 +133,22 @@ function MeetingForm({
                     <input
                         type="number"
                         step="any"
-                        value={formData.coordinates?.lat || ""}
+                        value={formData.coordinates?.lat ?? ""}
                         onChange={(e) => {
-                            const val = e.target.value === "" ? 0 : parseFloat(e.target.value)
-                            setFormData({
-                                ...formData,
-                                coordinates: {
-                                    lat: val,
-                                    lng: formData.coordinates?.lng || 0
-                                }
-                            })
+                            const val = e.target.value === "" ? undefined : parseFloat(e.target.value)
+                            if (val === undefined && formData.coordinates?.lng === undefined) {
+                                // If both cleared, remove coordinates object
+                                const { coordinates, ...rest } = formData
+                                setFormData(rest)
+                            } else {
+                                setFormData({
+                                    ...formData,
+                                    coordinates: {
+                                        lat: val ?? 0,
+                                        lng: formData.coordinates?.lng ?? 0
+                                    }
+                                })
+                            }
                         }}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
                         placeholder="36.1627"
@@ -118,16 +159,22 @@ function MeetingForm({
                     <input
                         type="number"
                         step="any"
-                        value={formData.coordinates?.lng || ""}
+                        value={formData.coordinates?.lng ?? ""}
                         onChange={(e) => {
-                            const val = e.target.value === "" ? 0 : parseFloat(e.target.value)
-                            setFormData({
-                                ...formData,
-                                coordinates: {
-                                    lat: formData.coordinates?.lat || 0,
-                                    lng: val
-                                }
-                            })
+                            const val = e.target.value === "" ? undefined : parseFloat(e.target.value)
+                            if (val === undefined && formData.coordinates?.lat === undefined) {
+                                // If both cleared, remove coordinates object
+                                const { coordinates, ...rest } = formData
+                                setFormData(rest)
+                            } else {
+                                setFormData({
+                                    ...formData,
+                                    coordinates: {
+                                        lat: formData.coordinates?.lat ?? 0,
+                                        lng: val ?? 0
+                                    }
+                                })
+                            }
                         }}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
                         placeholder="-86.7816"
@@ -176,12 +223,20 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
         },
         { key: "day", label: "Day" },
         { key: "time", label: "Time" },
-        { key: "address", label: "Address", className: "max-w-xs truncate text-gray-600" },
+        {
+            key: "address",
+            label: "Address",
+            className: "max-w-xs truncate text-gray-600",
+            render: (meeting) => {
+                const parts = [meeting.address, meeting.city, meeting.state].filter(Boolean)
+                return <span>{parts.join(", ")}</span>
+            }
+        },
         { key: "neighborhood", label: "Neighborhood", className: "text-gray-600" },
     ],
 
     // Search fields
-    searchFields: ["name", "address", "neighborhood"],
+    searchFields: ["name", "address", "neighborhood", "city"],
 
     // Filters
     filters: [
@@ -217,6 +272,9 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
         day: "Monday",
         time: "19:00",
         address: "",
+        city: "Nashville",
+        state: "TN",
+        zip: "",
         neighborhood: "",
     },
 
@@ -230,7 +288,8 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
     // Validation
     validateForm: (data) => {
         if (!data.name) return "Name is required"
-        if (!data.address) return "Address is required"
+        if (!data.address) return "Street Address is required"
+        if (!data.city) return "City is required"
         return null
     },
 }
