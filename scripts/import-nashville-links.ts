@@ -58,13 +58,29 @@ async function importNashvilleLinks() {
     try {
         const linksRef = db.collection('quick_links')
         let addedCount = 0
+        let skippedCount = 0
 
         for (const link of nashvilleLinks) {
+            // Check if this link already exists (idempotency check)
+            // Use title + category as unique identifier
+            const existingLinks = await linksRef
+                .where('title', '==', link.title)
+                .where('category', '==', link.category)
+                .limit(1)
+                .get()
+
+            if (!existingLinks.empty) {
+                console.log(`  ⏭️  Skipped: ${link.title} (already exists)`)
+                skippedCount++
+                continue
+            }
+
             await linksRef.add({
                 ...link,
                 isActive: true,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                source: 'import-nashville-links', // Track import source
             })
             console.log(`  ✅ Added: ${link.title} (${link.category})`)
             addedCount++
@@ -72,6 +88,7 @@ async function importNashvilleLinks() {
 
         console.log(`\n🎉 Import complete!`)
         console.log(`\nTotal links added: ${addedCount}`)
+        console.log(`Total links skipped: ${skippedCount}`)
         console.log(`\nBreakdown by category:`)
         const categoryCounts = nashvilleLinks.reduce((acc, link) => {
             acc[link.category] = (acc[link.category] || 0) + 1
