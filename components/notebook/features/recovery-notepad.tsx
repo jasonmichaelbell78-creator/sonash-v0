@@ -101,10 +101,6 @@ export function RecoveryNotepad({
           ) : null}
         </div>
       </div>
-
-      <div className="flex justify-end">
-        <p className="text-xs font-body text-amber-900/50 italic">Auto-saved</p>
-      </div>
     </div>
   )
 }
