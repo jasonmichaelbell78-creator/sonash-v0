@@ -3,7 +3,7 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { AlertTriangle, Heart, Calendar, StickyNote, BookOpen } from "lucide-react"
+import { AlertTriangle, Heart, Calendar, StickyNote, BookOpen, ClipboardCheck } from "lucide-react"
 
 interface RibbonNavProps {
     activeTab: string | null
@@ -16,6 +16,7 @@ const ribbons = [
     { id: "daily", color: "bg-sky-500", hoverColor: "hover:bg-sky-600", label: "Daily", icon: Calendar, description: "Moods & check-ins" },
     { id: "notes", color: "bg-amber-500", hoverColor: "hover:bg-amber-600", label: "Notes", icon: StickyNote, description: "Recovery notepad" },
     { id: "inventory", color: "bg-purple-500", hoverColor: "hover:bg-purple-600", label: "Inventory", icon: BookOpen, description: "Night reviews" },
+    { id: "stepwork", color: "bg-green-500", hoverColor: "hover:bg-green-600", label: "Step Work", icon: ClipboardCheck, description: "Step worksheets" },
 ]
 
 export function RibbonNav({ activeTab, onTabChange }: RibbonNavProps) {
