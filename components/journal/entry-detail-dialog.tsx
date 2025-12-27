@@ -77,60 +77,65 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
                         </div>
                     )}
 
-                    {entry.type === 'step-1-worksheet' && entry.data && (
-                        <div className="space-y-6">
-                            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                                <h4 className="font-bold text-green-900 mb-2">📗 Step 1 Worksheet</h4>
-                                <p className="text-sm text-green-800">Powerlessness • Unmanageability • Acceptance</p>
-                            </div>
+                    {entry.type === 'step-1-worksheet' && entry.data && (() => {
+                        // Cast to Record for dynamic property access
+                        const worksheetData = entry.data as unknown as Record<string, unknown>
 
-                            {/* Concept 1: Powerlessness over Amount */}
-                            <div className="space-y-3">
-                                <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">Concept 1: Powerlessness over Amount</h5>
-                                {renderWorksheetField(entry.data, 'concept1_q1_examples', 'concept1_q1_results', '1.1 Tried to stop drinking/drugging')}
-                                {renderWorksheetField(entry.data, 'concept1_q2_examples', 'concept1_q2_results', '1.2 Tried to limit/control by dosage')}
-                                {renderWorksheetField(entry.data, 'concept1_q3_examples', 'concept1_q3_results', '1.3 Tried to limit by switching drinks')}
-                                {renderWorksheetField(entry.data, 'concept1_q4_examples', 'concept1_q4_results', '1.4 Tried to limit by time restrictions')}
-                                {renderWorksheetArray(entry.data, 'concept1_q5', '1.5 Blackouts/memory loss')}
-                            </div>
+                        return (
+                            <div className="space-y-6">
+                                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                                    <h4 className="font-bold text-green-900 mb-2">📗 Step 1 Worksheet</h4>
+                                    <p className="text-sm text-green-800">Powerlessness • Unmanageability • Acceptance</p>
+                                </div>
 
-                            {/* Concept 2: Powerlessness over Bad Results */}
-                            <div className="space-y-3">
-                                <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">Concept 2: Powerlessness over Bad Results</h5>
-                                {renderWorksheetField(entry.data, 'concept2_q1_examples', 'concept2_q1_results', '2.1 Tried to drink without bad results')}
-                                {renderWorksheetField(entry.data, 'concept2_q2_examples', 'concept2_q2_results', '2.2 Tried to limit health effects')}
-                                {renderWorksheetField(entry.data, 'concept2_q3_examples', 'concept2_q3_results', '2.3 Other control attempts')}
-                            </div>
+                                {/* Concept 1: Powerlessness over Amount */}
+                                <div className="space-y-3">
+                                    <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">Concept 1: Powerlessness over Amount</h5>
+                                    {renderWorksheetField(worksheetData, 'concept1_q1_examples', 'concept1_q1_results', '1.1 Tried to stop drinking/drugging')}
+                                    {renderWorksheetField(worksheetData, 'concept1_q2_examples', 'concept1_q2_results', '1.2 Tried to limit/control by dosage')}
+                                    {renderWorksheetField(worksheetData, 'concept1_q3_examples', 'concept1_q3_results', '1.3 Tried to limit by switching drinks')}
+                                    {renderWorksheetField(worksheetData, 'concept1_q4_examples', 'concept1_q4_results', '1.4 Tried to limit by time restrictions')}
+                                    {renderWorksheetArray(worksheetData, 'concept1_q5', '1.5 Blackouts/memory loss')}
+                                </div>
 
-                            {/* Concept 3: Unmanageability */}
-                            <div className="space-y-3">
-                                <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">Concept 3: Unmanageability</h5>
-                                {renderWorksheetArray(entry.data, 'concept3_q1', '3.1 What brought me to AA')}
-                                {renderWorksheetArray(entry.data, 'concept3_q2', '3.2 Crisis that would have occurred')}
-                                {renderWorksheetArray(entry.data, 'concept3_q3', '3.3 Effect on self-esteem')}
-                                {renderWorksheetArray(entry.data, 'concept3_q4', '3.4 Physical fights')}
-                                {renderWorksheetArray(entry.data, 'concept3_q5', '3.5 Lost job/promotion')}
-                                {renderWorksheetArray(entry.data, 'concept3_q6', '3.6 Lost relationships')}
-                                {renderWorksheetArray(entry.data, 'concept3_q7', '3.7 Hospitalizations')}
-                                {renderWorksheetArray(entry.data, 'concept3_q8', '3.8 Depression/suicide')}
-                                {renderWorksheetArray(entry.data, 'concept3_q9', '3.9 Effect on life goals')}
-                                {renderWorksheetArray(entry.data, 'concept3_q10', '3.10 Health effects')}
-                                {renderWorksheetArray(entry.data, 'concept3_q11', '3.11 Danger to life')}
-                                {renderWorksheetArray(entry.data, 'concept3_q12', '3.12 Objections from loved ones')}
-                                {renderWorksheetArray(entry.data, 'concept3_q13', '3.13 Physical abuse')}
-                                {renderWorksheetArray(entry.data, 'concept3_q14', '3.14 Effects while sober')}
-                            </div>
+                                {/* Concept 2: Powerlessness over Bad Results */}
+                                <div className="space-y-3">
+                                    <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">Concept 2: Powerlessness over Bad Results</h5>
+                                    {renderWorksheetField(worksheetData, 'concept2_q1_examples', 'concept2_q1_results', '2.1 Tried to drink without bad results')}
+                                    {renderWorksheetField(worksheetData, 'concept2_q2_examples', 'concept2_q2_results', '2.2 Tried to limit health effects')}
+                                    {renderWorksheetField(worksheetData, 'concept2_q3_examples', 'concept2_q3_results', '2.3 Other control attempts')}
+                                </div>
 
-                            {/* Conclusions */}
-                            <div className="space-y-3">
-                                <h5 className="font-bold text-amber-900 text-sm uppercase tracking-wide border-b border-amber-200 pb-1">Conclusions</h5>
-                                {renderWorksheetArray(entry.data, 'conclusion_q1', '4.1 Why I can\'t use safely')}
-                                {renderWorksheetString(entry.data, 'conclusion_q2', '4.2 Admitting vs accepting')}
-                                {renderWorksheetString(entry.data, 'conclusion_q3', '4.3 Am I an alcoholic?')}
-                                {renderWorksheetArray(entry.data, 'conclusion_q4', '4.4 Reasons to continue in AA')}
+                                {/* Concept 3: Unmanageability */}
+                                <div className="space-y-3">
+                                    <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">Concept 3: Unmanageability</h5>
+                                    {renderWorksheetArray(worksheetData, 'concept3_q1', '3.1 What brought me to AA')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q2', '3.2 Crisis that would have occurred')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q3', '3.3 Effect on self-esteem')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q4', '3.4 Physical fights')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q5', '3.5 Lost job/promotion')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q6', '3.6 Lost relationships')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q7', '3.7 Hospitalizations')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q8', '3.8 Depression/suicide')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q9', '3.9 Effect on life goals')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q10', '3.10 Health effects')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q11', '3.11 Danger to life')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q12', '3.12 Objections from loved ones')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q13', '3.13 Physical abuse')}
+                                    {renderWorksheetArray(worksheetData, 'concept3_q14', '3.14 Effects while sober')}
+                                </div>
+
+                                {/* Conclusions */}
+                                <div className="space-y-3">
+                                    <h5 className="font-bold text-amber-900 text-sm uppercase tracking-wide border-b border-amber-200 pb-1">Conclusions</h5>
+                                    {renderWorksheetArray(worksheetData, 'conclusion_q1', '4.1 Why I can\'t use safely')}
+                                    {renderWorksheetString(worksheetData, 'conclusion_q2', '4.2 Admitting vs accepting')}
+                                    {renderWorksheetString(worksheetData, 'conclusion_q3', '4.3 Am I an alcoholic?')}
+                                    {renderWorksheetArray(worksheetData, 'conclusion_q4', '4.4 Reasons to continue in AA')}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )
+                    })()}
                 </div>
             </div>
         </div>
@@ -139,23 +144,42 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
 
 // Helper functions for rendering Step 1 Worksheet data
 function renderWorksheetField(data: Record<string, unknown>, examplesKey: string, resultsKey: string, label: string) {
-    const examples = data[examplesKey] as string[] | undefined
-    const results = data[resultsKey] as string[] | undefined
+    // Runtime type guards to validate data
+    const examplesRaw = data[examplesKey]
+    const resultsRaw = data[resultsKey]
 
-    if (!examples || !results) return null
+    const examples = Array.isArray(examplesRaw) && examplesRaw.every(item => typeof item === 'string')
+        ? examplesRaw as string[]
+        : []
+    const results = Array.isArray(resultsRaw) && resultsRaw.every(item => typeof item === 'string')
+        ? resultsRaw as string[]
+        : []
 
-    const hasContent = examples.some(e => e?.trim()) || results.some(r => r?.trim())
-    if (!hasContent) return null
+    // Handle mismatched array lengths by using the longer one
+    const maxLength = Math.max(examples.length, results.length)
+    if (maxLength === 0) return null
+
+    // Check if there's any actual content
+    const contentExists = Array.from({ length: maxLength }).some((_, i) =>
+        examples[i]?.trim() || results[i]?.trim()
+    )
+    if (!contentExists) return null
 
     return (
         <div className="text-sm pl-3 border-l-2 border-slate-200">
             <p className="font-semibold text-slate-700 mb-1">{label}</p>
-            {examples.map((example, i) => {
-                if (!example?.trim() && !results[i]?.trim()) return null
+            {Array.from({ length: maxLength }).map((_, i) => {
+                const example = examples[i]
+                const result = results[i]
+
+                if (!example?.trim() && !result?.trim()) {
+                    return null
+                }
+
                 return (
                     <div key={i} className="ml-2 mb-2 text-xs">
                         {example?.trim() && <p className="text-slate-600"><span className="font-semibold">Example:</span> {example}</p>}
-                        {results[i]?.trim() && <p className="text-slate-500"><span className="font-semibold">Result:</span> {results[i]}</p>}
+                        {result?.trim() && <p className="text-slate-500"><span className="font-semibold">Result:</span> {result}</p>}
                     </div>
                 )
             })}
@@ -164,10 +188,13 @@ function renderWorksheetField(data: Record<string, unknown>, examplesKey: string
 }
 
 function renderWorksheetArray(data: Record<string, unknown>, key: string, label: string) {
-    const values = data[key] as string[] | undefined
-    if (!values) return null
+    // Runtime type guard to validate data is an array of strings
+    const raw = data[key]
+    const values = Array.isArray(raw) && raw.every(item => typeof item === 'string')
+        ? raw as string[]
+        : []
 
-    const filledValues = values.filter(v => v?.trim())
+    const filledValues = values.filter(v => v.trim())
     if (filledValues.length === 0) return null
 
     return (
@@ -181,8 +208,11 @@ function renderWorksheetArray(data: Record<string, unknown>, key: string, label:
 }
 
 function renderWorksheetString(data: Record<string, unknown>, key: string, label: string) {
-    const value = data[key] as string | undefined
-    if (!value?.trim()) return null
+    // Runtime type guard to validate data is a string
+    const raw = data[key]
+    const value = typeof raw === 'string' ? raw : ''
+
+    if (!value.trim()) return null
 
     return (
         <div className="text-sm pl-3 border-l-2 border-slate-200">
