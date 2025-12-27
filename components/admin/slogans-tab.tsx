@@ -25,13 +25,12 @@ async function seedSlogans() {
 }
 
 // Form component
-function SloganForm({
+function SlogansForm({
     formData,
     setFormData
 }: {
     formData: Partial<Slogan>
     setFormData: (data: Partial<Slogan>) => void
-    isEditing: boolean
 }) {
     return (
         <div className="space-y-4 py-4">
@@ -77,7 +76,7 @@ function SloganForm({
                 <Label>Time of Day (Optional)</Label>
                 <select
                     value={formData.scheduledTimeOfDay || ''}
-                    onChange={e => setFormData({ ...formData, scheduledTimeOfDay: e.target.value as 'morning' | 'afternoon' | 'evening' | undefined || undefined })}
+                    onChange={e => setFormData({ ...formData, scheduledTimeOfDay: e.target.value ? e.target.value as 'morning' | 'afternoon' | 'evening' : undefined })}
                     className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
                 >
                     <option value="">Any time</option>
@@ -127,7 +126,7 @@ const slogansConfig: AdminCrudConfig<Slogan> = {
 
     searchFields: ["text", "author", "source"],
 
-    FormComponent: SloganForm,
+    FormComponent: SlogansForm,
 
     emptyFormData: {
         text: "",

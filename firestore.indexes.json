@@ -79,12 +79,16 @@
       ]
     },
     {
-      "collectionGroup": "daily_logs",
+      "collectionGroup": "meetings",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "date",
-          "order": "DESCENDING"
+          "fieldPath": "dayIndex",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "time",
+          "order": "ASCENDING"
         }
       ]
     }

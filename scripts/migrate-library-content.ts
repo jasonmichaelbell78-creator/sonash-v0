@@ -64,40 +64,74 @@ async function migrateLibraryContent() {
     console.log('🚀 Starting Library Content Migration...\n')
 
     try {
+        let linksAdded = 0
+        let linksSkipped = 0
+        let prayersAdded = 0
+        let prayersSkipped = 0
+
         // Migrate Quick Links
         console.log('📌 Migrating Quick Links...')
         const linksRef = db.collection('quick_links')
 
         for (const link of existingLinks) {
+            // Check if link already exists
+            const existing = await linksRef
+                .where('title', '==', link.title)
+                .where('category', '==', link.category)
+                .limit(1)
+                .get()
+
+            if (!existing.empty) {
+                console.log(`  ⏭️  Skipped: ${link.title} (already exists)`)
+                linksSkipped++
+                continue
+            }
+
             await linksRef.add({
                 ...link,
                 isActive: true,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                source: 'migrate-library-content',
             })
             console.log(`  ✅ Added: ${link.title}`)
+            linksAdded++
         }
-        console.log(`\n✓ Migrated ${existingLinks.length} quick links\n`)
+        console.log(`\n✓ Links: ${linksAdded} added, ${linksSkipped} skipped\n`)
 
         // Migrate Prayers
         console.log('🙏 Migrating Prayers...')
         const prayersRef = db.collection('prayers')
 
         for (const prayer of existingPrayers) {
+            // Check if prayer already exists
+            const existing = await prayersRef
+                .where('title', '==', prayer.title)
+                .limit(1)
+                .get()
+
+            if (!existing.empty) {
+                console.log(`  ⏭️  Skipped: ${prayer.title} (already exists)`)
+                prayersSkipped++
+                continue
+            }
+
             await prayersRef.add({
                 ...prayer,
                 isActive: true,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                source: 'migrate-library-content',
             })
             console.log(`  ✅ Added: ${prayer.title}`)
+            prayersAdded++
         }
-        console.log(`\n✓ Migrated ${existingPrayers.length} prayers\n`)
+        console.log(`\n✓ Prayers: ${prayersAdded} added, ${prayersSkipped} skipped\n`)
 
         console.log('🎉 Migration complete!')
-        console.log(`\nTotal items migrated:`)
-        console.log(`  - Quick Links: ${existingLinks.length}`)
-        console.log(`  - Prayers: ${existingPrayers.length}`)
+        console.log(`\nTotal items processed:`)
+        console.log(`  - Quick Links: ${linksAdded + linksSkipped} (${linksAdded} new, ${linksSkipped} existing)`)
+        console.log(`  - Prayers: ${prayersAdded + prayersSkipped} (${prayersAdded} new, ${prayersSkipped} existing)`)
 
     } catch (error) {
         console.error('❌ Migration failed:', error)

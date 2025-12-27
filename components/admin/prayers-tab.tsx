@@ -57,6 +57,10 @@ export default function PrayersTab() {
         try {
             const data = await getAllPrayers(true) // Include inactive
             setPrayers(data)
+        } catch (error) {
+            console.error('Failed to load prayers:', error)
+            toast.error('Failed to load prayers. Please refresh the page.')
+            setPrayers([]) // Set empty array to show UI
         } finally {
             setLoading(false)
         }

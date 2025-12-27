@@ -31,7 +31,6 @@ function GlossaryForm({
 }: {
     formData: Partial<GlossaryTerm>
     setFormData: (data: Partial<GlossaryTerm>) => void
-    isEditing: boolean
 }) {
     return (
         <div className="space-y-4 py-4">

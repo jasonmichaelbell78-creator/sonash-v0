@@ -58,20 +58,38 @@ async function importNashvilleLinks() {
     try {
         const linksRef = db.collection('quick_links')
         let addedCount = 0
+        let skippedCount = 0
 
         for (const link of nashvilleLinks) {
-            await linksRef.add({
+            // Use deterministic ID for idempotency (avoid composite index requirement)
+            const docId = `${link.category}__${link.title}`.toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
+                .replace(/(^-|-$)/g, "")     // Trim leading/trailing hyphens
+
+            const docRef = linksRef.doc(docId)
+            const existingDoc = await docRef.get()
+
+            if (existingDoc.exists) {
+                console.log(`  ⏭️  Skipped: ${link.title} (already exists)`)
+                skippedCount++
+                continue
+            }
+
+            await docRef.set({
                 ...link,
                 isActive: true,
                 createdAt: new Date(),
-                updatedAt: new Date()
-            })
+                updatedAt: new Date(),
+                source: 'import-nashville-links', // Track import source
+            }, { merge: true })
             console.log(`  ✅ Added: ${link.title} (${link.category})`)
             addedCount++
         }
 
         console.log(`\n🎉 Import complete!`)
-        console.log(`\nTotal links added: ${addedCount}`)
+        console.log(`\nTotal links processed: ${nashvilleLinks.length}`)
+        console.log(`Links added: ${addedCount}`)
+        console.log(`Links skipped: ${skippedCount}`)
         console.log(`\nBreakdown by category:`)
         const categoryCounts = nashvilleLinks.reduce((acc, link) => {
             acc[link.category] = (acc[link.category] || 0) + 1

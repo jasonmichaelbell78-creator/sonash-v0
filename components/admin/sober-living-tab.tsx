@@ -20,7 +20,6 @@ function SoberLivingForm({
 }: {
     formData: Partial<SoberLivingHome>
     setFormData: (data: Partial<SoberLivingHome>) => void
-    isEditing: boolean
 }) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })

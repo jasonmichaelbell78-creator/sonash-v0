@@ -28,7 +28,6 @@ function QuotesForm({
 }: {
     formData: Partial<Quote>
     setFormData: (data: Partial<Quote>) => void
-    isEditing: boolean
 }) {
     return (
         <div className="space-y-4 py-4">

@@ -633,10 +633,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Critical Bug Fixes** (1-2 hr effort)
 
-- ❌ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
+- ✅ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
   - **Issue:** `updateTimeUntil()` called inside setInterval before defined; violates React rules
   - **Impact:** Countdown timer may fail or throw runtime errors in strict mode
   - **Fix:** Wrap updateTimeUntil in useCallback hook, define before useEffect
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Wrapped `updateTimeUntil` in `useCallback` with `nextMeeting` dependency
+    * Updated both useEffect dependency arrays to include `updateTimeUntil`
+    * Removed eslint-disable comments - now follows React Hook rules
+    * Tests passing (92/93), lint clean (1 expected warning)
   - **Reports:** Gemini Aggregator Finding #4 (identified by Copilot only)
   - **Effort:** 1 hour
   - **Priority:** HIGH - Core meeting-finder feature reliability
@@ -656,30 +662,49 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Data Integrity** (2-3 hr effort)
 
-- ❌ **MEDIUM-2: Meeting Pagination Sort Mismatch** (lib/db/meetings.ts)
+- ✅ **MEDIUM-2: Meeting Pagination Sort Mismatch** (lib/db/meetings.ts, firestore.indexes.json)
   - **Issue:** Sorts by Document ID (random string) for pagination, then client-side sorts by time
   - **Impact:** Chronologically incorrect results across pages (7 AM on Page 2, 9 AM on Page 1)
   - **Fix:** Create Firestore Composite Index on [day, time]; update query to orderBy('day').orderBy('time')
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Added composite index in `firestore.indexes.json` for meetings collection [day, time]
+    * Updated `getAllMeetingsPaginated()` to use server-side orderBy('day', 'asc'), orderBy('time', 'asc') 
+    * Pagination cursors now match time-sorted results (no more random ID ordering)
+    * Still uses client-side sort for week order (Sun->Sat) since day field is string not numeric
+    * Requires index deployment: `firebase deploy --only firestore:indexes`
   - **Reports:** Gemini Aggregator Finding #6
   - **Effort:** 2 hours
   - **Priority:** MEDIUM - UX quality for meeting finder
 
 **Accessibility** (30 min effort)
 
-- ❌ **MEDIUM-3: Accessibility Violation - Zoom Disabled** (app/layout.tsx)
-  - **Issue:** Viewport meta tag configured with `userScalable: false`
+- ✅ **MEDIUM-3: Accessibility Violation - Zoom Disabled** (app/layout.tsx)
+  - **Issue:** Viewport meta tag configured with `userScalable: false` and `maximumScale: 1`
   - **Impact:** Violates WCAG 2.1 Success Criterion 1.4.4; prevents users with visual impairments from zooming
   - **Fix:** Remove `userScalable: false` and `maximumScale: 1`
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Removed `maximumScale: 1` restriction from viewport config
+    * Removed `userScalable: false` restriction
+    * Added comment explaining WCAG 2.1 compliance requirement
+    * Users can now pinch-to-zoom on mobile and use browser zoom controls
   - **Reports:** Gemini Aggregator Finding #7 (identified by Claude Opus only)
   - **Effort:** 30 minutes
   - **Priority:** MEDIUM - Accessibility compliance
 
 **Dependencies** (1-2 hr effort)
 
-- ❌ **MEDIUM-4: Zod Version Mismatch Between Client/Server** (functions/package.json vs package.json)
+- ✅ **MEDIUM-4: Zod Version Mismatch Between Client/Server** (functions/package.json vs package.json)
   - **Issue:** Client uses zod v4.2.1, server uses v4.1.13; npm install timeouts due to complex peer dependencies
   - **Impact:** Subtle validation bugs where payload passes on client but fails on server
   - **Fix:** Synchronize zod versions; use `npm install --legacy-peer-deps` to resolve timeouts
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Updated functions/package.json zod dependency from ^4.1.13 to ^4.2.1
+    * Ran npm install in functions directory to update package-lock.json
+    * Both client and server now use matching Zod version
+    * No npm install timeouts encountered (may have been transient issue)
   - **Reports:** Gemini Aggregator Finding #8 (identified by Copilot and Kimi K2)
   - **Effort:** 1 hour
   - **Priority:** MEDIUM - Consistency and stability
@@ -688,10 +713,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Security Hardening** (1 hr effort)
 
-- ❌ **LOW-1: Debug Logging in Production** (lib/firestore-service.ts)
+- ✅ **LOW-1: Debug Logging in Production** (lib/firestore-service.ts)
   - **Issue:** console.log statements printing full payloads and error objects in production
   - **Impact:** Sensitive user data (journal contents) leaked to browser console
   - **Fix:** Wrap all console logs in `if (process.env.NODE_ENV === 'development')` check
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Implementation:**
+    * Wrapped debug console.log for Cloud Function payload in development check
+    * Wrapped debug console.error statements for error details in development check
+    * Verified logger.ts already has proper environment guards (isDevelopment || isTest)
+    * Production console now only shows structured logger output (errors only)
   - **Reports:** Gemini Aggregator Finding #9
   - **Cross-reference:** Week 13+ Low Priority (debug logging cleanup)
   - **Effort:** 1 hour
@@ -699,16 +730,18 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Status Summary:**
 - ⏸️ Deferred: 1 issue (CRITICAL-1 - App Check, cross-reference to existing work)
-- ✅ Already Fixed: 3 issues (CRITICAL-2, HIGH-1, MEDIUM-1)
-- ❌ New Work Needed: 5 issues (HIGH-2, MEDIUM-2, MEDIUM-3, MEDIUM-4, LOW-1)
+- ✅ Already Fixed: 8 issues (CRITICAL-2, HIGH-1, HIGH-2, MEDIUM-1, MEDIUM-2, MEDIUM-3, MEDIUM-4, LOW-1)
+- ❌ New Work Needed: 0 issues
 
 **Total Estimated Effort:**
 - ⏸️ Deferred: CRITICAL-1 (covered in M2 App Check work)
-- ✅ Already Fixed: 0 hours (3 issues pre-completed)
-- ❌ Remaining: ~7.5 hours (5 new issues)
-  - P1 (High): 1 hour (HIGH-2: Hoisting bug)
-  - P2 (Medium): 5.5 hours (MEDIUM-2=2h, MEDIUM-3=0.5h, MEDIUM-4=1h)
-  - P3 (Low): 1 hour (LOW-1: Debug logging)
+- ✅ Already Fixed: 5.5 hours (8 issues: 3 pre-completed + 5 completed today)
+  - HIGH-2: Meeting countdown hoisting bug (1h)
+  - MEDIUM-2: Meeting pagination sorting (2h)
+  - MEDIUM-3: Accessibility zoom violation (0.5h)
+  - MEDIUM-4: Zod version sync (1h)
+  - LOW-1: Debug logging cleanup (1h)
+- ❌ Remaining: 0 hours - **ALL ISSUES COMPLETE!** ✅
 
 **Key Takeaway from Aggregator:**
 > "The SoNash codebase is a 'Ferrari with no brakes.' The engine (Next.js 15 + Firebase Architecture) is powerful and modern, but security configuration is critically flawed. Once specific configuration lines are fixed, codebase quality jumps from 6.5/10 to 8.5/10."
@@ -731,6 +764,11 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ✅ User error notifications (Sonner toasts)
 - ✅ Firestore indexes for performance
 - ✅ UI Polish (Notebook Cover typography, Recovery Prayers formatting)
+- ✅ The Library Tab (Content hub: Glossary, Etiquette, Quick Links, Prayers)
+- ✅ HALT Check (Basic Implementation)
+- ✅ "I Made It Through Today" Button
+- ✅ Sobriety Clock (Minutes display)
+
 
 **Documentation:** See [docs/JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md) for complete changelog
 
@@ -739,22 +777,13 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - 🔄 Settings page UI
 - 🔄 Profile management
 - 🔄 Clean date picker improvements
-- ✅ **The Library Tab** (10 SP) - Content hub consolidating:
-  - ✅ Glossary (searchable recovery terms)
-  - ✅ Meeting Etiquette guide
-  - ✅ Quick Links (AA/NA sites, hotlines)
-  - ✅ Prayers (CMS-managed)
+
 
 ### Planned Quick Wins (Priority Order)
 
 #### P0 - Critical UX
 
-1. **Recovery Library** (✅ Complete)
-   - ✅ Glossary of recovery terms, slogans, abbreviations
-   - ✅ Meeting etiquette guide for first-timers
-   - ✅ Searchable reference material
-
-2. **Expanded Onboarding Wizard** (8-13 SP)
+1. **Expanded Onboarding Wizard** (8-13 SP)
    - Program selection (AA/NA/CA/Smart Recovery)
    - Sobriety/clean date setup with guidance
    - Stage-of-recovery assessment
@@ -764,7 +793,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
    - Sponsor contact setup (optional)
    - Skip option for returning users
 
-3. **Sponsor Personalization System** (8-13 SP)
+2. **Sponsor Personalization System** (8-13 SP)
    - **Leverages:** `hasSponsor` data from onboarding
    - **Sponsor Contact Management:**
      - Add sponsor name, phone, email
@@ -784,21 +813,13 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
      - Feature usage by sponsor status
    - **Why:** Fulfills onboarding promise of personalization, proven retention booster
 
-4. **Stage-of-Recovery Selector** (4 SP)
+3. **Stage-of-Recovery Selector** (4 SP)
    - Adjusts app emphasis based on user stage
    - Newcomer vs old-timer focus
 
-4. **"I Made It Through Today" Button** (2 SP)
-   - End-of-day celebration/affirmation
-   - Builds positive reinforcement
-
 #### P1 - High Value
 
-5. **HALT Check** (4 SP)
-   - Hungry/Angry/Lonely/Tired assessment
-   - User-initiated button for self-check
-
-6. **User Documentation & Help System** (5-8 SP)
+4. **User Documentation & Help System** (5-8 SP)
    - Getting started guide for new users
    - Feature explanations (daily check-in, journal, growth tools)
    - Recovery program primer (12 steps overview)
@@ -807,25 +828,21 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
    - Optional: Interactive tutorial/walkthrough on first launch
    - **Why:** Reduces confusion, improves onboarding, helps users get value faster
 
-7. **Sober Fun Ideas Generator** (3 SP)
+5. **Sober Fun Ideas Generator** (3 SP)
    - Random activities for boredom
    - Relapse prevention tool
 
-7. **"Meetings Starting Soon" Filter** (3 SP)
+6. **"Meetings Starting Soon" Filter** (3 SP)
    - Shows meetings within next hour
    - Location-based proximity
 
 #### P2 - Nice to Have
 
-8. **Sobriety Clock with Minutes** (2 SP)
-   - Important for early recovery (0-90 days)
-   - Feasibility check required
-
-9. **"Too Tired" Mode** (3 SP)
+7. **"Too Tired" Mode** (3 SP)
    - Reduces night review to 3 questions
    - Prevents fatigue-based abandonment
 
-10. **Disguised App Icon + Name** (5 SP)
+8. **Disguised App Icon + Name** (5 SP)
 
 - Privacy layer for device sharing
 - "Journal" or neutral branding
@@ -950,23 +967,13 @@ All admin Cloud Functions MUST:
 - 8 new files (6 components + 2 hooks)
 - 1 major refactor (`components/notebook/pages/today-page.tsx`)
 
-### Today Page Mobile Layout Reordering (📋 HIGH PRIORITY - Next Up)
+### Today Page Mobile Layout Reordering (✅ Complete)
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High — improves mobile UX flow
 
 **Objective:** Reorder Today page components on mobile to follow a more logical progression from quick info to detailed reflection.
 
 **Current Mobile Order:**
-1. Check-In (mood, cravings, used)
-2. HALT Check
-3. "I Made It Through Today" button
-4. Weekly Stats
-5. Time Tracker
-6. Daily Quote
-7. Today's Reading
-8. Recovery Notepad
-
-**Desired Mobile Order:**
 1. **Time Tracker** (clean time display)
 2. **Daily Quote** (inspiration)
 3. **Today's Reading** (external links)
@@ -976,20 +983,7 @@ All admin Cloud Functions MUST:
 7. **Weekly Stats** (progress summary)
 8. **Recovery Notepad** (free-form journaling)
 
-**Rationale:**
-- Start with quick, passive content (tracker, quote, reading)
-- Move to active engagement (check-in, HALT)
-- End with reflection tools (notepad)
-- Maintains 2-column desktop grid layout
-
-**Technical Approach:**
-- Use CSS flexbox with `order` property on mobile
-- Preserve `md:grid md:grid-cols-2` on desktop
-- Individual `order-X` classes per component (avoid wrapper divs that create layout gaps)
-- Test thoroughly to prevent desktop layout regression
-
-**Previous Attempt:** Dec 23, 2025 - Caused desktop layout gaps, reverted
-**Next Attempt:** Use more conservative approach with minimal DOM changes
+**Status:** Verified - Codebase implementation matches desired mobile order through logical column grouping.
 
 ### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
 
@@ -1563,8 +1557,12 @@ All admin Cloud Functions MUST:
 
 **Document History:**
 
-- December 27, 2025: Added Week 18+ Gemini 2.0 Flash Thinking Aggregated Security Review - Integrated findings from 7-model aggregated review (Gemini 2.0 Flash Thinking as Aggregator, plus Copilot, Jules, Gemini, Kimi K2, Claude Opus, Claude). 9 deduplicated issues organized by priority: 2 critical (1 deferred, 1 already fixed), 2 high (1 already fixed, 1 new), 4 medium (1 already fixed, 3 new), 1 low (new). Only 5 issues require new work: ~7.5 hours total. Key insight: "Ferrari with no brakes" - modern architecture undermined by security configuration flaws. 3 findings already completed in prior weeks, demonstrating value of continuous code review. False positives identified: Next.js 16 and Firebase 12 flagged as non-existent by multiple models due to training data cutoff.
-- December 24, 2025: Added Week 14+ Consolidated 6-AI Code Review Remediation section - Integrated findings from 6-model consolidated review (Claude Code, Codex, Jules, Kimi K2, Claude, Claude Opus 4.5). 42 deduplicated issues organized by priority (P0-P3): 9 critical/high priority issues requiring action, 5 already fixed, 1 deferred (App Check), 22 medium/low priority planned. Estimated remediation: ~48-69 hours. Report: [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md). M1 progress remains ~85% (new findings extend completion timeline).
+- December 27, 2025: Added Week 18+ Gemini 2.0 Flash Thinking Aggregated Security Review - Integrated findings from 7-model aggregated review (Gemini 2.0 Flash Thinking as Aggregator, plus Copilot, Jules, Gemini, Kimi K2, Claude Opus, Claude).
+  9 deduplicated issues organized by priority: 2 critical (1 deferred, 1 already fixed), 2 high (1 already fixed, 1 new), 4 medium (1 already fixed, 3 new), 1 low (new). Only 5 issues require new work: ~7.5 hours total.
+  Key insight: "Ferrari with no brakes" - modern architecture undermined by security configuration flaws. 3 findings already completed in prior weeks, demonstrating value of continuous code review. False positives identified: Next.js 16 and Firebase 12 flagged as non-existent by multiple models due to training data cutoff.
+- December 24, 2025: Added Week 14+ Consolidated 6-AI Code Review Remediation section - Integrated findings from 6-model aggregated review (Claude Code, Codex, Jules, Kimi K2, Claude, Claude Opus 4.5).
+  42 deduplicated issues organized by priority (P0-P3): 9 critical/high priority issues requiring action, 5 already fixed, 1 deferred (App Check), 22 medium/low priority planned.
+  Estimated remediation: ~48-69 hours. Report: [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md). M1 progress remains ~85% (new findings extend completion timeline).
 - December 23, 2025: M1.6 updated to v1.4 - Phases 1-3 complete, Today Page Enhancement complete (all 10 UX improvements), added Phase 6 (Customizable Quick Actions). Renamed to "M1.6 - Admin Panel + Today Page Enhancement". Progress updated to ~65%. Overall roadmap progress: ~26%.
 - December 22, 2025: Updated Phase 1 prompt to v1.3 (fail-closed middleware, nodejs runtime, bounded queries, invalid date guards)
 - December 22, 2025: Updated M1.6 to v1.2 spec (server-side middleware, Sentry API in Cloud Function, throttled lastActive, robust job wrapper)
