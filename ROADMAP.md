@@ -235,6 +235,14 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Files:** `scripts/retry-failures.ts`, `scripts/enrichment_failures.json`
   - **Effort:** 10 minutes (retry) or 2-4 hours (API migration)
   - **Priority:** P2 - Data quality improvement, not blocking core functionality
+- ⏳ **Consider Reverting to next/font/google for Font Optimization** (Dec 28, 2025)
+  - **Current State:** Using @fontsource packages (self-hosted) to avoid build-time network dependency
+  - **Issue:** Previously experienced intermittent TLS/network failures when building with next/font/google
+  - **Benefits of Reverting:** Automatic font optimization, subsetting, and preloading by Next.js
+  - **When to Revisit:** Once build infrastructure has stable/reliable network access to fonts.googleapis.com
+  - **Files:** `app/layout.tsx`, `package.json` (remove @fontsource deps)
+  - **Effort:** 15 minutes (revert to original implementation)
+  - **Priority:** P3 - Nice-to-have optimization, current solution works well
 
 ### Potential Architecture Work
 
