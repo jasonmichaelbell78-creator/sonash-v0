@@ -15,7 +15,7 @@
 import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema } from "./schemas";
+import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema, softDeleteJournalEntrySchema } from "./schemas";
 import { initSentry, logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 import { withSecurityChecks } from "./security-wrapper";
@@ -74,7 +74,7 @@ export const saveDailyLog = onCall<DailyLogData>(
             functionName: 'saveDailyLog',
             rateLimiter: saveDailyLogLimiter,
             validationSchema: dailyLogSchema,
-            requireAppCheck: false, // TEMPORARY: Disabled while working out reCAPTCHA issues
+            requireAppCheck: true, // SECURITY: App Check enforced for production; use debug tokens in dev
         },
         async ({ data, userId }) => {
             const { date, content, mood, cravings, used } = data;
@@ -227,6 +227,105 @@ export const saveJournalEntry = onCall<JournalEntryData>(
     )
 );
 
+// Initialize rate limiter for soft delete operations
+const softDeleteJournalEntryLimiter = new FirestoreRateLimiter({
+    points: 20,    // Max 20 deletes
+    duration: 60,  // Per minute (more generous than writes)
+});
+
+interface SoftDeleteJournalEntryData {
+    entryId: string;
+    userId?: string;
+}
+
+/**
+ * Callable Function: Soft Delete Journal Entry
+ *
+ * Marks a journal entry as deleted without removing it from Firestore.
+ * Enables GDPR compliance and recovery of accidentally deleted entries.
+ *
+ * Security Layers (handled by withSecurityChecks):
+ * 1. Authentication required
+ * 2. Rate limiting (20 req/min)
+ * 3. App Check verification
+ * 4. Zod input validation
+ * 5. Authorization (user can only delete own entries)
+ */
+export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
+    async (request) => withSecurityChecks(
+        request,
+        {
+            functionName: 'softDeleteJournalEntry',
+            rateLimiter: softDeleteJournalEntryLimiter,
+            validationSchema: softDeleteJournalEntrySchema,
+            requireAppCheck: true, // SECURITY: App Check enforced for production; use debug tokens in dev
+        },
+        async ({ data, userId }) => {
+            const { entryId } = data;
+
+            try {
+                const docRef = admin
+                    .firestore()
+                    .collection("users")
+                    .doc(userId)
+                    .collection("journal")
+                    .doc(entryId);
+
+                // Verify document exists and belongs to user
+                const doc = await docRef.get();
+                if (!doc.exists) {
+                    throw new HttpsError("not-found", "Journal entry not found");
+                }
+
+                const docData = doc.data();
+                if (docData?.userId && docData.userId !== userId) {
+                    logSecurityEvent(
+                        "AUTHORIZATION_FAILURE",
+                        "softDeleteJournalEntry",
+                        "Attempted to delete another user's entry",
+                        { userId, metadata: { entryId, ownerId: docData.userId } }
+                    );
+                    throw new HttpsError("permission-denied", "Cannot delete another user's entry");
+                }
+
+                // Soft delete by setting flag
+                await docRef.update({
+                    isSoftDeleted: true,
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+
+                logSecurityEvent(
+                    "DELETE_SUCCESS",
+                    "softDeleteJournalEntry",
+                    "Journal entry soft deleted",
+                    { userId, severity: "INFO", metadata: { entryId } }
+                );
+
+                return {
+                    success: true,
+                    message: "Journal entry deleted successfully",
+                };
+            } catch (error) {
+                // Re-throw HttpsErrors directly
+                if (error instanceof HttpsError) {
+                    throw error;
+                }
+
+                logSecurityEvent(
+                    "DELETE_FAILURE",
+                    "softDeleteJournalEntry",
+                    "Failed to delete journal entry",
+                    { userId, metadata: { error: String(error), entryId }, captureToSentry: true }
+                );
+
+                throw new HttpsError(
+                    "internal",
+                    "Failed to delete journal entry. Please try again."
+                );
+            }
+        }
+    )
+);
 
 // Initialize rate limiter for inventory entries
 const saveInventoryEntryLimiter = new FirestoreRateLimiter({
@@ -255,7 +354,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             functionName: 'saveInventoryEntry',
             rateLimiter: saveInventoryEntryLimiter,
             validationSchema: inventoryEntrySchema,
-            requireAppCheck: false, // TEMPORARY: Disabled while working out reCAPTCHA issues
+            requireAppCheck: true, // SECURITY: App Check enforced for production; use debug tokens in dev
         },
         async ({ data, userId }) => {
             const { type, data: entryData, tags } = data;

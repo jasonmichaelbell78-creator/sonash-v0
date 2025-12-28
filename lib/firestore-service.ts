@@ -351,80 +351,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         })
         throw error
       }
-    },
-
-    // Save a generic journal entry (growth work, notes, etc.)
-    async saveJournalEntry(userId: string, entry: { title: string; content: string; type: string; tags: string[] }) {
-      ensureValidUser(userId)
-      deps.assertUserScope({ userId })
-
-      try {
-        // We use a separate collection for individual entries that allows multiple per day
-        const collectionPath = `users/${userId}/journalEntries`
-        deps.validateUserDocumentPath(userId, collectionPath)
-
-        const entriesRef = deps.collection(deps.db, collectionPath)
-        const newDocRef = deps.doc(entriesRef) // Auto-ID
-
-        const payload = {
-          id: newDocRef.id,
-          userId,
-          ...entry,
-          createdAt: deps.serverTimestamp(),
-          updatedAt: deps.serverTimestamp(),
-        }
-
-        await deps.setDoc(newDocRef, payload)
-        deps.logger.info("Journal entry saved", { userId: maskIdentifier(userId), type: entry.type })
-        return newDocRef.id
-      } catch (error) {
-        deps.logger.error("Failed to save journal entry", { userId: maskIdentifier(userId), error })
-        throw error
-      }
-    },
-
-    // Save a journal entry from notebook inputs (mood, cravings, used, notes, etc.)
-    async saveNotebookJournalEntry(userId: string, entry: {
-      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory' | 'step-1-worksheet';
-      data: Record<string, unknown>;
-      isPrivate?: boolean;
-    }) {
-      ensureValidUser(userId)
-      deps.assertUserScope({ userId })
-
-      try {
-        const { addDoc } = await import("firebase/firestore")
-        const collectionPath = `users/${userId}/journal`
-        deps.validateUserDocumentPath(userId, collectionPath)
-
-        const entriesRef = deps.collection(deps.db, collectionPath)
-        const today = getTodayDateId()
-
-        const payload = {
-          userId,
-          type: entry.type,
-          dateLabel: today,
-          isPrivate: entry.isPrivate ?? true,
-          isSoftDeleted: false,
-          data: entry.data,
-          createdAt: deps.serverTimestamp(),
-          updatedAt: deps.serverTimestamp(),
-        }
-
-        const docRef = await addDoc(entriesRef, payload)
-        deps.logger.info("Notebook journal entry saved", {
-          userId: maskIdentifier(userId),
-          type: entry.type
-        })
-        return docRef.id
-      } catch (error) {
-        deps.logger.error("Failed to save notebook journal entry", {
-          userId: maskIdentifier(userId),
-          error
-        })
-        throw error
-      }
     }
+
+    // REMOVED: saveJournalEntry and saveNotebookJournalEntry
+    // All journal writes now route through Cloud Functions (saveJournalEntry callable)
+    // This enforces consistent rate limiting, App Check, and validation server-side
+    // See: hooks/use-journal.ts:addEntry and functions/src/index.ts:saveJournalEntry
   }
 }
 

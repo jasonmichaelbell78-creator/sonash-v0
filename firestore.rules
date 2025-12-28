@@ -32,10 +32,10 @@ service cloud.firestore {
     // ============================================
     match /users/{userId}/journal/{entryId} {
       allow read: if isOwner(userId);
-      // Client-side writes allowed with ownership validation
-      // NOTE: App Check was removed to restore functionality
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isOwner(userId) && request.resource.data.userId == userId;
+      // SECURITY: All writes MUST go through Cloud Function (saveJournalEntry)
+      // Cloud Function enforces: rate limiting, Zod validation, App Check
+      // Direct client writes are BLOCKED to prevent bypassing security controls
+      allow create, update: if false;
       // Keep delete for GDPR data deletion compliance
       allow delete: if isOwner(userId);
     }
