@@ -1151,6 +1151,13 @@ All admin Cloud Functions MUST:
 - Special requirements (smoking, childcare, etc)
 - Meeting type badges (Step Study, Big Book, Speaker)
 
+#### F6: Celebrate Recovery Integration (13 SP)
+
+- Import ~20 Nashville area meetings (Source data ready in `docs/source-data/celebrate_recovery_meetings.json`)
+- Add "Celebrate Recovery" to fellowship type selector
+- Update meeting finder to support CR-specific tags (Large Group, Open Share, Fellowship Meal)
+- Distinguish between "Step Study" and "Open Share" groups
+
 **Dependencies:**
 
 - Google Maps API integration

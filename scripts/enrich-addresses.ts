@@ -1,0 +1,182 @@
+
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// --- CONFIGURATION ---
+const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org/search';
+const USER_AGENT = 'SonashMeetingFinder/1.0 (dev-project-migration)'; // Required by OSM TOS
+const DELAY_MS = 1100; // > 1 second to be safe and respectful
+// ---------------------
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function enrichAddresses() {
+    console.log('🚀 Starting Address Enrichment (OSM/Nominatim)...\n');
+
+    // 1. Initialize Firebase Admin
+    if (getApps().length === 0) {
+        try {
+            const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
+            const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+            initializeApp({
+                credential: cert(serviceAccount),
+            });
+            console.log('✅ Firebase Admin initialized');
+        } catch (error: any) {
+            if (error?.code === 'app/duplicate-app') {
+                console.log('ℹ️ Firebase Admin already initialized');
+            } else {
+                console.error('❌ Failed to initialize Firebase Admin.');
+                console.error(error);
+                process.exit(1);
+            }
+        }
+    }
+
+    const db = getFirestore();
+    const meetingsRef = db.collection('meetings');
+
+    // 2. Fetch meetings that need enrichment
+    // User requested to check ALL addresses, regardless of current zip
+    const snapshot = await meetingsRef.get();
+
+    if (snapshot.empty) {
+        console.log('⚠️ No meetings found.');
+        return;
+    }
+
+    // Process all documents that have a valid address
+    const toProcess = snapshot.docs.filter(doc => {
+        const data = doc.data();
+        // Only skip if address is missing entirely
+        return data.address && data.address.length > 5;
+    });
+
+    console.log(`📊 Found ${toProcess.length} meetings needing enrichment (out of ${snapshot.size} total).`);
+    console.log(`⏳ Estimated time: ~${Math.ceil((toProcess.length * DELAY_MS) / 1000 / 60)} minutes\n`);
+
+    let successCount = 0;
+    let failCount = 0;
+    let skippedCount = 0;
+    const failedLog: any[] = [];
+
+    // Helper to clean address for OSM
+    const cleanAddress = (addr: string) => {
+        // 1. Remove Facility Names (assume address starts with a number)
+        // matches "Facility Name, 123 Main" -> "123 Main"
+        const firstDigitIndex = addr.search(/\d/);
+        if (firstDigitIndex > -1) {
+            addr = addr.substring(firstDigitIndex);
+        }
+
+        return addr
+            .replace(/(?:apt|suite|unit|ste|#)\.?\s*[\w-]+/gi, '') // Remove unit info
+            .replace(/[,.]/g, '') // Remove commas/dots
+            .replace(/\s+/g, ' ')
+            .trim();
+    };
+
+    // 3. Process sequentially with delay
+    for (const [index, doc] of toProcess.entries()) {
+        const meeting = doc.data();
+        const rawAddress = meeting.address;
+
+        // Skip if really no address data
+        if (!rawAddress || rawAddress.trim().length < 5) {
+            console.log(`[${index + 1}/${toProcess.length}] ⏭️  Skipped (Invalid address): "${rawAddress}"`);
+            skippedCount++;
+            continue;
+        }
+
+        const streetClean = cleanAddress(rawAddress);
+        const currentCity = meeting.city || 'Nashville';
+
+        // Search Strategy:
+        // 1. Precise: "123 Main St, Nashville, TN"
+        // 2. Fallback: "123 Main St, TN" (Let OSM find better city)
+        const queries = [
+            `${streetClean}, ${currentCity}, TN, USA`,
+            `${streetClean}, TN, USA`
+        ];
+
+        let found = false;
+
+        for (const query of queries) {
+            if (found) break; // Stop if previous query worked
+
+            try {
+                // Rate limit wait
+                await delay(DELAY_MS);
+
+                // Fetch from Nominatim
+                const url = `${NOMINATIM_BASE_URL}?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=1`;
+
+                const response = await fetch(url, {
+                    headers: { 'User-Agent': USER_AGENT }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const results = await response.json() as any[];
+
+                if (results && results.length > 0) {
+                    const result = results[0];
+                    const addr = result.address;
+
+                    // Extract fields
+                    const newZip = addr.postcode;
+                    // OSM returns variable admin levels
+                    const newCity = addr.city || addr.town || addr.village || addr.hamlet || addr.suburb || currentCity;
+                    const lat = parseFloat(result.lat);
+                    const lon = parseFloat(result.lon);
+
+                    if (newZip) {
+                        // Update Firestore
+                        await doc.ref.update({
+                            city: newCity,
+                            zip: newZip,
+                            coordinates: { lat, lng: lon }
+                        });
+
+                        console.log(`[${index + 1}/${toProcess.length}] ✅ Enriched: "${rawAddress}"`);
+                        console.log(`   └-> ${newCity}, ${newZip} @ [${lat.toFixed(5)}, ${lon.toFixed(5)}]`);
+                        successCount++;
+                        found = true;
+                    }
+                }
+            } catch (error) {
+                console.error(`   💥 Error searching: "${query}"`, error);
+            }
+        }
+
+        if (!found) {
+            console.log(`[${index + 1}/${toProcess.length}] ❌ Not Found (All attempts failed for: "${rawAddress}") - Tried: "${streetClean}"`);
+            failCount++;
+            failedLog.push({
+                original: rawAddress,
+                cleaned: streetClean,
+                id: doc.id
+            });
+        }
+    }
+
+    // Write failures to file
+    if (failedLog.length > 0) {
+        fs.writeFileSync(
+            path.join(__dirname, 'enrichment_failures.json'),
+            JSON.stringify(failedLog, null, 2)
+        );
+        console.log(`\n📝 Wrote ${failedLog.length} failures to scripts/enrichment_failures.json`);
+    }
+
+    console.log('\n============================================================');
+    console.log('🎉 Enrichment Complete');
+    console.log(`✅ Updated: ${successCount}`);
+    console.log(`❌ Failed/Not Found: ${failCount}`);
+    console.log(`⏭️  Skipped: ${skippedCount}`);
+    console.log('============================================================\n');
+}
+
+enrichAddresses().catch(console.error);
