@@ -64,6 +64,18 @@ async function enrichAddresses() {
 
     // Helper to clean address for OSM
     const cleanAddress = (addr: string) => {
+        // 0. Handle "Duplicate" pattern: "123 Main St, 123 Main St" or "Facility, 123 Main St"
+        if (addr.includes(',')) {
+            const parts = addr.split(',').map(p => p.trim());
+            // If we have 2+ parts, try to find the "real" address part
+            // Heuristic: The part that starts with a number is likely the street address
+            const addressPart = parts.find(p => /^\d/.test(p));
+            if (addressPart) {
+                // Just use the address part, ignoring the facility name/duplicate
+                addr = addressPart;
+            }
+        }
+
         // 1. Remove Facility Names (assume address starts with a number)
         // matches "Facility Name, 123 Main" -> "123 Main"
         const firstDigitIndex = addr.search(/\d/);
@@ -92,14 +104,22 @@ async function enrichAddresses() {
 
         const streetClean = cleanAddress(rawAddress);
         const currentCity = meeting.city || 'Nashville';
+        const neighborhood = meeting.neighborhood;
 
         // Search Strategy:
-        // 1. Precise: "123 Main St, Nashville, TN"
-        // 2. Fallback: "123 Main St, TN" (Let OSM find better city)
-        const queries = [
-            `${streetClean}, ${currentCity}, TN, USA`,
-            `${streetClean}, TN, USA`
-        ];
+        const queries = [];
+
+        // 1. Neighborhood as City (High Priority)
+        // Many records have actual city (e.g. Madison, Antioch) in the neighborhood field
+        if (neighborhood && neighborhood !== 'Nashville' && neighborhood.length > 2) {
+            queries.push(`${streetClean}, ${neighborhood}, TN, USA`);
+        }
+
+        // 2. Precise with current database city
+        queries.push(`${streetClean}, ${currentCity}, TN, USA`);
+
+        // 3. Fallback: "123 Main St, TN" (Let OSM find better city)
+        queries.push(`${streetClean}, TN, USA`);
 
         let found = false;
 

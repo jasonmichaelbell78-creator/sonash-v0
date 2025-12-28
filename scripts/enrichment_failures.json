@@ -1,0 +1,252 @@
+[
+  {
+    "original": "City Roads UMC, 701 Gallatin Pike S",
+    "cleaned": "701 Gallatin Pike S",
+    "id": "csv_101"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_1038"
+  },
+  {
+    "original": "4th Avenue Church of Christ, 117 4th Ave N",
+    "cleaned": "4th Avenue Church of Christ",
+    "id": "csv_1061"
+  },
+  {
+    "original": "Franklin First UMC, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_108"
+  },
+  {
+    "original": "Franklin First UMC, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_1107"
+  },
+  {
+    "original": "Westmoreland Church of Christ, 1600 New Hwy 52",
+    "cleaned": "1600 New Hwy 52",
+    "id": "csv_1118"
+  },
+  {
+    "original": "Westmoreland Church of Christ, 1600 New Hwy 52",
+    "cleaned": "1600 New Hwy 52",
+    "id": "csv_119"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_173"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_195"
+  },
+  {
+    "original": "First Presbyterian Outreach, 215 Foster St",
+    "cleaned": "215 Fo St",
+    "id": "csv_236"
+  },
+  {
+    "original": "Unitarian Universalist, 3053 Hwy 41a South",
+    "cleaned": "3053 Hwy 41a South",
+    "id": "csv_242"
+  },
+  {
+    "original": "3530 North Highway 79",
+    "cleaned": "3530 North Highway 79",
+    "id": "csv_259"
+  },
+  {
+    "original": "UAW Union Hall, 125 Stephen P Yokich Pkwy",
+    "cleaned": "125 P Yokich Pkwy",
+    "id": "csv_260"
+  },
+  {
+    "original": "Fairview Nutrition, 2671 Fairview Blvd W",
+    "cleaned": "2671 Fairview Blvd W",
+    "id": "csv_265"
+  },
+  {
+    "original": "6257 Hwy 76 E",
+    "cleaned": "6257 Hwy 76 E",
+    "id": "csv_270"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_303"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_314"
+  },
+  {
+    "original": "Parish Life Center, 1217 Gallatin Pk South",
+    "cleaned": "1217 Gallatin Pk South",
+    "id": "csv_34"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_341"
+  },
+  {
+    "original": "UAW Union Hall, 125 Stephen P Yokich Pkwy",
+    "cleaned": "125 P Yokich Pkwy",
+    "id": "csv_355"
+  },
+  {
+    "original": "3530 North Highway 79",
+    "cleaned": "3530 North Highway 79",
+    "id": "csv_378"
+  },
+  {
+    "original": "Luton United Methodist Church, Lutons Cemetery",
+    "cleaned": "Luton Methodist Church Lutons Cemetery",
+    "id": "csv_418"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_438"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_451"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_482"
+  },
+  {
+    "original": "St Augustine Chapel, Vanderbilt University",
+    "cleaned": "St Augustine Chapel Vanderbilt University",
+    "id": "csv_490"
+  },
+  {
+    "original": "Unitarian Universalist, 3053 Hwy 41a South",
+    "cleaned": "3053 Hwy 41a South",
+    "id": "csv_513"
+  },
+  {
+    "original": "3530 North Highway 79",
+    "cleaned": "3530 North Highway 79",
+    "id": "csv_538"
+  },
+  {
+    "original": "UAW Union Hall, 125 Stephen P Yokich Pkwy",
+    "cleaned": "125 P Yokich Pkwy",
+    "id": "csv_540"
+  },
+  {
+    "original": "6257 Hwy 76 E",
+    "cleaned": "6257 Hwy 76 E",
+    "id": "csv_546"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_563"
+  },
+  {
+    "original": "Presbyterian Church, E Main St & Harp Ave",
+    "cleaned": "Presbyterian Church E Main St & Harp Ave",
+    "id": "csv_575"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_580"
+  },
+  {
+    "original": "Unitarian Universalist, 3053 Hwy 41A S",
+    "cleaned": "3053 Hwy 41A S",
+    "id": "csv_596"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_607"
+  },
+  {
+    "original": "UAW Union Hall, 125 Stephen P Yokich Pkwy",
+    "cleaned": "125 P Yokich Pkwy",
+    "id": "csv_622"
+  },
+  {
+    "original": "Luton UMC, Lutons Cemetery",
+    "cleaned": "Luton UMC Lutons Cemetery",
+    "id": "csv_644"
+  },
+  {
+    "original": "Fairview Nutrition, 2671 Fairview Blvd W #106",
+    "cleaned": "2671 Fairview Blvd W",
+    "id": "csv_652"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_711"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_724"
+  },
+  {
+    "original": "Westmoreland Church of Christ, 1600 New Hwy 52",
+    "cleaned": "1600 New Hwy 52",
+    "id": "csv_74"
+  },
+  {
+    "original": "First United Methodist Church, 120 Aldersgate Way",
+    "cleaned": "120 Aldersgate Way",
+    "id": "csv_748"
+  },
+  {
+    "original": "Hillsboro United Methodist Church, 5313 Old Hwy 96",
+    "cleaned": "5313 Old Hwy 96",
+    "id": "csv_797"
+  },
+  {
+    "original": "6257 Hwy 76 E",
+    "cleaned": "6257 Hwy 76 E",
+    "id": "csv_804"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_835"
+  },
+  {
+    "original": "4th Avenue Church of Christ, 117 4th Ave N",
+    "cleaned": "4th Avenue Church of Christ",
+    "id": "csv_900"
+  },
+  {
+    "original": "Fairview Nutrition, 2671 Fairview Blvd W #106",
+    "cleaned": "2671 Fairview Blvd W",
+    "id": "csv_951"
+  },
+  {
+    "original": "403 Smyrna Square Dr",
+    "cleaned": "403 Smyrna Square Dr",
+    "id": "csv_976"
+  },
+  {
+    "original": "Coffee Shop Backroom",
+    "cleaned": "Coffee Shop Backroom",
+    "id": "fri_1"
+  },
+  {
+    "original": "Centennial Park",
+    "cleaned": "Centennial Park",
+    "id": "sat_1"
+  }
+]
