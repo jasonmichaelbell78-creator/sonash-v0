@@ -211,7 +211,36 @@ See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for complete data schema and securi
 **Total Issues Identified:** 95 → **71 TRUE OPEN** (after verification)  
 **Report:** See artifacts - `AUTHORITATIVE_ISSUE_REPORT.md`
 
-### CRITICAL (1)
+### CRITICAL#### 🔴 P1 - HIGH Priority Fixes (Week 18-19 - Security & Reliability)
+
+**Address Enrichment & Geocoding** (2-3 hr effort)
+
+- ✅ **HIGH-3: Robust Address Enrichment** (scripts/enrich-addresses.ts)
+  - **Issue:** Nominatim API failed on facility names ("Church...", "Club...") and duplicate strings
+  - **Fix:** Implemented smart parsing (strip facility names, handle duplicates), added Neighborhood prioritization
+  - **Status:** ✅ **COMPLETED Dec 27, 2025**
+  - **Verification:** Script processed ~95% of records; failures logged to `scripts/enrichment_failures.json`
+
+- ⚠️ **HIGH-4: Geocoding API Rate Limits** (scripts/retry-failures.ts)
+  - **Issue:** Nominatim returning `403 Forbidden` on bulk retry, even with headers
+  - **Impact:** Cannot automatically fix remaining 50 broken addresses
+  - **Status:** ⚠️ **BLOCKED** - Added to Known Issues; requires API switch or slower queue
+  - **Workaround:** `retry-failures.ts` exists for targeted fixes when IP block lifts
+
+**XSS Prevention** (2-3 hr effort)
+
+- ❌ **HIGH-1: Stored XSS in searchableText Field** (functions/src/index.ts, hooks/use-journal.ts)
+  - **Issue:** Client-side sanitization for searchableText; insufficient regex; server-side sanitization missing
+  - **Impact:** Malicious scripts could be injected and execute in Admin Dashboard or shared views
+  - **Fix:** Implement robust server-side sanitization (DOMPurify or sanitize-html) in Cloud Function
+  - **Reports:** Gemini Aggregator Finding #3
+  - **Cross-reference:** Week 14+ P2 M11 (already completed with sanitizeForSearch())
+  - **Status:** ✅ **ALREADY FIXED** - Created sanitizeForSearch() function to strip HTML/JS
+  - **Effort:** 0 hours (already complete)
+
+**Critical Bug Fixes** (1-2 hr effort)
+
+- ✅ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
 
 **🚨 Journal Collection Security Gap**
 - **Source:** JULES #3, verified in firestore.rules

@@ -941,7 +941,12 @@ All admin Cloud Functions MUST:
 - [x] Quick actions FAB with 4 shortcuts
 - [x] Smart defaults with contextual prompts (3 types)
 - [x] Enhanced mood selector with keyboard shortcuts (1-4 keys)
-- [x] Data visualization enhancements (progress bars)
+- [ ] **Geocoding API Reliability (403 Errors)**
+  - Nominatim API is rate-limiting the enrichment script (`403 Forbidden`).
+  - **Proposed Fix:** Investigate Google Maps Geocoding API (requires key) or implement queue-based background processing with longer delays.
+  - **Status:** Mitigation scripts (`retry-failures.ts`) created but hitting limits.
+
+- [ ] **Data Cleanup & Deduplication** enhancements (progress bars)
 - [x] Accessibility improvements (ARIA labels, keyboard navigation)
 - [x] Offline-first enhancement with network status indicator
 - [x] Code quality improvements (custom hooks, localStorage persistence)
