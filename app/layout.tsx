@@ -7,20 +7,21 @@ import { CelebrationProvider } from "@/components/celebrations/celebration-provi
 import "./globals.css"
 import { Toaster } from "sonner"
 
-// Self-hosted fonts using @fontsource packages to avoid Google Fonts API dependency
+// Self-hosted fonts using @fontsource packages
+// Avoids network dependency on fonts.googleapis.com during builds
 // Performance optimization: Reduced from 20+ fonts to 2 essential fonts
 const handlee = localFont({
-  src: "../public/fonts/handlee-latin-400-normal.woff2",
+  src: "../node_modules/@fontsource/handlee/files/handlee-latin-400-normal.woff2",
   variable: "--font-handlee",
-  weight: "400",
-  display: "swap",
+  display: 'swap',
+  weight: '400',
 })
 
 const rockSalt = localFont({
-  src: "../public/fonts/rock-salt-latin-400-normal.woff2",
+  src: "../node_modules/@fontsource/rock-salt/files/rock-salt-latin-400-normal.woff2",
   variable: "--font-rocksalt",
-  weight: "400",
-  display: "swap",
+  display: 'swap',
+  weight: '400',
 })
 
 export const metadata: Metadata = {
