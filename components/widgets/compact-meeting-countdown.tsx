@@ -211,7 +211,9 @@ export default function CompactMeetingCountdown() {
         const updateTimer = () => {
             const newTimeUntil = getCountdownString(nextMeeting)
             if (newTimeUntil === null) {
-                // Meeting passed! Trigger re-fetch
+                // Meeting passed! Trigger re-fetch and clear stale timer
+                setTimeUntil(null)
+                setLoading(true)
                 setNextMeeting(null)
                 setRefreshKey(k => k + 1)
             } else {

@@ -74,8 +74,9 @@ async function migrateLibraryContent() {
         const linksRef = db.collection('quick_links')
 
         for (const link of existingLinks) {
-            // Use deterministic ID for robust idempotency
-            const docId = `link-${link.category}-${link.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, '')
+            // Use improved slugification for robust idempotency
+            const slug = link.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+            const docId = `link-${link.category}-${slug}`
             const docRef = linksRef.doc(docId)
 
             const existing = await docRef.get()
@@ -103,8 +104,9 @@ async function migrateLibraryContent() {
         const prayersRef = db.collection('prayers')
 
         for (const prayer of existingPrayers) {
-            // Use deterministic ID for robust idempotency
-            const docId = `prayer-${prayer.category}-${prayer.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, '')
+            // Use improved slugification for robust idempotency
+            const slug = prayer.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+            const docId = `prayer-${prayer.category}-${slug}`
             const docRef = prayersRef.doc(docId)
 
             const existing = await docRef.get()

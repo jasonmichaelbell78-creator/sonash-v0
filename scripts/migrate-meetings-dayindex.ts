@@ -37,11 +37,16 @@ async function migrateMeetings() {
             credential: cert(serviceAccount),
         });
         console.log('✅ Firebase Admin initialized\n');
-    } catch (error) {
-        console.error('❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists.');
-        console.error('   This file should be in the project root.\n');
-        console.error('Error details:', error);
-        process.exit(1);
+    } catch (error: any) {
+        // Allow re-running in environments where Admin may already be initialized
+        if (error?.code === 'app/duplicate-app') {
+            console.log('ℹ️ Firebase Admin already initialized; continuing...\n');
+        } else {
+            console.error('❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists.');
+            console.error('   This file should be in the project root.\n');
+            console.error('Error details:', error);
+            process.exit(1);
+        }
     }
 
     const db = getFirestore();

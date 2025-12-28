@@ -187,7 +187,7 @@ function generateSearchableText(type: string, data: Record<string, unknown>): st
             if (typeof data.step4_surrender === 'string') parts.push(data.step4_surrender);
             if (data.step3_reflections && typeof data.step3_reflections === 'object' && data.step3_reflections !== null) {
                 Object.values(data.step3_reflections).forEach((v: unknown) => {
-                    if (isPrimitive(v)) parts.push(String(v || ''));
+                    if (isPrimitive(v)) parts.push(String(v));
                 });
             }
             break;
