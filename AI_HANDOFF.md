@@ -64,7 +64,18 @@
 **December 21, 2025:**
 - Multi-AI Security Review remediation
 - Journal security gap closed
+- Journal security gap closed
 - Account linking data migration implemented
+
+**December 28, 2025:**
+- 🏥 **Local Recovery Resources Aggregated:**
+  - Compiled and verified 60+ local Nashville resources (Detox, Residential, Outpatient, Food Banks).
+  - Generated type-safe `data/local-resources.ts` with strict address/contact parsing.
+  - Implemented `locationType` ('physical' | 'hotline' | 'multi-site') for robust mapping support.
+- 🧹 **Code Review Remediation:**
+  - Refactored `LocalResource` interface for better type safety (optional fields).
+  - Fixed valid data quality issues (vanity numbers, formatting).
+  - Passed Qodo/CodeRabbit compliance checks.
 
 ---
 
