@@ -152,7 +152,7 @@
         ]
     },
     {
-        "name": "Madison Heights Baptist Church no child care",
+        "name": "Madison Heights Baptist Church",
         "day": "Thursday",
         "time": "6:30 PM",
         "address": {
@@ -163,7 +163,8 @@
         },
         "tags": [
             "Large Group",
-            "Open Share Groups"
+            "Open Share Groups",
+            "No Child Care"
         ]
     },
     {
@@ -264,7 +265,7 @@
             "street": "1667 Lewisburg pk",
             "city": "Franklin",
             "state": "TN",
-            "zip": "37211"
+            "zip": "37064"
         },
         "tags": [
             "Large Group",
