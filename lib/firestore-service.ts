@@ -353,7 +353,8 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       }
     },
 
-    // Save a generic journal entry (growth work, notes, etc.)
+    // DEPRECATED: Legacy method for journalEntries collection
+    // TODO: Migrate to saveNotebookJournalEntry or use Cloud Function
     async saveJournalEntry(userId: string, entry: { title: string; content: string; type: string; tags: string[] }) {
       ensureValidUser(userId)
       deps.assertUserScope({ userId })
@@ -383,7 +384,8 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       }
     },
 
-    // Save a journal entry from notebook inputs (mood, cravings, used, notes, etc.)
+    // DEPRECATED: Use hooks/use-journal.ts:addEntry instead
+    // Thin wrapper for backward compatibility - routes through Cloud Function
     async saveNotebookJournalEntry(userId: string, entry: {
       type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory' | 'step-1-worksheet';
       data: Record<string, unknown>;
@@ -393,36 +395,82 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       deps.assertUserScope({ userId })
 
       try {
-        const { addDoc } = await import("firebase/firestore")
-        const collectionPath = `users/${userId}/journal`
-        deps.validateUserDocumentPath(userId, collectionPath)
+        const { getFunctions, httpsCallable } = await import("firebase/functions")
+        const functions = getFunctions()
+        const saveJournalFn = httpsCallable(functions, "saveJournalEntry")
 
-        const entriesRef = deps.collection(deps.db, collectionPath)
         const today = getTodayDateId()
 
         const payload = {
           userId,
           type: entry.type,
+          data: entry.data,
           dateLabel: today,
           isPrivate: entry.isPrivate ?? true,
-          isSoftDeleted: false,
-          data: entry.data,
-          createdAt: deps.serverTimestamp(),
-          updatedAt: deps.serverTimestamp(),
         }
 
-        const docRef = await addDoc(entriesRef, payload)
-        deps.logger.info("Notebook journal entry saved", {
+        // Retry Cloud Function call with exponential backoff for network failures
+        const result = await retryCloudFunction(
+          saveJournalFn,
+          payload,
+          { maxRetries: 3, functionName: 'saveJournalEntry' }
+        )
+
+        const response = result.data as { success: boolean; entryId: string }
+        deps.logger.info("Notebook journal entry saved via Cloud Function", {
           userId: maskIdentifier(userId),
-          type: entry.type
+          type: entry.type,
+          entryId: response.entryId
         })
-        return docRef.id
-      } catch (error) {
-        deps.logger.error("Failed to save notebook journal entry", {
+        return response.entryId
+      } catch (error: unknown) {
+        // Debug: Log structured error details (development only)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Cloud Function error:', error)
+          const err = error as Error
+          console.error('Error details:', JSON.stringify({
+            message: err.message,
+            name: err.name,
+            stack: err.stack,
+            cause: err.cause,
+            code: (error as { code?: string }).code,
+          }, null, 2))
+        }
+
+        // Handle specific Cloud Function errors with user-friendly messages
+        interface CloudFunctionError {
+          code?: string
+          message?: string
+        }
+        const err = error as CloudFunctionError
+        if (err.code === "functions/resource-exhausted") {
+          deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
+          throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
+        }
+
+        if (err.code === "functions/invalid-argument") {
+          deps.logger.error("Invalid data sent to Cloud Function", {
+            userId: maskIdentifier(userId),
+            error: err.message,
+          })
+          throw new Error(err.message || "Invalid journal data. Please refresh and try again.")
+        }
+
+        if (err.code === "functions/unauthenticated") {
+          throw new Error("Please sign in to save your journal.")
+        }
+
+        if (err.code === "functions/failed-precondition") {
+          throw new Error(`Security check failed (App Check): ${err.message}`)
+        }
+
+        // Generic error for unexpected failures
+        deps.logger.error("Cloud Function call failed", {
           userId: maskIdentifier(userId),
-          error
+          error: err,
+          code: err.code,
         })
-        throw error
+        throw new Error("Couldn't save your journal right now. Please try again in a moment.")
       }
     }
   }

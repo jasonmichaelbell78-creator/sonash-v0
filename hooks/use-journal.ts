@@ -4,9 +4,6 @@ import {
     query,
     orderBy,
     onSnapshot,
-    updateDoc,
-    doc,
-    serverTimestamp,
     limit
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -127,6 +124,18 @@ export function generateTags(type: JournalEntryType, data: Record<string, unknow
     return [...new Set(tags)]; // Deduplicate
 }
 
+/**
+ * React hook that provides the current user's journal entries, grouped views, loading state, and actions to add or soft-delete entries.
+ *
+ * The hook subscribes to the authenticated user's journal and keeps a realtime list and grouped index up to the configured query limit.
+ *
+ * @returns An object with:
+ *  - `entries`: The raw array of journal entries for the current user.
+ *  - `groupedEntries`: Entries organized by relative date labels (e.g., "Today", "Yesterday", or formatted dates).
+ *  - `loading`: `true` while the initial fetch or auth resolution is in progress, `false` afterwards.
+ *  - `addEntry(type, data, isPrivate?)`: Async function to save a new journal entry; returns `{ success: boolean; error?: string }`.
+ *  - `crumplePage(entryId)`: Async function to soft-delete an entry by id; returns `{ success: boolean; error?: string }`.
+ */
 export function useJournal() {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [loading, setLoading] = useState(true);
@@ -273,15 +282,51 @@ export function useJournal() {
 
     // ACTION: Crumple Page (Soft Delete)
     // Memoized to prevent infinite re-renders
-    const crumplePage = useCallback(async (entryId: string) => {
-        const user = auth.currentUser;
-        if (!user) return;
+    const crumplePage = useCallback(async (entryId: string): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                return {
+                    success: false,
+                    error: "Must be signed in to delete entries."
+                };
+            }
 
-        const entryRef = doc(db, `users/${user.uid}/journal/${entryId}`);
-        await updateDoc(entryRef, {
-            isSoftDeleted: true,
-            updatedAt: serverTimestamp()
-        });
+            // Call Cloud Function instead of direct Firestore write
+            // This ensures rate limiting, App Check, and validation are enforced server-side
+            const functions = getFunctions();
+            const softDeleteEntry = httpsCallable(functions, 'softDeleteJournalEntry');
+
+            // Retry Cloud Function call with exponential backoff for network failures
+            await retryCloudFunction(
+                softDeleteEntry,
+                { entryId },
+                { maxRetries: 3, functionName: 'softDeleteJournalEntry' }
+            );
+
+            return { success: true };
+        } catch (error: unknown) {
+            // Handle rate limiting and App Check errors with user-friendly messages
+            let errorMessage = 'Failed to delete entry. Please try again.';
+
+            if (error && typeof error === 'object' && 'code' in error) {
+                const code = (error as { code: string }).code;
+                if (code === 'functions/resource-exhausted') {
+                    errorMessage = 'Too many requests. Please wait a moment and try again.';
+                } else if (code === 'functions/failed-precondition') {
+                    errorMessage = 'Security verification failed. Please refresh the page.';
+                } else if (code === 'functions/not-found') {
+                    errorMessage = 'Entry not found or already deleted.';
+                }
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+
+            return {
+                success: false,
+                error: errorMessage
+            };
+        }
     }, []);
 
     return {

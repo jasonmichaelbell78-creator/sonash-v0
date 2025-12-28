@@ -88,3 +88,11 @@ export const quoteSchema = z.object({
 });
 
 export type QuoteData = z.infer<typeof quoteSchema>;
+
+// Schema for soft delete journal entry validation
+export const softDeleteJournalEntrySchema = z.object({
+    entryId: z.string().min(1, "Entry ID is required"),
+    userId: z.string().optional(), // Optional in data because we get it from auth context
+});
+
+export type SoftDeleteJournalEntryInput = z.infer<typeof softDeleteJournalEntrySchema>;
