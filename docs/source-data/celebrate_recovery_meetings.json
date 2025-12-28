@@ -1,0 +1,321 @@
+[
+    {
+        "name": "West End Community Church",
+        "day": "Thursday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "235 White Bridge Pike",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37209"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "First Baptist Pegram",
+        "day": "Thursday",
+        "time": "7:00 PM",
+        "address": {
+            "street": "4548 Sunnyfield Drive",
+            "city": "Pegram",
+            "state": "TN",
+            "zip": "37143"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Woodmont Baptist",
+        "day": "Monday",
+        "time": "7:00 PM",
+        "address": {
+            "street": "2100 Woodmont Blvd",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37215"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "New Vision Church",
+        "day": "Friday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "4712 Clarksville Hwy",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37022"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "New Life",
+        "day": "Friday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "4712 Clarksville Pike",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37218"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "McKendree UMC",
+        "day": "Tuesday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "523 Church St",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37219"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Cheatham County Recovery",
+        "day": "Friday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "99 Brookhollow Dr",
+            "city": "Ashland City",
+            "state": "TN",
+            "zip": "37015"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Christ Church",
+        "day": "Friday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "15354 Old Hickory Blvd",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37211"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups",
+            "Fellowship Meal",
+            "Fellowship Cafe"
+        ]
+    },
+    {
+        "name": "Grace Church of the Nazarene",
+        "day": "Tuesday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "2620 Pennington Bend Rd",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37214"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Madison Church of Christ",
+        "day": "Wednesday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "106 Gallatin Pike North",
+            "city": "Madison",
+            "state": "TN",
+            "zip": "37115"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Madison Heights Baptist Church",
+        "day": "Thursday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "815 E Old Hickory Blvd",
+            "city": "Madison",
+            "state": "TN",
+            "zip": "37115"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups",
+            "No Child Care"
+        ]
+    },
+    {
+        "name": "Fairfield Baptist",
+        "day": "Friday",
+        "time": "5:30 PM",
+        "address": {
+            "street": "1004 South Dickerson road",
+            "city": "Goodlettsville",
+            "state": "TN",
+            "zip": "37072"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "24 Church",
+        "day": "Monday",
+        "time": "6:00 PM",
+        "address": {
+            "street": "1502 Substation Rd",
+            "city": "Pleasant View",
+            "state": "TN",
+            "zip": "37146"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Connell Memorial United Methodist",
+        "day": "Wednesday",
+        "time": "6:00 PM",
+        "address": {
+            "street": "113 Church Street",
+            "city": "Goodlettsville",
+            "state": "TN",
+            "zip": "37072",
+            "note": "Jason s House"
+        },
+        "tags": [
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Harpeth Christian Church",
+        "day": "Thursday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "1101 Gardner Drive",
+            "city": "Franklin",
+            "state": "TN",
+            "zip": "37064"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Hermitage United Methodist Church",
+        "day": "Wednesday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "205 Belinda Dr",
+            "city": "Hermitage",
+            "state": "TN",
+            "zip": "37076"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Calvary Baptist Church",
+        "day": "Sunday",
+        "time": "5:00 PM",
+        "address": {
+            "street": "2806 Hwy 41-S",
+            "city": "Greenbrier",
+            "state": "TN",
+            "zip": "37073"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Graceland Church",
+        "day": "Wednesday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "1667 Lewisburg pk",
+            "city": "Franklin",
+            "state": "TN",
+            "zip": "37064"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Long Hollow Baptist Church",
+        "day": "Monday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "3031 Long Hollow Pike",
+            "city": "Hendersonville",
+            "state": "TN",
+            "zip": "37075"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    },
+    {
+        "name": "Long Hollow Church",
+        "day": "Monday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "3031 Long Hollow Pike",
+            "city": "Hendersonville",
+            "state": "TN",
+            "zip": "37075"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups",
+            "Landing"
+        ]
+    },
+    {
+        "name": "First Baptist Hendersonville",
+        "day": "Tuesday",
+        "time": "6:30 PM",
+        "address": {
+            "street": "106 Bluegrass Commons Blvd",
+            "city": "Hendersonville",
+            "state": "TN",
+            "zip": "37075"
+        },
+        "tags": [
+            "Large Group",
+            "Open Share Groups"
+        ]
+    }
+]
