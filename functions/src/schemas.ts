@@ -50,7 +50,11 @@ export const meetingSchema = z.object({
     day: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
     time: z.string().regex(/^\d{2}:\d{2}$/), // HH:MM format
     address: z.string().min(1).max(500),
-    neighborhood: z.string().min(1).max(100),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zip: z.string().optional(),
+    neighborhood: z.string().max(100).optional().or(z.literal('')),
+    tags: z.array(z.string()).optional(),
     coordinates: z.object({
         lat: z.number().min(-90).max(90),
         lng: z.number().min(-180).max(180),
@@ -64,7 +68,7 @@ export const soberLivingSchema = z.object({
     id: z.string().optional(),
     name: z.string().min(1).max(200),
     address: z.string().min(1).max(500),
-    neighborhood: z.string().min(1).max(100),
+    neighborhood: z.string().max(100).optional().or(z.literal('')),
     phone: z.string().max(20).optional(),
     gender: z.enum(["Men", "Women", "Both"]).optional(),
     coordinates: z.object({
