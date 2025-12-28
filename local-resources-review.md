@@ -365,7 +365,7 @@ Mark `[ ]` (leave empty) to **EXCLUDE**.
 - [x] **The Phoenix Nashville**
   - *Address:* (Various Locations/Gyms)
   - *Website:* [thephoenix.org](https://thephoenix.org)
-  - *Note:* Free active recovery community (CrossFit, Climbing, Yoga) for 48hrs sober.
+  - *Note:* Free active recovery community (CrossFit, Climbing, Yoga) for 48 hrs sober.
 
 - [x] **Small World Yoga**
   - *Address:* 1101 18th Ave S, Nashville, TN 37212
