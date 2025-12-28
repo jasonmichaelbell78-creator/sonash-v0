@@ -188,7 +188,7 @@ Mark `[ ]` (leave empty) to **EXCLUDE**.
 
 - [x] **Recovery Unplugged**
   - *Address:* 255 Wilson Pike Circle, Brentwood, TN 37027
-  - *Phone:* 1-800-55-REHAB
+  - *Phone:* (800) 557-3422
   - *Website:* [recoveryunplugged.com](https://recoveryunplugged.com)
   - *Note:* Music-focused addiction treatment.
 

@@ -14,12 +14,12 @@ export interface LocalResource {
     id: string;
     name: string;
     category: ResourceCategory;
-    locationType?: LocationType;
+    locationType: LocationType;
     services?: string[];
-    address: string;
-    city: string;
-    state: string;
-    zip: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
     phone?: string;
     website?: string;
     notes: string;
@@ -29,7 +29,18 @@ export interface LocalResource {
     };
 }
 
-export const localResources: LocalResource[] = [
+const assertUniqueResourceIds = (resources: LocalResource[]) => {
+    const seen = new Set<string>();
+    for (const r of resources) {
+        if (seen.has(r.id)) {
+            throw new Error(`Duplicate LocalResource id: ${r.id}`);
+        }
+        seen.add(r.id);
+    }
+    return resources;
+};
+
+export const localResources: LocalResource[] = assertUniqueResourceIds([
     // 🏥 Clinical: Detox & Crisis
     {
         id: 'mental-health-cooperative',
@@ -121,10 +132,8 @@ export const localResources: LocalResource[] = [
         category: 'Clinical: Detox & Crisis',
         locationType: 'hotline',
         services: ['Crisis Hotline', 'Mobile Crisis Response'],
-        address: '',
         city: 'Nashville',
         state: 'TN',
-        zip: '',
         phone: '(800) 681-7444',
         website: 'https://centerstone.org',
         notes: '24/7/365 Crisis Support Line. Mobile crisis response available.',
@@ -549,7 +558,7 @@ export const localResources: LocalResource[] = [
         city: 'Nashville',
         state: 'TN',
         zip: '37212',
-        notes: 'Referenced in review doc.',
+        notes: 'Referenced in review doc. Contact details not confirmed; verify phone/website before publishing.',
     },
 
     // 💉 Clinical: Harm Reduction
@@ -587,12 +596,8 @@ export const localResources: LocalResource[] = [
         category: 'Clinical: Harm Reduction',
         locationType: 'hotline',
         services: ['Hotline', 'Referral Source'],
-        address: '', // Hotline
-        city: '',
         state: 'TN',
-        zip: '',
         phone: '800-889-9789',
-        website: '',
         notes: '24/7 referral source for all addiction services.',
     },
 
@@ -821,12 +826,10 @@ export const localResources: LocalResource[] = [
         category: 'Community: Wellness',
         locationType: 'multi-site',
         services: ['Active Recovery', 'Gym', 'Free'],
-        address: '',
         city: 'Nashville',
         state: 'TN',
-        zip: '', // Multiple locations
         website: 'https://thephoenix.org',
-        notes: 'Various Locations. Free active recovery community (CrossFit, Climbing, Yoga) for 48hrs sober.',
+        notes: 'Various Locations. Free active recovery community (CrossFit, Climbing, Yoga) for 48 hrs sober.',
     },
     {
         id: 'small-world-yoga',
@@ -853,4 +856,4 @@ export const localResources: LocalResource[] = [
         zip: '37210',
         notes: 'Recovery-supportive lifting gym culture.',
     }
-];
+]);
