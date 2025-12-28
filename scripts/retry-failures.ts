@@ -1,6 +1,7 @@
 
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -104,16 +105,12 @@ async function retryFailures() {
                 await new Promise(resolve => setTimeout(resolve, 2500));
 
                 const url = `${NOMINATIM_BASE_URL}?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`;
-                const response = await fetch(url, {
-                    headers: {
-                        'User-Agent': USER_AGENT,
-                        'Referer': 'https://sonash.app' // Good practice for OSM
-                    }
-                });
 
-                if (!response.ok) throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+                // Use curl instead of fetch due to environment limitations
+                const curlCommand = `curl -s -H "User-Agent: ${USER_AGENT}" -H "Referer: https://sonash.app" "${url}"`;
+                const responseText = execSync(curlCommand, { encoding: 'utf8', maxBuffer: 1024 * 1024 });
 
-                const results = await response.json() as any[];
+                const results = JSON.parse(responseText) as any[];
 
                 if (results && results.length > 0) {
                     const result = results[0];
