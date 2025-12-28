@@ -1,13 +1,13 @@
 /**
  * Cloud Functions for SoNash Recovery Notebook
- * 
+ *
  * Server-side rate limiting and validation for critical operations
  * Cannot be bypassed by client-side modifications
- * 
+ *
  * Security Features:
  * - Sentry error monitoring (initialized at module load)
  * - Structured audit logging for security events
- * - Rate limiting (10 req/min per user)
+ * - Rate limiting (10-20 req/min per user, varies by operation)
  * - App Check verification
  * - Zod schema validation
  */
