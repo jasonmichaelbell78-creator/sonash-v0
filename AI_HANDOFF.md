@@ -1,21 +1,22 @@
 # AI Handoff Document
 
-**Date:** December 20, 2025  
-**Status:** Active Development  
+**Date:** December 28, 2025
+**Status:** Active Development
 **Branch:** `main`
 
 ---
 
-## 📚 Documentation Structure (Updated Dec 19, 2025)
+## 📚 Documentation Structure
 
-**Primary documentation has been consolidated into 4 core files:**
+**Primary documentation has been consolidated into 5 core files:**
 
 1. **[README.md](./README.md)** - Project overview, quick start, current status
 2. **[ROADMAP.md](./ROADMAP.md)** - Product roadmap, milestones, feature planning
-3. **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup, testing, deployment
-4. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture, design patterns
+3. **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
+4. **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup, testing, deployment
+5. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture, design patterns
 
-**Archived documentation:** See [docs/archive/consolidated-2025-12-19/](./docs/archive/consolidated-2025-12-19/) for:
+**Archived documentation:** See [docs/archive/](./docs/archive/) for:
 - Previous roadmap versions
 - Project status snapshots
 - Feature decision documents
@@ -24,144 +25,53 @@
 
 ---
 
-## 🎯 Current Sprint Focus (December 21, 2025)
+## 🎯 Current Sprint Focus (December 28, 2025)
 
-### ✅ Recently Completed
+### 📋 Active Priorities
 
-**Account Linking Data Migration (Dec 21)**
-- Implemented `migrateAnonymousUserData` Cloud Function
-- Prevents data loss when linking anonymous → permanent accounts
-- Smart conflict resolution (preserves target account data)
-- Full security: rate limiting (5 req/5min), App Check, audit logging
-- **Status:** ✅ Deployed to production (us-central1)
+**M1.5 - Quick Wins (In Progress)**
+- Settings page UI improvements
+- Profile management enhancements
+- Clean date picker improvements
 
-### 🔄 Active Tasks
+**M1.6 - Admin Panel + UX (In Progress - ~75% complete)**
+- Phase 4: Error Tracking - Sentry Integration (Planned)
+- Phase 5: System Logs - GCP Integration (Planned)
+- Phase 6: Customizable Quick Actions (Planned)
 
-**Production Testing & Bug Discovery (Dec 21)**
-- Attempted manual testing of account linking migration
-- **Discovered:** Google OAuth COOP errors preventing popup auth
-- **Discovered:** Email/password linking returning 400 Bad Request
-- **Impact:** Cannot test migration function in production
-- **Next:** Fix Firebase Hosting headers, debug auth errors
+**Documentation Maintenance**
+- ✅ Created ROADMAP_LOG.md for completed items (Dec 28)
+- ✅ Streamlined ROADMAP.md to focus on active/planned work (Dec 28)
+- Active documentation review and updates
 
-**Code Quality & Security (Dec 21)**
-- All quick wins completed and deployed ✅
-- All security verifications complete ✅
-- Zero critical issues remaining ✅
+### ✅ Recently Completed (December 2025)
 
-**Code Quality Quick Wins (Dec 21)**
-- Fixed timeline array mutation (immutability)
-- Added error handling try/finally blocks (links-tab, prayers-tab)
-- Verified journal collection security already complete
-- Verified rate limiting coverage complete
-- **Status:** ✅ All deployed to production
+> **Note:** For detailed history of completed work, see [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
-**Feature Flag System Fix (Dec 21)**
-- Fixed `featureFlagEnabled()` - was hardcoded to return `true`
-- Implemented proper environment variable reading
-- Supports `NEXT_PUBLIC_*` flags for staged rollouts and A/B testing
-- **Status:** ✅ Deployed and working
+**December 27, 2025:**
+- Gemini 2.0 Flash Thinking Aggregated Security Review remediation (8 issues)
+- Meeting countdown hoisting bug fix
+- Meeting pagination sort fix (added dayIndex field)
+- Accessibility improvements (removed zoom restrictions)
+- Zod version sync between client/server
+- Debug logging cleanup
 
-**Production Deployment (Dec 21)**
-- Git: Committed & pushed (ee894a1)
-- Next.js: Built production bundle
-- Firebase: Deployed hosting + all functions
-- **Live at:** https://sonash-app.web.app
+**December 23-24, 2025:**
+- Consolidated 6-AI Code Review remediation (26 real issues)
+- Today Page UX Enhancement complete (all 10 improvements)
+- Admin Panel Phases 1-3 complete
 
-**Celebration Animation System (Dec 20)**
-- Multi-level celebration animations (confetti, pulse, fireworks, modal)
-- `CelebrationProvider` integrated into root layout
-- `useCelebration()` hook for triggering from any component
-- Demo page at `/celebration-demo` for testing all effects
-- Framer Motion animations with proper cleanup
-
-**Comprehensive Code Review (Dec 20)**
-- Cross-verified CodeRabbit, GitHub Copilot, and Claude Code reviews
-- 106 issues catalogued, 39 verified critical, 8 false positives identified
-- Priority fixes documented for migration idempotency, array mutation, error handling
-- See: `final-code-review-report.md` in artifacts
-
-**Step 1 Worksheet Analysis (Dec 20)**
-- Analyzed 6-page Step 1 Worksheet PDF (26 questions, 4 concepts)
-- Designed interactive component for Growth tab
-- Implementation plan created for 4-step wizard with auto-save
-
-**Library Content Management System (Dec 20)**
-- Complete Firestore-backed CMS for Quick Links & Prayers
-- Nashville recovery resources imported (31 links across 7 categories)
-
-**Documentation Consolidation (Dec 19)**
-- Merged 15+ docs into 4 core files
-- Archived obsolete proposals and status reports
-- Updated all cross-references
-- Improved navigation and discoverability
-
-**Journal System (Dec 17-18)**
-- Unified journal architecture (single-save pattern)
-- Entry type separation (mood stamps, stickers, notes)
-- Deduplication logic (no more duplicates!)
-- Enhanced UI styling (distinct visual styles)
-- Filter system redesign (horizontal buttons)
-- Firestore indexes for performance
-
-**Security & Stability (Dec 9-15)**
-- Firebase App Check with reCAPTCHA v3
-- Server-side validation (Zod schemas)
-- Rate limiting (10 req/min per user)
-- Audit logging for security events
-- GDPR compliance (data export/deletion)
-- Account linking (anonymous → permanent)
-
-**Code Quality**
-- ESLint: 0 errors, 29 warnings
-- Tests: 89/91 passing (97.8%)
-- Dependencies updated (Next.js 16.1.0, React 19.2.3) - verified Dec 20
-- Security vulnerabilities fixed
-
----
-
-## 🔄 Current Work
-
-**Code Remediation (M1 Week 10-12) - ✅ COMPLETE (Dec 20, 2025):**
-
-All 19 items from the 6-model AI code analysis have been addressed:
-
-| Phase | Status |
-|-------|--------|
-| Phase 1: Security | ✅ 4/4 fixed |
-| Phase 2: Bugs | ✅ 6/6 fixed |
-| Phase 3: Quality | ✅ 3/3 fixed |
-| Phase 4: Backlog | ✅ 6/6 fixed |
-
-**Key Fixes:**
-- ✅ Firestore rules bypass for `daily_logs` - closed
-- ✅ Rate limiter fail-open vulnerability - now fail-closed
-- ✅ Admin reset functionality - hidden in production
-- ✅ SSR unsafe exports - proxy guards added
-- ✅ Component extraction - CleanTimeDisplay, MoodSelector, CheckInQuestions, RecoveryNotepad
-- ✅ Full JSDoc documentation added
-- ✅ ARIA accessibility improvements
-
-**See:** [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
-
-**Active Tasks:**
-- Morning: Critical code fixes (5 items) - see task.md
-- After fixes: Step 1 Worksheet component implementation
-
-**Next Up (M1.5 Quick Wins):**
-1. ~~Recovery Library~~ ✅ + CMS
-2. ~~"I Made It Through Today" celebration~~ ✅ COMPLETE (celebration system)
-3. HALT Check button - 4 SP
-4. Step 1 Worksheet - in progress
-
-See **[ROADMAP.md](./ROADMAP.md)** for full scope.
+**December 21, 2025:**
+- Multi-AI Security Review remediation
+- Journal security gap closed
+- Account linking data migration implemented
 
 ---
 
 ## 🏗️ Architecture Overview
 
 **Tech Stack:**
-- Next.js 16.1.0, React 19.2.3, TypeScript 5.x
+- Next.js 16.1.1, React 19.2.3, TypeScript 5.x
 - Tailwind CSS v4, Framer Motion 12
 - Firebase (Auth, Firestore, Functions, App Check)
 - shadcn/ui components
@@ -206,98 +116,46 @@ See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for complete data schema and securi
 
 ## 🚨 Known Issues
 
-**Multi-AI Code Review Completed:** December 21, 2025  
-**Sources:** 5 AI models (CODEX, GEMINI, JULES, CLAUDE, CLAUDE CODE) + baseline  
-**Total Issues Identified:** 95 → **71 TRUE OPEN** (after verification)  
-**Report:** See artifacts - `AUTHORITATIVE_ISSUE_REPORT.md`
+**Current Priority Issues:**
 
-### CRITICAL#### 🔴 P1 - HIGH Priority Fixes (Week 18-19 - Security & Reliability)
+### P2 - Medium Priority (from M2 Potential Work)
 
-**Address Enrichment & Geocoding** (2-3 hr effort)
+- ⏳ **FirestoreService is a God Object** (lib/firestore-service.ts)
+  - 300-400+ line file manages all Firestore operations
+  - Should split into `DailyLogService`, `JournalService`, `InventoryService`
+  - Effort: 4 hours
+  - Milestone: M2 (Architecture Refactor)
 
-- ✅ **HIGH-3: Robust Address Enrichment** (scripts/enrich-addresses.ts)
-  - **Issue:** Nominatim API failed on facility names ("Church...", "Club...") and duplicate strings
-  - **Fix:** Implemented smart parsing (strip facility names, handle duplicates), added Neighborhood prioritization
-  - **Status:** ✅ **COMPLETED Dec 27, 2025**
-  - **Verification:** Script processed ~95% of records; failures logged to `scripts/enrichment_failures.json`
+- ⏳ **Error Handling Gaps in Contexts**
+  - Various contexts lack proper error handling
+  - Need consistent error state pattern
+  - Effort: 4 hours
+  - Priority: MEDIUM - UX quality
 
-- ⚠️ **HIGH-4: Geocoding API Rate Limits** (scripts/retry-failures.ts)
-  - **Issue:** Nominatim returning `403 Forbidden` on bulk retry, even with headers
-  - **Impact:** Cannot automatically fix remaining 50 broken addresses
-  - **Status:** ⚠️ **BLOCKED** - Added to Known Issues; requires API switch or slower queue
-  - **Workaround:** `retry-failures.ts` exists for targeted fixes when IP block lifts
+- ⏳ **Onboarding Wizard is 515 Lines** (components/onboarding/onboarding-wizard.tsx)
+  - Single component with 5 different step views
+  - Should extract each step into own component
+  - Effort: 3 hours
+  - Priority: LOW - works fine, refactor when needed
 
-**XSS Prevention** (2-3 hr effort)
+**Deferred Items:**
 
-- ❌ **HIGH-1: Stored XSS in searchableText Field** (functions/src/index.ts, hooks/use-journal.ts)
-  - **Issue:** Client-side sanitization for searchableText; insufficient regex; server-side sanitization missing
-  - **Impact:** Malicious scripts could be injected and execute in Admin Dashboard or shared views
-  - **Fix:** Implement robust server-side sanitization (DOMPurify or sanitize-html) in Cloud Function
-  - **Reports:** Gemini Aggregator Finding #3
-  - **Cross-reference:** Week 14+ P2 M11 (already completed with sanitizeForSearch())
-  - **Status:** ✅ **ALREADY FIXED** - Created sanitizeForSearch() function to strip HTML/JS
-  - **Effort:** 0 hours (already complete)
+- ⏸️ **Firebase App Check with reCAPTCHA** - Deferred to M2+
+  - See [recaptcha_removal_guide.md](./recaptcha_removal_guide.md)
+  - Priority: P2 - Implement after M3+ unless bot abuse becomes significant
 
-**Critical Bug Fixes** (1-2 hr effort)
+**No Blockers:** All critical functionality working, M1 foundation complete (100%).
 
-- ✅ **HIGH-2: Hoisting Bug in Meeting Countdown** (components/widgets/compact-meeting-countdown.tsx)
-
-**🚨 Journal Collection Security Gap**
-- **Source:** JULES #3, verified in firestore.rules
-- **Files:** `firestore.rules:35-40`
-- **Issue:** `journal` collection allows direct client writes while `daily_logs` properly blocks them
-- **Impact:** Bypasses rate limiting and App Check completely
-- **Fix:** Block direct writes, create `saveJournalEntry` Cloud Function (mirror `saveDailyLog`)
-- **Priority:** IMMEDIATE
-
-### HIGH PRIORITY (14)
-
-1. **Account Linking Data Loss** - Users lose anonymous data when credential exists
-2. **Test Assertions Broken** - Tests mock Firestore but implementation uses Cloud Functions
-3. **Feature Flags Non-functional** - `featureFlagEnabled()` always returns true
-4. **Daily Log History Ordering** - Query uses `dateId`, function stores `date`
-5. **Anonymous Session Error Handling** - No retry logic or user feedback
-6. **Timeline Array Mutation** - `entries.sort()` mutates array
-7. **Error Handling Missing** - links-tab, prayers-tab need try/finally
-8. **Missing Rate Limiting** - saveInventoryEntry, getHistory, getInventoryEntries
-9. **Onboarding Overwrites Profiles** - No check for existing profile
-10. **Ribbon Nav Active State** - Use `null` instead of `""`
-11. **Milestone Logic Bug** - Use `>=` instead of `===`
-12. **Composite Indexes Missing** - Library queries need indexes
-13. **Entry Card Null Checks** - Missing checks for mood/items
-14. **History Page Undefined Items** - Need type guards
-
-### MEDIUM PRIORITY (32)
-
-- Firestore rules overly permissive for user profiles
-- Delete operations without GDPR audit logging
-- Date validation missing in Cloud Function
-- localStorage unencrypted for journal data
-- Inefficient meeting sorting (parseTime regex)
-- Nested context providers cause re-renders
-- Monolithic components remain (ResourcesPage, AllMeetingsPage)
-- TypeScript strict flags missing (noUncheckedIndexedAccess)
-- useAuth deprecated but still used
-- _[See full report for complete list]_
-
-### LOW PRIORITY (24)
-
-- Debug console.log statements in production code
-- Console logs expose configuration
-- README lacks setup instructions
-- Duplicate comments, naming inconsistencies
-- _[See full report for complete list]_
-
-**No Blockers:** All critical functionality working, but security gap must be fixed before production deployment.
+> **Archive:** For historical issues and completed fixes, see [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
 ---
 
 ## 🔐 Security Notes
 
 **App Check:**
-- Production: reCAPTCHA v3 (automatic)
+- Production: reCAPTCHA v3 implementation deferred (see known issues)
 - Development: Debug token in `.env.local`
-- Required for all Firestore/Functions access
+- Currently not enforced (deferred to M2)
 
 **Rate Limiting:**
 - 10 requests/minute per user
@@ -357,24 +215,31 @@ firebase emulators:start  # Start Firebase emulators
 **For AI Agents:**
 1. Read **[ARCHITECTURE.md](./ARCHITECTURE.md)** first for system understanding
 2. Check **[ROADMAP.md](./ROADMAP.md)** before adding features
-3. Follow patterns in **[DEVELOPMENT.md](./DEVELOPMENT.md)**
-4. Update docs when making changes
-5. Run tests before committing
+3. Check **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** for completed work history
+4. Follow patterns in **[DEVELOPMENT.md](./DEVELOPMENT.md)**
+5. Update docs when making changes
+6. Run tests before committing
 
 **For Human Developers:**
 1. Start with **[README.md](./README.md)** for overview
 2. Follow **[DEVELOPMENT.md](./DEVELOPMENT.md)** for setup
 3. Reference **[ARCHITECTURE.md](./ARCHITECTURE.md)** for patterns
 4. Check **[ROADMAP.md](./ROADMAP.md)** for priorities
+5. Review **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** for context on completed work
 
 ---
 
 ## 📚 Historical Context
 
-**Major Milestones:**
-- Dec 19: Documentation consolidation
-- Dec 17-18: Journal system refactor
-- Dec 9-15: Security hardening (M1)
+**Major Milestones Completed:**
+- Dec 28: Documentation reorganization (ROADMAP_LOG.md created)
+- Dec 27: Gemini Aggregated Security Review remediation complete
+- Dec 24: Consolidated 6-AI Code Review remediation complete
+- Dec 23: Today Page UX Enhancement + Admin Panel Phases 1-3 complete
+- Dec 21: Multi-AI Security Review remediation complete
+- Dec 19: Documentation consolidation (4 core docs)
+- Dec 17-18: Journal system refactor complete
+- Dec 9-15: Security hardening (M1) complete
 - Dec 1-8: Initial MVP development
 
 **Archived Documentation:**
@@ -382,32 +247,31 @@ All historical documents preserved in:
 - `/docs/archive/consolidated-2025-12-19/` (recent consolidation)
 - `/docs/archive/handoffs-2025-12/` (daily handoffs)
 - `/docs/archive/architecture-reviews-dec-2025/` (design docs)
+- `/docs/archive/2025-dec-reports/` (code analysis reports)
 
 ---
 
 ## 🎯 Next Session Goals
 
-**Priority 1 - CRITICAL SECURITY (Immediate):**
-1. **Journal Security Gap** - Block direct writes to `journal` collection, create `saveJournalEntry` Cloud Function
-2. **Account Linking Data Loss** - Prevent anonymous data loss when credentials exist
+**Priority 1 - M1.5 Quick Wins (This Week):**
+1. Complete settings page UI improvements
+2. Enhanced profile management
+3. Clean date picker improvements
+4. Expanded Onboarding Wizard planning
 
-**Priority 2 - HIGH IMPACT (This Week):**
-3. Test assertions fix - Rewrite tests to mock Cloud Functions
-4. Feature flag system - Fix `featureFlagEnabled()` always-returns-true bug
-5. Timeline array mutation - One-line fix (`[...entries].sort()`)
-6. Error handling - Add try/finally to links-tab, prayers-tab
-7. Daily log history ordering - Align dateId vs date field
+**Priority 2 - M1.6 Phase 4 Planning (Next Week):**
+1. Design Sentry Integration approach
+2. Define error summary card requirements
+3. Plan Cloud Function for server-side Sentry API calls
 
-**Priority 3 - CODE QUALITY (Next Week):**
-8. Composite indexes for library queries
-9. Missing rate limiting for inventory operations
-10. TypeScript strict flags (noUncheckedIndexedAccess)
+**Priority 3 - M2 Planning (As Needed):**
+1. Evaluate need for FirestoreService refactor
+2. Review error handling patterns across contexts
+3. Consider component extraction opportunities
 
-**See:** `AUTHORITATIVE_ISSUE_REPORT.md` in artifacts for complete 71-issue list
-
-**Estimated Effort:** Priority 1-2 = ~30-40 hours
+**Estimated Effort:** Priority 1 = ~8-13 SP (~1-2 weeks)
 
 ---
 
-**Last Updated:** December 21, 2025 - Multi-AI code review aggregation (5 models, 71 issues identified)  
+**Last Updated:** December 28, 2025 - Documentation reorganization complete
 **Previous Handoff:** Archived to [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](./docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)

@@ -5,6 +5,7 @@
 ## 📖 Documentation
 
 - **[ROADMAP.md](./ROADMAP.md)** - Product roadmap and feature planning
+- **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing checklist
