@@ -165,6 +165,7 @@ export const saveJournalEntry = onCall<JournalEntryData>(
             functionName: 'saveJournalEntry',
             rateLimiter: saveJournalEntryLimiter,
             validationSchema: journalEntrySchema,
+            requireAppCheck: true, // SECURITY: App Check enforced for production; use debug tokens in dev
         },
         async ({ data, userId }) => {
             const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
@@ -278,12 +279,13 @@ export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
                 }
 
                 const docData = doc.data();
-                if (docData?.userId && docData.userId !== userId) {
+                // Require userId field to exist and match the caller
+                if (!docData?.userId || docData.userId !== userId) {
                     logSecurityEvent(
                         "AUTHORIZATION_FAILURE",
                         "softDeleteJournalEntry",
-                        "Attempted to delete another user's entry",
-                        { userId, metadata: { entryId, ownerId: docData.userId } }
+                        "Attempted to delete entry without valid ownership",
+                        { userId, metadata: { entryId, ownerId: docData?.userId || null } }
                     );
                     throw new HttpsError("permission-denied", "Cannot delete another user's entry");
                 }

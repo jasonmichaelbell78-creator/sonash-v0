@@ -351,12 +351,79 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         })
         throw error
       }
-    }
+    },
 
-    // REMOVED: saveJournalEntry and saveNotebookJournalEntry
-    // All journal writes now route through Cloud Functions (saveJournalEntry callable)
-    // This enforces consistent rate limiting, App Check, and validation server-side
-    // See: hooks/use-journal.ts:addEntry and functions/src/index.ts:saveJournalEntry
+    // DEPRECATED: Legacy method for journalEntries collection
+    // TODO: Migrate to saveNotebookJournalEntry or use Cloud Function
+    async saveJournalEntry(userId: string, entry: { title: string; content: string; type: string; tags: string[] }) {
+      ensureValidUser(userId)
+      deps.assertUserScope({ userId })
+
+      try {
+        // We use a separate collection for individual entries that allows multiple per day
+        const collectionPath = `users/${userId}/journalEntries`
+        deps.validateUserDocumentPath(userId, collectionPath)
+
+        const entriesRef = deps.collection(deps.db, collectionPath)
+        const newDocRef = deps.doc(entriesRef) // Auto-ID
+
+        const payload = {
+          id: newDocRef.id,
+          userId,
+          ...entry,
+          createdAt: deps.serverTimestamp(),
+          updatedAt: deps.serverTimestamp(),
+        }
+
+        await deps.setDoc(newDocRef, payload)
+        deps.logger.info("Journal entry saved", { userId: maskIdentifier(userId), type: entry.type })
+        return newDocRef.id
+      } catch (error) {
+        deps.logger.error("Failed to save journal entry", { userId: maskIdentifier(userId), error })
+        throw error
+      }
+    },
+
+    // DEPRECATED: Use hooks/use-journal.ts:addEntry instead
+    // Thin wrapper for backward compatibility - routes through Cloud Function
+    async saveNotebookJournalEntry(userId: string, entry: {
+      type: 'mood' | 'daily-log' | 'spot-check' | 'night-review' | 'gratitude' | 'free-write' | 'meeting-note' | 'check-in' | 'inventory' | 'step-1-worksheet';
+      data: Record<string, unknown>;
+      isPrivate?: boolean;
+    }) {
+      ensureValidUser(userId)
+      deps.assertUserScope({ userId })
+
+      try {
+        const { getFunctions, httpsCallable } = await import("firebase/functions")
+        const functions = getFunctions()
+        const saveJournalFn = httpsCallable(functions, "saveJournalEntry")
+
+        const today = getTodayDateId()
+
+        const result = await saveJournalFn({
+          userId,
+          type: entry.type,
+          data: entry.data,
+          dateLabel: today,
+          isPrivate: entry.isPrivate ?? true,
+        })
+
+        const response = result.data as { success: boolean; entryId: string }
+        deps.logger.info("Notebook journal entry saved via Cloud Function", {
+          userId: maskIdentifier(userId),
+          type: entry.type,
+          entryId: response.entryId
+        })
+        return response.entryId
+      } catch (error) {
+        deps.logger.error("Failed to save notebook journal entry", {
+          userId: maskIdentifier(userId),
+          error
+        })
+        throw error
+      }
+    }
   }
 }
 
