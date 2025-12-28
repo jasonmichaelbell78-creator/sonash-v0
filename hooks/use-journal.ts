@@ -124,6 +124,18 @@ export function generateTags(type: JournalEntryType, data: Record<string, unknow
     return [...new Set(tags)]; // Deduplicate
 }
 
+/**
+ * React hook that provides the current user's journal entries, grouped views, loading state, and actions to add or soft-delete entries.
+ *
+ * The hook subscribes to the authenticated user's journal and keeps a realtime list and grouped index up to the configured query limit.
+ *
+ * @returns An object with:
+ *  - `entries`: The raw array of journal entries for the current user.
+ *  - `groupedEntries`: Entries organized by relative date labels (e.g., "Today", "Yesterday", or formatted dates).
+ *  - `loading`: `true` while the initial fetch or auth resolution is in progress, `false` afterwards.
+ *  - `addEntry(type, data, isPrivate?)`: Async function to save a new journal entry; returns `{ success: boolean; error?: string }`.
+ *  - `crumplePage(entryId)`: Async function to soft-delete an entry by id; returns `{ success: boolean; error?: string }`.
+ */
 export function useJournal() {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [loading, setLoading] = useState(true);
