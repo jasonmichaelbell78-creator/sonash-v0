@@ -60,7 +60,7 @@ async function migrateAddresses() {
             batch.update(doc.ref, {
                 city: 'Nashville',
                 state: 'TN',
-                zip: '', // Initialize as empty string so it exists
+                zip: '00000', // Placeholder zip as documented
                 // Preserve existing address as street address
             });
 

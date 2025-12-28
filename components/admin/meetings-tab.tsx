@@ -89,7 +89,7 @@ function MeetingForm({
                         <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
                         <input
                             type="text"
-                            value={formData.city || "Nashville"}
+                            value={formData.city || ""}
                             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2"
                         />
@@ -98,7 +98,7 @@ function MeetingForm({
                         <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
                         <input
                             type="text"
-                            value={formData.state || "TN"}
+                            value={formData.state || ""}
                             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2"
                         />
@@ -135,17 +135,19 @@ function MeetingForm({
                         step="any"
                         value={formData.coordinates?.lat ?? ""}
                         onChange={(e) => {
-                            const val = e.target.value === "" ? undefined : parseFloat(e.target.value)
-                            if (val === undefined && formData.coordinates?.lng === undefined) {
-                                // If both cleared, remove coordinates object
+                            const newLat = e.target.value === "" ? undefined : parseFloat(e.target.value)
+                            const currentLng = formData.coordinates?.lng
+
+                            if (newLat === undefined && (currentLng === undefined || currentLng === 0)) {
+                                // If both cleared (or other is 0 default), remove coordinates object
                                 const { coordinates, ...rest } = formData
                                 setFormData(rest)
                             } else {
                                 setFormData({
                                     ...formData,
                                     coordinates: {
-                                        lat: val ?? 0,
-                                        lng: formData.coordinates?.lng ?? 0
+                                        lat: newLat ?? 0,
+                                        lng: currentLng ?? 0
                                     }
                                 })
                             }
@@ -161,17 +163,19 @@ function MeetingForm({
                         step="any"
                         value={formData.coordinates?.lng ?? ""}
                         onChange={(e) => {
-                            const val = e.target.value === "" ? undefined : parseFloat(e.target.value)
-                            if (val === undefined && formData.coordinates?.lat === undefined) {
-                                // If both cleared, remove coordinates object
+                            const newLng = e.target.value === "" ? undefined : parseFloat(e.target.value)
+                            const currentLat = formData.coordinates?.lat
+
+                            if (newLng === undefined && (currentLat === undefined || currentLat === 0)) {
+                                // If both cleared (or other is 0 default), remove coordinates object
                                 const { coordinates, ...rest } = formData
                                 setFormData(rest)
                             } else {
                                 setFormData({
                                     ...formData,
                                     coordinates: {
-                                        lat: formData.coordinates?.lat ?? 0,
-                                        lng: val ?? 0
+                                        lat: currentLat ?? 0,
+                                        lng: newLng ?? 0
                                     }
                                 })
                             }
@@ -272,8 +276,8 @@ const meetingsConfig: AdminCrudConfig<Meeting> = {
         day: "Monday",
         time: "19:00",
         address: "",
-        city: "Nashville",
-        state: "TN",
+        city: "",  // Removed default to allow explicit entry
+        state: "", // Removed default
         zip: "",
         neighborhood: "",
     },

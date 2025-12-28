@@ -28,8 +28,8 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
   const getFullAddress = () => {
     const parts = [
       meeting.address,
-      meeting.city || "Nashville",
-      meeting.state || "TN",
+      meeting.city,
+      meeting.state,
       meeting.zip
     ].filter(Boolean)
     return parts.join(", ")
@@ -58,7 +58,7 @@ export function MeetingDetailsDialog({ meeting, open, onOpenChange, userLocation
               <h4 className="font-medium text-amber-900 text-sm">Location</h4>
               <p className="text-sm text-amber-800/80">{meeting.address}</p>
               <p className="text-xs text-amber-800/60 mt-0.5">
-                {[meeting.city || "Nashville", meeting.state || "TN", meeting.zip].filter(Boolean).join(", ")}
+                {[meeting.city, meeting.state, meeting.zip].filter(Boolean).join(", ")}
               </p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">{meeting.neighborhood}</span>
