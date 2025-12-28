@@ -63,7 +63,7 @@ npx tsc --noEmit
 
 ### Building
 
-**CRITICAL BUILD ISSUE:** Build fails in restricted networks due to Google Fonts (Handlee, Rock Salt). Requires internet to fonts.googleapis.com.
+**FONTS NOW SELF-HOSTED:** Using @fontsource packages (Handlee, Rock Salt) - no longer requires network access to fonts.googleapis.com during builds.
 
 ```bash
 npm run build  # Output: out/ (static export for Firebase Hosting)
@@ -114,7 +114,7 @@ Runs on push to `main` and all PRs:
    - `npm ci`
    - `npm run build` (with Firebase secrets)
 
-**IMPORTANT:** If CI fails on build step with Google Fonts errors, check GitHub Actions network access. This is a known environment limitation.
+**NOTE:** Fonts are self-hosted via @fontsource packages. Previously experienced intermittent Google Fonts network errors, now resolved.
 
 ### Deploy Workflow (.github/workflows/deploy-firebase.yml)
 
@@ -162,10 +162,9 @@ TLS → App Check (reCAPTCHA v3) → Firebase Auth → Firestore Rules (`firesto
 ## Common Issues & Fixes
 
 1. **ESLint errors in compact-meeting-countdown.tsx**: 6 errors - move `updateTimeUntil` function before the useEffect that calls it
-2. **Build fails with Google Fonts error**: Requires internet access to fonts.googleapis.com (expected in restricted CI environments)
-3. **Tests fail**: ALWAYS run `npm test` (not `node --test`) - requires TypeScript compilation first via `test:build`
-4. **Node engine warnings in functions/**: Safe to ignore - functions work with Node 20+ despite requiring Node 22
-5. **Firebase test failures**: Expected without emulator - tests need mock env vars (see package.json)
+2. **Tests fail**: ALWAYS run `npm test` (not `node --test`) - requires TypeScript compilation first via `test:build`
+3. **Node engine warnings in functions/**: Safe to ignore - functions work with Node 20+ despite requiring Node 22
+4. **Firebase test failures**: Expected without emulator - tests need mock env vars (see package.json)
 
 ## Validation Steps
 
@@ -174,7 +173,7 @@ Before submitting a PR:
 1. **Lint:** `npm run lint` - Fix all errors, warnings acceptable
 2. **Type Check:** `npx tsc --noEmit` - Must pass with no errors
 3. **Tests:** `npm test` - 77+ tests passing (14 logger failures acceptable)
-4. **Build:** `npm run build` - Must complete (may require internet)
+4. **Build:** `npm run build` - Must complete (fonts are self-hosted)
 5. **Functions:** `cd functions && npm run build` - Must compile
 6. **Manual Test:** Start dev server, verify app loads and basic functionality works
 
