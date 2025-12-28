@@ -1,29 +1,26 @@
 import type React from "react"
 import type { Metadata } from "next"
-import {
-  Handlee,
-  Rock_Salt,
-} from "next/font/google"
+import localFont from "next/font/local"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { ErrorBoundary } from "@/components/providers/error-boundary"
 import { CelebrationProvider } from "@/components/celebrations/celebration-provider"
 import "./globals.css"
 import { Toaster } from "sonner"
 
-// Only load fonts that are actually used in the application
+// Self-hosted fonts using @fontsource packages to avoid Google Fonts API dependency
 // Performance optimization: Reduced from 20+ fonts to 2 essential fonts
-const handlee = Handlee({
-  weight: "400",
-  subsets: ["latin"],
+const handlee = localFont({
+  src: "../public/fonts/handlee-latin-400-normal.woff2",
   variable: "--font-handlee",
-  display: 'swap'
+  weight: "400",
+  display: "swap",
 })
 
-const rockSalt = Rock_Salt({
-  weight: "400",
-  subsets: ["latin"],
+const rockSalt = localFont({
+  src: "../public/fonts/rock-salt-latin-400-normal.woff2",
   variable: "--font-rocksalt",
-  display: 'swap'
+  weight: "400",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
