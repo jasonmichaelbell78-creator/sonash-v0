@@ -100,10 +100,10 @@ async function retryFailures() {
             if (found) break;
 
             try {
-                // Rate limit - Increased to 1500ms to be safe after block
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Rate limit - Increased to 2500ms to avoid OpenStreetMap rate limiting
+                await new Promise(resolve => setTimeout(resolve, 2500));
 
-                const url = `${NOMINATIM_BASE_URL}?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                const url = `${NOMINATIM_BASE_URL}?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`;
                 const response = await fetch(url, {
                     headers: {
                         'User-Agent': USER_AGENT,
