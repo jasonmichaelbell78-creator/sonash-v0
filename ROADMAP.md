@@ -226,6 +226,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - Troubleshooting and rollback plans
 - **Priority:** P2 - Implement after M3+ unless bot abuse becomes significant
 
+**Data Quality & Operations:**
+- ⏳ **Retry Geocoding for 50 Meeting Addresses** (Dec 28, 2025)
+  - **Issue:** OpenStreetMap Nominatim API blocked our IP for bulk requests
+  - **Status:** 50 meeting addresses still need GPS coordinates
+  - **Solution:** Wait 24-48 hours for block to lift, then retry with scripts/retry-failures.ts
+  - **Alternative:** Switch to Google Maps API or Mapbox for production reliability
+  - **Files:** `scripts/retry-failures.ts`, `scripts/enrichment_failures.json`
+  - **Effort:** 10 minutes (retry) or 2-4 hours (API migration)
+  - **Priority:** P2 - Data quality improvement, not blocking core functionality
+
 ### Potential Architecture Work
 
 - ⏳ Component library consolidation
