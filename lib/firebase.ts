@@ -1,7 +1,9 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
 import { getAuth, Auth } from "firebase/auth"
 import { getFirestore, Firestore } from "firebase/firestore"
-import { initializeAppCheck, ReCaptchaEnterpriseProvider, AppCheck } from "firebase/app-check"
+// DISABLED: App Check temporarily disabled due to Firebase platform issue
+// Restore these imports when re-enabling App Check
+// import { initializeAppCheck, ReCaptchaEnterpriseProvider, AppCheck } from "firebase/app-check"
 
 const validateEnv = (value: string | undefined, key: string) => {
   if (!value) {
@@ -23,7 +25,8 @@ const getFirebaseConfig = () => ({
 let _app: FirebaseApp | undefined
 let _auth: Auth | undefined
 let _db: Firestore | undefined
-let _appCheck: AppCheck | undefined
+// DISABLED: App Check temporarily disabled - will be undefined until re-enabled
+// let _appCheck: AppCheck | undefined
 
 
 
@@ -90,9 +93,9 @@ if (typeof window !== 'undefined') {
  * @throws {Error} If Firebase is not initialized (e.g., on server-side)
  * @returns Firebase instances (app, auth, db, appCheck)
  *
- * Note: appCheck is returned but not exported directly because it auto-activates
- * on initialization and doesn't require direct consumer access. Access via getFirebase()
- * only if you need to interact with App Check APIs directly.
+ * Note: appCheck is currently undefined (disabled due to Firebase platform issue).
+ * It will be re-enabled when Firebase resolves the issue. Consumers should handle
+ * the undefined case until App Check is restored.
  */
 export const getFirebase = () => {
   if (!_app || !_auth || !_db) {
@@ -101,7 +104,7 @@ export const getFirebase = () => {
       "Ensure Firebase is only accessed in client components or after checking typeof window !== 'undefined'."
     )
   }
-  return { app: _app, auth: _auth, db: _db, appCheck: _appCheck }
+  return { app: _app, auth: _auth, db: _db, appCheck: undefined }
 }
 
 /**
