@@ -1,6 +1,7 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
 import { getAuth, Auth } from "firebase/auth"
 import { getFirestore, Firestore } from "firebase/firestore"
+import { initializeAppCheck, ReCaptchaV3Provider, AppCheck } from "firebase/app-check"
 
 const validateEnv = (value: string | undefined, key: string) => {
   if (!value) {
@@ -22,6 +23,7 @@ const getFirebaseConfig = () => ({
 let _app: FirebaseApp | undefined
 let _auth: Auth | undefined
 let _db: Firestore | undefined
+let _appCheck: AppCheck | undefined
 
 
 
@@ -39,6 +41,35 @@ const initializeFirebase = () => {
 
   _auth = getAuth(_app)
   _db = getFirestore(_app)
+
+  // Initialize App Check for security
+  // SECURITY: App Check prevents unauthorized access to Cloud Functions
+  try {
+    const recaptchaSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY
+
+    if (recaptchaSiteKey) {
+      // Production: Use ReCaptchaV3Provider
+      _appCheck = initializeAppCheck(_app, {
+        provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+        isTokenAutoRefreshEnabled: true,
+      })
+    } else if (process.env.NODE_ENV === 'development') {
+      // Development: Use debug token if available
+      // To get a debug token: https://firebase.google.com/docs/app-check/web/debug-provider
+      const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
+      if (debugToken) {
+        (window as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string }).FIREBASE_APPCHECK_DEBUG_TOKEN = debugToken
+        _appCheck = initializeAppCheck(_app, {
+          provider: new ReCaptchaV3Provider('FAKE_SITE_KEY_FOR_DEBUG'),
+          isTokenAutoRefreshEnabled: true,
+        })
+      } else {
+        console.warn('App Check not configured: Missing NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY. Cloud Function calls may fail.')
+      }
+    }
+  } catch (error) {
+    console.error('Failed to initialize App Check:', error)
+  }
 }
 
 // Initialize on module load only if in browser
@@ -51,7 +82,7 @@ if (typeof window !== 'undefined') {
  * This prevents crashes from accessing undefined instances on server-side.
  *
  * @throws {Error} If Firebase is not initialized (e.g., on server-side)
- * @returns Firebase instances (app, auth, db)
+ * @returns Firebase instances (app, auth, db, appCheck)
  */
 export const getFirebase = () => {
   if (!_app || !_auth || !_db) {
@@ -60,7 +91,7 @@ export const getFirebase = () => {
       "Ensure Firebase is only accessed in client components or after checking typeof window !== 'undefined'."
     )
   }
-  return { app: _app, auth: _auth, db: _db }
+  return { app: _app, auth: _auth, db: _db, appCheck: _appCheck }
 }
 
 /**
