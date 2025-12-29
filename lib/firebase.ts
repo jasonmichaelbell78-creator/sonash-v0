@@ -53,14 +53,12 @@ const initializeFirebase = () => {
         const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
         if (debugToken) {
           // Convert string "true" to boolean true for auto-generated tokens
-          const debugValue = debugToken === 'true' ? true : debugToken
+          const debugValue = debugToken === 'true' ? true : debugToken;
           // Must set on self (global scope) before App Check initialization
           (self as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = debugValue
         } else {
-          console.warn(
-            'App Check debug token not set. For local development, set NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN ' +
-            'to enable App Check on localhost. See docs/APPCHECK_SETUP.md for details.'
-          )
+          console.warn('App Check debug token not set. For local development, set NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN ' +
+            'to enable App Check on localhost. See docs/APPCHECK_SETUP.md for details.')
         }
       }
 
