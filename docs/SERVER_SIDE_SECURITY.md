@@ -62,10 +62,10 @@ npm install firebase/app-check
 Create `lib/app-check.ts`:
 
 ```typescript
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
 import { app } from "./firebase"
 
-// Enable App Check with reCAPTCHA Enterprise
+// Enable App Check with reCAPTCHA v3
 export const initAppCheck = () => {
   if (typeof window === 'undefined') return
 
@@ -77,7 +77,7 @@ export const initAppCheck = () => {
   }
 
   const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaEnterpriseProvider(process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY!),
+    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY!),
     isTokenAutoRefreshEnabled: true, // Refresh tokens automatically
   })
 
