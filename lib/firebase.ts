@@ -44,36 +44,38 @@ const initializeFirebase = () => {
 
   // Initialize App Check for security
   // SECURITY: App Check prevents unauthorized access to Cloud Functions
-  try {
-    const recaptchaSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY
+  // DISABLED: Firebase App Check API broken (support ticket filed)
+  // Re-enable when Firebase resolves platform issue
+  // try {
+  //   const recaptchaSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY
 
-    if (recaptchaSiteKey) {
-      // Set debug token for development before initializing App Check
-      if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN) {
-        const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
-        if (debugToken) {
-          // Convert string "true" to boolean true for auto-generated tokens
-          const debugValue = debugToken === 'true' ? true : debugToken;
-          // Must set on self (global scope) before App Check initialization
-          const globalSelf = self as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean };
-          globalSelf.FIREBASE_APPCHECK_DEBUG_TOKEN = debugValue;
-        } else {
-          console.warn('App Check debug token not set. For local development, set NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN ' +
-            'to enable App Check on localhost. See docs/APPCHECK_SETUP.md for details.')
-        }
-      }
+  //   if (recaptchaSiteKey) {
+  //     // Set debug token for development before initializing App Check
+  //     if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN) {
+  //       const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
+  //       if (debugToken) {
+  //         // Convert string "true" to boolean true for auto-generated tokens
+  //         const debugValue = debugToken === 'true' ? true : debugToken;
+  //         // Must set on self (global scope) before App Check initialization
+  //         const globalSelf = self as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean };
+  //         globalSelf.FIREBASE_APPCHECK_DEBUG_TOKEN = debugValue;
+  //       } else {
+  //         console.warn('App Check debug token not set. For local development, set NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN ' +
+  //           'to enable App Check on localhost. See docs/APPCHECK_SETUP.md for details.')
+  //       }
+  //     }
 
-      // Initialize App Check with ReCaptchaEnterpriseProvider (production and development)
-      _appCheck = initializeAppCheck(_app, {
-        provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
-        isTokenAutoRefreshEnabled: true,
-      })
-    } else {
-      console.warn('App Check not configured: Missing NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY. Cloud Function calls may fail.')
-    }
-  } catch (error) {
-    console.error('Failed to initialize App Check:', error)
-  }
+  //     // Initialize App Check with ReCaptchaEnterpriseProvider (production and development)
+  //     _appCheck = initializeAppCheck(_app, {
+  //       provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
+  //       isTokenAutoRefreshEnabled: true,
+  //     })
+  //   } else {
+  //     console.warn('App Check not configured: Missing NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY. Cloud Function calls may fail.')
+  //   }
+  // } catch (error) {
+  //   console.error('Failed to initialize App Check:', error)
+  // }
 }
 
 // Initialize on module load only if in browser
