@@ -48,24 +48,22 @@ const initializeFirebase = () => {
     const recaptchaSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY
 
     if (recaptchaSiteKey) {
-      // Production: Use ReCaptchaV3Provider
+      // Set debug token for development before initializing App Check
+      if (process.env.NODE_ENV === 'development') {
+        const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
+        if (debugToken) {
+          // Must set on self (global scope) before App Check initialization
+          (self as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = debugToken
+        }
+      }
+
+      // Initialize App Check with ReCaptchaV3Provider (production and development)
       _appCheck = initializeAppCheck(_app, {
         provider: new ReCaptchaV3Provider(recaptchaSiteKey),
         isTokenAutoRefreshEnabled: true,
       })
-    } else if (process.env.NODE_ENV === 'development') {
-      // Development: Use debug token if available
-      // To get a debug token: https://firebase.google.com/docs/app-check/web/debug-provider
-      const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
-      if (debugToken) {
-        (window as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string }).FIREBASE_APPCHECK_DEBUG_TOKEN = debugToken
-        _appCheck = initializeAppCheck(_app, {
-          provider: new ReCaptchaV3Provider('FAKE_SITE_KEY_FOR_DEBUG'),
-          isTokenAutoRefreshEnabled: true,
-        })
-      } else {
-        console.warn('App Check not configured: Missing NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY. Cloud Function calls may fail.')
-      }
+    } else {
+      console.warn('App Check not configured: Missing NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY. Cloud Function calls may fail.')
     }
   } catch (error) {
     console.error('Failed to initialize App Check:', error)
@@ -83,6 +81,10 @@ if (typeof window !== 'undefined') {
  *
  * @throws {Error} If Firebase is not initialized (e.g., on server-side)
  * @returns Firebase instances (app, auth, db, appCheck)
+ *
+ * Note: appCheck is returned but not exported directly because it auto-activates
+ * on initialization and doesn't require direct consumer access. Access via getFirebase()
+ * only if you need to interact with App Check APIs directly.
  */
 export const getFirebase = () => {
   if (!_app || !_auth || !_db) {
