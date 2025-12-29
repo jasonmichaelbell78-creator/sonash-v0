@@ -49,7 +49,7 @@ const initializeFirebase = () => {
 
     if (recaptchaSiteKey) {
       // Set debug token for development before initializing App Check
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN) {
         const debugToken = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN
         if (debugToken) {
           // Convert string "true" to boolean true for auto-generated tokens
