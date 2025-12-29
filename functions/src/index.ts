@@ -74,7 +74,7 @@ export const saveDailyLog = onCall<DailyLogData>(
             functionName: 'saveDailyLog',
             rateLimiter: saveDailyLogLimiter,
             validationSchema: dailyLogSchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { date, content, mood, cravings, used } = data;
@@ -165,7 +165,7 @@ export const saveJournalEntry = onCall<JournalEntryData>(
             functionName: 'saveJournalEntry',
             rateLimiter: saveJournalEntryLimiter,
             validationSchema: journalEntrySchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
@@ -259,7 +259,7 @@ export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
             functionName: 'softDeleteJournalEntry',
             rateLimiter: softDeleteJournalEntryLimiter,
             validationSchema: softDeleteJournalEntrySchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { entryId } = data;
@@ -356,7 +356,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             functionName: 'saveInventoryEntry',
             rateLimiter: saveInventoryEntryLimiter,
             validationSchema: inventoryEntrySchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { type, data: entryData, tags } = data;
@@ -449,14 +449,14 @@ interface MigrationData {
 
 /**
  * Callable Function: Migrate Anonymous User Data
- * 
+ *
  * Migrates all data from an anonymous account to a permanent account
  * before account linking. Prevents data loss when credentials already exist.
- * 
+ *
  * Security Layers:
  * 1. Authentication required
  * 2. Rate limiting (5 req/5min)
- * 3. App Check verification
+ * 3. App Check verification (DISABLED: Firebase platform issue, support ticket filed)
  * 4. Authorization (caller must be source or target)
  * 5. Batch writes for atomicity
  * 6. Audit logging
@@ -483,11 +483,11 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             throw new HttpsError("resource-exhausted", errorMessage);
         }
 
-        // App Check verification
-        if (!app) {
-            logSecurityEvent("APP_CHECK_FAILURE", "migrateAnonymousUserData", "App Check token invalid", { userId });
-            throw new HttpsError("failed-precondition", "App Check verification failed. Please refresh the page.");
-        }
+        // App Check verification - DISABLED: Firebase App Check API broken (support ticket filed)
+        // if (!app) {
+        //     logSecurityEvent("APP_CHECK_FAILURE", "migrateAnonymousUserData", "App Check token invalid", { userId });
+        //     throw new HttpsError("failed-precondition", "App Check verification failed. Please refresh the page.");
+        // }
 
         // Validate input
         if (!data.anonymousUid || !data.targetUid) {
