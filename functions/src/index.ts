@@ -74,7 +74,7 @@ export const saveDailyLog = onCall<DailyLogData>(
             functionName: 'saveDailyLog',
             rateLimiter: saveDailyLogLimiter,
             validationSchema: dailyLogSchema,
-            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
+            requireAppCheck: true,
         },
         async ({ data, userId }) => {
             const { date, content, mood, cravings, used } = data;
@@ -165,7 +165,7 @@ export const saveJournalEntry = onCall<JournalEntryData>(
             functionName: 'saveJournalEntry',
             rateLimiter: saveJournalEntryLimiter,
             validationSchema: journalEntrySchema,
-            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
+            requireAppCheck: true,
         },
         async ({ data, userId }) => {
             const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
@@ -259,7 +259,7 @@ export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
             functionName: 'softDeleteJournalEntry',
             rateLimiter: softDeleteJournalEntryLimiter,
             validationSchema: softDeleteJournalEntrySchema,
-            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
+            requireAppCheck: true,
         },
         async ({ data, userId }) => {
             const { entryId } = data;
@@ -356,7 +356,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             functionName: 'saveInventoryEntry',
             rateLimiter: saveInventoryEntryLimiter,
             validationSchema: inventoryEntrySchema,
-            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
+            requireAppCheck: true,
         },
         async ({ data, userId }) => {
             const { type, data: entryData, tags } = data;
@@ -456,14 +456,14 @@ interface MigrationData {
  * Security Layers:
  * 1. Authentication required
  * 2. Rate limiting (5 req/5min)
- * 3. App Check verification (DISABLED: Firebase platform issue, support ticket filed)
+ * 3. App Check verification
  * 4. Authorization (caller must be source or target)
  * 5. Batch writes for atomicity
  * 6. Audit logging
  */
 export const migrateAnonymousUserData = onCall<MigrationData>(
     async (request) => {
-        const { data, auth } = request;
+        const { data, app, auth } = request;
 
         if (!auth) {
             logSecurityEvent("AUTH_FAILURE", "migrateAnonymousUserData", "Unauthenticated request");
@@ -483,11 +483,11 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             throw new HttpsError("resource-exhausted", errorMessage);
         }
 
-        // App Check verification - DISABLED: Firebase App Check API broken (support ticket filed)
-        // if (!app) {
-        //     logSecurityEvent("APP_CHECK_FAILURE", "migrateAnonymousUserData", "App Check token invalid", { userId });
-        //     throw new HttpsError("failed-precondition", "App Check verification failed. Please refresh the page.");
-        // }
+        // App Check verification
+        if (!app) {
+            logSecurityEvent("APP_CHECK_FAILURE", "migrateAnonymousUserData", "App Check token invalid", { userId });
+            throw new HttpsError("failed-precondition", "App Check verification failed. Please refresh the page.");
+        }
 
         // Validate input
         if (!data.anonymousUid || !data.targetUid) {
