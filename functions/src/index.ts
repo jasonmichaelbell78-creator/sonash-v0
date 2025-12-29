@@ -74,7 +74,7 @@ export const saveDailyLog = onCall<DailyLogData>(
             functionName: 'saveDailyLog',
             rateLimiter: saveDailyLogLimiter,
             validationSchema: dailyLogSchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { date, content, mood, cravings, used } = data;
@@ -165,7 +165,7 @@ export const saveJournalEntry = onCall<JournalEntryData>(
             functionName: 'saveJournalEntry',
             rateLimiter: saveJournalEntryLimiter,
             validationSchema: journalEntrySchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
@@ -259,7 +259,7 @@ export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
             functionName: 'softDeleteJournalEntry',
             rateLimiter: softDeleteJournalEntryLimiter,
             validationSchema: softDeleteJournalEntrySchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { entryId } = data;
@@ -356,7 +356,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             functionName: 'saveInventoryEntry',
             rateLimiter: saveInventoryEntryLimiter,
             validationSchema: inventoryEntrySchema,
-            requireAppCheck: true, // Testing with debug tokens to isolate ReCaptcha issue
+            requireAppCheck: false, // DISABLED: Firebase App Check API broken (support ticket filed)
         },
         async ({ data, userId }) => {
             const { type, data: entryData, tags } = data;
