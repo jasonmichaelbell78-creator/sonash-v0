@@ -17,6 +17,8 @@ export type SecurityEventType =
     | "AUTHORIZATION_FAILURE"
     | "SAVE_SUCCESS"
     | "SAVE_FAILURE"
+    | "DELETE_SUCCESS"
+    | "DELETE_FAILURE"
     | "DATA_EXPORT_REQUESTED"
     | "DATA_EXPORT_SUCCESS"
     | "DATA_EXPORT_FAILURE"
@@ -139,6 +141,7 @@ function getSeverityForType(type: SecurityEventType): Severity {
             return "WARNING";
         case "AUTHORIZATION_FAILURE":
         case "SAVE_FAILURE":
+        case "DELETE_FAILURE":
         case "DATA_EXPORT_FAILURE":
         case "ACCOUNT_DELETE_FAILURE":
         case "DATA_MIGRATION_FAILURE":
@@ -148,6 +151,7 @@ function getSeverityForType(type: SecurityEventType): Severity {
             return "ERROR";
         case "VALIDATION_FAILURE":
         case "SAVE_SUCCESS":
+        case "DELETE_SUCCESS":
         case "DATA_EXPORT_REQUESTED":
         case "DATA_EXPORT_SUCCESS":
         case "ACCOUNT_DELETE_SUCCESS":
