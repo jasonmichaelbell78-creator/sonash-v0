@@ -62,10 +62,10 @@ npm install firebase/app-check
 Create `lib/app-check.ts`:
 
 ```typescript
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check"
 import { app } from "./firebase"
 
-// Enable App Check with reCAPTCHA v3
+// Enable App Check with reCAPTCHA Enterprise
 export const initAppCheck = () => {
   if (typeof window === 'undefined') return
 
@@ -77,7 +77,7 @@ export const initAppCheck = () => {
   }
 
   const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!),
+    provider: new ReCaptchaEnterpriseProvider(process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY!),
     isTokenAutoRefreshEnabled: true, // Refresh tokens automatically
   })
 
@@ -112,11 +112,11 @@ export default function RootLayout({ children }) {
 
 1. Go to Firebase Console → App Check
 2. Click "Register" for your web app
-3. Select "reCAPTCHA v3"
+3. Select "reCAPTCHA Enterprise"
 4. Get your site key from [Google reCAPTCHA](https://www.google.com/recaptcha/admin)
 5. Add to `.env.local`:
    ```
-   NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_site_key_here
+   NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY=your_site_key_here
    ```
 
 ### Step 5: Enforce in Firestore Rules
@@ -370,7 +370,7 @@ Before launching to production, complete these steps:
 
 ### Phase 1: Bot Protection (Week 1)
 - [ ] Install Firebase App Check
-- [ ] Get reCAPTCHA v3 site key
+- [ ] Get reCAPTCHA Enterprise site key
 - [ ] Add App Check initialization to client
 - [ ] Update Firestore rules to enforce App Check
 - [ ] Test with debug token in development
@@ -416,7 +416,7 @@ Before launching to production, complete these steps:
   - Free tier: 2M invocations/month
   - Estimated: $5-15/month for typical SoNash usage
   - Spike protection: Set billing limit to prevent runaway costs
-- **reCAPTCHA v3:** Free for up to 1M assessments/month
+- **reCAPTCHA Enterprise:** Free for up to 1M assessments/month
 - **Total:** ~$15-30/month
 - **Risk Reduction:** 99%+ (attacker would need to bypass reCAPTCHA + App Check)
 

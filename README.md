@@ -41,7 +41,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - **Frontend**: Next.js 16.1 (App Router), React 19.2.3, TypeScript 5.x
 - **Styling**: Tailwind CSS v4, Framer Motion 12, shadcn/ui
 - **Backend**: Firebase (Auth, Firestore, Cloud Functions v2, App Check)
-- **Security**: reCAPTCHA v3, App Check, Firestore Rules, Rate Limiting
+- **Security**: reCAPTCHA Enterprise, App Check, Firestore Rules, Rate Limiting
 - **Testing**: Node test runner, c8 coverage (97.8% passing)
 - **Monitoring**: Sentry (optional)
 

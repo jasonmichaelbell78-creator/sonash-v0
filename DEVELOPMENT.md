@@ -38,7 +38,7 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 # Firebase App Check (Bot Protection)
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
 
 # App Check Debug Token (Development Only)
 NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
@@ -269,7 +269,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
 ```
 
 **Production Setup:**
-- Uses reCAPTCHA v3 (no user interaction)
+- Uses reCAPTCHA Enterprise (no user interaction)
 - Configured in Firebase Console
 - Required for all Firestore and Cloud Functions access
 
@@ -350,7 +350,7 @@ firebase deploy
   - Authentication (Anonymous, Email, Google)
   - Firestore (Real-time database)
   - Cloud Functions v2
-  - App Check (reCAPTCHA v3)
+  - App Check (reCAPTCHA Enterprise)
 
 ### UI Components
 - **shadcn/ui** - Component library

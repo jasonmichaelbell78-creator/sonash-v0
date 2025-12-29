@@ -21,7 +21,7 @@ SoNash is a privacy-first recovery journal app built on Firebase and Next.js, de
 | **Database** | Cloud Firestore | NoSQL document database |
 | **Authentication** | Firebase Auth | User management |
 | **Functions** | Cloud Functions v2 | Serverless compute |
-| **Security** | App Check + reCAPTCHA v3 | Bot protection |
+| **Security** | App Check + reCAPTCHA Enterprise | Bot protection |
 | **Monitoring** | Sentry (optional) | Error tracking |
 | **Testing** | Node test runner + c8 | Unit tests & coverage |
 
@@ -152,7 +152,7 @@ SoNash is a privacy-first recovery journal app built on Firebase and Next.js, de
 - Certificate pinning via Firebase SDK
 
 **Layer 2: App Check**
-- reCAPTCHA v3 verification
+- reCAPTCHA Enterprise verification
 - Blocks bots and automated attacks
 - Required for production Firestore access
 
