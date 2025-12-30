@@ -514,19 +514,16 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
         }
 
-        // Use validated data
-        data = validatedData;
-
         // Authorization: caller must be source OR target user
-        if (userId !== data.anonymousUid && userId !== data.targetUid) {
+        if (userId !== validatedData.anonymousUid && userId !== validatedData.targetUid) {
             logSecurityEvent("AUTHORIZATION_FAILURE", "migrateAnonymousUserData", "Unauthorized migration attempt",
-                { userId, metadata: { anonymousUid: data.anonymousUid, targetUid: data.targetUid } });
+                { userId, metadata: { anonymousUid: validatedData.anonymousUid, targetUid: validatedData.targetUid } });
             throw new HttpsError("permission-denied", "Cannot migrate data between other users' accounts");
         }
 
         // Verify anonymous user exists
         const db = admin.firestore();
-        const anonymousUserDoc = await db.collection("users").doc(data.anonymousUid).get();
+        const anonymousUserDoc = await db.collection("users").doc(validatedData.anonymousUid).get();
 
         if (!anonymousUserDoc.exists) {
             throw new HttpsError("not-found", "Anonymous user not found");
@@ -558,23 +555,23 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             };
 
             // Migrate journal entries
-            const journalSnapshot = await db.collection(`users/${data.anonymousUid}/journal`).get();
+            const journalSnapshot = await db.collection(`users/${validatedData.anonymousUid}/journal`).get();
             for (const doc of journalSnapshot.docs) {
-                const targetRef = db.doc(`users/${data.targetUid}/journal/${doc.id}`);
+                const targetRef = db.doc(`users/${validatedData.targetUid}/journal/${doc.id}`);
                 await addToBatch(targetRef, doc.data(), { merge: true });
             }
 
             // Migrate daily logs
-            const dailyLogsSnapshot = await db.collection(`users/${data.anonymousUid}/daily_logs`).get();
+            const dailyLogsSnapshot = await db.collection(`users/${validatedData.anonymousUid}/daily_logs`).get();
             for (const doc of dailyLogsSnapshot.docs) {
-                const targetRef = db.doc(`users/${data.targetUid}/daily_logs/${doc.id}`);
+                const targetRef = db.doc(`users/${validatedData.targetUid}/daily_logs/${doc.id}`);
                 await addToBatch(targetRef, doc.data(), { merge: true });
             }
 
             // Migrate inventory entries
-            const inventorySnapshot = await db.collection(`users/${data.anonymousUid}/inventoryEntries`).get();
+            const inventorySnapshot = await db.collection(`users/${validatedData.anonymousUid}/inventoryEntries`).get();
             for (const doc of inventorySnapshot.docs) {
-                const targetRef = db.doc(`users/${data.targetUid}/inventoryEntries/${doc.id}`);
+                const targetRef = db.doc(`users/${validatedData.targetUid}/inventoryEntries/${doc.id}`);
                 await addToBatch(targetRef, doc.data(), { merge: true });
             }
 
@@ -583,7 +580,7 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             // Only use anonymous data if target account lacks that field
             const anonymousProfile = anonymousUserDoc.data();
             if (anonymousProfile) {
-                const targetProfileRef = db.doc(`users/${data.targetUid}`);
+                const targetProfileRef = db.doc(`users/${validatedData.targetUid}`);
 
                 // Fetch target profile to check for existing data
                 const targetProfileDoc = await targetProfileRef.get();
@@ -591,7 +588,7 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
 
                 const mergeData: MigrationMergeData = {
                     // Always add migration metadata
-                    migratedFrom: data.anonymousUid,
+                    migratedFrom: validatedData.anonymousUid,
                     migratedAt: admin.firestore.FieldValue.serverTimestamp(),
                 };
 
@@ -624,8 +621,8 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
                     `Migration partially failed: ${committedBatches}/${batches.length} batches committed`,
                     {
                         metadata: {
-                            anonymousUid: data.anonymousUid,
-                            targetUid: data.targetUid,
+                            anonymousUid: validatedData.anonymousUid,
+                            targetUid: validatedData.targetUid,
                             totalBatches: batches.length,
                             successfulBatches: committedBatches,
                             failedAtBatch: committedBatches + 1,
@@ -647,8 +644,8 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
                 {
                     severity: "INFO",
                     metadata: {
-                        anonymousUid: data.anonymousUid,
-                        targetUid: data.targetUid,
+                        anonymousUid: validatedData.anonymousUid,
+                        targetUid: validatedData.targetUid,
                         journalEntries: journalSnapshot.size,
                         dailyLogs: dailyLogsSnapshot.size,
                         inventoryEntries: inventorySnapshot.size,
@@ -669,8 +666,8 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             logSecurityEvent("DATA_MIGRATION_FAILURE", "migrateAnonymousUserData", "Migration failed",
                 {
                     metadata: {
-                        anonymousUid: data.anonymousUid,
-                        targetUid: data.targetUid,
+                        anonymousUid: validatedData.anonymousUid,
+                        targetUid: validatedData.targetUid,
                         error: String(error)
                     },
                     captureToSentry: true

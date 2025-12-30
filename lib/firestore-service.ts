@@ -405,7 +405,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
       try {
         // Get reCAPTCHA token for bot protection
-        const recaptchaToken = await getRecaptchaToken('save_journal')
+        const recaptchaToken = await getRecaptchaToken('save_journal_entry')
 
         const { getFunctions, httpsCallable } = await import("firebase/functions")
         const functions = getFunctions()
