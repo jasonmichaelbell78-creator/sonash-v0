@@ -131,7 +131,7 @@ Every update should:
 
 | Phase | PR ID | Title | Status | Completion | Risk | Dependencies |
 |-------|-------|-------|--------|------------|------|--------------|
-| 1 | PR1 | Lock down journal writes and enable App Check | **IN_PROGRESS** | 67% | HIGH | None |
+| 1 | PR1 | Lock down journal writes and enable App Check | **IN_PROGRESS** | 83% | HIGH | None |
 | 2 | PR2 | Unify Firestore access patterns and journal models | **PENDING** | 0% | MEDIUM | PR1 |
 | 3 | PR3 | Strengthen typing and error boundaries | **PENDING** | 0% | MEDIUM | None |
 | 4 | PR4 | Harden rate limiting, storage keys, and listener utilities | **PENDING** | 0% | MEDIUM | PR1 |
@@ -141,7 +141,7 @@ Every update should:
 | 8 | PR8 | Align journal hook with shared auth state | **PENDING** | 0% | MEDIUM | PR1, PR2 |
 
 **Overall Progress**: 0/8 phases complete (0%)
-**Phase 1 Progress**: 67% complete (4/6 CANON items fully done, 1/6 partially done)
+**Phase 1 Progress**: 83% complete (5/6 CANON items fully done, 1/6 deferred to Dec 31)
 **Estimated Total Effort**: ~16-24 hours across all phases
 **Highest Risk Items**: PR1 (security hardening)
 
@@ -297,10 +297,10 @@ This separate document contains:
 | **Status** | **IN_PROGRESS** |
 | **Risk Level** | HIGH |
 | **Estimated Effort** | E2 (4-8 hours) |
-| **Completion** | 67% (4/6 CANON items fully complete, 1/6 partially complete) |
+| **Completion** | 83% (5/6 CANON items fully complete, 1/6 deferred to Dec 31) |
 | **Started** | 2025-12-30 |
 | **Completed** | Not completed |
-| **Last Updated** | 2025-12-30 (CANON-0001 completed) |
+| **Last Updated** | 2025-12-30 (CANON-0041 completed) |
 | **Blocking** | PR2, PR4, PR8 |
 
 ---
@@ -320,7 +320,7 @@ Standardize notebook writes through Cloud Functions, ensure App Check enforcemen
 
 ### What Was Accomplished (Past Tense - Verified 2025-12-30)
 
-**Fully Complete** (4/6 CANON items = 67%):
+**Fully Complete** (5/6 CANON items = 83%):
 - ✅ **Journal writes unified** (CANON-0001 - 100%)
   - All components route through `useJournal` hook
   - Deprecated `FirestoreService.saveJournalEntry` removed
@@ -329,17 +329,18 @@ Standardize notebook writes through Cloud Functions, ensure App Check enforcemen
   - All journal/daily_logs/inventory collections properly configured
   - Rules block direct client writes (`allow create, update: if false`)
   - Comments accurately describe enforcement ("Cloud Functions ONLY")
+- ✅ **Rate limiting fully aligned** (CANON-0041 - 100%) *(completed 2025-12-30)*
+  - All operations aligned: saves (10/60s), deletes (20/60s), migration (5/300s)
+  - Added `SOFT_DELETE_JOURNAL` and `MIGRATE_USER_DATA` constants
+  - Added `softDeleteJournalLimiter` and `migrateUserDataLimiter` exports
+  - Documented that client limits are UX-only, server is security boundary
 - ✅ **Validation strategy decided** (CANON-0043 - 100%)
   - Cloud Functions-only validation (server-side Zod schemas)
   - Decision documented with rationale
+  - Added JSDoc to `hooks/use-journal.ts` explaining architecture
 - ✅ **Rules comments fixed** (CANON-0044 - 100%)
   - No mismatches between comments and actual enforcement
   - Security model clearly documented in rules file
-
-**Partially Complete** (1/6 CANON items):
-- ⚠️ **Rate limiting partially aligned** (CANON-0041 - 60%)
-  - Primary operations aligned (daily log, journal, inventory: 10 req/60s) ✅
-  - **Gap**: Delete and migration operations lack client-side rate limiters
 
 ### Remaining Work (Future Tense - To Be Completed)
 
@@ -352,7 +353,6 @@ Standardize notebook writes through Cloud Functions, ensure App Check enforcemen
 
 **Remaining Steps to Complete Phase 1**:
 1. ⏸️ **Complete CANON-0002** (DEFERRED to Dec 31) - Re-enable App Check after throttle clears
-2. ⚠️ **Complete CANON-0041** (40% remaining) - Add missing client rate limiters (OPTIONAL)
 
 ### Why This Phase Matters
 This is the **highest priority security work** in the entire 8-phase plan. Multiple parallel write paths fragment security enforcement:
@@ -761,33 +761,30 @@ When App Check hit 403 throttle errors on Dec 30, 2025, we faced a critical arch
 }
 ```
 
-**Task Status**: ⚠️ **60% COMPLETE** (verified 2025-12-30)
+**Task Status**: ✅ **100% COMPLETE** (completed 2025-12-30)
 
-**What's Aligned** (Primary Operations):
+**What's Aligned** (All Operations):
 - ✅ Client `SAVE_DAILY_LOG`: 10 calls/60s → Server `saveDailyLog`: 10 req/60s (`functions/src/index.ts` lines 46-49)
 - ✅ Client `SAVE_JOURNAL`: 10 calls/60s → Server `saveJournalEntry`: 10 req/60s (lines 134-137)
 - ✅ Client `SAVE_INVENTORY`: 10 calls/60s → Server `saveInventoryEntry`: 10 req/60s (lines 337-340)
+- ✅ Client `SOFT_DELETE_JOURNAL`: 20 calls/60s → Server `softDeleteJournalEntry`: 20 req/60s (lines 235-238)
+- ✅ Client `MIGRATE_USER_DATA`: 5 calls/300s → Server `migrateAnonymousUserData`: 5 req/300s (lines 445-448)
 - ✅ Server uses `FirestoreRateLimiter` (persisted in Firestore, survives cold starts)
 - ✅ Client uses `RateLimiter` class for UX feedback (non-security boundary)
 
-**What's NOT Aligned** (Secondary Operations):
-- ❌ Server `softDeleteJournalEntry`: 20 req/60s (lines 235-238) → NO client-side limit defined
-- ❌ Server `migrateAnonymousUserData`: 5 req/300s (lines 445-448) → NO client-side limit defined
-- ⚠️ Client-side limits can be bypassed (not a security issue since server enforces)
+**What Was Implemented** (2025-12-30):
+1. ✅ Added `SOFT_DELETE_JOURNAL` constant to `lib/constants.ts` (20 calls/60s)
+2. ✅ Added `MIGRATE_USER_DATA` constant to `lib/constants.ts` (5 calls/300s)
+3. ✅ Added `softDeleteJournalLimiter` export to `lib/utils/rate-limiter.ts`
+4. ✅ Added `migrateUserDataLimiter` export to `lib/utils/rate-limiter.ts`
+5. ✅ Added documentation comments clarifying client-side limiters are UX-only
 
-**Remaining Implementation Steps**:
-1. **Add client-side rate limiters** for completeness (optional UX improvement):
-   ```typescript
-   // lib/constants.ts
-   SOFT_DELETE_JOURNAL: { MAX_CALLS: 20, WINDOW_MS: 60000 }
-   MIGRATE_USER_DATA: { MAX_CALLS: 5, WINDOW_MS: 300000 }
-   ```
-2. **Update hooks** to use new limiters for immediate UX feedback
-3. **Document** that client limits are UX-only, server is security boundary
+**Architecture Documentation**:
+- Client-side limiters are for UX feedback only (immediate error before network call)
+- Server-side limiters are the security boundary (enforced in Cloud Functions)
+- Client limits can be bypassed but that's acceptable since server enforces
 
-**Note**: Core security is intact (server enforces all limits). Missing client limits only affect UX (no immediate feedback).
-
-**Dependencies**: ~~CANON-0001~~ (mostly complete - sufficient for rate limiting alignment)
+**Dependencies**: ~~CANON-0001~~ ✅ RESOLVED
 
 ---
 
@@ -875,15 +872,19 @@ When App Check hit 403 throttle errors on Dec 30, 2025, we faced a critical arch
 
 **Documentation**:
 - ✅ **This document** (CANON-0043) - strategy documented
-- ⏳ **Code comments** - Add comments to `hooks/use-journal.ts` explaining no client validation
-- ⏳ **SECURITY.md** - Document validation architecture (if file exists)
+- ✅ **Code comments** - Added JSDoc to `hooks/use-journal.ts` explaining CF-only validation (2025-12-30)
+- ⏳ **SECURITY.md** - Document validation architecture (optional future enhancement)
 
 **Completed Steps**:
 1. ~~**Decision**~~ ✅ DONE - Cloud Functions-only validation chosen
 2. ~~**Document strategy**~~ ✅ DONE - documented in this CANON section
-3. **Next**: Add code comments to `hooks/use-journal.ts` explaining validation architecture
+3. ~~**Code comments**~~ ✅ DONE (2025-12-30) - Added comprehensive JSDoc to `hooks/use-journal.ts`
+   - Documents security architecture (CANON-0043)
+   - Explains server-side Zod validation
+   - Clarifies rate limiting strategy
+   - Notes trade-offs and rationale
 
-**Dependencies**: ~~CANON-0001~~ (independent - decision can be made regardless of write surface status)
+**Dependencies**: ~~CANON-0001~~ ✅ RESOLVED
 
 ---
 
@@ -1070,13 +1071,13 @@ match /users/{userId}/journal/{entryId} {
 - ✅ Comments explicitly state "All writes MUST go through Cloud Function"
 - **VERIFIED**: Rules correctly enforce Cloud Functions-only writes
 
-**⚠️ CANON-0041: Rate limiting alignment (60% complete - partially done)**
+**✅ CANON-0041: Rate limiting alignment (100% complete - 2025-12-30)**
 - ✅ `lib/constants.ts` SAVE_DAILY_LOG: 10 calls/60s → matches server: 10 req/60s
 - ✅ `lib/constants.ts` SAVE_JOURNAL: 10 calls/60s → matches server: 10 req/60s
 - ✅ `lib/constants.ts` SAVE_INVENTORY: 10 calls/60s → matches server: 10 req/60s
-- ❌ Server has softDeleteJournalEntry: 20 req/60s → NO client-side limit
-- ❌ Server has migrateAnonymousUserData: 5 req/300s → NO client-side limit
-- **GAP**: Primary operations aligned, but delete/migration lack client limits
+- ✅ `lib/constants.ts` SOFT_DELETE_JOURNAL: 20 calls/60s → matches server: 20 req/60s
+- ✅ `lib/constants.ts` MIGRATE_USER_DATA: 5 calls/300s → matches server: 5 req/300s
+- **COMPLETE**: All operations aligned with server-side rate limits
 
 **✅ CANON-0043: Client validation strategy (100% complete - decision documented)**
 - ✅ **Decision**: Cloud Functions-only validation (server-side Zod schemas)

@@ -64,6 +64,10 @@ class RateLimiter {
 
 // Export pre-configured rate limiters for common operations
 // Uses centralized constants from lib/constants.ts
+//
+// NOTE: These client-side limiters are for UX feedback only.
+// The actual security enforcement happens server-side in Cloud Functions.
+// See functions/src/index.ts for server-side rate limits.
 export const saveDailyLogLimiter = new RateLimiter({
   maxCalls: RATE_LIMITS.SAVE_DAILY_LOG.MAX_CALLS,
   windowMs: RATE_LIMITS.SAVE_DAILY_LOG.WINDOW_MS,
@@ -77,6 +81,25 @@ export const authLimiter = new RateLimiter({
 export const readLimiter = new RateLimiter({
   maxCalls: RATE_LIMITS.READ.MAX_CALLS,
   windowMs: RATE_LIMITS.READ.WINDOW_MS,
+})
+
+/**
+ * Rate limiter for journal soft delete (crumplePage) operations
+ * Matches server-side: 20 req/60s in softDeleteJournalEntry (functions/src/index.ts)
+ */
+export const softDeleteJournalLimiter = new RateLimiter({
+  maxCalls: RATE_LIMITS.SOFT_DELETE_JOURNAL.MAX_CALLS,
+  windowMs: RATE_LIMITS.SOFT_DELETE_JOURNAL.WINDOW_MS,
+})
+
+/**
+ * Rate limiter for anonymous user data migration
+ * Matches server-side: 5 req/300s in migrateAnonymousUserData (functions/src/index.ts)
+ * Very restrictive since migration is a one-time, expensive operation
+ */
+export const migrateUserDataLimiter = new RateLimiter({
+  maxCalls: RATE_LIMITS.MIGRATE_USER_DATA.MAX_CALLS,
+  windowMs: RATE_LIMITS.MIGRATE_USER_DATA.WINDOW_MS,
 })
 
 // Export the class for custom rate limiters
