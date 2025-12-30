@@ -1,3 +1,31 @@
+/**
+ * useJournal Hook
+ *
+ * Provides journal entry management with real-time synchronization.
+ *
+ * ## Security Architecture (CANON-0043)
+ *
+ * This hook uses a **Cloud Functions-only validation** strategy:
+ *
+ * 1. **Server-side validation**: All input validation happens in Cloud Functions
+ *    using Zod schemas (see functions/src/schemas.ts)
+ *
+ * 2. **No client-side pre-validation**: The client prepares data and sends it
+ *    directly to Cloud Functions. Server errors are propagated to the UI.
+ *
+ * 3. **Rate limiting**: Server-side enforcement (10 req/60s for saves, 20 req/60s
+ *    for deletes). Client-side limiters exist for UX feedback only.
+ *
+ * 4. **Why this approach**:
+ *    - Single source of truth for validation logic
+ *    - Simpler client code (no duplicate validation)
+ *    - Server is the security boundary (client can't be trusted)
+ *
+ * Trade-off: Slightly slower feedback (requires network round-trip), but
+ * Cloud Functions are fast (<500ms) and return clear error messages.
+ *
+ * See: docs/EIGHT_PHASE_REFACTOR_PLAN.md (CANON-0043 section)
+ */
 import { useState, useEffect, useCallback } from 'react';
 import {
     collection,
