@@ -1,7 +1,7 @@
 # SoNash Roadmap Log
 
 **Purpose:** Archive of completed roadmap items and deprecated tasks
-**Last Updated:** December 28, 2025
+**Last Updated:** December 30, 2025
 **Status:** Historical reference - all items in this document are completed or deprecated
 
 ---
@@ -429,6 +429,51 @@ This document contains the historical record of completed milestones, tasks, and
 ## 📚 Historical Context
 
 ### Recent Completions (December 2025)
+
+**December 30, 2025: Manual reCAPTCHA Implementation + 8-Phase Refactoring Plan (🔄 Partial - See Phase 1)**
+
+**Completed Items:**
+- ✅ **Manual reCAPTCHA Enterprise Integration:**
+  - Frontend: `lib/recaptcha.ts` - `getRecaptchaToken()` helper for all protected operations
+  - Backend: `functions/src/recaptcha-verify.ts` - Server-side token validation with Google reCAPTCHA Enterprise API
+  - Security wrapper: Integrated into all 5 Cloud Functions (`saveDailyLog`, `saveJournalEntry`, `softDeleteJournalEntry`, `saveInventoryEntry`, `migrateAnonymousUserData`)
+  - Made optional: Corporate networks block Google reCAPTCHA → logs `RECAPTCHA_MISSING_TOKEN` (WARNING) instead of blocking
+  - Event logging: Added 8 reCAPTCHA event types to `security-logger.ts`
+  - Commits: `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
+- ✅ **8-Phase Refactoring Plan Documentation:**
+  - Created `docs/EIGHT_PHASE_REFACTOR_PLAN.md` (2,130 lines) - Comprehensive plan addressing 44 CANON findings
+  - Created `docs/IMPLEMENTATION_PROMPTS.md` (461 lines) - Reusable prompts for implementing each phase
+  - **Phase 1 Status (Lock Down Journal Writes + Enable App Check):** 33% complete (2/6 CANON items fully done)
+    - ✅ CANON-0003: Firestore rules alignment (100% complete)
+    - ✅ CANON-0044: Rules comment mismatch fixed (100% complete)
+    - ⚠️ CANON-0001: Journal writes unified (95% complete - 1 deprecated method remains)
+    - ⚠️ CANON-0041: Rate limiting alignment (60% complete - primary ops aligned)
+    - ❌ CANON-0002: App Check enforcement (0% - DISABLED everywhere)
+    - ❓ CANON-0043: Client validation strategy (unknown - needs decision)
+  - Commit: `50e5c3e`, `f391927`
+- ✅ **Admin Panel Security Monitoring Requirements:**
+  - Created `docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md` - Detailed spec for monitoring missing reCAPTCHA tokens
+  - Commit: `3b651fa`
+- ✅ **CodeRabbit Technical Debt Items:**
+  - Added to `ROADMAP.md` M2 section (duplicate reCAPTCHA logic, migrateAnonymousUserData manual security checks, FirestoreService god object)
+  - Commit: `ce9cdb3`
+
+**Status Changes:**
+- ❌ **Firebase App Check:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
+  - Reason: Hit 403 throttle errors (24-hour limit)
+  - Impact: Security posture weakened vs. intended PR1 goal
+  - Decision needed: Re-enable App Check strategy (see Phase 1 CANON-0002)
+
+**Blockers/Issues:**
+- ⚠️ **Phase 1 NOT Complete:** App Check disabled (opposite of goal), 1 deprecated write method still in use
+- 🔴 **Security Decision Required:** How to handle App Check + optional reCAPTCHA (defense in depth vs. single layer)
+
+**Reference:**
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Full plan with gap analysis
+- [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md) - Implementation and review prompts
+- [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) - Monitoring spec
+
+---
 
 **December 28, 2025: Resource Aggregation & Code Compliance (✅ Complete)**
 
