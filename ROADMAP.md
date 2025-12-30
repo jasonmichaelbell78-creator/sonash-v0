@@ -1,9 +1,11 @@
 # SoNash Product Roadmap
 
-**Last Updated:** December 28, 2025
+**Last Updated:** December 30, 2025
 **Status:** Canonical roadmap - supersedes all previous roadmap documents
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
+>
+> **Architecture Refactoring:** See [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) for comprehensive 8-phase security and architecture refactoring plan addressing 44 canonical findings from code audit
 
 ---
 
@@ -219,12 +221,24 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - ⏳ Client-side rate limiting in firestore-service.ts
 
 **From M1 - Security Hardening:**
-- ⏳ Firebase App Check with reCAPTCHA *(deferred due to authentication blocking issues)*
-- See [recaptcha_removal_guide.md](./recaptcha_removal_guide.md) for:
-  - Complete removal instructions (Firebase Console, Google Cloud, codebase)
-  - Fresh implementation guide (8 phases with detailed steps)
-  - Troubleshooting and rollback plans
-- **Priority:** P2 - Implement after M3+ unless bot abuse becomes significant
+- 🔄 **Manual reCAPTCHA Enterprise Implementation** (Dec 30, 2025)
+  - ✅ **Frontend Integration:** `lib/recaptcha.ts` - `getRecaptchaToken()` helper for bot protection
+  - ✅ **Backend Verification:** `functions/src/recaptcha-verify.ts` - Server-side token validation
+  - ✅ **Security Wrapper Integration:** Added to all 5 Cloud Functions with `recaptchaAction` parameters
+  - ✅ **Made Optional:** Corporate networks block Google reCAPTCHA - logs `RECAPTCHA_MISSING_TOKEN` (WARNING)
+  - ✅ **Event Logging:** Added 8 reCAPTCHA event types to `security-logger.ts`
+  - ⏳ **Admin Panel Monitoring:** See [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)
+  - **Files:** See commits `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
+- ❌ **Firebase App Check** (Dec 30, 2025)
+  - **Status:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
+  - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual reCAPTCHA as workaround
+  - **Impact:** Security posture weakened - App Check provides bot protection at Firebase SDK level
+  - **Next Steps:** Decide strategy (see [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) Phase 1 CANON-0002)
+    - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
+    - Option B: Wait for throttle to clear, then re-enable App Check only
+    - Option C: Accept weaker security posture (reCAPTCHA optional, no App Check)
+  - **Reference:** [recaptcha_removal_guide.md](./recaptcha_removal_guide.md) for removal/implementation guides
+- **Priority:** P0 - CRITICAL security decision needed (App Check should be re-enabled)
 
 **Data Quality & Operations:**
 - ⏳ **Retry Geocoding for 50 Meeting Addresses** (Dec 28, 2025)
