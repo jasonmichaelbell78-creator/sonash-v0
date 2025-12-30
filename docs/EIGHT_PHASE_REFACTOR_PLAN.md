@@ -1173,6 +1173,52 @@ match /users/{userId}/journal/{entryId} {
 
 ---
 
+## Phase 1 Risks & Mitigations (From PR1 Implementation)
+
+### Identified Risks:
+
+**RISK 1: App Check enforcement may break dev workflows without debug tokens**
+- **Mitigation**: Comment in code instructs developers to use debug tokens; existing dev setup should handle this
+- **Status**: ⏸️ Deferred until CANON-0002 (App Check re-enablement on Dec 31)
+- **Action Required**: Update developer setup documentation when re-enabling App Check
+
+**RISK 2: Blocking direct client writes could break legacy code paths**
+- **Mitigation**: All journal writes already route through Cloud Functions; removed unused direct write methods only
+- **Status**: ✅ RESOLVED (CANON-0001 completed - verified no legacy paths remain)
+- **Verification**: `grep -r "FirestoreService.saveJournalEntry" components/` → 0 results
+
+**RISK 3: crumplePage return type changed from void to Promise<{ success: boolean; error?: string }>**
+- **Mitigation**: Callers may not handle errors; recommend follow-up to update UI to display errors
+- **Status**: ✅ PARTIALLY ADDRESSED
+  - `journal-modal.tsx` updated to handle `addEntry()` errors ✅
+  - `crumplePage()` error handling in UI components - NOT VERIFIED
+- **Action Required**: Audit all `crumplePage()` call sites for proper error handling
+
+### Follow-up Items (Out of Scope for Phase 1):
+
+1. **Update UI components calling crumplePage to handle error responses**
+   - Priority: P2 (UX improvement)
+   - Effort: 1-2 hours
+   - Suggested: Add to Phase 2 or Phase 5 (Growth card refactor)
+
+2. **Add integration tests for App Check enforcement**
+   - Priority: P3 (nice-to-have)
+   - Effort: 2-3 hours
+   - Suggested: Add to Phase 7 (Test coverage increase)
+
+3. **Consider adding similar soft-delete callable for daily_logs and inventoryEntries collections**
+   - Priority: P2 (consistency)
+   - Effort: 2-3 hours
+   - Suggested: Add to Phase 2 (Firestore patterns unification)
+
+4. **Review and potentially remove lib/firestore-service.ts entirely if all methods now delegate to Cloud Functions**
+   - Priority: P3 (cleanup)
+   - Effort: 3-4 hours
+   - Suggested: Add to Phase 2 or defer to post-8-phase cleanup
+   - **Note**: Some methods still used by legacy code; requires full audit before removal
+
+---
+
 ## What Was NOT Accomplished
 
 ### Critical Gaps
