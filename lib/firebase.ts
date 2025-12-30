@@ -42,9 +42,11 @@ const initializeFirebase = () => {
   _auth = getAuth(_app)
   _db = getFirestore(_app)
 
+  // TEMPORARILY DISABLED: App Check is disabled due to 24-hour throttle
+  // Will re-enable after throttle clears (Dec 31, ~01:02 UTC)
   // Initialize App Check for security
   // SECURITY: App Check prevents unauthorized access to Cloud Functions
-  try {
+  /* try {
     const recaptchaSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY
 
     if (recaptchaSiteKey) {
@@ -73,7 +75,7 @@ const initializeFirebase = () => {
     }
   } catch (error) {
     console.error('Failed to initialize App Check:', error)
-  }
+  } */
 }
 
 // Initialize on module load only if in browser
