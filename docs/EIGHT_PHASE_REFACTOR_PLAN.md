@@ -310,6 +310,14 @@ This separate document contains:
 ### Primary Goal
 Standardize notebook writes through Cloud Functions, ensure App Check enforcement, and review rules for journal entries.
 
+**⚠️ CRITICAL PATH CONSTRAINT**:
+- **External Dependency**: Firebase App Check throttle clearance required
+- **Blocked Until**: Dec 31, 2025 ~01:02 UTC (24 hours from 403 errors)
+- **Downstream Impact**: PR2, PR4, PR8 cannot start until CANON-0002 (App Check) complete
+- **Timeline Post-Throttle**: ~1-2 hours to re-enable and test
+- **Reason**: Firebase throttle 403 errors prevent App Check re-enablement
+- **Mitigation**: Option D (Hybrid Approach) - defer App Check, keep reCAPTCHA optional
+
 ### What Was Accomplished (Past Tense - Verified 2025-12-30)
 
 **Fully Complete** (4/6 CANON items = 67%):
