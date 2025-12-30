@@ -89,7 +89,7 @@ After configuration, test by:
 ### Client-Side (lib/firebase.ts)
 
 App Check is initialized with the Firebase app:
-- **Production:** Uses `ReCaptchaV3Provider` with the configured site key
+- **Production:** Uses `ReCaptchaEnterpriseProvider` with the configured site key
 - **Development:** Uses debug token if provided, otherwise shows warning
 - Automatic token refresh enabled for seamless user experience
 
