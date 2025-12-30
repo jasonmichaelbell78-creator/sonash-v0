@@ -237,7 +237,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
     - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
     - Option B: Wait for throttle to clear, then re-enable App Check only
     - Option C: Accept weaker security posture (reCAPTCHA optional, no App Check)
-  - **Reference:** [recaptcha_removal_guide.md](./recaptcha_removal_guide.md) for removal/implementation guides
+  - **Reference:** [recaptcha_removal_guide.md](./docs/recaptcha_removal_guide.md) for removal/implementation guides
 - **Priority:** P0 - CRITICAL security decision needed (App Check should be re-enabled)
 
 **Data Quality & Operations:**

@@ -44,6 +44,13 @@ You are the Implementation Engineer for a single PR in a Next.js (App Router) + 
 - **Evidence discipline**: Every claim about a change must cite file path + symbol name you touched.
 - **No rewrites**. Prefer extraction + mechanical migration.
 - **No secrets**. Never print env values or keys.
+- **Decision Discipline**: When you encounter an architectural blocker or ambiguous requirement:
+  1. **Do NOT guess or pick the "easiest" option** - document all viable approaches
+  2. **Use structured decision framework**: List 2-4 options with pros/cons/trade-offs
+  3. **Document decision criteria**: Security, user impact, development velocity, risk management
+  4. **Make a recommendation** with clear rationale, but mark as "NEEDS APPROVAL" if it affects security posture or user experience
+  5. **Update tracking document** with the decision, decision owner, timeline, and fallback plan
+  6. **Example**: See CANON-0002 App Check decision in EIGHT_PHASE_REFACTOR_PLAN.md (Options A/B/C analysis → Option D hybrid)
 
 ---
 
@@ -138,6 +145,16 @@ For each CANON-XXXX:
 ```
 - Baseline: (short status)
 - After changes: (short status)
+```
+
+#### METRICS
+```
+- Tests: X passed → Y passed (net +Z or -Z)
+- Type errors: X → Y
+- Lint warnings: X → Y
+- Files changed: N files
+- Lines added/removed: +X / -Y (net impact)
+- Test coverage: X% → Y% (if measured)
 ```
 
 #### NOTES_FOR_REVIEWERS
@@ -293,13 +310,46 @@ Catches "PR compiles but breaks the app router build" issues early.
 ## 2) Lock the New Canonical Surface
 
 ### Action
-Write 1–2 sentences in a log (or in EIGHT_PHASE_REFACTOR_PLAN.md):
+Document the new canonical surface in EIGHT_PHASE_REFACTOR_PLAN.md using this format:
 
-- **What became canonical** (e.g., "All slogan reads go through SlogansService")
-- **What is now forbidden** (e.g., "No direct `collection(db, 'slogans')` in components")
+```markdown
+**Canonical Surface Locked** (YYYY-MM-DD):
+
+**What Became Canonical**:
+- [Specific API/pattern]: [File path + exported symbol]
+- Example: Journal writes: `hooks/use-journal.ts::useJournal().createEntry()`
+
+**What Is Now Forbidden**:
+- [Old pattern to avoid]: [Why it's forbidden]
+- Example: Direct Firestore writes: `setDoc(doc(db, 'users/...'))` - bypasses validation and rate limiting
+
+**Verification Commands**:
+- `grep -r "pattern-to-avoid" .` should return zero results in relevant directories
+```
+
+### Example
+After completing Phase 1 (Journal Write Surface):
+
+```markdown
+**Canonical Surface Locked** (2025-12-30):
+
+**What Became Canonical**:
+- Journal writes: `hooks/use-journal.ts::useJournal().createEntry()`
+- Journal updates: `hooks/use-journal.ts::useJournal().updateEntry()`
+- Journal deletes: `hooks/use-journal.ts::useJournal().softDelete()`
+
+**What Is Now Forbidden**:
+- Direct `setDoc(doc(db, 'users/${userId}/journalEntries/...'))` in components
+- Calling Cloud Functions directly with `httpsCallable(functions, 'saveJournalEntry')`
+- Reason: Bypasses client-side rate limiting and validation
+
+**Verification Commands**:
+- `grep -r "setDoc.*journalEntries" components/` → 0 results
+- `grep -r "httpsCallable.*Journal" components/` → 0 results
+```
 
 ### Why
-Prevents the next AI PR from reintroducing the old pattern.
+Prevents the next AI PR from reintroducing the old pattern. Makes the "canonical surface" concrete and greppable.
 
 ---
 
