@@ -1327,25 +1327,28 @@ match /users/{userId}/journal/{entryId} {
 | **Tests** | Add coverage for write paths | Not done | 🟡 HIGH |
 | **Documentation** | Security policy documentation | Partial - monitoring docs added | 🟢 LOW |
 
-### Completion Metrics (Verified via Codebase Audit)
+### Completion Metrics (Updated 2025-12-30 Post-CANON-0001)
 
-- **CANON Items Complete**: 2/6 (33%)
+- **CANON Items Complete**: 4/6 (67%)
+  - ✅ CANON-0001: Journal writes unified (100% - deprecated method removed)
+  - ⏸️ CANON-0002: App Check enforcement (DEFERRED to Dec 31 - decision complete, awaiting throttle clearance)
   - ✅ CANON-0003: Firestore rules alignment (100%)
+  - ✅ CANON-0043: Client validation strategy (100% - CF-only validation confirmed)
+  - ⚠️ CANON-0041: Rate limiting alignment (60% - main ops aligned, delete/migration missing client limits)
   - ✅ CANON-0044: Rules comment mismatch (100%)
-  - ⚠️ CANON-0001: Journal writes unified (95% - blocker: 1 deprecated method in use)
-  - ⚠️ CANON-0041: Rate limiting alignment (60% - main ops aligned)
-  - ❌ CANON-0002: App Check enforcement (0% - OPPOSITE of goal)
-  - ❓ CANON-0043: Client validation strategy (Unknown)
-- **Critical (S0) Items Complete**: 0/2 (0%)
-  - ❌ CANON-0001: 95% done but not 100%
-  - ❌ CANON-0002: 0% - disabled instead of enabled
-- **High (S1) Items Complete**: 2/4 (50%)
+- **Critical (S0) Items Complete**: 1/2 (50%)
+  - ✅ CANON-0001: 100% - complete
+  - ⏸️ CANON-0002: DEFERRED - decision made, implementation blocked until Dec 31
+- **High (S1) Items Complete**: 3/4 (75%)
   - ✅ CANON-0003: 100% - rules aligned
+  - ✅ CANON-0043: 100% - CF-only validation
   - ✅ CANON-0044: 100% - comments fixed
   - ⚠️ CANON-0041: 60% - partial alignment
-  - ❓ CANON-0043: Unknown - needs investigation
-- **Acceptance Tests Passed**: 0/3 (0%)
-- **Overall Phase 1 Completion**: **33%** (2 of 6 CANON items fully complete)
+- **Acceptance Tests Passed**: 2/3 (67%)
+  - ✅ `npm run lint` passes (0 errors, 17 pre-existing warnings)
+  - ✅ `npm run test` passes (92 passed, 0 failed)
+  - ⏳ Manual verification pending user testing
+- **Overall Phase 1 Completion**: **67%** (4 of 6 CANON items fully complete, 1 deferred with decision made)
 
 ### Root Cause Analysis
 
