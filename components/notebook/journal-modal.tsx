@@ -5,20 +5,32 @@ import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
 import { VoiceTextArea } from "@/components/ui/voice-text-area"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
+import { useJournal } from "@/hooks/use-journal"
 import { toast } from "sonner"
 
 interface JournalModalProps {
     onClose: () => void
 }
 
+/**
+ * Render a modal UI that lets an authenticated user create and save a free-write journal entry.
+ *
+ * The modal provides optional title and content inputs, voice dictation support, and client-side
+ * validation that prevents saving empty content or when no user is present. While saving, the save
+ * control is disabled and shows a loading state. On successful save the modal closes and a success
+ * toast is shown; on failure an error toast is shown.
+ *
+ * @param onClose - Callback invoked to close the modal (called when cancelling or after a successful save)
+ * @returns The rendered modal element for creating a new journal entry
+ */
 export default function JournalModal({ onClose }: JournalModalProps) {
     const { user } = useAuth()
+    const { addEntry } = useJournal()
     const [content, setContent] = useState("")
     const [isSaving, setIsSaving] = useState(false)
     const [title, setTitle] = useState("")
 
-    // For now, these are basic entries. 
+    // For now, these are basic entries.
     // In M5 Phase 2, we will add 'type' selection (Spot Check vs Review vs Generic)
 
     const handleSave = async () => {
@@ -26,14 +38,18 @@ export default function JournalModal({ onClose }: JournalModalProps) {
 
         setIsSaving(true)
         try {
-            await FirestoreService.saveJournalEntry(user.uid, {
+            const result = await addEntry('free-write', {
                 title: title || "Quick Entry",
-                content: content,
-                type: "note", // Default type for now
-                tags: []
+                content: content
             })
-            toast.success("Entry saved to History")
-            onClose()
+
+            if (result.success) {
+                toast.success("Entry saved to History")
+                onClose()
+            } else {
+                console.error("Failed to save entry:", result.error)
+                toast.error(result.error || "Failed to save entry")
+            }
         } catch (error) {
             console.error("Failed to save entry", error)
             toast.error("Failed to save entry")
