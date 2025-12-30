@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import localFont from "next/font/local"
+import Script from "next/script"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { ErrorBoundary } from "@/components/providers/error-boundary"
 import { CelebrationProvider } from "@/components/celebrations/celebration-provider"
@@ -80,6 +81,11 @@ export default function RootLayout({
         ${rockSalt.variable}
       `}
       >
+        {/* Load reCAPTCHA Enterprise for bot protection */}
+        <Script
+          src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY}`}
+          strategy="lazyOnload"
+        />
         <ErrorBoundary>
           <AuthProvider>
             <CelebrationProvider>
