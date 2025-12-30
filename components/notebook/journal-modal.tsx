@@ -12,6 +12,17 @@ interface JournalModalProps {
     onClose: () => void
 }
 
+/**
+ * Render a modal UI that lets an authenticated user create and save a free-write journal entry.
+ *
+ * The modal provides optional title and content inputs, voice dictation support, and client-side
+ * validation that prevents saving empty content or when no user is present. While saving, the save
+ * control is disabled and shows a loading state. On successful save the modal closes and a success
+ * toast is shown; on failure an error toast is shown.
+ *
+ * @param onClose - Callback invoked to close the modal (called when cancelling or after a successful save)
+ * @returns The rendered modal element for creating a new journal entry
+ */
 export default function JournalModal({ onClose }: JournalModalProps) {
     const { user } = useAuth()
     const { addEntry } = useJournal()
