@@ -1071,13 +1071,13 @@ match /users/{userId}/journal/{entryId} {
 - ✅ Comments explicitly state "All writes MUST go through Cloud Function"
 - **VERIFIED**: Rules correctly enforce Cloud Functions-only writes
 
-**⚠️ CANON-0041: Rate limiting alignment (60% complete - partially done)**
+**✅ CANON-0041: Rate limiting alignment (100% complete - 2025-12-30)**
 - ✅ `lib/constants.ts` SAVE_DAILY_LOG: 10 calls/60s → matches server: 10 req/60s
 - ✅ `lib/constants.ts` SAVE_JOURNAL: 10 calls/60s → matches server: 10 req/60s
 - ✅ `lib/constants.ts` SAVE_INVENTORY: 10 calls/60s → matches server: 10 req/60s
-- ❌ Server has softDeleteJournalEntry: 20 req/60s → NO client-side limit
-- ❌ Server has migrateAnonymousUserData: 5 req/300s → NO client-side limit
-- **GAP**: Primary operations aligned, but delete/migration lack client limits
+- ✅ `lib/constants.ts` SOFT_DELETE_JOURNAL: 20 calls/60s → matches server: 20 req/60s
+- ✅ `lib/constants.ts` MIGRATE_USER_DATA: 5 calls/300s → matches server: 5 req/300s
+- **COMPLETE**: All operations aligned with server-side rate limits
 
 **✅ CANON-0043: Client validation strategy (100% complete - decision documented)**
 - ✅ **Decision**: Cloud Functions-only validation (server-side Zod schemas)

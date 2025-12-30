@@ -85,7 +85,7 @@ export const readLimiter = new RateLimiter({
 
 /**
  * Rate limiter for journal soft delete (crumplePage) operations
- * Matches server-side: 20 req/60s in functions/src/index.ts (lines 235-238)
+ * Matches server-side: 20 req/60s in softDeleteJournalEntry (functions/src/index.ts)
  */
 export const softDeleteJournalLimiter = new RateLimiter({
   maxCalls: RATE_LIMITS.SOFT_DELETE_JOURNAL.MAX_CALLS,
@@ -94,7 +94,7 @@ export const softDeleteJournalLimiter = new RateLimiter({
 
 /**
  * Rate limiter for anonymous user data migration
- * Matches server-side: 5 req/300s in functions/src/index.ts (lines 445-448)
+ * Matches server-side: 5 req/300s in migrateAnonymousUserData (functions/src/index.ts)
  * Very restrictive since migration is a one-time, expensive operation
  */
 export const migrateUserDataLimiter = new RateLimiter({

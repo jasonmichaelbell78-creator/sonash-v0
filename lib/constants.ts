@@ -90,7 +90,7 @@ export const RATE_LIMITS = {
   },
   /**
    * Soft delete operations (crumplePage)
-   * Matches server-side: 20 req/60s in functions/src/index.ts
+   * Matches server-side: 20 req/60s in functions/src/index.ts (softDeleteJournalEntry)
    * More lenient than saves since deletions are less frequent
    */
   SOFT_DELETE_JOURNAL: {
@@ -99,7 +99,7 @@ export const RATE_LIMITS = {
   },
   /**
    * Anonymous user data migration
-   * Matches server-side: 5 req/300s in functions/src/index.ts
+   * Matches server-side: 5 req/300s in functions/src/index.ts (migrateAnonymousUserData)
    * Very restrictive since migration is a one-time, expensive operation
    */
   MIGRATE_USER_DATA: {
