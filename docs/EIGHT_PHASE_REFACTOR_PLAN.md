@@ -1158,8 +1158,8 @@ match /users/{userId}/journal/{entryId} {
 | CANON-0001 (5% remaining) | ✅ COMPLETE | N/A | N/A | N/A |
 | CANON-0002 Implementation | ❌ BLOCKED | No (Dec 31+) | Yes (Firebase throttle) | 1 hour |
 | CANON-0043 Decision | ✅ COMPLETE | N/A | N/A | N/A |
+| CANON-0041 Rate Limiting | ✅ COMPLETE | N/A | N/A | N/A |
 | Acceptance Tests (partial) | ✅ PASSED | Yes (smoke test pending) | No | 30 minutes |
-| CANON-0041 (40% remaining) | ⚠️ OPTIONAL | **Yes** | **No** | 1 hour |
 
 **Critical Path to Phase 1 Completion**:
 1. **Dec 31 ~01:02 UTC**: Throttle clears
@@ -1170,14 +1170,14 @@ match /users/{userId}/journal/{entryId} {
 **Timeline Summary**:
 - **Can be done NOW**: None (waiting for Dec 31)
 - **After Dec 31**: CANON-0002 implementation (1 hour) + testing (30 min)
-- **Optional**: CANON-0041 (1 hour)
+- **Completed**: CANON-0041 (rate limiting alignment - 2025-12-30)
 
-**Phase 1 Current Status**: **67% complete** (4/6 CANON items fully done, 1/6 partially done)
+**Phase 1 Current Status**: **83% complete** (5/6 CANON items fully done, 1/6 deferred)
 - ✅ CANON-0001: Journal writes unified (100% - completed 2025-12-30)
 - ✅ CANON-0003: Firestore rules (100%)
 - ✅ CANON-0043: Validation strategy (100%)
 - ✅ CANON-0044: Rules comments (100%)
-- ⚠️ CANON-0041: Rate limiting (60% - gap: delete/migration limits - OPTIONAL)
+- ✅ CANON-0041: Rate limiting (100% - completed 2025-12-30)
 - ⏸️ CANON-0002: App Check (DEFERRED to Dec 31 - decision complete, implementation pending)
 
 ---
@@ -1320,35 +1320,35 @@ match /users/{userId}/journal/{entryId} {
 | Aspect | Intended (PR1 Goal) | Actual (What Happened) | Gap Severity |
 |--------|---------------------|------------------------|--------------|
 | **App Check** | Enable enforcement (`requireAppCheck: true`) | Disabled (`requireAppCheck: false`) everywhere | 🔴 CRITICAL - Opposite |
-| **Write Surface** | Single Cloud Function callable | 95% complete - one deprecated method remains | 🟡 MEDIUM - Mostly done |
+| **Write Surface** | Single Cloud Function callable | ✅ COMPLETE - all writes through Cloud Functions | 🟢 COMPLETE |
 | **Firestore Rules** | Review and align with policy | ✅ COMPLETE - rules block direct writes | 🟢 COMPLETE |
-| **Rate Limiting** | Server enforcement, client UX-only | 60% complete - main ops aligned, delete/migration missing client limits | 🟡 MEDIUM - Partial |
-| **Validation** | Consistent client strategy or CF-only | Unknown - needs investigation | 🟡 HIGH - Unverified |
+| **Rate Limiting** | Server enforcement, client UX-only | ✅ COMPLETE - all operations aligned | 🟢 COMPLETE |
+| **Validation** | Consistent client strategy or CF-only | ✅ COMPLETE - CF-only validation confirmed | 🟢 COMPLETE |
 | **Tests** | Add coverage for write paths | Not done | 🟡 HIGH |
 | **Documentation** | Security policy documentation | Partial - monitoring docs added | 🟢 LOW |
 
-### Completion Metrics (Updated 2025-12-30 Post-CANON-0001)
+### Completion Metrics (Updated 2025-12-30 Post-CANON-0041)
 
-- **CANON Items Complete**: 4/6 (67%)
+- **CANON Items Complete**: 5/6 (83%)
   - ✅ CANON-0001: Journal writes unified (100% - deprecated method removed)
   - ⏸️ CANON-0002: App Check enforcement (DEFERRED to Dec 31 - decision complete, awaiting throttle clearance)
   - ✅ CANON-0003: Firestore rules alignment (100%)
   - ✅ CANON-0043: Client validation strategy (100% - CF-only validation confirmed)
-  - ⚠️ CANON-0041: Rate limiting alignment (60% - main ops aligned, delete/migration missing client limits)
+  - ✅ CANON-0041: Rate limiting alignment (100% - completed 2025-12-30)
   - ✅ CANON-0044: Rules comment mismatch (100%)
 - **Critical (S0) Items Complete**: 1/2 (50%)
   - ✅ CANON-0001: 100% - complete
   - ⏸️ CANON-0002: DEFERRED - decision made, implementation blocked until Dec 31
-- **High (S1) Items Complete**: 3/4 (75%)
+- **High (S1) Items Complete**: 4/4 (100%)
   - ✅ CANON-0003: 100% - rules aligned
   - ✅ CANON-0043: 100% - CF-only validation
   - ✅ CANON-0044: 100% - comments fixed
-  - ⚠️ CANON-0041: 60% - partial alignment
+  - ✅ CANON-0041: 100% - alignment complete
 - **Acceptance Tests Passed**: 2/3 (67%)
   - ✅ `npm run lint` passes (0 errors, 17 pre-existing warnings)
   - ✅ `npm run test` passes (92 passed, 0 failed)
   - ⏳ Manual verification pending user testing
-- **Overall Phase 1 Completion**: **67%** (4 of 6 CANON items fully complete, 1 deferred with decision made)
+- **Overall Phase 1 Completion**: **83%** (5 of 6 CANON items fully complete, 1 deferred with decision made)
 
 ### Root Cause Analysis
 
