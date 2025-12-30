@@ -469,7 +469,7 @@ interface MigrationData {
  */
 export const migrateAnonymousUserData = onCall<MigrationData>(
     async (request) => {
-        const { data, app, auth } = request;
+        const { data, app: _app, auth } = request;
 
         if (!auth) {
             logSecurityEvent("AUTH_FAILURE", "migrateAnonymousUserData", "Unauthenticated request");

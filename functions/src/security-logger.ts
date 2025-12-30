@@ -32,7 +32,15 @@ export type SecurityEventType =
     | "ADMIN_ERROR"
     | "HEALTH_CHECK_FAILURE"
     | "JOB_SUCCESS"
-    | "JOB_FAILURE";
+    | "JOB_FAILURE"
+    | "RECAPTCHA_CONFIG_ERROR"
+    | "RECAPTCHA_MISSING_TOKEN"
+    | "RECAPTCHA_API_ERROR"
+    | "RECAPTCHA_INVALID_TOKEN"
+    | "RECAPTCHA_ACTION_MISMATCH"
+    | "RECAPTCHA_LOW_SCORE"
+    | "RECAPTCHA_SUCCESS"
+    | "RECAPTCHA_UNEXPECTED_ERROR";
 
 
 // Severity levels (aligned with GCP Cloud Logging)
