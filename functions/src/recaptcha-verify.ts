@@ -61,7 +61,9 @@ export async function verifyRecaptchaToken(
 ): Promise<void> {
     // Get project ID and site key from environment
     const projectId = process.env.GCLOUD_PROJECT;
-    const siteKey = process.env.RECAPTCHA_SITE_KEY;
+    // Firebase Functions config is accessed via functions.config() or process.env
+    // When using firebase functions:config:set recaptcha.site_key="...", it becomes RECAPTCHA_SITE_KEY
+    const siteKey = process.env.RECAPTCHA_SITE_KEY || '6LdeazosAAAAAMDNCh1hTUDKh_UeS6xWY1-85B2O';
 
     if (!projectId || !siteKey) {
         logSecurityEvent(
