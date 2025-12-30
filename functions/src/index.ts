@@ -497,11 +497,23 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
         } */
 
         // Verify reCAPTCHA token (manual verification)
-        await verifyRecaptchaToken(
-            data.recaptchaToken || '',
-            'migrate_user_data',
-            userId
-        );
+        // Make reCAPTCHA optional - log but don't block when missing
+        const token = data.recaptchaToken;
+        if (!token || token.trim() === '') {
+            logSecurityEvent(
+                "RECAPTCHA_MISSING_TOKEN",
+                "migrateAnonymousUserData",
+                "Migration processed without reCAPTCHA token (may indicate network blocking)",
+                {
+                    userId,
+                    severity: "WARNING",
+                    metadata: { action: 'migrate_user_data' }
+                }
+            );
+            // Continue without reCAPTCHA protection - rely on other security layers
+        } else {
+            await verifyRecaptchaToken(token, 'migrate_user_data', userId);
+        }
 
         // Validate input using Zod schema
         let validatedData: MigrationData;
