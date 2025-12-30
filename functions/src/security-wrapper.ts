@@ -165,11 +165,26 @@ export async function withSecurityChecks<TInput, TOutput>(
     // 3.5. Verify reCAPTCHA token (if action specified)
     if (recaptchaAction) {
         const dataWithToken = request.data as { recaptchaToken?: string };
-        await verifyRecaptchaToken(
-            dataWithToken.recaptchaToken || '',
-            recaptchaAction,
-            userId
-        );
+        const token = dataWithToken.recaptchaToken;
+
+        // Make reCAPTCHA optional - log but don't block when missing
+        // This allows app to work on corporate networks that block Google reCAPTCHA
+        if (!token || token.trim() === '') {
+            logSecurityEvent(
+                "RECAPTCHA_MISSING_TOKEN",
+                functionName,
+                "Request processed without reCAPTCHA token (may indicate network blocking)",
+                {
+                    userId,
+                    severity: "WARNING",
+                    metadata: { action: recaptchaAction }
+                }
+            );
+            // Continue without reCAPTCHA protection - rely on other security layers
+        } else {
+            // Verify token if present
+            await verifyRecaptchaToken(token, recaptchaAction, userId);
+        }
     }
 
     // 4. Validate input data using Zod (if schema provided)

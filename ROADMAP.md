@@ -264,6 +264,16 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Fix:** Extract each step into own component
   - **Effort:** 3 hours
   - **Priority:** LOW - works fine, refactor when needed
+- ⏳ **M2: Duplicate reCAPTCHA Verification Logic** (security-wrapper.ts & index.ts)
+  - **Issue:** Optional reCAPTCHA verification logic duplicated in two locations
+  - **Fix:** Extract into `verifyRecaptchaTokenOptional()` helper in recaptcha-verify.ts
+  - **Effort:** 1 hour
+  - **Priority:** LOW - DRY violation, but code works fine
+- ⏳ **M2: migrateAnonymousUserData Manual Security Checks** (functions/src/index.ts)
+  - **Issue:** Function manually implements security checks instead of using withSecurityChecks wrapper
+  - **Fix:** Add custom authorization callback option to withSecurityChecks, refactor to use wrapper
+  - **Effort:** 2-3 hours
+  - **Priority:** LOW - consistency improvement, custom auth logic works correctly
 
 **Trigger:** Only pursue if M3+ blocked by technical limitations or if scaling reveals performance issues
 
