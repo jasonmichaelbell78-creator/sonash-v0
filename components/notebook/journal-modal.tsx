@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
 import { VoiceTextArea } from "@/components/ui/voice-text-area"
 import { useAuth } from "@/components/providers/auth-provider"
-import { FirestoreService } from "@/lib/firestore-service"
+import { useJournal } from "@/hooks/use-journal"
 import { toast } from "sonner"
 
 interface JournalModalProps {
@@ -14,11 +14,12 @@ interface JournalModalProps {
 
 export default function JournalModal({ onClose }: JournalModalProps) {
     const { user } = useAuth()
+    const { addEntry } = useJournal()
     const [content, setContent] = useState("")
     const [isSaving, setIsSaving] = useState(false)
     const [title, setTitle] = useState("")
 
-    // For now, these are basic entries. 
+    // For now, these are basic entries.
     // In M5 Phase 2, we will add 'type' selection (Spot Check vs Review vs Generic)
 
     const handleSave = async () => {
@@ -26,14 +27,18 @@ export default function JournalModal({ onClose }: JournalModalProps) {
 
         setIsSaving(true)
         try {
-            await FirestoreService.saveJournalEntry(user.uid, {
+            const result = await addEntry('free-write', {
                 title: title || "Quick Entry",
-                content: content,
-                type: "note", // Default type for now
-                tags: []
+                content: content
             })
-            toast.success("Entry saved to History")
-            onClose()
+
+            if (result.success) {
+                toast.success("Entry saved to History")
+                onClose()
+            } else {
+                console.error("Failed to save entry:", result.error)
+                toast.error(result.error || "Failed to save entry")
+            }
         } catch (error) {
             console.error("Failed to save entry", error)
             toast.error("Failed to save entry")
