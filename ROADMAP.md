@@ -193,6 +193,82 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - Analytics on most-used actions
 - Suggested actions based on usage patterns
 
+### Phase 7: Local Recovery Resources Directory (📋 Planned)
+
+**Priority:** Medium-High | **Effort:** Medium (5-8 SP) | **Value:** High — critical local resource access
+
+**Approach:** Display verified Nashville recovery resources with admin management
+
+**Context:**
+- 60+ verified local resources already aggregated in `data/local-resources.ts` (Dec 28, 2025)
+- 8 categories: Clinical (Detox, Residential, Outpatient, Harm Reduction) + Community (Recovery Centers, Essentials, Jobs/Legal, Wellness)
+- All resources have addresses, phone numbers, websites, services, and GPS coordinates
+
+**User-Facing Features:**
+- [ ] Display local resources in Growth tab (below Sober Living Finder)
+- [ ] Category filtering (8 predefined categories)
+- [ ] Search/filter by resource name or services
+- [ ] Map view with "Nearby" feature using GPS coordinates
+- [ ] Resource detail cards (address, phone, website, services)
+- [ ] "Call" and "Get Directions" quick actions
+- [ ] Sort by distance (if location permission granted)
+
+**Admin Panel Features:**
+- [ ] Resources tab in Admin Panel (similar to Meetings/Sober Living)
+- [ ] CRUD operations for local resources
+- [ ] Category management
+- [ ] Active/inactive toggle for resources
+- [ ] Bulk import from `data/local-resources.ts` (one-time migration)
+- [ ] GPS coordinate validation
+- [ ] Phone/website format validation
+
+**Technical Implementation:**
+- **New Collection:** `/local_resources/{resourceId}` in Firestore
+- **New Service:** `lib/db/local-resources.ts` (similar to `meetings.ts`, `sober-living.ts`)
+- **New Component:** `components/notebook/pages/local-resources-section.tsx` (in Growth tab)
+- **New Admin Component:** `components/admin/local-resources-tab.tsx`
+- **Map Integration:** Reuse existing `MeetingMap` component with LocalResource type support
+- **Firestore Rules:** Admin-write, user-read for `/local_resources/{resourceId}`
+
+**Data Migration:**
+- [ ] Cloud Function or script to seed Firestore from `data/local-resources.ts`
+- [ ] Preserve existing data structure (categories, locationType, coordinates)
+- [ ] Add `createdAt`, `updatedAt`, `active` fields
+
+**Files to Create:**
+1. `lib/db/local-resources.ts` - Service layer (CRUD operations)
+2. `components/growth/local-resources-card.tsx` - Resource display card
+3. `components/growth/local-resources-list.tsx` - Filterable list view
+4. `components/growth/local-resources-map.tsx` - Map view with markers
+5. `components/admin/local-resources-tab.tsx` - Admin CRUD interface
+6. `scripts/seed-local-resources.ts` - One-time data migration
+7. Update `firestore.rules` - Add rules for `/local_resources` collection
+8. Update `firestore.indexes.json` - Add indexes for category, city filtering
+
+**Files to Modify:**
+1. `components/notebook/pages/growth-page.tsx` - Add local resources section
+2. `components/admin/admin-panel.tsx` - Add Resources tab
+3. `components/maps/meeting-map.tsx` - Extend to support LocalResource type (or create separate component)
+
+**Effort Estimate:**
+- Service layer + Firestore setup: 2 hours
+- User-facing UI (list + map + filters): 3-4 hours
+- Admin panel CRUD: 2-3 hours
+- Data migration script: 1 hour
+- Testing + polish: 1-2 hours
+- **Total: 9-12 hours (6-8 SP)**
+
+**Dependencies:**
+- ✅ Data already aggregated (`data/local-resources.ts`)
+- ✅ Map component already exists (reuse `MeetingMap`)
+- ✅ Admin panel framework already exists
+- ⚠️ Should wait until PR1 complete (Firestore rules changes)
+
+**Why This Matters:**
+- Provides critical access to treatment, housing, food, legal services
+- Fills gap between meetings (fellowship) and clinical care
+- High user value for newly sober individuals navigating Nashville recovery ecosystem
+
 ### Success Metrics
 
 | Metric | Target |
