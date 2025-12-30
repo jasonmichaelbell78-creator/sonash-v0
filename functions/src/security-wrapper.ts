@@ -5,6 +5,7 @@
  * - Authentication verification
  * - Rate limiting
  * - App Check verification
+ * - reCAPTCHA Enterprise verification
  * - Input validation with Zod
  * - Authorization checks
  * - Security event logging
@@ -16,6 +17,7 @@ import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { ZodSchema, ZodError } from "zod";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 import { logSecurityEvent } from "./security-logger";
+import { verifyRecaptchaToken } from "./recaptcha-verify";
 
 interface SecurityOptions<T> {
     /**
@@ -38,6 +40,12 @@ interface SecurityOptions<T> {
      * Set to false only for non-production environments or admin functions
      */
     requireAppCheck?: boolean;
+
+    /**
+     * Expected reCAPTCHA action (optional, skips reCAPTCHA if not provided)
+     * When set, requires and verifies a reCAPTCHA token in the request data
+     */
+    recaptchaAction?: string;
 
     /**
      * Whether to perform userId authorization check (default: true)
@@ -99,6 +107,7 @@ export async function withSecurityChecks<TInput, TOutput>(
         rateLimiter,
         validationSchema,
         requireAppCheck = true,
+        recaptchaAction,
         authorizeUserId = true,
     } = options;
 
@@ -150,6 +159,16 @@ export async function withSecurityChecks<TInput, TOutput>(
         throw new HttpsError(
             "failed-precondition",
             "App Check verification failed. Please refresh the page."
+        );
+    }
+
+    // 3.5. Verify reCAPTCHA token (if action specified)
+    if (recaptchaAction) {
+        const dataWithToken = request.data as { recaptchaToken?: string };
+        await verifyRecaptchaToken(
+            dataWithToken.recaptchaToken || '',
+            recaptchaAction,
+            userId
         );
     }
 

@@ -44,8 +44,8 @@ export async function getRecaptchaToken(action: string): Promise<string> {
     }, 10000); // 10 second timeout
 
     if (!window.grecaptcha?.enterprise) {
-      reject(new Error('reCAPTCHA library not loaded'));
       clearTimeout(timeout);
+      reject(new Error('reCAPTCHA library not loaded'));
       return;
     }
 

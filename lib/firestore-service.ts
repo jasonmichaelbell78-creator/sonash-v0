@@ -36,6 +36,7 @@ import { saveDailyLogLimiter, readLimiter } from "./utils/rate-limiter"
 import { buildPath, QUERY_LIMITS } from "./constants"
 import { getTodayDateId } from "./utils/date-utils"
 import { retryCloudFunction } from "./utils/retry"
+import { getRecaptchaToken } from "./recaptcha"
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
 
 // Re-export types for backwards compatibility
@@ -121,6 +122,9 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       if (rateError) throw rateError
 
       try {
+        // Get reCAPTCHA token for bot protection
+        const recaptchaToken = await getRecaptchaToken('save_daily_log')
+
         // Call Cloud Function for server-side rate limiting and validation
         // This cannot be bypassed by client-side modifications
         const { getFunctions, httpsCallable } = await import("firebase/functions")
@@ -137,6 +141,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           mood: data.mood || null,
           cravings: data.cravings,
           used: data.used,
+          recaptchaToken, // Include for server-side verification
         }
 
         // The Cloud Function may reject nulls; omit fields when neutral
@@ -324,6 +329,9 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       deps.assertUserScope({ userId })
 
       try {
+        // Get reCAPTCHA token for bot protection
+        const recaptchaToken = await getRecaptchaToken('save_inventory')
+
         // Call Cloud Function instead of direct Firestore write
         // This provides rate limiting (10 req/min) and server-side validation
         const { getFunctions, httpsCallable } = await import("firebase/functions")
@@ -335,6 +343,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           type: entry.type,
           data: entry.data,
           tags: entry.tags || [],
+          recaptchaToken, // Include for server-side verification
         })
 
         const response = result.data as { success: boolean; entryId: string }
@@ -395,6 +404,9 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       deps.assertUserScope({ userId })
 
       try {
+        // Get reCAPTCHA token for bot protection
+        const recaptchaToken = await getRecaptchaToken('save_journal')
+
         const { getFunctions, httpsCallable } = await import("firebase/functions")
         const functions = getFunctions()
         const saveJournalFn = httpsCallable(functions, "saveJournalEntry")
@@ -407,6 +419,7 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           data: entry.data,
           dateLabel: today,
           isPrivate: entry.isPrivate ?? true,
+          recaptchaToken, // Include for server-side verification
         }
 
         // Retry Cloud Function call with exponential backoff for network failures

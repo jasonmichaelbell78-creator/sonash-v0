@@ -11,6 +11,7 @@ import { db, auth } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
 import { QUERY_LIMITS } from '@/lib/constants';
 import { retryCloudFunction } from '@/lib/utils/retry';
+import { getRecaptchaToken } from '@/lib/recaptcha';
 
 // Helper to check for "Today" and "Yesterday"
 export const getRelativeDateLabel = (dateString: string) => {
@@ -237,6 +238,9 @@ export function useJournal() {
             if ('used' in data) denormalized.hasUsed = data.used;
             if ('mood' in data) denormalized.mood = data.mood;
 
+            // Get reCAPTCHA token for bot protection
+            const recaptchaToken = await getRecaptchaToken('save_journal_entry');
+
             // Call Cloud Function instead of direct Firestore write
             // This ensures rate limiting, App Check, and validation are enforced server-side
             const functions = getFunctions();
@@ -253,6 +257,7 @@ export function useJournal() {
                     searchableText,
                     tags,
                     ...denormalized,
+                    recaptchaToken, // Include for server-side verification
                 },
                 { maxRetries: 3, functionName: 'saveJournalEntry' }
             );
@@ -292,6 +297,9 @@ export function useJournal() {
                 };
             }
 
+            // Get reCAPTCHA token for bot protection
+            const recaptchaToken = await getRecaptchaToken('delete_journal_entry');
+
             // Call Cloud Function instead of direct Firestore write
             // This ensures rate limiting, App Check, and validation are enforced server-side
             const functions = getFunctions();
@@ -300,7 +308,10 @@ export function useJournal() {
             // Retry Cloud Function call with exponential backoff for network failures
             await retryCloudFunction(
                 softDeleteEntry,
-                { entryId },
+                {
+                    entryId,
+                    recaptchaToken // Include for server-side verification
+                },
                 { maxRetries: 3, functionName: 'softDeleteJournalEntry' }
             );
 

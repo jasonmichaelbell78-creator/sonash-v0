@@ -21,6 +21,7 @@ import { auth } from "../firebase";
 import { updateUserProfile } from "../db/users";
 import { logger, maskIdentifier } from "../logger";
 import { retryCloudFunction } from "../utils/retry";
+import { getRecaptchaToken } from "../recaptcha";
 
 /**
  * Result type for account linking operations
@@ -198,6 +199,9 @@ export async function linkWithEmail(
                 });
 
                 // Step 2: Migrate anonymous data
+                // Get reCAPTCHA token for bot protection
+                const recaptchaToken = await getRecaptchaToken('migrate_user_data');
+
                 const { getFunctions, httpsCallable } = await import("firebase/functions");
                 const functions = getFunctions();
                 const migrateData = httpsCallable(functions, "migrateAnonymousUserData");
@@ -205,7 +209,11 @@ export async function linkWithEmail(
                 // Retry migration with exponential backoff for network failures
                 const migrationResult = await retryCloudFunction(
                     migrateData,
-                    { anonymousUid, targetUid },
+                    {
+                        anonymousUid,
+                        targetUid,
+                        recaptchaToken // Include for server-side verification
+                    },
                     { maxRetries: 3, functionName: 'migrateAnonymousUserData' }
                 );
 
@@ -315,15 +323,23 @@ export async function linkWithGoogle(): Promise<LinkResult> {
                 });
 
                 // Step 2: Migrate anonymous data to target account
+                // Get reCAPTCHA token for bot protection
+                const recaptchaToken = await getRecaptchaToken('migrate_user_data');
+
                 const { getFunctions, httpsCallable } = await import("firebase/functions");
                 const functions = getFunctions();
                 const migrateData = httpsCallable(functions, "migrateAnonymousUserData");
 
                 try {
-                    const migrationResult = await migrateData({
-                        anonymousUid,
-                        targetUid,
-                    });
+                    const migrationResult = await retryCloudFunction(
+                        migrateData,
+                        {
+                            anonymousUid,
+                            targetUid,
+                            recaptchaToken // Include for server-side verification
+                        },
+                        { maxRetries: 3, functionName: 'migrateAnonymousUserData' }
+                    );
 
                     logger.info("Migration successful", {
                         anonymousUid: maskIdentifier(anonymousUid),

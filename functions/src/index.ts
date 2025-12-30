@@ -15,10 +15,11 @@
 import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema, softDeleteJournalEntrySchema } from "./schemas";
+import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema, softDeleteJournalEntrySchema, migrationDataSchema } from "./schemas";
 import { initSentry, logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 import { withSecurityChecks } from "./security-wrapper";
+import { verifyRecaptchaToken } from "./recaptcha-verify";
 
 // Type-safe interface for migration merge data
 interface MigrationMergeData {
@@ -75,6 +76,7 @@ export const saveDailyLog = onCall<DailyLogData>(
             rateLimiter: saveDailyLogLimiter,
             validationSchema: dailyLogSchema,
             requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+            recaptchaAction: 'save_daily_log', // Manual reCAPTCHA verification
         },
         async ({ data, userId }) => {
             const { date, content, mood, cravings, used } = data;
@@ -166,6 +168,7 @@ export const saveJournalEntry = onCall<JournalEntryData>(
             rateLimiter: saveJournalEntryLimiter,
             validationSchema: journalEntrySchema,
             requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+            recaptchaAction: 'save_journal_entry', // Manual reCAPTCHA verification
         },
         async ({ data, userId }) => {
             const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
@@ -260,6 +263,7 @@ export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
             rateLimiter: softDeleteJournalEntryLimiter,
             validationSchema: softDeleteJournalEntrySchema,
             requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+            recaptchaAction: 'delete_journal_entry', // Manual reCAPTCHA verification
         },
         async ({ data, userId }) => {
             const { entryId } = data;
@@ -357,6 +361,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
             rateLimiter: saveInventoryEntryLimiter,
             validationSchema: inventoryEntrySchema,
             requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+            recaptchaAction: 'save_inventory', // Manual reCAPTCHA verification
         },
         async ({ data, userId }) => {
             const { type, data: entryData, tags } = data;
@@ -445,6 +450,7 @@ const migrateDataLimiter = new FirestoreRateLimiter({
 interface MigrationData {
     anonymousUid: string;
     targetUid: string;
+    recaptchaToken?: string;
 }
 
 /**
@@ -490,10 +496,26 @@ export const migrateAnonymousUserData = onCall<MigrationData>(
             throw new HttpsError("failed-precondition", "App Check verification failed. Please refresh the page.");
         } */
 
-        // Validate input
-        if (!data.anonymousUid || !data.targetUid) {
-            throw new HttpsError("invalid-argument", "Both anonymousUid and targetUid are required");
+        // Verify reCAPTCHA token (manual verification)
+        await verifyRecaptchaToken(
+            data.recaptchaToken || '',
+            'migrate_user_data',
+            userId
+        );
+
+        // Validate input using Zod schema
+        let validatedData: MigrationData;
+        try {
+            validatedData = migrationDataSchema.parse(data);
+        } catch (error) {
+            const zodError = error as { issues?: Array<{ message: string }> };
+            const errorMessages = zodError.issues?.map((e) => e.message).join(", ") || "Validation failed";
+            logSecurityEvent("VALIDATION_FAILURE", "migrateAnonymousUserData", `Validation failed: ${errorMessages}`, { userId });
+            throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
         }
+
+        // Use validated data
+        data = validatedData;
 
         // Authorization: caller must be source OR target user
         if (userId !== data.anonymousUid && userId !== data.targetUid) {

@@ -9,6 +9,7 @@ export const dailyLogSchema = z.object({
     cravings: z.boolean().optional(),
     used: z.boolean().optional(),
     userId: z.string().optional(), // Optional in data because we get it from auth context
+    recaptchaToken: z.string().optional(), // reCAPTCHA Enterprise token for bot protection
 });
 
 export type DailyLogInput = z.infer<typeof dailyLogSchema>;
@@ -27,6 +28,7 @@ export const journalEntrySchema = z.object({
     hasUsed: z.boolean().optional(),
     mood: z.string().nullable().optional(),
     userId: z.string().optional(), // Optional in data because we get it from auth context
+    recaptchaToken: z.string().optional(), // reCAPTCHA Enterprise token for bot protection
 });
 
 export type JournalEntryInput = z.infer<typeof journalEntrySchema>;
@@ -38,6 +40,7 @@ export const inventoryEntrySchema = z.object({
     data: z.record(z.string(), z.unknown()), // Flexible object structure per inventory type
     tags: z.array(z.string()).optional().default([]),
     userId: z.string().optional(), // Optional in data because we get it from auth context
+    recaptchaToken: z.string().optional(), // reCAPTCHA Enterprise token for bot protection
 });
 
 export type InventoryEntryInput = z.infer<typeof inventoryEntrySchema>;
@@ -93,6 +96,16 @@ export type QuoteData = z.infer<typeof quoteSchema>;
 export const softDeleteJournalEntrySchema = z.object({
     entryId: z.string().min(1, "Entry ID is required"),
     userId: z.string().optional(), // Optional in data because we get it from auth context
+    recaptchaToken: z.string().optional(), // reCAPTCHA Enterprise token for bot protection
 });
 
 export type SoftDeleteJournalEntryInput = z.infer<typeof softDeleteJournalEntrySchema>;
+
+// Schema for migration data validation
+export const migrationDataSchema = z.object({
+    anonymousUid: z.string().min(1, "Anonymous UID is required"),
+    targetUid: z.string().min(1, "Target UID is required"),
+    recaptchaToken: z.string().optional(), // reCAPTCHA Enterprise token for bot protection
+});
+
+export type MigrationDataInput = z.infer<typeof migrationDataSchema>;
