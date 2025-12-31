@@ -202,13 +202,24 @@ export function useJournal() {
                     // Filter out soft-deleted entries client-side
                     if (data.isSoftDeleted) return;
 
+                    // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
+                    // All entries should have valid Firestore Timestamps from Cloud Functions
+                    if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
+                        console.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
+                            hasCreatedAt: !!data.createdAt,
+                            hasUpdatedAt: !!data.updatedAt,
+                            createdAtHasToMillis: !!data.createdAt?.toMillis,
+                            updatedAtHasToMillis: !!data.updatedAt?.toMillis
+                        });
+                        return;
+                    }
+
                     fetchedEntries.push({
                         id: doc.id,
                         ...data,
-                        // Convert Firestore Timestamp to millis if necessary, or keep as is if types match
-                        // transform timestamps to numbers or Date objects if needed for client side consistent typing
-                        createdAt: data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now(),
-                        updatedAt: data.updatedAt?.toMillis ? data.updatedAt.toMillis() : Date.now()
+                        // Convert Firestore Timestamp to millis for consistent client-side typing
+                        createdAt: data.createdAt.toMillis(),
+                        updatedAt: data.updatedAt.toMillis()
                     } as JournalEntry);
                 });
 
