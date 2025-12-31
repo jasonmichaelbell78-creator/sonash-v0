@@ -27,14 +27,28 @@ This is the **CANONICAL** tracking document for the 8-phase security and archite
 
 ### For AI Assistants Starting a New Session
 
+**🚨 CRITICAL**: Before implementing ANY phase, follow the 4-step workflow:
+
+```
+1️⃣  IMPLEMENTATION → 2️⃣  REVIEW R1 → 3️⃣  REVIEW R2 → 4️⃣  BETWEEN-PR CHECKLIST
+```
+
+**See [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md) for the complete workflow with checkboxes.**
+
+**Step-by-step**:
+
 1. **READ THIS DOCUMENT FIRST** before implementing any phase
 2. Check the **Overall Status Dashboard** (below) to see current state
 3. Locate the next **PENDING** phase in dependency order
 4. Review all **CANONICAL FINDINGS** for that phase
 5. Check **Dependencies** section - ensure prerequisite work is COMPLETE
 6. Read **Gap Analysis** of previous phases to avoid repeating mistakes
-7. Consult **IMPLEMENTATION_PROMPTS.md** for execution templates
-8. After completing work, **UPDATE THIS DOCUMENT** immediately (see update instructions below)
+7. **Follow the 4-step workflow** in [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md):
+   - Step 1: Implementation (IMPLEMENTATION_PROMPTS.md)
+   - Step 2: Self-review (Review R1)
+   - Step 3: Hallucination check (Review R2)
+   - Step 4: Between-PR checklist
+8. After completing ALL 4 steps, **UPDATE THIS DOCUMENT** immediately (see update instructions below)
 
 ### For Developers/Reviewers
 

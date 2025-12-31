@@ -2,18 +2,47 @@
 
 **Purpose**: This document contains reusable prompts for implementing and reviewing each phase of the refactoring plan.
 
-**Related Document**: [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md)
+**Related Documents**:
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Master tracking document
+- **[PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md) - START HERE! Complete workflow with checkboxes**
 
 **Last Updated**: 2025-12-30
 
 ---
 
+## 🚨 CRITICAL: READ THIS FIRST
+
+**⚠️ The PR workflow has 4 MANDATORY steps that must be done IN ORDER:**
+
+```
+1️⃣  IMPLEMENTATION (Master PR Implementer Prompt below)
+     ↓
+2️⃣  REVIEW R1 (Self-review - catch regressions)
+     ↓
+3️⃣  REVIEW R2 (Hallucination check - verify claims)
+     ↓
+4️⃣  BETWEEN-PR CHECKLIST (Lock canonical surface, run guardrails)
+```
+
+**DO NOT SKIP STEPS**. Skipping leads to:
+- ❌ Incomplete work
+- ❌ Regressions
+- ❌ Scope creep
+- ❌ Pattern drift
+- ❌ False claims
+
+**See [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md) for the complete checklist with checkboxes.**
+
+---
+
 ## Table of Contents
 
-1. [Master PR Implementer Prompt](#master-pr-implementer-prompt) - Reuse for every phase
-2. [Review Prompt R1](#review-prompt-r1) - Self-review after implementation
-3. [Review Prompt R2](#review-prompt-r2) - Hallucination guardrail check
-4. [Between-PR Checklist](#between-pr-checklist) - What to do after each phase
+1. [Master PR Implementer Prompt](#master-pr-implementer-prompt) - Step 1: Implementation
+2. [Review Prompt R1](#review-prompt-r1) - Step 2: Self-review
+3. [Review Prompt R2](#review-prompt-r2) - Step 3: Hallucination check
+4. [Between-PR Checklist](#between-pr-checklist) - Step 4: Post-completion
+
+**→ For a printable checklist, see [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md)**
 
 ---
 
