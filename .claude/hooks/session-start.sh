@@ -15,9 +15,7 @@ npm install --prefer-offline --no-audit --no-fund
 # Install Firebase Functions dependencies
 if [ -d "functions" ]; then
   echo "📦 Installing Firebase Functions dependencies..."
-  cd functions
-  npm install --prefer-offline --no-audit --no-fund
-  cd ..
+  (cd functions && npm install --prefer-offline --no-audit --no-fund && echo "🔨 Building Firebase Functions..." && npm run build)
 fi
 
 # Build test files (required for npm test to work)
