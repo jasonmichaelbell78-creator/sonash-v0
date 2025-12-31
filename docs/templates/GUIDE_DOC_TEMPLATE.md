@@ -18,7 +18,7 @@ By the end of this guide, you will be able to:
 
 ### What You'll Build/Accomplish
 
-[Brief description of the end result]
+[Brief description of the outcome]
 
 ### Prerequisites
 

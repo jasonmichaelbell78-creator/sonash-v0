@@ -315,12 +315,10 @@ Example:
 
 ### How to Update
 
-1. Make changes to relevant sections
-2. Update "Last Updated" date at top
-3. Increment version number (minor for updates, major for overhauls)
-4. Add entry to version history
-5. Test updated procedure if possible
-6. Commit changes:
+1. Edit relevant sections and update "Last Updated" date
+2. Increment version number and add entry to version history
+3. Test updated procedure if applicable
+4. Commit with clear message:
    ```bash
    git add docs/[this-document].md
    git commit -m "docs: Update [document] - [changes]"

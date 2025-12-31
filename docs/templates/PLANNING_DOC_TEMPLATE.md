@@ -207,7 +207,7 @@ interface [Name] {
 
 ### Definition of Done
 
-This plan is complete when ALL of the following are true:
+This plan is complete when all of the following are true:
 
 - [ ] **All phases complete**: All tasks in all phases checked off
 - [ ] **Tests passing**: All new tests pass, no regressions

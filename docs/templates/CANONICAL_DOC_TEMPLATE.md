@@ -254,7 +254,7 @@ Upon completion:
 
 **Completed Items** (X/Y = Z%):
 - ✅ **[Item 1]** (YYYY-MM-DD)
-  - [Specific details of what was done]
+  - [Details of what was done]
   - [Files changed, commits made, evidence]
 - ✅ **[Item 2]** (YYYY-MM-DD)
   - [Details]
