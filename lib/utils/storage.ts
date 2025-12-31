@@ -6,6 +6,8 @@
  * if window and localStorage are available before accessing them.
  */
 
+import { getErrorMessage } from './errors';
+
 /**
  * Check if localStorage is available (client-side only)
  * @returns True if localStorage is available
@@ -38,7 +40,7 @@ export function getLocalStorage(key: string): string | null {
   try {
     return window.localStorage.getItem(key);
   } catch (error) {
-    console.warn(`Failed to get localStorage item "${key}":`, error);
+    console.warn(`Failed to get localStorage item "${key}": ${getErrorMessage(error)}`);
     return null;
   }
 }
@@ -58,7 +60,7 @@ export function setLocalStorage(key: string, value: string): boolean {
     window.localStorage.setItem(key, value);
     return true;
   } catch (error) {
-    console.warn(`Failed to set localStorage item "${key}":`, error);
+    console.warn(`Failed to set localStorage item "${key}": ${getErrorMessage(error)}`);
     return false;
   }
 }
@@ -77,7 +79,7 @@ export function removeLocalStorage(key: string): boolean {
     window.localStorage.removeItem(key);
     return true;
   } catch (error) {
-    console.warn(`Failed to remove localStorage item "${key}":`, error);
+    console.warn(`Failed to remove localStorage item "${key}": ${getErrorMessage(error)}`);
     return false;
   }
 }
@@ -96,7 +98,7 @@ export function getLocalStorageJSON<T>(key: string): T | null {
   try {
     return JSON.parse(value) as T;
   } catch (error) {
-    console.warn(`Failed to parse JSON from localStorage key "${key}":`, error);
+    console.warn(`Failed to parse JSON from localStorage key "${key}": ${getErrorMessage(error)}`);
     return null;
   }
 }
@@ -112,7 +114,7 @@ export function setLocalStorageJSON<T>(key: string, value: T): boolean {
     const jsonString = JSON.stringify(value);
     return setLocalStorage(key, jsonString);
   } catch (error) {
-    console.warn(`Failed to stringify value for localStorage key "${key}":`, error);
+    console.warn(`Failed to stringify value for localStorage key "${key}": ${getErrorMessage(error)}`);
     return false;
   }
 }
@@ -130,7 +132,7 @@ export function clearLocalStorage(): boolean {
     window.localStorage.clear();
     return true;
   } catch (error) {
-    console.warn('Failed to clear localStorage:', error);
+    console.warn(`Failed to clear localStorage: ${getErrorMessage(error)}`);
     return false;
   }
 }

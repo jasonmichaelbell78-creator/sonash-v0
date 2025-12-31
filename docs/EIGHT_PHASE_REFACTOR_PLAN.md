@@ -1589,11 +1589,22 @@ match /users/{userId}/journal/{entryId} {
 
 ## Acceptance Criteria
 
-**⚠️ STATUS NOTE**: These acceptance criteria are templates based on CANON definitions and best practices. They have **not yet been evaluated** against actual implementation. Before marking Phase 1 COMPLETE, you must:
-1. Review each criterion against actual code changes
-2. Check or uncheck boxes based on what was actually completed
-3. If any criterion fails, reopen the corresponding CANON as a blocker
-4. Document any deviations or decisions (e.g., "App Check deferred to Dec 31")
+**⚠️ PHASE 1 STATUS** (Updated 2025-12-30):
+- **Technical Implementation**: 83% complete (5/6 CANON items done, 1 blocked by Firebase throttle until Dec 31)
+- **Automated Tests**: All passing ✅
+- **User Testing**: **4 items pending** (marked ⏳ below)
+- **Can Phase 1 be marked COMPLETE?**: **NO** - The following manual verification items must pass first:
+  - Create/update journal entry via UI
+  - Rate limiting verification
+  - Hallucination check (Review Prompt R2)
+- **Blocking downstream phases**: PR2, PR4, PR8 remain blocked until Phase 1 is marked COMPLETE
+
+**Next Steps**:
+1. Wait for Firebase App Check throttle to clear (Dec 31, 2025)
+2. Complete App Check implementation (CANON-0002)
+3. Perform manual user testing (4 pending items)
+4. Run Review Prompt R2 (hallucination check)
+5. Only then mark Phase 1 as COMPLETE
 
 ### Must Pass Before Marking Phase 1 COMPLETE
 
@@ -1997,9 +2008,10 @@ Add error type guards, reduce any/unknown casting, and guard client-only APIs fr
    - `clearLocalStorage()`: SSR-safe clear
 
 ### Files Modified
-1. **hooks/use-journal.ts** (lines 177-187)
+1. **hooks/use-journal.ts** (lines 205-215, 220-222)
    - Removed `Date.now()` fallback for timestamps
-   - Added validation to skip entries with missing/invalid timestamps
+   - Added validation to skip entries with missing/invalid timestamps (lines 205-215)
+   - Added strict timestamp conversion without fallbacks (lines 220-222)
    - Added warning logs for corrupted data
 
 ### Verification Completed

@@ -142,7 +142,12 @@ For each claimed improvement:
 
 ### Verification Commands
 
+**Important**: Replace `<placeholders>` with actual file names and patterns from your phase. Supplement generic commands with phase-specific CANON verification patterns.
+
 ```bash
+# Generic Verification (use for all phases)
+# ----------------------------------------
+
 # Verify files exist
 ls -lh <file1> <file2> <file3>
 
@@ -154,7 +159,33 @@ grep -c "functionName\|className" <file>
 
 # Verify behavior changes
 git diff HEAD~1 <file>
+
+# Phase-Specific Verification Examples
+# -------------------------------------
+# Use patterns from your phase's "Canonical Surface" or "Verification Commands" section
+
+# Example (Phase 1): Verify deprecated patterns removed
+grep -r "FirestoreService.saveJournalEntry" components/
+grep -r "setDoc.*users/.*journal" components/
+
+# Example (Phase 3): Verify SSR-safe localStorage usage
+grep -r "localStorage\\.getItem\|localStorage\\.setItem" components/ lib/
+# Expected: 0 results (all should use lib/utils/storage.ts)
+
+# Example (Phase 3): Verify error handling uses type guards
+grep -r "error\\.code ===" components/ hooks/
+# Expected: 0 results (all should use isFirebaseError() first)
+
+# Add your phase-specific patterns here:
+# grep -r "<forbidden-pattern>" <search-path>
+# grep -c "<canonical-pattern>" <file>
 ```
+
+**How to find phase-specific patterns**:
+1. Open `EIGHT_PHASE_REFACTOR_PLAN.md`
+2. Find your phase's "Canonical Surface Locked" section
+3. Copy the verification commands from "Verification Commands" subsection
+4. Run each command and verify the expected results match actual results
 
 ### Output
 
