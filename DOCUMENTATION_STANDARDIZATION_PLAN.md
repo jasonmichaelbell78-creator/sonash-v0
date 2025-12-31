@@ -545,6 +545,7 @@ Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to e
   - Navigation rules (always start README → AI_WORKFLOW → specific doc)
   - What information lives where
   - Standard operating procedures
+  - **Reference CODERABBIT_REVIEW_PROCESS.md in "Standard Procedures" section**
   - Session context usage
   - When to update which docs
 
@@ -552,6 +553,7 @@ Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to e
   - Current sprint focus
   - Recent completions (last 3 sessions)
   - Active blockers
+  - **Pending CodeRabbit reviews section (links to CODERABBIT_REVIEW_PROCESS.md)**
   - Next session goals
   - Collaboration notes
 
@@ -1287,7 +1289,7 @@ Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new s
 - [ ] **Task 3.1**: Migrate README.md (1.5 hours)
   - Add status dashboard (auto-scripted from ROADMAP.md)
   - Add project overview refinement
-  - Add links to all major docs
+  - Add links to all major docs (including CODERABBIT_REVIEW_PROCESS.md)
   - Add AI instructions section
   - Add version metadata
   - Run `npm run docs:update-readme` to test automation
@@ -1373,7 +1375,7 @@ When implementing this phase:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6-8 hours
+**Estimated Effort:** 6.5-8.5 hours
 **Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation)
 **Risk Level:** Low
 
@@ -1459,7 +1461,14 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
   - Add "Last Updated" date
   - Add purpose & scope
   - Ensure checklist complete
+  - **Add CodeRabbit review section (links to CODERABBIT_REVIEW_PROCESS.md)**
   - Add AI instructions (mandatory pre-PR checks)
+
+- [ ] **Task 4.9**: Create .github/pull_request_template.md (0.5 hours)
+  - **Add CodeRabbit review checklist section**
+  - Link to CODERABBIT_REVIEW_PROCESS.md
+  - Include collapsible template for CodeRabbit summary
+  - Add standard PR sections (description, testing, checklist)
 
 ### ✅ Acceptance Criteria
 
