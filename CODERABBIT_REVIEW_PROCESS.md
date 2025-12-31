@@ -220,7 +220,7 @@ When processing CodeRabbit suggestions:
 
 - **PR_WORKFLOW_CHECKLIST.md** - Pre-PR checklist includes CodeRabbit review
 - **DOCUMENTATION_STANDARDS.md** (Phase 1) - Standards for doc structure
-- **.github/workflows/docs-lint.yml** (Phase 2) - Automated linting that complements CodeRabbit
+- **GitHub Actions workflow: docs-lint.yml** (Phase 2) - Automated linting that complements CodeRabbit
 
 ---
 
@@ -236,7 +236,7 @@ When processing CodeRabbit suggestions:
 
 1. **Integrate into PR_WORKFLOW_CHECKLIST.md** (Phase 1 or 4)
 2. **Add CodeRabbit review step** to pre-merge checklist
-3. **Template PR comment** in .github/pull_request_template.md
+3. **Template PR comment** in GitHub pull_request_template.md
 4. **Track metrics** (optional: add to MULTI_AI_REVIEW_COORDINATOR.md)
 
 ---

@@ -574,8 +574,9 @@ When implementing this phase:
 2. Create templates in order (1.1 → 1.8) as dependencies exist
 3. Use example content from existing docs where applicable
 4. Test each template by creating a sample document
-5. Commit templates individually for easier review
-6. Update this phase's completion percentage after each task
+5. Verify CODERABBIT_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8 (ensure Standard Procedures and Pending Reviews sections exist)
+6. Commit templates individually for easier review
+7. Update this phase's completion percentage after each task
 
 ---
 
