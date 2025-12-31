@@ -926,7 +926,7 @@ When implementing this phase:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6-8 hours
+**Estimated Effort:** 7-9 hours
 **Dependencies:** Phase 1 (templates exist for validation)
 **Risk Level:** Low
 
@@ -998,12 +998,17 @@ Create automation scripts for documentation maintenance, validation, and review 
  */
 
 // Implementation requirements:
-// 1. Parse ROADMAP.md status table
+// 1. Parse ROADMAP.md status table (use remark/unified for robust markdown parsing, avoid regex)
 // 2. Calculate weighted completion (by milestone size)
 // 3. Find current active milestone
 // 4. Find recently completed milestones (last 30 days)
 // 5. Update README.md preserving structure
 // 6. Exit 0 if success, 1 if error
+//
+// Recommended libraries:
+// - unified/remark-parse for markdown parsing
+// - gray-matter for frontmatter (if needed)
+// - defensive checks: verify ROADMAP.md exists, status table present, valid format
 ```
 
 #### scripts/check-docs-light.js
@@ -1017,6 +1022,7 @@ Create automation scripts for documentation maintenance, validation, and review 
  * - "Last Updated" dates within reasonable range (< 90 days for active docs)
  * - Version numbers follow X.Y format
  * - Cross-references point to existing files
+ * - Internal anchor links are valid (e.g., [link](#section))
  *
  * Outputs:
  * - List of validation errors
@@ -1026,11 +1032,16 @@ Create automation scripts for documentation maintenance, validation, and review 
 
 // Implementation requirements:
 // 1. Determine doc tier from filename/path
-// 2. Check for required sections per tier
+// 2. Check for required sections per tier (parse markdown headings)
 // 3. Parse "Last Updated" dates, calculate age
 // 4. Validate version number format
-// 5. Extract markdown links, verify targets exist
+// 5. Extract markdown links, verify targets exist (both file paths and anchors)
 // 6. Output formatted report
+//
+// Recommended libraries:
+// - remark/remark-parse for markdown parsing
+// - remark-link-check or similar for comprehensive link validation (files + anchors)
+// - defensive checks: handle missing files gracefully, log all validation steps
 ```
 
 #### scripts/archive-doc.js
@@ -1055,10 +1066,19 @@ Create automation scripts for documentation maintenance, validation, and review 
 
 // Implementation requirements:
 // 1. CLI argument parsing
-// 2. YAML frontmatter generation
-// 3. File move operation
-// 4. Cross-reference scanning and updating
+// 2. YAML frontmatter generation (use gray-matter)
+// 3. File move operation (fs.rename with error handling)
+// 4. Cross-reference scanning and updating:
+//    - Pattern: only replace [text](FILENAME.md) → [text](docs/archive/FILENAME.md)
+//    - Log all changes made (file path + line number)
+//    - Confirm each replacement (avoid silent failures or incorrect replacements)
 // 5. Optional ROADMAP_LOG.md update
+//
+// Defensive checks:
+// - Verify source file exists
+// - Verify docs/archive/ directory exists (create if not)
+// - Backup source before moving (or use git to track)
+// - Exit with clear error message if any step fails
 ```
 
 #### scripts/check-review-needed.js
@@ -1096,9 +1116,16 @@ Create automation scripts for documentation maintenance, validation, and review 
 // 3. Count new files by extension and path
 // 4. Run npm run lint -- --format json to get current warnings
 // 5. Read coverage report (coverage/coverage-summary.json)
+//    NOTE: Assumes Jest/NYC format. If coverage tool changes, add format detection.
 // 6. Compare against thresholds
 // 7. Update coordinator with current metrics
 // 8. Output recommendation
+//
+// Defensive checks:
+// - Handle missing MULTI_AI_REVIEW_COORDINATOR.md gracefully
+// - Handle missing coverage file (warn, don't fail)
+// - Validate git commands succeed before parsing output
+// - Log all metrics calculated for debugging
 ```
 
 ### 📋 Tasks
@@ -1135,9 +1162,31 @@ Create automation scripts for documentation maintenance, validation, and review 
   - Format output as PR comment
   - Configure failure conditions
 
-- [ ] **Task 2.6**: Add npm scripts to package.json (0.5 hours)
+- [ ] **Task 2.6**: Add npm scripts to package.json and validate (1 hour)
   - All 4 script shortcuts
-  - Test each script runs correctly
+  - **Test each script with concrete validation:**
+    - `npm run docs:update-readme`:
+      - Run against current ROADMAP.md
+      - Verify README.md "Project Status" section updated
+      - Check script exits with code 0
+      - Verify no other README content modified
+    - `npm run docs:check`:
+      - Run against all tier docs
+      - Confirm required sections detected correctly
+      - Test with known-good doc (should pass with exit 0)
+      - Test with doc missing required section (should fail with exit 1)
+      - Verify no false positives
+    - `npm run docs:archive`:
+      - Test with sample doc (create test-doc.md)
+      - Verify YAML frontmatter added correctly
+      - Verify file moved to docs/archive/
+      - Check cross-references updated (if any)
+    - `npm run review:check`:
+      - Run in current repo state
+      - Verify baseline metrics printed (lines, files, components)
+      - Check thresholds calculated correctly
+      - Verify exit code reflects trigger status
+  - Document test results (command, input, expected outcome, actual result)
 
 ### ✅ Acceptance Criteria
 
@@ -1678,9 +1727,16 @@ When implementing this phase:
 
 **Automation & Enforcement:**
 - [ ] All 4 automation scripts functional
-- [ ] npm scripts added and tested
-- [ ] GitHub Actions workflow passing
-- [ ] Review trigger detection working
+- [ ] npm scripts added and tested (with documented test results per Task 2.6)
+- [ ] GitHub Actions workflow passing with measurable criteria:
+  - PR with new Tier 1 doc triggers docs-lint.yml
+  - Linter detects missing required section (e.g., "🤖 AI Instructions")
+  - PR comment posted: "Missing required section: '🤖 AI Instructions'"
+  - Workflow fails with exit code 1
+- [ ] Review trigger detection working with measurable criteria:
+  - `npm run review:check` outputs current metrics vs thresholds
+  - Script exits 0 if no trigger reached, exits 1 if trigger threshold met
+  - Example output: "Lines changed: 1,234 / 5,000 (24%)"
 
 **Content Quality:**
 - [ ] All Tier 1-2 docs have status dashboards
