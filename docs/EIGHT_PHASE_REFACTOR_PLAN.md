@@ -2008,6 +2008,27 @@ Add error type guards, reduce any/unknown casting, and guard client-only APIs fr
 - ✅ CANON-0017: Unsafe casts documented (Step1WorksheetCard - low risk)
 - ✅ CANON-0038: Index signatures documented (appropriate for Firestore)
 
+### Items Accepted / Won't Fix
+
+**CANON-0017: Unsafe Type Casts**
+- **Status**: ACCEPTED for now, will fix in PR5
+- **Location**: `components/notebook/pages/worksheets/steps/step1-worksheet-card.tsx`
+- **Why acceptable**: Low risk, isolated to one component, will be fixed during PR5 (growth card refactor)
+- **Follow-up**: Added to PR5 scope (30 min fix using Zod validation)
+
+**CANON-0038: Index Signatures**
+- **Status**: WON'T FIX - This is not a problem
+- **Locations**:
+  - `lib/db/users.ts::UserProfile.preferences`
+  - `hooks/use-journal.ts::generateSearchableText()` and `generateTags()` accept `Record<string, unknown>`
+- **Why acceptable**:
+  - Index signatures are appropriate for Firestore dynamic data
+  - Firestore documents have flexible schemas by design
+  - Not a bug or vulnerability
+  - Adding stricter types would add complexity without value
+  - These usages are intentional and correct
+- **Decision**: Marked as "VERIFIED - Acceptable" - no action needed
+
 ---
 
 ## Canonical Surface Locked (2025-12-30)
@@ -2220,7 +2241,45 @@ Extract shared primitives for growth cards and notifications while deduplicating
 3. Create notification helpers (`notifySuccess`, `notifyError`)
 4. Add Badge component to `components/ui/`
 
-**Estimated Time**: 6-10 hours
+**Estimated Time**: 6-10 hours (+ 30 min for unsafe casts fix = 6.5-10.5 hours total)
+
+---
+
+## Follow-up Items (From Phase 3 Review)
+
+### Fix Unsafe Type Casts in Step1WorksheetCard
+
+**Source**: Phase 3 (PR3) review identified unsafe casts documented in CANON-0017
+**Priority**: P2 (should fix during this phase)
+**Effort**: 30 minutes
+
+**Current Issue**:
+- `components/notebook/pages/worksheets/steps/step1-worksheet-card.tsx` uses `as unknown as Record<string, unknown>` pattern
+- This bypasses TypeScript's type safety
+
+**Suggested Fix**:
+Replace unsafe casts with Zod schema validation:
+```typescript
+// Before:
+const data = formData as unknown as Record<string, unknown>;
+
+// After:
+import { z } from 'zod';
+const Step1DataSchema = z.object({
+  selectedRung: z.number(),
+  admitPowerlessness: z.string(),
+  admitUnmanageability: z.string()
+});
+const data = Step1DataSchema.parse(formData);
+```
+
+**Files affected**:
+- `components/notebook/pages/worksheets/steps/step1-worksheet-card.tsx`
+
+**Why fix in PR5**:
+- PR5 already touches growth card code
+- Fix is simple (30 min) and improves type safety
+- Aligns with overall refactoring goals
 
 ---
 
@@ -2231,6 +2290,7 @@ Extract shared primitives for growth cards and notifications while deduplicating
 - [ ] Quote widgets use shared hook
 - [ ] Notifications use helpers
 - [ ] Badge component exists and is used
+- [ ] Unsafe casts in Step1WorksheetCard replaced with Zod validation
 
 ---
 
@@ -2376,7 +2436,52 @@ Address critical coverage gaps for account linking and Firestore services.
 3. Add tests for callable wrappers
 4. Aim for >70% coverage on critical paths
 
-**Estimated Time**: 12-16 hours
+**Estimated Time**: 12-16 hours (+ 2-3 hours for Phase 3 utility tests = 14-19 hours total)
+
+---
+
+## Follow-up Items (From Phase 3 Review)
+
+### Test Coverage for Phase 3 Utilities
+
+**Source**: Phase 3 (PR3) review identified need for comprehensive test coverage
+**Priority**: P2 (should add during this testing phase)
+**Effort**: 2-3 hours
+
+**New utilities created in Phase 3 that need tests**:
+
+1. **lib/utils/errors.ts** (1 hour)
+   - Test `isFirebaseError()` with various error shapes
+   - Test `getErrorMessage()` with Firebase errors, Error objects, strings, unknowns
+   - Test `isAuthError()` and `isNetworkError()` categorization
+   - Test edge cases: null, undefined, malformed errors
+   - Aim for >80% coverage
+
+2. **lib/utils/storage.ts** (1 hour)
+   - Test SSR scenario (typeof window === 'undefined')
+   - Test quota exceeded errors
+   - Test JSON parse failures in `getLocalStorageJSON()`
+   - Test successful set/get/remove flows
+   - Mock localStorage to simulate failures
+   - Aim for >80% coverage
+
+3. **hooks/use-journal.ts** timestamp validation (30 min)
+   - Test that entries with invalid timestamps are skipped
+   - Test that warning is logged for invalid entries
+   - Test that valid entries are processed correctly
+   - Mock Firestore snapshot with mixed valid/invalid timestamps
+
+**Why add in PR7**:
+- PR7 is the dedicated testing phase
+- These utilities are critical infrastructure
+- Fits naturally with other service/utility testing
+- Ensures Phase 3 improvements are properly covered
+
+**Acceptance Criteria**:
+- [ ] errors.ts has >80% coverage
+- [ ] storage.ts has >80% coverage
+- [ ] use-journal.ts timestamp validation has test cases
+- [ ] All edge cases covered (SSR, errors, malformed data)
 
 ---
 
@@ -2387,6 +2492,8 @@ Address critical coverage gaps for account linking and Firestore services.
 - [ ] DB services have >60% coverage
 - [ ] Callable wrappers have >60% coverage
 - [ ] `npm run test:coverage` shows improvement
+- [ ] Phase 3 utilities have >80% coverage (errors.ts, storage.ts)
+- [ ] Journal hook timestamp validation tested
 
 ---
 
