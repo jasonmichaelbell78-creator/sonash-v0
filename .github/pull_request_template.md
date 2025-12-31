@@ -24,7 +24,7 @@ For full conventions, see: docs/PR_WORKFLOW_CHECKLIST.md
 
 
 ## How It Works
-<!-- Implementation approach (for non-trivial changes) -->
+<!-- Implementation approach (required for refactors, feature changes, architectural modifications, behavior changes; optional for docs/test-only updates) -->
 
 
 ## Testing Done
@@ -48,8 +48,9 @@ Related to #
 
 
 ## CodeRabbit Review
-<!-- Will be filled after CodeRabbit reviews this PR -->
-<!-- See: CODERABBIT_REVIEW_PROCESS.md for processing guidelines -->
+<!-- To be filled manually after processing CodeRabbit suggestions -->
+<!-- See: CODERABBIT_REVIEW_PROCESS.md for categorization and triage guidelines -->
+<!-- Categorize each suggestion as Addressed/Deferred/Rejected with reasoning -->
 
 **Total Suggestions:**
 **Addressed:**
