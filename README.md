@@ -121,7 +121,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Project Status
 
-**Last Updated:** December 23, 2025
+**Last Updated:** December 31, 2025
 **Current Focus:** UX Polish + Admin Operations
 
 ### Recent Completions
