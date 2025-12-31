@@ -11,6 +11,24 @@
 			},
 			"gallery": "https://api.mcp.github.com",
 			"version": "1.0.31"
+		},
+		"puppeteer": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-puppeteer"
+			],
+			"description": "Browser automation with Chrome DevTools - navigate, screenshot, interact with pages"
+		},
+		"playwright": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@playwright/mcp-server"
+			],
+			"description": "Cross-browser testing and automation - Chrome, Firefox, Safari support"
 		}
 	},
 	"inputs": [
