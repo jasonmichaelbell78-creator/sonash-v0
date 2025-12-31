@@ -48,10 +48,16 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 ## Project Structure
 
 \`\`\`
+├── .claude/                    # Claude Code development infrastructure
+│   ├── agents/                 # 24 specialized AI agents (architecture, security, testing, etc.)
+│   ├── skills/                 # 23 task-specific skills (senior roles, debugging, research, design)
+│   ├── hooks/
+│   │   └── session-start.sh    # Auto-install dependencies on session start
+│   └── settings.json           # Hook configuration
 ├── app/
-│   ├── page.tsx          # Main app entry
-│   ├── layout.tsx        # Root layout with fonts
-│   └── globals.css       # Global styles & design tokens
+│   ├── page.tsx                # Main app entry
+│   ├── layout.tsx              # Root layout with fonts
+│   └── globals.css             # Global styles & design tokens
 ├── components/
 │   ├── notebook/
 │   │   ├── book-cover.tsx      # Main book cover component
@@ -83,6 +89,11 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - Recovery library (glossary + etiquette guide)
 
 ### ✅ Recently Completed (December 2025)
+- **Claude Code Development Infrastructure** (December 31):
+  - SessionStart hook for automatic dependency installation
+  - 24 specialized AI agents (architecture, security, testing, DevOps, documentation)
+  - 23 task-specific skills (senior roles, debugging, research, design tools)
+  - Auto-build for tests and Firebase Functions on session start
 - **Admin Panel Enhancement** (Phases 1-3):
   - Dashboard with system health checks and user metrics
   - Enhanced user management (search, detail view, admin actions)

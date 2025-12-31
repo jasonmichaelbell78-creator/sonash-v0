@@ -1,11 +1,11 @@
 # Eight-Phase Security & Architecture Refactoring Plan
 
 **Project**: SoNash Recovery Notebook
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2025-12-30
-**Last Updated**: 2025-12-30
-**Status**: Phase 1 PENDING (gap analysis documented)
-**Overall Completion**: 0/8 phases complete (0%)
+**Last Updated**: 2025-12-31
+**Status**: Phase 1 PENDING (gap analysis documented) | Infrastructure: COMPLETE
+**Overall Completion**: 0/8 phases complete (0%) | Supporting Infrastructure: Complete
 
 ---
 
@@ -2710,7 +2710,70 @@ YYYY-MM-DD | PhaseX | STATUS_CHANGE | Brief description | Completed by
 **Log**:
 ```
 2025-12-30 | All | PENDING | 8-phase plan documented | Claude
+2025-12-31 | Infrastructure | COMPLETE | Added Claude Code development infrastructure (SessionStart hook, agents, skills) | Claude
 ```
+
+---
+
+## Appendix F: Supporting Infrastructure
+
+**Last Updated**: 2025-12-31
+
+This section documents supporting infrastructure and tooling that enables the refactoring work but isn't part of the core 8-phase plan.
+
+### Claude Code Development Environment (2025-12-31)
+
+**Status**: ✅ COMPLETE
+**Branch**: Merged to `main` via `claude/sonash-refactoring-PcLTk`
+**Commits**: `69395f5`, `e8745a4`, `4dd147d`
+
+#### What Was Added
+
+**1. SessionStart Hook** (`.claude/hooks/session-start.sh`)
+- Auto-installs npm dependencies on session start for Claude Code on the web
+- Installs root project dependencies (`npm install`)
+- Installs Firebase Functions dependencies (`cd functions && npm install`)
+- Builds Firebase Functions (`npm run build`)
+- Builds test files (`npm run test:build`)
+- Uses synchronous mode to ensure dependencies ready before session starts
+- Uses subshell pattern for safe directory operations
+
+**2. Hook Configuration** (`.claude/settings.json`)
+- Registers SessionStart hook with Claude Code
+- Configured to run on every new session
+
+**3. Agents** (`.claude/agents/` - 24 files)
+Specialized AI agents for development tasks:
+- Architecture: `backend-architect.md`, `database-architect.md`, `fullstack-developer.md`, `nextjs-architecture-expert.md`
+- Security: `penetration-tester.md`, `security-auditor.md`, `security-engineer.md`
+- Development: `code-reviewer.md`, `debugger.md`, `error-detective.md`, `frontend-developer.md`, `test-engineer.md`
+- DevOps: `deployment-engineer.md`, `devops-troubleshooter.md`, `dependency-manager.md`
+- Documentation: `documentation-expert.md`, `technical-writer.md`, `markdown-syntax-formatter.md`
+- Performance: `performance-engineer.md`, `react-performance-optimization.md`
+- Specialized: `git-flow-manager.md`, `mcp-expert.md`, `prompt-engineer.md`, `ui-ux-designer.md`
+
+**4. Skills** (`.claude/skills/` - 23 directories)
+Task-specific skills for common workflows:
+- Senior Roles: `senior-frontend`, `senior-backend`, `senior-fullstack`, `senior-devops`, `senior-architect`, `senior-qa`
+- Development: `code-reviewer`, `skill-creator`, `mcp-builder`, `artifacts-builder`, `webapp-testing`, `gh-fix-ci`
+- Debugging: `systematic-debugging`, `requesting-code-review`, `using-superpowers`
+- Research: `content-research-writer`, `market-research-reports`, `developer-growth-analysis`
+- Design: `frontend-design`, `ui-design-system`, `ux-researcher-designer`
+- Tools: `excel-analysis`, `markitdown`
+
+#### Benefits for Refactoring Work
+
+1. **Faster session startup** - Dependencies pre-installed, tests ready to run
+2. **Specialized agents** - Can invoke domain experts for security, architecture, testing tasks
+3. **Consistent workflows** - Skills provide repeatable patterns for common tasks
+4. **Better code review** - `code-reviewer` skill can be invoked before committing
+5. **Improved debugging** - `systematic-debugging` and `error-detective` agents available
+
+#### Usage
+
+**SessionStart Hook**: Runs automatically on every new Claude Code web session
+**Agents**: Invoke via Task tool with specific agent prompts
+**Skills**: Invoke via Skill tool (e.g., `/skill code-reviewer`)
 
 ---
 
@@ -2719,6 +2782,7 @@ YYYY-MM-DD | PhaseX | STATUS_CHANGE | Brief description | Completed by
 | Date | Version | Changes | Author |
 |------|---------|---------|--------|
 | 2025-12-30 | 1.0 | Initial comprehensive documentation of 8-phase plan | Claude |
+| 2025-12-31 | 1.1 | Added Appendix F: Supporting Infrastructure (SessionStart hook, agents, skills) | Claude |
 
 ---
 
