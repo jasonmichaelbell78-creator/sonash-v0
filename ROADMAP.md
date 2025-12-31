@@ -1,11 +1,13 @@
 # SoNash Product Roadmap
 
-**Last Updated:** December 30, 2025
+**Last Updated:** December 31, 2025
 **Status:** Canonical roadmap - supersedes all previous roadmap documents
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
 > **Architecture Refactoring:** See [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) for comprehensive 8-phase security and architecture refactoring plan addressing 44 canonical findings from code audit
+>
+> **⚠️ CRITICAL BLOCKER:** Documentation standardization initiative is now active. See [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - **ALL feature development, refactoring, and new initiatives are blocked until this plan is 100% complete** (estimated 44-56 hours, target completion: February 5, 2026)
 
 ---
 
