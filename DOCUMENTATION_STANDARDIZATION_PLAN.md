@@ -83,7 +83,7 @@ Implement comprehensive documentation and review system:
 - **Week 4** (Jan 25-31): Migrate Tier 5 docs
 - **Week 5** (Feb 1-5): Archive, cleanup, verification
 
-**Total Estimated Effort:** 43-55 hours across 5 weeks
+**Total Estimated Effort:** 44-56 hours across 5 weeks
 
 ---
 
@@ -100,7 +100,7 @@ Implement comprehensive documentation and review system:
 | Phase 6 | Archive & Cleanup | **PENDING** | 0% | Phase 3, 4, 5 |
 
 **Overall Progress:** 0/6 phases complete (0%)
-**Estimated Total Effort:** 43-55 hours
+**Estimated Total Effort:** 44-56 hours
 **Target Completion:** 2026-02-05
 
 ---
@@ -1376,7 +1376,7 @@ When implementing this phase:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6.5-8.5 hours
+**Estimated Effort:** 7-9 hours
 **Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation)
 **Risk Level:** Low
 
@@ -1458,18 +1458,45 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
   - Add purpose & scope
   - Add AI instructions (when to use each prompt)
 
-- [ ] **Task 4.8**: Migrate PR_WORKFLOW_CHECKLIST.md (0.5 hours)
+- [ ] **Task 4.8**: Migrate PR_WORKFLOW_CHECKLIST.md (0.75 hours)
   - Add "Last Updated" date
   - Add purpose & scope
   - Ensure checklist complete
+  - **Add PR naming conventions section:**
+    - Format: `<type>(<scope>): <description>`
+    - Types: feat, fix, docs, refactor, test, chore, style, perf
+    - Scope guidelines (component/feature area)
+    - Description best practices (imperative mood, concise)
+  - **Add PR description requirements section:**
+    - What: Brief summary of changes
+    - Why: Motivation and context
+    - How: Implementation approach
+    - Testing: How to verify changes
+    - Links: Related issues/PRs
   - **Add CodeRabbit review section (links to CODERABBIT_REVIEW_PROCESS.md)**
   - Add AI instructions (mandatory pre-PR checks)
 
-- [ ] **Task 4.9**: Create GitHub pull_request_template (.github/pull_request_template.md) (0.5 hours)
+- [ ] **Task 4.9**: Create GitHub pull_request_template (.github/pull_request_template.md) (0.75 hours)
+  - **Add PR title format guidance at top:**
+    - Comment block explaining: `<type>(<scope>): <description>`
+    - Examples: `feat(auth): add password reset flow`, `fix(journal): resolve entry save bug`
+    - Link to PR_WORKFLOW_CHECKLIST.md for full conventions
+  - **Add standard PR description sections:**
+    - What Changed (required)
+    - Why This Change (required)
+    - How It Works (required for non-trivial changes)
+    - Testing Done (required)
+    - Screenshots/Videos (if UI changes)
+    - Related Issues/PRs (if applicable)
   - **Add CodeRabbit review checklist section**
   - Link to CODERABBIT_REVIEW_PROCESS.md
   - Include collapsible template for CodeRabbit summary
-  - Add standard PR sections (description, testing, checklist)
+  - **Add pre-merge checklist:**
+    - [ ] Tests passing
+    - [ ] Lint passing
+    - [ ] Build successful
+    - [ ] CodeRabbit review addressed
+    - [ ] Breaking changes documented
 
 ### ✅ Acceptance Criteria
 
