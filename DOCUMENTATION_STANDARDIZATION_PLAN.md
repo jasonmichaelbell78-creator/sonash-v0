@@ -450,7 +450,7 @@ npm run review:check  # Automated checkpoint script
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6-8 hours
+**Estimated Effort:** 10-12 hours
 **Dependencies:** None
 **Risk Level:** Low
 
@@ -867,7 +867,7 @@ When starting a review:
   - Adapt Phase 3 categories to security focus
   - Firebase-specific checks (Auth, Rules, App Check)
   - Trust boundary analysis
-  - Rate limiting verification
+  - Rate-limiting verification
 
 - [ ] **Task 1.5.3**: Create MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md (2 hours)
   - Performance-specific categories
@@ -1216,6 +1216,11 @@ Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new s
 - Document known gaps (technical debt)
 - Add blockers (current state)
 - **Limitation Note**: For ROADMAP_LOG.md, add note about pre-standardization entries having limited metadata
+- **Placeholder for Missing Context**: When reasoning/decisions cannot be reconstructed, use:
+  ```markdown
+  **Reasoning & Decisions** (reconstructed 2026-01-XX):
+  - [INCOMPLETE] Original reasoning unavailable; see commit <hash> for context (or "no sources found")
+  ```
 
 **Step 5: Validate**
 - Run `npm run docs:check` on updated doc
@@ -1275,7 +1280,7 @@ Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new s
   - Add known gaps section (security debt)
   - Document Firebase Auth, App Check, Rules decisions
   - Add trust boundary documentation
-  - Add rate limiting strategy
+  - Add rate-limiting strategy
   - Add AI instructions
   - Add update triggers
 
@@ -1610,7 +1615,10 @@ Use `npm run docs:archive -- <filename>` which:
     - Reason: "superseded by SECURITY.md"
 
 - [ ] **Task 6.3**: Archive AI_HANDOFF.md (0.5 hours)
-  - Verify unique content migrated to SESSION_CONTEXT.md
+  - **Pre-archival checklist:**
+    - [ ] All collaboration notes from AI_HANDOFF.md migrated to SESSION_CONTEXT.md
+    - [ ] No unique content remains in AI_HANDOFF.md
+    - [ ] SESSION_CONTEXT.md contains full transition context
   - Run `npm run docs:archive -- AI_HANDOFF.md`
     - Reason: "superseded by SESSION_CONTEXT.md + standardized docs"
     - Superseded by: SESSION_CONTEXT.md
