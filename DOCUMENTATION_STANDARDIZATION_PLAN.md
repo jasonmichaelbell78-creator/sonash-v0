@@ -12,7 +12,7 @@
 **THIS DOCUMENTATION STANDARDIZATION EFFORT BLOCKS ALL OTHER PROJECT WORK.**
 
 No feature development, refactoring, or new initiatives should begin until:
-- ✅ All 7 phases of this plan are COMPLETE
+- ✅ All 6 phases + Phase 1.5 of this plan are COMPLETE
 - ✅ All docs pass automated linter
 - ✅ AI_WORKFLOW.md is published and verified
 - ✅ All templates are created and tested
@@ -83,7 +83,7 @@ Implement comprehensive documentation and review system:
 - **Week 4** (Jan 25-31): Migrate Tier 5 docs
 - **Week 5** (Feb 1-5): Archive, cleanup, verification
 
-**Total Estimated Effort:** 25-35 hours across 5 weeks
+**Total Estimated Effort:** 43-55 hours across 5 weeks
 
 ---
 
@@ -966,7 +966,7 @@ Create automation scripts for documentation maintenance, validation, and review 
 - Outputs trigger status
 - Updates MULTI_AI_REVIEW_COORDINATOR.md
 
-**5. .github/workflows/docs-lint.yml**
+**5. GitHub Actions workflow: docs-lint.yml**
 - Runs check-docs-light.js on every PR
 - Fails if required sections missing
 - Warns if "Last Updated" is stale
@@ -1465,7 +1465,7 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
   - **Add CodeRabbit review section (links to CODERABBIT_REVIEW_PROCESS.md)**
   - Add AI instructions (mandatory pre-PR checks)
 
-- [ ] **Task 4.9**: Create .github/pull_request_template.md (0.5 hours)
+- [ ] **Task 4.9**: Create GitHub pull_request_template (.github/pull_request_template.md) (0.5 hours)
   - **Add CodeRabbit review checklist section**
   - Link to CODERABBIT_REVIEW_PROCESS.md
   - Include collapsible template for CodeRabbit summary
