@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
-**Last Updated**: 2025-12-31
-**Document Version**: 1.0
+**Last Updated**: 2026-01-01
+**Document Version**: 1.1
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -35,14 +35,17 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
-☐ 2. Check ROADMAP.md (verify milestone priorities)
-☐ 3. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
-☐ 4. Review AI_HANDOFF.md (detailed recent work)
-☐ 5. Consult specific planning docs as needed
-☐ 6. Begin work following documented procedures
+☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
+☐ 3. Check ROADMAP.md (verify milestone priorities)
+☐ 4. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
+☐ 5. Review AI_HANDOFF.md (detailed recent work)
+☐ 6. Consult specific planning docs as needed
+☐ 7. Begin work following documented procedures
 ```
 
 **Time**: 5-10 minutes
+
+> **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4 mandatory security standards (rate limiting, input validation, secrets management, OWASP compliance). See [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
 
 ---
 
@@ -57,36 +60,42 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
    - Active blockers
    - Recent completions
 
-2. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
+2. **[GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md)** - MANDATORY before coding!
+   - Rate limiting requirements
+   - Input validation requirements
+   - Secrets management rules
+   - OWASP compliance checklist
+
+3. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
    - Current milestones
    - Feature priorities
    - Dependencies
 
 **As Needed** (Reference When Relevant):
 
-3. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
+4. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
    - Full recent work history
    - Technical decisions
    - Known issues
    - Architecture overview
 
-4. **Planning Documents** (when working on specific features):
+5. **Planning Documents** (when working on specific features):
    - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
    - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
 
-5. **Foundation Documents** (when making architectural decisions):
+6. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System design
    - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
    - [DEVELOPMENT.md](./docs/DEVELOPMENT.md) - Development procedures
 
-6. **Reference Documents** (when following workflows):
+7. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
    - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
-7. **Standards** (when creating/updating docs):
+8. **Standards** (when creating/updating docs):
    - [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
 
 ---
@@ -257,7 +266,8 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 → [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 **Security Guidelines**:
-→ [SECURITY.md](./docs/SECURITY.md)
+→ [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md) - MANDATORY standards
+→ [SECURITY.md](./docs/SECURITY.md) - Additional security docs
 
 **Development Procedures**:
 → [DEVELOPMENT.md](./docs/DEVELOPMENT.md)
@@ -401,6 +411,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup | Claude |
 | 1.0 | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference | Claude Code |
 
 ---
