@@ -4,6 +4,11 @@
 
 **⚠️ CRITICAL**: Print this checklist and check off each step. Skipping steps leads to incomplete work, regressions, and scope creep.
 
+**Related Documents**:
+- [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Security requirements for ALL code
+- [AI_REVIEW_PROCESS.md](../AI_REVIEW_PROCESS.md) - Processing AI review feedback
+- [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Deliverable Audit procedure
+
 ---
 
 ## 📋 The Complete PR Workflow
@@ -38,7 +43,8 @@
 │      ├─ Step 1: Rebase + Sanity Build                      │
 │      ├─ Step 2: Document Canonical Surface                 │
 │      ├─ Step 3: Run Grep Guardrails                        │
-│      └─ Step 4: Update Tracking Document                   │
+│      ├─ Step 4: Update Tracking Document                   │
+│      └─ Step 5: Run Deliverable Audit (MANDATORY)          │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -58,6 +64,12 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
   - [ ] Restate PR title + goal (1-2 sentences)
   - [ ] List CANON IDs you will satisfy
   - [ ] List expected files to touch
+
+- [ ] **SECURITY CHECK** (MANDATORY - see [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md))
+  - [ ] Rate Limiting: Will new endpoints need limits?
+  - [ ] Input Validation: Will new inputs need validation?
+  - [ ] Secrets: Any new API keys or secrets needed?
+  - [ ] OWASP: Any security-sensitive changes?
 
 - [ ] **BASELINE** (if not done this session)
   - [ ] Run: `npm run lint`
@@ -112,6 +124,7 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
   - [ ] No weakening of security posture
   - [ ] Server still enforces all critical validation
   - [ ] Client doesn't bypass security checks
+  - [ ] All 4 GLOBAL_SECURITY_STANDARDS met (rate limiting, input validation, secrets, OWASP)
 
 - [ ] **Tests: do they cover the risky path or just the happy path?**
   - [ ] Error cases tested
@@ -254,6 +267,17 @@ grep -r "onAuthStateChanged(" hooks/
 - [ ] Add "What Was Accomplished" section
 - [ ] Check all acceptance criteria boxes
 
+### Step 5: Run Deliverable Audit (MANDATORY)
+
+**See**: [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure"
+
+- [ ] Gather original goals, acceptance criteria, deliverables list
+- [ ] Verify each deliverable exists, is complete, meets criteria
+- [ ] Check for gaps (missing items, unmet criteria)
+- [ ] Document findings in "What Was Accomplished"
+- [ ] Address any gaps before marking complete
+- [ ] Run procedure gap analysis (cross-reference dependencies)
+
 ---
 
 ## 🚨 COMMON MISTAKES TO AVOID
@@ -353,6 +377,7 @@ You've successfully completed a phase when:
 
 ✅ All 4 workflow steps done (Implementation → R1 → R2 → Between-PR)
 ✅ All checkboxes in this document checked
+✅ Security standards verified (GLOBAL_SECURITY_STANDARDS.md)
 ✅ All tests passing
 ✅ Build successful
 ✅ Canonical surface documented
@@ -360,11 +385,13 @@ You've successfully completed a phase when:
 ✅ Grep guardrails run and passing
 ✅ No MUST_FIX items remaining
 ✅ No UNPROVEN claims
+✅ **Deliverable audit passed** (all deliverables verified)
+✅ **Procedure gap analysis complete** (cross-references checked)
 
 **Only then** can you start the next phase.
 
 ---
 
-**Last Updated**: 2025-12-30
-**Document Version**: 1.0
-**Related**: IMPLEMENTATION_PROMPTS.md, EIGHT_PHASE_REFACTOR_PLAN.md
+**Last Updated**: 2026-01-01
+**Document Version**: 1.1
+**Related**: IMPLEMENTATION_PROMPTS.md, EIGHT_PHASE_REFACTOR_PLAN.md, GLOBAL_SECURITY_STANDARDS.md, AI_WORKFLOW.md

@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
 **Last Updated**: 2026-01-01
-**Document Version**: 1.2
+**Document Version**: 1.3
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -36,16 +36,22 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
-☐ 3. Check ROADMAP.md (verify milestone priorities)
-☐ 4. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
-☐ 5. Review AI_HANDOFF.md (detailed recent work)
-☐ 6. Consult specific planning docs as needed
-☐ 7. Begin work following documented procedures
+☐ 3. Check MULTI_AI_REVIEW_COORDINATOR.md:
+     - Check review triggers active?
+     - Increment session counter
+     - Note any health issues
+☐ 4. Check ROADMAP.md (verify milestone priorities)
+☐ 5. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
+☐ 6. Review AI_HANDOFF.md (detailed recent work)
+☐ 7. Consult specific planning docs as needed
+☐ 8. Begin work following documented procedures
 ```
 
 **Time**: 5-10 minutes
 
 > **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4 mandatory security standards (rate limiting, input validation, secrets management, OWASP compliance). See [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
+
+> **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
 
 ---
 
@@ -66,36 +72,42 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
    - Secrets management rules
    - OWASP compliance checklist
 
-3. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
+3. **[MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)** - Project health & reviews
+   - Session counter (increment each session)
+   - Review triggers
+   - Project Health Dashboard
+   - Compliance log
+
+4. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
    - Current milestones
    - Feature priorities
    - Dependencies
 
 **As Needed** (Reference When Relevant):
 
-4. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
+5. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
    - Full recent work history
    - Technical decisions
    - Known issues
    - Architecture overview
 
-5. **Planning Documents** (when working on specific features):
+6. **Planning Documents** (when working on specific features):
    - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
    - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
 
-6. **Foundation Documents** (when making architectural decisions):
+7. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System design
    - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
    - [DEVELOPMENT.md](./docs/DEVELOPMENT.md) - Development procedures
 
-7. **Reference Documents** (when following workflows):
+8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
    - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
-8. **Standards** (when creating/updating docs):
+9. **Standards** (when creating/updating docs):
    - [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
 
 ---
@@ -519,6 +531,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude |
 | 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion | Claude |
 | 1.1 | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup | Claude |
 | 1.0 | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference | Claude Code |
@@ -544,8 +557,9 @@ Use this template when completing any phase/milestone:
 **At session end:**
 1. Update SESSION_CONTEXT.md
 2. Update relevant planning docs
-3. Commit documentation changes
-4. Verify all work documented
+3. Add entry to compliance log in [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)
+4. Commit documentation changes
+5. Verify all work documented
 
 **When updating this document:**
 1. Preserve structure and organization

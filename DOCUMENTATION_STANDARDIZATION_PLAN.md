@@ -1369,6 +1369,8 @@ Create automation scripts for documentation maintenance, validation, and review 
 - [ ] Scripts tested with current repository state
 - [ ] README.md status successfully updated from ROADMAP.md
 - [ ] check-review-needed.js correctly identifies current baseline
+- [ ] **Deliverable audit passed** (all deliverables verified)
+- [ ] **Procedure gap analysis complete** (cross-references checked)
 
 ### 🤖 AI Instructions
 
@@ -1381,6 +1383,8 @@ When implementing this phase:
 6. Run `npm run docs:update-readme` after completing scripts
 7. Run `npm run review:check` to establish baseline
 8. Update Phase 2 completion after each task
+9. **Run deliverable audit before marking complete**
+10. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
 
 ---
 
@@ -1525,6 +1529,8 @@ Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new s
 - [ ] Version metadata added (all at 2.0 due to restructure)
 - [ ] Cross-references between docs verified
 - [ ] README.md auto-update from ROADMAP.md tested and working
+- [ ] **Deliverable audit passed** (all deliverables verified)
+- [ ] **Procedure gap analysis complete** (cross-references checked)
 
 ### 🤖 AI Instructions
 
@@ -1537,6 +1543,8 @@ When implementing this phase:
 6. Commit each doc individually with descriptive message
 7. Update Phase 3 completion after each task
 8. If retroactive info unavailable, note it in doc (don't fabricate)
+9. **Run deliverable audit before marking complete**
+10. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
 
 ---
 
@@ -1676,6 +1684,8 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
 - [ ] AI instructions clear in all docs
 - [ ] Cross-references validated
 - [ ] Version metadata added
+- [ ] **Deliverable audit passed** (all deliverables verified)
+- [ ] **Procedure gap analysis complete** (cross-references checked)
 
 ### 🤖 AI Instructions
 
@@ -1687,6 +1697,8 @@ When implementing this phase:
 5. Run `npm run docs:check` after each migration
 6. Commit each doc individually
 7. Update Phase 4 completion after each task
+8. **Run deliverable audit before marking complete**
+9. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
 
 ---
 
@@ -1787,6 +1799,8 @@ Use GUIDE_TEMPLATE.md for all migrations.
 - [ ] All docs pass `npm run docs:check`
 - [ ] "Last Updated" dates added
 - [ ] Version metadata added
+- [ ] **Deliverable audit passed** (all deliverables verified)
+- [ ] **Procedure gap analysis complete** (cross-references checked)
 
 ### 🤖 AI Instructions
 
@@ -1800,6 +1814,8 @@ When implementing this phase:
 7. Commit each doc individually
 8. Mark merged source docs for archival (handle in Phase 6)
 9. Update Phase 5 completion after each task
+10. **Run deliverable audit before marking complete**
+11. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
 
 ---
 
@@ -1907,6 +1923,8 @@ Use `npm run docs:archive -- <filename>` which:
 - [ ] GitHub Actions docs-lint.yml workflow passing
 - [ ] MULTI_AI_REVIEW_COORDINATOR.md has baseline metrics
 - [ ] DOCUMENTATION_STANDARDIZATION_PLAN.md marked 100% complete
+- [ ] **Deliverable audit passed** (all deliverables verified)
+- [ ] **Procedure gap analysis complete** (cross-references checked)
 
 ### 🤖 AI Instructions
 
@@ -1918,6 +1936,8 @@ When implementing this phase:
 5. Test all npm scripts one final time
 6. Update this plan's status to COMPLETE when done
 7. Commit all changes with message: "docs: Complete documentation standardization (Phase 6)"
+8. **Run deliverable audit before marking complete**
+9. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
 
 ---
 
@@ -2024,6 +2044,7 @@ When implementing this phase:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-01 | Added MANDATORY deliverable audit and procedure gap analysis to ALL phases (2-6); fixed procedure gaps (AI_WORKFLOW.md sync, docs/reviews/ folder, PR_WORKFLOW_CHECKLIST.md integration); added Procedure Gap Analysis Checklist | Claude |
 | 1.4 | 2026-01-01 | Added Project Health Dashboard (5 areas: Security, Code Quality, Performance, Architecture, Documentation); added Complete Documentation Flow Diagram and AI Workflow Guide; expanded system health beyond docs | Claude |
 | 1.3 | 2026-01-01 | Phase 1.5 complete - 4 review templates + coordinator + trigger script created; added security standards foundation (GLOBAL_SECURITY_STANDARDS.md); non-time-based triggers per user preference | Claude |
 | 1.2 | 2026-01-01 | Added "Lessons Learned" section to Phase 1 documenting CodeRabbit review findings, process improvements, and recommendations for future phases | Claude Code |
@@ -2045,13 +2066,41 @@ When implementing this phase:
 7. **Update Status**: Change phase status when starting/completing
 8. **Commit Frequently**: Individual commits per doc/script for easier review
 
+**⚠️ MANDATORY: When completing ANY phase:**
+
+Before marking a phase complete, you MUST run:
+
+1. **Deliverable Audit** (see [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure")
+   - Verify all deliverables exist and are complete
+   - Check all acceptance criteria met
+   - Document in "What Was Accomplished" section
+
+2. **Procedure Gap Analysis**
+   - Check all procedure documents for gaps or missing dependencies
+   - Verify cross-references between documents are valid
+   - Ensure new procedures are referenced in all relevant documents
+   - Check for inconsistencies between documents
+   - Document findings and fix before marking complete
+
+**Procedure Gap Analysis Checklist:**
+```
+[ ] AI_WORKFLOW.md references new procedures?
+[ ] DOCUMENTATION_STANDARDS.md updated if new standards added?
+[ ] MULTI_AI_REVIEW_COORDINATOR.md updated if health metrics changed?
+[ ] PR_WORKFLOW_CHECKLIST.md updated if workflow changed?
+[ ] All cross-references between docs are valid?
+[ ] No forward references to non-existent documents?
+[ ] Session startup/end sequences are consistent across docs?
+```
+
 **When this plan is complete:**
 1. Verify all acceptance criteria met
 2. Run full validation suite
-3. Update overall completion to 100%
-4. Update document version to 2.0 (major milestone)
-5. Move to docs/archive/ (use `npm run docs:archive`)
-6. Create DOCUMENTATION_STANDARDS_MAINTENANCE_PLAN.md for ongoing governance
+3. Run final procedure gap analysis across ALL documents
+4. Update overall completion to 100%
+5. Update document version to 2.0 (major milestone)
+6. Move to docs/archive/ (use `npm run docs:archive`)
+7. Create DOCUMENTATION_STANDARDS_MAINTENANCE_PLAN.md for ongoing governance
 
 **Emergency Stop:**
 - If any phase completely blocked, document in "Current Blockers" section
