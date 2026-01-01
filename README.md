@@ -121,25 +121,36 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Project Status
 
-**Last Updated:** December 31, 2025
-**Current Focus:** UX Polish + Admin Operations
+**Last Updated:** January 1, 2026
+**Overall Progress:** ~35%
+**Current Focus:** Quick Wins + Admin Panel + UX
+
+### Milestone Status
+
+| Milestone | Status | Progress |
+|-----------|--------|----------|
+| M1 - Foundation | ✅ Complete | 100% |
+| M1.5 - Quick Wins | 🔄 In Progress | 50% |
+| M1.6 - Admin Panel + UX | 🔄 In Progress | 75% |
+| M2 - Architecture | ⏸️ Optional | 0% |
+| M3 - Meetings | 📋 Planned | 0% |
+| M4 - Expansion | 📋 Planned | 0% |
+| M5 - Inventories | 📋 Planned | 0% |
+| M6 - Prayers | 📋 Planned | 0% |
+| M7 - Fellowship | 📋 Planned | 0% |
+| M8 - Speakers | 📋 Planned | 0% |
+| M10 - Monetization | 🔬 Research | 0% |
 
 ### Recent Completions
-- ✅ Today Page UX Overhaul (10 improvements: loading states, smart prompts, quick actions, keyboard shortcuts)
-- ✅ Admin Panel Enhancement (Phases 1-3: Dashboard, Users, Jobs)
-- ✅ Security hardening (App Check, rate limiting, audit logging)
-- ✅ Journal system consolidation (single-save architecture)
-- ✅ Entry type separation (mood stamps, stickers, notes)
-- ✅ Firestore indexes for performance
-- ✅ Dependencies updated (Next.js 16.1.0, React 19.2.3)
-- ✅ 97.8% test pass rate (89/91 tests)
+- ✅ M1 - Foundation
 
 ### Current Sprint
-- 🔄 Settings page improvements
-- 🔄 Recovery library implementation
-- 🔄 Code quality refinement
+- 🔄 M1.5 - Quick Wins (50%)
+- 🔄 M1.6 - Admin Panel + UX (75%)
 
+See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
 See **[AI_HANDOFF.md](./AI_HANDOFF.md)** for detailed development status.
+
 
 ## Data Architecture
 
