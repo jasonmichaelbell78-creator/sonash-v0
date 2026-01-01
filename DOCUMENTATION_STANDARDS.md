@@ -1,0 +1,583 @@
+# SoNash Documentation Standards
+
+**Document Version**: 1.0
+**Created**: 2025-12-31
+**Last Updated**: 2025-12-31
+**Status**: ACTIVE
+**Overall Completion**: 100% (Standards established and operational)
+
+---
+
+## 📋 Purpose
+
+This document establishes the standards, conventions, and guidelines for ALL documentation in the SoNash Recovery Notebook project.
+
+**📌 NOTE**: This is the **CANONICAL** guide for all SoNash documentation. All docs must follow these standards.
+
+**Goals**:
+1. **Consistency**: Uniform structure and formatting across all docs
+2. **Maintainability**: Clear ownership and update triggers
+3. **Discoverability**: Easy to find and navigate documentation
+4. **AI-Friendly**: Optimized for AI assistant comprehension and updates
+5. **Quality**: High standards for accuracy and completeness
+
+**⚠️ CRITICAL**: All documentation MUST conform to these standards. Non-compliant docs will be flagged during reviews.
+
+---
+
+## 🗂️ 5-Tier Documentation System
+
+### Overview
+
+All documentation is organized into 5 tiers based on purpose, update frequency, and structure requirements:
+
+| Tier | Category | Update Frequency | Status Tracking | Templates |
+|------|----------|------------------|-----------------|-----------|
+| 1 | Canonical Living | After every change | ✅ Required | CANONICAL_DOC_TEMPLATE |
+| 2 | Foundation | Quarterly or as needed | ❌ Not required | FOUNDATION_DOC_TEMPLATE |
+| 3 | Planning | Active work only | ✅ Required | PLANNING_DOC_TEMPLATE |
+| 4 | Reference | When workflows change | ❌ Not required | REFERENCE_DOC_TEMPLATE |
+| 5 | Guides | When outdated | ❌ Not required | GUIDE_DOC_TEMPLATE |
+
+---
+
+### Tier 1: Canonical Living Documents
+
+**Purpose**: Single sources of truth for critical project information
+
+**Documents**:
+- README.md
+- ROADMAP.md
+- ROADMAP_LOG.md
+- Major multi-phase plans (e.g., EIGHT_PHASE_REFACTOR_PLAN.md, DOCUMENTATION_STANDARDIZATION_PLAN.md)
+
+**Characteristics**:
+- ✅ **Must have**: Status dashboards, progress tracking, completion percentages
+- ✅ **Must have**: Version history table
+- ✅ **Must have**: Update triggers section
+- ✅ **Must have**: "Last Updated" date in header
+- ✅ **Must have**: Clear "How to Use" and "How to Update" sections
+- ✅ **Must have**: Dependency maps for multi-phase plans
+- 🔄 **Update immediately** when any tracked item changes status
+
+**Template**: `docs/templates/CANONICAL_DOC_TEMPLATE.md`
+
+**Example**: See EIGHT_PHASE_REFACTOR_PLAN.md
+
+---
+
+### Tier 2: Foundation Documents
+
+**Purpose**: Technical reference and architectural documentation
+
+**Documents**:
+- ARCHITECTURE.md
+- SECURITY.md
+- DEVELOPMENT.md
+
+**Characteristics**:
+- ✅ **Must have**: Purpose & Scope section
+- ✅ **Must have**: "Last Updated" date and version number
+- ✅ **Must have**: Best practices and anti-patterns
+- ✅ **Must have**: Code examples with file references
+- ✅ **Should have**: Quick start section
+- ✅ **Should have**: Common pitfalls section
+- 🔄 **Update when**: Architecture changes, new patterns added, quarterly reviews
+
+**Template**: `docs/templates/FOUNDATION_DOC_TEMPLATE.md`
+
+---
+
+### Tier 3: Planning Documents
+
+**Purpose**: Active planning and tracking for specific initiatives
+
+**Documents**:
+- Feature implementation plans (M1.6_SUPPORT_TAB_PLAN.md)
+- Initiative plans (LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)
+- Research documents (MONETIZATION_RESEARCH.md)
+- Backlog documents (POST_PHASE_8_BACKLOG.md)
+
+**Characteristics**:
+- ✅ **Must have**: Status dashboard with task tracking
+- ✅ **Must have**: Objectives and acceptance criteria
+- ✅ **Must have**: Dependencies section
+- ✅ **Must have**: Progress tracking (What Was Accomplished)
+- ✅ **Should have**: Implementation phases
+- ✅ **Should have**: Risk register
+- 🔄 **Update when**: Task status changes, work completed, blockers discovered
+- 📦 **Archive when**: Plan fully complete → move to docs/archive/plans/
+
+**Template**: `docs/templates/PLANNING_DOC_TEMPLATE.md`
+
+---
+
+### Tier 4: Reference Documents
+
+**Purpose**: Procedural guidance and workflow instructions
+
+**Documents**:
+- AI_WORKFLOW.md
+- SESSION_CONTEXT.md
+- PR_WORKFLOW_CHECKLIST.md
+- IMPLEMENTATION_PROMPTS.md
+- CODERABBIT_REVIEW_PROCESS.md
+- MULTI_AI_REVIEW_COORDINATOR.md
+- claude.md
+
+**Characteristics**:
+- ✅ **Must have**: Clear "When to Use" section
+- ✅ **Must have**: Step-by-step procedures
+- ✅ **Must have**: "Last Updated" date
+- ✅ **Should have**: Quick reference section
+- ✅ **Should have**: Examples and templates
+- ✅ **Should have**: Troubleshooting section
+- 🔄 **Update when**: Workflows change, best practices evolve
+
+**Template**: `docs/templates/REFERENCE_DOC_TEMPLATE.md`
+
+---
+
+### Tier 5: Guides
+
+**Purpose**: How-to documentation and tutorials
+
+**Documents**:
+- How-to guides (to be created as needed)
+- Tutorials
+- Learning materials
+
+**Characteristics**:
+- ✅ **Must have**: Learning objectives
+- ✅ **Must have**: Prerequisites section
+- ✅ **Must have**: Step-by-step instructions with verification
+- ✅ **Should have**: Examples (simple and complex)
+- ✅ **Should have**: Troubleshooting section
+- ✅ **Should have**: Next steps/related guides
+- 🔄 **Update when**: Steps become outdated, tools change
+- 📦 **Archive when**: Approach becomes deprecated
+
+**Template**: `docs/templates/GUIDE_DOC_TEMPLATE.md`
+
+---
+
+## 📝 Document Metadata Standards
+
+### Required Metadata (All Tiers)
+
+**At the top of EVERY document**:
+
+```markdown
+# [Document Title]
+
+**Last Updated**: YYYY-MM-DD
+[Additional metadata specific to tier]
+```
+
+### Tier-Specific Metadata
+
+**Tier 1 (Canonical)**:
+```markdown
+**Document Version**: X.Y
+**Created**: YYYY-MM-DD
+**Last Updated**: YYYY-MM-DD
+**Status**: [ACTIVE | COMPLETE | ARCHIVED]
+**Overall Completion**: X% or "X/Y items complete (Z%)"
+```
+
+**Tier 2 (Foundation)**:
+```markdown
+**Last Updated**: YYYY-MM-DD
+**Document Version**: X.Y
+**Status**: Active | Under Review | Deprecated
+**Applies To**: [Version/Release/All]
+```
+
+**Tier 3 (Planning)**:
+```markdown
+**Document Version**: X.Y
+**Created**: YYYY-MM-DD
+**Last Updated**: YYYY-MM-DD
+**Status**: PLANNING | IN_PROGRESS | COMPLETE | ON_HOLD
+**Overall Completion**: X%
+**Target Completion**: YYYY-MM-DD
+```
+
+**Tier 4 (Reference)**:
+```markdown
+**Last Updated**: YYYY-MM-DD
+**Document Version**: X.Y
+**Purpose**: [Brief description]
+**When to Use**: [Trigger/scenario]
+```
+
+**Tier 5 (Guides)**:
+```markdown
+**Last Updated**: YYYY-MM-DD
+**Difficulty**: Beginner | Intermediate | Advanced
+**Estimated Time**: X minutes/hours
+**Prerequisites**: [What's required]
+```
+
+---
+
+## 🔢 Version Numbering
+
+### Format: X.Y
+
+**Major Version (X.0)**:
+- Complete document restructure
+- Breaking changes to documented processes
+- Tier migrations
+- Significant scope changes
+
+**Minor Version (X.Y)**:
+- Content additions
+- Clarifications
+- Updates to existing sections
+- Bug fixes in documentation
+
+### Examples
+
+- `1.0` → Initial document creation
+- `1.1` → Added new section on error handling
+- `1.2` → Updated code examples, fixed typos
+- `2.0` → Complete rewrite with new structure
+- `2.1` → Added troubleshooting section
+
+### When to Increment
+
+**Increment major version when**:
+- Changing document tier
+- Complete restructure
+- Breaking process changes
+
+**Increment minor version when**:
+- Adding new sections
+- Updating examples
+- Clarifying existing content
+- Fixing errors
+
+**Don't increment for**:
+- Typo fixes in same session
+- Formatting adjustments
+- Date updates only
+
+---
+
+## 🔗 Cross-Reference Standards
+
+### Internal Links
+
+**Format**: `[Link Text](./path/to/file.md)`
+
+**Best Practices**:
+- ✅ Use relative paths
+- ✅ Link to specific sections with anchors: `(./FILE.md#section-name)`
+- ✅ Use descriptive link text (not "click here")
+- ✅ Verify links work before committing
+
+**Examples**:
+```markdown
+See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for system design.
+See the [Dependencies section](./ROADMAP.md#dependencies) for prerequisites.
+```
+
+### External Links
+
+**Format**: `[Link Text](https://full-url.com)`
+
+**Best Practices**:
+- ✅ Include link purpose: `[Firebase Auth Docs](url) - User management`
+- ✅ Use official documentation when available
+- ✅ Check links periodically for rot
+
+### File References
+
+**When referencing code**:
+
+Format: `path/to/file.ts:line_number`
+
+**Examples**:
+```markdown
+See the implementation in `lib/firestore-service.ts:142`
+The canonical pattern is in `hooks/use-journal.ts:89-104`
+```
+
+---
+
+## ✍️ Markdown Conventions
+
+### Headings
+
+**Structure**:
+```markdown
+# Document Title (H1 - once per document)
+
+## Major Section (H2)
+
+### Subsection (H3)
+
+#### Detail Level (H4)
+```
+
+**Best Practices**:
+- ✅ Only one H1 per document (the title)
+- ✅ Use H2 for major sections
+- ✅ Don't skip levels (H2 → H4)
+- ✅ Use emoji prefixes for major sections: `## 📋 Section Name`
+
+### Lists
+
+**Unordered**:
+```markdown
+- Item 1
+- Item 2
+  - Nested item 2.1
+  - Nested item 2.2
+- Item 3
+```
+
+**Ordered**:
+```markdown
+1. First step
+2. Second step
+3. Third step
+```
+
+**Checklists**:
+```markdown
+- [ ] Incomplete item
+- [x] Complete item
+- [ ] Another item
+```
+
+### Code Blocks
+
+**With language**:
+````markdown
+```typescript
+// Code with syntax highlighting
+const example = "value";
+```
+````
+
+**With comments**:
+```typescript
+// Always explain what code does
+// Especially for complex logic
+const result = complexFunction();
+```
+
+**Bash commands**:
+```bash
+# Description of what this does
+command --with-flags argument
+```
+
+### Tables
+
+**Standard format**:
+```markdown
+| Column 1 | Column 2 | Column 3 |
+|----------|----------|----------|
+| Value 1  | Value 2  | Value 3  |
+| Value 4  | Value 5  | Value 6  |
+```
+
+**Alignment**:
+```markdown
+| Left | Center | Right |
+|:-----|:------:|------:|
+| L    | C      | R     |
+```
+
+### Emphasis
+
+**Bold**: `**important text**` for critical information
+**Italic**: `*emphasized text*` for emphasis
+**Code**: `` `code` `` for inline code, commands, file names
+
+**Best Practices**:
+- ✅ Use bold for warnings: `**⚠️ WARNING**: message`
+- ✅ Use code formatting for: file names, commands, variables, functions
+- ✅ Don't overuse emphasis - save it for truly important items
+
+---
+
+## 🚨 Required Sections by Tier
+
+### All Tiers Must Have
+
+1. **Document title** (H1)
+2. **Metadata block** (see standards above)
+3. **Purpose/Overview section** (what is this doc for?)
+4. **Main content** (tier-specific)
+5. **Version history table** (at bottom)
+
+### Tier-Specific Requirements
+
+**Tier 1 (Canonical)**:
+- 📋 Document Purpose
+- 📋 How to Use This Document
+- 📝 How to Update This Document
+- 📊 Status Legend
+- 🗺️ Overall Status Dashboard
+- 📚 Main Content Sections
+- 📝 Update Triggers
+- 🗓️ Version History
+- 🤖 AI Instructions
+
+**Tier 2 (Foundation)**:
+- 📋 Purpose & Scope
+- 🎯 Quick Start (optional but recommended)
+- 📚 Main Technical Content
+- 🔐 Critical Requirements (if applicable)
+- 🚨 Common Pitfalls
+- 🔄 Update Procedures
+- 🔗 References
+- 🗓️ Version History
+- 🤖 AI Instructions
+
+**Tier 3 (Planning)**:
+- 📋 Purpose & Scope
+- 🗺️ Status Dashboard
+- 🎯 Objectives & Requirements
+- 🔀 Dependencies
+- 📐 Design (if applicable)
+- 📋 Implementation Plan
+- ✅ Acceptance Criteria
+- 📊 Progress Tracking
+- 🗓️ Version History
+- 🤖 AI Instructions
+
+**Tier 4 (Reference)**:
+- 📋 Purpose & Scope
+- 🎯 Quick Reference
+- 📖 Complete Workflow/Process
+- ✅ Completion Checklist
+- 🚨 Common Issues & Solutions
+- 💡 Best Practices
+- 🗓️ Version History
+- 🤖 AI Instructions
+
+**Tier 5 (Guides)**:
+- 📋 Overview (objectives, prerequisites)
+- 🎯 Quick Start
+- 📖 Step-by-Step Guide
+- ✅ Verification
+- 💡 Best Practices
+- 📚 Examples
+- 🚨 Troubleshooting
+- 📝 Next Steps
+- 🗓️ Version History
+
+---
+
+## 🔄 Update Standards
+
+### When to Update
+
+**Update immediately** (within same session):
+- Tier 1: Any status change, completion update
+- Tier 3: Task completion, blocker discovery
+- All tiers: Errors discovered in documentation
+
+**Update soon** (within a week):
+- Tier 2: New patterns added to codebase
+- Tier 4: Workflow changes
+- Tier 5: Steps become outdated
+
+**Update periodically**:
+- Tier 2: Quarterly review
+- Tier 4: When used and issues found
+- Tier 5: When dependencies change
+
+### How to Update
+
+1. **Make content changes** in relevant sections
+2. **Update metadata**:
+   - "Last Updated" date (always)
+   - Version number (if significant changes)
+3. **Add version history entry** (for significant changes)
+4. **Run validation** (if automation available):
+   ```bash
+   npm run docs:check
+   ```
+5. **Commit with clear message**:
+   ```bash
+   git add path/to/doc.md
+   git commit -m "docs: Update [doc-name] - [what changed]"
+   ```
+
+### Commit Message Format
+
+**For documentation updates**:
+```
+docs: Update [document-name] - [brief description]
+
+[Optional longer description of what changed and why]
+```
+
+**Examples**:
+```
+docs: Update ARCHITECTURE.md - add Firebase Collections section
+docs: Update ROADMAP.md - mark M1.5 tasks complete
+docs: Update SESSION_CONTEXT.md - add Dec 31 session work
+```
+
+---
+
+## 🤖 AI Instructions
+
+### For AI Assistants
+
+**When creating new documentation**:
+1. Determine correct tier
+2. Use appropriate template from `docs/templates/`
+3. Fill in all required sections
+4. Follow metadata standards
+5. Add initial version history entry
+6. Commit with descriptive message
+
+**When updating existing documentation**:
+1. Read current document first
+2. Make content changes
+3. Update "Last Updated" date
+4. Add version history entry (if significant)
+5. Increment version number (if significant)
+6. Maintain existing structure
+7. Commit changes
+
+**When archiving documentation**:
+1. Add to appropriate archive directory:
+   - Plans → `docs/archive/plans/`
+   - Historical → `docs/archive/YYYY-MM-DD/`
+2. Update referencing documents
+3. Add archive note to top of document
+4. Commit with "docs: Archive [doc-name]" message
+
+### Quality Checks
+
+Before committing documentation changes, verify:
+- [ ] Metadata block present and accurate
+- [ ] All required sections included for tier
+- [ ] Internal links work
+- [ ] Code examples are valid
+- [ ] No typos or grammatical errors
+- [ ] Version history updated (if significant changes)
+- [ ] Formatting consistent with conventions
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0 | 2025-12-31 | Initial documentation standards created | Claude Code |
+
+---
+
+**END OF DOCUMENTATION_STANDARDS.md**
+
+This is a living document. Update it as documentation needs evolve.
