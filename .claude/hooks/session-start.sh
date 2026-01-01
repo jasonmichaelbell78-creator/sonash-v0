@@ -82,13 +82,17 @@ run_npm_with_timeout() {
 }
 
 # Install root dependencies
+# Use 'npm ci' instead of 'npm install' to:
+#   1. Never modify package-lock.json (prevents CI sync issues)
+#   2. Install exactly what's in lockfile (reproducible builds)
+#   3. Fail fast if lockfile is out of sync (surfaces real issues)
 run_npm_with_timeout "Installing root dependencies" \
-  "npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120
+  "npm ci --prefer-offline --no-audit --no-fund" 120
 
 # Install Firebase Functions dependencies and build
 if [ -d "functions" ]; then
   run_npm_with_timeout "Installing Firebase Functions dependencies" \
-    "cd functions && npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120
+    "cd functions && npm ci --prefer-offline --no-audit --no-fund" 120
 
   run_npm_with_timeout "Building Firebase Functions" \
     "cd functions && npm run build" 60
