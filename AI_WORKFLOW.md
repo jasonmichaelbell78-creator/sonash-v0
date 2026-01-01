@@ -40,11 +40,16 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
      - Check review triggers active?
      - Increment session counter
      - Note any health issues
-☐ 4. Check ROADMAP.md (verify milestone priorities)
-☐ 5. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
-☐ 6. Review AI_HANDOFF.md (detailed recent work)
-☐ 7. Consult specific planning docs as needed
-☐ 8. Begin work following documented procedures
+☐ 4. Check Available Capabilities (MANDATORY):
+     - Scan .claude/skills/ for applicable skills
+     - Scan .claude/agents/ for specialist agents
+     - Note any MCP servers configured
+     - If task matches a capability, USE IT (not optional)
+☐ 5. Check ROADMAP.md (verify milestone priorities)
+☐ 6. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
+☐ 7. Review AI_HANDOFF.md (detailed recent work)
+☐ 8. Consult specific planning docs as needed
+☐ 9. Begin work following documented procedures
 ```
 
 **Time**: 5-10 minutes
@@ -52,6 +57,8 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 > **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4 mandatory security standards (rate limiting, input validation, secrets management, OWASP compliance). See [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
 
 > **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
+
+> **MANDATORY**: Step 4 ensures you leverage ALL available tools. If a skill or agent applies to your task (even 1% chance), you MUST use it. See "Available AI Capabilities" section below.
 
 ---
 
@@ -299,6 +306,122 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ---
 
+## 🛠️ Available AI Capabilities
+
+### MANDATORY: Use Available Tools
+
+**This is NOT optional.** Before ANY task, check if a skill, agent, or MCP applies. If there's even a **1% chance** a capability might help, you MUST use it.
+
+> **Rule**: Capabilities are discovered dynamically. When new skills/agents/MCPs are added to the project, they are automatically available. Always scan the directories - don't rely on memorized lists.
+
+### How to Discover Capabilities
+
+```bash
+# Skills (specialized workflows and knowledge)
+ls .claude/skills/
+
+# Agents (specialist sub-agents for complex tasks)
+ls .claude/agents/
+
+# MCP Servers (external tool integrations)
+# Check .claude/settings.json or project MCP configuration
+```
+
+### Skills (`.claude/skills/`)
+
+Skills are specialized workflows with domain-specific knowledge. They are invoked using the **Skill tool**.
+
+**When to Use Skills:**
+- `systematic-debugging` → Use FIRST for ANY bug, error, or unexpected behavior
+- `code-reviewer` → Use AFTER writing or modifying code
+- `requesting-code-review` → Use when completing features before merge
+- `frontend-design` → Use for UI/UX implementation work
+- `senior-frontend` / `senior-backend` / `senior-fullstack` → Use for implementation guidance
+- `mcp-builder` → Use when creating MCP server integrations
+- `gh-fix-ci` → Use when GitHub Actions CI/CD fails
+- `markitdown` → Use when converting documents to Markdown
+
+**Priority Order:**
+1. **Process skills first** (debugging, brainstorming) - determine HOW to approach
+2. **Implementation skills second** (frontend-design, senior-backend) - guide execution
+
+**Example:**
+```
+Task: "Fix this authentication bug"
+→ Use `systematic-debugging` skill FIRST
+→ Then use `senior-backend` or `security-auditor` for the fix
+```
+
+### Agents (`.claude/agents/`)
+
+Agents are specialist sub-agents invoked via the **Task tool** with `subagent_type` parameter. They run autonomously and return results.
+
+**When to Use Agents:**
+- `code-reviewer` → Post-code review for quality/security
+- `security-auditor` → Security vulnerability assessment
+- `debugger` → Complex debugging requiring deep analysis
+- `frontend-developer` / `backend-architect` → Domain-specific implementation
+- `test-engineer` → Test strategy and automation
+- `documentation-expert` → Documentation creation/improvement
+- `git-flow-manager` → Git workflow operations
+- `deployment-engineer` → CI/CD and deployment tasks
+
+**Example:**
+```
+After writing a new Cloud Function:
+→ Invoke code-reviewer agent to review the code
+→ Invoke security-auditor agent to check for vulnerabilities
+```
+
+### MCP Servers
+
+MCP (Model Context Protocol) servers provide external tool integrations. Check project configuration for available servers.
+
+**Common MCP Integrations:**
+- Database access tools
+- External API integrations
+- File conversion tools
+- Custom project-specific tools
+
+### Decision Matrix: Skill vs Agent vs Direct Action
+
+| Scenario | Use |
+|----------|-----|
+| Need specific workflow guidance | **Skill** |
+| Need autonomous complex task completion | **Agent** |
+| Simple, well-understood task | **Direct action** |
+| Bug or error encountered | **Skill** (`systematic-debugging`) |
+| Code review needed | **Agent** (`code-reviewer`) |
+| UI implementation | **Skill** (`frontend-design`) |
+| Security assessment | **Agent** (`security-auditor`) |
+
+### Red Flags: When You're Avoiding Capabilities
+
+If you find yourself thinking these thoughts, STOP - you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
+| "This is just a simple task" | Simple tasks become complex. Check for skills. |
+| "I can do this faster myself" | Skills/agents have specialized knowledge. Use them. |
+| "Let me try first, then use skill if needed" | Check BEFORE starting. |
+| "I remember what this skill does" | Skills evolve. Read current version. |
+| "The skill is overkill for this" | If it applies, use it. |
+| "I'll just check git/files quickly" | Skills tell you HOW to check correctly. |
+
+### Capability Maintenance
+
+**When new capabilities are added:**
+1. They appear automatically in `.claude/skills/` or `.claude/agents/`
+2. No documentation update needed - discovery is dynamic
+3. AIs scan directories at session start (Step 4 of Startup Checklist)
+
+**To add new capabilities:**
+- Skills: Add `SKILL.md` in `.claude/skills/<skill-name>/`
+- Agents: Add `<agent-name>.md` in `.claude/agents/`
+- MCPs: Configure in `.claude/settings.json` or project MCP config
+
+---
+
 ## 🚨 Common Scenarios
 
 ### Scenario 1: Starting a New Feature
@@ -531,6 +654,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.4 | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools | Claude |
 | 1.3 | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude |
 | 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion | Claude |
 | 1.1 | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup | Claude |
