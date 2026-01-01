@@ -1,8 +1,8 @@
 # 🐰 CodeRabbit Review Process
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2025-12-31
-**Last Updated:** 2025-12-31
+**Last Updated:** 2026-01-01
 
 ## 📋 Purpose
 
@@ -216,6 +216,141 @@ When processing CodeRabbit suggestions:
 
 ---
 
+## 📚 Learning from Reviews
+
+### Purpose
+
+Each CodeRabbit review is an opportunity to improve future work. Systematically capturing learnings prevents recurring issues and improves documentation quality over time.
+
+### When to Extract Learnings
+
+**After EVERY CodeRabbit review** (regardless of size), ask:
+1. **Are there patterns?** (3+ suggestions about the same issue)
+2. **Did we miss something obvious?** (self-compliance, metadata, formatting)
+3. **Can we prevent this?** (checklist, protocol, automation)
+
+### How to Extract Learnings
+
+**Step 1: Identify Patterns**
+
+Group suggestions by root cause, not symptom:
+
+```markdown
+Example:
+- "Missing Created date" (3 files)
+- "Missing Overall Completion" (2 files)
+- "Status format inconsistent" (1 file)
+
+Root Cause: No pre-commit metadata validation
+Pattern: Tier 1 documents not following own standards
+```
+
+**Step 2: Classify by Prevention Type**
+
+| Type | Description | Solution |
+|------|-------------|----------|
+| **Self-Compliance** | Standards doc doesn't follow its own rules | Add self-check to pre-commit checklist |
+| **Synchronization** | Related docs out of sync | Add sync protocol to standards |
+| **Validation** | Missing checks before commit | Add to pre-commit checklist or automation |
+| **Clarity** | Template placeholders unclear | Add concrete examples, improve guidance |
+| **Process Gap** | No procedure for specific scenario | Document procedure in standards |
+
+**Step 3: Document the Learning**
+
+Use this template in the "Lessons Learned Log" section below:
+
+```markdown
+**Review Date:** YYYY-MM-DD
+**PR:** #XXX or branch name
+**Suggestions:** Total count (Critical/Major/Minor/Trivial breakdown)
+
+**Patterns Identified:**
+1. [Pattern name]: [Description] ([X occurrences])
+   - Root cause: [Why this happened]
+   - Prevention: [What to add/change]
+
+**Process Improvements:**
+- ✅ [Improvement 1]: Added to [document/section]
+- ✅ [Improvement 2]: Updated [checklist/protocol]
+- ⏳ [Improvement 3]: Deferred to [Phase X] - [reason]
+
+**Expected Impact:** [X%] reduction in [category] issues
+```
+
+**Step 4: Update Documentation**
+
+Based on learnings, update one or more of:
+- **DOCUMENTATION_STANDARDS.md**: Add checklists, protocols, or clarifications
+- **This document (CODERABBIT_REVIEW_PROCESS.md)**: Add to Lessons Learned Log and update categories/examples
+- **Templates**: Improve placeholder clarity, add examples
+- **Phase plans**: Add automation or validation tasks
+
+### Lessons Learned Log
+
+**📌 NOTE**: This log accumulates learnings over time. Each review adds an entry.
+
+---
+
+#### Review #1: Phase 1 Documentation Templates (2026-01-01)
+**PR:** `claude/update-session-docs-uRgUs` (Phase 1 completion)
+**Suggestions:** 14 total (2 Critical, 2 Major, 10 Minor/Nitpick)
+
+**Patterns Identified:**
+1. **Self-Compliance Failure** (1 occurrence - high impact)
+   - Root cause: DOCUMENTATION_STANDARDS.md created without validating against its own Tier 1 requirements
+   - Prevention: Added "Document follows its own standards" to Pre-Commit Validation Checklist
+
+2. **Status Synchronization Gap** (2 occurrences)
+   - Root cause: Updated PLAN document but didn't sync SESSION_CONTEXT.md (62% → 100% mismatch)
+   - Prevention: Added Status Synchronization Protocol matrix to DOCUMENTATION_STANDARDS.md
+
+3. **Template Placeholder Ambiguity** (5 occurrences)
+   - Root cause: Placeholders like `[Step 1]`, `[Brief description]` too generic
+   - Prevention: Added concrete examples and clarifying text to all templates
+
+4. **Redundant Wording** (3 occurrences)
+   - Root cause: No static analysis run during creation
+   - Prevention: Added "Run static analysis" to Pre-Commit Validation Checklist
+
+5. **Missing Cross-Reference Validation** (1 occurrence - potential)
+   - Root cause: No systematic check for broken links
+   - Prevention: Added Cross-Reference Validation protocol with 4-step process
+
+6. **Metadata Inconsistency** (2 occurrences)
+   - Root cause: No tier-specific metadata checklists
+   - Prevention: Added tier-specific checklists to Pre-Commit Validation section
+
+**Process Improvements:**
+- ✅ Added Quality Protocols section to DOCUMENTATION_STANDARDS.md v1.1:
+  - Pre-Commit Validation Checklist (tier-specific)
+  - Status Synchronization Protocol (cross-doc updates)
+  - Cross-Reference Validation (link verification)
+  - Template Testing Requirement (example docs)
+- ✅ Added Lessons Learned section to DOCUMENTATION_STANDARDIZATION_PLAN.md v1.2
+- ✅ Improved template clarity (8 fixes across 3 templates)
+- ⏳ Pre-commit hooks: Deferred to Phase 2 (automation scripts)
+- ⏳ Cross-reference validator script: Deferred to Phase 2 (extend check-docs-light.js)
+
+**Expected Impact:** 70-80% reduction in similar documentation issues
+
+**Key Insight:** Standards documents MUST validate against themselves before commit. Self-compliance is non-negotiable.
+
+---
+
+### Continuous Improvement Triggers
+
+**When to update this process document:**
+- ✅ New pattern emerges (3+ reviews show same root cause)
+- ✅ Rejection reason not covered by existing categories
+- ✅ Process inefficiency discovered (e.g., triage taking >30 min)
+- ✅ New CodeRabbit capability added (e.g., security scanning, auto-fix)
+
+**Version update rules:**
+- **Minor version (1.X)**: Add lesson to log, update examples, clarify existing sections
+- **Major version (2.0)**: Restructure process, change workflow, add/remove categories
+
+---
+
 ## 🔗 Related Documents
 
 - **PR_WORKFLOW_CHECKLIST.md** - Pre-PR checklist includes CodeRabbit review
@@ -228,6 +363,7 @@ When processing CodeRabbit suggestions:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-01 | Added "Learning from Reviews" section with systematic learning capture process, lessons learned log (Review #1), and continuous improvement triggers | Claude Code |
 | 1.0 | 2025-12-31 | Initial process definition based on Dec 31 CodeRabbit review | Claude Code |
 
 ---
