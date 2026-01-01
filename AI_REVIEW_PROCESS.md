@@ -1,6 +1,6 @@
 # 🤖 AI Code Review Process
 
-**Document Version:** 2.5
+**Document Version:** 2.6
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
@@ -481,11 +481,21 @@ Based on learnings, update one or more of:
 - ⏳ Key rotation policy: Deferred to Phase 2 (captured in backlog)
 
 **Script Robustness Patterns (NEW PROCEDURE):**
+
+> ⚠️ **CORRECTION**: The HEAD~N guard below was revised in Review #7 due to an off-by-one error. See Review #7's "Script Robustness Patterns (UPDATED)" section for the correct implementation.
+
 When implementing bash scripts, apply these guards:
 ```bash
 # Guard for HEAD~N (fails on short repos)
+# ⚠️ INCORRECT - see Review #7 for fix: HEAD~N requires N+1 commits
+# LOOKBACK=$((COMMIT_COUNT < N ? COMMIT_COUNT : N))  # OFF-BY-ONE BUG
+# CORRECT version (from Review #7):
 COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
-LOOKBACK=$((COMMIT_COUNT < N ? COMMIT_COUNT : N))
+if [ "$COMMIT_COUNT" -le 1 ]; then
+  LOOKBACK=0
+else
+  LOOKBACK=$((COMMIT_COUNT <= 10 ? COMMIT_COUNT - 1 : 10))
+fi
 
 # Guard for optional commands (timeout, jq, etc.)
 if command -v timeout &> /dev/null; then
@@ -553,6 +563,8 @@ if [ "$WARNINGS" -eq 0 ]; then echo "Success"; else echo "Completed with $WARNIN
 **Suggestions:** 3 actionable (scope mismatch, acceptance criteria, version dates)
 **Tools:** CodeRabbit 🐰
 
+> **Context**: This is a **retrospective meta-analysis** conducted after Review #5, when it was discovered that Review #5's learning entry had been omitted. Both Reviews #5 and #6 are being documented retroactively in this commit to complete the learning capture audit.
+
 **Patterns Identified:**
 1. **⚠️ LEARNING CAPTURE FAILURE** (Meta-pattern - CRITICAL)
    - Root cause: Review #5 was processed but learning entry was NOT added before commit
@@ -575,9 +587,9 @@ if [ "$WARNINGS" -eq 0 ]; then echo "Success"; else echo "Completed with $WARNIN
 **Process Improvements:**
 - ✅ Added Review #5 retroactively (was missed)
 - ✅ Added Review #6 (current review)
-- ⏳ Phase 1.5 deliverables update (pending)
-- ⏳ Phase 1/1.5 acceptance criteria update (pending)
-- ⏳ Learning capture enforcement mechanism (pending - see below)
+- ⏳ Phase 1.5 deliverables update *(forward-looking action item)*
+- ⏳ Phase 1/1.5 acceptance criteria update *(forward-looking action item)*
+- ⏳ Learning capture enforcement mechanism *(forward-looking action item - see below)*
 
 **Expected Impact:** 100% learning capture compliance after enforcement mechanism implemented
 
@@ -661,6 +673,48 @@ fi
 
 ---
 
+#### Review #9: CodeRabbit Round 6 - Documentation Clarity (2026-01-01)
+**PR:** `claude/review-repo-docs-D4nYF` (Post-CI fix review)
+**Suggestions:** 4 actionable (pattern conflict, retrospective context, Phase 4 vision, version phrasing)
+**Tools:** CodeRabbit 🐰
+
+**Patterns Identified:**
+1. **Conflicting Code Examples** (1 occurrence)
+   - Root cause: Review #4 pattern for HEAD~N guard was incorrect, Review #7 fixed it, but both coexisted
+   - Example: Two different LOOKBACK formulas in same document created confusion
+   - Prevention: When fixing bugs in documented patterns, annotate the original as deprecated/incorrect
+   - Resolution: Added correction note to Review #4 with corrected code inline
+
+2. **Retrospective Context Ambiguity** (1 occurrence)
+   - Root cause: Review #6 read as contemporaneous discovery of Review #5's gap
+   - Example: "Adding Review #5 and #6 retroactively" wasn't clear about timeline
+   - Prevention: Explicitly label retrospective analyses upfront
+   - Resolution: Added context callout explaining retrospective meta-analysis
+
+3. **Forward-Looking Enforcement Vagueness** (1 occurrence)
+   - Root cause: "Phase 4 enforcement" mentioned but not specified
+   - Example: Readers didn't know what Phase 4 would implement
+   - Prevention: Include implementation vision for deferred features
+   - Resolution: Added "Phase 4 Enforcement Vision" subsection with mechanisms and acceptance criteria
+
+4. **Ambiguous Version History Phrasing** (1 occurrence)
+   - Root cause: "(retroactive)" in version history unclear on timing
+   - Example: "Added Review #5 and #6 (retroactive)" could mean added retroactively to v2.3
+   - Prevention: Use complete phrases like "Retroactively documented"
+   - Resolution: Changed to "Retroactively documented Reviews #5 and #6 to complete learning capture audit"
+
+**Process Improvements:**
+- ✅ Fixed conflicting HEAD~N patterns with correction annotation
+- ✅ Added retrospective context callout to Review #6
+- ✅ Added Phase 4 Enforcement Vision with specific mechanisms
+- ✅ Clarified version history phrasing
+
+**Expected Impact:** 100% documentation clarity; no conflicting code patterns
+
+**Key Insight:** Documentation that evolves through reviews must maintain internal consistency. When fixing documented patterns, explicitly mark the original as corrected rather than just adding the fix elsewhere.
+
+---
+
 ### 🚨 Learning Capture Enforcement Mechanism
 
 **Problem:** Despite "MANDATORY" labeling, learning capture was skipped in Review #5. Self-enforcement is unreliable.
@@ -692,6 +746,19 @@ fix: Address [Tool] review feedback
 2. If missing, add it before push
 3. Include in commit message: "Added Review #N to Lessons Learned Log"
 
+**Phase 4 Enforcement Vision** *(not yet implemented)*:
+
+When PR_WORKFLOW_CHECKLIST.md is created in Phase 4, this enforcement mechanism will be automated:
+
+| Mechanism | Description | Acceptance Criteria |
+|-----------|-------------|---------------------|
+| Pre-commit hook | Validates learning entry exists when commit message contains "review" or "CodeRabbit" | Hook blocks commit with clear error message |
+| GitHub Actions check | Scans for new "Review #N" entry in AI_REVIEW_PROCESS.md | Merge blocked if entry missing |
+| Error remediation | Provides specific instructions on how to add missing entry | Message includes template and location |
+| Compliance tracking | Logs learning capture rate in MULTI_AI_REVIEW_COORDINATOR.md | 100% capture rate across all PRs |
+
+*Until Phase 4, manual enforcement via the "Immediate Enforcement" checklist above is required.*
+
 ---
 
 ### Continuous Improvement Triggers
@@ -722,9 +789,10 @@ fix: Address [Tool] review feedback
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.6 | 2026-01-01 | Added Review #9 (documentation clarity fixes). Fixed conflicting HEAD~N patterns with correction annotation. Added Phase 4 Enforcement Vision. Clarified retrospective context and version history phrasing. | Claude Code |
 | 2.5 | 2026-01-01 | Fixed "Enforcement Mechanism" section reference to use correct name "Learning Capture Enforcement Mechanism". Added Review #8 (CI fix, reference corrections). | Claude Code |
 | 2.4 | 2026-01-01 | Added Review #7 (off-by-one fix). Updated Script Robustness Patterns with correct HEAD~N boundary handling. | Claude Code |
-| 2.3 | 2026-01-01 | Added Review #5 and #6 (retroactive). Added Learning Capture Enforcement Mechanism section. Identified meta-pattern: self-enforcement unreliable without hard checkpoints. | Claude Code |
+| 2.3 | 2026-01-01 | Retroactively documented Reviews #5 and #6 to complete learning capture audit. Added Learning Capture Enforcement Mechanism section. Identified meta-pattern: self-enforcement unreliable without hard checkpoints. | Claude Code |
 | 2.2 | 2026-01-01 | Added Review #4 (Phase 1.5 review) to Lessons Learned Log. Documented script robustness patterns as new procedure standard. Identified process complexity as review consideration. | Claude Code |
 | 2.1 | 2026-01-01 | Made learning capture MANDATORY: Added step 6 to Workflow Integration, added step 7 to AI Instructions, added Review #2 to Lessons Learned Log. Enforces systematic learning after EVERY review with no exceptions. | Claude Code |
 | 2.0 | 2026-01-01 | Renamed from CODERABBIT_REVIEW_PROCESS.md to AI_REVIEW_PROCESS.md. Made process tool-agnostic to support CodeRabbit, Qodo, and future AI review tools. Updated all references from "CodeRabbit" to generic "AI review" terminology. | Claude Code |
