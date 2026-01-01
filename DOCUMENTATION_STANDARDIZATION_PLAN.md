@@ -1382,6 +1382,7 @@ The following items were identified during AI review but deferred to Phase 2:
 | Key rotation policy | Document key rotation schedule and procedures | Medium | CodeRabbit |
 | Template schema consolidation | Standardize JSONL output schema across all 4 review templates | Low | Qodo |
 | Automated deliverable audit script | Create script to verify phase deliverables automatically | Low | Internal |
+| Lessons learned automation | Script to surface relevant past learnings when working in areas with logged issues (grep AI_REVIEW_PROCESS.md for patterns matching current work area) | Medium | Internal |
 
 **Note**: These items enhance the automation phase and can be addressed during Task 2.1-2.6 implementation.
 
