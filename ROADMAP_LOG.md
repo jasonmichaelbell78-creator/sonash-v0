@@ -18,7 +18,7 @@
   - Phase 3-6: Migration & Cleanup (19-25h)
   - **Total Effort:** 44-56 hours
   - **Target Completion:** February 5, 2026
-- ✅ Created CODERABBIT_REVIEW_PROCESS.md (standardized CodeRabbit workflow)
+- ✅ Created AI_REVIEW_PROCESS.md (standardized AI review workflow)
   - 4-tier categorization (Critical/Major/Minor/Trivial)
   - Triage decision matrix
   - Documentation template for reviews

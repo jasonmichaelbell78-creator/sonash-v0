@@ -49,7 +49,7 @@ Related to #
 
 ## CodeRabbit Review
 <!-- To be filled manually after processing CodeRabbit suggestions -->
-<!-- See: CODERABBIT_REVIEW_PROCESS.md for categorization and triage guidelines -->
+<!-- This section is for CodeRabbit reviews. See AI_REVIEW_PROCESS.md (tool-agnostic) for categorization and triage guidelines. -->
 <!-- Categorize each suggestion as Addressed/Deferred/Rejected with reasoning -->
 
 **Total Suggestions:**
