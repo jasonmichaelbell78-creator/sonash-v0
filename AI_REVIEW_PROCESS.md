@@ -1,6 +1,6 @@
 # 🤖 AI Code Review Process
 
-**Document Version:** 2.0
+**Document Version:** 2.1
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
@@ -161,6 +161,15 @@ After processing AI review suggestions, document decisions using this template:
 - **Clear message**: "docs: Address AI review feedback" or "fix: Address CodeRabbit/Qodo feedback"
 - **Body**: Include summary or link to PR comment
 
+### 6. **Learning Capture** ⚠️ **MANDATORY - Do NOT skip**
+- **After EVERY review** (regardless of size), extract learnings following "Learning from Reviews" section below
+- **Add entry to Lessons Learned Log** in this document
+- **Identify patterns** (3+ suggestions about same issue = pattern)
+- **Document root causes** and prevention strategies
+- **Commit learning entry** separately: "docs: Add Review #X to Lessons Learned Log"
+
+**When to skip:** Never. Even if no clear patterns, document "No significant patterns identified" with review summary.
+
 ---
 
 ## 📋 Common Rejection Reasons
@@ -220,6 +229,7 @@ When processing AI review suggestions (CodeRabbit, Qodo, etc.):
 4. **Group related fixes** (e.g., all hyphenation fixes in one commit)
 5. **Use documentation template** (for PR comment or commit body)
 6. **Never silently ignore Critical items** (always address or explicitly reject with reason)
+7. **⚠️ MANDATORY: Capture learnings** (add entry to Lessons Learned Log below after EVERY review - no exceptions)
 
 ---
 
@@ -426,6 +436,7 @@ Based on learnings, update one or more of:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.1 | 2026-01-01 | Made learning capture MANDATORY: Added step 6 to Workflow Integration, added step 7 to AI Instructions, added Review #2 to Lessons Learned Log. Enforces systematic learning after EVERY review with no exceptions. | Claude Code |
 | 2.0 | 2026-01-01 | Renamed from CODERABBIT_REVIEW_PROCESS.md to AI_REVIEW_PROCESS.md. Made process tool-agnostic to support CodeRabbit, Qodo, and future AI review tools. Updated all references from "CodeRabbit" to generic "AI review" terminology. | Claude Code |
 | 1.1 | 2026-01-01 | Added "Learning from Reviews" section with systematic learning capture process, lessons learned log (Review #1), and continuous improvement triggers | Claude Code |
 | 1.0 | 2025-12-31 | Initial process definition based on Dec 31 CodeRabbit review | Claude Code |
