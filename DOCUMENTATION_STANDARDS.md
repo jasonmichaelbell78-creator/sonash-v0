@@ -548,17 +548,25 @@ When updating project status in **any** document, immediately update **all relat
 
 | Primary Doc Updated | Must Sync To | What to Update |
 |---------------------|--------------|----------------|
-| DOCUMENTATION_STANDARDIZATION_PLAN.md | SESSION_CONTEXT.md | Current sprint focus, Quick Status table, Next Up |
+| DOCUMENTATION_STANDARDIZATION_PLAN.md | SESSION_CONTEXT.md, ROADMAP.md, README.md | Current sprint focus, Quick Status table, Next Up, Overall progress, next priorities |
 | ROADMAP.md | SESSION_CONTEXT.md, README.md | Active milestones, completion %, current sprint |
 | Any plan document | AI_WORKFLOW.md | Navigation map (if new doc added) |
-| Phase completion | All status docs | Overall progress, next priorities |
 
 **Cross-Reference Validation**
 
 Before committing:
-1. List all markdown links: `[text](path)` and `[text](#anchor)`
-2. Verify each `path` exists in repository
-3. Verify each `#anchor` exists in target file
+1. List all Markdown references (all formats):
+   - Inline links: `[text](path)` and `[text](#anchor)`
+   - Reference-style links: `[text][id]` and definitions like `[id]: path-or-url`
+   - Images: `![alt](path)`
+   - Autolinks: `<https://...>`
+2. For each **internal path**:
+   - Verify the target file exists in the repository
+   - If linking to a section, verify the `#anchor` exists in the target file
+     - Anchors are GitHub-generated from headings (lowercase, spaces → `-`, punctuation removed)
+     - Verify by matching the exact heading text in the target file or copy from GitHub's heading link icon
+3. For each **external URL**:
+   - Verify it resolves (no 404/redirect loop) and points to the intended resource
 4. Update or remove broken references
 
 **Template Testing (for new templates only)**

@@ -420,9 +420,9 @@ This full template is comprehensive (16+ sections) and best for large initiative
 - Single-task work items
 
 **Sections to omit for lightweight docs:**
-- Gap Analysis
-- Detailed Work Items
-- Evidence of Completion (keep high-level only)
-- Extensive Acceptance Criteria (3-5 items max)
+- Gap Analysis (skip detailed analysis)
+- Detailed Work Items (keep task list minimal)
+- Extensive Acceptance Criteria (keep 3-5 items max)
+- Reasoning & Decisions (include only if critical)
 
-**Simplified template = Core sections only:** Purpose, Status Dashboard, What Was Accomplished, Next Steps, AI Instructions
+**Simplified template = Core sections only:** Purpose, Status Dashboard, one Item/Phase section (with What Was Accomplished), AI Instructions

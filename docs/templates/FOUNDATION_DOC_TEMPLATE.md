@@ -36,7 +36,7 @@ This document provides [comprehensive | reference | canonical] information about
 
 ### For New Team Members
 
-1. **Clone repo and run setup**: `git clone <repo> && npm install && npm test`
+1. **Clone repo and run setup**: `git clone <repo-url> && cd <repo-dir> && npm install && npm test`
 2. **Read sections in order**: Overview → Architecture → Patterns → Examples
 3. **Run tests to verify setup**: All tests should pass before starting work
 
@@ -349,9 +349,9 @@ When working with [subject area]:
 
 **For Non-Code or Polyglot Projects:**
 - Replace "Technology Stack" and "Key Files" sections with appropriate headings:
-  - Infrastructure docs → "Platform Components", "Configuration Locations"
-  - Multi-language repos → Group by language/service, show integration points
-  - Non-technical docs → "Stakeholders", "Business Goals", "Decision Framework"
+  - **Infrastructure docs**: "Technology Stack" → "Platform Components" (list services, hosting, IaC tools); "Key Files" → "Configuration Locations" (point to terraform/, k8s/, .env files, CI/CD configs)
+  - **Multi-language repos**: "Technology Stack" → Group by language/service with main entry points and build commands; "Key Files" → Integration points and shared libraries (e.g., protobuf definitions, API contracts, shared utilities)
+  - **Non-technical docs**: "Technology Stack" → "Stakeholders and Tools" (decision-making tools, collaboration platforms); "Key Files" → "Core Documents" (RACI matrix, OKRs, decision logs, strategy docs)
 
 **Path Customization:**
 - Internal reference paths (e.g., `./ARCHITECTURE.md`, `../ROADMAP.md`) are examples
