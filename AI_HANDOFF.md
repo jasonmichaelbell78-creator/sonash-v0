@@ -58,7 +58,7 @@
     - Phase 3-6: Migration & Cleanup (19-25h)
     - **Total Effort:** 44-56 hours, Target: February 5, 2026
     - **⚠️ HARD BLOCKER:** ALL feature development blocked until 100% complete
-  - **Created CODERABBIT_REVIEW_PROCESS.md** - Standardized CodeRabbit workflow (244 lines)
+  - **Created AI_REVIEW_PROCESS.md** - Standardized CodeRabbit workflow (244 lines)
     - 4-tier categorization (Critical/Major/Minor/Trivial)
     - Triage decision matrix
     - Documentation template for systematic review processing
@@ -325,10 +325,10 @@ All historical documents preserved in:
    - REFERENCE_DOC_TEMPLATE.md (Tier 4)
    - GUIDE_DOC_TEMPLATE.md (Tier 5)
    - DOCUMENTATION_STANDARDS.md
-   - AI_WORKFLOW.md (with CODERABBIT_REVIEW_PROCESS.md reference)
-   - SESSION_CONTEXT.md (with CODERABBIT_REVIEW_PROCESS.md reference)
+   - AI_WORKFLOW.md (with AI_REVIEW_PROCESS.md reference)
+   - SESSION_CONTEXT.md (with AI_REVIEW_PROCESS.md reference)
 3. Test each template by creating sample doc
-4. Verify CODERABBIT_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8
+4. Verify AI_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8
 5. Commit templates individually for easier review
 
 **After Phase 1 Complete:**

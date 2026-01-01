@@ -83,7 +83,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 6. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
-   - [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md)
+   - [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
    - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
 7. **Standards** (when creating/updating docs):
@@ -117,7 +117,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **⚠️ IMPORTANT**: CodeRabbit reviews occur multiple times daily and must be processed systematically.
 
-**See**: [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md) for complete workflow
+**See**: [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for complete workflow
 
 **Quick Reference**:
 1. **Categorize** suggestions: Critical → Major → Minor → Trivial
@@ -126,7 +126,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 4. **Implement** accepted changes
 5. **Commit** with CodeRabbit review summary
 
-**Template** (from CODERABBIT_REVIEW_PROCESS.md):
+**Template** (from AI_REVIEW_PROCESS.md):
 ```markdown
 ## CodeRabbit Review Summary
 
@@ -267,7 +267,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 → [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
 **How to Process CodeRabbit Reviews**:
-→ [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md)
+→ [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
 
 **Documentation Standards**:
 → [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
@@ -299,7 +299,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ### Scenario 3: Processing CodeRabbit Feedback
 
-1. Follow [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md)
+1. Follow [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
 2. Categorize all suggestions
 3. Triage using decision matrix
 4. Implement accepted changes

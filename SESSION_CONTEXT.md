@@ -65,7 +65,7 @@ This document provides **essential session context** for quick startup. It's des
 **Status**: No pending CodeRabbit reviews
 
 **When reviews arrive**:
-1. See [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md) for systematic processing
+1. See [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for systematic processing
 2. Categorize: Critical → Major → Minor → Trivial
 3. Triage using decision matrix
 4. Document using template
@@ -86,7 +86,7 @@ This document provides **essential session context** for quick startup. It's des
 
 **Previous Session** (earlier Dec 31):
 - ✅ Created DOCUMENTATION_STANDARDIZATION_PLAN.md
-- ✅ Created CODERABBIT_REVIEW_PROCESS.md
+- ✅ Created AI_REVIEW_PROCESS.md
 - ✅ Created GitHub pull request template (.github/pull_request_template.md)
 - ✅ Processed 7 CodeRabbit reviews
 - ✅ Updated all project documentation
@@ -118,7 +118,7 @@ All other systems operational.
 1. **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - How to navigate documentation
 2. **[DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)** - Active blocker details
 3. **[ROADMAP.md](./ROADMAP.md)** - Overall project priorities
-4. **[CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md)** - When CodeRabbit feedback arrives
+4. **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - When CodeRabbit feedback arrives
 
 **For deeper context**:
 - [AI_HANDOFF.md](./AI_HANDOFF.md) - Comprehensive project context
@@ -141,7 +141,7 @@ All other systems operational.
 **During Session**:
 - Use [TodoWrite] to track complex tasks
 - Update this document if status changes significantly
-- Follow [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md) for reviews
+- Follow [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for reviews
 - Reference [AI_WORKFLOW.md](./AI_WORKFLOW.md) for navigation
 
 **End of Session**:
@@ -219,7 +219,7 @@ npm run build        # Production build
 **Navigation**:
 - Need more context? → [AI_HANDOFF.md](./AI_HANDOFF.md)
 - Need to understand docs? → [AI_WORKFLOW.md](./AI_WORKFLOW.md)
-- Need CodeRabbit process? → [CODERABBIT_REVIEW_PROCESS.md](./CODERABBIT_REVIEW_PROCESS.md)
+- Need CodeRabbit process? → [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
 - Need to check priorities? → [ROADMAP.md](./ROADMAP.md)
 
 ---

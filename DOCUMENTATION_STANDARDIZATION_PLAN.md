@@ -547,7 +547,7 @@ Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to e
   - Navigation rules (always start README → AI_WORKFLOW → specific doc)
   - What information lives where
   - Standard operating procedures
-  - **Reference CODERABBIT_REVIEW_PROCESS.md in "Standard Procedures" section** ✅
+  - **Reference AI_REVIEW_PROCESS.md in "Standard Procedures" section** ✅
   - Session context usage
   - When to update which docs
 
@@ -555,7 +555,7 @@ Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to e
   - Current sprint focus
   - Recent completions (last 3 sessions)
   - Active blockers
-  - **Pending CodeRabbit reviews section (links to CODERABBIT_REVIEW_PROCESS.md)** ✅
+  - **Pending CodeRabbit reviews section (links to AI_REVIEW_PROCESS.md)** ✅
   - Next session goals
   - Collaboration notes
 
@@ -669,7 +669,7 @@ When implementing this phase:
 2. Create templates in order (1.1 → 1.8) as dependencies exist
 3. Use example content from existing docs where applicable
 4. Test each template by creating a sample document
-5. Verify CODERABBIT_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8 (ensure Standard Procedures and Pending Reviews sections exist)
+5. Verify AI_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8 (ensure Standard Procedures and Pending Reviews sections exist)
 6. Commit templates individually for easier review
 7. Update this phase's completion percentage after each task
 
@@ -1385,7 +1385,7 @@ Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new s
 - [ ] **Task 3.1**: Migrate README.md (1.5 hours)
   - Add status dashboard (auto-scripted from ROADMAP.md)
   - Add project overview refinement
-  - Add links to all major docs (including CODERABBIT_REVIEW_PROCESS.md)
+  - Add links to all major docs (including AI_REVIEW_PROCESS.md)
   - Add AI instructions section
   - Add version metadata
   - Run `npm run docs:update-readme` to test automation
@@ -1568,7 +1568,7 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
     - How: Implementation approach
     - Testing: How to verify changes
     - Links: Related issues/PRs
-  - **Add CodeRabbit review section (links to CODERABBIT_REVIEW_PROCESS.md)**
+  - **Add CodeRabbit review section (links to AI_REVIEW_PROCESS.md)**
   - Add AI instructions (mandatory pre-PR checks)
 
 - [ ] **Task 4.9**: Create GitHub pull_request_template (.github/pull_request_template.md) (0.75 hours)
@@ -1584,7 +1584,7 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
     - Screenshots/Videos (if UI changes)
     - Related Issues/PRs (if applicable)
   - **Add CodeRabbit review checklist section**
-  - Link to CODERABBIT_REVIEW_PROCESS.md
+  - Link to AI_REVIEW_PROCESS.md
   - Include collapsible template for CodeRabbit summary
   - **Add pre-merge checklist:**
     - [ ] Tests passing

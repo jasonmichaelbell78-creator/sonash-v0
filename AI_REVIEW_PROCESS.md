@@ -1,19 +1,26 @@
-# 🐰 CodeRabbit Review Process
+# 🤖 AI Code Review Process
 
-**Document Version:** 1.1
+**Document Version:** 2.0
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
 ## 📋 Purpose
 
-This document defines the standardized process for triaging, addressing, and documenting CodeRabbit AI review suggestions. CodeRabbit reviews occur multiple times daily, so having a consistent workflow ensures efficient handling and prevents suggestion fatigue.
+This document defines the standardized process for triaging, addressing, and documenting **AI code review suggestions** from automated review tools. AI reviews occur multiple times daily, so having a consistent workflow ensures efficient handling and prevents suggestion fatigue.
+
+**Supported AI Review Tools:**
+- **CodeRabbit** 🐰 - Primary AI code reviewer
+- **Qodo (formerly Codium AI)** - Secondary AI code reviewer
+- **Future tools** - Process applies to any AI-based code review system
+
+**Note**: While this document originally focused on CodeRabbit, the process is tool-agnostic and applies to all AI review systems.
 
 ---
 
 ## 🎯 Process Overview
 
 ```
-CodeRabbit Review
+AI Review Received
     ↓
 Categorize Suggestions
     ↓
@@ -84,12 +91,12 @@ Commit with Explanation
 
 ## 📝 Documentation Template
 
-After processing CodeRabbit suggestions, document decisions using this template:
+After processing AI review suggestions, document decisions using this template:
 
 ### For PR Comments:
 
 ```markdown
-## CodeRabbit Review Summary
+## AI Review Summary
 
 **Total Suggestions:** X
 **Addressed:** Y
@@ -129,7 +136,7 @@ After processing CodeRabbit suggestions, document decisions using this template:
 
 ## 🔄 Workflow Integration
 
-### 1. **Immediate Review** (Within 1 hour of CodeRabbit comment)
+### 1. **Immediate Review** (Within 1 hour of AI review comment)
 - Read all suggestions
 - Categorize using matrix above
 - Flag any **Critical** items for immediate action
@@ -150,15 +157,15 @@ After processing CodeRabbit suggestions, document decisions using this template:
 - Explain deferred/rejected items
 
 ### 5. **Commit Strategy**
-- **Separate commit** for CodeRabbit fixes (easier review)
-- **Clear message**: "docs: Address CodeRabbit feedback"
+- **Separate commit** for AI review fixes (easier review)
+- **Clear message**: "docs: Address AI review feedback" or "fix: Address CodeRabbit/Qodo feedback"
 - **Body**: Include summary or link to PR comment
 
 ---
 
 ## 📋 Common Rejection Reasons
 
-Use these standard reasons when rejecting CodeRabbit suggestions:
+Use these standard reasons when rejecting AI review suggestions:
 
 | Reason | When to Use | Example |
 |--------|-------------|---------|
@@ -205,7 +212,7 @@ Optional but helpful for improving process:
 
 ## 🤖 AI Instructions
 
-When processing CodeRabbit suggestions:
+When processing AI review suggestions (CodeRabbit, Qodo, etc.):
 
 1. **Read ALL suggestions first** (don't fix incrementally)
 2. **Categorize using the matrix** (Critical/Major/Minor/Trivial)
@@ -220,11 +227,11 @@ When processing CodeRabbit suggestions:
 
 ### Purpose
 
-Each CodeRabbit review is an opportunity to improve future work. Systematically capturing learnings prevents recurring issues and improves documentation quality over time.
+Each AI review is an opportunity to improve future work. Systematically capturing learnings prevents recurring issues and improves documentation quality over time.
 
 ### When to Extract Learnings
 
-**After EVERY CodeRabbit review** (regardless of size), ask:
+**After EVERY AI review** (regardless of size or tool), ask:
 1. **Are there patterns?** (3+ suggestions about the same issue)
 2. **Did we miss something obvious?** (self-compliance, metadata, formatting)
 3. **Can we prevent this?** (checklist, protocol, automation)
@@ -281,7 +288,7 @@ Use this template in the "Lessons Learned Log" section below:
 
 Based on learnings, update one or more of:
 - **DOCUMENTATION_STANDARDS.md**: Add checklists, protocols, or clarifications
-- **This document (CODERABBIT_REVIEW_PROCESS.md)**: Add to Lessons Learned Log and update categories/examples
+- **This document (AI_REVIEW_PROCESS.md)**: Add to Lessons Learned Log and update categories/examples
 - **Templates**: Improve placeholder clarity, add examples
 - **Phase plans**: Add automation or validation tasks
 
@@ -343,7 +350,8 @@ Based on learnings, update one or more of:
 - ✅ New pattern emerges (3+ reviews show same root cause)
 - ✅ Rejection reason not covered by existing categories
 - ✅ Process inefficiency discovered (e.g., triage taking >30 min)
-- ✅ New CodeRabbit capability added (e.g., security scanning, auto-fix)
+- ✅ New AI review tool capability added (e.g., security scanning, auto-fix)
+- ✅ New AI review tool adopted (add to "Supported AI Review Tools" section)
 
 **Version update rules:**
 - **Minor version (1.X)**: Add lesson to log, update examples, clarify existing sections
@@ -353,9 +361,10 @@ Based on learnings, update one or more of:
 
 ## 🔗 Related Documents
 
-- **PR_WORKFLOW_CHECKLIST.md** - Pre-PR checklist includes CodeRabbit review
+- **PR_WORKFLOW_CHECKLIST.md** - Pre-PR checklist includes AI review step
 - **DOCUMENTATION_STANDARDS.md** (Phase 1) - Standards for doc structure
-- **GitHub Actions workflow: docs-lint.yml** (Phase 2) - Automated linting that complements CodeRabbit
+- **GitHub Actions workflow: docs-lint.yml** (Phase 2) - Automated linting that complements AI reviews
+- **MULTI_AI_REVIEW_COORDINATOR.md** (Phase 1.5) - Coordinates multiple AI review tools
 
 ---
 
@@ -363,6 +372,7 @@ Based on learnings, update one or more of:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.0 | 2026-01-01 | Renamed from CODERABBIT_REVIEW_PROCESS.md to AI_REVIEW_PROCESS.md. Made process tool-agnostic to support CodeRabbit, Qodo, and future AI review tools. Updated all references from "CodeRabbit" to generic "AI review" terminology. | Claude Code |
 | 1.1 | 2026-01-01 | Added "Learning from Reviews" section with systematic learning capture process, lessons learned log (Review #1), and continuous improvement triggers | Claude Code |
 | 1.0 | 2025-12-31 | Initial process definition based on Dec 31 CodeRabbit review | Claude Code |
 
@@ -371,10 +381,11 @@ Based on learnings, update one or more of:
 ## 🚀 Next Steps
 
 1. **Integrate into PR_WORKFLOW_CHECKLIST.md** (Phase 1 or 4)
-2. **Add CodeRabbit review step** to pre-merge checklist
+2. **Add AI review step** to pre-merge checklist
 3. **Template PR comment** in GitHub pull_request_template.md
 4. **Track metrics** (optional: add to MULTI_AI_REVIEW_COORDINATOR.md)
+5. **Configure Qodo** alongside CodeRabbit for comprehensive reviews
 
 ---
 
-**END OF CODERABBIT_REVIEW_PROCESS.md**
+**END OF AI_REVIEW_PROCESS.md**

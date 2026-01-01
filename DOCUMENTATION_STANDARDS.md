@@ -121,7 +121,7 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 - SESSION_CONTEXT.md
 - PR_WORKFLOW_CHECKLIST.md
 - IMPLEMENTATION_PROMPTS.md
-- CODERABBIT_REVIEW_PROCESS.md
+- AI_REVIEW_PROCESS.md
 - MULTI_AI_REVIEW_COORDINATOR.md
 - claude.md
 
