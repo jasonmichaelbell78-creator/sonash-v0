@@ -1,6 +1,6 @@
 # 📚 SoNash Documentation Standardization Plan
 
-**Document Version:** 1.4
+**Document Version:** 1.6
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 **Status:** Active - In Progress
@@ -1092,6 +1092,23 @@ All 6 Phase 1.5 deliverables created and committed:
    - Added mandatory security standards section to README
    - Added GLOBAL_SECURITY_STANDARDS.md as step 2 in AI_WORKFLOW session startup
 
+**Advisory Content (v1.4 additions to this plan):**
+
+9. **Complete Documentation Flow Diagram** (lines 2180-2233)
+   - Master document hierarchy visual
+   - Document flow by purpose
+
+10. **Complete AI Workflow Guide** (lines 2264-2470)
+    - 5 session type workflows (New Work, Feature, Bug Fix, Review, Docs)
+    - Decision matrix for common situations
+    - What NOT to do / ALWAYS do checklists
+
+11. **Post-Standardization Maintenance** (lines 2474-2510)
+    - Continuous improvement loop diagram
+    - Key files for ongoing maintenance
+
+*Note: These advisory sections (lines 2180-2510) provide comprehensive workflow guidance added in v1.4. They are informational content within the plan, not separate deliverable files.*
+
 **Evidence:**
 - All commits pushed to remote on branch `claude/review-repo-docs-D4nYF`
 - Non-time-based triggers implemented per user preference
@@ -2082,6 +2099,7 @@ When implementing this phase:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.6 | 2026-01-01 | Fixed AI_HANDOFF.md references to use SESSION_CONTEXT.md (aligns with Phase 6 archival plan); documented advisory content sections (lines 2180-2510) as Phase 1.5 informational deliverables | Claude |
 | 1.5 | 2026-01-01 | Added MANDATORY deliverable audit and procedure gap analysis to ALL phases (2-6); fixed procedure gaps (AI_WORKFLOW.md sync, docs/reviews/ folder, PR_WORKFLOW_CHECKLIST.md integration); added Procedure Gap Analysis Checklist | Claude |
 | 1.4 | 2026-01-01 | Added Project Health Dashboard (5 areas: Security, Code Quality, Performance, Architecture, Documentation); added Complete Documentation Flow Diagram and AI Workflow Guide; expanded system health beyond docs | Claude |
 | 1.3 | 2026-01-01 | Phase 1.5 complete - 4 review templates + coordinator + trigger script created; added security standards foundation (GLOBAL_SECURITY_STANDARDS.md); non-time-based triggers per user preference | Claude |
@@ -2351,7 +2369,7 @@ FEATURE IMPLEMENTATION WORKFLOW:
 BUG FIX WORKFLOW:
 
 1. CONTEXT
-   ├── Check AI_HANDOFF.md for known issues
+   ├── Check SESSION_CONTEXT.md for known issues
    ├── Check relevant feature plan
    └── Understand component in ARCHITECTURE.md
 
@@ -2367,8 +2385,8 @@ BUG FIX WORKFLOW:
    └── Follow security standards
 
 4. DOCUMENT
-   ├── Update SESSION_CONTEXT.md if significant
-   ├── Update AI_HANDOFF.md known issues
+   ├── Update SESSION_CONTEXT.md (including known issues section)
+   ├── Update ROADMAP.md if bug affects milestone
    └── Commit with clear message
 ```
 
@@ -2440,7 +2458,7 @@ DOCUMENTATION WORKFLOW:
 |-----------|--------------|----------|--------------|
 | Starting new session | Read SESSION_CONTEXT.md | AI_WORKFLOW.md, GLOBAL_SECURITY_STANDARDS.md | Increment session counter |
 | User asks for feature | Check if blocked | ROADMAP.md, SESSION_CONTEXT.md | Security standards |
-| User asks to fix bug | Check known issues | AI_HANDOFF.md | Add regression test |
+| User asks to fix bug | Check known issues | SESSION_CONTEXT.md | Add regression test |
 | User asks for review | Check triggers | MULTI_AI_REVIEW_COORDINATOR.md | Select right template |
 | Writing new code | Check security | GLOBAL_SECURITY_STANDARDS.md | All 4 standards |
 | Updating docs | Check tier | DOCUMENTATION_STANDARDS.md | Required sections |
