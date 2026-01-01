@@ -1,6 +1,6 @@
 # SoNash Documentation Standards
 
-**Document Version**: 1.1
+**Document Version**: 1.2
 **Created**: 2025-12-31
 **Last Updated**: 2026-01-01
 **Status**: ACTIVE
@@ -577,6 +577,21 @@ When creating a new template:
 3. Verify example makes sense and placeholders are clear
 4. Save example to `docs/examples/[template-name]-example.md`
 
+**⚠️ MANDATORY: Deliverable Audit (for phase/milestone completion)**
+
+Before marking ANY phase, milestone, or work package as complete:
+
+1. **Review original scope** - Goals, acceptance criteria, deliverables list
+2. **Verify each deliverable** - Exists? Complete? Meets criteria?
+3. **Check for gaps** - Any missing items or unmet criteria?
+4. **Document findings** - Add to "What Was Accomplished" section
+5. **Address gaps** - Fix or document why acceptable
+6. **Then mark complete** - Only after audit passes
+
+**See**: [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure" for full template.
+
+This is a **global standard** - applies to ALL phases, milestones, sections, and work packages throughout the entire project.
+
 ### Commit Message Format
 
 **For documentation updates**:
@@ -641,6 +656,7 @@ Before committing documentation changes, verify:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit as global standard for phase/milestone completion in Quality Protocols | Claude |
 | 1.1 | 2026-01-01 | Added Quality Protocols section with 4 new protocols: Pre-Commit Validation Checklist, Status Synchronization Protocol, Cross-Reference Validation, Template Testing | Claude Code |
 | 1.0 | 2025-12-31 | Initial documentation standards created | Claude Code |
 

@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
 **Last Updated**: 2026-01-01
-**Document Version**: 1.1
+**Document Version**: 1.2
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -324,14 +324,122 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 4. Validate links and formatting
 5. Commit with "docs:" prefix
 
-### Scenario 5: Completing a Milestone
+### Scenario 5: Completing a Milestone/Phase
 
 1. Update planning doc - Mark complete
 2. Update [ROADMAP.md](./ROADMAP.md) - Update dashboard
 3. Add entry to [ROADMAP_LOG.md](./ROADMAP_LOG.md) - Archive completion
 4. Update [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Note completion
 5. Update [AI_HANDOFF.md](./AI_HANDOFF.md) - Add to recent work
-6. Commit all doc updates together
+6. **RUN DELIVERABLE AUDIT** (see below)
+7. Commit all doc updates together
+
+---
+
+## 🔍 MANDATORY: Deliverable Audit Procedure
+
+### Purpose
+
+**Every phase, section, or milestone completion MUST include a deliverable audit** - a systematic verification that all goals were met and all deliverables are complete. This is NOT optional.
+
+### When to Run
+
+Run a deliverable audit when ANY of these occur:
+- ✅ Phase completion (e.g., Phase 1.5 complete)
+- ✅ Milestone completion (e.g., M1.6 complete)
+- ✅ Section completion within a plan
+- ✅ Feature completion
+- ✅ Sprint completion
+- ✅ Any work package with defined deliverables
+
+### Audit Process
+
+```
+DELIVERABLE AUDIT CHECKLIST
+
+1. GATHER REQUIREMENTS
+   ├── Find original goals/objectives
+   ├── Find original acceptance criteria
+   ├── Find original deliverables list
+   └── Note any scope changes during work
+
+2. VERIFY DELIVERABLES
+   For each deliverable:
+   ├── Does it exist? (file created, feature implemented)
+   ├── Is it complete? (all required sections/features)
+   ├── Does it meet acceptance criteria?
+   └── Is it documented?
+
+3. CHECK FOR GAPS
+   ├── Any deliverables missing?
+   ├── Any partially complete items?
+   ├── Any acceptance criteria unmet?
+   └── Any scope items forgotten?
+
+4. DOCUMENT FINDINGS
+   ├── List all deliverables and status
+   ├── Note any gaps found
+   ├── Note any items that exceed scope (bonus)
+   └── Add to "What Was Accomplished" section
+
+5. ADDRESS GAPS
+   ├── Fix any gaps before marking complete
+   ├── Or document why gap is acceptable
+   └── Get user approval if scope changed
+```
+
+### Audit Template
+
+Use this template when completing any phase/milestone:
+
+```markdown
+## Deliverable Audit: [Phase/Milestone Name]
+
+**Audit Date:** YYYY-MM-DD
+**Auditor:** [AI Name]
+
+### Original Goals
+[List from original plan]
+
+### Original Deliverables
+[List from original plan]
+
+### Verification Results
+
+| Deliverable | Exists? | Complete? | Meets Criteria? | Notes |
+|-------------|---------|-----------|-----------------|-------|
+| [Item 1] | ✅/❌ | ✅/❌ | ✅/❌ | |
+| [Item 2] | ✅/❌ | ✅/❌ | ✅/❌ | |
+
+### Acceptance Criteria Check
+
+| Criterion | Met? | Evidence |
+|-----------|------|----------|
+| [Criterion 1] | ✅/❌ | |
+| [Criterion 2] | ✅/❌ | |
+
+### Gaps Found
+- [Gap 1]: [Resolution]
+- [Gap 2]: [Resolution]
+
+### Additional Deliverables (Beyond Scope)
+- [Bonus item 1]
+- [Bonus item 2]
+
+### Audit Result
+- [ ] ALL deliverables complete
+- [ ] ALL acceptance criteria met
+- [ ] ALL gaps addressed
+- [ ] Ready to mark phase/milestone COMPLETE
+```
+
+### Integration with Phase Completion
+
+**Before marking ANY phase/milestone complete:**
+1. Run deliverable audit
+2. Fix any gaps found
+3. Document in "What Was Accomplished" section
+4. Only THEN mark as complete
 
 ---
 
@@ -411,6 +519,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion | Claude |
 | 1.1 | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup | Claude |
 | 1.0 | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference | Claude Code |
 
