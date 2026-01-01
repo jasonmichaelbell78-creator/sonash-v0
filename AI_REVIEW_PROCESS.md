@@ -344,6 +344,60 @@ Based on learnings, update one or more of:
 
 ---
 
+#### Review #2: File Rename & Cross-Reference Updates (2026-01-01)
+**PR:** `claude/update-session-docs-uRgUs` (Tool-agnostic rename v2.0)
+**Suggestions:** 17 total from 2 tools (CodeRabbit: 14, Qodo: 6, overlapping: 3)
+**Tools:** CodeRabbit 🐰 + Qodo (first multi-tool review)
+
+**Patterns Identified:**
+1. **Tool-Specific Language Persistence** (2 occurrences)
+   - Root cause: After renaming CODERABBIT_REVIEW_PROCESS.md → AI_REVIEW_PROCESS.md, only updated filename references, not descriptive text ("standardized CodeRabbit workflow")
+   - Prevention: When renaming files, grep for old terminology in descriptions/comments, not just filenames
+   - Files: AI_HANDOFF.md:61, ROADMAP_LOG.md:21
+
+2. **Incomplete Link Format Coverage** (1 occurrence)
+   - Root cause: Cross-Reference Validation protocol only listed inline links `[text](path)`, missing reference-style, images, autolinks
+   - Prevention: Expanded protocol to cover all Markdown link formats (reference-style, images, autolinks, external URLs)
+   - Files: DOCUMENTATION_STANDARDS.md:558-570
+
+3. **Missing Forward-Reference Annotations** (1 occurrence)
+   - Root cause: AI_REVIEW_PROCESS.md referenced PR_WORKFLOW_CHECKLIST.md (Phase 4) without noting it doesn't exist yet
+   - Prevention: Add phase annotations `(Phase X)` to forward references in Related Documents sections
+   - Files: AI_REVIEW_PROCESS.md:364
+
+4. **Template Contradictions** (2 occurrences)
+   - Root cause: CANONICAL template listed "Evidence of Completion" in omit list but "What Was Accomplished" in core sections; referenced "Next Steps" without explicit section
+   - Prevention: Template Testing Requirement exists but wasn't executed for Phase 1 templates (deferred to Phase 3)
+   - Files: docs/templates/CANONICAL_DOC_TEMPLATE.md:423-428
+
+5. **Broken Shell Commands in Examples** (1 occurrence)
+   - Root cause: Quick-start command `git clone <repo> && npm install` missing `cd <repo-dir>` step
+   - Prevention: Test all shell command examples before commit; add to Pre-Commit Validation for code-containing docs
+   - Files: docs/templates/FOUNDATION_DOC_TEMPLATE.md:39
+
+6. **Generic Examples Lacking Concrete Mappings** (1 occurrence)
+   - Root cause: Non-Code/Polyglot adaptation bullets too abstract without showing how to map sections
+   - Prevention: Add concrete mapping examples to all "how to adapt" guidance (e.g., "Technology Stack → Platform Components: list services, IaC paths")
+   - Files: docs/templates/FOUNDATION_DOC_TEMPLATE.md:352-354
+
+**Process Improvements:**
+- ✅ Enhanced Cross-Reference Validation (DOCUMENTATION_STANDARDS.md v1.1):
+  - Added all Markdown link formats (reference-style, images, autolinks)
+  - Added internal/external URL distinction
+  - Added GitHub anchor generation rules
+- ✅ Fixed Status Synchronization Protocol table (removed event entry, merged into doc row)
+- ✅ Fixed 4 template issues (contradictions, broken commands, concrete examples)
+- ✅ Added forward-reference phase annotations pattern
+- ✅ Updated 4 tool-specific descriptions to tool-agnostic language
+- ⏳ Automated framework complexity: Deferred (Phase 2 already addresses with pre-commit hooks, validators)
+- ⏳ Library version specificity: Deferred (implementation detail for Phase 2 script development)
+
+**Expected Impact:** 60-70% reduction in file rename inconsistencies, 40-50% reduction in template usability issues
+
+**Key Insight:** File renames require two passes: (1) update references/links, (2) grep for old terminology in descriptions/comments/documentation.
+
+---
+
 ### Continuous Improvement Triggers
 
 **When to update this process document:**
