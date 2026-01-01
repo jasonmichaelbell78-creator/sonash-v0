@@ -1,6 +1,6 @@
 # 🤖 AI Code Review Process
 
-**Document Version:** 2.6
+**Document Version:** 2.7
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
@@ -715,36 +715,123 @@ fi
 
 ---
 
+#### Review #10: Session Hook Robustness & CI Fixes (2026-01-01)
+**PR:** `claude/review-repo-docs-D4nYF` (Session hook improvements)
+**Suggestions:** 8 actionable across 4 commits (CodeRabbit + Qodo)
+**Tools:** CodeRabbit 🐰 + Qodo
+
+**Patterns Identified:**
+1. **npm install Modifies Lockfile** (1 occurrence - ROOT CAUSE of repeated CI failures)
+   - Root cause: Session hook used `npm install` which modifies package-lock.json
+   - Example: Every session start created lockfile drift, breaking CI's `npm ci`
+   - Prevention: Always use `npm ci` in automated scripts; never `npm install`
+   - Resolution: Changed session-start.sh to use `npm ci`
+
+2. **Missing Transitive Dependencies** (1 occurrence)
+   - Root cause: External deployment check expected jest, not in package.json
+   - Example: Deployment failed with "Missing: jest@30.2.0 from lock file"
+   - Prevention: When external checks require packages, add them explicitly
+   - Resolution: Added jest@30.2.0 to devDependencies
+
+3. **Lockfile Existence Not Checked** (2 occurrences - Qodo)
+   - Root cause: `npm ci` fails if lockfile missing; script didn't check
+   - Example: New repos or missing lockfiles would cause complete hook failure
+   - Prevention: Check lockfile exists before `npm ci`; fallback to `npm install`
+   - Resolution: Added `-s` checks for both root and functions/ lockfiles
+
+4. **Empty/Corrupted Lockfile Edge Case** (1 occurrence - Qodo)
+   - Root cause: `-f` checks if file exists, not if it has content
+   - Example: Empty package-lock.json would pass `-f` but fail `npm ci`
+   - Prevention: Use `-s` (non-empty) instead of `-f` for lockfile checks
+   - Resolution: Changed all lockfile checks to use `-s`
+
+5. **Unsafe Variable Increment** (1 occurrence - Qodo)
+   - Root cause: `$((WARNINGS + 1))` fails if WARNINGS unset
+   - Example: Edge case could cause script error
+   - Prevention: Use `${WARNINGS:-0}` for safe defaults
+   - Resolution: Changed to `WARNINGS=$(( ${WARNINGS:-0} + 1 ))`
+
+6. **Missing --legacy-peer-deps** (1 occurrence - Qodo)
+   - Root cause: Removed flag could break dependency resolution
+   - Example: Functions/ dependencies might fail with peer dep conflicts
+   - Prevention: Keep --legacy-peer-deps for functions/ npm commands
+   - Resolution: Restored flag for functions/ directory only
+
+**Process Improvements:**
+- ✅ Session hook now uses `npm ci` (prevents lockfile drift)
+- ✅ Added jest@30.2.0 for external deployment check
+- ✅ Added lockfile existence checks with fallback
+- ✅ Use `-s` for non-empty file checks
+- ✅ Safe WARNINGS increment with default
+- ✅ Restored --legacy-peer-deps for functions/
+
+**Commits:**
+- `44ca8ed`: npm install → npm ci
+- `d4309b8`: Added jest@30.2.0
+- `15c285f`: Lockfile existence checks
+- `1fc9992`: Qodo fixes (non-empty, safe increment, legacy-peer-deps)
+
+**Expected Impact:** 100% session hook reliability; no more lockfile drift causing CI failures
+
+**Key Insight:** `npm install` vs `npm ci` is critical in automated environments. `npm install` is for development (updates lockfile); `npm ci` is for CI/CD (reads lockfile exactly). This distinction prevents the "works locally, breaks in CI" pattern.
+
+---
+
 ### 🚨 Learning Capture Enforcement Mechanism
 
-**Problem:** Despite "MANDATORY" labeling, learning capture was skipped in Review #5. Self-enforcement is unreliable.
+**Problem:** Despite "MANDATORY" labeling, learning capture was skipped in Reviews #5 and #10. Self-enforcement and "do it after" approaches are unreliable. The AI gets into "fix mode" and forgets the meta-step.
 
-**Solution - Hard Checkpoint:**
+**Root Cause:** Learning entry was treated as a POST-fix step. By the time fixes are done, the AI has moved on mentally.
 
-Add to commit workflow (in PR_WORKFLOW_CHECKLIST.md Phase 4, and immediately enforce):
+**Solution - LEARNING ENTRY FIRST (Enforced via TodoWrite):**
 
-```markdown
-## Pre-Commit Checklist for AI Review Responses
+```
+⚠️ CRITICAL WORKFLOW CHANGE - EFFECTIVE IMMEDIATELY ⚠️
 
-Before committing ANY changes that address AI review feedback:
+When AI review feedback arrives (CodeRabbit, Qodo, etc.):
 
-- [ ] **STOP** - Have you added a Lessons Learned entry?
-- [ ] Open AI_REVIEW_PROCESS.md
-- [ ] Add Review #N entry with: Date, PR, Suggestions count, Patterns, Improvements
-- [ ] Increment document version
-- [ ] THEN commit both the fixes AND the learning entry together
+1. FIRST: Create TodoWrite item "Add Review #N to Lessons Learned Log" as FIRST task
+2. FIRST: Create the Review #N stub entry in AI_REVIEW_PROCESS.md (date, PR, tools)
+3. THEN: Address the actual review feedback
+4. THEN: Fill in patterns/improvements as you work
+5. LAST: Commit everything together (fixes + learning entry)
 
-**Commit message format:**
-fix: Address [Tool] review feedback
-
-- [Summary of fixes]
-- Added Review #N to Lessons Learned Log
+The learning entry must be STARTED before any fixes are made.
+This ensures it's not forgotten in the flow of fixing issues.
 ```
 
-**Immediate Enforcement (until Phase 4):**
-1. After addressing ANY AI review, grep for new "Review #" entry before pushing
-2. If missing, add it before push
-3. Include in commit message: "Added Review #N to Lessons Learned Log"
+**TodoWrite Template for AI Reviews:**
+```
+todos:
+- content: "Add Review #N to Lessons Learned Log"
+  status: "in_progress"  # START with this
+  activeForm: "Adding Review #N to Lessons Learned Log"
+- content: "Fix [issue 1]"
+  status: "pending"
+- content: "Fix [issue 2]"
+  status: "pending"
+```
+
+**Why This Works:**
+- Learning entry is the FIRST todo, not the last
+- Entry stub is created BEFORE fixes start
+- Details are filled in AS work progresses
+- Cannot forget because it's tracked in TodoWrite
+- Commit includes both fixes AND learning together
+
+**Verification Before Push:**
+```bash
+# Run this before every push that addresses AI review feedback:
+grep -c "#### Review #" AI_REVIEW_PROCESS.md
+# Compare to previous count - must have increased
+```
+
+**Failure Recovery:**
+If learning entry was missed (like Reviews #5, #10):
+1. Add entry retroactively with all available details
+2. Mark as "Retroactively documented" in the entry
+3. Note the failure in the entry's patterns section
+4. This meta-pattern of missing entries is itself a learning
 
 **Phase 4 Enforcement Vision** *(not yet implemented)*:
 
@@ -789,6 +876,7 @@ When PR_WORKFLOW_CHECKLIST.md is created in Phase 4, this enforcement mechanism 
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.7 | 2026-01-01 | Added Review #10 (session hook CI fixes). **CRITICAL**: Rewrote enforcement mechanism to "LEARNING ENTRY FIRST" approach - create entry BEFORE fixing issues, not after. Previous "do it after" approach failed repeatedly. | Claude Code |
 | 2.6 | 2026-01-01 | Added Review #9 (documentation clarity fixes). Fixed conflicting HEAD~N patterns with correction annotation. Added Phase 4 Enforcement Vision. Clarified retrospective context and version history phrasing. | Claude Code |
 | 2.5 | 2026-01-01 | Fixed "Enforcement Mechanism" section reference to use correct name "Learning Capture Enforcement Mechanism". Added Review #8 (CI fix, reference corrections). | Claude Code |
 | 2.4 | 2026-01-01 | Added Review #7 (off-by-one fix). Updated Script Robustness Patterns with correct HEAD~N boundary handling. | Claude Code |
