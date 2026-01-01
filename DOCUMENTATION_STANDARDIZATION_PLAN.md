@@ -2083,6 +2083,11 @@ The following items were deferred from Phase 2 and should be addressed in Phase 
   - Add procedures for rotating Firebase, API keys
   - Link from GLOBAL_SECURITY_STANDARDS.md
 
+- [ ] **Task 6.12**: Clean up deploy-firebase.yml (0.25 hours)
+  - Remove `claude/review-repo-docs-D4nYF` from triggers (line 7)
+  - This branch was added temporarily during Phase 2 development
+  - Should only deploy from `main` branch after PR merges
+
 ### ✅ Acceptance Criteria
 
 - [ ] All 7 documents archived with complete metadata
