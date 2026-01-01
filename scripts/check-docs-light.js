@@ -165,7 +165,7 @@ function extractHeadings(content) {
     if (match) {
       headings.push({
         level: match[1].length,
-        text: match[2].replace(/[🔗📋🎯📊🗓️🤖💡🚨✅📝📚🔐🔄🗺️📖📐🔀]/g, '').trim(),
+        text: match[2].replace(/🔗|📋|🎯|📊|🗓️|🤖|💡|🚨|✅|📝|📚|🔐|🔄|🗺️|📖|📐|🔀/gu, '').trim(),
         line: i + 1
       });
     }
@@ -186,7 +186,7 @@ function extractMetadata(content) {
 
   // Look for "Last Updated" in various formats
   const lastUpdatedPatterns = [
-    /\*\*Last Updated[:\*]*\**\s*[:]*\s*(.+)/i,
+    /\*\*Last Updated[:*]*\**\s*[:]*\s*(.+)/i,
     /Last Updated[:\s]+(.+)/i,
     /Updated[:\s]+(.+)/i
   ];
@@ -201,7 +201,7 @@ function extractMetadata(content) {
 
   // Look for version number
   const versionPatterns = [
-    /\*\*(?:Document )?Version[:\*]*\**\s*[:]*\s*(\d+\.?\d*)/i,
+    /\*\*(?:Document )?Version[:*]*\**\s*[:]*\s*(\d+\.?\d*)/i,
     /Version[:\s]+(\d+\.?\d*)/i,
     /\| (\d+\.\d+) \|.*\|.*\|/  // Version history table
   ];

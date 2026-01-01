@@ -338,7 +338,7 @@ function generateStatusSection(milestones, overallProgress) {
                        m.status.includes('Planned') ? '📋' :
                        m.status.includes('Optional') ? '⏸️' :
                        m.status.includes('Research') ? '🔬' : '⏸️';
-    const cleanStatus = m.status.replace(/[✅🔄📋⏸️🔬]/g, '').trim();
+    const cleanStatus = m.status.replace(/✅|🔄|📋|⏸️|🔬/gu, '').trim();
     section += `| ${m.name} | ${statusIcon} ${cleanStatus} | ${m.progress}% |\n`;
   }
 
@@ -456,7 +456,7 @@ function main() {
   const milestones = parseResult.milestones;
   console.log(`Found ${milestones.length} milestones:`);
   for (const m of milestones) {
-    console.log(`  - ${m.name}: ${m.progress}% (${m.status.replace(/[✅🔄📋⏸️🔬]/g, '').trim()})`);
+    console.log(`  - ${m.name}: ${m.progress}% (${m.status.replace(/✅|🔄|📋|⏸️|🔬/gu, '').trim()})`);
   }
 
   // Step 4: Get overall progress
