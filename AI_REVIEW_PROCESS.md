@@ -361,7 +361,7 @@ Based on learnings, update one or more of:
 
 ## 🔗 Related Documents
 
-- **PR_WORKFLOW_CHECKLIST.md** - Pre-PR checklist includes AI review step
+- **PR_WORKFLOW_CHECKLIST.md** (Phase 4) - Pre-PR checklist includes AI review step
 - **DOCUMENTATION_STANDARDS.md** (Phase 1) - Standards for doc structure
 - **GitHub Actions workflow: docs-lint.yml** (Phase 2) - Automated linting that complements AI reviews
 - **MULTI_AI_REVIEW_COORDINATOR.md** (Phase 1.5) - Coordinates multiple AI review tools

@@ -58,7 +58,7 @@
     - Phase 3-6: Migration & Cleanup (19-25h)
     - **Total Effort:** 44-56 hours, Target: February 5, 2026
     - **⚠️ HARD BLOCKER:** ALL feature development blocked until 100% complete
-  - **Created AI_REVIEW_PROCESS.md** - Standardized CodeRabbit workflow (244 lines)
+  - **Created AI_REVIEW_PROCESS.md** - Standardized AI review workflow (244 lines)
     - 4-tier categorization (Critical/Major/Minor/Trivial)
     - Triage decision matrix
     - Documentation template for systematic review processing
