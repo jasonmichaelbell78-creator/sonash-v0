@@ -1,6 +1,6 @@
 # 🤖 AI Code Review Process
 
-**Document Version:** 2.7
+**Document Version:** 2.8
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
@@ -774,6 +774,58 @@ fi
 **Expected Impact:** 100% session hook reliability; no more lockfile drift causing CI failures
 
 **Key Insight:** `npm install` vs `npm ci` is critical in automated environments. `npm install` is for development (updates lockfile); `npm ci` is for CI/CD (reads lockfile exactly). This distinction prevents the "works locally, breaks in CI" pattern.
+
+---
+
+#### Review #11: Lockfile Sync & Workflow Configuration (2026-01-01)
+**PR:** `claude/review-repo-docs-D4nYF` (CI/CD fixes)
+**Suggestions:** 5 actionable (CodeRabbit + Qodo)
+**Tools:** CodeRabbit 🐰 + Qodo
+
+**Patterns Identified:**
+1. **Lockfile Structural Inconsistencies** (1 occurrence - ROOT CAUSE)
+   - Root cause: Lockfile generated with duplicated/invalid entries that npm ci rejects
+   - Example: CI failed with "Missing jest@30.2.0" but package-lock.json HAD jest
+   - Prevention: After ANY lockfile changes, verify with `rm -rf node_modules && npm ci`
+   - Resolution: Complete regeneration (`rm package-lock.json && npm install`)
+
+2. **Feature Branches in Workflow Triggers** (1 occurrence - CodeRabbit)
+   - Root cause: Adding feature branch to deploy-firebase.yml for testing
+   - Example: `claude/review-repo-docs-D4nYF` in triggers is temporary
+   - Prevention: Remove feature branches before merging to main
+   - Resolution: Documented as TODO; use `workflow_dispatch` for testing instead
+
+3. **Missing Firebase Environment Variables** (1 occurrence - self-identified)
+   - Root cause: deploy-firebase.yml lacked NEXT_PUBLIC_FIREBASE_* vars
+   - Example: Build step only had NODE_ENV=production
+   - Prevention: Keep CI workflows in sync with build requirements
+   - Resolution: Added all 6 Firebase env vars to Build step
+
+4. **npm Cache Keyed on Wrong Lockfile** (1 occurrence - self-identified)
+   - Root cause: cache-dependency-path only referenced functions/package-lock.json
+   - Example: Root lockfile changes didn't invalidate cache properly
+   - Prevention: Include all lockfiles in cache-dependency-path
+   - Resolution: Added both root and functions lockfiles to cache path
+
+5. **Secrets Validation Missing** (1 occurrence - Qodo)
+   - Root cause: No validation that required secrets exist before build
+   - Example: Missing secret causes silent build failure
+   - Prevention: Validate required secrets at start of workflow
+   - Resolution: Added to backlog (suggested inline validation script)
+
+**Process Improvements:**
+- ✅ Regenerated lockfile for npm ci compatibility
+- ✅ Added Firebase env vars to deploy workflow
+- ✅ Fixed npm cache to include all lockfiles
+- ⏳ Remove feature branch from triggers before merge
+
+**Commits:**
+- `2c0eded`: Deploy workflow fixes (triggers, env vars, cache)
+- `5826217`: Regenerated lockfile for npm ci compatibility
+
+**Expected Impact:** 100% CI reliability for deployment workflow
+
+**Key Insight:** When `npm ci` fails with "missing package" errors but the package IS in the lockfile, the lockfile has structural issues. Complete regeneration (`rm package-lock.json && npm install && npm ci` to verify) is often faster than debugging the corruption.
 
 ---
 
