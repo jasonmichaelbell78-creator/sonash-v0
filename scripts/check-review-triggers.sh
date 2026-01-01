@@ -39,8 +39,14 @@ if [ "$COMMITS_SINCE" -ge 50 ]; then
 fi
 
 # Files changed in last 10 commits (with guard for short repos)
+# Note: HEAD~N requires at least N+1 commits, so LOOKBACK must be < COMMIT_COUNT
 COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
-LOOKBACK=$((COMMIT_COUNT < 10 ? COMMIT_COUNT : 10))
+if [ "$COMMIT_COUNT" -le 1 ]; then
+  LOOKBACK=0
+else
+  # LOOKBACK must be strictly less than COMMIT_COUNT to avoid referencing before initial commit
+  LOOKBACK=$((COMMIT_COUNT <= 10 ? COMMIT_COUNT - 1 : 10))
+fi
 if [ "$LOOKBACK" -gt 0 ]; then
   FILES_CHANGED=$(git diff --name-only HEAD~$LOOKBACK 2>/dev/null | wc -l | tr -d ' ')
 else

@@ -1,6 +1,6 @@
 # 🤖 AI Code Review Process
 
-**Document Version:** 2.3
+**Document Version:** 2.4
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
@@ -585,6 +585,39 @@ if [ "$WARNINGS" -eq 0 ]; then echo "Success"; else echo "Completed with $WARNIN
 
 ---
 
+#### Review #7: CodeRabbit Round 4 - Off-by-One Bug (2026-01-01)
+**PR:** `claude/review-repo-docs-D4nYF` (Script robustness fix)
+**Suggestions:** 1 actionable (off-by-one), 4 duplicate
+**Tools:** CodeRabbit 🐰
+
+**Patterns Identified:**
+1. **Off-by-One in Git History Commands** (1 occurrence - CRITICAL)
+   - Root cause: HEAD~N requires N+1 commits in history; if COMMIT_COUNT=10, HEAD~10 fails
+   - Example: `LOOKBACK=$((COMMIT_COUNT < 10 ? COMMIT_COUNT : 10))` allows LOOKBACK=COMMIT_COUNT
+   - Prevention: Always use `COMMIT_COUNT - 1` as upper bound for HEAD~N operations
+   - Resolution: Fixed LOOKBACK calculation to ensure LOOKBACK < COMMIT_COUNT
+
+**Process Improvements:**
+- ✅ Fixed off-by-one error in check-review-triggers.sh
+- ✅ Added explanatory comments for future maintainers
+
+**Script Robustness Patterns (UPDATED):**
+```bash
+# CORRECT: HEAD~N requires at least N+1 commits
+COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
+if [ "$COMMIT_COUNT" -le 1 ]; then
+  LOOKBACK=0
+else
+  LOOKBACK=$((COMMIT_COUNT <= 10 ? COMMIT_COUNT - 1 : 10))
+fi
+```
+
+**Expected Impact:** 100% reliability on repos with ≤10 commits
+
+**Key Insight:** Edge cases in git commands compound - the original guard for "short repos" was incomplete. Always verify boundary conditions with concrete examples (e.g., "what if exactly 10 commits?").
+
+---
+
 ### 🚨 Learning Capture Enforcement Mechanism
 
 **Problem:** Despite "MANDATORY" labeling, learning capture was skipped in Review #5. Self-enforcement is unreliable.
@@ -646,6 +679,7 @@ fix: Address [Tool] review feedback
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.4 | 2026-01-01 | Added Review #7 (off-by-one fix). Updated Script Robustness Patterns with correct HEAD~N boundary handling. | Claude Code |
 | 2.3 | 2026-01-01 | Added Review #5 and #6 (retroactive). Added Learning Capture Enforcement Mechanism section. Identified meta-pattern: self-enforcement unreliable without hard checkpoints. | Claude Code |
 | 2.2 | 2026-01-01 | Added Review #4 (Phase 1.5 review) to Lessons Learned Log. Documented script robustness patterns as new procedure standard. Identified process complexity as review consideration. | Claude Code |
 | 2.1 | 2026-01-01 | Made learning capture MANDATORY: Added step 6 to Workflow Integration, added step 7 to AI Instructions, added Review #2 to Lessons Learned Log. Enforces systematic learning after EVERY review with no exceptions. | Claude Code |
