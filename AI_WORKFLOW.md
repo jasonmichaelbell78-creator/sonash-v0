@@ -55,9 +55,9 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **Time**: 5-10 minutes
 
 > **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4 mandatory security standards (rate limiting, input validation, secrets management, OWASP compliance). See [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
-
+>
 > **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
-
+>
 > **MANDATORY**: Step 4 ensures you leverage ALL available tools. If a skill or agent clearly applies to your task, you MUST use it. See "Available AI Capabilities" section below.
 
 ---

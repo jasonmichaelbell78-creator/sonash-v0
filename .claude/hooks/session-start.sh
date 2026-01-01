@@ -83,12 +83,12 @@ run_npm_with_timeout() {
 
 # Install root dependencies
 run_npm_with_timeout "Installing root dependencies" \
-  "npm install --prefer-offline --no-audit --no-fund" 120
+  "npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120
 
 # Install Firebase Functions dependencies and build
 if [ -d "functions" ]; then
   run_npm_with_timeout "Installing Firebase Functions dependencies" \
-    "cd functions && npm install --prefer-offline --no-audit --no-fund" 120
+    "cd functions && npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120
 
   run_npm_with_timeout "Building Firebase Functions" \
     "cd functions && npm run build" 60

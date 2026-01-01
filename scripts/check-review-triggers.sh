@@ -79,7 +79,7 @@ fi
 
 # Check for heavy dependencies added recently
 if [ "$LOOKBACK" -gt 0 ]; then
-  NEW_DEPS=$(git diff HEAD~$LOOKBACK -- package.json 2>/dev/null | grep "^\+" | grep -E '"(lodash|moment|jquery|rxjs|three|d3|chart)' || echo "")
+  NEW_DEPS=$(git diff HEAD~$LOOKBACK -- package.json 2>/dev/null | grep "^\+" | grep -E '"(lodash|moment|jquery|rxjs|three|d3|chart\.js)"' || echo "")
 else
   NEW_DEPS=""
 fi
@@ -123,9 +123,9 @@ echo "=== Documentation Status ==="
 DOC_FILES=$(find ./docs -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 echo "Documentation files: $DOC_FILES"
 
-# Check for stale docs (not modified in last 20 commits)
-STALE_DOCS=$(git log --oneline -20 --name-only | grep "\.md$" | sort -u | wc -l | tr -d ' ')
-echo "Docs modified (last 20 commits): $STALE_DOCS"
+# Check for recently modified docs
+RECENT_DOCS=$(git log --oneline -20 --name-only | grep "\.md$" | sort -u | wc -l | tr -d ' ')
+echo "Docs modified (last 20 commits): $RECENT_DOCS"
 echo ""
 
 # --- Summary ---
