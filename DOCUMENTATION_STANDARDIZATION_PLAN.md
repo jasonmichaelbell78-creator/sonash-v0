@@ -1,6 +1,6 @@
 # 📚 SoNash Documentation Standardization Plan
 
-**Document Version:** 1.3
+**Document Version:** 1.4
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 **Status:** Active - In Progress
@@ -2024,6 +2024,7 @@ When implementing this phase:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.4 | 2026-01-01 | Added Project Health Dashboard (5 areas: Security, Code Quality, Performance, Architecture, Documentation); added Complete Documentation Flow Diagram and AI Workflow Guide; expanded system health beyond docs | Claude |
 | 1.3 | 2026-01-01 | Phase 1.5 complete - 4 review templates + coordinator + trigger script created; added security standards foundation (GLOBAL_SECURITY_STANDARDS.md); non-time-based triggers per user preference | Claude |
 | 1.2 | 2026-01-01 | Added "Lessons Learned" section to Phase 1 documenting CodeRabbit review findings, process improvements, and recommendations for future phases | Claude Code |
 | 1.1 | 2025-12-31 | Phase 1 complete - all 8 templates and standards created; updated status dashboard, marked all tasks complete, added "What Was Accomplished" section | Claude Code |
@@ -2086,6 +2087,339 @@ When implementing this phase:
 2. Final validation
 3. Mark complete
 4. Resume M1.6 work
+
+---
+
+## 📊 COMPLETE DOCUMENTATION FLOW DIAGRAM
+
+### Master Document Hierarchy
+
+```
+                    ┌─────────────────────────────────────┐
+                    │           README.md                 │
+                    │    (Entry Point for Everyone)       │
+                    │  • Project overview                 │
+                    │  • Quick links to all major docs    │
+                    │  • Security standards summary       │
+                    └───────────────┬─────────────────────┘
+                                    │
+                    ┌───────────────▼─────────────────────┐
+                    │         AI_WORKFLOW.md              │
+                    │   (Master AI Navigation Guide)      │
+                    │  • Session startup checklist        │
+                    │  • Document read order              │
+                    │  • Standard procedures              │
+                    └───────────────┬─────────────────────┘
+                                    │
+        ┌───────────────────────────┼───────────────────────────┐
+        │                           │                           │
+        ▼                           ▼                           ▼
+┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐
+│ SESSION_CONTEXT   │   │ GLOBAL_SECURITY   │   │    ROADMAP.md     │
+│      .md          │   │   STANDARDS.md    │   │  (What to Build)  │
+│ (Current Status)  │   │   (MANDATORY)     │   │                   │
+│ • Sprint focus    │   │ • 4 security stds │   │ • Milestones      │
+│ • Next goals      │   │ • Checklists      │   │ • Priorities      │
+│ • Recent work     │   │ • Verification    │   │ • Dependencies    │
+└───────────────────┘   └───────────────────┘   └───────────────────┘
+        │                           │                           │
+        │                           │                           │
+        ▼                           ▼                           ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    MULTI_AI_REVIEW_COORDINATOR.md                   │
+│                    (Project Health Dashboard)                        │
+│  • Review triggers        • Security compliance    • Architecture   │
+│  • Code quality health    • Performance health     • Session log    │
+└────────────────────────────────────┬────────────────────────────────┘
+                                     │
+         ┌───────────────────────────┼───────────────────────────┐
+         │                           │                           │
+         ▼                           ▼                           ▼
+┌─────────────────┐   ┌─────────────────────┐   ┌─────────────────┐
+│   TIER 2 DOCS   │   │    TIER 3 DOCS      │   │  TIER 4/5 DOCS  │
+│   (Foundation)  │   │    (Planning)       │   │   (Reference)   │
+│                 │   │                     │   │                 │
+│ • ARCHITECTURE  │   │ • Feature plans     │   │ • Workflows     │
+│ • SECURITY      │   │ • Review results    │   │ • Guides        │
+│ • DEVELOPMENT   │   │ • Implementation    │   │ • Prompts       │
+└─────────────────┘   └─────────────────────┘   └─────────────────┘
+```
+
+### Document Flow by Purpose
+
+```
+UNDERSTANDING PROJECT STATUS:
+README.md → SESSION_CONTEXT.md → ROADMAP.md
+
+STARTING AI WORK:
+AI_WORKFLOW.md → SESSION_CONTEXT.md → GLOBAL_SECURITY_STANDARDS.md → [task-specific docs]
+
+IMPLEMENTING FEATURES:
+ROADMAP.md → [Feature Plan] → ARCHITECTURE.md → DEVELOPMENT.md → PR_WORKFLOW_CHECKLIST.md
+
+CONDUCTING REVIEWS:
+MULTI_AI_REVIEW_COORDINATOR.md → [Review Template] → [Review Results] → ROADMAP.md
+
+MONITORING HEALTH:
+MULTI_AI_REVIEW_COORDINATOR.md (Project Health Dashboard)
+├── Security: GLOBAL_SECURITY_STANDARDS.md
+├── Code Quality: npm test, npm run lint
+├── Performance: npm run build, bundle analysis
+├── Architecture: Pattern verification commands
+└── Documentation: Compliance log
+
+UPDATING DOCUMENTATION:
+DOCUMENTATION_STANDARDS.md → [Tier Template] → [Updated Doc] → AI_WORKFLOW.md (verify links)
+```
+
+---
+
+## 🤖 COMPLETE AI WORKFLOW GUIDE
+
+### Session Types and Behaviors
+
+#### Type 1: New Work Session (Starting Fresh)
+
+```
+STARTUP SEQUENCE (5-10 minutes):
+
+1. READ SESSION_CONTEXT.md
+   ├── Check: What's the current sprint focus?
+   ├── Check: What were the next session goals?
+   ├── Check: Are there any active blockers?
+   └── Note: What was recently completed?
+
+2. READ GLOBAL_SECURITY_STANDARDS.md
+   ├── Review: 4 mandatory standards
+   ├── Acknowledge: All code must comply
+   └── Note: Verification commands available
+
+3. CHECK MULTI_AI_REVIEW_COORDINATOR.md
+   ├── Check: Any review triggers active?
+   ├── Update: Increment session counter
+   └── Note: Any health issues?
+
+4. READ ROADMAP.md (if working on features)
+   ├── Verify: Current milestone priorities
+   ├── Check: Dependencies satisfied?
+   └── Confirm: Acceptance criteria clear?
+
+5. PLAN SESSION
+   ├── Create: TodoWrite list for complex tasks
+   ├── Identify: Which docs will need updates
+   └── Clarify: Ask user if conflicts with blockers
+
+DURING SESSION:
+- Follow security standards for all code
+- Update docs as you complete work
+- Mark todos complete immediately
+- Log exceptions if any
+
+END OF SESSION:
+- Update SESSION_CONTEXT.md
+- Update relevant planning docs
+- Add to compliance log in coordinator
+- Commit documentation changes
+```
+
+#### Type 2: Feature Implementation Request
+
+```
+FEATURE IMPLEMENTATION WORKFLOW:
+
+1. CONTEXT GATHERING
+   ├── Read SESSION_CONTEXT.md (is this blocked?)
+   ├── Read ROADMAP.md (is this prioritized?)
+   ├── Read feature plan if exists (in docs/)
+   └── Read ARCHITECTURE.md (understand patterns)
+
+2. SECURITY CHECK (before writing ANY code)
+   ├── Will this need rate limiting? → Follow Standard 1
+   ├── Will this accept user input? → Follow Standard 2
+   ├── Will this need secrets? → Follow Standard 3
+   └── Does this touch auth/data? → Follow Standard 4
+
+3. IMPLEMENTATION
+   ├── Follow existing patterns in codebase
+   ├── Add tests for new functionality
+   ├── Keep changes minimal and focused
+   └── Document decisions in code comments
+
+4. VERIFICATION
+   ├── npm test (must pass)
+   ├── npm run lint (must be clean)
+   ├── Security standards checklist
+   └── Run relevant verification commands
+
+5. DOCUMENTATION UPDATE
+   ├── Update feature plan if exists
+   ├── Update SESSION_CONTEXT.md
+   ├── Update ARCHITECTURE.md if new patterns
+   └── Commit with descriptive message
+```
+
+#### Type 3: Bug Fix Request
+
+```
+BUG FIX WORKFLOW:
+
+1. CONTEXT
+   ├── Check AI_HANDOFF.md for known issues
+   ├── Check relevant feature plan
+   └── Understand component in ARCHITECTURE.md
+
+2. DIAGNOSE
+   ├── Reproduce the issue
+   ├── Identify root cause
+   └── Check if security-related (escalate if yes)
+
+3. FIX
+   ├── Make minimal targeted fix
+   ├── Add regression test
+   ├── Verify fix doesn't break other tests
+   └── Follow security standards
+
+4. DOCUMENT
+   ├── Update SESSION_CONTEXT.md if significant
+   ├── Update AI_HANDOFF.md known issues
+   └── Commit with clear message
+```
+
+#### Type 4: Code Review Request
+
+```
+CODE REVIEW WORKFLOW:
+
+1. CHECK COORDINATOR
+   ├── Read MULTI_AI_REVIEW_COORDINATOR.md
+   ├── Select appropriate template
+   └── Check if triggers warrant full review
+
+2. IF FULL MULTI-AI REVIEW:
+   ├── Copy template to docs/reviews/
+   ├── Follow 6-phase review process
+   ├── Collect outputs from multiple AIs
+   ├── Run aggregation
+   └── Create PR plan
+
+3. IF SINGLE REVIEW:
+   ├── Follow AI_REVIEW_PROCESS.md
+   ├── Categorize findings
+   ├── Document decisions
+   └── Implement accepted changes
+
+4. POST-REVIEW:
+   ├── Update coordinator audit history
+   ├── Update baseline metrics if changed
+   └── Link findings to ROADMAP if actionable
+```
+
+#### Type 5: Documentation Request
+
+```
+DOCUMENTATION WORKFLOW:
+
+1. DETERMINE DOC TIER
+   ├── Tier 1: Canonical (README, ROADMAP, major plans)
+   ├── Tier 2: Foundation (ARCHITECTURE, SECURITY, DEVELOPMENT)
+   ├── Tier 3: Planning (feature plans, review results)
+   ├── Tier 4: Reference (workflows, guides)
+   └── Tier 5: Guides (how-to, tutorials)
+
+2. SELECT TEMPLATE
+   └── Use template from docs/templates/ for tier
+
+3. FOLLOW DOCUMENTATION_STANDARDS.md
+   ├── Required metadata
+   ├── Required sections for tier
+   ├── Markdown conventions
+   └── Version numbering
+
+4. VALIDATE
+   ├── Run npm run docs:check (when available)
+   ├── Verify cross-references
+   └── Check links work
+
+5. UPDATE
+   ├── Update "Last Updated" date
+   ├── Update version if significant
+   ├── Add version history entry
+   └── Commit with "docs:" prefix
+```
+
+### Decision Matrix: What to Do When
+
+| Situation | First Action | Key Docs | Don't Forget |
+|-----------|--------------|----------|--------------|
+| Starting new session | Read SESSION_CONTEXT.md | AI_WORKFLOW.md, GLOBAL_SECURITY_STANDARDS.md | Increment session counter |
+| User asks for feature | Check if blocked | ROADMAP.md, SESSION_CONTEXT.md | Security standards |
+| User asks to fix bug | Check known issues | AI_HANDOFF.md | Add regression test |
+| User asks for review | Check triggers | MULTI_AI_REVIEW_COORDINATOR.md | Select right template |
+| Writing new code | Check security | GLOBAL_SECURITY_STANDARDS.md | All 4 standards |
+| Updating docs | Check tier | DOCUMENTATION_STANDARDS.md | Required sections |
+| Session ending | Update context | SESSION_CONTEXT.md | Compliance log |
+| Health trigger fires | Full review | MULTI_AI_REVIEW_COORDINATOR.md | All 5 areas |
+
+### What NOT To Do
+
+```
+NEVER:
+❌ Skip reading GLOBAL_SECURITY_STANDARDS.md before coding
+❌ Write code that violates the 4 mandatory standards
+❌ Start work on blocked items without user confirmation
+❌ Batch documentation updates (update as you go)
+❌ Invent new patterns without updating ARCHITECTURE.md
+❌ Skip adding to compliance log
+❌ Ignore active review triggers
+
+ALWAYS:
+✅ Read SESSION_CONTEXT.md at session start
+✅ Follow security standards for ALL code
+✅ Update docs as you complete work
+✅ Ask clarifying questions early
+✅ Mark todos complete immediately
+✅ Commit frequently with clear messages
+✅ Add to session counter and compliance log
+```
+
+---
+
+## 🔄 POST-STANDARDIZATION MAINTENANCE
+
+After all phases complete, ongoing maintenance follows this cycle:
+
+```
+CONTINUOUS IMPROVEMENT LOOP:
+
+                    ┌─────────────────────┐
+                    │   Normal Work       │
+                    │   (Follow workflows)│
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   Health Triggers   │◄────────────┐
+                    │   (Non-time-based)  │             │
+                    └──────────┬──────────┘             │
+                               │                        │
+                    ┌──────────▼──────────┐             │
+                    │   Health Review     │             │
+                    │   (5 areas)         │             │
+                    └──────────┬──────────┘             │
+                               │                        │
+                    ┌──────────▼──────────┐             │
+                    │   Improvement       │             │
+                    │   Actions           │             │
+                    └──────────┬──────────┘             │
+                               │                        │
+                               └────────────────────────┘
+```
+
+**Key Files for Ongoing Maintenance:**
+- MULTI_AI_REVIEW_COORDINATOR.md (health dashboard)
+- AI_WORKFLOW.md (navigation updates)
+- DOCUMENTATION_STANDARDS.md (standard updates)
+- scripts/check-review-triggers.sh (trigger detection)
 
 ---
 

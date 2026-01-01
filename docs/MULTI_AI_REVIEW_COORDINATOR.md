@@ -1,6 +1,6 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-01
 **Last Updated:** 2026-01-01
 **Document Tier:** Tier 2 (Foundation)
@@ -220,77 +220,232 @@ Track effectiveness of reviews over time:
 
 ---
 
-## Documentation System Health
+## Project Health Dashboard
 
 ### Purpose
 
-This section tracks the health and effectiveness of the documentation system itself - a meta-review to ensure procedures are being followed and are worth the effort.
+This section tracks the health and effectiveness of ALL project systems - not just documentation, but security, code quality, performance, and architecture. This is the master health monitoring view.
 
-### Compliance Log
+---
 
-Track procedure adherence in each session:
+### 1. Security Standards Compliance
 
-| Date | Session | Security Read? | Workflow Followed? | Docs Updated? | Exceptions? |
-|------|---------|----------------|-------------------|---------------|-------------|
+**Standard:** [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)
+
+| Standard | Requirement | Current Status | Last Verified |
+|----------|-------------|----------------|---------------|
+| Rate Limiting | All endpoints have limits | ✅ IMPLEMENTED | 2026-01-01 |
+| Input Validation | All inputs validated | ✅ IMPLEMENTED | 2026-01-01 |
+| Secrets Management | No hardcoded keys | ✅ COMPLIANT | 2026-01-01 |
+| OWASP Compliance | Top 10 addressed | ✅ COMPLIANT | 2026-01-01 |
+
+**Verification Commands:**
+```bash
+# Rate limiting check
+grep -rn "RateLimiter\|rateLimit" --include="*.ts" | wc -l
+
+# Input validation check
+grep -rn "validateInput\|z\.object\|z\.string" --include="*.ts" | wc -l
+
+# Secrets check (should find NONE)
+grep -rn "apiKey.*=.*['\"]" --include="*.ts" --include="*.tsx" | grep -v ".env"
+```
+
+**Triggers for Security Review:**
+- [ ] Any of the 4 standards becomes non-compliant
+- [ ] New external service integrated
+- [ ] Auth system modified
+- [ ] 5+ new Cloud Functions added
+
+---
+
+### 2. Code Quality Health
+
+| Metric | Target | Current | Status | Last Checked |
+|--------|--------|---------|--------|--------------|
+| Test Pass Rate | ≥95% | 97.8% | ✅ Healthy | 2026-01-01 |
+| Test Coverage | ≥80% | [Run test:coverage] | ⏳ Check | — |
+| Lint Errors | 0 | [Run npm run lint] | ⏳ Check | — |
+| Lint Warnings | <20 | [Run npm run lint] | ⏳ Check | — |
+| TypeScript Strict | true | ✅ Enabled | ✅ Healthy | 2026-01-01 |
+
+**Verification Commands:**
+```bash
+# Test health
+npm test 2>&1 | tail -5
+
+# Coverage
+npm run test:coverage 2>&1 | grep "All files"
+
+# Lint
+npm run lint 2>&1 | tail -10
+```
+
+**Triggers for Code Quality Review:**
+- [ ] Test pass rate drops below 95%
+- [ ] Coverage drops below 80%
+- [ ] Lint errors > 0
+- [ ] Lint warnings increase by 20+
+
+---
+
+### 3. Performance Health
+
+| Metric | Target | Current | Status | Last Checked |
+|--------|--------|---------|--------|--------------|
+| Bundle Size (JS) | <500 KB gzip | [Run build] | ⏳ Check | — |
+| Largest Chunk | <200 KB | [Run build] | ⏳ Check | — |
+| Build Time (dev) | <30s | [Time it] | ⏳ Check | — |
+| Build Time (prod) | <120s | [Time it] | ⏳ Check | — |
+
+**Verification Commands:**
+```bash
+# Bundle size after build
+npm run build 2>&1 | grep -E "First Load|Route"
+
+# Build time
+time npm run build
+
+# Chunk analysis
+du -sh .next/static/chunks/*.js | sort -h | tail -5
+```
+
+**Triggers for Performance Review:**
+- [ ] Bundle size increases >10%
+- [ ] Build time increases >30%
+- [ ] Users report slow pages
+- [ ] New heavy dependencies added
+
+---
+
+### 4. Architecture Health
+
+| Aspect | Target | Current | Status | Last Checked |
+|--------|--------|---------|--------|--------------|
+| Pattern Consistency | Single canonical patterns | [Review needed] | ⏳ Check | — |
+| Component Boundaries | Clear server/client split | [Review needed] | ⏳ Check | — |
+| Service Consolidation | No duplicate services | [Review needed] | ⏳ Check | — |
+| Hook Organization | Consistent hook patterns | [Review needed] | ⏳ Check | — |
+
+**Verification Commands:**
+```bash
+# Firebase access patterns (should be consolidated)
+grep -rn "collection(db" --include="*.ts" | wc -l
+
+# Hook patterns
+grep -rn "^export function use" --include="*.ts" --include="*.tsx" | wc -l
+
+# "use client" directives
+grep -rn "\"use client\"" --include="*.tsx" | wc -l
+```
+
+**Triggers for Architecture Review:**
+- [ ] Multiple AIs have worked on codebase
+- [ ] Same pattern in 3+ places
+- [ ] Adding feature requires touching 10+ files
+- [ ] Circular dependency detected
+
+---
+
+### 5. Documentation Compliance
+
+| Procedure | Requirement | Compliance Rate | Status |
+|-----------|-------------|-----------------|--------|
+| Security Read | Read GLOBAL_SECURITY_STANDARDS.md at session start | 100% | ✅ Healthy |
+| Workflow Follow | Follow AI_WORKFLOW.md procedures | 100% | ✅ Healthy |
+| Doc Updates | Update docs after significant changes | 100% | ✅ Healthy |
+| Exception Process | Document any exceptions | N/A (0 exceptions) | ✅ Healthy |
+
+**Compliance Log:**
+
+| Date | Session | Security Read? | Workflow? | Docs Updated? | Exceptions? |
+|------|---------|----------------|-----------|---------------|-------------|
 | 2026-01-01 | Initial setup | ✅ | ✅ | ✅ | None |
 
-**Compliance Rate:** 100% (1/1 sessions)
+**Overall Compliance Rate:** 100% (1/1 sessions)
+
+---
 
 ### Health Triggers (Non-Time-Based)
 
-Documentation system health review is triggered when ANY of these occur:
+Project health review is triggered when ANY of these occur:
 
 | Trigger | Threshold | Current | Status |
 |---------|-----------|---------|--------|
 | Session Count | Every 10 sessions | 1 | ⏳ Pending |
+| Security Non-Compliance | Any standard fails | 0 | ✅ Clear |
+| Test Pass Rate | Drops below 95% | 97.8% | ✅ Healthy |
 | Exception Used | Any exception invoked | 0 | ✅ Clear |
-| Compliance Rate | Drops below 80% | 100% | ✅ Healthy |
-| New Mandatory Procedure | Any added to AI_WORKFLOW.md | 1 (security read) | 📋 Review at next trigger |
+| Documentation Compliance | Drops below 80% | 100% | ✅ Healthy |
+| Performance Regression | Any metric >20% worse | 0 | ✅ Clear |
+
+---
 
 ### Health Review Template
 
-When a health trigger fires, answer these questions:
+When any health trigger fires, complete this review:
 
 ```markdown
-## Documentation System Health Review
+## Project Health Review
 
 **Trigger:** [What triggered this review]
 **Date:** YYYY-MM-DD
 **Sessions Since Last Review:** X
 
-### Compliance Assessment
+### 1. Security Standards Assessment
+- Rate Limiting: PASS/FAIL
+- Input Validation: PASS/FAIL
+- Secrets Management: PASS/FAIL
+- OWASP Compliance: PASS/FAIL
+- Issues found: [list]
 
-1. **Are procedures being followed?**
-   - Compliance rate: X%
-   - Common skips: [list]
-   - Reasons for skips: [list]
+### 2. Code Quality Assessment
+- Test pass rate: X%
+- Test coverage: X%
+- Lint errors: X
+- Lint warnings: X
+- Issues found: [list]
 
-2. **Are procedures effective?**
-   - Did following procedures prevent issues? Y/N, examples:
-   - Did procedures catch problems early? Y/N, examples:
-   - Were any procedures unnecessary? Y/N, which:
+### 3. Performance Assessment
+- Bundle size: X KB (target: <500 KB)
+- Build time: Xs (target: <120s)
+- Regressions: [list any]
+- Issues found: [list]
 
-3. **Is the burden appropriate?**
-   - Average startup time: X minutes
-   - Procedures that slow work: [list]
-   - Procedures that could be automated: [list]
+### 4. Architecture Assessment
+- Pattern consistency: GOOD/NEEDS_ATTENTION
+- Duplication clusters found: X
+- Boundary violations: X
+- Issues found: [list]
 
-4. **Recommendations:**
-   - Procedures to keep: [list]
-   - Procedures to modify: [list]
-   - Procedures to remove: [list]
-   - Procedures to add: [list]
+### 5. Documentation Compliance Assessment
+- Procedure compliance rate: X%
+- Exceptions used: X
+- Burden assessment: ACCEPTABLE/TOO_HIGH
+- Issues found: [list]
 
-### Actions Taken
+### Overall Health Score
 
-- [ ] Updated AI_WORKFLOW.md with changes
-- [ ] Updated this coordinator with findings
-- [ ] Reset session counter
+| Area | Score | Status |
+|------|-------|--------|
+| Security | X/100 | 🟢/🟡/🔴 |
+| Code Quality | X/100 | 🟢/🟡/🔴 |
+| Performance | X/100 | 🟢/🟡/🔴 |
+| Architecture | X/100 | 🟢/🟡/🔴 |
+| Documentation | X/100 | 🟢/🟡/🔴 |
+| **OVERALL** | X/100 | 🟢/🟡/🔴 |
+
+### Actions Required
+
+- [ ] [Action 1]
+- [ ] [Action 2]
+- [ ] Update this coordinator
+- [ ] Reset session counter if applicable
 ```
 
 ### Burden Assessment
 
-Track if documentation overhead is worthwhile:
+Track if overhead is worthwhile:
 
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
@@ -364,6 +519,7 @@ Increment this counter at the start of each AI work session:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template | Claude |
 | 1.0 | 2026-01-01 | Initial coordinator creation with non-time-based triggers | Claude |
 
 ---
