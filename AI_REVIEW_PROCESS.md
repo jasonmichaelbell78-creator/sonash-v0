@@ -1,6 +1,6 @@
 # 🤖 AI Code Review Process
 
-**Document Version:** 2.8
+**Document Version:** 2.9
 **Created:** 2025-12-31
 **Last Updated:** 2026-01-01
 
@@ -829,6 +829,89 @@ fi
 
 ---
 
+#### Review #12: The Jest Incident - Understanding WHY Before Fixing (2026-01-01)
+**PR:** `claude/review-repo-docs-D4nYF` (Lockfile/deployment fixes)
+**Suggestions:** CI failures across multiple commits
+**Tools:** Qodo + CI + Firebase Cloud Build
+
+**Incident Summary:**
+A cascade of CI failures over multiple hours, caused by adding a dependency (jest) that was never needed in the first place. The root cause was **fixing without understanding WHY**.
+
+**Timeline of Errors:**
+1. CI failed with "Missing: jest@30.2.0 from lock file"
+2. AI (Claude) saw "jest" in error → assumed CI needed jest → added jest to package.json
+3. This was WRONG - jest was never used by this project
+4. Adding jest created a cascade: broken lockfile → more CI failures → more "fixes"
+5. Multiple commits trying to fix the symptom (lockfile sync) instead of the cause
+6. Eventually discovered: `firebase-functions-test` has `jest>=28.0.0` as a **peerDependency**
+7. The ACTUAL fix: regenerate functions/package-lock.json to include jest as a peer dep
+
+**Patterns Identified:**
+
+1. **🚨 FIXING WITHOUT UNDERSTANDING (CRITICAL - Anti-Pattern)**
+   - Root cause: Saw "jest" in error message → assumed project needed jest → added it
+   - Example: "an external CI check expects jest" - but this was WRONG assumption
+   - Prevention: **ALWAYS ask "WHY?" before making changes:**
+     - "Does this project actually use [X]?"
+     - "What is the real root cause?"
+     - "Is this symptom or cause?"
+   - Resolution: Removed jest from root package.json; fixed actual issue (peer dep resolution)
+
+2. **npm ci vs npm install vs Cloud Build** (Critical distinction)
+   - Root cause: Different npm commands have different peer dependency behavior
+   - Details:
+     - `npm ci --legacy-peer-deps`: Ignores peer deps (GitHub Actions used this)
+     - `npm ci` (plain): Expects peer deps in lockfile (Cloud Build used this)
+     - `npm install`: Auto-installs peer deps in npm 7+ (regenerates lockfile)
+   - Prevention: Understand the FULL deployment pipeline, not just local behavior
+   - Resolution: Ensured lockfile has peer deps properly resolved for all environments
+
+3. **Peer Dependencies Are Real Dependencies** (1 occurrence - ROOT CAUSE)
+   - Root cause: `firebase-functions-test` declares `jest>=28.0.0` as peerDependency
+   - Example: Peer deps must be in lockfile for `npm ci` to work in Cloud Build
+   - Prevention: Check `npm view <package> peerDependencies` before debugging lockfile issues
+   - Resolution: Regenerated functions/package-lock.json with proper peer dep resolution
+
+4. **Cascade Effect of Wrong Fixes** (Multiple occurrences)
+   - Root cause: Each "fix" for symptoms created new problems
+   - Timeline:
+     - Added jest → lockfile bloated
+     - Lockfile sync issues → more regeneration attempts
+     - Multiple commits → user frustration → wasted time
+   - Prevention: STOP and understand before acting. One correct fix > ten wrong ones.
+   - Resolution: Systematic root cause analysis before any changes
+
+**The Critical Question That Should Have Been Asked:**
+> "Does this project actually use jest?"
+>
+> Answer: NO - project uses Node's built-in test runner (`node --test`)
+>
+> If this question had been asked FIRST, none of the cascade would have happened.
+
+**Process Improvements:**
+- ✅ Identified peer dependency as root cause
+- ✅ Regenerated lockfiles with proper peer dep resolution (commit `547f2af`)
+- ✅ Documented this as a CRITICAL learning for future AI sessions
+
+**New Mandatory Questions Before Any "Fix":**
+```
+BEFORE changing package.json or lockfiles, ask:
+1. Does this project actually use [package]? Check package.json scripts.
+2. What is the REAL error? Read the full error, not just the package name.
+3. Is this a peer dependency issue? Check `npm view <pkg> peerDependencies`.
+4. Who runs this code? (local npm, GitHub Actions, Cloud Build, etc.)
+5. What npm command do they use? (`npm ci` vs `npm install` vs `--legacy-peer-deps`)
+```
+
+**Expected Impact:** 100% reduction in "fix without understanding" incidents
+
+**Key Insight:** The "WHY" is just as important as the "HOW". Without understanding WHY an error occurred, you risk "fixing" something that doesn't need fixing and making the problem worse. One hour understanding the problem saves ten hours fixing symptoms.
+
+**User Quote (verbatim):**
+> "THE 'WHY SOME ERROR HAPPENED' IS JUST AS IMPORTANT AS THE 'HOW DO WE FIX IT' WITHOUT PROPER CONTEXT WE CAN END UP 'FIXING' SOMETHING THAT DOESNT NEED FIXING AND MAKE THE PROBLEM WORSE"
+
+---
+
 ### 🚨 Learning Capture Enforcement Mechanism
 
 **Problem:** Despite "MANDATORY" labeling, learning capture was skipped in Reviews #5 and #10. Self-enforcement and "do it after" approaches are unreliable. The AI gets into "fix mode" and forgets the meta-step.
@@ -928,6 +1011,8 @@ When PR_WORKFLOW_CHECKLIST.md is created in Phase 4, this enforcement mechanism 
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.9 | 2026-01-01 | Added Review #12 "The Jest Incident" - CRITICAL lesson on understanding WHY before fixing. Documents cascade failure caused by adding unnecessary dependency. Introduces mandatory questions before any package.json/lockfile changes. | Claude Code |
+| 2.8 | 2026-01-01 | Added Review #11 (lockfile sync and workflow configuration fixes). | Claude Code |
 | 2.7 | 2026-01-01 | Added Review #10 (session hook CI fixes). **CRITICAL**: Rewrote enforcement mechanism to "LEARNING ENTRY FIRST" approach - create entry BEFORE fixing issues, not after. Previous "do it after" approach failed repeatedly. | Claude Code |
 | 2.6 | 2026-01-01 | Added Review #9 (documentation clarity fixes). Fixed conflicting HEAD~N patterns with correction annotation. Added Phase 4 Enforcement Vision. Clarified retrospective context and version history phrasing. | Claude Code |
 | 2.5 | 2026-01-01 | Fixed "Enforcement Mechanism" section reference to use correct name "Learning Capture Enforcement Mechanism". Added Review #8 (CI fix, reference corrections). | Claude Code |
