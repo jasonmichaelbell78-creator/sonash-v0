@@ -186,7 +186,17 @@ npm run phase:complete
 
 ---
 
-## GitHub Actions Workflow
+## GitHub Actions Workflows
+
+### ci.yml (Existing)
+
+**Purpose:** Core CI pipeline - lint, type check, test, build
+
+**Triggers:** All PRs to main, pushes to main
+
+**Blocks merge if:** Lint errors, type errors, test failures, build failures
+
+---
 
 ### docs-lint.yml
 
@@ -203,6 +213,46 @@ npm run phase:complete
 2. Runs check-docs-light.js on each file
 3. Posts results as a PR comment (updates existing comment if present)
 4. Fails the check if any errors are found
+
+---
+
+### validate-plan.yml
+
+**Purpose:** Enforce phase completion audit documentation
+
+**Triggers:** PRs modifying `DOCUMENTATION_STANDARDIZATION_PLAN.md`
+
+**Blocks merge if:**
+- Phase marked COMPLETE without "What Was Accomplished" section
+- No acceptance criteria checked
+- Missing completion date
+
+---
+
+### review-check.yml
+
+**Purpose:** Auto-detect when code review thresholds are triggered
+
+**Triggers:** All PRs to main (opened or updated)
+
+**What it does:**
+1. Runs `check-review-needed.js` against the PR
+2. If thresholds exceeded, posts comment with details
+3. Adds `needs-review` label to PR
+4. Does NOT block merge (advisory only)
+
+---
+
+### sync-readme.yml
+
+**Purpose:** Auto-sync README status when ROADMAP changes
+
+**Triggers:** Push to main that modifies `ROADMAP.md`
+
+**What it does:**
+1. Runs `update-readme-status.js` automatically
+2. Commits and pushes README.md if changed
+3. Keeps README Project Status in sync with ROADMAP milestones
 
 ---
 
