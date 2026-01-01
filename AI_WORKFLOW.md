@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
-**Last Updated**: 2025-12-31
-**Document Version**: 1.0
+**Last Updated**: 2026-01-01
+**Document Version**: 1.4
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -35,14 +35,30 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
-☐ 2. Check ROADMAP.md (verify milestone priorities)
-☐ 3. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
-☐ 4. Review AI_HANDOFF.md (detailed recent work)
-☐ 5. Consult specific planning docs as needed
-☐ 6. Begin work following documented procedures
+☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
+☐ 3. Check MULTI_AI_REVIEW_COORDINATOR.md:
+     - Check review triggers active?
+     - Increment session counter
+     - Note any health issues
+☐ 4. Check Available Capabilities (MANDATORY):
+     - Scan .claude/skills/ for applicable skills
+     - Scan .claude/agents/ for specialist agents
+     - Note any MCP servers configured
+     - If task matches a capability, USE IT (not optional)
+☐ 5. Check ROADMAP.md (verify milestone priorities)
+☐ 6. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
+☐ 7. Review AI_HANDOFF.md (detailed recent work)
+☐ 8. Consult specific planning docs as needed
+☐ 9. Begin work following documented procedures
 ```
 
 **Time**: 5-10 minutes
+
+> **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4 mandatory security standards (rate limiting, input validation, secrets management, OWASP compliance). See [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
+>
+> **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
+>
+> **MANDATORY**: Step 4 ensures you leverage ALL available tools. If a skill or agent clearly applies to your task, you MUST use it. See "Available AI Capabilities" section below.
 
 ---
 
@@ -57,36 +73,48 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
    - Active blockers
    - Recent completions
 
-2. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
+2. **[GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md)** - MANDATORY before coding!
+   - Rate limiting requirements
+   - Input validation requirements
+   - Secrets management rules
+   - OWASP compliance checklist
+
+3. **[MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)** - Project health & reviews
+   - Session counter (increment each session)
+   - Review triggers
+   - Project Health Dashboard
+   - Compliance log
+
+4. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
    - Current milestones
    - Feature priorities
    - Dependencies
 
 **As Needed** (Reference When Relevant):
 
-3. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
+5. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
    - Full recent work history
    - Technical decisions
    - Known issues
    - Architecture overview
 
-4. **Planning Documents** (when working on specific features):
+6. **Planning Documents** (when working on specific features):
    - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
    - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
 
-5. **Foundation Documents** (when making architectural decisions):
+7. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System design
    - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
    - [DEVELOPMENT.md](./docs/DEVELOPMENT.md) - Development procedures
 
-6. **Reference Documents** (when following workflows):
+8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
    - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
-7. **Standards** (when creating/updating docs):
+9. **Standards** (when creating/updating docs):
    - [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
 
 ---
@@ -257,7 +285,8 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 → [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 **Security Guidelines**:
-→ [SECURITY.md](./docs/SECURITY.md)
+→ [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md) - MANDATORY standards
+→ [SECURITY.md](./docs/SECURITY.md) - Additional security docs
 
 **Development Procedures**:
 → [DEVELOPMENT.md](./docs/DEVELOPMENT.md)
@@ -274,6 +303,122 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **Specific Feature Plans**:
 → Check `docs/` for feature-specific plans
+
+---
+
+## 🛠️ Available AI Capabilities
+
+### MANDATORY: Use Available Tools
+
+**This is NOT optional.** Before ANY task, check if a skill, agent, or MCP applies. If a capability **clearly applies** to your task, you MUST use it.
+
+> **Rule**: Capabilities are discovered dynamically. When new skills/agents/MCPs are added to the project, they are automatically available. Always scan the directories - don't rely on memorized lists.
+
+### How to Discover Capabilities
+
+```bash
+# Skills (specialized workflows and knowledge)
+ls .claude/skills/
+
+# Agents (specialist sub-agents for complex tasks)
+ls .claude/agents/
+
+# MCP Servers (external tool integrations)
+# Check .claude/settings.json or project MCP configuration
+```
+
+### Skills (`.claude/skills/`)
+
+Skills are specialized workflows with domain-specific knowledge. They are invoked using the **Skill tool**.
+
+**When to Use Skills:**
+- `systematic-debugging` → Use FIRST for ANY bug, error, or unexpected behavior
+- `code-reviewer` → Use AFTER writing or modifying code
+- `requesting-code-review` → Use when completing features before merge
+- `frontend-design` → Use for UI/UX implementation work
+- `senior-frontend` / `senior-backend` / `senior-fullstack` → Use for implementation guidance
+- `mcp-builder` → Use when creating MCP server integrations
+- `gh-fix-ci` → Use when GitHub Actions CI/CD fails
+- `markitdown` → Use when converting documents to Markdown
+
+**Priority Order:**
+1. **Process skills first** (debugging, brainstorming) - determine HOW to approach
+2. **Implementation skills second** (frontend-design, senior-backend) - guide execution
+
+**Example:**
+```
+Task: "Fix this authentication bug"
+→ Use `systematic-debugging` skill FIRST
+→ Then use `senior-backend` or `security-auditor` for the fix
+```
+
+### Agents (`.claude/agents/`)
+
+Agents are specialist sub-agents invoked via the **Task tool** with `subagent_type` parameter. They run autonomously and return results.
+
+**When to Use Agents:**
+- `code-reviewer` → Post-code review for quality/security
+- `security-auditor` → Security vulnerability assessment
+- `debugger` → Complex debugging requiring deep analysis
+- `frontend-developer` / `backend-architect` → Domain-specific implementation
+- `test-engineer` → Test strategy and automation
+- `documentation-expert` → Documentation creation/improvement
+- `git-flow-manager` → Git workflow operations
+- `deployment-engineer` → CI/CD and deployment tasks
+
+**Example:**
+```
+After writing a new Cloud Function:
+→ Invoke code-reviewer agent to review the code
+→ Invoke security-auditor agent to check for vulnerabilities
+```
+
+### MCP Servers
+
+MCP (Model Context Protocol) servers provide external tool integrations. Check project configuration for available servers.
+
+**Common MCP Integrations:**
+- Database access tools
+- External API integrations
+- File conversion tools
+- Custom project-specific tools
+
+### Decision Matrix: Skill vs Agent vs Direct Action
+
+| Scenario | Use |
+|----------|-----|
+| Need specific workflow guidance | **Skill** |
+| Need autonomous complex task completion | **Agent** |
+| Simple, well-understood task | **Direct action** |
+| Bug or error encountered | **Skill** (`systematic-debugging`) |
+| Code review needed | **Agent** (`code-reviewer`) |
+| UI implementation | **Skill** (`frontend-design`) |
+| Security assessment | **Agent** (`security-auditor`) |
+
+### Red Flags: When You're Avoiding Capabilities
+
+If you find yourself thinking these thoughts, STOP - you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
+| "This is just a simple task" | Simple tasks become complex. Check for skills. |
+| "I can do this faster myself" | Skills/agents have specialized knowledge. Use them. |
+| "Let me try first, then use skill if needed" | Check BEFORE starting. |
+| "I remember what this skill does" | Skills evolve. Read current version. |
+| "The skill is overkill for this" | If it applies, use it. |
+| "I'll just check git/files quickly" | Skills tell you HOW to check correctly. |
+
+### Capability Maintenance
+
+**When new capabilities are added:**
+1. They appear automatically in `.claude/skills/` or `.claude/agents/`
+2. No documentation update needed - discovery is dynamic
+3. AIs scan directories at session start (Step 4 of Startup Checklist)
+
+**To add new capabilities:**
+- Skills: Add `SKILL.md` in `.claude/skills/<skill-name>/`
+- Agents: Add `<agent-name>.md` in `.claude/agents/`
+- MCPs: Configure in `.claude/settings.json` or project MCP config
 
 ---
 
@@ -314,14 +459,122 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 4. Validate links and formatting
 5. Commit with "docs:" prefix
 
-### Scenario 5: Completing a Milestone
+### Scenario 5: Completing a Milestone/Phase
 
 1. Update planning doc - Mark complete
 2. Update [ROADMAP.md](./ROADMAP.md) - Update dashboard
 3. Add entry to [ROADMAP_LOG.md](./ROADMAP_LOG.md) - Archive completion
 4. Update [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Note completion
 5. Update [AI_HANDOFF.md](./AI_HANDOFF.md) - Add to recent work
-6. Commit all doc updates together
+6. **RUN DELIVERABLE AUDIT** (see below)
+7. Commit all doc updates together
+
+---
+
+## 🔍 MANDATORY: Deliverable Audit Procedure
+
+### Purpose
+
+**Every phase, section, or milestone completion MUST include a deliverable audit** - a systematic verification that all goals were met and all deliverables are complete. This is NOT optional.
+
+### When to Run
+
+Run a deliverable audit when ANY of these occur:
+- ✅ Phase completion (e.g., Phase 1.5 complete)
+- ✅ Milestone completion (e.g., M1.6 complete)
+- ✅ Section completion within a plan
+- ✅ Feature completion
+- ✅ Sprint completion
+- ✅ Any work package with defined deliverables
+
+### Audit Process
+
+```
+DELIVERABLE AUDIT CHECKLIST
+
+1. GATHER REQUIREMENTS
+   ├── Find original goals/objectives
+   ├── Find original acceptance criteria
+   ├── Find original deliverables list
+   └── Note any scope changes during work
+
+2. VERIFY DELIVERABLES
+   For each deliverable:
+   ├── Does it exist? (file created, feature implemented)
+   ├── Is it complete? (all required sections/features)
+   ├── Does it meet acceptance criteria?
+   └── Is it documented?
+
+3. CHECK FOR GAPS
+   ├── Any deliverables missing?
+   ├── Any partially complete items?
+   ├── Any acceptance criteria unmet?
+   └── Any scope items forgotten?
+
+4. DOCUMENT FINDINGS
+   ├── List all deliverables and status
+   ├── Note any gaps found
+   ├── Note any items that exceed scope (bonus)
+   └── Add to "What Was Accomplished" section
+
+5. ADDRESS GAPS
+   ├── Fix any gaps before marking complete
+   ├── Or document why gap is acceptable
+   └── Get user approval if scope changed
+```
+
+### Audit Template
+
+Use this template when completing any phase/milestone:
+
+```markdown
+## Deliverable Audit: [Phase/Milestone Name]
+
+**Audit Date:** YYYY-MM-DD
+**Auditor:** [AI Name]
+
+### Original Goals
+[List from original plan]
+
+### Original Deliverables
+[List from original plan]
+
+### Verification Results
+
+| Deliverable | Exists? | Complete? | Meets Criteria? | Notes |
+|-------------|---------|-----------|-----------------|-------|
+| [Item 1] | ✅/❌ | ✅/❌ | ✅/❌ | |
+| [Item 2] | ✅/❌ | ✅/❌ | ✅/❌ | |
+
+### Acceptance Criteria Check
+
+| Criterion | Met? | Evidence |
+|-----------|------|----------|
+| [Criterion 1] | ✅/❌ | |
+| [Criterion 2] | ✅/❌ | |
+
+### Gaps Found
+- [Gap 1]: [Resolution]
+- [Gap 2]: [Resolution]
+
+### Additional Deliverables (Beyond Scope)
+- [Bonus item 1]
+- [Bonus item 2]
+
+### Audit Result
+- [ ] ALL deliverables complete
+- [ ] ALL acceptance criteria met
+- [ ] ALL gaps addressed
+- [ ] Ready to mark phase/milestone COMPLETE
+```
+
+### Integration with Phase Completion
+
+**Before marking ANY phase/milestone complete:**
+1. Run deliverable audit
+2. Fix any gaps found
+3. Document in "What Was Accomplished" section
+4. Only THEN mark as complete
 
 ---
 
@@ -401,6 +654,10 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.4 | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools | Claude |
+| 1.3 | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude |
+| 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion | Claude |
+| 1.1 | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup | Claude |
 | 1.0 | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference | Claude Code |
 
 ---
@@ -424,8 +681,9 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **At session end:**
 1. Update SESSION_CONTEXT.md
 2. Update relevant planning docs
-3. Commit documentation changes
-4. Verify all work documented
+3. Add entry to compliance log in [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)
+4. Commit documentation changes
+5. Verify all work documented
 
 **When updating this document:**
 1. Preserve structure and organization

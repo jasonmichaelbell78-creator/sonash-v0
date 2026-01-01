@@ -45,13 +45,43 @@
 ## 5. Documentation Index
 *Use these files to answer your own questions.*
 
+*   **[AI_WORKFLOW.md](./AI_WORKFLOW.md)**: **START HERE** - Master navigation guide, session startup checklist.
 *   **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Database schema, security layers, component hierarchy.
 *   **[DEVELOPMENT.md](./DEVELOPMENT.md)**: Setup, testing commands, directory structure.
 *   **[ROADMAP.md](./ROADMAP.md)**: What features are planned vs. completed.
 *   **[AI_HANDOFF.md](./AI_HANDOFF.md)**: Current sprint status, active bugs, recent context.
 *   **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)**: Manual verification steps.
 
-## 6. Coding Standards
+## 6. Available AI Capabilities
+> [!IMPORTANT]
+> **MANDATORY**: Before ANY task, check if a skill or agent applies. If one clearly applies to your task, USE IT.
+
+### Skills (`.claude/skills/`)
+Specialized workflows invoked via **Skill tool**. Scan directory for current list.
+
+**Key Skills:**
+- `systematic-debugging` → Use FIRST for bugs/errors
+- `code-reviewer` → Use AFTER writing code
+- `frontend-design` → Use for UI implementation
+- `senior-frontend` / `senior-backend` → Implementation guidance
+
+### Agents (`.claude/agents/`)
+Specialist sub-agents invoked via **Task tool**. Scan directory for current list.
+
+**Key Agents:**
+- `code-reviewer` → Post-code quality review
+- `security-auditor` → Security assessment
+- `debugger` → Complex debugging
+- `test-engineer` → Test strategy
+
+### MCP Servers
+External tool integrations. Check `.claude/settings.json` for configured servers.
+
+**Discovery is dynamic** - new capabilities added to these directories are automatically available.
+
+**Full Details**: See [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "Available AI Capabilities"
+
+## 7. Coding Standards
 *   **Language**: TypeScript (Strict Mode). No `any`.
 *   **Components**: React Functional Components + Hooks.
 *   **Styling**: Tailwind CSS (Utility-first). No inline styles unless dynamic (e.g., animations).

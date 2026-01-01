@@ -219,7 +219,22 @@ See **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** for manual QA checklist.
 
 ## Security
 
-This app handles sensitive recovery data. See **[docs/SECURITY.md](./docs/SECURITY.md)** for:
+This app handles sensitive recovery data.
+
+### Mandatory Security Standards
+
+All code changes MUST comply with these standards:
+
+1. **Rate Limiting** - All endpoints have IP + user-based limits with graceful 429s
+2. **Input Validation** - All inputs validated with schemas, type checks, length limits
+3. **Secrets Management** - No hardcoded keys; all secrets in env vars; nothing client-side
+4. **OWASP Compliance** - Follow OWASP Top 10; clear comments; no breaking changes
+
+See **[docs/GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md)** for full requirements.
+
+### Additional Security Documentation
+
+See **[docs/SECURITY.md](./docs/SECURITY.md)** for:
 - Data classification (Red/Yellow/Green)
 - Security layers (TLS, App Check, Auth, Rules)
 - Privacy protections (GDPR, data export/deletion)

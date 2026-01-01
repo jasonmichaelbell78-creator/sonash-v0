@@ -390,6 +390,19 @@ git add docs/[this-plan].md
 git commit -m "docs: Update [plan] - completed task [ID]"
 ```
 
+**⚠️ MANDATORY: When completing a phase/milestone:**
+
+Before marking ANY phase or milestone complete, you MUST run a **Deliverable Audit**:
+
+1. **Gather Requirements** - Review original goals, acceptance criteria, deliverables list
+2. **Verify Each Deliverable** - Confirm exists, is complete, meets criteria
+3. **Check for Gaps** - Any missing items? Any incomplete work?
+4. **Document Findings** - Add to "What Was Accomplished" section
+5. **Address Gaps** - Fix gaps or document why acceptable
+6. **Only Then** - Mark phase/milestone complete
+
+See [AI_WORKFLOW.md](../../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure" for full template.
+
 ---
 
 **END OF TEMPLATE**
@@ -399,4 +412,5 @@ git commit -m "docs: Update [plan] - completed task [ID]"
 - Remove phases/sections not needed for your specific plan
 - Add phases as needed for complex features
 - Keep status dashboard updated throughout implementation
+- **Run deliverable audit before marking ANY phase complete**
 - Archive to docs/archive/plans/ when complete
