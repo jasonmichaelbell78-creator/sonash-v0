@@ -306,7 +306,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 5. Document using provided template
 6. Commit with review summary
 
-### Scenario 4: Documentation Only Work
+### Scenario 4: Documentation-Only Work
 
 1. Check which tier doc belongs to ([DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md))
 2. Use appropriate template from `docs/templates/`

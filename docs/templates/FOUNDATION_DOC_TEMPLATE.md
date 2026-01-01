@@ -36,17 +36,21 @@ This document provides [comprehensive | reference | canonical] information about
 
 ### For New Team Members
 
-1. **[First Step]**: [Brief description]
-2. **[Second Step]**: [Brief description]
-3. **[Third Step]**: [Brief description]
+1. **Clone repo and run setup**: `git clone <repo> && npm install && npm test`
+2. **Read sections in order**: Overview → Architecture → Patterns → Examples
+3. **Run tests to verify setup**: All tests should pass before starting work
+
+*Tip: Start with the "Quick Reference" and "Common Patterns" sections for practical examples.*
 
 ### For AI Assistants
 
 **Before making changes that affect [subject area]:**
-1. Read relevant sections of this document
-2. Verify current patterns match documented patterns
-3. Update this document if introducing new patterns
-4. Commit documentation changes with code changes
+1. **Prioritize these sections**: Overview, Architecture, Patterns/Conventions, Coding Standards, Examples
+2. **Verify patterns**: Search for repeated implementations across modules, check unit tests/examples, review recent PRs
+3. **Distinguish patterns from anomalies**:
+   - **Pattern** = repeated, documented, covered by tests/examples
+   - **Anomaly** = one-off, undocumented, or flagged in issues
+4. **When introducing new patterns**: Add description, examples, link to related tests/PRs, commit docs with code
 
 ---
 
@@ -319,6 +323,11 @@ When working with [subject area]:
 4. **Maintain consistency** - if documented approach conflicts with code, flag it
 5. **Ask clarifying questions** if documented guidance is unclear
 
+**Role-Specific Guidance:**
+- **Code Reviewers**: Focus on Patterns section and change compatibility checks
+- **Feature Developers**: Focus on Best Practices, Pitfalls, and commit pairing (docs + code)
+- **Architects**: Focus on Design, Requirements, and system compatibility
+
 **When updating this document:**
 1. Preserve existing structure and formatting
 2. Add examples for new patterns
@@ -337,3 +346,14 @@ When working with [subject area]:
 - Use concrete examples from the actual codebase
 - Keep examples up-to-date as code evolves
 - Include file references with line numbers for traceability
+
+**For Non-Code or Polyglot Projects:**
+- Replace "Technology Stack" and "Key Files" sections with appropriate headings:
+  - Infrastructure docs → "Platform Components", "Configuration Locations"
+  - Multi-language repos → Group by language/service, show integration points
+  - Non-technical docs → "Stakeholders", "Business Goals", "Decision Framework"
+
+**Path Customization:**
+- Internal reference paths (e.g., `./ARCHITECTURE.md`, `../ROADMAP.md`) are examples
+- Adjust paths to match your actual project structure
+- Verify all links work before committing

@@ -1,8 +1,8 @@
 # SoNash Documentation Standards
 
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2025-12-31
-**Last Updated**: 2025-12-31
+**Last Updated**: 2026-01-01
 **Status**: ACTIVE
 **Overall Completion**: 100% (Standards established and operational)
 
@@ -510,6 +510,65 @@ command --with-flags argument
    git commit -m "docs: Update [doc-name] - [what changed]"
    ```
 
+### Quality Protocols
+
+**⚠️ Pre-Commit Validation Checklist**
+
+Before committing **any** documentation:
+
+**All Tiers:**
+- [ ] Run static analysis if available (`markdownlint`, `languagetool`)
+- [ ] Verify all cross-referenced files exist
+- [ ] Check all links are valid (no broken references)
+- [ ] Confirm formatting is consistent
+
+**Tier 1 (Canonical) Documents:**
+- [ ] Document Version present
+- [ ] Created date present
+- [ ] Last Updated present
+- [ ] Status present
+- [ ] Overall Completion present
+- [ ] Document follows its own standards (self-compliance check)
+
+**Tier 2 (Foundation) Documents:**
+- [ ] Document Version present
+- [ ] Last Updated present
+- [ ] Status present
+- [ ] Applies To present
+
+**Tier 3 (Planning) Documents:**
+- [ ] Document Version present
+- [ ] Status present
+- [ ] Overall Completion present
+- [ ] Target Completion present
+
+**Status Synchronization Protocol**
+
+When updating project status in **any** document, immediately update **all related** status documents:
+
+| Primary Doc Updated | Must Sync To | What to Update |
+|---------------------|--------------|----------------|
+| DOCUMENTATION_STANDARDIZATION_PLAN.md | SESSION_CONTEXT.md | Current sprint focus, Quick Status table, Next Up |
+| ROADMAP.md | SESSION_CONTEXT.md, README.md | Active milestones, completion %, current sprint |
+| Any plan document | AI_WORKFLOW.md | Navigation map (if new doc added) |
+| Phase completion | All status docs | Overall progress, next priorities |
+
+**Cross-Reference Validation**
+
+Before committing:
+1. List all markdown links: `[text](path)` and `[text](#anchor)`
+2. Verify each `path` exists in repository
+3. Verify each `#anchor` exists in target file
+4. Update or remove broken references
+
+**Template Testing (for new templates only)**
+
+When creating a new template:
+1. Create a minimal viable example document using the template
+2. Fill ALL placeholder sections with 1-2 sentence real content
+3. Verify example makes sense and placeholders are clear
+4. Save example to `docs/examples/[template-name]-example.md`
+
 ### Commit Message Format
 
 **For documentation updates**:
@@ -574,6 +633,7 @@ Before committing documentation changes, verify:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-01 | Added Quality Protocols section with 4 new protocols: Pre-Commit Validation Checklist, Status Synchronization Protocol, Cross-Reference Validation, Template Testing | Claude Code |
 | 1.0 | 2025-12-31 | Initial documentation standards created | Claude Code |
 
 ---

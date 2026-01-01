@@ -37,8 +37,10 @@ This is the **CANONICAL** [tracking document | reference | plan] for [specific p
 **Step-by-step workflow:**
 
 ```
-1️⃣ [Step 1] → 2️⃣ [Step 2] → 3️⃣ [Step 3] → 4️⃣ [Step 4]
+1️⃣ [Initial condition/prerequisite] → 2️⃣ [Decision point/action trigger] → 3️⃣ [Primary action] → 4️⃣ [Expected outcome/next state]
 ```
+
+*Example: 1️⃣ Read current status → 2️⃣ Identify next task → 3️⃣ Complete task → 4️⃣ Update dashboard*
 
 **See [related document] for complete workflow details.**
 
@@ -118,6 +120,12 @@ Every update should:
 - **HIGH**: Significant risk to project success, timeline, or quality
 - **MEDIUM**: Moderate risk with manageable impact
 - **LOW**: Minimal risk with low impact
+
+**📌 Note on Status Dimensions:**
+- **Status**, **Priority**, and **Risk** are independent fields
+- A COMPLETE item can still have HIGH risk if mitigation is pending
+- BLOCKED items don't automatically become P0 unless escalation is required
+- For DEPRECATED items, progress is typically locked at final % or marked N/A
 
 ---
 
@@ -403,3 +411,18 @@ When implementing work tracked by this document:
 - Add sections as needed for your use case
 - Maintain consistent formatting and structure
 - Update status indicators regularly
+
+**When to Use Simplified Version:**
+
+This full template is comprehensive (16+ sections) and best for large initiatives. **Use a lighter version** for:
+- Small features, quick wins, or bug fixes
+- Experiments or proof-of-concepts
+- Single-task work items
+
+**Sections to omit for lightweight docs:**
+- Gap Analysis
+- Detailed Work Items
+- Evidence of Completion (keep high-level only)
+- Extensive Acceptance Criteria (3-5 items max)
+
+**Simplified template = Core sections only:** Purpose, Status Dashboard, What Was Accomplished, Next Steps, AI Instructions
