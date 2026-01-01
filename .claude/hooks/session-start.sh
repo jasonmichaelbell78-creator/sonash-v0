@@ -86,13 +86,29 @@ run_npm_with_timeout() {
 #   1. Never modify package-lock.json (prevents CI sync issues)
 #   2. Install exactly what's in lockfile (reproducible builds)
 #   3. Fail fast if lockfile is out of sync (surfaces real issues)
-run_npm_with_timeout "Installing root dependencies" \
-  "npm ci --prefer-offline --no-audit --no-fund" 120
+# Falls back to 'npm install' if lockfile is missing (new repos, etc.)
+if [ -f "package-lock.json" ]; then
+  run_npm_with_timeout "Installing root dependencies" \
+    "npm ci --prefer-offline --no-audit --no-fund" 120
+else
+  echo "   ⚠️ package-lock.json not found, falling back to npm install"
+  WARNINGS=$((WARNINGS + 1))
+  run_npm_with_timeout "Installing root dependencies (no lockfile)" \
+    "npm install --prefer-offline --no-audit --no-fund" 120
+fi
 
 # Install Firebase Functions dependencies and build
-if [ -d "functions" ]; then
+if [ -d "functions" ] && [ -f "functions/package-lock.json" ]; then
   run_npm_with_timeout "Installing Firebase Functions dependencies" \
     "cd functions && npm ci --prefer-offline --no-audit --no-fund" 120
+
+  run_npm_with_timeout "Building Firebase Functions" \
+    "cd functions && npm run build" 60
+elif [ -d "functions" ]; then
+  echo "   ⚠️ functions/package-lock.json not found, falling back to npm install"
+  WARNINGS=$((WARNINGS + 1))
+  run_npm_with_timeout "Installing Firebase Functions dependencies (no lockfile)" \
+    "cd functions && npm install --prefer-offline --no-audit --no-fund" 120
 
   run_npm_with_timeout "Building Firebase Functions" \
     "cd functions && npm run build" 60
