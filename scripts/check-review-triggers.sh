@@ -13,7 +13,6 @@ echo "========================================"
 echo ""
 
 # Color codes for output
-RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
@@ -39,15 +38,25 @@ if [ "$COMMITS_SINCE" -ge 50 ]; then
   TRIGGERS_FOUND=$((TRIGGERS_FOUND + 1))
 fi
 
-# Files changed in last 10 commits
-FILES_CHANGED=$(git diff --name-only HEAD~10 2>/dev/null | wc -l | tr -d ' ')
-echo "Files changed (last 10 commits): $FILES_CHANGED"
+# Files changed in last 10 commits (with guard for short repos)
+COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
+LOOKBACK=$((COMMIT_COUNT < 10 ? COMMIT_COUNT : 10))
+if [ "$LOOKBACK" -gt 0 ]; then
+  FILES_CHANGED=$(git diff --name-only HEAD~$LOOKBACK 2>/dev/null | wc -l | tr -d ' ')
+else
+  FILES_CHANGED=0
+fi
+echo "Files changed (last $LOOKBACK commits): $FILES_CHANGED"
 echo ""
 
 # --- Security Triggers ---
-echo "=== Security-Sensitive Changes (last 10 commits) ==="
+echo "=== Security-Sensitive Changes (last $LOOKBACK commits) ==="
 
-SECURITY_FILES=$(git diff --name-only HEAD~10 2>/dev/null | grep -iE "(auth|security|firebase|api|secret|env|token|key|password|credential)" || echo "")
+if [ "$LOOKBACK" -gt 0 ]; then
+  SECURITY_FILES=$(git diff --name-only HEAD~$LOOKBACK 2>/dev/null | grep -iE "(auth|security|firebase|api|secret|env|token|key|password|credential)" || echo "")
+else
+  SECURITY_FILES=""
+fi
 if [ -n "$SECURITY_FILES" ]; then
   echo -e "${YELLOW}[TRIGGER]${NC} Security-sensitive files changed:"
   echo "$SECURITY_FILES" | head -10 | sed 's/^/  - /'
@@ -69,7 +78,11 @@ else
 fi
 
 # Check for heavy dependencies added recently
-NEW_DEPS=$(git diff HEAD~10 -- package.json 2>/dev/null | grep "^\+" | grep -E '"(lodash|moment|jquery|rxjs|three|d3|chart)' || echo "")
+if [ "$LOOKBACK" -gt 0 ]; then
+  NEW_DEPS=$(git diff HEAD~$LOOKBACK -- package.json 2>/dev/null | grep "^\+" | grep -E '"(lodash|moment|jquery|rxjs|three|d3|chart)' || echo "")
+else
+  NEW_DEPS=""
+fi
 if [ -n "$NEW_DEPS" ]; then
   echo -e "${YELLOW}[TRIGGER]${NC} Heavy dependencies may have been added"
   TRIGGERS_FOUND=$((TRIGGERS_FOUND + 1))

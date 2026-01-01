@@ -34,6 +34,9 @@ fi
 echo "🚀 SessionStart Hook for sonash-v0"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# Track warnings for accurate completion message
+WARNINGS=0
+
 # Log environment versions for debugging
 echo "📋 Environment:"
 echo "   Node: $(node -v 2>/dev/null || echo 'not found')"
@@ -42,23 +45,39 @@ echo "   PWD:  $(pwd)"
 echo ""
 
 # Helper function for npm commands with timeout
+# Uses 'timeout' command if available, otherwise falls back to running without timeout
 run_npm_with_timeout() {
   local description="$1"
   local command="$2"
   local timeout_seconds="${3:-120}"
 
   echo "📦 $description..."
-  if timeout "$timeout_seconds" bash -c "$command" 2>&1; then
-    echo "   ✓ $description complete"
-    return 0
-  else
-    local exit_code=$?
-    if [ $exit_code -eq 124 ]; then
-      echo "   ⚠️ $description timed out after ${timeout_seconds}s (continuing anyway)"
+
+  # Check if timeout command is available
+  if command -v timeout &> /dev/null; then
+    if timeout "$timeout_seconds" bash -c "$command" 2>&1; then
+      echo "   ✓ $description complete"
+      return 0
     else
-      echo "   ⚠️ $description failed with exit code $exit_code (continuing anyway)"
+      local exit_code=$?
+      if [ $exit_code -eq 124 ]; then
+        echo "   ⚠️ $description timed out after ${timeout_seconds}s (continuing anyway)"
+      else
+        echo "   ⚠️ $description failed with exit code $exit_code (continuing anyway)"
+      fi
+      WARNINGS=$((WARNINGS + 1))
+      return 0  # Don't fail the hook, just warn
     fi
-    return 0  # Don't fail the hook, just warn
+  else
+    # Fallback: run without timeout
+    if bash -c "$command" 2>&1; then
+      echo "   ✓ $description complete"
+      return 0
+    else
+      echo "   ⚠️ $description failed (continuing anyway)"
+      WARNINGS=$((WARNINGS + 1))
+      return 0  # Don't fail the hook, just warn
+    fi
   fi
 }
 
@@ -81,7 +100,12 @@ run_npm_with_timeout "Building test files" \
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ SessionStart hook completed successfully!"
+if [ "$WARNINGS" -eq 0 ]; then
+  echo "✅ SessionStart hook completed successfully!"
+else
+  echo "⚠️ SessionStart hook completed with $WARNINGS warning(s)"
+  echo "   Some steps may have failed - check output above."
+fi
 echo ""
 echo "💡 Tip: If you encounter issues, check that all npm commands succeeded above."
 echo "   See AI_WORKFLOW.md → 'Available AI Capabilities' for skills/agents."

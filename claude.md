@@ -54,7 +54,7 @@
 
 ## 6. Available AI Capabilities
 > [!IMPORTANT]
-> **MANDATORY**: Before ANY task, check if a skill or agent applies. If there's even a 1% chance, USE IT.
+> **MANDATORY**: Before ANY task, check if a skill or agent applies. If one clearly applies to your task, USE IT.
 
 ### Skills (`.claude/skills/`)
 Specialized workflows invoked via **Skill tool**. Scan directory for current list.

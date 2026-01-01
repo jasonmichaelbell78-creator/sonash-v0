@@ -46,7 +46,7 @@ All public-facing endpoints and user-triggered actions MUST have rate limiting:
 |-------------|---------|--------------|
 | IP-based limiting | Prevent abuse from single IP | `grep -r "RateLimiter" --include="*.ts"` |
 | User-based limiting | Prevent abuse from authenticated users | Check limiter uses `userId` |
-| Sensible defaults | Auth: 5/min, Writes: 10/min, Reads: 60/min | Review `lib/constants.ts` |
+| Sensible defaults | Auth: 5/min, Writes: 10/min, Reads: 30/min | Review `lib/constants.ts` |
 | Graceful 429 responses | Include `Retry-After` header, user-friendly message | Test endpoint manually |
 | Client-side UX limiting | Disable buttons during cooldown | Check UI components |
 

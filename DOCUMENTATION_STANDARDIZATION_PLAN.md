@@ -1372,6 +1372,19 @@ Create automation scripts for documentation maintenance, validation, and review 
 - [ ] **Deliverable audit passed** (all deliverables verified)
 - [ ] **Procedure gap analysis complete** (cross-references checked)
 
+### 📋 Phase 2 Backlog (from CodeRabbit/Qodo Review 2026-01-01)
+
+The following items were identified during AI review but deferred to Phase 2:
+
+| Item | Description | Priority | Source |
+|------|-------------|----------|--------|
+| Pre-commit hook | Add Husky pre-commit hook for secrets detection and linting | Medium | Qodo |
+| Key rotation policy | Document key rotation schedule and procedures | Medium | CodeRabbit |
+| Template schema consolidation | Standardize JSONL output schema across all 4 review templates | Low | Qodo |
+| Automated deliverable audit script | Create script to verify phase deliverables automatically | Low | Internal |
+
+**Note**: These items enhance the automation phase and can be addressed during Task 2.1-2.6 implementation.
+
 ### 🤖 AI Instructions
 
 When implementing this phase:
@@ -1385,6 +1398,7 @@ When implementing this phase:
 8. Update Phase 2 completion after each task
 9. **Run deliverable audit before marking complete**
 10. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
+11. **Check Phase 2 Backlog above** - address items during implementation
 
 ---
 

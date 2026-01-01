@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
 **Last Updated**: 2026-01-01
-**Document Version**: 1.3
+**Document Version**: 1.4
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -58,7 +58,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 > **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
 
-> **MANDATORY**: Step 4 ensures you leverage ALL available tools. If a skill or agent applies to your task (even 1% chance), you MUST use it. See "Available AI Capabilities" section below.
+> **MANDATORY**: Step 4 ensures you leverage ALL available tools. If a skill or agent clearly applies to your task, you MUST use it. See "Available AI Capabilities" section below.
 
 ---
 
@@ -310,7 +310,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ### MANDATORY: Use Available Tools
 
-**This is NOT optional.** Before ANY task, check if a skill, agent, or MCP applies. If there's even a **1% chance** a capability might help, you MUST use it.
+**This is NOT optional.** Before ANY task, check if a skill, agent, or MCP applies. If a capability **clearly applies** to your task, you MUST use it.
 
 > **Rule**: Capabilities are discovered dynamically. When new skills/agents/MCPs are added to the project, they are automatically available. Always scan the directories - don't rely on memorized lists.
 
