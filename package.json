@@ -14,7 +14,9 @@
     "docs:update-readme": "node scripts/update-readme-status.js",
     "docs:check": "node scripts/check-docs-light.js",
     "docs:archive": "node scripts/archive-doc.js",
-    "review:check": "node scripts/check-review-needed.js"
+    "review:check": "node scripts/check-review-needed.js",
+    "phase:complete": "node scripts/phase-complete-check.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
@@ -65,6 +67,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "firebase-admin": "^13.6.0",
     "gray-matter": "^4.0.3",
+    "husky": "^9.1.7",
     "postcss": "^8.5",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",

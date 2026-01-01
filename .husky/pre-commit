@@ -1,0 +1,34 @@
+#!/bin/sh
+# Pre-commit hook - AUTOMATED GATE (not optional documentation)
+# This blocks commits if checks fail
+
+echo "🔍 Running pre-commit checks..."
+
+# 1. Run ESLint (fail on errors, allow warnings)
+echo "  ▶ Running ESLint..."
+LINT_OUTPUT=$(npm run lint 2>&1)
+# Check for "X errors" in the summary line (not "error" in rule names)
+ERROR_COUNT=$(echo "$LINT_OUTPUT" | grep -oE "✖ [0-9]+ problems \([0-9]+ errors" | grep -oE "\([0-9]+" | tr -d '(')
+if [ -n "$ERROR_COUNT" ] && [ "$ERROR_COUNT" -gt 0 ]; then
+  echo "  ❌ ESLint has $ERROR_COUNT error(s)"
+  echo "$LINT_OUTPUT" | tail -5
+  echo ""
+  echo "  Fix errors before committing. Run: npm run lint"
+  exit 1
+fi
+echo "  ✅ ESLint passed (0 errors)"
+
+# 2. Run tests
+echo "  ▶ Running tests..."
+TEST_OUTPUT=$(npm test 2>&1)
+if [ $? -ne 0 ]; then
+  echo "  ❌ Tests failed"
+  echo "$TEST_OUTPUT" | tail -10
+  echo ""
+  echo "  Fix tests before committing. Run: npm test"
+  exit 1
+fi
+echo "  ✅ Tests passed"
+
+echo ""
+echo "✅ All pre-commit checks passed - commit allowed"

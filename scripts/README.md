@@ -141,6 +141,51 @@ npm run review:check         # Check if code review is needed
 
 ---
 
+## Automated Gates (Enforcement)
+
+These are NOT optional - they block progress if checks fail.
+
+### Pre-commit Hook (Husky)
+
+**Location:** `.husky/pre-commit`
+
+**What it does:**
+- Runs ESLint before every commit
+- Runs tests before every commit
+- **BLOCKS commit if either fails**
+
+**Bypass (emergency only):**
+```bash
+git commit --no-verify -m "message"  # ONLY for emergencies!
+```
+
+---
+
+### phase-complete-check.js
+
+**Purpose:** Mandatory checklist before marking any phase/milestone complete
+
+**Activation:**
+```bash
+npm run phase:complete
+```
+
+**What it does:**
+1. Runs ESLint automatically
+2. Runs tests automatically
+3. Asks manual verification questions:
+   - Did you review original deliverables?
+   - Does every deliverable exist and work?
+   - Did you test with real data?
+   - Are ALL acceptance criteria met?
+   - Did you document what was accomplished?
+   - Did you run lint/test before EVERY commit?
+4. **BLOCKS completion if any check fails**
+
+**Exit codes:** 0 = safe to mark complete, 1 = DO NOT mark complete
+
+---
+
 ## GitHub Actions Workflow
 
 ### docs-lint.yml
