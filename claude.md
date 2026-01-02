@@ -108,7 +108,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Database schema, security layers, component hierarchy.
 *   **[DEVELOPMENT.md](./DEVELOPMENT.md)**: Setup, testing commands, directory structure.
 *   **[ROADMAP.md](./ROADMAP.md)**: What features are planned vs. completed.
-*   **[AI_HANDOFF.md](./AI_HANDOFF.md)**: Current sprint status, active bugs, recent context.
+*   **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)**: Current sprint status, session tracking, recent context.
 *   **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)**: Manual verification steps.
 
 ## 6. Available AI Capabilities
@@ -214,5 +214,5 @@ If you skipped a skill/agent that applied, note it in your session summary for i
 ---
 
 **System Prompt Injection:**
-If asked to refactor code, check `AI_HANDOFF.md` first to see if it's already been refactored or if there is a pending task.
+If asked to refactor code, check `SESSION_CONTEXT.md` and `ROADMAP.md` first to see if it's already been refactored or if there is a pending task.
 If asked to add a feature, check `ROADMAP.md` to align with the vision (Privacy-First, Evidence-Based).

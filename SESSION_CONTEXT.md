@@ -1,7 +1,7 @@
 # Session Context
 
 **Last Updated**: 2026-01-02
-**Document Version**: 1.3
+**Document Version**: 1.4
 **Purpose**: Quick session-to-session handoff
 **When to Use**: **START OF EVERY SESSION** (read this first!)
 
@@ -11,7 +11,7 @@
 
 This document provides **essential session context** for quick startup. It's designed to be read in under 2 minutes and contains only what you need to begin productive work.
 
-**For detailed context**, see [AI_HANDOFF.md](./AI_HANDOFF.md)
+**For detailed architecture**, see [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ---
 
@@ -140,9 +140,9 @@ All other systems operational.
 5. **[TRIGGERS.md](./docs/TRIGGERS.md)** - All automation and enforcement mechanisms
 
 **For deeper context**:
-- [AI_HANDOFF.md](./AI_HANDOFF.md) - Comprehensive project context
 - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System design
 - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
+- [ROADMAP_LOG.md](./ROADMAP_LOG.md) - Historical completions
 
 ---
 
@@ -221,6 +221,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.4 | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation links | Claude |
 | 1.3 | 2026-01-02 | Phase 3-4 complete; added session tracking; updated status for 43 commits; workflow audit findings | Claude |
 | 1.2 | 2026-01-01 | Updated for afternoon session: Fixed Jest Incident, documented Review #12, ready for Phase 2 | Claude Code |
 | 1.1 | 2026-01-01 | Updated for Phase 1.5 completion; added multi-AI review system deliverables; updated next goals to Phase 2 | Claude |
@@ -241,15 +242,15 @@ npm run docs:check   # Documentation linting
 
 **When updating**:
 - Keep "Recently Completed" to last 2-3 sessions only
-- Older work moves to AI_HANDOFF.md
+- Older work moves to ROADMAP_LOG.md
 - Keep this document focused and brief
-- Detailed context goes in AI_HANDOFF.md
+- Detailed context goes in planning docs or ARCHITECTURE.md
 
 **Navigation**:
-- Need more context? → [AI_HANDOFF.md](./AI_HANDOFF.md)
 - Need to understand docs? → [AI_WORKFLOW.md](./AI_WORKFLOW.md)
 - Need CodeRabbit process? → [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
 - Need to check priorities? → [ROADMAP.md](./ROADMAP.md)
+- Need architecture details? → [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ---
 

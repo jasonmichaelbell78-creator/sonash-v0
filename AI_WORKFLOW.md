@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-01
-**Document Version**: 1.4
+**Last Updated**: 2026-01-02
+**Document Version**: 1.5
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -47,9 +47,8 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
      - If task matches a capability, USE IT (not optional)
 ☐ 5. Check ROADMAP.md (verify milestone priorities)
 ☐ 6. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
-☐ 7. Review AI_HANDOFF.md (detailed recent work)
-☐ 8. Consult specific planning docs as needed
-☐ 9. Begin work following documented procedures
+☐ 7. Consult specific planning docs as needed
+☐ 8. Begin work following documented procedures
 ```
 
 **Time**: 5-10 minutes
@@ -92,13 +91,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **As Needed** (Reference When Relevant):
 
-5. **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Detailed context
-   - Full recent work history
-   - Technical decisions
-   - Known issues
-   - Architecture overview
-
-6. **Planning Documents** (when working on specific features):
+5. **Planning Documents** (when working on specific features):
    - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
    - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
@@ -227,7 +220,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **After Milestone Completion**:
 - ✅ **ROADMAP_LOG.md** - Add completion entry
 - ✅ **ROADMAP.md** - Update status dashboard
-- ✅ **AI_HANDOFF.md** - Add to "Recently Completed"
+- ✅ **SESSION_CONTEXT.md** - Update "Recently Completed"
 
 **When Architecture/Process Changes**:
 - ✅ **ARCHITECTURE.md** - New patterns
@@ -278,7 +271,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 → [ROADMAP.md](./ROADMAP.md)
 
 **Recent Work History**:
-→ [AI_HANDOFF.md](./AI_HANDOFF.md)
+→ [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) → "Recently Completed"
 → [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
 **System Architecture**:
@@ -435,12 +428,11 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 
 ### Scenario 2: Fixing a Bug
 
-1. Read [AI_HANDOFF.md](./AI_HANDOFF.md) - Check known issues
+1. Check [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Check known blockers/issues
 2. Reference [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Understand component
 3. Fix the bug
 4. Add tests
 5. Update [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) if significant
-6. Update [AI_HANDOFF.md](./AI_HANDOFF.md) known issues if applicable
 
 ### Scenario 3: Processing CodeRabbit Feedback
 
@@ -465,9 +457,8 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 2. Update [ROADMAP.md](./ROADMAP.md) - Update dashboard
 3. Add entry to [ROADMAP_LOG.md](./ROADMAP_LOG.md) - Archive completion
 4. Update [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Note completion
-5. Update [AI_HANDOFF.md](./AI_HANDOFF.md) - Add to recent work
-6. **RUN DELIVERABLE AUDIT** (see below)
-7. Commit all doc updates together
+5. **RUN DELIVERABLE AUDIT** (see below)
+6. Commit all doc updates together
 
 ---
 
@@ -654,6 +645,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation to use SESSION_CONTEXT.md for recent work | Claude |
 | 1.4 | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools | Claude |
 | 1.3 | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude |
 | 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion | Claude |
