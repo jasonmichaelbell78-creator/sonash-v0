@@ -16,10 +16,11 @@
  * Exit codes: 0 = no violations, 1 = violations found, 2 = error
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, lstatSync } from 'fs';
 import { join, dirname, extname, relative } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -127,7 +128,7 @@ const ANTI_PATTERNS = [
     id: 'simple-path-traversal-check',
     pattern: /startsWith\s*\(\s*['"`]\.\.['"`]\s*\)/g,
     message: 'Simple ".." check has false positives (e.g., "..hidden.md")',
-    fix: 'Use: /^\\.\\.\\.(?:[\\\\/]|$)/.test(rel)',
+    fix: 'Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)',
     review: '#18',
     fileTypes: ['.js', '.ts'],
   },
@@ -138,7 +139,10 @@ const ANTI_PATTERNS = [
  */
 function getFilesToCheck() {
   if (FILES.length > 0) {
-    return FILES.filter(f => existsSync(f));
+    // Normalize user-provided paths relative to ROOT for consistent handling
+    return FILES
+      .map(f => relative(ROOT, join(ROOT, f)))
+      .filter(f => existsSync(join(ROOT, f)));
   }
 
   if (STAGED) {
@@ -163,14 +167,26 @@ function getFilesToCheck() {
         const entries = readdirSync(dir);
         for (const entry of entries) {
           const fullPath = join(dir, entry);
-          const stat = statSync(fullPath);
 
-          if (stat.isDirectory()) {
+          // Use lstatSync to detect symlinks and avoid infinite loops
+          const lstat = lstatSync(fullPath);
+          if (lstat.isSymbolicLink()) {
+            continue; // Skip symlinks to prevent infinite recursion
+          }
+
+          if (lstat.isDirectory()) {
             if (!ignoreDirs.includes(entry)) {
               walk(fullPath);
             }
-          } else if (extensions.includes(extname(entry))) {
-            files.push(relative(ROOT, fullPath));
+          } else {
+            const ext = extname(entry);
+            // Include files with known extensions OR extensionless files in .husky
+            if (extensions.includes(ext)) {
+              files.push(relative(ROOT, fullPath));
+            } else if (!ext && relative(ROOT, dir).startsWith('.husky')) {
+              // Extensionless files in .husky are shell scripts
+              files.push(relative(ROOT, fullPath));
+            }
           }
         }
       } catch {
@@ -200,8 +216,20 @@ function checkFile(filePath) {
     return [];
   }
 
-  const ext = extname(filePath);
+  let ext = extname(filePath);
   const content = readFileSync(fullPath, 'utf-8');
+
+  // Extensionless files: detect type by shebang or path
+  if (!ext) {
+    if (filePath.startsWith('.husky/') ||
+        content.startsWith('#!/bin/sh') ||
+        content.startsWith('#!/bin/bash') ||
+        content.startsWith('#!/usr/bin/env bash') ||
+        content.startsWith('#!/usr/bin/env sh')) {
+      ext = '.sh'; // Treat as shell script
+    }
+  }
+
   const violations = [];
 
   for (const antiPattern of ANTI_PATTERNS) {
@@ -313,4 +341,15 @@ function main() {
   process.exit(allViolations.length > 0 ? 1 : 0);
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  // Exit code 2 for unexpected errors (as documented in header)
+  const message = sanitizeError(error);
+  if (JSON_OUTPUT) {
+    console.log(JSON.stringify({ error: true, message }, null, 2));
+  } else {
+    console.error(`❌ Error: ${message}`);
+  }
+  process.exit(2);
+}

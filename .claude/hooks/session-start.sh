@@ -125,13 +125,24 @@ echo ""
 # Run pattern compliance check to surface known anti-patterns
 # This helps prevent repeating mistakes documented in AI_REVIEW_LEARNINGS_LOG.md
 echo "🔍 Checking for known anti-patterns..."
-if node scripts/check-pattern-compliance.js 2>/dev/null; then
+PATTERN_ERR_TMP="$(mktemp)"
+if node scripts/check-pattern-compliance.js 2>"$PATTERN_ERR_TMP"; then
   echo "   ✓ No pattern violations found"
 else
-  echo "   ⚠️ Pattern violations detected - review claude.md Section 4"
-  echo "   Run: npm run patterns:check-all for details"
+  EXIT_CODE=$?
+  if [ "$EXIT_CODE" -ge 2 ]; then
+    echo "   ❌ Pattern checker failed (exit $EXIT_CODE)"
+    if [ -s "$PATTERN_ERR_TMP" ]; then
+      echo "   stderr:"
+      sed 's/^/   /' "$PATTERN_ERR_TMP"
+    fi
+  else
+    echo "   ⚠️ Pattern violations detected - review claude.md Section 4"
+    echo "   Run: npm run patterns:check-all for details"
+  fi
   WARNINGS=$((WARNINGS + 1))
 fi
+rm -f "$PATTERN_ERR_TMP"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

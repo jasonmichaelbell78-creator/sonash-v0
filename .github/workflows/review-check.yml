@@ -43,9 +43,11 @@ jobs:
           EXIT_CODE=$?
           set -e
 
-          # Provide fallback JSON on actual errors (exit code 2+) to guarantee valid output
-          if [ "$EXIT_CODE" -ge 2 ] && [ -z "$OUTPUT" ]; then
-            OUTPUT='{"error":"Script failed","exit_code":'"$EXIT_CODE"'}'
+          # Validate OUTPUT is valid JSON; provide fallback if not
+          if [ "$EXIT_CODE" -ge 2 ]; then
+            if ! node -e 'JSON.parse(process.argv[1])' "$OUTPUT" >/dev/null 2>&1; then
+              OUTPUT='{"error":"Script failed","exit_code":'"$EXIT_CODE"'}'
+            fi
           fi
 
           if [ "$EXIT_CODE" -eq 1 ]; then
@@ -62,9 +64,13 @@ jobs:
             echo "::warning::Script stderr:" && cat "$STDERR_FILE"
           fi
 
-          echo "output<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$OUTPUT" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          # Use unique delimiter to prevent output corruption if content contains "EOF"
+          DELIM="OUTPUT_$(date +%s%N)"
+          {
+            printf 'output<<%s\n' "$DELIM"
+            printf '%s\n' "$OUTPUT"
+            printf '%s\n' "$DELIM"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR if review needed
         if: steps.review-check.outputs.review_needed == 'true'

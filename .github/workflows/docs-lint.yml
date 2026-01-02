@@ -119,8 +119,8 @@ jobs:
           echo "**Summary:** $ERRORS error(s), $WARNINGS warning(s)" >> lint-results.md
 
           # Set outputs
-          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
-          echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+          echo "errors=$ERRORS" >> "$GITHUB_OUTPUT"
+          echo "warnings=$WARNINGS" >> "$GITHUB_OUTPUT"
 
           # Output to console
           cat lint-results.md

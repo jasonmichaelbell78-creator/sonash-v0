@@ -20,8 +20,11 @@ async function syncGeocache() {
             if ((error as { code?: string })?.code === 'app/duplicate-app') {
                 console.log('ℹ️ Firebase Admin already initialized');
             } else {
+                // Sanitize error to prevent sensitive path exposure
+                const errorMsg = error instanceof Error ? error.message : String(error);
+                const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
                 console.error('❌ Failed to initialize Firebase Admin.');
-                console.error(error);
+                console.error(`   Error: ${safeMsg}`);
                 process.exit(1);
             }
         }
@@ -38,8 +41,10 @@ async function syncGeocache() {
             cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
             console.log(`📂 Loaded existing cache with ${Object.keys(cache).length} entries.`);
         } catch (error: unknown) {
+            // Sanitize error to prevent sensitive path/content exposure
             const errorMsg = error instanceof Error ? error.message : String(error);
-            console.warn(`⚠️ Could not parse existing cache: ${errorMsg}`);
+            const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
+            console.warn(`⚠️ Could not parse existing cache: ${safeMsg}`);
             console.warn('   Starting fresh with empty cache.');
         }
     } else {

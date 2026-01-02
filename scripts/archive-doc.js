@@ -472,9 +472,10 @@ function main() {
   // Only relative paths (resolved against known safe directories) are allowed
   const isAbsoluteUnix = FILE_ARG.startsWith('/');
   const isAbsoluteWindows = /^[A-Za-z]:/.test(FILE_ARG);
+  const isWindowsRooted = FILE_ARG.startsWith('\\') && !FILE_ARG.startsWith('\\\\'); // Single backslash (e.g., \Windows)
   const isUNCPath = FILE_ARG.startsWith('\\\\') || FILE_ARG.startsWith('//');
 
-  if (isAbsoluteUnix || isAbsoluteWindows || isUNCPath) {
+  if (isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath) {
     console.error('❌ Security Error: Absolute or UNC paths are not allowed');
     console.error('   Please provide a relative path or filename');
     process.exit(1);
@@ -510,8 +511,8 @@ function main() {
   console.log(`Destination: ${archivePath}`);
   console.log(`Reason: ${ARCHIVE_REASON}\n`);
 
-  // Check if already archived
-  if (sourcePath.includes('/archive/')) {
+  // Check if already archived (cross-platform: handle both / and \ separators)
+  if (sourcePath.includes('/archive/') || sourcePath.includes('\\archive\\')) {
     console.error('❌ Error: File is already in the archive directory');
     process.exit(1);
   }

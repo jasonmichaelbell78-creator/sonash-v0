@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.7 | 2026-01-02 | Added Review #20 (sanitizeError, extensionless hooks, Windows paths, JSON validation) |
 | 1.6 | 2026-01-02 | Added Review #19 (retry loop, UNC paths, JSON output, proper nouns) |
 | 1.5 | 2026-01-02 | Added distillation process docs and pattern compliance checker |
 | 1.4 | 2026-01-02 | Added Review #18 (security hardening and temp file cleanup) |
@@ -1043,6 +1044,83 @@ These are acceptable for internal dev tooling but would need sanitization for us
 **Verification:** `npm run lint` (0 errors)
 
 **Key Insight:** Edge cases matter in automation. A retry loop that silently succeeds masks failures. Always track and verify success explicitly, don't rely on loop exit.
+
+---
+
+#### Review #20: Security Error Handling & Cross-Platform Fixes (2026-01-02)
+
+**Context:** FINALLY addressing the recurring Qodo compliance findings for "Generic: Secure Error Handling" and "Generic: Secure Logging Practices" that had appeared across multiple reviews but were only noted as acceptable rather than fixed.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Raw error.message may expose sensitive paths | HIGH | multiple scripts | Created sanitizeError utility, applied across codebase |
+| 2 | Extensionless hook files not scanned | Medium | check-pattern-compliance.js | Detect .husky/* files by path or shebang |
+| 3 | Windows rooted paths not blocked | Medium | archive-doc.js | Check for `\Windows` style paths (single backslash) |
+| 4 | Fixed delimiter can corrupt GITHUB_OUTPUT | Medium | review-check.yml | Use unique delimiter with timestamp |
+| 5 | User-provided paths not normalized | Medium | check-pattern-compliance.js | Normalize paths relative to ROOT |
+| 6 | Stderr suppressed hides diagnostics | Medium | session-start.sh | Capture stderr to temp file, show on error |
+| 7 | Invalid JSON may reach consumers | Medium | review-check.yml | Validate JSON with node -e before accepting |
+| 8 | Triple-dot in regex fix suggestion | Low | check-pattern-compliance.js | Fixed to double-dot (/^\\.\\./) |
+| 9 | Exit code 2 not implemented for errors | Low | check-pattern-compliance.js | Wrapped main() in try-catch with exit(2) |
+| 10 | Cross-platform archive detection | Low | archive-doc.js | Check both `/archive/` and `\archive\` |
+| 11 | Symlinks may cause infinite recursion | Low | check-pattern-compliance.js | Use lstatSync to detect and skip symlinks |
+
+**New Files Created:**
+
+- `scripts/lib/sanitize-error.js` - Reusable error sanitization utility that:
+  - Strips sensitive patterns (home directories, credentials, connection strings, internal IPs)
+  - Works with Error objects, strings, and unknown throws
+  - Provides `sanitizeError()`, `sanitizeErrorForJson()`, `createSafeLogger()`, and `safeErrorMessage()` exports
+
+**Key Patterns Identified:**
+
+1. **RECURRING ISSUES MUST BE FIXED, NOT NOTED:** Qodo compliance findings for secure error handling appeared in Reviews #16, #17, #18, #19 but were only acknowledged as "acceptable for dev tooling." This was wrong - they should have been fixed earlier.
+
+2. **Error Sanitization Pattern:**
+   ```javascript
+   const SENSITIVE_PATTERNS = [
+     /\/home\/[^/\s]+/gi,     // Linux home directories
+     /\/Users\/[^/\s]+/gi,    // macOS home directories
+     /C:\\Users\\[^\\]+/gi,   // Windows user directories
+     /password[=:]\s*\S+/gi,  // Password assignments
+     /api[_-]?key[=:]\s*\S+/gi, // API keys
+     // ... etc
+   ];
+   ```
+
+3. **Extensionless file detection by shebang:**
+   ```javascript
+   if (!ext && (filePath.startsWith('.husky/') ||
+       content.startsWith('#!/bin/sh') ||
+       content.startsWith('#!/bin/bash'))) {
+     ext = '.sh'; // Treat as shell script
+   }
+   ```
+
+4. **Unique delimiter for GITHUB_OUTPUT:**
+   ```bash
+   DELIM="OUTPUT_$(date +%s%N)"
+   printf 'output<<%s\n%s\n%s\n' "$DELIM" "$OUTPUT" "$DELIM" >> "$GITHUB_OUTPUT"
+   ```
+
+5. **Preserve stderr for debugging while checking exit code:**
+   ```bash
+   ERR_TMP="$(mktemp)"
+   if cmd 2>"$ERR_TMP"; then
+     echo "success"
+   else
+     if [ -s "$ERR_TMP" ]; then cat "$ERR_TMP"; fi
+   fi
+   rm -f "$ERR_TMP"
+   ```
+
+**Promoted to claude.md:** Pattern #1 (error sanitization) - This is now a MANDATORY pattern, not optional.
+
+**Verification:** `npm run lint` (0 errors)
+
+**Key Insight:** "Acceptable for dev tooling" is not an acceptable response to recurring security findings. Each time an issue is flagged and noted but not fixed, it compounds technical debt and normalizes ignoring security feedback. FIX ISSUES WHEN THEY ARE IDENTIFIED - don't defer security improvements.
 
 ---
 

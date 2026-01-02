@@ -84,6 +84,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Separate stderr: `cmd 2>err.log` to keep JSON output parseable
 
 **JavaScript/TypeScript:**
+- **MANDATORY: Sanitize error messages** - Strip sensitive paths/credentials before logging. Use `scripts/lib/sanitize-error.js` or inline sanitization. Do NOT log raw error.message to console.
 - Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
 - Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
 - Markdown links: `.replace(/\\/g, '/')` to normalize Windows backslashes
