@@ -17,7 +17,7 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { sanitizeError } from './lib/sanitize-error.js';
 
@@ -27,6 +27,10 @@ const ROOT = join(__dirname, '..');
 
 const LEARNINGS_FILE = join(ROOT, 'AI_REVIEW_LEARNINGS_LOG.md');
 const CHECKER_FILE = join(ROOT, 'scripts/check-pattern-compliance.js');
+
+// File names for error messages (avoid exposing full paths)
+const LEARNINGS_FILENAME = basename(LEARNINGS_FILE);
+const CHECKER_FILENAME = basename(CHECKER_FILE);
 
 // Patterns we can extract and potentially automate
 const EXTRACTABLE_PATTERNS = [
@@ -92,7 +96,7 @@ function sanitizeCodeForLogging(code, maxLen = 60) {
 function extractPatternsFromLearnings() {
   // Check file exists
   if (!existsSync(LEARNINGS_FILE)) {
-    console.error(`❌ Learnings file not found: ${LEARNINGS_FILE}`);
+    console.error(`❌ Learnings file not found: ${LEARNINGS_FILENAME}`);
     process.exit(2);
   }
 
@@ -107,10 +111,12 @@ function extractPatternsFromLearnings() {
   const extracted = [];
   const seen = new Set(); // Deduplication
 
-  // Find review sections
-  const reviewSections = content.split(/####\s+Review\s+#\d+/i);
-
-  for (const section of reviewSections) {
+  // Find review sections while preserving the review number for traceability
+  const sectionRegex = /####\s+Review\s+#(\d+)([\s\S]*?)(?=####\s+Review\s+#\d+|$)/gi;
+  let sectionMatch;
+  while ((sectionMatch = sectionRegex.exec(content)) !== null) {
+    const reviewNumber = sectionMatch[1];
+    const section = sectionMatch[2];
     if (!section.trim()) continue;
 
     // Extract "Wrong:" patterns
@@ -129,7 +135,8 @@ function extractPatternsFromLearnings() {
           extracted.push({
             code,
             type,
-            context: section.slice(Math.max(0, match.index - 100), match.index + match[0].length + 100)
+            reviewNumber,
+            context: `Review #${reviewNumber}\n` + section.slice(Math.max(0, match.index - 100), match.index + match[0].length + 100)
           });
         }
       }
@@ -145,7 +152,7 @@ function extractPatternsFromLearnings() {
 function getExistingPatterns() {
   // Check file exists
   if (!existsSync(CHECKER_FILE)) {
-    console.error(`❌ Pattern checker file not found: ${CHECKER_FILE}`);
+    console.error(`❌ Pattern checker file not found: ${CHECKER_FILENAME}`);
     process.exit(2);
   }
 
@@ -159,19 +166,15 @@ function getExistingPatterns() {
 
   const patterns = [];
 
-  // Extract pattern IDs and regexes (handles escaped slashes)
+  // Extract pattern IDs, regexes, and flags (handles escaped slashes)
   const patternRegex = /id:\s*['"`]([^'"`]+)['"`][\s\S]*?pattern:\s*\/((?:\\\/|[^/])+?)\/([gimuy]*)/g;
   let match;
   while ((match = patternRegex.exec(content)) !== null) {
     patterns.push({
       id: match[1],
-      pattern: match[2]
+      pattern: match[2],
+      flags: match[3] || ''
     });
-  }
-
-  // Warn if no patterns found (may indicate parsing issue)
-  if (patterns.length === 0) {
-    console.warn('[WARN] Could not parse any regex-literal patterns from checker; skipping coverage detection.');
   }
 
   return patterns;
@@ -181,9 +184,11 @@ function getExistingPatterns() {
  * Check if a code snippet is already covered by existing patterns
  */
 function isAlreadyCovered(code, existingPatterns) {
-  for (const { pattern, id } of existingPatterns) {
+  for (const { pattern, flags, id } of existingPatterns) {
     try {
-      const regex = new RegExp(pattern, 'gi');
+      // Use original flags, default to 'i' for case-insensitive matching
+      // Note: We create a new RegExp each iteration so 'g' flag's lastIndex doesn't matter
+      const regex = new RegExp(pattern, flags || 'i');
       if (regex.test(code)) {
         return true;
       }
@@ -224,25 +229,26 @@ function suggestRegex(code, _category) {
   // Don't try to be too clever - let humans refine it
 
   // For common anti-patterns, suggest known good patterns
+  // Keys are regex patterns (not literals) for matching
   const knownPatterns = {
     'pipe.*while': 'cmd \\| while.*done(?!.*< <)',
-    '$?': '\\$\\(.*\\)\\s*;\\s*if\\s+\\[\\s*\\$\\?',
+    '\\$\\?': '\\$\\(.*\\)\\s*;\\s*if\\s+\\[\\s*\\$\\?',
     'for.*in.*do': 'for\\s+\\w+\\s+in\\s+\\$',
     'startsWith': '\\.startsWith\\s*\\(',
-    '.message': '\\.message(?![^}]*instanceof)',
-    'console.error': '\\.catch\\s*\\(\\s*console\\.error',
-    'user.type': '\\.user\\.type\\s*===',
+    '\\.message': '\\.message(?![^}]*instanceof)',
+    'console\\.error': '\\.catch\\s*\\(\\s*console\\.error',
+    'user\\.type': '\\.user\\.type\\s*===',
   };
 
   for (const [key, pattern] of Object.entries(knownPatterns)) {
-    // Use regex match instead of includes() to avoid false positives
+    // Treat keys as regex patterns (not literals)
     try {
-      const keyRegex = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      const keyRegex = new RegExp(key, 'i');
       if (keyRegex.test(code)) {
         return pattern;
       }
     } catch {
-      // Fallback to includes if regex fails
+      // Fallback to literal substring match if regex construction fails
       if (code.toLowerCase().includes(key.toLowerCase())) {
         return pattern;
       }
@@ -257,7 +263,7 @@ function suggestRegex(code, _category) {
 /**
  * Generate a pattern entry for the checker
  */
-function generatePatternEntry(code, category, context) {
+function generatePatternEntry(code, category, context, reviewNumber) {
   // Use content-based hash for stable ID
   const stableIdBase = `${category}|${code}`;
   let hash = 0;
@@ -269,9 +275,12 @@ function generatePatternEntry(code, category, context) {
   const regex = suggestRegex(code, category);
   const fileTypes = AUTOMATABLE_CATEGORIES[category]?.fileTypes || ['.js', '.ts'];
 
-  // Try to extract review number from context
-  const reviewMatch = context.match(/Review\s+#(\d+)/i);
-  const review = reviewMatch ? `#${reviewMatch[1]}` : 'auto-detected';
+  // Use preserved review number, fallback to extracting from context
+  let review = reviewNumber ? `#${reviewNumber}` : 'auto-detected';
+  if (!reviewNumber) {
+    const reviewMatch = context.match(/Review\s+#(\d+)/i);
+    if (reviewMatch) review = `#${reviewMatch[1]}`;
+  }
 
   return {
     id,
@@ -301,6 +310,12 @@ function main() {
   const existing = getExistingPatterns();
   console.log(`Pattern checker has ${existing.length} existing patterns\n`);
 
+  // Abort if we couldn't parse existing patterns (prevents false positive suggestions)
+  if (existing.length === 0) {
+    console.error('❌ Unable to detect existing patterns; aborting to avoid false suggestions.');
+    process.exit(2);
+  }
+
   // Find patterns that aren't covered
   const uncovered = [];
   for (const item of extracted) {
@@ -310,7 +325,7 @@ function main() {
         uncovered.push({
           ...item,
           category,
-          suggested: generatePatternEntry(item.code, category, item.context)
+          suggested: generatePatternEntry(item.code, category, item.context, item.reviewNumber)
         });
       }
     }
@@ -325,12 +340,12 @@ function main() {
   console.log(`⚠️  Found ${uncovered.length} pattern(s) that could potentially be automated:\n`);
 
   for (let i = 0; i < uncovered.length; i++) {
-    const { code, category, suggested } = uncovered[i];
+    const { code, category, suggested, reviewNumber } = uncovered[i];
     // Use sanitized code output to prevent leaking sensitive data
     const sanitizedCode = sanitizeCodeForLogging(code);
     const sanitizedPattern = suggested.pattern.slice(0, 50) + (suggested.pattern.length > 50 ? '...' : '');
 
-    console.log(`${i + 1}. Category: ${category}`);
+    console.log(`${i + 1}. Category: ${category}${reviewNumber ? ` (Review #${reviewNumber})` : ''}`);
     console.log(`   Code: ${sanitizedCode}`);
     console.log(`   Suggested regex: /${sanitizedPattern}/`);
     console.log(`   File types: ${suggested.fileTypes.join(', ')}`);

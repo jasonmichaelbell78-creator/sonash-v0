@@ -48,6 +48,9 @@ pnpm-workspace.yaml
 src/dataconnect-generated
 dataconnect/
 
+# auto-generated pattern suggestions
+scripts/suggested-patterns.json
+
 # MCP configuration (contains tokens)
 .vscode/mcp.json
 
