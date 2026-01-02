@@ -217,8 +217,9 @@ function categorizePattern(code, context) {
         if (indicatorRegex.test(code) || indicatorRegex.test(context)) {
           return category;
         }
-      } catch {
-        // Invalid indicator regex, skip silently
+      } catch (e) {
+        // Log invalid indicator regex for debuggability
+        console.warn(`[WARN] Invalid indicator regex '${indicator}' in category '${category}': ${sanitizeError(e)}`);
       }
     }
   }
