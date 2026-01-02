@@ -40,8 +40,8 @@ const EXTRACTABLE_PATTERNS = [
     type: 'wrong_code'
   },
   {
-    // "Example: `code`" in negative context
-    regex: /Example:\s*`([^`]+)`(?=.*(?:fails|breaks|crashes|bug|issue|problem))/gi,
+    // "Example: `code`" in negative context (use [\s\S]*? to match across lines)
+    regex: /Example:\s*`([^`]+)`(?=[\s\S]*?(?:fails|breaks|crashes|bug|issue|problem))/gi,
     type: 'example_negative'
   },
   {
@@ -81,9 +81,10 @@ function sanitizeCodeForLogging(code, maxLen = 60) {
     .replace(/['"`][A-Za-z0-9_/+=-]{20,}['"`]/g, '"[REDACTED]"')
     .replace(/(?:key|token|secret|password|api[_-]?key)\s*[:=]\s*\S+/gi, '[CREDENTIAL_REDACTED]')
     // Unix-like absolute paths (require at least two segments: /usr/local/...)
-    .replace(/(?:^|[\s"'`(])\/(?:[^/\s]+\/){2,}[^/\s]+/g, (m) => m[0] + '/[PATH_REDACTED]')
+    // Use capture groups for deterministic replacement
+    .replace(/(^|[\s"'`(])(\/(?:[^/\s]+\/){2,}[^/\s]+)/g, '$1/[PATH_REDACTED]')
     // Windows absolute paths like C:\Users\Name\...
-    .replace(/(?:^|[\s"'`(])[A-Za-z]:\\(?:[^\\\s]+\\){2,}[^\\\s]+/g, (m) => m[0] + '[PATH_REDACTED]');
+    .replace(/(^|[\s"'`(])([A-Za-z]:\\(?:[^\\\s]+\\){2,}[^\\\s]+)/g, '$1[PATH_REDACTED]');
 
   // Truncate
   if (sanitized.length > maxLen) {
@@ -189,15 +190,17 @@ function getExistingPatterns() {
 function isAlreadyCovered(code, existingPatterns) {
   for (const { pattern, flags, id } of existingPatterns) {
     try {
+      // Sanitize flags to only include valid RegExp flag characters
+      const safeFlags = (flags ?? '').replace(/[^dgimsuvy]/g, '');
       // Use original flags exactly - don't override as it can change pattern semantics
       // Note: We create a new RegExp each iteration so 'g' flag's lastIndex doesn't matter
-      const regex = new RegExp(pattern, flags ?? '');
+      const regex = new RegExp(pattern, safeFlags);
       if (regex.test(code)) {
         return true;
       }
     } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : String(e);
-      console.warn(`[WARN] Invalid regex in pattern '${id}', skipping: ${errorMsg}`);
+      // Use sanitizeError to prevent leaking sensitive pattern content
+      console.warn(`[WARN] Invalid regex in pattern '${id}', skipping: ${sanitizeError(e)}`);
     }
   }
   return false;
@@ -291,7 +294,8 @@ function generatePatternEntry(code, category, context, reviewNumber) {
     fix: 'See AI_REVIEW_LEARNINGS_LOG.md for the correct pattern',
     review,
     fileTypes,
-    originalCode: code
+    // Sanitize originalCode before persisting to prevent leaking secrets in generated artifacts
+    originalCode: sanitizeCodeForLogging(code, 120)
   };
 }
 
@@ -367,9 +371,11 @@ function main() {
     console.log('Suggestions saved to: scripts/suggested-patterns.json');
 
     try {
+      const outPath = join(__dirname, 'suggested-patterns.json');
       writeFileSync(
-        join(__dirname, 'suggested-patterns.json'),
-        JSON.stringify(uncovered.map(u => u.suggested), null, 2)
+        outPath,
+        JSON.stringify(uncovered.map(u => u.suggested), null, 2),
+        { mode: 0o600 } // Restrictive permissions (owner read/write only)
       );
     } catch (error) {
       console.error(`❌ Failed to write suggestions file: ${sanitizeError(error)}`);
