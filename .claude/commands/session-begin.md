@@ -1,3 +1,7 @@
+---
+description: Load context, check blockers, and verify consolidation status before starting work
+---
+
 # Session Begin Checklist
 
 Before starting any work, complete these verification steps:
@@ -7,12 +11,23 @@ Before starting any work, complete these verification steps:
 - [ ] Increment session counter in SESSION_CONTEXT.md
 - [ ] Check ROADMAP.md for priority changes
 
-## 2. Documentation Phase Awareness
+## 2. Consolidation Status Check
+Check AI_REVIEW_LEARNINGS_LOG.md for the "Consolidation Trigger" section:
+- If "Reviews since last consolidation" >= 10: **⚠️ CONSOLIDATION WAS MISSED**
+- This means patterns from previous reviews are NOT in claude.md context
+- Previous session should have consolidated but didn't
+
+**If consolidation was missed:**
+1. Note this in your session summary
+2. The patterns are still available in AI_REVIEW_LEARNINGS_LOG.md (read if needed)
+3. Consolidation will happen at THIS session's end
+
+## 3. Documentation Phase Awareness
 - [ ] Check DOCUMENTATION_STANDARDIZATION_PLAN.md for current phase
 - [ ] Note: CI uses `continue-on-error` for docs:check until Phase 6 complete
 - [ ] Archive files in `docs/archive/` are excluded from linting
 
-## 3. Skill Selection (BEFORE starting work)
+## 4. Skill Selection (BEFORE starting work)
 ```
 DECISION TREE:
 ├─ Bug/Error? → Use 'systematic-debugging' skill FIRST
@@ -23,7 +38,7 @@ DECISION TREE:
 └─ Multi-step task? → Use TodoWrite to track progress
 ```
 
-## 4. Code Review Handling Procedures
+## 5. Code Review Handling Procedures
 When receiving code review feedback (CodeRabbit, Qodo, etc.):
 
 1. **Analyze ALL suggestions** - Read through every comment multiple times
@@ -32,7 +47,7 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 4. **Verify CI impact** - Check if changes affect workflows (ci.yml, docs-lint.yml)
 5. **Test after changes** - Run `npm test` and `npm run lint` before committing
 
-## 5. Anti-Pattern Awareness
+## 6. Anti-Pattern Awareness
 Review these common issues before writing code:
 - **Read before edit** - Always read files before attempting to edit
 - **Regex performance** - Avoid greedy `.*` in patterns; use bounded `[\s\S]{0,N}?`
@@ -40,7 +55,7 @@ Review these common issues before writing code:
 - **Path-based filtering** - Add pathFilter for directory-specific patterns
 - **Archive exclusions** - Historical docs should be excluded from strict linting
 
-## 6. Pattern Check
+## 7. Pattern Check
 Run: `npm run patterns:check` to surface known anti-patterns
 
 ---

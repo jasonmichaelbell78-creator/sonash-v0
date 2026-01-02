@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.1
+**Document Version:** 2.2
 **Last Updated:** 2026-01-02
 **Status:** ACTIVE
 
@@ -72,6 +72,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Ask "does project actually use X?" before adding packages
 - Peer deps must be in lockfile for `npm ci` in Cloud Build
 - Husky CI: Use `husky || echo 'not available'` for graceful degradation
+- Lockfile corruption: If `npm ci` fails with "missing X" but X IS in lockfile, regenerate: `rm package-lock.json && npm install && npm ci` to verify
 
 **Security:**
 - Validate file paths within repo root before unlinkSync/operations
@@ -84,21 +85,26 @@ This file defines the strict architectural and security rules for SoNash. It ser
 **GitHub Actions:**
 - Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)
 - Use exit codes to detect command failure, not output parsing
-- Use custom separators for file lists (spaces break parsing)
+- Use newline separator for file lists: `separator: "\n"` with `while IFS= read -r`
 - Separate stderr: `cmd 2>err.log` to keep JSON output parseable
+- Always use explicit `${{ }}` in `if:` conditions to avoid YAML parser issues
+- Retry loops: Track success explicitly, don't assume loop exit means success
 
 **JavaScript/TypeScript:**
 - **MANDATORY: Sanitize error messages** - Strip sensitive paths/credentials before logging. Use `scripts/lib/sanitize-error.js` or inline sanitization. Do NOT log raw error.message to console.
 - Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
 - Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
+- Windows cross-drive: `path.relative()` returns absolute path across drives - check output for `/^[A-Za-z]:/`
 - Markdown links: `.replace(/\\/g, '/')` to normalize Windows backslashes
+- lstatSync can throw: Wrap in try-catch for permission denied, broken symlinks
 
 **Git:**
 - File renames: grep for old terminology in descriptions, not just filenames
 - After lockfile changes: verify with `rm -rf node_modules && npm ci`
 
 **General:**
-- Understand WHY before fixing - one correct fix > ten wrong ones
+- **🚨 UNDERSTAND WHY BEFORE FIXING** - Ask "Does this project actually use X?" before adding packages. Read full errors, not just package names. One correct fix > ten wrong ones. (See Review #12: The Jest Incident)
+- Before changing package.json: What's the REAL error? Is it a peer dep? Who runs this code?
 - Remove `g` flag from regex when using `.test()` in loops (stateful lastIndex)
 
 ## 5. Documentation Index
@@ -194,6 +200,7 @@ If you skipped a skill/agent that applied, note it in your session summary for i
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.2 | 2026-01-02 | Consolidated patterns from Reviews #11-23 (lockfile corruption, GitHub Actions YAML, cross-drive paths, WHY before fixing) |
 | 2.1 | 2026-01-02 | Added Skill Decision Tree and Session End Self-Audit checklist |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration |
 | 1.2 | 2026-01-02 | Added patterns from Reviews #15-18 (trap cleanup, cross-platform, exit codes) |

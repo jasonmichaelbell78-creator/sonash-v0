@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.16 | 2026-01-02 | Consolidated Reviews #11-23 into claude.md v2.2; reset consolidation counter |
 | 1.15 | 2026-01-02 | Added Consolidation Trigger section with counter |
 | 1.14 | 2026-01-02 | Review #23: Link text consistency in "See also" sections |
 | 1.13 | 2026-01-02 | Review #22: Phase 3 CodeRabbit reviews (App Check status, duplicate Layer 5, terminology) |
@@ -48,9 +49,9 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 13 (Reviews #11-#23)
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**⚠️ STATUS: CONSOLIDATION NEEDED**
+**✅ STATUS: UP TO DATE**
 
 ### When to Consolidate
 
@@ -70,9 +71,15 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-02
-- **Reviews consolidated:** #1-#10
-- **Patterns added to claude.md:** 15+ patterns in Section 4
+- **Date:** 2026-01-02 (Session #3)
+- **Reviews consolidated:** #11-#23 (13 reviews)
+- **Patterns added to claude.md v2.2:**
+  - Lockfile corruption debugging tip
+  - GitHub Actions explicit `${{ }}` in if conditions
+  - Retry loop success tracking
+  - Windows cross-drive path.relative() behavior
+  - lstatSync error handling
+  - Enhanced "WHY before fixing" (Review #12 lesson)
 - **Next consolidation due:** At review #33 (or ~10 more reviews)
 
 ---
