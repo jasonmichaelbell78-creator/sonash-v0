@@ -38,6 +38,7 @@ jobs:
           files: |
             **/*.md
             docs/**/*.md
+          separator: "\n"
 
       - name: Run documentation linter
         id: docs-lint
@@ -53,9 +54,9 @@ jobs:
           ERRORS=0
           WARNINGS=0
 
-          # Process changed files (space-separated by default)
-          for file in $CHANGED_FILES; do
-            # Skip empty
+          # Process changed files safely (newline-separated, handles spaces in filenames)
+          while IFS= read -r file; do
+            # Skip empty lines
             if [[ -z "$file" ]]; then
               continue
             fi
@@ -103,7 +104,7 @@ jobs:
               echo "### ✅ $file" >> lint-results.md
               echo "" >> lint-results.md
             fi
-          done
+          done <<< "$CHANGED_FILES"
 
           # Summary
           echo "" >> lint-results.md

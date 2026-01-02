@@ -142,7 +142,7 @@ async function retryFailures() {
                     console.log(`   🔸 No results for: "${query}"`);
                 }
             } catch (error: unknown) {
-                // Note: query contains address data needed for debugging geocoding issues
+                // Query intentionally omitted from logs to avoid exposing address data
                 console.error(`   ⚠️ Error querying geocode API`);
                 console.error(`      Error details: ${sanitizeError(error)}`);
             }

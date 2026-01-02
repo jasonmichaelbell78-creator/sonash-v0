@@ -139,10 +139,10 @@ const ANTI_PATTERNS = [
  */
 function getFilesToCheck() {
   if (FILES.length > 0) {
-    // Block absolute paths, drive letters, and UNC paths before processing
+    // Block absolute paths, drive letters, UNC paths, and Windows rooted paths before processing
     // Then normalize relative to ROOT and filter out any path traversal attempts
     return FILES
-      .filter(f => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/)/.test(f)) // Block absolute/drive/UNC inputs
+      .filter(f => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/|\\(?!\\))/.test(f)) // Block absolute/drive/UNC/rooted inputs
       .map(f => join(ROOT, f))
       .filter(abs => {
         const rel = relative(ROOT, abs);
