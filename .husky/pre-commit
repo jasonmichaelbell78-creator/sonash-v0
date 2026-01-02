@@ -18,15 +18,15 @@ echo "  ✅ ESLint passed (0 errors)"
 # 2. Run tests - stream output using temp file
 echo "  ▶ Running tests..."
 TEST_TMPFILE=$(mktemp)
+trap 'rm -f "$TEST_TMPFILE"' EXIT
+
 if ! npm test > "$TEST_TMPFILE" 2>&1; then
   echo "  ❌ Tests failed"
   tail -10 "$TEST_TMPFILE"
-  rm -f "$TEST_TMPFILE"
   echo ""
   echo "  Fix tests before committing. Run: npm test"
   exit 1
 fi
-rm -f "$TEST_TMPFILE"
 echo "  ✅ Tests passed"
 
 echo ""

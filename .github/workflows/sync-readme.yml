@@ -57,4 +57,10 @@ jobs:
           git fetch origin main
           git rebase origin/main || (git rebase --abort && exit 1)
 
-          git push || (git pull --rebase origin main && git push)
+          # Retry push to handle race conditions
+          for i in 1 2 3; do
+            git push && break
+            echo "Push failed (attempt $i). Retrying in 5 seconds..."
+            sleep 5
+            git pull --rebase origin main
+          done

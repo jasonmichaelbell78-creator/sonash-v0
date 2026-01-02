@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.4 | 2026-01-02 | Added Review #18 (security hardening and temp file cleanup) |
 | 1.3 | 2026-01-02 | Added Review #17 (remaining Qodo/CodeRabbit fixes) |
 | 1.2 | 2026-01-02 | Added Review #16 (security hardening and robustness) |
 | 1.1 | 2026-01-02 | Added Review #15 (CI workflow and documentation fixes) |
@@ -914,6 +915,64 @@ BEFORE changing package.json or lockfiles, ask:
 **Verification:** `npm run lint` (0 errors), `npm test` (92 passed)
 
 **Key Insight:** Edge cases compound across platforms and environments. What works on Linux may fail on Windows (paths), and what works locally may fail in CI (Husky, env vars). Testing in the target environment is essential.
+
+---
+
+#### Review #18: Security Hardening and Temp File Cleanup (2026-01-02)
+
+**Source:** Qodo compliance feedback + CodeRabbit PR suggestions
+**Scope:** Security improvements, cross-platform compatibility, shell scripting best practices
+**Commit:** (pending)
+
+**Issues Fixed (10 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | require() in ES module crashes | HIGH | archive-doc.js | Removed - using regex instead |
+| 2 | Windows cross-drive path bypass | HIGH | archive-doc.js | Added drive letter comparison check |
+| 3 | False positive path traversal | Medium | archive-doc.js | Use regex `/^\.\.(?:[\\/]\|$)/` for accuracy |
+| 4 | Redundant ./ prefix | Low | archive-doc.js | Removed from link replacement |
+| 5 | Push race condition retry | Medium | sync-readme.yml | Added retry loop (3 attempts with sleep) |
+| 6 | Hardcoded temp file path | Medium | review-check.yml | Use mktemp for unique temp files |
+| 7 | Script error not distinguished | Medium | review-check.yml | Differentiate exit codes (0/1/2) |
+| 8 | Temp file not cleaned on error | Medium | docs-lint.yml | Added trap for cleanup on exit |
+| 9 | Temp file not cleaned on error | Medium | .husky/pre-commit | Added trap for cleanup on exit |
+| 10 | Unused sep import | Low | archive-doc.js | Removed after switching to regex |
+
+**Key Patterns Identified:**
+
+1. **Windows cross-drive security:** `path.relative()` across drives returns absolute paths
+   - Check: Compare drive letters before using relative path check
+   - Pattern: `resolvedPath.slice(0, 2).toLowerCase() !== resolvedRoot.slice(0, 2).toLowerCase()`
+
+2. **Accurate path traversal detection:** Simple `startsWith('..')` has false positives
+   - Wrong: `rel.startsWith('..')` matches filenames like `..hidden.md`
+   - Right: `/^\.\.(?:[\\/]|$)/.test(rel)` ensures it's actually traversing up
+
+3. **Shell temp file cleanup:** Always use trap for guaranteed cleanup
+   - Pattern: `TMPFILE=$(mktemp); trap 'rm -f "$TMPFILE"' EXIT`
+   - Works even if script exits early due to error
+
+4. **Exit code differentiation:** Scripts should use distinct exit codes
+   - 0 = success/no action needed
+   - 1 = action recommended (not an error)
+   - 2 = actual error
+   - Check exit code explicitly, not just if command "failed"
+
+5. **Retry loops for race conditions:** Multiple concurrent workflows can conflict
+   - Pattern: `for i in 1 2 3; do git push && break; sleep 5; git pull --rebase; done`
+
+**Qodo Compliance Notes:**
+
+Two items flagged as "Requires Further Human Verification":
+- **Secure Error Handling:** Error messages may expose internal paths in logs
+- **Secure Logging Practices:** Raw error.message could contain sensitive data
+
+These are acceptable for internal dev tooling but would need sanitization for user-facing applications.
+
+**Verification:** `npm run lint` (0 errors), `npm test` (92 passed)
+
+**Key Insight:** Security considerations differ by context. Internal dev scripts can be more verbose for debugging, while user-facing or production code needs sanitized error messages. Document the intended context.
 
 ---
 

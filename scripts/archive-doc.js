@@ -75,9 +75,24 @@ function validatePathWithinRepo(filePath) {
     const resolvedPath = realpathSync(filePath);
     const resolvedRoot = realpathSync(ROOT);
 
+    // On Windows, path.relative() across different drives returns an absolute path
+    // Block cross-drive paths as a security measure
+    if (
+      process.platform === 'win32' &&
+      /^[A-Za-z]:/.test(resolvedPath) &&
+      /^[A-Za-z]:/.test(resolvedRoot) &&
+      resolvedPath.slice(0, 2).toLowerCase() !== resolvedRoot.slice(0, 2).toLowerCase()
+    ) {
+      return {
+        valid: false,
+        error: `Path "${filePath}" resolves outside repository root (cross-drive)`
+      };
+    }
+
     // Check if the resolved path is within the repo root (cross-platform)
+    // Uses regex to handle both forward slashes and backslashes, and filenames starting with ..
     const rel = relative(resolvedRoot, resolvedPath);
-    if (rel.startsWith('..') || rel.startsWith(require('path').sep + '..')) {
+    if (/^\.\.(?:[\\/]|$)/.test(rel)) {
       return {
         valid: false,
         error: `Path "${filePath}" resolves outside repository root`
@@ -341,10 +356,10 @@ function updateCrossReferences(oldPath, _newPath) {
           const fileDir = dirname(filePath);
           const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename)).replace(/\\/g, '/');
 
-          // Replace the link
+          // Replace the link (relativePath already has correct structure)
           const newLine = line.replace(
             new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`, 'g'),
-            `](./${relativePath})`
+            `](${relativePath})`
           );
 
           if (newLine !== line) {

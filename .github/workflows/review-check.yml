@@ -32,17 +32,27 @@ jobs:
         id: review-check
         continue-on-error: true
         run: |
-          # Run script once and capture both output and exit code
-          # Redirect stderr separately to keep JSON output parseable
-          if ! OUTPUT=$(node scripts/check-review-needed.js --json 2>review-check.stderr); then
+          # Use temp file for stderr to avoid conflicts
+          STDERR_FILE=$(mktemp)
+          trap 'rm -f "$STDERR_FILE"' EXIT
+
+          # Run script and capture output and exit code separately
+          # Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
+          OUTPUT=$(node scripts/check-review-needed.js --json 2>"$STDERR_FILE")
+          EXIT_CODE=$?
+
+          if [ "$EXIT_CODE" -eq 1 ]; then
             echo "review_needed=true" >> $GITHUB_OUTPUT
-          else
+          elif [ "$EXIT_CODE" -eq 0 ]; then
             echo "review_needed=false" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Review check script failed (exit $EXIT_CODE)"
+            echo "review_needed=true" >> $GITHUB_OUTPUT
           fi
 
           # Log stderr if any (but don't mix with JSON output)
-          if [ -s review-check.stderr ]; then
-            echo "::warning::Script stderr:" && cat review-check.stderr
+          if [ -s "$STDERR_FILE" ]; then
+            echo "::warning::Script stderr:" && cat "$STDERR_FILE"
           fi
 
           echo "output<<EOF" >> $GITHUB_OUTPUT

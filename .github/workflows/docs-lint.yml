@@ -54,8 +54,11 @@ jobs:
           ERRORS=0
           WARNINGS=0
 
-          # Write changed files to temp file to avoid subshell variable scope issues
-          echo "$CHANGED_FILES" | tr '|' '\n' > /tmp/changed_files.txt
+          # Write changed files to unique temp file and ensure cleanup
+          CHANGED_FILES_TMP="$(mktemp)"
+          trap 'rm -f "$CHANGED_FILES_TMP"' EXIT
+
+          echo "$CHANGED_FILES" | tr '|' '\n' > "$CHANGED_FILES_TMP"
 
           # Check each changed markdown file
           while IFS= read -r file; do
@@ -107,7 +110,7 @@ jobs:
               echo "### ✅ $file" >> lint-results.md
               echo "" >> lint-results.md
             fi
-          done < /tmp/changed_files.txt
+          done < "$CHANGED_FILES_TMP"
 
           # Summary
           echo "" >> lint-results.md
