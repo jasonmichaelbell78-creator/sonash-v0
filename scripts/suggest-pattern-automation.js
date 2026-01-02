@@ -128,14 +128,21 @@ function extractPatternsFromLearnings() {
       regex.lastIndex = 0;
       let match;
       while ((match = regex.exec(section)) !== null) {
-        const code = match[1].trim();
+        let code = match[1].trim();
+
+        // For code blocks, keep a representative snippet (blocks are often >200 chars)
+        if (type === 'wrong_block') {
+          code = code.split('\n').slice(0, 12).join('\n').trim();
+        }
 
         // Deduplicate by type and code
         const key = `${type}|${code}`;
         if (seen.has(key)) continue;
         seen.add(key);
 
-        if (code.length > 10 && code.length < 200) { // Reasonable length
+        // Allow longer code blocks (up to 800 chars) vs inline snippets (200 chars)
+        const maxLen = type === 'wrong_block' ? 800 : 200;
+        if (code.length > 10 && code.length < maxLen) {
           extracted.push({
             code,
             type,
