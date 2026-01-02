@@ -181,6 +181,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
 
+
 ## Data Architecture
 
 This app uses **Firebase Firestore** with a user-centric data model.
