@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.11
+**Document Version:** 1.12
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.12 | 2026-01-02 | Review #21 third follow-up: cross-drive bypass, lstatSync error handling, underscore prefix |
 | 1.11 | 2026-01-02 | Review #21 second follow-up: filename spaces, Windows rooted paths, comment clarity |
 | 1.10 | 2026-01-02 | Review #21 follow-up: docs-lint.yml rewrite, path traversal hardening, TS imports |
 | 1.9 | 2026-01-02 | Added Review #21 (root cause analysis, TS wrapper, path traversal, AbortError handling) |
@@ -1319,6 +1320,56 @@ The error persisted because of multiple interacting issues:
 **Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors)
 
 **Key Insight:** When iterating over file lists in shell scripts, always assume filenames may contain spaces, quotes, or other special characters. Use newline separation and `while read` loops rather than `for` loops with word splitting.
+
+---
+
+#### Review #21 Third Follow-up: Final Cleanup Items (2026-01-02)
+
+**Context:** Final cleanup items from code review addressing path security edge cases and code quality.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Windows cross-drive bypass | Medium | check-pattern-compliance.js | Check if `relative()` returns absolute/UNC path |
+| 2 | lstatSync can throw on unreadable entries | Medium | check-pattern-compliance.js | Added try-catch with continue |
+| 3 | Underscore prefix on used option | Low | sanitize-error.js | Renamed `_preserveStackInDev` → `preserveStackInDev` |
+
+**Key Patterns Identified:**
+
+1. **path.relative() can return absolute paths on Windows:**
+   ```javascript
+   // When paths are on different drives, relative() returns absolute path
+   // Example: relative('C:\\project', 'D:\\evil') => 'D:\\evil'
+
+   const rel = relative(ROOT, abs);
+   // Must check for absolute/UNC paths in addition to ".." traversal
+   if (/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/.test(rel)) {
+     // Reject - cross-drive or UNC path
+   }
+   ```
+
+2. **Graceful handling of unreadable filesystem entries:**
+   ```javascript
+   let lstat;
+   try {
+     lstat = lstatSync(fullPath);
+   } catch (error) {
+     // Skip unreadable entries (permission denied, etc.)
+     // Don't abort entire scan for one bad entry
+     if (VERBOSE) console.warn(`Skipping: ${sanitizeError(error)}`);
+     continue;
+   }
+   ```
+
+3. **Underscore prefix convention in JavaScript:**
+   - `_variable` traditionally indicates "unused" or "private"
+   - ESLint `no-unused-vars` may flag variables starting with underscore as intentionally unused
+   - If a variable IS used (even if reserved for future), don't prefix with underscore
+
+**Verification:** `npm run lint` (0 errors), `npm test` (passing)
+
+**Key Insight:** Defense in depth for path security requires checking both input (block absolute paths early) AND output (verify relative() result is actually relative). On Windows, cross-drive paths make relative() behave unexpectedly.
 
 ---
 
