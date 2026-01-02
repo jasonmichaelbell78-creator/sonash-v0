@@ -1,6 +1,10 @@
 # Scripts Reference
 
-This directory contains automation scripts for documentation, development, and migration tasks.
+**Last Updated:** 2026-01-02
+
+## Purpose & Overview
+
+This directory contains automation scripts for documentation, development, and migration tasks. These scripts enforce quality gates, automate repetitive tasks, and ensure consistent workflows across the project.
 
 ---
 
@@ -312,3 +316,11 @@ npx tsx scripts/migrate-meetings-dayindex.ts
 - They use the Firebase Admin SDK (not client SDK)
 - Service account credentials are required
 - Each script is designed to be run once, but is idempotent for safety
+
+---
+
+## Version History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| 1.0 | 2026-01-02 | Initial documentation of all scripts |

@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.1 | 2026-01-02 | Added Review #15 (CI workflow and documentation fixes) |
 | 1.0 | 2026-01-02 | Initial creation with Reviews #1-14 |
 
 ---
@@ -773,6 +774,48 @@ BEFORE changing package.json or lockfiles, ask:
 **Verification:** All fixes verified with `npm run lint` (0 errors) and `npm test` (92 passed)
 
 **Key Insight:** Fixing code review issues should happen in the SAME session as receiving them. Deferring creates technical debt and risks forgetting context. The 15 fixes took ~30 minutes - much less than re-understanding the issues later would take.
+
+---
+
+#### Review #15: CI Workflow and Documentation Fixes (2026-01-02)
+
+**Source:** CI failure feedback + continuation of Review #14 fixes
+**Scope:** Workflow bugs causing CI failures, documentation lint errors
+**Commit:** 69cd22d (+ pending commit)
+
+**Issues Fixed (7 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | Subshell variable scope | CRITICAL | docs-lint.yml | Changed pipe to process substitution `< <(...)` |
+| 2 | YAML syntax error | Major | review-check.yml | Converted template literal to `array.join('\n')` |
+| 3 | Fragile bot detection | Major | review-check.yml | Changed `user.type === 'Bot'` to `user.login === 'github-actions[bot]'` |
+| 4 | Fragile bot detection | Major | docs-lint.yml | Changed `user.type === 'Bot'` to `user.login === 'github-actions[bot]'` |
+| 5 | Broken doc links (4) | Major | README.md | Removed links to non-existent files |
+| 6 | Missing version history | Minor | README.md, claude.md, AI_REVIEW_LEARNINGS_LOG.md | Added sections |
+| 7 | Missing purpose section | Minor | claude.md | Added Purpose & Overview section |
+
+**Key Patterns Identified:**
+
+1. **Subshell variable scope:** Variables set in `while` loop fed by pipe (`|`) run in subshell - values don't persist
+   - Wrong: `echo "$list" | while read line; do VAR=x; done; echo $VAR  # empty!`
+   - Right: `while read line; do VAR=x; done < <(echo "$list"); echo $VAR  # works`
+
+2. **YAML template literal safety:** Template literals with `${}` at line start can break YAML parsing
+   - Wrong: Template literal spanning multiple lines in YAML
+   - Right: `['line1', 'line2', variable].join('\n')`
+
+3. **GitHub Actions bot detection:** `user.type === 'Bot'` is unreliable
+   - Wrong: `c.user.type === 'Bot'` (GitHub Actions may not set this)
+   - Right: `c.user.login === 'github-actions[bot]'`
+
+4. **Documentation compliance:** All docs need version history section for audit trail
+
+**Added to claude.md:** Pattern #1 (subshell scope) added to Section 4 "Tribal Knowledge"
+
+**Verification:** `npm run lint` (0 errors), `npm test` (passing), `check-docs-light.js` (0 errors)
+
+**Key Insight:** CI failures are immediate feedback - fix them before moving on. The subshell bug would have silently made `ERRORS` always 0, causing the workflow to never fail even with errors.
 
 ---
 

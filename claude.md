@@ -56,6 +56,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Exit codes: `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]` (captures assignment, not cmd)
 - HEAD~N needs N+1 commits: use `COMMIT_COUNT - 1` as max
 - File iteration: `while IFS= read -r file` NOT `for file in $list` (spaces break loop)
+- Subshell scope: `cmd | while read` loses variables; use `while read; done < <(cmd)` instead
 
 **npm/Dependencies:**
 - Use `npm ci` NOT `npm install` in automation (prevents lockfile drift)

@@ -1281,7 +1281,7 @@ Create automation scripts for documentation maintenance, validation, and review 
 // 2. YAML frontmatter generation (use gray-matter)
 // 3. File move operation (fs.rename with error handling)
 // 4. Cross-reference scanning and updating:
-//    - Pattern: only replace [text](FILENAME.md) → [text](docs/archive/FILENAME.md)
+//    - Pattern: only replace bracket-paren links → docs/archive/ prefix
 //    - Log all changes made (file path + line number)
 //    - Confirm each replacement (avoid silent failures or incorrect replacements)
 // 5. Optional ROADMAP_LOG.md update
