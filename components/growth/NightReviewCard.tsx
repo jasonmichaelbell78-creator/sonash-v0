@@ -471,7 +471,9 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                                         navigator.share({
                                             title: 'Nightly Inventory',
                                             text: shareText
-                                        }).catch(console.error)
+                                        }).catch(() => {
+                                            // Silent fail - user cancelled or share not supported
+                                        })
                                     } else {
                                         // Fallback to mailto
                                         window.open(`mailto:?subject=Nightly Inventory&body=${encodeURIComponent(shareText)}`)

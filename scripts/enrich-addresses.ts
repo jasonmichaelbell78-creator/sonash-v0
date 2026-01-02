@@ -199,4 +199,9 @@ async function enrichAddresses() {
     console.log('============================================================\n');
 }
 
-enrichAddresses().catch(console.error);
+enrichAddresses().catch((error: unknown) => {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
+    console.error('❌ Unexpected error:', safeMsg);
+    process.exit(1);
+});
