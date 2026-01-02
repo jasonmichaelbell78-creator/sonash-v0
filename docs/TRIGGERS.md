@@ -848,11 +848,8 @@ gh run view <RUN_ID>
 ### ~~1. Add Pattern Check to CI~~ ✅ DONE
 *Implemented via Gap 1 resolution above*
 
-### 2. Add Documentation Drift Check
-Create `scripts/check-doc-drift.js`:
-- Verify README status matches ROADMAP
-- Check all doc links are valid
-- Verify version history is current
+### ~~2. Add Documentation Drift Check~~ SKIPPED
+*Deferred - docs:check already covers link validation, section requirements, and date checks. Revisit if drift becomes a real problem.*
 
 ### ~~3. Add Pre-push Hook~~ ✅ DONE
 *Implemented via Gap 3 resolution above*
