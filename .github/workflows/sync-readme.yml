@@ -6,6 +6,11 @@ on:
     paths:
       - 'ROADMAP.md'
 
+# Prevent race conditions from concurrent pushes
+concurrency:
+  group: sync-readme-main
+  cancel-in-progress: false
+
 jobs:
   sync-readme:
     name: Update README Status from ROADMAP

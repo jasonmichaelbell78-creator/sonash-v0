@@ -66,17 +66,17 @@ jobs:
 
             const body = `## ⚠️ Code Review Triggers Active
 
-            This PR has triggered review thresholds:
+This PR has triggered review thresholds:
 
-            ${triggered}
+${triggered}
 
-            **Recommendation:** ${data.recommendation}
+**Recommendation:** ${data.recommendation}
 
-            Consider running a multi-AI code review before merging.
-            See [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md) for review templates.
+Consider running a multi-AI code review before merging.
+See [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md) for review templates.
 
-            ---
-            *This check runs automatically on every PR.*`;
+---
+*This check runs automatically on every PR.*`;
 
             // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({

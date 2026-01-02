@@ -294,7 +294,7 @@ function validateFileLinks(links, docPath) {
     if (link.isAnchor) continue; // Skip anchor-only links
 
     // Handle paths with anchors
-    const [filePath, anchor] = link.target.split('#');
+    const [filePath] = link.target.split('#');
 
     if (!filePath) continue; // Pure anchor link
 
@@ -515,7 +515,7 @@ function findMarkdownFiles(dir, files = []) {
       } else if (extname(entry) === '.md') {
         files.push(fullPath);
       }
-    } catch (error) {
+    } catch (_error) {
       // Skip files we can't stat
     }
   }

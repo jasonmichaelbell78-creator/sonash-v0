@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - '**.md'
+      - '**/*.md'
       - 'docs/**'
       - 'scripts/check-docs-light.js'
 
@@ -36,7 +36,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
-            **.md
+            **/*.md
             docs/**/*.md
 
       - name: Run documentation linter
