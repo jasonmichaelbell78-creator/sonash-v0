@@ -714,3 +714,57 @@ BEFORE changing package.json or lockfiles, ask:
 
 ---
 
+#### Review #14: CodeRabbit/Qodo Fix Implementation (2026-01-02)
+
+**Source:** Implementation session following Review #13 findings
+**Scope:** All issues identified in Review #13 CodeRabbit/Qodo reviews
+**Commits:** 3606765, e54d12f, f4186e5
+
+**Issues Fixed (15 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | Command injection via date string | CRITICAL | check-review-needed.js | Added `sanitizeDateString()` with ISO format validation |
+| 2 | Arbitrary file deletion outside repo | CRITICAL | archive-doc.js | Added `validatePathWithinRepo()` with realpathSync |
+| 3 | Exit code capture bug | CRITICAL | .husky/pre-commit | Changed to `if ! OUT=$(cmd); then` pattern |
+| 4 | Filename with spaces breaks loop | Major | docs-lint.yml | Changed `for` to `while IFS= read -r` pattern |
+| 5 | Missing workflow permissions | Major | validate-plan.yml | Added `permissions: pull-requests: write` |
+| 6 | Double script execution | Major | review-check.yml | Single execution with captured exit code |
+| 7 | Unused `execSync` import | Minor | validate-phase-completion.js | Removed unused import |
+| 8 | Unused `newPath` parameter | Minor | archive-doc.js | Prefixed with `_` |
+| 9 | Unused `content` parameter | Minor | check-docs-light.js | Prefixed with `_` |
+| 10 | Regex global flag in .test() loop | Bug | archive-doc.js | Removed `g` flag from patterns |
+| 11 | Unused `anchor` variable | Minor | check-docs-light.js | Removed from destructuring |
+| 12 | Unused `error` in catch | Minor | check-docs-light.js | Prefixed with `_` |
+| 13 | Template literal extra whitespace | Minor | review-check.yml | Fixed indentation |
+| 14 | Race condition on concurrent pushes | Major | sync-readme.yml | Added concurrency group |
+| 15 | Wrong glob pattern | Bug | docs-lint.yml | Changed `**.md` to `**/*.md` |
+
+**Deferred to Phase 6:**
+- DRY violation: Extract `safeReadFile`/`safeWriteFile` to `scripts/lib/file-utils.js`
+- ESLint JSON output parsing (requires jq dependency)
+- Cross-platform path normalization for Windows compatibility
+
+**Key Patterns Reinforced:**
+
+1. **Exit code capture:** `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]`
+   - The latter captures assignment exit code (always 0), not command exit code
+
+2. **File iteration:** `while IFS= read -r file` NOT `for file in $list`
+   - Spaces in filenames break word-splitting in for loops
+
+3. **Regex with .test() in loops:** Remove `g` flag
+   - Global flag makes lastIndex stateful, causing missed matches
+
+4. **Input validation patterns:**
+   - Dates: Regex + Date.parse() validation before shell interpolation
+   - Paths: realpathSync + startsWith check before file operations
+
+5. **Unused variables:** Prefix with `_` to satisfy ESLint while documenting intent
+
+**Verification:** All fixes verified with `npm run lint` (0 errors) and `npm test` (92 passed)
+
+**Key Insight:** Fixing code review issues should happen in the SAME session as receiving them. Deferring creates technical debt and risks forgetting context. The 15 fixes took ~30 minutes - much less than re-understanding the issues later would take.
+
+---
+
