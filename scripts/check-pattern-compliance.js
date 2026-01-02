@@ -70,6 +70,14 @@ const ANTI_PATTERNS = [
     fileTypes: ['.sh', '.yml', '.yaml'],
   },
   {
+    id: 'retry-loop-no-success-tracking',
+    pattern: /for\s+\w+\s+in\s+[123]\s+[23]?\s*[3]?\s*;\s*do[\s\S]{0,200}&&\s*break[\s\S]{0,100}done(?![\s\S]{0,50}(?:SUCCESS|success|FAILED|failed))/g,
+    message: 'Retry loop may silently succeed on failure - not tracking success',
+    fix: 'Track: SUCCESS=false; for i in 1 2 3; do cmd && { SUCCESS=true; break; }; done; $SUCCESS || exit 1',
+    review: '#18, #19',
+    fileTypes: ['.sh', '.yml', '.yaml'],
+  },
+  {
     id: 'npm-install-automation',
     pattern: /npm\s+install(?!\s+--)/g,
     message: 'npm install in automation can modify lockfile',
@@ -86,6 +94,14 @@ const ANTI_PATTERNS = [
     message: 'Unsafe error.message access - crashes if non-Error is thrown',
     fix: 'Use: error instanceof Error ? error.message : String(error)',
     review: '#17',
+    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+  },
+  {
+    id: 'catch-console-error',
+    pattern: /\.catch\s*\(\s*console\.error\s*\)/g,
+    message: 'Unsanitized error logging - may expose sensitive paths/credentials',
+    fix: 'Use: .catch((e) => console.error(sanitizeError(e))) or handle specific errors',
+    review: '#20',
     fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
   },
   {
@@ -121,6 +137,22 @@ const ANTI_PATTERNS = [
     fix: 'Use: TMPFILE=$(mktemp) and trap for cleanup',
     review: '#18',
     fileTypes: ['.yml', '.yaml', '.sh'],
+  },
+  {
+    id: 'implicit-if-expression',
+    pattern: /^\s+if:\s+(?!.*\$\{\{).*(?:steps|github|env|inputs|needs)\./gm,
+    message: 'Implicit expression in if: condition can cause YAML parser issues',
+    fix: 'Always use explicit ${{ }} in if: conditions',
+    review: '#17, #21',
+    fileTypes: ['.yml', '.yaml'],
+  },
+  {
+    id: 'fragile-bot-detection',
+    pattern: /\.user\.type\s*===?\s*['"`]Bot['"`]/g,
+    message: 'Fragile bot detection - user.type is unreliable',
+    fix: 'Use: user.login === "github-actions[bot]"',
+    review: '#15',
+    fileTypes: ['.yml', '.yaml', '.js', '.ts'],
   },
 
   // Security patterns

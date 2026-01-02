@@ -72,7 +72,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR if review needed
-        if: steps.review-check.outputs.review_needed == 'true'
+        if: ${{ steps.review-check.outputs.review_needed == 'true' }}
         uses: actions/github-script@v7
         env:
           REVIEW_OUTPUT: ${{ steps.review-check.outputs.output }}
@@ -138,7 +138,7 @@ jobs:
             }
 
       - name: Add label if review needed
-        if: steps.review-check.outputs.review_needed == 'true'
+        if: ${{ steps.review-check.outputs.review_needed == 'true' }}
         uses: actions/github-script@v7
         with:
           script: |
