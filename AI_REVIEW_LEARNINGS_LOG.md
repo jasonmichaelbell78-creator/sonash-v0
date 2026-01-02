@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.10
+**Document Version:** 1.11
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.11 | 2026-01-02 | Review #21 second follow-up: filename spaces, Windows rooted paths, comment clarity |
 | 1.10 | 2026-01-02 | Review #21 follow-up: docs-lint.yml rewrite, path traversal hardening, TS imports |
 | 1.9 | 2026-01-02 | Added Review #21 (root cause analysis, TS wrapper, path traversal, AbortError handling) |
 | 1.8 | 2026-01-02 | Review #20 follow-up: Applied error sanitization to 5 remaining files |
@@ -1271,6 +1272,53 @@ The error persisted because of multiple interacting issues:
 **Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), GitHub Actions workflow syntax validated
 
 **Key Insight:** When a GitHub Actions workflow fails with cryptic YAML parsing errors, try a complete rewrite using the most explicit, conservative patterns rather than incremental fixes. The interaction between implicit expressions, multiline blocks, and special characters can cause hard-to-diagnose issues.
+
+---
+
+#### Review #21 Second Follow-up: Filename Spaces & Path Security (2026-01-02)
+
+**Context:** Additional code review findings after the docs-lint.yml rewrite.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Filenames with spaces break loop | Medium | docs-lint.yml | Use `separator: "\n"` + `while IFS= read -r` |
+| 2 | Windows rooted paths bypass filter | Medium | check-pattern-compliance.js | Added `\\(?!\\)` to block `\Windows` |
+| 3 | Misleading comment about query logging | Low | retry-failures.ts | Clarified: query intentionally omitted |
+
+**Key Patterns Identified:**
+
+1. **Safe iteration over filenames with spaces:**
+   ```yaml
+   # In tj-actions/changed-files
+   separator: "\n"
+
+   # In shell script
+   while IFS= read -r file; do
+     # process "$file" (quoted!)
+   done <<< "$CHANGED_FILES"
+   ```
+   Never use `for file in $VAR` when filenames might contain spaces.
+
+2. **Windows rooted path detection:**
+   ```javascript
+   // Block: /, C:\, \\server, //, \Windows
+   /^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/|\\(?!\\))/.test(path)
+
+   // \\(?!\\) matches single backslash at start (but not \\)
+   ```
+
+3. **Comment accuracy for security-sensitive code:**
+   When code intentionally omits data for security reasons, the comment should clearly state WHY it's omitted, not suggest it should be there:
+   ```typescript
+   // BAD: "Note: query contains address data needed for debugging"
+   // GOOD: "Query intentionally omitted to avoid exposing address data"
+   ```
+
+**Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors)
+
+**Key Insight:** When iterating over file lists in shell scripts, always assume filenames may contain spaces, quotes, or other special characters. Use newline separation and `while read` loops rather than `for` loops with word splitting.
 
 ---
 
