@@ -1,6 +1,26 @@
 # Security & Privacy Guide
 
-> **Purpose:** This document outlines security measures, privacy protections, and data handling practices for the SoNash recovery app.
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
+
+---
+
+## 🎯 Purpose & Scope
+
+This document outlines security measures, privacy protections, and data handling practices for the SoNash recovery app.
+
+**Scope:**
+- ✅ Data classification and handling
+- ✅ Security layers and implementation
+- ✅ Privacy rights and GDPR compliance
+- ✅ Incident response procedures
+
+**See also:**
+- [SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Cloud Functions security patterns
+- [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Mandatory standards for all code
+
+---
 
 ## Table of Contents
 
@@ -60,7 +80,7 @@ meetings/{id}                   → Authenticated read, no write
 - **Path validation**: `validateUserDocumentPath()` prevents traversal
 - **User scope**: `assertUserScope()` enforces ownership
 - **Rate limiting**: Server-side via Cloud Functions (10 req/min per user)
-- **App Check**: reCAPTCHA Enterprise verification blocks bots
+- **App Check**: reCAPTCHA Enterprise configured (⚠️ temporarily disabled in Cloud Functions due to Firebase 403 throttle - see EIGHT_PHASE_REFACTOR_PLAN.md CANON-0002)
 
 ### Layer 5: Monitoring & Audit
 - **Sentry**: Error monitoring for client and Cloud Functions
@@ -68,7 +88,7 @@ meetings/{id}                   → Authenticated read, no write
 - **Event types**: AUTH_FAILURE, RATE_LIMIT_EXCEEDED, APP_CHECK_FAILURE, VALIDATION_FAILURE, AUTHORIZATION_FAILURE
 - **Related docs**: [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md)
 
-### Layer 5: Data at Rest
+### Layer 6: Data at Rest
 - **Encryption**: Google encrypts all Firestore data at rest
 - **Key management**: Managed by Google Cloud KMS
 - **Backups**: Firestore automatic backups (7-day retention)
@@ -121,7 +141,7 @@ async function linkAnonymousAccount(email: string, password: string) {
 - ✅ PII redaction in logs
 - ✅ Document size limits
 - ✅ Server-side rate limiting (Cloud Functions)
-- ✅ Firebase App Check (reCAPTCHA Enterprise)
+- ⚠️ Firebase App Check (configured, temporarily disabled due to throttle)
 - ✅ Sentry error monitoring
 - ✅ Security audit logging
 - ❌ End-to-end encryption (not implemented)
@@ -284,19 +304,19 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 | Auth | ⚠️ Anonymous only | Add account linking |
 | Firestore rules | ✅ Deployed | Maintained |
 | Rate limiting | ✅ Server-side | Deployed via Cloud Functions |
-| App Check | ✅ Enabled | reCAPTCHA Enterprise active |
+| App Check | ⚠️ Disabled (temp) | reCAPTCHA configured; blocked by Firebase 403 throttle |
 | Error monitoring | ✅ Sentry | Client + Functions |
 | Audit logging | ✅ Enabled | GCP Cloud Logging |
-| Billing alerts | ⚠️ Manual | See BILLING_ALERTS_SETUP.md |
+| Billing alerts | ⚠️ Manual | See [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md) |
 | Data export | ❌ Missing | Implement before launch |
 | Data deletion | ❌ Missing | Implement before launch |
 | Privacy policy | ❌ Missing | Create before launch |
 
 **Bottom line:** Security posture significantly improved. Priority actions now:
 1. ✅ ~~Deploy Cloud Functions rate limiting~~ Done
-2. ✅ ~~Enable App Check~~ Done
+2. ⚠️ ~~Enable App Check~~ Configured but disabled (Firebase 403 throttle)
 3. ✅ ~~Add monitoring (Sentry)~~ Done
-4. ⚠️ Configure billing alerts (see [BILLING_ALERTS_SETUP.md](./BILLING_ALERTS_SETUP.md))
+4. ⚠️ Configure billing alerts (see [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md))
 5. Implement account linking
 6. Add data export/delete
 7. Create privacy policy
@@ -306,5 +326,39 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 ## Related Documentation
 
 - [SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Implementation details
-- [BILLING_ALERTS_SETUP.md](./BILLING_ALERTS_SETUP.md) - GCP billing configuration
+- [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md) - GCP billing configuration
 - [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md) - Response procedures
+
+---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- Adding new security controls or layers
+- Changing authentication or authorization flows
+- Modifying Firestore security rules
+- Adding new data classification categories
+- Updating incident response procedures
+- Changing rate limiting or App Check configuration
+
+---
+
+## 🤖 AI Instructions
+
+When working with security-related code:
+
+1. **Follow [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - mandatory for all code
+2. **Check data classification** before logging or exposing data
+3. **Test Firestore rules** after any schema changes
+4. **Update this document** when adding new security controls
+5. **Never expose Red/Yellow data** in logs, errors, or API responses
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.1 | 2025-12-19 | Added security checklist and current status |
+| 1.0 | 2025-12-17 | Initial security documentation |

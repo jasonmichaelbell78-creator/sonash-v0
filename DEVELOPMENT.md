@@ -1,6 +1,25 @@
 # Development Guide
 
-**Last Updated:** December 19, 2025
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
+
+---
+
+## 🎯 Purpose & Scope
+
+This guide provides everything needed to set up and develop on the SoNash project.
+
+**Scope:**
+- ✅ Local environment setup
+- ✅ Development workflows
+- ✅ Testing procedures
+- ✅ Deployment process
+
+**See also:**
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
+- [SECURITY.md](./docs/SECURITY.md) - Security requirements
+- [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
 
 ---
 
@@ -614,5 +633,33 @@ Closes #123
 
 ---
 
-**Document History:**
-- December 19, 2025: Consolidated from README.md, TESTING_CHECKLIST.md, and development notes
+## 📝 Update Triggers
+
+**Update this document when:**
+- Development setup steps change (new dependencies, env vars)
+- Testing procedures are modified
+- Deployment process changes
+- New development workflows are established
+- Troubleshooting guides need updates
+
+---
+
+## 🤖 AI Instructions
+
+When maintaining this document:
+
+1. **Update "Quick Start"** when Node.js version or Firebase CLI requirements change
+2. **Update "Environment Setup"** when new env vars or Firebase config is added
+3. **Update "Testing"** section when test coverage or CI/CD procedures change
+4. **Update "Deployment"** when Firebase services or deployment flow change
+5. **Verify all commands work** before committing changes (run them!)
+6. **Keep troubleshooting current** - add new common issues as discovered
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.0 | 2025-12-19 | Initial guide consolidated from multiple sources |

@@ -2,13 +2,44 @@
 
 *A privacy-first digital recovery journal for the recovery community*
 
-## 📖 Documentation
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
 
+---
+
+## 🎯 Purpose
+
+This README serves as the **entry point** for the SoNash Recovery Notebook project:
+
+1. **Project Overview** - What SoNash is and what it does
+2. **Quick Start** - How to get started with development
+3. **Documentation Index** - Links to all project documentation
+4. **Status Dashboard** - Current project progress and milestones
+
+---
+
+## 📖 Documentation Index
+
+### Core Documents (Tier 1)
 - **[ROADMAP.md](./ROADMAP.md)** - Product roadmap and feature planning
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
+
+### Technical Documentation (Tier 2)
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
-- **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing checklist
+- **[docs/SECURITY.md](./docs/SECURITY.md)** - Security standards and practices
+
+### AI & Development Workflow
+- **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - AI assistant navigation guide
+- **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - Code review process
+- **[claude.md](./claude.md)** - AI context and tribal knowledge
+
+### Testing & QA
+- **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - Manual QA testing checklist
+- **[docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Testing strategy
+
+---
 
 ## Overview
 
@@ -121,7 +152,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Project Status
 
-**Last Updated:** January 1, 2026
+**Last Updated:** January 2, 2026
 **Overall Progress:** ~35%
 **Current Focus:** Quick Wins + Admin Panel + UX
 
@@ -149,8 +180,6 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - 🔄 M1.6 - Admin Panel + UX (75%)
 
 See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
-See **[AI_HANDOFF.md](./AI_HANDOFF.md)** for detailed development status.
-
 
 ## Data Architecture
 
@@ -163,19 +192,6 @@ This app uses **Firebase Firestore** with a user-centric data model.
 - **Daily Logs** (`/users/{uid}/daily_logs/{date}`):
   - Store check-ins, mood, and journal entries.
   - Guarded client-side via `lib/security/firestore-validation.ts` to mirror the deployed rules.
-
-## Documentation
-
-### Product & Planning
-- [ROADMAP.md](./ROADMAP.md) - Canonical product roadmap (consolidated Dec 19, 2025)
-
-### Technical Documentation
-- [docs/SECURITY.md](./docs/SECURITY.md) - Security best practices
-- [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md) - Testing strategy
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical architecture and design patterns
-
-### Current Status
-- [AI_HANDOFF.md](./AI_HANDOFF.md) - Active development status and next steps
 
 ## Roadmap Module Mapping
 
@@ -253,13 +269,43 @@ See **[docs/SECURITY.md](./docs/SECURITY.md)** for:
 
 ---
 
-## Version History
+## 📝 Update Triggers
 
-Version history is tracked via git commits. See `git log` for detailed change history.
+**Update this README when:**
+- Project status or milestone progress changes significantly
+- New major features are added or completed
+- Tech stack changes (dependencies, frameworks)
+- Documentation structure changes (new docs added/removed)
+- Project structure changes (directory reorganization)
+
+---
+
+## 🤖 AI Instructions
+
+When working on this project:
+
+1. **Read [AI_WORKFLOW.md](./AI_WORKFLOW.md)** first for navigation guidance
+2. **Check [ROADMAP.md](./ROADMAP.md)** for current priorities and planned features
+3. **Follow [claude.md](./claude.md)** patterns and tribal knowledge
+4. **Run `npm run patterns:check`** to verify compliance before committing
+5. **Update documentation** when making changes that affect project status
+6. **Use `npm run docs:update-readme`** to sync status section from ROADMAP.md
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.1 | 2026-01-01 | Added Claude Code infrastructure section |
+| 1.0 | 2025-12 | Initial README with MVP features |
 
 **Major Milestones:**
 - **v0.1** (December 2025) - MVP: Book cover, Today page, Journal system, Meetings directory
 - **v0.2** (January 2026) - Admin panel, Documentation standardization, Security hardening
+
+---
 
 ## License
 

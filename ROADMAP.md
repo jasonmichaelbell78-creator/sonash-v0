@@ -1,13 +1,46 @@
 # SoNash Product Roadmap
 
-**Last Updated:** December 31, 2025
-**Status:** Canonical roadmap - supersedes all previous roadmap documents
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
+**Overall Completion:** ~35%
+
+---
+
+## 🎯 Document Purpose
+
+This is the **CANONICAL** product roadmap for SoNash. This document serves as:
+
+1. **Single Source of Truth** - All feature planning and prioritization
+2. **Progress Tracker** - Current milestone status and completion
+3. **Planning Reference** - What's next and why
+
+**📌 NOTE**: This document supersedes all previous roadmap documents.
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
-> **Architecture Refactoring:** See [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) for comprehensive 8-phase security and architecture refactoring plan addressing 44 canonical findings from code audit
+> **Architecture Refactoring:** See [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) for comprehensive 8-phase security and architecture refactoring plan
 >
-> **⚠️ CRITICAL BLOCKER:** Documentation standardization initiative is now active. See [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - **ALL feature development, refactoring, and new initiatives are blocked until this plan is 100% complete** (estimated 44-56 hours, target completion: February 5, 2026)
+> **⚠️ BLOCKER:** Documentation standardization initiative is active. See [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
+
+---
+
+## 📋 How to Use This Document
+
+### For AI Assistants
+
+1. **Check Milestones Overview** to understand current priorities
+2. **Find active work** in "In Progress" sections (🔄 emoji)
+3. **Before starting new features**, verify they're in the roadmap
+4. **Update progress** after completing significant work
+5. **Archive completed items** to [ROADMAP_LOG.md](./ROADMAP_LOG.md)
+
+### For Developers
+
+1. **Quick Status**: See Milestones Overview table
+2. **Current Work**: Look for 🔄 In Progress sections
+3. **Feature Details**: Each milestone has detailed breakdowns
+4. **Acceptance Criteria**: Check Definition of Done at bottom
 
 ---
 
@@ -123,7 +156,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 **Goal:** Operational monitoring for admins + dramatically improved user experience for Today page
 
-**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md) (v1.4)
+**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md) (v1.4)
 
 > **Completed Phases:** For details on completed Phases 1-3 and Today Page Enhancement, see [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
 
@@ -805,20 +838,20 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
 - **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
-- **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report
-- **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
-- **[SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)** - Phase 1 implementation prompt
+- **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report
+- **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
+- **[SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)** - Phase 1 implementation prompt
 
 ### Detailed Documentation (in /docs)
 
 - **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections
 - **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident procedures
 - **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue model research and recommendations (M10)
-- **[JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md)** - December 2025 journal refactor changelog
+- **[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)** - December 2025 journal refactor changelog
 - **[TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing strategy and multi-phase fixes
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud Functions security patterns
 - **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent collaboration guide
-- **[LIBRARY_ANALYSIS.md](./docs/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
+- **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
 - **[firestore-rules.md](./docs/firestore-rules.md)** - Firestore security rules documentation
 
 ### Archived Documentation
@@ -827,13 +860,42 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 ---
 
-**Document History:**
+## 📝 Update Triggers
 
-- **December 28, 2025:** Added "Resource Aggregation & Code Compliance" to completed log. Created ROADMAP_LOG.md and streamlined ROADMAP.md - Moved all completed M0, M1 (Weeks 1-18), M1.5 completed items, and M1.6 completed phases to archive. Updated milestone progress percentages. Roadmap now focuses on active and planned work.
-- **December 27, 2025:** Added Week 18+ Gemini 2.0 Flash Thinking Aggregated Security Review
-- **December 24, 2025:** Added Week 14+ Consolidated 6-AI Code Review Remediation section
-- **December 23, 2025:** M1.6 updated to v1.4 - Phases 1-3 complete, Today Page Enhancement complete
-- **December 22, 2025:** Updated Phase 1 prompt to v1.3, M1.6 to v1.2 spec
-- **December 19, 2025:** Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
-- **December 18, 2025:** M1 security hardening completed
-- **December 17, 2025:** Journal system refactor completed
+**Update this document when:**
+- Milestone status changes (started, completed, blocked)
+- New features are added to roadmap
+- Priority or timeline changes
+- Progress percentage changes significantly (>10%)
+- Features are completed and need archiving to ROADMAP_LOG.md
+
+---
+
+## 🤖 AI Instructions
+
+When working on roadmap items:
+
+1. **Before starting work**, verify the feature is in this roadmap
+2. **Update status** when starting a feature (PENDING → IN_PROGRESS)
+3. **Update progress** after significant work
+4. **Archive completed items** to ROADMAP_LOG.md using `npm run docs:archive`
+5. **Follow Definition of Done** checklist before marking complete
+6. **Run `npm run docs:update-readme`** after milestone changes
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.5 | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1 |
+| 1.4 | 2025-12-23 | M1.6 Phases 1-3 complete |
+| 1.3 | 2025-12-22 | Admin panel spec v1.2 |
+| 1.2 | 2025-12-19 | Consolidated from multiple roadmap docs |
+| 1.1 | 2025-12-18 | M1 security hardening complete |
+| 1.0 | 2025-12-17 | Initial consolidated roadmap |
+
+**Historical Notes:**
+- December 28, 2025: Created ROADMAP_LOG.md archive, streamlined active roadmap
+- December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md

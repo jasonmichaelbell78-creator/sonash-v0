@@ -1,9 +1,9 @@
 # Eight-Phase Security & Architecture Refactoring Plan
 
 **Project**: SoNash Recovery Notebook
-**Document Version**: 1.1
+**Document Version**: 1.2
 **Created**: 2025-12-30
-**Last Updated**: 2025-12-31
+**Last Updated**: 2026-01-02
 **Status**: Phase 1 PENDING (gap analysis documented) | Infrastructure: COMPLETE
 **Overall Completion**: 0/8 phases complete (0%) | Supporting Infrastructure: Complete
 
@@ -2777,12 +2777,26 @@ Task-specific skills for common workflows:
 
 ---
 
-## Document Change Log
+## 🤖 AI Instructions
 
-| Date | Version | Changes | Author |
-|------|---------|---------|--------|
-| 2025-12-30 | 1.0 | Initial comprehensive documentation of 8-phase plan | Claude |
-| 2025-12-31 | 1.1 | Added Appendix F: Supporting Infrastructure (SessionStart hook, agents, skills) | Claude |
+When working on this refactoring plan:
+
+1. **Read this document first** before starting any phase
+2. **Check dependencies** - phases must be completed in order
+3. **Follow the 4-step workflow** in PR_WORKFLOW_CHECKLIST.md
+4. **Update status** after completing work on any phase
+5. **Document gaps** in Gap Analysis sections when actual work differs from intent
+6. **Run verification scripts** before marking phases complete
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.2 | 2026-01-02 | Added AI Instructions section per Phase 3 migration |
+| 1.1 | 2025-12-31 | Added Appendix F: Supporting Infrastructure |
+| 1.0 | 2025-12-30 | Initial comprehensive documentation of 8-phase plan |
 
 ---
 
