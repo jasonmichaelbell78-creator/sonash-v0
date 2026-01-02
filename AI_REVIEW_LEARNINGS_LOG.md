@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.17 | 2026-01-02 | Review #24: Pattern automation script security (Qodo compliance fixes) |
 | 1.16 | 2026-01-02 | Consolidated Reviews #11-23 into claude.md v2.2; reset consolidation counter |
 | 1.15 | 2026-01-02 | Added Consolidation Trigger section with counter |
 | 1.14 | 2026-01-02 | Review #23: Link text consistency in "See also" sections |
@@ -49,7 +50,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0
+**Reviews since last consolidation:** 1 (Review #24)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1501,6 +1502,61 @@ The error persisted because of multiple interacting issues:
 **Rule:** Link display text should show clean filename; actual path goes in the URL portion.
 
 **Key Insight:** Consistency in documentation formatting matters even for small details. Users scan "See also" sections quickly - uniform formatting reduces cognitive load.
+
+---
+
+#### Review #24: Pattern Automation Script Security (2026-01-02)
+
+**Source:** Qodo PR Compliance Review of `suggest-pattern-automation.js`
+**PR:** `claude/session-start-h9O9F` (Session workflow + pattern automation)
+**Tools:** Qodo Compliance Checker
+
+**Compliance Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Missing IO guards | 🔴 Critical | Error Handling | Added `existsSync()` checks + try-catch with `sanitizeError()` |
+| 2 | Logs extracted code | 🔴 Critical | Secure Logging | Added `sanitizeCodeForLogging()` to redact secrets/paths |
+| 3 | Raw stack traces | ⚪ Medium | Error Handling | Global try-catch with sanitized output |
+| 4 | Unbounded regex | ⚪ Medium | Input Validation | Added warnings for invalid patterns |
+
+**Code Suggestions Applied:**
+
+| # | Issue | Fix |
+|---|-------|-----|
+| 1 | Fallback regex `...` as wildcard | Changed to `\.{3}` |
+| 2 | `code.includes(key)` false positives | Use regex match instead |
+| 3 | Date.now() IDs not stable | Use content-based hash |
+| 4 | Duplicate pattern suggestions | Added Set-based deduplication |
+| 5 | Top-level `if:` not detected | Changed `^\s+if:` to `^\s*if:` |
+| 6 | Silent invalid regex skip | Added warning logs |
+
+**Patterns Identified:**
+
+1. **Secure Logging for Code Analysis Tools** (1 occurrence - CRITICAL)
+   - Root cause: Script logged extracted code snippets directly, potentially exposing secrets
+   - Example: `console.log(\`Code: ${code.slice(0, 60)}\`)` - could log API keys
+   - Prevention: Always sanitize before logging extracted code: redact long strings, credentials, paths
+   - Resolution: Added `sanitizeCodeForLogging()` with secret/path redaction
+
+2. **existsSync Before readFileSync** (1 occurrence - Major)
+   - Root cause: `readFileSync()` without existence check crashes with unhelpful message
+   - Example: "ENOENT: no such file or directory" doesn't tell user what file
+   - Prevention: Check `existsSync(path)` and log specific error message
+   - Resolution: Added checks with descriptive error messages
+
+3. **Fallback Regex Wildcards** (1 occurrence - Bug)
+   - Root cause: `...` in regex is treated as "any 3 characters" not literal ellipsis
+   - Example: `return code.slice(0, 40) + '...'` creates invalid pattern
+   - Prevention: Escape ellipsis as `\.{3}` or `\.\.\.`
+   - Resolution: Changed to `+ '\\.{3}'`
+
+4. **Content-Based Hashing for Stable IDs** (1 occurrence - Best Practice)
+   - Root cause: `Date.now()` creates different IDs each run, makes output non-deterministic
+   - Prevention: Use hash of content for stable, reproducible IDs
+   - Resolution: Simple hash: `hash = (hash * 31 + charCode) >>> 0`
+
+**Key Insight:** Scripts that analyze code/logs need extra care about what they output. Even internal tools can leak secrets if they echo extracted content to console. Apply the same security standards to tooling as to production code.
 
 ---
 
