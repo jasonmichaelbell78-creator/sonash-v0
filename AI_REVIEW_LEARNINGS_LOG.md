@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.14
+**Document Version:** 1.15
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.15 | 2026-01-02 | Added Consolidation Trigger section with counter |
 | 1.14 | 2026-01-02 | Review #23: Link text consistency in "See also" sections |
 | 1.13 | 2026-01-02 | Review #22: Phase 3 CodeRabbit reviews (App Check status, duplicate Layer 5, terminology) |
 | 1.12 | 2026-01-02 | Review #21 third follow-up: cross-drive bypass, lstatSync error handling, underscore prefix |
@@ -42,6 +43,37 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 2. **Reference previous entries** when similar patterns emerge
 3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
 4. **Run pattern audit** periodically: `npm run patterns:check-all`
+
+---
+
+## 🔔 Consolidation Trigger
+
+**Reviews since last consolidation:** 13 (Reviews #11-#23)
+**Consolidation threshold:** 10 reviews
+**⚠️ STATUS: CONSOLIDATION NEEDED**
+
+### When to Consolidate
+
+Consolidation is needed when:
+- Reviews since last consolidation reaches 10+
+- Multiple reviews mention similar patterns
+- New security or critical patterns are identified
+
+### Consolidation Process
+
+1. Review all entries since last consolidation
+2. Identify recurring patterns (3+ mentions)
+3. Add new distilled patterns to claude.md Section 4
+4. Update pattern compliance checker if automatable
+5. Reset "Reviews since last consolidation" counter
+6. Note consolidation in version history
+
+### Last Consolidation
+
+- **Date:** 2026-01-02
+- **Reviews consolidated:** #1-#10
+- **Patterns added to claude.md:** 15+ patterns in Section 4
+- **Next consolidation due:** At review #33 (or ~10 more reviews)
 
 ---
 

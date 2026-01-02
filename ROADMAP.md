@@ -56,8 +56,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 |-----------|--------|----------|--------|----------|
 | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
 | **M1 - Foundation** | ✅ Complete | 100% | Q1 2026 | P0 |
-| **M1.5 - Quick Wins** | 🔄 In Progress | ~50% | Q1 2026 | P0 |
-| **M1.6 - Admin Panel + UX** | 🔄 In Progress | ~75% | Q1 2026 | P1 |
+| **Doc Standardization** | 🔄 In Progress | 57% (4/7) | Q1 2026 | P0 BLOCKER |
+| **M1.5 - Quick Wins** | ⏸️ BLOCKED | ~50% | Q1 2026 | P0 |
+| **M1.6 - Admin Panel + UX** | ⏸️ BLOCKED | ~75% | Q1 2026 | P1 |
 | **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
 | **M3 - Meetings** | 📋 Planned | 0% | Q2 2026 | P1 |
 | **M4 - Expansion** | 📋 Planned | 0% | Q2 2026 | P1 |

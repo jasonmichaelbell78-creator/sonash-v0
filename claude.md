@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.0
+**Document Version:** 2.1
 **Last Updated:** 2026-01-02
 **Status:** ACTIVE
 
@@ -115,6 +115,30 @@ This file defines the strict architectural and security rules for SoNash. It ser
 > [!IMPORTANT]
 > **MANDATORY**: Before ANY task, check if a skill or agent applies. If one clearly applies to your task, USE IT.
 
+### Skill Decision Tree (USE THIS!)
+
+```
+BEFORE STARTING ANY TASK, ASK:
+│
+├─ Is this a bug, error, or unexpected behavior?
+│   └─ YES → Use 'systematic-debugging' skill FIRST
+│
+├─ Am I about to write or modify code?
+│   └─ YES → Plan to use 'code-reviewer' agent AFTER
+│
+├─ Does this involve security, auth, or sensitive data?
+│   └─ YES → Use 'security-auditor' agent
+│
+├─ Is this UI/frontend work?
+│   └─ YES → Use 'frontend-design' skill
+│
+├─ Is this a complex multi-step task?
+│   └─ YES → Run: ls .claude/skills/ and find a match
+│
+└─ None of the above?
+    └─ Proceed, but reconsider if task changes
+```
+
 ### Skills (`.claude/skills/`)
 Specialized workflows invoked via **Skill tool**. Scan directory for current list.
 
@@ -138,6 +162,23 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 **Discovery is dynamic** - new capabilities added to these directories are automatically available.
 
+### Session End Self-Audit
+
+> [!WARNING]
+> **BEFORE ENDING SESSION**, verify you followed workflow:
+
+```
+SESSION END CHECKLIST:
+☐ Did I use systematic-debugging for any bugs encountered?
+☐ Did I use code-reviewer after significant code changes?
+☐ Did I use security-auditor for security-related work?
+☐ Did I update SESSION_CONTEXT.md with work completed?
+☐ Did I update relevant planning docs?
+☐ Did I commit all documentation changes?
+```
+
+If you skipped a skill/agent that applied, note it in your session summary for improvement.
+
 **Full Details**: See [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "Available AI Capabilities"
 
 ## 7. Coding Standards
@@ -153,6 +194,7 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.1 | 2026-01-02 | Added Skill Decision Tree and Session End Self-Audit checklist |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration |
 | 1.2 | 2026-01-02 | Added patterns from Reviews #15-18 (trap cleanup, cross-platform, exit codes) |
 | 1.1 | 2026-01-02 | Added code review patterns from 14 reviews |
