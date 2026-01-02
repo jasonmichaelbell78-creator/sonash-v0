@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.12
+**Document Version:** 1.13
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.13 | 2026-01-02 | Review #22: Phase 3 CodeRabbit reviews (App Check status, duplicate Layer 5, terminology) |
 | 1.12 | 2026-01-02 | Review #21 third follow-up: cross-drive bypass, lstatSync error handling, underscore prefix |
 | 1.11 | 2026-01-02 | Review #21 second follow-up: filename spaces, Windows rooted paths, comment clarity |
 | 1.10 | 2026-01-02 | Review #21 follow-up: docs-lint.yml rewrite, path traversal hardening, TS imports |
@@ -1370,6 +1371,63 @@ The error persisted because of multiple interacting issues:
 **Verification:** `npm run lint` (0 errors), `npm test` (passing)
 
 **Key Insight:** Defense in depth for path security requires checking both input (block absolute paths early) AND output (verify relative() result is actually relative). On Windows, cross-drive paths make relative() behave unexpectedly.
+
+---
+
+#### Review #22: Phase 3 CodeRabbit Reviews (2026-01-02)
+
+**Context:** CodeRabbit automated reviews during Phase 3 documentation migration.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | App Check documented as "✅ Enabled" but actually disabled | Major | docs/SECURITY.md | Updated 4 locations to show "⚠️ Disabled (temp)" with explanation |
+| 2 | Duplicate "Layer 5" labels | Minor | docs/SECURITY.md | Changed second to "Layer 6: Data at Rest" |
+| 3 | BILLING_ALERTS_SETUP.md inconsistent reference | Minor | docs/SECURITY.md | Added proper markdown link to archived location |
+| 4 | "⚠️ CRITICAL" vs "⚠️ BLOCKER" terminology | Minor | ROADMAP.md | Changed to "📌 NOTE" for supersedes message |
+| 5 | "Prior to" wordy phrasing | Trivial | ROADMAP_LOG.md | Changed to "Before" |
+| 6 | AI Instructions too generic | Minor | DEVELOPMENT.md | Made document-specific (when to update which sections) |
+
+**Key Patterns Identified:**
+
+1. **Documentation must match codebase state:**
+   ```markdown
+   <!-- BAD: Claims feature is enabled when it's actually disabled -->
+   | App Check | ✅ Enabled | reCAPTCHA Enterprise active |
+
+   <!-- GOOD: Accurately reflects current state with explanation -->
+   | App Check | ⚠️ Disabled (temp) | Blocked by Firebase 403 throttle |
+   ```
+
+2. **Sequential numbering must be verified:**
+   - When copying/editing sections, check for duplicate numbers
+   - Easy to miss: "Layer 5" appearing twice in security layers
+
+3. **Link references must be consistent:**
+   - If a file is archived, ALL references should use the archived path
+   - Don't mix plain text references with markdown links
+
+4. **Warning terminology should be meaningful:**
+   - Reserve "⚠️ BLOCKER" for actual blockers
+   - Use "📌 NOTE" for informational notices
+   - Use "⚠️ CRITICAL" sparingly (for actual critical items)
+
+5. **AI Instructions should be document-specific:**
+   ```markdown
+   <!-- BAD: Generic development instructions -->
+   1. Run tests before committing
+   2. Follow patterns in ARCHITECTURE.md
+
+   <!-- GOOD: Specific to maintaining this document -->
+   1. Update "Quick Start" when Node.js version changes
+   2. Update "Environment Setup" when new env vars added
+   3. Verify all commands work before committing
+   ```
+
+**Verification:** `npm run docs:check` (0 errors)
+
+**Key Insight:** Automated code reviewers catch documentation inconsistencies that humans miss. Always cross-reference documentation claims with actual codebase state, especially for security-related features.
 
 ---
 
