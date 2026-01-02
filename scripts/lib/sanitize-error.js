@@ -38,8 +38,12 @@ const SENSITIVE_PATTERNS = [
   // Environment variables with sensitive data
   /process\.env\.[A-Z_]+/gi,
 
-  // IP addresses (internal)
-  /\b(?:10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b/g,
+  // IP addresses (internal - RFC 1918 private ranges)
+  // 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+  /\b(?:10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b/g,
+
+  // URLs that might contain sensitive endpoints
+  /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)[^\s]*/gi,
 ];
 
 /**

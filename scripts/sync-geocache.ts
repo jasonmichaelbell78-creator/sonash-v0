@@ -3,6 +3,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 async function syncGeocache() {
     console.log('🚀 Starting Geocache Sync...\n');
@@ -20,11 +21,8 @@ async function syncGeocache() {
             if ((error as { code?: string })?.code === 'app/duplicate-app') {
                 console.log('ℹ️ Firebase Admin already initialized');
             } else {
-                // Sanitize error to prevent sensitive path exposure
-                const errorMsg = error instanceof Error ? error.message : String(error);
-                const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
                 console.error('❌ Failed to initialize Firebase Admin.');
-                console.error(`   Error: ${safeMsg}`);
+                console.error(`   Error: ${sanitizeError(error)}`);
                 process.exit(1);
             }
         }
@@ -41,10 +39,7 @@ async function syncGeocache() {
             cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
             console.log(`📂 Loaded existing cache with ${Object.keys(cache).length} entries.`);
         } catch (error: unknown) {
-            // Sanitize error to prevent sensitive path/content exposure
-            const errorMsg = error instanceof Error ? error.message : String(error);
-            const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
-            console.warn(`⚠️ Could not parse existing cache: ${safeMsg}`);
+            console.warn(`⚠️ Could not parse existing cache: ${sanitizeError(error)}`);
             console.warn('   Starting fresh with empty cache.');
         }
     } else {
@@ -128,8 +123,6 @@ async function syncGeocache() {
 }
 
 syncGeocache().catch((error: unknown) => {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
-    console.error('❌ Unexpected error:', safeMsg);
+    console.error('❌ Unexpected error:', sanitizeError(error));
     process.exit(1);
 });

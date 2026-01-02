@@ -471,8 +471,14 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                                         navigator.share({
                                             title: 'Nightly Inventory',
                                             text: shareText
-                                        }).catch(() => {
-                                            // Silent fail - user cancelled or share not supported
+                                        }).catch((error: unknown) => {
+                                            // AbortError = user cancelled, which is expected behavior
+                                            if (error instanceof Error && error.name === 'AbortError') {
+                                                return
+                                            }
+                                            // Log other share errors (sanitized, no sensitive paths in browser)
+                                            const message = error instanceof Error ? error.name : 'Share failed'
+                                            console.error('Share error:', message)
                                         })
                                     } else {
                                         // Fallback to mailto

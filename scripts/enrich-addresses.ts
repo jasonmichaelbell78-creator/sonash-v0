@@ -3,6 +3,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 // --- CONFIGURATION ---
 const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org/search';
@@ -200,8 +201,6 @@ async function enrichAddresses() {
 }
 
 enrichAddresses().catch((error: unknown) => {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
-    console.error('❌ Unexpected error:', safeMsg);
+    console.error('❌ Unexpected error:', sanitizeError(error));
     process.exit(1);
 });

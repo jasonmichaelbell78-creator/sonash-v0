@@ -140,8 +140,10 @@ const ANTI_PATTERNS = [
 function getFilesToCheck() {
   if (FILES.length > 0) {
     // Normalize user-provided paths relative to ROOT for consistent handling
+    // Filter out paths that would escape ROOT (path traversal prevention)
     return FILES
       .map(f => relative(ROOT, join(ROOT, f)))
+      .filter(f => !(/^\.\.(?:[\\/]|$)/.test(f))) // Block paths escaping ROOT
       .filter(f => existsSync(join(ROOT, f)));
   }
 
@@ -217,7 +219,16 @@ function checkFile(filePath) {
   }
 
   let ext = extname(filePath);
-  const content = readFileSync(fullPath, 'utf-8');
+  let content;
+  try {
+    content = readFileSync(fullPath, 'utf-8');
+  } catch (error) {
+    // Skip unreadable files (permissions, binary, etc.) to prevent scan abort
+    if (VERBOSE && !JSON_OUTPUT) {
+      console.warn(`⚠️ Skipping unreadable file: ${filePath} (${sanitizeError(error)})`);
+    }
+    return [];
+  }
 
   // Extensionless files: detect type by shebang or path
   if (!ext) {

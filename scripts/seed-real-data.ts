@@ -4,6 +4,7 @@ import * as readline from 'readline';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import fetch from 'node-fetch'; // Ensure request is installed or use global fetch if available (Node 18+)
+import { sanitizeError } from './lib/sanitize-error.js';
 
 // --- CONFIG ---
 const CSV_FILE = "SoNash_Meetings__cleaned.csv";
@@ -213,8 +214,6 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
-    console.error('❌ Unexpected error:', safeMsg);
+    console.error('❌ Unexpected error:', sanitizeError(error));
     process.exit(1);
 });

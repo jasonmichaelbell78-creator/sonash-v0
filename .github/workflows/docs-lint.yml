@@ -165,14 +165,15 @@ jobs:
 
       - name: Check for errors
         if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          LINT_ERRORS: ${{ steps.docs-lint.outputs.errors || '0' }}
         run: |
-          ERRORS=${{ steps.docs-lint.outputs.errors }}
-          if [[ "$ERRORS" -gt 0 ]]; then
-            echo "❌ Documentation linting found $ERRORS error(s)"
+          if [[ "$LINT_ERRORS" -gt 0 ]]; then
+            echo "Documentation linting found $LINT_ERRORS error(s)"
             echo "Please fix the issues listed above before merging"
             exit 1
           fi
-          echo "✅ Documentation linting passed"
+          echo "Documentation linting passed"
 
       - name: No markdown changes
         if: steps.changed-files.outputs.any_changed != 'true'

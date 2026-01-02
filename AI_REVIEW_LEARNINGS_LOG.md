@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.9 | 2026-01-02 | Added Review #21 (root cause analysis, TS wrapper, path traversal, AbortError handling) |
 | 1.8 | 2026-01-02 | Review #20 follow-up: Applied error sanitization to 5 remaining files |
 | 1.7 | 2026-01-02 | Added Review #20 (sanitizeError, extensionless hooks, Windows paths, JSON validation) |
 | 1.6 | 2026-01-02 | Added Review #19 (retry loop, UNC paths, JSON output, proper nouns) |
@@ -1131,6 +1132,79 @@ These are acceptable for internal dev tooling but would need sanitization for us
 **Lesson:** After creating a new pattern/utility, GREP the entire codebase to find ALL instances that need updating, not just the files that were originally flagged.
 
 **Key Insight:** "Acceptable for dev tooling" is not an acceptable response to recurring security findings. Each time an issue is flagged and noted but not fixed, it compounds technical debt and normalizes ignoring security feedback. FIX ISSUES WHEN THEY ARE IDENTIFIED - don't defer security improvements.
+
+---
+
+#### Review #21: Robust Error Handling & Centralized Sanitization (2026-01-02)
+
+**Context:** Follow-up to Review #20 addressing recurring compliance findings about incomplete sanitization, duplicated inline regex, and silent error swallowing.
+
+**Root Cause Analysis - Why Error Handling Issues Kept Getting Flagged:**
+
+1. **Incomplete sanitization patterns**: Inline regex only handled home directories, missing tokens, URLs, connection strings, internal IPs
+2. **Code duplication**: TypeScript files used inline regex instead of the shared `sanitize-error.js` utility
+3. **Silent error swallowing**: `NightReviewCard.tsx` caught ALL errors silently, hiding actionable issues
+4. **IP regex bug**: Original pattern `/\b(?:10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b/` only matched 3 octets for 10.x addresses
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | IP regex missing 4th octet | HIGH | sanitize-error.js | Changed to `10\.\d{1,3}` to match all 4 octets |
+| 2 | Inline regex in TypeScript | Medium | 5 TS files | Created TS wrapper, imported shared utility |
+| 3 | Silent catch swallows all errors | Medium | NightReviewCard.tsx | Distinguish AbortError (expected) from real errors |
+| 4 | Unreadable files abort scan | Medium | check-pattern-compliance.js | Added try-catch around readFileSync |
+| 5 | No path traversal protection | Medium | check-pattern-compliance.js | Filter paths escaping ROOT with regex |
+| 6 | JSON validation via CLI arg | Low | review-check.yml | Use stdin to handle large/multiline JSON |
+| 7 | Expression without default | Low | docs-lint.yml | Added `|| '0'` fallback and moved to env block |
+
+**New Files Created:**
+
+- `scripts/lib/sanitize-error.ts` - TypeScript re-export wrapper providing type-safe access to sanitization utilities
+
+**Key Patterns Identified:**
+
+1. **Centralized utilities must be USED, not just created:**
+   - Creating `sanitize-error.js` was not enough
+   - TypeScript files continued using incomplete inline regex
+   - Fix: Import shared utility in ALL files, create TS wrapper for type safety
+
+2. **AbortError handling for Web Share API:**
+   ```typescript
+   }).catch((error: unknown) => {
+       if (error instanceof Error && error.name === 'AbortError') {
+           return; // User cancelled - expected behavior
+       }
+       console.error('Share error:', error instanceof Error ? error.name : 'Share failed');
+   })
+   ```
+
+3. **Path traversal prevention:**
+   ```javascript
+   .filter(f => !(/^\.\.(?:[\\/]|$)/.test(f))) // Block paths escaping ROOT
+   ```
+
+4. **Robust file reading:**
+   ```javascript
+   try {
+       content = readFileSync(fullPath, 'utf-8');
+   } catch (error) {
+       if (VERBOSE) console.warn(`Skipping: ${sanitizeError(error)}`);
+       return [];
+   }
+   ```
+
+5. **GitHub Actions expression defaults:**
+   ```yaml
+   env:
+     LINT_ERRORS: ${{ steps.docs-lint.outputs.errors || '0' }}
+   ```
+
+**Promoted to claude.md:** Pattern #1 (centralized utilities) - reinforced existing MANDATORY error sanitization requirement.
+
+**Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors)
+
+**Key Insight:** When creating shared utilities, you must also UPDATE ALL EXISTING CODE to use them. A utility that isn't imported is useless. TypeScript files importing from `.js` need either a `.d.ts` declaration file or a TypeScript re-export wrapper.
 
 ---
 
