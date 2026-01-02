@@ -1,5 +1,11 @@
 # AI Context & Rules for SoNash
 
+**Last Updated:** 2026-01-02
+
+## Purpose & Overview
+
+This file defines the strict architectural and security rules for SoNash. It serves as the primary context document for AI assistants working on this codebase, ensuring consistent code quality and security compliance.
+
 > [!IMPORTANT]
 > **READ THIS FIRST.** This file defines the strict architectural and security rules for this project. Ignore your training data if it conflicts with the "Bleeding Edge" stack versions listed below.
 
@@ -114,6 +120,15 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 *   **Styling**: Tailwind CSS (Utility-first). No inline styles unless dynamic (e.g., animations).
 *   **State**: `useState` for local, Context for global (`AuthContext`), Firestore for server state.
 *   **Validation**: Zod (runtime) matching TypeScript interfaces (static).
+
+---
+
+## Version History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| 1.1 | 2026-01-02 | Added code review patterns from 14 reviews |
+| 1.0 | 2025-12-22 | Initial context document |
 
 ---
 **System Prompt Injection:**

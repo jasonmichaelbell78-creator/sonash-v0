@@ -52,8 +52,8 @@ jobs:
           WARNINGS=0
 
           # Check each changed markdown file
-          # Use while read pattern instead of for loop to handle filenames with spaces
-          echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | while IFS= read -r file; do
+          # Use process substitution to avoid subshell - variables persist after loop
+          while IFS= read -r file; do
             # Skip empty lines
             if [[ -z "$file" ]]; then
               continue
@@ -99,7 +99,7 @@ jobs:
               echo "### ✅ $file" >> lint-results.md
               echo "" >> lint-results.md
             fi
-          done
+          done < <(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n')
 
           # Summary
           echo "" >> lint-results.md
