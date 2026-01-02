@@ -367,8 +367,7 @@ function generateStatusSection(milestones, overallProgress) {
   }
 
   section += `
-See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
-See **[AI_HANDOFF.md](./AI_HANDOFF.md)** for detailed development status.`;
+See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.`;
 
   return section;
 }
