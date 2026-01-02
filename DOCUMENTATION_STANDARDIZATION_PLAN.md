@@ -2216,6 +2216,40 @@ The following items were deferred from Phase 2 and should be addressed in Phase 
   - This branch was added temporarily during Phase 2 development
   - Should only deploy from `main` branch after PR merges
 
+### 📋 Deferred Items from Phase 3 (Additional Tasks)
+
+The following items were intentionally skipped in Phase 3 and should be reviewed in Phase 6:
+
+- [ ] **Task 6.13**: Review dependency graphs for milestones (1 hour)
+  - Evaluate if Mermaid dependency graphs are needed for ROADMAP.md milestones
+  - Original plan called for Mermaid diagrams showing milestone dependencies
+  - Decision: Add only if complexity warrants visual representation
+  - May be unnecessary if milestone relationships are clear from text
+
+- [ ] **Task 6.14**: Review pre-standardization metadata note (0.25 hours)
+  - Evaluate if existing docs need "pre-standardization" annotations
+  - Original plan called for metadata note in documents created before standardization
+  - Decision: Likely not needed - existing entries preserved as-is was sufficient
+  - Archive as "not needed" or add if gaps discovered
+
+- [ ] **Task 6.15**: Review component health dashboard (0.5 hours)
+  - Evaluate if ARCHITECTURE.md needs separate component health tracking
+  - Original plan called for component health dashboard section
+  - Current: Existing content comprehensive without over-templating
+  - Decision: Add only if specific component issues arise
+
+- [ ] **Task 6.16**: Review security posture dashboard (0.5 hours)
+  - Evaluate if SECURITY.md needs dedicated posture dashboard
+  - Original plan called for security posture dashboard section
+  - Current: Has checklist table that serves same purpose
+  - Decision: Add only if checklist table proves insufficient
+
+- [ ] **Task 6.17**: CI-level lint enforcement (1 hour)
+  - Add lint enforcement to CI workflow (beyond pre-commit)
+  - Current: Pre-commit hooks block commits if lint fails
+  - Enhancement: Add `npm run lint` to GitHub Actions workflow
+  - Evaluate: May be redundant with pre-commit; assess value add
+
 ### ✅ Acceptance Criteria
 
 - [ ] All 7 documents archived with complete metadata

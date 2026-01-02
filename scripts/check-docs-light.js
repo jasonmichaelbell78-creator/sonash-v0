@@ -504,8 +504,8 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
-    // Skip node_modules, .git, and hidden directories
-    if (entry.startsWith('.') || entry === 'node_modules' || entry === 'out' || entry === 'dist') {
+    // Skip node_modules, .git, hidden directories, and archive folders
+    if (entry.startsWith('.') || entry === 'node_modules' || entry === 'out' || entry === 'dist' || entry === 'archive') {
       continue;
     }
 

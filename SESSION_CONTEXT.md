@@ -11,7 +11,7 @@
 
 This document provides **essential session context** for quick startup. It's designed to be read in under 2 minutes and contains only what you need to begin productive work.
 
-**For detailed architecture**, see [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+**For detailed architecture**, see [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
 
@@ -140,7 +140,7 @@ All other systems operational.
 5. **[TRIGGERS.md](./docs/TRIGGERS.md)** - All automation and enforcement mechanisms
 
 **For deeper context**:
-- [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System design
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
 - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
 - [ROADMAP_LOG.md](./ROADMAP_LOG.md) - Historical completions
 
@@ -250,7 +250,7 @@ npm run docs:check   # Documentation linting
 - Need to understand docs? → [AI_WORKFLOW.md](./AI_WORKFLOW.md)
 - Need CodeRabbit process? → [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
 - Need to check priorities? → [ROADMAP.md](./ROADMAP.md)
-- Need architecture details? → [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+- Need architecture details? → [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
 

@@ -98,9 +98,9 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
    - Feature-specific plans in `docs/`
 
 7. **Foundation Documents** (when making architectural decisions):
-   - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System design
+   - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
    - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
-   - [DEVELOPMENT.md](./docs/DEVELOPMENT.md) - Development procedures
+   - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures
 
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
@@ -275,14 +275,14 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 → [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
 **System Architecture**:
-→ [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+→ [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 **Security Guidelines**:
 → [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md) - MANDATORY standards
 → [SECURITY.md](./docs/SECURITY.md) - Additional security docs
 
 **Development Procedures**:
-→ [DEVELOPMENT.md](./docs/DEVELOPMENT.md)
+→ [DEVELOPMENT.md](./DEVELOPMENT.md)
 
 **How to Implement Features**:
 → [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
@@ -422,14 +422,14 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 1. Read [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Verify this is the priority
 2. Check [ROADMAP.md](./ROADMAP.md) - Understand milestone context
 3. Look for feature plan in `docs/` - Follow if exists
-4. Reference [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Understand patterns
+4. Reference [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand patterns
 5. Follow [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md) - Implementation workflow
 6. Update docs as you work
 
 ### Scenario 2: Fixing a Bug
 
 1. Check [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Check known blockers/issues
-2. Reference [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Understand component
+2. Reference [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand component
 3. Fix the bug
 4. Add tests
 5. Update [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) if significant
