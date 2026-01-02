@@ -37,10 +37,37 @@
 ## 4. "Tribal Knowledge" (Lessons Learned)
 *Detailed history of "fixed" bugs—do not re-introduce them.*
 
+### App-Specific Patterns
 *   **Testing**: When writing tests, **MOCK `httpsCallable`**, not direct Firestore writes. The codebase uses Cloud Functions for writes. Mocking Firestore writes will lead to false positives (tests pass, app fails).
 *   **Account Linking**: `migrateAnonymousUserData` is a batch operation. It handles the merge. Do not attempt to merge manually on the client.
 *   **Google OAuth**: Requires specific COOP/COEP headers in `firebase.json` to work correctly in popups. Do not remove them.
 *   **Meeting Widgets**: Hoisting bugs in `setInterval` are common. Always define callbacks `useCallback` *before* the effect.
+
+### Code Review Patterns (from 13+ reviews)
+*Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md)*
+
+**Bash/Shell:**
+- Exit codes: `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]` (captures assignment, not cmd)
+- HEAD~N needs N+1 commits: use `COMMIT_COUNT - 1` as max
+- File iteration: `while IFS= read -r file` NOT `for file in $list` (spaces break loop)
+
+**npm/Dependencies:**
+- Use `npm ci` NOT `npm install` in automation (prevents lockfile drift)
+- Ask "does project actually use X?" before adding packages
+- Peer deps must be in lockfile for `npm ci` in Cloud Build
+
+**Security:**
+- Validate file paths within repo root before unlinkSync/operations
+- Sanitize inputs before shell interpolation (command injection risk)
+- Never trust external input in execSync/spawn
+
+**Git:**
+- File renames: grep for old terminology in descriptions, not just filenames
+- After lockfile changes: verify with `rm -rf node_modules && npm ci`
+
+**General:**
+- Understand WHY before fixing - one correct fix > ten wrong ones
+- Remove `g` flag from regex when using `.test()` in loops (stateful lastIndex)
 
 ## 5. Documentation Index
 *Use these files to answer your own questions.*
