@@ -18,7 +18,7 @@ This guide provides everything needed to set up and develop on the SoNash projec
 
 **See also:**
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
-- [docs/SECURITY.md](./docs/SECURITY.md) - Security requirements
+- [SECURITY.md](./docs/SECURITY.md) - Security requirements
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
 
 ---
