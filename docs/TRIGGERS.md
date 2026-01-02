@@ -854,8 +854,8 @@ gh run view <RUN_ID>
 ### ~~3. Add Pre-push Hook~~ ✅ DONE
 *Implemented via Gap 3 resolution above*
 
-### 4. Automate Doc Update Reminders
-- GitHub Action to comment on PRs that touch code without updating docs
+### ~~4. Automate Doc Update Reminders~~ SKIPPED
+*Deferred - CodeRabbit reviews + docs:check + PR template checkbox provide sufficient coverage. Revisit if doc drift becomes a problem.*
 
 ---
 
