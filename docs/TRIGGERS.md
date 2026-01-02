@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
 **Project**: SoNash Recovery Notebook
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2026-01-02
 **Last Updated**: 2026-01-02
 **Status**: ACTIVE
@@ -795,23 +795,24 @@ gh run view <RUN_ID>
 
 # 9. COMPLIANCE GAPS & RECOMMENDATIONS
 
+## Resolved Gaps ✅
+
+### Gap 1: Pattern Check Not in CI - RESOLVED
+**Resolved**: 2026-01-02
+**Solution**: Added `npm run patterns:check` to CI workflow (`.github/workflows/ci.yml`)
+**Commit**: ci: Add pattern compliance check to CI workflow
+
+### Gap 2: Documentation Directives Not Enforced - RESOLVED
+**Resolved**: 2026-01-02
+**Solution**:
+- Added `--strict` flag to `scripts/check-docs-light.js` (treats warnings as errors)
+- Added `npm run docs:check -- --strict` to CI workflow
+- Warnings now block PRs (exit code 1)
+**Commit**: ci: Add docs:check --strict to CI workflow (Gap 2 fix)
+
+---
+
 ## Current Gaps
-
-### Gap 1: Pattern Check Not in CI
-**Issue**: `npm run patterns:check` must be run manually
-**Risk**: Anti-patterns can be committed if developer forgets
-**Recommendation**: Add to CI workflow
-```yaml
-- name: Pattern compliance check
-  run: npm run patterns:check
-```
-
-### Gap 2: Documentation Directives Not Enforced
-**Issue**: Doc update triggers are manual and easily forgotten
-**Risk**: Documentation drift from codebase
-**Recommendation**:
-- Add doc linting to CI
-- Create doc-coverage check script
 
 ### Gap 3: Pre-commit Hook Bypass
 **Issue**: `git commit --no-verify` bypasses all hooks
@@ -831,12 +832,8 @@ gh run view <RUN_ID>
 
 ## Recommended Additions
 
-### 1. Add Pattern Check to CI
-```yaml
-# In .github/workflows/ci.yml
-- name: Pattern compliance
-  run: npm run patterns:check
-```
+### ~~1. Add Pattern Check to CI~~ ✅ DONE
+*Implemented via Gap 1 resolution above*
 
 ### 2. Add Documentation Drift Check
 Create `scripts/check-doc-drift.js`:
@@ -872,6 +869,7 @@ npm run patterns:check
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow | Claude |
 | 1.0 | 2026-01-02 | Initial document created | Claude |
 
 ---
