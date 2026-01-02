@@ -30,7 +30,28 @@ If you modified any of these, verify they still work:
 - [ ] If applicable, update DOCUMENTATION_STANDARDIZATION_PLAN.md with phase progress
 - [ ] Log any significant learnings in AI_REVIEW_LEARNINGS_LOG.md
 
-## 4. Code Review Completeness Audit
+## 4. Learning Consolidation (IMPORTANT)
+Check if consolidation is due and perform it so patterns are in claude.md for next session:
+
+1. **Check consolidation trigger** in AI_REVIEW_LEARNINGS_LOG.md:
+   - Find "Reviews since last consolidation" counter
+   - If >= 10, consolidation is needed
+
+2. **If consolidation needed:**
+   - Review all entries since last consolidation
+   - Identify patterns appearing 3+ times across reviews
+   - Add new distilled patterns to claude.md Section 4 "Tribal Knowledge"
+   - **Run `npm run patterns:suggest`** to find automatable patterns
+   - Add suggested patterns to check-pattern-compliance.js (with human review)
+   - Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md
+   - Note consolidation in version history
+
+3. **Why this matters:**
+   - claude.md is loaded at session START
+   - Patterns consolidated NOW will be in context for NEXT session
+   - This is how the AI "learns" from previous sessions
+
+## 5. Code Review Completeness Audit
 If you received code review feedback this session:
 ```
 VERIFICATION CHECKLIST:
@@ -41,7 +62,7 @@ VERIFICATION CHECKLIST:
 └─ Did you commit descriptive messages explaining WHY changes were made?
 ```
 
-## 5. Key Learnings to Remember
+## 6. Key Learnings to Remember
 Today's session reinforced these patterns:
 
 ### DO:
@@ -61,7 +82,7 @@ Today's session reinforced these patterns:
 - Push without verifying CI impact
 - Edit files without reading them first
 
-## 6. Commit Summary
+## 7. Commit Summary
 Provide a summary of all commits made this session:
 
 ```

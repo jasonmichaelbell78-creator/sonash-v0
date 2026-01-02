@@ -19,6 +19,7 @@
     "phase:validate": "node scripts/validate-phase-completion.js",
     "patterns:check": "node scripts/check-pattern-compliance.js",
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
+    "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'"
   },
   "dependencies": {
