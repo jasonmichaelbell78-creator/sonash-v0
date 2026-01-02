@@ -1,18 +1,41 @@
 # Local Recovery Resources Implementation Plan
 
-**Feature ID:** M1.6 Phase 7
-**Priority:** Medium-High
-**Effort:** 6-8 SP (9-12 hours)
-**Status:** 📋 Planned
-**Created:** 2025-12-30
+**Document Version**: 2.0
+**Created**: 2025-12-30
+**Last Updated**: 2026-01-02
+**Status**: PLANNING
+**Overall Completion**: 20% (2/10 tasks - data aggregation & review complete)
+**Target Completion**: Q1 2026
 
 ---
 
-## Overview
+## 📋 Purpose & Scope
 
-Implement a comprehensive Local Recovery Resources directory in the Growth tab, providing users with access to 60+ verified Nashville recovery resources across 8 categories. Includes admin panel management similar to Meetings and Sober Living features.
+### What This Plan Covers
 
-**Key Value Proposition:**
+This document provides the complete planning, tracking, and implementation guide for the Local Recovery Resources feature.
+
+**Primary Goal**: Implement a comprehensive Local Recovery Resources directory in the Growth tab, providing users with access to 60+ verified Nashville recovery resources across 8 categories.
+
+**Scope**:
+- ✅ **In Scope**:
+  - Firestore collection and service layer
+  - User-facing list and map views in Growth tab
+  - Admin panel CRUD interface
+  - GPS-based "nearby" filtering
+  - Data migration from existing `data/local-resources.ts`
+- ❌ **Out of Scope**:
+  - User reviews/ratings
+  - Real-time bed availability
+  - Insurance filtering
+  - Multilingual support
+
+**Related To**:
+- [M1.6 Admin Panel](../ROADMAP.md#m16---admin-panel--today-page-enhancement)
+- Meetings feature (`lib/db/meetings.ts`)
+- Sober Living feature (`lib/db/sober-living.ts`)
+
+**Key Value Proposition**:
 - Critical access to treatment centers, housing, food banks, legal services
 - GPS-based "nearby" filtering for location-aware discovery
 - Admin-managed content ensures accuracy and relevance
@@ -20,7 +43,40 @@ Implement a comprehensive Local Recovery Resources directory in the Growth tab, 
 
 ---
 
-## Current State
+## 🗺️ STATUS DASHBOARD
+
+| Task/Phase | ID | Description | Status | Est. Hours | Dependencies |
+|------------|----|--------------| -------|------------|--------------|
+| **Phase 0: Data Prep** | | | | | |
+| Data Aggregation | T0.1 | Compile 60+ Nashville resources | **✅ COMPLETE** | 4h | None |
+| Review & Validation | T0.2 | Verify addresses, phones, websites | **✅ COMPLETE** | 2h | T0.1 |
+| **Phase 1: Service Layer** | | | | | |
+| Firestore Collection | T1.1 | Create `/local_resources` collection | **PENDING** | 0.5h | PR1 complete |
+| Service Layer | T1.2 | CRUD operations (`lib/db/local-resources.ts`) | **PENDING** | 1h | T1.1 |
+| Seed Script | T1.3 | Migration script to populate Firestore | **PENDING** | 0.5h | T1.2 |
+| **Phase 2: User UI** | | | | | |
+| List View | T2.1 | Filterable list in Growth tab | **PENDING** | 3h | T1.3 |
+| Map View | T2.2 | Map with category-coded markers | **PENDING** | 2h | T1.3 |
+| **Phase 3: Admin** | | | | | |
+| Admin Tab | T3.1 | CRUD interface in admin panel | **PENDING** | 2.5h | T1.2 |
+| **Phase 4: Polish** | | | | | |
+| Testing | T4.1 | E2E testing, mobile verification | **PENDING** | 1.5h | T2.1, T2.2, T3.1 |
+
+**Progress Summary**:
+- **Completed**: 2 tasks (20%)
+- **In Progress**: 0 tasks
+- **Blocked**: 8 tasks (waiting for Documentation Standardization)
+- **Not Started**: 0 tasks
+
+**Timeline**:
+- **Data Prep Completed**: 2025-12-28
+- **Current Sprint**: N/A (blocked)
+- **Target Completion**: Q1 2026
+- **Actual Completion**: TBD
+
+---
+
+## 🎯 Current State
 
 ### ✅ Completed (Dec 28, 2025)
 
@@ -44,16 +100,41 @@ Implement a comprehensive Local Recovery Resources directory in the Growth tab, 
 
 ### 🚧 Missing Components
 
-1. **Firestore Collection** - No `/local_resources` collection exists
-2. **Service Layer** - No CRUD operations for local resources
-3. **User-Facing UI** - No display component in Growth tab
-4. **Admin Panel** - No CRUD interface for resource management
-5. **Map Integration** - Need to extend existing map component
-6. **Data Migration** - Need seeding script to populate Firestore
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Firestore Collection | ❌ Missing | No `/local_resources` collection exists |
+| Service Layer | ❌ Missing | No CRUD operations for local resources |
+| User-Facing UI | ❌ Missing | No display component in Growth tab |
+| Admin Panel | ❌ Missing | No CRUD interface for resource management |
+| Map Integration | ❌ Missing | Need to extend existing map component |
+| Data Migration | ❌ Missing | Need seeding script to populate Firestore |
 
 ---
 
-## Technical Architecture
+## 🔀 Dependencies
+
+### Prerequisite Work
+
+**Must be complete before starting**:
+- [x] Data aggregation complete (`data/local-resources.ts`) - ✅ Complete
+- [x] Map component exists (can reuse `MeetingMap`) - ✅ Available
+- [x] Geolocation hook exists (`hooks/use-geolocation.ts`) - ✅ Available
+- [ ] Documentation Standardization Phase 6 complete - 🔄 In Progress
+- [ ] PR1 complete (Firestore rules stability) - ✅ Complete
+
+**Blockers**:
+- Documentation Standardization Initiative blocks new feature development
+
+### Downstream Impact
+
+**This work will enable**:
+- User reviews/ratings (future)
+- Resource analytics (future)
+- Insurance filtering (future)
+
+---
+
+## 📐 Technical Architecture
 
 ### Data Model
 
@@ -78,7 +159,7 @@ interface LocalResource {
     lng: number;
   };
 
-  // Admin fields (to be added)
+  // Admin fields
   active: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -138,274 +219,73 @@ match /local_resources/{resourceId} {
 
 ---
 
-## Implementation Plan
+## 📋 Implementation Plan
 
 ### Phase 1: Service Layer & Data Migration (2 hours)
 
-**Files to Create:**
+**Goal**: Create Firestore collection and service layer
 
-1. **`lib/db/local-resources.ts`** - Service layer (pattern: `meetings.ts`, `sober-living.ts`)
+**Tasks**:
+- [ ] **Task 1.1**: Create Firestore collection and rules (0.5h)
+  - Add `/local_resources` rules to `firestore.rules`
+  - Add indexes to `firestore.indexes.json`
 
-```typescript
-// Key functions to implement:
-export async function getAllLocalResources(): Promise<LocalResource[]>
-export async function getLocalResourcesByCategory(category: ResourceCategory): Promise<LocalResource[]>
-export async function getLocalResourceById(id: string): Promise<LocalResource | null>
-export async function addLocalResource(data: LocalResourceInput): Promise<string>
-export async function updateLocalResource(id: string, data: Partial<LocalResourceInput>): Promise<void>
-export async function deleteLocalResource(id: string): Promise<void>
-export async function toggleLocalResourceActive(id: string): Promise<void>
-```
+- [ ] **Task 1.2**: Create service layer (1h)
+  - **File**: `lib/db/local-resources.ts`
+  - Functions: `getAllLocalResources()`, `getByCategory()`, `getById()`, `add()`, `update()`, `delete()`, `toggleActive()`
+  - Follow patterns from `meetings.ts`, `sober-living.ts`
 
-2. **`scripts/seed-local-resources.ts`** - One-time migration script
+- [ ] **Task 1.3**: Create seeding script (0.5h)
+  - **File**: `scripts/seed-local-resources.ts`
+  - Import from `data/local-resources.ts`
+  - Add `active: true`, timestamps
+  - Batch write to Firestore
 
-```typescript
-// Import from data/local-resources.ts
-// Add active: true, createdAt, updatedAt fields
-// Batch write to Firestore /local_resources collection
-// Verify count: 60+ resources
-```
+### Phase 2: User-Facing UI (5 hours)
 
-**Tasks:**
-- [ ] Create service layer with full CRUD operations
-- [ ] Add type exports for LocalResource interfaces
-- [ ] Implement error handling and logging
-- [ ] Create seeding script
-- [ ] Run migration: `npm run seed-local-resources`
-- [ ] Verify in Firebase Console: 60+ documents in `/local_resources`
+**Goal**: Display resources in Growth tab with list and map views
 
-**Testing:**
-```bash
-# Test service layer
-npm test -- local-resources.test.ts
+**Tasks**:
+- [ ] **Task 2.1**: Create list view components (3h)
+  - `components/growth/local-resources-card.tsx` - Resource card
+  - `components/growth/local-resources-list.tsx` - Filterable list
+  - `components/growth/local-resources-section.tsx` - Main section with tabs
+  - Integrate into `growth-page.tsx`
 
-# Run seeding (one-time)
-npm run seed-local-resources
-```
+- [ ] **Task 2.2**: Create map view (2h)
+  - `components/growth/local-resources-map.tsx`
+  - Category-coded markers (8 colors)
+  - Marker clustering for performance
+  - Info popups with resource details
 
----
+### Phase 3: Admin Panel (2.5 hours)
 
-### Phase 2: User-Facing UI - List View (3-4 hours)
+**Goal**: Enable admin CRUD operations
 
-**Files to Create:**
+**Tasks**:
+- [ ] **Task 3.1**: Create admin CRUD interface (2.5h)
+  - `components/admin/local-resources-tab.tsx`
+  - Table view with filters
+  - Add/Edit/Delete dialogs
+  - Form validation (coordinates, phone, URL)
+  - Add tab to `admin-panel.tsx`
 
-1. **`components/growth/local-resources-card.tsx`** - Individual resource card
+### Phase 4: Testing & Polish (1.5 hours)
 
-```tsx
-interface LocalResourceCardProps {
-  resource: LocalResource;
-  userLocation?: { lat: number; lng: number };
-}
+**Goal**: Verify all functionality and polish UX
 
-// Features:
-// - Display name, category badge, services
-// - Show address, phone, website
-// - "Call" button (tel: link)
-// - "Get Directions" button (Google Maps link)
-// - Distance badge if userLocation provided
-```
-
-2. **`components/growth/local-resources-list.tsx`** - Filterable list
-
-```tsx
-// Features:
-// - Category filter dropdown (8 categories + "All")
-// - Search input (name, services)
-// - Sort by: Name, Distance, Category
-// - Virtual scrolling for performance (60+ items)
-// - Empty state for no results
-```
-
-3. **`components/growth/local-resources-section.tsx`** - Main section component
-
-```tsx
-// Features:
-// - Tab switcher: List View | Map View
-// - Filter controls at top
-// - Request location permission for "Nearby" sorting
-// - Loading states
-// - Error states
-```
-
-**Files to Modify:**
-
-4. **`components/notebook/pages/growth-page.tsx`**
-
-```tsx
-// Add after Sober Living section:
-import LocalResourcesSection from "@/components/growth/local-resources-section"
-
-// In render:
-<section className="space-y-3">
-  <div className="flex items-center gap-2 mb-2">
-    <div className="h-px flex-1 bg-amber-900/10" />
-    <span className="text-xs font-body text-amber-900/40 uppercase tracking-widest">
-      Local Resources
-    </span>
-    <div className="h-px flex-1 bg-amber-900/10" />
-  </div>
-  <LocalResourcesSection />
-</section>
-```
-
-**Tasks:**
-- [ ] Create resource card component
-- [ ] Create filterable list component
-- [ ] Create main section component with tab switcher
-- [ ] Integrate into Growth page
-- [ ] Add category badge styling (8 colors for 8 categories)
-- [ ] Implement geolocation hook integration
-- [ ] Add empty states and loading states
-
-**UI/UX Notes:**
-- **Category badges:** Use color coding (e.g., red for crisis, blue for clinical, green for community)
-- **Phone links:** `tel:` protocol for one-tap calling
-- **Directions:** `https://maps.google.com/?q=${lat},${lng}` or `geo:${lat},${lng}`
-- **Nearby sorting:** Only show distance if user grants location permission
+**Tasks**:
+- [ ] **Task 4.1**: Comprehensive testing (1.5h)
+  - User flow testing (list, map, filters)
+  - Admin flow testing (CRUD)
+  - Mobile testing (call, directions)
+  - Performance testing (60+ markers)
 
 ---
 
-### Phase 3: User-Facing UI - Map View (1-2 hours)
+## ✅ Acceptance Criteria
 
-**Files to Create:**
-
-1. **`components/growth/local-resources-map.tsx`** - Map component
-
-**Option A: Extend Existing MeetingMap**
-```tsx
-// Modify components/maps/meeting-map.tsx to accept generic markers
-// Add LocalResource support via type union or generics
-```
-
-**Option B: Create New Component**
-```tsx
-// Clone and adapt meeting-map.tsx for local resources
-// Simpler if map behaviors differ significantly
-```
-
-**Map Features:**
-- Markers for each resource (color-coded by category)
-- Info popup on marker click (name, category, services)
-- "Get Directions" link in popup
-- User location marker (blue dot)
-- Auto-zoom to fit all visible markers
-- Cluster markers when zoomed out (performance)
-
-**Tasks:**
-- [ ] Decide: Extend MeetingMap vs. create new component
-- [ ] Add category-based marker colors
-- [ ] Implement marker clustering for performance
-- [ ] Add info popups with resource details
-- [ ] Test with 60+ markers on map
-
-**Performance Considerations:**
-- Use marker clustering (e.g., `react-leaflet-markercluster`)
-- Lazy load map component (already done for MeetingMap)
-- Limit visible markers to 100 at a time
-
----
-
-### Phase 4: Admin Panel CRUD (2-3 hours)
-
-**Files to Create:**
-
-1. **`components/admin/local-resources-tab.tsx`** - Admin CRUD interface
-
-```tsx
-// Features (pattern: components/admin/links-tab.tsx):
-// - Table view of all resources
-// - Filter by category, active status
-// - Search by name
-// - Add Resource dialog
-// - Edit Resource dialog
-// - Delete confirmation dialog
-// - Active/Inactive toggle
-// - Bulk actions (activate, deactivate, delete)
-// - GPS coordinate validation (lat: -90 to 90, lng: -180 to 180)
-// - Phone number formatting
-// - URL validation for websites
-```
-
-**Files to Modify:**
-
-2. **`components/admin/admin-panel.tsx`**
-
-```tsx
-// Add new tab:
-const tabs = [
-  // ...existing tabs
-  { id: "local-resources", label: "Local Resources", icon: MapPin }
-]
-
-// In render:
-{activeTab === "local-resources" && <LocalResourcesTab />}
-```
-
-**Tasks:**
-- [ ] Create admin CRUD component (follow `links-tab.tsx` pattern)
-- [ ] Add Resources tab to admin panel
-- [ ] Implement form validation (coordinates, phone, URL)
-- [ ] Add bulk actions (activate/deactivate multiple)
-- [ ] Test CRUD operations in admin panel
-- [ ] Verify Firestore rules prevent non-admin writes
-
-**Form Validation Rules:**
-- **Name:** Required, 3-100 characters
-- **Category:** Required, one of 8 predefined categories
-- **Location Type:** Required, one of 5 types
-- **Phone:** Optional, format: `(XXX) XXX-XXXX` or `XXX-XXX-XXXX`
-- **Website:** Optional, valid URL format
-- **Coordinates:** Optional, lat: -90 to 90, lng: -180 to 180
-- **Address:** Required if locationType is 'physical'
-
----
-
-### Phase 5: Testing & Polish (1-2 hours)
-
-**Testing Checklist:**
-
-**User-Facing:**
-- [ ] Resources display correctly in Growth tab
-- [ ] Category filtering works (8 categories + All)
-- [ ] Search filters by name and services
-- [ ] Distance sorting works (with location permission)
-- [ ] Map view displays all resources with correct markers
-- [ ] "Call" and "Get Directions" buttons work
-- [ ] Empty states display when no results
-- [ ] Loading states display during fetch
-
-**Admin Panel:**
-- [ ] Can create new resource
-- [ ] Can edit existing resource
-- [ ] Can delete resource (with confirmation)
-- [ ] Can toggle active/inactive status
-- [ ] Form validation works (coordinates, phone, URL)
-- [ ] Bulk actions work
-- [ ] Non-admin users cannot access CRUD operations
-
-**Data Integrity:**
-- [ ] All 60+ resources migrated to Firestore
-- [ ] No duplicate IDs
-- [ ] GPS coordinates valid for all physical locations
-- [ ] Phone numbers formatted consistently
-- [ ] Websites accessible (spot check)
-
-**Performance:**
-- [ ] List view renders 60+ items without lag
-- [ ] Map view handles 60+ markers (with clustering)
-- [ ] Search/filter operations are instantaneous
-
-**Mobile:**
-- [ ] Cards display correctly on mobile
-- [ ] Map gestures work (pinch-zoom, pan)
-- [ ] "Call" button works on mobile (tel: protocol)
-- [ ] "Get Directions" opens native maps app
-
----
-
-## Acceptance Criteria
-
-**User Stories:**
+### User Stories
 
 1. **As a user**, I can view local recovery resources in the Growth tab
 2. **As a user**, I can filter resources by category (8 categories)
@@ -414,67 +294,42 @@ const tabs = [
 5. **As a user**, I can sort resources by distance from my location
 6. **As a user**, I can call a resource with one tap (mobile)
 7. **As a user**, I can get directions to a resource (Google Maps)
+8. **As an admin**, I can add, edit, delete, and toggle resources
 
-8. **As an admin**, I can add new local resources
-9. **As an admin**, I can edit existing resources
-10. **As an admin**, I can delete resources
-11. **As an admin**, I can activate/deactivate resources
-12. **As an admin**, I can bulk-activate or bulk-deactivate resources
-
-**Technical Criteria:**
+### Technical Criteria
 
 - [ ] Firestore collection `/local_resources` created with 60+ documents
 - [ ] Firestore security rules allow user read, admin write
-- [ ] Service layer (`lib/db/local-resources.ts`) implements all CRUD operations
-- [ ] Growth tab displays local resources section below sober living
-- [ ] Map view uses existing map infrastructure (Leaflet)
-- [ ] Admin panel has Resources tab with full CRUD interface
-- [ ] All form inputs validated (phone, URL, coordinates)
-- [ ] No TypeScript errors
-- [ ] No ESLint warnings
+- [ ] Service layer implements all CRUD operations
+- [ ] Growth tab displays resources section below sober living
+- [ ] Map view uses existing Leaflet infrastructure
+- [ ] Admin panel has Resources tab with full CRUD
+- [ ] All form inputs validated
+- [ ] No TypeScript errors, no ESLint warnings
 
 ---
 
-## Dependencies & Risks
+## 🚨 Risks & Mitigation
 
-### ✅ Dependencies Met
-
-1. **Data aggregation complete** - `data/local-resources.ts` ready
-2. **Map component exists** - Can reuse `MeetingMap` with modifications
-3. **Admin panel framework exists** - Follow established patterns
-4. **Geolocation hook exists** - `hooks/use-geolocation.ts` already implemented
-
-### ⚠️ Risks & Mitigations
-
-**Risk 1: Firestore Rules Conflict with PR1**
-- **Issue:** PR1 (refactoring) is also modifying Firestore rules
-- **Mitigation:** Wait until PR1 complete before adding `/local_resources` rules
-- **Timeline:** Dec 31+ (after App Check decision)
-
-**Risk 2: Map Performance with 60+ Markers**
-- **Issue:** Rendering 60+ markers may lag on low-end devices
-- **Mitigation:** Implement marker clustering, lazy load map component
-- **Fallback:** Limit visible markers to nearest 50 if performance issues
-
-**Risk 3: GPS Coordinate Accuracy**
-- **Issue:** Some resources may have incorrect coordinates
-- **Mitigation:** Admin panel allows coordinate editing, add "Report Issue" button
-- **Testing:** Spot-check coordinates in map view during QA
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| Map performance with 60+ markers | MEDIUM | MEDIUM | Implement marker clustering |
+| GPS coordinate accuracy | LOW | LOW | Admin panel allows coordinate editing |
+| Firestore rules conflict | LOW | HIGH | Wait for PR1 stability |
 
 ---
 
-## Files Summary
+## 📚 Files Summary
 
 ### New Files (8 total)
 
 1. `lib/db/local-resources.ts` - Service layer
 2. `components/growth/local-resources-card.tsx` - Resource card UI
 3. `components/growth/local-resources-list.tsx` - Filterable list
-4. `components/growth/local-resources-map.tsx` - Map view (or extend MeetingMap)
+4. `components/growth/local-resources-map.tsx` - Map view
 5. `components/growth/local-resources-section.tsx` - Main section
 6. `components/admin/local-resources-tab.tsx` - Admin CRUD
 7. `scripts/seed-local-resources.ts` - Data migration
-8. `docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md` - This document
 
 ### Modified Files (4 total)
 
@@ -482,64 +337,79 @@ const tabs = [
 2. `components/admin/admin-panel.tsx` - Add Resources tab
 3. `firestore.rules` - Add `/local_resources` rules
 4. `firestore.indexes.json` - Add category/city indexes
-5. `components/maps/meeting-map.tsx` (optional) - Extend for LocalResource type
 
 ---
 
-## Timeline & Effort
+## 📚 Related Documentation
 
-**Total Effort:** 9-12 hours (6-8 SP)
-
-| Phase | Tasks | Effort | Dependencies |
-|-------|-------|--------|--------------|
-| **Phase 1** | Service layer + migration | 2 hours | None |
-| **Phase 2** | List view UI | 3-4 hours | Phase 1 complete |
-| **Phase 3** | Map view | 1-2 hours | Phase 1 complete |
-| **Phase 4** | Admin panel | 2-3 hours | Phase 1 complete |
-| **Phase 5** | Testing + polish | 1-2 hours | Phases 2-4 complete |
-
-**Recommended Order:**
-1. Phase 1 (service + data) - enables all other work
-2. Phase 2 (list view) - core user-facing feature
-3. Phase 4 (admin panel) - enables content management
-4. Phase 3 (map view) - nice-to-have enhancement
-5. Phase 5 (testing) - final polish
-
-**Blocker:** Wait until PR1 complete (Firestore rules stability) - **Dec 31+**
-
----
-
-## Post-Launch Enhancements
-
-**Future Features (out of scope for M1.6):**
-
-1. **User Reviews/Ratings** - Allow users to rate resources
-2. **Favorites** - Save frequently accessed resources
-3. **Share Resources** - Share via SMS/email
-4. **Resource Availability** - Real-time bed availability for treatment centers
-5. **Multilingual Support** - Spanish translations for Nashville's Latino recovery community
-6. **Insurance Filter** - Filter by accepted insurance (TennCare, Medicaid, etc.)
-7. **Walk-in Hours** - Real-time open/closed status
-8. **Photos** - Add facility photos
-9. **Verified Badge** - Mark resources verified by admins
-10. **Resource Analytics** - Track which resources users access most
-
----
-
-## Related Documentation
-
-- **Data Source:** `data/local-resources.ts`
-- **Review Checklist:** `local-resources-review.md`
-- **Roadmap Entry:** `ROADMAP.md` - M1.6 Phase 7
-- **Similar Features:**
-  - Meetings: `lib/db/meetings.ts`, `components/notebook/pages/resources-page.tsx`
+- **Data Source**: `data/local-resources.ts`
+- **Review Checklist**: `local-resources-review.md`
+- **Similar Features**:
+  - Meetings: `lib/db/meetings.ts`
   - Sober Living: `lib/db/sober-living.ts`
-  - Admin Meetings: `components/admin/meetings-tab.tsx` (if exists)
   - Admin Links: `components/admin/links-tab.tsx`
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2025-12-30
-**Owner:** Development Team
-**Status:** Ready for Implementation (waiting for PR1 completion)
+## 🗓️ Version History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration | Claude |
+| 1.0 | 2025-12-30 | Initial plan created | Development Team |
+
+---
+
+## 🤖 AI Instructions
+
+**For AI Assistants implementing this plan:**
+
+1. **Read this entire document** before starting any task
+2. **Check dependencies** - Ensure PR1 and Doc Standardization complete
+3. **Follow existing patterns** - Reference `meetings.ts` and `sober-living.ts`
+4. **Start with Phase 1** - Service layer enables all other work
+5. **Run seed script** after service layer complete
+6. **Update status dashboard** as you complete tasks
+7. **Test with 60+ resources** - Verify performance
+8. **Follow admin panel patterns** - Reference `links-tab.tsx`
+
+**When completing a task:**
+```bash
+# 1. Implement the feature
+# 2. Update this document (check off task)
+# 3. Commit with descriptive message
+git add docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md
+git commit -m "docs: Update Local Resources plan - completed task [ID]"
+```
+
+---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- ✅ Task status changes
+- ✅ Blockers discovered or resolved
+- ✅ New resources added to data file
+- ✅ Technical approach changes
+- ✅ Dependencies change status
+
+---
+
+## 📊 Post-Launch Enhancements
+
+**Future Features (out of scope for M1.6):**
+
+1. User Reviews/Ratings
+2. Favorites/Save resources
+3. Share via SMS/email
+4. Real-time bed availability
+5. Multilingual support (Spanish)
+6. Insurance filtering
+7. Walk-in hours/open status
+8. Facility photos
+9. Verified badge
+10. Resource analytics
+
+---
+
+**END OF DOCUMENT**

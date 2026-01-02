@@ -1,12 +1,19 @@
 # Implementation Prompts for 8-Phase Refactoring Plan
 
-**Purpose**: This document contains reusable prompts for implementing and reviewing each phase of the refactoring plan.
+**Document Version**: 2.0
+**Created**: 2025-12-30
+**Last Updated**: 2026-01-02
+**Status**: ACTIVE
+
+---
+
+## 📋 Purpose & Scope
+
+This document contains reusable prompts for implementing and reviewing each phase of the refactoring plan.
 
 **Related Documents**:
 - [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Master tracking document
 - **[PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md) - START HERE! Complete workflow with checkboxes**
-
-**Last Updated**: 2025-12-30
 
 ---
 
@@ -537,4 +544,35 @@ git checkout -b phase-2-firebase-access
 
 ---
 
-**END OF IMPLEMENTATION_PROMPTS.md**
+## 🗓️ Version History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration | Claude |
+| 1.0 | 2025-12-30 | Initial prompts document | Development Team |
+
+---
+
+## 🤖 AI Instructions
+
+**When using these prompts:**
+
+1. **Use Master PR Implementer Prompt** for any phase implementation
+2. **Always run Review R1** after implementing (self-review)
+3. **Always run Review R2** after R1 (hallucination check)
+4. **Complete Between-PR Checklist** before starting next phase
+5. **Reference PR_WORKFLOW_CHECKLIST.md** for checkboxes
+
+---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- ✅ Prompt format needs adjustment based on results
+- ✅ New checks need adding to review prompts
+- ✅ Between-PR checklist needs new steps
+- ✅ New lessons learned from using the prompts
+
+---
+
+**END OF DOCUMENT**

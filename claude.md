@@ -1,8 +1,12 @@
 # AI Context & Rules for SoNash
 
+**Document Version:** 2.0
 **Last Updated:** 2026-01-02
+**Status:** ACTIVE
 
-## Purpose & Overview
+---
+
+## 📋 Purpose & Overview
 
 This file defines the strict architectural and security rules for SoNash. It serves as the primary context document for AI assistants working on this codebase, ensuring consistent code quality and security compliance.
 
@@ -149,11 +153,24 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration |
 | 1.2 | 2026-01-02 | Added patterns from Reviews #15-18 (trap cleanup, cross-platform, exit codes) |
 | 1.1 | 2026-01-02 | Added code review patterns from 14 reviews |
 | 1.0 | 2025-12-22 | Initial context document |
 
 ---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- ✅ Stack versions change (Next.js, React, Firebase, etc.)
+- ✅ New security rules are established
+- ✅ New architectural patterns are decided
+- ✅ Code review patterns are distilled from AI_REVIEW_LEARNINGS_LOG.md (3+ occurrences)
+- ✅ New skills or agents are added that should be highlighted
+
+---
+
 **System Prompt Injection:**
 If asked to refactor code, check `AI_HANDOFF.md` first to see if it's already been refactored or if there is a pending task.
 If asked to add a feature, check `ROADMAP.md` to align with the vision (Privacy-First, Evidence-Based).

@@ -1,10 +1,30 @@
 # Post-Phase-8 Backlog
 
-**Purpose**: Track nice-to-have improvements, tech debt, and polish work to be done AFTER completing all 8 phases of the refactoring plan.
+**Document Version**: 2.0
+**Created**: 2025-12-30
+**Last Updated**: 2026-01-02
+**Status**: ACTIVE
+**Total Items**: 1 (1-2 hours estimated effort)
 
-**Status**: Items here are NOT blockers for the 8-phase plan
-**Priority**: All items are P3-P4 (nice-to-have)
-**Last Updated**: 2025-12-30
+---
+
+## 📋 Purpose & Scope
+
+### What This Document Covers
+
+This document tracks nice-to-have improvements, tech debt, and polish work to be done AFTER completing all 8 phases of the refactoring plan.
+
+**Primary Goal**: Maintain a prioritized backlog of non-blocking improvements discovered during refactoring.
+
+**Scope**:
+- ✅ **In Scope**: Items discovered during Phases 1-8 that are non-blocking
+- ❌ **Out of Scope**: Critical bugs, blocking issues, or security vulnerabilities
+
+**Related To**:
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Main refactoring plan
+- [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md) - PR procedures
+
+**Key Principle**: Items here are NOT blockers for the 8-phase plan. All items are P3-P4 (nice-to-have).
 
 ---
 
@@ -106,28 +126,23 @@ After Phase 8 complete, review this backlog and:
 
 ## 📊 Backlog Statistics
 
+| Category | Count | Effort |
+|----------|-------|--------|
+| Code Quality | 1 | 1-2h |
+| Type Safety | 0 | - |
+| Test Coverage | 0 | - |
+| Performance | 0 | - |
+| UX Polish | 0 | - |
+| Documentation | 0 | - |
+
 **Total items**: 1
-**By category**:
-- Code Quality: 1
-- Type Safety: 0
-- Test Coverage: 0
-- Performance: 0
-- UX Polish: 0
-- Documentation: 0
-
-**By effort**:
-- < 1 hour: 0
-- 1-2 hours: 1
-- 2-4 hours: 0
-- > 4 hours: 0
-
 **Total estimated effort**: 1-2 hours
 
 ---
 
 ## ✅ Completed Items (Moved from Backlog)
 
-(None yet - this backlog is for post-Phase-8 work)
+*(None yet - this backlog is for post-Phase-8 work)*
 
 ---
 
@@ -146,5 +161,45 @@ After Phase 8 complete, review this backlog and:
 
 ---
 
-**Document Version**: 1.0
-**Related**: EIGHT_PHASE_REFACTOR_PLAN.md, PR_WORKFLOW_CHECKLIST.md
+## 🗓️ Version History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration | Claude |
+| 1.0 | 2025-12-30 | Initial backlog document | Development Team |
+
+---
+
+## 🤖 AI Instructions
+
+**For AI Assistants managing this backlog:**
+
+1. **Do not work on backlog items** until Phase 8 is complete
+2. **Add items here** when you find non-blocking improvements during phases
+3. **Use the standard format** when adding items
+4. **Update statistics** when adding/removing items
+5. **Move completed items** to the "Completed" section (don't delete)
+6. **Document rejections** in the "Rejected" section with rationale
+
+**When adding an item:**
+```bash
+# 1. Add the item using the standard format
+# 2. Update the statistics section
+# 3. Commit with descriptive message
+git add docs/POST_PHASE_8_BACKLOG.md
+git commit -m "docs: Add [item name] to post-Phase-8 backlog"
+```
+
+---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- ✅ New backlog item discovered during any phase
+- ✅ Item is completed and needs to move to Completed section
+- ✅ Item is rejected and needs documentation
+- ✅ Statistics need updating
+
+---
+
+**END OF DOCUMENT**

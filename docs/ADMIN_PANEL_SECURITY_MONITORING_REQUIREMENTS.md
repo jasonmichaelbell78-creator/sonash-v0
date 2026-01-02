@@ -1,18 +1,69 @@
 # Admin Panel Security & Monitoring Requirements
 
-**Created:** 2025-12-30
-**Related:** SoNash Admin Panel Enhancement v1.4 (M1.6)
-**Context:** reCAPTCHA optional implementation & network compatibility fixes
+**Document Version**: 2.0
+**Created**: 2025-12-30
+**Last Updated**: 2026-01-02
+**Status**: PLANNING
+**Overall Completion**: 0% (0/11 tasks complete)
+**Target Completion**: Q1 2026
 
 ---
 
-## Overview
+## 📋 Purpose & Scope
+
+### What This Document Covers
 
 This document outlines security monitoring and logging requirements for the SoNash Admin Panel (Phases 4 & 5). These requirements emerged from implementing optional reCAPTCHA verification to support corporate networks that block Google reCAPTCHA.
 
+**Primary Goal**: Enable admins to monitor security events, track reCAPTCHA health, and respond to security incidents through the admin panel.
+
+**Scope**:
+- ✅ **In Scope**:
+  - reCAPTCHA monitoring dashboard
+  - Security event trends visualization
+  - Quick filters for security logs
+  - Security event detail views
+  - Admin configuration for reCAPTCHA
+- ❌ **Out of Scope**:
+  - Automated bot blocking
+  - IP-based pattern detection
+  - Real-time log streaming (deferred)
+
+**Related To**:
+- [M1.6 Admin Panel Phase 4](../ROADMAP.md#phase-4-error-tracking---sentry-integration-planned) - Error Tracking
+- [M1.6 Admin Panel Phase 5](../ROADMAP.md#phase-5-system-logs---gcp-integration-planned) - Logs Tab
+- [SoNash Admin Panel Enhancement v1.4](./archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
+
 ---
 
-## Background: reCAPTCHA Optional Implementation
+## 🗺️ STATUS DASHBOARD
+
+| Task/Phase | ID | Description | Status | Est. Hours | Dependencies |
+|------------|----|--------------| -------|------------|--------------|
+| **Phase 4: Error Tracking** | | | | | |
+| Sentry Filter | T4.1 | Add `RECAPTCHA_MISSING_TOKEN` to Sentry filters | **PENDING** | 0.5h | None |
+| reCAPTCHA Widget | T4.2 | Create reCAPTCHA Health widget on Dashboard | **PENDING** | 2h | T4.1 |
+| Security Trends | T4.3 | Implement Security Event Trends chart | **PENDING** | 3h | T4.2 |
+| Spike Detection | T4.4 | Add spike detection alerting | **PENDING** | 2h | T4.3 |
+| GCP Queries | T4.5 | Create reCAPTCHA monitoring queries | **PENDING** | 1h | None |
+| **Phase 5: Logs Tab** | | | | | |
+| Quick Filters | T5.1 | Add Quick Filters for security events | **PENDING** | 1.5h | None |
+| Event Detail | T5.2 | Implement Security Event Detail View | **PENDING** | 2h | T5.1 |
+| Related Events | T5.3 | Add "View Related Events" action | **PENDING** | 1h | T5.2 |
+| Export | T5.4 | Create Export functionality | **PENDING** | 1h | T5.2 |
+| **Future** | | | | | |
+| Settings Panel | TF.1 | reCAPTCHA Settings panel in admin | **DEFERRED** | 2h | T4.2 |
+| Stricter Limits | TF.2 | Stricter rate limits for no-token requests | **DEFERRED** | 1h | TF.1 |
+
+**Progress Summary**:
+- **Completed**: 0 tasks (0%)
+- **In Progress**: 0 tasks
+- **Blocked**: 9 tasks (waiting for M1.6 Phase 4-5 to start)
+- **Deferred**: 2 tasks (future enhancements)
+
+---
+
+## 🎯 Background: reCAPTCHA Optional Implementation
 
 ### The Problem
 - Corporate networks (hospitals, treatment centers, sober living facilities) often block Google reCAPTCHA Enterprise
@@ -26,21 +77,21 @@ This document outlines security monitoring and logging requirements for the SoNa
 - Still verify reCAPTCHA tokens when present (~80-90% of users)
 
 ### Security Trade-offs
-**Still Protected By:**
-- ✅ Firebase Authentication (required)
-- ✅ Rate limiting (10 req/min writes, 5 req/5min migrations)
-- ✅ Input validation (Zod schemas)
-- ✅ Authorization (user can only write own data)
-- ✅ Server-side timestamps
 
-**Lost Protection:**
-- ⚠️ reCAPTCHA bot detection when token missing (10-20% of users)
+| Protection Layer | Status | Notes |
+|------------------|--------|-------|
+| Firebase Authentication | ✅ Required | All requests authenticated |
+| Rate Limiting | ✅ Active | 10 req/min writes, 5 req/5min migrations |
+| Input Validation | ✅ Active | Zod schemas |
+| Authorization | ✅ Active | User can only write own data |
+| Server-side Timestamps | ✅ Active | Prevents timestamp manipulation |
+| reCAPTCHA Bot Detection | ⚠️ Optional | Missing for ~10-20% of users |
 
 ---
 
-## Required Admin Panel Features
+## 📋 Requirements
 
-### 🎯 Phase 4: Error Tracking Enhancement
+### Phase 4: Error Tracking Enhancement
 
 #### reCAPTCHA Monitoring Dashboard
 
@@ -63,13 +114,6 @@ Display metrics:
 - 🟢 Normal: <10% missing tokens
 - 🟡 Warning: 10-20% missing tokens (monitor)
 - 🔴 Critical: >20% missing tokens (investigate)
-
-**Actions:**
-- View recent `RECAPTCHA_MISSING_TOKEN` events
-- Filter by userId to identify affected users
-- Export for analysis
-
----
 
 #### Security Event Trends
 
@@ -104,11 +148,11 @@ type SecurityTrendData = {
 
 ---
 
-### 🎯 Phase 5: Logs Tab Enhancement
+### Phase 5: Logs Tab Enhancement
 
 #### Quick Filters
 
-Add pre-configured filters for security events:
+Pre-configured filters for security events:
 
 ```typescript
 const QUICK_FILTERS = [
@@ -147,8 +191,6 @@ const QUICK_FILTERS = [
 
 #### Security Event Detail View
 
-When clicking a log entry, show:
-
 ```typescript
 interface SecurityEventDetail {
   // Event Identification
@@ -159,7 +201,7 @@ interface SecurityEventDetail {
 
   // User Context
   userId?: string;              // Hashed (SHA-256, 12 chars)
-  userEmail?: string;           // If available (from Cloud Function)
+  userEmail?: string;           // If available
 
   // Event Details
   message: string;
@@ -169,10 +211,6 @@ interface SecurityEventDetail {
     attemptedUserId?: string;  // For AUTHORIZATION_FAILURE
     [key: string]: unknown;
   };
-
-  // Context
-  ipAddress?: string;           // If available
-  userAgent?: string;           // If available
 
   // Actions
   actions: {
@@ -185,7 +223,7 @@ interface SecurityEventDetail {
 
 ---
 
-### 🎯 Admin Configuration
+### Admin Configuration (Future)
 
 #### reCAPTCHA Settings Panel
 
@@ -193,20 +231,14 @@ interface SecurityEventDetail {
 
 ```typescript
 interface RecaptchaConfig {
-  // Threshold Configuration
-  minScore: number;              // Default: 0.5, Range: 0.0-1.0
-
-  // Monitoring
-  alertOnHighMissingRate: boolean;  // Alert if >20% missing
-  alertOnLowScoreSpike: boolean;    // Alert if sudden increase
-
-  // Enforcement (Future)
-  requireTokenForActions: string[]; // Future: specific actions that REQUIRE token
+  minScore: number;                    // Default: 0.5, Range: 0.0-1.0
+  alertOnHighMissingRate: boolean;     // Alert if >20% missing
+  alertOnLowScoreSpike: boolean;       // Alert if sudden increase
   stricterRateLimitWithoutToken: boolean; // Future: 5 req/min instead of 10
 }
 ```
 
-**UI:**
+**UI Mockup:**
 ```
 ┌─ reCAPTCHA Configuration ────────────────────────────┐
 │                                                       │
@@ -220,7 +252,6 @@ interface RecaptchaConfig {
 │  • Total Requests: 1,247                             │
 │  • With reCAPTCHA: 1,089 (87.3%)                     │
 │  • Without reCAPTCHA: 158 (12.7%) ✓ Normal           │
-│  • Low Score Rejections: 3 (0.2%)                    │
 │                                                       │
 │  [Save Changes]                                      │
 └───────────────────────────────────────────────────────┘
@@ -228,35 +259,7 @@ interface RecaptchaConfig {
 
 ---
 
-## Implementation Checklist
-
-### Phase 4: Error Tracking (Sentry Integration)
-
-- [ ] Add `RECAPTCHA_MISSING_TOKEN` to Sentry issue filters
-- [ ] Create reCAPTCHA Health widget on Dashboard
-- [ ] Implement Security Event Trends chart
-- [ ] Add spike detection alerting
-- [ ] Create reCAPTCHA monitoring queries in GCP
-
-### Phase 5: Logs Tab
-
-- [ ] Add Quick Filters for security events
-- [ ] Implement Security Event Detail View
-- [ ] Add "View Related Events" action
-- [ ] Create Export functionality for investigations
-- [ ] Add real-time log streaming (optional)
-
-### Future Enhancements
-
-- [ ] reCAPTCHA Settings panel in admin
-- [ ] Configurable MIN_SCORE threshold
-- [ ] Optional stricter rate limits for no-token requests
-- [ ] IP-based pattern detection
-- [ ] Automated bot blocking (careful - could block treatment centers)
-
----
-
-## GCP Cloud Logging Queries
+## 🔍 GCP Cloud Logging Queries
 
 ### Recent Missing reCAPTCHA Tokens
 ```
@@ -289,7 +292,7 @@ severity>="WARNING"
 
 ---
 
-## Monitoring Best Practices
+## 📊 Monitoring Best Practices
 
 ### Daily Checks
 1. Review reCAPTCHA missing token rate (Dashboard widget)
@@ -309,7 +312,7 @@ severity>="WARNING"
 
 ---
 
-## Security Incident Response
+## 🚨 Security Incident Response
 
 ### High Missing Token Rate (>20%)
 
@@ -339,18 +342,56 @@ severity>="WARNING"
 
 ---
 
-## Related Documentation
+## 📚 Related Documentation
 
-- [SoNash Admin Panel Enhancement v1.4](../docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
-- [Sentry Integration Guide](../docs/SENTRY_INTEGRATION_GUIDE.md)
-- [Security Architecture](../docs/SECURITY.md)
-- [Server-Side Security](../docs/SERVER_SIDE_SECURITY.md)
-- [Incident Response](../docs/INCIDENT_RESPONSE.md)
+- [SoNash Admin Panel Enhancement v1.4](./archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
+- [Sentry Integration Guide](./SENTRY_INTEGRATION_GUIDE.md)
+- [Security Architecture](./SECURITY.md)
+- [Server-Side Security](./SERVER_SIDE_SECURITY.md)
 
 ---
 
-## Changelog
+## 🗓️ Version History
 
-| Date | Change |
-|------|--------|
-| 2025-12-30 | Initial document created after implementing optional reCAPTCHA |
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration | Claude |
+| 1.0 | 2025-12-30 | Initial document created | Development Team |
+
+---
+
+## 🤖 AI Instructions
+
+**For AI Assistants implementing these requirements:**
+
+1. **Read this entire document** before implementing any feature
+2. **Reference M1.6 Admin Panel spec** for UI patterns
+3. **Follow Phase 4-5 order** - Error tracking before logs
+4. **Use existing GCP queries** as starting point
+5. **Maintain security context** - Never expose raw user IDs
+6. **Test alert thresholds** with realistic data
+7. **Update status dashboard** as tasks complete
+
+**When implementing:**
+```bash
+# 1. Implement the feature
+# 2. Update this document (check off task)
+# 3. Commit with descriptive message
+git add docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md
+git commit -m "docs: Update Security Monitoring Requirements - completed task [ID]"
+```
+
+---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- ✅ Task status changes
+- ✅ New security event types added
+- ✅ Alert thresholds adjusted
+- ✅ GCP queries modified
+- ✅ Incident response procedures updated
+
+---
+
+**END OF DOCUMENT**
