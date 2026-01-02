@@ -20,8 +20,8 @@ echo "  ✅ ESLint passed (0 errors)"
 
 # 2. Run tests
 echo "  ▶ Running tests..."
-TEST_OUTPUT=$(npm test 2>&1)
-if [ $? -ne 0 ]; then
+# Use if ! pattern to capture exit code correctly (not $? after assignment)
+if ! TEST_OUTPUT=$(npm test 2>&1); then
   echo "  ❌ Tests failed"
   echo "$TEST_OUTPUT" | tail -10
   echo ""

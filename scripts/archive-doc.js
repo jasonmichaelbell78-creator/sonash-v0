@@ -24,7 +24,7 @@
  * Exit codes: 0 = success, 1 = error
  */
 
-import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync, readdirSync, statSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync, readdirSync, statSync, realpathSync } from 'fs';
 import { join, dirname, basename, relative } from 'path';
 import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
@@ -60,6 +60,43 @@ const FILE_ARG = args.find(arg => !arg.startsWith('--') && (reasonIndex === -1 |
 function verbose(...messages) {
   if (VERBOSE) {
     console.log('[VERBOSE]', ...messages);
+  }
+}
+
+/**
+ * Validate that a path is within the repository root
+ * Prevents arbitrary file deletion outside the repo
+ * @param {string} filePath - Path to validate
+ * @returns {{valid: boolean, error?: string}}
+ */
+function validatePathWithinRepo(filePath) {
+  try {
+    // Resolve to absolute path, following symlinks
+    const resolvedPath = realpathSync(filePath);
+    const resolvedRoot = realpathSync(ROOT);
+
+    // Check if the resolved path starts with the repo root
+    if (!resolvedPath.startsWith(resolvedRoot + '/') && resolvedPath !== resolvedRoot) {
+      return {
+        valid: false,
+        error: `Path "${filePath}" resolves outside repository root`
+      };
+    }
+
+    // Additional check: must be a markdown file
+    if (!resolvedPath.endsWith('.md')) {
+      return {
+        valid: false,
+        error: `Path "${filePath}" is not a markdown file`
+      };
+    }
+
+    return { valid: true };
+  } catch (err) {
+    return {
+      valid: false,
+      error: `Cannot validate path: ${err.message}`
+    };
   }
 }
 
@@ -425,6 +462,14 @@ function main() {
   } else {
     console.error(`❌ Error: File not found: ${FILE_ARG}`);
     console.error('   Searched in: current directory, project root, docs/');
+    process.exit(1);
+  }
+
+  // SECURITY: Validate path is within repository root
+  const pathValidation = validatePathWithinRepo(sourcePath);
+  if (!pathValidation.valid) {
+    console.error(`❌ Security Error: ${pathValidation.error}`);
+    console.error('   This script only operates on files within the repository');
     process.exit(1);
   }
 

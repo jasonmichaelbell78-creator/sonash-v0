@@ -32,17 +32,17 @@ jobs:
         id: review-check
         continue-on-error: true
         run: |
-          OUTPUT=$(node scripts/check-review-needed.js --json 2>&1)
+          # Run script once and capture both output and exit code
+          # Use if ! pattern to correctly capture exit code (not $? after assignment)
+          if ! OUTPUT=$(node scripts/check-review-needed.js --json 2>&1); then
+            echo "review_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "review_needed=false" >> $GITHUB_OUTPUT
+          fi
+
           echo "output<<EOF" >> $GITHUB_OUTPUT
           echo "$OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
-          # Check if review is needed (exit code 1)
-          if node scripts/check-review-needed.js 2>/dev/null; then
-            echo "review_needed=false" >> $GITHUB_OUTPUT
-          else
-            echo "review_needed=true" >> $GITHUB_OUTPUT
-          fi
 
       - name: Comment on PR if review needed
         if: steps.review-check.outputs.review_needed == 'true'

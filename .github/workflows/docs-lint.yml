@@ -52,7 +52,13 @@ jobs:
           WARNINGS=0
 
           # Check each changed markdown file
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          # Use while read pattern instead of for loop to handle filenames with spaces
+          echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | while IFS= read -r file; do
+            # Skip empty lines
+            if [[ -z "$file" ]]; then
+              continue
+            fi
+
             echo "Checking: $file"
 
             # Skip non-markdown files and templates
@@ -66,9 +72,12 @@ jobs:
               continue
             fi
 
-            # Run linter and capture output
-            OUTPUT=$(node scripts/check-docs-light.js "$file" 2>&1) || true
-            EXIT_CODE=$?
+            # Run linter and capture output (use if ! pattern for correct exit code)
+            if ! OUTPUT=$(node scripts/check-docs-light.js "$file" 2>&1); then
+              EXIT_CODE=1
+            else
+              EXIT_CODE=0
+            fi
 
             if [[ $EXIT_CODE -ne 0 ]]; then
               ERRORS=$((ERRORS + 1))

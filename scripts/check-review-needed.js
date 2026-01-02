@@ -74,6 +74,37 @@ function verbose(...messages) {
 }
 
 /**
+ * Validate and sanitize ISO date string to prevent command injection
+ * @param {string} dateString - Date string to validate
+ * @returns {string} - Validated date string or safe fallback
+ */
+function sanitizeDateString(dateString) {
+  // Only allow ISO date format: YYYY-MM-DD (with optional time)
+  const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+
+  if (!dateString || typeof dateString !== 'string') {
+    verbose('Invalid date string, using fallback');
+    return '2025-01-01';
+  }
+
+  const trimmed = dateString.trim();
+
+  if (!isoDatePattern.test(trimmed)) {
+    verbose(`Date string "${trimmed}" does not match ISO format, using fallback`);
+    return '2025-01-01';
+  }
+
+  // Additional validation: ensure it parses to a valid date
+  const parsed = new Date(trimmed);
+  if (isNaN(parsed.getTime())) {
+    verbose(`Date string "${trimmed}" is not a valid date, using fallback`);
+    return '2025-01-01';
+  }
+
+  return trimmed;
+}
+
+/**
  * Safely read a file with error handling
  * @param {string} filePath - Path to file
  * @param {string} description - Human-readable description for errors
@@ -518,7 +549,8 @@ function main() {
   const coordContent = coordResult.success ? coordResult.content : '';
 
   // Step 2: Get baseline values
-  const lastReviewDate = getLastReviewDate(coordContent) || '2025-01-01';
+  // Sanitize date to prevent command injection in git commands
+  const lastReviewDate = sanitizeDateString(getLastReviewDate(coordContent) || '2025-01-01');
   const baselineLintWarnings = getBaselineLintWarnings(coordContent);
   const baselineCoverage = getBaselineCoverage(coordContent);
 
