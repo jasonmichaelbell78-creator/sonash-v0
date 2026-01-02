@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.13
+**Document Version:** 1.14
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.14 | 2026-01-02 | Review #23: Link text consistency in "See also" sections |
 | 1.13 | 2026-01-02 | Review #22: Phase 3 CodeRabbit reviews (App Check status, duplicate Layer 5, terminology) |
 | 1.12 | 2026-01-02 | Review #21 third follow-up: cross-drive bypass, lstatSync error handling, underscore prefix |
 | 1.11 | 2026-01-02 | Review #21 second follow-up: filename spaces, Windows rooted paths, comment clarity |
@@ -1428,6 +1429,39 @@ The error persisted because of multiple interacting issues:
 **Verification:** `npm run docs:check` (0 errors)
 
 **Key Insight:** Automated code reviewers catch documentation inconsistencies that humans miss. Always cross-reference documentation claims with actual codebase state, especially for security-related features.
+
+---
+
+#### Review #23: Link Text Consistency (2026-01-02)
+
+**Context:** CodeRabbit review of TRIGGERS.md addition and prior Phase 3 changes.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Link text includes path prefix inconsistently | Trivial | DEVELOPMENT.md | Changed `[docs/SECURITY.md]` to `[SECURITY.md]` |
+
+**Pattern Identified:**
+
+**Link text in "See also" sections should be consistent:**
+```markdown
+<!-- BAD: Mixed formats - one shows path, others don't -->
+**See also:**
+- [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [docs/SECURITY.md](./docs/SECURITY.md)  <!-- ❌ includes path -->
+- [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+
+<!-- GOOD: Consistent format - all show just filename -->
+**See also:**
+- [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [SECURITY.md](./docs/SECURITY.md)  <!-- ✅ clean display text -->
+- [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+```
+
+**Rule:** Link display text should show clean filename; actual path goes in the URL portion.
+
+**Key Insight:** Consistency in documentation formatting matters even for small details. Users scan "See also" sections quickly - uniform formatting reduces cognitive load.
 
 ---
 
