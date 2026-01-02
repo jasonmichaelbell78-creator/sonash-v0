@@ -134,7 +134,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'hardcoded-api-key',
-    pattern: /(?:api[_-]?key|apikey|secret|password|token)\s*[:=]\s*['"`][A-Za-z0-9_\-/+=]{20,}['"`]/gi,
+    pattern: /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Za-z0-9_/+=-]{20,}['"`]/gi,
     message: 'Potential hardcoded API key or secret detected',
     fix: 'Use environment variables: process.env.API_KEY',
     review: 'Security Standards',
@@ -167,7 +167,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'unsanitized-error-response',
-    pattern: /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[^}]*(?:error|err|exception)\.(?:message|stack)/g,
+    pattern: /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g,
     message: 'Exposing raw error messages/stack traces to clients',
     fix: 'Return sanitized error messages (e.g., "An error occurred"), log full details server-side',
     review: 'Security Standards',
