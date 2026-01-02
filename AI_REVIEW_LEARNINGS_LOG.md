@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.3 | 2026-01-02 | Added Review #17 (remaining Qodo/CodeRabbit fixes) |
 | 1.2 | 2026-01-02 | Added Review #16 (security hardening and robustness) |
 | 1.1 | 2026-01-02 | Added Review #15 (CI workflow and documentation fixes) |
 | 1.0 | 2026-01-02 | Initial creation with Reviews #1-14 |
@@ -859,6 +860,60 @@ BEFORE changing package.json or lockfiles, ask:
 **Verification:** `npm run lint` (0 errors), `npm test` (passing)
 
 **Key Insight:** Security review feedback compounds - each review surfaces new attack vectors. The markdown injection and string interpolation issues weren't visible until the core bugs were fixed.
+
+---
+
+#### Review #17: Remaining Qodo/CodeRabbit Fixes (2026-01-02)
+
+**Source:** Full Qodo compliance feedback + CodeRabbit suggestions from Review #16
+**Scope:** Cross-platform compatibility, robustness, workflow YAML fixes
+**Commit:** 43b94c9
+
+**Issues Fixed (12 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | Swallowed parse error | Medium | sync-geocache.ts | Log error details with `error instanceof Error` check |
+| 2 | Cross-platform path validation | Medium | archive-doc.js | Use `path.relative()` instead of POSIX `startsWith()` |
+| 3 | Non-Error throws crash | Medium | retry-failures.ts | Safe error handling with `error instanceof Error` |
+| 4 | Test output not streamed | Medium | .husky/pre-commit | Use temp file for streaming output |
+| 5 | Push race conditions | Medium | sync-readme.yml | Add rebase before push |
+| 6 | Non-portable path in markdown | Medium | archive-doc.js | Normalize to forward slashes for markdown links |
+| 7 | JSON output corrupted by stderr | Medium | review-check.yml | Redirect stderr to separate file |
+| 8 | Husky breaks CI | Low | package.json | Add fallback `\|\| echo` for graceful failure |
+| 9 | Safe error handling | Medium | check-review-needed.js | Use `error instanceof Error ? error.message : String(error)` |
+| 10 | YAML expression parsing | CRITICAL | docs-lint.yml | Use env var approach instead of process substitution |
+| 11 | ESLint sourceType wrong | Low | eslint.config.mjs | Configure as ES modules with custom globals |
+| 12 | __filename/__dirname conflict | Low | eslint.config.mjs | Exclude from node globals since scripts define them |
+
+**Key Patterns Identified:**
+
+1. **Cross-platform path handling:** Use `path.relative()` instead of string operations
+   - Wrong: `resolvedPath.startsWith(resolvedRoot)` (fails on Windows backslashes)
+   - Right: `path.relative(root, path).startsWith('..')` (works everywhere)
+
+2. **Safe error handling for non-Error throws:** JavaScript allows throwing any value
+   - Wrong: `error.message` (crashes if non-Error thrown)
+   - Right: `error instanceof Error ? error.message : String(error)`
+
+3. **YAML expression parsing gotcha:** `< <(...)` looks like broken `${{ }}` to YAML parser
+   - Wrong: `done < <(echo "${{ ... }}")` - YAML sees `< <(echo "${{` as expression start
+   - Right: Use `env:` block to pass value, then `< /tmp/file` or heredoc
+
+4. **Markdown link portability:** Windows paths use backslashes, markdown expects forward slashes
+   - Fix: `.replace(/\\/g, '/')` when generating markdown links
+
+5. **Husky CI compatibility:** CI may not have dev dependencies installed
+   - Pattern: `husky || echo 'not available'` for graceful degradation
+
+6. **stderr corrupts JSON parsing:** When capturing JSON output, stderr can corrupt it
+   - Pattern: `cmd 2>stderr.log` to separate stderr from stdout
+
+**Added to claude.md:** Pattern #2 (safe error handling) already in section 4
+
+**Verification:** `npm run lint` (0 errors), `npm test` (92 passed)
+
+**Key Insight:** Edge cases compound across platforms and environments. What works on Linux may fail on Windows (paths), and what works locally may fail in CI (Husky, env vars). Testing in the target environment is essential.
 
 ---
 
