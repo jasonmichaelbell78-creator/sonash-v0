@@ -31,13 +31,21 @@ export default [
       "no-console": "off",
     },
   },
-  // Node.js scripts configuration
+  // Node.js scripts configuration (ES modules that define their own __filename/__dirname)
   {
     files: ["scripts/**/*.js"],
     languageOptions: {
+      sourceType: "module",
       globals: {
-        ...globals.node,
+        // Node.js globals except __filename/__dirname (scripts define these from import.meta.url)
+        ...Object.fromEntries(
+          Object.entries(globals.node).filter(([k]) => !['__filename', '__dirname'].includes(k))
+        ),
       },
+    },
+    rules: {
+      // Allow require() for dynamic imports (e.g., path.sep detection)
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ];

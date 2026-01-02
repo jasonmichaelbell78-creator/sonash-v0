@@ -44,6 +44,8 @@ jobs:
         id: docs-lint
         if: steps.changed-files.outputs.any_changed == 'true'
         continue-on-error: true
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           echo "## Documentation Lint Results" > lint-results.md
           echo "" >> lint-results.md
@@ -52,8 +54,10 @@ jobs:
           ERRORS=0
           WARNINGS=0
 
+          # Write changed files to temp file to avoid subshell variable scope issues
+          echo "$CHANGED_FILES" | tr '|' '\n' > /tmp/changed_files.txt
+
           # Check each changed markdown file
-          # Use process substitution to avoid subshell - variables persist after loop
           while IFS= read -r file; do
             # Skip empty lines
             if [[ -z "$file" ]]; then
@@ -103,7 +107,7 @@ jobs:
               echo "### ✅ $file" >> lint-results.md
               echo "" >> lint-results.md
             fi
-          done < <(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr '|' '\n')
+          done < /tmp/changed_files.txt
 
           # Summary
           echo "" >> lint-results.md

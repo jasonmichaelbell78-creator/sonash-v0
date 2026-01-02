@@ -75,8 +75,9 @@ function validatePathWithinRepo(filePath) {
     const resolvedPath = realpathSync(filePath);
     const resolvedRoot = realpathSync(ROOT);
 
-    // Check if the resolved path starts with the repo root
-    if (!resolvedPath.startsWith(resolvedRoot + '/') && resolvedPath !== resolvedRoot) {
+    // Check if the resolved path is within the repo root (cross-platform)
+    const rel = relative(resolvedRoot, resolvedPath);
+    if (rel.startsWith('..') || rel.startsWith(require('path').sep + '..')) {
       return {
         valid: false,
         error: `Path "${filePath}" resolves outside repository root`
@@ -336,9 +337,9 @@ function updateCrossReferences(oldPath, _newPath) {
 
       for (const pattern of patterns) {
         if (pattern.test(line)) {
-          // Calculate relative path from this file to archive
+          // Calculate relative path from this file to archive (normalize for cross-platform)
           const fileDir = dirname(filePath);
-          const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename));
+          const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename)).replace(/\\/g, '/');
 
           // Replace the link
           const newLine = line.replace(

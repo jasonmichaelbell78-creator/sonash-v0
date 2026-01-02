@@ -52,4 +52,9 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add README.md
           git commit -m "docs: Auto-sync README status from ROADMAP.md"
-          git push
+
+          # Avoid non-fast-forward failures when multiple runs queue up
+          git fetch origin main
+          git rebase origin/main || (git rebase --abort && exit 1)
+
+          git push || (git pull --rebase origin main && git push)

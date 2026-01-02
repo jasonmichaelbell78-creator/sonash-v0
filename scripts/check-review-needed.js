@@ -125,9 +125,10 @@ function safeReadFile(filePath, description) {
     verbose(`Successfully read ${content.length} characters from ${description}`);
     return { success: true, content };
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: `Failed to read ${description}: ${error.message}`
+      error: `Failed to read ${description}: ${errorMsg}`
     };
   }
 }
@@ -153,9 +154,10 @@ function safeWriteFile(filePath, content, description) {
     writeFileSync(filePath, content, 'utf-8');
     return { success: true };
   } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: `Failed to write ${description}: ${error.message}`
+      error: `Failed to write ${description}: ${errorMsg}`
     };
   }
 }
@@ -372,7 +374,8 @@ function getCurrentCoverage() {
     }
     return null;
   } catch (error) {
-    verbose(`Failed to parse coverage: ${error.message}`);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    verbose(`Failed to parse coverage: ${errorMsg}`);
     return null;
   }
 }

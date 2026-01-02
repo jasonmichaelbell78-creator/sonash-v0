@@ -37,8 +37,10 @@ async function syncGeocache() {
         try {
             cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
             console.log(`📂 Loaded existing cache with ${Object.keys(cache).length} entries.`);
-        } catch {
-            console.warn('⚠️ Could not parse existing cache, starting fresh.');
+        } catch (error: unknown) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            console.warn(`⚠️ Could not parse existing cache: ${errorMsg}`);
+            console.warn('   Starting fresh with empty cache.');
         }
     } else {
         console.log('✨ Creating new cache file.');

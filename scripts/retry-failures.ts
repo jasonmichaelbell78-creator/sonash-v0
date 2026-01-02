@@ -142,7 +142,8 @@ async function retryFailures() {
                 }
             } catch (error: unknown) {
                 console.error(`   ⚠️ Error querying: "${query}"`);
-                console.error(`      Error details: ${(error as Error).message}`);
+                const errorMsg = error instanceof Error ? error.message : String(error);
+                console.error(`      Error details: ${errorMsg}`);
             }
         }
 

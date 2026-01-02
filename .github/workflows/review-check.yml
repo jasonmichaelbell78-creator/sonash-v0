@@ -33,11 +33,16 @@ jobs:
         continue-on-error: true
         run: |
           # Run script once and capture both output and exit code
-          # Use if ! pattern to correctly capture exit code (not $? after assignment)
-          if ! OUTPUT=$(node scripts/check-review-needed.js --json 2>&1); then
+          # Redirect stderr separately to keep JSON output parseable
+          if ! OUTPUT=$(node scripts/check-review-needed.js --json 2>review-check.stderr); then
             echo "review_needed=true" >> $GITHUB_OUTPUT
           else
             echo "review_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Log stderr if any (but don't mix with JSON output)
+          if [ -s review-check.stderr ]; then
+            echo "::warning::Script stderr:" && cat review-check.stderr
           fi
 
           echo "output<<EOF" >> $GITHUB_OUTPUT
