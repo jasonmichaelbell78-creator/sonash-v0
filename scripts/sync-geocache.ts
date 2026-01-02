@@ -3,6 +3,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sanitizeError } from './lib/sanitize-error';
 
 async function syncGeocache() {
     console.log('🚀 Starting Geocache Sync...\n');
@@ -21,7 +22,7 @@ async function syncGeocache() {
                 console.log('ℹ️ Firebase Admin already initialized');
             } else {
                 console.error('❌ Failed to initialize Firebase Admin.');
-                console.error(error);
+                console.error(`   Error: ${sanitizeError(error)}`);
                 process.exit(1);
             }
         }
@@ -37,8 +38,9 @@ async function syncGeocache() {
         try {
             cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
             console.log(`📂 Loaded existing cache with ${Object.keys(cache).length} entries.`);
-        } catch {
-            console.warn('⚠️ Could not parse existing cache, starting fresh.');
+        } catch (error: unknown) {
+            console.warn(`⚠️ Could not parse existing cache: ${sanitizeError(error)}`);
+            console.warn('   Starting fresh with empty cache.');
         }
     } else {
         console.log('✨ Creating new cache file.');
@@ -120,4 +122,7 @@ async function syncGeocache() {
     console.log('============================================================\n');
 }
 
-syncGeocache().catch(console.error);
+syncGeocache().catch((error: unknown) => {
+    console.error('❌ Unexpected error:', sanitizeError(error));
+    process.exit(1);
+});

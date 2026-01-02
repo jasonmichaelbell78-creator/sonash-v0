@@ -52,4 +52,24 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add README.md
           git commit -m "docs: Auto-sync README status from ROADMAP.md"
-          git push
+
+          # Avoid non-fast-forward failures when multiple runs queue up
+          git fetch origin main
+          git rebase origin/main || (git rebase --abort && exit 1)
+
+          # Retry push to handle race conditions (explicit remote/branch for CI reliability)
+          PUSH_SUCCESS=false
+          for i in 1 2 3; do
+            if git push origin HEAD:main; then
+              PUSH_SUCCESS=true
+              break
+            fi
+            echo "Push failed (attempt $i). Retrying in 5 seconds..."
+            sleep 5
+            git pull --rebase origin main || exit 1
+          done
+
+          if [ "$PUSH_SUCCESS" != "true" ]; then
+            echo "Push failed after 3 attempts."
+            exit 1
+          fi

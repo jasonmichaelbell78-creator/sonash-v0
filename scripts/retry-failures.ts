@@ -4,6 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sanitizeError } from './lib/sanitize-error';
 
 // Nominatim Config
 const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org/search';
@@ -22,7 +23,7 @@ async function retryFailures() {
             });
             console.log('✅ Firebase Admin initialized');
         } catch (error: unknown) {
-            console.error('❌ Failed to initialize Firebase Admin:', error);
+            console.error('❌ Failed to initialize Firebase Admin:', sanitizeError(error));
             process.exit(1);
         }
     }
@@ -141,8 +142,9 @@ async function retryFailures() {
                     console.log(`   🔸 No results for: "${query}"`);
                 }
             } catch (error: unknown) {
-                console.error(`   ⚠️ Error querying: "${query}"`);
-                console.error(`      Error details: ${(error as Error).message}`);
+                // Query intentionally omitted from logs to avoid exposing address data
+                console.error(`   ⚠️ Error querying geocode API`);
+                console.error(`      Error details: ${sanitizeError(error)}`);
             }
         }
 
@@ -159,4 +161,7 @@ async function retryFailures() {
     console.log('============================================================\n');
 }
 
-retryFailures().catch(console.error);
+retryFailures().catch((error: unknown) => {
+    console.error('❌ Unexpected error:', sanitizeError(error));
+    process.exit(1);
+});

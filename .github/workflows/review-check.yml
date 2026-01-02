@@ -32,17 +32,44 @@ jobs:
         id: review-check
         continue-on-error: true
         run: |
-          # Run script once and capture both output and exit code
-          # Use if ! pattern to correctly capture exit code (not $? after assignment)
-          if ! OUTPUT=$(node scripts/check-review-needed.js --json 2>&1); then
-            echo "review_needed=true" >> $GITHUB_OUTPUT
-          else
-            echo "review_needed=false" >> $GITHUB_OUTPUT
+          # Use temp file for stderr to avoid conflicts
+          STDERR_FILE=$(mktemp)
+          trap 'rm -f "$STDERR_FILE"' EXIT
+
+          # Run script and capture output and exit code separately
+          # Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
+          set +e
+          OUTPUT=$(node scripts/check-review-needed.js --json 2>"$STDERR_FILE")
+          EXIT_CODE=$?
+          set -e
+
+          # Always validate OUTPUT is valid JSON via stdin (handles large/multiline JSON)
+          if ! printf '%s' "$OUTPUT" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>JSON.parse(d))' >/dev/null 2>&1; then
+            OUTPUT='{"error":"Invalid JSON output","exit_code":'"$EXIT_CODE"'}'
+            EXIT_CODE=2
           fi
 
-          echo "output<<EOF" >> $GITHUB_OUTPUT
-          echo "$OUTPUT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          if [ "$EXIT_CODE" -eq 1 ]; then
+            echo "review_needed=true" >> "$GITHUB_OUTPUT"
+          elif [ "$EXIT_CODE" -eq 0 ]; then
+            echo "review_needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Review check script failed (exit $EXIT_CODE)"
+            echo "review_needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Log stderr if any (but don't mix with JSON output)
+          if [ -s "$STDERR_FILE" ]; then
+            echo "::warning::Script stderr:" && cat "$STDERR_FILE"
+          fi
+
+          # Use unique delimiter to prevent output corruption if content contains "EOF"
+          DELIM="OUTPUT_$(date +%s%N)"
+          {
+            printf 'output<<%s\n' "$DELIM"
+            printf '%s\n' "$OUTPUT"
+            printf '%s\n' "$DELIM"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR if review needed
         if: steps.review-check.outputs.review_needed == 'true'

@@ -1,13 +1,15 @@
 /**
  * Migration Script: Legacy Firestore to Unified Journal
- * 
+ *
  * Migrates data from:
  * - /users/{uid}/daily_logs -> journal entries (check-in, daily-log)
  * - /users/{uid}/inventoryEntries -> journal entries (spot-check, night-review, gratitude)
- * 
+ *
  * Usage: Run with ts-node or from Firebase Functions
  *   npx ts-node scripts/migrate-to-journal.ts
  */
+
+import { sanitizeError } from './lib/sanitize-error';
 
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
@@ -261,4 +263,7 @@ async function runMigration() {
 }
 
 // Run if called directly
-runMigration().catch(console.error);
+runMigration().catch((error: unknown) => {
+    console.error('❌ Unexpected error:', sanitizeError(error));
+    process.exit(1);
+});

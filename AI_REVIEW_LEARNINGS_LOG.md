@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.0
+**Document Version:** 1.12
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,16 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.12 | 2026-01-02 | Review #21 third follow-up: cross-drive bypass, lstatSync error handling, underscore prefix |
+| 1.11 | 2026-01-02 | Review #21 second follow-up: filename spaces, Windows rooted paths, comment clarity |
+| 1.10 | 2026-01-02 | Review #21 follow-up: docs-lint.yml rewrite, path traversal hardening, TS imports |
+| 1.9 | 2026-01-02 | Added Review #21 (root cause analysis, TS wrapper, path traversal, AbortError handling) |
+| 1.8 | 2026-01-02 | Review #20 follow-up: Applied error sanitization to 5 remaining files |
+| 1.7 | 2026-01-02 | Added Review #20 (sanitizeError, extensionless hooks, Windows paths, JSON validation) |
+| 1.6 | 2026-01-02 | Added Review #19 (retry loop, UNC paths, JSON output, proper nouns) |
+| 1.5 | 2026-01-02 | Added distillation process docs and pattern compliance checker |
+| 1.4 | 2026-01-02 | Added Review #18 (security hardening and temp file cleanup) |
+| 1.3 | 2026-01-02 | Added Review #17 (remaining Qodo/CodeRabbit fixes) |
 | 1.2 | 2026-01-02 | Added Review #16 (security hardening and robustness) |
 | 1.1 | 2026-01-02 | Added Review #15 (CI workflow and documentation fixes) |
 | 1.0 | 2026-01-02 | Initial creation with Reviews #1-14 |
@@ -28,7 +38,37 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 1. **After addressing AI review feedback**, add a new Review #N entry
 2. **Reference previous entries** when similar patterns emerge
-3. **Extract key patterns** to claude.md section 4 when they become recurring
+3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
+4. **Run pattern audit** periodically: `npm run patterns:check-all`
+
+---
+
+## Learnings → claude.md Distillation Process
+
+### Threshold: 3+ Occurrences
+A pattern should appear across multiple reviews before being promoted to claude.md.
+
+### Format Transformation
+```
+This Log (detailed):
+  Review #17: "YAML expression parsing gotcha: `< <(...)` looks like
+  broken `${{ }}` to YAML parser..."
+
+claude.md (distilled):
+  - Subshell scope: `cmd | while read` loses variables; use
+    `while read; done < <(cmd)` or temp file
+```
+
+### Categories in claude.md Section 4
+- Bash/Shell, npm/Dependencies, Security, GitHub Actions, JavaScript/TypeScript, Git, General
+
+### Automated Auditing
+The pattern compliance checker surfaces known anti-patterns:
+- **Session start**: Runs automatically, warns if violations found
+- **Manual check**: `npm run patterns:check` (default files) or `npm run patterns:check-all` (full repo)
+- **Staged files**: `npm run patterns:check -- --staged`
+
+The checker references this log so you can find the detailed context for each pattern.
 
 ---
 
@@ -150,7 +190,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
    - Files: AI_REVIEW_PROCESS.md:448
 
 2. **Document Type Classification Ambiguity** (1 occurrence - potential)
-   - Root cause: Related Documents section mixes markdown docs with tool/automation files (docs-lint.yml)
+   - Root cause: Related Documents section mixes Markdown docs with tool/automation files (docs-lint.yml)
    - Prevention: Could separate "Documentation" vs "Tools/Automation" subsections, but phase annotations already provide timing context
    - Files: AI_REVIEW_PROCESS.md:418-422 (deferred - functional as-is)
 
@@ -282,7 +322,7 @@ if [ "$WARNINGS" -eq 0 ]; then echo "Success"; else echo "Completed with $WARNIN
 - ✅ Renamed STALE_DOCS → RECENT_DOCS for clarity
 - ✅ Fixed chart dependency pattern precision (chart → chart\.js)
 
-**Expected Impact:** 30-40% reduction in npm install failures in sandboxed environments; 100% markdown lint compliance
+**Expected Impact:** 30-40% reduction in npm install failures in sandboxed environments; 100% Markdown lint compliance
 
 **Key Insight:** Minor fixes compound - 4 small improvements in one commit prevent 4 potential future issues. Don't skip "trivial" suggestions.
 
@@ -838,7 +878,7 @@ BEFORE changing package.json or lockfiles, ask:
 
 **Key Patterns Identified:**
 
-1. **Markdown injection prevention:** Always sanitize user/tool output before embedding in markdown
+1. **Markdown injection prevention:** Always sanitize user/tool output before embedding in Markdown
    - Escape triple backticks: `sed 's/\`\`\`/\\\\`\\\\`\\\\`/g'`
    - Escape GitHub Actions syntax: `sed 's/\${{/\\${{/g'`
 
@@ -858,7 +898,478 @@ BEFORE changing package.json or lockfiles, ask:
 
 **Verification:** `npm run lint` (0 errors), `npm test` (passing)
 
-**Key Insight:** Security review feedback compounds - each review surfaces new attack vectors. The markdown injection and string interpolation issues weren't visible until the core bugs were fixed.
+**Key Insight:** Security review feedback compounds - each review surfaces new attack vectors. The Markdown injection and string interpolation issues weren't visible until the core bugs were fixed.
+
+---
+
+#### Review #17: Remaining Qodo/CodeRabbit Fixes (2026-01-02)
+
+**Source:** Full Qodo compliance feedback + CodeRabbit suggestions from Review #16
+**Scope:** Cross-platform compatibility, robustness, workflow YAML fixes
+**Commit:** 43b94c9
+
+**Issues Fixed (12 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | Swallowed parse error | Medium | sync-geocache.ts | Log error details with `error instanceof Error` check |
+| 2 | Cross-platform path validation | Medium | archive-doc.js | Use `path.relative()` instead of POSIX `startsWith()` |
+| 3 | Non-Error throws crash | Medium | retry-failures.ts | Safe error handling with `error instanceof Error` |
+| 4 | Test output not streamed | Medium | .husky/pre-commit | Use temp file for streaming output |
+| 5 | Push race conditions | Medium | sync-readme.yml | Add rebase before push |
+| 6 | Non-portable path in Markdown | Medium | archive-doc.js | Normalize to forward slashes for Markdown links |
+| 7 | JSON output corrupted by stderr | Medium | review-check.yml | Redirect stderr to separate file |
+| 8 | Husky breaks CI | Low | package.json | Add fallback `\|\| echo` for graceful failure |
+| 9 | Safe error handling | Medium | check-review-needed.js | Use `error instanceof Error ? error.message : String(error)` |
+| 10 | YAML expression parsing | CRITICAL | docs-lint.yml | Use env var approach instead of process substitution |
+| 11 | ESLint sourceType wrong | Low | eslint.config.mjs | Configure as ES modules with custom globals |
+| 12 | __filename/__dirname conflict | Low | eslint.config.mjs | Exclude from node globals since scripts define them |
+
+**Key Patterns Identified:**
+
+1. **Cross-platform path handling:** Use `path.relative()` instead of string operations
+   - Wrong: `resolvedPath.startsWith(resolvedRoot)` (fails on Windows backslashes)
+   - Right: `path.relative(root, path).startsWith('..')` (works everywhere)
+
+2. **Safe error handling for non-Error throws:** JavaScript allows throwing any value
+   - Wrong: `error.message` (crashes if non-Error thrown)
+   - Right: `error instanceof Error ? error.message : String(error)`
+
+3. **YAML expression parsing gotcha:** `< <(...)` looks like broken `${{ }}` to YAML parser
+   - Wrong: `done < <(echo "${{ ... }}")` - YAML sees `< <(echo "${{` as expression start
+   - Right: Use `env:` block to pass value, then `< /tmp/file` or heredoc
+
+4. **Markdown link portability:** Windows paths use backslashes, Markdown expects forward slashes
+   - Fix: `.replace(/\\/g, '/')` when generating Markdown links
+
+5. **Husky CI compatibility:** CI may not have dev dependencies installed
+   - Pattern: `husky || echo 'not available'` for graceful degradation
+
+6. **stderr corrupts JSON parsing:** When capturing JSON output, stderr can corrupt it
+   - Pattern: `cmd 2>stderr.log` to separate stderr from stdout
+
+**Added to claude.md:** Pattern #2 (safe error handling) already in section 4
+
+**Verification:** `npm run lint` (0 errors), `npm test` (92 passed)
+
+**Key Insight:** Edge cases compound across platforms and environments. What works on Linux may fail on Windows (paths), and what works locally may fail in CI (Husky, env vars). Testing in the target environment is essential.
+
+---
+
+#### Review #18: Security Hardening and Temp File Cleanup (2026-01-02)
+
+**Source:** Qodo compliance feedback + CodeRabbit PR suggestions
+**Scope:** Security improvements, cross-platform compatibility, shell scripting best practices
+**Commit:** (pending)
+
+**Issues Fixed (10 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | require() in ES module crashes | HIGH | archive-doc.js | Removed - using regex instead |
+| 2 | Windows cross-drive path bypass | HIGH | archive-doc.js | Added drive letter comparison check |
+| 3 | False positive path traversal | Medium | archive-doc.js | Use regex `/^\.\.(?:[\\/]\|$)/` for accuracy |
+| 4 | Redundant ./ prefix | Low | archive-doc.js | Removed from link replacement |
+| 5 | Push race condition retry | Medium | sync-readme.yml | Added retry loop (3 attempts with sleep) |
+| 6 | Hardcoded temp file path | Medium | review-check.yml | Use mktemp for unique temp files |
+| 7 | Script error not distinguished | Medium | review-check.yml | Differentiate exit codes (0/1/2) |
+| 8 | Temp file not cleaned on error | Medium | docs-lint.yml | Added trap for cleanup on exit |
+| 9 | Temp file not cleaned on error | Medium | .husky/pre-commit | Added trap for cleanup on exit |
+| 10 | Unused sep import | Low | archive-doc.js | Removed after switching to regex |
+
+**Key Patterns Identified:**
+
+1. **Windows cross-drive security:** `path.relative()` across drives returns absolute paths
+   - Check: Compare drive letters before using relative path check
+   - Pattern: `resolvedPath.slice(0, 2).toLowerCase() !== resolvedRoot.slice(0, 2).toLowerCase()`
+
+2. **Accurate path traversal detection:** Simple `startsWith('..')` has false positives
+   - Wrong: `rel.startsWith('..')` matches filenames like `..hidden.md`
+   - Right: `/^\.\.(?:[\\/]|$)/.test(rel)` ensures it's actually traversing up
+
+3. **Shell temp file cleanup:** Always use trap for guaranteed cleanup
+   - Pattern: `TMPFILE=$(mktemp); trap 'rm -f "$TMPFILE"' EXIT`
+   - Works even if script exits early due to error
+
+4. **Exit code differentiation:** Scripts should use distinct exit codes
+   - 0 = success/no action needed
+   - 1 = action recommended (not an error)
+   - 2 = actual error
+   - Check exit code explicitly, not just if command "failed"
+
+5. **Retry loops for race conditions:** Multiple concurrent workflows can conflict
+   - Pattern: `for i in 1 2 3; do git push && break; sleep 5; git pull --rebase; done`
+
+**Qodo Compliance Notes:**
+
+Two items flagged as "Requires Further Human Verification":
+- **Secure Error Handling:** Error messages may expose internal paths in logs
+- **Secure Logging Practices:** Raw error.message could contain sensitive data
+
+These are acceptable for internal dev tooling but would need sanitization for user-facing applications.
+
+**Verification:** `npm run lint` (0 errors), `npm test` (92 passed)
+
+**Key Insight:** Security considerations differ by context. Internal dev scripts can be more verbose for debugging, while user-facing or production code needs sanitized error messages. Document the intended context.
+
+---
+
+#### Review #19: Follow-up Refinements (2026-01-02)
+
+**Context:** CodeRabbit and Qodo follow-up suggestions after Review #18 fixes.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Retry loop silently succeeds on failure | Medium | sync-readme.yml | Track success flag, fail if all attempts exhaust |
+| 2 | Absolute/UNC paths not blocked early | Medium | archive-doc.js | Block `/path`, `C:\path`, `\\server\share` before resolution |
+| 3 | No fallback JSON on script errors | Medium | review-check.yml | Provide default JSON if output empty on exit code 2+ |
+| 4 | $GITHUB_OUTPUT not quoted | Low | review-check.yml | Quote as `"$GITHUB_OUTPUT"` for robustness |
+| 5 | Lowercase "markdown" proper noun | Low | AI_REVIEW_LEARNINGS_LOG.md | Capitalize as "Markdown" throughout |
+
+**Key Patterns Identified:**
+
+1. **Retry loop failure tracking:** Don't assume loop exit means success
+   - Wrong: `for i in 1 2 3; do cmd && break; sleep 5; done`
+   - Right: Track `SUCCESS=false`, set `SUCCESS=true` on success, fail if still false
+
+2. **Block dangerous paths early:** Check user input before path resolution
+   - Block absolute Unix paths: `filePath.startsWith('/')`
+   - Block absolute Windows paths: `/^[A-Za-z]:/.test(filePath)`
+   - Block UNC paths: `filePath.startsWith('\\\\') || filePath.startsWith('//')`
+
+3. **Guarantee valid JSON output:** Fallback when script produces no output
+   - Pattern: `OUTPUT=$(cmd) || true; EXIT_CODE=$?; if [ -z "$OUTPUT" ]; then OUTPUT='{"error":"..."}'; fi`
+
+4. **Proper nouns in documentation:** Capitalize brand/technology names
+   - "Markdown" not "markdown" (language name is a proper noun)
+   - "JavaScript" not "javascript", "GitHub" not "github", etc.
+
+**Verification:** `npm run lint` (0 errors)
+
+**Key Insight:** Edge cases matter in automation. A retry loop that silently succeeds masks failures. Always track and verify success explicitly, don't rely on loop exit.
+
+---
+
+#### Review #20: Security Error Handling & Cross-Platform Fixes (2026-01-02)
+
+**Context:** FINALLY addressing the recurring Qodo compliance findings for "Generic: Secure Error Handling" and "Generic: Secure Logging Practices" that had appeared across multiple reviews but were only noted as acceptable rather than fixed.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Raw error.message may expose sensitive paths | HIGH | multiple scripts | Created sanitizeError utility, applied across codebase |
+| 2 | Extensionless hook files not scanned | Medium | check-pattern-compliance.js | Detect .husky/* files by path or shebang |
+| 3 | Windows rooted paths not blocked | Medium | archive-doc.js | Check for `\Windows` style paths (single backslash) |
+| 4 | Fixed delimiter can corrupt GITHUB_OUTPUT | Medium | review-check.yml | Use unique delimiter with timestamp |
+| 5 | User-provided paths not normalized | Medium | check-pattern-compliance.js | Normalize paths relative to ROOT |
+| 6 | Stderr suppressed hides diagnostics | Medium | session-start.sh | Capture stderr to temp file, show on error |
+| 7 | Invalid JSON may reach consumers | Medium | review-check.yml | Validate JSON with node -e before accepting |
+| 8 | Triple-dot in regex fix suggestion | Low | check-pattern-compliance.js | Fixed to double-dot (/^\\.\\./) |
+| 9 | Exit code 2 not implemented for errors | Low | check-pattern-compliance.js | Wrapped main() in try-catch with exit(2) |
+| 10 | Cross-platform archive detection | Low | archive-doc.js | Check both `/archive/` and `\archive\` |
+| 11 | Symlinks may cause infinite recursion | Low | check-pattern-compliance.js | Use lstatSync to detect and skip symlinks |
+
+**New Files Created:**
+
+- `scripts/lib/sanitize-error.js` - Reusable error sanitization utility that:
+  - Strips sensitive patterns (home directories, credentials, connection strings, internal IPs)
+  - Works with Error objects, strings, and unknown throws
+  - Provides `sanitizeError()`, `sanitizeErrorForJson()`, `createSafeLogger()`, and `safeErrorMessage()` exports
+
+**Key Patterns Identified:**
+
+1. **RECURRING ISSUES MUST BE FIXED, NOT NOTED:** Qodo compliance findings for secure error handling appeared in Reviews #16, #17, #18, #19 but were only acknowledged as "acceptable for dev tooling." This was wrong - they should have been fixed earlier.
+
+2. **Error Sanitization Pattern:**
+   ```javascript
+   const SENSITIVE_PATTERNS = [
+     /\/home\/[^/\s]+/gi,     // Linux home directories
+     /\/Users\/[^/\s]+/gi,    // macOS home directories
+     /C:\\Users\\[^\\]+/gi,   // Windows user directories
+     /password[=:]\s*\S+/gi,  // Password assignments
+     /api[_-]?key[=:]\s*\S+/gi, // API keys
+     // ... etc
+   ];
+   ```
+
+3. **Extensionless file detection by shebang:**
+   ```javascript
+   if (!ext && (filePath.startsWith('.husky/') ||
+       content.startsWith('#!/bin/sh') ||
+       content.startsWith('#!/bin/bash'))) {
+     ext = '.sh'; // Treat as shell script
+   }
+   ```
+
+4. **Unique delimiter for GITHUB_OUTPUT:**
+   ```bash
+   DELIM="OUTPUT_$(date +%s%N)"
+   printf 'output<<%s\n%s\n%s\n' "$DELIM" "$OUTPUT" "$DELIM" >> "$GITHUB_OUTPUT"
+   ```
+
+5. **Preserve stderr for debugging while checking exit code:**
+   ```bash
+   ERR_TMP="$(mktemp)"
+   if cmd 2>"$ERR_TMP"; then
+     echo "success"
+   else
+     if [ -s "$ERR_TMP" ]; then cat "$ERR_TMP"; fi
+   fi
+   rm -f "$ERR_TMP"
+   ```
+
+**Promoted to claude.md:** Pattern #1 (error sanitization) - This is now a MANDATORY pattern, not optional.
+
+**Verification:** `npm run lint` (0 errors)
+
+**Follow-up Fix (cfc80f3):** Initial fix missed 5 files still using `.catch(console.error)`. Second pass applied sanitization to:
+- `scripts/sync-geocache.ts` (global catch)
+- `scripts/migrate-to-journal.ts` (global catch)
+- `scripts/enrich-addresses.ts` (global catch)
+- `scripts/seed-real-data.ts` (global catch)
+- `components/growth/NightReviewCard.tsx` (changed to silent fail for navigator.share)
+
+**Lesson:** After creating a new pattern/utility, GREP the entire codebase to find ALL instances that need updating, not just the files that were originally flagged.
+
+**Key Insight:** "Acceptable for dev tooling" is not an acceptable response to recurring security findings. Each time an issue is flagged and noted but not fixed, it compounds technical debt and normalizes ignoring security feedback. FIX ISSUES WHEN THEY ARE IDENTIFIED - don't defer security improvements.
+
+---
+
+#### Review #21: Robust Error Handling & Centralized Sanitization (2026-01-02)
+
+**Context:** Follow-up to Review #20 addressing recurring compliance findings about incomplete sanitization, duplicated inline regex, and silent error swallowing.
+
+**Root Cause Analysis - Why Error Handling Issues Kept Getting Flagged:**
+
+1. **Incomplete sanitization patterns**: Inline regex only handled home directories, missing tokens, URLs, connection strings, internal IPs
+2. **Code duplication**: TypeScript files used inline regex instead of the shared `sanitize-error.js` utility
+3. **Silent error swallowing**: `NightReviewCard.tsx` caught ALL errors silently, hiding actionable issues
+4. **IP regex bug**: Original pattern `/\b(?:10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b/` only matched 3 octets for 10.x addresses
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | IP regex missing 4th octet | HIGH | sanitize-error.js | Changed to `10\.\d{1,3}` to match all 4 octets |
+| 2 | Inline regex in TypeScript | Medium | 5 TS files | Created TS wrapper, imported shared utility |
+| 3 | Silent catch swallows all errors | Medium | NightReviewCard.tsx | Distinguish AbortError (expected) from real errors |
+| 4 | Unreadable files abort scan | Medium | check-pattern-compliance.js | Added try-catch around readFileSync |
+| 5 | No path traversal protection | Medium | check-pattern-compliance.js | Filter paths escaping ROOT with regex |
+| 6 | JSON validation via CLI arg | Low | review-check.yml | Use stdin to handle large/multiline JSON |
+| 7 | Expression without default | Low | docs-lint.yml | Added `|| '0'` fallback and moved to env block |
+
+**New Files Created:**
+
+- `scripts/lib/sanitize-error.ts` - TypeScript re-export wrapper providing type-safe access to sanitization utilities
+
+**Key Patterns Identified:**
+
+1. **Centralized utilities must be USED, not just created:**
+   - Creating `sanitize-error.js` was not enough
+   - TypeScript files continued using incomplete inline regex
+   - Fix: Import shared utility in ALL files, create TS wrapper for type safety
+
+2. **AbortError handling for Web Share API:**
+   ```typescript
+   }).catch((error: unknown) => {
+       if (error instanceof Error && error.name === 'AbortError') {
+           return; // User cancelled - expected behavior
+       }
+       console.error('Share error:', error instanceof Error ? error.name : 'Share failed');
+   })
+   ```
+
+3. **Path traversal prevention:**
+   ```javascript
+   .filter(f => !(/^\.\.(?:[\\/]|$)/.test(f))) // Block paths escaping ROOT
+   ```
+
+4. **Robust file reading:**
+   ```javascript
+   try {
+       content = readFileSync(fullPath, 'utf-8');
+   } catch (error) {
+       if (VERBOSE) console.warn(`Skipping: ${sanitizeError(error)}`);
+       return [];
+   }
+   ```
+
+5. **GitHub Actions expression defaults:**
+   ```yaml
+   env:
+     LINT_ERRORS: ${{ steps.docs-lint.outputs.errors || '0' }}
+   ```
+
+**Promoted to claude.md:** Pattern #1 (centralized utilities) - reinforced existing MANDATORY error sanitization requirement.
+
+**Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors)
+
+**Key Insight:** When creating shared utilities, you must also UPDATE ALL EXISTING CODE to use them. A utility that isn't imported is useless. TypeScript files importing from `.js` need either a `.d.ts` declaration file or a TypeScript re-export wrapper.
+
+---
+
+#### Review #21 Follow-up: docs-lint.yml YAML Error & Final Fixes (2026-01-02)
+
+**Context:** The docs-lint.yml workflow kept failing with "An expression was expected" at line 49 despite previous fixes. Additional code review suggestions needed addressing.
+
+**Root Cause - docs-lint.yml Error:**
+
+The error persisted because of multiple interacting issues:
+1. **Implicit `if:` expressions** - GitHub Actions' YAML parser was confused by conditions without explicit `${{ }}`
+2. **Custom separator `'|'`** - The pipe character in `separator: '|'` may have interacted poorly with the YAML multiline `run: |` block
+3. **Complex sed pattern** - The `sed 's/\${{/\\${{/g'` was potentially triggering expression parsing
+
+**Solution:** Complete rewrite of docs-lint.yml:
+- All `if:` conditions now use explicit `${{ }}` syntax
+- Removed custom separator, using default space-separated output
+- Simplified file processing with `for file in $CHANGED_FILES` loop
+- Removed the potentially problematic sed escaping pattern
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | YAML "expression expected" error | HIGH | docs-lint.yml | Complete rewrite with explicit expressions |
+| 2 | Absolute/UNC paths not blocked | Medium | check-pattern-compliance.js | Block `/`, `C:\`, `\\\\` inputs early |
+| 3 | JSON validation only on error | Medium | review-check.yml | Always validate, set exit 2 if invalid |
+| 4 | Implicit git push target | Low | sync-readme.yml | Use `git push origin HEAD:main` |
+| 5 | Temp file cleanup not guaranteed | Low | session-start.sh | Added `trap 'rm -f' EXIT` |
+| 6 | TS files import .js directly | Low | 5 TypeScript files | Import from `.ts` wrapper |
+
+**Key Patterns Identified:**
+
+1. **GitHub Actions `if:` conditions - always use explicit `${{ }}`:**
+   ```yaml
+   # GOOD - explicit expression
+   if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+
+   # RISKY - implicit expression (can cause parser issues)
+   if: steps.changed-files.outputs.any_changed == 'true'
+   ```
+
+2. **Avoid custom separators when using multiline run blocks:**
+   ```yaml
+   # GOOD - use default space separator
+   - uses: tj-actions/changed-files@v44
+     with:
+       files: |
+         **/*.md
+
+   # RISKY - custom separator may interfere with YAML parsing
+   separator: '|'
+   ```
+
+3. **Path traversal defense in depth:**
+   ```javascript
+   return FILES
+     .filter(f => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/)/.test(f)) // Block absolute/UNC
+     .map(f => join(ROOT, f))
+     .filter(abs => !relative(ROOT, abs).startsWith('..'))     // Block traversal
+   ```
+
+**Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), GitHub Actions workflow syntax validated
+
+**Key Insight:** When a GitHub Actions workflow fails with cryptic YAML parsing errors, try a complete rewrite using the most explicit, conservative patterns rather than incremental fixes. The interaction between implicit expressions, multiline blocks, and special characters can cause hard-to-diagnose issues.
+
+---
+
+#### Review #21 Second Follow-up: Filename Spaces & Path Security (2026-01-02)
+
+**Context:** Additional code review findings after the docs-lint.yml rewrite.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Filenames with spaces break loop | Medium | docs-lint.yml | Use `separator: "\n"` + `while IFS= read -r` |
+| 2 | Windows rooted paths bypass filter | Medium | check-pattern-compliance.js | Added `\\(?!\\)` to block `\Windows` |
+| 3 | Misleading comment about query logging | Low | retry-failures.ts | Clarified: query intentionally omitted |
+
+**Key Patterns Identified:**
+
+1. **Safe iteration over filenames with spaces:**
+   ```yaml
+   # In tj-actions/changed-files
+   separator: "\n"
+
+   # In shell script
+   while IFS= read -r file; do
+     # process "$file" (quoted!)
+   done <<< "$CHANGED_FILES"
+   ```
+   Never use `for file in $VAR` when filenames might contain spaces.
+
+2. **Windows rooted path detection:**
+   ```javascript
+   // Block: /, C:\, \\server, //, \Windows
+   /^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/|\\(?!\\))/.test(path)
+
+   // \\(?!\\) matches single backslash at start (but not \\)
+   ```
+
+3. **Comment accuracy for security-sensitive code:**
+   When code intentionally omits data for security reasons, the comment should clearly state WHY it's omitted, not suggest it should be there:
+   ```typescript
+   // BAD: "Note: query contains address data needed for debugging"
+   // GOOD: "Query intentionally omitted to avoid exposing address data"
+   ```
+
+**Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors)
+
+**Key Insight:** When iterating over file lists in shell scripts, always assume filenames may contain spaces, quotes, or other special characters. Use newline separation and `while read` loops rather than `for` loops with word splitting.
+
+---
+
+#### Review #21 Third Follow-up: Final Cleanup Items (2026-01-02)
+
+**Context:** Final cleanup items from code review addressing path security edge cases and code quality.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Windows cross-drive bypass | Medium | check-pattern-compliance.js | Check if `relative()` returns absolute/UNC path |
+| 2 | lstatSync can throw on unreadable entries | Medium | check-pattern-compliance.js | Added try-catch with continue |
+| 3 | Underscore prefix on used option | Low | sanitize-error.js | Renamed `_preserveStackInDev` → `preserveStackInDev` |
+
+**Key Patterns Identified:**
+
+1. **path.relative() can return absolute paths on Windows:**
+   ```javascript
+   // When paths are on different drives, relative() returns absolute path
+   // Example: relative('C:\\project', 'D:\\evil') => 'D:\\evil'
+
+   const rel = relative(ROOT, abs);
+   // Must check for absolute/UNC paths in addition to ".." traversal
+   if (/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/.test(rel)) {
+     // Reject - cross-drive or UNC path
+   }
+   ```
+
+2. **Graceful handling of unreadable filesystem entries:**
+   ```javascript
+   let lstat;
+   try {
+     lstat = lstatSync(fullPath);
+   } catch (error) {
+     // Skip unreadable entries (permission denied, etc.)
+     // Don't abort entire scan for one bad entry
+     if (VERBOSE) console.warn(`Skipping: ${sanitizeError(error)}`);
+     continue;
+   }
+   ```
+
+3. **Underscore prefix convention in JavaScript:**
+   - `_variable` traditionally indicates "unused" or "private"
+   - ESLint `no-unused-vars` may flag variables starting with underscore as intentionally unused
+   - If a variable IS used (even if reserved for future), don't prefix with underscore
+
+**Verification:** `npm run lint` (0 errors), `npm test` (passing)
+
+**Key Insight:** Defense in depth for path security requires checking both input (block absolute paths early) AND output (verify relative() result is actually relative). On Windows, cross-drive paths make relative() behave unexpectedly.
 
 ---
 

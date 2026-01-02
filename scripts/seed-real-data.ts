@@ -4,6 +4,7 @@ import * as readline from 'readline';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import fetch from 'node-fetch'; // Ensure request is installed or use global fetch if available (Node 18+)
+import { sanitizeError } from './lib/sanitize-error';
 
 // --- CONFIG ---
 const CSV_FILE = "SoNash_Meetings__cleaned.csv";
@@ -212,4 +213,7 @@ async function main() {
     console.log("\nDone! Success.");
 }
 
-main().catch(console.error);
+main().catch((error: unknown) => {
+    console.error('❌ Unexpected error:', sanitizeError(error));
+    process.exit(1);
+});

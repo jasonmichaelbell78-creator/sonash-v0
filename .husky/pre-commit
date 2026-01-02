@@ -15,12 +15,14 @@ if ! npm run lint > /dev/null 2>&1; then
 fi
 echo "  ✅ ESLint passed (0 errors)"
 
-# 2. Run tests
+# 2. Run tests - stream output using temp file
 echo "  ▶ Running tests..."
-# Use if ! pattern to capture exit code correctly (not $? after assignment)
-if ! TEST_OUTPUT=$(npm test 2>&1); then
+TEST_TMPFILE=$(mktemp)
+trap 'rm -f "$TEST_TMPFILE"' EXIT
+
+if ! npm test > "$TEST_TMPFILE" 2>&1; then
   echo "  ❌ Tests failed"
-  echo "$TEST_OUTPUT" | tail -10
+  tail -10 "$TEST_TMPFILE"
   echo ""
   echo "  Fix tests before committing. Run: npm test"
   exit 1

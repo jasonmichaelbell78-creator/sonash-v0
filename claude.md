@@ -49,30 +49,45 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **Google OAuth**: Requires specific COOP/COEP headers in `firebase.json` to work correctly in popups. Do not remove them.
 *   **Meeting Widgets**: Hoisting bugs in `setInterval` are common. Always define callbacks `useCallback` *before* the effect.
 
-### Code Review Patterns (from 13+ reviews)
+### Code Review Patterns (from 18+ reviews)
 *Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md)*
+
+> ⚠️ **SELF-AUDIT**: Before writing shell scripts, workflow files, or security-sensitive code, scan the patterns below. If you've made an error covered here before, STOP and fix it.
 
 **Bash/Shell:**
 - Exit codes: `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]` (captures assignment, not cmd)
 - HEAD~N needs N+1 commits: use `COMMIT_COUNT - 1` as max
 - File iteration: `while IFS= read -r file` NOT `for file in $list` (spaces break loop)
-- Subshell scope: `cmd | while read` loses variables; use `while read; done < <(cmd)` instead
+- Subshell scope: `cmd | while read` loses variables; use temp file or `while read; done < <(cmd)`
+- Temp file cleanup: Always use `trap 'rm -f "$TMPFILE"' EXIT` for guaranteed cleanup
+- Exit code semantics: 0=success, 1=action-needed, 2=error (check explicitly, not just "failed")
+- Retry loops: `for i in 1 2 3; do cmd && break; sleep 5; done` for race conditions
 
 **npm/Dependencies:**
 - Use `npm ci` NOT `npm install` in automation (prevents lockfile drift)
 - Ask "does project actually use X?" before adding packages
 - Peer deps must be in lockfile for `npm ci` in Cloud Build
+- Husky CI: Use `husky || echo 'not available'` for graceful degradation
 
 **Security:**
 - Validate file paths within repo root before unlinkSync/operations
+- Path traversal: Use `/^\.\.(?:[\\/]|$)/.test(rel)` NOT `startsWith('..')` (avoids false positives)
+- Windows cross-drive: Check drive letters match before path.relative() security checks
 - Sanitize inputs before shell interpolation (command injection risk)
 - Never trust external input in execSync/spawn
-- Sanitize output before embedding in markdown (escape backticks, ${{ }})
+- Sanitize output before embedding in markdown (escape backticks, `${{ }}`)
 
 **GitHub Actions:**
 - Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)
 - Use exit codes to detect command failure, not output parsing
 - Use custom separators for file lists (spaces break parsing)
+- Separate stderr: `cmd 2>err.log` to keep JSON output parseable
+
+**JavaScript/TypeScript:**
+- **MANDATORY: Sanitize error messages** - Strip sensitive paths/credentials before logging. Use `scripts/lib/sanitize-error.js` or inline sanitization. Do NOT log raw error.message to console.
+- Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
+- Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
+- Markdown links: `.replace(/\\/g, '/')` to normalize Windows backslashes
 
 **Git:**
 - File renames: grep for old terminology in descriptions, not just filenames
@@ -134,6 +149,7 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.2 | 2026-01-02 | Added patterns from Reviews #15-18 (trap cleanup, cross-platform, exit codes) |
 | 1.1 | 2026-01-02 | Added code review patterns from 14 reviews |
 | 1.0 | 2025-12-22 | Initial context document |
 

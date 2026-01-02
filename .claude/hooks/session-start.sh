@@ -121,6 +121,30 @@ run_npm_with_timeout "Building test files" \
   "npm run test:build" 60
 
 echo ""
+
+# Run pattern compliance check to surface known anti-patterns
+# This helps prevent repeating mistakes documented in AI_REVIEW_LEARNINGS_LOG.md
+echo "🔍 Checking for known anti-patterns..."
+PATTERN_ERR_TMP="$(mktemp)"
+trap 'rm -f "$PATTERN_ERR_TMP"' EXIT
+if node scripts/check-pattern-compliance.js 2>"$PATTERN_ERR_TMP"; then
+  echo "   ✓ No pattern violations found"
+else
+  EXIT_CODE=$?
+  if [ "$EXIT_CODE" -ge 2 ]; then
+    echo "   ❌ Pattern checker failed (exit $EXIT_CODE)"
+    if [ -s "$PATTERN_ERR_TMP" ]; then
+      echo "   stderr:"
+      sed 's/^/   /' "$PATTERN_ERR_TMP"
+    fi
+  else
+    echo "   ⚠️ Pattern violations detected - review claude.md Section 4"
+    echo "   Run: npm run patterns:check-all for details"
+  fi
+  WARNINGS=$((WARNINGS + 1))
+fi
+
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ "$WARNINGS" -eq 0 ]; then
   echo "✅ SessionStart hook completed successfully!"
@@ -129,5 +153,7 @@ else
   echo "   Some steps may have failed - check output above."
 fi
 echo ""
-echo "💡 Tip: If you encounter issues, check that all npm commands succeeded above."
-echo "   See AI_WORKFLOW.md → 'Available AI Capabilities' for skills/agents."
+echo "💡 Tips:"
+echo "   - If you encounter issues, check that all npm commands succeeded above"
+echo "   - Review claude.md Section 4 for known anti-patterns before writing code"
+echo "   - See AI_WORKFLOW.md → 'Available AI Capabilities' for skills/agents"

@@ -28,6 +28,7 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync, readdir
 import { join, dirname, basename, relative } from 'path';
 import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -75,8 +76,24 @@ function validatePathWithinRepo(filePath) {
     const resolvedPath = realpathSync(filePath);
     const resolvedRoot = realpathSync(ROOT);
 
-    // Check if the resolved path starts with the repo root
-    if (!resolvedPath.startsWith(resolvedRoot + '/') && resolvedPath !== resolvedRoot) {
+    // On Windows, path.relative() across different drives returns an absolute path
+    // Block cross-drive paths as a security measure
+    if (
+      process.platform === 'win32' &&
+      /^[A-Za-z]:/.test(resolvedPath) &&
+      /^[A-Za-z]:/.test(resolvedRoot) &&
+      resolvedPath.slice(0, 2).toLowerCase() !== resolvedRoot.slice(0, 2).toLowerCase()
+    ) {
+      return {
+        valid: false,
+        error: `Path "${filePath}" resolves outside repository root (cross-drive)`
+      };
+    }
+
+    // Check if the resolved path is within the repo root (cross-platform)
+    // Uses regex to handle both forward slashes and backslashes, and filenames starting with ..
+    const rel = relative(resolvedRoot, resolvedPath);
+    if (/^\.\.(?:[\\/]|$)/.test(rel)) {
       return {
         valid: false,
         error: `Path "${filePath}" resolves outside repository root`
@@ -131,7 +148,7 @@ function safeReadFile(filePath, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to read ${description}: ${error.message}`
+      error: `Failed to read ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -157,7 +174,7 @@ function safeWriteFile(filePath, content, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to write ${description}: ${error.message}`
+      error: `Failed to write ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -186,7 +203,7 @@ function ensureArchiveDir() {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to create archive directory: ${error.message}`
+      error: `Failed to create archive directory: ${sanitizeError(error)}`
     };
   }
 }
@@ -336,14 +353,14 @@ function updateCrossReferences(oldPath, _newPath) {
 
       for (const pattern of patterns) {
         if (pattern.test(line)) {
-          // Calculate relative path from this file to archive
+          // Calculate relative path from this file to archive (normalize for cross-platform)
           const fileDir = dirname(filePath);
-          const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename));
+          const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename)).replace(/\\/g, '/');
 
-          // Replace the link
+          // Replace the link (relativePath already has correct structure)
           const newLine = line.replace(
             new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`, 'g'),
-            `](./${relativePath})`
+            `](${relativePath})`
           );
 
           if (newLine !== line) {
@@ -452,6 +469,19 @@ function main() {
     process.exit(1);
   }
 
+  // SECURITY: Block absolute and UNC paths from user input
+  // Only relative paths (resolved against known safe directories) are allowed
+  const isAbsoluteUnix = FILE_ARG.startsWith('/');
+  const isAbsoluteWindows = /^[A-Za-z]:/.test(FILE_ARG);
+  const isWindowsRooted = FILE_ARG.startsWith('\\') && !FILE_ARG.startsWith('\\\\'); // Single backslash (e.g., \Windows)
+  const isUNCPath = FILE_ARG.startsWith('\\\\') || FILE_ARG.startsWith('//');
+
+  if (isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath) {
+    console.error('❌ Security Error: Absolute or UNC paths are not allowed');
+    console.error('   Please provide a relative path or filename');
+    process.exit(1);
+  }
+
   // Resolve file path
   let sourcePath;
   if (existsSync(FILE_ARG)) {
@@ -482,8 +512,8 @@ function main() {
   console.log(`Destination: ${archivePath}`);
   console.log(`Reason: ${ARCHIVE_REASON}\n`);
 
-  // Check if already archived
-  if (sourcePath.includes('/archive/')) {
+  // Check if already archived (cross-platform: handle both / and \ separators)
+  if (sourcePath.includes('/archive/') || sourcePath.includes('\\archive\\')) {
     console.error('❌ Error: File is already in the archive directory');
     process.exit(1);
   }
@@ -531,7 +561,7 @@ function main() {
       unlinkSync(sourcePath);
       console.log(`✅ Removed original: ${sourcePath}`);
     } catch (error) {
-      console.error(`❌ Error removing original: ${error.message}`);
+      console.error(`❌ Error removing original: ${sanitizeError(error)}`);
       process.exit(1);
     }
   } else {
@@ -574,9 +604,6 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error('❌ Unexpected error:', error.message);
-  if (VERBOSE) {
-    console.error(error.stack);
-  }
+  console.error('❌ Unexpected error:', sanitizeError(error));
   process.exit(1);
 }
