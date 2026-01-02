@@ -515,7 +515,7 @@ function findMarkdownFiles(dir, files = []) {
       } else if (extname(entry) === '.md') {
         files.push(fullPath);
       }
-    } catch (_error) {
+    } catch {
       // Skip files we can't stat
     }
   }

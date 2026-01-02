@@ -21,7 +21,7 @@ async function retryFailures() {
                 credential: cert(serviceAccount),
             });
             console.log('✅ Firebase Admin initialized');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('❌ Failed to initialize Firebase Admin:', error);
             process.exit(1);
         }
@@ -110,11 +110,11 @@ async function retryFailures() {
                 const curlCommand = `curl -s -H "User-Agent: ${USER_AGENT}" -H "Referer: https://sonash.app" "${url}"`;
                 const responseText = execSync(curlCommand, { encoding: 'utf8', maxBuffer: 1024 * 1024 });
 
-                const results = JSON.parse(responseText) as any[];
+                const results = JSON.parse(responseText) as Array<{ lat: string; lon: string; address?: Record<string, string> }>;
 
                 if (results && results.length > 0) {
                     const result = results[0];
-                    const addrInfo = result.address; // Might need detailed 'addressdetails=1' if using reverse param, but standard search returns basics
+                    const _addrInfo = result.address; // Might need detailed 'addressdetails=1' if using reverse param, but standard search returns basics
 
                     // Note: 'search' endpoint JSON result structure usually has 'lat', 'lon', 'display_name'. 
                     // To get decomposed address (zip, city) reliably, we usually need '&addressdetails=1'.
@@ -140,9 +140,9 @@ async function retryFailures() {
                     // Log empty result key for debugging
                     console.log(`   🔸 No results for: "${query}"`);
                 }
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`   ⚠️ Error querying: "${query}"`);
-                console.error(`      Error details: ${error.message}`);
+                console.error(`      Error details: ${(error as Error).message}`);
             }
         }
 

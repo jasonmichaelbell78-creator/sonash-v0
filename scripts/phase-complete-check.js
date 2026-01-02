@@ -55,7 +55,7 @@ async function main() {
     } else {
       console.log('  ✅ ESLint passed');
     }
-  } catch (e) {
+  } catch {
     console.log('  ❌ ESLint failed to run');
     failures.push('ESLint check failed');
     allPassed = false;
@@ -66,7 +66,7 @@ async function main() {
   try {
     execSync('npm test 2>&1', { encoding: 'utf-8' });
     console.log('  ✅ Tests passed');
-  } catch (e) {
+  } catch {
     console.log('  ❌ Tests failed');
     failures.push('Tests must pass');
     allPassed = false;

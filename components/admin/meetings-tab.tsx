@@ -140,7 +140,7 @@ function MeetingForm({
 
                             if (newLat === undefined && (currentLng === undefined || currentLng === 0)) {
                                 // If both cleared (or other is 0 default), remove coordinates object
-                                const { coordinates, ...rest } = formData
+                                const { coordinates: _coordinates, ...rest } = formData
                                 setFormData(rest)
                             } else {
                                 setFormData({
@@ -168,7 +168,7 @@ function MeetingForm({
 
                             if (newLng === undefined && (currentLat === undefined || currentLat === 0)) {
                                 // If both cleared (or other is 0 default), remove coordinates object
-                                const { coordinates, ...rest } = formData
+                                const { coordinates: _coordinates, ...rest } = formData
                                 setFormData(rest)
                             } else {
                                 setFormData({

@@ -1,7 +1,9 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
 import { getAuth, Auth } from "firebase/auth"
 import { getFirestore, Firestore } from "firebase/firestore"
-import { initializeAppCheck, ReCaptchaEnterpriseProvider, AppCheck } from "firebase/app-check"
+// AppCheck imports commented out until ready to implement
+// import { initializeAppCheck, ReCaptchaEnterpriseProvider, AppCheck } from "firebase/app-check"
+import type { AppCheck } from "firebase/app-check"
 
 const validateEnv = (value: string | undefined, key: string) => {
   if (!value) {

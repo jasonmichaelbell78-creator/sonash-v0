@@ -16,8 +16,8 @@ async function syncGeocache() {
                 credential: cert(serviceAccount),
             });
             console.log('✅ Firebase Admin initialized');
-        } catch (error: any) {
-            if (error?.code === 'app/duplicate-app') {
+        } catch (error: unknown) {
+            if ((error as { code?: string })?.code === 'app/duplicate-app') {
                 console.log('ℹ️ Firebase Admin already initialized');
             } else {
                 console.error('❌ Failed to initialize Firebase Admin.');
@@ -32,12 +32,12 @@ async function syncGeocache() {
 
     // 2. Load existing cache
     const cachePath = path.join(process.cwd(), 'geocoding_cache.json');
-    let cache: Record<string, any> = {};
+    let cache: Record<string, { lat: number; lng: number }> = {};
     if (fs.existsSync(cachePath)) {
         try {
             cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
             console.log(`📂 Loaded existing cache with ${Object.keys(cache).length} entries.`);
-        } catch (e) {
+        } catch {
             console.warn('⚠️ Could not parse existing cache, starting fresh.');
         }
     } else {
@@ -74,7 +74,7 @@ async function syncGeocache() {
             // 1. Full combo
             const fullAddr = `${data.address}, ${data.city || 'Nashville'}, ${data.state || 'TN'}`;
             // 2. Just raw address (if implied context)
-            const rawAddr = data.address;
+            const _rawAddr = data.address;
 
             // We'll prioritize the full address key as it's less ambiguous
             // But let's check what keys are already in the cache to guess the pattern?
@@ -105,7 +105,7 @@ async function syncGeocache() {
     });
 
     // 5. Write back to file (Sorted keys for clean diffs)
-    const sortedCache = Object.keys(cache).sort().reduce((obj: any, key) => {
+    const sortedCache = Object.keys(cache).sort().reduce((obj: Record<string, { lat: number; lng: number }>, key) => {
         obj[key] = cache[key];
         return obj;
     }, {});
