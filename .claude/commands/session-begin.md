@@ -1,3 +1,7 @@
+---
+description: Complete verification steps before starting any work session
+---
+
 # Session Begin Checklist
 
 Before starting any work, complete these verification steps:

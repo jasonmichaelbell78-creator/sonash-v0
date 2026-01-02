@@ -1,3 +1,7 @@
+---
+description: Complete verification steps before ending the session
+---
+
 # Session End Checklist
 
 Before ending the session, complete these verification steps:
