@@ -62,7 +62,7 @@ const REDACTED = '[REDACTED]';
  */
 export function sanitizeError(error, options = {}) {
   const {
-    _preserveStackInDev = true, // Reserved for future: preserve stack in dev mode
+    preserveStackInDev = true, // Reserved for future: preserve stack in dev mode
     verbose = false,
   } = options;
 

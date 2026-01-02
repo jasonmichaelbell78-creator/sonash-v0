@@ -146,7 +146,14 @@ function getFilesToCheck() {
       .map(f => join(ROOT, f))
       .filter(abs => {
         const rel = relative(ROOT, abs);
-        return rel && !/^\.\.(?:[\\/]|$)/.test(rel); // Block paths escaping ROOT
+
+        // `relative()` can return an absolute/UNC path on Windows (e.g., cross-drive),
+        // so explicitly reject those in addition to ".." traversal.
+        return (
+          rel &&
+          !/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/.test(rel) &&
+          !/^\.\.(?:[\\/]|$)/.test(rel)
+        );
       })
       .map(abs => relative(ROOT, abs))
       .filter(rel => existsSync(join(ROOT, rel)));
@@ -180,7 +187,17 @@ function getFilesToCheck() {
           const fullPath = join(dir, entry);
 
           // Use lstatSync to detect symlinks and avoid infinite loops
-          const lstat = lstatSync(fullPath);
+          let lstat;
+          try {
+            lstat = lstatSync(fullPath);
+          } catch (error) {
+            // Skip unreadable entries without aborting entire scan
+            if (VERBOSE && !JSON_OUTPUT) {
+              console.warn(`⚠️ Skipping unreadable entry: ${relative(ROOT, fullPath)} (${sanitizeError(error)})`);
+            }
+            continue;
+          }
+
           if (lstat.isSymbolicLink()) {
             continue; // Skip symlinks to prevent infinite recursion
           }
