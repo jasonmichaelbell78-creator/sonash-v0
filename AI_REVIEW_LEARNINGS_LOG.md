@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.17
+**Document Version:** 1.18
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.18 | 2026-01-02 | Review #25: Pattern automation script robustness (second round fixes) |
 | 1.17 | 2026-01-02 | Review #24: Pattern automation script security (Qodo compliance fixes) |
 | 1.16 | 2026-01-02 | Consolidated Reviews #11-23 into claude.md v2.2; reset consolidation counter |
 | 1.15 | 2026-01-02 | Added Consolidation Trigger section with counter |
@@ -50,7 +51,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 (Review #24)
+**Reviews since last consolidation:** 2 (Reviews #24-#25)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1557,6 +1558,80 @@ The error persisted because of multiple interacting issues:
    - Resolution: Simple hash: `hash = (hash * 31 + charCode) >>> 0`
 
 **Key Insight:** Scripts that analyze code/logs need extra care about what they output. Even internal tools can leak secrets if they echo extracted content to console. Apply the same security standards to tooling as to production code.
+
+---
+
+#### Review #25: Pattern Automation Script Robustness (2026-01-02)
+
+**Source:** Qodo/CodeRabbit Second Review of `suggest-pattern-automation.js`
+**PR:** `claude/session-start-h9O9F` (Session workflow + pattern automation)
+**Tools:** Qodo Compliance Checker, CodeRabbit
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path disclosure in logs | 🔴 Critical | Security | Use `basename()` instead of full paths in error messages |
+| 2 | Regex-key literal matching | 🟡 Major | Logic Bug | Treat knownPatterns keys as regex, not escaped literals |
+| 3 | Lost review metadata | 🟡 Major | Data Loss | Use regex loop with capture groups instead of `split()` |
+| 4 | Hardcoded 'gi' flags | ⚪ Medium | Accuracy | Capture and use original pattern flags |
+| 5 | Silent false positives | ⚪ Medium | Reliability | Abort if unable to parse existing patterns |
+
+**Code Changes:**
+
+1. **Path Disclosure Prevention**
+   - Wrong: `console.error(\`File not found: ${LEARNINGS_FILE}\`)`
+   - Right: `const LEARNINGS_FILENAME = basename(LEARNINGS_FILE);` then use filename only
+   - Why: Full paths can expose filesystem structure, usernames, deployment paths
+
+2. **Regex-Key Matching**
+   - Wrong: `if (code.toLowerCase().includes(key.toLowerCase()))`
+   - Right: `const keyRegex = new RegExp(key, 'i'); if (keyRegex.test(code))`
+   - Why: Keys like `'pipe.*while'` are regex patterns, not literal strings
+
+3. **Review Metadata Preservation**
+   - Wrong: `content.split(/####\s+Review\s+#\d+/).forEach((section) => {...})`
+   - Right: `const regex = /####\s+Review\s+#(\d+)([\s\S]*?)(?=####|$)/gi; while ((match = regex.exec(content))...`
+   - Why: `split()` discards the review number; capture groups preserve it for traceability
+
+4. **Original Flag Preservation**
+   - Wrong: `const regex = new RegExp(pattern, 'gi')` - always use 'gi'
+   - Right: `pattern: /(pattern)\/(flags)?/; flags: match[3] || ''` - use captured flags
+   - Why: Some patterns are case-sensitive; overriding flags changes semantics
+
+5. **Parse Failure Abort**
+   - Wrong: Continue with empty pattern list, suggest everything as "uncovered"
+   - Right: `if (existing.length === 0) { console.error('Unable to detect...'); process.exit(2); }`
+   - Why: Prevents false positive suggestions when parser fails
+
+**Patterns Identified:**
+
+1. **basename() for Error Messages** (1 occurrence - CRITICAL)
+   - Root cause: Error messages included full filesystem paths
+   - Prevention: Always use `basename()` or relative paths in user-facing messages
+   - Pattern: `import { basename } from 'path'; ... basename(fullPath)`
+
+2. **Regex Keys vs Literal Keys** (1 occurrence - Logic)
+   - Root cause: Object keys containing regex syntax treated as literals
+   - Example: `{ 'pipe.*while': 'pattern' }` - the key IS a regex
+   - Prevention: Document intent; if key is regex, use `new RegExp(key)` not `includes()`
+
+3. **Capture Groups for Metadata** (1 occurrence - Data Integrity)
+   - Root cause: `String.split()` discards match content
+   - Prevention: When metadata is in the delimiter, use `exec()` loop with capture groups
+   - Pattern: `/pattern(capture)(capture2)/g` with `while (match = regex.exec(text))`
+
+4. **Preserve Original Semantics** (1 occurrence - Accuracy)
+   - Root cause: Overwriting regex flags changes pattern behavior
+   - Example: Case-sensitive pattern matched with 'i' flag finds false positives
+   - Prevention: Capture and use original flags: `/(pattern)\/([gimuy]*)/`
+
+5. **Fail-Fast on Parse Errors** (1 occurrence - Reliability)
+   - Root cause: Empty result from parser silently treated as "no patterns exist"
+   - Prevention: Check for unexpected empty results and abort with error
+   - Pattern: `if (parsed.length === 0) { error(...); exit(2); }`
+
+**Key Insight:** When processing structured data (regex patterns, review sections), preserve ALL metadata. Lost metadata causes cascading issues: wrong IDs, lost traceability, incorrect matching. Fail fast when parsing produces unexpected empty results.
 
 ---
 
