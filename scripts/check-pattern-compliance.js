@@ -140,7 +140,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'implicit-if-expression',
-    pattern: /^\s+if:\s+(?!.*\$\{\{).*(?:steps|github|env|inputs|needs)\./gm,
+    pattern: /^\s*if:\s+(?!.*\$\{\{).*(?:steps|github|env|inputs|needs)\./gm,
     message: 'Implicit expression in if: condition can cause YAML parser issues',
     fix: 'Always use explicit ${{ }} in if: conditions',
     review: '#17, #21',

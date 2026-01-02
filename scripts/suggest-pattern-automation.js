@@ -12,11 +12,14 @@
  * 2. Checking if they're already in the pattern checker
  * 3. Suggesting regex patterns for ones that aren't
  * 4. Optionally adding them to check-pattern-compliance.js
+ *
+ * Exit codes: 0 = success, 1 = no patterns found, 2 = error
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,11 +68,44 @@ const AUTOMATABLE_CATEGORIES = {
 };
 
 /**
+ * Sanitize code snippet for safe logging
+ * Redacts potential secrets and truncates long strings
+ */
+function sanitizeCodeForLogging(code, maxLen = 60) {
+  // Redact potential secrets/credentials
+  let sanitized = code
+    .replace(/['"`][A-Za-z0-9_/+=-]{20,}['"`]/g, '"[REDACTED]"')
+    .replace(/(?:key|token|secret|password|api[_-]?key)\s*[:=]\s*\S+/gi, '[CREDENTIAL_REDACTED]')
+    .replace(/\/[A-Za-z]\/[^/\s]+\/[^/\s]+/g, '/[PATH_REDACTED]'); // Absolute paths
+
+  // Truncate
+  if (sanitized.length > maxLen) {
+    sanitized = sanitized.slice(0, maxLen) + '...';
+  }
+
+  return sanitized;
+}
+
+/**
  * Extract code patterns from learnings file
  */
 function extractPatternsFromLearnings() {
-  const content = readFileSync(LEARNINGS_FILE, 'utf-8');
+  // Check file exists
+  if (!existsSync(LEARNINGS_FILE)) {
+    console.error(`❌ Learnings file not found: ${LEARNINGS_FILE}`);
+    process.exit(2);
+  }
+
+  let content;
+  try {
+    content = readFileSync(LEARNINGS_FILE, 'utf-8');
+  } catch (error) {
+    console.error(`❌ Failed to read learnings file: ${sanitizeError(error)}`);
+    process.exit(2);
+  }
+
   const extracted = [];
+  const seen = new Set(); // Deduplication
 
   // Find review sections
   const reviewSections = content.split(/####\s+Review\s+#\d+/i);
@@ -83,6 +119,12 @@ function extractPatternsFromLearnings() {
       let match;
       while ((match = regex.exec(section)) !== null) {
         const code = match[1].trim();
+
+        // Deduplicate by type and code
+        const key = `${type}|${code}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
         if (code.length > 10 && code.length < 200) { // Reasonable length
           extracted.push({
             code,
@@ -101,17 +143,35 @@ function extractPatternsFromLearnings() {
  * Get existing patterns from checker
  */
 function getExistingPatterns() {
-  const content = readFileSync(CHECKER_FILE, 'utf-8');
+  // Check file exists
+  if (!existsSync(CHECKER_FILE)) {
+    console.error(`❌ Pattern checker file not found: ${CHECKER_FILE}`);
+    process.exit(2);
+  }
+
+  let content;
+  try {
+    content = readFileSync(CHECKER_FILE, 'utf-8');
+  } catch (error) {
+    console.error(`❌ Failed to read pattern checker: ${sanitizeError(error)}`);
+    process.exit(2);
+  }
+
   const patterns = [];
 
-  // Extract pattern IDs and regexes
-  const patternRegex = /id:\s*['"`]([^'"`]+)['"`][\s\S]*?pattern:\s*\/([^/]+)\/[gim]*/g;
+  // Extract pattern IDs and regexes (handles escaped slashes)
+  const patternRegex = /id:\s*['"`]([^'"`]+)['"`][\s\S]*?pattern:\s*\/((?:\\\/|[^/])+?)\/([gimuy]*)/g;
   let match;
   while ((match = patternRegex.exec(content)) !== null) {
     patterns.push({
       id: match[1],
       pattern: match[2]
     });
+  }
+
+  // Warn if no patterns found (may indicate parsing issue)
+  if (patterns.length === 0) {
+    console.warn('[WARN] Could not parse any regex-literal patterns from checker; skipping coverage detection.');
   }
 
   return patterns;
@@ -121,14 +181,16 @@ function getExistingPatterns() {
  * Check if a code snippet is already covered by existing patterns
  */
 function isAlreadyCovered(code, existingPatterns) {
-  for (const { pattern } of existingPatterns) {
+  for (const { pattern, id } of existingPatterns) {
     try {
       const regex = new RegExp(pattern, 'gi');
       if (regex.test(code)) {
         return true;
       }
-    } catch {
-      // Invalid regex, skip
+    } catch (e) {
+      // Log warning for invalid regex
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      console.warn(`[WARN] Invalid regex in pattern '${id}', skipping: ${errorMsg}`);
     }
   }
   return false;
@@ -140,9 +202,13 @@ function isAlreadyCovered(code, existingPatterns) {
 function categorizePattern(code, context) {
   for (const [category, { indicators }] of Object.entries(AUTOMATABLE_CATEGORIES)) {
     for (const indicator of indicators) {
-      const indicatorRegex = new RegExp(indicator, 'i');
-      if (indicatorRegex.test(code) || indicatorRegex.test(context)) {
-        return category;
+      try {
+        const indicatorRegex = new RegExp(indicator, 'i');
+        if (indicatorRegex.test(code) || indicatorRegex.test(context)) {
+          return category;
+        }
+      } catch {
+        // Invalid indicator regex, skip silently
       }
     }
   }
@@ -169,20 +235,37 @@ function suggestRegex(code, _category) {
   };
 
   for (const [key, pattern] of Object.entries(knownPatterns)) {
-    if (code.includes(key) || code.toLowerCase().includes(key.toLowerCase())) {
-      return pattern;
+    // Use regex match instead of includes() to avoid false positives
+    try {
+      const keyRegex = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      if (keyRegex.test(code)) {
+        return pattern;
+      }
+    } catch {
+      // Fallback to includes if regex fails
+      if (code.toLowerCase().includes(key.toLowerCase())) {
+        return pattern;
+      }
     }
   }
 
-  // Fallback: return escaped literal (needs human review)
-  return code.slice(0, 40).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '...';
+  // Fallback: escaped literal prefix (human should refine)
+  // Use \\.{3} instead of ... to prevent regex wildcard interpretation
+  return code.slice(0, 40).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.{3}';
 }
 
 /**
  * Generate a pattern entry for the checker
  */
 function generatePatternEntry(code, category, context) {
-  const id = `auto-suggested-${Date.now()}`;
+  // Use content-based hash for stable ID
+  const stableIdBase = `${category}|${code}`;
+  let hash = 0;
+  for (let i = 0; i < stableIdBase.length; i++) {
+    hash = (hash * 31 + stableIdBase.charCodeAt(i)) >>> 0;
+  }
+  const id = `auto-suggested-${hash.toString(16)}`;
+
   const regex = suggestRegex(code, category);
   const fileTypes = AUTOMATABLE_CATEGORIES[category]?.fileTypes || ['.js', '.ts'];
 
@@ -243,9 +326,13 @@ function main() {
 
   for (let i = 0; i < uncovered.length; i++) {
     const { code, category, suggested } = uncovered[i];
+    // Use sanitized code output to prevent leaking sensitive data
+    const sanitizedCode = sanitizeCodeForLogging(code);
+    const sanitizedPattern = suggested.pattern.slice(0, 50) + (suggested.pattern.length > 50 ? '...' : '');
+
     console.log(`${i + 1}. Category: ${category}`);
-    console.log(`   Code: ${code.slice(0, 60)}${code.length > 60 ? '...' : ''}`);
-    console.log(`   Suggested regex: /${suggested.pattern.slice(0, 50)}${suggested.pattern.length > 50 ? '...' : ''}/`);
+    console.log(`   Code: ${sanitizedCode}`);
+    console.log(`   Suggested regex: /${sanitizedPattern}/`);
     console.log(`   File types: ${suggested.fileTypes.join(', ')}`);
     console.log('');
   }
@@ -261,11 +348,22 @@ function main() {
     console.log('\n⚠️  --add-to-checker not fully implemented yet.');
     console.log('Suggestions saved to: scripts/suggested-patterns.json');
 
-    writeFileSync(
-      join(__dirname, 'suggested-patterns.json'),
-      JSON.stringify(uncovered.map(u => u.suggested), null, 2)
-    );
+    try {
+      writeFileSync(
+        join(__dirname, 'suggested-patterns.json'),
+        JSON.stringify(uncovered.map(u => u.suggested), null, 2)
+      );
+    } catch (error) {
+      console.error(`❌ Failed to write suggestions file: ${sanitizeError(error)}`);
+      process.exit(2);
+    }
   }
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  // Catch-all for unexpected errors with sanitized output
+  console.error(`❌ Unexpected error: ${sanitizeError(error)}`);
+  process.exit(2);
+}
