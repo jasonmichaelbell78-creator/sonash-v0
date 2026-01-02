@@ -1,6 +1,26 @@
 # Security & Privacy Guide
 
-> **Purpose:** This document outlines security measures, privacy protections, and data handling practices for the SoNash recovery app.
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
+
+---
+
+## 🎯 Purpose & Scope
+
+This document outlines security measures, privacy protections, and data handling practices for the SoNash recovery app.
+
+**Scope:**
+- ✅ Data classification and handling
+- ✅ Security layers and implementation
+- ✅ Privacy rights and GDPR compliance
+- ✅ Incident response procedures
+
+**See also:**
+- [SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Cloud Functions security patterns
+- [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Mandatory standards for all code
+
+---
 
 ## Table of Contents
 
@@ -296,7 +316,7 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 1. ✅ ~~Deploy Cloud Functions rate limiting~~ Done
 2. ✅ ~~Enable App Check~~ Done
 3. ✅ ~~Add monitoring (Sentry)~~ Done
-4. ⚠️ Configure billing alerts (see [BILLING_ALERTS_SETUP.md](./BILLING_ALERTS_SETUP.md))
+4. ⚠️ Configure billing alerts (see [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md))
 5. Implement account linking
 6. Add data export/delete
 7. Create privacy policy
@@ -306,5 +326,27 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 ## Related Documentation
 
 - [SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Implementation details
-- [BILLING_ALERTS_SETUP.md](./BILLING_ALERTS_SETUP.md) - GCP billing configuration
+- [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md) - GCP billing configuration
 - [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md) - Response procedures
+
+---
+
+## 🤖 AI Instructions
+
+When working with security-related code:
+
+1. **Follow [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - mandatory for all code
+2. **Check data classification** before logging or exposing data
+3. **Test Firestore rules** after any schema changes
+4. **Update this document** when adding new security controls
+5. **Never expose Red/Yellow data** in logs, errors, or API responses
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.1 | 2025-12-19 | Added security checklist and current status |
+| 1.0 | 2025-12-17 | Initial security documentation |

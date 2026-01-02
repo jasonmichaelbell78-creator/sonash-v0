@@ -1,6 +1,25 @@
 # Development Guide
 
-**Last Updated:** December 19, 2025
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
+
+---
+
+## 🎯 Purpose & Scope
+
+This guide provides everything needed to set up and develop on the SoNash project.
+
+**Scope:**
+- ✅ Local environment setup
+- ✅ Development workflows
+- ✅ Testing procedures
+- ✅ Deployment process
+
+**See also:**
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
+- [docs/SECURITY.md](./docs/SECURITY.md) - Security requirements
+- [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
 
 ---
 
@@ -614,5 +633,21 @@ Closes #123
 
 ---
 
-**Document History:**
-- December 19, 2025: Consolidated from README.md, TESTING_CHECKLIST.md, and development notes
+## 🤖 AI Instructions
+
+When setting up or developing:
+
+1. **Run session-start hook** - automatically installs dependencies
+2. **Check `npm test`** before committing changes
+3. **Follow patterns** in [ARCHITECTURE.md](./ARCHITECTURE.md)
+4. **Run `npm run lint`** before submitting PRs
+5. **Update this doc** when adding new development workflows
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.0 | 2025-12-19 | Initial guide consolidated from multiple sources |

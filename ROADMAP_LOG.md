@@ -1,8 +1,48 @@
 # SoNash Roadmap Log
 
-**Purpose:** Archive of completed roadmap items and deprecated tasks
-**Last Updated:** December 31, 2025
-**Status:** Historical reference - all items in this document are completed or deprecated
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE (append-only archive)
+
+---
+
+## 🎯 Document Purpose
+
+This is the **archive** of completed roadmap items for SoNash. This document serves as:
+
+1. **Historical Record** - All completed milestones and features
+2. **Reference for Context** - What was accomplished and when
+3. **Audit Trail** - Evidence of completed work
+
+**⚠️ IMPORTANT**: This document is append-only. Items are moved here from [ROADMAP.md](./ROADMAP.md) when completed.
+
+---
+
+## 📊 Status
+
+This document contains **all completed milestones** from the SoNash product roadmap:
+- **M0 - Baseline**: ✅ Complete (Q4 2025)
+- **M1 - Foundation**: ✅ Complete (Q1 2026)
+- **M1.6 Today Page Enhancement**: ✅ Complete (December 2025)
+
+For **active work**, see [ROADMAP.md](./ROADMAP.md).
+
+---
+
+## 📋 How to Use This Document
+
+### For AI Assistants
+
+1. **Search for context** on past implementations
+2. **Reference completed work** when building on existing features
+3. **Add new completions** at the top of "Recent Completions" section
+4. **Include evidence** (dates, commits, what was accomplished)
+
+### For Developers
+
+1. **Find historical context** for existing features
+2. **Check completion dates** for project timeline
+3. **Review metrics achieved** for quality benchmarks
 
 ---
 
@@ -200,7 +240,7 @@ This document contains the historical record of completed milestones, tasks, and
 **Analysis Results:**
 - **Total Raw Findings:** 85 → **~42 Deduplicated Issues**
 - **Consensus Score:** 6.3/10
-- **Report:** [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)
+- **Report:** [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)
 
 #### P0 - Immediate Blockers (✅ Complete)
 
@@ -375,7 +415,7 @@ This document contains the historical record of completed milestones, tasks, and
 - ✅ "I Made It Through Today" Button
 - ✅ Sobriety Clock (Minutes display)
 
-**Documentation:** [docs/JOURNAL_SYSTEM_UPDATE.md](./docs/JOURNAL_SYSTEM_UPDATE.md)
+**Documentation:** [JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)
 
 ---
 
@@ -593,11 +633,35 @@ This document contains the historical record of completed milestones, tasks, and
 
 ---
 
-## 🔄 Document History
+## 📝 Update Triggers
 
-- **December 28, 2025:** Roadmap log created - consolidated all completed items from ROADMAP.md
-- **Prior to Dec 28:** Items tracked in active ROADMAP.md document
+**Update this document when:**
+- A milestone or feature is completed in ROADMAP.md
+- Using `npm run docs:archive` to move content
+- Adding retrospective notes about past implementations
+- Recording metrics or achievements
 
 ---
 
-**Note:** This document is append-only. Items are moved here from the active roadmap as they are completed. For current and planned work, see [ROADMAP.md](./ROADMAP.md).
+## 🤖 AI Instructions
+
+When archiving completed work:
+
+1. **Move completed items** from ROADMAP.md to "Recent Completions" section
+2. **Include completion date** and evidence (commits, PRs)
+3. **Document what was accomplished** with specifics
+4. **Preserve historical context** - don't delete, append only
+5. **Use `npm run docs:archive`** for automated archival
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.0 | 2025-12-28 | Initial creation, consolidated from ROADMAP.md |
+
+**Historical Notes:**
+- December 28, 2025: Roadmap log created - consolidated all completed items from ROADMAP.md
+- Prior to Dec 28: Items tracked in active ROADMAP.md document

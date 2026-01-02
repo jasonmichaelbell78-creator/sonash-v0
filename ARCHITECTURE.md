@@ -1,6 +1,29 @@
 # Architecture Documentation
 
-**Last Updated:** December 19, 2025
+**Document Version:** 2.0
+**Last Updated:** 2026-01-02
+**Status:** ACTIVE
+
+---
+
+## 🎯 Purpose
+
+This document provides the **technical architecture reference** for SoNash. It covers:
+
+1. **System Overview** - Tech stack and infrastructure
+2. **Data Architecture** - Firestore schema and data models
+3. **Security Architecture** - Multi-layer security implementation
+4. **Component Patterns** - Reusable code patterns
+
+---
+
+## 📊 Status
+
+Current architecture is **production-ready** with:
+- ✅ Firebase infrastructure complete
+- ✅ Security layers implemented (App Check, Firestore Rules, Rate Limiting)
+- ✅ Journal system consolidated
+- ⏳ Optional Sentry integration (pending)
 
 ---
 
@@ -683,7 +706,34 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
 ---
 
-**Document History:**
-- December 19, 2025: Consolidated from multiple architecture documents
-- December 18, 2025: Journal system refactor completed
-- December 17, 2025: Security hardening documentation added
+## 📝 Update Triggers
+
+**Update this document when:**
+- Adding new Firebase collections or schemas
+- Changing security architecture or rules
+- Adding new component patterns
+- Modifying tech stack (adding/removing dependencies)
+- Changing data flow or system architecture
+
+---
+
+## 🤖 AI Instructions
+
+When working with this architecture:
+
+1. **Follow established patterns** documented in Component Patterns section
+2. **Check security constraints** before adding new data paths
+3. **Update schemas** in this doc when modifying Firestore structure
+4. **Test security rules** after any changes to data architecture
+5. **Document new patterns** when creating reusable components
+
+---
+
+## 🗓️ Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
+| 1.2 | 2025-12-19 | Consolidated from multiple architecture documents |
+| 1.1 | 2025-12-18 | Journal system refactor completed |
+| 1.0 | 2025-12-17 | Security hardening documentation added |
