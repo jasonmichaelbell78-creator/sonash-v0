@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.5 | 2026-01-02 | Added distillation process docs and pattern compliance checker |
 | 1.4 | 2026-01-02 | Added Review #18 (security hardening and temp file cleanup) |
 | 1.3 | 2026-01-02 | Added Review #17 (remaining Qodo/CodeRabbit fixes) |
 | 1.2 | 2026-01-02 | Added Review #16 (security hardening and robustness) |
@@ -30,7 +31,37 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 1. **After addressing AI review feedback**, add a new Review #N entry
 2. **Reference previous entries** when similar patterns emerge
-3. **Extract key patterns** to claude.md section 4 when they become recurring
+3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
+4. **Run pattern audit** periodically: `npm run patterns:check-all`
+
+---
+
+## Learnings → claude.md Distillation Process
+
+### Threshold: 3+ Occurrences
+A pattern should appear across multiple reviews before being promoted to claude.md.
+
+### Format Transformation
+```
+This Log (detailed):
+  Review #17: "YAML expression parsing gotcha: `< <(...)` looks like
+  broken `${{ }}` to YAML parser..."
+
+claude.md (distilled):
+  - Subshell scope: `cmd | while read` loses variables; use
+    `while read; done < <(cmd)` or temp file
+```
+
+### Categories in claude.md Section 4
+- Bash/Shell, npm/Dependencies, Security, GitHub Actions, JavaScript/TypeScript, Git, General
+
+### Automated Auditing
+The pattern compliance checker surfaces known anti-patterns:
+- **Session start**: Runs automatically, warns if violations found
+- **Manual check**: `npm run patterns:check` (default files) or `npm run patterns:check-all` (full repo)
+- **Staged files**: `npm run patterns:check -- --staged`
+
+The checker references this log so you can find the detailed context for each pattern.
 
 ---
 
