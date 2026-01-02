@@ -142,8 +142,10 @@ async function retryFailures() {
                 }
             } catch (error: unknown) {
                 console.error(`   ⚠️ Error querying: "${query}"`);
+                // Sanitize error to prevent sensitive path exposure
                 const errorMsg = error instanceof Error ? error.message : String(error);
-                console.error(`      Error details: ${errorMsg}`);
+                const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
+                console.error(`      Error details: ${safeMsg}`);
             }
         }
 
@@ -160,4 +162,9 @@ async function retryFailures() {
     console.log('============================================================\n');
 }
 
-retryFailures().catch(console.error);
+retryFailures().catch((error: unknown) => {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const safeMsg = errorMsg.replace(/\/home\/[^/\s]+|\/Users\/[^/\s]+|C:\\Users\\[^\\]+/gi, '[REDACTED]');
+    console.error('❌ Unexpected error:', safeMsg);
+    process.exit(1);
+});

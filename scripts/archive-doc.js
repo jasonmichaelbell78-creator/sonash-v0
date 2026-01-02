@@ -28,6 +28,7 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync, readdir
 import { join, dirname, basename, relative } from 'path';
 import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -147,7 +148,7 @@ function safeReadFile(filePath, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to read ${description}: ${error.message}`
+      error: `Failed to read ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -173,7 +174,7 @@ function safeWriteFile(filePath, content, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to write ${description}: ${error.message}`
+      error: `Failed to write ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -202,7 +203,7 @@ function ensureArchiveDir() {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to create archive directory: ${error.message}`
+      error: `Failed to create archive directory: ${sanitizeError(error)}`
     };
   }
 }
@@ -560,7 +561,7 @@ function main() {
       unlinkSync(sourcePath);
       console.log(`✅ Removed original: ${sourcePath}`);
     } catch (error) {
-      console.error(`❌ Error removing original: ${error.message}`);
+      console.error(`❌ Error removing original: ${sanitizeError(error)}`);
       process.exit(1);
     }
   } else {
@@ -603,9 +604,6 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error('❌ Unexpected error:', error.message);
-  if (VERBOSE) {
-    console.error(error.stack);
-  }
+  console.error('❌ Unexpected error:', sanitizeError(error));
   process.exit(1);
 }

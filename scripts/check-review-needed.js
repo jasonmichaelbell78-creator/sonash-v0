@@ -36,6 +36,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -125,10 +126,9 @@ function safeReadFile(filePath, description) {
     verbose(`Successfully read ${content.length} characters from ${description}`);
     return { success: true, content };
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: `Failed to read ${description}: ${errorMsg}`
+      error: `Failed to read ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -154,10 +154,9 @@ function safeWriteFile(filePath, content, description) {
     writeFileSync(filePath, content, 'utf-8');
     return { success: true };
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: `Failed to write ${description}: ${errorMsg}`
+      error: `Failed to write ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -186,7 +185,7 @@ function safeExec(command, description) {
     }
     return {
       success: false,
-      error: `Failed to run ${description}: ${error.message}`
+      error: `Failed to run ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -374,8 +373,7 @@ function getCurrentCoverage() {
     }
     return null;
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    verbose(`Failed to parse coverage: ${errorMsg}`);
+    verbose(`Failed to parse coverage: ${sanitizeError(error)}`);
     return null;
   }
 }
@@ -678,13 +676,11 @@ function main() {
 try {
   main();
 } catch (error) {
+  const msg = sanitizeError(error);
   if (JSON_OUTPUT) {
-    console.log(JSON.stringify({ error: error.message }));
+    console.log(JSON.stringify({ error: msg }));
   } else {
-    console.error('❌ Unexpected error:', error.message);
-    if (VERBOSE) {
-      console.error(error.stack);
-    }
+    console.error('❌ Unexpected error:', msg);
   }
   process.exit(2);
 }
