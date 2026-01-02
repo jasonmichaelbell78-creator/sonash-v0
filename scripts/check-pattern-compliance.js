@@ -159,7 +159,7 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'sql-injection-risk',
-    pattern: /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*[`'"](?:[^`'"]*\$\{|.*\+\s*\w+)/g,
+    pattern: /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
     message: 'Potential SQL injection: string interpolation or concatenation in query',
     fix: 'Use parameterized queries with placeholders (e.g., db.query("SELECT * FROM users WHERE id = ?", [userId]))',
     review: 'Security Standards',
@@ -180,6 +180,7 @@ const ANTI_PATTERNS = [
     fix: 'Ensure endpoint has rate limiting per GLOBAL_SECURITY_STANDARDS.md',
     review: 'Security Standards',
     fileTypes: ['.js', '.ts'],
+    pathFilter: /(?:^|\/)(?:pages|app|routes|api|functions)\/.*(?:api|routes|handlers|endpoints)?/i,
   },
 ];
 
@@ -321,6 +322,11 @@ function checkFile(filePath) {
   for (const antiPattern of ANTI_PATTERNS) {
     // Skip if file type doesn't match
     if (!antiPattern.fileTypes.includes(ext)) {
+      continue;
+    }
+
+    // Skip if path filter doesn't match (for patterns that only apply to specific directories)
+    if (antiPattern.pathFilter && !antiPattern.pathFilter.test(filePath)) {
       continue;
     }
 

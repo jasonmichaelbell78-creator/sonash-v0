@@ -7,7 +7,12 @@ import globals from "globals";
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  security.configs.recommended,
+  {
+    plugins: { security },
+    rules: {
+      ...(security.configs.recommended?.rules ?? {}),
+    },
+  },
   {
     ignores: [
       'node_modules/**',
