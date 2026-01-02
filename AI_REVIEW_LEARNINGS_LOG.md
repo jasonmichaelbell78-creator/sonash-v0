@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.19
+**Document Version:** 1.20
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.20 | 2026-01-02 | Review #27: Pattern automation script (fourth round - artifact persistence, regex flags) |
 | 1.19 | 2026-01-02 | Review #26: Pattern automation script (third round - secure logging, regex accuracy) |
 | 1.18 | 2026-01-02 | Review #25: Pattern automation script robustness (second round fixes) |
 | 1.17 | 2026-01-02 | Review #24: Pattern automation script security (Qodo compliance fixes) |
@@ -52,7 +53,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 (Reviews #24-#26)
+**Reviews since last consolidation:** 4 (Reviews #24-#27)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1698,6 +1699,88 @@ The error persisted because of multiple interacting issues:
    - Pattern: `[\s\S]{0,N}?(?!pattern)` vs `[\s\S]{0,N}(?!pattern)`
 
 **Key Insight:** Scripts that process code need multiple layers of sanitization. The raw input, any transformed versions, and any derived outputs (like regex patterns) all need sanitization before logging. Defense in depth applies to data transformations, not just external boundaries.
+
+---
+
+#### Review #27: Pattern Automation Script - Fourth Round (2026-01-02)
+
+**Source:** Qodo/CodeRabbit Fourth Review of `suggest-pattern-automation.js`
+**PR:** `claude/session-start-h9O9F` (Session workflow + pattern automation)
+**Tools:** Qodo Compliance Checker, CodeRabbit
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Unsanitized artifact persistence | 🔴 Critical | Security | Sanitize `originalCode` before writing to JSON |
+| 2 | Path redaction non-deterministic | 🟡 Major | Reliability | Use capture groups instead of callback |
+| 3 | Multiline regex mismatch | 🟡 Major | Bug | Use `[\s\S]*?` instead of `.*` |
+| 4 | Unsafe regex flags | ⚪ Medium | Robustness | Filter invalid flag characters |
+| 5 | Raw error leakage | ⚪ Medium | Security | Use `sanitizeError()` for regex errors |
+| 6 | Stateful global regex | ⚪ Medium | Bug | Remove `g` flag from retry-loop pattern |
+| 7 | No file permissions | ⚪ Minor | Security | Set restrictive `0o600` on output |
+
+**Code Changes:**
+
+1. **Sanitize originalCode Before Persistence**
+   - Wrong: `originalCode: code` - raw code written to JSON file
+   - Right: `originalCode: sanitizeCodeForLogging(code, 120)`
+   - Why: Artifacts (JSON files) persist beyond the session and can leak secrets
+
+2. **Capture Groups for Path Redaction**
+   - Wrong: `.replace(/pattern/g, (m) => m[0] + 'replacement')` - callback
+   - Right: `.replace(/(prefix)(path)/g, '$1/[REDACTED]')` - capture groups
+   - Why: Capture groups are deterministic; callbacks can behave unexpectedly
+
+3. **Multiline Regex Lookahead**
+   - Wrong: `/Example:\s*`([^\`]+)`(?=.*(?:fails|...))/gi` - `.` doesn't match newlines
+   - Right: `/Example:\s*`([^\`]+)`(?=[\s\S]*?(?:fails|...))/gi`
+   - Why: `.` only matches within same line; `[\s\S]` matches any character
+
+4. **Regex Flags Sanitization**
+   - Wrong: `new RegExp(pattern, flags ?? '')` - accepts any string
+   - Right: `const safeFlags = (flags ?? '').replace(/[^dgimsuvy]/g, '')`
+   - Why: Invalid flags cause RegExp to throw; pre-filter for robustness
+
+5. **Stateful Global Regex with .test()**
+   - Wrong: `/pattern/g` with `.test()` - lastIndex increments between calls
+   - Right: `/pattern/` without `g` flag for `.test()` checks
+   - Why: `regex.test()` with `g` flag skips matches due to stateful lastIndex
+
+6. **Restrictive File Permissions**
+   - Wrong: `writeFileSync(path, content)` - inherits umask
+   - Right: `writeFileSync(path, content, { mode: 0o600 })`
+   - Why: Generated artifacts may contain sensitive data; restrict access
+
+**Patterns Identified:**
+
+1. **Artifact vs Console Sanitization** (1 occurrence - CRITICAL)
+   - Root cause: Console output sanitized but file artifacts weren't
+   - Prevention: Any persisted output (files, databases) needs same sanitization as console
+   - Pattern: If you sanitize for `console.log`, also sanitize for `writeFileSync`
+
+2. **Capture Groups for Replacements** (1 occurrence - Best Practice)
+   - Root cause: Callback-based replacements can be non-deterministic
+   - Prevention: Use capture groups when preserving parts of the match
+   - Pattern: `/(prefix)(content)/g, '$1replacement'`
+
+3. **Global Flag with .test()** (1 occurrence - BUG)
+   - Root cause: `regex.test()` updates `lastIndex` when global flag is set
+   - Example: `/.../g.test(str)` returns true, then false on second call
+   - Prevention: Don't use `g` flag if only calling `.test()` once per string
+   - Resolution: Removed `g` flag from patterns that use `.test()`
+
+4. **Multiline Lookahead** (1 occurrence - Bug)
+   - Root cause: Dot `.` doesn't match newlines by default
+   - Prevention: Use `[\s\S]` or enable `s` flag for multiline patterns
+   - Pattern: Replace `.*?` with `[\s\S]*?` in lookaheads
+
+5. **Flag Validation for Dynamic RegExp** (1 occurrence - Robustness)
+   - Root cause: Invalid flags in `new RegExp(pat, flags)` throw errors
+   - Prevention: Sanitize flags before creating dynamic RegExp
+   - Pattern: `flags.replace(/[^dgimsuvy]/g, '')`
+
+**Key Insight:** There are two types of output sanitization - ephemeral (console logs) and persistent (files, databases). Both need the same security treatment, but persistent outputs are often overlooked. Generated artifacts like JSON files can contain the same sensitive data as the inputs they were derived from.
 
 ---
 
