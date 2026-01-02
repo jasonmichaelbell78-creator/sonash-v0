@@ -44,20 +44,14 @@ async function main() {
   console.log('━━━ AUTOMATED CHECKS ━━━');
   console.log('');
 
-  // Lint check
+  // Lint check - rely on exit code, not output parsing
   console.log('▶ Running ESLint...');
   try {
-    const lintOutput = execSync('npm run lint 2>&1', { encoding: 'utf-8' });
-    if (lintOutput.includes(' error')) {
-      console.log('  ❌ ESLint has errors');
-      failures.push('ESLint errors must be fixed');
-      allPassed = false;
-    } else {
-      console.log('  ✅ ESLint passed');
-    }
+    execSync('npm run lint', { stdio: 'inherit' });
+    console.log('  ✅ ESLint passed');
   } catch {
-    console.log('  ❌ ESLint failed to run');
-    failures.push('ESLint check failed');
+    console.log('  ❌ ESLint has errors');
+    failures.push('ESLint errors must be fixed');
     allPassed = false;
   }
 

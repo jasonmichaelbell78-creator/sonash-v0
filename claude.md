@@ -67,6 +67,12 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Validate file paths within repo root before unlinkSync/operations
 - Sanitize inputs before shell interpolation (command injection risk)
 - Never trust external input in execSync/spawn
+- Sanitize output before embedding in markdown (escape backticks, ${{ }})
+
+**GitHub Actions:**
+- Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)
+- Use exit codes to detect command failure, not output parsing
+- Use custom separators for file lists (spaces break parsing)
 
 **Git:**
 - File renames: grep for old terminology in descriptions, not just filenames

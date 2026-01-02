@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.2 | 2026-01-02 | Added Review #16 (security hardening and robustness) |
 | 1.1 | 2026-01-02 | Added Review #15 (CI workflow and documentation fixes) |
 | 1.0 | 2026-01-02 | Initial creation with Reviews #1-14 |
 
@@ -816,6 +817,48 @@ BEFORE changing package.json or lockfiles, ask:
 **Verification:** `npm run lint` (0 errors), `npm test` (passing), `check-docs-light.js` (0 errors)
 
 **Key Insight:** CI failures are immediate feedback - fix them before moving on. The subshell bug would have silently made `ERRORS` always 0, causing the workflow to never fail even with errors.
+
+---
+
+#### Review #16: Security Hardening and Robustness (2026-01-02)
+
+**Source:** CodeRabbit/Qodo continued feedback on Review #15 commit
+**Scope:** Security vulnerabilities, robustness improvements
+**Commit:** (pending)
+
+**Issues Fixed (5 total):**
+
+| # | Issue | Severity | File | Fix Applied |
+|---|-------|----------|------|-------------|
+| 1 | Markdown injection risk | Major | docs-lint.yml | Sanitize output (escape backticks, ${{ }}) |
+| 2 | Unsafe string interpolation | Major | review-check.yml | Use `process.env` instead of template literal |
+| 3 | Filenames with spaces | Major | docs-lint.yml | Custom separator `\|` in changed-files action |
+| 4 | Brittle ESLint output parsing | Medium | phase-complete-check.js | Use exit code with `stdio: 'inherit'` |
+| 5 | Brittle ESLint output parsing | Medium | .husky/pre-commit | Use exit code with `if ! cmd` pattern |
+
+**Key Patterns Identified:**
+
+1. **Markdown injection prevention:** Always sanitize user/tool output before embedding in markdown
+   - Escape triple backticks: `sed 's/\`\`\`/\\\\`\\\\`\\\\`/g'`
+   - Escape GitHub Actions syntax: `sed 's/\${{/\\${{/g'`
+
+2. **Safe GitHub Actions interpolation:** Never use `${{ }}` in JavaScript template literals
+   - Wrong: `const x = \`${{ steps.foo.outputs.bar }}\`;`
+   - Right: Use `env:` block and `process.env.VAR`
+
+3. **Filename-safe file lists:** Configure separators for file list actions
+   - Add `separator: '|'` (or other non-space char) to tj-actions/changed-files
+   - Update parsing to use same separator
+
+4. **Exit code over output parsing:** Commands return exit codes for success/failure
+   - Wrong: Parse output for "error" string
+   - Right: Check exit code (non-zero = failure)
+
+**Added to claude.md:** Patterns #2 (safe interpolation) and #4 (exit codes)
+
+**Verification:** `npm run lint` (0 errors), `npm test` (passing)
+
+**Key Insight:** Security review feedback compounds - each review surfaces new attack vectors. The markdown injection and string interpolation issues weren't visible until the core bugs were fixed.
 
 ---
 

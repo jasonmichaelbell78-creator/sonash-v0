@@ -38,6 +38,7 @@ jobs:
           files: |
             **/*.md
             docs/**/*.md
+          separator: '|'
 
       - name: Run documentation linter
         id: docs-lint
@@ -79,12 +80,15 @@ jobs:
               EXIT_CODE=0
             fi
 
+            # Sanitize output to prevent markdown injection (escape backticks and ${{ }})
+            SAFE_OUTPUT=$(echo "$OUTPUT" | sed 's/```/\\`\\`\\`/g' | sed 's/\${{/\\${{/g')
+
             if [[ $EXIT_CODE -ne 0 ]]; then
               ERRORS=$((ERRORS + 1))
               echo "### ❌ $file" >> lint-results.md
               echo "" >> lint-results.md
               echo "\`\`\`" >> lint-results.md
-              echo "$OUTPUT" >> lint-results.md
+              echo "$SAFE_OUTPUT" >> lint-results.md
               echo "\`\`\`" >> lint-results.md
               echo "" >> lint-results.md
             elif echo "$OUTPUT" | grep -q "Warning:"; then
@@ -92,14 +96,14 @@ jobs:
               echo "### ⚠️ $file" >> lint-results.md
               echo "" >> lint-results.md
               echo "\`\`\`" >> lint-results.md
-              echo "$OUTPUT" >> lint-results.md
+              echo "$SAFE_OUTPUT" >> lint-results.md
               echo "\`\`\`" >> lint-results.md
               echo "" >> lint-results.md
             else
               echo "### ✅ $file" >> lint-results.md
               echo "" >> lint-results.md
             fi
-          done < <(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n')
+          done < <(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr '|' '\n')
 
           # Summary
           echo "" >> lint-results.md
