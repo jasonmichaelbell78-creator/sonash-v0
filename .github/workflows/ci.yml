@@ -30,6 +30,9 @@ jobs:
       - name: Pattern compliance check
         run: npm run patterns:check
 
+      - name: Documentation check
+        run: npm run docs:check -- --strict
+
       - name: Type check
         run: npx tsc --noEmit
 
