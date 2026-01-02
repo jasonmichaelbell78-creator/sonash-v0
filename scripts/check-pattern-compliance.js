@@ -71,7 +71,8 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'retry-loop-no-success-tracking',
-    pattern: /for\s+\w+\s+in\s+[123]\s+[23]?\s*[3]?\s*;\s*do[\s\S]{0,200}&&\s*break[\s\S]{0,100}done(?![\s\S]{0,50}(?:SUCCESS|success|FAILED|failed))/g,
+    // Use lazy quantifiers and word boundaries for accurate matching
+    pattern: /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/g,
     message: 'Retry loop may silently succeed on failure - not tracking success',
     fix: 'Track: SUCCESS=false; for i in 1 2 3; do cmd && { SUCCESS=true; break; }; done; $SUCCESS || exit 1',
     review: '#18, #19',

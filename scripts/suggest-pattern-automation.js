@@ -13,7 +13,7 @@
  * 3. Suggesting regex patterns for ones that aren't
  * 4. Optionally adding them to check-pattern-compliance.js
  *
- * Exit codes: 0 = success, 1 = no patterns found, 2 = error
+ * Exit codes: 0 = success (including when all patterns covered), 2 = error
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -80,7 +80,10 @@ function sanitizeCodeForLogging(code, maxLen = 60) {
   let sanitized = code
     .replace(/['"`][A-Za-z0-9_/+=-]{20,}['"`]/g, '"[REDACTED]"')
     .replace(/(?:key|token|secret|password|api[_-]?key)\s*[:=]\s*\S+/gi, '[CREDENTIAL_REDACTED]')
-    .replace(/\/[A-Za-z]\/[^/\s]+\/[^/\s]+/g, '/[PATH_REDACTED]'); // Absolute paths
+    // Unix-like absolute paths (require at least two segments: /usr/local/...)
+    .replace(/(?:^|[\s"'`(])\/(?:[^/\s]+\/){2,}[^/\s]+/g, (m) => m[0] + '/[PATH_REDACTED]')
+    // Windows absolute paths like C:\Users\Name\...
+    .replace(/(?:^|[\s"'`(])[A-Za-z]:\\(?:[^\\\s]+\\){2,}[^\\\s]+/g, (m) => m[0] + '[PATH_REDACTED]');
 
   // Truncate
   if (sanitized.length > maxLen) {
@@ -186,14 +189,13 @@ function getExistingPatterns() {
 function isAlreadyCovered(code, existingPatterns) {
   for (const { pattern, flags, id } of existingPatterns) {
     try {
-      // Use original flags, default to 'i' for case-insensitive matching
+      // Use original flags exactly - don't override as it can change pattern semantics
       // Note: We create a new RegExp each iteration so 'g' flag's lastIndex doesn't matter
-      const regex = new RegExp(pattern, flags || 'i');
+      const regex = new RegExp(pattern, flags ?? '');
       if (regex.test(code)) {
         return true;
       }
     } catch (e) {
-      // Log warning for invalid regex
       const errorMsg = e instanceof Error ? e.message : String(e);
       console.warn(`[WARN] Invalid regex in pattern '${id}', skipping: ${errorMsg}`);
     }
@@ -341,9 +343,10 @@ function main() {
 
   for (let i = 0; i < uncovered.length; i++) {
     const { code, category, suggested, reviewNumber } = uncovered[i];
-    // Use sanitized code output to prevent leaking sensitive data
+    // Sanitize both code AND pattern output to prevent leaking sensitive data
+    // (patterns are derived from code and may contain embedded secrets)
     const sanitizedCode = sanitizeCodeForLogging(code);
-    const sanitizedPattern = suggested.pattern.slice(0, 50) + (suggested.pattern.length > 50 ? '...' : '');
+    const sanitizedPattern = sanitizeCodeForLogging(suggested.pattern, 50);
 
     console.log(`${i + 1}. Category: ${category}${reviewNumber ? ` (Review #${reviewNumber})` : ''}`);
     console.log(`   Code: ${sanitizedCode}`);
