@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.8 | 2026-01-02 | Review #20 follow-up: Applied error sanitization to 5 remaining files |
 | 1.7 | 2026-01-02 | Added Review #20 (sanitizeError, extensionless hooks, Windows paths, JSON validation) |
 | 1.6 | 2026-01-02 | Added Review #19 (retry loop, UNC paths, JSON output, proper nouns) |
 | 1.5 | 2026-01-02 | Added distillation process docs and pattern compliance checker |
@@ -1119,6 +1120,15 @@ These are acceptable for internal dev tooling but would need sanitization for us
 **Promoted to claude.md:** Pattern #1 (error sanitization) - This is now a MANDATORY pattern, not optional.
 
 **Verification:** `npm run lint` (0 errors)
+
+**Follow-up Fix (cfc80f3):** Initial fix missed 5 files still using `.catch(console.error)`. Second pass applied sanitization to:
+- `scripts/sync-geocache.ts` (global catch)
+- `scripts/migrate-to-journal.ts` (global catch)
+- `scripts/enrich-addresses.ts` (global catch)
+- `scripts/seed-real-data.ts` (global catch)
+- `components/growth/NightReviewCard.tsx` (changed to silent fail for navigator.share)
+
+**Lesson:** After creating a new pattern/utility, GREP the entire codebase to find ALL instances that need updating, not just the files that were originally flagged.
 
 **Key Insight:** "Acceptable for dev tooling" is not an acceptable response to recurring security findings. Each time an issue is flagged and noted but not fixed, it compounds technical debt and normalizes ignoring security feedback. FIX ISSUES WHEN THEY ARE IDENTIFIED - don't defer security improvements.
 
