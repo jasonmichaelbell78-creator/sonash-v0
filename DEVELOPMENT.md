@@ -539,6 +539,36 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 
 ## 🔄 Git Workflow
 
+### Git Hooks Policy
+
+**⚠️ MANDATORY: Never bypass git hooks**
+
+This project uses Husky hooks to enforce code quality:
+- **Pre-commit**: ESLint, tests
+- **Pre-push**: Tests, pattern compliance, type check
+
+**DO NOT use `--no-verify`** to bypass hooks:
+```bash
+# ❌ NEVER DO THIS
+git commit --no-verify
+git push --no-verify
+
+# ✅ ALWAYS DO THIS
+git commit  # Let hooks run
+git push    # Let hooks run
+```
+
+**Why this matters:**
+- Hooks catch issues before they enter git history
+- CI will reject PRs anyway, so bypassing wastes time
+- Bad commits pollute git history permanently
+- Team trust depends on everyone following the same rules
+
+**If hooks are blocking you:**
+1. Fix the underlying issue (lint errors, test failures)
+2. If legitimately stuck, ask for help in PR discussion
+3. Never bypass - the hook is telling you something important
+
 ### Branch Strategy
 
 - `main` - Production-ready code

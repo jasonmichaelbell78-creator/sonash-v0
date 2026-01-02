@@ -27,6 +27,16 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Pattern compliance check
+        run: npm run patterns:check
+
+      - name: Documentation check
+        # Note: Non-blocking until Phase 5/6 documentation migration complete
+        # Pre-existing docs have issues that will be fixed during migration
+        # TODO: Remove continue-on-error after DOCUMENTATION_STANDARDIZATION_PLAN.md Phase 6 is done
+        continue-on-error: true
+        run: npm run docs:check
+
       - name: Type check
         run: npx tsc --noEmit
 

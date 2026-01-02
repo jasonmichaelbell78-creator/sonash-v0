@@ -1,0 +1,41 @@
+#!/bin/sh
+# Pre-push hook - Additional gate before pushing to remote
+# This blocks pushes if checks fail
+
+echo "🚀 Running pre-push checks..."
+
+# 1. Run tests
+echo "  ▶ Running tests..."
+if ! npm test > /dev/null 2>&1; then
+  echo "  ❌ Tests failed"
+  npm test 2>&1 | tail -10
+  echo ""
+  echo "  Fix tests before pushing. Run: npm test"
+  exit 1
+fi
+echo "  ✅ Tests passed"
+
+# 2. Run pattern compliance check
+echo "  ▶ Running pattern compliance check..."
+if ! npm run patterns:check > /dev/null 2>&1; then
+  echo "  ❌ Pattern compliance check failed"
+  npm run patterns:check 2>&1 | tail -20
+  echo ""
+  echo "  Fix pattern violations before pushing. Run: npm run patterns:check"
+  exit 1
+fi
+echo "  ✅ Pattern compliance passed"
+
+# 3. Type check
+echo "  ▶ Running type check..."
+if ! npx tsc --noEmit > /dev/null 2>&1; then
+  echo "  ❌ Type check failed"
+  npx tsc --noEmit 2>&1 | tail -10
+  echo ""
+  echo "  Fix type errors before pushing. Run: npx tsc --noEmit"
+  exit 1
+fi
+echo "  ✅ Type check passed"
+
+echo ""
+echo "✅ All pre-push checks passed - push allowed"

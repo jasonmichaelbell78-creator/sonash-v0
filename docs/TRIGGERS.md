@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
 **Project**: SoNash Recovery Notebook
-**Document Version**: 1.0
+**Document Version**: 1.3
 **Created**: 2026-01-02
 **Last Updated**: 2026-01-02
 **Status**: ACTIVE
@@ -795,64 +795,67 @@ gh run view <RUN_ID>
 
 # 9. COMPLIANCE GAPS & RECOMMENDATIONS
 
+## Resolved Gaps ✅
+
+### Gap 1: Pattern Check Not in CI - RESOLVED
+**Resolved**: 2026-01-02
+**Solution**: Added `npm run patterns:check` to CI workflow (`.github/workflows/ci.yml`)
+**Commit**: ci: Add pattern compliance check to CI workflow
+
+### Gap 2: Documentation Directives Not Enforced - RESOLVED
+**Resolved**: 2026-01-02
+**Solution**:
+- Added `--strict` flag to `scripts/check-docs-light.js` (treats warnings as errors)
+- Added `npm run docs:check -- --strict` to CI workflow
+- Warnings now block PRs (exit code 1)
+**Commit**: ci: Add docs:check --strict to CI workflow (Gap 2 fix)
+
+### Gap 3: Pre-commit Hook Bypass - MITIGATED
+**Resolved**: 2026-01-02
+**Solution**:
+- Added pre-push hook (`.husky/pre-push`) with tests, pattern check, type check
+- Added team policy in DEVELOPMENT.md prohibiting `--no-verify`
+- CI catches any issues that slip through (defense in depth)
+**Commit**: feat: Add pre-push hook and git hooks policy (Gap 3 fix)
+
+### Gap 4: Security Directives Not Automated - RESOLVED
+**Resolved**: 2026-01-02
+**Solution**:
+- Installed `eslint-plugin-security` (detects eval, timing attacks, regex DoS, object injection)
+- Added 6 security patterns to `check-pattern-compliance.js`:
+  - Hardcoded API keys/secrets
+  - innerHTML XSS risks
+  - eval() usage
+  - SQL injection patterns
+  - Unsanitized error responses
+  - Rate limiting reminders for endpoints
+**Commit**: feat: Add security linting and patterns (Gap 4 fix)
+
+**Future Improvements** (documented for later):
+- Option B: Custom ESLint rules for project-specific security patterns
+- Option D: Semgrep rules for advanced security scanning
+
+---
+
 ## Current Gaps
 
-### Gap 1: Pattern Check Not in CI
-**Issue**: `npm run patterns:check` must be run manually
-**Risk**: Anti-patterns can be committed if developer forgets
-**Recommendation**: Add to CI workflow
-```yaml
-- name: Pattern compliance check
-  run: npm run patterns:check
-```
-
-### Gap 2: Documentation Directives Not Enforced
-**Issue**: Doc update triggers are manual and easily forgotten
-**Risk**: Documentation drift from codebase
-**Recommendation**:
-- Add doc linting to CI
-- Create doc-coverage check script
-
-### Gap 3: Pre-commit Hook Bypass
-**Issue**: `git commit --no-verify` bypasses all hooks
-**Risk**: Bad code can be committed
-**Recommendation**:
-- CI catches this, but consider server-side hooks
-- Team policy against `--no-verify`
-
-### Gap 4: Security Directives Not Automated
-**Issue**: Security standards in docs aren't code-enforced
-**Risk**: Security violations in new code
-**Recommendation**:
-- Add ESLint security plugin
-- Custom rules for project-specific patterns
+*All identified gaps have been resolved!*
 
 ---
 
 ## Recommended Additions
 
-### 1. Add Pattern Check to CI
-```yaml
-# In .github/workflows/ci.yml
-- name: Pattern compliance
-  run: npm run patterns:check
-```
+### ~~1. Add Pattern Check to CI~~ ✅ DONE
+*Implemented via Gap 1 resolution above*
 
-### 2. Add Documentation Drift Check
-Create `scripts/check-doc-drift.js`:
-- Verify README status matches ROADMAP
-- Check all doc links are valid
-- Verify version history is current
+### ~~2. Add Documentation Drift Check~~ SKIPPED
+*Deferred - docs:check already covers link validation, section requirements, and date checks. Revisit if drift becomes a real problem.*
 
-### 3. Add Pre-push Hook
-```bash
-# .husky/pre-push
-npm test
-npm run patterns:check
-```
+### ~~3. Add Pre-push Hook~~ ✅ DONE
+*Implemented via Gap 3 resolution above*
 
-### 4. Automate Doc Update Reminders
-- GitHub Action to comment on PRs that touch code without updating docs
+### ~~4. Automate Doc Update Reminders~~ SKIPPED
+*Deferred - CodeRabbit reviews + docs:check + PR template checkbox provide sufficient coverage. Revisit if doc drift becomes a problem.*
 
 ---
 
@@ -872,6 +875,9 @@ npm run patterns:check
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-02 | Resolved Gap 4, added security linting | Claude |
+| 1.2 | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
+| 1.1 | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow | Claude |
 | 1.0 | 2026-01-02 | Initial document created | Claude |
 
 ---

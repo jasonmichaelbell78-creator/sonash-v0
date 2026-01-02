@@ -14,14 +14,15 @@
  * - List of warnings
  * - Exit 0 if pass, 1 if errors (warnings don't fail)
  *
- * Usage: node scripts/check-docs-light.js [file...] [--verbose] [--fix] [--json]
+ * Usage: node scripts/check-docs-light.js [file...] [--verbose] [--fix] [--json] [--strict]
  * Options:
  *   file...     Specific files to check (default: all markdown files)
  *   --verbose   Show detailed logging
  *   --json      Output results as JSON
  *   --errors-only  Only show errors, not warnings
+ *   --strict    Treat warnings as errors (exit 1 if any warnings)
  *
- * Exit codes: 0 = pass, 1 = errors found
+ * Exit codes: 0 = pass, 1 = errors found (or warnings in --strict mode)
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
@@ -37,6 +38,7 @@ const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose');
 const JSON_OUTPUT = args.includes('--json');
 const ERRORS_ONLY = args.includes('--errors-only');
+const STRICT_MODE = args.includes('--strict');
 const fileArgs = args.filter(a => !a.startsWith('--'));
 
 /**
@@ -502,8 +504,8 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
-    // Skip node_modules, .git, and hidden directories
-    if (entry.startsWith('.') || entry === 'node_modules' || entry === 'out' || entry === 'dist') {
+    // Skip node_modules, .git, hidden directories, and archive folders
+    if (entry.startsWith('.') || entry === 'node_modules' || entry === 'out' || entry === 'dist' || entry === 'archive') {
       continue;
     }
 
@@ -614,15 +616,18 @@ function main() {
     console.log(`   Total errors: ${totalErrors}`);
     console.log(`   Total warnings: ${totalWarnings}`);
 
-    if (totalErrors === 0) {
+    if (totalErrors === 0 && (totalWarnings === 0 || !STRICT_MODE)) {
       console.log('\n✅ All documentation checks passed!');
+    } else if (totalErrors === 0 && totalWarnings > 0 && STRICT_MODE) {
+      console.log('\n❌ Documentation checks failed (--strict mode: warnings treated as errors).');
     } else {
       console.log('\n❌ Documentation checks failed. Please fix errors above.');
     }
   }
 
-  // Exit with appropriate code
-  process.exit(totalErrors > 0 ? 1 : 0);
+  // Exit with appropriate code (in strict mode, warnings also cause failure)
+  const hasFailures = totalErrors > 0 || (STRICT_MODE && totalWarnings > 0);
+  process.exit(hasFailures ? 1 : 0);
 }
 
 // Run main function

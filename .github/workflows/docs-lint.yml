@@ -74,6 +74,12 @@ jobs:
               continue
             fi
 
+            # Skip archive files (historical documents with outdated links)
+            if [[ "$file" =~ ^docs/archive/ ]] || [[ "$file" =~ /archive/ ]]; then
+              echo "  Skipping archive file"
+              continue
+            fi
+
             # Run linter and capture output
             if ! OUTPUT=$(node scripts/check-docs-light.js "$file" 2>&1); then
               EXIT_CODE=1

@@ -488,17 +488,24 @@ Track if overhead is worthwhile:
 
 ---
 
-## Session Counter
+## Scope Clarification
 
-**Current Session Count:** 1
+> **NOTE**: This document is for **repo-wide multi-AI code reviews** (comprehensive audits involving multiple AI models).
+>
+> **Session tracking** has been moved to [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) where it belongs.
+>
+> **PR/commit reviews** are tracked in [AI_REVIEW_LEARNINGS_LOG.md](../AI_REVIEW_LEARNINGS_LOG.md).
 
-Increment this counter at the start of each AI work session:
+This coordinator should be used when:
+- Planning a full-repo security audit
+- Coordinating multi-AI refactoring effort
+- Running comprehensive performance review
+- Architecture consolidation review
 
-| Session # | Date | AI Model | Notes |
-|-----------|------|----------|-------|
-| 1 | 2026-01-01 | Claude (Opus 4.5) | Initial documentation setup |
-
-**Next Health Review:** At session 10
+It should NOT be used for:
+- Daily session tracking (use SESSION_CONTEXT.md)
+- Individual PR reviews (use AI_REVIEW_PROCESS.md)
+- Commit-level code review (use CodeRabbit/Qodo)
 
 ---
 
@@ -519,6 +526,7 @@ Increment this counter at the start of each AI work session:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
 | 1.1 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template | Claude |
 | 1.0 | 2026-01-01 | Initial coordinator creation with non-time-based triggers | Claude |
 

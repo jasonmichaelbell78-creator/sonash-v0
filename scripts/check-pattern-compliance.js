@@ -132,6 +132,56 @@ const ANTI_PATTERNS = [
     review: '#18',
     fileTypes: ['.js', '.ts'],
   },
+  {
+    id: 'hardcoded-api-key',
+    pattern: /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Za-z0-9_/+=-]{20,}['"`]/gi,
+    message: 'Potential hardcoded API key or secret detected',
+    fix: 'Use environment variables: process.env.API_KEY',
+    review: 'Security Standards',
+    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    exclude: /(?:test|mock|fake|dummy|example|placeholder|xxx+|your[_-]?api|insert[_-]?your)/i,
+  },
+  {
+    id: 'unsafe-innerhtml',
+    pattern: /\.innerHTML\s*=/g,
+    message: 'innerHTML assignment can lead to XSS vulnerabilities',
+    fix: 'Use textContent for text, or sanitize with DOMPurify for HTML',
+    review: 'Security Standards',
+    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+  },
+  {
+    id: 'eval-usage',
+    pattern: /\beval\s*\(/g,
+    message: 'eval() is a security risk - allows arbitrary code execution',
+    fix: 'Avoid eval. Use JSON.parse for JSON, or restructure code',
+    review: 'Security Standards',
+    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+  },
+  {
+    id: 'sql-injection-risk',
+    pattern: /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
+    message: 'Potential SQL injection: string interpolation or concatenation in query',
+    fix: 'Use parameterized queries with placeholders (e.g., db.query("SELECT * FROM users WHERE id = ?", [userId]))',
+    review: 'Security Standards',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'unsanitized-error-response',
+    pattern: /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g,
+    message: 'Exposing raw error messages/stack traces to clients',
+    fix: 'Return sanitized error messages (e.g., "An error occurred"), log full details server-side',
+    review: 'Security Standards',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'missing-rate-limit-comment',
+    pattern: /(?:exports\.|module\.exports|export\s+(?:default\s+)?(?:async\s+)?function)\s+\w+(?:Handler|API|Endpoint)/gi,
+    message: 'API endpoint may need rate limiting (verify rate limit is implemented)',
+    fix: 'Ensure endpoint has rate limiting per GLOBAL_SECURITY_STANDARDS.md',
+    review: 'Security Standards',
+    fileTypes: ['.js', '.ts'],
+    pathFilter: /(?:^|\/)(?:pages|app|routes|api|functions)\/.*(?:api|routes|handlers|endpoints)?/i,
+  },
 ];
 
 /**
@@ -272,6 +322,11 @@ function checkFile(filePath) {
   for (const antiPattern of ANTI_PATTERNS) {
     // Skip if file type doesn't match
     if (!antiPattern.fileTypes.includes(ext)) {
+      continue;
+    }
+
+    // Skip if path filter doesn't match (for patterns that only apply to specific directories)
+    if (antiPattern.pathFilter && !antiPattern.pathFilter.test(filePath)) {
       continue;
     }
 

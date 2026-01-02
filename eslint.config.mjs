@@ -1,11 +1,18 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
+import security from "eslint-plugin-security";
 import globals from "globals";
 
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    plugins: { security },
+    rules: {
+      ...(security.configs.recommended?.rules ?? {}),
+    },
+  },
   {
     ignores: [
       'node_modules/**',

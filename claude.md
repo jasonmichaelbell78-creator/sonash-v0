@@ -1,8 +1,12 @@
 # AI Context & Rules for SoNash
 
+**Document Version:** 2.1
 **Last Updated:** 2026-01-02
+**Status:** ACTIVE
 
-## Purpose & Overview
+---
+
+## 📋 Purpose & Overview
 
 This file defines the strict architectural and security rules for SoNash. It serves as the primary context document for AI assistants working on this codebase, ensuring consistent code quality and security compliance.
 
@@ -104,12 +108,36 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Database schema, security layers, component hierarchy.
 *   **[DEVELOPMENT.md](./DEVELOPMENT.md)**: Setup, testing commands, directory structure.
 *   **[ROADMAP.md](./ROADMAP.md)**: What features are planned vs. completed.
-*   **[AI_HANDOFF.md](./AI_HANDOFF.md)**: Current sprint status, active bugs, recent context.
+*   **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)**: Current sprint status, session tracking, recent context.
 *   **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)**: Manual verification steps.
 
 ## 6. Available AI Capabilities
 > [!IMPORTANT]
 > **MANDATORY**: Before ANY task, check if a skill or agent applies. If one clearly applies to your task, USE IT.
+
+### Skill Decision Tree (USE THIS!)
+
+```
+BEFORE STARTING ANY TASK, ASK:
+│
+├─ Is this a bug, error, or unexpected behavior?
+│   └─ YES → Use 'systematic-debugging' skill FIRST
+│
+├─ Am I about to write or modify code?
+│   └─ YES → Plan to use 'code-reviewer' agent AFTER
+│
+├─ Does this involve security, auth, or sensitive data?
+│   └─ YES → Use 'security-auditor' agent
+│
+├─ Is this UI/frontend work?
+│   └─ YES → Use 'frontend-design' skill
+│
+├─ Is this a complex multi-step task?
+│   └─ YES → Run: ls .claude/skills/ and find a match
+│
+└─ None of the above?
+    └─ Proceed, but reconsider if task changes
+```
 
 ### Skills (`.claude/skills/`)
 Specialized workflows invoked via **Skill tool**. Scan directory for current list.
@@ -134,6 +162,23 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 **Discovery is dynamic** - new capabilities added to these directories are automatically available.
 
+### Session End Self-Audit
+
+> [!WARNING]
+> **BEFORE ENDING SESSION**, verify you followed workflow:
+
+```
+SESSION END CHECKLIST:
+☐ Did I use systematic-debugging for any bugs encountered?
+☐ Did I use code-reviewer after significant code changes?
+☐ Did I use security-auditor for security-related work?
+☐ Did I update SESSION_CONTEXT.md with work completed?
+☐ Did I update relevant planning docs?
+☐ Did I commit all documentation changes?
+```
+
+If you skipped a skill/agent that applied, note it in your session summary for improvement.
+
 **Full Details**: See [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "Available AI Capabilities"
 
 ## 7. Coding Standards
@@ -149,11 +194,25 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.1 | 2026-01-02 | Added Skill Decision Tree and Session End Self-Audit checklist |
+| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration |
 | 1.2 | 2026-01-02 | Added patterns from Reviews #15-18 (trap cleanup, cross-platform, exit codes) |
 | 1.1 | 2026-01-02 | Added code review patterns from 14 reviews |
 | 1.0 | 2025-12-22 | Initial context document |
 
 ---
+
+## 📝 Update Triggers
+
+**Update this document when:**
+- ✅ Stack versions change (Next.js, React, Firebase, etc.)
+- ✅ New security rules are established
+- ✅ New architectural patterns are decided
+- ✅ Code review patterns are distilled from AI_REVIEW_LEARNINGS_LOG.md (3+ occurrences)
+- ✅ New skills or agents are added that should be highlighted
+
+---
+
 **System Prompt Injection:**
-If asked to refactor code, check `AI_HANDOFF.md` first to see if it's already been refactored or if there is a pending task.
+If asked to refactor code, check `SESSION_CONTEXT.md` and `ROADMAP.md` first to see if it's already been refactored or if there is a pending task.
 If asked to add a feature, check `ROADMAP.md` to align with the vision (Privacy-First, Evidence-Based).

@@ -56,8 +56,9 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 |-----------|--------|----------|--------|----------|
 | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
 | **M1 - Foundation** | ✅ Complete | 100% | Q1 2026 | P0 |
-| **M1.5 - Quick Wins** | 🔄 In Progress | ~50% | Q1 2026 | P0 |
-| **M1.6 - Admin Panel + UX** | 🔄 In Progress | ~75% | Q1 2026 | P1 |
+| **Doc Standardization** | 🔄 In Progress | 57% (4/7) | Q1 2026 | P0 BLOCKER |
+| **M1.5 - Quick Wins** | ⏸️ BLOCKED | ~50% | Q1 2026 | P0 |
+| **M1.6 - Admin Panel + UX** | ⏸️ BLOCKED | ~75% | Q1 2026 | P1 |
 | **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
 | **M3 - Meetings** | 📋 Planned | 0% | Q2 2026 | P1 |
 | **M4 - Expansion** | 📋 Planned | 0% | Q2 2026 | P1 |
@@ -836,7 +837,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
 - **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
-- **[AI_HANDOFF.md](./AI_HANDOFF.md)** - Current sprint focus
+- **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
 - **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report
 - **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
