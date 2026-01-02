@@ -664,4 +664,4 @@ When archiving completed work:
 
 **Historical Notes:**
 - December 28, 2025: Roadmap log created - consolidated all completed items from ROADMAP.md
-- Prior to Dec 28: Items tracked in active ROADMAP.md document
+- Before Dec 28: Items tracked in active ROADMAP.md document

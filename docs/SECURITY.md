@@ -80,7 +80,7 @@ meetings/{id}                   → Authenticated read, no write
 - **Path validation**: `validateUserDocumentPath()` prevents traversal
 - **User scope**: `assertUserScope()` enforces ownership
 - **Rate limiting**: Server-side via Cloud Functions (10 req/min per user)
-- **App Check**: reCAPTCHA Enterprise verification blocks bots
+- **App Check**: reCAPTCHA Enterprise configured (⚠️ temporarily disabled in Cloud Functions due to Firebase 403 throttle - see EIGHT_PHASE_REFACTOR_PLAN.md CANON-0002)
 
 ### Layer 5: Monitoring & Audit
 - **Sentry**: Error monitoring for client and Cloud Functions
@@ -141,7 +141,7 @@ async function linkAnonymousAccount(email: string, password: string) {
 - ✅ PII redaction in logs
 - ✅ Document size limits
 - ✅ Server-side rate limiting (Cloud Functions)
-- ✅ Firebase App Check (reCAPTCHA Enterprise)
+- ⚠️ Firebase App Check (configured, temporarily disabled due to throttle)
 - ✅ Sentry error monitoring
 - ✅ Security audit logging
 - ❌ End-to-end encryption (not implemented)
@@ -304,7 +304,7 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 | Auth | ⚠️ Anonymous only | Add account linking |
 | Firestore rules | ✅ Deployed | Maintained |
 | Rate limiting | ✅ Server-side | Deployed via Cloud Functions |
-| App Check | ✅ Enabled | reCAPTCHA Enterprise active |
+| App Check | ⚠️ Disabled (temp) | reCAPTCHA configured; blocked by Firebase 403 throttle |
 | Error monitoring | ✅ Sentry | Client + Functions |
 | Audit logging | ✅ Enabled | GCP Cloud Logging |
 | Billing alerts | ⚠️ Manual | See BILLING_ALERTS_SETUP.md |
@@ -314,7 +314,7 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 
 **Bottom line:** Security posture significantly improved. Priority actions now:
 1. ✅ ~~Deploy Cloud Functions rate limiting~~ Done
-2. ✅ ~~Enable App Check~~ Done
+2. ⚠️ ~~Enable App Check~~ Configured but disabled (Firebase 403 throttle)
 3. ✅ ~~Add monitoring (Sentry)~~ Done
 4. ⚠️ Configure billing alerts (see [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md))
 5. Implement account linking

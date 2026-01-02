@@ -15,7 +15,7 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 2. **Progress Tracker** - Current milestone status and completion
 3. **Planning Reference** - What's next and why
 
-**⚠️ CRITICAL**: This document supersedes all previous roadmap documents.
+**📌 NOTE**: This document supersedes all previous roadmap documents.
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
