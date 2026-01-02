@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
 **Project**: SoNash Recovery Notebook
-**Document Version**: 1.1
+**Document Version**: 1.2
 **Created**: 2026-01-02
 **Last Updated**: 2026-01-02
 **Status**: ACTIVE
@@ -810,16 +810,17 @@ gh run view <RUN_ID>
 - Warnings now block PRs (exit code 1)
 **Commit**: ci: Add docs:check --strict to CI workflow (Gap 2 fix)
 
+### Gap 3: Pre-commit Hook Bypass - MITIGATED
+**Resolved**: 2026-01-02
+**Solution**:
+- Added pre-push hook (`.husky/pre-push`) with tests, pattern check, type check
+- Added team policy in DEVELOPMENT.md prohibiting `--no-verify`
+- CI catches any issues that slip through (defense in depth)
+**Commit**: feat: Add pre-push hook and git hooks policy (Gap 3 fix)
+
 ---
 
 ## Current Gaps
-
-### Gap 3: Pre-commit Hook Bypass
-**Issue**: `git commit --no-verify` bypasses all hooks
-**Risk**: Bad code can be committed
-**Recommendation**:
-- CI catches this, but consider server-side hooks
-- Team policy against `--no-verify`
 
 ### Gap 4: Security Directives Not Automated
 **Issue**: Security standards in docs aren't code-enforced
@@ -841,12 +842,8 @@ Create `scripts/check-doc-drift.js`:
 - Check all doc links are valid
 - Verify version history is current
 
-### 3. Add Pre-push Hook
-```bash
-# .husky/pre-push
-npm test
-npm run patterns:check
-```
+### ~~3. Add Pre-push Hook~~ ✅ DONE
+*Implemented via Gap 3 resolution above*
 
 ### 4. Automate Doc Update Reminders
 - GitHub Action to comment on PRs that touch code without updating docs
@@ -869,6 +866,7 @@ npm run patterns:check
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
 | 1.1 | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow | Claude |
 | 1.0 | 2026-01-02 | Initial document created | Claude |
 
