@@ -114,7 +114,7 @@ const TIER_DEFINITIONS = {
  * @param {string} content - Document content
  * @returns {number} - Tier number (1-5) or 0 if unknown
  */
-function determineTier(filePath, content) {
+function determineTier(filePath, _content) {
   const fileName = basename(filePath);
   const relativePath = relative(ROOT, filePath);
 

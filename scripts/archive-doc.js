@@ -291,7 +291,7 @@ function getMarkdownFiles(dir, files = []) {
  * @param {string} newPath - New archive path (relative)
  * @returns {{success: boolean, updated: Array<{file: string, line: number}>, error?: string}}
  */
-function updateCrossReferences(oldPath, newPath) {
+function updateCrossReferences(oldPath, _newPath) {
   const updated = [];
   const oldFilename = basename(oldPath);
 
@@ -307,9 +307,10 @@ function updateCrossReferences(oldPath, newPath) {
 
   // Patterns to match links to the old file
   // Match: [text](./FILENAME.md), [text](FILENAME.md), [text](./docs/FILENAME.md), etc.
+  // Note: NO 'g' flag - using .test() in loop with 'g' flag causes bugs (stateful lastIndex)
   const patterns = [
-    new RegExp(`\\]\\(\\.?\\/?${escapeRegex(oldFilename)}\\)`, 'g'),
-    new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`, 'g')
+    new RegExp(`\\]\\(\\.?\\/?${escapeRegex(oldFilename)}\\)`),
+    new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`)
   ];
 
   for (const filePath of markdownFiles) {
