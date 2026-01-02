@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
 **Project**: SoNash Recovery Notebook
-**Document Version**: 1.2
+**Document Version**: 1.3
 **Created**: 2026-01-02
 **Last Updated**: 2026-01-02
 **Status**: ACTIVE
@@ -818,16 +818,28 @@ gh run view <RUN_ID>
 - CI catches any issues that slip through (defense in depth)
 **Commit**: feat: Add pre-push hook and git hooks policy (Gap 3 fix)
 
+### Gap 4: Security Directives Not Automated - RESOLVED
+**Resolved**: 2026-01-02
+**Solution**:
+- Installed `eslint-plugin-security` (detects eval, timing attacks, regex DoS, object injection)
+- Added 6 security patterns to `check-pattern-compliance.js`:
+  - Hardcoded API keys/secrets
+  - innerHTML XSS risks
+  - eval() usage
+  - SQL injection patterns
+  - Unsanitized error responses
+  - Rate limiting reminders for endpoints
+**Commit**: feat: Add security linting and patterns (Gap 4 fix)
+
+**Future Improvements** (documented for later):
+- Option B: Custom ESLint rules for project-specific security patterns
+- Option D: Semgrep rules for advanced security scanning
+
 ---
 
 ## Current Gaps
 
-### Gap 4: Security Directives Not Automated
-**Issue**: Security standards in docs aren't code-enforced
-**Risk**: Security violations in new code
-**Recommendation**:
-- Add ESLint security plugin
-- Custom rules for project-specific patterns
+*All identified gaps have been resolved!*
 
 ---
 
@@ -866,6 +878,7 @@ Create `scripts/check-doc-drift.js`:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-02 | Resolved Gap 4, added security linting | Claude |
 | 1.2 | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
 | 1.1 | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow | Claude |
 | 1.0 | 2026-01-02 | Initial document created | Claude |
