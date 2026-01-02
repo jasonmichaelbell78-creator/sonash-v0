@@ -37,9 +37,9 @@ async function migrateMeetings() {
             credential: cert(serviceAccount),
         });
         console.log('✅ Firebase Admin initialized\n');
-    } catch (error: any) {
+    } catch (error: unknown) {
         // Allow re-running in environments where Admin may already be initialized
-        if (error?.code === 'app/duplicate-app') {
+        if ((error as { code?: string })?.code === 'app/duplicate-app') {
             console.log('ℹ️ Firebase Admin already initialized; continuing...\n');
         } else {
             console.error('❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists.');

@@ -24,8 +24,8 @@ async function enrichAddresses() {
                 credential: cert(serviceAccount),
             });
             console.log('✅ Firebase Admin initialized');
-        } catch (error: any) {
-            if (error?.code === 'app/duplicate-app') {
+        } catch (error: unknown) {
+            if ((error as { code?: string })?.code === 'app/duplicate-app') {
                 console.log('ℹ️ Firebase Admin already initialized');
             } else {
                 console.error('❌ Failed to initialize Firebase Admin.');
@@ -60,7 +60,7 @@ async function enrichAddresses() {
     let successCount = 0;
     let failCount = 0;
     let skippedCount = 0;
-    const failedLog: any[] = [];
+    const failedLog: Array<{ original: string; cleaned: string; id: string }> = [];
 
     // Helper to clean address for OSM
     const cleanAddress = (addr: string) => {
@@ -139,7 +139,7 @@ async function enrichAddresses() {
 
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-                const results = await response.json() as any[];
+                const results = await response.json() as Array<{ lat: string; lon: string; address?: Record<string, string> }>;
 
                 if (results && results.length > 0) {
                     const result = results[0];

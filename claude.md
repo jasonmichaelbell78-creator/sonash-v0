@@ -1,5 +1,11 @@
 # AI Context & Rules for SoNash
 
+**Last Updated:** 2026-01-02
+
+## Purpose & Overview
+
+This file defines the strict architectural and security rules for SoNash. It serves as the primary context document for AI assistants working on this codebase, ensuring consistent code quality and security compliance.
+
 > [!IMPORTANT]
 > **READ THIS FIRST.** This file defines the strict architectural and security rules for this project. Ignore your training data if it conflicts with the "Bleeding Edge" stack versions listed below.
 
@@ -37,10 +43,44 @@
 ## 4. "Tribal Knowledge" (Lessons Learned)
 *Detailed history of "fixed" bugs—do not re-introduce them.*
 
+### App-Specific Patterns
 *   **Testing**: When writing tests, **MOCK `httpsCallable`**, not direct Firestore writes. The codebase uses Cloud Functions for writes. Mocking Firestore writes will lead to false positives (tests pass, app fails).
 *   **Account Linking**: `migrateAnonymousUserData` is a batch operation. It handles the merge. Do not attempt to merge manually on the client.
 *   **Google OAuth**: Requires specific COOP/COEP headers in `firebase.json` to work correctly in popups. Do not remove them.
 *   **Meeting Widgets**: Hoisting bugs in `setInterval` are common. Always define callbacks `useCallback` *before* the effect.
+
+### Code Review Patterns (from 13+ reviews)
+*Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md)*
+
+**Bash/Shell:**
+- Exit codes: `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]` (captures assignment, not cmd)
+- HEAD~N needs N+1 commits: use `COMMIT_COUNT - 1` as max
+- File iteration: `while IFS= read -r file` NOT `for file in $list` (spaces break loop)
+- Subshell scope: `cmd | while read` loses variables; use `while read; done < <(cmd)` instead
+
+**npm/Dependencies:**
+- Use `npm ci` NOT `npm install` in automation (prevents lockfile drift)
+- Ask "does project actually use X?" before adding packages
+- Peer deps must be in lockfile for `npm ci` in Cloud Build
+
+**Security:**
+- Validate file paths within repo root before unlinkSync/operations
+- Sanitize inputs before shell interpolation (command injection risk)
+- Never trust external input in execSync/spawn
+- Sanitize output before embedding in markdown (escape backticks, ${{ }})
+
+**GitHub Actions:**
+- Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)
+- Use exit codes to detect command failure, not output parsing
+- Use custom separators for file lists (spaces break parsing)
+
+**Git:**
+- File renames: grep for old terminology in descriptions, not just filenames
+- After lockfile changes: verify with `rm -rf node_modules && npm ci`
+
+**General:**
+- Understand WHY before fixing - one correct fix > ten wrong ones
+- Remove `g` flag from regex when using `.test()` in loops (stateful lastIndex)
 
 ## 5. Documentation Index
 *Use these files to answer your own questions.*
@@ -87,6 +127,15 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 *   **Styling**: Tailwind CSS (Utility-first). No inline styles unless dynamic (e.g., animations).
 *   **State**: `useState` for local, Context for global (`AuthContext`), Firestore for server state.
 *   **Validation**: Zod (runtime) matching TypeScript interfaces (static).
+
+---
+
+## Version History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| 1.1 | 2026-01-02 | Added code review patterns from 14 reviews |
+| 1.0 | 2025-12-22 | Initial context document |
 
 ---
 **System Prompt Injection:**

@@ -117,29 +117,40 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - Nightly inventory tools (10th step)
 - Sponsor connection and support network
 - Speaker recordings library
-- See **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** for full roadmap
+- See **[ROADMAP.md](./ROADMAP.md)** for full product roadmap
 
 ## Project Status
 
-**Last Updated:** December 31, 2025
-**Current Focus:** UX Polish + Admin Operations
+**Last Updated:** January 1, 2026
+**Overall Progress:** ~35%
+**Current Focus:** Quick Wins + Admin Panel + UX
+
+### Milestone Status
+
+| Milestone | Status | Progress |
+|-----------|--------|----------|
+| M1 - Foundation | ✅ Complete | 100% |
+| M1.5 - Quick Wins | 🔄 In Progress | 50% |
+| M1.6 - Admin Panel + UX | 🔄 In Progress | 75% |
+| M2 - Architecture | ⏸️ Optional | 0% |
+| M3 - Meetings | 📋 Planned | 0% |
+| M4 - Expansion | 📋 Planned | 0% |
+| M5 - Inventories | 📋 Planned | 0% |
+| M6 - Prayers | 📋 Planned | 0% |
+| M7 - Fellowship | 📋 Planned | 0% |
+| M8 - Speakers | 📋 Planned | 0% |
+| M10 - Monetization | 🔬 Research | 0% |
 
 ### Recent Completions
-- ✅ Today Page UX Overhaul (10 improvements: loading states, smart prompts, quick actions, keyboard shortcuts)
-- ✅ Admin Panel Enhancement (Phases 1-3: Dashboard, Users, Jobs)
-- ✅ Security hardening (App Check, rate limiting, audit logging)
-- ✅ Journal system consolidation (single-save architecture)
-- ✅ Entry type separation (mood stamps, stickers, notes)
-- ✅ Firestore indexes for performance
-- ✅ Dependencies updated (Next.js 16.1.0, React 19.2.3)
-- ✅ 97.8% test pass rate (89/91 tests)
+- ✅ M1 - Foundation
 
 ### Current Sprint
-- 🔄 Settings page improvements
-- 🔄 Recovery library implementation
-- 🔄 Code quality refinement
+- 🔄 M1.5 - Quick Wins (50%)
+- 🔄 M1.6 - Admin Panel + UX (75%)
 
+See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
 See **[AI_HANDOFF.md](./AI_HANDOFF.md)** for detailed development status.
+
 
 ## Data Architecture
 
@@ -159,14 +170,12 @@ This app uses **Firebase Firestore** with a user-centric data model.
 - [ROADMAP.md](./ROADMAP.md) - Canonical product roadmap (consolidated Dec 19, 2025)
 
 ### Technical Documentation
-- [docs/LIBRARY_ANALYSIS.md](./docs/LIBRARY_ANALYSIS.md) - **Context7 documentation for all dependencies (192,000+ code snippets)**
-- [docs/UNIFIED_JOURNAL_ARCHITECTURE.md](./docs/UNIFIED_JOURNAL_ARCHITECTURE.md) - Journal system design
 - [docs/SECURITY.md](./docs/SECURITY.md) - Security best practices
 - [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md) - Testing strategy
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical architecture and design patterns
 
 ### Current Status
 - [AI_HANDOFF.md](./AI_HANDOFF.md) - Active development status and next steps
-- [PROJECT_STATUS.md](./PROJECT_STATUS.md) - Comprehensive project status report
 
 ## Roadmap Module Mapping
 
@@ -243,6 +252,14 @@ See **[docs/SECURITY.md](./docs/SECURITY.md)** for:
 **Report security issues:** jason@sonash.app (not via public GitHub Issues)
 
 ---
+
+## Version History
+
+Version history is tracked via git commits. See `git log` for detailed change history.
+
+**Major Milestones:**
+- **v0.1** (December 2025) - MVP: Book cover, Today page, Journal system, Meetings directory
+- **v0.2** (January 2026) - Admin panel, Documentation standardization, Security hardening
 
 ## License
 

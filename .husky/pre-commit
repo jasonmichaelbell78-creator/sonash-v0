@@ -1,0 +1,31 @@
+#!/bin/sh
+# Pre-commit hook - AUTOMATED GATE (not optional documentation)
+# This blocks commits if checks fail
+
+echo "🔍 Running pre-commit checks..."
+
+# 1. Run ESLint - rely on exit code, not output parsing
+echo "  ▶ Running ESLint..."
+if ! npm run lint > /dev/null 2>&1; then
+  echo "  ❌ ESLint has errors"
+  npm run lint 2>&1 | tail -10
+  echo ""
+  echo "  Fix errors before committing. Run: npm run lint"
+  exit 1
+fi
+echo "  ✅ ESLint passed (0 errors)"
+
+# 2. Run tests
+echo "  ▶ Running tests..."
+# Use if ! pattern to capture exit code correctly (not $? after assignment)
+if ! TEST_OUTPUT=$(npm test 2>&1); then
+  echo "  ❌ Tests failed"
+  echo "$TEST_OUTPUT" | tail -10
+  echo ""
+  echo "  Fix tests before committing. Run: npm test"
+  exit 1
+fi
+echo "  ✅ Tests passed"
+
+echo ""
+echo "✅ All pre-commit checks passed - commit allowed"

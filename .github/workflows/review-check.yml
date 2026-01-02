@@ -1,0 +1,128 @@
+name: Review Trigger Check
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  check-review-triggers:
+    name: Check if Code Review Needed
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git stats
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run review trigger check
+        id: review-check
+        continue-on-error: true
+        run: |
+          # Run script once and capture both output and exit code
+          # Use if ! pattern to correctly capture exit code (not $? after assignment)
+          if ! OUTPUT=$(node scripts/check-review-needed.js --json 2>&1); then
+            echo "review_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "review_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR if review needed
+        if: steps.review-check.outputs.review_needed == 'true'
+        uses: actions/github-script@v7
+        env:
+          REVIEW_OUTPUT: ${{ steps.review-check.outputs.output }}
+        with:
+          script: |
+            const output = process.env.REVIEW_OUTPUT;
+            let data;
+            try {
+              data = JSON.parse(output);
+            } catch (e) {
+              console.log('Could not parse output:', output);
+              return;
+            }
+
+            const triggers = data.triggers || {};
+            const triggered = Object.entries(triggers)
+              .filter(([_, v]) => v.triggered)
+              .map(([k, v]) => `- **${k}**: ${v.value} (threshold: ${v.threshold})`)
+              .join('\n');
+
+            const body = [
+              '## ⚠️ Code Review Triggers Active',
+              '',
+              'This PR has triggered review thresholds:',
+              '',
+              triggered,
+              '',
+              `**Recommendation:** ${data.recommendation}`,
+              '',
+              'Consider running a multi-AI code review before merging.',
+              'See [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md) for review templates.',
+              '',
+              '---',
+              '*This check runs automatically on every PR.*'
+            ].join('\n');
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Code Review Triggers Active')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
+
+      - name: Add label if review needed
+        if: steps.review-check.outputs.review_needed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['needs-review']
+              });
+            } catch (e) {
+              // Label might not exist, that's ok
+              console.log('Could not add label:', e.message);
+            }
