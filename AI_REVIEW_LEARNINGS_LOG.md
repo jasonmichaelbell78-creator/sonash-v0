@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.18
+**Document Version:** 1.19
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-02
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.19 | 2026-01-02 | Review #26: Pattern automation script (third round - secure logging, regex accuracy) |
 | 1.18 | 2026-01-02 | Review #25: Pattern automation script robustness (second round fixes) |
 | 1.17 | 2026-01-02 | Review #24: Pattern automation script security (Qodo compliance fixes) |
 | 1.16 | 2026-01-02 | Consolidated Reviews #11-23 into claude.md v2.2; reset consolidation counter |
@@ -51,7 +52,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2 (Reviews #24-#25)
+**Reviews since last consolidation:** 3 (Reviews #24-#26)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1632,6 +1633,71 @@ The error persisted because of multiple interacting issues:
    - Pattern: `if (parsed.length === 0) { error(...); exit(2); }`
 
 **Key Insight:** When processing structured data (regex patterns, review sections), preserve ALL metadata. Lost metadata causes cascading issues: wrong IDs, lost traceability, incorrect matching. Fail fast when parsing produces unexpected empty results.
+
+---
+
+#### Review #26: Pattern Automation Script - Third Round (2026-01-02)
+
+**Source:** Qodo/CodeRabbit Third Review of `suggest-pattern-automation.js`
+**PR:** `claude/session-start-h9O9F` (Session workflow + pattern automation)
+**Tools:** Qodo Compliance Checker, CodeRabbit
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Unsanitized regex logging | 🔴 Critical | Secure Logging | Apply `sanitizeCodeForLogging()` to `suggested.pattern` |
+| 2 | Weak path redaction | 🟡 Major | Security | Improve regex for Unix and Windows absolute paths |
+| 3 | Default 'i' flag override | ⚪ Medium | Accuracy | Use `flags ?? ''` instead of `flags \|\| 'i'` |
+| 4 | Exit code doc mismatch | ⚪ Minor | Documentation | Clarify 0 = success including "all patterns covered" |
+| 5 | Retry-loop regex inefficiency | ⚪ Minor | Performance | Use lazy quantifiers + word boundaries |
+
+**Code Changes:**
+
+1. **Sanitize Pattern Output**
+   - Wrong: `suggested.pattern.slice(0, 50)` - truncates but doesn't sanitize
+   - Right: `sanitizeCodeForLogging(suggested.pattern, 50)` - sanitizes AND truncates
+   - Why: Patterns are derived from code and may contain embedded secrets
+
+2. **Improved Path Redaction**
+   - Wrong: `/\/[A-Za-z]\/[^/\s]+\/[^/\s]+/g` - only matches `/A/path/segments`
+   - Right: Unix: `/(?:^|[\s"'\`(])\/(?:[^/\s]+\/){2,}[^/\s]+/g`
+   - Right: Windows: `/(?:^|[\s"'\`(])[A-Za-z]:\\(?:[^\\\s]+\\){2,}[^\\\s]+/g`
+   - Why: Original pattern missed common paths like `/usr/local/bin` or `C:\Users\Name`
+
+3. **Original Flag Preservation**
+   - Wrong: `flags || 'i'` - case-sensitive patterns become case-insensitive
+   - Right: `flags ?? ''` - use exactly what the pattern specifies
+   - Why: Overriding flags changes pattern semantics, causes false positives
+
+4. **Lazy Quantifiers in Retry-Loop Pattern**
+   - Wrong: `[\s\S]{0,200}` - greedy, can cause backtracking
+   - Right: `[\s\S]{0,120}?` - lazy, with word boundaries on SUCCESS/FAILED
+   - Why: Reduces regex backtracking, more precise matching
+
+**Patterns Identified:**
+
+1. **Derived Data Needs Same Sanitization** (1 occurrence - CRITICAL)
+   - Root cause: Regex patterns derived from code contain the same sensitive data
+   - Prevention: If X comes from user/code input, anything derived from X also needs sanitization
+   - Pattern: Apply same sanitization to all outputs derived from sensitive inputs
+
+2. **Path Regex Completeness** (1 occurrence - Security)
+   - Root cause: Path matching regex too narrow, missed common formats
+   - Example: `/\/[A-Za-z]\/` only matches macOS-style `/V/olumes` not `/usr/local`
+   - Prevention: Test path regex against common formats: `/usr/...`, `/home/...`, `C:\Users\...`
+
+3. **Nullish Coalescing for Semantic Defaults** (1 occurrence - Accuracy)
+   - Root cause: `||` operator treats `''` as falsy, `??` only treats null/undefined
+   - Example: `flags || 'i'` when flags is `''` incorrectly defaults to 'i'
+   - Prevention: Use `??` when empty string is a valid value
+
+4. **Lazy Quantifiers for Bounded Patterns** (1 occurrence - Performance)
+   - Root cause: Greedy quantifiers in negative lookahead patterns cause backtracking
+   - Prevention: Use lazy quantifiers (`{0,N}?`) and word boundaries for accurate matching
+   - Pattern: `[\s\S]{0,N}?(?!pattern)` vs `[\s\S]{0,N}(?!pattern)`
+
+**Key Insight:** Scripts that process code need multiple layers of sanitization. The raw input, any transformed versions, and any derived outputs (like regex patterns) all need sanitization before logging. Defense in depth applies to data transformations, not just external boundaries.
 
 ---
 
