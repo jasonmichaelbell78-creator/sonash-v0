@@ -139,12 +139,17 @@ const ANTI_PATTERNS = [
  */
 function getFilesToCheck() {
   if (FILES.length > 0) {
-    // Normalize user-provided paths relative to ROOT for consistent handling
-    // Filter out paths that would escape ROOT (path traversal prevention)
+    // Block absolute paths, drive letters, and UNC paths before processing
+    // Then normalize relative to ROOT and filter out any path traversal attempts
     return FILES
-      .map(f => relative(ROOT, join(ROOT, f)))
-      .filter(f => !(/^\.\.(?:[\\/]|$)/.test(f))) // Block paths escaping ROOT
-      .filter(f => existsSync(join(ROOT, f)));
+      .filter(f => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/)/.test(f)) // Block absolute/drive/UNC inputs
+      .map(f => join(ROOT, f))
+      .filter(abs => {
+        const rel = relative(ROOT, abs);
+        return rel && !/^\.\.(?:[\\/]|$)/.test(rel); // Block paths escaping ROOT
+      })
+      .map(abs => relative(ROOT, abs))
+      .filter(rel => existsSync(join(ROOT, rel)));
   }
 
   if (STAGED) {
@@ -154,7 +159,11 @@ function getFilesToCheck() {
         encoding: 'utf-8'
       });
       return output.trim().split('\n').filter(f => f.trim());
-    } catch {
+    } catch (error) {
+      // Log git errors for debugging but don't abort (may not be a git repo)
+      if (VERBOSE && !JSON_OUTPUT) {
+        console.warn(`⚠️ Could not list staged files: ${sanitizeError(error)}`);
+      }
       return [];
     }
   }

@@ -4,7 +4,7 @@ import * as readline from 'readline';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import fetch from 'node-fetch'; // Ensure request is installed or use global fetch if available (Node 18+)
-import { sanitizeError } from './lib/sanitize-error.js';
+import { sanitizeError } from './lib/sanitize-error';
 
 // --- CONFIG ---
 const CSV_FILE = "SoNash_Meetings__cleaned.csv";

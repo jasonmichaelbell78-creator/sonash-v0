@@ -57,10 +57,10 @@ jobs:
           git fetch origin main
           git rebase origin/main || (git rebase --abort && exit 1)
 
-          # Retry push to handle race conditions
+          # Retry push to handle race conditions (explicit remote/branch for CI reliability)
           PUSH_SUCCESS=false
           for i in 1 2 3; do
-            if git push; then
+            if git push origin HEAD:main; then
               PUSH_SUCCESS=true
               break
             fi

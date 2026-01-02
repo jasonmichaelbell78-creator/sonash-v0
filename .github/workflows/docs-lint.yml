@@ -38,11 +38,10 @@ jobs:
           files: |
             **/*.md
             docs/**/*.md
-          separator: '|'
 
       - name: Run documentation linter
         id: docs-lint
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         continue-on-error: true
         env:
           CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
@@ -54,15 +53,9 @@ jobs:
           ERRORS=0
           WARNINGS=0
 
-          # Write changed files to unique temp file and ensure cleanup
-          CHANGED_FILES_TMP="$(mktemp)"
-          trap 'rm -f "$CHANGED_FILES_TMP"' EXIT
-
-          echo "$CHANGED_FILES" | tr '|' '\n' > "$CHANGED_FILES_TMP"
-
-          # Check each changed markdown file
-          while IFS= read -r file; do
-            # Skip empty lines
+          # Process changed files (space-separated by default)
+          for file in $CHANGED_FILES; do
+            # Skip empty
             if [[ -z "$file" ]]; then
               continue
             fi
@@ -80,37 +73,37 @@ jobs:
               continue
             fi
 
-            # Run linter and capture output (use if ! pattern for correct exit code)
+            # Run linter and capture output
             if ! OUTPUT=$(node scripts/check-docs-light.js "$file" 2>&1); then
               EXIT_CODE=1
             else
               EXIT_CODE=0
             fi
 
-            # Sanitize output to prevent markdown injection (escape backticks and ${{ }})
-            SAFE_OUTPUT=$(echo "$OUTPUT" | sed 's/```/\\`\\`\\`/g' | sed 's/\${{/\\${{/g')
+            # Sanitize output to prevent markdown injection
+            SAFE_OUTPUT=$(echo "$OUTPUT" | sed 's/```/\\`\\`\\`/g')
 
             if [[ $EXIT_CODE -ne 0 ]]; then
               ERRORS=$((ERRORS + 1))
               echo "### ❌ $file" >> lint-results.md
               echo "" >> lint-results.md
-              echo "\`\`\`" >> lint-results.md
+              echo '```' >> lint-results.md
               echo "$SAFE_OUTPUT" >> lint-results.md
-              echo "\`\`\`" >> lint-results.md
+              echo '```' >> lint-results.md
               echo "" >> lint-results.md
             elif echo "$OUTPUT" | grep -q "Warning:"; then
               WARNINGS=$((WARNINGS + 1))
               echo "### ⚠️ $file" >> lint-results.md
               echo "" >> lint-results.md
-              echo "\`\`\`" >> lint-results.md
+              echo '```' >> lint-results.md
               echo "$SAFE_OUTPUT" >> lint-results.md
-              echo "\`\`\`" >> lint-results.md
+              echo '```' >> lint-results.md
               echo "" >> lint-results.md
             else
               echo "### ✅ $file" >> lint-results.md
               echo "" >> lint-results.md
             fi
-          done < "$CHANGED_FILES_TMP"
+          done
 
           # Summary
           echo "" >> lint-results.md
@@ -126,7 +119,7 @@ jobs:
           cat lint-results.md
 
       - name: Comment on PR
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -164,7 +157,7 @@ jobs:
             }
 
       - name: Check for errors
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         env:
           LINT_ERRORS: ${{ steps.docs-lint.outputs.errors || '0' }}
         run: |
@@ -176,5 +169,5 @@ jobs:
           echo "Documentation linting passed"
 
       - name: No markdown changes
-        if: steps.changed-files.outputs.any_changed != 'true'
+        if: ${{ steps.changed-files.outputs.any_changed != 'true' }}
         run: echo "No markdown files changed, skipping documentation lint"

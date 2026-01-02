@@ -43,11 +43,10 @@ jobs:
           EXIT_CODE=$?
           set -e
 
-          # Validate OUTPUT is valid JSON via stdin (handles large/multiline JSON)
-          if [ "$EXIT_CODE" -ge 2 ]; then
-            if ! printf '%s' "$OUTPUT" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>JSON.parse(d))' >/dev/null 2>&1; then
-              OUTPUT='{"error":"Script failed","exit_code":'"$EXIT_CODE"'}'
-            fi
+          # Always validate OUTPUT is valid JSON via stdin (handles large/multiline JSON)
+          if ! printf '%s' "$OUTPUT" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>JSON.parse(d))' >/dev/null 2>&1; then
+            OUTPUT='{"error":"Invalid JSON output","exit_code":'"$EXIT_CODE"'}'
+            EXIT_CODE=2
           fi
 
           if [ "$EXIT_CODE" -eq 1 ]; then

@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { sanitizeError } from './lib/sanitize-error';
 
 // Nominatim Config
 const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org/search';

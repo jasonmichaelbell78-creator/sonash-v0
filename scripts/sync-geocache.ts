@@ -3,7 +3,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as fs from 'fs';
 import * as path from 'path';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { sanitizeError } from './lib/sanitize-error';
 
 async function syncGeocache() {
     console.log('🚀 Starting Geocache Sync...\n');

@@ -126,6 +126,7 @@ echo ""
 # This helps prevent repeating mistakes documented in AI_REVIEW_LEARNINGS_LOG.md
 echo "🔍 Checking for known anti-patterns..."
 PATTERN_ERR_TMP="$(mktemp)"
+trap 'rm -f "$PATTERN_ERR_TMP"' EXIT
 if node scripts/check-pattern-compliance.js 2>"$PATTERN_ERR_TMP"; then
   echo "   ✓ No pattern violations found"
 else
@@ -142,7 +143,6 @@ else
   fi
   WARNINGS=$((WARNINGS + 1))
 fi
-rm -f "$PATTERN_ERR_TMP"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
