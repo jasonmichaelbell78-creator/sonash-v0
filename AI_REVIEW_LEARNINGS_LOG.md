@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.10 | 2026-01-02 | Review #21 follow-up: docs-lint.yml rewrite, path traversal hardening, TS imports |
 | 1.9 | 2026-01-02 | Added Review #21 (root cause analysis, TS wrapper, path traversal, AbortError handling) |
 | 1.8 | 2026-01-02 | Review #20 follow-up: Applied error sanitization to 5 remaining files |
 | 1.7 | 2026-01-02 | Added Review #20 (sanitizeError, extensionless hooks, Windows paths, JSON validation) |
@@ -1205,6 +1206,71 @@ These are acceptable for internal dev tooling but would need sanitization for us
 **Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors)
 
 **Key Insight:** When creating shared utilities, you must also UPDATE ALL EXISTING CODE to use them. A utility that isn't imported is useless. TypeScript files importing from `.js` need either a `.d.ts` declaration file or a TypeScript re-export wrapper.
+
+---
+
+#### Review #21 Follow-up: docs-lint.yml YAML Error & Final Fixes (2026-01-02)
+
+**Context:** The docs-lint.yml workflow kept failing with "An expression was expected" at line 49 despite previous fixes. Additional code review suggestions needed addressing.
+
+**Root Cause - docs-lint.yml Error:**
+
+The error persisted because of multiple interacting issues:
+1. **Implicit `if:` expressions** - GitHub Actions' YAML parser was confused by conditions without explicit `${{ }}`
+2. **Custom separator `'|'`** - The pipe character in `separator: '|'` may have interacted poorly with the YAML multiline `run: |` block
+3. **Complex sed pattern** - The `sed 's/\${{/\\${{/g'` was potentially triggering expression parsing
+
+**Solution:** Complete rewrite of docs-lint.yml:
+- All `if:` conditions now use explicit `${{ }}` syntax
+- Removed custom separator, using default space-separated output
+- Simplified file processing with `for file in $CHANGED_FILES` loop
+- Removed the potentially problematic sed escaping pattern
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | YAML "expression expected" error | HIGH | docs-lint.yml | Complete rewrite with explicit expressions |
+| 2 | Absolute/UNC paths not blocked | Medium | check-pattern-compliance.js | Block `/`, `C:\`, `\\\\` inputs early |
+| 3 | JSON validation only on error | Medium | review-check.yml | Always validate, set exit 2 if invalid |
+| 4 | Implicit git push target | Low | sync-readme.yml | Use `git push origin HEAD:main` |
+| 5 | Temp file cleanup not guaranteed | Low | session-start.sh | Added `trap 'rm -f' EXIT` |
+| 6 | TS files import .js directly | Low | 5 TypeScript files | Import from `.ts` wrapper |
+
+**Key Patterns Identified:**
+
+1. **GitHub Actions `if:` conditions - always use explicit `${{ }}`:**
+   ```yaml
+   # GOOD - explicit expression
+   if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+
+   # RISKY - implicit expression (can cause parser issues)
+   if: steps.changed-files.outputs.any_changed == 'true'
+   ```
+
+2. **Avoid custom separators when using multiline run blocks:**
+   ```yaml
+   # GOOD - use default space separator
+   - uses: tj-actions/changed-files@v44
+     with:
+       files: |
+         **/*.md
+
+   # RISKY - custom separator may interfere with YAML parsing
+   separator: '|'
+   ```
+
+3. **Path traversal defense in depth:**
+   ```javascript
+   return FILES
+     .filter(f => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/)/.test(f)) // Block absolute/UNC
+     .map(f => join(ROOT, f))
+     .filter(abs => !relative(ROOT, abs).startsWith('..'))     // Block traversal
+   ```
+
+**Verification:** `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), GitHub Actions workflow syntax validated
+
+**Key Insight:** When a GitHub Actions workflow fails with cryptic YAML parsing errors, try a complete rewrite using the most explicit, conservative patterns rather than incremental fixes. The interaction between implicit expressions, multiline blocks, and special characters can cause hard-to-diagnose issues.
 
 ---
 
