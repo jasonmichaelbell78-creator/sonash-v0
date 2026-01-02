@@ -88,7 +88,7 @@ meetings/{id}                   → Authenticated read, no write
 - **Event types**: AUTH_FAILURE, RATE_LIMIT_EXCEEDED, APP_CHECK_FAILURE, VALIDATION_FAILURE, AUTHORIZATION_FAILURE
 - **Related docs**: [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md)
 
-### Layer 5: Data at Rest
+### Layer 6: Data at Rest
 - **Encryption**: Google encrypts all Firestore data at rest
 - **Key management**: Managed by Google Cloud KMS
 - **Backups**: Firestore automatic backups (7-day retention)
@@ -307,7 +307,7 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 | App Check | ⚠️ Disabled (temp) | reCAPTCHA configured; blocked by Firebase 403 throttle |
 | Error monitoring | ✅ Sentry | Client + Functions |
 | Audit logging | ✅ Enabled | GCP Cloud Logging |
-| Billing alerts | ⚠️ Manual | See BILLING_ALERTS_SETUP.md |
+| Billing alerts | ⚠️ Manual | See [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md) |
 | Data export | ❌ Missing | Implement before launch |
 | Data deletion | ❌ Missing | Implement before launch |
 | Privacy policy | ❌ Missing | Create before launch |

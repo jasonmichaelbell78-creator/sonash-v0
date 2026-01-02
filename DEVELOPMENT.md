@@ -646,13 +646,14 @@ Closes #123
 
 ## 🤖 AI Instructions
 
-When setting up or developing:
+When maintaining this document:
 
-1. **Run session-start hook** - automatically installs dependencies
-2. **Check `npm test`** before committing changes
-3. **Follow patterns** in [ARCHITECTURE.md](./ARCHITECTURE.md)
-4. **Run `npm run lint`** before submitting PRs
-5. **Update this doc** when adding new development workflows
+1. **Update "Quick Start"** when Node.js version or Firebase CLI requirements change
+2. **Update "Environment Setup"** when new env vars or Firebase config is added
+3. **Update "Testing"** section when test coverage or CI/CD procedures change
+4. **Update "Deployment"** when Firebase services or deployment flow change
+5. **Verify all commands work** before committing changes (run them!)
+6. **Keep troubleshooting current** - add new common issues as discovered
 
 ---
 
