@@ -1,5 +1,5 @@
 ---
-description: Load context, check blockers, and verify consolidation status before starting work
+description: Complete verification steps before starting any work session
 ---
 
 # Session Begin Checklist

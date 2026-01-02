@@ -1,5 +1,5 @@
 ---
-description: Complete session end checklist including consolidation and documentation updates
+description: Complete verification steps before ending the session
 ---
 
 # Session End Checklist
