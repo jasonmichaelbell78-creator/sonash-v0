@@ -331,6 +331,18 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 
 ---
 
+## 📝 Update Triggers
+
+**Update this document when:**
+- Adding new security controls or layers
+- Changing authentication or authorization flows
+- Modifying Firestore security rules
+- Adding new data classification categories
+- Updating incident response procedures
+- Changing rate limiting or App Check configuration
+
+---
+
 ## 🤖 AI Instructions
 
 When working with security-related code:

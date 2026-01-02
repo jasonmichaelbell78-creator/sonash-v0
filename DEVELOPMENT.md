@@ -633,6 +633,17 @@ Closes #123
 
 ---
 
+## 📝 Update Triggers
+
+**Update this document when:**
+- Development setup steps change (new dependencies, env vars)
+- Testing procedures are modified
+- Deployment process changes
+- New development workflows are established
+- Troubleshooting guides need updates
+
+---
+
 ## 🤖 AI Instructions
 
 When setting up or developing:
