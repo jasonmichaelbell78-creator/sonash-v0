@@ -468,6 +468,18 @@ function main() {
     process.exit(1);
   }
 
+  // SECURITY: Block absolute and UNC paths from user input
+  // Only relative paths (resolved against known safe directories) are allowed
+  const isAbsoluteUnix = FILE_ARG.startsWith('/');
+  const isAbsoluteWindows = /^[A-Za-z]:/.test(FILE_ARG);
+  const isUNCPath = FILE_ARG.startsWith('\\\\') || FILE_ARG.startsWith('//');
+
+  if (isAbsoluteUnix || isAbsoluteWindows || isUNCPath) {
+    console.error('❌ Security Error: Absolute or UNC paths are not allowed');
+    console.error('   Please provide a relative path or filename');
+    process.exit(1);
+  }
+
   // Resolve file path
   let sourcePath;
   if (existsSync(FILE_ARG)) {

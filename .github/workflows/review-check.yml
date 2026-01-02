@@ -38,16 +38,23 @@ jobs:
 
           # Run script and capture output and exit code separately
           # Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
+          set +e
           OUTPUT=$(node scripts/check-review-needed.js --json 2>"$STDERR_FILE")
           EXIT_CODE=$?
+          set -e
+
+          # Provide fallback JSON on actual errors (exit code 2+) to guarantee valid output
+          if [ "$EXIT_CODE" -ge 2 ] && [ -z "$OUTPUT" ]; then
+            OUTPUT='{"error":"Script failed","exit_code":'"$EXIT_CODE"'}'
+          fi
 
           if [ "$EXIT_CODE" -eq 1 ]; then
-            echo "review_needed=true" >> $GITHUB_OUTPUT
+            echo "review_needed=true" >> "$GITHUB_OUTPUT"
           elif [ "$EXIT_CODE" -eq 0 ]; then
-            echo "review_needed=false" >> $GITHUB_OUTPUT
+            echo "review_needed=false" >> "$GITHUB_OUTPUT"
           else
             echo "::error::Review check script failed (exit $EXIT_CODE)"
-            echo "review_needed=true" >> $GITHUB_OUTPUT
+            echo "review_needed=true" >> "$GITHUB_OUTPUT"
           fi
 
           # Log stderr if any (but don't mix with JSON output)
@@ -55,9 +62,9 @@ jobs:
             echo "::warning::Script stderr:" && cat "$STDERR_FILE"
           fi
 
-          echo "output<<EOF" >> $GITHUB_OUTPUT
-          echo "$OUTPUT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "output<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$OUTPUT" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR if review needed
         if: steps.review-check.outputs.review_needed == 'true'

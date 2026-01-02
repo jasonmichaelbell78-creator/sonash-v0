@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.6 | 2026-01-02 | Added Review #19 (retry loop, UNC paths, JSON output, proper nouns) |
 | 1.5 | 2026-01-02 | Added distillation process docs and pattern compliance checker |
 | 1.4 | 2026-01-02 | Added Review #18 (security hardening and temp file cleanup) |
 | 1.3 | 2026-01-02 | Added Review #17 (remaining Qodo/CodeRabbit fixes) |
@@ -183,7 +184,7 @@ The checker references this log so you can find the detailed context for each pa
    - Files: AI_REVIEW_PROCESS.md:448
 
 2. **Document Type Classification Ambiguity** (1 occurrence - potential)
-   - Root cause: Related Documents section mixes markdown docs with tool/automation files (docs-lint.yml)
+   - Root cause: Related Documents section mixes Markdown docs with tool/automation files (docs-lint.yml)
    - Prevention: Could separate "Documentation" vs "Tools/Automation" subsections, but phase annotations already provide timing context
    - Files: AI_REVIEW_PROCESS.md:418-422 (deferred - functional as-is)
 
@@ -315,7 +316,7 @@ if [ "$WARNINGS" -eq 0 ]; then echo "Success"; else echo "Completed with $WARNIN
 - ✅ Renamed STALE_DOCS → RECENT_DOCS for clarity
 - ✅ Fixed chart dependency pattern precision (chart → chart\.js)
 
-**Expected Impact:** 30-40% reduction in npm install failures in sandboxed environments; 100% markdown lint compliance
+**Expected Impact:** 30-40% reduction in npm install failures in sandboxed environments; 100% Markdown lint compliance
 
 **Key Insight:** Minor fixes compound - 4 small improvements in one commit prevent 4 potential future issues. Don't skip "trivial" suggestions.
 
@@ -871,7 +872,7 @@ BEFORE changing package.json or lockfiles, ask:
 
 **Key Patterns Identified:**
 
-1. **Markdown injection prevention:** Always sanitize user/tool output before embedding in markdown
+1. **Markdown injection prevention:** Always sanitize user/tool output before embedding in Markdown
    - Escape triple backticks: `sed 's/\`\`\`/\\\\`\\\\`\\\\`/g'`
    - Escape GitHub Actions syntax: `sed 's/\${{/\\${{/g'`
 
@@ -891,7 +892,7 @@ BEFORE changing package.json or lockfiles, ask:
 
 **Verification:** `npm run lint` (0 errors), `npm test` (passing)
 
-**Key Insight:** Security review feedback compounds - each review surfaces new attack vectors. The markdown injection and string interpolation issues weren't visible until the core bugs were fixed.
+**Key Insight:** Security review feedback compounds - each review surfaces new attack vectors. The Markdown injection and string interpolation issues weren't visible until the core bugs were fixed.
 
 ---
 
@@ -910,7 +911,7 @@ BEFORE changing package.json or lockfiles, ask:
 | 3 | Non-Error throws crash | Medium | retry-failures.ts | Safe error handling with `error instanceof Error` |
 | 4 | Test output not streamed | Medium | .husky/pre-commit | Use temp file for streaming output |
 | 5 | Push race conditions | Medium | sync-readme.yml | Add rebase before push |
-| 6 | Non-portable path in markdown | Medium | archive-doc.js | Normalize to forward slashes for markdown links |
+| 6 | Non-portable path in Markdown | Medium | archive-doc.js | Normalize to forward slashes for Markdown links |
 | 7 | JSON output corrupted by stderr | Medium | review-check.yml | Redirect stderr to separate file |
 | 8 | Husky breaks CI | Low | package.json | Add fallback `\|\| echo` for graceful failure |
 | 9 | Safe error handling | Medium | check-review-needed.js | Use `error instanceof Error ? error.message : String(error)` |
@@ -932,8 +933,8 @@ BEFORE changing package.json or lockfiles, ask:
    - Wrong: `done < <(echo "${{ ... }}")` - YAML sees `< <(echo "${{` as expression start
    - Right: Use `env:` block to pass value, then `< /tmp/file` or heredoc
 
-4. **Markdown link portability:** Windows paths use backslashes, markdown expects forward slashes
-   - Fix: `.replace(/\\/g, '/')` when generating markdown links
+4. **Markdown link portability:** Windows paths use backslashes, Markdown expects forward slashes
+   - Fix: `.replace(/\\/g, '/')` when generating Markdown links
 
 5. **Husky CI compatibility:** CI may not have dev dependencies installed
    - Pattern: `husky || echo 'not available'` for graceful degradation
@@ -1004,6 +1005,44 @@ These are acceptable for internal dev tooling but would need sanitization for us
 **Verification:** `npm run lint` (0 errors), `npm test` (92 passed)
 
 **Key Insight:** Security considerations differ by context. Internal dev scripts can be more verbose for debugging, while user-facing or production code needs sanitized error messages. Document the intended context.
+
+---
+
+#### Review #19: Follow-up Refinements (2026-01-02)
+
+**Context:** CodeRabbit and Qodo follow-up suggestions after Review #18 fixes.
+
+**Issues Addressed:**
+
+| # | Issue | Severity | File | Fix |
+|---|-------|----------|------|-----|
+| 1 | Retry loop silently succeeds on failure | Medium | sync-readme.yml | Track success flag, fail if all attempts exhaust |
+| 2 | Absolute/UNC paths not blocked early | Medium | archive-doc.js | Block `/path`, `C:\path`, `\\server\share` before resolution |
+| 3 | No fallback JSON on script errors | Medium | review-check.yml | Provide default JSON if output empty on exit code 2+ |
+| 4 | $GITHUB_OUTPUT not quoted | Low | review-check.yml | Quote as `"$GITHUB_OUTPUT"` for robustness |
+| 5 | Lowercase "markdown" proper noun | Low | AI_REVIEW_LEARNINGS_LOG.md | Capitalize as "Markdown" throughout |
+
+**Key Patterns Identified:**
+
+1. **Retry loop failure tracking:** Don't assume loop exit means success
+   - Wrong: `for i in 1 2 3; do cmd && break; sleep 5; done`
+   - Right: Track `SUCCESS=false`, set `SUCCESS=true` on success, fail if still false
+
+2. **Block dangerous paths early:** Check user input before path resolution
+   - Block absolute Unix paths: `filePath.startsWith('/')`
+   - Block absolute Windows paths: `/^[A-Za-z]:/.test(filePath)`
+   - Block UNC paths: `filePath.startsWith('\\\\') || filePath.startsWith('//')`
+
+3. **Guarantee valid JSON output:** Fallback when script produces no output
+   - Pattern: `OUTPUT=$(cmd) || true; EXIT_CODE=$?; if [ -z "$OUTPUT" ]; then OUTPUT='{"error":"..."}'; fi`
+
+4. **Proper nouns in documentation:** Capitalize brand/technology names
+   - "Markdown" not "markdown" (language name is a proper noun)
+   - "JavaScript" not "javascript", "GitHub" not "github", etc.
+
+**Verification:** `npm run lint` (0 errors)
+
+**Key Insight:** Edge cases matter in automation. A retry loop that silently succeeds masks failures. Always track and verify success explicitly, don't rely on loop exit.
 
 ---
 

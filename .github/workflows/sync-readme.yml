@@ -58,9 +58,18 @@ jobs:
           git rebase origin/main || (git rebase --abort && exit 1)
 
           # Retry push to handle race conditions
+          PUSH_SUCCESS=false
           for i in 1 2 3; do
-            git push && break
+            if git push; then
+              PUSH_SUCCESS=true
+              break
+            fi
             echo "Push failed (attempt $i). Retrying in 5 seconds..."
             sleep 5
-            git pull --rebase origin main
+            git pull --rebase origin main || exit 1
           done
+
+          if [ "$PUSH_SUCCESS" != "true" ]; then
+            echo "Push failed after 3 attempts."
+            exit 1
+          fi
