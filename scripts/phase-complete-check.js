@@ -215,7 +215,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     if (isAutoMode) {
       return { passed: false, verified: 0, missing: [], warnings: ['Plan file required in --auto mode'] };
     }
-    return { passed: true, warnings: ['No plan file for automated audit'] };
+    return { passed: true, verified: 0, missing: [], warnings: ['No plan file for automated audit'] };
   }
 
   // Log relative path to avoid exposing filesystem info in CI logs
@@ -238,7 +238,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     if (isAutoMode) {
       return { passed: false, verified: 0, missing: [], warnings: ['Unable to read plan file in --auto mode'] };
     }
-    return { passed: true, warnings: ['Unable to read plan file for automated audit'] };
+    return { passed: true, verified: 0, missing: [], warnings: ['Unable to read plan file for automated audit'] };
   }
   const deliverables = extractDeliverablesFromPlan(planContent);
 
@@ -266,7 +266,8 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
         .replace(/^'(.+)'$/, '$1')      // Remove single quotes
         .replace(/[)`"'.,;:]+$/g, '')   // Remove trailing punctuation
     }))
-    .filter(d => d.path.length > 0);
+    .filter(d => d.path.length > 0)
+    .filter(d => !d.path.split('/').includes('..')); // Reject path traversal
 
   const MAX_CHECKS = 20;
   const wasTruncated = normalizedDeliverables.length > MAX_CHECKS;
@@ -276,7 +277,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     ? normalizedDeliverables
     : normalizedDeliverables.slice(0, MAX_CHECKS);
 
-  // In auto mode, fail if we would have truncated (ensures CI doesn't skip files)
+  // In auto mode, log when checking many files (ensures CI knows we're thorough)
   if (isAutoMode && wasTruncated) {
     console.log(`  ⚠️  Plan references ${normalizedDeliverables.length} deliverables`);
     console.log('     Checking all in --auto mode (no truncation)');
@@ -447,10 +448,13 @@ async function main() {
 }
 
 main().catch(err => {
-  // Sanitize error output - avoid exposing file paths and stack traces
+  // Sanitize error output - avoid exposing file paths, stack traces, and control characters
   // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+  // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
   const safeMessage = String(err?.message ?? err ?? 'Unknown error')
     .split('\n')[0]
+    // eslint-disable-next-line no-control-regex -- intentional: strip ANSI/control chars for security
+    .replace(/[\x00-\x1F\x7F]/g, '')
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
     .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');

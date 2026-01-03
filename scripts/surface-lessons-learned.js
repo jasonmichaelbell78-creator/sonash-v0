@@ -144,8 +144,8 @@ function detectTopicsFromGitChanges() {
 function extractLessons(content) {
   const lessons = [];
 
-  // Pattern: Review #XX: Title
-  const reviewPattern = /### Review #(\d+):?\s*(.+?)(?=\n###|\n## |$)/gs;
+  // Pattern: Review #XX: Title (uses #### headings in AI_REVIEW_LEARNINGS_LOG.md)
+  const reviewPattern = /#### Review #(\d+):?\s*(.+?)(?=\n#### Review #|\n## |\n---|$)/gs;
   let match;
 
   while ((match = reviewPattern.exec(content)) !== null) {
@@ -331,8 +331,11 @@ async function main() {
 main().catch(err => {
   // Avoid exposing sensitive paths in error messages
   // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+  // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
   const safeMessage = String(err?.message ?? err ?? 'Unknown error')
     .split('\n')[0]
+    // eslint-disable-next-line no-control-regex -- intentional: strip ANSI/control chars for security
+    .replace(/[\x00-\x1F\x7F]/g, '')
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
     .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
