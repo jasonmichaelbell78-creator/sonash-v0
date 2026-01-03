@@ -17,7 +17,7 @@ Comprehensive testing guidance for the SoNash application, including manual test
 **Run automated tests:**
 ```bash
 npm test                    # Run all tests
-npm run test:watch          # Watch mode
+npm run test:coverage       # Run with coverage report
 npm run lint                # Lint check
 ```
 

@@ -20,7 +20,7 @@ This prompt template was designed to be fed into multiple AI models (ChatGPT, Ge
 
 **Related Documents:**
 - [ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](./ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) - Planning conversation
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
 
 ---
 

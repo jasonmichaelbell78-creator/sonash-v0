@@ -51,13 +51,25 @@ function parseArgs() {
 
 /**
  * Auto-detect topics from git changes
+ * Cross-platform compatible (no shell-specific syntax)
  */
 function detectTopicsFromGitChanges() {
   try {
-    // Get recently modified files
-    const changedFiles = execSync('git diff --name-only HEAD~5 2>/dev/null || git diff --name-only', {
-      encoding: 'utf-8'
-    }).trim().split('\n').filter(Boolean);
+    // Get recently modified files - try HEAD~5 first, fall back to HEAD
+    let changedFilesOutput = '';
+    try {
+      changedFilesOutput = execSync('git diff --name-only HEAD~5', {
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore']
+      });
+    } catch {
+      // Fall back to diff against HEAD (no commits to compare)
+      changedFilesOutput = execSync('git diff --name-only', {
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore']
+      });
+    }
+    const changedFiles = changedFilesOutput.trim().split('\n').filter(Boolean);
 
     const detectedTopics = new Set();
 

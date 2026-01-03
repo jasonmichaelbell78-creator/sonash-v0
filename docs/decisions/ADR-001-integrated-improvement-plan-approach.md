@@ -98,5 +98,5 @@ These initiatives were tracked in separate documents with unclear dependencies a
 
 - [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md) - The plan created by this decision
 - [DOCUMENTATION_STANDARDIZATION_PLAN.md](../DOCUMENTATION_STANDARDIZATION_PLAN.md) - Original doc plan (Phases 5-6 continue)
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./archive/EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
 - [ROADMAP.md](../ROADMAP.md) - Target for validated refactor items

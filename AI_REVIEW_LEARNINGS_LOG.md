@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.34
+**Document Version:** 1.35
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.35 | 2026-01-03 | Review #33: Qodo PR compliance, script security, documentation fixes |
 | 1.34 | 2026-01-03 | Process Pivot #1: Integrated Improvement Plan approach (ADR-001, Step 1 execution) |
 | 1.33 | 2026-01-03 | Review #32 follow-up: end-of-options, UTF-8 sanitization, gtimeout, file limit fix |
 | 1.32 | 2026-01-03 | Review #32: CodeRabbit CLI robustness (timeout handling, glob safety, stderr protocol) |
@@ -74,7 +75,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3
+**Reviews since last consolidation:** 4
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2320,6 +2321,67 @@ The error persisted because of multiple interacting issues:
    - Principle: stdout = machine-readable, stderr = human-readable
 
 **Key Insight:** Shell hooks need to be robust against edge cases: large inputs, old Bash versions, special characters, and protocol expectations. Always capture exit status rather than swallowing errors, feature-detect Bash capabilities, and keep protocol communication clean on stdout.
+
+---
+
+#### Review #33: Qodo PR Compliance + Script Security & Documentation Fixes (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #12 (code review response)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Comprehensive code review addressing security vulnerabilities, script robustness issues, and documentation inconsistencies identified by Qodo PR Compliance Guide and CodeRabbit.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path traversal in phase-complete-check.js | 🔴 High | Security | Added `path.resolve()` + containment check before file operations |
+| 2 | Silent catch blocks swallow errors | 🟠 Medium | Error Handling | Distinguished ENOENT from other errors with specific messages |
+| 3 | Readline interface not closed (script hangs) | 🟠 Medium | Robustness | Added `closeRl()` helper called in all exit paths |
+| 4 | Auto mode passes when plan missing | 🟠 Medium | CI/CD | Return `passed: false` when `--auto` and plan file missing |
+| 5 | Git diff detection not portable | 🟠 Medium | Portability | Replaced shell syntax `2>/dev/null ||` with try/catch + stdio options |
+| 6 | Directory validation incomplete | 🟡 Low | Validation | Added `fs.readdirSync()` check for empty directories |
+| 7 | Broken links in ADR-001 + archive doc | 🟡 Low | Documentation | Fixed relative paths to EIGHT_PHASE_REFACTOR_PLAN.md |
+| 8 | Version/status inconsistency in doc header | 🟡 Low | Documentation | Updated DOCUMENTATION_STANDARDIZATION_PLAN.md to 100% complete |
+| 9 | Non-existent test:watch script documented | 🟡 Low | Documentation | Removed references from TESTING_PLAN.md and TRIGGERS.md |
+| 10 | Effort estimates outdated | 🟡 Low | Documentation | Updated INTEGRATED_IMPROVEMENT_PLAN.md with actual vs projected |
+
+**Patterns Identified:**
+
+1. **Path Traversal Prevention with Containment Check** (1 occurrence - Security)
+   - Root cause: User-controlled paths used with `fs.statSync`/`fs.readFileSync` without validation
+   - Prevention: Resolve path with `path.resolve()`, then verify it stays within project root
+   - Wrong: `fs.readFileSync(path.join(projectRoot, userPath))`
+   - Right: `const resolved = path.resolve(projectRoot, userPath); if (!resolved.startsWith(projectRoot + path.sep)) { reject; }`
+   - Note: Also check edge case where resolved path equals projectRoot exactly
+
+2. **Distinguish ENOENT from Other Errors** (1 occurrence - Error Handling)
+   - Root cause: Generic catch block treats all errors as "not found"
+   - Prevention: Check `err.code === 'ENOENT'` explicitly, handle other errors separately
+   - Pattern: `try { stat = fs.statSync(path); } catch (err) { if (err.code === 'ENOENT') { /* not found */ } else { /* other error */ } }`
+   - Note: Other errors include EACCES (permissions), ENOTDIR (path traversal)
+
+3. **Always Close Readline Interface** (1 occurrence - Robustness)
+   - Root cause: Script hangs if readline interface not closed before exit
+   - Prevention: Create `closeRl()` helper, call in all exit paths including error handler
+   - Pattern: `function closeRl() { try { rl.close(); } catch { /* ignore if already closed */ } }`
+   - Note: Wrap in try/catch to handle already-closed case
+
+4. **Fail CI Fast on Missing Required Config** (1 occurrence - CI/CD)
+   - Root cause: `--auto` mode silently passes when plan file is missing
+   - Prevention: In auto/CI mode, missing required files should fail explicitly
+   - Pattern: `if (isAutoMode && !planFile) { return { passed: false, ... }; }`
+   - Principle: CI should fail loudly, interactive mode can prompt for action
+
+5. **Cross-Platform Exec with stdio Options** (1 occurrence - Portability)
+   - Root cause: Shell syntax like `2>/dev/null ||` doesn't work on Windows
+   - Prevention: Use Node.js `execSync` with `stdio` option and try/catch
+   - Wrong: `execSync('cmd 2>/dev/null || fallback')`
+   - Right: `try { execSync('cmd', { stdio: ['ignore', 'pipe', 'ignore'] }); } catch { fallback; }`
+   - Note: `['ignore', 'pipe', 'ignore']` = ignore stdin, capture stdout, ignore stderr
+
+**Key Insight:** Scripts that process untrusted input (like deliverable paths from plan files) need multi-layered validation: path normalization, containment checks, and error code differentiation. For CI/automation modes, explicit failure is better than silent success with warnings. Cross-platform compatibility requires avoiding shell-specific syntax in favor of Node.js native options.
 
 ---
 

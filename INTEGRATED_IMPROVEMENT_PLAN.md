@@ -39,7 +39,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 6 | Verification & Feature Resumption | **PENDING** | 0% | Step 5 |
 
 **Overall Progress:** 2/6 steps complete (33%)
-**Estimated Total Effort:** 20-30 hours
+**Effort Tracking:** ~5.5 hours actual (Steps 1-2) + 10-15 hours remaining (Steps 3-6) = ~15.5-20.5 hours total projected
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---

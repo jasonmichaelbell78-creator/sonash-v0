@@ -31,6 +31,17 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
+/**
+ * Close readline interface to prevent script hanging
+ */
+function closeRl() {
+  try {
+    rl.close();
+  } catch {
+    // ignore - already closed
+  }
+}
+
 function ask(question) {
   return new Promise(resolve => {
     rl.question(question, answer => {
@@ -79,12 +90,38 @@ function extractDeliverablesFromPlan(planContent) {
 
 /**
  * Verify deliverable exists and has content
+ * Security: Prevents path traversal by ensuring resolved path stays within projectRoot
  */
 function verifyDeliverable(deliverable, projectRoot) {
-  const fullPath = path.join(projectRoot, deliverable.path);
+  const resolvedPath = path.resolve(projectRoot, deliverable.path);
+
+  // Security: Prevent path traversal (e.g., ../../etc/passwd)
+  const normalizedRoot = projectRoot.endsWith(path.sep) ? projectRoot : projectRoot + path.sep;
+  if (!resolvedPath.startsWith(normalizedRoot) && resolvedPath !== projectRoot) {
+    return { exists: false, valid: false, reason: 'Invalid path (outside project root)' };
+  }
+
+  const fullPath = resolvedPath;
+  let stat;
 
   try {
-    const stat = fs.statSync(fullPath);
+    stat = fs.statSync(fullPath);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // File doesn't exist - check if it's in docs/archive (might be archived)
+      const archivePath = path.join(projectRoot, 'docs/archive', path.basename(deliverable.path));
+      try {
+        fs.statSync(archivePath);
+        return { exists: true, valid: true, reason: 'Archived' };
+      } catch {
+        return { exists: false, valid: false, reason: 'File not found' };
+      }
+    }
+    // Other error (permissions, etc.)
+    return { exists: false, valid: false, reason: 'Error checking file status' };
+  }
+
+  try {
     if (stat.isFile()) {
       const content = fs.readFileSync(fullPath, 'utf-8');
       if (content.trim().length < 10) {
@@ -92,26 +129,28 @@ function verifyDeliverable(deliverable, projectRoot) {
       }
       return { exists: true, valid: true };
     } else if (stat.isDirectory()) {
+      // Check directory is not empty
+      const files = fs.readdirSync(fullPath);
+      if (files.length === 0) {
+        return { exists: true, valid: false, reason: 'Directory exists but is empty' };
+      }
       return { exists: true, valid: true, reason: 'Directory exists' };
     }
-  } catch {
-    // File doesn't exist - check if it's in docs/archive (might be archived)
-    const archivePath = path.join(projectRoot, 'docs/archive', path.basename(deliverable.path));
-    try {
-      fs.statSync(archivePath);
-      return { exists: true, valid: true, reason: 'Archived' };
-    } catch {
-      return { exists: false, valid: false, reason: 'File not found' };
-    }
+  } catch (err) {
+    // Error reading file content or directory
+    return { exists: true, valid: false, reason: 'File exists but could not be read' };
   }
 
-  return { exists: false, valid: false, reason: 'Unknown error' };
+  return { exists: false, valid: false, reason: 'Unknown file type' };
 }
 
 /**
  * Run automated deliverable audit
+ * @param {string|null} planPath - Path to plan file
+ * @param {string} projectRoot - Project root directory
+ * @param {boolean} isAutoMode - Whether running in CI/auto mode
  */
-function runAutomatedDeliverableAudit(planPath, projectRoot) {
+function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
   console.log('');
   console.log('━━━ AUTOMATED DELIVERABLE AUDIT ━━━');
   console.log('');
@@ -119,6 +158,11 @@ function runAutomatedDeliverableAudit(planPath, projectRoot) {
   if (!planPath || !fs.existsSync(planPath)) {
     console.log('  ⚠️  No plan file specified or file not found');
     console.log('     Use --plan <path> to specify a plan document');
+
+    // In auto mode, missing plan is a failure (CI should have explicit plan)
+    if (isAutoMode) {
+      return { passed: false, verified: 0, missing: [], warnings: ['Plan file required in --auto mode'] };
+    }
     return { passed: true, warnings: ['No plan file for automated audit'] };
   }
 
@@ -218,7 +262,7 @@ async function main() {
 
   // 2. Automated deliverable audit (if plan specified)
   const projectRoot = process.cwd();
-  const auditResult = runAutomatedDeliverableAudit(planPath, projectRoot);
+  const auditResult = runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode);
 
   if (!auditResult.passed) {
     failures.push('Automated deliverable audit found missing files');
@@ -233,6 +277,7 @@ async function main() {
     console.log('     Manual verification questions skipped');
     console.log('     Only automated checks performed');
     console.log('');
+    closeRl();
   } else {
     console.log('━━━ DELIVERABLE AUDIT (Manual Verification) ━━━');
     console.log('');
@@ -276,6 +321,7 @@ async function main() {
         console.log('  ✅ Confirmed');
       }
     }
+    closeRl();
   } // end of !isAutoMode block
 
   console.log('');
@@ -287,7 +333,6 @@ async function main() {
     console.log('');
     console.log('You may now mark this phase as COMPLETE.');
     console.log('');
-    rl.close();
     process.exit(0);
   } else {
     console.log('❌ CHECKS FAILED - DO NOT MARK COMPLETE');
@@ -297,13 +342,12 @@ async function main() {
     console.log('');
     console.log('Fix these issues, then run this check again.');
     console.log('');
-    rl.close();
     process.exit(1);
   }
 }
 
 main().catch(err => {
-  console.error('Error:', err.message);
-  rl.close();
+  console.error('Script error');
+  closeRl();
   process.exit(1);
 });
