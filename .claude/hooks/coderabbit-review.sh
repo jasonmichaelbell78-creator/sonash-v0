@@ -49,15 +49,6 @@ for FILE_PATH in "$@"; do
         continue
     fi
 
-    # Check file limit
-    ((reviewed++)) || true
-    if (( reviewed > MAX_FILES )); then
-        ALL_FINDINGS+="
---- (skipped remaining files, limit: $MAX_FILES) ---
-"
-        break
-    fi
-
     # Extract filename using parameter expansion (more efficient than basename)
     filename="${FILE_PATH##*/}"
     # Convert to lowercase (portable across Bash versions)
@@ -68,15 +59,28 @@ for FILE_PATH in "$@"; do
         continue
     fi
 
+    # Check file limit AFTER filtering to code files (don't count non-code files)
+    ((reviewed++)) || true
+    if (( reviewed > MAX_FILES )); then
+        ALL_FINDINGS+="
+--- (skipped remaining code files, limit: $MAX_FILES) ---
+"
+        break
+    fi
+
     # Run CodeRabbit review with timeout to prevent hangs (20s per file)
     # --plain: output without colors for easier parsing
     # --severity medium: focus on medium+ severity issues
+    # Use -- to prevent filenames starting with - being interpreted as options
     # Capture exit status to distinguish timeouts/errors from findings
     REVIEW_STATUS=0
     if command -v timeout >/dev/null 2>&1; then
-        REVIEW_OUTPUT=$(timeout 20s coderabbit review "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
+        REVIEW_OUTPUT=$(timeout 20s coderabbit review -- "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
+    elif command -v gtimeout >/dev/null 2>&1; then
+        # macOS with coreutils installed has gtimeout
+        REVIEW_OUTPUT=$(gtimeout 20s coderabbit review -- "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
     else
-        REVIEW_OUTPUT=$(coderabbit review "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
+        REVIEW_OUTPUT=$(coderabbit review -- "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
     fi
 
     # Skip timeouts (exit code 124) - don't block workflow
@@ -111,8 +115,9 @@ for FILE_PATH in "$@"; do
             REVIEW_OUTPUT="${REVIEW_OUTPUT:0:1500}... (truncated)"
         fi
 
-        # Sanitize output (strip ANSI escapes even with --plain, just in case)
-        REVIEW_OUTPUT=$(printf '%s' "$REVIEW_OUTPUT" | tr -cd '[:print:]\n\t')
+        # Sanitize output: strip ANSI escapes while preserving UTF-8 text
+        # Use sed instead of tr to avoid removing valid non-ASCII characters
+        REVIEW_OUTPUT=$(printf '%s' "$REVIEW_OUTPUT" | sed $'s/\x1b\\[[0-9;]*[[:alpha:]]//g')
 
         ALL_FINDINGS+="
 --- $FILE_PATH ---

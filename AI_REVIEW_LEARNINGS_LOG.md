@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.32
+**Document Version:** 1.33
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.33 | 2026-01-03 | Review #32 follow-up: end-of-options, UTF-8 sanitization, gtimeout, file limit fix |
 | 1.32 | 2026-01-03 | Review #32: CodeRabbit CLI robustness (timeout handling, glob safety, stderr protocol) |
 | 1.31 | 2026-01-03 | Review #31: CodeRabbit CLI hook improvements (multi-file, timeout, efficiency) |
 | 1.30 | 2026-01-03 | Added CodeRabbit CLI as review source with logging instructions |
@@ -72,7 +73,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2
+**Reviews since last consolidation:** 3
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
