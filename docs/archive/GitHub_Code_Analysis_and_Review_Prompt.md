@@ -1,3 +1,31 @@
+# GitHub Code Analysis and Review Prompt
+
+**Document Type:** Historical Archive  
+**Original Format:** .txt (prompt template)
+**Date Created:** December 2025
+**Converted to Markdown:** 2026-01-03
+**Purpose:** Master prompt template for multi-AI code review analysis
+
+---
+
+## About This Document
+
+This prompt template was designed to be fed into multiple AI models (ChatGPT, Gemini, Claude, etc.) to produce standardized code review outputs that could be aggregated and deduplicated.
+
+**Key Features:**
+- 9-category analysis framework
+- Standardized output format for comparison
+- Repository access validation
+- Severity classification system
+
+**Related Documents:**
+- [ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](./ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) - Planning conversation
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
+
+---
+
+## Prompt Template
+
 You will act as a senior developer and code analyst to conduct a comprehensive code review of a GitHub repository. Your task is to analyze the codebase systematically and produce a standardized analysis report.
 
 # Repository and Model Information

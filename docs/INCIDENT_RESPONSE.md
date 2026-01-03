@@ -1,6 +1,25 @@
 # Incident Response Runbook
 
-> **Purpose:** Documented procedures for responding to security incidents, cost spikes, and service outages.
+**Last Updated:** 2026-01-03
+**Document Tier:** 2 (Active Reference)
+**Status:** Active
+
+---
+
+## Purpose
+
+Documented procedures for responding to security incidents, cost spikes, and service outages in the SoNash application.
+
+---
+
+## Quick Start
+
+**On detecting an incident:**
+1. Classify severity (P0-P3) using table below
+2. For P0-P1: Start timer, notify stakeholders immediately
+3. Follow response procedure for incident type
+4. Document timeline as you work
+5. Complete post-incident review within 48 hours
 
 ---
 
@@ -253,4 +272,20 @@ bq query --use_legacy_sql=false 'SELECT * FROM billing_export LIMIT 100'
 
 ---
 
-**Last Updated:** 2025-12-13
+## AI Instructions
+
+When helping with incident response:
+1. First identify incident severity (P0-P3) based on impact
+2. For cost spikes, immediately check Firebase Console usage
+3. Never share or log user credentials or PII in incident reports
+4. Recommend post-incident review for all P0-P1 incidents
+5. Reference this document's procedures rather than improvising
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0 | 2025-12-13 | Initial creation |

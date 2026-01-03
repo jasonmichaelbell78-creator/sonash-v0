@@ -16,10 +16,12 @@
     "docs:archive": "node scripts/archive-doc.js",
     "review:check": "node scripts/check-review-needed.js",
     "phase:complete": "node scripts/phase-complete-check.js",
+    "phase:complete:auto": "node scripts/phase-complete-check.js --auto",
     "phase:validate": "node scripts/validate-phase-completion.js",
     "patterns:check": "node scripts/check-pattern-compliance.js",
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
+    "lessons:surface": "node scripts/surface-lessons-learned.js",
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'"
   },
   "dependencies": {

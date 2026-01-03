@@ -72,6 +72,66 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 
 > **Archive:** For completed M0 and M1 milestones, see [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
+### Milestone Dependency Graph
+
+```mermaid
+flowchart TD
+    subgraph Completed["✅ Completed"]
+        M0[M0 - Baseline]
+        M1[M1 - Foundation]
+    end
+
+    subgraph Active["🔄 Active/Blocked"]
+        DOC[Doc Standardization\nP0 BLOCKER]
+        M15[M1.5 - Quick Wins]
+        M16[M1.6 - Admin Panel]
+    end
+
+    subgraph Future["📋 Planned"]
+        M2[M2 - Architecture\nOptional]
+        M3[M3 - Meetings\nQ2 2026]
+        M4[M4 - Expansion\nQ2 2026]
+        M5[M5 - Inventories\nQ3 2026]
+        M6[M6 - Prayers\nQ3 2026]
+        M7[M7 - Fellowship\nQ4 2026]
+        M8[M8 - Speakers\nQ4 2026]
+    end
+
+    subgraph Research["🔬 Research"]
+        M10[M10 - Monetization\n2027]
+    end
+
+    M0 --> M1
+    M1 --> DOC
+    DOC --> M15
+    DOC --> M16
+    M15 --> M3
+    M16 --> M3
+    M2 -.-> M3
+    M3 --> M4
+    M4 --> M5
+    M5 --> M6
+    M5 --> M7
+    M7 --> M8
+    M8 --> M10
+
+    style M0 fill:#90EE90
+    style M1 fill:#90EE90
+    style DOC fill:#FFD700
+    style M15 fill:#FFA07A
+    style M16 fill:#FFA07A
+    style M2 fill:#D3D3D3
+    style M3 fill:#ADD8E6
+    style M4 fill:#ADD8E6
+    style M5 fill:#ADD8E6
+    style M6 fill:#ADD8E6
+    style M7 fill:#ADD8E6
+    style M8 fill:#ADD8E6
+    style M10 fill:#DDA0DD
+```
+
+**Legend:** 🟢 Complete | 🟡 In Progress/Blocker | 🟠 Blocked | ⚪ Optional | 🔵 Planned | 🟣 Research
+
 ---
 
 ## ⚡ M1.5 - Quick Wins (🔄 In Progress)

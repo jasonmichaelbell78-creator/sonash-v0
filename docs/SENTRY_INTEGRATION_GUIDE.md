@@ -1,9 +1,27 @@
 # Sentry Integration Guide for SoNash Admin Panel
 
-**Purpose:** Step-by-step guide to integrate Sentry error tracking into the SoNash admin panel (Phase 4 of Admin Panel Enhancement)
+**Last Updated:** 2026-01-03
+**Document Tier:** 2 (Active Reference)
+**Status:** Active
+
+---
+
+## Purpose
+
+Step-by-step guide to integrate Sentry error tracking into the SoNash admin panel (Phase 4 of Admin Panel Enhancement).
 
 **Time Required:** ~30 minutes
 **Skill Level:** Beginner-friendly (no CLI required)
+
+---
+
+## Quick Start
+
+1. Sign up at [sentry.io](https://sentry.io) (free plan)
+2. Create a Node.js project named `sonash-app`
+3. Create an API token with read-only scopes
+4. Add 4 secrets to GitHub: `SENTRY_DSN`, `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
+5. Deploy and test the Errors tab in admin panel
 
 ---
 
@@ -322,5 +340,19 @@ Once you've added all 4 secrets to GitHub:
 
 ---
 
-**Last Updated:** 2025-12-23
-**Version:** 1.0
+## AI Instructions
+
+When helping with Sentry integration:
+1. Verify all 4 GitHub secrets are configured correctly
+2. Check API token has read-only scopes: `event:read`, `org:read`, `project:read`
+3. For "Failed to fetch" errors, verify Cloud Function is deployed
+4. Never expose or log API tokens in client-side code
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0 | 2025-12-23 | Initial creation |

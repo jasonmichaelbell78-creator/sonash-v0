@@ -2,8 +2,8 @@
 
 *A privacy-first digital recovery journal for the recovery community*
 
-**Document Version:** 2.0
-**Last Updated:** 2026-01-02
+**Document Version:** 2.1
+**Last Updated:** 2026-01-03
 **Status:** ACTIVE
 
 ---
@@ -39,8 +39,15 @@ This README serves as the **entry point** for the SoNash Recovery Notebook proje
 - **[claude.md](./claude.md)** - AI context and tribal knowledge
 
 ### Testing & QA
-- **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - Manual QA testing checklist
-- **[docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Testing strategy
+- **[docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing guide (includes manual checklists)
+
+### Security & Operations
+- **[docs/APPCHECK_SETUP.md](./docs/APPCHECK_SETUP.md)** - Firebase App Check configuration
+- **[docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Incident response runbook
+- **[docs/SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Server-side security implementation
+
+### Architecture Decisions
+- **[docs/decisions/](./docs/decisions/)** - Architecture Decision Records (ADRs)
 
 ---
 

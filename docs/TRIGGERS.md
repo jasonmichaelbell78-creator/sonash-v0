@@ -522,7 +522,6 @@ README.md reflects current status
 |---------|----------|---------|
 | `npm test` | Run all unit tests | Manual/CI |
 | `npm run test:coverage` | Tests with c8 coverage | Manual |
-| `npm run test:watch` | Watch mode for TDD | Manual |
 
 ---
 
