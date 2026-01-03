@@ -19,7 +19,14 @@ fi
 
 # Sanitize file path - remove potentially dangerous characters
 # Strip path traversal sequences (../ and ./) before other sanitization
-SANITIZED_PATH=$(echo "$FILE_PATH" | sed 's#\.\./##g; s#\./##g' | tr -cd '[:alnum:]._/-')
+# Use printf instead of echo to prevent -n/-e option injection
+SANITIZED_PATH=$(printf '%s' "$FILE_PATH" | sed 's#\.\./##g; s#\./##g' | tr -cd '[:alnum:]._/-')
+
+# Handle case where sanitization strips everything
+if [[ -z "$SANITIZED_PATH" ]]; then
+    echo "ok"
+    exit 0
+fi
 
 # Truncate excessively long paths
 if [[ ${#SANITIZED_PATH} -gt 500 ]]; then
@@ -27,9 +34,10 @@ if [[ ${#SANITIZED_PATH} -gt 500 ]]; then
 fi
 
 # Extract filename for pattern matching
-FILENAME=$(basename "$SANITIZED_PATH")
-FILENAME_LOWER=$(echo "$FILENAME" | tr '[:upper:]' '[:lower:]')
-PATH_LOWER=$(echo "$SANITIZED_PATH" | tr '[:upper:]' '[:lower:]')
+# Use -- to prevent paths starting with - from being interpreted as options
+FILENAME=$(basename -- "$SANITIZED_PATH")
+FILENAME_LOWER=$(printf '%s' "$FILENAME" | tr '[:upper:]' '[:lower:]')
+PATH_LOWER=$(printf '%s' "$SANITIZED_PATH" | tr '[:upper:]' '[:lower:]')
 
 # Priority 1: Security-sensitive files (HIGHEST priority per PR review)
 # Case-insensitive matching for security keywords in path

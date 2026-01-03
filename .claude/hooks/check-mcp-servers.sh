@@ -6,7 +6,7 @@
 # - Only outputs server NAMES (safe information)
 # - Proper error handling for missing/malformed config
 # - Terminal escape injection protection (strips ANSI sequences)
-# - Portable fallback (no PCRE grep requirement)
+# - Requires jq for safe JSON parsing (no unreliable grep fallback)
 
 set -euo pipefail
 
@@ -29,24 +29,9 @@ fi
 
 # Validate JSON and extract server names only
 # SECURITY: Only extract the keys (server names), not values (which may contain secrets)
+# jq is required for safe JSON parsing - grep-based fallback was unreliable
 if ! command -v jq &> /dev/null; then
-    # Fallback if jq not available - use portable grep (no -P flag)
-    # This is less reliable but safer than exposing full config
-    # The || true prevents script exit on no matches due to set -o pipefail
-    SERVER_NAMES=$(grep -o '"[^"]*"[[:space:]]*:' "$MCP_CONFIG" 2>/dev/null | \
-                   grep -v 'mcpServers' | \
-                   head -20 | \
-                   tr -d '":' | \
-                   tr -s '[:space:]' | \
-                   tr '\n' ',' | \
-                   sed 's/,$//' | \
-                   sanitize_output) || SERVER_NAMES=""
-
-    if [[ -z "$SERVER_NAMES" ]]; then
-        echo "No MCP servers configured"
-        exit 0
-    fi
-    echo "Available MCP servers: $SERVER_NAMES. Use mcp__<server>__<tool> to invoke."
+    echo "MCP config detected but 'jq' is unavailable; unable to list MCP servers safely"
     exit 0
 fi
 
