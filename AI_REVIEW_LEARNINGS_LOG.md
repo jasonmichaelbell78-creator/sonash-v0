@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.23
+**Document Version:** 1.24
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.24 | 2026-01-03 | Review #30 follow-up: Additional security & robustness (terminal injection, path traversal, portable grep) |
 | 1.23 | 2026-01-03 | Review #30: Claude hooks PR compliance & security (script-based hooks, input validation, security ordering) |
 | 1.22 | 2026-01-03 | Review #29: Documentation consistency & verification refinements (objective criteria, trigger ordering) |
 | 1.21 | 2026-01-03 | Review #28: Documentation & process planning improvements (CodeRabbit + technical-writer feedback) |
@@ -56,7 +57,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7 (Reviews #24-#30)
+**Reviews since last consolidation:** 8 (Reviews #24-#30 + follow-up)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1954,6 +1955,58 @@ The error persisted because of multiple interacting issues:
    - Pattern: Write/Edit/MultiEdit should have consistent post-checks
 
 **Key Insight:** Hook prompts are not the place for complex business logic. Inline prompts become unmaintainable, untestable, and prone to security issues. Dedicated scripts with proper shell practices (set -euo pipefail, input validation, error handling) are more robust. Security rule ordering matters - "fix the authentication bug" should trigger security review, not debugging.
+
+---
+
+#### Review #30 Follow-up: Additional Security & Robustness Fixes (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit (second round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of automated review after initial fixes. Focus on terminal injection, portable fallbacks, and path traversal protection.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Terminal escape injection | 🔴 High | Security | Added sanitize_output() to strip ANSI sequences |
+| 2 | PCRE grep not portable | 🟠 Medium | Robustness | Replaced grep -oP with standard grep -o |
+| 3 | Fallback crashes on no match | 🟠 Medium | Robustness | Added `\|\| SERVER_NAMES=""` to prevent pipefail exit |
+| 4 | Path traversal attack surface | 🟠 Medium | Security | Strip `../` and `./` before other sanitization |
+| 5 | Custom word boundary fragile | 🟡 Low | Robustness | Use grep's `\b` token for standard matching |
+| 6 | Nested if less readable | 🟡 Low | Maintainability | Combined into single compound condition |
+
+**Patterns Identified:**
+
+1. **Sanitize Terminal Output** (1 occurrence - Security)
+   - Root cause: JSON keys could contain ANSI escape sequences
+   - Prevention: Always sanitize before echoing to terminal
+   - Pattern: `sanitize_output() { tr -cd '[:alnum:] ,_-'; }`
+   - Use: Pipe any user/config-derived data through sanitize
+
+2. **Use Portable Shell Features** (1 occurrence - Robustness)
+   - Root cause: grep -oP (PCRE) not available on all systems
+   - Prevention: Prefer POSIX-compatible options
+   - Pattern: Use `grep -o` with basic regex, not `grep -oP` with PCRE
+   - Note: BSD systems, Alpine, minimal containers often lack PCRE
+
+3. **Handle Pipeline Failures Gracefully** (1 occurrence - Robustness)
+   - Root cause: `set -o pipefail` causes exit on any pipeline command failure
+   - Prevention: Add `|| VAR=""` fallback for commands that may legitimately fail
+   - Pattern: `VAR=$(cmd | cmd2) || VAR=""`
+
+4. **Strip Path Traversal Early** (1 occurrence - Security)
+   - Root cause: Input sanitization preserved `../` sequences
+   - Prevention: Strip traversal before other sanitization
+   - Pattern: `sed 's#\.\./##g; s#\./##g'` before `tr -cd`
+
+5. **Use Standard Word Boundary Tokens** (1 occurrence - Robustness)
+   - Root cause: Custom `(^|[^a-z])pattern([^a-z]|$)` is verbose and error-prone
+   - Prevention: Use grep's built-in `\b` word boundary
+   - Pattern: `grep -qiE "\\b$pattern\\b"` (note escaped backslash in bash)
+
+**Key Insight:** Defense in depth requires multiple layers: sanitize output (terminal injection), validate input (path traversal), and use portable features (POSIX grep). Each layer catches different attack vectors.
 
 ---
 
