@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.37
+**Document Version:** 1.38
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.38 | 2026-01-03 | Review #39: Qodo script robustness - explicit plan failure, terminal sanitization |
 | 1.37 | 2026-01-03 | Review #38: Security hardening - path traversal, control char stripping, regex fix |
 | 1.36 | 2026-01-03 | Review #34: Qodo PR follow-up - path.relative(), API key redaction, archive fixes |
 | 1.35 | 2026-01-03 | Review #33: Qodo PR compliance, script security, documentation fixes |
@@ -77,7 +78,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 9
+**Reviews since last consolidation:** 10
+**⚠️ CONSOLIDATION THRESHOLD REACHED** - consolidate at session end
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2667,6 +2669,63 @@ The error persisted because of multiple interacting issues:
    - Note: Different markdown files may use different heading levels
 
 **Key Insight:** Security-focused regexes that intentionally match control characters will trigger `no-control-regex` lint rules. Use targeted eslint-disable comments with clear security justification rather than disabling the rule globally. Path traversal and terminal injection are related attack vectors—sanitize both paths and output text.
+
+---
+
+#### Review #39: Qodo Script Robustness + Terminal Sanitization (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide
+**PR:** Session #17
+**Tools:** Qodo
+
+**Context:** Seventh round of feedback addressing explicit plan failure handling, cross-platform path normalization, regex truncation, terminal output sanitization, and documentation accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Plan file missing passes silently (interactive) | 🔴 High | Correctness | Added `planWasProvided` flag to fail when --plan explicitly requested |
+| 2 | Duplicate projectRoot declaration | 🟠 Medium | Security | Removed re-declaration in main() to ensure consistent validation |
+| 3 | Path traversal not cross-platform | 🟠 Medium | Security | Added `.replace(/\\/g, '/')` before splitting for Windows paths |
+| 4 | reviewPattern truncates at ## | 🟠 Medium | Accuracy | Changed to `[\s\S]*?` to capture subheadings within reviews |
+| 5 | Control char stripping too aggressive | 🟡 Low | Robustness | Preserve \t\n\r (0x09, 0x0A, 0x0D) for log readability |
+| 6 | formatLessons outputs unsanitized content | 🟠 Medium | Security | Added sanitizeForTerminal() to strip control chars from file content |
+| 7 | SESSION_CONTEXT count mismatch | 🟡 Low | Documentation | Added note explaining review sessions don't add feature entries |
+| 8 | APPCHECK_SETUP references .env.production | 🟠 Medium | Security | Changed to hosting/CI environment vars guidance |
+
+**Patterns Identified:**
+
+1. **Explicit Requests Should Fail Explicitly** (1 occurrence - Correctness)
+   - Root cause: --plan flag accepts path but missing file silently passes in interactive mode
+   - Prevention: Track `planWasProvided` flag, fail even in interactive if explicit request fails
+   - Pattern: `const planWasProvided = Boolean(rawPlanPath); if (planWasProvided || isAutoMode) { fail }`
+   - Note: Silent success on explicit request violates principle of least surprise
+
+2. **Cross-Platform Path Security** (1 occurrence - Security)
+   - Root cause: Path traversal check split on `/` but Windows uses `\`
+   - Prevention: Normalize path separators before security checks
+   - Pattern: `d.path.replace(/\\/g, '/').split('/').includes('..')`
+   - Note: Always normalize before path-based security decisions
+
+3. **Preserve Safe Whitespace in Sanitization** (2 occurrences - Robustness)
+   - Root cause: Stripping all 0x00-0x1F removes \t\n\r which are useful for logs
+   - Prevention: Exclude 0x09, 0x0A, 0x0D from control char stripping
+   - Pattern: `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`
+   - Note: Balance security (strip dangerous) with readability (preserve safe whitespace)
+
+4. **Sanitize File-Derived Terminal Output** (1 occurrence - Security)
+   - Root cause: Content read from files could contain terminal escape sequences
+   - Prevention: Sanitize before printing to terminal, especially in CI contexts
+   - Pattern: Apply control char stripping to any file content before console.log
+   - Note: Even "trusted" project files could be compromised
+
+5. **Regex Must Match Actual Content Structure** (1 occurrence - Accuracy)
+   - Root cause: reviewPattern stopped at `## ` but reviews contain ## subheadings
+   - Prevention: Use `[\s\S]*?` for content that may include any characters including ##
+   - Pattern: Verify regex against real file content, not assumptions
+   - Note: Multi-line content often contains unexpected nested patterns
+
+**Key Insight:** Explicit user requests should fail explicitly when they can't be satisfied—silent success is worse than clear failure. Cross-platform security requires normalizing platform-specific formats (paths, line endings) before applying security checks. When sanitizing output, preserve safe whitespace for readability while stripping dangerous control characters.
 
 ---
 
