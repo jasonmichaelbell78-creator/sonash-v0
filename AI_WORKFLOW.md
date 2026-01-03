@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
 **Last Updated**: 2026-01-03
-**Document Version**: 1.6
+**Document Version**: 1.7
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -330,6 +330,12 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ☐ Is this UI/frontend implementation work?
    → MUST use 'frontend-design' skill
+
+☐ Does this involve database design or queries?
+   → MUST use 'database-architect' agent
+
+☐ Is this complex debugging requiring deep analysis?
+   → MUST use 'debugger' agent
 ```
 
 **If ANY trigger matches → Use the agent/skill BEFORE doing manual work.**
@@ -342,7 +348,11 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ☐ Did I write or modify code (any amount)?
    → MUST run 'code-reviewer' agent
 
-☐ Did I create or update documentation?
+☐ Did I create new documentation?
+   → MUST use 'documentation-expert' for authoring
+   → SHOULD run 'technical-writer' for quality check
+
+☐ Did I update existing documentation?
    → SHOULD run 'technical-writer' agent for quality check
 
 ☐ Did I make security-related changes?
@@ -692,6 +702,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.7 | 2026-01-03 | Added database-architect, debugger to PRE-TASK; split documentation triggers in POST-TASK; aligned with claude.md | Claude |
 | 1.6 | 2026-01-03 | Added PRE-TASK and POST-TASK mandatory checklists for agent/skill usage; strengthened enforcement language | Claude |
 | 1.5 | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation to use SESSION_CONTEXT.md for recent work | Claude |
 | 1.4 | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools | Claude |

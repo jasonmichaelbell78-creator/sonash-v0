@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
@@ -123,10 +123,10 @@ Address small, high-value items that unblock or simplify subsequent steps.
   - Create `TEMPLATE.md` for new ADRs
   - Document first ADR: "ADR-001: Integrated Improvement Plan Approach"
 
-- [ ] **Task 1.3**: Update cross-references in active docs (1 hour)
-  - Update ROADMAP.md references to EIGHT_PHASE_REFACTOR_PLAN.md (search for all occurrences) to note pending migration
-  - Verify all links in SESSION_CONTEXT.md are current
+- [ ] **Task 1.3**: Audit and fix broken links in active docs (1 hour)
+  - Audit ROADMAP.md and SESSION_CONTEXT.md for broken/outdated links
   - Fix any broken links found during review
+  - Note: EIGHT_PHASE_REFACTOR_PLAN.md migration deferred to Step 5 (after Delta Review validates items)
 
 - [ ] **Task 1.4**: Log this process pivot in AI_REVIEW_LEARNINGS_LOG.md (0.5 hours)
   - Add entry documenting the staff-engineer audit
@@ -138,7 +138,7 @@ Address small, high-value items that unblock or simplify subsequent steps.
 - [ ] All 3 .txt files converted to .md with frontmatter
 - [ ] ADR folder exists with README and template
 - [ ] ADR-001 documents this plan's approach
-- [ ] Cross-references updated in ROADMAP.md
+- [ ] Broken links fixed in active docs
 - [ ] AI_REVIEW_LEARNINGS_LOG.md updated
 
 ---
@@ -298,8 +298,9 @@ A Delta Review will refresh this plan with current context.
   - Add to Step 5 ROADMAP integration
 
 - [ ] **Task 4.5**: Archive EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours)
-  - Move to `docs/archive/` with superseded_by note pointing to ROADMAP.md M2
-  - Update all cross-references to point to ROADMAP.md
+  - Move full content to `docs/archive/EIGHT_PHASE_REFACTOR_PLAN.md` with superseded_by note
+  - Leave stub file at original `docs/EIGHT_PHASE_REFACTOR_PLAN.md` explaining archived status and linking to ROADMAP.md M2 (prevents broken external links)
+  - Update internal cross-references to point to ROADMAP.md
   - No new planning document (avoid fragmentation)
 
 ### Acceptance Criteria
@@ -464,6 +465,7 @@ After each work session:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-01-03 | Added stub file strategy for archival; clarified Task 1.3 (defer migration to Step 5); improved acceptance criteria |
 | 1.1 | 2026-01-03 | Added Task 5.3 for App Check tracking; fixed CANON count (45); removed ARCHITECTURE_REFACTOR_BACKLOG.md option; removed brittle line-number references |
 | 1.0 | 2026-01-03 | Initial creation - consolidated improvement roadmap |
 
