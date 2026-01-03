@@ -126,6 +126,7 @@ Address small, high-value items that unblock or simplify subsequent steps.
 - [ ] **Task 1.3**: Audit and fix broken links in active docs (1 hour)
   - Audit ROADMAP.md and SESSION_CONTEXT.md for broken/outdated links
   - Fix any broken links found during review
+  - Run `npm run docs:check` after fixes to confirm no broken references remain
   - Note: EIGHT_PHASE_REFACTOR_PLAN.md migration deferred to Step 5 (after Delta Review validates items)
 
 - [ ] **Task 1.4**: Log this process pivot in AI_REVIEW_LEARNINGS_LOG.md (0.5 hours)
@@ -138,7 +139,7 @@ Address small, high-value items that unblock or simplify subsequent steps.
 - [ ] All 3 .txt files converted to .md with frontmatter
 - [ ] ADR folder exists with README and template
 - [ ] ADR-001 documents this plan's approach
-- [ ] Broken links fixed in active docs
+- [ ] Broken links fixed in active docs (validated by `npm run docs:check`)
 - [ ] AI_REVIEW_LEARNINGS_LOG.md updated
 
 ---

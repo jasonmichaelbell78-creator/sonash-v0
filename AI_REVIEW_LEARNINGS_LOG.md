@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.21
+**Document Version:** 1.22
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.22 | 2026-01-03 | Review #29: Documentation consistency & verification refinements (objective criteria, trigger ordering) |
 | 1.21 | 2026-01-03 | Review #28: Documentation & process planning improvements (CodeRabbit + technical-writer feedback) |
 | 1.20 | 2026-01-02 | Review #27: Pattern automation script (fourth round - artifact persistence, regex flags) |
 | 1.19 | 2026-01-02 | Review #26: Pattern automation script (third round - secure logging, regex accuracy) |
@@ -54,7 +55,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5 (Reviews #24-#28)
+**Reviews since last consolidation:** 6 (Reviews #24-#29)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1838,6 +1839,49 @@ The error persisted because of multiple interacting issues:
 - Track security items explicitly with acceptance criteria
 - Use descriptive references, not line numbers
 - Verify counts and references against source documents
+
+---
+
+#### Review #29: Documentation Consistency & Verification Refinements (2026-01-03)
+
+**Source:** CodeRabbit Third Round Review
+**PR:** `claude/session-start-h9O9F` (Integrated Improvement Plan + Agent Enforcement)
+**Tools:** CodeRabbit
+
+**Context:** Follow-up review after addressing second round feedback. Focus on making acceptance criteria objectively verifiable and clarifying trigger ordering.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Link fixes not objectively verifiable | ⚪ Medium | Verification | Added `npm run docs:check` to Task 1.3 and acceptance criteria |
+| 2 | Trigger precedence ambiguity | ⚪ Medium | Clarity | Clarified debugger runs AFTER systematic-debugging |
+| 3 | Review order unclear | ⚪ Minor | Clarity | Clarified technical-writer runs AFTER documentation-expert |
+| 4 | Stale Last Processed reference | ⚪ Minor | Consistency | Updated SESSION_CONTEXT.md to Review #28 |
+
+**Patterns Identified:**
+
+1. **Make Acceptance Criteria Objectively Verifiable** (1 occurrence - Quality)
+   - Root cause: "Broken links fixed" is subjective; no verification step
+   - Prevention: Always include verification command in acceptance criteria
+   - Pattern: "- [ ] X completed (validated by `npm run Y`)"
+
+2. **Clarify Trigger Ordering When Multiple Apply** (1 occurrence - Clarity)
+   - Root cause: Both systematic-debugging and debugger could apply to complex bugs
+   - Prevention: When triggers can overlap, specify ordering explicitly
+   - Resolution: "AFTER 'systematic-debugging' if it's a bug/unexpected behavior"
+
+3. **Specify Workflow Ordering in Multi-Step Triggers** (1 occurrence - Clarity)
+   - Root cause: documentation-expert + technical-writer order was ambiguous
+   - Prevention: Use explicit ordering words (AFTER, BEFORE, THEN)
+   - Resolution: "SHOULD run `technical-writer` AFTER for quality check"
+
+4. **Keep Cross-Document References Current** (1 occurrence - Consistency)
+   - Root cause: SESSION_CONTEXT.md still referenced Review #27 after #28 was added
+   - Prevention: When adding reviews, update all Last Processed references
+   - Pattern: Add to review workflow checklist
+
+**Key Insight:** Acceptance criteria should be machine-verifiable whenever possible. Commands like `npm run docs:check` provide objective pass/fail verification rather than relying on human judgment. When multiple tools/agents can apply to the same scenario, explicit ordering prevents confusion.
 
 ---
 

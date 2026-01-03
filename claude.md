@@ -144,7 +144,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 | What You Just Did | Required Action | Tool |
 |-------------------|-----------------|------|
 | Wrote or modified code (any amount) | MUST run `code-reviewer` agent | Task |
-| Created new documentation | MUST use `documentation-expert` agent for authoring; SHOULD run `technical-writer` for quality check | Task |
+| Created new documentation | MUST use `documentation-expert` agent for authoring; SHOULD run `technical-writer` AFTER for quality check | Task |
 | Updated existing documentation | SHOULD run `technical-writer` agent for quality check | Task |
 | Made security-related changes | MUST run `security-auditor` agent | Task |
 | Wrote tests | SHOULD run `test-engineer` agent to validate strategy | Task |

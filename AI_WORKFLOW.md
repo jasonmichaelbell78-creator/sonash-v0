@@ -335,7 +335,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
    → MUST use 'database-architect' agent
 
 ☐ Is this complex debugging requiring deep analysis?
-   → MUST use 'debugger' agent
+   → MUST use 'debugger' agent (AFTER 'systematic-debugging' if it's a bug/unexpected behavior)
 ```
 
 **If ANY trigger matches → Use the agent/skill BEFORE doing manual work.**
