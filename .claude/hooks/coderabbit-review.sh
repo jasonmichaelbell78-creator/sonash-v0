@@ -25,9 +25,22 @@ if ! command -v coderabbit &> /dev/null; then
     exit 0
 fi
 
+# Portable lowercase function (Bash 4.0+ has ${var,,}, macOS ships Bash 3.2)
+to_lower() {
+    if ( set +u; : "${1,,}" ) 2>/dev/null; then
+        printf '%s' "${1,,}"
+    else
+        printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+    fi
+}
+
 # Track if we found any issues across all files
 FOUND_ISSUES=false
 ALL_FINDINGS=""
+
+# Bound hook runtime: limit files to prevent stalling on large changes
+MAX_FILES=10
+reviewed=0
 
 # Iterate over all provided file arguments
 for FILE_PATH in "$@"; do
@@ -36,10 +49,19 @@ for FILE_PATH in "$@"; do
         continue
     fi
 
+    # Check file limit
+    ((reviewed++)) || true
+    if (( reviewed > MAX_FILES )); then
+        ALL_FINDINGS+="
+--- (skipped remaining files, limit: $MAX_FILES) ---
+"
+        break
+    fi
+
     # Extract filename using parameter expansion (more efficient than basename)
     filename="${FILE_PATH##*/}"
-    # Convert to lowercase using parameter expansion (Bash 4.0+)
-    filename_lower="${filename,,}"
+    # Convert to lowercase (portable across Bash versions)
+    filename_lower=$(to_lower "$filename")
 
     # Only review code files (skip configs, docs, etc. to reduce noise)
     if ! [[ "$filename_lower" =~ \.(ts|tsx|js|jsx|py|sh|go|rs|rb|php|java|kt|swift)$ ]]; then
@@ -49,15 +71,39 @@ for FILE_PATH in "$@"; do
     # Run CodeRabbit review with timeout to prevent hangs (20s per file)
     # --plain: output without colors for easier parsing
     # --severity medium: focus on medium+ severity issues
+    # Capture exit status to distinguish timeouts/errors from findings
+    REVIEW_STATUS=0
     if command -v timeout >/dev/null 2>&1; then
-        REVIEW_OUTPUT=$(timeout 20s coderabbit review "$FILE_PATH" --plain --severity medium 2>&1) || true
+        REVIEW_OUTPUT=$(timeout 20s coderabbit review "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
     else
-        REVIEW_OUTPUT=$(coderabbit review "$FILE_PATH" --plain --severity medium 2>&1) || true
+        REVIEW_OUTPUT=$(coderabbit review "$FILE_PATH" --plain --severity medium 2>&1) || REVIEW_STATUS=$?
+    fi
+
+    # Skip timeouts (exit code 124) - don't block workflow
+    if [[ "$REVIEW_STATUS" -eq 124 ]]; then
+        ALL_FINDINGS+="
+--- $FILE_PATH ---
+(review timed out after 20s)
+"
+        continue
+    fi
+
+    # Skip CLI errors (non-zero exit, or output starts with Error:)
+    # But capture the error for visibility
+    if [[ "$REVIEW_STATUS" -ne 0 ]]; then
+        # Only note errors if output is short (likely an error message)
+        if [[ ${#REVIEW_OUTPUT} -lt 200 ]]; then
+            ALL_FINDINGS+="
+--- $FILE_PATH ---
+(review failed: exit $REVIEW_STATUS)
+"
+        fi
+        continue
     fi
 
     # Check if there are any actionable findings
-    # Use "Error:" prefix match instead of *"error"* to avoid filtering valid findings
-    if [[ -n "$REVIEW_OUTPUT" && "$REVIEW_OUTPUT" != *"No issues found"* && "$REVIEW_OUTPUT" != "Error:"* ]]; then
+    # Use case-insensitive regex for "Error:" prefix to avoid filtering valid findings
+    if [[ -n "$REVIEW_OUTPUT" && "$REVIEW_OUTPUT" != *"No issues found"* && ! "$REVIEW_OUTPUT" =~ ^[[:space:]]*[Ee][Rr][Rr][Oo][Rr]: ]]; then
         FOUND_ISSUES=true
 
         # Truncate very long output to prevent terminal spam (per file)
@@ -75,17 +121,20 @@ $REVIEW_OUTPUT
     fi
 done
 
-# Output all findings at once
-if [[ "$FOUND_ISSUES" == true ]]; then
+# Output findings to stderr to keep stdout clean for hook protocol
+if [[ "$FOUND_ISSUES" == true || -n "$ALL_FINDINGS" ]]; then
     # Cap total output length
     if [[ ${#ALL_FINDINGS} -gt 3000 ]]; then
         ALL_FINDINGS="${ALL_FINDINGS:0:3000}... (output truncated)"
     fi
 
-    echo "CodeRabbit Review Findings:"
-    echo "$ALL_FINDINGS"
-    echo ""
-    echo "Consider addressing these issues before committing."
+    {
+        echo "CodeRabbit Review Findings:"
+        echo "$ALL_FINDINGS"
+        echo ""
+        echo "Consider addressing these issues before committing."
+    } >&2
 fi
 
+# Protocol: stdout only contains "ok"
 echo "ok"

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.31
+**Document Version:** 1.32
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.32 | 2026-01-03 | Review #32: CodeRabbit CLI robustness (timeout handling, glob safety, stderr protocol) |
 | 1.31 | 2026-01-03 | Review #31: CodeRabbit CLI hook improvements (multi-file, timeout, efficiency) |
 | 1.30 | 2026-01-03 | Added CodeRabbit CLI as review source with logging instructions |
 | 1.29 | 2026-01-03 | Added AI Instructions section (CI compliance) |
@@ -71,7 +72,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1
+**Reviews since last consolidation:** 2
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2260,6 +2261,63 @@ The error persisted because of multiple interacting issues:
    - Note: `${var,,}` requires Bash 4.0+
 
 **Key Insight:** Hook scripts often receive multiple arguments. Always design for the multi-file case using `$@` iteration. Use parameter expansion over external commands when processing many files - the performance difference adds up.
+
+---
+
+#### Review #32: CodeRabbit CLI Robustness (2026-01-03)
+
+**Source:** Qodo + CodeRabbit PR
+**PR:** `claude/address-pr-review-feedback-Og33H` (Review #31 follow-up)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of feedback on CodeRabbit CLI integration addressing error handling, portability, and protocol compliance.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Swallowed errors hide failures | 🟠 Medium | Error Handling | Capture exit status, distinguish timeout (124) from errors |
+| 2 | Glob expansion on unquoted args | 🟠 Medium | Security | Add `set -f;` before command in settings.json |
+| 3 | `${var,,}` not portable (Bash 3.2) | 🟠 Medium | Portability | Add `to_lower()` function with fallback to `tr` |
+| 4 | No file count limit | 🟠 Medium | Performance | Add `MAX_FILES=10` limit |
+| 5 | Findings pollute stdout protocol | 🟡 Low | Protocol | Redirect findings to stderr, keep "ok" on stdout |
+
+**Patterns Identified:**
+
+1. **Capture Exit Status, Don't Swallow Errors** (1 occurrence - Error Handling)
+   - Root cause: `|| true` hides whether command failed
+   - Prevention: Use `|| STATUS=$?` and check status explicitly
+   - Wrong: `OUTPUT=$(cmd) || true`
+   - Right: `OUTPUT=$(cmd) || STATUS=$?; if [[ $STATUS -eq 124 ]]; then ...`
+   - Note: timeout(1) returns 124 on timeout
+
+2. **Use `set -f` to Prevent Glob Expansion** (1 occurrence - Security)
+   - Root cause: Unquoted `$VAR` expands globs (`*`, `?`) in filenames
+   - Prevention: Disable globbing with `set -f` before expansion
+   - Wrong: `script.sh $ARGUMENTS` (globs expand)
+   - Right: `set -f; script.sh $ARGUMENTS` (globs preserved)
+   - Trade-off: Breaks intentional globbing in same shell
+
+3. **Portable Bash Version Compatibility** (1 occurrence - Portability)
+   - Root cause: `${var,,}` lowercase requires Bash 4.0+, macOS ships 3.2
+   - Prevention: Feature-detect with `( : "${var,,}" ) 2>/dev/null`
+   - Pattern: `if ( : "${var,,}" ) 2>/dev/null; then ...; else tr fallback; fi`
+   - Note: Function wrapper (`to_lower()`) keeps code clean
+
+4. **Bound Hook Runtime with File Limits** (1 occurrence - Performance)
+   - Root cause: Large edits (100+ files) cause unacceptable delays
+   - Prevention: Set maximum file count, break early
+   - Pattern: `MAX_FILES=10; ((count++)); if (( count > MAX_FILES )); then break; fi`
+   - Note: Inform user when limit reached
+
+5. **Keep Protocol Output Clean (stdout vs stderr)** (1 occurrence - Protocol)
+   - Root cause: Extra output on stdout breaks hook protocol parsing
+   - Prevention: Redirect informational messages to stderr
+   - Wrong: `echo "findings..."; echo "ok"`
+   - Right: `{ echo "findings..."; } >&2; echo "ok"`
+   - Principle: stdout = machine-readable, stderr = human-readable
+
+**Key Insight:** Shell hooks need to be robust against edge cases: large inputs, old Bash versions, special characters, and protocol expectations. Always capture exit status rather than swallowing errors, feature-detect Bash capabilities, and keep protocol communication clean on stdout.
 
 ---
 
