@@ -58,5 +58,18 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 ## 7. Pattern Check
 Run: `npm run patterns:check` to surface known anti-patterns
 
+## 8. Review Trigger Check
+Run: `npm run review:check` to see if multi-AI review thresholds are reached
+
+## 9. Surface Relevant Lessons
+Run: `npm run lessons:surface` to surface past lessons relevant to current work
+
+## 10. Incident Documentation Reminder
+**After encountering any significant errors or issues:**
+- Document the issue in AI_REVIEW_LEARNINGS_LOG.md
+- Use the standard "Review #XX" format
+- Include: cause, fix, pattern identified, prevention steps
+- This builds institutional knowledge for future sessions
+
 ---
 Ready to begin session. What would you like to work on?

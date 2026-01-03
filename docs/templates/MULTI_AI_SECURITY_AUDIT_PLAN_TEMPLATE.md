@@ -595,6 +595,7 @@ When using this template:
 
 ## Related Documents
 
+- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** - Mandatory standards being verified
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template

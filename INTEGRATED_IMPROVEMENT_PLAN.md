@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.5
+**Document Version:** 1.6
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
@@ -46,12 +46,44 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 
 ## Dependency Map
 
+```mermaid
+flowchart LR
+    subgraph Phase1["Foundation"]
+        S1[Step 1\nQuick Wins]
+        S2[Step 2\nDoc Standardization]
+    end
+
+    subgraph Phase2["Tooling"]
+        S3[Step 3\nDeveloper Tooling]
+    end
+
+    subgraph Phase3["Validation"]
+        S4[Step 4\nDelta Review]
+        S5[Step 5\nROADMAP Integration]
+    end
+
+    subgraph Phase4["Completion"]
+        S6[Step 6\nVerification]
+    end
+
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+
+    S6 --> FR[Feature Resumption\nM1.5, M1.6, M3+]
+
+    style S1 fill:#90EE90
+    style S2 fill:#90EE90
+    style S3 fill:#FFE4B5
+    style S4 fill:#FFE4B5
+    style S5 fill:#FFE4B5
+    style S6 fill:#FFE4B5
+    style FR fill:#ADD8E6
 ```
-Step 1 (Quick Wins) ──> Step 2 (Doc Standardization) ──> Step 3 (Tooling)
-                                                              │
-                                                              v
-Step 6 (Verification) <── Step 5 (Integration) <── Step 4 (Delta Review)
-```
+
+**Legend:** 🟢 Complete | 🟡 Pending | 🔵 Future
 
 **Critical Path:** Step 1 → Step 2 → Step 3 → Step 4 → Step 5 → Step 6
 
@@ -308,6 +340,12 @@ Install and configure developer tooling that was identified as missing during th
   - Add madge check (warning only)
   - Add knip check (warning only)
 
+- [ ] **Task 3.6**: CI-level lint enforcement (1 hour) - *from Phase 6 backlog*
+  - Add `npm run lint` to GitHub Actions ci.yml workflow
+  - Ensure lint runs on all PRs, not just pre-commit
+  - Fail PR checks if lint errors found
+  - Document in DEVELOPMENT.md
+
 ### Acceptance Criteria
 
 - [ ] Prettier installed and configured
@@ -315,7 +353,8 @@ Install and configure developer tooling that was identified as missing during th
 - [ ] madge installed with `npm run deps:circular`
 - [ ] knip installed with `npm run deps:unused`
 - [ ] DEVELOPMENT.md documents all tools
-- [ ] CI pipeline updated
+- [ ] CI pipeline updated with all checks
+- [ ] CI lint enforcement active (PRs fail on lint errors)
 
 ---
 
@@ -372,6 +411,12 @@ A Delta Review will refresh this plan with current context.
   - Update internal cross-references to point to ROADMAP.md
   - No new planning document (avoid fragmentation)
 
+- [ ] **Task 4.6**: Key rotation policy documentation (0.5 hours) - *from Phase 6 backlog*
+  - Document key rotation schedule in SECURITY.md
+  - Add procedures for rotating Firebase, API keys
+  - Link from GLOBAL_SECURITY_STANDARDS.md
+  - Review alongside App Check re-enablement (Task 4.4)
+
 ### Acceptance Criteria
 
 - [ ] All 45 CANON items categorized
@@ -379,6 +424,7 @@ A Delta Review will refresh this plan with current context.
 - [ ] Valid items ready for ROADMAP.md integration
 - [ ] App Check plan documented
 - [ ] EIGHT_PHASE_REFACTOR_PLAN.md properly archived/superseded
+- [ ] Key rotation policy documented in SECURITY.md
 
 ---
 
@@ -571,6 +617,7 @@ After each work session:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6 | 2026-01-03 | Added Mermaid dependency graph (replaced ASCII diagram); color-coded steps showing progress |
 | 1.5 | 2026-01-03 | Added mandatory Step Completion Audit process; retroactive audits for Steps 1-2; audit requirement added to AI Instructions |
 | 1.4 | 2026-01-03 | Step 2 COMPLETE: Phase 5 (6/6 migrations), Phase 6 core (7 tasks); 11 deferred tasks (6.7-6.17) moved to backlog |
 | 1.3 | 2026-01-03 | Step 1 COMPLETE: .txt→.md conversions, ADR folder with ADR-001, link audit passed, process pivot logged |

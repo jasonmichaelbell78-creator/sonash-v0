@@ -1,8 +1,8 @@
 # 📚 SoNash Documentation Standardization Plan
 
-**Document Version:** 1.7
+**Document Version:** 1.8
 **Created:** 2025-12-31
-**Last Updated:** 2026-01-02
+**Last Updated:** 2026-01-03
 **Status:** Active - In Progress
 **Overall Completion:** 57% (Phase 1 + 1.5 + 2 + 3 Complete - 4/7 phases)
 
@@ -2235,71 +2235,70 @@ Use `npm run docs:archive -- <filename>` which:
 
 The following items were deferred from Phase 2 and should be addressed in Phase 6:
 
-- [ ] **Task 6.7**: Template schema consolidation (1 hour)
-  - Standardize JSONL output schema across all 4 review templates
-  - Ensure consistent field names, types, and formats
-  - Update aggregation procedures in each template
+- [x] **Task 6.7**: Template schema consolidation (1 hour) - **DONE (Session #10)**
+  - Created JSONL_SCHEMA_STANDARD.md defining canonical schema for all review templates
+  - Updated all 4 review templates to reference the standard
+  - Documented severity/effort scales and domain-specific extensions
 
-- [ ] **Task 6.8**: Full deliverable audit automation (1.5 hours)
-  - Enhance phase-complete-check.js to auto-verify deliverables against plan
-  - Parse DOCUMENTATION_STANDARDIZATION_PLAN.md for deliverables list
-  - Check file existence and basic content validation
-  - Currently interactive; make it fully automated
+- [x] **Task 6.8**: Full deliverable audit automation (1.5 hours) - **DONE (Session #10)**
+  - Enhanced phase-complete-check.js with `--auto` mode for CI
+  - Added `--plan <path>` flag to specify plan document
+  - Automated file existence verification from plan deliverables
+  - Added `npm run phase:complete:auto` script
 
-- [ ] **Task 6.9**: Lessons learned automation (2 hours)
-  - Create script to grep AI_REVIEW_PROCESS.md for relevant past issues
-  - Run at session start to surface applicable lessons
-  - Match patterns based on current work area (e.g., "firebase", "auth", "tests")
-  - Add to session-start hook
+- [x] **Task 6.9**: Lessons learned automation (2 hours) - **DONE (Session #10)**
+  - Created scripts/surface-lessons-learned.js
+  - Auto-detects topics from git changes
+  - Surfaces relevant lessons from AI_REVIEW_LEARNINGS_LOG.md
+  - Added `npm run lessons:surface` script
 
-- [ ] **Task 6.10**: Session hook enhancements (1 hour)
-  - Add `npm run review:check` to session-start.sh
-  - Add prompt to document incidents in AI_REVIEW_PROCESS.md after errors
-  - Surface relevant lessons learned at session start
+- [x] **Task 6.10**: Session hook enhancements (1 hour) - **DONE (Session #10)**
+  - Added Step 8: Review trigger check (`npm run review:check`)
+  - Added Step 9: Surface relevant lessons (`npm run lessons:surface`)
+  - Added Step 10: Incident documentation reminder
 
-- [ ] **Task 6.11**: Key rotation policy documentation (0.5 hours)
+- [x] **Task 6.11**: Key rotation policy documentation (0.5 hours) - **MOVED TO Step 4 (Session #10)**
   - Document key rotation schedule in SECURITY.md
   - Add procedures for rotating Firebase, API keys
   - Link from GLOBAL_SECURITY_STANDARDS.md
+  - **Decision: Moved to INTEGRATED_IMPROVEMENT_PLAN.md Step 4, Task 4.6**
 
-- [ ] **Task 6.12**: Clean up deploy-firebase.yml (0.25 hours)
+- [x] **Task 6.12**: Clean up deploy-firebase.yml (0.25 hours) - **DONE (Session #8)**
   - Remove `claude/review-repo-docs-D4nYF` from triggers (line 7)
   - This branch was added temporarily during Phase 2 development
   - Should only deploy from `main` branch after PR merges
+  - **Completed: Commit 3be9640**
 
 ### 📋 Deferred Items from Phase 3 (Additional Tasks)
 
 The following items were intentionally skipped in Phase 3 and should be reviewed in Phase 6:
 
-- [ ] **Task 6.13**: Review dependency graphs for milestones (1 hour)
-  - Evaluate if Mermaid dependency graphs are needed for ROADMAP.md milestones
-  - Original plan called for Mermaid diagrams showing milestone dependencies
-  - Decision: Add only if complexity warrants visual representation
-  - May be unnecessary if milestone relationships are clear from text
+- [x] **Task 6.13**: Review dependency graphs for milestones (1 hour) - **DONE (Session #10)**
+  - Evaluated if Mermaid dependency graphs are needed for ROADMAP.md milestones
+  - Added Mermaid flowchart to ROADMAP.md showing M0→M1→Doc→M1.5/M1.6→M3+ dependencies
+  - Added Mermaid flowchart to INTEGRATED_IMPROVEMENT_PLAN.md showing Step 1-6 dependencies
+  - Both diagrams use color coding: green=complete, yellow=pending, blue=future
 
-- [ ] **Task 6.14**: Review pre-standardization metadata note (0.25 hours)
+- [x] **Task 6.14**: Review pre-standardization metadata note (0.25 hours) - **SKIPPED (Session #10)**
   - Evaluate if existing docs need "pre-standardization" annotations
   - Original plan called for metadata note in documents created before standardization
-  - Decision: Likely not needed - existing entries preserved as-is was sufficient
-  - Archive as "not needed" or add if gaps discovered
+  - **Decision: SKIPPED - Not needed; existing entries preserved as-is was sufficient**
 
-- [ ] **Task 6.15**: Review component health dashboard (0.5 hours)
+- [x] **Task 6.15**: Review component health dashboard (0.5 hours) - **SKIPPED (Session #10)**
   - Evaluate if ARCHITECTURE.md needs separate component health tracking
   - Original plan called for component health dashboard section
-  - Current: Existing content comprehensive without over-templating
-  - Decision: Add only if specific component issues arise
+  - **Decision: SKIPPED - Existing content comprehensive; add only if issues arise**
 
-- [ ] **Task 6.16**: Review security posture dashboard (0.5 hours)
+- [x] **Task 6.16**: Review security posture dashboard (0.5 hours) - **SKIPPED (Session #10)**
   - Evaluate if SECURITY.md needs dedicated posture dashboard
   - Original plan called for security posture dashboard section
-  - Current: Has checklist table that serves same purpose
-  - Decision: Add only if checklist table proves insufficient
+  - **Decision: SKIPPED - Checklist table serves same purpose sufficiently**
 
-- [ ] **Task 6.17**: CI-level lint enforcement (1 hour)
+- [x] **Task 6.17**: CI-level lint enforcement (1 hour) - **MOVED TO Step 3 (Session #10)**
   - Add lint enforcement to CI workflow (beyond pre-commit)
   - Current: Pre-commit hooks block commits if lint fails
   - Enhancement: Add `npm run lint` to GitHub Actions workflow
-  - Evaluate: May be redundant with pre-commit; assess value add
+  - **Decision: Moved to INTEGRATED_IMPROVEMENT_PLAN.md Step 3, Task 3.6**
 
 ### ✅ Acceptance Criteria
 
