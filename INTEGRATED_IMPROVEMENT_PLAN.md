@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
@@ -124,7 +124,7 @@ Address small, high-value items that unblock or simplify subsequent steps.
   - Document first ADR: "ADR-001: Integrated Improvement Plan Approach"
 
 - [ ] **Task 1.3**: Update cross-references in active docs (1 hour)
-  - Update ROADMAP.md lines 22, 348 to note EIGHT_PHASE_REFACTOR_PLAN pending migration
+  - Update ROADMAP.md references to EIGHT_PHASE_REFACTOR_PLAN.md (search for all occurrences) to note pending migration
   - Verify all links in SESSION_CONTEXT.md are current
   - Fix any broken links found during review
 
@@ -275,7 +275,7 @@ A Delta Review will refresh this plan with current context.
 ### Tasks
 
 - [ ] **Task 4.1**: Extract current CANON findings from EIGHT_PHASE_REFACTOR_PLAN.md (1 hour)
-  - List all 44 CANON items with current status
+  - List all 45 CANON items with current status
   - Categorize: DONE, STILL_VALID, STALE, SUPERSEDED
 
 - [ ] **Task 4.2**: Run fresh analysis on high-priority items (2 hours)
@@ -297,14 +297,14 @@ A Delta Review will refresh this plan with current context.
   - Testing requirements
   - Add to Step 5 ROADMAP integration
 
-- [ ] **Task 4.5**: Archive or deprecate EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours)
-  - If items migrated to ROADMAP.md → Archive with superseded_by note
-  - If separate doc needed → Create ARCHITECTURE_REFACTOR_BACKLOG.md
-  - Update all cross-references
+- [ ] **Task 4.5**: Archive EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours)
+  - Move to `docs/archive/` with superseded_by note pointing to ROADMAP.md M2
+  - Update all cross-references to point to ROADMAP.md
+  - No new planning document (avoid fragmentation)
 
 ### Acceptance Criteria
 
-- [ ] All 44 CANON items categorized
+- [ ] All 45 CANON items categorized
 - [ ] Stale items documented and discarded
 - [ ] Valid items ready for ROADMAP.md integration
 - [ ] App Check plan documented
@@ -339,17 +339,22 @@ Integrate validated refactor items into ROADMAP.md and update all documentation 
   - Group appropriately
   - Add dependencies where applicable
 
-- [ ] **Task 5.3**: Update ROADMAP.md references (0.5 hours)
-  - Remove/update references to EIGHT_PHASE_REFACTOR_PLAN.md (lines 22, 348)
-  - Point to new location (M2 or ARCHITECTURE_REFACTOR_BACKLOG.md)
+- [ ] **Task 5.3**: Add App Check re-enablement to ROADMAP.md (0.5 hours)
+  - Add App Check re-enablement as M2 item (from Step 4 Task 4.4)
+  - Include prerequisites and testing requirements
+  - Link to detailed plan in docs/
+
+- [ ] **Task 5.4**: Update ROADMAP.md references (0.5 hours)
+  - Search and update all references to EIGHT_PHASE_REFACTOR_PLAN.md
+  - Point to ROADMAP.md M2 for refactor items
   - Update Doc Standardization blocker status
 
-- [ ] **Task 5.4**: Update SESSION_CONTEXT.md (0.5 hours)
+- [ ] **Task 5.5**: Update SESSION_CONTEXT.md (0.5 hours)
   - Reflect completion of this improvement plan
   - Update current priorities
   - Set next session focus to feature work
 
-- [ ] **Task 5.5**: Final cross-reference audit (0.5 hours)
+- [ ] **Task 5.6**: Final cross-reference audit (0.5 hours)
   - Run `npm run docs:check`
   - Fix any broken links
   - Verify all archived docs properly referenced
@@ -358,6 +363,7 @@ Integrate validated refactor items into ROADMAP.md and update all documentation 
 
 - [ ] ROADMAP.md M2 contains all tooling items
 - [ ] ROADMAP.md M2 contains validated refactor items
+- [ ] ROADMAP.md M2 contains App Check re-enablement item
 - [ ] No dangling references to EIGHT_PHASE_REFACTOR_PLAN.md
 - [ ] SESSION_CONTEXT.md updated
 - [ ] All cross-references valid
@@ -458,6 +464,7 @@ After each work session:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-01-03 | Added Task 5.3 for App Check tracking; fixed CANON count (45); removed ARCHITECTURE_REFACTOR_BACKLOG.md option; removed brittle line-number references |
 | 1.0 | 2026-01-03 | Initial creation - consolidated improvement roadmap |
 
 ---

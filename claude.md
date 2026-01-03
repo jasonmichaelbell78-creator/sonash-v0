@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.3
+**Document Version:** 2.4
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
 
@@ -144,9 +144,9 @@ This file defines the strict architectural and security rules for SoNash. It ser
 | What You Just Did | Required Action | Tool |
 |-------------------|-----------------|------|
 | Wrote or modified code (any amount) | MUST run `code-reviewer` agent | Task |
-| Created or updated documentation | MUST run `technical-writer` agent for quality check | Task |
+| Created or updated documentation | SHOULD run `technical-writer` agent for quality check | Task |
 | Made security-related changes | MUST run `security-auditor` agent | Task |
-| Wrote tests | MUST run `test-engineer` agent to validate strategy | Task |
+| Wrote tests | SHOULD run `test-engineer` agent to validate strategy | Task |
 
 **If condition matches → Use agent BEFORE committing.**
 
@@ -210,6 +210,7 @@ If I skipped a MUST-use agent → Note it and explain why in session summary.
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.4 | 2026-01-03 | Aligned MUST/SHOULD levels with AI_WORKFLOW.md (SHOULD for technical-writer/test-engineer) |
 | 2.3 | 2026-01-03 | Strengthened agent/skill enforcement with PRE-TASK and POST-TASK mandatory checks |
 | 2.2 | 2026-01-02 | Consolidated patterns from Reviews #11-23 (lockfile corruption, GitHub Actions YAML, cross-drive paths, WHY before fixing) |
 | 2.1 | 2026-01-02 | Added Skill Decision Tree and Session End Self-Audit checklist |
