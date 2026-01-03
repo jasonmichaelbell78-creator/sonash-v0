@@ -33,8 +33,9 @@ PATH_LOWER=$(echo "$SANITIZED_PATH" | tr '[:upper:]' '[:lower:]')
 
 # Priority 1: Security-sensitive files (HIGHEST priority per PR review)
 # Case-insensitive matching for security keywords in path
+# Use word boundaries to prevent false positives (e.g., "monkey" matching "key")
 # Expanded list based on PR feedback about false negatives
-if [[ "$PATH_LOWER" =~ (auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto|key|keys|cert|certificate|ssl|tls|hash|hmac) ]]; then
+if [[ "$PATH_LOWER" =~ (^|[^[:alnum:]])(auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto|keys?|cert|certificate|ssl|tls|hash|hmac)([^[:alnum:]]|$) ]]; then
     echo "POST-TASK: MUST run security-auditor agent before committing"
     exit 0
 fi

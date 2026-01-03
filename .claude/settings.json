@@ -17,7 +17,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "(?i)write",
+        "matcher": "^(?i)write$",
         "hooks": [
           {
             "type": "command",
@@ -27,7 +27,7 @@
         ]
       },
       {
-        "matcher": "(?i)edit",
+        "matcher": "^(?i)edit$",
         "hooks": [
           {
             "type": "command",
@@ -37,7 +37,7 @@
         ]
       },
       {
-        "matcher": "(?i)multiedit",
+        "matcher": "^(?i)multiedit$",
         "hooks": [
           {
             "type": "command",

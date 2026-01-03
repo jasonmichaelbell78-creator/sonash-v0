@@ -42,8 +42,9 @@ if [[ "$FILENAME_LOWER" =~ \.(test|spec)\.(ts|tsx|js|jsx)$ ]]; then
 fi
 
 # Priority 2: Security-sensitive files (case-insensitive path check)
-# Check path for security-related keywords
-if [[ "$PATH_LOWER" =~ (auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto) ]]; then
+# Check path for security-related keywords with word boundaries
+# Prevents false positives (e.g., "monkey" matching "key")
+if [[ "$PATH_LOWER" =~ (^|[^[:alnum:]])(auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto)([^[:alnum:]]|$) ]]; then
     echo "POST-TASK: MUST run security-auditor agent before committing"
     exit 0
 fi

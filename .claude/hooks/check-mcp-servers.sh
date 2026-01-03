@@ -51,8 +51,14 @@ if ! command -v jq &> /dev/null; then
 fi
 
 # Use jq to safely extract only server names (keys)
+# First validate that the JSON is parseable
+if ! jq -e . "$MCP_CONFIG" >/dev/null 2>&1; then
+    echo "Invalid .mcp.json (unable to parse)"
+    exit 0
+fi
+
 # Sanitize output to prevent terminal escape injection from malicious config
-SERVER_NAMES=$(jq -r '.mcpServers // {} | keys | join(", ")' "$MCP_CONFIG" 2>/dev/null | sanitize_output) || SERVER_NAMES=""
+SERVER_NAMES=$(jq -r '.mcpServers // {} | keys | join(", ")' "$MCP_CONFIG" | sanitize_output)
 
 if [[ -z "$SERVER_NAMES" ]]; then
     echo "No MCP servers configured"
