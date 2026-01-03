@@ -27,7 +27,7 @@ This document provides **essential session context** for quick startup. It's des
 
 **Active Priority**: **Integrated Improvement Plan**
 
-**Status**: Step 1 PENDING (0% overall - 6 steps total)
+**Status**: Step 2 PENDING (17% overall - 1/6 steps complete)
 
 **⚠️ CRITICAL BLOCKER**: ALL feature development blocked until improvement plan complete
 
@@ -43,8 +43,8 @@ This document provides **essential session context** for quick startup. It's des
 
 | Item | Status | Progress |
 |------|--------|----------|
-| **Integrated Improvement Plan** | 🔄 ACTIVE | 0% (0/6 steps) |
-| Step 1: Quick Wins & Cleanup | ⏸️ PENDING | 0% |
+| **Integrated Improvement Plan** | 🔄 ACTIVE | 17% (1/6 steps) |
+| Step 1: Quick Wins & Cleanup | ✅ COMPLETE | 100% |
 | Step 2: Doc Standardization Completion | ⏸️ PENDING | 0% |
 | Step 3: Developer Tooling Setup | ⏸️ PENDING | 0% |
 | Step 4: Delta Review & Refactor Refresh | ⏸️ PENDING | 0% |
@@ -53,7 +53,7 @@ This document provides **essential session context** for quick startup. It's des
 | M1.5 - Quick Wins | ⏸️ BLOCKED | On hold |
 | M1.6 - Admin Panel + UX | ⏸️ BLOCKED | On hold |
 
-**Current Branch**: `claude/session-start-h9O9F`
+**Current Branch**: `claude/new-session-lRoR9`
 
 **Test Status**: 98.9% pass rate (92/93 tests passing)
 
@@ -61,19 +61,19 @@ This document provides **essential session context** for quick startup. It's des
 
 ## 🚀 Next Session Goals
 
-### Immediate Priority (This Session)
-
-**Step 1: Quick Wins & Cleanup** (2-3 hours estimated):
-- Convert 3 .txt files to .md
-- Create ADR folder structure
-- Update cross-references
-- Log process pivot in AI_REVIEW_LEARNINGS_LOG.md
-
-### Next Up
+### Immediate Priority (Next Session)
 
 **Step 2: Doc Standardization Completion** (8-12 hours estimated):
-- Complete Phase 5 (Tier 5 doc migration)
-- Complete Phase 6 (Archive & Cleanup)
+- Complete Phase 5 (Tier 5 doc migration - 6 tasks)
+- Complete Phase 6 (Archive & Cleanup - 9 tasks)
+
+### Then
+
+**Step 3: Developer Tooling Setup** (3-4 hours estimated):
+- Install and configure Prettier
+- Install and configure madge (circular deps)
+- Install and configure knip (unused exports)
+- Document in DEVELOPMENT.md
 
 **See**: [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) for full roadmap
 
@@ -95,6 +95,19 @@ This document provides **essential session context** for quick startup. It's des
 ---
 
 ## ✅ Recently Completed
+
+- **Session #8** (Jan 3, 2026):
+  - ✅ **Integrated Improvement Plan Step 1 COMPLETE**
+    - Converted 3 .txt files to .md in docs/archive/
+    - Created ADR folder structure with README, TEMPLATE, and ADR-001
+    - Audited active docs for broken links (all valid)
+    - Logged Process Pivot #1 in AI_REVIEW_LEARNINGS_LOG.md
+  - ✅ **ADR-001: Integrated Improvement Plan Approach**
+    - Documents decision to integrate vs restart
+    - Captures 4 rejected alternatives with reasoning
+  - ✅ **Deferred code review audits to Step 4**
+    - Review triggers active (128 commits, 65 files, etc.)
+    - Will be addressed in Delta Review step
 
 - **Session #6** (Jan 3, 2026):
   - ✅ **CodeRabbit CLI Integration** - Autonomous code review loop

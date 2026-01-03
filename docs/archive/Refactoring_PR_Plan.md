@@ -1,3 +1,31 @@
+# Refactoring PR Plan
+
+**Document Type:** Historical Archive
+**Original Format:** .txt (planning document)
+**Date Created:** December 2025
+**Converted to Markdown:** 2026-01-03
+**Purpose:** Execution plan for implementing refactoring in PRs
+
+---
+
+## About This Document
+
+This document outlines the PR-by-PR execution strategy for implementing the refactoring findings from the multi-AI code review. It includes:
+
+- Master implementer prompt for consistency
+- 8 PR payloads with CANON findings
+- Between-PR checklist for quality control
+- Review/verification prompts
+
+**Related Documents:**
+- [ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](./ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) - Planning conversation
+- [GitHub_Code_Analysis_and_Review_Prompt.md](./GitHub_Code_Analysis_and_Review_Prompt.md) - The analysis prompt
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
+
+---
+
+## PR Implementation Plan
+
 Where I’d start (based on your plan)
 
 Your aggregation’s “recommended order” starts with security posture PR1 and then the Firestore/journal normalization work. 

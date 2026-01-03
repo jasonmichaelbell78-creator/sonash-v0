@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.33
+**Document Version:** 1.34
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.34 | 2026-01-03 | Process Pivot #1: Integrated Improvement Plan approach (ADR-001, Step 1 execution) |
 | 1.33 | 2026-01-03 | Review #32 follow-up: end-of-options, UTF-8 sanitization, gtimeout, file limit fix |
 | 1.32 | 2026-01-03 | Review #32: CodeRabbit CLI robustness (timeout handling, glob safety, stderr protocol) |
 | 1.31 | 2026-01-03 | Review #31: CodeRabbit CLI hook improvements (multi-file, timeout, efficiency) |
@@ -2319,6 +2320,71 @@ The error persisted because of multiple interacting issues:
    - Principle: stdout = machine-readable, stderr = human-readable
 
 **Key Insight:** Shell hooks need to be robust against edge cases: large inputs, old Bash versions, special characters, and protocol expectations. Always capture exit status rather than swallowing errors, feature-detect Bash capabilities, and keep protocol communication clean on stdout.
+
+---
+
+#### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
+
+**Source:** Staff-engineer audit (Session #5)
+**Decision:** [ADR-001](./docs/decisions/ADR-001-integrated-improvement-plan-approach.md)
+**Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
+
+**Context:** After completing 57% of documentation standardization (Phases 1-4), we faced a decision point: continue with fragmented planning documents (Doc Standardization Plan + Eight-Phase Refactor Plan + missing tooling) or consolidate into a unified path.
+
+**Staff-Engineer Audit Findings:**
+
+| Finding | Assessment | Decision |
+|---------|------------|----------|
+| 57% doc work completed | Valuable, don't discard | Preserve Phases 1-4 |
+| Eight-Phase Refactor 0% started | Potentially stale | Validate via Delta Review first |
+| Missing dev tooling | Gap identified | Add Prettier, madge, knip |
+| Multiple planning docs | Fragmented priorities | Consolidate into one plan |
+| App Check disabled | Security gap | Plan re-enablement in Step 4 |
+
+**Decision: Integrate, Don't Restart**
+
+- **Alternative rejected:** Full planning restart (wastes 57% work, demoralizing)
+- **Alternative rejected:** Aggressive consolidation 197→30 docs (too disruptive)
+- **Alternative rejected:** Numbered folder structure (breaks all links, low value)
+- **Alternative rejected:** Immediate refactoring (acting on stale findings)
+
+**What We Created:**
+
+1. **INTEGRATED_IMPROVEMENT_PLAN.md** - Single source of truth with 6 sequential steps:
+   - Step 1: Quick Wins & Cleanup (this session)
+   - Step 2: Doc Standardization Completion (Phases 5-6)
+   - Step 3: Developer Tooling Setup (Prettier, madge, knip)
+   - Step 4: Delta Review & Refactor Validation
+   - Step 5: ROADMAP.md Integration
+   - Step 6: Verification & Feature Resumption
+
+2. **ADR Folder Structure** - For documenting future significant decisions
+
+3. **ADR-001** - Documents this decision with alternatives considered
+
+**Patterns Identified:**
+
+1. **Preserve Investment, Adjust Course** (Planning)
+   - Root cause: Planning paralysis when faced with partial progress + new information
+   - Prevention: Evaluate "integrate" option before "restart" option
+   - Insight: Completed work has value; course correction beats restart
+
+2. **Validate Before Acting on Stale Plans** (Planning)
+   - Root cause: Multi-AI refactor findings may be outdated after weeks of other work
+   - Prevention: Delta Review step to categorize findings as DONE/VALID/STALE/SUPERSEDED
+   - Pattern: Old plans need refresh before execution
+
+3. **Single Source of Truth for Improvement Work** (Documentation)
+   - Root cause: Multiple planning docs with unclear dependencies
+   - Prevention: One canonical improvement roadmap with explicit dependency map
+   - Insight: Linear execution path beats parallel fragmented tracks
+
+4. **Explicit "What We Decided NOT To Do"** (Planning)
+   - Root cause: Without documenting rejected alternatives, decisions get re-litigated
+   - Prevention: ADRs capture alternatives and why they were rejected
+   - Benefit: Future sessions don't waste time reconsidering closed decisions
+
+**Key Insight:** When facing planning paralysis after partial progress, evaluate "course correction" options before "restart" options. Completed work has value. Use ADRs to capture decisions and prevent re-litigation. A single integrated plan with explicit dependencies beats multiple fragmented plans with unclear priority ordering.
 
 ---
 
