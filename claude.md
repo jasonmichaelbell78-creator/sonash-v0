@@ -66,6 +66,11 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Temp file cleanup: Always use `trap 'rm -f "$TMPFILE"' EXIT` for guaranteed cleanup
 - Exit code semantics: 0=success, 1=action-needed, 2=error (check explicitly, not just "failed")
 - Retry loops: `for i in 1 2 3; do cmd && break; sleep 5; done` for race conditions
+- **printf over echo**: Use `printf '%s' "$VAR"` NOT `echo "$VAR"` for user input (-n/-e injection)
+- **End-of-options**: Use `basename -- "$PATH"` to prevent leading `-` being interpreted as options
+- **Portable word boundaries**: Use `(^|[^[:alnum:]])(word)([^[:alnum:]]|$)` NOT `\b` (not portable ERE)
+- **Pipeline failure handling**: Add `|| VAR=""` fallback for commands that may legitimately fail with pipefail
+- **Terminal output sanitization**: Pipe user/config data through `tr -cd '[:alnum:] ,_-'` to strip ANSI escapes
 
 **npm/Dependencies:**
 - Use `npm ci` NOT `npm install` in automation (prevents lockfile drift)
@@ -77,10 +82,14 @@ This file defines the strict architectural and security rules for SoNash. It ser
 **Security:**
 - Validate file paths within repo root before unlinkSync/operations
 - Path traversal: Use `/^\.\.(?:[\\/]|$)/.test(rel)` NOT `startsWith('..')` (avoids false positives)
+- **Reject traversal, don't rewrite**: `if [[ "$PATH" == *"../"* ]]; then exit; fi` - don't strip `../`
 - Windows cross-drive: Check drive letters match before path.relative() security checks
 - Sanitize inputs before shell interpolation (command injection risk)
 - Never trust external input in execSync/spawn
 - Sanitize output before embedding in markdown (escape backticks, `${{ }}`)
+- **Word boundary security keywords**: `(^|[^[:alnum:]])(auth|token|...)([^[:alnum:]]|$)` prevents "monkey" matching "key"
+- **Bound user-controllable output**: Limit count (`.[0:50]`) and length (`${VAR:0:500}`) to prevent DoS
+- **Never expose secrets in hook output**: Only output safe metadata (names, not URLs/tokens)
 
 **GitHub Actions:**
 - Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)

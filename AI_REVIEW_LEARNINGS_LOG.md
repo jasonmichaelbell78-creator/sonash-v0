@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.22
+**Document Version:** 1.29
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,13 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.29 | 2026-01-03 | Added AI Instructions section (CI compliance) |
+| 1.28 | 2026-01-03 | CONSOLIDATION COMPLETE: Reset counter, patterns added to claude.md v2.5 |
+| 1.27 | 2026-01-03 | Review #30 fifth round + CONSOLIDATION: reject traversal, portable ERE, DoS limits |
+| 1.26 | 2026-01-03 | Review #30 fourth round: printf, basename safety, jq requirement (echo injection, option safety) |
+| 1.25 | 2026-01-03 | Review #30 third round: Validation, anchors & word boundaries (JSON validation, regex precision) |
+| 1.24 | 2026-01-03 | Review #30 follow-up: Additional security & robustness (terminal injection, path traversal, portable grep) |
+| 1.23 | 2026-01-03 | Review #30: Claude hooks PR compliance & security (script-based hooks, input validation, security ordering) |
 | 1.22 | 2026-01-03 | Review #29: Documentation consistency & verification refinements (objective criteria, trigger ordering) |
 | 1.21 | 2026-01-03 | Review #28: Documentation & process planning improvements (CodeRabbit + technical-writer feedback) |
 | 1.20 | 2026-01-02 | Review #27: Pattern automation script (fourth round - artifact persistence, regex flags) |
@@ -55,9 +62,9 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 (Reviews #24-#29)
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: UP TO DATE**
+**✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
 ### When to Consolidate
 
@@ -77,6 +84,22 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-03 (Session #4)
+- **Reviews consolidated:** #24-#30 (7 reviews + 4 follow-ups = 11 entries)
+- **Patterns added to claude.md v2.5:**
+  - printf over echo for user input (prevents -n/-e injection)
+  - End-of-options (`--`) for basename/other commands
+  - Portable word boundaries in ERE (not `\b`)
+  - Pipeline failure handling with `|| VAR=""` fallback
+  - Terminal output sanitization (strip ANSI escapes)
+  - Reject path traversal, don't rewrite (security)
+  - Word boundary security keywords (prevents false matches)
+  - Bound user-controllable output (DoS prevention)
+  - Never expose secrets in hook output
+- **Next consolidation due:** At review #40 (or ~10 more reviews)
+
+### Previous Consolidation
+
 - **Date:** 2026-01-02 (Session #3)
 - **Reviews consolidated:** #11-#23 (13 reviews)
 - **Patterns added to claude.md v2.2:**
@@ -86,7 +109,6 @@ Consolidation is needed when:
   - Windows cross-drive path.relative() behavior
   - lstatSync error handling
   - Enhanced "WHY before fixing" (Review #12 lesson)
-- **Next consolidation due:** At review #33 (or ~10 more reviews)
 
 ---
 
@@ -116,6 +138,44 @@ The pattern compliance checker surfaces known anti-patterns:
 - **Staged files**: `npm run patterns:check -- --staged`
 
 The checker references this log so you can find the detailed context for each pattern.
+
+---
+
+## 🤖 AI Instructions
+
+**This document is the audit trail for all AI code review learnings.**
+
+### When to Update
+
+1. **After each code review cycle** - Add a new Review #N entry
+2. **When patterns recur 3+ times** - Extract to claude.md Section 4
+3. **Every 10 reviews** - Check consolidation trigger status
+4. **When version changes** - Update version history table
+
+### How to Add Review Entries
+
+1. **Title format**: `#### Review #N: Brief Description (YYYY-MM-DD)`
+2. **Include context**: Source (tool name), PR link, commit hash
+3. **Document patterns**: Root cause → Prevention → Resolution
+4. **Use severity tags**: 🔴 Critical, 🟠 Major, 🟡 Minor, ⚪ Low
+5. **Show before/after**: Wrong vs Right code examples
+6. **Track impact**: Expected reduction in similar issues
+
+### Consolidation Process
+
+When "Reviews since last consolidation" reaches 10+:
+1. Review all entries since last consolidation
+2. Identify recurring patterns (3+ mentions)
+3. Add distilled patterns to claude.md Section 4
+4. Reset counter to 0
+5. Update "Last Consolidation" section
+6. Note in version history
+
+### Version History Maintenance
+
+- Increment version on each review entry
+- Use descriptive change summaries
+- Reference review numbers in descriptions
 
 ---
 
@@ -1882,6 +1942,255 @@ The error persisted because of multiple interacting issues:
    - Pattern: Add to review workflow checklist
 
 **Key Insight:** Acceptance criteria should be machine-verifiable whenever possible. Commands like `npm run docs:check` provide objective pass/fail verification rather than relying on human judgment. When multiple tools/agents can apply to the same scenario, explicit ordering prevents confusion.
+
+---
+
+#### Review #30: Claude Hooks PR Compliance & Security (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit
+**PR:** `claude/address-pr-review-feedback-Og33H` (Claude hooks configuration)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** PR adding PostToolUse and UserPromptSubmit hooks to `.claude/settings.json`. Reviews flagged multiple security, robustness, and maintainability issues with inline prompt-based logic.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Complex logic in inline prompts | 🔴 High | Maintainability | Moved all logic to dedicated bash scripts |
+| 2 | Security rule priority wrong | 🔴 High | Security | Reordered: security checks BEFORE bug/error checks |
+| 3 | Unsanitized $ARGUMENTS | 🔴 High | Security | Added input validation, sanitization, length truncation |
+| 4 | MCP secrets exposure risk | 🔴 High | Security | Script outputs only server names, not URLs/tokens |
+| 5 | Test file misclassification | 🟠 Medium | Logic | Test files (.test.ts) detected BEFORE code files |
+| 6 | Case-sensitive matching | 🟠 Medium | Robustness | Added case-insensitive regex `(?i)` and lowercase comparison |
+| 7 | Missing MultiEdit hook | 🟠 Medium | Coverage | Added MultiEdit hook using same script as Edit |
+| 8 | Ambiguous new/existing md rules | 🟡 Low | Logic | Consolidated (can't reliably detect new vs existing) |
+| 9 | Empty/malformed input crash | 🟡 Low | Robustness | Graceful handling returns "ok" |
+| 10 | Missing security keywords | 🟡 Low | Coverage | Expanded list (jwt, oauth, encrypt, crypto, etc.) |
+
+**Patterns Identified:**
+
+1. **Move Complex Hook Logic to Scripts** (1 occurrence - Maintainability)
+   - Root cause: Inline prompts with 400+ char decision trees are unmaintainable
+   - Prevention: Create dedicated `.claude/hooks/*.sh` scripts
+   - Pattern: `"type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/script.sh \"$ARGUMENTS\""`
+   - Benefit: Scripts are testable, maintainable, and can use proper control flow
+
+2. **Prioritize Security Over General Patterns** (1 occurrence - Security)
+   - Root cause: "fix authentication bug" matched "bug/fix" before "auth"
+   - Prevention: Always order security keyword checks FIRST
+   - Pattern: Check security → bugs → database → UI → planning → exploration → testing
+   - Example: "fix the auth bug" → security-auditor (not systematic-debugging)
+
+3. **Validate and Sanitize Hook $ARGUMENTS** (1 occurrence - Security)
+   - Root cause: $ARGUMENTS contains raw user input, no automatic sanitization
+   - Prevention: In hook scripts, always:
+     - Check for empty input: `"${1:-}"` with graceful fallback
+     - Sanitize: `tr -cd '[:alnum:]._/-'` to remove dangerous characters
+     - Truncate: Limit length to prevent DoS
+   - Pattern: See `check-write-requirements.sh` for reference implementation
+
+4. **Never Expose Config Secrets in Hook Output** (1 occurrence - Security)
+   - Root cause: MCP hook could expose URLs, tokens, headers from .mcp.json
+   - Prevention: Only output safe metadata (server names, not connection details)
+   - Pattern: Use `jq '.mcpServers | keys'` to extract only keys
+   - Wrong: Output entire config or specific URLs/tokens
+
+5. **Order File Type Detection by Specificity** (1 occurrence - Logic)
+   - Root cause: `.test.ts` matched "code file" before "test file"
+   - Prevention: Check most specific patterns first
+   - Pattern: Test files → Security files → Code files → Docs → Config
+   - Applies to: Any pattern matching with overlapping categories
+
+6. **Use Case-Insensitive Matching for Security Keywords** (1 occurrence - Robustness)
+   - Root cause: "Auth.tsx" might not match "auth" with case-sensitive check
+   - Prevention: Use `tr '[:upper:]' '[:lower:]'` and case-insensitive regex
+   - Pattern: `PATH_LOWER=$(echo "$PATH" | tr '[:upper:]' '[:lower:]')`
+
+7. **Cover All Related Tools in Hooks** (1 occurrence - Coverage)
+   - Root cause: Edit hook existed but MultiEdit (same purpose) was uncovered
+   - Prevention: When adding hooks, audit for related tools that need same treatment
+   - Pattern: Write/Edit/MultiEdit should have consistent post-checks
+
+**Key Insight:** Hook prompts are not the place for complex business logic. Inline prompts become unmaintainable, untestable, and prone to security issues. Dedicated scripts with proper shell practices (set -euo pipefail, input validation, error handling) are more robust. Security rule ordering matters - "fix the authentication bug" should trigger security review, not debugging.
+
+---
+
+#### Review #30 Follow-up: Additional Security & Robustness Fixes (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit (second round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of automated review after initial fixes. Focus on terminal injection, portable fallbacks, and path traversal protection.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Terminal escape injection | 🔴 High | Security | Added sanitize_output() to strip ANSI sequences |
+| 2 | PCRE grep not portable | 🟠 Medium | Robustness | Replaced grep -oP with standard grep -o |
+| 3 | Fallback crashes on no match | 🟠 Medium | Robustness | Added `\|\| SERVER_NAMES=""` to prevent pipefail exit |
+| 4 | Path traversal attack surface | 🟠 Medium | Security | Strip `../` and `./` before other sanitization |
+| 5 | Custom word boundary fragile | 🟡 Low | Robustness | Use grep's `\b` token for standard matching |
+| 6 | Nested if less readable | 🟡 Low | Maintainability | Combined into single compound condition |
+
+**Patterns Identified:**
+
+1. **Sanitize Terminal Output** (1 occurrence - Security)
+   - Root cause: JSON keys could contain ANSI escape sequences
+   - Prevention: Always sanitize before echoing to terminal
+   - Pattern: `sanitize_output() { tr -cd '[:alnum:] ,_-'; }`
+   - Use: Pipe any user/config-derived data through sanitize
+
+2. **Use Portable Shell Features** (1 occurrence - Robustness)
+   - Root cause: grep -oP (PCRE) not available on all systems
+   - Prevention: Prefer POSIX-compatible options
+   - Pattern: Use `grep -o` with basic regex, not `grep -oP` with PCRE
+   - Note: BSD systems, Alpine, minimal containers often lack PCRE
+
+3. **Handle Pipeline Failures Gracefully** (1 occurrence - Robustness)
+   - Root cause: `set -o pipefail` causes exit on any pipeline command failure
+   - Prevention: Add `|| VAR=""` fallback for commands that may legitimately fail
+   - Pattern: `VAR=$(cmd | cmd2) || VAR=""`
+
+4. **Strip Path Traversal Early** (1 occurrence - Security)
+   - Root cause: Input sanitization preserved `../` sequences
+   - Prevention: Strip traversal before other sanitization
+   - Pattern: `sed 's#\.\./##g; s#\./##g'` before `tr -cd`
+
+5. **Use Standard Word Boundary Tokens** (1 occurrence - Robustness)
+   - Root cause: Custom `(^|[^a-z])pattern([^a-z]|$)` is verbose and error-prone
+   - Prevention: Use grep's built-in `\b` word boundary
+   - Pattern: `grep -qiE "\\b$pattern\\b"` (note escaped backslash in bash)
+
+**Key Insight:** Defense in depth requires multiple layers: sanitize output (terminal injection), validate input (path traversal), and use portable features (POSIX grep). Each layer catches different attack vectors.
+
+---
+
+#### Review #30 Third Round: Validation, Anchors & Word Boundaries (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit (third round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of suggestions after security and robustness fixes. Focus on validation, regex precision, and false positive prevention.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Invalid JSON masked as "no config" | 🟠 Medium | Validation | Added `jq -e` validation before parsing |
+| 2 | Unanchored tool matchers | 🟡 Low | Precision | Added `^` and `$` anchors to matchers |
+| 3 | Security regex false positives | 🟠 Medium | Accuracy | Added word boundary patterns `(^|[^[:alnum:]])` |
+
+**Patterns Identified:**
+
+1. **Validate Before Parsing** (1 occurrence - Error Handling)
+   - Root cause: Parse errors silently treated as empty config
+   - Prevention: Validate JSON before extracting data
+   - Pattern: `if ! jq -e . "$FILE" >/dev/null 2>&1; then echo "Invalid JSON"; exit 0; fi`
+   - Benefit: Clear error messages instead of misleading "no config"
+
+2. **Anchor Regex Matchers** (1 occurrence - Precision)
+   - Root cause: Unanchored patterns could match substrings
+   - Prevention: Use `^` and `$` anchors for exact matching
+   - Pattern: `"matcher": "^(?i)write$"` instead of `"(?i)write"`
+   - Note: Defensive programming against future matching logic changes
+
+3. **Word Boundaries in Security Keywords** (1 occurrence - Accuracy)
+   - Root cause: "monkey" matches "key", "donkey" matches "key"
+   - Prevention: Use word boundary patterns in bash regex
+   - Pattern: `(^|[^[:alnum:]])(keywords)([^[:alnum:]]|$)`
+   - Test: "monkey.ts" → code reviewer (not security) ✓
+
+**Key Insight:** Substring matching in security checks leads to false positives that desensitize users. Use word boundaries to ensure "key" only matches standalone "key" or as part of compound words like "api-key", not random words containing "key".
+
+---
+
+#### Review #30 Fourth Round: printf, basename Safety, jq Requirement (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit (fourth round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fourth round addressing echo option injection vulnerability and unreliable fallback concerns.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Echo option injection | 🔴 High | Security | Replaced `echo "$VAR"` with `printf '%s' "$VAR"` |
+| 2 | basename option injection | 🟠 Medium | Security | Added `--` before path argument |
+| 3 | Empty path misclassification | 🟡 Low | Logic | Added check for empty SANITIZED_PATH |
+| 4 | Unreliable grep JSON fallback | 🟠 Medium | Reliability | Removed fallback, require jq for safe parsing |
+
+**Patterns Identified:**
+
+1. **Use printf Instead of echo for User Input** (1 occurrence - Security)
+   - Root cause: `echo "$VAR"` treats leading `-n`, `-e`, `-E` as options
+   - Prevention: Always use `printf '%s' "$VAR"` for untrusted data
+   - Pattern: `printf '%s' "$USER_INPUT" | tr ...`
+   - Test: `-e something` → no option injection ✓
+
+2. **Signal End of Options with --** (1 occurrence - Security)
+   - Root cause: Commands interpret leading `-` as options
+   - Prevention: Use `--` before arguments that may start with `-`
+   - Pattern: `basename -- "$PATH"` not `basename "$PATH"`
+   - Test: `-n test.ts` → code reviewer (not option error) ✓
+
+3. **Handle Edge Cases After Sanitization** (1 occurrence - Robustness)
+   - Root cause: Aggressive sanitization may produce empty string
+   - Prevention: Check for empty result after sanitization
+   - Pattern: `if [[ -z "$SANITIZED" ]]; then echo "ok"; exit 0; fi`
+
+4. **Prefer Explicit Errors Over Unreliable Fallbacks** (1 occurrence - Reliability)
+   - Root cause: grep-based JSON parsing is fragile and may produce wrong output
+   - Prevention: Fail clearly rather than silently produce incorrect results
+   - Pattern: If tool X is needed, require it with clear error message
+   - Example: "MCP config detected but 'jq' is unavailable; unable to list MCP servers safely"
+
+**Key Insight:** Shell commands have many edge cases with special characters. The `echo` command is particularly dangerous with untrusted input. `printf '%s'` is the safe alternative that never interprets its argument as options or escape sequences.
+
+---
+
+#### Review #30 Fifth Round: Reject Traversal, Portable ERE, DoS Limits (2026-01-03)
+
+**Source:** Qodo Code Review (fifth round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo
+
+**Context:** Fifth round addressing path rewriting bypasses, grep portability, and output bounding.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path traversal rewriting bypass | 🔴 High | Security | Reject paths with `../` instead of stripping |
+| 2 | Non-portable `\b` word boundary | 🟠 Medium | Portability | Use `(^|[^[:alnum:]])(pattern)([^[:alnum:]]|$)` |
+| 3 | Unbounded MCP output | 🟠 Medium | DoS Prevention | Limit to 50 servers, 500 chars max |
+
+**Patterns Identified:**
+
+1. **Reject Rather Than Rewrite Malicious Input** (1 occurrence - Security)
+   - Root cause: Stripping `../` can be bypassed with clever encoding
+   - Prevention: Reject paths containing traversal patterns entirely
+   - Pattern: `if [[ "$PATH" == *"../"* ]]; then echo "ok"; exit 0; fi`
+   - Principle: Don't try to fix malicious input, reject it
+
+2. **Use Portable ERE for Word Boundaries** (1 occurrence - Portability)
+   - Root cause: `\b` is a Perl regex extension, not portable ERE
+   - Prevention: Use character class pattern instead
+   - Pattern: `(^|[^[:alnum:]])(word)([^[:alnum:]]|$)` instead of `\bword\b`
+   - Note: Works consistently across grep implementations
+
+3. **Bound All User-Controllable Output** (1 occurrence - DoS Prevention)
+   - Root cause: Large config files could spam terminal output
+   - Prevention: Limit both count and length of output
+   - Pattern: `jq '... | .[0:50]'` + `${VAR:0:500}...`
+   - Applies to: Any output derived from user-controlled files
+
+**Key Insight:** Path rewriting creates a false sense of security. An attacker who controls the input can often find ways around sanitization (URL encoding, double encoding, etc.). Rejecting malicious patterns is simpler and more secure than attempting to fix them.
 
 ---
 
