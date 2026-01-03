@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ccusage": {
+      "command": "bunx",
+      "args": ["@ccusage/mcp@latest"]
+    }
+  }
+}
