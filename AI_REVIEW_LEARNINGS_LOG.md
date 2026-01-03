@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.22
+**Document Version:** 1.23
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.23 | 2026-01-03 | Review #30: Claude hooks PR compliance & security (script-based hooks, input validation, security ordering) |
 | 1.22 | 2026-01-03 | Review #29: Documentation consistency & verification refinements (objective criteria, trigger ordering) |
 | 1.21 | 2026-01-03 | Review #28: Documentation & process planning improvements (CodeRabbit + technical-writer feedback) |
 | 1.20 | 2026-01-02 | Review #27: Pattern automation script (fourth round - artifact persistence, regex flags) |
@@ -55,7 +56,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 (Reviews #24-#29)
+**Reviews since last consolidation:** 7 (Reviews #24-#30)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1882,6 +1883,77 @@ The error persisted because of multiple interacting issues:
    - Pattern: Add to review workflow checklist
 
 **Key Insight:** Acceptance criteria should be machine-verifiable whenever possible. Commands like `npm run docs:check` provide objective pass/fail verification rather than relying on human judgment. When multiple tools/agents can apply to the same scenario, explicit ordering prevents confusion.
+
+---
+
+#### Review #30: Claude Hooks PR Compliance & Security (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit
+**PR:** `claude/address-pr-review-feedback-Og33H` (Claude hooks configuration)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** PR adding PostToolUse and UserPromptSubmit hooks to `.claude/settings.json`. Reviews flagged multiple security, robustness, and maintainability issues with inline prompt-based logic.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Complex logic in inline prompts | 🔴 High | Maintainability | Moved all logic to dedicated bash scripts |
+| 2 | Security rule priority wrong | 🔴 High | Security | Reordered: security checks BEFORE bug/error checks |
+| 3 | Unsanitized $ARGUMENTS | 🔴 High | Security | Added input validation, sanitization, length truncation |
+| 4 | MCP secrets exposure risk | 🔴 High | Security | Script outputs only server names, not URLs/tokens |
+| 5 | Test file misclassification | 🟠 Medium | Logic | Test files (.test.ts) detected BEFORE code files |
+| 6 | Case-sensitive matching | 🟠 Medium | Robustness | Added case-insensitive regex `(?i)` and lowercase comparison |
+| 7 | Missing MultiEdit hook | 🟠 Medium | Coverage | Added MultiEdit hook using same script as Edit |
+| 8 | Ambiguous new/existing md rules | 🟡 Low | Logic | Consolidated (can't reliably detect new vs existing) |
+| 9 | Empty/malformed input crash | 🟡 Low | Robustness | Graceful handling returns "ok" |
+| 10 | Missing security keywords | 🟡 Low | Coverage | Expanded list (jwt, oauth, encrypt, crypto, etc.) |
+
+**Patterns Identified:**
+
+1. **Move Complex Hook Logic to Scripts** (1 occurrence - Maintainability)
+   - Root cause: Inline prompts with 400+ char decision trees are unmaintainable
+   - Prevention: Create dedicated `.claude/hooks/*.sh` scripts
+   - Pattern: `"type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/script.sh \"$ARGUMENTS\""`
+   - Benefit: Scripts are testable, maintainable, and can use proper control flow
+
+2. **Prioritize Security Over General Patterns** (1 occurrence - Security)
+   - Root cause: "fix authentication bug" matched "bug/fix" before "auth"
+   - Prevention: Always order security keyword checks FIRST
+   - Pattern: Check security → bugs → database → UI → planning → exploration → testing
+   - Example: "fix the auth bug" → security-auditor (not systematic-debugging)
+
+3. **Validate and Sanitize Hook $ARGUMENTS** (1 occurrence - Security)
+   - Root cause: $ARGUMENTS contains raw user input, no automatic sanitization
+   - Prevention: In hook scripts, always:
+     - Check for empty input: `"${1:-}"` with graceful fallback
+     - Sanitize: `tr -cd '[:alnum:]._/-'` to remove dangerous characters
+     - Truncate: Limit length to prevent DoS
+   - Pattern: See `check-write-requirements.sh` for reference implementation
+
+4. **Never Expose Config Secrets in Hook Output** (1 occurrence - Security)
+   - Root cause: MCP hook could expose URLs, tokens, headers from .mcp.json
+   - Prevention: Only output safe metadata (server names, not connection details)
+   - Pattern: Use `jq '.mcpServers | keys'` to extract only keys
+   - Wrong: Output entire config or specific URLs/tokens
+
+5. **Order File Type Detection by Specificity** (1 occurrence - Logic)
+   - Root cause: `.test.ts` matched "code file" before "test file"
+   - Prevention: Check most specific patterns first
+   - Pattern: Test files → Security files → Code files → Docs → Config
+   - Applies to: Any pattern matching with overlapping categories
+
+6. **Use Case-Insensitive Matching for Security Keywords** (1 occurrence - Robustness)
+   - Root cause: "Auth.tsx" might not match "auth" with case-sensitive check
+   - Prevention: Use `tr '[:upper:]' '[:lower:]'` and case-insensitive regex
+   - Pattern: `PATH_LOWER=$(echo "$PATH" | tr '[:upper:]' '[:lower:]')`
+
+7. **Cover All Related Tools in Hooks** (1 occurrence - Coverage)
+   - Root cause: Edit hook existed but MultiEdit (same purpose) was uncovered
+   - Prevention: When adding hooks, audit for related tools that need same treatment
+   - Pattern: Write/Edit/MultiEdit should have consistent post-checks
+
+**Key Insight:** Hook prompts are not the place for complex business logic. Inline prompts become unmaintainable, untestable, and prone to security issues. Dedicated scripts with proper shell practices (set -euo pipefail, input validation, error handling) are more robust. Security rule ordering matters - "fix the authentication bug" should trigger security review, not debugging.
 
 ---
 
