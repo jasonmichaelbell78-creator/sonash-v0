@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.29
+**Document Version:** 1.30
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.30 | 2026-01-03 | Added CodeRabbit CLI as review source with logging instructions |
 | 1.29 | 2026-01-03 | Added AI Instructions section (CI compliance) |
 | 1.28 | 2026-01-03 | CONSOLIDATION COMPLETE: Reset counter, patterns added to claude.md v2.5 |
 | 1.27 | 2026-01-03 | Review #30 fifth round + CONSOLIDATION: reject traversal, portable ERE, DoS limits |
@@ -57,6 +58,13 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 2. **Reference previous entries** when similar patterns emerge
 3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
 4. **Run pattern audit** periodically: `npm run patterns:check-all`
+
+### Review Sources
+
+Log findings from ALL AI code review sources:
+- **Qodo** - PR suggestions (appears as "PR Code Suggestions")
+- **CodeRabbit PR** - GitHub PR reviews (appears as comments/suggestions on PRs)
+- **CodeRabbit CLI** - Local reviews via PostToolUse hook (appears in Claude session output)
 
 ---
 
@@ -155,11 +163,19 @@ The checker references this log so you can find the detailed context for each pa
 ### How to Add Review Entries
 
 1. **Title format**: `#### Review #N: Brief Description (YYYY-MM-DD)`
-2. **Include context**: Source (tool name), PR link, commit hash
+2. **Include context**: Source (Qodo/CodeRabbit PR/CodeRabbit CLI), PR link, commit hash
 3. **Document patterns**: Root cause → Prevention → Resolution
 4. **Use severity tags**: 🔴 Critical, 🟠 Major, 🟡 Minor, ⚪ Low
 5. **Show before/after**: Wrong vs Right code examples
 6. **Track impact**: Expected reduction in similar issues
+
+### CodeRabbit CLI Findings
+
+When CodeRabbit CLI outputs review findings during a session:
+1. **Log immediately** - Add entry before addressing the issues
+2. **Source tag**: Use `**Source:** CodeRabbit CLI (local)`
+3. **Include file**: Reference the file(s) being reviewed
+4. **Apply same process**: Document pattern, fix, update counter
 
 ### Consolidation Process
 
