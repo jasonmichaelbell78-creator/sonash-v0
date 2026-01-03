@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-02
-**Document Version**: 1.5
+**Last Updated**: 2026-01-03
+**Document Version**: 1.6
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -307,6 +307,52 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **This is NOT optional.** Before ANY task, check if a skill, agent, or MCP applies. If a capability **clearly applies** to your task, you MUST use it.
 
 > **Rule**: Capabilities are discovered dynamically. When new skills/agents/MCPs are added to the project, they are automatically available. Always scan the directories - don't rely on memorized lists.
+
+### 🚨 PRE-TASK Checklist (BEFORE Starting Work)
+
+**When you receive a task from the user, IMMEDIATELY check these triggers:**
+
+```
+☐ Is this a bug, error, or unexpected behavior?
+   → MUST use 'systematic-debugging' skill FIRST
+
+☐ Am I exploring unfamiliar codebase areas?
+   → MUST use 'Explore' agent via Task tool
+
+☐ Does this require planning a multi-step implementation?
+   → MUST use 'Plan' agent via Task tool
+
+☐ Does this involve security, auth, or sensitive data?
+   → MUST use 'security-auditor' agent
+
+☐ Am I creating new documentation?
+   → MUST use 'documentation-expert' agent
+
+☐ Is this UI/frontend implementation work?
+   → MUST use 'frontend-design' skill
+```
+
+**If ANY trigger matches → Use the agent/skill BEFORE doing manual work.**
+
+### 🚨 POST-TASK Checklist (AFTER Completing Work)
+
+**Before committing, check these triggers:**
+
+```
+☐ Did I write or modify code (any amount)?
+   → MUST run 'code-reviewer' agent
+
+☐ Did I create or update documentation?
+   → SHOULD run 'technical-writer' agent for quality check
+
+☐ Did I make security-related changes?
+   → MUST run 'security-auditor' agent
+
+☐ Did I write tests?
+   → SHOULD run 'test-engineer' agent to validate strategy
+```
+
+**If ANY trigger matches → Use the agent BEFORE committing.**
 
 ### How to Discover Capabilities
 
@@ -646,6 +692,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.6 | 2026-01-03 | Added PRE-TASK and POST-TASK mandatory checklists for agent/skill usage; strengthened enforcement language | Claude |
 | 1.5 | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation to use SESSION_CONTEXT.md for recent work | Claude |
 | 1.4 | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools | Claude |
 | 1.3 | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude |
