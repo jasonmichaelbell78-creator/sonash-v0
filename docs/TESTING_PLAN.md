@@ -1,8 +1,139 @@
-# Testing Plan for Multi-AI Code Review Fixes
+# Testing Plan
 
-## Overview
+**Last Updated:** 2026-01-03
+**Document Tier:** 2 (Active Reference)
+**Status:** Active
 
-This document provides comprehensive testing guidance for all fixes implemented across 4 phases of the multi-AI code review. Tests are organized by phase (Critical → High → Medium → Low priority) and include both manual testing checklists and automated test recommendations.
+---
+
+## Purpose
+
+Comprehensive testing guidance for the SoNash application, including manual testing checklists, automated test recommendations, and phase-specific testing for code review fixes.
+
+---
+
+## Quick Start
+
+**Run automated tests:**
+```bash
+npm test                    # Run all tests
+npm run test:watch          # Watch mode
+npm run lint                # Lint check
+```
+
+**Manual testing:**
+1. Start dev server: `npm run dev`
+2. Start emulators (optional): `firebase emulators:start`
+3. Follow checklists in "Quick Manual Testing" section below
+
+---
+
+## Table of Contents
+
+1. [Quick Manual Testing](#quick-manual-testing)
+2. [Prerequisites](#prerequisites)
+3. [Phase 1-4 Testing](#phase-1-critical-security-fixes) (Multi-AI Code Review)
+4. [Integration Testing](#integration-testing-checklist)
+5. [Performance Testing](#performance-testing)
+6. [Security Audit](#security-audit-checklist)
+7. [Automated Testing](#automated-testing-recommendations)
+
+---
+
+## Quick Manual Testing
+
+### Test Results Summary
+
+**Automated Tests:** ✅ 92/93 passing (98.9%)
+- ✅ Security validation tests
+- ✅ Date utilities
+- ✅ Firebase type guards
+- ✅ Logger with PII redaction
+- ✅ Rate limiter
+- ⚠️ 1 skipped test (requires specific setup)
+
+### Basic App Functionality
+
+#### Homepage/Desktop
+- [ ] App loads at `http://localhost:3000`
+- [ ] Notebook/desk visual renders correctly
+- [ ] No console errors
+- [ ] Sobriety chip displays
+- [ ] Click on notebook opens it
+
+#### Sign-in Flow
+- [ ] Click "Sign in" opens modal
+- [ ] Can sign in anonymously
+- [ ] After sign-in, user state persists
+- [ ] Can sign out
+
+#### Onboarding (New Users)
+- [ ] Clean date picker appears
+- [ ] Can select fellowship (AA/NA/etc)
+- [ ] Can enter nickname
+- [ ] Saves to profile
+
+### Core Features Testing
+
+#### Journal Page
+- [ ] Floating pen button opens entry creator menu
+- [ ] Mood form saves successfully
+- [ ] Gratitude form saves successfully
+- [ ] Free-write form saves successfully
+- [ ] Toast error notifications appear on failures
+- [ ] Timeline loads all entries
+- [ ] Entry cards show type, date, preview text
+- [ ] Ribbon navigation filters by type
+
+#### Today Page (Daily Journal)
+- [ ] Opens on click
+- [ ] Mood selection works (1-10 scale)
+- [ ] Gratitude text area accepts input
+- [ ] Night review saves
+- [ ] Data persists after page refresh
+
+#### Resources Page (Meeting Finder)
+- [ ] Meetings list loads
+- [ ] Search box filters results
+- [ ] Day filter works (Mon-Sun)
+- [ ] Pagination: "Load More" button appears
+- [ ] Geolocation: Browser permission prompt works
+- [ ] Directions: "Get Directions" button opens Google Maps
+
+### Admin Panel Testing
+
+- [ ] Navigate to `/admin` (must be logged in)
+- [ ] **WITHOUT admin claim**: Shows "Not authorized" message
+- [ ] **WITH admin claim**: Shows admin dashboard
+- [ ] Meetings CRUD operations work
+- [ ] Sober Living CRUD operations work
+- [ ] Quotes CRUD operations work
+
+### Security & Performance Checks
+
+- [ ] Rate limiting: Save 15 times rapidly, should see error after ~10
+- [ ] XSS: Enter `<script>alert('xss')</script>` - should be escaped
+- [ ] Privacy: No PII stored in cookies
+
+### Mobile Responsiveness
+
+- [ ] Test on mobile viewport (DevTools → Toggle Device Toolbar)
+- [ ] Touch interactions work
+- [ ] Text is readable
+- [ ] No horizontal scrolling
+
+### Browser Compatibility
+
+- [ ] Chrome/Chromium
+- [ ] Firefox
+- [ ] Safari (if available)
+- [ ] Edge
+
+---
+
+## Overview (Multi-AI Code Review Fixes)
+
+This document also provides testing guidance for all fixes implemented across 4 phases of the multi-AI code review. Tests are organized by phase (Critical → High → Medium → Low priority).
 
 **Related Commits:**
 - Phase 1: `e13f813` - Critical Security Fixes
@@ -879,3 +1010,24 @@ For questions about this testing plan:
 - Review related commits: `e13f813`, `3ca9212`, `08f6e9d`, `8ea0cf2`
 - Check Firebase Emulator logs for detailed error traces
 - Consult Firebase documentation: https://firebase.google.com/docs/emulator-suite
+
+---
+
+## AI Instructions
+
+When helping with testing:
+1. First run `npm test` to check automated test status
+2. For specific issues, check the relevant phase section (1-4)
+3. Rate limiter issues: Check Phase 2
+4. Security issues: Check Phase 1 and Security Audit section
+5. Always recommend emulator testing before production deployment
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.2 | 2026-01-03 | Merged TESTING_CHECKLIST.md; added Tier 2 sections, Quick Manual Testing |
+| 1.1 | 2025-12-XX | Added Phase 3-4 testing guidance |
+| 1.0 | 2025-12-XX | Initial creation with Phase 1-2 testing |
