@@ -28,7 +28,13 @@ fi
 # Use printf instead of echo to prevent -n/-e option injection
 SANITIZED_PATH=$(printf '%s' "$FILE_PATH" | tr -cd '[:alnum:]._/-')
 
-# Handle case where sanitization strips everything
+# Reject paths altered by sanitization - treat modification as potential security risk
+if [[ "$SANITIZED_PATH" != "$FILE_PATH" ]]; then
+    echo "ok"
+    exit 0
+fi
+
+# Handle case where sanitization strips everything (redundant now but kept for defense in depth)
 if [[ -z "$SANITIZED_PATH" ]]; then
     echo "ok"
     exit 0
@@ -75,9 +81,10 @@ if [[ "$FILENAME_LOWER" =~ \.md$ ]]; then
 fi
 
 # Priority 5: Config files that may contain secrets (combined condition)
+# Use { ..; } instead of (..) to avoid subshell overhead (SC2235)
 if [[ "$FILENAME_LOWER" =~ \.(env|env\..+|config|cfg|ini|yaml|yml|json)$ ]] && \
-   ([[ "$FILENAME_LOWER" =~ (secret|credential|auth|key|token|password) ]] || \
-    [[ "$FILENAME_LOWER" =~ ^\.env ]]); then
+   { [[ "$FILENAME_LOWER" =~ (secret|credential|auth|key|token|password) ]] || \
+     [[ "$FILENAME_LOWER" =~ ^\.env ]]; }; then
     echo "POST-TASK: SHOULD review for sensitive data exposure"
     exit 0
 fi

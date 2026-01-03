@@ -27,7 +27,13 @@ fi
 # Use printf instead of echo to prevent -n/-e option injection
 SANITIZED_PATH=$(printf '%s' "$FILE_PATH" | tr -cd '[:alnum:]._/-')
 
-# Handle case where sanitization strips everything
+# Reject paths altered by sanitization - treat modification as potential security risk
+if [[ "$SANITIZED_PATH" != "$FILE_PATH" ]]; then
+    echo "ok"
+    exit 0
+fi
+
+# Handle case where sanitization strips everything (redundant now but kept for defense in depth)
 if [[ -z "$SANITIZED_PATH" ]]; then
     echo "ok"
     exit 0

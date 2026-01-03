@@ -5,11 +5,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\""
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-mcp-servers.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-mcp-servers.sh\"",
             "statusMessage": "Checking MCP availability..."
           }
         ]
@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-write-requirements.sh \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-write-requirements.sh\" \"$ARGUMENTS\"",
             "statusMessage": "Checking agent requirements..."
           }
         ]
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-edit-requirements.sh \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-edit-requirements.sh\" \"$ARGUMENTS\"",
             "statusMessage": "Checking agent requirements..."
           }
         ]
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-edit-requirements.sh \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-edit-requirements.sh\" \"$ARGUMENTS\"",
             "statusMessage": "Checking agent requirements..."
           }
         ]
@@ -52,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/analyze-user-request.sh \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/analyze-user-request.sh\" \"$ARGUMENTS\"",
             "statusMessage": "Checking PRE-TASK triggers..."
           }
         ]

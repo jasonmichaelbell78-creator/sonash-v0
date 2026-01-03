@@ -34,7 +34,8 @@ matches_word() {
     local pattern="$1"
     # Use portable word boundary pattern instead of \b
     # Use printf instead of echo to prevent option injection
-    printf '%s' "$REQUEST_LOWER" | grep -qiE "(^|[^[:alnum:]])(${pattern})([^[:alnum:]]|$)"
+    # Note: -i flag removed since REQUEST_LOWER is already lowercased
+    printf '%s' "$REQUEST_LOWER" | grep -qE "(^|[^[:alnum:]])(${pattern})([^[:alnum:]]|$)"
 }
 
 # Priority 1: SECURITY (HIGHEST - per PR review, must come before bugs)

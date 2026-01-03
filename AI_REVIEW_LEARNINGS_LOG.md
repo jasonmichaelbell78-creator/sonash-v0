@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.28
+**Document Version:** 1.29
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.29 | 2026-01-03 | Added AI Instructions section (CI compliance) |
 | 1.28 | 2026-01-03 | CONSOLIDATION COMPLETE: Reset counter, patterns added to claude.md v2.5 |
 | 1.27 | 2026-01-03 | Review #30 fifth round + CONSOLIDATION: reject traversal, portable ERE, DoS limits |
 | 1.26 | 2026-01-03 | Review #30 fourth round: printf, basename safety, jq requirement (echo injection, option safety) |
@@ -137,6 +138,44 @@ The pattern compliance checker surfaces known anti-patterns:
 - **Staged files**: `npm run patterns:check -- --staged`
 
 The checker references this log so you can find the detailed context for each pattern.
+
+---
+
+## 🤖 AI Instructions
+
+**This document is the audit trail for all AI code review learnings.**
+
+### When to Update
+
+1. **After each code review cycle** - Add a new Review #N entry
+2. **When patterns recur 3+ times** - Extract to claude.md Section 4
+3. **Every 10 reviews** - Check consolidation trigger status
+4. **When version changes** - Update version history table
+
+### How to Add Review Entries
+
+1. **Title format**: `#### Review #N: Brief Description (YYYY-MM-DD)`
+2. **Include context**: Source (tool name), PR link, commit hash
+3. **Document patterns**: Root cause → Prevention → Resolution
+4. **Use severity tags**: 🔴 Critical, 🟠 Major, 🟡 Minor, ⚪ Low
+5. **Show before/after**: Wrong vs Right code examples
+6. **Track impact**: Expected reduction in similar issues
+
+### Consolidation Process
+
+When "Reviews since last consolidation" reaches 10+:
+1. Review all entries since last consolidation
+2. Identify recurring patterns (3+ mentions)
+3. Add distilled patterns to claude.md Section 4
+4. Reset counter to 0
+5. Update "Last Consolidation" section
+6. Note in version history
+
+### Version History Maintenance
+
+- Increment version on each review entry
+- Use descriptive change summaries
+- Reference review numbers in descriptions
 
 ---
 

@@ -12,6 +12,13 @@ set -euo pipefail
 
 # Get project directory from environment or use current directory
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
+
+# Reject path traversal in PROJECT_DIR
+if [[ "$PROJECT_DIR" == *".."* ]]; then
+    echo "No MCP servers configured"
+    exit 0
+fi
+
 MCP_CONFIG="$PROJECT_DIR/.mcp.json"
 
 # Function to sanitize output - strips ANSI escape sequences and control characters
@@ -44,7 +51,11 @@ fi
 
 # Sanitize output to prevent terminal escape injection from malicious config
 # Limit to first 50 server names to prevent DoS from large config
-SERVER_NAMES=$(jq -r '.mcpServers // {} | keys | .[0:50] | join(", ")' "$MCP_CONFIG" | sanitize_output)
+# Handle unexpected JSON shapes (e.g., .mcpServers is not an object)
+SERVER_NAMES=$(
+    jq -r '(.mcpServers // {}) | (if type == "object" then keys else [] end) | .[0:50] | join(", ")' "$MCP_CONFIG" \
+    | sanitize_output
+) || SERVER_NAMES=""
 
 if [[ -z "$SERVER_NAMES" ]]; then
     echo "No MCP servers configured"
