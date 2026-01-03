@@ -26,7 +26,7 @@
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" $ARGUMENTS",
             "statusMessage": "Running CodeRabbit review..."
           }
         ]
@@ -41,7 +41,7 @@
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" $ARGUMENTS",
             "statusMessage": "Running CodeRabbit review..."
           }
         ]
@@ -56,7 +56,7 @@
           },
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" \"$ARGUMENTS\"",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" $ARGUMENTS",
             "statusMessage": "Running CodeRabbit review..."
           }
         ]
