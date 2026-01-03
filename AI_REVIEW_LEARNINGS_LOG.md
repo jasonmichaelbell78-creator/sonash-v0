@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.29
+**Document Version:** 1.33
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,10 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.33 | 2026-01-03 | Review #32 follow-up: end-of-options, UTF-8 sanitization, gtimeout, file limit fix |
+| 1.32 | 2026-01-03 | Review #32: CodeRabbit CLI robustness (timeout handling, glob safety, stderr protocol) |
+| 1.31 | 2026-01-03 | Review #31: CodeRabbit CLI hook improvements (multi-file, timeout, efficiency) |
+| 1.30 | 2026-01-03 | Added CodeRabbit CLI as review source with logging instructions |
 | 1.29 | 2026-01-03 | Added AI Instructions section (CI compliance) |
 | 1.28 | 2026-01-03 | CONSOLIDATION COMPLETE: Reset counter, patterns added to claude.md v2.5 |
 | 1.27 | 2026-01-03 | Review #30 fifth round + CONSOLIDATION: reject traversal, portable ERE, DoS limits |
@@ -58,11 +62,18 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
 4. **Run pattern audit** periodically: `npm run patterns:check-all`
 
+### Review Sources
+
+Log findings from ALL AI code review sources:
+- **Qodo** - PR suggestions (appears as "PR Code Suggestions")
+- **CodeRabbit PR** - GitHub PR reviews (appears as comments/suggestions on PRs)
+- **CodeRabbit CLI** - Local reviews via PostToolUse hook (appears in Claude session output)
+
 ---
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0
+**Reviews since last consolidation:** 3
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -155,11 +166,19 @@ The checker references this log so you can find the detailed context for each pa
 ### How to Add Review Entries
 
 1. **Title format**: `#### Review #N: Brief Description (YYYY-MM-DD)`
-2. **Include context**: Source (tool name), PR link, commit hash
+2. **Include context**: Source (Qodo/CodeRabbit PR/CodeRabbit CLI), PR link, commit hash
 3. **Document patterns**: Root cause → Prevention → Resolution
 4. **Use severity tags**: 🔴 Critical, 🟠 Major, 🟡 Minor, ⚪ Low
 5. **Show before/after**: Wrong vs Right code examples
 6. **Track impact**: Expected reduction in similar issues
+
+### CodeRabbit CLI Findings
+
+When CodeRabbit CLI outputs review findings during a session:
+1. **Log immediately** - Add entry before addressing the issues
+2. **Source tag**: Use `**Source:** CodeRabbit CLI (local)`
+3. **Include file**: Reference the file(s) being reviewed
+4. **Apply same process**: Document pattern, fix, update counter
 
 ### Consolidation Process
 
@@ -2191,6 +2210,115 @@ The error persisted because of multiple interacting issues:
    - Applies to: Any output derived from user-controlled files
 
 **Key Insight:** Path rewriting creates a false sense of security. An attacker who controls the input can often find ways around sanitization (URL encoding, double encoding, etc.). Rejecting malicious patterns is simpler and more secure than attempting to fix them.
+
+---
+
+#### Review #31: CodeRabbit CLI Hook Improvements (2026-01-03)
+
+**Source:** Qodo + CodeRabbit PR (combined)
+**PR:** `claude/address-pr-review-feedback-Og33H` (CodeRabbit CLI integration)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** First review of the new CodeRabbit CLI integration hook.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Only processes first file argument | 🔴 High | Functionality | Iterate over all `$@` arguments |
+| 2 | Quoted `$ARGUMENTS` prevents multi-file | 🟠 Medium | Configuration | Remove quotes around `$ARGUMENTS` in settings.json |
+| 3 | No timeout protection | 🟠 Medium | Resilience | Wrap with `timeout 20s` if available |
+| 4 | File existence not checked | 🟡 Low | Robustness | Add `[[ ! -f "$FILE_PATH" ]]` early exit |
+| 5 | Error check filters valid findings | 🟡 Low | Accuracy | Change `*"error"*` to `"Error:"*` prefix match |
+| 6 | Inefficient external commands | ⚪ Nitpick | Performance | Use `${FILE_PATH##*/}` and `${filename,,}` |
+
+**Patterns Identified:**
+
+1. **Iterate Over All Arguments in Hooks** (1 occurrence - Functionality)
+   - Root cause: Only `$1` was processed, ignoring rest of `$@`
+   - Prevention: Use `for FILE in "$@"; do ... done` loop
+   - Wrong: `FILE="${1:-}"`
+   - Right: `for FILE in "$@"; do ... done`
+   - Applies to: Any hook that may receive multiple arguments
+
+2. **Unquoted $ARGUMENTS for Multi-Value** (1 occurrence - Configuration)
+   - Root cause: `"$ARGUMENTS"` passes all files as single argument
+   - Prevention: Use `$ARGUMENTS` (unquoted) when multiple args expected
+   - Wrong: `"script.sh" "$ARGUMENTS"` (one arg with spaces)
+   - Right: `"script.sh" $ARGUMENTS` (multiple args)
+   - Trade-off: Unquoted breaks on filenames with spaces
+
+3. **Timeout External Commands** (1 occurrence - Resilience)
+   - Root cause: Network commands can hang indefinitely
+   - Prevention: Wrap with timeout, check if available
+   - Pattern: `if command -v timeout >/dev/null; then timeout 20s cmd; else cmd; fi`
+   - Note: Prevents workflow from stalling
+
+4. **Bash Parameter Expansion Over External Commands** (1 occurrence - Performance)
+   - Root cause: `basename` and `tr` fork new processes
+   - Prevention: Use built-in parameter expansion
+   - Wrong: `FILENAME=$(basename -- "$PATH")` + `$(echo "$F" | tr '[:upper:]' '[:lower:]')`
+   - Right: `filename="${PATH##*/}"` + `filename_lower="${filename,,}"`
+   - Note: `${var,,}` requires Bash 4.0+
+
+**Key Insight:** Hook scripts often receive multiple arguments. Always design for the multi-file case using `$@` iteration. Use parameter expansion over external commands when processing many files - the performance difference adds up.
+
+---
+
+#### Review #32: CodeRabbit CLI Robustness (2026-01-03)
+
+**Source:** Qodo + CodeRabbit PR
+**PR:** `claude/address-pr-review-feedback-Og33H` (Review #31 follow-up)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of feedback on CodeRabbit CLI integration addressing error handling, portability, and protocol compliance.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Swallowed errors hide failures | 🟠 Medium | Error Handling | Capture exit status, distinguish timeout (124) from errors |
+| 2 | Glob expansion on unquoted args | 🟠 Medium | Security | Add `set -f;` before command in settings.json |
+| 3 | `${var,,}` not portable (Bash 3.2) | 🟠 Medium | Portability | Add `to_lower()` function with fallback to `tr` |
+| 4 | No file count limit | 🟠 Medium | Performance | Add `MAX_FILES=10` limit |
+| 5 | Findings pollute stdout protocol | 🟡 Low | Protocol | Redirect findings to stderr, keep "ok" on stdout |
+
+**Patterns Identified:**
+
+1. **Capture Exit Status, Don't Swallow Errors** (1 occurrence - Error Handling)
+   - Root cause: `|| true` hides whether command failed
+   - Prevention: Use `|| STATUS=$?` and check status explicitly
+   - Wrong: `OUTPUT=$(cmd) || true`
+   - Right: `OUTPUT=$(cmd) || STATUS=$?; if [[ $STATUS -eq 124 ]]; then ...`
+   - Note: timeout(1) returns 124 on timeout
+
+2. **Use `set -f` to Prevent Glob Expansion** (1 occurrence - Security)
+   - Root cause: Unquoted `$VAR` expands globs (`*`, `?`) in filenames
+   - Prevention: Disable globbing with `set -f` before expansion
+   - Wrong: `script.sh $ARGUMENTS` (globs expand)
+   - Right: `set -f; script.sh $ARGUMENTS` (globs preserved)
+   - Trade-off: Breaks intentional globbing in same shell
+
+3. **Portable Bash Version Compatibility** (1 occurrence - Portability)
+   - Root cause: `${var,,}` lowercase requires Bash 4.0+, macOS ships 3.2
+   - Prevention: Feature-detect with `( : "${var,,}" ) 2>/dev/null`
+   - Pattern: `if ( : "${var,,}" ) 2>/dev/null; then ...; else tr fallback; fi`
+   - Note: Function wrapper (`to_lower()`) keeps code clean
+
+4. **Bound Hook Runtime with File Limits** (1 occurrence - Performance)
+   - Root cause: Large edits (100+ files) cause unacceptable delays
+   - Prevention: Set maximum file count, break early
+   - Pattern: `MAX_FILES=10; ((count++)); if (( count > MAX_FILES )); then break; fi`
+   - Note: Inform user when limit reached
+
+5. **Keep Protocol Output Clean (stdout vs stderr)** (1 occurrence - Protocol)
+   - Root cause: Extra output on stdout breaks hook protocol parsing
+   - Prevention: Redirect informational messages to stderr
+   - Wrong: `echo "findings..."; echo "ok"`
+   - Right: `{ echo "findings..."; } >&2; echo "ok"`
+   - Principle: stdout = machine-readable, stderr = human-readable
+
+**Key Insight:** Shell hooks need to be robust against edge cases: large inputs, old Bash versions, special characters, and protocol expectations. Always capture exit status rather than swallowing errors, feature-detect Bash capabilities, and keep protocol communication clean on stdout.
 
 ---
 
