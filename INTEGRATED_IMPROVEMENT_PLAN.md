@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.6
+**Document Version:** 1.7
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
@@ -613,10 +613,31 @@ After each work session:
 
 ---
 
+## Sprint Backlog Additions
+
+Items discovered during sprint execution that need tracking. Review at step boundaries for inclusion/deferral.
+
+| # | Item | Discovered | Target Step | Status | Notes |
+|---|------|------------|-------------|--------|-------|
+| A1 | *Example: Fix lint warning baseline* | Session #X | Step 3 | PENDING | *Description* |
+
+### Disposition Options
+- **INCLUDE** - Add to current/specific step
+- **DEFER** - Add to ROADMAP.md M2 (post-sprint)
+- **SKIP** - Not worth doing, document why
+
+### Review Log
+| Session | Items Reviewed | Decisions |
+|---------|----------------|-----------|
+| *#11* | *Initial setup* | *Section created* |
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.7 | 2026-01-03 | Added Sprint Backlog Additions section for tracking emergent tasks |
 | 1.6 | 2026-01-03 | Added Mermaid dependency graph (replaced ASCII diagram); color-coded steps showing progress |
 | 1.5 | 2026-01-03 | Added mandatory Step Completion Audit process; retroactive audits for Steps 1-2; audit requirement added to AI Instructions |
 | 1.4 | 2026-01-03 | Step 2 COMPLETE: Phase 5 (6/6 migrations), Phase 6 core (7 tasks); 11 deferred tasks (6.7-6.17) moved to backlog |
