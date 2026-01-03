@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.39
+**Document Version:** 1.40
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.40 | 2026-01-03 | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added) |
 | 1.39 | 2026-01-03 | Review #40: Qodo archive security, path containment, CRLF handling |
 | 1.38 | 2026-01-03 | Review #39: Qodo script robustness - explicit plan failure, terminal sanitization |
 | 1.37 | 2026-01-03 | Review #38: Security hardening - path traversal, control char stripping, regex fix |
@@ -79,10 +80,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11
-**⚠️ CONSOLIDATION OVERDUE** - perform consolidation NOW
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CURRENT** (consolidated 2026-01-03)
+**✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
 ### When to Consolidate
 
@@ -102,6 +102,27 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-03 (Session #18)
+- **Reviews consolidated:** #31-#40 (10 reviews)
+- **Patterns added to claude.md v2.7:**
+  - Containment at ALL touch points (not just entry) - archive, fallback, basename checks
+  - Validate CLI args immediately at parse time
+  - Empty path edge case (`rel === ''`)
+  - Error first line extraction with CRLF handling
+  - Control char stripping preserving safe whitespace (\t\n\r)
+  - Sanitize file-derived content (not just errors)
+  - Normalize backslashes before security checks
+  - CRLF in regex lookaheads (`\r?\n`)
+  - Wrap ALL file reads in try/catch
+  - CI mode checks ALL (no truncation for interactive convenience)
+  - Invalid files should fail (not just missing)
+  - Explicit flags should fail explicitly
+  - Readline close on all paths
+  - Never recommend committing .env files
+- **Next consolidation due:** At review #50 (or ~10 more reviews)
+
+### Previous Consolidation
+
 - **Date:** 2026-01-03 (Session #4)
 - **Reviews consolidated:** #24-#30 (7 reviews + 4 follow-ups = 11 entries)
 - **Patterns added to claude.md v2.5:**
@@ -114,9 +135,8 @@ Consolidation is needed when:
   - Word boundary security keywords (prevents false matches)
   - Bound user-controllable output (DoS prevention)
   - Never expose secrets in hook output
-- **Next consolidation due:** At review #40 (or ~10 more reviews)
 
-### Previous Consolidation
+### Consolidation #2
 
 - **Date:** 2026-01-02 (Session #3)
 - **Reviews consolidated:** #11-#23 (13 reviews)
