@@ -21,6 +21,9 @@ This README serves as the **entry point** for the SoNash Recovery Notebook proje
 
 ## 📖 Documentation Index
 
+### ⚠️ Current Initiative (Blocker)
+- **[INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)** - Unified improvement roadmap (blocks feature work)
+
 ### Core Documents (Tier 1)
 - **[ROADMAP.md](./ROADMAP.md)** - Product roadmap and feature planning
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items

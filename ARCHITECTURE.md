@@ -25,6 +25,8 @@ Current architecture is **production-ready** with:
 - ✅ Journal system consolidated
 - ⏳ Optional Sentry integration (pending)
 
+> **📋 Note:** Architecture improvements and refactoring are being validated via the [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) Delta Review process. Developer tooling (Prettier, madge, knip) will be added in Step 3 of that plan.
+
 ---
 
 ## 🏛️ System Overview

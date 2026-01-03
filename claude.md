@@ -1,7 +1,7 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.2
-**Last Updated:** 2026-01-02
+**Document Version:** 2.5
+**Last Updated:** 2026-01-03
 **Status:** ACTIVE
 
 ---
@@ -118,48 +118,57 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)**: Manual verification steps.
 
 ## 6. Available AI Capabilities
-> [!IMPORTANT]
-> **MANDATORY**: Before ANY task, check if a skill or agent applies. If one clearly applies to your task, USE IT.
 
-### Skill Decision Tree (USE THIS!)
+> [!CAUTION]
+> **🚨 MANDATORY ENFORCEMENT**: Agents and skills are NOT optional suggestions. They are REQUIRED when trigger conditions are met. Failure to use them when applicable results in lower quality output.
 
-```
-BEFORE STARTING ANY TASK, ASK:
-│
-├─ Is this a bug, error, or unexpected behavior?
-│   └─ YES → Use 'systematic-debugging' skill FIRST
-│
-├─ Am I about to write or modify code?
-│   └─ YES → Plan to use 'code-reviewer' agent AFTER
-│
-├─ Does this involve security, auth, or sensitive data?
-│   └─ YES → Use 'security-auditor' agent
-│
-├─ Is this UI/frontend work?
-│   └─ YES → Use 'frontend-design' skill
-│
-├─ Is this a complex multi-step task?
-│   └─ YES → Run: ls .claude/skills/ and find a match
-│
-└─ None of the above?
-    └─ Proceed, but reconsider if task changes
-```
+### PRE-TASK: Agent Trigger Check (BEFORE Starting Work)
+
+**When you receive a task from the user, IMMEDIATELY check these triggers:**
+
+| Trigger Condition | Required Action | Tool |
+|-------------------|-----------------|------|
+| Bug, error, or unexpected behavior | MUST use `systematic-debugging` FIRST | Skill |
+| Exploring unfamiliar codebase areas | MUST use `Explore` agent | Task |
+| Planning multi-step implementation | MUST use `Plan` agent | Task |
+| Security, auth, or sensitive data | MUST use `security-auditor` agent | Task |
+| Creating new documentation | MUST use `documentation-expert` agent | Task |
+| UI/frontend implementation | MUST use `frontend-design` skill | Skill |
+| Database design or queries | MUST use `database-architect` agent | Task |
+| Complex debugging | MUST use `debugger` agent | Task |
+
+**If trigger matches → Use agent/skill BEFORE doing manual work.**
+
+### POST-TASK: Mandatory Review Checks (AFTER Completing Work)
+
+| What You Just Did | Required Action | Tool |
+|-------------------|-----------------|------|
+| Wrote or modified code (any amount) | MUST run `code-reviewer` agent | Task |
+| Created new documentation | MUST use `documentation-expert` agent for authoring; SHOULD run `technical-writer` AFTER for quality check | Task |
+| Updated existing documentation | SHOULD run `technical-writer` agent for quality check | Task |
+| Made security-related changes | MUST run `security-auditor` agent | Task |
+| Wrote tests | SHOULD run `test-engineer` agent to validate strategy | Task |
+
+**If condition matches → Use agent BEFORE committing.**
 
 ### Skills (`.claude/skills/`)
 Specialized workflows invoked via **Skill tool**. Scan directory for current list.
 
 **Key Skills:**
-- `systematic-debugging` → Use FIRST for bugs/errors
-- `code-reviewer` → Use AFTER writing code
-- `frontend-design` → Use for UI implementation
+- `systematic-debugging` → MUST use FIRST for bugs/errors
+- `code-reviewer` → MUST use AFTER writing code
+- `frontend-design` → MUST use for UI implementation
 - `senior-frontend` / `senior-backend` → Implementation guidance
 
 ### Agents (`.claude/agents/`)
 Specialist sub-agents invoked via **Task tool**. Scan directory for current list.
 
 **Key Agents:**
-- `code-reviewer` → Post-code quality review
-- `security-auditor` → Security assessment
+- `code-reviewer` → MUST use after code changes
+- `security-auditor` → MUST use for security work
+- `documentation-expert` → MUST use for new docs
+- `Explore` → MUST use for codebase exploration
+- `Plan` → MUST use for multi-step planning
 - `debugger` → Complex debugging
 - `test-engineer` → Test strategy
 
@@ -171,19 +180,21 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 ### Session End Self-Audit
 
 > [!WARNING]
-> **BEFORE ENDING SESSION**, verify you followed workflow:
+> **BEFORE ENDING SESSION**, verify you followed the mandatory workflow:
 
 ```
 SESSION END CHECKLIST:
+☐ Did I check PRE-TASK triggers when user gave me tasks?
 ☐ Did I use systematic-debugging for any bugs encountered?
-☐ Did I use code-reviewer after significant code changes?
+☐ Did I use code-reviewer AFTER all code changes?
 ☐ Did I use security-auditor for security-related work?
+☐ Did I use documentation-expert for new documentation?
 ☐ Did I update SESSION_CONTEXT.md with work completed?
 ☐ Did I update relevant planning docs?
 ☐ Did I commit all documentation changes?
-```
 
-If you skipped a skill/agent that applied, note it in your session summary for improvement.
+If I skipped a MUST-use agent → Note it and explain why in session summary.
+```
 
 **Full Details**: See [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "Available AI Capabilities"
 
@@ -200,6 +211,9 @@ If you skipped a skill/agent that applied, note it in your session summary for i
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.5 | 2026-01-03 | Split documentation triggers: MUST documentation-expert for new docs; aligned with AI_WORKFLOW.md |
+| 2.4 | 2026-01-03 | Aligned MUST/SHOULD levels with AI_WORKFLOW.md (SHOULD for technical-writer/test-engineer) |
+| 2.3 | 2026-01-03 | Strengthened agent/skill enforcement with PRE-TASK and POST-TASK mandatory checks |
 | 2.2 | 2026-01-02 | Consolidated patterns from Reviews #11-23 (lockfile corruption, GitHub Actions YAML, cross-drive paths, WHY before fixing) |
 | 2.1 | 2026-01-02 | Added Skill Decision Tree and Session End Self-Audit checklist |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration |
