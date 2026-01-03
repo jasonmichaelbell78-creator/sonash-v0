@@ -18,7 +18,8 @@ if [[ -z "$FILE_PATH" ]]; then
 fi
 
 # Sanitize file path - remove potentially dangerous characters
-SANITIZED_PATH=$(echo "$FILE_PATH" | tr -cd '[:alnum:]._/-')
+# Strip path traversal sequences (../ and ./) before other sanitization
+SANITIZED_PATH=$(echo "$FILE_PATH" | sed 's#\.\./##g; s#\./##g' | tr -cd '[:alnum:]._/-')
 
 # Truncate excessively long paths
 if [[ ${#SANITIZED_PATH} -gt 500 ]]; then

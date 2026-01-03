@@ -30,8 +30,8 @@ REQUEST_LOWER=$(echo "$USER_REQUEST" | tr '[:upper:]' '[:lower:]')
 # This reduces false positives like "token" in "authentication"
 matches_word() {
     local pattern="$1"
-    # Use word boundaries with grep -E
-    echo "$REQUEST_LOWER" | grep -qiE "(^|[^a-z])$pattern([^a-z]|$)"
+    # Use grep's built-in \b word boundary token for robust matching
+    echo "$REQUEST_LOWER" | grep -qiE "\\b$pattern\\b"
 }
 
 # Priority 1: SECURITY (HIGHEST - per PR review, must come before bugs)

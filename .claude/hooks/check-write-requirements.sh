@@ -18,8 +18,9 @@ if [[ -z "$FILE_PATH" ]]; then
 fi
 
 # Sanitize file path - remove potentially dangerous characters
+# Strip path traversal sequences (../ and ./) before other sanitization
 # Only allow alphanumeric, dots, dashes, underscores, slashes
-SANITIZED_PATH=$(echo "$FILE_PATH" | tr -cd '[:alnum:]._/-')
+SANITIZED_PATH=$(echo "$FILE_PATH" | sed 's#\.\./##g; s#\./##g' | tr -cd '[:alnum:]._/-')
 
 # Truncate excessively long paths (prevent DoS)
 if [[ ${#SANITIZED_PATH} -gt 500 ]]; then
@@ -59,14 +60,12 @@ if [[ "$FILENAME_LOWER" =~ \.md$ ]]; then
     exit 0
 fi
 
-# Priority 5: Config files that may contain secrets
-if [[ "$FILENAME_LOWER" =~ \.(env|env\..+|config|cfg|ini|yaml|yml|json)$ ]]; then
-    # Only flag if it looks like it might contain secrets
-    if [[ "$FILENAME_LOWER" =~ (secret|credential|auth|key|token|password) ]] || \
-       [[ "$FILENAME_LOWER" =~ ^\.env ]]; then
-        echo "POST-TASK: SHOULD review for sensitive data exposure"
-        exit 0
-    fi
+# Priority 5: Config files that may contain secrets (combined condition)
+if [[ "$FILENAME_LOWER" =~ \.(env|env\..+|config|cfg|ini|yaml|yml|json)$ ]] && \
+   ([[ "$FILENAME_LOWER" =~ (secret|credential|auth|key|token|password) ]] || \
+    [[ "$FILENAME_LOWER" =~ ^\.env ]]); then
+    echo "POST-TASK: SHOULD review for sensitive data exposure"
+    exit 0
 fi
 
 # No specific requirements
