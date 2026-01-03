@@ -1,5 +1,11 @@
 # App Check Fresh Setup Guide
 
+> ⚠️ **SECRET HANDLING WARNING**: This document contains placeholder values like `<RECAPTCHA_SITE_KEY>` and `<YOUR_NEW_SITE_KEY>`. Before following these instructions:
+> 1. **NEVER** commit actual secrets/keys to version control
+> 2. Replace ALL placeholders with your actual values in `.env.*` files (gitignored)
+> 3. Verify your `.gitignore` includes `.env*` patterns
+> 4. Review each step - this is archived documentation that may be outdated
+
 ## Clean Slate Setup for Firebase App Check with reCAPTCHA Enterprise
 
 Follow these steps in order to set up App Check from scratch.

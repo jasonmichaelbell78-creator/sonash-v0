@@ -1029,5 +1029,5 @@ When helping with testing:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.2 | 2026-01-03 | Merged TESTING_CHECKLIST.md; added Tier 2 sections, Quick Manual Testing |
-| 1.1 | 2025-12-XX | Added Phase 3-4 testing guidance |
-| 1.0 | 2025-12-XX | Initial creation with Phase 1-2 testing |
+| 1.1 | 2026-01-01 | Added Phase 3-4 testing guidance |
+| 1.0 | 2025-12-31 | Initial creation with Phase 1-2 testing |

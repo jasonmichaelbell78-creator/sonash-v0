@@ -1,5 +1,10 @@
 # Firebase App Check & reCAPTCHA Configuration Problem - Need Expert Advice
 
+> ⚠️ **ARCHIVED - DO NOT COPY-PASTE**: This document is archived and outdated. The reCAPTCHA configuration described here has been replaced by App Check.
+> - See [APPCHECK_SETUP.md](../APPCHECK_SETUP.md) for current setup
+> - Code snippets here may not reflect current implementation
+> - Configuration values shown are placeholders/redacted
+
 ## Background
 
 I'm working on a Next.js application (SoNash Recovery Notebook) using Firebase services including Authentication, Firestore, and Cloud Functions. I'm trying to implement Firebase App Check for security but encountering persistent errors.

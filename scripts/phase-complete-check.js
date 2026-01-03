@@ -24,7 +24,19 @@ import * as path from 'path';
 const args = process.argv.slice(2);
 const isAutoMode = args.includes('--auto');
 const planIndex = args.indexOf('--plan');
-const rawPlanPath = planIndex !== -1 ? args[planIndex + 1] : null;
+
+// Validate --plan flag has a valid value
+let rawPlanPath = null;
+if (planIndex !== -1) {
+  const nextArg = args[planIndex + 1];
+  // Check: value exists, not another flag, not empty
+  if (!nextArg || nextArg.startsWith('--') || nextArg.trim() === '') {
+    console.error('Error: --plan requires a path argument');
+    console.error('Usage: node scripts/phase-complete-check.js --plan <path>');
+    process.exit(1);
+  }
+  rawPlanPath = nextArg;
+}
 
 // Security: Validate --plan path is within project root
 const projectRoot = process.cwd();
@@ -79,12 +91,14 @@ function ask(question) {
 function extractDeliverablesFromPlan(planContent) {
   const deliverables = [];
 
-  // Extract file paths mentioned (e.g., path/to/file.md)
-  const filePathRegex = /(?:^|\s)([a-zA-Z0-9_\-./]+\.(md|js|ts|tsx|json|yml|yaml|sh))/gm;
+  // Extract file paths mentioned (e.g., path/to/file.md or path\to\file.md on Windows)
+  // Note: Includes backslashes for Windows path support
+  const filePathRegex = /(?:^|\s)([a-zA-Z0-9_\-./\\]+\.(md|js|ts|tsx|json|yml|yaml|sh))/gm;
   const matches = planContent.match(filePathRegex) || [];
 
   for (const match of matches) {
-    const filePath = match.trim();
+    // Normalize path: trim whitespace, convert backslashes to forward slashes
+    const filePath = match.trim().replace(/\\/g, '/');
     // Skip obvious non-deliverables
     if (!filePath.includes('node_modules') &&
         !filePath.includes('example') &&
@@ -133,6 +147,12 @@ function verifyDeliverable(deliverable, projectRoot) {
   } catch (err) {
     if (err.code === 'ENOENT') {
       // File doesn't exist - check if it's in docs/archive (might be archived)
+      // Skip archive lookup if path already points to docs/archive (avoid double-nesting)
+      const normalizedPath = deliverable.path.replace(/\\/g, '/');
+      if (normalizedPath.startsWith('docs/archive/') || normalizedPath.startsWith('./docs/archive/')) {
+        return { exists: false, valid: false, reason: 'File not found (already in archive path)' };
+      }
+
       // Try exact relative path first to avoid false positives
       const archivePathExact = path.join(projectRoot, 'docs/archive', deliverable.path);
       try {
@@ -213,12 +233,24 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     warnings: []
   };
 
-  // Only check first 20 most relevant files to avoid noise
   // Normalize paths to forward slashes for cross-platform compatibility
-  const relevantDeliverables = deliverables
+  const normalizedDeliverables = deliverables
     .map(d => ({ ...d, path: d.path.replace(/\\/g, '/') }))
-    .filter(d => /\.[a-z0-9]+$/i.test(d.path)) // Must have file extension
-    .slice(0, 20);
+    .filter(d => /\.[a-z0-9]+$/i.test(d.path)); // Must have file extension
+
+  const MAX_CHECKS = 20;
+  const wasTruncated = normalizedDeliverables.length > MAX_CHECKS;
+
+  // In auto mode, check all deliverables; in interactive mode, limit to avoid noise
+  const relevantDeliverables = isAutoMode
+    ? normalizedDeliverables
+    : normalizedDeliverables.slice(0, MAX_CHECKS);
+
+  // In auto mode, fail if we would have truncated (ensures CI doesn't skip files)
+  if (isAutoMode && wasTruncated) {
+    console.log(`  ⚠️  Plan references ${normalizedDeliverables.length} deliverables`);
+    console.log('     Checking all in --auto mode (no truncation)');
+  }
 
   for (const deliverable of relevantDeliverables) {
     const result = verifyDeliverable(deliverable, projectRoot);

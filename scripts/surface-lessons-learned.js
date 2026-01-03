@@ -44,7 +44,22 @@ const TOPIC_ALIASES = {
 function parseArgs() {
   const args = process.argv.slice(2);
   const topicIndex = args.indexOf('--topic');
-  const topics = topicIndex !== -1 ? args[topicIndex + 1]?.split(',').map(t => t.trim().toLowerCase()) : null;
+  let topics = null;
+
+  if (topicIndex !== -1) {
+    const nextArg = args[topicIndex + 1];
+    // Validate: value exists, not another flag, not empty
+    if (!nextArg || nextArg.startsWith('--') || nextArg.trim() === '') {
+      console.error('Error: --topic requires a value (comma-separated topics)');
+      console.error('Usage: node scripts/surface-lessons-learned.js --topic firebase,auth');
+      process.exit(1);
+    }
+    topics = nextArg.split(',').map(t => t.trim().toLowerCase()).filter(t => t.length > 0);
+    if (topics.length === 0) {
+      console.error('Error: --topic value cannot be empty');
+      process.exit(1);
+    }
+  }
 
   return { topics };
 }
@@ -86,7 +101,14 @@ function detectTopicsFromGitChanges() {
       .split('\n')
       .map(l => l.trim())
       .filter(Boolean)
-      .map(l => l.slice(3)); // drop "XY " prefix
+      .map(l => {
+        const path = l.slice(3); // drop "XY " prefix
+        // Handle renamed files: "R  old -> new" format - extract the new filename
+        if (path.includes(' -> ')) {
+          return path.split(' -> ')[1];
+        }
+        return path;
+      });
 
     // Deduplicate using Set
     const changedFiles = Array.from(new Set([...diffFiles, ...statusFiles])).filter(Boolean);

@@ -76,7 +76,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5
+**Reviews since last consolidation:** 6
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2441,6 +2441,65 @@ The error persisted because of multiple interacting issues:
    - Note: This preserves "Label: Value" semantics from markdown patterns
 
 **Key Insight:** Security reviews often reveal layered issues - the first fix addresses the obvious vulnerability, but follow-up reviews catch subtler issues like input validation at CLI boundaries and secrets in historical documentation. Always verify that security fixes are complete by checking all code paths that handle the same type of input.
+
+---
+
+#### Review #35: Qodo PR Compliance + CodeRabbit Documentation & Script Fixes (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #13
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of feedback addressing remaining script robustness, documentation updates, and path handling issues across phase completion scripts and documentation files.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | CI skips deliverables after 20 | 🔴 High | CI/Auto | Changed to check ALL deliverables in --auto mode (only limit in interactive) |
+| 2 | Archive path double-nesting | 🟠 Medium | Bug Fix | Skip archive lookup if path already contains `docs/archive/` |
+| 3 | --plan flag with no value | 🟠 Medium | Validation | Added explicit validation for missing/invalid --plan argument |
+| 4 | --topic flag with no value | 🟠 Medium | Validation | Added explicit validation for missing/invalid --topic argument |
+| 5 | Renamed files in git status | 🟠 Medium | Bug Fix | Parse `old -> new` format to extract new filename |
+| 6 | ADR-001 broken links | 🟡 Low | Documentation | Fixed paths to root docs (../../ instead of ../) |
+| 7 | Archive docs missing warnings | 🟡 Low | Documentation | Added secret handling and copy-paste warnings |
+| 8 | DOC_STANDARDIZATION version history | 🟡 Low | Documentation | Added v1.8 (Phase 5) and v1.9 (Phase 6) entries |
+| 9 | TESTING_PLAN placeholder dates | 🟡 Low | Documentation | Fixed 2025-12-XX placeholders to actual dates |
+| 10 | Path normalization during extraction | 🟡 Low | Portability | Normalize backslashes to forward slashes at extraction time |
+
+**Patterns Identified:**
+
+1. **CI/Auto Mode Should Be Stricter** (1 occurrence - CI)
+   - Root cause: Interactive-friendly limits (20 items) silently skip checks in CI
+   - Prevention: In --auto mode, check everything; limits are for human convenience only
+   - Pattern: `isAutoMode ? allItems : allItems.slice(0, MAX)` not `allItems.slice(0, MAX)`
+   - Note: CI failures should be explicit, not silent truncation
+
+2. **Validate CLI Arguments Defensively** (2 occurrences - Validation)
+   - Root cause: `args[index + 1]` can be undefined, empty, or another flag
+   - Prevention: Check existence, non-empty, and not starting with `--`
+   - Pattern: `if (!nextArg || nextArg.startsWith('--') || nextArg.trim() === '') { error; }`
+   - Note: Provide helpful usage message on validation failure
+
+3. **Handle Git Rename Format** (1 occurrence - Bug Fix)
+   - Root cause: `git status --porcelain` shows renames as `R  old -> new`
+   - Prevention: Check for ` -> ` separator and extract second part
+   - Pattern: `if (path.includes(' -> ')) { path = path.split(' -> ')[1]; }`
+   - Note: Applies to both renames and copies (`C` status)
+
+4. **Prevent Double Archive Lookup** (1 occurrence - Bug Fix)
+   - Root cause: If file path already contains `docs/archive/`, prepending creates invalid path
+   - Prevention: Check if path already points to archive before constructing archive path
+   - Pattern: `if (path.startsWith('docs/archive/')) { return notFound; }`
+   - Note: Also check for leading `./` variant
+
+5. **Keep ADR Links Relative to Doc Location** (1 occurrence - Documentation)
+   - Root cause: ADRs in `docs/decisions/` need `../../` to reach project root
+   - Prevention: Count directory depth when creating relative links
+   - Pattern: From `docs/decisions/ADR.md` to root: `../../FILE.md`
+   - Note: Different from docs in `docs/` which only need `../`
+
+**Key Insight:** Automation scripts need different behavior for interactive vs CI modes. Interactive mode can use friendly limits and warnings, but CI mode should be comprehensive and fail explicitly. Also, input validation should happen at the earliest possible point (argument parsing) not deferred to use sites.
 
 ---
 
