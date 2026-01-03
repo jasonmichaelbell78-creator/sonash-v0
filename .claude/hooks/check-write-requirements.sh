@@ -1,0 +1,73 @@
+#!/bin/bash
+# check-write-requirements.sh - PostToolUse hook for Write tool
+# Addresses PR review feedback:
+# - Input validation and sanitization
+# - Test files prioritized over code files
+# - Consolidated markdown rules (can't reliably distinguish new vs existing)
+# - Case-insensitive security matching
+# - Proper error handling for edge cases
+
+set -euo pipefail
+
+# Validate input - handle empty/malformed arguments
+FILE_PATH="${1:-}"
+
+if [[ -z "$FILE_PATH" ]]; then
+    echo "ok"
+    exit 0
+fi
+
+# Sanitize file path - remove potentially dangerous characters
+# Only allow alphanumeric, dots, dashes, underscores, slashes
+SANITIZED_PATH=$(echo "$FILE_PATH" | tr -cd '[:alnum:]._/-')
+
+# Truncate excessively long paths (prevent DoS)
+if [[ ${#SANITIZED_PATH} -gt 500 ]]; then
+    SANITIZED_PATH="${SANITIZED_PATH:0:500}"
+fi
+
+# Extract just the filename for pattern matching
+FILENAME=$(basename "$SANITIZED_PATH")
+
+# Convert to lowercase for case-insensitive matching
+FILENAME_LOWER=$(echo "$FILENAME" | tr '[:upper:]' '[:lower:]')
+PATH_LOWER=$(echo "$SANITIZED_PATH" | tr '[:upper:]' '[:lower:]')
+
+# Priority 1: Test files (check BEFORE code files to avoid misclassification)
+# Matches: .test.ts, .test.js, .spec.ts, .spec.js, etc.
+if [[ "$FILENAME_LOWER" =~ \.(test|spec)\.(ts|tsx|js|jsx)$ ]]; then
+    echo "POST-TASK: SHOULD run test-engineer agent to validate test strategy"
+    exit 0
+fi
+
+# Priority 2: Security-sensitive files (case-insensitive path check)
+# Check path for security-related keywords
+if [[ "$PATH_LOWER" =~ (auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto) ]]; then
+    echo "POST-TASK: MUST run security-auditor agent before committing"
+    exit 0
+fi
+
+# Priority 3: Code files
+if [[ "$FILENAME_LOWER" =~ \.(ts|tsx|js|jsx|py|sh|go|rs|rb|php|java|kt|swift)$ ]]; then
+    echo "POST-TASK: MUST run code-reviewer agent before committing"
+    exit 0
+fi
+
+# Priority 4: Markdown files (consolidated - can't reliably detect new vs existing)
+if [[ "$FILENAME_LOWER" =~ \.md$ ]]; then
+    echo "POST-TASK: SHOULD run technical-writer agent for quality check"
+    exit 0
+fi
+
+# Priority 5: Config files that may contain secrets
+if [[ "$FILENAME_LOWER" =~ \.(env|env\..+|config|cfg|ini|yaml|yml|json)$ ]]; then
+    # Only flag if it looks like it might contain secrets
+    if [[ "$FILENAME_LOWER" =~ (secret|credential|auth|key|token|password) ]] || \
+       [[ "$FILENAME_LOWER" =~ ^\.env ]]; then
+        echo "POST-TASK: SHOULD review for sensitive data exposure"
+        exit 0
+    fi
+fi
+
+# No specific requirements
+echo "ok"
