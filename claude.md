@@ -212,7 +212,7 @@ SESSION END CHECKLIST:
 ☐ Did I use code-reviewer AFTER all code changes?
 ☐ Did I use security-auditor for security-related work?
 ☐ Did I use documentation-expert for new documentation?
-☐ Did required hooks trigger AND pass? (SessionStart, Pre-commit, Pre-push)
+☐ Did required hooks trigger AND pass? (SessionStart, UserPromptSubmit, Pre-commit, Pre-push)
 ☐ Did I update SESSION_CONTEXT.md with work completed?
 
 If I skipped a MUST-use agent → Note it and explain why in session summary.

@@ -76,7 +76,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7
+**Reviews since last consolidation:** 8
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2559,6 +2559,64 @@ The error persisted because of multiple interacting issues:
    - Note: Prevents redundant processing and alias expansion issues
 
 **Key Insight:** Error handling in automation scripts should be explicit and informative, not suppressive. CI logs are often shared or visible, so sanitize paths while still providing useful diagnostic information. Also, verify assumptions about data types (files vs directories) before filtering.
+
+---
+
+#### Review #37: Qodo PR Compliance + CodeRabbit Script Security & Documentation (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #15
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fifth round of feedback addressing plan file error handling, stack trace leakage prevention, path normalization improvements, and security documentation.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Plan file read unhandled | 🔴 High | Error Handling | Added try/catch around fs.readFileSync(planPath) with structured failure |
+| 2 | Stack trace leakage via String(err) | 🔴 High | Security | Added .split('\n')[0] to extract first line only |
+| 3 | Absolute path in logs | 🟠 Medium | Security | Use path.relative() for display path in console |
+| 4 | Path normalization incomplete | 🟠 Medium | Robustness | Handle quotes, backticks, ./ prefix in deliverable paths |
+| 5 | Version history contradiction | 🟠 Medium | Documentation | Fixed v1.9 to reflect tasks DONE vs deferred accurately |
+| 6 | Deviations table incorrect | 🟠 Medium | Documentation | Updated Phase 6 deviations to show accurate task disposition |
+| 7 | UserPromptSubmit missing | 🟡 Low | Documentation | Added to claude.md hooks checklist for consistency |
+| 8 | Duplicate section numbering | 🟡 Low | Documentation | Changed second ## 7 to ## 8 in session-end.md |
+| 9 | APPCHECK_SETUP.md security | 🟡 Low | Security | Updated to not recommend committing .env files |
+
+**Patterns Identified:**
+
+1. **Use .split('\n')[0] for Error First Line** (2 occurrences - Security)
+   - Root cause: String(err) can include multi-line stack traces with file paths
+   - Prevention: Extract first line before sanitizing paths
+   - Pattern: `String(err?.message ?? err ?? 'Unknown').split('\n')[0].replace(...)`
+   - Note: Stack traces often contain full paths that reveal environment details
+
+2. **Wrap All Plan/Config File Reads** (1 occurrence - Error Handling)
+   - Root cause: fs.readFileSync can fail with permission/encoding errors
+   - Prevention: Try/catch with structured failure response for CI mode
+   - Pattern: `try { content = fs.readFileSync(...) } catch (err) { return structuredError }`
+   - Note: Return different failure modes for interactive vs auto/CI execution
+
+3. **Use Relative Paths in Logs** (1 occurrence - Security)
+   - Root cause: Absolute paths in CI logs reveal server filesystem structure
+   - Prevention: Use path.relative() or path.basename() for display
+   - Pattern: `const display = path.relative(root, full).replace(/\\/g, '/')` with fallback
+   - Note: If relative path escapes root, fall back to basename only
+
+4. **Normalize Quoted/Prefixed Paths** (1 occurrence - Robustness)
+   - Root cause: Plan documents may wrap paths in quotes/backticks or use ./ prefix
+   - Prevention: Strip quotes, backticks, and leading ./ during normalization
+   - Pattern: `.replace(/^\.\/+/, '').replace(/^['"\`](.+)['"\`]$/, '$1')`
+   - Note: Apply before checking path existence
+
+5. **Never Recommend Committing .env Files** (1 occurrence - Security)
+   - Root cause: Documentation instructed "commit and push environment variable changes"
+   - Prevention: Always recommend hosting/CI environment configuration instead
+   - Pattern: "Set via hosting/CI environment (do **not** commit `.env*` files)"
+   - Note: Even public keys can enable abuse; treat all .env content as sensitive
+
+**Key Insight:** Error sanitization must handle multi-line errors—`String(err)` can produce stack traces that contain full paths. Always extract the first line before applying path redaction. Also, documentation should never suggest committing environment files; this creates security habits that can lead to credential leaks.
 
 ---
 

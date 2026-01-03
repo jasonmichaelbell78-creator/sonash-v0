@@ -330,7 +330,9 @@ async function main() {
 
 main().catch(err => {
   // Avoid exposing sensitive paths in error messages
-  const safeMessage = (err?.message || String(err))
+  // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+  const safeMessage = String(err?.message ?? err ?? 'Unknown error')
+    .split('\n')[0]
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
     .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');

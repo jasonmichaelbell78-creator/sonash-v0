@@ -218,9 +218,28 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     return { passed: true, warnings: ['No plan file for automated audit'] };
   }
 
-  console.log(`  📄 Analyzing: ${planPath}`);
+  // Log relative path to avoid exposing filesystem info in CI logs
+  const displayPlanPath = (() => {
+    try {
+      const rel = path.relative(projectRoot, planPath).replace(/\\/g, '/');
+      return rel && !rel.startsWith('..') ? rel : path.basename(planPath);
+    } catch {
+      return path.basename(planPath);
+    }
+  })();
+  console.log(`  📄 Analyzing: ${displayPlanPath}`);
 
-  const planContent = fs.readFileSync(planPath, 'utf-8');
+  // Read plan file with error handling
+  let planContent;
+  try {
+    planContent = fs.readFileSync(planPath, 'utf-8');
+  } catch (err) {
+    console.log(`  ⚠️  Could not read plan file: ${err.code || 'unknown error'}`);
+    if (isAutoMode) {
+      return { passed: false, verified: 0, missing: [], warnings: ['Unable to read plan file in --auto mode'] };
+    }
+    return { passed: true, warnings: ['Unable to read plan file for automated audit'] };
+  }
   const deliverables = extractDeliverablesFromPlan(planContent);
 
   console.log(`  📋 Found ${deliverables.length} potential deliverables`);
@@ -233,12 +252,19 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     warnings: []
   };
 
-  // Normalize paths: forward slashes, strip trailing punctuation from prose references
+  // Normalize paths: handle quotes, backticks, ./ prefix, trailing punctuation
   // Note: Don't filter by extension - directories are valid deliverables
   const normalizedDeliverables = deliverables
     .map(d => ({
       ...d,
-      path: d.path.replace(/\\/g, '/').replace(/[),.;:]+$/g, '')
+      path: d.path
+        .replace(/\\/g, '/')           // Normalize backslashes
+        .trim()                         // Remove whitespace
+        .replace(/^\.\/+/, '')          // Remove leading ./
+        .replace(/^`(.+)`$/, '$1')      // Remove backticks
+        .replace(/^"(.+)"$/, '$1')      // Remove double quotes
+        .replace(/^'(.+)'$/, '$1')      // Remove single quotes
+        .replace(/[)`"'.,;:]+$/g, '')   // Remove trailing punctuation
     }))
     .filter(d => d.path.length > 0);
 
@@ -422,12 +448,13 @@ async function main() {
 
 main().catch(err => {
   // Sanitize error output - avoid exposing file paths and stack traces
-  const safeMessage = (err?.message || String(err))
+  // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+  const safeMessage = String(err?.message ?? err ?? 'Unknown error')
+    .split('\n')[0]
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
     .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
   console.error('Script error:', safeMessage);
-  // Note: Stack trace intentionally omitted to avoid path exposure in CI logs
   closeRl();
   process.exit(1);
 });

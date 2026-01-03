@@ -164,12 +164,17 @@ Verify: You should see "reCAPTCHA Enterprise" with status "Registered" ✓
 
 ### Step 4: Update Environment Variables
 
-Update `.env.production`:
+Set the App Check site key in your environment configuration:
+
+- **Local development:** Use a gitignored `.env.local` file
+- **Production deploy:** Set via your hosting/CI environment variables (recommended)
 
 ```bash
 # App Check (reCAPTCHA Enterprise)
 NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY=<YOUR_NEW_SITE_KEY>
 ```
+
+> ⚠️ **Do not commit `.env*` files to version control.** Use environment variables in your hosting platform.
 
 ### Step 5: Verify Code Configuration
 
@@ -186,7 +191,7 @@ _appCheck = initializeAppCheck(_app, {
 
 ### Step 6: Deploy and Test
 
-1. Commit and push environment variable changes
+1. Set environment variable in your hosting/CI platform (do **not** commit `.env*` files)
 2. Deploy the application
 3. Open DevTools Console
 4. Perform an action that calls a Cloud Function

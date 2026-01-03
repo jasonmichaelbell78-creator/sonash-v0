@@ -137,7 +137,7 @@ Today's session reinforced these patterns:
 - Push without verifying CI impact
 - Edit files without reading them first
 
-## 7. Commit Summary
+## 8. Commit Summary
 Provide a summary of all commits made this session:
 
 ```
