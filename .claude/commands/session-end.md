@@ -103,13 +103,18 @@ VERIFICATION CHECKLIST:
 | Pre-push | On push | [ ] | [ ] |
 
 ### 6.6 Audit Result
-- [ ] **PASS** - All required items completed or justified
-- [ ] **FAIL** - Gaps found, fixes applied this session
-- [ ] **FAIL** - Gaps found, documented for next session
 
-**If FAIL with fixes:** Describe what was invoked/run to address gaps:
+**Overall Result:** [ ] PASS  [ ] FAIL
+
+**PASS criteria:** All required items ran AND passed (or justified with explanation)
+
+**If FAIL, select disposition:**
+- [ ] Fixes applied this session (describe below)
+- [ ] Documented for next session (note in SESSION_CONTEXT.md)
+
+**Remediation notes (if FAIL):**
 ```
-(fill in)
+(describe what was invoked/run to address gaps, or next steps)
 ```
 
 ## 7. Key Learnings to Remember

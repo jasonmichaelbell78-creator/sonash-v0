@@ -233,10 +233,14 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     warnings: []
   };
 
-  // Normalize paths to forward slashes for cross-platform compatibility
+  // Normalize paths: forward slashes, strip trailing punctuation from prose references
+  // Note: Don't filter by extension - directories are valid deliverables
   const normalizedDeliverables = deliverables
-    .map(d => ({ ...d, path: d.path.replace(/\\/g, '/') }))
-    .filter(d => /\.[a-z0-9]+$/i.test(d.path)); // Must have file extension
+    .map(d => ({
+      ...d,
+      path: d.path.replace(/\\/g, '/').replace(/[),.;:]+$/g, '')
+    }))
+    .filter(d => d.path.length > 0);
 
   const MAX_CHECKS = 20;
   const wasTruncated = normalizedDeliverables.length > MAX_CHECKS;
@@ -417,8 +421,13 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error('Script error:', err?.message ?? err);
-  if (err?.stack) console.error(err.stack);
+  // Sanitize error output - avoid exposing file paths and stack traces
+  const safeMessage = (err?.message || String(err))
+    .replace(/\/home\/[^/\s]+/g, '[HOME]')
+    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+    .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+  console.error('Script error:', safeMessage);
+  // Note: Stack trace intentionally omitted to avoid path exposure in CI logs
   closeRl();
   process.exit(1);
 });

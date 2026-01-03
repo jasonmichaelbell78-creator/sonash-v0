@@ -54,7 +54,10 @@ function parseArgs() {
       console.error('Usage: node scripts/surface-lessons-learned.js --topic firebase,auth');
       process.exit(1);
     }
-    topics = nextArg.split(',').map(t => t.trim().toLowerCase()).filter(t => t.length > 0);
+    // Deduplicate topics
+    topics = Array.from(new Set(
+      nextArg.split(',').map(t => t.trim().toLowerCase()).filter(t => t.length > 0)
+    ));
     if (topics.length === 0) {
       console.error('Error: --topic value cannot be empty');
       process.exit(1);
@@ -295,7 +298,13 @@ async function main() {
   console.log('');
 
   // Read and parse the learnings file
-  const content = fs.readFileSync(learningsPath, 'utf-8');
+  let content;
+  try {
+    content = fs.readFileSync(learningsPath, 'utf-8');
+  } catch (err) {
+    console.error(`  ❌ Error reading ${LEARNINGS_FILE}: ${err.code || 'unknown error'}`);
+    process.exit(1);
+  }
   const allLessons = extractLessons(content);
 
   console.log(`  📚 Found ${allLessons.length} documented reviews`);
@@ -320,6 +329,11 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error('Error:', err.message);
+  // Avoid exposing sensitive paths in error messages
+  const safeMessage = (err?.message || String(err))
+    .replace(/\/home\/[^/\s]+/g, '[HOME]')
+    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+    .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+  console.error('Script error:', safeMessage);
   process.exit(1);
 });

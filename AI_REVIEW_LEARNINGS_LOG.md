@@ -76,7 +76,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 7
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2500,6 +2500,65 @@ The error persisted because of multiple interacting issues:
    - Note: Different from docs in `docs/` which only need `../`
 
 **Key Insight:** Automation scripts need different behavior for interactive vs CI modes. Interactive mode can use friendly limits and warnings, but CI mode should be comprehensive and fail explicitly. Also, input validation should happen at the earliest possible point (argument parsing) not deferred to use sites.
+
+---
+
+#### Review #36: Qodo PR Compliance + CodeRabbit Script & Documentation Fixes (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #14
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fourth round of feedback addressing error handling robustness, documentation link fixes, and audit checklist improvements across multiple files.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Unhandled file read in surface-lessons-learned.js | 🔴 High | Error Handling | Wrapped fs.readFileSync in try/catch with error code output |
+| 2 | Stack trace exposure in catch handlers | 🔴 High | Security | Sanitize error messages, omit stack traces in CI logs |
+| 3 | Extensionless deliverables skipped | 🟠 Medium | Bug Fix | Removed extension filter - directories are valid deliverables |
+| 4 | Session scripts suppress errors | 🟠 Medium | Robustness | Removed 2>/dev/null - errors should be visible |
+| 5 | Duplicate --topic values not handled | 🟡 Low | Input Validation | Added Set() deduplication for topic arguments |
+| 6 | Version history factual mismatch | 🟡 Low | Documentation | Fixed v1.9 to say "5 docs + 2 stubs" not "3 docs" |
+| 7 | Broken link in firestore-rules.md | 🟡 Low | Documentation | Fixed redundant "docs/" prefix in link text |
+| 8 | Missing link in session-begin.md | 🟡 Low | Documentation | Added clickable link to AI_REVIEW_LEARNINGS_LOG.md |
+| 9 | Ambiguous audit outcomes in session-end.md | 🟡 Low | Documentation | Refactored to single PASS/FAIL with conditional disposition |
+| 10 | Hooks checklist unclear in claude.md | 🟡 Low | Documentation | Clarified "trigger AND pass" requirement |
+
+**Patterns Identified:**
+
+1. **Wrap All File Operations in try/catch** (1 occurrence - Error Handling)
+   - Root cause: fs.existsSync followed by fs.readFileSync without try/catch
+   - Prevention: Always wrap filesystem operations that can fail with IO/permission errors
+   - Pattern: `try { content = fs.readFileSync(...); } catch (err) { console.error(err.code); exit(1); }`
+   - Note: existsSync doesn't guarantee readFileSync success (race conditions, permissions)
+
+2. **Sanitize Error Output for CI Logs** (2 occurrences - Security)
+   - Root cause: main().catch exposing full error messages and stack traces
+   - Prevention: Redact home directories and omit stack traces in production/CI output
+   - Pattern: Replace `/home/[^/]+` and `/Users/[^/]+` with `[HOME]`
+   - Note: Stack traces often contain full file paths that reveal environment details
+
+3. **Directories Are Valid Deliverables** (1 occurrence - Bug Fix)
+   - Root cause: Filter requiring file extensions excluded valid directory paths
+   - Prevention: Don't assume all deliverables are files; verifyDeliverable already handles directories
+   - Pattern: Remove `filter(d => /\.[a-z]+$/i.test(d.path))` that excluded directories
+   - Note: Strip trailing punctuation from prose references instead
+
+4. **Don't Suppress Script Errors** (1 occurrence - Robustness)
+   - Root cause: `2>/dev/null` hiding real failures in automation scripts
+   - Prevention: Let errors propagate; document expected failures explicitly
+   - Pattern: Remove stderr redirection; use proper exit code handling
+   - Note: If a script might not exist, check explicitly rather than suppressing
+
+5. **Deduplicate User Input** (1 occurrence - Input Validation)
+   - Root cause: Duplicate values in comma-separated lists not handled
+   - Prevention: Use Set() to deduplicate before processing
+   - Pattern: `Array.from(new Set(input.split(',').map(trim).filter(nonEmpty)))`
+   - Note: Prevents redundant processing and alias expansion issues
+
+**Key Insight:** Error handling in automation scripts should be explicit and informative, not suppressive. CI logs are often shared or visible, so sanitize paths while still providing useful diagnostic information. Also, verify assumptions about data types (files vs directories) before filtering.
 
 ---
 

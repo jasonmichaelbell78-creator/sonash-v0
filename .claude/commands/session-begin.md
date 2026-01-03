@@ -60,21 +60,26 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 **Execute these scripts automatically** when processing this command:
 
 ```bash
-# Surface known anti-patterns
-npm run patterns:check 2>/dev/null || echo "patterns:check not available"
+# Surface known anti-patterns (errors should be visible, not suppressed)
+npm run patterns:check
 
 # Check if multi-AI review thresholds reached
-npm run review:check 2>/dev/null || echo "review:check not available"
+npm run review:check
 
 # Surface past lessons relevant to current work
-npm run lessons:surface 2>/dev/null || echo "lessons:surface not available"
+npm run lessons:surface
 ```
 
-**Record results in session audit** - these must be marked as "Ran" in `/session-end` audit.
+**Important**: These scripts are **required**. If any script fails:
+1. Note the error in session summary
+2. Investigate if it's a real issue vs missing script
+3. If script missing, note it as "N/A" in audit
+
+**Record results in session audit** - these must be marked as "Ran" or "Failed (reason)" in `/session-end` audit.
 
 ## 8. Incident Documentation Reminder
 **After encountering any significant errors or issues:**
-- Document the issue in AI_REVIEW_LEARNINGS_LOG.md
+- Document the issue in [AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)
 - Use the standard "Review #XX" format
 - Include: cause, fix, pattern identified, prevention steps
 - This builds institutional knowledge for future sessions

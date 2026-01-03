@@ -212,7 +212,7 @@ SESSION END CHECKLIST:
 ☐ Did I use code-reviewer AFTER all code changes?
 ☐ Did I use security-auditor for security-related work?
 ☐ Did I use documentation-expert for new documentation?
-☐ Did hooks execute properly? (SessionStart, Pre-commit, Pre-push)
+☐ Did required hooks trigger AND pass? (SessionStart, Pre-commit, Pre-push)
 ☐ Did I update SESSION_CONTEXT.md with work completed?
 
 If I skipped a MUST-use agent → Note it and explain why in session summary.
@@ -225,7 +225,7 @@ If I skipped a MUST-use agent → Note it and explain why in session summary.
 - MCP servers (list from SessionStart hook)
 - Hooks (SessionStart, UserPromptSubmit, Pre-commit, Pre-push)
 
-**Audit Result**: Mark PASS (all justified) or FAIL (with fixes applied or documented)
+**Audit Result**: Mark PASS only if all required items ran AND passed (or justified); otherwise FAIL with remediation documented
 
 **Full Details**: See [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "Available AI Capabilities"
 
