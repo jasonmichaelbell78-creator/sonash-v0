@@ -170,13 +170,11 @@ NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN=<YOUR_DEBUG_TOKEN>
 
 ## Step 7: Deploy and Test
 
-### 7.1 Commit Environment Variable Change
+### 7.1 Configure Production Environment Variable (Do Not Commit)
 
-```bash
-git add .env.production
-git commit -m "chore: Update reCAPTCHA Enterprise site key for fresh App Check setup"
-git push
-```
+**Do not commit `.env.production`**. Configure `NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY` in your production deployment environment (e.g., Firebase Hosting build environment, Vercel environment variables, GitHub Actions secrets), then redeploy.
+
+If you maintain local `.env.*` files for development, keep them gitignored and never commit real keys.
 
 ### 7.2 Deploy
 

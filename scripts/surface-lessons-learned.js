@@ -146,7 +146,8 @@ function extractLessons(content) {
 
   // Pattern: Review #XX: Title (uses #### headings in AI_REVIEW_LEARNINGS_LOG.md)
   // Use [\s\S]*? to capture content including ## subheadings within a review section
-  const reviewPattern = /#### Review #(\d+):?\s*([\s\S]*?)(?=\n#### Review #|$)/g;
+  // Handle both Unix (\n) and Windows (\r\n) line endings in lookahead
+  const reviewPattern = /#### Review #(\d+):?\s*([\s\S]*?)(?=\r?\n#### Review #|$)/g;
   let match;
 
   while ((match = reviewPattern.exec(content)) !== null) {
@@ -343,6 +344,7 @@ main().catch(err => {
   // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
   const safeMessage = String(err?.message ?? err ?? 'Unknown error')
     .split('\n')[0]
+    .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
     // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
     .replace(/\/home\/[^/\s]+/g, '[HOME]')

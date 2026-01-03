@@ -50,9 +50,9 @@ if (rawPlanPath) {
   }
   const resolvedPlan = path.resolve(projectRoot, rawPlanPath);
   const rel = path.relative(projectRoot, resolvedPlan);
-  // Reject paths that escape project root
-  if (rel.startsWith('..') || path.isAbsolute(rel)) {
-    console.error('Error: --plan path must be within project root');
+  // Reject paths that escape project root or reference root itself
+  if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) {
+    console.error('Error: --plan path must be a file within project root');
     process.exit(1);
   }
   planPath = resolvedPlan;
@@ -155,20 +155,36 @@ function verifyDeliverable(deliverable, projectRoot) {
       }
 
       // Try exact relative path first to avoid false positives
-      const archivePathExact = path.join(projectRoot, 'docs/archive', deliverable.path);
+      const archiveRoot = path.join(projectRoot, 'docs/archive');
+
+      // Containment check to prevent path traversal in archive lookups
+      const isWithinArchive = (candidate) => {
+        const resolved = path.resolve(candidate);
+        const rel = path.relative(archiveRoot, resolved);
+        return rel && !rel.startsWith('..') && !path.isAbsolute(rel);
+      };
+
+      const archivePathExact = path.join(archiveRoot, deliverable.path);
       try {
-        fs.statSync(archivePathExact);
-        return { exists: true, valid: true, reason: 'Archived' };
+        if (isWithinArchive(archivePathExact)) {
+          fs.statSync(archivePathExact);
+          return { exists: true, valid: true, reason: 'Archived' };
+        }
       } catch {
-        // Fall back to basename-only check
-        const archivePathBasename = path.join(projectRoot, 'docs/archive', path.basename(deliverable.path));
-        try {
+        // Continue to basename fallback
+      }
+
+      // Fall back to basename-only check
+      const archivePathBasename = path.join(archiveRoot, path.basename(deliverable.path));
+      try {
+        if (isWithinArchive(archivePathBasename)) {
           fs.statSync(archivePathBasename);
           return { exists: true, valid: true, reason: 'Archived' };
-        } catch {
-          return { exists: false, valid: false, reason: 'File not found' };
         }
+      } catch {
+        // File not found
       }
+      return { exists: false, valid: false, reason: 'File not found' };
     }
     // Other error (permissions, etc.)
     return { exists: false, valid: false, reason: 'Error checking file status' };
@@ -297,7 +313,11 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
         results.passed = false;
       }
     } else {
+      // File exists but is invalid (empty, unreadable, etc.)
       results.warnings.push(`${deliverable.path}: ${result.reason}`);
+      if (deliverable.required) {
+        results.passed = false;
+      }
     }
   }
 
@@ -455,6 +475,7 @@ main().catch(err => {
   // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
   const safeMessage = String(err?.message ?? err ?? 'Unknown error')
     .split('\n')[0]
+    .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
     // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
