@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.26
+**Document Version:** 1.28
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.28 | 2026-01-03 | CONSOLIDATION COMPLETE: Reset counter, patterns added to claude.md v2.5 |
+| 1.27 | 2026-01-03 | Review #30 fifth round + CONSOLIDATION: reject traversal, portable ERE, DoS limits |
 | 1.26 | 2026-01-03 | Review #30 fourth round: printf, basename safety, jq requirement (echo injection, option safety) |
 | 1.25 | 2026-01-03 | Review #30 third round: Validation, anchors & word boundaries (JSON validation, regex precision) |
 | 1.24 | 2026-01-03 | Review #30 follow-up: Additional security & robustness (terminal injection, path traversal, portable grep) |
@@ -59,9 +61,9 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10 (Reviews #24-#30 + 3 follow-ups)
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**⚠️ STATUS: CONSOLIDATION DUE** (threshold reached)
+**✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
 ### When to Consolidate
 
@@ -81,6 +83,22 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-03 (Session #4)
+- **Reviews consolidated:** #24-#30 (7 reviews + 4 follow-ups = 11 entries)
+- **Patterns added to claude.md v2.5:**
+  - printf over echo for user input (prevents -n/-e injection)
+  - End-of-options (`--`) for basename/other commands
+  - Portable word boundaries in ERE (not `\b`)
+  - Pipeline failure handling with `|| VAR=""` fallback
+  - Terminal output sanitization (strip ANSI escapes)
+  - Reject path traversal, don't rewrite (security)
+  - Word boundary security keywords (prevents false matches)
+  - Bound user-controllable output (DoS prevention)
+  - Never expose secrets in hook output
+- **Next consolidation due:** At review #40 (or ~10 more reviews)
+
+### Previous Consolidation
+
 - **Date:** 2026-01-02 (Session #3)
 - **Reviews consolidated:** #11-#23 (13 reviews)
 - **Patterns added to claude.md v2.2:**
@@ -90,7 +108,6 @@ Consolidation is needed when:
   - Windows cross-drive path.relative() behavior
   - lstatSync error handling
   - Enhanced "WHY before fixing" (Review #12 lesson)
-- **Next consolidation due:** At review #33 (or ~10 more reviews)
 
 ---
 
@@ -2095,6 +2112,46 @@ The error persisted because of multiple interacting issues:
    - Example: "MCP config detected but 'jq' is unavailable; unable to list MCP servers safely"
 
 **Key Insight:** Shell commands have many edge cases with special characters. The `echo` command is particularly dangerous with untrusted input. `printf '%s'` is the safe alternative that never interprets its argument as options or escape sequences.
+
+---
+
+#### Review #30 Fifth Round: Reject Traversal, Portable ERE, DoS Limits (2026-01-03)
+
+**Source:** Qodo Code Review (fifth round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo
+
+**Context:** Fifth round addressing path rewriting bypasses, grep portability, and output bounding.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path traversal rewriting bypass | 🔴 High | Security | Reject paths with `../` instead of stripping |
+| 2 | Non-portable `\b` word boundary | 🟠 Medium | Portability | Use `(^|[^[:alnum:]])(pattern)([^[:alnum:]]|$)` |
+| 3 | Unbounded MCP output | 🟠 Medium | DoS Prevention | Limit to 50 servers, 500 chars max |
+
+**Patterns Identified:**
+
+1. **Reject Rather Than Rewrite Malicious Input** (1 occurrence - Security)
+   - Root cause: Stripping `../` can be bypassed with clever encoding
+   - Prevention: Reject paths containing traversal patterns entirely
+   - Pattern: `if [[ "$PATH" == *"../"* ]]; then echo "ok"; exit 0; fi`
+   - Principle: Don't try to fix malicious input, reject it
+
+2. **Use Portable ERE for Word Boundaries** (1 occurrence - Portability)
+   - Root cause: `\b` is a Perl regex extension, not portable ERE
+   - Prevention: Use character class pattern instead
+   - Pattern: `(^|[^[:alnum:]])(word)([^[:alnum:]]|$)` instead of `\bword\b`
+   - Note: Works consistently across grep implementations
+
+3. **Bound All User-Controllable Output** (1 occurrence - DoS Prevention)
+   - Root cause: Large config files could spam terminal output
+   - Prevention: Limit both count and length of output
+   - Pattern: `jq '... | .[0:50]'` + `${VAR:0:500}...`
+   - Applies to: Any output derived from user-controlled files
+
+**Key Insight:** Path rewriting creates a false sense of security. An attacker who controls the input can often find ways around sanitization (URL encoding, double encoding, etc.). Rejecting malicious patterns is simpler and more secure than attempting to fix them.
 
 ---
 
