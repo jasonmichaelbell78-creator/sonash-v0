@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/review-repo-docs-D4nYF
   workflow_dispatch:
 
 jobs:

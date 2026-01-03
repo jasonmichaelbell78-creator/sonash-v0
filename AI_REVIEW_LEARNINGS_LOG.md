@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.33
+**Document Version:** 1.39
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,12 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.39 | 2026-01-03 | Review #40: Qodo archive security, path containment, CRLF handling |
+| 1.38 | 2026-01-03 | Review #39: Qodo script robustness - explicit plan failure, terminal sanitization |
+| 1.37 | 2026-01-03 | Review #38: Security hardening - path traversal, control char stripping, regex fix |
+| 1.36 | 2026-01-03 | Review #34: Qodo PR follow-up - path.relative(), API key redaction, archive fixes |
+| 1.35 | 2026-01-03 | Review #33: Qodo PR compliance, script security, documentation fixes |
+| 1.34 | 2026-01-03 | Process Pivot #1: Integrated Improvement Plan approach (ADR-001, Step 1 execution) |
 | 1.33 | 2026-01-03 | Review #32 follow-up: end-of-options, UTF-8 sanitization, gtimeout, file limit fix |
 | 1.32 | 2026-01-03 | Review #32: CodeRabbit CLI robustness (timeout handling, glob safety, stderr protocol) |
 | 1.31 | 2026-01-03 | Review #31: CodeRabbit CLI hook improvements (multi-file, timeout, efficiency) |
@@ -73,7 +79,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3
+**Reviews since last consolidation:** 11
+**⚠️ CONSOLIDATION OVERDUE** - perform consolidation NOW
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2319,6 +2326,522 @@ The error persisted because of multiple interacting issues:
    - Principle: stdout = machine-readable, stderr = human-readable
 
 **Key Insight:** Shell hooks need to be robust against edge cases: large inputs, old Bash versions, special characters, and protocol expectations. Always capture exit status rather than swallowing errors, feature-detect Bash capabilities, and keep protocol communication clean on stdout.
+
+---
+
+#### Review #33: Qodo PR Compliance + Script Security & Documentation Fixes (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #12 (code review response)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Comprehensive code review addressing security vulnerabilities, script robustness issues, and documentation inconsistencies identified by Qodo PR Compliance Guide and CodeRabbit.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path traversal in phase-complete-check.js | 🔴 High | Security | Added `path.resolve()` + containment check before file operations |
+| 2 | Silent catch blocks swallow errors | 🟠 Medium | Error Handling | Distinguished ENOENT from other errors with specific messages |
+| 3 | Readline interface not closed (script hangs) | 🟠 Medium | Robustness | Added `closeRl()` helper called in all exit paths |
+| 4 | Auto mode passes when plan missing | 🟠 Medium | CI/CD | Return `passed: false` when `--auto` and plan file missing |
+| 5 | Git diff detection not portable | 🟠 Medium | Portability | Replaced shell syntax `2>/dev/null ||` with try/catch + stdio options |
+| 6 | Directory validation incomplete | 🟡 Low | Validation | Added `fs.readdirSync()` check for empty directories |
+| 7 | Broken links in ADR-001 + archive doc | 🟡 Low | Documentation | Fixed relative paths to EIGHT_PHASE_REFACTOR_PLAN.md |
+| 8 | Version/status inconsistency in doc header | 🟡 Low | Documentation | Updated DOCUMENTATION_STANDARDIZATION_PLAN.md to 100% complete |
+| 9 | Non-existent test:watch script documented | 🟡 Low | Documentation | Removed references from TESTING_PLAN.md and TRIGGERS.md |
+| 10 | Effort estimates outdated | 🟡 Low | Documentation | Updated INTEGRATED_IMPROVEMENT_PLAN.md with actual vs projected |
+
+**Patterns Identified:**
+
+1. **Path Traversal Prevention with Containment Check** (1 occurrence - Security)
+   - Root cause: User-controlled paths used with `fs.statSync`/`fs.readFileSync` without validation
+   - Prevention: Resolve path with `path.resolve()`, then verify it stays within project root
+   - Wrong: `fs.readFileSync(path.join(projectRoot, userPath))`
+   - Right: `const resolved = path.resolve(projectRoot, userPath); if (!resolved.startsWith(projectRoot + path.sep)) { reject; }`
+   - Note: Also check edge case where resolved path equals projectRoot exactly
+
+2. **Distinguish ENOENT from Other Errors** (1 occurrence - Error Handling)
+   - Root cause: Generic catch block treats all errors as "not found"
+   - Prevention: Check `err.code === 'ENOENT'` explicitly, handle other errors separately
+   - Pattern: `try { stat = fs.statSync(path); } catch (err) { if (err.code === 'ENOENT') { /* not found */ } else { /* other error */ } }`
+   - Note: Other errors include EACCES (permissions), ENOTDIR (path traversal)
+
+3. **Always Close Readline Interface** (1 occurrence - Robustness)
+   - Root cause: Script hangs if readline interface not closed before exit
+   - Prevention: Create `closeRl()` helper, call in all exit paths including error handler
+   - Pattern: `function closeRl() { try { rl.close(); } catch { /* ignore if already closed */ } }`
+   - Note: Wrap in try/catch to handle already-closed case
+
+4. **Fail CI Fast on Missing Required Config** (1 occurrence - CI/CD)
+   - Root cause: `--auto` mode silently passes when plan file is missing
+   - Prevention: In auto/CI mode, missing required files should fail explicitly
+   - Pattern: `if (isAutoMode && !planFile) { return { passed: false, ... }; }`
+   - Principle: CI should fail loudly, interactive mode can prompt for action
+
+5. **Cross-Platform Exec with stdio Options** (1 occurrence - Portability)
+   - Root cause: Shell syntax like `2>/dev/null ||` doesn't work on Windows
+   - Prevention: Use Node.js `execSync` with `stdio` option and try/catch
+   - Wrong: `execSync('cmd 2>/dev/null || fallback')`
+   - Right: `try { execSync('cmd', { stdio: ['ignore', 'pipe', 'ignore'] }); } catch { fallback; }`
+   - Note: `['ignore', 'pipe', 'ignore']` = ignore stdin, capture stdout, ignore stderr
+
+**Key Insight:** Scripts that process untrusted input (like deliverable paths from plan files) need multi-layered validation: path normalization, containment checks, and error code differentiation. For CI/automation modes, explicit failure is better than silent success with warnings. Cross-platform compatibility requires avoiding shell-specific syntax in favor of Node.js native options.
+
+---
+
+#### Review #34: Qodo PR Compliance Follow-up - Security Hardening & Documentation (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #12 continuation
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of feedback following Review #33, addressing remaining security issues (API key exposure, path validation improvements) and documentation fixes.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Use path.relative() for traversal check | 🔴 High | Security | Replaced string prefix check with `path.relative()` for cross-platform safety |
+| 2 | --plan path not validated | 🔴 High | Security | Added project root containment check for user-supplied --plan argument |
+| 3 | Firebase/reCAPTCHA keys in archive docs | 🔴 High | Security | Redacted hardcoded API keys in APPCHECK_FRESH_SETUP.md and RECAPTCHA_PROBLEM_SUMMARY.md |
+| 4 | Error context lost in catch handler | 🟠 Medium | Error Handling | Restored `err.message` and `err.stack` logging in main().catch |
+| 5 | Archive check false positives | 🟠 Medium | Robustness | Check exact relative path before falling back to basename-only |
+| 6 | Untracked files not in topic detection | 🟠 Medium | Feature | Added `git status --porcelain` to include staged/untracked files |
+| 7 | Takeaway extraction drops values | 🟠 Medium | Bug Fix | Combined label and value capture groups in `- **Label**: value` pattern |
+| 8 | Deliverable filter platform-specific | 🟡 Low | Portability | Normalized backslashes to forward slashes, use regex for extension check |
+| 9 | Broken links in archive docs | 🟡 Low | Documentation | Fixed EIGHT_PHASE_REFACTOR_PLAN.md links in 3 archive files |
+| 10 | Broken link in firestore-rules.md | 🟡 Low | Documentation | Fixed self-referential archive link path |
+
+**Patterns Identified:**
+
+1. **Use path.relative() for Containment Checks** (1 occurrence - Security)
+   - Root cause: String-based `startsWith()` can be bypassed on different OS path conventions
+   - Prevention: Use `path.relative()` - if result starts with `..` or is absolute, path escapes root
+   - Pattern: `const rel = path.relative(projectRoot, resolved); if (rel.startsWith('..') || path.isAbsolute(rel)) { reject; }`
+   - Note: `rel === ''` means path equals root exactly (may or may not be allowed depending on use case)
+
+2. **Validate CLI Arguments at Entry Point** (1 occurrence - Security)
+   - Root cause: User-supplied paths passed directly to filesystem operations
+   - Prevention: Validate all user input immediately after parsing, before any use
+   - Pattern: Parse args → Validate → Exit early if invalid → Use validated values
+   - Note: Reject absolute paths and paths that escape project root
+
+3. **Redact Secrets from Historical Docs** (1 occurrence - Security)
+   - Root cause: API keys hardcoded in troubleshooting documentation committed to repo
+   - Prevention: Replace actual values with `<PLACEHOLDER>` style tokens in archive docs
+   - Note: Even "public" Firebase keys can enable abuse (quota exhaustion, reputation issues)
+
+4. **Include All Working Tree Changes in Detection** (1 occurrence - Feature)
+   - Root cause: `git diff` only shows committed changes, misses staged/untracked files
+   - Prevention: Combine `git diff --name-only` with `git status --porcelain`
+   - Pattern: `const diffFiles = ...; const statusFiles = ...; const all = [...new Set([...diffFiles, ...statusFiles])];`
+   - Note: Parse porcelain output with `.slice(3)` to remove "XY " status prefix
+
+5. **Preserve Multi-Group Regex Matches** (1 occurrence - Bug Fix)
+   - Root cause: Regex with multiple capture groups only extracts first group
+   - Prevention: Check for capture group 2 existence and combine both groups
+   - Pattern: `if (match[2]) { result = match[1] + ': ' + match[2]; } else { result = match[1]; }`
+   - Note: This preserves "Label: Value" semantics from markdown patterns
+
+**Key Insight:** Security reviews often reveal layered issues - the first fix addresses the obvious vulnerability, but follow-up reviews catch subtler issues like input validation at CLI boundaries and secrets in historical documentation. Always verify that security fixes are complete by checking all code paths that handle the same type of input.
+
+---
+
+#### Review #35: Qodo PR Compliance + CodeRabbit Documentation & Script Fixes (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #13
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of feedback addressing remaining script robustness, documentation updates, and path handling issues across phase completion scripts and documentation files.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | CI skips deliverables after 20 | 🔴 High | CI/Auto | Changed to check ALL deliverables in --auto mode (only limit in interactive) |
+| 2 | Archive path double-nesting | 🟠 Medium | Bug Fix | Skip archive lookup if path already contains `docs/archive/` |
+| 3 | --plan flag with no value | 🟠 Medium | Validation | Added explicit validation for missing/invalid --plan argument |
+| 4 | --topic flag with no value | 🟠 Medium | Validation | Added explicit validation for missing/invalid --topic argument |
+| 5 | Renamed files in git status | 🟠 Medium | Bug Fix | Parse `old -> new` format to extract new filename |
+| 6 | ADR-001 broken links | 🟡 Low | Documentation | Fixed paths to root docs (../../ instead of ../) |
+| 7 | Archive docs missing warnings | 🟡 Low | Documentation | Added secret handling and copy-paste warnings |
+| 8 | DOC_STANDARDIZATION version history | 🟡 Low | Documentation | Added v1.8 (Phase 5) and v1.9 (Phase 6) entries |
+| 9 | TESTING_PLAN placeholder dates | 🟡 Low | Documentation | Fixed 2025-12-XX placeholders to actual dates |
+| 10 | Path normalization during extraction | 🟡 Low | Portability | Normalize backslashes to forward slashes at extraction time |
+
+**Patterns Identified:**
+
+1. **CI/Auto Mode Should Be Stricter** (1 occurrence - CI)
+   - Root cause: Interactive-friendly limits (20 items) silently skip checks in CI
+   - Prevention: In --auto mode, check everything; limits are for human convenience only
+   - Pattern: `isAutoMode ? allItems : allItems.slice(0, MAX)` not `allItems.slice(0, MAX)`
+   - Note: CI failures should be explicit, not silent truncation
+
+2. **Validate CLI Arguments Defensively** (2 occurrences - Validation)
+   - Root cause: `args[index + 1]` can be undefined, empty, or another flag
+   - Prevention: Check existence, non-empty, and not starting with `--`
+   - Pattern: `if (!nextArg || nextArg.startsWith('--') || nextArg.trim() === '') { error; }`
+   - Note: Provide helpful usage message on validation failure
+
+3. **Handle Git Rename Format** (1 occurrence - Bug Fix)
+   - Root cause: `git status --porcelain` shows renames as `R  old -> new`
+   - Prevention: Check for ` -> ` separator and extract second part
+   - Pattern: `if (path.includes(' -> ')) { path = path.split(' -> ')[1]; }`
+   - Note: Applies to both renames and copies (`C` status)
+
+4. **Prevent Double Archive Lookup** (1 occurrence - Bug Fix)
+   - Root cause: If file path already contains `docs/archive/`, prepending creates invalid path
+   - Prevention: Check if path already points to archive before constructing archive path
+   - Pattern: `if (path.startsWith('docs/archive/')) { return notFound; }`
+   - Note: Also check for leading `./` variant
+
+5. **Keep ADR Links Relative to Doc Location** (1 occurrence - Documentation)
+   - Root cause: ADRs in `docs/decisions/` need `../../` to reach project root
+   - Prevention: Count directory depth when creating relative links
+   - Pattern: From `docs/decisions/ADR.md` to root: `../../FILE.md`
+   - Note: Different from docs in `docs/` which only need `../`
+
+**Key Insight:** Automation scripts need different behavior for interactive vs CI modes. Interactive mode can use friendly limits and warnings, but CI mode should be comprehensive and fail explicitly. Also, input validation should happen at the earliest possible point (argument parsing) not deferred to use sites.
+
+---
+
+#### Review #36: Qodo PR Compliance + CodeRabbit Script & Documentation Fixes (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #14
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fourth round of feedback addressing error handling robustness, documentation link fixes, and audit checklist improvements across multiple files.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Unhandled file read in surface-lessons-learned.js | 🔴 High | Error Handling | Wrapped fs.readFileSync in try/catch with error code output |
+| 2 | Stack trace exposure in catch handlers | 🔴 High | Security | Sanitize error messages, omit stack traces in CI logs |
+| 3 | Extensionless deliverables skipped | 🟠 Medium | Bug Fix | Removed extension filter - directories are valid deliverables |
+| 4 | Session scripts suppress errors | 🟠 Medium | Robustness | Removed 2>/dev/null - errors should be visible |
+| 5 | Duplicate --topic values not handled | 🟡 Low | Input Validation | Added Set() deduplication for topic arguments |
+| 6 | Version history factual mismatch | 🟡 Low | Documentation | Fixed v1.9 to say "5 docs + 2 stubs" not "3 docs" |
+| 7 | Broken link in firestore-rules.md | 🟡 Low | Documentation | Fixed redundant "docs/" prefix in link text |
+| 8 | Missing link in session-begin.md | 🟡 Low | Documentation | Added clickable link to AI_REVIEW_LEARNINGS_LOG.md |
+| 9 | Ambiguous audit outcomes in session-end.md | 🟡 Low | Documentation | Refactored to single PASS/FAIL with conditional disposition |
+| 10 | Hooks checklist unclear in claude.md | 🟡 Low | Documentation | Clarified "trigger AND pass" requirement |
+
+**Patterns Identified:**
+
+1. **Wrap All File Operations in try/catch** (1 occurrence - Error Handling)
+   - Root cause: fs.existsSync followed by fs.readFileSync without try/catch
+   - Prevention: Always wrap filesystem operations that can fail with IO/permission errors
+   - Pattern: `try { content = fs.readFileSync(...); } catch (err) { console.error(err.code); exit(1); }`
+   - Note: existsSync doesn't guarantee readFileSync success (race conditions, permissions)
+
+2. **Sanitize Error Output for CI Logs** (2 occurrences - Security)
+   - Root cause: main().catch exposing full error messages and stack traces
+   - Prevention: Redact home directories and omit stack traces in production/CI output
+   - Pattern: Replace `/home/[^/]+` and `/Users/[^/]+` with `[HOME]`
+   - Note: Stack traces often contain full file paths that reveal environment details
+
+3. **Directories Are Valid Deliverables** (1 occurrence - Bug Fix)
+   - Root cause: Filter requiring file extensions excluded valid directory paths
+   - Prevention: Don't assume all deliverables are files; verifyDeliverable already handles directories
+   - Pattern: Remove `filter(d => /\.[a-z]+$/i.test(d.path))` that excluded directories
+   - Note: Strip trailing punctuation from prose references instead
+
+4. **Don't Suppress Script Errors** (1 occurrence - Robustness)
+   - Root cause: `2>/dev/null` hiding real failures in automation scripts
+   - Prevention: Let errors propagate; document expected failures explicitly
+   - Pattern: Remove stderr redirection; use proper exit code handling
+   - Note: If a script might not exist, check explicitly rather than suppressing
+
+5. **Deduplicate User Input** (1 occurrence - Input Validation)
+   - Root cause: Duplicate values in comma-separated lists not handled
+   - Prevention: Use Set() to deduplicate before processing
+   - Pattern: `Array.from(new Set(input.split(',').map(trim).filter(nonEmpty)))`
+   - Note: Prevents redundant processing and alias expansion issues
+
+**Key Insight:** Error handling in automation scripts should be explicit and informative, not suppressive. CI logs are often shared or visible, so sanitize paths while still providing useful diagnostic information. Also, verify assumptions about data types (files vs directories) before filtering.
+
+---
+
+#### Review #37: Qodo PR Compliance + CodeRabbit Script Security & Documentation (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #15
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fifth round of feedback addressing plan file error handling, stack trace leakage prevention, path normalization improvements, and security documentation.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Plan file read unhandled | 🔴 High | Error Handling | Added try/catch around fs.readFileSync(planPath) with structured failure |
+| 2 | Stack trace leakage via String(err) | 🔴 High | Security | Added .split('\n')[0] to extract first line only |
+| 3 | Absolute path in logs | 🟠 Medium | Security | Use path.relative() for display path in console |
+| 4 | Path normalization incomplete | 🟠 Medium | Robustness | Handle quotes, backticks, ./ prefix in deliverable paths |
+| 5 | Version history contradiction | 🟠 Medium | Documentation | Fixed v1.9 to reflect tasks DONE vs deferred accurately |
+| 6 | Deviations table incorrect | 🟠 Medium | Documentation | Updated Phase 6 deviations to show accurate task disposition |
+| 7 | UserPromptSubmit missing | 🟡 Low | Documentation | Added to claude.md hooks checklist for consistency |
+| 8 | Duplicate section numbering | 🟡 Low | Documentation | Changed second ## 7 to ## 8 in session-end.md |
+| 9 | APPCHECK_SETUP.md security | 🟡 Low | Security | Updated to not recommend committing .env files |
+
+**Patterns Identified:**
+
+1. **Use .split('\n')[0] for Error First Line** (2 occurrences - Security)
+   - Root cause: String(err) can include multi-line stack traces with file paths
+   - Prevention: Extract first line before sanitizing paths
+   - Pattern: `String(err?.message ?? err ?? 'Unknown').split('\n')[0].replace(...)`
+   - Note: Stack traces often contain full paths that reveal environment details
+
+2. **Wrap All Plan/Config File Reads** (1 occurrence - Error Handling)
+   - Root cause: fs.readFileSync can fail with permission/encoding errors
+   - Prevention: Try/catch with structured failure response for CI mode
+   - Pattern: `try { content = fs.readFileSync(...) } catch (err) { return structuredError }`
+   - Note: Return different failure modes for interactive vs auto/CI execution
+
+3. **Use Relative Paths in Logs** (1 occurrence - Security)
+   - Root cause: Absolute paths in CI logs reveal server filesystem structure
+   - Prevention: Use path.relative() or path.basename() for display
+   - Pattern: `const display = path.relative(root, full).replace(/\\/g, '/')` with fallback
+   - Note: If relative path escapes root, fall back to basename only
+
+4. **Normalize Quoted/Prefixed Paths** (1 occurrence - Robustness)
+   - Root cause: Plan documents may wrap paths in quotes/backticks or use ./ prefix
+   - Prevention: Strip quotes, backticks, and leading ./ during normalization
+   - Pattern: `.replace(/^\.\/+/, '').replace(/^['"\`](.+)['"\`]$/, '$1')`
+   - Note: Apply before checking path existence
+
+5. **Never Recommend Committing .env Files** (1 occurrence - Security)
+   - Root cause: Documentation instructed "commit and push environment variable changes"
+   - Prevention: Always recommend hosting/CI environment configuration instead
+   - Pattern: "Set via hosting/CI environment (do **not** commit `.env*` files)"
+   - Note: Even public keys can enable abuse; treat all .env content as sensitive
+
+**Key Insight:** Error sanitization must handle multi-line errors—`String(err)` can produce stack traces that contain full paths. Always extract the first line before applying path redaction. Also, documentation should never suggest committing environment files; this creates security habits that can lead to credential leaks.
+
+---
+
+#### Review #38: CodeRabbit Security Hardening + Regex Accuracy (2026-01-03)
+
+**Source:** CodeRabbit
+**PR:** Session #16
+**Tools:** CodeRabbit
+
+**Context:** Sixth round of feedback addressing path traversal vulnerabilities, terminal injection prevention, return shape consistency, and regex accuracy for lesson extraction.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path traversal via .. segments | 🔴 High | Security | Added `.filter(d => !d.path.split('/').includes('..'))` |
+| 2 | Control character injection | 🔴 High | Security | Added `.replace(/[\x00-\x1F\x7F]/g, '')` to strip ANSI escapes |
+| 3 | Inconsistent return shape | 🟠 Medium | Robustness | Added `verified: 0, missing: []` to all early returns |
+| 4 | Lesson regex uses ### not #### | 🟠 Medium | Accuracy | Changed regex to match `#### Review #` headings |
+| 5 | Misleading truncation comment | 🟡 Low | Documentation | Fixed comment to reflect actual auto-mode behavior |
+| 6 | ESLint no-control-regex error | 🟡 Low | Tooling | Added eslint-disable comment with security justification |
+
+**Patterns Identified:**
+
+1. **Reject Path Traversal Before Processing** (1 occurrence - Security)
+   - Root cause: Paths from documents could contain `..` to escape intended directories
+   - Prevention: Filter out paths containing `..` segments before any file operations
+   - Pattern: `.filter(d => !d.path.split('/').includes('..'))`
+   - Note: Check after normalization but before file existence checks
+
+2. **Strip Control Characters from Errors** (2 occurrences - Security)
+   - Root cause: Error messages could contain ANSI escape codes for terminal injection
+   - Prevention: Remove all control characters (0x00-0x1F, 0x7F) from error output
+   - Pattern: `.replace(/[\x00-\x1F\x7F]/g, '')` with eslint-disable for no-control-regex
+   - Note: Apply before path redaction to prevent escape sequence bypasses
+
+3. **Consistent Return Shapes for Audit Results** (2 occurrences - Robustness)
+   - Root cause: Early returns missing fields could cause destructuring failures
+   - Prevention: Include all expected fields even in error/fallback returns
+   - Pattern: `return { passed: true, verified: 0, missing: [], warnings: [...] }`
+   - Note: TypeScript would catch this; consider adding type annotations to scripts
+
+4. **Match Actual Heading Levels in Regex** (1 occurrence - Accuracy)
+   - Root cause: Regex assumed `###` but file uses `####` for review headings
+   - Prevention: Verify regex against actual file format before deployment
+   - Pattern: Check sample content with regex before committing
+   - Note: Different markdown files may use different heading levels
+
+**Key Insight:** Security-focused regexes that intentionally match control characters will trigger `no-control-regex` lint rules. Use targeted eslint-disable comments with clear security justification rather than disabling the rule globally. Path traversal and terminal injection are related attack vectors—sanitize both paths and output text.
+
+---
+
+#### Review #39: Qodo Script Robustness + Terminal Sanitization (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide
+**PR:** Session #17
+**Tools:** Qodo
+
+**Context:** Seventh round of feedback addressing explicit plan failure handling, cross-platform path normalization, regex truncation, terminal output sanitization, and documentation accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Plan file missing passes silently (interactive) | 🔴 High | Correctness | Added `planWasProvided` flag to fail when --plan explicitly requested |
+| 2 | Duplicate projectRoot declaration | 🟠 Medium | Security | Removed re-declaration in main() to ensure consistent validation |
+| 3 | Path traversal not cross-platform | 🟠 Medium | Security | Added `.replace(/\\/g, '/')` before splitting for Windows paths |
+| 4 | reviewPattern truncates at ## | 🟠 Medium | Accuracy | Changed to `[\s\S]*?` to capture subheadings within reviews |
+| 5 | Control char stripping too aggressive | 🟡 Low | Robustness | Preserve \t\n\r (0x09, 0x0A, 0x0D) for log readability |
+| 6 | formatLessons outputs unsanitized content | 🟠 Medium | Security | Added sanitizeForTerminal() to strip control chars from file content |
+| 7 | SESSION_CONTEXT count mismatch | 🟡 Low | Documentation | Added note explaining review sessions don't add feature entries |
+| 8 | APPCHECK_SETUP references .env.production | 🟠 Medium | Security | Changed to hosting/CI environment vars guidance |
+
+**Patterns Identified:**
+
+1. **Explicit Requests Should Fail Explicitly** (1 occurrence - Correctness)
+   - Root cause: --plan flag accepts path but missing file silently passes in interactive mode
+   - Prevention: Track `planWasProvided` flag, fail even in interactive if explicit request fails
+   - Pattern: `const planWasProvided = Boolean(rawPlanPath); if (planWasProvided || isAutoMode) { fail }`
+   - Note: Silent success on explicit request violates principle of least surprise
+
+2. **Cross-Platform Path Security** (1 occurrence - Security)
+   - Root cause: Path traversal check split on `/` but Windows uses `\`
+   - Prevention: Normalize path separators before security checks
+   - Pattern: `d.path.replace(/\\/g, '/').split('/').includes('..')`
+   - Note: Always normalize before path-based security decisions
+
+3. **Preserve Safe Whitespace in Sanitization** (2 occurrences - Robustness)
+   - Root cause: Stripping all 0x00-0x1F removes \t\n\r which are useful for logs
+   - Prevention: Exclude 0x09, 0x0A, 0x0D from control char stripping
+   - Pattern: `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`
+   - Note: Balance security (strip dangerous) with readability (preserve safe whitespace)
+
+4. **Sanitize File-Derived Terminal Output** (1 occurrence - Security)
+   - Root cause: Content read from files could contain terminal escape sequences
+   - Prevention: Sanitize before printing to terminal, especially in CI contexts
+   - Pattern: Apply control char stripping to any file content before console.log
+   - Note: Even "trusted" project files could be compromised
+
+5. **Regex Must Match Actual Content Structure** (1 occurrence - Accuracy)
+   - Root cause: reviewPattern stopped at `## ` but reviews contain ## subheadings
+   - Prevention: Use `[\s\S]*?` for content that may include any characters including ##
+   - Pattern: Verify regex against real file content, not assumptions
+   - Note: Multi-line content often contains unexpected nested patterns
+
+**Key Insight:** Explicit user requests should fail explicitly when they can't be satisfied—silent success is worse than clear failure. Cross-platform security requires normalizing platform-specific formats (paths, line endings) before applying security checks. When sanitizing output, preserve safe whitespace for readability while stripping dangerous control characters.
+
+---
+
+#### Review #40: Qodo Archive Security + Cross-Platform Robustness (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide
+**PR:** Session #18
+**Tools:** Qodo
+
+**Context:** Eighth round of feedback addressing archive path traversal, invalid required deliverable handling, Windows CRLF line endings, and documentation consistency.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Env file commit instructions in archive doc | 🔴 High | Security | Replaced with hosting/CI environment variable guidance |
+| 2 | Archive path traversal vulnerability | 🔴 High | Security | Added isWithinArchive() containment check |
+| 3 | Invalid required deliverables pass silently | 🟠 Medium | Correctness | Added `results.passed = false` for invalid required files |
+| 4 | --plan . accepted (targets project root) | 🟠 Medium | Security | Added `rel === ''` rejection check |
+| 5 | Trailing \r after split('\n')[0] | 🟡 Low | Robustness | Added `.replace(/\r$/, '')` for Windows CRLF |
+| 6 | reviewPattern fails on CRLF files | 🟡 Low | Robustness | Changed lookahead to `\r?\n` for cross-platform |
+| 7 | Test count inconsistency in docs | 🟡 Low | Documentation | Updated 89/91 to 92/93 in SESSION_CONTEXT.md |
+
+**Patterns Identified:**
+
+1. **Archive Paths Need Containment Checks** (1 occurrence - Security)
+   - Root cause: Archive fallback lookup joined untrusted path with archive root
+   - Prevention: Verify resolved path is within archive root before fs operations
+   - Pattern: `path.relative(archiveRoot, resolved)` must not start with `..`
+   - Note: Same pattern as projectRoot checks; apply to all secondary roots
+
+2. **Invalid Files Are Worse Than Missing Files** (1 occurrence - Correctness)
+   - Root cause: Required file exists but is empty/invalid, yet check passes
+   - Prevention: Fail on (exists && !valid && required), not just (!exists && required)
+   - Pattern: Check validity separately from existence for required items
+   - Note: Empty stub files could mask incomplete deliverables
+
+3. **Windows CRLF Requires Explicit Handling** (2 occurrences - Robustness)
+   - Root cause: `split('\n')[0]` leaves trailing `\r` on Windows
+   - Prevention: Add `.replace(/\r$/, '')` after line splitting
+   - Pattern: Also update regex lookaheads: `(?=\r?\n...` instead of `(?=\n...`
+   - Note: Git may normalize some files but not all (especially generated content)
+
+4. **Empty Path After Resolution Must Be Rejected** (1 occurrence - Security)
+   - Root cause: `--plan .` resolves to project root, rel === '' bypasses checks
+   - Prevention: Add explicit `rel === ''` to path security checks
+   - Pattern: `if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel))`
+   - Note: Edge case that existing checks miss; empty string is falsy but valid path
+
+**Key Insight:** Security containment checks must be applied at every point where untrusted input touches the filesystem, not just at the entry point. Archive fallback lookups, alternate path checks, and basename-only lookups all need independent containment verification. For cross-platform compatibility, always handle both `\n` and `\r\n` line endings explicitly rather than assuming Unix-style.
+
+---
+
+#### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
+
+**Source:** Staff-engineer audit (Session #5)
+**Decision:** [ADR-001](./docs/decisions/ADR-001-integrated-improvement-plan-approach.md)
+**Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
+
+**Context:** After completing 57% of documentation standardization (Phases 1-4), we faced a decision point: continue with fragmented planning documents (Doc Standardization Plan + Eight-Phase Refactor Plan + missing tooling) or consolidate into a unified path.
+
+**Staff-Engineer Audit Findings:**
+
+| Finding | Assessment | Decision |
+|---------|------------|----------|
+| 57% doc work completed | Valuable, don't discard | Preserve Phases 1-4 |
+| Eight-Phase Refactor 0% started | Potentially stale | Validate via Delta Review first |
+| Missing dev tooling | Gap identified | Add Prettier, madge, knip |
+| Multiple planning docs | Fragmented priorities | Consolidate into one plan |
+| App Check disabled | Security gap | Plan re-enablement in Step 4 |
+
+**Decision: Integrate, Don't Restart**
+
+- **Alternative rejected:** Full planning restart (wastes 57% work, demoralizing)
+- **Alternative rejected:** Aggressive consolidation 197→30 docs (too disruptive)
+- **Alternative rejected:** Numbered folder structure (breaks all links, low value)
+- **Alternative rejected:** Immediate refactoring (acting on stale findings)
+
+**What We Created:**
+
+1. **INTEGRATED_IMPROVEMENT_PLAN.md** - Single source of truth with 6 sequential steps:
+   - Step 1: Quick Wins & Cleanup (this session)
+   - Step 2: Doc Standardization Completion (Phases 5-6)
+   - Step 3: Developer Tooling Setup (Prettier, madge, knip)
+   - Step 4: Delta Review & Refactor Validation
+   - Step 5: ROADMAP.md Integration
+   - Step 6: Verification & Feature Resumption
+
+2. **ADR Folder Structure** - For documenting future significant decisions
+
+3. **ADR-001** - Documents this decision with alternatives considered
+
+**Patterns Identified:**
+
+1. **Preserve Investment, Adjust Course** (Planning)
+   - Root cause: Planning paralysis when faced with partial progress + new information
+   - Prevention: Evaluate "integrate" option before "restart" option
+   - Insight: Completed work has value; course correction beats restart
+
+2. **Validate Before Acting on Stale Plans** (Planning)
+   - Root cause: Multi-AI refactor findings may be outdated after weeks of other work
+   - Prevention: Delta Review step to categorize findings as DONE/VALID/STALE/SUPERSEDED
+   - Pattern: Old plans need refresh before execution
+
+3. **Single Source of Truth for Improvement Work** (Documentation)
+   - Root cause: Multiple planning docs with unclear dependencies
+   - Prevention: One canonical improvement roadmap with explicit dependency map
+   - Insight: Linear execution path beats parallel fragmented tracks
+
+4. **Explicit "What We Decided NOT To Do"** (Planning)
+   - Root cause: Without documenting rejected alternatives, decisions get re-litigated
+   - Prevention: ADRs capture alternatives and why they were rejected
+   - Benefit: Future sessions don't waste time reconsidering closed decisions
+
+**Key Insight:** When facing planning paralysis after partial progress, evaluate "course correction" options before "restart" options. Completed work has value. Use ADRs to capture decisions and prevent re-litigation. A single integrated plan with explicit dependencies beats multiple fragmented plans with unclear priority ordering.
 
 ---
 

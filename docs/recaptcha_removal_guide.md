@@ -1,12 +1,37 @@
 # reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide
 
-**Status:** Deferred - App Check blocking critical functionality  
-**Created:** December 23, 2025  
+**Last Updated:** 2026-01-03
+**Document Tier:** 2 (Active Reference)
+**Status:** Deferred - App Check blocking critical functionality
 **Target:** Future implementation after M1-M3 stabilization
 
 ---
 
-## 🚨 Current Situation
+## Purpose
+
+Complete removal and fresh implementation guide for Firebase App Check with reCAPTCHA Enterprise. Use this when App Check is blocking legitimate users or when setting up from scratch.
+
+**Related:** [APPCHECK_SETUP.md](./APPCHECK_SETUP.md) - Standard setup guide
+
+---
+
+## Quick Start
+
+**To remove App Check:**
+1. Remove App Check imports from `lib/firebase.ts`
+2. Remove `enforceAppCheck` from Cloud Functions
+3. Disable App Check in Firebase Console
+4. Delete reCAPTCHA keys in Google Cloud Console
+
+**To re-implement App Check:**
+1. Create new reCAPTCHA Enterprise key
+2. Register in Firebase App Check (Monitor mode first)
+3. Update environment variables and code
+4. Test for 1 week before enforcing
+
+---
+
+## Current Situation
 
 App Check with reCAPTCHA Enterprise is causing persistent authentication failures that block users from accessing the application. This guide provides complete removal instructions and a detailed plan for fresh implementation when ready.
 
@@ -675,3 +700,23 @@ After full deployment, monitor these metrics:
 - **Estimated Implementation Time:** 4-6 hours
 - **Risk Level:** Medium - can affect all users if misconfigured
 - **Dependencies:** None (fully optional security enhancement)
+
+---
+
+## AI Instructions
+
+When helping with App Check/reCAPTCHA issues:
+1. First determine if user wants removal or fresh setup
+2. For removal: Follow Part 1 exactly in order
+3. For fresh setup: Use Monitor mode first, never enforce immediately
+4. Always recommend 1-week monitoring period before enforcement
+5. If issues arise, emergency rollback plan is at end of doc
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0 | 2025-12-23 | Initial creation |

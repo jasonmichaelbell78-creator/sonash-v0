@@ -1,10 +1,31 @@
 # Server-Side Security Implementation Guide
 
-**Purpose:** This document provides copy-paste implementation examples for hardening SoNash's security before production launch.
-
+**Last Updated:** 2026-01-03
+**Document Tier:** 2 (Active Reference)
 **Status:** 🟡 RECOMMENDED BEFORE PUBLIC LAUNCH
-
 **Priority:** P0 - Prevents financial disaster ($10K+ monthly bills) and data breaches
+
+---
+
+## Purpose
+
+This document provides copy-paste implementation examples for hardening SoNash's security before production launch. It covers:
+- Firebase App Check (bot protection)
+- Cloud Functions rate limiting
+- Server-side authorization
+- Security testing procedures
+
+**Related:** [SECURITY.md](./SECURITY.md), [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md)
+
+---
+
+## Quick Start
+
+1. **App Check:** Install, configure, enable in Firebase Console
+2. **Rate Limiting:** Deploy Cloud Functions with rate limiters
+3. **Authorization:** Move validation to server-side
+4. **Testing:** Run bypass attempt tests
+5. **Monitoring:** Set up billing alerts
 
 ---
 
@@ -517,6 +538,20 @@ const maliciousWrite = await setDoc(doc(db, 'users', 'VICTIM_USER_ID', 'daily_lo
 
 ---
 
-**Last Updated:** 2025-12-12
-**Owner:** Engineering Team
-**Review Cycle:** Before each major release
+## AI Instructions
+
+When helping with server-side security:
+1. App Check issues: Check APPCHECK_SETUP.md first
+2. Rate limiting: Verify Cloud Functions are deployed with proper limits
+3. Never expose API keys or secrets in client code
+4. Always recommend server-side validation over client-side only
+5. Reference this doc's Implementation Checklist for launch readiness
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0 | 2025-12-12 | Initial creation |

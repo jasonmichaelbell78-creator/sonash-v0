@@ -55,8 +55,34 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 - **Path-based filtering** - Add pathFilter for directory-specific patterns
 - **Archive exclusions** - Historical docs should be excluded from strict linting
 
-## 7. Pattern Check
-Run: `npm run patterns:check` to surface known anti-patterns
+## 7. Session Start Scripts (AUTO-RUN)
+
+**Execute these scripts automatically** when processing this command:
+
+```bash
+# Surface known anti-patterns (errors should be visible, not suppressed)
+npm run patterns:check
+
+# Check if multi-AI review thresholds reached
+npm run review:check
+
+# Surface past lessons relevant to current work
+npm run lessons:surface
+```
+
+**Important**: These scripts are **required**. If any script fails:
+1. Note the error in session summary
+2. Investigate if it's a real issue vs missing script
+3. If script missing, note it as "N/A" in audit
+
+**Record results in session audit** - these must be marked as "Ran" or "Failed (reason)" in `/session-end` audit.
+
+## 8. Incident Documentation Reminder
+**After encountering any significant errors or issues:**
+- Document the issue in [AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)
+- Use the standard "Review #XX" format
+- Include: cause, fix, pattern identified, prevention steps
+- This builds institutional knowledge for future sessions
 
 ---
 Ready to begin session. What would you like to work on?
