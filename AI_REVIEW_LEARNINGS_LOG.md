@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.20
+**Document Version:** 1.21
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-02
+**Last Updated:** 2026-01-03
 
 ## Purpose
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.21 | 2026-01-03 | Review #28: Documentation & process planning improvements (CodeRabbit + technical-writer feedback) |
 | 1.20 | 2026-01-02 | Review #27: Pattern automation script (fourth round - artifact persistence, regex flags) |
 | 1.19 | 2026-01-02 | Review #26: Pattern automation script (third round - secure logging, regex accuracy) |
 | 1.18 | 2026-01-02 | Review #25: Pattern automation script robustness (second round fixes) |
@@ -53,7 +54,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4 (Reviews #24-#27)
+**Reviews since last consolidation:** 5 (Reviews #24-#28)
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: UP TO DATE**
 
@@ -1781,6 +1782,62 @@ The error persisted because of multiple interacting issues:
    - Pattern: `flags.replace(/[^dgimsuvy]/g, '')`
 
 **Key Insight:** There are two types of output sanitization - ephemeral (console logs) and persistent (files, databases). Both need the same security treatment, but persistent outputs are often overlooked. Generated artifacts like JSON files can contain the same sensitive data as the inputs they were derived from.
+
+---
+
+#### Review #28: Documentation & Process Planning Improvements (2026-01-03)
+
+**Source:** CodeRabbit PR Review + technical-writer Agent Review
+**PR:** `claude/session-start-h9O9F` (Integrated Improvement Plan + Agent Enforcement)
+**Tools:** CodeRabbit, technical-writer agent
+
+**Context:** Created INTEGRATED_IMPROVEMENT_PLAN.md to consolidate fragmented planning docs. CodeRabbit and technical-writer agent provided feedback on documentation quality and planning approach.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | MUST/SHOULD inconsistency between docs | 🟡 Major | Consistency | Aligned claude.md with AI_WORKFLOW.md |
+| 2 | Missing App Check tracking | 🟡 Major | Completeness | Added Task 5.3 for explicit ROADMAP tracking |
+| 3 | Fragmentation encouragement | 🟡 Major | Process | Removed ARCHITECTURE_REFACTOR_BACKLOG.md option |
+| 4 | Brittle line-number references | ⚪ Medium | Maintainability | Use descriptive references instead |
+| 5 | Incorrect CANON count | ⚪ Medium | Accuracy | Fixed 44 → 45 |
+| 6 | Heavy process overhead concern | ⚪ Minor | Process | Acknowledged; chose to proceed (solo project flexibility) |
+
+**Patterns Identified:**
+
+1. **Document Consistency for Severity Levels** (1 occurrence - Documentation)
+   - Root cause: claude.md and AI_WORKFLOW.md used different MUST/SHOULD for same items
+   - Prevention: When creating parallel checklists in multiple docs, ensure severity alignment
+   - Resolution: SHOULD for quality-improvement tools (technical-writer, test-engineer), MUST for critical tools (code-reviewer, security-auditor)
+
+2. **Avoid Brittle Line-Number References** (1 occurrence - Maintainability)
+   - Root cause: "Update ROADMAP.md lines 22, 348" becomes stale as files change
+   - Prevention: Use descriptive references: "Search for all occurrences of X"
+   - Pattern: Never reference line numbers in planning docs; they're volatile
+
+3. **Explicit Security Item Tracking** (1 occurrence - Security)
+   - Root cause: App Check re-enablement mentioned in Task 4.4 but not tracked in Step 5
+   - Prevention: Any security-related item needs explicit acceptance criteria
+   - Resolution: Added Task 5.3 specifically for App Check ROADMAP integration
+
+4. **Avoid Planning Document Fragmentation** (1 occurrence - Process)
+   - Root cause: Task 4.5 offered "Create ARCHITECTURE_REFACTOR_BACKLOG.md" option
+   - Prevention: Prefer integration into existing docs (ROADMAP.md) over new planning docs
+   - Pattern: When archiving a planning doc, migrate items to ROADMAP.md, don't create a new doc
+
+5. **Verify Counts When Referencing External Docs** (1 occurrence - Accuracy)
+   - Root cause: Assumed 44 CANON items without verifying in EIGHT_PHASE_REFACTOR_PLAN.md
+   - Prevention: Count items when referencing them, don't assume
+   - Resolution: Verified actual count is 45
+
+**Key Insight:** Planning documents are meta-documents that need the same rigor as code. Line numbers become stale, counts become incorrect, and inconsistencies between parallel checklists cause confusion. When creating multi-document workflows (like PRE-TASK/POST-TASK checklists), treat them as a single logical unit that must stay synchronized.
+
+**Process Learning:** When consolidating planning work:
+- Avoid creating new planning docs (integrate into ROADMAP.md)
+- Track security items explicitly with acceptance criteria
+- Use descriptive references, not line numbers
+- Verify counts and references against source documents
 
 ---
 
