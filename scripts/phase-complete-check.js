@@ -41,6 +41,7 @@ if (planIndex !== -1) {
 // Security: Validate --plan path is within project root
 const projectRoot = process.cwd();
 let planPath = null;
+const planWasProvided = Boolean(rawPlanPath); // Track if --plan explicitly requested
 if (rawPlanPath) {
   // Reject absolute paths
   if (path.isAbsolute(rawPlanPath)) {
@@ -201,8 +202,9 @@ function verifyDeliverable(deliverable, projectRoot) {
  * @param {string|null} planPath - Path to plan file
  * @param {string} projectRoot - Project root directory
  * @param {boolean} isAutoMode - Whether running in CI/auto mode
+ * @param {boolean} planWasProvided - Whether --plan was explicitly specified
  */
-function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
+function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWasProvided) {
   console.log('');
   console.log('━━━ AUTOMATED DELIVERABLE AUDIT ━━━');
   console.log('');
@@ -211,9 +213,9 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     console.log('  ⚠️  No plan file specified or file not found');
     console.log('     Use --plan <path> to specify a plan document');
 
-    // In auto mode, missing plan is a failure (CI should have explicit plan)
-    if (isAutoMode) {
-      return { passed: false, verified: 0, missing: [], warnings: ['Plan file required in --auto mode'] };
+    // If plan explicitly requested or in auto mode, treat missing plan as failure
+    if (planWasProvided || isAutoMode) {
+      return { passed: false, verified: 0, missing: [], warnings: ['Plan file not found'] };
     }
     return { passed: true, verified: 0, missing: [], warnings: ['No plan file for automated audit'] };
   }
@@ -235,8 +237,9 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
     planContent = fs.readFileSync(planPath, 'utf-8');
   } catch (err) {
     console.log(`  ⚠️  Could not read plan file: ${err.code || 'unknown error'}`);
-    if (isAutoMode) {
-      return { passed: false, verified: 0, missing: [], warnings: ['Unable to read plan file in --auto mode'] };
+    // If plan explicitly requested or in auto mode, treat unreadable as failure
+    if (planWasProvided || isAutoMode) {
+      return { passed: false, verified: 0, missing: [], warnings: ['Unable to read plan file'] };
     }
     return { passed: true, verified: 0, missing: [], warnings: ['Unable to read plan file for automated audit'] };
   }
@@ -267,7 +270,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
         .replace(/[)`"'.,;:]+$/g, '')   // Remove trailing punctuation
     }))
     .filter(d => d.path.length > 0)
-    .filter(d => !d.path.split('/').includes('..')); // Reject path traversal
+    .filter(d => !d.path.replace(/\\/g, '/').split('/').includes('..')); // Reject path traversal (cross-platform)
 
   const MAX_CHECKS = 20;
   const wasTruncated = normalizedDeliverables.length > MAX_CHECKS;
@@ -358,8 +361,7 @@ async function main() {
   console.log('');
 
   // 2. Automated deliverable audit (if plan specified)
-  const projectRoot = process.cwd();
-  const auditResult = runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode);
+  const auditResult = runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWasProvided);
 
   if (!auditResult.passed) {
     failures.push('Automated deliverable audit found missing files');
@@ -453,8 +455,8 @@ main().catch(err => {
   // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
   const safeMessage = String(err?.message ?? err ?? 'Unknown error')
     .split('\n')[0]
-    // eslint-disable-next-line no-control-regex -- intentional: strip ANSI/control chars for security
-    .replace(/[\x00-\x1F\x7F]/g, '')
+    // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
     .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');

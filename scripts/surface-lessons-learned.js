@@ -145,7 +145,8 @@ function extractLessons(content) {
   const lessons = [];
 
   // Pattern: Review #XX: Title (uses #### headings in AI_REVIEW_LEARNINGS_LOG.md)
-  const reviewPattern = /#### Review #(\d+):?\s*(.+?)(?=\n#### Review #|\n## |\n---|$)/gs;
+  // Use [\s\S]*? to capture content including ## subheadings within a review section
+  const reviewPattern = /#### Review #(\d+):?\s*([\s\S]*?)(?=\n#### Review #|$)/g;
   let match;
 
   while ((match = reviewPattern.exec(content)) !== null) {
@@ -243,17 +244,25 @@ function formatLessons(lessons, _topics) {
     return '  📚 No specific lessons found for these topics.\n     Check AI_REVIEW_LEARNINGS_LOG.md for all patterns.';
   }
 
+  // Sanitize content from file before terminal output (prevent control char injection)
+  const sanitizeForTerminal = (s) =>
+    String(s ?? '')
+      // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
   let output = '';
 
   for (const lesson of lessons.slice(0, 5)) {
-    output += `\n  📖 Review #${lesson.reviewNum}: ${lesson.title.slice(0, 60)}`;
-    if (lesson.title.length > 60) output += '...';
+    const safeTitle = sanitizeForTerminal(lesson.title);
+    output += `\n  📖 Review #${lesson.reviewNum}: ${safeTitle.slice(0, 60)}`;
+    if (safeTitle.length > 60) output += '...';
     output += '\n';
 
     if (lesson.takeaways.length > 0) {
       output += `     Key points:\n`;
       for (const takeaway of lesson.takeaways.slice(0, 2)) {
-        output += `       - ${takeaway.slice(0, 80)}${takeaway.length > 80 ? '...' : ''}\n`;
+        const safeTakeaway = sanitizeForTerminal(takeaway);
+        output += `       - ${safeTakeaway.slice(0, 80)}${safeTakeaway.length > 80 ? '...' : ''}\n`;
       }
     }
   }
@@ -334,8 +343,8 @@ main().catch(err => {
   // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
   const safeMessage = String(err?.message ?? err ?? 'Unknown error')
     .split('\n')[0]
-    // eslint-disable-next-line no-control-regex -- intentional: strip ANSI/control chars for security
-    .replace(/[\x00-\x1F\x7F]/g, '')
+    // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
     .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');

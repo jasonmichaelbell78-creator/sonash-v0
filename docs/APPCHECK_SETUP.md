@@ -243,7 +243,8 @@ App Check provides protection against:
 
 If App Check isn't working after setup:
 
-- [ ] Verify the site key in `.env.production` matches the key in Firebase App Check
+- [ ] Verify the production App Check site key is set in your hosting/CI environment variables (do **not** store production keys in tracked `.env.*` files)
+- [ ] For local development, verify the key (or debug token) is set in a gitignored `.env.local`
 - [ ] Verify the site key in Firebase App Check matches the key in Google Cloud Console
 - [ ] Check that all your domains are added to the reCAPTCHA key in Google Cloud Console
 - [ ] Verify reCAPTCHA Enterprise API is enabled in Google Cloud Console
