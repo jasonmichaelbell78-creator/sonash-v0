@@ -18,7 +18,7 @@ Follow these steps in order to set up App Check from scratch.
 ### 1.2 Delete Old reCAPTCHA Key
 
 1. Go to [Google Cloud Console → reCAPTCHA](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
-2. Find "SoNash-v2" key (ID: `6LflyDksAAAAAJcSHrwTjdoWf5ixj9OHX_wCwS3G`)
+2. Find "SoNash-v2" key (ID: `<RECAPTCHA_SITE_KEY>`)
 3. Click the three-dot menu (⋮) → **Delete**
 4. Confirm deletion
 
@@ -84,13 +84,13 @@ NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY=<YOUR_NEW_SITE_KEY_FROM_STEP_2.
 Make sure these are still correct:
 
 ```bash
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDGvM5kFwkgSTUS1Tbwt0piuhk9bcCeY7Q
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=sonash-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=sonash-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=sonash-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=236021751794
-NEXT_PUBLIC_FIREBASE_APP_ID=1:236021751794:web:8d54964dbe6d9288bf956b
+# Firebase Configuration (values redacted for security)
+NEXT_PUBLIC_FIREBASE_API_KEY=<FIREBASE_API_KEY>
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<FIREBASE_AUTH_DOMAIN>
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=<FIREBASE_PROJECT_ID>
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<FIREBASE_STORAGE_BUCKET>
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<FIREBASE_MESSAGING_SENDER_ID>
+NEXT_PUBLIC_FIREBASE_APP_ID=<FIREBASE_APP_ID>
 ```
 
 ---

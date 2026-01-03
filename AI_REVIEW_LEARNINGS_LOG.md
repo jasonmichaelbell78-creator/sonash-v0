@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.35
+**Document Version:** 1.36
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.36 | 2026-01-03 | Review #34: Qodo PR follow-up - path.relative(), API key redaction, archive fixes |
 | 1.35 | 2026-01-03 | Review #33: Qodo PR compliance, script security, documentation fixes |
 | 1.34 | 2026-01-03 | Process Pivot #1: Integrated Improvement Plan approach (ADR-001, Step 1 execution) |
 | 1.33 | 2026-01-03 | Review #32 follow-up: end-of-options, UTF-8 sanitization, gtimeout, file limit fix |
@@ -75,7 +76,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4
+**Reviews since last consolidation:** 5
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2382,6 +2383,64 @@ The error persisted because of multiple interacting issues:
    - Note: `['ignore', 'pipe', 'ignore']` = ignore stdin, capture stdout, ignore stderr
 
 **Key Insight:** Scripts that process untrusted input (like deliverable paths from plan files) need multi-layered validation: path normalization, containment checks, and error code differentiation. For CI/automation modes, explicit failure is better than silent success with warnings. Cross-platform compatibility requires avoiding shell-specific syntax in favor of Node.js native options.
+
+---
+
+#### Review #34: Qodo PR Compliance Follow-up - Security Hardening & Documentation (2026-01-03)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #12 continuation
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of feedback following Review #33, addressing remaining security issues (API key exposure, path validation improvements) and documentation fixes.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Use path.relative() for traversal check | 🔴 High | Security | Replaced string prefix check with `path.relative()` for cross-platform safety |
+| 2 | --plan path not validated | 🔴 High | Security | Added project root containment check for user-supplied --plan argument |
+| 3 | Firebase/reCAPTCHA keys in archive docs | 🔴 High | Security | Redacted hardcoded API keys in APPCHECK_FRESH_SETUP.md and RECAPTCHA_PROBLEM_SUMMARY.md |
+| 4 | Error context lost in catch handler | 🟠 Medium | Error Handling | Restored `err.message` and `err.stack` logging in main().catch |
+| 5 | Archive check false positives | 🟠 Medium | Robustness | Check exact relative path before falling back to basename-only |
+| 6 | Untracked files not in topic detection | 🟠 Medium | Feature | Added `git status --porcelain` to include staged/untracked files |
+| 7 | Takeaway extraction drops values | 🟠 Medium | Bug Fix | Combined label and value capture groups in `- **Label**: value` pattern |
+| 8 | Deliverable filter platform-specific | 🟡 Low | Portability | Normalized backslashes to forward slashes, use regex for extension check |
+| 9 | Broken links in archive docs | 🟡 Low | Documentation | Fixed EIGHT_PHASE_REFACTOR_PLAN.md links in 3 archive files |
+| 10 | Broken link in firestore-rules.md | 🟡 Low | Documentation | Fixed self-referential archive link path |
+
+**Patterns Identified:**
+
+1. **Use path.relative() for Containment Checks** (1 occurrence - Security)
+   - Root cause: String-based `startsWith()` can be bypassed on different OS path conventions
+   - Prevention: Use `path.relative()` - if result starts with `..` or is absolute, path escapes root
+   - Pattern: `const rel = path.relative(projectRoot, resolved); if (rel.startsWith('..') || path.isAbsolute(rel)) { reject; }`
+   - Note: `rel === ''` means path equals root exactly (may or may not be allowed depending on use case)
+
+2. **Validate CLI Arguments at Entry Point** (1 occurrence - Security)
+   - Root cause: User-supplied paths passed directly to filesystem operations
+   - Prevention: Validate all user input immediately after parsing, before any use
+   - Pattern: Parse args → Validate → Exit early if invalid → Use validated values
+   - Note: Reject absolute paths and paths that escape project root
+
+3. **Redact Secrets from Historical Docs** (1 occurrence - Security)
+   - Root cause: API keys hardcoded in troubleshooting documentation committed to repo
+   - Prevention: Replace actual values with `<PLACEHOLDER>` style tokens in archive docs
+   - Note: Even "public" Firebase keys can enable abuse (quota exhaustion, reputation issues)
+
+4. **Include All Working Tree Changes in Detection** (1 occurrence - Feature)
+   - Root cause: `git diff` only shows committed changes, misses staged/untracked files
+   - Prevention: Combine `git diff --name-only` with `git status --porcelain`
+   - Pattern: `const diffFiles = ...; const statusFiles = ...; const all = [...new Set([...diffFiles, ...statusFiles])];`
+   - Note: Parse porcelain output with `.slice(3)` to remove "XY " status prefix
+
+5. **Preserve Multi-Group Regex Matches** (1 occurrence - Bug Fix)
+   - Root cause: Regex with multiple capture groups only extracts first group
+   - Prevention: Check for capture group 2 existence and combine both groups
+   - Pattern: `if (match[2]) { result = match[1] + ': ' + match[2]; } else { result = match[1]; }`
+   - Note: This preserves "Label: Value" semantics from markdown patterns
+
+**Key Insight:** Security reviews often reveal layered issues - the first fix addresses the obvious vulnerability, but follow-up reviews catch subtler issues like input validation at CLI boundaries and secrets in historical documentation. Always verify that security fixes are complete by checking all code paths that handle the same type of input.
 
 ---
 

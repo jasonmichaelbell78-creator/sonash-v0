@@ -24,7 +24,26 @@ import * as path from 'path';
 const args = process.argv.slice(2);
 const isAutoMode = args.includes('--auto');
 const planIndex = args.indexOf('--plan');
-const planPath = planIndex !== -1 ? args[planIndex + 1] : null;
+const rawPlanPath = planIndex !== -1 ? args[planIndex + 1] : null;
+
+// Security: Validate --plan path is within project root
+const projectRoot = process.cwd();
+let planPath = null;
+if (rawPlanPath) {
+  // Reject absolute paths
+  if (path.isAbsolute(rawPlanPath)) {
+    console.error('Error: --plan path must be relative to project root');
+    process.exit(1);
+  }
+  const resolvedPlan = path.resolve(projectRoot, rawPlanPath);
+  const rel = path.relative(projectRoot, resolvedPlan);
+  // Reject paths that escape project root
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    console.error('Error: --plan path must be within project root');
+    process.exit(1);
+  }
+  planPath = resolvedPlan;
+}
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -93,11 +112,16 @@ function extractDeliverablesFromPlan(planContent) {
  * Security: Prevents path traversal by ensuring resolved path stays within projectRoot
  */
 function verifyDeliverable(deliverable, projectRoot) {
+  // Security: Reject absolute paths
+  if (path.isAbsolute(deliverable.path)) {
+    return { exists: false, valid: false, reason: 'Invalid path (absolute paths not allowed)' };
+  }
+
   const resolvedPath = path.resolve(projectRoot, deliverable.path);
 
-  // Security: Prevent path traversal (e.g., ../../etc/passwd)
-  const normalizedRoot = projectRoot.endsWith(path.sep) ? projectRoot : projectRoot + path.sep;
-  if (!resolvedPath.startsWith(normalizedRoot) && resolvedPath !== projectRoot) {
+  // Security: Prevent path traversal using path.relative() (cross-platform safe)
+  const rel = path.relative(projectRoot, resolvedPath);
+  if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) {
     return { exists: false, valid: false, reason: 'Invalid path (outside project root)' };
   }
 
@@ -109,12 +133,20 @@ function verifyDeliverable(deliverable, projectRoot) {
   } catch (err) {
     if (err.code === 'ENOENT') {
       // File doesn't exist - check if it's in docs/archive (might be archived)
-      const archivePath = path.join(projectRoot, 'docs/archive', path.basename(deliverable.path));
+      // Try exact relative path first to avoid false positives
+      const archivePathExact = path.join(projectRoot, 'docs/archive', deliverable.path);
       try {
-        fs.statSync(archivePath);
+        fs.statSync(archivePathExact);
         return { exists: true, valid: true, reason: 'Archived' };
       } catch {
-        return { exists: false, valid: false, reason: 'File not found' };
+        // Fall back to basename-only check
+        const archivePathBasename = path.join(projectRoot, 'docs/archive', path.basename(deliverable.path));
+        try {
+          fs.statSync(archivePathBasename);
+          return { exists: true, valid: true, reason: 'Archived' };
+        } catch {
+          return { exists: false, valid: false, reason: 'File not found' };
+        }
       }
     }
     // Other error (permissions, etc.)
@@ -182,8 +214,10 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode) {
   };
 
   // Only check first 20 most relevant files to avoid noise
+  // Normalize paths to forward slashes for cross-platform compatibility
   const relevantDeliverables = deliverables
-    .filter(d => d.path.includes('/') || d.path.endsWith('.md'))
+    .map(d => ({ ...d, path: d.path.replace(/\\/g, '/') }))
+    .filter(d => /\.[a-z0-9]+$/i.test(d.path)) // Must have file extension
     .slice(0, 20);
 
   for (const deliverable of relevantDeliverables) {
@@ -347,7 +381,8 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error('Script error');
+  console.error('Script error:', err?.message ?? err);
+  if (err?.stack) console.error(err.stack);
   closeRl();
   process.exit(1);
 });

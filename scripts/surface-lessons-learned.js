@@ -69,7 +69,27 @@ function detectTopicsFromGitChanges() {
         stdio: ['ignore', 'pipe', 'ignore']
       });
     }
-    const changedFiles = changedFilesOutput.trim().split('\n').filter(Boolean);
+
+    // Also include untracked and staged files from git status
+    let statusOutput = '';
+    try {
+      statusOutput = execSync('git status --porcelain', {
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore']
+      });
+    } catch {
+      // Ignore errors - continue with diff files only
+    }
+
+    const diffFiles = changedFilesOutput.trim().split('\n').filter(Boolean);
+    const statusFiles = statusOutput
+      .split('\n')
+      .map(l => l.trim())
+      .filter(Boolean)
+      .map(l => l.slice(3)); // drop "XY " prefix
+
+    // Deduplicate using Set
+    const changedFiles = Array.from(new Set([...diffFiles, ...statusFiles])).filter(Boolean);
 
     const detectedTopics = new Set();
 
@@ -122,7 +142,12 @@ function extractLessons(content) {
       const tempContent = reviewContent;
       pattern.lastIndex = 0;
       while ((takeawayMatch = pattern.exec(tempContent)) !== null) {
-        takeaways.push(takeawayMatch[1] || takeawayMatch[0]);
+        // For patterns with label:value (capture group 2), combine them
+        if (takeawayMatch[2]) {
+          takeaways.push(`${takeawayMatch[1].trim()}: ${takeawayMatch[2].trim()}`);
+        } else {
+          takeaways.push((takeawayMatch[1] || takeawayMatch[0]).trim());
+        }
       }
     }
 

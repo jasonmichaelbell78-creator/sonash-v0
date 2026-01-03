@@ -20,7 +20,7 @@ This document outlines the PR-by-PR execution strategy for implementing the refa
 **Related Documents:**
 - [ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](./ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) - Planning conversation
 - [GitHub_Code_Analysis_and_Review_Prompt.md](./GitHub_Code_Analysis_and_Review_Prompt.md) - The analysis prompt
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
 
 ---
 

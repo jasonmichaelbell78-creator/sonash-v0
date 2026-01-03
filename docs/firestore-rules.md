@@ -12,4 +12,4 @@ See: [docs/SECURITY.md](./SECURITY.md) for current security documentation
 
 ---
 
-**Archive Location:** [docs/archive/firestore-rules.md](./docs/archive/firestore-rules.md)
+**Archive Location:** [docs/archive/firestore-rules.md](./archive/firestore-rules.md)

@@ -13,7 +13,7 @@ I'm working on a Next.js application (SoNash Recovery Notebook) using Firebase s
 - **App Check**: Enabled with server-side enforcement on all Cloud Functions
 
 ### reCAPTCHA Configuration
-- **Site Key**: `6LflyDksAAAAAJcSHrwTjdoWf5ixj9OHX_wCwS3G`
+- **Site Key**: `<RECAPTCHA_SITE_KEY>` (redacted)
 - **Key Type**: reCAPTCHA **v3** (NOT Enterprise)
 - **Created From**: Google Cloud Console reCAPTCHA admin panel
 - **Key Name in Console**: "v3 SoNash Recovery Notebook"
@@ -79,7 +79,7 @@ export const myFunction = onCall<DataType>(
 ### Phase 3: Provider Type Discovery (CURRENT ISSUE ❌)
 **Symptoms After Re-enablement**:
 ```
-POST https://www.google.com/recaptcha/enterprise/clr?k=6LflyDksAAAAAJcSHrwTjdoWf5ixj9OHX_wCwS3G 400
+POST https://www.google.com/recaptcha/enterprise/clr?k=<RECAPTCHA_SITE_KEY> 400
 AppCheck: ReCAPTCHA error
 ```
 
@@ -159,15 +159,16 @@ Should I:
 
 ### Environment Variables (.env.production)
 ```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDGvM5kFwkgSTUS1Tbwt0piuhk9bcCeY7Q
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=sonash-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=sonash-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=sonash-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=236021751794
-NEXT_PUBLIC_FIREBASE_APP_ID=1:236021751794:web:8d54964dbe6d9288bf956b
+# Values redacted for security - see .env.example for format
+NEXT_PUBLIC_FIREBASE_API_KEY=<FIREBASE_API_KEY>
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<FIREBASE_AUTH_DOMAIN>
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=<FIREBASE_PROJECT_ID>
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<FIREBASE_STORAGE_BUCKET>
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<FIREBASE_MESSAGING_SENDER_ID>
+NEXT_PUBLIC_FIREBASE_APP_ID=<FIREBASE_APP_ID>
 
 # App Check (reCAPTCHA site key - this is a v3 key)
-NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY=6LflyDksAAAAAJcSHrwTjdoWf5ixj9OHX_wCwS3G
+NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY=<RECAPTCHA_SITE_KEY>
 ```
 
 ## What I Need

@@ -16,7 +16,7 @@ This is an archived conversation from ChatGPT that was used to design the multi-
 - Aggregation and deduplication strategies
 
 **Related Documents:**
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
 - [GitHub_Code_Analysis_and_Review_Prompt.md](./GitHub_Code_Analysis_and_Review_Prompt.md) - The analysis prompt
 - [Refactoring_PR_Plan.md](./Refactoring_PR_Plan.md) - The PR execution plan
 
