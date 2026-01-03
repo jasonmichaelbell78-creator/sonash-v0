@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.7
+**Document Version:** 1.8
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
@@ -346,6 +346,16 @@ Install and configure developer tooling that was identified as missing during th
   - Fail PR checks if lint errors found
   - Document in DEVELOPMENT.md
 
+- [ ] **Task 3.7**: Test coverage for new scripts (1.5 hours) - *from Sprint Backlog A3* **DO FIRST**
+  - Add tests for `scripts/surface-lessons-learned.js`
+  - Add tests for enhanced `scripts/phase-complete-check.js` (--auto, --plan flags)
+  - Ensure tests cover core functionality and edge cases
+
+- [ ] **Task 3.8**: Lint warning baseline (0.5 hours) - *from Sprint Backlog A1*
+  - Document 160 existing eslint-plugin-security warnings as baseline
+  - Evaluate: accept as-is, configure plugin, or fix critical ones
+  - Add baseline count to DEVELOPMENT.md for tracking
+
 ### Acceptance Criteria
 
 - [ ] Prettier installed and configured
@@ -355,6 +365,8 @@ Install and configure developer tooling that was identified as missing during th
 - [ ] DEVELOPMENT.md documents all tools
 - [ ] CI pipeline updated with all checks
 - [ ] CI lint enforcement active (PRs fail on lint errors)
+- [ ] New scripts have test coverage (A3)
+- [ ] Lint warning baseline documented (A1)
 
 ---
 
@@ -417,6 +429,18 @@ A Delta Review will refresh this plan with current context.
   - Link from GLOBAL_SECURITY_STANDARDS.md
   - Review alongside App Check re-enablement (Task 4.4)
 
+- [ ] **Task 4.7**: Security audit (2 hours) - *from Sprint Backlog A2*
+  - 6 security-sensitive files changed since last review
+  - Use MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md
+  - Focus on: deploy-firebase.yml, SECURITY.md, SERVER_SIDE_SECURITY.md, lib/firebase.ts
+  - Document findings and remediation
+
+- [ ] **Task 4.8**: Review commit backlog (1 hour) - *from Sprint Backlog A4*
+  - 133 commits since last multi-AI review (threshold: 50)
+  - Combine with Delta Review (Task 4.1-4.3) for efficiency
+  - Focus on high-churn files and new patterns
+  - Log findings in AI_REVIEW_LEARNINGS_LOG.md
+
 ### Acceptance Criteria
 
 - [ ] All 45 CANON items categorized
@@ -425,6 +449,8 @@ A Delta Review will refresh this plan with current context.
 - [ ] App Check plan documented
 - [ ] EIGHT_PHASE_REFACTOR_PLAN.md properly archived/superseded
 - [ ] Key rotation policy documented in SECURITY.md
+- [ ] Security audit completed for changed files (A2)
+- [ ] Commit backlog reviewed and findings logged (A4)
 
 ---
 
@@ -619,7 +645,10 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | # | Item | Discovered | Target Step | Status | Notes |
 |---|------|------------|-------------|--------|-------|
-| A1 | *Example: Fix lint warning baseline* | Session #X | Step 3 | PENDING | *Description* |
+| A1 | Lint warning baseline | Session #11 | Step 3 | INCLUDE | 160 warnings from eslint-plugin-security; establish baseline or configure |
+| A2 | Security audit | Session #11 | Step 4 | INCLUDE | 6 security-sensitive files changed; combine with Delta Review |
+| A3 | Test coverage for new scripts | Session #11 | Step 3 | INCLUDE | `surface-lessons-learned.js`, `phase-complete-check.js` need tests; do FIRST |
+| A4 | Review commit backlog | Session #11 | Step 4 | INCLUDE | 133 commits since last review; combine with Delta Review |
 
 ### Disposition Options
 - **INCLUDE** - Add to current/specific step
@@ -629,7 +658,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 ### Review Log
 | Session | Items Reviewed | Decisions |
 |---------|----------------|-----------|
-| *#11* | *Initial setup* | *Section created* |
+| #11 | A1-A4 | A1,A3→Step 3; A2,A4→Step 4 |
 
 ---
 
@@ -637,6 +666,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.8 | 2026-01-03 | Added A1-A4 from sprint backlog: Tasks 3.7-3.8 (Step 3), Tasks 4.7-4.8 (Step 4) |
 | 1.7 | 2026-01-03 | Added Sprint Backlog Additions section for tracking emergent tasks |
 | 1.6 | 2026-01-03 | Added Mermaid dependency graph (replaced ASCII diagram); color-coded steps showing progress |
 | 1.5 | 2026-01-03 | Added mandatory Step Completion Audit process; retroactive audits for Steps 1-2; audit requirement added to AI Instructions |
