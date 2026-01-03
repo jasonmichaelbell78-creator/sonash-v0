@@ -46,7 +46,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
      - Note any MCP servers configured
      - If task matches a capability, USE IT (not optional)
 ☐ 5. Check ROADMAP.md (verify milestone priorities)
-☐ 6. Check active blockers (DOCUMENTATION_STANDARDIZATION_PLAN.md if active)
+☐ 6. Check active blockers (INTEGRATED_IMPROVEMENT_PLAN.md - current blocker)
 ☐ 7. Consult specific planning docs as needed
 ☐ 8. Begin work following documented procedures
 ```
@@ -92,8 +92,9 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **As Needed** (Reference When Relevant):
 
 5. **Planning Documents** (when working on specific features):
-   - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
-   - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
+   - [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) - **CURRENT BLOCKER** - Unified improvement roadmap
+   - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - Coordinated under integrated plan
+   - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Pending Delta Review
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
 
