@@ -342,6 +342,10 @@ async function main() {
       {
         q: 'Did you run npm run lint AND npm test before EVERY commit? (y/n): ',
         fail: 'Lint and test must run before every commit'
+      },
+      {
+        q: 'Did you complete the Agent/Skill/MCP/Hook/Script audit (per /session-end)? (y/n): ',
+        fail: 'Agent/Skill/MCP audit must be completed - run /session-end'
       }
     ];
 

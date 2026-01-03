@@ -62,7 +62,57 @@ VERIFICATION CHECKLIST:
 └─ Did you commit descriptive messages explaining WHY changes were made?
 ```
 
-## 6. Key Learnings to Remember
+## 6. Agent/Skill/MCP/Hook/Script Audit (MANDATORY)
+
+**Complete this audit for every session. If gaps found, document why or fix before ending.**
+
+### 6.1 Session Start Scripts
+| Script | Required | Ran? | If No, Why? |
+|--------|----------|------|-------------|
+| `npm run patterns:check` | ✅ | [ ] | |
+| `npm run review:check` | ✅ | [ ] | |
+| `npm run lessons:surface` | ✅ | [ ] | |
+
+### 6.2 Agent Usage (based on work performed)
+| Condition | Agent | Should Invoke? | Did Invoke? | If No, Why? |
+|-----------|-------|----------------|-------------|-------------|
+| Wrote/modified .js/.ts files | code-reviewer | [ ] | [ ] | |
+| Security-related changes | security-auditor | [ ] | [ ] | |
+| Bug/error debugging | debugger | [ ] | [ ] | |
+| Complex codebase exploration | Explore | [ ] | [ ] | |
+| Multi-step planning needed | Plan | [ ] | [ ] | |
+
+### 6.3 Skill Usage
+| Condition | Skill | Should Invoke? | Did Invoke? | If No, Why? |
+|-----------|-------|----------------|-------------|-------------|
+| Bug/error encountered | systematic-debugging | [ ] | [ ] | |
+| UI/frontend work | frontend-design | [ ] | [ ] | |
+| Code review requested | code-reviewer | [ ] | [ ] | |
+
+### 6.4 MCP Servers
+| Server | Available | Used? | Purpose if Used |
+|--------|-----------|-------|-----------------|
+| (list from SessionStart hook) | | [ ] | |
+
+### 6.5 Hooks Executed
+| Hook | Should Trigger | Did Trigger? | Passed? |
+|------|----------------|--------------|---------|
+| SessionStart | ✅ | [ ] | [ ] |
+| UserPromptSubmit | ✅ | [ ] | [ ] |
+| Pre-commit | On commit | [ ] | [ ] |
+| Pre-push | On push | [ ] | [ ] |
+
+### 6.6 Audit Result
+- [ ] **PASS** - All required items completed or justified
+- [ ] **FAIL** - Gaps found, fixes applied this session
+- [ ] **FAIL** - Gaps found, documented for next session
+
+**If FAIL with fixes:** Describe what was invoked/run to address gaps:
+```
+(fill in)
+```
+
+## 7. Key Learnings to Remember
 Today's session reinforced these patterns:
 
 ### DO:

@@ -202,21 +202,30 @@ Reviews trigger on code files only (`.ts`, `.js`, `.py`, `.sh`, etc.). Silently 
 ### Session End Self-Audit
 
 > [!WARNING]
-> **BEFORE ENDING SESSION**, verify you followed the mandatory workflow:
+> **BEFORE ENDING SESSION**, complete the full Agent/Skill/MCP/Hook/Script Audit:
 
 ```
 SESSION END CHECKLIST:
+☐ Did I run session start scripts? (patterns:check, review:check, lessons:surface)
 ☐ Did I check PRE-TASK triggers when user gave me tasks?
 ☐ Did I use systematic-debugging for any bugs encountered?
 ☐ Did I use code-reviewer AFTER all code changes?
 ☐ Did I use security-auditor for security-related work?
 ☐ Did I use documentation-expert for new documentation?
+☐ Did hooks execute properly? (SessionStart, Pre-commit, Pre-push)
 ☐ Did I update SESSION_CONTEXT.md with work completed?
-☐ Did I update relevant planning docs?
-☐ Did I commit all documentation changes?
 
 If I skipped a MUST-use agent → Note it and explain why in session summary.
 ```
+
+**MANDATORY AUDIT**: Run `/session-end` command which includes full audit tables for:
+- Session start scripts (patterns:check, review:check, lessons:surface)
+- Agent usage (code-reviewer, security-auditor, debugger, Explore, Plan)
+- Skill usage (systematic-debugging, frontend-design, code-reviewer)
+- MCP servers (list from SessionStart hook)
+- Hooks (SessionStart, UserPromptSubmit, Pre-commit, Pre-push)
+
+**Audit Result**: Mark PASS (all justified) or FAIL (with fixes applied or documented)
 
 **Full Details**: See [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "Available AI Capabilities"
 
@@ -233,6 +242,7 @@ If I skipped a MUST-use agent → Note it and explain why in session summary.
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.7 | 2026-01-03 | Added mandatory Agent/Skill/MCP/Hook/Script audit to session-end workflow |
 | 2.6 | 2026-01-03 | Added CodeRabbit CLI integration for autonomous code review loop |
 | 2.5 | 2026-01-03 | Split documentation triggers: MUST documentation-expert for new docs; aligned with AI_WORKFLOW.md |
 | 2.4 | 2026-01-03 | Aligned MUST/SHOULD levels with AI_WORKFLOW.md (SHOULD for technical-writer/test-engineer) |

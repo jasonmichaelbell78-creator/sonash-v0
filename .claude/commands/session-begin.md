@@ -55,16 +55,24 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 - **Path-based filtering** - Add pathFilter for directory-specific patterns
 - **Archive exclusions** - Historical docs should be excluded from strict linting
 
-## 7. Pattern Check
-Run: `npm run patterns:check` to surface known anti-patterns
+## 7. Session Start Scripts (AUTO-RUN)
 
-## 8. Review Trigger Check
-Run: `npm run review:check` to see if multi-AI review thresholds are reached
+**Execute these scripts automatically** when processing this command:
 
-## 9. Surface Relevant Lessons
-Run: `npm run lessons:surface` to surface past lessons relevant to current work
+```bash
+# Surface known anti-patterns
+npm run patterns:check 2>/dev/null || echo "patterns:check not available"
 
-## 10. Incident Documentation Reminder
+# Check if multi-AI review thresholds reached
+npm run review:check 2>/dev/null || echo "review:check not available"
+
+# Surface past lessons relevant to current work
+npm run lessons:surface 2>/dev/null || echo "lessons:surface not available"
+```
+
+**Record results in session audit** - these must be marked as "Ran" in `/session-end` audit.
+
+## 8. Incident Documentation Reminder
 **After encountering any significant errors or issues:**
 - Document the issue in AI_REVIEW_LEARNINGS_LOG.md
 - Use the standard "Review #XX" format
