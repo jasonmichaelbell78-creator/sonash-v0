@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.36
+**Document Version:** 1.37
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.37 | 2026-01-03 | Review #38: Security hardening - path traversal, control char stripping, regex fix |
 | 1.36 | 2026-01-03 | Review #34: Qodo PR follow-up - path.relative(), API key redaction, archive fixes |
 | 1.35 | 2026-01-03 | Review #33: Qodo PR compliance, script security, documentation fixes |
 | 1.34 | 2026-01-03 | Process Pivot #1: Integrated Improvement Plan approach (ADR-001, Step 1 execution) |
@@ -76,7 +77,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 9
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03)
 
@@ -2617,6 +2618,55 @@ The error persisted because of multiple interacting issues:
    - Note: Even public keys can enable abuse; treat all .env content as sensitive
 
 **Key Insight:** Error sanitization must handle multi-line errors—`String(err)` can produce stack traces that contain full paths. Always extract the first line before applying path redaction. Also, documentation should never suggest committing environment files; this creates security habits that can lead to credential leaks.
+
+---
+
+#### Review #38: CodeRabbit Security Hardening + Regex Accuracy (2026-01-03)
+
+**Source:** CodeRabbit
+**PR:** Session #16
+**Tools:** CodeRabbit
+
+**Context:** Sixth round of feedback addressing path traversal vulnerabilities, terminal injection prevention, return shape consistency, and regex accuracy for lesson extraction.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Path traversal via .. segments | 🔴 High | Security | Added `.filter(d => !d.path.split('/').includes('..'))` |
+| 2 | Control character injection | 🔴 High | Security | Added `.replace(/[\x00-\x1F\x7F]/g, '')` to strip ANSI escapes |
+| 3 | Inconsistent return shape | 🟠 Medium | Robustness | Added `verified: 0, missing: []` to all early returns |
+| 4 | Lesson regex uses ### not #### | 🟠 Medium | Accuracy | Changed regex to match `#### Review #` headings |
+| 5 | Misleading truncation comment | 🟡 Low | Documentation | Fixed comment to reflect actual auto-mode behavior |
+| 6 | ESLint no-control-regex error | 🟡 Low | Tooling | Added eslint-disable comment with security justification |
+
+**Patterns Identified:**
+
+1. **Reject Path Traversal Before Processing** (1 occurrence - Security)
+   - Root cause: Paths from documents could contain `..` to escape intended directories
+   - Prevention: Filter out paths containing `..` segments before any file operations
+   - Pattern: `.filter(d => !d.path.split('/').includes('..'))`
+   - Note: Check after normalization but before file existence checks
+
+2. **Strip Control Characters from Errors** (2 occurrences - Security)
+   - Root cause: Error messages could contain ANSI escape codes for terminal injection
+   - Prevention: Remove all control characters (0x00-0x1F, 0x7F) from error output
+   - Pattern: `.replace(/[\x00-\x1F\x7F]/g, '')` with eslint-disable for no-control-regex
+   - Note: Apply before path redaction to prevent escape sequence bypasses
+
+3. **Consistent Return Shapes for Audit Results** (2 occurrences - Robustness)
+   - Root cause: Early returns missing fields could cause destructuring failures
+   - Prevention: Include all expected fields even in error/fallback returns
+   - Pattern: `return { passed: true, verified: 0, missing: [], warnings: [...] }`
+   - Note: TypeScript would catch this; consider adding type annotations to scripts
+
+4. **Match Actual Heading Levels in Regex** (1 occurrence - Accuracy)
+   - Root cause: Regex assumed `###` but file uses `####` for review headings
+   - Prevention: Verify regex against actual file format before deployment
+   - Pattern: Check sample content with regex before committing
+   - Note: Different markdown files may use different heading levels
+
+**Key Insight:** Security-focused regexes that intentionally match control characters will trigger `no-control-regex` lint rules. Use targeted eslint-disable comments with clear security justification rather than disabling the rule globally. Path traversal and terminal injection are related attack vectors—sanitize both paths and output text.
 
 ---
 
