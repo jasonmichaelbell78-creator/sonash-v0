@@ -29,6 +29,8 @@ No feature development, refactoring, or new initiatives should begin until:
 **Estimated blocker duration:** 4-5 weeks (2026-01-01 to 2026-02-05)
 **After this completes:** M1.6 Support Tab, M1.5 remaining items can resume
 
+> **📋 COORDINATION NOTE:** This plan is now coordinated under [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md), which provides a unified roadmap from current state to feature resumption. The remaining phases (5-6) of this document are tracked as Step 2 in that plan.
+
 ---
 
 ## 🎯 DOCUMENT PURPOSE

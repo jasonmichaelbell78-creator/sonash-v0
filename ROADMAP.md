@@ -19,9 +19,9 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
-> **Architecture Refactoring:** See [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) for comprehensive 8-phase security and architecture refactoring plan
+> **⚠️ BLOCKER:** Integrated improvement initiative is active. See [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) for the unified roadmap covering documentation standardization, tooling setup, and architecture refactoring validation.
 >
-> **⚠️ BLOCKER:** Documentation standardization initiative is active. See [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md)
+> **Architecture Refactoring:** Pending Delta Review validation (Step 4 of Integrated Improvement Plan). Original plan: [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
 
 ---
 
@@ -345,7 +345,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
   - **Status:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
   - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual reCAPTCHA as workaround
   - **Impact:** Security posture weakened - App Check provides bot protection at Firebase SDK level
-  - **Next Steps:** Decide strategy (see [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) Phase 1 CANON-0002)
+  - **Next Steps:** Decide strategy (tracked in [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) Step 4, Task 4.4)
     - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
     - Option B: Wait for throttle to clear, then re-enable App Check only
     - Option C: Accept weaker security posture (reCAPTCHA optional, no App Check)
