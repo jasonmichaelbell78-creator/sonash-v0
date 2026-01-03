@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.24
+**Document Version:** 1.25
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.25 | 2026-01-03 | Review #30 third round: Validation, anchors & word boundaries (JSON validation, regex precision) |
 | 1.24 | 2026-01-03 | Review #30 follow-up: Additional security & robustness (terminal injection, path traversal, portable grep) |
 | 1.23 | 2026-01-03 | Review #30: Claude hooks PR compliance & security (script-based hooks, input validation, security ordering) |
 | 1.22 | 2026-01-03 | Review #29: Documentation consistency & verification refinements (objective criteria, trigger ordering) |
@@ -57,9 +58,9 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8 (Reviews #24-#30 + follow-up)
+**Reviews since last consolidation:** 9 (Reviews #24-#30 + 2 follow-ups)
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: UP TO DATE**
+**✅ STATUS: UP TO DATE** (consolidation at next review)
 
 ### When to Consolidate
 
@@ -2007,6 +2008,46 @@ The error persisted because of multiple interacting issues:
    - Pattern: `grep -qiE "\\b$pattern\\b"` (note escaped backslash in bash)
 
 **Key Insight:** Defense in depth requires multiple layers: sanitize output (terminal injection), validate input (path traversal), and use portable features (POSIX grep). Each layer catches different attack vectors.
+
+---
+
+#### Review #30 Third Round: Validation, Anchors & Word Boundaries (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit (third round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of suggestions after security and robustness fixes. Focus on validation, regex precision, and false positive prevention.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Invalid JSON masked as "no config" | 🟠 Medium | Validation | Added `jq -e` validation before parsing |
+| 2 | Unanchored tool matchers | 🟡 Low | Precision | Added `^` and `$` anchors to matchers |
+| 3 | Security regex false positives | 🟠 Medium | Accuracy | Added word boundary patterns `(^|[^[:alnum:]])` |
+
+**Patterns Identified:**
+
+1. **Validate Before Parsing** (1 occurrence - Error Handling)
+   - Root cause: Parse errors silently treated as empty config
+   - Prevention: Validate JSON before extracting data
+   - Pattern: `if ! jq -e . "$FILE" >/dev/null 2>&1; then echo "Invalid JSON"; exit 0; fi`
+   - Benefit: Clear error messages instead of misleading "no config"
+
+2. **Anchor Regex Matchers** (1 occurrence - Precision)
+   - Root cause: Unanchored patterns could match substrings
+   - Prevention: Use `^` and `$` anchors for exact matching
+   - Pattern: `"matcher": "^(?i)write$"` instead of `"(?i)write"`
+   - Note: Defensive programming against future matching logic changes
+
+3. **Word Boundaries in Security Keywords** (1 occurrence - Accuracy)
+   - Root cause: "monkey" matches "key", "donkey" matches "key"
+   - Prevention: Use word boundary patterns in bash regex
+   - Pattern: `(^|[^[:alnum:]])(keywords)([^[:alnum:]]|$)`
+   - Test: "monkey.ts" → code reviewer (not security) ✓
+
+**Key Insight:** Substring matching in security checks leads to false positives that desensitize users. Use word boundaries to ensure "key" only matches standalone "key" or as part of compound words like "api-key", not random words containing "key".
 
 ---
 
