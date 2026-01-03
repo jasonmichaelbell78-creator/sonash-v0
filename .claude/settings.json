@@ -9,6 +9,39 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "The AI just used Write tool on file: $ARGUMENTS. If this is a code file (.ts, .tsx, .js, .jsx, .py, .sh), remind: 'MUST run code-reviewer agent before committing'. If this is a NEW markdown file (.md), remind: 'MUST use documentation-expert agent, SHOULD run technical-writer for quality check'. If updating existing .md, remind: 'SHOULD run technical-writer agent'. Output only the reminder or 'ok' if no reminder needed.",
+            "statusMessage": "Checking agent requirements..."
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "The AI just used Edit tool on file: $ARGUMENTS. If this is a code file (.ts, .tsx, .js, .jsx, .py, .sh), remind: 'MUST run code-reviewer agent before committing'. Output only the reminder or 'ok' if no reminder needed.",
+            "statusMessage": "Checking agent requirements..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check user request: $ARGUMENTS. If it mentions bug/error/fix, output: 'PRE-TASK: MUST use systematic-debugging skill FIRST'. If it mentions security/auth, output: 'PRE-TASK: MUST use security-auditor agent'. If it mentions database/query, output: 'PRE-TASK: MUST use database-architect agent'. Otherwise output 'ok'.",
+            "statusMessage": "Checking PRE-TASK triggers..."
+          }
+        ]
+      }
     ]
   }
 }
