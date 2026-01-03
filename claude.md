@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.5
+**Document Version:** 2.6
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
 
@@ -186,6 +186,19 @@ External tool integrations. Check `.claude/settings.json` for configured servers
 
 **Discovery is dynamic** - new capabilities added to these directories are automatically available.
 
+### CodeRabbit CLI Integration (Optional)
+AI code review runs automatically on Write/Edit if installed:
+
+```bash
+# Install
+curl -fsSL https://cli.coderabbit.ai/install.sh | sh
+coderabbit auth login
+
+# Autonomous loop: Claude writes → CodeRabbit reviews → Claude fixes
+```
+
+Reviews trigger on code files only (`.ts`, `.js`, `.py`, `.sh`, etc.). Silently skips if not installed.
+
 ### Session End Self-Audit
 
 > [!WARNING]
@@ -220,6 +233,7 @@ If I skipped a MUST-use agent → Note it and explain why in session summary.
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.6 | 2026-01-03 | Added CodeRabbit CLI integration for autonomous code review loop |
 | 2.5 | 2026-01-03 | Split documentation triggers: MUST documentation-expert for new docs; aligned with AI_WORKFLOW.md |
 | 2.4 | 2026-01-03 | Aligned MUST/SHOULD levels with AI_WORKFLOW.md (SHOULD for technical-writer/test-engineer) |
 | 2.3 | 2026-01-03 | Strengthened agent/skill enforcement with PRE-TASK and POST-TASK mandatory checks |
