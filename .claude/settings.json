@@ -6,6 +6,11 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          },
+          {
+            "type": "prompt",
+            "prompt": "List available MCP servers from .mcp.json if it exists. Remind: 'Available MCP tools: ccusage (usage tracking). Use mcp__<server>__<tool> to invoke.' Output the reminder or 'No MCP servers configured' if none.",
+            "statusMessage": "Checking MCP availability..."
           }
         ]
       }
@@ -16,7 +21,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "The AI just used Write tool on file: $ARGUMENTS. If this is a code file (.ts, .tsx, .js, .jsx, .py, .sh), remind: 'MUST run code-reviewer agent before committing'. If this is a NEW markdown file (.md), remind: 'MUST use documentation-expert agent, SHOULD run technical-writer for quality check'. If updating existing .md, remind: 'SHOULD run technical-writer agent'. Output only the reminder or 'ok' if no reminder needed.",
+            "prompt": "The AI just used Write tool on file: $ARGUMENTS. Check file type: 1) Code file (.ts, .tsx, .js, .jsx, .py, .sh) → 'POST-TASK: MUST run code-reviewer agent before committing'. 2) Test file (.test.ts, .test.js, .spec.ts) → 'POST-TASK: SHOULD run test-engineer agent to validate test strategy'. 3) NEW markdown file (.md) → 'POST-TASK: MUST use documentation-expert agent, SHOULD run technical-writer for quality check'. 4) Existing .md → 'POST-TASK: SHOULD run technical-writer agent'. Output the most relevant reminder or 'ok' if none apply.",
             "statusMessage": "Checking agent requirements..."
           }
         ]
@@ -26,7 +31,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "The AI just used Edit tool on file: $ARGUMENTS. If this is a code file (.ts, .tsx, .js, .jsx, .py, .sh), remind: 'MUST run code-reviewer agent before committing'. Output only the reminder or 'ok' if no reminder needed.",
+            "prompt": "The AI just used Edit tool on file: $ARGUMENTS. Check file type: 1) Code file (.ts, .tsx, .js, .jsx, .py, .sh) → 'POST-TASK: MUST run code-reviewer agent before committing'. 2) Test file (.test.ts, .test.js, .spec.ts) → 'POST-TASK: SHOULD run test-engineer agent'. 3) Security-related file (auth, token, credential, secret in path) → 'POST-TASK: MUST run security-auditor agent'. Output the most relevant reminder or 'ok' if none apply.",
             "statusMessage": "Checking agent requirements..."
           }
         ]
@@ -37,7 +42,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Check user request: $ARGUMENTS. If it mentions bug/error/fix, output: 'PRE-TASK: MUST use systematic-debugging skill FIRST'. If it mentions security/auth, output: 'PRE-TASK: MUST use security-auditor agent'. If it mentions database/query, output: 'PRE-TASK: MUST use database-architect agent'. Otherwise output 'ok'.",
+            "prompt": "Analyze user request: $ARGUMENTS. Check for these triggers (output the FIRST match): 1) bug/error/fix/broken/not working → 'PRE-TASK: MUST use systematic-debugging skill FIRST'. 2) security/auth/token/password/credential → 'PRE-TASK: MUST use security-auditor agent'. 3) database/query/schema/migration → 'PRE-TASK: MUST use database-architect agent'. 4) UI/frontend/component/CSS/styling/design → 'PRE-TASK: MUST use frontend-design skill'. 5) plan/design/architect/implement feature → 'PRE-TASK: SHOULD use Plan agent for multi-step work'. 6) explore/understand/find/where is/how does → 'PRE-TASK: SHOULD use Explore agent for codebase exploration'. 7) test/testing strategy → 'PRE-TASK: SHOULD use test-engineer agent'. Otherwise output 'ok'.",
             "statusMessage": "Checking PRE-TASK triggers..."
           }
         ]
