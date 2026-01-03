@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.25
+**Document Version:** 1.26
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.26 | 2026-01-03 | Review #30 fourth round: printf, basename safety, jq requirement (echo injection, option safety) |
 | 1.25 | 2026-01-03 | Review #30 third round: Validation, anchors & word boundaries (JSON validation, regex precision) |
 | 1.24 | 2026-01-03 | Review #30 follow-up: Additional security & robustness (terminal injection, path traversal, portable grep) |
 | 1.23 | 2026-01-03 | Review #30: Claude hooks PR compliance & security (script-based hooks, input validation, security ordering) |
@@ -58,9 +59,9 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 9 (Reviews #24-#30 + 2 follow-ups)
+**Reviews since last consolidation:** 10 (Reviews #24-#30 + 3 follow-ups)
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: UP TO DATE** (consolidation at next review)
+**⚠️ STATUS: CONSOLIDATION DUE** (threshold reached)
 
 ### When to Consolidate
 
@@ -2048,6 +2049,52 @@ The error persisted because of multiple interacting issues:
    - Test: "monkey.ts" → code reviewer (not security) ✓
 
 **Key Insight:** Substring matching in security checks leads to false positives that desensitize users. Use word boundaries to ensure "key" only matches standalone "key" or as part of compound words like "api-key", not random words containing "key".
+
+---
+
+#### Review #30 Fourth Round: printf, basename Safety, jq Requirement (2026-01-03)
+
+**Source:** Qodo Code Review + CodeRabbit (fourth round)
+**PR:** `claude/address-pr-review-feedback-Og33H` (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fourth round addressing echo option injection vulnerability and unreliable fallback concerns.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Echo option injection | 🔴 High | Security | Replaced `echo "$VAR"` with `printf '%s' "$VAR"` |
+| 2 | basename option injection | 🟠 Medium | Security | Added `--` before path argument |
+| 3 | Empty path misclassification | 🟡 Low | Logic | Added check for empty SANITIZED_PATH |
+| 4 | Unreliable grep JSON fallback | 🟠 Medium | Reliability | Removed fallback, require jq for safe parsing |
+
+**Patterns Identified:**
+
+1. **Use printf Instead of echo for User Input** (1 occurrence - Security)
+   - Root cause: `echo "$VAR"` treats leading `-n`, `-e`, `-E` as options
+   - Prevention: Always use `printf '%s' "$VAR"` for untrusted data
+   - Pattern: `printf '%s' "$USER_INPUT" | tr ...`
+   - Test: `-e something` → no option injection ✓
+
+2. **Signal End of Options with --** (1 occurrence - Security)
+   - Root cause: Commands interpret leading `-` as options
+   - Prevention: Use `--` before arguments that may start with `-`
+   - Pattern: `basename -- "$PATH"` not `basename "$PATH"`
+   - Test: `-n test.ts` → code reviewer (not option error) ✓
+
+3. **Handle Edge Cases After Sanitization** (1 occurrence - Robustness)
+   - Root cause: Aggressive sanitization may produce empty string
+   - Prevention: Check for empty result after sanitization
+   - Pattern: `if [[ -z "$SANITIZED" ]]; then echo "ok"; exit 0; fi`
+
+4. **Prefer Explicit Errors Over Unreliable Fallbacks** (1 occurrence - Reliability)
+   - Root cause: grep-based JSON parsing is fragile and may produce wrong output
+   - Prevention: Fail clearly rather than silently produce incorrect results
+   - Pattern: If tool X is needed, require it with clear error message
+   - Example: "MCP config detected but 'jq' is unavailable; unable to list MCP servers safely"
+
+**Key Insight:** Shell commands have many edge cases with special characters. The `echo` command is particularly dangerous with untrusted input. `printf '%s'` is the safe alternative that never interprets its argument as options or escape sequences.
 
 ---
 
