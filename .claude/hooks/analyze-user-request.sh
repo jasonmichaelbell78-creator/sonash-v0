@@ -27,13 +27,14 @@ fi
 # Use printf instead of echo to prevent -n/-e option injection
 REQUEST_LOWER=$(printf '%s' "$USER_REQUEST" | tr '[:upper:]' '[:lower:]')
 
-# Helper function for word boundary matching
-# This reduces false positives like "token" in "authentication"
+# Helper function for word boundary-ish matching (portable ERE)
+# Uses non-alphanumeric boundaries to reduce false positives
+# Note: \b is not portable across all grep implementations
 matches_word() {
     local pattern="$1"
-    # Use grep's built-in \b word boundary token for robust matching
+    # Use portable word boundary pattern instead of \b
     # Use printf instead of echo to prevent option injection
-    printf '%s' "$REQUEST_LOWER" | grep -qiE "\\b$pattern\\b"
+    printf '%s' "$REQUEST_LOWER" | grep -qiE "(^|[^[:alnum:]])(${pattern})([^[:alnum:]]|$)"
 }
 
 # Priority 1: SECURITY (HIGHEST - per PR review, must come before bugs)

@@ -17,11 +17,16 @@ if [[ -z "$FILE_PATH" ]]; then
     exit 0
 fi
 
+# Reject path traversal attempts rather than rewriting (prevents security bypasses)
+if [[ "$FILE_PATH" == *"../"* || "$FILE_PATH" == ../* || "$FILE_PATH" == *"/.."* || "$FILE_PATH" == ".." ]]; then
+    echo "ok"
+    exit 0
+fi
+
 # Sanitize file path - remove potentially dangerous characters
-# Strip path traversal sequences (../ and ./) before other sanitization
 # Only allow alphanumeric, dots, dashes, underscores, slashes
 # Use printf instead of echo to prevent -n/-e option injection
-SANITIZED_PATH=$(printf '%s' "$FILE_PATH" | sed 's#\.\./##g; s#\./##g' | tr -cd '[:alnum:]._/-')
+SANITIZED_PATH=$(printf '%s' "$FILE_PATH" | tr -cd '[:alnum:]._/-')
 
 # Handle case where sanitization strips everything
 if [[ -z "$SANITIZED_PATH" ]]; then

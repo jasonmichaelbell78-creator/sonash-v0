@@ -43,11 +43,17 @@ if ! jq -e . "$MCP_CONFIG" >/dev/null 2>&1; then
 fi
 
 # Sanitize output to prevent terminal escape injection from malicious config
-SERVER_NAMES=$(jq -r '.mcpServers // {} | keys | join(", ")' "$MCP_CONFIG" | sanitize_output)
+# Limit to first 50 server names to prevent DoS from large config
+SERVER_NAMES=$(jq -r '.mcpServers // {} | keys | .[0:50] | join(", ")' "$MCP_CONFIG" | sanitize_output)
 
 if [[ -z "$SERVER_NAMES" ]]; then
     echo "No MCP servers configured"
     exit 0
+fi
+
+# Cap final output length to prevent terminal spam (DoS prevention)
+if [[ ${#SERVER_NAMES} -gt 500 ]]; then
+    SERVER_NAMES="${SERVER_NAMES:0:500}..."
 fi
 
 # Output only server names - no URLs, tokens, headers, or other config
