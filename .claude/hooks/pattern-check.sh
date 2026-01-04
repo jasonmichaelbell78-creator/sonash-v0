@@ -32,11 +32,25 @@ if [ -z "$FILE_PATH" ]; then
   exit 0
 fi
 
-# SECURITY: Block absolute paths, UNC paths, and paths with traversal
-# Only allow relative paths that stay within PROJECT_DIR
+# SECURITY: Reject option-like and multiline paths to prevent bypass/spoofing
 case "$FILE_PATH" in
-  /* | \\* | //* | *..* )
-    # Absolute Unix, UNC, or traversal attempt - reject
+  -* | *$'\n'* | *$'\r'* )
+    exit 0
+    ;;
+esac
+
+# SECURITY: Normalize backslashes to forward slashes for consistent checks
+FILE_PATH="${FILE_PATH//\\//}"
+
+# SECURITY: Block absolute paths and traversal segments
+# Using specific patterns to avoid false positives (e.g., files with ".." in name)
+case "$FILE_PATH" in
+  /* )
+    # Absolute Unix path
+    exit 0
+    ;;
+  *"/../"* | "../"* | *"/.." )
+    # Traversal segment - reject (POSIX-style)
     exit 0
     ;;
 esac
@@ -58,18 +72,25 @@ cd "$PROJECT_DIR" || exit 0
 REL_PATH="${FILE_PATH#"$PROJECT_DIR/"}"
 
 # SECURITY: Verify the resolved path is within PROJECT_DIR
-# Use realpath to resolve any symlinks and get canonical path
+# Use Node.js for portable path resolution (realpath -m not available on all systems)
 if [ -f "$REL_PATH" ]; then
-  REAL_PATH="$(realpath -m "$REL_PATH" 2>/dev/null || echo "")"
-  REAL_PROJECT="$(realpath -m "$PROJECT_DIR" 2>/dev/null || echo "")"
+  REAL_PATH="$(
+    node -e 'const fs=require("fs"); try { process.stdout.write(fs.realpathSync(process.argv[1])); } catch { process.stdout.write(""); }' \
+      "$REL_PATH" 2>/dev/null
+  )"
+  REAL_PROJECT="$(
+    node -e 'const fs=require("fs"); try { process.stdout.write(fs.realpathSync(process.argv[1])); } catch { process.stdout.write(""); }' \
+      "$PROJECT_DIR" 2>/dev/null
+  )"
 
   # Verify containment: REAL_PATH must start with REAL_PROJECT/
   if [ -z "$REAL_PATH" ] || [ -z "$REAL_PROJECT" ]; then
     exit 0
   fi
-  if [[ "$REAL_PATH" != "$REAL_PROJECT"/* ]]; then
-    exit 0  # Path escapes project directory
-  fi
+  case "$REAL_PATH" in
+    "$REAL_PROJECT"/*) ;;
+    *) exit 0 ;;  # Path escapes project directory
+  esac
 else
   # File doesn't exist (may have been deleted)
   exit 0
