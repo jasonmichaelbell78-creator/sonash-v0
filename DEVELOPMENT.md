@@ -1,7 +1,7 @@
 # Development Guide
 
-**Document Version:** 2.0
-**Last Updated:** 2026-01-02
+**Document Version:** 2.1
+**Last Updated:** 2026-01-04
 **Status:** ACTIVE
 
 ---
@@ -378,11 +378,14 @@ firebase deploy
 - **Sonner** - Toast notifications
 - **date-fns** - Date manipulation
 
-### Development
-- **ESLint** - Linting
+### Development Tools
+- **ESLint** - Linting (168 warnings baseline, 0 errors)
 - **Prettier** - Code formatting
-- **Node test runner** - Built-in testing
+- **madge** - Circular dependency detection
+- **knip** - Unused export detection
+- **Node test runner** - Built-in testing (115 tests)
 - **c8** - Code coverage
+- **Husky** - Git hooks (pre-commit, pre-push)
 
 ### Monitoring
 - **Sentry** (optional) - Error tracking
@@ -404,6 +407,87 @@ npm install package@latest
 npm audit
 npm audit fix
 ```
+
+---
+
+## 🛠️ Developer Tooling
+
+### Code Quality Commands
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `npm run lint` | ESLint check | Must pass (0 errors) |
+| `npm run format` | Prettier auto-format | Formats all files |
+| `npm run format:check` | Prettier check | For CI (no changes) |
+| `npm run deps:circular` | Check circular deps | Uses madge |
+| `npm run deps:unused` | Find unused exports | Uses knip |
+| `npm test` | Run all tests | 115 tests (1 skipped) |
+| `npm run test:coverage` | Test with coverage | Uses c8 |
+
+### Prettier (Code Formatting)
+
+**Configuration:** `.prettierrc`
+- 2-space tabs
+- Double quotes (consistent with JSX)
+- Trailing commas (es5)
+- 100 char line width (80 for markdown)
+
+**Format code:**
+```bash
+npm run format           # Format all files
+npm run format:check     # Check without changing (CI)
+```
+
+**Ignores:** See `.prettierignore` - excludes build output, dependencies, generated files.
+
+### madge (Circular Dependencies)
+
+**Check for circular imports:**
+```bash
+npm run deps:circular
+```
+
+Currently: ✅ No circular dependencies
+
+### knip (Unused Exports)
+
+**Find unused code:**
+```bash
+npm run deps:unused
+```
+
+**Configuration:** `knip.json`
+- Analyzes `app/`, `components/`, `lib/`
+- Ignores test files and scripts
+- Some false positives ignored (fonts, CSS, test utils)
+
+**Current baseline (to investigate):**
+- 7 potentially unused dependencies
+- 2 unlisted dependencies
+- 1 duplicate export
+
+### ESLint
+
+**Run linting:**
+```bash
+npm run lint
+```
+
+**Current baseline:** 0 errors, 168 warnings (eslint-plugin-security rules)
+
+**Configuration:** `eslint.config.mjs` (flat config)
+
+### Git Hooks (Husky)
+
+**Pre-commit hook runs:**
+1. ESLint (must pass with 0 errors)
+2. Full test suite
+
+**Pre-push hook runs:**
+1. Pattern compliance check
+2. Full test suite
+
+**⚠️ Never bypass:** See Git Workflow section for policy.
 
 ---
 
@@ -691,5 +775,6 @@ When maintaining this document:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip) |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
 | 1.0 | 2025-12-19 | Initial guide consolidated from multiple sources |
