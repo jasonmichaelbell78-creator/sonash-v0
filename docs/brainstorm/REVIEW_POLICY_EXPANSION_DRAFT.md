@@ -49,7 +49,10 @@ Overrides are allowed but:
 1. Must provide explicit reason
 2. Are logged permanently
 3. Are reviewed during consolidation cycles
-4. Excessive overrides trigger escalation
+4. Excessive overrides trigger escalation:
+   - **Per-session threshold:** ≥5 overrides in single session → WARN_PROMINENT
+   - **Per-check threshold:** ≥3 overrides on same check type within 7 days → escalate to human review
+   - **Absolute threshold:** ≥10 total overrides within 7 days → require explicit acknowledgment before next session
 
 ```jsonl
 {"timestamp":"2026-01-04T10:30:00Z","check":"skill-usage","skipped":"code-reviewer","reason":"Trivial 1-line typo fix","session":21}
@@ -351,7 +354,60 @@ fi
 
 ---
 
-## 8. Implementation Order
+## 8. Testing Strategy
+
+### Unit Tests for New Scripts
+
+Each new script should have corresponding Jest tests:
+
+| Script | Test File | Key Test Cases |
+|--------|-----------|----------------|
+| `check-triggers.js` | `__tests__/check-triggers.test.js` | Threshold boundaries, multi-trigger scenarios, edge cases |
+| `verify-skill-usage.js` | `__tests__/verify-skill-usage.test.js` | Exception handling, blocking vs non-blocking |
+| `validate-skill-config.js` | `__tests__/validate-skill-config.test.js` | Valid/invalid configs, missing sections |
+
+### Integration Tests
+
+```javascript
+// __tests__/integration/policy-enforcement.test.js
+describe('Policy Enforcement Integration', () => {
+  it('should block security file changes without audit', async () => {
+    // Simulate git commit with firestore.rules
+    // Verify pre-push hook blocks
+  });
+
+  it('should log override and allow with justification', async () => {
+    // Trigger check, provide override reason
+    // Verify logged to override-log.jsonl
+  });
+
+  it('should escalate after threshold breached', async () => {
+    // Create 5 overrides in session
+    // Verify WARN_PROMINENT triggered
+  });
+});
+```
+
+### Manual Testing Checklist
+
+Before deploying new enforcement:
+- [ ] Test with real session (not just unit tests)
+- [ ] Verify override mechanism works
+- [ ] Check that blocking doesn't break normal workflows
+- [ ] Confirm log files written correctly
+- [ ] Test rollback procedure
+
+### Rollback Strategy
+
+If new enforcement causes issues:
+1. Disable in `.claude/settings.json` (`"enforcementLevel": "warn"`)
+2. Document issue in AI_REVIEW_LEARNINGS_LOG.md
+3. Adjust thresholds or fix logic
+4. Re-enable with `"enforcementLevel": "block"`
+
+---
+
+## 9. Implementation Order
 
 **Principle: Build detection before correction, infrastructure before policies**
 
@@ -379,8 +435,8 @@ fi
 
 ## Next Steps
 
-1. Integrate as Step 3.5 in INTEGRATED_IMPROVEMENT_PLAN.md
+1. Integrate as **Step 5** in INTEGRATED_IMPROVEMENT_PLAN.md (Review Policy Integration)
 2. Prioritize based on dependencies (infrastructure first)
 3. Estimate effort for each task
-4. Begin implementation after Step 3 is marked complete
+4. Begin implementation after Step 4 (Delta Review) is complete
 
