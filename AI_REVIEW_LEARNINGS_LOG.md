@@ -80,7 +80,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0
+**Reviews since last consolidation:** 1
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -2797,6 +2797,50 @@ The error persisted because of multiple interacting issues:
    - Note: Edge case that existing checks miss; empty string is falsy but valid path
 
 **Key Insight:** Security containment checks must be applied at every point where untrusted input touches the filesystem, not just at the entry point. Archive fallback lookups, alternate path checks, and basename-only lookups all need independent containment verification. For cross-platform compatibility, always handle both `\n` and `\r\n` line endings explicitly rather than assuming Unix-style.
+
+---
+
+#### Review #41: Qodo/CodeRabbit Security Hardening + Doc Migration (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #19
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Ninth round of feedback addressing pattern-check.sh security (path containment, input validation, output sanitization), regex pattern improvements, and CI pipeline fix.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Arbitrary file read via absolute paths | 🔴 High | Security | Block absolute/UNC/traversal paths at input |
+| 2 | Path scope not enforced | 🔴 High | Security | Added realpath containment check within PROJECT_DIR |
+| 3 | Brittle sed-based JSON parsing | 🟠 Medium | Robustness | Use node for robust JSON parsing (handles escapes) |
+| 4 | Terminal output not sanitized | 🟠 Medium | Security | Strip ANSI escape sequences + control chars |
+| 5 | Variable-length lookbehind in regex | 🟠 Medium | Compatibility | Removed lookbehind from readfilesync-without-try |
+| 6 | regex-newline-lookahead misses strings | 🟡 Low | Completeness | Match both regex literals and string patterns |
+| 7 | CI fails on pattern violations | 🟡 Low | CI/Automation | Added continue-on-error (legacy violations exist) |
+
+**Patterns Identified:**
+
+1. **Path Containment at Shell Level** (2 occurrences - Security)
+   - Root cause: Hook accepts file_path from JSON and passes to node script
+   - Prevention: Validate path is relative AND within project root using realpath
+   - Pattern: `realpath -m "$path"` must start with `realpath -m "$PROJECT_DIR"/`
+   - Note: Shell scripts need same containment discipline as JS
+
+2. **Robust JSON Parsing in Shell** (1 occurrence - Robustness)
+   - Root cause: sed-based parsing fails on escaped quotes, backslashes
+   - Prevention: Use node one-liner for proper JSON parsing
+   - Pattern: `node -e 'console.log(JSON.parse(arg).key)' "$1"`
+   - Note: jq is another option but requires external dependency
+
+3. **Terminal Output Sanitization** (1 occurrence - Security)
+   - Root cause: Script output could contain ANSI escapes or control chars
+   - Prevention: Strip before printing: `sed + tr` for ANSI and control chars
+   - Pattern: `sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' | tr -d '\000-\010\013\014\016-\037\177'`
+   - Note: Preserves \t\n\r for formatting
+
+**Key Insight:** Hooks that process external input (like file paths from JSON) need the same security discipline as the scripts they invoke. Path containment, input validation, and output sanitization must all happen at the hook layer before passing to downstream tools.
 
 ---
 
