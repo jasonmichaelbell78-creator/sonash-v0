@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.40
+**Document Version:** 1.41
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-03
+**Last Updated:** 2026-01-04
 
 ## Purpose
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.41 | 2026-01-04 | Review #45: TOCTOU fix, error.message handling, path containment, tier matching, PR spam |
 | 1.40 | 2026-01-03 | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added) |
 | 1.39 | 2026-01-03 | Review #40: Qodo archive security, path containment, CRLF handling |
 | 1.38 | 2026-01-03 | Review #39: Qodo script robustness - explicit plan failure, terminal sanitization |
@@ -80,7 +81,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4
+**Reviews since last consolidation:** 5
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -3025,5 +3026,72 @@ The error persisted because of multiple interacting issues:
    - Pattern: `| head -c 20000` caps at 20KB, reasonable for hook feedback
 
 **Key Insight:** Self-monitoring creates a feedback loop - enforcement scripts should enforce rules on themselves. Windows path detection needs precision to avoid false positives on valid Unix filenames with colons. Output limiting is both UX and security (prevents terminal DoS from malicious files with excessive violations).
+
+---
+
+#### Review #45: Comprehensive Security & Compliance Hardening (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued from #19)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Comprehensive multi-pass review of all scripts for security and compliance issues. Initial fix (commit 4ada4c6) addressed 10 scripts with sanitizeError, followed by deep review addressing TOCTOU, error handling, workflow fixes, and more (commit 2e38796).
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | TOCTOU vulnerability in assign-review-tier.js | 🔴 High | Security | Resolve path once, use for all operations |
+| 2 | error.message assumption in catch blocks | 🟠 Medium | Robustness | Check `error && typeof error === 'object' && 'message' in error` |
+| 3 | Path containment missing in ai-review.js | 🟠 Medium | Security | Added isPathContained() validation |
+| 4 | .env in config extensions conflicts with block list | 🟠 Medium | Bug | Removed .env from configuration extensions |
+| 5 | Tier matching fails with space-separated files | 🟠 Medium | Bug | Use `printf '%s\n'` before grep for newline separation |
+| 6 | PR comment spam on every synchronize | 🟡 Low | UX | Only comment on opened/reopened events |
+| 7 | Shell-dependent `2>&1` redirection | 🟡 Low | Portability | Use `stdio: 'pipe'` instead |
+| 8 | Verbose stack traces lost after sanitization | 🟡 Low | Debugging | Restore sanitized stack output in verbose mode |
+| 9 | ESM import path missing .js extension | 🟡 Low | Bug | Fixed migrate-to-journal.ts import |
+| 10 | sanitizeError could throw | 🟡 Low | Robustness | Added defensive try-catch wrapper |
+| 11 | Top-level error handling unsanitized | 🟡 Low | Security | Wrap main() in try-catch with sanitizePath |
+| 12 | Dotfile matching for .env variants broken | 🟡 Low | Bug | Fixed multi-suffix detection |
+
+**Patterns Identified:**
+
+1. **TOCTOU Prevention** (1 occurrence - Security)
+   - Root cause: Using original path for existsSync after security check allows race condition
+   - Prevention: Resolve path once at validation, use resolved path for all subsequent operations
+   - Pattern: `const resolvedFile = resolve(projectRoot, file); if (existsSync(resolvedFile)) { readFileSync(resolvedFile, ...) }`
+   - Note: Attacker could swap file between security check and read
+
+2. **Safe Error Property Access** (5 occurrences - Robustness)
+   - Root cause: Catch blocks assume `error.message` exists, but throws can be any value
+   - Prevention: Check type before accessing: `error && typeof error === 'object' && 'message' in error`
+   - Pattern: `const errorMsg = error && typeof error === 'object' && 'message' in error ? error.message : String(error);`
+   - Note: Someone might `throw "string"` or `throw null`
+
+3. **Block List vs Allow List Conflicts** (1 occurrence - Bug)
+   - Root cause: .env in configuration extensions list, but also in SENSITIVE_FILE_PATTERNS block list
+   - Prevention: When adding to block list, check for conflicts in allow lists
+   - Pattern: Remove from allow list when adding to block list
+   - Note: Block list is checked first, so extension match was never reached anyway
+
+4. **Space-to-Newline for grep Anchors** (1 occurrence - Bug)
+   - Root cause: Shell variable expansion gives space-separated list, but `^` anchor needs newlines
+   - Prevention: Use `printf '%s\n' $VAR` before piping to grep
+   - Pattern: `printf '%s\n' $FILES_RAW | grep -qE '^pattern'`
+   - Note: grep `^` and `$` anchors work on lines, not words
+
+5. **Event-Specific Actions in CI** (1 occurrence - UX)
+   - Root cause: GitHub Actions on: [opened, synchronize, reopened] runs same steps for all
+   - Prevention: Check `context.payload.action` to limit side effects
+   - Pattern: `if (context.payload.action === 'opened' || context.payload.action === 'reopened')`
+   - Note: Posting comments on every push creates noise
+
+6. **Defensive Error Handler Wrappers** (1 occurrence - Robustness)
+   - Root cause: Error sanitization helper could itself throw (e.g., if passed unusual object)
+   - Prevention: Wrap sanitization call in try-catch with fallback
+   - Pattern: `const safeError = (() => { try { return sanitizeError(error); } catch { return "Unknown error"; } })();`
+   - Note: Error handlers must never throw
+
+**Key Insight:** Security hardening requires multiple passes - initial review often catches obvious issues, but TOCTOU vulnerabilities, error handling edge cases, and cross-file conflicts require deeper analysis. Block lists and allow lists must be kept in sync. Event-specific logic prevents CI noise. Error handlers need defensive wrappers because they're the last line of defense.
 
 ---
