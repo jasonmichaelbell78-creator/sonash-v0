@@ -80,7 +80,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1
+**Reviews since last consolidation:** 2
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -2841,6 +2841,49 @@ The error persisted because of multiple interacting issues:
    - Note: Preserves \t\n\r for formatting
 
 **Key Insight:** Hooks that process external input (like file paths from JSON) need the same security discipline as the scripts they invoke. Path containment, input validation, and output sanitization must all happen at the hook layer before passing to downstream tools.
+
+---
+
+#### Review #42: Qodo/CodeRabbit Hook Hardening Round 2 (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #19 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Follow-up review with additional security hardening for pattern-check.sh.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Option-like paths bypass | 🟠 Medium | Security | Block paths starting with `-` |
+| 2 | Multiline path spoofing | 🟠 Medium | Security | Block paths with `\n` or `\r` |
+| 3 | Overly broad `*..*` pattern | 🟡 Low | Correctness | Use specific `/../`, `../`, `/..` patterns |
+| 4 | Redundant `//*` pattern (SC2221) | 🟡 Low | Cleanup | Remove redundant pattern |
+| 5 | `realpath -m` not portable | 🟡 Low | Portability | Use Node.js `fs.realpathSync()` |
+| 6 | Backslash not normalized | 🟡 Low | Robustness | Normalize `\` to `/` before checks |
+
+**Patterns Identified:**
+
+1. **Block CLI Option-Like Paths** (1 occurrence - Security)
+   - Root cause: Path starting with `-` could be interpreted as CLI option
+   - Prevention: Reject paths matching `-*` before further processing
+   - Pattern: `case "$path" in -*) exit 0 ;; esac`
+   - Note: Also block newlines to prevent multi-line spoofing
+
+2. **Use Specific Traversal Patterns** (1 occurrence - Correctness)
+   - Root cause: `*..*` matches legitimate filenames like `foo..bar.js`
+   - Prevention: Match actual traversal segments: `/../`, `../`, `/..`
+   - Pattern: `*"/../"* | "../"* | *"/.."`
+   - Note: Quote patterns in case to prevent glob expansion
+
+3. **Portable Path Resolution** (1 occurrence - Portability)
+   - Root cause: `realpath -m` is GNU-specific, fails on macOS
+   - Prevention: Use Node.js fs.realpathSync() which is always available
+   - Pattern: `node -e 'fs.realpathSync(process.argv[1])'`
+   - Note: Already using node for JSON parsing, so no new dependency
+
+**Key Insight:** Shell script security requires multiple layers: input rejection (option-like, multiline), normalization (backslashes), specific pattern matching (traversal segments not broad globs), and portable implementations (Node.js over GNU-specific tools).
 
 ---
 
