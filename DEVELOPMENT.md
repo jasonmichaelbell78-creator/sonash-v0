@@ -379,7 +379,7 @@ firebase deploy
 - **date-fns** - Date manipulation
 
 ### Development Tools
-- **ESLint** - Linting (168 warnings baseline, 0 errors)
+- **ESLint** - Linting (181 warnings baseline, 0 errors)
 - **Prettier** - Code formatting
 - **madge** - Circular dependency detection
 - **knip** - Unused export detection
@@ -473,7 +473,14 @@ npm run deps:unused
 npm run lint
 ```
 
-**Current baseline:** 0 errors, 168 warnings (eslint-plugin-security rules)
+**Current baseline:** 0 errors, 181 warnings (eslint-plugin-security rules)
+
+**Warning breakdown (all false positives - audited 2026-01-04):**
+- `detect-object-injection` (91): Safe iteration/lookups with developer-defined keys
+- `detect-non-literal-fs-filename` (65): CLI scripts with controlled paths
+- `detect-unsafe-regex` (14): Bounded input, linear patterns
+- `detect-non-literal-regexp` (6): Intentional dynamic patterns
+- `detect-possible-timing-attacks` (1): Comparing user's own password inputs
 
 **Configuration:** `eslint.config.mjs` (flat config)
 

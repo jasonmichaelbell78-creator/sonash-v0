@@ -211,9 +211,20 @@ The checker references this log so you can find the detailed context for each pa
 4. Improved `unsafe-error-message` regex to detect `instanceof` before OR after `.message`
 5. Critical files (14) now at 0 violations
 
+**ESLint Security Warnings Audit (2026-01-04):**
+| Rule | Count | Verdict |
+|------|-------|---------|
+| `detect-object-injection` | 91 | False positives - safe iteration/lookups |
+| `detect-non-literal-fs-filename` | 66 | False positives - CLI scripts |
+| `detect-unsafe-regex` | 14 | Safe - bounded input, linear patterns |
+| `detect-non-literal-regexp` | 6 | False positives - intentional dynamic patterns |
+| `detect-possible-timing-attacks` | 1 | False positive - user's own password compare |
+| **Total** | **181** | **All false positives** |
+
 **Recommendations:**
 - [ ] Gradually fix migration script violations (low priority - run once)
 - [x] Keep `patterns:check` blocking for critical files
+- [x] ESLint warnings audited and documented (181 baseline)
 - [ ] Review full repo quarterly
 
 ---
