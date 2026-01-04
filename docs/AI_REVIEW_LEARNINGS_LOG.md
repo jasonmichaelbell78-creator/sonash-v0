@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.44
+**Document Version:** 1.45
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-04
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.45 | 2026-01-04 | Review #49: Workflow hardening, robust module detection, dead code removal |
 | 1.44 | 2026-01-04 | Review #48: Security hardening, OSC escapes, fail-closed realpath, pathspec fixes |
 | 1.43 | 2026-01-04 | Review #47: PII masking, sensitive dirs, printf workflow, fault-tolerant labels |
 | 1.42 | 2026-01-04 | Review #46: Symlink protection, realpath hardening, buffer overflow, jq/awk fixes |
@@ -84,7 +85,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 9
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -3292,5 +3293,69 @@ The error persisted because of multiple interacting issues:
    - Note: Required for safety if pathspec could start with `-`
 
 **Key Insight:** Security hardening is iterative - each review round catches edge cases missed by pattern-based approaches. Defense-in-depth means explicit blocklists alongside pattern matching, fail-closed error handling for security-critical functions, and comprehensive escape sequence stripping. Even "low severity" items like trailing dots or string comparisons can cause production issues.
+
+---
+
+#### Review #49: Workflow Hardening & Code Cleanup (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fifth round of compliance fixes addressing workflow tier detection gaps, module detection robustness, dead code removal, and documentation accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | next.config.js missing from Tier 4 detection | 🟠 Medium | Bug | Added `next\.config\.(js\|mjs)$` to Tier 4 pattern |
+| 2 | Tier 3 regex could match substrings | 🟡 Low | Bug | Added `(^\|/)` path boundary anchor |
+| 3 | Node.js version mismatch (20 vs 22) | 🟡 Low | Compatibility | Updated workflow to node-version: '22' |
+| 4 | Misleading step name "Check for security violations" | 🟡 Low | Clarity | Renamed to "Tier 4 informational warnings" |
+| 5 | isMainModule detection could crash | 🟡 Low | Robustness | Added try-catch wrapper in 3 scripts |
+| 6 | pr-review.md reads first 200 lines (not most recent) | 🟡 Low | Bug | Changed to "last 200 lines" |
+| 7 | Broken relative path in INTEGRATED_IMPROVEMENT_PLAN.md | 🟡 Low | Docs | Changed `docs/brainstorm/...` to `./brainstorm/...` |
+| 8 | Dead .env filtering code in ai-review.js | 🟡 Low | Cleanup | Removed unreachable branch |
+| 9 | Unsanitized file path in warning message | 🟡 Low | Security | Added sanitizePath() wrapper |
+
+**Patterns Identified:**
+
+1. **Critical File Pattern Coverage** (1 occurrence - Bug)
+   - Root cause: Tier 4 patterns missing next.config.js/mjs which is a critical infrastructure file
+   - Prevention: When defining tier patterns, cross-reference with documented TIER_RULES constant
+   - Pattern: `next\.config\.(js|mjs)$` - covers both CommonJS and ESM configs
+   - Note: Temporary workflow patterns should match the authoritative script
+
+2. **Path Boundary Anchoring in Regex** (1 occurrence - Bug)
+   - Root cause: Pattern `functions/src/auth/` matches `somefunctions/src/auth/` substring
+   - Prevention: Add `(^|/)` prefix to anchor at path boundary
+   - Pattern: `(^|/)(firestore\.rules$|functions/src/auth/|middleware/)`
+   - Note: Prevents over-classification from partial path matches
+
+3. **Robust Main Module Detection** (3 occurrences - Robustness)
+   - Root cause: `pathToFileURL(process.argv[1])` can throw on unusual paths (symlinks, relative)
+   - Prevention: Wrap in try-catch, use `path.resolve()` first, default to false on error
+   - Pattern: `let isMain=false; try { isMain = !!argv[1] && url === pathToFileURL(resolve(argv[1])).href } catch { isMain=false }`
+   - Note: Essential for scripts that export functions for testing
+
+4. **Log File Reading Direction** (1 occurrence - Bug)
+   - Root cause: Log files append at the end, but instruction said "first 200 lines"
+   - Prevention: When referencing logs, always read from the end (tail) not beginning (head)
+   - Pattern: "Read `file.log` (last N lines)" for logs; "(first N lines)" only for header-heavy docs
+   - Note: Recent patterns are at the end of AI_REVIEW_LEARNINGS_LOG.md
+
+5. **Relative Path Context in Docs** (1 occurrence - Docs)
+   - Root cause: File in docs/ used `docs/brainstorm/...` instead of `./brainstorm/...`
+   - Prevention: Paths in docs/ should be relative to docs/, not repo root
+   - Pattern: Use `./sibling/` for files in same parent, `../root-file` for repo root
+   - Note: Test links with markdown preview to catch broken references
+
+6. **Dead Code from Security Hardening** (1 occurrence - Cleanup)
+   - Root cause: .env removed from extensions array but filtering code remained
+   - Prevention: After removing config items, grep for code that references them
+   - Pattern: When removing `X` from config: `grep -r "X" scripts/` to find stale code
+   - Note: Dead branches can confuse readers and trigger false linter warnings
+
+**Key Insight:** Workflow automation requires the same rigor as application code - tier detection patterns must be comprehensive and anchored correctly, Node.js versions must match across CI config, and step names should accurately reflect behavior. When scripts are imported for testing, main module detection must be robust against edge cases. Documentation paths need careful attention to the file's location context.
 
 ---

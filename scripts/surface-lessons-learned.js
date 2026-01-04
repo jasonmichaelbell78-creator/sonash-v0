@@ -352,7 +352,15 @@ export {
 
 // Only run main() when executed directly (not when imported for testing)
 // Cross-platform: pathToFileURL handles Windows paths correctly
-const isMainModule = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+// Wrap in try-catch for robust handling of edge cases (relative paths, symlinks, etc.)
+let isMainModule = false;
+try {
+  isMainModule =
+    !!process.argv[1] &&
+    import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+} catch {
+  isMainModule = false;
+}
 
 if (isMainModule) {
   main().catch(err => {

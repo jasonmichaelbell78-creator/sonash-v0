@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Get changed files
         id: changed-files
@@ -59,9 +59,9 @@ jobs:
           # TEMPORARY PLACEHOLDER: Remove when scripts/assign-review-tier.js is integrated
           # This logic duplicates TIER_RULES in assign-review-tier.js
           # Use printf to safely pipe newline-separated files to grep ^ anchors
-          if printf '%s\n' "$FILES" | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$)'; then
+          if printf '%s\n' "$FILES" | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$|next\.config\.(js|mjs)$)'; then
             TIER=4
-          elif printf '%s\n' "$FILES" | grep -qE '(firestore\.rules$|functions/src/auth/|middleware/)'; then
+          elif printf '%s\n' "$FILES" | grep -qE '(^|/)(firestore\.rules$|functions/src/auth/|middleware/)'; then
             TIER=3
           elif printf '%s\n' "$FILES" | grep -qE '^(app/|components/|lib/|hooks/)'; then
             TIER=2
@@ -164,7 +164,7 @@ jobs:
               });
             }
 
-      - name: Check for security violations
+      - name: Tier 4 informational warnings
         if: steps.assign-tier.outputs.tier == '4'
         run: |
           echo "::warning::This PR modifies critical infrastructure files (Tier 4)"

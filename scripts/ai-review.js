@@ -237,10 +237,6 @@ function getFilesToReview() {
         if (ext === '' && reviewTypeConfig.extensions.includes(basename)) {
           return true;
         }
-        // Explicitly handle common multi-suffix env files (.env.local, .env.production)
-        if (basename.startsWith('.env.')) {
-          return reviewTypeConfig.extensions.includes('.env');
-        }
         return false;
       });
     } catch (error) {
@@ -320,7 +316,7 @@ function formatReviewRequest(prompt, files) {
         request += content;
         request += '\n```\n\n';
       } else {
-        console.warn(`Warning: Skipping file ${file} (could not read content)`);
+        console.warn(`Warning: Skipping file ${sanitizePath(file)} (could not read content)`);
       }
     });
   }

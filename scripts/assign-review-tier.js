@@ -427,7 +427,17 @@ function main() {
 }
 
 // Run if called directly (cross-platform: pathToFileURL handles Windows paths)
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// Wrap in try-catch for robust handling of edge cases (relative paths, symlinks, etc.)
+let isMainModule = false;
+try {
+  isMainModule =
+    !!process.argv[1] &&
+    import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+} catch {
+  isMainModule = false;
+}
+
+if (isMainModule) {
   main();
 }
 

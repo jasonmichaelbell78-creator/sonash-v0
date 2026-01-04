@@ -540,7 +540,7 @@ Brainstorming session (Session #21) identified gaps in review coverage:
 - Triggers are time-based (unreliable) instead of event-based
 - Detection exists but correction is missing
 
-See: `docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md` for full design.
+See: `./brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md` for full design.
 
 ### Design Principles
 
