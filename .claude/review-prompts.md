@@ -691,17 +691,28 @@ Add to `.claude/hooks/pre-commit.sh`:
 #!/bin/bash
 
 # Documentation review
+# Note: Using awk instead of sed for robust section extraction (handles internal --- lines)
 if git diff --cached --name-only | grep -qE '\.md$'; then
   echo "Reviewing documentation changes..."
-  claude --prompt "$(cat .claude/review-prompts.md | sed -n '/^## 1. Documentation Review/,/^---$/p')" \
-        --input "$(git diff --cached '*.md')"
+  claude --prompt "$(
+    awk '
+      $0 ~ /^## 1\. Documentation Review/ {in_section=1}
+      in_section && $0 ~ /^## [0-9]+\./ && $0 !~ /^## 1\./ {exit}
+      in_section {print}
+    ' .claude/review-prompts.md
+  )" --input "$(git diff --cached '*.md')"
 fi
 
 # Configuration review
 if git diff --cached --name-only | grep -qE 'package\.json$|\.env|firebase\.json'; then
   echo "Reviewing configuration changes..."
-  claude --prompt "$(cat .claude/review-prompts.md | sed -n '/^## 2. Configuration Review/,/^---$/p')" \
-        --input "$(git diff --cached package.json .env* firebase.json 2>/dev/null)"
+  claude --prompt "$(
+    awk '
+      $0 ~ /^## 2\. Configuration Review/ {in_section=1}
+      in_section && $0 ~ /^## [0-9]+\./ && $0 !~ /^## 2\./ {exit}
+      in_section {print}
+    ' .claude/review-prompts.md
+  )" --input "$(git diff --cached package.json .env* firebase.json 2>/dev/null)"
 fi
 ```
 

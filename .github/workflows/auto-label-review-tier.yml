@@ -38,33 +38,34 @@ jobs:
             **/*.yml
             **/*.yaml
             **/*.rules
+          # Use newline separator for robust filename handling (supports spaces)
+          separator: "\n"
 
       - name: Run tier assignment script
         id: assign-tier
         run: |
-          # Get list of changed files (space-separated from action)
-          FILES_RAW="${{ steps.changed-files.outputs.all_changed_files }}"
-          # Convert to newline-separated for proper grep matching with ^ anchors
-          FILES="$(printf '%s\n' $FILES_RAW)"
+          # Get list of changed files (newline-separated from action)
+          FILES="${{ steps.changed-files.outputs.all_changed_files }}"
 
           # Run tier assignment (will be implemented in Phase 1)
           # For now, output a placeholder result
           echo "Changed files:"
-          printf '%s\n' $FILES_RAW
+          echo "$FILES"
 
           # TODO: Uncomment when script is ready
-          # RESULT=$(node scripts/assign-review-tier.js $FILES_RAW)
+          # RESULT=$(node scripts/assign-review-tier.js $FILES)
           # echo "result=$RESULT" >> $GITHUB_OUTPUT
 
-          # Placeholder: Extract tier from file paths
-          # Use printf to ensure newline-separated files for grep ^ anchors
-          if printf '%s\n' $FILES_RAW | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$)'; then
+          # TEMPORARY PLACEHOLDER: Remove when scripts/assign-review-tier.js is integrated
+          # This logic duplicates TIER_RULES in assign-review-tier.js
+          # Use echo to pipe newline-separated files to grep ^ anchors
+          if echo "$FILES" | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$)'; then
             TIER=4
-          elif printf '%s\n' $FILES_RAW | grep -qE '(firestore\.rules$|functions/src/auth/|middleware/)'; then
+          elif echo "$FILES" | grep -qE '(firestore\.rules$|functions/src/auth/|middleware/)'; then
             TIER=3
-          elif printf '%s\n' $FILES_RAW | grep -qE '^(app/|components/|lib/|hooks/)'; then
+          elif echo "$FILES" | grep -qE '^(app/|components/|lib/|hooks/)'; then
             TIER=2
-          elif printf '%s\n' $FILES_RAW | grep -qE '(\.test\.(ts|tsx)$|^docs/.*\.md$)'; then
+          elif echo "$FILES" | grep -qE '(\.test\.(ts|tsx)$|^docs/.*\.md$)'; then
             TIER=1
           else
             TIER=0

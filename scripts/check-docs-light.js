@@ -635,11 +635,20 @@ function main() {
 try {
   main();
 } catch (error) {
+  // Defensive wrapper to prevent error handling from failing
+  const safe = (value) => {
+    try {
+      return sanitizeError(value);
+    } catch {
+      return 'Unknown error';
+    }
+  };
+
   // Use sanitizeError to avoid exposing sensitive paths in CI logs
-  console.error('❌ Unexpected error:', sanitizeError(error));
+  console.error('❌ Unexpected error:', safe(error));
   // Show sanitized stack trace in verbose mode for debugging
   if (VERBOSE && error && typeof error === 'object' && 'stack' in error && error.stack) {
-    console.error(sanitizeError(error.stack));
+    console.error(safe(error.stack));
   }
   process.exit(1);
 }

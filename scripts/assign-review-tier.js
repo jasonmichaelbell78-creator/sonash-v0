@@ -17,7 +17,7 @@
  *   Exit code: 0 (success)
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, realpathSync } from 'fs';
 import { join, resolve, relative, isAbsolute } from 'path';
 import { pathToFileURL } from 'url';
 
@@ -302,6 +302,27 @@ function assignReviewTier(files, options = {}) {
     // Resolve the path once for all file operations (prevents TOCTOU vulnerabilities)
     const resolvedFile = resolve(projectRoot, file);
 
+    // SECURITY: Prevent symlink escapes by verifying realpath stays within project root
+    let realResolvedFile = resolvedFile;
+    if (existsSync(resolvedFile)) {
+      try {
+        const realProjectRoot = realpathSync(projectRoot);
+        realResolvedFile = realpathSync(resolvedFile);
+        const realRel = relative(realProjectRoot, realResolvedFile);
+        if (realRel === '' || realRel.startsWith('..') || isAbsolute(realRel)) {
+          warnings.push(`Skipping symlinked file outside project root: ${sanitizePath(file)}`);
+          continue;
+        }
+      } catch (error) {
+        // realpathSync can fail on permission issues; skip file safely
+        const errorMsg = error && typeof error === 'object' && 'message' in error
+          ? error.message
+          : String(error);
+        warnings.push(`Could not resolve real path: ${sanitizePath(errorMsg)}`);
+        continue;
+      }
+    }
+
     // Assign tier by path (pass all files for conditional checks)
     const pathTier = assignTierByPath(file, files);
     if (pathTier.tier > highestTier) {
@@ -313,10 +334,10 @@ function assignReviewTier(files, options = {}) {
       reasons.push(pathTier.reason);
     }
 
-    // Check file content if it exists (use resolved path for security)
-    if (existsSync(resolvedFile)) {
+    // Check file content if it exists (use realpath for security against symlink attacks)
+    if (existsSync(realResolvedFile)) {
       try {
-        const content = readFileSync(resolvedFile, 'utf-8');
+        const content = readFileSync(realResolvedFile, 'utf-8');
 
         // Check for escalation triggers
         const fileEscalations = checkEscalationTriggers(file, content);

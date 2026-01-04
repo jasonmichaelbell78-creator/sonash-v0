@@ -12,4 +12,4 @@ Project continues to use Firebase as backend. Any future migration analysis shou
 
 ---
 
-**Archive Location:** [docs/archive/SUPABASE_MIGRATION_ANALYSIS.md](./docs/archive/SUPABASE_MIGRATION_ANALYSIS.md)
+**Archive Location:** [docs/archive/SUPABASE_MIGRATION_ANALYSIS.md](./SUPABASE_MIGRATION_ANALYSIS.md)

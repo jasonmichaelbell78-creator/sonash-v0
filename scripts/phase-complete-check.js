@@ -357,10 +357,17 @@ async function main() {
   console.log('━━━ AUTOMATED CHECKS ━━━');
   console.log('');
 
-  // Helper to sanitize paths in output
+  // Helper to sanitize paths and control characters in output
   const sanitizeOutput = (output) => {
     if (!output) return '';
     return String(output)
+      .replace(/\r$/, '') // strip trailing CR from Windows CRLF line endings
+      // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
+      // eslint-disable-next-line no-control-regex
+      .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      // Strip control chars while preserving safe whitespace (\t\n\r)
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       .replace(/\/home\/[^/\s]+/g, '[HOME]')
       .replace(/\/Users\/[^/\s]+/g, '[HOME]')
       .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
@@ -368,9 +375,14 @@ async function main() {
 
   // Lint check - capture and sanitize output to avoid exposing paths
   // Note: Using stdio: 'pipe' for cross-platform compatibility (avoids shell-dependent 2>&1)
+  // Using maxBuffer: 10MB to prevent buffer overflow on large output
   console.log('▶ Running ESLint...');
   try {
-    const lintOutput = execSync('npm run lint', { encoding: 'utf-8', stdio: 'pipe' });
+    const lintOutput = execSync('npm run lint', {
+      encoding: 'utf-8',
+      stdio: 'pipe',
+      maxBuffer: 10 * 1024 * 1024,
+    });
     console.log(sanitizeOutput(lintOutput));
     console.log('  ✅ ESLint passed');
   } catch (err) {
@@ -384,9 +396,14 @@ async function main() {
 
   // Test check - capture and sanitize output
   // Note: Using stdio: 'pipe' for cross-platform compatibility
+  // Using maxBuffer: 10MB to prevent buffer overflow on large output
   console.log('▶ Running tests...');
   try {
-    const testOutput = execSync('npm test', { encoding: 'utf-8', stdio: 'pipe' });
+    const testOutput = execSync('npm test', {
+      encoding: 'utf-8',
+      stdio: 'pipe',
+      maxBuffer: 10 * 1024 * 1024,
+    });
     // Only show summary, not full output (too verbose)
     const lines = testOutput.split('\n');
     const summaryLines = lines.filter(l =>

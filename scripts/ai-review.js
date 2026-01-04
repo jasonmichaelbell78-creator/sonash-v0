@@ -59,7 +59,8 @@ const config = {
 };
 
 args.forEach(arg => {
-  const [key, value] = arg.split('=');
+  const [key, ...rest] = arg.split('=');
+  const value = rest.join('=');
   if (key === '--type') config.type = value;
   if (key === '--file') config.file = value;
   if (key === '--staged') config.staged = true;
@@ -117,6 +118,10 @@ if (!REVIEW_TYPES[config.type]) {
  * Extract prompt from review-prompts.md
  */
 function extractPrompt(type) {
+  if (!fs.existsSync(REVIEW_PROMPTS_FILE)) {
+    throw new Error(`Review prompts file not found: ${REVIEW_PROMPTS_FILE}`);
+  }
+
   const reviewTypeConfig = REVIEW_TYPES[type];
   const promptsFile = fs.readFileSync(REVIEW_PROMPTS_FILE, 'utf-8');
 
@@ -145,12 +150,27 @@ function extractPrompt(type) {
 /**
  * Check if a file path is safely contained within project root
  * Prevents path traversal attacks when reading files from CLI args
+ * Uses realpath to prevent symlink-based escapes
  */
 function isPathContained(filePath) {
   try {
     const projectRoot = process.cwd();
     const resolvedPath = path.resolve(projectRoot, filePath);
-    const rel = path.relative(projectRoot, resolvedPath);
+
+    // SECURITY: Use realpath to prevent symlink escapes
+    // Note: realpathSync throws if path doesn't exist, so we check existence first
+    // For non-existent files, we fall back to resolved path comparison
+    let realRoot, realResolved;
+    try {
+      realRoot = fs.realpathSync(projectRoot);
+      realResolved = fs.realpathSync(resolvedPath);
+    } catch {
+      // File doesn't exist yet, use resolved path for validation
+      realRoot = projectRoot;
+      realResolved = resolvedPath;
+    }
+
+    const rel = path.relative(realRoot, realResolved);
     // Path is contained if:
     // 1. Not empty (exact root match)
     // 2. Doesn't start with '..' (traversal)
@@ -222,6 +242,7 @@ function getFilesToReview() {
 /**
  * Read file content
  * SECURITY: Blocks reading sensitive files (.env, credentials, keys, etc.)
+ *           Also blocks reading files outside the project root
  */
 function readFileContent(filePath) {
   // SECURITY: Block reading sensitive files to prevent exfiltration
@@ -229,6 +250,12 @@ function readFileContent(filePath) {
     console.error(`🚫 BLOCKED: Refusing to read sensitive file: ${path.basename(filePath)}`);
     console.error('   This file may contain secrets and should not be piped to external tools.');
     console.error('   Remove this file from staging or use a different review method.');
+    return null;
+  }
+
+  // SECURITY: Last-line containment check (covers --staged and direct calls)
+  if (!isPathContained(filePath)) {
+    console.error(`🚫 BLOCKED: Refusing to read file outside project root: ${sanitizePath(filePath)}`);
     return null;
   }
 
@@ -241,7 +268,11 @@ function readFileContent(filePath) {
       return fs.readFileSync(filePath, 'utf-8');
     }
   } catch (error) {
-    console.error(`Error reading file ${sanitizePath(filePath)}:`, sanitizePath(error.message));
+    // Handle non-Error throws safely
+    const errorMsg = error && typeof error === 'object' && 'message' in error
+      ? error.message
+      : String(error);
+    console.error(`Error reading file ${sanitizePath(filePath)}:`, sanitizePath(errorMsg));
     return null;
   }
 }
@@ -270,7 +301,7 @@ function formatReviewRequest(prompt, files) {
         request += content;
         request += '\n```\n\n';
       } else {
-        console.warn(`Warning: Skipping file (could not read content)`);
+        console.warn(`Warning: Skipping file ${file} (could not read content)`);
       }
     });
   }

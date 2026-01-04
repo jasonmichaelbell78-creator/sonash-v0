@@ -434,12 +434,12 @@ if git diff --cached --name-only | grep -qE 'package\.json$'; then
   echo "📦 Reviewing dependencies..."
   RESULT=$(node scripts/ai-review.js --type=dependencies --file=package.json --output=json)
 
-  # Check for high security issues
-  HIGH_SECURITY=$(echo "$RESULT" | jq -r '.findings[] | select(.severity=="CRITICAL" or .severity=="HIGH") | select(.category=="SECURITY") | length')
+  # Check for high security issues (count critical/high security findings)
+  HIGH_SECURITY=$(echo "$RESULT" | jq -r '[.findings[]? | select((.severity=="CRITICAL" or .severity=="HIGH") and .category=="SECURITY")] | length')
 
-  if [ -n "$HIGH_SECURITY" ]; then
-    echo "⚠️  Security vulnerabilities in dependencies"
-    echo "$RESULT" | jq -r '.findings[] | select(.category=="SECURITY") | "  - \(.package): \(.issue)"'
+  if [ "$HIGH_SECURITY" -gt 0 ]; then
+    echo "⚠️  Security vulnerabilities in dependencies ($HIGH_SECURITY)"
+    echo "$RESULT" | jq -r '.findings[]? | select(.category=="SECURITY") | "  - \(.package): \(.issue)"'
     BLOCKED=1
   fi
 fi
