@@ -10,6 +10,7 @@
 import admin from "firebase-admin"
 import { readFileSync } from "fs"
 import { join } from "path"
+import { sanitizeError } from "./lib/sanitize-error.js"
 
 // Initialize Firebase Admin
 const serviceAccountPath = join(process.cwd(), "firebase-service-account.json")
@@ -37,7 +38,8 @@ async function setAdminClaim(email: string) {
         if ((error as { code?: string }).code === "auth/user-not-found") {
             console.error(`❌ User not found: ${email}`)
         } else {
-            console.error("❌ Error setting admin claim:", error)
+            // Use sanitizeError to avoid exposing sensitive paths
+            console.error("❌ Error setting admin claim:", sanitizeError(error))
         }
         process.exit(1)
     }

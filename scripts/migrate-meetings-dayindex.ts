@@ -12,6 +12,7 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as path from 'path';
 import * as fs from 'fs';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 // Day name to index mapping (0=Sunday, 1=Monday, ..., 6=Saturday)
 // Day name to index mapping (0=Sunday, 1=Monday, ..., 6=Saturday)
@@ -44,7 +45,8 @@ async function migrateMeetings() {
         } else {
             console.error('❌ Failed to initialize Firebase Admin. Make sure firebase-service-account.json exists.');
             console.error('   This file should be in the project root.\n');
-            console.error('Error details:', error);
+            // Use sanitizeError to avoid exposing sensitive paths
+            console.error('Error details:', sanitizeError(error));
             process.exit(1);
         }
     }
@@ -143,7 +145,8 @@ async function migrateMeetings() {
 
     } catch (error) {
         console.error('\n❌ Migration failed:');
-        console.error(error);
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error(sanitizeError(error));
         process.exit(1);
     }
 }
@@ -154,6 +157,7 @@ migrateMeetings()
         process.exit(0);
     })
     .catch((error) => {
-        console.error('Unexpected error:', error);
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error('Unexpected error:', sanitizeError(error));
         process.exit(1);
     });

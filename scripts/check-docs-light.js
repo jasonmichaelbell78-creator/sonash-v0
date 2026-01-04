@@ -28,6 +28,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join, dirname, basename, relative, extname } from 'path';
 import { fileURLToPath } from 'url';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -634,9 +635,7 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error('❌ Unexpected error:', error.message);
-  if (VERBOSE) {
-    console.error(error.stack);
-  }
+  // Use sanitizeError to avoid exposing sensitive paths in CI logs
+  console.error('❌ Unexpected error:', sanitizeError(error));
   process.exit(1);
 }

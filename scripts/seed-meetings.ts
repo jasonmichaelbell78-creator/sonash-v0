@@ -8,6 +8,7 @@
 import admin from "firebase-admin"
 import { readFileSync } from "fs"
 import { join } from "path"
+import { sanitizeError } from "./lib/sanitize-error.js"
 
 // Initialize Firebase Admin
 const serviceAccountPath = join(process.cwd(), "firebase-service-account.json")
@@ -127,6 +128,7 @@ async function importMeetings() {
 }
 
 importMeetings().catch(error => {
-    console.error("❌ Import failed:", error)
+    // Use sanitizeError to avoid exposing sensitive paths
+    console.error("❌ Import failed:", sanitizeError(error))
     process.exit(1)
 })

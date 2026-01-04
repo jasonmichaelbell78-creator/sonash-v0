@@ -241,7 +241,8 @@ async function runMigration() {
                 await migrateUserData(userDoc.id, stats);
                 totalUsers++;
             } catch (error) {
-                console.error(`❌ Error migrating user ${userDoc.id}:`, error);
+                // Use sanitizeError to avoid exposing sensitive paths
+                console.error(`❌ Error migrating user ${userDoc.id}:`, sanitizeError(error));
                 // Continue to next user
             }
         }

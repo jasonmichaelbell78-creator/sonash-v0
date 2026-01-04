@@ -1,5 +1,6 @@
 
 import fetch from 'node-fetch';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 // Load from environment - never hardcode API keys
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "";
@@ -24,7 +25,8 @@ async function testGeocode() {
             console.log("Error Message:", data.error_message);
         }
     } catch (error) {
-        console.error("Fetch error:", error);
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error("Fetch error:", sanitizeError(error));
     }
 }
 

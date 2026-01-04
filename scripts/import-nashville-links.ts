@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { sanitizeError } from './lib/sanitize-error.js'
 
 // Initialize Firebase Admin
 if (getApps().length === 0) {
@@ -101,7 +102,8 @@ async function importNashvilleLinks() {
         })
 
     } catch (error) {
-        console.error('❌ Import failed:', error)
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error('❌ Import failed:', sanitizeError(error))
         throw error
     }
 }
@@ -110,6 +112,7 @@ async function importNashvilleLinks() {
 importNashvilleLinks()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error)
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error(sanitizeError(error))
         process.exit(1)
     })
