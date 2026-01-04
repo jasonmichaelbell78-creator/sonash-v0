@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.48 | 2026-01-04 | EFFECTIVENESS AUDIT: Fixed 26→0 violations in critical files; patterns:check now blocking |
 | 1.47 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 → claude.md v2.8 (12 patterns added) |
 | 1.46 | 2026-01-04 | Review #50: Audit trails, label auto-creation, .env multi-segment, biome-ignore |
 | 1.45 | 2026-01-04 | Review #49: Workflow hardening, robust module detection, dead code removal |
@@ -183,6 +184,37 @@ The pattern compliance checker surfaces known anti-patterns:
 - **Staged files**: `npm run patterns:check -- --staged`
 
 The checker references this log so you can find the detailed context for each pattern.
+
+### 📊 Pattern Effectiveness Audit
+
+**Last Audit:** 2026-01-04 (Session #23)
+**Next Audit Due:** After 10 new reviews or 2 weeks
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| Critical files (14) violations | 0 | 0 | ✅ |
+| Full repo violations | 63 | <50 | ⚠️ |
+| Patterns in claude.md | 50+ | - | ✅ |
+| Reviews since last consolidation | 0 | <10 | ✅ |
+
+**Violation Categories (Full Repo):**
+| Pattern ID | Count | Action |
+|------------|-------|--------|
+| readfilesync-without-try | ~30 | Many false positives (migration scripts with try/catch) |
+| unsafe-error-message | ~15 | Some in old migration scripts |
+| Other patterns | ~18 | Mixed - some need fixes |
+
+**Audit Actions Taken (2026-01-04):**
+1. Fixed 2 genuine violations (archive-doc.js, validate-phase-completion.js)
+2. Fixed 4 violations in update-readme-status.js
+3. Updated pattern checker to reduce false positives (added pathExclude for verified files)
+4. Improved `unsafe-error-message` regex to detect `instanceof` before OR after `.message`
+5. Critical files (14) now at 0 violations
+
+**Recommendations:**
+- [ ] Gradually fix migration script violations (low priority - run once)
+- [x] Keep `patterns:check` blocking for critical files
+- [ ] Review full repo quarterly
 
 ---
 

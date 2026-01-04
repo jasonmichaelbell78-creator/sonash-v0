@@ -25,8 +25,14 @@ const PLAN_PATH = join(ROOT, 'docs', 'DOCUMENTATION_STANDARDIZATION_PLAN.md');
 function main() {
   console.log('🔍 Validating Phase Completion...\n');
 
-  // Read current plan
-  const content = readFileSync(PLAN_PATH, 'utf-8');
+  // Read current plan with error handling
+  let content;
+  try {
+    content = readFileSync(PLAN_PATH, 'utf-8');
+  } catch (err) {
+    console.error(`❌ Failed to read plan: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  }
 
   // Find all phases marked COMPLETE
   const phasePattern = /## 📋 (PHASE \d+(?:\.\d+)?:[^*\n]+)\n\n\*\*Status:\*\* COMPLETE/g;

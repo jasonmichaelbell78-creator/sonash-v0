@@ -82,7 +82,7 @@ function safeReadFile(filePath, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to read ${description}: ${error.message}`
+      error: `Failed to read ${description}: ${error instanceof Error ? error.message : String(error)}`
     };
   }
 }
@@ -108,7 +108,7 @@ function safeWriteFile(filePath, content, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to write ${description}: ${error.message}`
+      error: `Failed to write ${description}: ${error instanceof Error ? error.message : String(error)}`
     };
   }
 }
@@ -382,7 +382,8 @@ See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.`;
 function updateReadme(readmeContent, newStatusSection) {
   // Find and replace the Project Status section
   // Match from "## Project Status" to the next "## " heading or end of file
-  const statusPattern = /## Project Status[\s\S]*?(?=\n## [^#]|\n## $|$)/;
+  // Note: Use \r?\n to handle both Unix (LF) and Windows (CRLF) line endings
+  const statusPattern = /## Project Status[\s\S]*?(?=\r?\n## [^#]|\r?\n## $|$)/;
 
   if (statusPattern.test(readmeContent)) {
     const updated = readmeContent.replace(statusPattern, newStatusSection + '\n\n');

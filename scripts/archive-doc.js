@@ -112,7 +112,7 @@ function validatePathWithinRepo(filePath) {
   } catch (err) {
     return {
       valid: false,
-      error: `Cannot validate path: ${err.message}`
+      error: `Cannot validate path: ${err instanceof Error ? err.message : String(err)}`
     };
   }
 }

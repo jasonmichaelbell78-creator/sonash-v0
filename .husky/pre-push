@@ -26,17 +26,18 @@ if ! npm run deps:circular > /dev/null 2>&1; then
 fi
 echo "  ✅ No circular dependencies"
 
-# 3. Run pattern compliance check
-# NOTE: Currently set to WARN (not block) because legacy code has violations
-# TODO: Change back to blocking once violations are fixed (tracked in ROADMAP.md)
+# 3. Run pattern compliance check (BLOCKING - 14 critical files)
+# Fixed 2026-01-04: Legacy violations resolved (Session #23)
+# Note: Uses default file list (critical files). Full repo check (--all) may have violations in migration scripts.
 echo "  ▶ Running pattern compliance check..."
 if ! npm run patterns:check > /dev/null 2>&1; then
-  echo "  ⚠️  Pattern compliance warnings found"
-  npm run patterns:check 2>&1 | grep -E "Found [0-9]+ potential" || true
-  echo "  (Not blocking push - legacy violations exist. Run: npm run patterns:check)"
-else
-  echo "  ✅ Pattern compliance passed"
+  echo "  ❌ Pattern compliance violations found"
+  npm run patterns:check 2>&1 | grep -E "^📄|Found [0-9]+ potential" || npm run patterns:check 2>&1 | tail -15
+  echo ""
+  echo "  Fix pattern violations before pushing. Run: npm run patterns:check"
+  exit 1
 fi
+echo "  ✅ Pattern compliance passed"
 
 # 4. Type check
 echo "  ▶ Running type check..."
