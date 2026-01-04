@@ -80,7 +80,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2
+**Reviews since last consolidation:** 3
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -2884,6 +2884,42 @@ The error persisted because of multiple interacting issues:
    - Note: Already using node for JSON parsing, so no new dependency
 
 **Key Insight:** Shell script security requires multiple layers: input rejection (option-like, multiline), normalization (backslashes), specific pattern matching (traversal segments not broad globs), and portable implementations (Node.js over GNU-specific tools).
+
+---
+
+#### Review #43: Qodo/CodeRabbit Additional Hardening (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #19 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of hardening for pattern-check.sh and check-pattern-compliance.js.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | grep alternation pattern failing | 🔴 High | Bug | Use `grep -E` for extended regex |
+| 2 | Windows drive paths bypass | 🟠 Medium | Security | Block `C:/...` after backslash normalization |
+| 3 | UNC paths bypass | 🟠 Medium | Security | Block `//server/...` paths |
+| 4 | Root project dir bypass | 🟡 Low | Security | Reject if `REAL_PROJECT = "/"` |
+| 5 | Path regex fails on Windows | 🟡 Low | Portability | Normalize backslashes before pathFilter/pathExclude |
+
+**Patterns Identified:**
+
+1. **grep -E for Alternation** (1 occurrence - Bug)
+   - Root cause: Basic grep treats `\|` literally, not as alternation
+   - Prevention: Always use `grep -E` for alternation patterns
+   - Pattern: `grep -E "a|b|c"` not `grep "a\|b\|c"`
+   - Note: This was silently failing, outputting nothing
+
+2. **Block Post-Normalization Absolute Paths** (2 occurrences - Security)
+   - Root cause: `C:\foo` becomes `C:/foo` after normalization, still absolute
+   - Prevention: Check for `[A-Za-z]:*` and `//*` after backslash conversion
+   - Pattern: `case "$path" in /* | //* | [A-Za-z]:* ) reject ;; esac`
+   - Note: Must check AFTER normalization, not before
+
+**Key Insight:** Post-normalization validation is critical - converting backslashes to forward slashes changes the attack surface. Windows paths like `C:\foo` become `C:/foo` which bypasses Unix-style `/` prefix checks. Always validate after all normalization is complete.
 
 ---
 
