@@ -92,8 +92,8 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **As Needed** (Reference When Relevant):
 
 5. **Planning Documents** (when working on specific features):
-   - [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) - **CURRENT BLOCKER** - Unified improvement roadmap
-   - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - Coordinated under integrated plan
+   - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) - **CURRENT BLOCKER** - Unified improvement roadmap
+   - [DOCUMENTATION_STANDARDIZATION_PLAN.md](docs/DOCUMENTATION_STANDARDIZATION_PLAN.md) - Coordinated under integrated plan
    - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Pending Delta Review
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
@@ -105,11 +105,11 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
-   - [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
+   - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
    - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
 9. **Standards** (when creating/updating docs):
-   - [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
+   - [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
 
 ---
 
@@ -139,7 +139,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **⚠️ IMPORTANT**: CodeRabbit reviews occur multiple times daily and must be processed systematically.
 
-**See**: [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for complete workflow
+**See**: [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) for complete workflow
 
 **Quick Reference**:
 1. **Categorize** suggestions: Critical → Major → Minor → Trivial
@@ -254,7 +254,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 - [ ] Required sections present (per tier)
 - [ ] Links work
 - [ ] No typos
-- [ ] Follows [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
+- [ ] Follows [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
 
 ---
 
@@ -290,10 +290,10 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 → [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
 
 **How to Process CodeRabbit Reviews**:
-→ [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
+→ [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
 
 **Documentation Standards**:
-→ [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)
+→ [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
 
 **Specific Feature Plans**:
 → Check `docs/` for feature-specific plans
@@ -493,7 +493,7 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 
 ### Scenario 3: Processing CodeRabbit Feedback
 
-1. Follow [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
+1. Follow [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
 2. Categorize all suggestions
 3. Triage using decision matrix
 4. Implement accepted changes
@@ -502,7 +502,7 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 
 ### Scenario 4: Documentation-Only Work
 
-1. Check which tier doc belongs to ([DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md))
+1. Check which tier doc belongs to ([DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md))
 2. Use appropriate template from `docs/templates/`
 3. Follow metadata requirements
 4. Validate links and formatting

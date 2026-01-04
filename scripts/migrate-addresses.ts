@@ -11,6 +11,7 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as path from 'path';
 import * as fs from 'fs';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 async function migrateAddresses() {
     console.log('🚀 Starting address migration...\n');
@@ -25,7 +26,8 @@ async function migrateAddresses() {
         console.log('✅ Firebase Admin initialized\n');
     } catch (error) {
         console.error('❌ Failed to initialize Firebase Admin.');
-        console.error(error);
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error(sanitizeError(error));
         process.exit(1);
     }
 
@@ -90,7 +92,8 @@ async function migrateAddresses() {
         console.log('='.repeat(60));
 
     } catch (error) {
-        console.error('\n❌ Migration failed:', error);
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error('\n❌ Migration failed:', sanitizeError(error));
         process.exit(1);
     }
 }
@@ -98,6 +101,7 @@ async function migrateAddresses() {
 migrateAddresses()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error('Unexpected error:', error);
+        // Use sanitizeError to avoid exposing sensitive paths
+        console.error('Unexpected error:', sanitizeError(error));
         process.exit(1);
     });

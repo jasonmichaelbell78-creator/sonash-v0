@@ -19,6 +19,7 @@ import { execSync } from 'child_process';
 import * as readline from 'readline';
 import * as fs from 'fs';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -356,23 +357,79 @@ async function main() {
   console.log('━━━ AUTOMATED CHECKS ━━━');
   console.log('');
 
-  // Lint check - rely on exit code, not output parsing
+  // Helper to sanitize paths and control characters in output
+  const sanitizeOutput = (output) => {
+    if (!output) return '';
+    return String(output)
+      // Normalize Windows CRLF to LF everywhere
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '')
+      // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping ANSI escape sequences for CI safety
+      .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '') // eslint-disable-line no-control-regex
+      // Strip OSC escape sequences (Operating System Commands like title changes)
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping OSC escape sequences for CI safety
+      .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, '') // eslint-disable-line no-control-regex
+      // Strip control chars while preserving safe whitespace (\t\n)
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex
+      .replace(/\/home\/[^/\s]+/g, '[HOME]')
+      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
+  };
+
+  // Lint check - capture and sanitize output to avoid exposing paths
+  // Note: Using stdio: 'pipe' for cross-platform compatibility (avoids shell-dependent 2>&1)
+  // Using maxBuffer: 10MB to prevent buffer overflow on large output
   console.log('▶ Running ESLint...');
   try {
-    execSync('npm run lint', { stdio: 'inherit' });
+    const lintOutput = execSync('npm run lint', {
+      encoding: 'utf-8',
+      stdio: 'pipe',
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    console.log(sanitizeOutput(lintOutput));
     console.log('  ✅ ESLint passed');
-  } catch {
+  } catch (err) {
+    // ESLint failed - show sanitized output (err.stdout/stderr captured by stdio: 'pipe')
+    if (err.stdout) console.log(sanitizeOutput(err.stdout));
+    if (err.stderr) console.error(sanitizeOutput(err.stderr));
     console.log('  ❌ ESLint has errors');
     failures.push('ESLint errors must be fixed');
     allPassed = false;
   }
 
-  // Test check
+  // Test check - capture and sanitize output
+  // Note: Using stdio: 'pipe' for cross-platform compatibility
+  // Using maxBuffer: 10MB to prevent buffer overflow on large output
   console.log('▶ Running tests...');
   try {
-    execSync('npm test 2>&1', { encoding: 'utf-8' });
+    const testOutput = execSync('npm test', {
+      encoding: 'utf-8',
+      stdio: 'pipe',
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    // Only show summary, not full output (too verbose)
+    // Use case-insensitive matching to catch PASS/FAIL/Tests: etc.
+    const lines = testOutput.split('\n');
+    const summaryLines = lines.filter(l => {
+      const lower = l.toLowerCase();
+      return lower.includes('tests') || lower.includes('pass') || lower.includes('fail') || lower.includes('skip');
+    });
+    if (summaryLines.length > 0) {
+      console.log(sanitizeOutput(summaryLines.join('\n')));
+    }
     console.log('  ✅ Tests passed');
-  } catch {
+  } catch (err) {
+    // Tests failed - show sanitized error output (err.stdout/stderr captured by stdio: 'pipe')
+    if (err.stdout) {
+      const sanitized = sanitizeOutput(err.stdout);
+      // Show last 20 lines to see failure info
+      const lines = sanitized.split('\n').slice(-20);
+      console.log(lines.join('\n'));
+    }
+    if (err.stderr) console.error(sanitizeOutput(err.stderr));
     console.log('  ❌ Tests failed');
     failures.push('Tests must pass');
     allPassed = false;
@@ -469,19 +526,41 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  // Sanitize error output - avoid exposing file paths, stack traces, and control characters
-  // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
-  // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
-  const safeMessage = String(err?.message ?? err ?? 'Unknown error')
-    .split('\n')[0]
-    .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
-    // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    .replace(/\/home\/[^/\s]+/g, '[HOME]')
-    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-    .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
-  console.error('Script error:', safeMessage);
-  closeRl();
-  process.exit(1);
-});
+// Export functions for testing
+export {
+  extractDeliverablesFromPlan,
+  verifyDeliverable,
+  runAutomatedDeliverableAudit
+};
+
+// Only run main() when executed directly (not when imported for testing)
+// Use pathToFileURL for cross-platform compatibility (Windows paths use backslashes)
+// Wrap in try-catch for robust handling of edge cases (relative paths, symlinks, etc.)
+let isMainModule = false;
+try {
+  isMainModule =
+    !!process.argv[1] &&
+    import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+} catch {
+  isMainModule = false;
+}
+
+if (isMainModule) {
+  main().catch(err => {
+    // Sanitize error output - avoid exposing file paths, stack traces, and control characters
+    // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+    // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
+    const safeMessage = String(err?.message ?? err ?? 'Unknown error')
+      .split('\n')[0]
+      .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex -- intentional: strip control chars
+      .replace(/\/home\/[^/\s]+/g, '[HOME]')
+      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
+    console.error('Script error:', safeMessage);
+    closeRl();
+    process.exit(1);
+  });
+}

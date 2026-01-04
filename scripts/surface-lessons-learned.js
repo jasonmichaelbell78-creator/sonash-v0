@@ -2,7 +2,7 @@
 /**
  * Surface Lessons Learned - Session Start Helper
  *
- * Searches AI_REVIEW_LEARNINGS_LOG.md for relevant past issues
+ * Searches docs/AI_REVIEW_LEARNINGS_LOG.md for relevant past issues
  * based on current work context (modified files, keywords).
  *
  * Usage:
@@ -18,8 +18,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import { pathToFileURL } from 'url';
 
-const LEARNINGS_FILE = 'AI_REVIEW_LEARNINGS_LOG.md';
+const LEARNINGS_FILE = 'docs/AI_REVIEW_LEARNINGS_LOG.md';
 
 // Common topic keywords and their aliases
 const TOPIC_ALIASES = {
@@ -242,7 +243,7 @@ function findRelevantLessons(lessons, topics) {
  */
 function formatLessons(lessons, _topics) {
   if (lessons.length === 0) {
-    return '  📚 No specific lessons found for these topics.\n     Check AI_REVIEW_LEARNINGS_LOG.md for all patterns.';
+    return '  📚 No specific lessons found for these topics.\n     Check docs/AI_REVIEW_LEARNINGS_LOG.md for all patterns.';
   }
 
   // Sanitize content from file before terminal output (prevent control char injection)
@@ -269,7 +270,7 @@ function formatLessons(lessons, _topics) {
   }
 
   if (lessons.length > 5) {
-    output += `\n  ... and ${lessons.length - 5} more lessons (see AI_REVIEW_LEARNINGS_LOG.md)\n`;
+    output += `\n  ... and ${lessons.length - 5} more lessons (see docs/AI_REVIEW_LEARNINGS_LOG.md)\n`;
   }
 
   return output;
@@ -332,24 +333,50 @@ async function main() {
   }
 
   console.log('');
-  console.log('  📖 Full log: AI_REVIEW_LEARNINGS_LOG.md');
+  console.log('  📖 Full log: docs/AI_REVIEW_LEARNINGS_LOG.md');
   console.log('');
 
   process.exit(0);
 }
 
-main().catch(err => {
-  // Avoid exposing sensitive paths in error messages
-  // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
-  // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
-  const safeMessage = String(err?.message ?? err ?? 'Unknown error')
-    .split('\n')[0]
-    .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
-    // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    .replace(/\/home\/[^/\s]+/g, '[HOME]')
-    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-    .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
-  console.error('Script error:', safeMessage);
-  process.exit(1);
-});
+// Export functions for testing
+export {
+  parseArgs,
+  detectTopicsFromGitChanges,
+  extractLessons,
+  extractKeywords,
+  findRelevantLessons,
+  formatLessons,
+  TOPIC_ALIASES
+};
+
+// Only run main() when executed directly (not when imported for testing)
+// Cross-platform: pathToFileURL handles Windows paths correctly
+// Wrap in try-catch for robust handling of edge cases (relative paths, symlinks, etc.)
+let isMainModule = false;
+try {
+  isMainModule =
+    !!process.argv[1] &&
+    import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+} catch {
+  isMainModule = false;
+}
+
+if (isMainModule) {
+  main().catch(err => {
+    // Avoid exposing sensitive paths in error messages
+    // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+    // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
+    const safeMessage = String(err?.message ?? err ?? 'Unknown error')
+      .split('\n')[0]
+      .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex -- intentional: strip control chars
+      .replace(/\/home\/[^/\s]+/g, '[HOME]')
+      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
+    console.error('Script error:', safeMessage);
+    process.exit(1);
+  });
+}

@@ -1,10 +1,10 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.9
+**Document Version:** 2.0
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-04
 **Status:** ACTIVE
-**Overall Completion:** 33%
+**Overall Completion:** 43% (3/7 steps)
 
 ---
 
@@ -33,13 +33,14 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 |------|-------|--------|------------|----------|
 | Step 1 | Quick Wins & Cleanup | **COMPLETE** | 100% | None |
 | Step 2 | Documentation Standardization Completion | **COMPLETE** | 100% | ~~Step 1~~ |
-| Step 3 | Developer Tooling Setup | **PENDING** | 0% | ~~Step 2~~ |
-| Step 4 | Delta Review & Refactor Plan Refresh | **PENDING** | 0% | Step 3 |
-| Step 5 | ROADMAP.md Integration & Doc Updates | **PENDING** | 0% | Step 4 |
-| Step 6 | Verification & Feature Resumption | **PENDING** | 0% | Step 5 |
+| Step 3 | Developer Tooling Setup | **COMPLETE** | 100% | ~~Step 2~~ |
+| Step 4 | Delta Review & Security Audit | **PENDING** | 0% | ~~Step 3~~ |
+| Step 5 | Review Policy Expansion | **PENDING** | 0% | Step 4 |
+| Step 6 | ROADMAP.md Integration & Doc Updates | **PENDING** | 0% | Step 5 |
+| Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
-**Overall Progress:** 2/6 steps complete (33%)
-**Effort Tracking:** ~5.5 hours actual (Steps 1-2) + 10-15 hours remaining (Steps 3-6) = ~15.5-20.5 hours total projected
+**Overall Progress:** 3/7 steps complete (43%)
+**Effort Tracking:** ~9 hours actual (Steps 1-3) + 12-18 hours remaining (Steps 4-7)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -51,19 +52,20 @@ flowchart LR
     subgraph Phase1["Foundation"]
         S1[Step 1\nQuick Wins]
         S2[Step 2\nDoc Standardization]
-    end
-
-    subgraph Phase2["Tooling"]
         S3[Step 3\nDeveloper Tooling]
     end
 
-    subgraph Phase3["Validation"]
-        S4[Step 4\nDelta Review]
-        S5[Step 5\nROADMAP Integration]
+    subgraph Phase2["Validation & Policy"]
+        S4[Step 4\nDelta Review\n+ Security Audit]
+        S5[Step 5\nReview Policy\nExpansion]
+    end
+
+    subgraph Phase3["Integration"]
+        S6[Step 6\nROADMAP Integration]
     end
 
     subgraph Phase4["Completion"]
-        S6[Step 6\nVerification]
+        S7[Step 7\nVerification]
     end
 
     S1 --> S2
@@ -71,21 +73,23 @@ flowchart LR
     S3 --> S4
     S4 --> S5
     S5 --> S6
+    S6 --> S7
 
-    S6 --> FR[Feature Resumption\nM1.5, M1.6, M3+]
+    S7 --> FR[Feature Resumption\nM1.5, M1.6, M3+]
 
     style S1 fill:#90EE90
     style S2 fill:#90EE90
-    style S3 fill:#FFE4B5
+    style S3 fill:#90EE90
     style S4 fill:#FFE4B5
     style S5 fill:#FFE4B5
     style S6 fill:#FFE4B5
+    style S7 fill:#FFE4B5
     style FR fill:#ADD8E6
 ```
 
 **Legend:** 🟢 Complete | 🟡 Pending | 🔵 Future
 
-**Critical Path:** Step 1 → Step 2 → Step 3 → Step 4 → Step 5 → Step 6
+**Critical Path:** Step 1 → Step 2 → Step 3 → Step 4 → Step 5 → Step 6 → Step 7
 
 ---
 
@@ -294,9 +298,10 @@ Complete the remaining phases (5-6) of DOCUMENTATION_STANDARDIZATION_PLAN.md.
 
 ## Step 3: Developer Tooling Setup
 
-**Status:** PENDING
-**Completion:** 0%
-**Estimated Effort:** 3-4 hours
+**Status:** COMPLETE
+**Completion:** 100%
+**Completed:** 2026-01-04 (Session #20)
+**Actual Effort:** ~3.5 hours
 **Dependencies:** Step 2
 **Risk Level:** Low
 
@@ -306,7 +311,7 @@ Install and configure developer tooling that was identified as missing during th
 
 ### Tasks
 
-- [ ] **Task 3.1**: Install and configure Prettier (1 hour)
+- [x] **Task 3.1**: Install and configure Prettier (1 hour)
   - `npm install --save-dev prettier`
   - Create `.prettierrc` with project config
   - Create `.prettierignore` for exclusions
@@ -315,48 +320,48 @@ Install and configure developer tooling that was identified as missing during th
   - Run initial format on codebase
   - Commit formatted changes
 
-- [ ] **Task 3.2**: Install and configure madge (0.5 hours)
+- [x] **Task 3.2**: Install and configure madge (0.5 hours)
   - `npm install --save-dev madge`
   - Add `npm run deps:circular` script
   - Run initial check, document any existing circular deps
   - Add to CI pipeline (warn, don't block initially)
 
-- [ ] **Task 3.3**: Install and configure knip (0.5 hours)
+- [x] **Task 3.3**: Install and configure knip (0.5 hours)
   - `npm install --save-dev knip`
   - Create `knip.json` config
   - Add `npm run deps:unused` script
   - Run initial check, document findings
   - Add to CI pipeline (warn, don't block initially)
 
-- [ ] **Task 3.4**: Document tooling in DEVELOPMENT.md (1 hour)
+- [x] **Task 3.4**: Document tooling in DEVELOPMENT.md (1 hour)
   - Add "Code Quality Tools" section
   - Document Prettier usage and configuration
   - Document madge usage for circular dep detection
   - Document knip usage for unused export detection
   - Add to "Definition of Done" checklist
 
-- [ ] **Task 3.5**: Update CI/CD pipeline (0.5 hours)
+- [x] **Task 3.5**: Update CI/CD pipeline (0.5 hours)
   - Add Prettier check to GitHub Actions
   - Add madge check (warning only)
   - Add knip check (warning only)
 
-- [ ] **Task 3.6**: CI-level lint enforcement (1 hour) - *from Phase 6 backlog*
+- [x] **Task 3.6**: CI-level lint enforcement (1 hour) - *from Phase 6 backlog*
   - Add `npm run lint` to GitHub Actions ci.yml workflow
   - Ensure lint runs on all PRs, not just pre-commit
   - Fail PR checks if lint errors found
   - Document in DEVELOPMENT.md
 
-- [ ] **Task 3.7**: Test coverage for new scripts (1.5 hours) - *from Sprint Backlog A3* **DO FIRST**
+- [x] **Task 3.7**: Test coverage for new scripts (1.5 hours) - *from Sprint Backlog A3* **DO FIRST**
   - Add tests for `scripts/surface-lessons-learned.js`
   - Add tests for enhanced `scripts/phase-complete-check.js` (--auto, --plan flags)
   - Ensure tests cover core functionality and edge cases
 
-- [ ] **Task 3.8**: Lint warning baseline (0.5 hours) - *from Sprint Backlog A1*
-  - Document 160 existing eslint-plugin-security warnings as baseline
+- [x] **Task 3.8**: Lint warning baseline (0.5 hours) - *from Sprint Backlog A1*
+  - Document 168 existing eslint-plugin-security warnings as baseline
   - Evaluate: accept as-is, configure plugin, or fix critical ones
   - Add baseline count to DEVELOPMENT.md for tracking
 
-- [ ] **Task 3.9**: Document location cleanup (1.5 hours) - *from Session #19 audit*
+- [x] **Task 3.9**: Document location cleanup (1.5 hours) - *from Session #19 audit*
   - **Context**: Audit found docs at root that should be in `docs/` folder
   - **Move to `docs/`** (7 files):
     - AI_REVIEW_PROCESS.md
@@ -378,20 +383,51 @@ Install and configure developer tooling that was identified as missing during th
 
 ### Acceptance Criteria
 
-- [ ] Prettier installed and configured
-- [ ] `npm run format` works
-- [ ] madge installed with `npm run deps:circular`
-- [ ] knip installed with `npm run deps:unused`
-- [ ] DEVELOPMENT.md documents all tools
-- [ ] CI pipeline updated with all checks
-- [ ] CI lint enforcement active (PRs fail on lint errors)
-- [ ] New scripts have test coverage (A3)
-- [ ] Lint warning baseline documented (A1)
-- [ ] Root docs reorganized (7 moved to `docs/`, 3 archived)
+- [x] Prettier installed and configured
+- [x] `npm run format` works
+- [x] madge installed with `npm run deps:circular`
+- [x] knip installed with `npm run deps:unused`
+- [x] DEVELOPMENT.md documents all tools
+- [x] CI pipeline updated with all checks
+- [x] CI lint enforcement active (PRs fail on lint errors)
+- [x] New scripts have test coverage (A3)
+- [x] Lint warning baseline documented (A1)
+- [x] Root docs reorganized (7 moved to `docs/`, 3 archived)
+
+### Step 3 Completion Audit
+
+**Audit performed by:** Claude
+**Audit date:** 2026-01-04
+
+#### Deliverable Verification
+| Deliverable | Status | Evidence |
+|-------------|--------|----------|
+| Prettier configured | ✅ | `.prettierrc`, `.prettierignore` created |
+| madge installed | ✅ | `npm run deps:circular` - 0 circular deps |
+| knip installed | ✅ | `npm run deps:unused` - baseline documented |
+| DEVELOPMENT.md updated | ✅ | Commit 181bae0 - Developer Tooling section |
+| CI pipeline updated | ✅ | Commit 4c04f33 - Prettier, madge, knip checks |
+| Pre-commit enhanced | ✅ | Prettier check (warning) added |
+| Pre-push enhanced | ✅ | Circular dependency check (blocking) added |
+| Script tests added | ✅ | 23 new tests for surface-lessons-learned.js and phase-complete-check.js |
+| Lint baseline documented | ✅ | 168 warnings in DEVELOPMENT.md |
+| Docs reorganized | ✅ | 7 docs moved to docs/, 3 archived |
+
+#### Validation Results
+- npm run lint: PASS (0 errors, 168 warnings)
+- npm test: 115/116 passing (1 skipped)
+- npm run patterns:check: 26 legacy violations (non-blocking)
+- npm run deps:circular: PASS (0 circular dependencies)
+
+#### Sign-off
+- [x] All deliverables verified
+- [x] All tasks completed
+- [x] Validation scripts pass
+- [x] Step marked COMPLETE in status dashboard
 
 ---
 
-## Step 4: Delta Review & Refactor Plan Refresh
+## Step 4: Delta Review & Security Audit
 
 **Status:** PENDING
 **Completion:** 0%
@@ -462,6 +498,14 @@ A Delta Review will refresh this plan with current context.
   - Focus on high-churn files and new patterns
   - Log findings in AI_REVIEW_LEARNINGS_LOG.md
 
+- [ ] **Task 4.9**: Create FIREBASE_CHANGE_POLICY.md (1 hour) - *foundation for Step 5*
+  - Document requirements for firestore.rules changes
+  - Document Cloud Functions security review process
+  - Define when security-auditor agent is REQUIRED
+  - Create review checklist for Firebase-related PRs
+  - **Benefits Task 4.7** (provides structure for security audit)
+  - **Benefits Step 5** (foundation for correction framework)
+
 ### Acceptance Criteria
 
 - [ ] All 45 CANON items categorized
@@ -472,15 +516,112 @@ A Delta Review will refresh this plan with current context.
 - [ ] Key rotation policy documented in SECURITY.md
 - [ ] Security audit completed for changed files (A2)
 - [ ] Commit backlog reviewed and findings logged (A4)
+- [ ] FIREBASE_CHANGE_POLICY.md created (foundation for Step 5)
 
 ---
 
-## Step 5: ROADMAP.md Integration & Doc Updates
+## Step 5: Review Policy Expansion
+
+**Status:** PENDING
+**Completion:** 0%
+**Estimated Effort:** 4-6 hours
+**Dependencies:** Step 4
+**Risk Level:** Low
+
+### Objectives
+
+Expand review policies beyond code to cover skills, agents, procedures, and configurations. Implement event-based triggers, usage verification, and correction mechanisms.
+
+### Background
+
+Brainstorming session (Session #21) identified gaps in review coverage:
+- Skills/agents have no usage verification
+- Procedures have no correction mechanisms
+- Triggers are time-based (unreliable) instead of event-based
+- Detection exists but correction is missing
+
+See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md) for full design.
+
+### Design Principles
+
+1. **Event-Based Triggers** (not time-based):
+   - Count-based: After N occurrences (commits, reviews, files)
+   - Threshold-based: When metric exceeds limit
+   - Completion-based: When milestone reached
+   - Delta-based: When change detected
+
+2. **Correction Framework**:
+   - Every detection has a corresponding correction
+   - Corrections are BLOCKING, REQUIRE_ACTION, WARN, or LOG
+   - Overrides require explicit justification
+   - Overrides are logged and reviewed
+
+3. **Usage Verification**:
+   - Track skill/agent invocations per session
+   - Verify expected usage based on activity
+   - Prompt for action or justification when missing
+
+### Tasks
+
+- [ ] **Task 5.1**: Create session activity logging infrastructure (1 hour)
+  - Create `scripts/log-session-activity.js`
+  - Log: file writes, skill invocations, commits, session start/end
+  - Output to `.claude/session-activity.jsonl`
+  - Integrate with session-start hook
+
+- [ ] **Task 5.2**: Create event-based trigger checker (1.5 hours)
+  - Create `scripts/check-triggers.js`
+  - Implement triggers: security_audit, consolidation, skill_validation
+  - Integrate with pre-push hook
+  - Blocking triggers prevent push, warning triggers inform
+
+- [ ] **Task 5.3**: Create skill/agent configuration validator (1 hour)
+  - Create `scripts/validate-skill-config.js`
+  - Validate SKILL.md structure (required sections)
+  - Check file references exist
+  - Check for deprecated patterns
+  - Integrate with pre-commit hook
+
+- [ ] **Task 5.4**: Create skill usage verifier (1 hour)
+  - Create `scripts/verify-skill-usage.js`
+  - Define rules: code-reviewer after writing, systematic-debugging after bug fix
+  - Check session activity against rules
+  - Integrate with session-end
+
+- [ ] **Task 5.5**: Create override logging system (0.5 hours)
+  - Create `.claude/override-log.jsonl` format
+  - Add override mechanism to blocking scripts
+  - Environment variable: `SKIP_REASON="reason" npm run check`
+
+- [ ] **Task 5.6**: Create SKILL_AGENT_POLICY.md (1 hour)
+  - Document skill/agent creation requirements
+  - Document expected usage patterns
+  - Document override policy
+  - Add examples
+
+- [ ] **Task 5.7**: Update session-end command (0.5 hours)
+  - Add skill usage verification step
+  - Add override review prompt
+  - Integrate with trigger checking
+
+### Acceptance Criteria
+
+- [ ] Session activity logging operational
+- [ ] Event-based triggers replace time-based
+- [ ] Skill/agent configs validated on change
+- [ ] Skill usage verified at session end
+- [ ] Override mechanism with logging
+- [ ] SKILL_AGENT_POLICY.md created
+- [ ] Pre-commit/pre-push hooks updated
+
+---
+
+## Step 6: ROADMAP.md Integration & Doc Updates
 
 **Status:** PENDING
 **Completion:** 0%
 **Estimated Effort:** 2-3 hours
-**Dependencies:** Step 4
+**Dependencies:** Step 5
 **Risk Level:** Low
 
 ### Objectives
@@ -489,35 +630,36 @@ Integrate validated refactor items into ROADMAP.md and update all documentation 
 
 ### Tasks
 
-- [ ] **Task 5.1**: Add "Developer Tooling" section to ROADMAP.md M2 (0.5 hours)
+- [ ] **Task 6.1**: Add "Developer Tooling" section to ROADMAP.md M2 (0.5 hours)
   - Add Prettier (ongoing enforcement)
   - Add madge (circular dependency detection)
   - Add knip (unused export detection)
   - Add ESLint import boundary rules (future, after feature folders)
   - Add Delta Review process documentation
+  - Add Review Policy Expansion items
 
-- [ ] **Task 5.2**: Migrate valid refactor items to ROADMAP.md M2 (1 hour)
+- [ ] **Task 6.2**: Migrate valid refactor items to ROADMAP.md M2 (1 hour)
   - Add items from Step 4 Task 4.3
   - Preserve severity and effort estimates
   - Group appropriately
   - Add dependencies where applicable
 
-- [ ] **Task 5.3**: Add App Check re-enablement to ROADMAP.md (0.5 hours)
+- [ ] **Task 6.3**: Add App Check re-enablement to ROADMAP.md (0.5 hours)
   - Add App Check re-enablement as M2 item (from Step 4 Task 4.4)
   - Include prerequisites and testing requirements
   - Link to detailed plan in docs/
 
-- [ ] **Task 5.4**: Update ROADMAP.md references (0.5 hours)
+- [ ] **Task 6.4**: Update ROADMAP.md references (0.5 hours)
   - Search and update all references to EIGHT_PHASE_REFACTOR_PLAN.md
   - Point to ROADMAP.md M2 for refactor items
   - Update Doc Standardization blocker status
 
-- [ ] **Task 5.5**: Update SESSION_CONTEXT.md (0.5 hours)
+- [ ] **Task 6.5**: Update SESSION_CONTEXT.md (0.5 hours)
   - Reflect completion of this improvement plan
   - Update current priorities
   - Set next session focus to feature work
 
-- [ ] **Task 5.6**: Final cross-reference audit (0.5 hours)
+- [ ] **Task 6.6**: Final cross-reference audit (0.5 hours)
   - Run `npm run docs:check`
   - Fix any broken links
   - Verify all archived docs properly referenced
@@ -533,12 +675,12 @@ Integrate validated refactor items into ROADMAP.md and update all documentation 
 
 ---
 
-## Step 6: Verification & Feature Resumption
+## Step 7: Verification & Feature Resumption
 
 **Status:** PENDING
 **Completion:** 0%
 **Estimated Effort:** 1-2 hours
-**Dependencies:** Step 5
+**Dependencies:** Step 6
 **Risk Level:** Low
 
 ### Objectives
@@ -547,26 +689,29 @@ Final verification that all improvement work is complete and feature development
 
 ### Tasks
 
-- [ ] **Task 6.1**: Run all validation scripts (0.5 hours)
+- [ ] **Task 7.1**: Run all validation scripts (0.5 hours)
   - `npm run docs:check` - all docs pass
   - `npm run format:check` - code formatted
   - `npm run deps:circular` - no new circular deps
   - `npm run deps:unused` - baseline documented
   - `npm run lint` - no lint errors
   - `npm run build` - builds successfully
+  - `npm run triggers:check` - all triggers operational
 
-- [ ] **Task 6.2**: Verify documentation completeness (0.5 hours)
+- [ ] **Task 7.2**: Verify documentation completeness (0.5 hours)
   - DOCUMENTATION_STANDARDIZATION_PLAN.md at 100%
   - This document (INTEGRATED_IMPROVEMENT_PLAN.md) at 100%
+  - FIREBASE_CHANGE_POLICY.md complete
+  - SKILL_AGENT_POLICY.md complete
   - All templates in place
   - AI_WORKFLOW.md current
 
-- [ ] **Task 6.3**: Update ROADMAP.md blocker status (0.5 hours)
+- [ ] **Task 7.3**: Update ROADMAP.md blocker status (0.5 hours)
   - Remove "Doc Standardization" blocker
   - Update M1.5, M1.6 status to "Ready"
   - Update overall progress percentage
 
-- [ ] **Task 6.4**: Mark this plan COMPLETE (0.5 hours)
+- [ ] **Task 7.4**: Mark this plan COMPLETE (0.5 hours)
   - Update status dashboard above
   - Set completion to 100%
   - Add completion date
@@ -687,6 +832,8 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0 | 2026-01-04 | Major update: Step 3 COMPLETE; Added Step 5 (Review Policy Expansion); Renumbered Steps 5-6 to 6-7; Added Task 4.9 (FIREBASE_CHANGE_POLICY foundation) |
+| 1.9 | 2026-01-04 | Session #20: Step 3 work completed (Prettier, madge, knip, CI updates, docs reorganization) |
 | 1.8 | 2026-01-03 | Added A1-A4 from sprint backlog: Tasks 3.7-3.8 (Step 3), Tasks 4.7-4.8 (Step 4) |
 | 1.7 | 2026-01-03 | Added Sprint Backlog Additions section for tracking emergent tasks |
 | 1.6 | 2026-01-03 | Added Mermaid dependency graph (replaced ASCII diagram); color-coded steps showing progress |
@@ -703,11 +850,11 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 ### Source Documents
 - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - Detailed Phase 5-6 tasks
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
-- [ROADMAP.md](./ROADMAP.md) - Product roadmap (target for integration)
-- [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Session handoff document
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
+- [ROADMAP.md](../ROADMAP.md) - Product roadmap (target for integration)
+- [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) - Session handoff document
 
 ### Related Documents
-- [AI_WORKFLOW.md](./AI_WORKFLOW.md) - AI navigation guide
-- [DEVELOPMENT.md](./DEVELOPMENT.md) - Developer setup (tooling target)
+- [AI_WORKFLOW.md](../AI_WORKFLOW.md) - AI navigation guide
+- [DEVELOPMENT.md](../DEVELOPMENT.md) - Developer setup (tooling target)
 - [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md) - Review learnings

@@ -157,7 +157,7 @@ When creating a new MCP integration:
         "filesystem-mcp@latest"
       ],
       "env": {
-        "ALLOWED_PATHS": "/home/user/projects,/tmp",
+        "ALLOWED_PATHS": "/home/<your-username>/projects,/tmp",
         "MAX_FILE_SIZE": "10485760",
         "ALLOWED_EXTENSIONS": ".js,.ts,.json,.md,.txt",
         "ENABLE_WRITE": "false"

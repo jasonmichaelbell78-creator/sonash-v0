@@ -22,7 +22,7 @@ This README serves as the **entry point** for the SoNash Recovery Notebook proje
 ## 📖 Documentation Index
 
 ### ⚠️ Current Initiative (Blocker)
-- **[INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)** - Unified improvement roadmap (blocks feature work)
+- **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)** - Unified improvement roadmap (blocks feature work)
 
 ### Core Documents (Tier 1)
 - **[ROADMAP.md](./ROADMAP.md)** - Product roadmap and feature planning
@@ -35,7 +35,7 @@ This README serves as the **entry point** for the SoNash Recovery Notebook proje
 
 ### AI & Development Workflow
 - **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - AI assistant navigation guide
-- **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - Code review process
+- **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - Code review process
 - **[claude.md](./claude.md)** - AI context and tribal knowledge
 
 ### Testing & QA
@@ -239,7 +239,7 @@ npm run lint
 
 **Test Status:** 89/91 passing (97.8%)
 
-See **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** for manual QA checklist.
+See **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** for manual QA checklist.
 
 ---
 

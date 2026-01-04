@@ -9,7 +9,7 @@
  *   npx ts-node scripts/migrate-to-journal.ts
  */
 
-import { sanitizeError } from './lib/sanitize-error';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
@@ -241,7 +241,8 @@ async function runMigration() {
                 await migrateUserData(userDoc.id, stats);
                 totalUsers++;
             } catch (error) {
-                console.error(`❌ Error migrating user ${userDoc.id}:`, error);
+                // Use sanitizeError to avoid exposing sensitive paths
+                console.error(`❌ Error migrating user ${userDoc.id}:`, sanitizeError(error));
                 // Continue to next user
             }
         }

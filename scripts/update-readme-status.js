@@ -26,6 +26,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -498,9 +499,20 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error('❌ Unexpected error:', error.message);
-  if (VERBOSE) {
-    console.error(error.stack);
+  // Defensive wrapper to prevent error handling from failing
+  const safe = (value) => {
+    try {
+      return sanitizeError(value);
+    } catch {
+      return 'Unknown error';
+    }
+  };
+
+  // Use sanitizeError to avoid exposing sensitive paths in CI logs
+  console.error('❌ Unexpected error:', safe(error));
+  // Show sanitized stack trace in verbose mode for debugging
+  if (VERBOSE && error && typeof error === 'object' && 'stack' in error && error.stack) {
+    console.error(safe(error.stack));
   }
   process.exit(1);
 }

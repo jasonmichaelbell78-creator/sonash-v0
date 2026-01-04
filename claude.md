@@ -53,8 +53,8 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **Google OAuth**: Requires specific COOP/COEP headers in `firebase.json` to work correctly in popups. Do not remove them.
 *   **Meeting Widgets**: Hoisting bugs in `setInterval` are common. Always define callbacks `useCallback` *before* the effect.
 
-### Code Review Patterns (from 18+ reviews)
-*Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md)*
+### Code Review Patterns (from 50 reviews)
+*Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)*
 
 > ⚠️ **SELF-AUDIT**: Before writing shell scripts, workflow files, or security-sensitive code, scan the patterns below. If you've made an error covered here before, STOP and fix it.
 
@@ -94,6 +94,10 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - **Bound user-controllable output**: Limit count (`.[0:50]`) and length (`${VAR:0:500}`) to prevent DoS
 - **Never expose secrets in hook output**: Only output safe metadata (names, not URLs/tokens)
 - **Never recommend committing .env files**: Use hosting/CI environment vars instead
+- **Symlink escape prevention**: After resolve(), use realpathSync() to verify real path stays within project root: `const real = fs.realpathSync(resolved); path.relative(realRoot, real)`
+- **Fail-closed on realpath errors**: If realpathSync fails but file exists, reject access: `catch { if (existsSync(path)) return false; }`
+- **PII masking in logs**: Use maskEmail(`user@domain.com`) → `u***@d***.com`, maskUid(`abc123xyz`) → `abc***xyz`
+- **Structured audit logging**: Emit JSON with timestamp, operator, action, target, result: `console.log('[AUDIT]', JSON.stringify({...}))`
 
 **GitHub Actions:**
 - Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)
@@ -102,20 +106,29 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Separate stderr: `cmd 2>err.log` to keep JSON output parseable
 - Always use explicit `${{ }}` in `if:` conditions to avoid YAML parser issues
 - Retry loops: Track success explicitly, don't assume loop exit means success
+- **String comparison for outputs**: Use `== '4'` not `== 4` in if conditions (outputs are strings)
+- **Label auto-creation**: Check getLabel, create on 404 before addLabels (fresh repos/forks)
+- **Event-specific actions**: Use `context.payload.action === 'opened'` to avoid spam on synchronize
+- **API error tolerance**: Catch 404/422 on removeLabel - label may already be gone
 
 **JavaScript/TypeScript:**
 - **MANDATORY: Sanitize error messages** - Strip sensitive paths/credentials before logging. Use `scripts/lib/sanitize-error.js` or inline sanitization. Do NOT log raw error.message to console.
 - **Error first line extraction**: `.split('\n')[0].replace(/\r$/, '')` - handles stack traces and Windows CRLF
 - **Control char stripping (safe whitespace)**: `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g` preserves \t\n\r for readability
+- **OSC escape stripping**: Add `/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g` alongside ANSI CSI stripping
 - **Sanitize file-derived content**: Apply control char stripping to ANY file content before console.log (not just errors)
 - Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
+- **Robust non-Error catch**: `error && typeof error === 'object' && 'message' in error ? error.message : String(error)`
 - Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
 - **Normalize backslashes before security checks**: `.replace(/\\/g, '/')` before splitting on `/` for path traversal
 - **CRLF in regex lookaheads**: Use `\r?\n` instead of `\n` for cross-platform regex patterns
 - Windows cross-drive: `path.relative()` returns absolute path across drives - check output for `/^[A-Za-z]:/`
+- **Windows path sanitization**: `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')` - use `gi` flag for all drives
 - Markdown links: `.replace(/\\/g, '/')` to normalize Windows backslashes
 - lstatSync can throw: Wrap in try-catch for permission denied, broken symlinks
 - Wrap ALL file reads in try/catch: existsSync doesn't guarantee readFileSync success (race, permissions)
+- **Main module detection**: Wrap in try-catch: `try { isMain = url === pathToFileURL(resolve(argv[1])).href } catch { isMain = false }`
+- **maxBuffer for execSync**: Set `maxBuffer: 10 * 1024 * 1024` (10MB) for large lint/test output
 
 **CI/Automation:**
 - **CI mode checks ALL, no truncation**: Limits are for interactive convenience only; `isAutoMode ? allItems : slice(0, MAX)`
@@ -140,7 +153,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **[DEVELOPMENT.md](./DEVELOPMENT.md)**: Setup, testing commands, directory structure.
 *   **[ROADMAP.md](./ROADMAP.md)**: What features are planned vs. completed.
 *   **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)**: Current sprint status, session tracking, recent context.
-*   **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)**: Manual verification steps.
+*   **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)**: Manual verification steps.
 
 ## 6. Available AI Capabilities
 
@@ -258,6 +271,7 @@ If I skipped a MUST-use agent → Note it and explain why in session summary.
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.8 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 → symlink escape, PII masking, audit logging, label auto-creation, OSC stripping, main module detection, maxBuffer |
 | 2.7 | 2026-01-03 | Added mandatory Agent/Skill/MCP/Hook/Script audit to session-end workflow |
 | 2.6 | 2026-01-03 | Added CodeRabbit CLI integration for autonomous code review loop |
 | 2.5 | 2026-01-03 | Split documentation triggers: MUST documentation-expert for new docs; aligned with AI_WORKFLOW.md |

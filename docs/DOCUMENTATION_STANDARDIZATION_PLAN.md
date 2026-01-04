@@ -2570,7 +2570,7 @@ Note: Errors are primarily from:
 
 Before marking a phase complete, you MUST run:
 
-1. **Deliverable Audit** (see [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure")
+1. **Deliverable Audit** (see [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure")
    - Verify all deliverables exist and are complete
    - Check all acceptance criteria met
    - Document in "What Was Accomplished" section

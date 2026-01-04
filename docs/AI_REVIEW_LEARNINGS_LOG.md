@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.40
+**Document Version:** 1.46
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-03
+**Last Updated:** 2026-01-04
 
 ## Purpose
 
@@ -10,7 +10,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 **Related Documents:**
 - **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - How to triage and handle reviews
-- **[claude.md](./claude.md)** - Distilled patterns (always in AI context)
+- **[claude.md](../claude.md)** - Distilled patterns (always in AI context)
 
 ---
 
@@ -18,6 +18,13 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.47 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 → claude.md v2.8 (12 patterns added) |
+| 1.46 | 2026-01-04 | Review #50: Audit trails, label auto-creation, .env multi-segment, biome-ignore |
+| 1.45 | 2026-01-04 | Review #49: Workflow hardening, robust module detection, dead code removal |
+| 1.44 | 2026-01-04 | Review #48: Security hardening, OSC escapes, fail-closed realpath, pathspec fixes |
+| 1.43 | 2026-01-04 | Review #47: PII masking, sensitive dirs, printf workflow, fault-tolerant labels |
+| 1.42 | 2026-01-04 | Review #46: Symlink protection, realpath hardening, buffer overflow, jq/awk fixes |
+| 1.41 | 2026-01-04 | Review #45: TOCTOU fix, error.message handling, path containment, tier matching, PR spam |
 | 1.40 | 2026-01-03 | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added) |
 | 1.39 | 2026-01-03 | Review #40: Qodo archive security, path containment, CRLF handling |
 | 1.38 | 2026-01-03 | Review #39: Qodo script robustness - explicit plan failure, terminal sanitization |
@@ -80,9 +87,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
+**✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
 ### When to Consolidate
 
@@ -1599,14 +1606,14 @@ The error persisted because of multiple interacting issues:
 ```markdown
 <!-- BAD: Mixed formats - one shows path, others don't -->
 **See also:**
-- [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [docs/SECURITY.md](./docs/SECURITY.md)  <!-- ❌ includes path -->
+- [ARCHITECTURE.md](../ARCHITECTURE.md)
+- [docs/SECURITY.md](./SECURITY.md)  <!-- ❌ includes path -->
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
 
 <!-- GOOD: Consistent format - all show just filename -->
 **See also:**
-- [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [SECURITY.md](./docs/SECURITY.md)  <!-- ✅ clean display text -->
+- [ARCHITECTURE.md](../ARCHITECTURE.md)
+- [SECURITY.md](./SECURITY.md)  <!-- ✅ clean display text -->
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
 ```
 
@@ -2631,7 +2638,7 @@ The error persisted because of multiple interacting issues:
 4. **Normalize Quoted/Prefixed Paths** (1 occurrence - Robustness)
    - Root cause: Plan documents may wrap paths in quotes/backticks or use ./ prefix
    - Prevention: Strip quotes, backticks, and leading ./ during normalization
-   - Pattern: `.replace(/^\.\/+/, '').replace(/^['"\`](.+)['"\`]$/, '$1')`
+   - Pattern: Strip `./` prefix, then unwrap quotes: `path.replace(/^\.\/+/, '').replace(/^["'](.*)["']$/, '$1')`
    - Note: Apply before checking path existence
 
 5. **Never Recommend Committing .env Files** (1 occurrence - Security)
@@ -2926,7 +2933,7 @@ The error persisted because of multiple interacting issues:
 #### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
 
 **Source:** Staff-engineer audit (Session #5)
-**Decision:** [ADR-001](./docs/decisions/ADR-001-integrated-improvement-plan-approach.md)
+**Decision:** [ADR-001](./decisions/ADR-001-integrated-improvement-plan-approach.md)
 **Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
 
 **Context:** After completing 57% of documentation standardization (Phases 1-4), we faced a decision point: continue with fragmented planning documents (Doc Standardization Plan + Eight-Phase Refactor Plan + missing tooling) or consolidate into a unified path.
@@ -3025,5 +3032,397 @@ The error persisted because of multiple interacting issues:
    - Pattern: `| head -c 20000` caps at 20KB, reasonable for hook feedback
 
 **Key Insight:** Self-monitoring creates a feedback loop - enforcement scripts should enforce rules on themselves. Windows path detection needs precision to avoid false positives on valid Unix filenames with colons. Output limiting is both UX and security (prevents terminal DoS from malicious files with excessive violations).
+
+---
+
+#### Review #45: Comprehensive Security & Compliance Hardening (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued from #19)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Comprehensive multi-pass review of all scripts for security and compliance issues. Initial fix (commit 4ada4c6) addressed 10 scripts with sanitizeError, followed by deep review addressing TOCTOU, error handling, workflow fixes, and more (commit 2e38796).
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | TOCTOU vulnerability in assign-review-tier.js | 🔴 High | Security | Resolve path once, use for all operations |
+| 2 | error.message assumption in catch blocks | 🟠 Medium | Robustness | Check `error && typeof error === 'object' && 'message' in error` |
+| 3 | Path containment missing in ai-review.js | 🟠 Medium | Security | Added isPathContained() validation |
+| 4 | .env in config extensions conflicts with block list | 🟠 Medium | Bug | Removed .env from configuration extensions |
+| 5 | Tier matching fails with space-separated files | 🟠 Medium | Bug | Use `printf '%s\n'` before grep for newline separation |
+| 6 | PR comment spam on every synchronize | 🟡 Low | UX | Only comment on opened/reopened events |
+| 7 | Shell-dependent `2>&1` redirection | 🟡 Low | Portability | Use `stdio: 'pipe'` instead |
+| 8 | Verbose stack traces lost after sanitization | 🟡 Low | Debugging | Restore sanitized stack output in verbose mode |
+| 9 | ESM import path missing .js extension | 🟡 Low | Bug | Fixed migrate-to-journal.ts import |
+| 10 | sanitizeError could throw | 🟡 Low | Robustness | Added defensive try-catch wrapper |
+| 11 | Top-level error handling unsanitized | 🟡 Low | Security | Wrap main() in try-catch with sanitizePath |
+| 12 | Dotfile matching for .env variants broken | 🟡 Low | Bug | Fixed multi-suffix detection |
+
+**Patterns Identified:**
+
+1. **TOCTOU Prevention** (1 occurrence - Security)
+   - Root cause: Using original path for existsSync after security check allows race condition
+   - Prevention: Resolve path once at validation, use resolved path for all subsequent operations
+   - Pattern: `const resolvedFile = resolve(projectRoot, file); if (existsSync(resolvedFile)) { readFileSync(resolvedFile, ...) }`
+   - Note: Attacker could swap file between security check and read
+
+2. **Safe Error Property Access** (5 occurrences - Robustness)
+   - Root cause: Catch blocks assume `error.message` exists, but throws can be any value
+   - Prevention: Check type before accessing: `error && typeof error === 'object' && 'message' in error`
+   - Pattern: `const errorMsg = error && typeof error === 'object' && 'message' in error ? error.message : String(error);`
+   - Note: Someone might `throw "string"` or `throw null`
+
+3. **Block List vs Allow List Conflicts** (1 occurrence - Bug)
+   - Root cause: .env in configuration extensions list, but also in SENSITIVE_FILE_PATTERNS block list
+   - Prevention: When adding to block list, check for conflicts in allow lists
+   - Pattern: Remove from allow list when adding to block list
+   - Note: Block list is checked first, so extension match was never reached anyway
+
+4. **Space-to-Newline for grep Anchors** (1 occurrence - Bug)
+   - Root cause: Shell variable expansion gives space-separated list, but `^` anchor needs newlines
+   - Prevention: Use `printf '%s\n' $VAR` before piping to grep
+   - Pattern: `printf '%s\n' $FILES_RAW | grep -qE '^pattern'`
+   - Note: grep `^` and `$` anchors work on lines, not words
+
+5. **Event-Specific Actions in CI** (1 occurrence - UX)
+   - Root cause: GitHub Actions on: [opened, synchronize, reopened] runs same steps for all
+   - Prevention: Check `context.payload.action` to limit side effects
+   - Pattern: `if (context.payload.action === 'opened' || context.payload.action === 'reopened')`
+   - Note: Posting comments on every push creates noise
+
+6. **Defensive Error Handler Wrappers** (1 occurrence - Robustness)
+   - Root cause: Error sanitization helper could itself throw (e.g., if passed unusual object)
+   - Prevention: Wrap sanitization call in try-catch with fallback
+   - Pattern: `const safeError = (() => { try { return sanitizeError(error); } catch { return "Unknown error"; } })();`
+   - Note: Error handlers must never throw
+
+**Key Insight:** Security hardening requires multiple passes - initial review often catches obvious issues, but TOCTOU vulnerabilities, error handling edge cases, and cross-file conflicts require deeper analysis. Block lists and allow lists must be kept in sync. Event-specific logic prevents CI noise. Error handlers need defensive wrappers because they're the last line of defense.
+
+---
+
+#### Review #46: Advanced Security Hardening & Script Robustness (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of fixes from PR Compliance Guide, addressing symlink attacks, buffer overflows, jq bugs, and sed fragility.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Symlink path escapes in assign-review-tier.js | 🔴 High | Security | Added realpathSync verification |
+| 2 | Symlink escapes in ai-review.js isPathContained | 🔴 High | Security | Added realpathSync with fallback |
+| 3 | execSync buffer overflow risk | 🟠 Medium | Robustness | Added maxBuffer: 10MB |
+| 4 | Missing ANSI/control char stripping | 🟠 Medium | Security | Strip escape sequences in sanitizeOutput |
+| 5 | jq counting logic bug | 🟠 Medium | Bug | Fixed array wrapping and -gt comparison |
+| 6 | sed prompt extraction fragility | 🟠 Medium | Bug | Replaced with awk for section extraction |
+| 7 | Argument parsing truncates = values | 🟡 Low | Bug | Use spread operator to rejoin value |
+| 8 | Missing review prompts file check | 🟡 Low | Robustness | Added existsSync check |
+| 9 | Warning message lacks file context | 🟡 Low | UX | Added file name to skip warning |
+| 10 | Defensive sanitizeError wrappers | 🟡 Low | Robustness | Added try-catch in 2 files |
+| 11 | Broken archive link | 🟡 Low | Bug | Fixed relative path |
+| 12 | Shell variable expansion issues | 🟡 Low | Bug | Added separator: "\n" to workflow |
+| 13 | Unexpanded $HOME in config | 🟡 Low | Bug | Replaced with explicit placeholder |
+
+**Patterns Identified:**
+
+1. **Symlink Escape Prevention with realpathSync** (2 occurrences - Security)
+   - Root cause: resolve() creates canonical path, but file could be symlink pointing outside
+   - Prevention: After resolve(), use realpathSync() and verify relative path
+   - Pattern: `const real = fs.realpathSync(resolved); const rel = path.relative(realRoot, real);`
+   - Note: Falls back to resolved path when file doesn't exist yet
+
+2. **maxBuffer for execSync** (2 occurrences - Robustness)
+   - Root cause: Default maxBuffer is 1MB, large outputs cause ENOBUFS error
+   - Prevention: Set maxBuffer: `10 * 1024 * 1024` for 10MB
+   - Pattern: `execSync(cmd, { encoding: 'utf-8', stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })`
+   - Note: Especially important for lint/test output which can be verbose
+
+3. **ANSI Escape Sequence Stripping** (1 occurrence - Security)
+   - Root cause: Terminal escape sequences can inject content in CI logs
+   - Prevention: Strip with regex before sanitizing paths
+   - Pattern: `.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')`
+   - Note: eslint-disable comment needed for no-control-regex rule
+
+4. **jq Array Counting Pattern** (1 occurrence - Bug)
+   - Root cause: `.findings[] | select(...) | length` gives length of each object, not count
+   - Prevention: Wrap in array and get length: `[.findings[]? | select(...)] | length`
+   - Pattern: `jq -r '[.findings[]? | select(.severity=="HIGH")] | length'`
+   - Note: Use -gt 0 instead of -n for numeric comparison
+
+5. **awk vs sed for Multi-Section Extraction** (1 occurrence - Bug)
+   - Root cause: sed `/start/,/end/p` stops at first end marker, truncating content
+   - Prevention: Use awk with state variable to capture until next section header
+   - Pattern: `awk '$0 ~ /^## 1\./ {in=1} in && $0 ~ /^## [0-9]/ && $0 !~ /^## 1/ {exit} in {print}'`
+   - Note: More robust for documents with internal separators
+
+6. **Argument Parsing with = Values** (1 occurrence - Bug)
+   - Root cause: `arg.split('=')` returns array, destructuring loses extra parts
+   - Prevention: Use spread operator and rejoin: `const [key, ...rest] = arg.split('='); const value = rest.join('=')`
+   - Pattern: Handles `--file=some=path=with=equals.md`
+
+**Key Insight:** Symlinks are a blind spot in path validation - resolve() creates a canonical path but doesn't reveal what's actually on disk. Always use realpathSync() after resolve() when reading files. Command output can be large and contain escape sequences that bypass simple sanitization. Use maxBuffer and strip ANSI sequences before other processing.
+
+---
+
+#### Review #47: PII Protection & Workflow Robustness (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of compliance fixes addressing PII logging, sensitive directory detection, shell scripting robustness, and documentation link accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Email logged in set-admin-claim.ts | 🔴 High | Privacy | Added maskEmail() function: `u***@e***.com` |
+| 2 | Sensitive files only checked by name | 🟠 Medium | Security | Added SENSITIVE_DIR_PATTERNS for secrets/, credentials/, private/ |
+| 3 | echo can mangle special chars | 🟠 Medium | Robustness | Replaced echo with printf '%s\n' in workflow |
+| 4 | Label removal can fail if already gone | 🟠 Medium | Robustness | Added try-catch for 404/422 errors |
+| 5 | Windows path sanitization only C: | 🟡 Low | Portability | Changed to [A-Z]:\\Users\\[^\\\\]+/gi |
+| 6 | CRLF only stripped at line end | 🟡 Low | Robustness | Normalize all \r\n to \n |
+| 7 | Broken link to ./claude.md | 🟡 Low | Docs | Changed to ../claude.md |
+| 8 | Broken links to ./ARCHITECTURE.md | 🟡 Low | Docs | Changed to ../ARCHITECTURE.md |
+| 9 | Regex caused markdown link false positive | 🟡 Low | Docs | Simplified regex pattern |
+| 10 | Missing docs/ prefix in template | 🟡 Low | Docs | Added docs/ prefix to file references |
+
+**Patterns Identified:**
+
+1. **PII Masking for Logs** (1 occurrence - Privacy)
+   - Root cause: Console.log/error directly output user email addresses
+   - Prevention: Create maskEmail() helper that preserves structure but hides content
+   - Pattern: `u***@e***.com` format - shows first char of local/domain, masks rest
+   - Note: Even in error cases, mask the email before logging
+
+2. **Sensitive Directory Detection** (1 occurrence - Security)
+   - Root cause: isSensitiveFile only checked basename, not path components
+   - Prevention: Add SENSITIVE_DIR_PATTERNS to catch files in sensitive directories
+   - Pattern: `/(^|\/)(secrets?|credentials?|private)(\/|$)/i`
+   - Note: Normalize backslashes before checking: `.replace(/\\/g, '/')`
+
+3. **printf vs echo in Shell Scripts** (4 occurrences - Robustness)
+   - Root cause: echo behavior varies across shells; can interpret escape sequences
+   - Prevention: Use `printf '%s\n' "$VAR"` for reliable output
+   - Pattern: Replace `echo "$FILES"` with `printf '%s\n' "$FILES"`
+   - Note: Especially important in GitHub Actions where shell may vary
+
+4. **Fault-Tolerant API Calls in Workflows** (1 occurrence - Robustness)
+   - Root cause: removeLabel fails if label already removed (404) or invalid (422)
+   - Prevention: Wrap in try-catch, only rethrow unexpected errors
+   - Pattern: `try { await api.call(); } catch (e) { if (e?.status !== 404 && e?.status !== 422) throw e; }`
+   - Note: GitHub API can return 422 for various "unprocessable" states
+
+5. **Drive-Agnostic Windows Path Sanitization** (1 occurrence - Portability)
+   - Root cause: Hardcoded `C:\\Users\\` misses D:, E:, etc.
+   - Prevention: Use character class for any drive letter, case-insensitive
+   - Pattern: `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`
+   - Note: Windows allows any letter A-Z for drive mappings
+
+6. **Relative Path Navigation in Docs** (3 occurrences - Docs)
+   - Root cause: Links assumed files were in same directory
+   - Prevention: Use `../` to navigate up from docs/ to repository root
+   - Pattern: `./file.md` → `../file.md` when linking to root from subdirectory
+   - Note: Link checkers in CI catch these; verify paths before commit
+
+**Key Insight:** Privacy compliance requires masking PII at the point of logging, not just in error handlers. Sensitive file detection should check both filename patterns AND directory location - a file named "config.json" inside a "secrets/" directory is sensitive. Shell scripts should use printf over echo for predictable behavior, and API calls in workflows should gracefully handle "already done" states like 404/422.
+
+---
+
+#### Review #48: Security Hardening & Documentation Fixes (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fourth round of compliance fixes addressing secret exfiltration risks, escape sequence security, fail-closed security patterns, and documentation accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Pattern blocklist non-exhaustive for firebase-service-account.json | ⚪ Low | Security | Added explicit `/^firebase-service-account\.json$/i` pattern |
+| 2 | maskEmail trailing dot for domains without TLD | ⚪ Low | Bug | Handle empty tld array: `tld.length > 0 ? '.'+tld.join('.') : ''` |
+| 3 | Fail-open on realpath failures for existing files | ⚪ Low | Security | Added `fs.existsSync` check before fallback |
+| 4 | OSC escape sequences not stripped | ⚪ Low | Security | Added OSC stripping regex to sanitizeOutput |
+| 5 | Incomplete Windows path sanitization (lowercase drives) | ⚪ Low | Portability | Changed `C:\\` to `[A-Z]:\\` with `/gi` flag |
+| 6 | Tier comparison uses integer instead of string | ⚪ Low | Bug | Changed `== 4` to `== '4'` in workflow |
+| 7 | Documentation file paths missing docs/ prefix | ⚪ Low | Docs | Added `docs/` prefix to AI_REVIEW_PROCESS.md refs |
+| 8 | Markdown lint: unescaped asterisks in code | ⚪ Low | Docs | Wrapped `10 * 1024 * 1024` in backticks |
+| 9 | Git diff missing pathspec separator | ⚪ Low | Robustness | Added `--` before file patterns |
+
+**Patterns Identified:**
+
+1. **Explicit Filename Blocklists** (1 occurrence - Security)
+   - Root cause: Regex patterns with wildcards can miss common exact filenames
+   - Prevention: Add explicit exact-match patterns for known sensitive files
+   - Pattern: `/^firebase-service-account\.json$/i` alongside `/serviceAccount.*\.json$/i`
+   - Note: Defense-in-depth - both pattern-based and exact-match protection
+
+2. **Fail-Closed Security for realpath** (1 occurrence - Security)
+   - Root cause: When realpathSync fails on existing file (permissions), falling back to resolved path is dangerous
+   - Prevention: Check `fs.existsSync(resolvedPath)` in catch block - if file exists but realpath fails, return false
+   - Pattern: `catch { if (fs.existsSync(path)) return false; /* else fallback for non-existent */ }`
+   - Note: Non-existent files can still use resolved path (for creation scenarios)
+
+3. **OSC Escape Sequence Stripping** (1 occurrence - Security)
+   - Root cause: ANSI CSI sequences stripped but OSC (Operating System Command) sequences not
+   - Prevention: Add OSC regex: `/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g`
+   - Pattern: Strip both CSI (`\x1B[...`) and OSC (`\x1B]...BEL/ST`)
+   - Note: OSC can set terminal title, which could be exploited for log injection
+
+4. **Edge Case Handling in String Functions** (1 occurrence - Bug)
+   - Root cause: `tld.join('.')` returns empty string when tld is empty, leading to trailing dot
+   - Prevention: Check array length before joining: `tld.length > 0 ? '.'+tld.join('.') : ''`
+   - Pattern: Guard array operations that assume non-empty input
+   - Note: Domain "localhost" has no TLD; email "user@localhost" should mask to "u***@l***" not "u***@l***."
+
+5. **String vs Number Comparison in YAML** (1 occurrence - Bug)
+   - Root cause: GitHub Actions outputs are strings; `== 4` may not match `'4'`
+   - Prevention: Use quoted string literals in workflow conditions: `== '4'`
+   - Pattern: `if: steps.x.outputs.y == 'value'` not `if: steps.x.outputs.y == value`
+   - Note: YAML type coercion is unreliable; always use explicit string comparison
+
+6. **Git Pathspec Separator** (1 occurrence - Robustness)
+   - Root cause: `git diff --cached *.md` without `--` can interpret patterns as options
+   - Prevention: Always use `--` before pathspec: `git diff --cached -- '*.md'`
+   - Pattern: `git <cmd> [options] -- <pathspec>`
+   - Note: Required for safety if pathspec could start with `-`
+
+**Key Insight:** Security hardening is iterative - each review round catches edge cases missed by pattern-based approaches. Defense-in-depth means explicit blocklists alongside pattern matching, fail-closed error handling for security-critical functions, and comprehensive escape sequence stripping. Even "low severity" items like trailing dots or string comparisons can cause production issues.
+
+---
+
+#### Review #49: Workflow Hardening & Code Cleanup (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fifth round of compliance fixes addressing workflow tier detection gaps, module detection robustness, dead code removal, and documentation accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | next.config.js missing from Tier 4 detection | 🟠 Medium | Bug | Added `next\.config\.(js\|mjs)$` to Tier 4 pattern |
+| 2 | Tier 3 regex could match substrings | 🟡 Low | Bug | Added `(^\|/)` path boundary anchor |
+| 3 | Node.js version mismatch (20 vs 22) | 🟡 Low | Compatibility | Updated workflow to node-version: '22' |
+| 4 | Misleading step name "Check for security violations" | 🟡 Low | Clarity | Renamed to "Tier 4 informational warnings" |
+| 5 | isMainModule detection could crash | 🟡 Low | Robustness | Added try-catch wrapper in 3 scripts |
+| 6 | pr-review.md reads first 200 lines (not most recent) | 🟡 Low | Bug | Changed to "last 200 lines" |
+| 7 | Broken relative path in INTEGRATED_IMPROVEMENT_PLAN.md | 🟡 Low | Docs | Changed `docs/brainstorm/...` to `./brainstorm/...` |
+| 8 | Dead .env filtering code in ai-review.js | 🟡 Low | Cleanup | Removed unreachable branch |
+| 9 | Unsanitized file path in warning message | 🟡 Low | Security | Added sanitizePath() wrapper |
+
+**Patterns Identified:**
+
+1. **Critical File Pattern Coverage** (1 occurrence - Bug)
+   - Root cause: Tier 4 patterns missing next.config.js/mjs which is a critical infrastructure file
+   - Prevention: When defining tier patterns, cross-reference with documented TIER_RULES constant
+   - Pattern: `next\.config\.(js|mjs)$` - covers both CommonJS and ESM configs
+   - Note: Temporary workflow patterns should match the authoritative script
+
+2. **Path Boundary Anchoring in Regex** (1 occurrence - Bug)
+   - Root cause: Pattern `functions/src/auth/` matches `somefunctions/src/auth/` substring
+   - Prevention: Add `(^|/)` prefix to anchor at path boundary
+   - Pattern: `(^|/)(firestore\.rules$|functions/src/auth/|middleware/)`
+   - Note: Prevents over-classification from partial path matches
+
+3. **Robust Main Module Detection** (3 occurrences - Robustness)
+   - Root cause: `pathToFileURL(process.argv[1])` can throw on unusual paths (symlinks, relative)
+   - Prevention: Wrap in try-catch, use `path.resolve()` first, default to false on error
+   - Pattern: `let isMain=false; try { isMain = !!argv[1] && url === pathToFileURL(resolve(argv[1])).href } catch { isMain=false }`
+   - Note: Essential for scripts that export functions for testing
+
+4. **Log File Reading Direction** (1 occurrence - Bug)
+   - Root cause: Log files append at the end, but instruction said "first 200 lines"
+   - Prevention: When referencing logs, always read from the end (tail) not beginning (head)
+   - Pattern: "Read `file.log` (last N lines)" for logs; "(first N lines)" only for header-heavy docs
+   - Note: Recent patterns are at the end of AI_REVIEW_LEARNINGS_LOG.md
+
+5. **Relative Path Context in Docs** (1 occurrence - Docs)
+   - Root cause: File in docs/ used `docs/brainstorm/...` instead of `./brainstorm/...`
+   - Prevention: Paths in docs/ should be relative to docs/, not repo root
+   - Pattern: Use `./sibling/` for files in same parent, `../root-file` for repo root
+   - Note: Test links with markdown preview to catch broken references
+
+6. **Dead Code from Security Hardening** (1 occurrence - Cleanup)
+   - Root cause: .env removed from extensions array but filtering code remained
+   - Prevention: After removing config items, grep for code that references them
+   - Pattern: When removing `X` from config: `grep -r "X" scripts/` to find stale code
+   - Note: Dead branches can confuse readers and trigger false linter warnings
+
+**Key Insight:** Workflow automation requires the same rigor as application code - tier detection patterns must be comprehensive and anchored correctly, Node.js versions must match across CI config, and step names should accurately reflect behavior. When scripts are imported for testing, main module detection must be robust against edge cases. Documentation paths need careful attention to the file's location context.
+
+---
+
+#### Review #50: Audit Trails & Comprehensive Hardening (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Sixth round of compliance fixes addressing audit trail requirements, PII logging, label management, pattern completeness, and linter compliance.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Windows path sanitization missing in ai-review.js | 🟠 Medium | Security | Changed `C:\\` to `[A-Z]:\\` with gi flag |
+| 2 | Missing audit trail in set-admin-claim.ts | 🟠 Medium | Compliance | Added JSON audit entry with timestamp, operator, action, result |
+| 3 | user.uid logged as PII | 🟡 Low | Privacy | Added maskUid() function to mask UID in logs |
+| 4 | Workflow fails if tier label doesn't exist | 🟠 Medium | Robustness | Added label auto-creation before addLabels |
+| 5 | .env pattern misses multi-segment variants | 🟡 Low | Bug | Changed `[a-zA-Z0-9_-]+` to `[a-zA-Z0-9_.-]+` |
+| 6 | Unknown CLI flags silently ignored | 🟡 Low | Robustness | Added explicit flag validation with error message |
+| 7 | Flag filtering doesn't skip flag values | 🟡 Low | Bug | Explicit loop to skip --pr value |
+| 8 | Biome complains about control char regexes | 🟡 Low | Linter | Added biome-ignore comments |
+| 9 | Case-sensitive summary filtering | 🟡 Low | Bug | Changed to case-insensitive with toLowerCase() |
+| 10 | Backtick path not a clickable link | 🟡 Low | Docs | Converted to markdown link syntax |
+
+**Patterns Identified:**
+
+1. **Structured Audit Logging** (1 occurrence - Compliance)
+   - Root cause: Admin actions logged only human-readable messages without machine-parseable records
+   - Prevention: Emit JSON audit entries with timestamp, operator, action, target, result
+   - Pattern: `console.log('[AUDIT]', JSON.stringify({ timestamp: new Date().toISOString(), operator, action, target, result }))`
+   - Note: Mask all identifiers (email, uid) in audit entries too
+
+2. **Label Auto-Creation in Workflows** (1 occurrence - Robustness)
+   - Root cause: addLabels fails if label doesn't exist in fresh repos/forks
+   - Prevention: Try getLabel first, create on 404
+   - Pattern: `try { await getLabel() } catch (e) { if (e?.status !== 404) throw e; await createLabel() }`
+   - Note: Include tier-specific colors for visual distinction
+
+3. **Multi-Segment .env Pattern** (1 occurrence - Bug)
+   - Root cause: Character class `[a-zA-Z0-9_-]` doesn't include `.` for .env.development.local
+   - Prevention: Add `.` to character class: `[a-zA-Z0-9_.-]`
+   - Pattern: `/(^|[/\\])\.env(\.[a-zA-Z0-9_.-]+)?$/`
+   - Note: Real-world projects use multi-segment env files
+
+4. **Explicit Flag Validation** (1 occurrence - Robustness)
+   - Root cause: Unknown flags silently filtered, user doesn't know about typos
+   - Prevention: Check against knownFlags array, exit with error for unknown
+   - Pattern: `if (arg.startsWith('--') && !knownFlags.includes(arg.split('=')[0])) { error(); exit(1); }`
+   - Note: Also properly skip flag values (e.g., value after --pr)
+
+5. **UID Masking for Logs** (1 occurrence - Privacy)
+   - Root cause: Firebase UIDs are identifiers that some policies consider PII
+   - Prevention: Create maskUid() helper showing first 3 + *** + last 3 chars
+   - Pattern: `uid.slice(0, 3) + '***' + uid.slice(-3)`
+   - Note: Maintains some traceability while reducing exposure
+
+6. **Biome-Ignore for Security Regexes** (3 occurrences - Linter)
+   - Root cause: Control character regexes intentional for sanitization, but Biome flags them
+   - Prevention: Add biome-ignore comment alongside eslint-disable
+   - Pattern: `// biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters`
+   - Note: Both linters need suppression comments for intentional security code
+
+**Key Insight:** Security fixes are iterative and touch multiple concerns simultaneously - a single audit trail requirement expands to timestamp formatting, operator identification, identifier masking, and structured logging. Pattern-based blocklists need comprehensive character classes for real-world variants. Workflow robustness requires graceful handling of missing resources (labels) rather than assuming infrastructure exists. When multiple linters are in use, each needs appropriate suppression comments for intentional security patterns.
 
 ---
