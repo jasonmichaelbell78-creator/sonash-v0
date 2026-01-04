@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.47 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 → claude.md v2.8 (12 patterns added) |
 | 1.46 | 2026-01-04 | Review #50: Audit trails, label auto-creation, .env multi-segment, biome-ignore |
 | 1.45 | 2026-01-04 | Review #49: Workflow hardening, robust module detection, dead code removal |
 | 1.44 | 2026-01-04 | Review #48: Security hardening, OSC escapes, fail-closed realpath, pathspec fixes |
@@ -86,10 +87,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10
-**🔔 CONSOLIDATION DUE: Threshold reached. Run consolidation process.**
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
+**✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
 ### When to Consolidate
 
