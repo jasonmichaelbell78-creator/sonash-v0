@@ -46,7 +46,7 @@ FILE_PATH="${FILE_PATH//\\//}"
 # Using specific patterns to avoid false positives (e.g., files with ".." in name)
 # Note: Backslashes are normalized to / above, so check for Windows/UNC paths too
 case "$FILE_PATH" in
-  /* | //* | [A-Za-z]:* )
+  /* | //* | [A-Za-z]:/* )
     # Absolute path (Unix), UNC path (//server), or Windows drive path (C:/)
     exit 0
     ;;
@@ -98,8 +98,8 @@ else
   exit 0
 fi
 
-# Run pattern checker and capture output
-OUTPUT=$(node scripts/check-pattern-compliance.js "$REL_PATH" 2>&1 || true)
+# Run pattern checker and capture output (limit to 20KB to prevent terminal spam)
+OUTPUT=$(node scripts/check-pattern-compliance.js "$REL_PATH" 2>&1 | head -c 20000 || true)
 
 # Sanitize for terminal safety (strip ANSI escape sequences + control chars except \t\n\r)
 SAFE_OUTPUT="$(

@@ -421,6 +421,7 @@ function getFilesToCheck() {
     '.claude/hooks/check-write-requirements.sh',
     '.claude/hooks/coderabbit-review.sh',
     '.claude/hooks/check-mcp-servers.sh',
+    '.claude/hooks/pattern-check.sh',
   ].filter(f => existsSync(join(ROOT, f)));
 }
 
