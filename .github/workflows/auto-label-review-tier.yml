@@ -1,0 +1,144 @@
+name: Auto-Label Review Tier
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  assign-tier:
+    runs-on: ubuntu-latest
+    name: Assign Review Tier Label
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
+            **/*.json
+            **/*.md
+            **/*.yml
+            **/*.yaml
+            **/*.rules
+
+      - name: Run tier assignment script
+        id: assign-tier
+        run: |
+          # Get list of changed files
+          FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+
+          # Run tier assignment (will be implemented in Phase 1)
+          # For now, output a placeholder result
+          echo "Changed files: $FILES"
+
+          # TODO: Uncomment when script is ready
+          # RESULT=$(node scripts/assign-review-tier.js $FILES)
+          # echo "result=$RESULT" >> $GITHUB_OUTPUT
+
+          # Placeholder: Extract tier from file paths
+          if echo "$FILES" | grep -qE "^\.github/workflows/|firebase\.json|package\.json"; then
+            TIER=4
+          elif echo "$FILES" | grep -qE "firestore\.rules|functions/src/auth/|middleware/"; then
+            TIER=3
+          elif echo "$FILES" | grep -qE "^app/|^components/|^lib/|^hooks/"; then
+            TIER=2
+          elif echo "$FILES" | grep -qE "\.test\.(ts|tsx)|^docs/.*\.md$"; then
+            TIER=1
+          else
+            TIER=0
+          fi
+
+          echo "tier=$TIER" >> $GITHUB_OUTPUT
+          echo "Assigned tier: $TIER"
+
+      - name: Remove existing tier labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = ['tier-0', 'tier-1', 'tier-2', 'tier-3', 'tier-4'];
+            const currentLabels = context.payload.pull_request.labels.map(l => l.name);
+
+            for (const label of labels) {
+              if (currentLabels.includes(label)) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  name: label
+                });
+              }
+            }
+
+      - name: Add tier label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tier = ${{ steps.assign-tier.outputs.tier }};
+            const labelName = `tier-${tier}`;
+
+            // Add tier label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: [labelName]
+            });
+
+            // Add comment explaining tier
+            const tierDescriptions = {
+              0: 'Tier 0 (Exempt): Auto-merge eligible. No human review required.',
+              1: 'Tier 1 (Light): AI review only. Human review optional.',
+              2: 'Tier 2 (Standard): AI + 1 human review required.',
+              3: 'Tier 3 (Heavy): AI + 2 human reviews + security checklist required.',
+              4: 'Tier 4 (Critical): RFC + Multi-AI + all codebase owners required.'
+            };
+
+            const tierInfo = tierDescriptions[tier] || 'Unknown tier';
+
+            const comment = `## 🏷️ Review Tier Assigned: **Tier ${tier}**
+
+${tierInfo}
+
+**What this means:**
+${tier === 0 ? '- This PR is eligible for auto-merge after CI passes\n- Estimated merge time: 4 hours' : ''}
+${tier === 1 ? '- AI review will run automatically\n- Human review is optional\n- Estimated merge time: 1-2 days' : ''}
+${tier === 2 ? '- AI review will run automatically\n- 1 human approval required\n- Estimated merge time: 2 days' : ''}
+${tier === 3 ? '- Exhaustive AI review will run\n- 2 human approvals required (1 must be codebase owner)\n- Security checklist must be completed\n- Estimated merge time: 3-5 days' : ''}
+${tier === 4 ? '- RFC document required\n- Multi-AI review (CodeRabbit + Qodo + custom)\n- All codebase owners must approve\n- Staging deployment + testing required\n- Estimated merge time: 1-2 weeks' : ''}
+
+**Review Policy:** See [REVIEW_POLICY_ARCHITECTURE.md](../docs/REVIEW_POLICY_ARCHITECTURE.md) for details.
+
+**Need tier adjustment?** Comment below with justification and tag a codeowner.
+`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: comment
+            });
+
+      - name: Check for security violations
+        if: steps.assign-tier.outputs.tier == 4
+        run: |
+          echo "::warning::This PR modifies critical infrastructure files (Tier 4)"
+          echo "::warning::RFC document required before implementation review"
+          echo "::warning::All codebase owners must approve before merge"
