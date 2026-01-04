@@ -1,8 +1,8 @@
 # Integrated Improvement Plan
 
-**Document Version:** 1.8
+**Document Version:** 1.9
 **Created:** 2026-01-03
-**Last Updated:** 2026-01-03
+**Last Updated:** 2026-01-04
 **Status:** ACTIVE
 **Overall Completion:** 33%
 
@@ -356,6 +356,26 @@ Install and configure developer tooling that was identified as missing during th
   - Evaluate: accept as-is, configure plugin, or fix critical ones
   - Add baseline count to DEVELOPMENT.md for tracking
 
+- [ ] **Task 3.9**: Document location cleanup (1.5 hours) - *from Session #19 audit*
+  - **Context**: Audit found docs at root that should be in `docs/` folder
+  - **Move to `docs/`** (7 files):
+    - AI_REVIEW_PROCESS.md
+    - AI_REVIEW_LEARNINGS_LOG.md
+    - DOCUMENTATION_STANDARDIZATION_PLAN.md
+    - DOCUMENTATION_STANDARDS.md
+    - INTEGRATED_IMPROVEMENT_PLAN.md
+    - TESTING_CHECKLIST.md
+    - APPCHECK_FRESH_SETUP.md (consolidate with docs/APPCHECK_SETUP.md)
+  - **Archive** (3 files - duplicates/historical):
+    - RECAPTCHA_PROBLEM_SUMMARY.md (already in docs/archive/)
+    - SUPABASE_MIGRATION_ANALYSIS.md (already in docs/archive/)
+    - local-resources-review.md
+  - **Keep at root** (8 files - Tier 1-2 + special):
+    - README.md, ROADMAP.md, ROADMAP_LOG.md, ARCHITECTURE.md, DEVELOPMENT.md
+    - claude.md, AI_WORKFLOW.md, SESSION_CONTEXT.md
+  - Update all internal links after moves
+  - Verify no broken links with `npm run docs:check`
+
 ### Acceptance Criteria
 
 - [ ] Prettier installed and configured
@@ -367,6 +387,7 @@ Install and configure developer tooling that was identified as missing during th
 - [ ] CI lint enforcement active (PRs fail on lint errors)
 - [ ] New scripts have test coverage (A3)
 - [ ] Lint warning baseline documented (A1)
+- [ ] Root docs reorganized (7 moved to `docs/`, 3 archived)
 
 ---
 

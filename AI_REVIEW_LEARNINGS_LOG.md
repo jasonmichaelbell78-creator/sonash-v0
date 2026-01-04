@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.39
+**Document Version:** 1.40
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-03
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.40 | 2026-01-03 | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added) |
 | 1.39 | 2026-01-03 | Review #40: Qodo archive security, path containment, CRLF handling |
 | 1.38 | 2026-01-03 | Review #39: Qodo script robustness - explicit plan failure, terminal sanitization |
 | 1.37 | 2026-01-03 | Review #38: Security hardening - path traversal, control char stripping, regex fix |
@@ -79,10 +80,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11
-**⚠️ CONSOLIDATION OVERDUE** - perform consolidation NOW
+**Reviews since last consolidation:** 4
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CURRENT** (consolidated 2026-01-03)
+**✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
 ### When to Consolidate
 
@@ -102,6 +102,27 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-03 (Session #18)
+- **Reviews consolidated:** #31-#40 (10 reviews)
+- **Patterns added to claude.md v2.7:**
+  - Containment at ALL touch points (not just entry) - archive, fallback, basename checks
+  - Validate CLI args immediately at parse time
+  - Empty path edge case (`rel === ''`)
+  - Error first line extraction with CRLF handling
+  - Control char stripping preserving safe whitespace (\t\n\r)
+  - Sanitize file-derived content (not just errors)
+  - Normalize backslashes before security checks
+  - CRLF in regex lookaheads (`\r?\n`)
+  - Wrap ALL file reads in try/catch
+  - CI mode checks ALL (no truncation for interactive convenience)
+  - Invalid files should fail (not just missing)
+  - Explicit flags should fail explicitly
+  - Readline close on all paths
+  - Never recommend committing .env files
+- **Next consolidation due:** At review #50 (or ~10 more reviews)
+
+### Previous Consolidation
+
 - **Date:** 2026-01-03 (Session #4)
 - **Reviews consolidated:** #24-#30 (7 reviews + 4 follow-ups = 11 entries)
 - **Patterns added to claude.md v2.5:**
@@ -114,9 +135,8 @@ Consolidation is needed when:
   - Word boundary security keywords (prevents false matches)
   - Bound user-controllable output (DoS prevention)
   - Never expose secrets in hook output
-- **Next consolidation due:** At review #40 (or ~10 more reviews)
 
-### Previous Consolidation
+### Consolidation #2
 
 - **Date:** 2026-01-02 (Session #3)
 - **Reviews consolidated:** #11-#23 (13 reviews)
@@ -2780,6 +2800,129 @@ The error persisted because of multiple interacting issues:
 
 ---
 
+#### Review #41: Qodo/CodeRabbit Security Hardening + Doc Migration (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #19
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Ninth round of feedback addressing pattern-check.sh security (path containment, input validation, output sanitization), regex pattern improvements, and CI pipeline fix.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Arbitrary file read via absolute paths | 🔴 High | Security | Block absolute/UNC/traversal paths at input |
+| 2 | Path scope not enforced | 🔴 High | Security | Added realpath containment check within PROJECT_DIR |
+| 3 | Brittle sed-based JSON parsing | 🟠 Medium | Robustness | Use node for robust JSON parsing (handles escapes) |
+| 4 | Terminal output not sanitized | 🟠 Medium | Security | Strip ANSI escape sequences + control chars |
+| 5 | Variable-length lookbehind in regex | 🟠 Medium | Compatibility | Removed lookbehind from readfilesync-without-try |
+| 6 | regex-newline-lookahead misses strings | 🟡 Low | Completeness | Match both regex literals and string patterns |
+| 7 | CI fails on pattern violations | 🟡 Low | CI/Automation | Added continue-on-error (legacy violations exist) |
+
+**Patterns Identified:**
+
+1. **Path Containment at Shell Level** (2 occurrences - Security)
+   - Root cause: Hook accepts file_path from JSON and passes to node script
+   - Prevention: Validate path is relative AND within project root using realpath
+   - Pattern: `realpath -m "$path"` must start with `realpath -m "$PROJECT_DIR"/`
+   - Note: Shell scripts need same containment discipline as JS
+
+2. **Robust JSON Parsing in Shell** (1 occurrence - Robustness)
+   - Root cause: sed-based parsing fails on escaped quotes, backslashes
+   - Prevention: Use node one-liner for proper JSON parsing
+   - Pattern: `node -e 'console.log(JSON.parse(arg).key)' "$1"`
+   - Note: jq is another option but requires external dependency
+
+3. **Terminal Output Sanitization** (1 occurrence - Security)
+   - Root cause: Script output could contain ANSI escapes or control chars
+   - Prevention: Strip before printing: `sed + tr` for ANSI and control chars
+   - Pattern: `sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' | tr -d '\000-\010\013\014\016-\037\177'`
+   - Note: Preserves \t\n\r for formatting
+
+**Key Insight:** Hooks that process external input (like file paths from JSON) need the same security discipline as the scripts they invoke. Path containment, input validation, and output sanitization must all happen at the hook layer before passing to downstream tools.
+
+---
+
+#### Review #42: Qodo/CodeRabbit Hook Hardening Round 2 (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #19 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Follow-up review with additional security hardening for pattern-check.sh.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Option-like paths bypass | 🟠 Medium | Security | Block paths starting with `-` |
+| 2 | Multiline path spoofing | 🟠 Medium | Security | Block paths with `\n` or `\r` |
+| 3 | Overly broad `*..*` pattern | 🟡 Low | Correctness | Use specific `/../`, `../`, `/..` patterns |
+| 4 | Redundant `//*` pattern (SC2221) | 🟡 Low | Cleanup | Remove redundant pattern |
+| 5 | `realpath -m` not portable | 🟡 Low | Portability | Use Node.js `fs.realpathSync()` |
+| 6 | Backslash not normalized | 🟡 Low | Robustness | Normalize `\` to `/` before checks |
+
+**Patterns Identified:**
+
+1. **Block CLI Option-Like Paths** (1 occurrence - Security)
+   - Root cause: Path starting with `-` could be interpreted as CLI option
+   - Prevention: Reject paths matching `-*` before further processing
+   - Pattern: `case "$path" in -*) exit 0 ;; esac`
+   - Note: Also block newlines to prevent multi-line spoofing
+
+2. **Use Specific Traversal Patterns** (1 occurrence - Correctness)
+   - Root cause: `*..*` matches legitimate filenames like `foo..bar.js`
+   - Prevention: Match actual traversal segments: `/../`, `../`, `/..`
+   - Pattern: `*"/../"* | "../"* | *"/.."`
+   - Note: Quote patterns in case to prevent glob expansion
+
+3. **Portable Path Resolution** (1 occurrence - Portability)
+   - Root cause: `realpath -m` is GNU-specific, fails on macOS
+   - Prevention: Use Node.js fs.realpathSync() which is always available
+   - Pattern: `node -e 'fs.realpathSync(process.argv[1])'`
+   - Note: Already using node for JSON parsing, so no new dependency
+
+**Key Insight:** Shell script security requires multiple layers: input rejection (option-like, multiline), normalization (backslashes), specific pattern matching (traversal segments not broad globs), and portable implementations (Node.js over GNU-specific tools).
+
+---
+
+#### Review #43: Qodo/CodeRabbit Additional Hardening (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #19 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of hardening for pattern-check.sh and check-pattern-compliance.js.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | grep alternation pattern failing | 🔴 High | Bug | Use `grep -E` for extended regex |
+| 2 | Windows drive paths bypass | 🟠 Medium | Security | Block `C:/...` after backslash normalization |
+| 3 | UNC paths bypass | 🟠 Medium | Security | Block `//server/...` paths |
+| 4 | Root project dir bypass | 🟡 Low | Security | Reject if `REAL_PROJECT = "/"` |
+| 5 | Path regex fails on Windows | 🟡 Low | Portability | Normalize backslashes before pathFilter/pathExclude |
+
+**Patterns Identified:**
+
+1. **grep -E for Alternation** (1 occurrence - Bug)
+   - Root cause: Basic grep treats `\|` literally, not as alternation
+   - Prevention: Always use `grep -E` for alternation patterns
+   - Pattern: `grep -E "a|b|c"` not `grep "a\|b\|c"`
+   - Note: This was silently failing, outputting nothing
+
+2. **Block Post-Normalization Absolute Paths** (2 occurrences - Security)
+   - Root cause: `C:\foo` becomes `C:/foo` after normalization, still absolute
+   - Prevention: Check for `[A-Za-z]:*` and `//*` after backslash conversion
+   - Pattern: `case "$path" in /* | //* | [A-Za-z]:* ) reject ;; esac`
+   - Note: Must check AFTER normalization, not before
+
+**Key Insight:** Post-normalization validation is critical - converting backslashes to forward slashes changes the attack surface. Windows paths like `C:\foo` become `C:/foo` which bypasses Unix-style `/` prefix checks. Always validate after all normalization is complete.
+
+---
+
 #### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
 
 **Source:** Staff-engineer audit (Session #5)
@@ -2845,3 +2988,42 @@ The error persisted because of multiple interacting issues:
 
 ---
 
+
+
+### Review #44: Hook Refinements & Output Limiting
+
+**Date:** 2026-01-04
+**Source:** Qodo PR Compliance Guide
+**PR:** Session #19 (continued)
+**Tools:** Qodo
+
+**Context:** Fourth round of refinements for pattern-check.sh and check-pattern-compliance.js after hook security hardening.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | pattern-check.sh not in scan list | 🟡 Low | Completeness | Added to default scan list |
+| 2 | Windows drive path colon false positive | 🟡 Low | Portability | Changed `[A-Za-z]:*` to `[A-Za-z]:/*` |
+| 3 | No output size limit | 🟡 Low | UX | Added `head -c 20000` (20KB limit) |
+
+**Patterns Identified:**
+
+1. **Self-Monitoring for Pattern Checkers** (1 occurrence - Completeness)
+   - Root cause: Scripts that enforce patterns should be checked themselves
+   - Prevention: Add enforcement scripts to their own scan list
+   - Pattern: Include `pattern-check.sh` in default files for `check-pattern-compliance.js`
+
+2. **Windows Path Pattern Precision** (1 occurrence - Portability)
+   - Root cause: `[A-Za-z]:*` matches valid POSIX files containing colons (e.g., `foo:bar`)
+   - Prevention: Check for `[A-Za-z]:/*` to require the slash after drive letter
+   - Pattern: Windows drive paths always have `/` after the colon when normalized
+
+3. **Output Limiting for Terminal Safety** (1 occurrence - UX)
+   - Root cause: Large pattern checker output can spam terminal
+   - Prevention: Pipe through `head -c BYTES` to cap output
+   - Pattern: `| head -c 20000` caps at 20KB, reasonable for hook feedback
+
+**Key Insight:** Self-monitoring creates a feedback loop - enforcement scripts should enforce rules on themselves. Windows path detection needs precision to avoid false positives on valid Unix filenames with colons. Output limiting is both UX and security (prevents terminal DoS from malicious files with excessive violations).
+
+---

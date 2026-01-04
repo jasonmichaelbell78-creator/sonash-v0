@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.6
+**Document Version:** 2.7
 **Last Updated:** 2026-01-03
 **Status:** ACTIVE
 
@@ -83,6 +83,9 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Validate file paths within repo root before unlinkSync/operations
 - Path traversal: Use `/^\.\.(?:[\\/]|$)/.test(rel)` NOT `startsWith('..')` (avoids false positives)
 - **Reject traversal, don't rewrite**: `if [[ "$PATH" == *"../"* ]]; then exit; fi` - don't strip `../`
+- **Containment at ALL touch points**: Apply path validation to archive lookups, fallback checks, basename-only checks - not just entry
+- **Validate CLI args immediately**: Check existence, non-empty, not another flag at parse time: `if (!arg || arg.startsWith('--')) { reject; }`
+- **Empty path edge case**: Check `rel === ''` in path validation - resolving `.` gives empty relative path
 - Windows cross-drive: Check drive letters match before path.relative() security checks
 - Sanitize inputs before shell interpolation (command injection risk)
 - Never trust external input in execSync/spawn
@@ -90,6 +93,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - **Word boundary security keywords**: `(^|[^[:alnum:]])(auth|token|...)([^[:alnum:]]|$)` prevents "monkey" matching "key"
 - **Bound user-controllable output**: Limit count (`.[0:50]`) and length (`${VAR:0:500}`) to prevent DoS
 - **Never expose secrets in hook output**: Only output safe metadata (names, not URLs/tokens)
+- **Never recommend committing .env files**: Use hosting/CI environment vars instead
 
 **GitHub Actions:**
 - Use `process.env.VAR` NOT `${{ }}` in JavaScript template literals (injection risk)
@@ -101,11 +105,23 @@ This file defines the strict architectural and security rules for SoNash. It ser
 
 **JavaScript/TypeScript:**
 - **MANDATORY: Sanitize error messages** - Strip sensitive paths/credentials before logging. Use `scripts/lib/sanitize-error.js` or inline sanitization. Do NOT log raw error.message to console.
+- **Error first line extraction**: `.split('\n')[0].replace(/\r$/, '')` - handles stack traces and Windows CRLF
+- **Control char stripping (safe whitespace)**: `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g` preserves \t\n\r for readability
+- **Sanitize file-derived content**: Apply control char stripping to ANY file content before console.log (not just errors)
 - Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
 - Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
+- **Normalize backslashes before security checks**: `.replace(/\\/g, '/')` before splitting on `/` for path traversal
+- **CRLF in regex lookaheads**: Use `\r?\n` instead of `\n` for cross-platform regex patterns
 - Windows cross-drive: `path.relative()` returns absolute path across drives - check output for `/^[A-Za-z]:/`
 - Markdown links: `.replace(/\\/g, '/')` to normalize Windows backslashes
 - lstatSync can throw: Wrap in try-catch for permission denied, broken symlinks
+- Wrap ALL file reads in try/catch: existsSync doesn't guarantee readFileSync success (race, permissions)
+
+**CI/Automation:**
+- **CI mode checks ALL, no truncation**: Limits are for interactive convenience only; `isAutoMode ? allItems : slice(0, MAX)`
+- **Invalid files should fail, not just missing**: `(exists && !valid && required)` is a failure, not just `(!exists && required)`
+- **Explicit flags should fail explicitly**: If user passes `--plan missing.md`, fail even in interactive mode
+- **Readline close on all paths**: Create `closeRl()` helper, call in success/failure/error paths to prevent script hang
 
 **Git:**
 - File renames: grep for old terminology in descriptions, not just filenames
