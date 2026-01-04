@@ -113,6 +113,34 @@ jobs:
 
             const labelName = `tier-${tier}`;
 
+            // Tier label colors (consistent visual cues)
+            const tierColors = {
+              'tier-0': '0E8A16', // green
+              'tier-1': '7057FF', // purple
+              'tier-2': 'FBCA04', // yellow
+              'tier-3': 'F9A825', // orange
+              'tier-4': 'D93F0B'  // red
+            };
+
+            // Ensure tier label exists (avoid failing on fresh repos/forks)
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName
+              });
+            } catch (e) {
+              if (e?.status !== 404) throw e;
+              // Create missing label with tier-specific color
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+                color: tierColors[labelName] || '0E8A16',
+                description: `Review tier ${tier} - auto-assigned by workflow`
+              });
+            }
+
             // Add tier label
             await github.rest.issues.addLabels({
               owner: context.repo.owner,

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.45
+**Document Version:** 1.46
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-04
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.46 | 2026-01-04 | Review #50: Audit trails, label auto-creation, .env multi-segment, biome-ignore |
 | 1.45 | 2026-01-04 | Review #49: Workflow hardening, robust module detection, dead code removal |
 | 1.44 | 2026-01-04 | Review #48: Security hardening, OSC escapes, fail-closed realpath, pathspec fixes |
 | 1.43 | 2026-01-04 | Review #47: PII masking, sensitive dirs, printf workflow, fault-tolerant labels |
@@ -85,7 +86,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 9
+**Reviews since last consolidation:** 10
+**🔔 CONSOLIDATION DUE: Threshold reached. Run consolidation process.**
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -3357,5 +3359,70 @@ The error persisted because of multiple interacting issues:
    - Note: Dead branches can confuse readers and trigger false linter warnings
 
 **Key Insight:** Workflow automation requires the same rigor as application code - tier detection patterns must be comprehensive and anchored correctly, Node.js versions must match across CI config, and step names should accurately reflect behavior. When scripts are imported for testing, main module detection must be robust against edge cases. Documentation paths need careful attention to the file's location context.
+
+---
+
+#### Review #50: Audit Trails & Comprehensive Hardening (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Sixth round of compliance fixes addressing audit trail requirements, PII logging, label management, pattern completeness, and linter compliance.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Windows path sanitization missing in ai-review.js | 🟠 Medium | Security | Changed `C:\\` to `[A-Z]:\\` with gi flag |
+| 2 | Missing audit trail in set-admin-claim.ts | 🟠 Medium | Compliance | Added JSON audit entry with timestamp, operator, action, result |
+| 3 | user.uid logged as PII | 🟡 Low | Privacy | Added maskUid() function to mask UID in logs |
+| 4 | Workflow fails if tier label doesn't exist | 🟠 Medium | Robustness | Added label auto-creation before addLabels |
+| 5 | .env pattern misses multi-segment variants | 🟡 Low | Bug | Changed `[a-zA-Z0-9_-]+` to `[a-zA-Z0-9_.-]+` |
+| 6 | Unknown CLI flags silently ignored | 🟡 Low | Robustness | Added explicit flag validation with error message |
+| 7 | Flag filtering doesn't skip flag values | 🟡 Low | Bug | Explicit loop to skip --pr value |
+| 8 | Biome complains about control char regexes | 🟡 Low | Linter | Added biome-ignore comments |
+| 9 | Case-sensitive summary filtering | 🟡 Low | Bug | Changed to case-insensitive with toLowerCase() |
+| 10 | Backtick path not a clickable link | 🟡 Low | Docs | Converted to markdown link syntax |
+
+**Patterns Identified:**
+
+1. **Structured Audit Logging** (1 occurrence - Compliance)
+   - Root cause: Admin actions logged only human-readable messages without machine-parseable records
+   - Prevention: Emit JSON audit entries with timestamp, operator, action, target, result
+   - Pattern: `console.log('[AUDIT]', JSON.stringify({ timestamp: new Date().toISOString(), operator, action, target, result }))`
+   - Note: Mask all identifiers (email, uid) in audit entries too
+
+2. **Label Auto-Creation in Workflows** (1 occurrence - Robustness)
+   - Root cause: addLabels fails if label doesn't exist in fresh repos/forks
+   - Prevention: Try getLabel first, create on 404
+   - Pattern: `try { await getLabel() } catch (e) { if (e?.status !== 404) throw e; await createLabel() }`
+   - Note: Include tier-specific colors for visual distinction
+
+3. **Multi-Segment .env Pattern** (1 occurrence - Bug)
+   - Root cause: Character class `[a-zA-Z0-9_-]` doesn't include `.` for .env.development.local
+   - Prevention: Add `.` to character class: `[a-zA-Z0-9_.-]`
+   - Pattern: `/(^|[/\\])\.env(\.[a-zA-Z0-9_.-]+)?$/`
+   - Note: Real-world projects use multi-segment env files
+
+4. **Explicit Flag Validation** (1 occurrence - Robustness)
+   - Root cause: Unknown flags silently filtered, user doesn't know about typos
+   - Prevention: Check against knownFlags array, exit with error for unknown
+   - Pattern: `if (arg.startsWith('--') && !knownFlags.includes(arg.split('=')[0])) { error(); exit(1); }`
+   - Note: Also properly skip flag values (e.g., value after --pr)
+
+5. **UID Masking for Logs** (1 occurrence - Privacy)
+   - Root cause: Firebase UIDs are identifiers that some policies consider PII
+   - Prevention: Create maskUid() helper showing first 3 + *** + last 3 chars
+   - Pattern: `uid.slice(0, 3) + '***' + uid.slice(-3)`
+   - Note: Maintains some traceability while reducing exposure
+
+6. **Biome-Ignore for Security Regexes** (3 occurrences - Linter)
+   - Root cause: Control character regexes intentional for sanitization, but Biome flags them
+   - Prevention: Add biome-ignore comment alongside eslint-disable
+   - Pattern: `// biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters`
+   - Note: Both linters need suppression comments for intentional security code
+
+**Key Insight:** Security fixes are iterative and touch multiple concerns simultaneously - a single audit trail requirement expands to timestamp formatting, operator identification, identifier masking, and structured logging. Pattern-based blocklists need comprehensive character classes for real-world variants. Workflow robustness requires graceful handling of missing resources (labels) rather than assuming infrastructure exists. When multiple linters are in use, each needs appropriate suppression comments for intentional security patterns.
 
 ---

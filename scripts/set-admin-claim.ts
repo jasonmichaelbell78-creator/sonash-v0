@@ -27,6 +27,23 @@ function maskEmail(email: string): string {
     return `${maskedLocal}@${maskedDomain}${tldPart}`
 }
 
+/**
+ * Mask UID for logging (prevents direct identifier exposure)
+ * Example: "abc123xyz789" -> "abc***789"
+ */
+function maskUid(uid: string): string {
+    if (!uid || uid.length < 6) return "***"
+    return `${uid.slice(0, 3)}***${uid.slice(-3)}`
+}
+
+/**
+ * Get current operator identity for audit trail
+ * Returns whoami username on Unix, USERNAME on Windows, or 'unknown'
+ */
+function getOperatorIdentity(): string {
+    return process.env.USER || process.env.USERNAME || "unknown"
+}
+
 // Initialize Firebase Admin
 const serviceAccountPath = join(process.cwd(), "firebase-service-account.json")
 const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf-8"))
@@ -45,11 +62,32 @@ async function setAdminClaim(email: string) {
         // Set admin custom claim
         await auth.setCustomUserClaims(user.uid, { admin: true })
 
-        console.log(`✅ Admin claim set for ${maskEmail(email)} (uid: ${user.uid})`)
+        // Audit trail: timestamp, operator, action, target (masked)
+        const auditEntry = {
+            timestamp: new Date().toISOString(),
+            operator: getOperatorIdentity(),
+            action: "SET_ADMIN_CLAIM",
+            target: maskEmail(email),
+            targetUid: maskUid(user.uid),
+            result: "SUCCESS"
+        }
+        console.log(`[AUDIT] ${JSON.stringify(auditEntry)}`)
+        console.log(`✅ Admin claim set for ${maskEmail(email)} (uid: ${maskUid(user.uid)})`)
         console.log("   User must sign out and sign back in for changes to take effect.")
         process.exit(0)
 
     } catch (error) {
+        // Audit trail for failures too
+        const auditEntry = {
+            timestamp: new Date().toISOString(),
+            operator: getOperatorIdentity(),
+            action: "SET_ADMIN_CLAIM",
+            target: maskEmail(email),
+            result: "FAILURE",
+            errorCode: (error as { code?: string }).code || "unknown"
+        }
+        console.log(`[AUDIT] ${JSON.stringify(auditEntry)}`)
+
         if ((error as { code?: string }).code === "auth/user-not-found") {
             console.error(`❌ User not found: ${maskEmail(email)}`)
         } else {

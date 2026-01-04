@@ -161,9 +161,10 @@ const FORBIDDEN_PATTERNS = [
     checkContent: true,
   },
   {
-    pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_-]+)?$/,
-    reason: '.env file (or variant like .env.local) should not be committed',
-    checkPath: true, // Path-only check (matches .env, .env.local, .env.production, etc.)
+    // Matches .env, .env.local, .env.production, .env.development.local (multi-segment)
+    pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_.-]+)?$/,
+    reason: '.env file (or variant like .env.local, .env.development.local) should not be committed',
+    checkPath: true, // Path-only check
   },
 ];
 
@@ -403,8 +404,26 @@ function main() {
     process.exit(1);
   }
 
-  // Filter out any flags and their values
-  const files = args.filter(arg => !arg.startsWith('--'));
+  // Check for unknown flags (reject early rather than silently ignoring)
+  const knownFlags = ['--pr'];
+  for (const arg of args) {
+    if (arg.startsWith('--') && !knownFlags.includes(arg.split('=')[0])) {
+      console.error(`Error: Unknown flag "${arg}"`);
+      console.error('Usage: assign-review-tier.js [files...]');
+      console.error('       assign-review-tier.js --pr <PR_NUMBER>');
+      process.exit(1);
+    }
+  }
+
+  // Filter out flags and their values explicitly
+  const files = [];
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--pr') {
+      i++; // Skip the value too
+    } else if (!args[i].startsWith('--')) {
+      files.push(args[i]);
+    }
+  }
 
   if (files.length === 0) {
     console.error('Error: No files specified');

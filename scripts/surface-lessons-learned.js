@@ -370,11 +370,12 @@ if (isMainModule) {
     const safeMessage = String(err?.message ?? err ?? 'Unknown error')
       .split('\n')[0]
       .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
-      // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex -- intentional: strip control chars
       .replace(/\/home\/[^/\s]+/g, '[HOME]')
       .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-      .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
     console.error('Script error:', safeMessage);
     process.exit(1);
   });

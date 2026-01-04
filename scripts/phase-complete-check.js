@@ -365,14 +365,14 @@ async function main() {
       .replace(/\r\n/g, '\n')
       .replace(/\r/g, '')
       // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
-      // eslint-disable-next-line no-control-regex
-      .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping ANSI escape sequences for CI safety
+      .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '') // eslint-disable-line no-control-regex
       // Strip OSC escape sequences (Operating System Commands like title changes)
-      // eslint-disable-next-line no-control-regex
-      .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, '')
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping OSC escape sequences for CI safety
+      .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, '') // eslint-disable-line no-control-regex
       // Strip control chars while preserving safe whitespace (\t\n)
-      // eslint-disable-next-line no-control-regex
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex
       .replace(/\/home\/[^/\s]+/g, '[HOME]')
       .replace(/\/Users\/[^/\s]+/g, '[HOME]')
       // Handle any Windows drive letter, case-insensitive
@@ -411,10 +411,12 @@ async function main() {
       maxBuffer: 10 * 1024 * 1024,
     });
     // Only show summary, not full output (too verbose)
+    // Use case-insensitive matching to catch PASS/FAIL/Tests: etc.
     const lines = testOutput.split('\n');
-    const summaryLines = lines.filter(l =>
-      l.includes('tests') || l.includes('pass') || l.includes('fail') || l.includes('skip')
-    );
+    const summaryLines = lines.filter(l => {
+      const lower = l.toLowerCase();
+      return lower.includes('tests') || lower.includes('pass') || lower.includes('fail') || lower.includes('skip');
+    });
     if (summaryLines.length > 0) {
       console.log(sanitizeOutput(summaryLines.join('\n')));
     }
@@ -551,8 +553,8 @@ if (isMainModule) {
     const safeMessage = String(err?.message ?? err ?? 'Unknown error')
       .split('\n')[0]
       .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
-      // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex -- intentional: strip control chars
       .replace(/\/home\/[^/\s]+/g, '[HOME]')
       .replace(/\/Users\/[^/\s]+/g, '[HOME]')
       // Handle any Windows drive letter, case-insensitive
