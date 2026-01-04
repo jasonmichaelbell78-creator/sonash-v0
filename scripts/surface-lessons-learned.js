@@ -2,7 +2,7 @@
 /**
  * Surface Lessons Learned - Session Start Helper
  *
- * Searches AI_REVIEW_LEARNINGS_LOG.md for relevant past issues
+ * Searches docs/AI_REVIEW_LEARNINGS_LOG.md for relevant past issues
  * based on current work context (modified files, keywords).
  *
  * Usage:
@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
 
-const LEARNINGS_FILE = 'AI_REVIEW_LEARNINGS_LOG.md';
+const LEARNINGS_FILE = 'docs/AI_REVIEW_LEARNINGS_LOG.md';
 
 // Common topic keywords and their aliases
 const TOPIC_ALIASES = {
@@ -242,7 +242,7 @@ function findRelevantLessons(lessons, topics) {
  */
 function formatLessons(lessons, _topics) {
   if (lessons.length === 0) {
-    return '  📚 No specific lessons found for these topics.\n     Check AI_REVIEW_LEARNINGS_LOG.md for all patterns.';
+    return '  📚 No specific lessons found for these topics.\n     Check docs/AI_REVIEW_LEARNINGS_LOG.md for all patterns.';
   }
 
   // Sanitize content from file before terminal output (prevent control char injection)
@@ -269,7 +269,7 @@ function formatLessons(lessons, _topics) {
   }
 
   if (lessons.length > 5) {
-    output += `\n  ... and ${lessons.length - 5} more lessons (see AI_REVIEW_LEARNINGS_LOG.md)\n`;
+    output += `\n  ... and ${lessons.length - 5} more lessons (see docs/AI_REVIEW_LEARNINGS_LOG.md)\n`;
   }
 
   return output;
@@ -332,7 +332,7 @@ async function main() {
   }
 
   console.log('');
-  console.log('  📖 Full log: AI_REVIEW_LEARNINGS_LOG.md');
+  console.log('  📖 Full log: docs/AI_REVIEW_LEARNINGS_LOG.md');
   console.log('');
 
   process.exit(0);

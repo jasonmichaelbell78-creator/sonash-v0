@@ -15,7 +15,18 @@ if ! npm test > /dev/null 2>&1; then
 fi
 echo "  ✅ Tests passed"
 
-# 2. Run pattern compliance check
+# 2. Check for circular dependencies (blocking - architectural integrity)
+echo "  ▶ Checking for circular dependencies..."
+if ! npm run deps:circular > /dev/null 2>&1; then
+  echo "  ❌ Circular dependencies detected"
+  npm run deps:circular 2>&1 | tail -10
+  echo ""
+  echo "  Fix circular dependencies before pushing. Run: npm run deps:circular"
+  exit 1
+fi
+echo "  ✅ No circular dependencies"
+
+# 3. Run pattern compliance check
 # NOTE: Currently set to WARN (not block) because legacy code has violations
 # TODO: Change back to blocking once violations are fixed (tracked in ROADMAP.md)
 echo "  ▶ Running pattern compliance check..."
@@ -27,7 +38,7 @@ else
   echo "  ✅ Pattern compliance passed"
 fi
 
-# 3. Type check
+# 4. Type check
 echo "  ▶ Running type check..."
 if ! npx tsc --noEmit > /dev/null 2>&1; then
   echo "  ❌ Type check failed"

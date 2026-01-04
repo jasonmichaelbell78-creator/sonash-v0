@@ -1600,13 +1600,13 @@ The error persisted because of multiple interacting issues:
 <!-- BAD: Mixed formats - one shows path, others don't -->
 **See also:**
 - [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [docs/SECURITY.md](./docs/SECURITY.md)  <!-- ❌ includes path -->
+- [docs/SECURITY.md](./SECURITY.md)  <!-- ❌ includes path -->
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
 
 <!-- GOOD: Consistent format - all show just filename -->
 **See also:**
 - [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [SECURITY.md](./docs/SECURITY.md)  <!-- ✅ clean display text -->
+- [SECURITY.md](./SECURITY.md)  <!-- ✅ clean display text -->
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
 ```
 
@@ -2926,7 +2926,7 @@ The error persisted because of multiple interacting issues:
 #### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
 
 **Source:** Staff-engineer audit (Session #5)
-**Decision:** [ADR-001](./docs/decisions/ADR-001-integrated-improvement-plan-approach.md)
+**Decision:** [ADR-001](./decisions/ADR-001-integrated-improvement-plan-approach.md)
 **Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
 
 **Context:** After completing 57% of documentation standardization (Phases 1-4), we faced a decision point: continue with fragmented planning documents (Doc Standardization Plan + Eight-Phase Refactor Plan + missing tooling) or consolidate into a unified path.

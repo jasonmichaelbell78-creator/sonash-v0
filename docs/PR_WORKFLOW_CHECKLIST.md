@@ -15,7 +15,7 @@ This checklist ensures EVERY phase (PR1-PR8) follows the complete workflow from 
 
 **Related Documents**:
 - [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Security requirements for ALL code
-- [AI_REVIEW_PROCESS.md](../AI_REVIEW_PROCESS.md) - Processing AI review feedback
+- [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) - Processing AI review feedback
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Deliverable Audit procedure
 
 ---

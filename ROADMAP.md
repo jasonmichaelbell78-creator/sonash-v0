@@ -19,7 +19,7 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
-> **⚠️ BLOCKER:** Integrated improvement initiative is active. See [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) for the unified roadmap covering documentation standardization, tooling setup, and architecture refactoring validation.
+> **⚠️ BLOCKER:** Integrated improvement initiative is active. See [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) for the unified roadmap covering documentation standardization, tooling setup, and architecture refactoring validation.
 >
 > **Architecture Refactoring:** Pending Delta Review validation (Step 4 of Integrated Improvement Plan). Original plan: [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
 
@@ -405,7 +405,7 @@ flowchart TD
   - **Status:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
   - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual reCAPTCHA as workaround
   - **Impact:** Security posture weakened - App Check provides bot protection at Firebase SDK level
-  - **Next Steps:** Decide strategy (tracked in [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) Step 4, Task 4.4)
+  - **Next Steps:** Decide strategy (tracked in [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Step 4, Task 4.4)
     - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
     - Option B: Wait for throttle to clear, then re-enable App Check only
     - Option C: Accept weaker security posture (reCAPTCHA optional, no App Check)
@@ -896,7 +896,7 @@ flowchart TD
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
-- **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - QA testing procedures
+- **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** - QA testing procedures
 - **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
 - **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report

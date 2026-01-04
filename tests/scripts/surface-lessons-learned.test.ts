@@ -111,7 +111,7 @@ describe("surface-lessons-learned.js", () => {
       const result = runScript()
 
       assert.ok(
-        result.stdout.includes("AI_REVIEW_LEARNINGS_LOG.md"),
+        result.stdout.includes("docs/AI_REVIEW_LEARNINGS_LOG.md"),
         "Should reference the full log file"
       )
     })

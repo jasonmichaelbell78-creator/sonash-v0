@@ -32,7 +32,7 @@ This document provides **essential session context** for quick startup. It's des
 
 **⚠️ CRITICAL BLOCKER**: ALL feature development blocked until improvement plan complete
 
-**See**: [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) - Unified roadmap covering:
+**See**: [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) - Unified roadmap covering:
 - Documentation Standardization (remaining Phase 5-6)
 - Developer Tooling Setup (Prettier, madge, knip)
 - Delta Review & Refactor Validation
@@ -70,7 +70,7 @@ This document provides **essential session context** for quick startup. It's des
 - Install and configure knip (unused exports)
 - Document in DEVELOPMENT.md
 
-**See**: [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) for full roadmap
+**See**: [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) for full roadmap
 
 ---
 
@@ -79,7 +79,7 @@ This document provides **essential session context** for quick startup. It's des
 **Status**: No pending CodeRabbit reviews
 
 **When reviews arrive**:
-1. See [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for systematic processing
+1. See [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) for systematic processing
 2. Categorize: Critical → Major → Minor → Trivial
 3. Triage using decision matrix
 4. Document using template
@@ -200,7 +200,7 @@ This document provides **essential session context** for quick startup. It's des
 **1. Integrated Improvement Plan (Priority: P0)**
 - **Status**: IN PROGRESS - Steps 1-2 complete, Step 3 next
 - **Impact**: ALL feature work blocked
-- **Resolution**: Complete remaining 4 steps of [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
+- **Resolution**: Complete remaining 4 steps of [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)
 - **Next**: Start Step 3 - Developer Tooling Setup (3-4 hours estimated)
 
 ### No Other Blockers
@@ -213,10 +213,10 @@ All other systems operational.
 
 **Before starting work**, familiarize yourself with:
 
-1. **[INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)** - Current unified roadmap (START HERE)
+1. **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)** - Current unified roadmap (START HERE)
 2. **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - How to navigate documentation
 3. **[ROADMAP.md](./ROADMAP.md)** - Overall project priorities
-4. **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - When CodeRabbit feedback arrives
+4. **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - When CodeRabbit feedback arrives
 5. **[TRIGGERS.md](./docs/TRIGGERS.md)** - All automation and enforcement mechanisms
 
 **For deeper context**:
@@ -242,7 +242,7 @@ All other systems operational.
 **During Session**:
 - Use [TodoWrite] to track complex tasks
 - Update this document if status changes significantly
-- Follow [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for reviews
+- Follow [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) for reviews
 - Reference [AI_WORKFLOW.md](./AI_WORKFLOW.md) for navigation
 - **Use appropriate skills/agents** (see claude.md Section 6)
 
@@ -332,7 +332,7 @@ npm run docs:check   # Documentation linting
 
 **Navigation**:
 - Need to understand docs? → [AI_WORKFLOW.md](./AI_WORKFLOW.md)
-- Need CodeRabbit process? → [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
+- Need CodeRabbit process? → [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
 - Need to check priorities? → [ROADMAP.md](./ROADMAP.md)
 - Need architecture details? → [ARCHITECTURE.md](./ARCHITECTURE.md)
 

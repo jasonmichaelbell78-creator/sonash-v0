@@ -279,7 +279,7 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 
 **Examples**:
 ```markdown
-See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for system design.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design.
 See the [Dependencies section](./ROADMAP.md#dependencies) for prerequisites.
 ```
 

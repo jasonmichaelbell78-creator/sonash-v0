@@ -25,7 +25,7 @@ Current architecture is **production-ready** with:
 - ✅ Journal system consolidated
 - ⏳ Optional Sentry integration (pending)
 
-> **📋 Note:** Architecture improvements and refactoring are being validated via the [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) Delta Review process. Developer tooling (Prettier, madge, knip) will be added in Step 3 of that plan.
+> **📋 Note:** Architecture improvements and refactoring are being validated via the [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Delta Review process. Developer tooling (Prettier, madge, knip) will be added in Step 3 of that plan.
 
 ---
 
@@ -703,7 +703,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 - **Product:** [ROADMAP.md](./ROADMAP.md)
 - **Development:** [DEVELOPMENT.md](./DEVELOPMENT.md)
 - **Security:** [docs/SECURITY.md](./docs/SECURITY.md)
-- **Testing:** [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+- **Testing:** [TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)
 - **Incident Response:** [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)
 
 ---

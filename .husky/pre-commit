@@ -15,7 +15,17 @@ if ! npm run lint > /dev/null 2>&1; then
 fi
 echo "  ✅ ESLint passed (0 errors)"
 
-# 2. Run tests - stream output using temp file
+# 2. Check code formatting (Prettier)
+# NOTE: Currently set to WARN (not block) until initial codebase formatting is applied
+# TODO: Change to blocking after running 'npm run format' on the codebase
+echo "  ▶ Checking code formatting..."
+if ! npm run format:check > /dev/null 2>&1; then
+  echo "  ⚠️  Formatting issues found (not blocking - run: npm run format)"
+else
+  echo "  ✅ Code formatting passed"
+fi
+
+# 3. Run tests - stream output using temp file
 echo "  ▶ Running tests..."
 TEST_TMPFILE=$(mktemp)
 trap 'rm -f "$TEST_TMPFILE"' EXIT

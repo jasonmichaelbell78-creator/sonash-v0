@@ -703,11 +703,11 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 ### Source Documents
 - [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - Detailed Phase 5-6 tasks
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
-- [ROADMAP.md](./ROADMAP.md) - Product roadmap (target for integration)
-- [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Session handoff document
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
+- [ROADMAP.md](../ROADMAP.md) - Product roadmap (target for integration)
+- [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) - Session handoff document
 
 ### Related Documents
-- [AI_WORKFLOW.md](./AI_WORKFLOW.md) - AI navigation guide
-- [DEVELOPMENT.md](./DEVELOPMENT.md) - Developer setup (tooling target)
+- [AI_WORKFLOW.md](../AI_WORKFLOW.md) - AI navigation guide
+- [DEVELOPMENT.md](../DEVELOPMENT.md) - Developer setup (tooling target)
 - [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md) - Review learnings
