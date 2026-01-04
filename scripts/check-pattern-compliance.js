@@ -72,11 +72,11 @@ const ANTI_PATTERNS = [
   {
     id: 'retry-loop-no-success-tracking',
     // Use lazy quantifiers and word boundaries for accurate matching
-    // Note: No 'g' flag - using .test() which is stateful with global regexes
-    pattern: /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/,
+    // Note: Global flag required - checkFile uses exec() in a loop which needs /g to advance lastIndex
+    pattern: /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/g,
     message: 'Retry loop may silently succeed on failure - not tracking success',
     fix: 'Track: SUCCESS=false; for i in 1 2 3; do cmd && { SUCCESS=true; break; }; done; $SUCCESS || exit 1',
-    review: '#18, #19',
+    review: '#18, #19, #51',
     fileTypes: ['.sh', '.yml', '.yaml'],
   },
   {
@@ -92,12 +92,13 @@ const ANTI_PATTERNS = [
   // JavaScript/TypeScript patterns
   {
     id: 'unsafe-error-message',
-    // Match catch blocks with .message access that DON'T have instanceof check nearby
-    // The instanceof check can come BEFORE (ternary) or AFTER the .message access
-    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[\s\S]{0,100}\1\.message/g,
+    // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
+    // Uses negative lookahead to check full block, then lazy quantifier to find first .message
+    // Fixed in Review #51: Removed 100-char limit that missed multi-line catch blocks
+    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![\s\S]*instanceof\s+Error)[\s\S]*?\1\.message/g,
     message: 'Unsafe error.message access - crashes if non-Error is thrown',
     fix: 'Use: error instanceof Error ? error.message : String(error)',
-    review: '#17',
+    review: '#17, #51',
     fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
   },
   {
@@ -303,7 +304,8 @@ const ANTI_PATTERNS = [
     // - archive-doc.js: safeReadFile wrapper at L126-154 with try/catch
     // - validate-phase-completion.js: NOW HAS try/catch at L29-35 (fixed 2026-01-04)
     // - update-readme-status.js: safeReadFile wrapper at L57-88 with try/catch (fixed 2026-01-04)
-    pathExclude: /(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status)\.js$/,
+    // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status)\.js$/,
   },
   {
     id: 'auto-mode-slice-truncation',

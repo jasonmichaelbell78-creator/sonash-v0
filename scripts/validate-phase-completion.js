@@ -16,6 +16,7 @@
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,12 +31,13 @@ function main() {
   try {
     content = readFileSync(PLAN_PATH, 'utf-8');
   } catch (err) {
-    console.error(`❌ Failed to read plan: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`❌ Failed to read plan: ${sanitizeError(err)}`);
     process.exit(1);
   }
 
   // Find all phases marked COMPLETE
-  const phasePattern = /## 📋 (PHASE \d+(?:\.\d+)?:[^*\n]+)\n\n\*\*Status:\*\* COMPLETE/g;
+  // Note: Use \r?\n for cross-platform CRLF support (Review #51)
+  const phasePattern = /## 📋 (PHASE \d+(?:\.\d+)?:[^*\r\n]+)\r?\n\r?\n\*\*Status:\*\* COMPLETE/g;
   const completedPhases = [];
   let match;
 

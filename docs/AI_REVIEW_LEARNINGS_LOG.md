@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.46
+**Document Version:** 1.49
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-04
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.49 | 2026-01-04 | Review #51: ESLint audit follow-up, infinite loop fix, regex hardening |
 | 1.48 | 2026-01-04 | EFFECTIVENESS AUDIT: Fixed 26→0 violations in critical files; patterns:check now blocking |
 | 1.47 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 → claude.md v2.8 (12 patterns added) |
 | 1.46 | 2026-01-04 | Review #50: Audit trails, label auto-creation, .env multi-segment, biome-ignore |
@@ -214,18 +215,20 @@ The checker references this log so you can find the detailed context for each pa
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
 |------|-------|---------|
-| `detect-object-injection` | 91 | False positives - safe iteration/lookups |
-| `detect-non-literal-fs-filename` | 66 | False positives - CLI scripts |
-| `detect-unsafe-regex` | 14 | Safe - bounded input, linear patterns |
-| `detect-non-literal-regexp` | 6 | False positives - intentional dynamic patterns |
-| `detect-possible-timing-attacks` | 1 | False positive - user's own password compare |
-| **Total** | **181** | **All false positives** |
+| `detect-object-injection` | 91 | Audited as false positives - safe iteration/lookups |
+| `detect-non-literal-fs-filename` | 66 | Audited as false positives - CLI scripts |
+| `detect-unsafe-regex` | 14 | Audited as safe - bounded input, linear patterns |
+| `detect-non-literal-regexp` | 6 | Audited as false positives - intentional dynamic patterns |
+| `detect-possible-timing-attacks` | 1 | Audited as false positive - user's own password compare |
+| `@typescript-eslint/no-unused-vars` | 3 | Audited as legitimate - type definitions |
+| **Total** | **181** | **Audited as false positives (2026-01-04)** |
 
 **Recommendations:**
 - [ ] Gradually fix migration script violations (low priority - run once)
 - [x] Keep `patterns:check` blocking for critical files
-- [x] ESLint warnings audited and documented (181 baseline)
+- [x] ESLint warnings audited and documented (181 baseline as of 2026-01-04)
 - [ ] Review full repo quarterly
+- [ ] **DEFERRED (Review #51)**: Consider migrating regex patterns to AST-based ESLint rules for better accuracy (architectural change)
 
 ---
 
@@ -3467,5 +3470,75 @@ The error persisted because of multiple interacting issues:
    - Note: Both linters need suppression comments for intentional security code
 
 **Key Insight:** Security fixes are iterative and touch multiple concerns simultaneously - a single audit trail requirement expands to timestamp formatting, operator identification, identifier masking, and structured logging. Pattern-based blocklists need comprehensive character classes for real-world variants. Workflow robustness requires graceful handling of missing resources (labels) rather than assuming infrastructure exists. When multiple linters are in use, each needs appropriate suppression comments for intentional security patterns.
+
+---
+
+#### Review #51: ESLint Audit Follow-up & Pattern Checker Fixes (2026-01-04)
+
+**Source:** Qodo PR Compliance + CodeRabbit
+**PR:** Session #23 (ESLint audit commit)
+**Tools:** Qodo, CodeRabbit
+**Suggestions:** 12 total (Critical: 1, Major: 5, Minor: 5, Deferred: 1)
+
+**Context:** Follow-up review of ESLint warning audit commit (71a4390) and pattern effectiveness audit commit (f3dbcb2). Identified critical infinite loop bug and several regex robustness issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Non-global pattern causes infinite loop | 🔴 Critical | Bug | Added `/g` flag to retry-loop-no-success-tracking pattern |
+| 2 | unsafe-error-message regex 100-char limit | 🟠 Major | Bug | Removed limit, use `[\s\S]*?` for full catch block |
+| 3 | CRLF in phase matching regex | 🟠 Major | Bug | Added `\r?` for cross-platform line endings |
+| 4 | pathExclude needs path boundary | 🟠 Major | Bug | Added `(?:^|[\\/])` anchor |
+| 5 | Flawed regex lookahead in statusPattern | 🟠 Major | Bug | Simplified to `(?=\r?\n## [^#]|$)` |
+| 6 | Triple command invocation in pre-push | 🟠 Major | Performance | Capture output once, reuse for grep/tail |
+| 7 | Missing sanitizeError import | 🟡 Minor | Consistency | Added import in validate-phase-completion.js |
+| 8 | Inline error handling vs sanitizeError | 🟡 Minor | Consistency | Use sanitizeError in update-readme-status.js helpers |
+| 9 | Document version out of sync | 🟡 Minor | Docs | Updated 1.46 → 1.49 |
+| 10 | Warning count mismatch (65 vs 66) | 🟡 Minor | Docs | Reconciled: 66 + 3 no-unused-vars = 181 |
+| 11 | Time-bound audit claims | 🟡 Minor | Docs | Changed to "Audited as false positives (2026-01-04)" |
+
+**Deferred:**
+- AST-based linting migration (architectural suggestion for future)
+
+**Patterns Identified:**
+
+1. **Global Flag Required for exec() Loops** (1 occurrence - Critical)
+   - Root cause: Pattern without `/g` flag used in `while (exec())` loop never advances lastIndex
+   - Prevention: Every pattern used with exec() must have `/g` flag
+   - Pattern: Always add `/g` when pattern will be used in a loop
+   - Note: The comment said "using .test()" but checkFile uses exec()
+
+2. **Regex Scope Limits Miss Multi-line Catch Blocks** (1 occurrence - Major)
+   - Root cause: `{0,100}` limit truncates match in large catch blocks
+   - Prevention: Use `[\s\S]*?` (lazy) instead of fixed limits
+   - Pattern: `/catch\s*\(\s*(\w+)\s*\)\s*\{(?![\s\S]*instanceof\s+Error)[\s\S]*?\1\.message/g`
+   - Note: Lookahead checks full block, lazy quantifier finds first .message
+
+3. **CRLF Cross-Platform Regex** (3 occurrences - Major)
+   - Root cause: `\n` pattern fails on Windows CRLF files
+   - Prevention: Always use `\r?\n` for newline matching
+   - Pattern: Phase patterns, lookaheads, any newline-dependent regex
+   - Note: Already documented in claude.md but not applied consistently
+
+4. **Path Boundary Anchoring in Exclusions** (1 occurrence - Major)
+   - Root cause: Substring match excludes unintended files
+   - Prevention: Anchor with `(?:^|[\\/])` at path boundary
+   - Pattern: `/(?:^|[\\/])(?:filename1|filename2)\.js$/`
+   - Note: Prevents "somefile.js" matching "otherfile.js" substring
+
+5. **Redundant Regex Alternatives** (1 occurrence - Major)
+   - Root cause: `|\r?\n## $` alternative never matches realistically
+   - Prevention: Simplify to just `(?=\r?\n## [^#]|$)` - next section OR end
+   - Pattern: Remove impossible alternatives from lookaheads
+   - Note: Cleaner regex = fewer edge cases
+
+6. **Command Output Caching in Hooks** (1 occurrence - Major)
+   - Root cause: Running same command multiple times wastes time and may give inconsistent results
+   - Prevention: Capture output once: `output=$(cmd 2>&1)`
+   - Pattern: `output=$(npm run patterns:check 2>&1); echo "$output" | grep ... || echo "$output" | tail`
+   - Note: Also reduces CI log noise
+
+**Key Insight:** Pattern checkers that use exec() loops MUST have the global flag - this is a critical bug that causes infinite loops. Cross-platform regex robustness requires consistent `\r?\n` usage. Path-based exclusions need proper anchoring to prevent substring false positives. When documenting audits, use time-bound language ("audited as X on date") rather than absolute claims.
 
 ---

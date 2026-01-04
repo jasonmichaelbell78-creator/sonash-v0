@@ -29,10 +29,13 @@ echo "  ✅ No circular dependencies"
 # 3. Run pattern compliance check (BLOCKING - 14 critical files)
 # Fixed 2026-01-04: Legacy violations resolved (Session #23)
 # Note: Uses default file list (critical files). Full repo check (--all) may have violations in migration scripts.
+# Fixed in Review #51: Capture output once instead of running command multiple times
 echo "  ▶ Running pattern compliance check..."
-if ! npm run patterns:check > /dev/null 2>&1; then
+patterns_output=$(npm run patterns:check 2>&1)
+patterns_exit=$?
+if [ $patterns_exit -ne 0 ]; then
   echo "  ❌ Pattern compliance violations found"
-  npm run patterns:check 2>&1 | grep -E "^📄|Found [0-9]+ potential" || npm run patterns:check 2>&1 | tail -15
+  printf '%s\n' "$patterns_output" | grep -E "^📄|Found [0-9]+ potential" || printf '%s\n' "$patterns_output" | tail -15
   echo ""
   echo "  Fix pattern violations before pushing. Run: npm run patterns:check"
   exit 1

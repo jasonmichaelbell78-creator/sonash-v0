@@ -473,14 +473,15 @@ npm run deps:unused
 npm run lint
 ```
 
-**Current baseline:** 0 errors, 181 warnings (eslint-plugin-security rules)
+**Current baseline:** 0 errors, 181 warnings (eslint-plugin-security + TypeScript rules)
 
-**Warning breakdown (all false positives - audited 2026-01-04):**
+**Warning breakdown (audited as false positives - 2026-01-04):**
 - `detect-object-injection` (91): Safe iteration/lookups with developer-defined keys
-- `detect-non-literal-fs-filename` (65): CLI scripts with controlled paths
+- `detect-non-literal-fs-filename` (66): CLI scripts with controlled paths
 - `detect-unsafe-regex` (14): Bounded input, linear patterns
 - `detect-non-literal-regexp` (6): Intentional dynamic patterns
 - `detect-possible-timing-attacks` (1): Comparing user's own password inputs
+- `@typescript-eslint/no-unused-vars` (3): Legitimate unused variables in type definitions
 
 **Configuration:** `eslint.config.mjs` (flat config)
 
