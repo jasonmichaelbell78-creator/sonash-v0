@@ -469,19 +469,32 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  // Sanitize error output - avoid exposing file paths, stack traces, and control characters
-  // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
-  // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
-  const safeMessage = String(err?.message ?? err ?? 'Unknown error')
-    .split('\n')[0]
-    .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
-    // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    .replace(/\/home\/[^/\s]+/g, '[HOME]')
-    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-    .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
-  console.error('Script error:', safeMessage);
-  closeRl();
-  process.exit(1);
-});
+// Export functions for testing
+export {
+  extractDeliverablesFromPlan,
+  verifyDeliverable,
+  runAutomatedDeliverableAudit
+};
+
+// Only run main() when executed directly (not when imported for testing)
+const isMainModule = import.meta.url === `file://${process.argv[1]}` ||
+                     process.argv[1]?.endsWith('phase-complete-check.js');
+
+if (isMainModule) {
+  main().catch(err => {
+    // Sanitize error output - avoid exposing file paths, stack traces, and control characters
+    // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+    // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
+    const safeMessage = String(err?.message ?? err ?? 'Unknown error')
+      .split('\n')[0]
+      .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
+      // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      .replace(/\/home\/[^/\s]+/g, '[HOME]')
+      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+    console.error('Script error:', safeMessage);
+    closeRl();
+    process.exit(1);
+  });
+}
