@@ -203,7 +203,7 @@ Before merging changes reviewed by AI:
 
 ## Customization
 
-Edit `/home/user/sonash-v0/.claude/review-prompts.md` to:
+Edit `.claude/review-prompts.md` to:
 
 1. **Adjust severity thresholds** - What's CRITICAL vs HIGH for your project
 2. **Add project-specific rules** - Your coding standards, naming conventions
@@ -285,5 +285,5 @@ fi
 ---
 
 For detailed prompts, implementation notes, and examples, see:
-- **Full Guide:** `/home/user/sonash-v0/.claude/review-prompts.md`
-- **Implementation:** `/home/user/sonash-v0/scripts/ai-review.js`
+- **Full Guide:** `.claude/review-prompts.md`
+- **Implementation:** `scripts/ai-review.js`

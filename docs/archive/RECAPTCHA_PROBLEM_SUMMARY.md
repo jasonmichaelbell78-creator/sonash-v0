@@ -8,9 +8,9 @@
 
 This document has been archived as outdated.
 
-See: [docs/APPCHECK_SETUP.md](./docs/APPCHECK_SETUP.md) for current App Check setup
-See: [docs/recaptcha_removal_guide.md](./docs/recaptcha_removal_guide.md) for removal/setup guide
+See: [APPCHECK_SETUP.md](../APPCHECK_SETUP.md) for current App Check setup
+See: [recaptcha_removal_guide.md](../recaptcha_removal_guide.md) for removal/setup guide
 
 ---
 
-**Archive Location:** [docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md](./docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md)
+**Archive Location:** `docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md`

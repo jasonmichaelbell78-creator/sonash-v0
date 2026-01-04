@@ -540,4 +540,4 @@ function formatReviewForPR(review) {
 
 ---
 
-See full prompts in `/home/user/sonash-v0/.claude/review-prompts.md`
+See full prompts in `.claude/review-prompts.md`

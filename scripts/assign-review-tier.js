@@ -227,7 +227,11 @@ function assignReviewTier(files, options = {}) {
     // Assign tier by path
     const pathTier = assignTierByPath(file);
     if (pathTier.tier > highestTier) {
+      // Found a higher tier - reset reasons and update tier
       highestTier = pathTier.tier;
+      reasons = [pathTier.reason];
+    } else if (pathTier.tier === highestTier) {
+      // Same tier as current highest - add to reasons
       reasons.push(pathTier.reason);
     }
 

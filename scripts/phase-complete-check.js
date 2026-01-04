@@ -19,6 +19,7 @@ import { execSync } from 'child_process';
 import * as readline from 'readline';
 import * as fs from 'fs';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -477,8 +478,8 @@ export {
 };
 
 // Only run main() when executed directly (not when imported for testing)
-const isMainModule = import.meta.url === `file://${process.argv[1]}` ||
-                     process.argv[1]?.endsWith('phase-complete-check.js');
+// Use pathToFileURL for cross-platform compatibility (Windows paths use backslashes)
+const isMainModule = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMainModule) {
   main().catch(err => {

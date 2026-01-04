@@ -143,7 +143,7 @@ describe("surface-lessons-learned.js", () => {
         )
       } finally {
         // Cleanup
-        fs.rmSync(tempDir, { recursive: true })
+        fs.rmSync(tempDir, { recursive: true, force: true })
       }
     })
   })

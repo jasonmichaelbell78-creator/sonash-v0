@@ -14,7 +14,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 
 const REVIEW_PROMPTS_FILE = '.claude/review-prompts.md';
 
@@ -143,8 +143,8 @@ function getFilesToReview() {
 function readFileContent(filePath) {
   try {
     if (config.staged) {
-      // Read staged version
-      return execSync(`git show :${filePath}`, { encoding: 'utf-8' });
+      // Read staged version (use execFileSync to prevent command injection)
+      return execFileSync('git', ['show', `:${filePath}`], { encoding: 'utf-8' });
     } else {
       // Read current version
       return fs.readFileSync(filePath, 'utf-8');
