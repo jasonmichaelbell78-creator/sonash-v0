@@ -1,11 +1,15 @@
 # Review Policy Architecture
 
 **Document Type:** FOUNDATION (Tier 2)
-**Version:** 1.0
+**Version:** 1.1
 **Created:** 2026-01-04
 **Last Updated:** 2026-01-04
-**Status:** ACTIVE
-**Authority:** MANDATORY for all development activities
+**Status:** UNDER IMPLEMENTATION (Phase 1 in progress)
+**Authority:** MANDATORY for all development activities after Phase 1 completion
+
+> **Implementation Note:** This document describes the target review policy architecture.
+> Full enforcement begins after Phase 1 deliverables are complete (see Section 6.1).
+> Currently, only blocking CI checks (ESLint, TypeScript, tests) are enforced.
 
 ---
 
@@ -336,26 +340,29 @@ Production canary → Full rollout
 - No AI warnings flagged
 - Pattern matches known-safe changes
 
-**What's Automated:**
-| Check | Tool | Blocks Merge |
-|-------|------|--------------|
-| Linting | ESLint | ✅ Yes |
-| Type checking | TypeScript | ✅ Yes |
-| Unit tests | Jest/Vitest | ✅ Yes |
-| Build | Next.js | ✅ Yes |
-| Security patterns | check-patterns.js | ✅ Yes |
-| Dependency vulnerabilities | npm audit | ✅ Yes |
-| Code security | CodeQL | 🟡 Advisory |
-| Documentation lint | docs:check --strict | ✅ Yes |
+**What's Automated (Currently Implemented):**
+| Check | Tool | Blocks Merge | Status |
+|-------|------|--------------|--------|
+| Linting | ESLint | ✅ Yes | ✅ Implemented |
+| Type checking | TypeScript | ✅ Yes | ✅ Implemented |
+| Unit tests | Node test runner | ✅ Yes | ✅ Implemented |
+| Build | Next.js | ✅ Yes | ✅ Implemented |
+| Security patterns | check-pattern-compliance.js | 🟡 Warning only | ✅ Implemented |
+| Dependency vulnerabilities | npm audit | 🟡 Warning only | ⏳ Planned |
+| Code security | CodeQL | 🟡 Advisory | ⏳ Planned |
+| Documentation lint | docs:check | 🟡 continue-on-error | ✅ Implemented |
 
-**Auto-Merge Conditions:**
+> **Note:** Full auto-merge is not yet implemented. The conditions below describe the target state after Phase 2 completion.
+
+**Auto-Merge Conditions (Target State - Phase 2):**
 ```javascript
+// These functions will be implemented in Phase 2
 if (
   tier === 0 &&
   allChecksPass() &&
-  noAIWarnings() &&
-  !touchesSecurityPaths() &&
-  !modifiesPublicAPI()
+  noAIWarnings() &&        // Phase 2: AI review integration
+  !touchesSecurityPaths() && // Phase 2: Security path detection
+  !modifiesPublicAPI()     // Phase 2: API change detection
 ) {
   autoMerge();
 }
@@ -537,7 +544,7 @@ tier_4:
 ```
 
 **Implementation:**
-Uses existing `scripts/check-patterns.js` + new `check-review-escalation.js`
+Uses existing `scripts/check-pattern-compliance.js` + `check-review-escalation.js` (Phase 2 - planned)
 
 ---
 
@@ -567,10 +574,10 @@ Uses existing `scripts/check-patterns.js` + new `check-review-escalation.js`
 5. Critical issues get immediate PRs
 ```
 
-**Documentation Drift Audit:**
+**Documentation Drift Audit (Phase 3 - Planned):**
 ```bash
-# Bi-weekly automated check
-npm run audit:docs-drift
+# Bi-weekly automated check (not yet implemented)
+npm run audit:docs-drift  # Phase 3 deliverable
 # Compares:
 # - README.md feature list vs actual app features
 # - API docs vs actual API endpoints
@@ -663,8 +670,12 @@ const fastPathPatterns = [
 const fastPathFiles = [
   /^docs\/archive\//,
   /\.test\.(ts|tsx)$/,
-  /\.md$/ // Except ROADMAP, README, DOCUMENTATION_STANDARDS
+  // Markdown files, excluding protected docs (ROADMAP, README, DOCUMENTATION_STANDARDS)
+  /^(?!.*(ROADMAP|README|DOCUMENTATION_STANDARDS)).*\.md$/
 ];
+
+// Note: The 5+ PRs threshold (Fast-Path) is cumulative with 20+ PRs (Good Faith).
+// See section 4.3 for progressive trust levels.
 ```
 
 **Safety Mechanisms:**
@@ -873,15 +884,20 @@ Result: Human reviewer discovers endpoints were removed without docs update
 | **Tier de-escalations** | <5% of PRs | De-escalation requests | Lower = not over-cautious |
 | **Misclassified PRs** | <3% | Post-merge audit | Lower = tier system working |
 
-**Tracking Implementation:**
+**Tracking Implementation (Phase 3 - Planned):**
 ```javascript
-// scripts/collect-review-metrics.js
-// Runs monthly, outputs to docs/audits/YYYY-MM-review-metrics.md
-// Data sources:
+// scripts/collect-review-metrics.js (NOT YET IMPLEMENTED)
+// Target: Runs monthly, outputs to docs/audits/YYYY-MM-review-metrics.md
+// Planned data sources:
 // - GitHub API (PR data, review times)
 // - AI review logs (CodeRabbit, Qodo)
-// - CI logs (check-patterns.js, build times)
+// - CI logs (check-pattern-compliance.js, build times)
 // - Incident reports (INCIDENT_RESPONSE.md)
+
+// Prerequisites:
+// - docs/audits/ directory (create in Phase 3)
+// - GitHub API token (for PR data)
+// - "caught-in-review" label (must be created on GitHub)
 ```
 
 ---

@@ -123,22 +123,28 @@ const ESCALATION_TRIGGERS = [
 ];
 
 // Forbidden patterns (block merge)
+// checkContent: true = pattern should match file content
+// checkPath: true = pattern should match file path
 const FORBIDDEN_PATTERNS = [
   {
     pattern: /sk_live_[A-Za-z0-9]+/,
     reason: 'Hardcoded API key detected',
+    checkContent: true,
   },
   {
     pattern: /sk_test_[A-Za-z0-9]+/,
     reason: 'Hardcoded test API key detected',
+    checkContent: true,
   },
   {
     pattern: /password\s*=\s*["'][^"']+["']/,
     reason: 'Hardcoded password detected',
+    checkContent: true,
   },
   {
     pattern: /^\.env$/,
     reason: '.env file should not be committed',
+    checkPath: true, // Path-only check
   },
 ];
 
@@ -221,7 +227,9 @@ function checkForbiddenPatterns(filePath, content) {
   const violations = [];
 
   for (const forbidden of FORBIDDEN_PATTERNS) {
-    if (forbidden.pattern.test(content) || forbidden.pattern.test(filePath)) {
+    const matchesContent = forbidden.checkContent && forbidden.pattern.test(content);
+    const matchesPath = forbidden.checkPath && forbidden.pattern.test(filePath);
+    if (matchesContent || matchesPath) {
       violations.push({
         pattern: forbidden.pattern.toString(),
         reason: forbidden.reason,
@@ -241,6 +249,7 @@ function assignReviewTier(files, options = {}) {
   let reasons = [];
   let escalations = [];
   let violations = [];
+  let warnings = [];
 
   for (const file of files) {
     // Assign tier by path (pass all files for conditional checks)
@@ -283,7 +292,7 @@ function assignReviewTier(files, options = {}) {
 
       } catch (error) {
         // File might be binary or unreadable, skip content checks
-        console.error(`Warning: Could not read ${file}: ${error.message}`);
+        warnings.push(`Could not read ${file}: ${error.message}`);
       }
     }
   }
@@ -293,6 +302,7 @@ function assignReviewTier(files, options = {}) {
     reasons,
     escalations,
     violations,
+    warnings,
     blocked: violations.length > 0,
   };
 }

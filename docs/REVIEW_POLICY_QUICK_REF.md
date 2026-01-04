@@ -9,13 +9,16 @@
 
 **Ask yourself: "What am I changing?"**
 
-| If you're changing... | Tier | Review needed | Time to merge |
-|----------------------|------|---------------|---------------|
-| Typos, comments, logs | **T0** | None (auto-merge) | 4 hours |
+| If you're changing... | Tier | Review needed | Target merge time |
+|----------------------|------|---------------|-------------------|
+| Typos, comments, logs | **T0** | None (auto-merge after CI) | ~4 hours* |
 | Docs, tests, UI copy | **T1** | AI only | 1-2 days |
-| Features, bug fixes | **T2** | AI + 1 human | 2 days |
+| Features, bug fixes | **T2** | AI + 1 human | ≤2 days |
 | Auth, payments, security | **T3** | AI + 2 humans + checklist | 3-5 days |
-| Infrastructure, schema | **T4** | RFC + all owners | 1-2 weeks |
+| Infrastructure, schema | **T4** | RFC + all owners | 1-2 weeks** |
+
+> *T0: Auto-merge after CI passes + 4h delay (Phase 2 - not yet implemented)
+> **T4: RFC (2-3d) + Implementation (3-5d) + Deployment (2-3d)
 
 ---
 

@@ -46,26 +46,31 @@ const REVIEW_TYPES = {
   'documentation': {
     section: '## 1. Documentation Review',
     extensions: ['.md', '.mdx'],
+    filenames: [],
     description: 'Markdown documentation files',
   },
   'configuration': {
     section: '## 2. Configuration Review',
     extensions: ['.json', '.env', '.yaml', '.yml'],
+    filenames: [],
     description: 'Configuration files',
   },
   'security-policy': {
     section: '## 3. Security Policy Review',
     extensions: ['.rules'],
+    filenames: [],
     description: 'Security rules and policies',
   },
   'process-change': {
     section: '## 4. Process Change Review',
     extensions: ['.sh', '.yml', '.yaml'],
+    filenames: [],
     description: 'Workflow and automation files',
   },
   'dependencies': {
     section: '## 5. Dependency Review',
-    extensions: ['package.json'],
+    extensions: [],
+    filenames: ['package.json'], // Exact filename match
     description: 'Dependency changes',
   },
 };
@@ -121,10 +126,13 @@ function getFilesToReview() {
 
       const reviewTypeConfig = REVIEW_TYPES[config.type];
       return stagedFiles.filter(file => {
-        if (reviewTypeConfig.extensions.includes(path.basename(file))) {
+        const basename = path.basename(file);
+        const ext = path.extname(file);
+        // Check exact filename match
+        if (reviewTypeConfig.filenames && reviewTypeConfig.filenames.includes(basename)) {
           return true;
         }
-        const ext = path.extname(file);
+        // Check extension match
         return reviewTypeConfig.extensions.includes(ext);
       });
     } catch (error) {
@@ -178,6 +186,8 @@ function formatReviewRequest(prompt, files) {
         request += '```\n';
         request += content;
         request += '\n```\n\n';
+      } else {
+        console.warn(`Warning: Skipping ${file} (could not read content)`);
       }
     });
   }
