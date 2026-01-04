@@ -8,9 +8,9 @@ You are about to process AI code review feedback. This is a **standardized, thor
 
 Before processing, load critical context files:
 
-1. **Read** `AI_REVIEW_PROCESS.md` - Review process and categorization
-2. **Read** `AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) - Recent patterns and consolidation status
-3. **Read** `claude.md` Section 4 - Distilled anti-patterns to watch for
+1. **Read** `docs/AI_REVIEW_PROCESS.md` - Review process and categorization
+2. **Read** `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) - Recent patterns and consolidation status
+3. **Read** `claude.md` (root) Section 4 - Distilled anti-patterns to watch for
 
 ---
 

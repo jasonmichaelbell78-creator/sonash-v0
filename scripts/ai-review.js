@@ -25,6 +25,7 @@ const SENSITIVE_FILE_PATTERNS = [
   /\.env$/,                     // any file ending in .env
   /credentials\.json$/i,        // Google credentials
   /serviceAccount.*\.json$/i,   // Firebase service account
+  /^firebase-service-account\.json$/i, // Explicit Firebase SA file
   /\.pem$/,                     // Private keys
   /\.key$/,                     // Private keys
   /secrets?\.(json|ya?ml)$/i,   // Secrets files
@@ -179,6 +180,10 @@ function isPathContained(filePath) {
       realRoot = fs.realpathSync(projectRoot);
       realResolved = fs.realpathSync(resolvedPath);
     } catch {
+      // SECURITY: If file exists but realpathSync fails (permission denied, etc.), fail closed
+      if (fs.existsSync(resolvedPath)) {
+        return false;
+      }
       // File doesn't exist yet, use resolved path for validation
       realRoot = projectRoot;
       realResolved = resolvedPath;

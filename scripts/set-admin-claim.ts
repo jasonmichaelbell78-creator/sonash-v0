@@ -22,7 +22,9 @@ function maskEmail(email: string): string {
     const [domainName, ...tld] = domain.split(".")
     const maskedLocal = local.length > 1 ? local[0] + "***" : "***"
     const maskedDomain = domainName.length > 1 ? domainName[0] + "***" : "***"
-    return `${maskedLocal}@${maskedDomain}.${tld.join(".")}`
+    // Handle domains without TLD (e.g., localhost) to avoid trailing dot
+    const tldPart = tld.length > 0 ? `.${tld.join(".")}` : ""
+    return `${maskedLocal}@${maskedDomain}${tldPart}`
 }
 
 // Initialize Firebase Admin

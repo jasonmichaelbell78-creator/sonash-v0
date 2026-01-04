@@ -367,12 +367,16 @@ async function main() {
       // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
       // eslint-disable-next-line no-control-regex
       .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      // Strip OSC escape sequences (Operating System Commands like title changes)
+      // eslint-disable-next-line no-control-regex
+      .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, '')
       // Strip control chars while preserving safe whitespace (\t\n)
       // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       .replace(/\/home\/[^/\s]+/g, '[HOME]')
       .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-      .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
   };
 
   // Lint check - capture and sanitize output to avoid exposing paths
@@ -543,7 +547,8 @@ if (isMainModule) {
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       .replace(/\/home\/[^/\s]+/g, '[HOME]')
       .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-      .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
     console.error('Script error:', safeMessage);
     closeRl();
     process.exit(1);

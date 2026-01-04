@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.43
+**Document Version:** 1.44
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-04
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.44 | 2026-01-04 | Review #48: Security hardening, OSC escapes, fail-closed realpath, pathspec fixes |
 | 1.43 | 2026-01-04 | Review #47: PII masking, sensitive dirs, printf workflow, fault-tolerant labels |
 | 1.42 | 2026-01-04 | Review #46: Symlink protection, realpath hardening, buffer overflow, jq/awk fixes |
 | 1.41 | 2026-01-04 | Review #45: TOCTOU fix, error.message handling, path containment, tier matching, PR spam |
@@ -83,7 +84,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7
+**Reviews since last consolidation:** 8
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -3134,7 +3135,7 @@ The error persisted because of multiple interacting issues:
 
 2. **maxBuffer for execSync** (2 occurrences - Robustness)
    - Root cause: Default maxBuffer is 1MB, large outputs cause ENOBUFS error
-   - Prevention: Set maxBuffer: 10 * 1024 * 1024 for 10MB
+   - Prevention: Set maxBuffer: `10 * 1024 * 1024` for 10MB
    - Pattern: `execSync(cmd, { encoding: 'utf-8', stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })`
    - Note: Especially important for lint/test output which can be verbose
 
@@ -3227,5 +3228,69 @@ The error persisted because of multiple interacting issues:
    - Note: Link checkers in CI catch these; verify paths before commit
 
 **Key Insight:** Privacy compliance requires masking PII at the point of logging, not just in error handlers. Sensitive file detection should check both filename patterns AND directory location - a file named "config.json" inside a "secrets/" directory is sensitive. Shell scripts should use printf over echo for predictable behavior, and API calls in workflows should gracefully handle "already done" states like 404/422.
+
+---
+
+#### Review #48: Security Hardening & Documentation Fixes (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Fourth round of compliance fixes addressing secret exfiltration risks, escape sequence security, fail-closed security patterns, and documentation accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Pattern blocklist non-exhaustive for firebase-service-account.json | ⚪ Low | Security | Added explicit `/^firebase-service-account\.json$/i` pattern |
+| 2 | maskEmail trailing dot for domains without TLD | ⚪ Low | Bug | Handle empty tld array: `tld.length > 0 ? '.'+tld.join('.') : ''` |
+| 3 | Fail-open on realpath failures for existing files | ⚪ Low | Security | Added `fs.existsSync` check before fallback |
+| 4 | OSC escape sequences not stripped | ⚪ Low | Security | Added OSC stripping regex to sanitizeOutput |
+| 5 | Incomplete Windows path sanitization (lowercase drives) | ⚪ Low | Portability | Changed `C:\\` to `[A-Z]:\\` with `/gi` flag |
+| 6 | Tier comparison uses integer instead of string | ⚪ Low | Bug | Changed `== 4` to `== '4'` in workflow |
+| 7 | Documentation file paths missing docs/ prefix | ⚪ Low | Docs | Added `docs/` prefix to AI_REVIEW_PROCESS.md refs |
+| 8 | Markdown lint: unescaped asterisks in code | ⚪ Low | Docs | Wrapped `10 * 1024 * 1024` in backticks |
+| 9 | Git diff missing pathspec separator | ⚪ Low | Robustness | Added `--` before file patterns |
+
+**Patterns Identified:**
+
+1. **Explicit Filename Blocklists** (1 occurrence - Security)
+   - Root cause: Regex patterns with wildcards can miss common exact filenames
+   - Prevention: Add explicit exact-match patterns for known sensitive files
+   - Pattern: `/^firebase-service-account\.json$/i` alongside `/serviceAccount.*\.json$/i`
+   - Note: Defense-in-depth - both pattern-based and exact-match protection
+
+2. **Fail-Closed Security for realpath** (1 occurrence - Security)
+   - Root cause: When realpathSync fails on existing file (permissions), falling back to resolved path is dangerous
+   - Prevention: Check `fs.existsSync(resolvedPath)` in catch block - if file exists but realpath fails, return false
+   - Pattern: `catch { if (fs.existsSync(path)) return false; /* else fallback for non-existent */ }`
+   - Note: Non-existent files can still use resolved path (for creation scenarios)
+
+3. **OSC Escape Sequence Stripping** (1 occurrence - Security)
+   - Root cause: ANSI CSI sequences stripped but OSC (Operating System Command) sequences not
+   - Prevention: Add OSC regex: `/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g`
+   - Pattern: Strip both CSI (`\x1B[...`) and OSC (`\x1B]...BEL/ST`)
+   - Note: OSC can set terminal title, which could be exploited for log injection
+
+4. **Edge Case Handling in String Functions** (1 occurrence - Bug)
+   - Root cause: `tld.join('.')` returns empty string when tld is empty, leading to trailing dot
+   - Prevention: Check array length before joining: `tld.length > 0 ? '.'+tld.join('.') : ''`
+   - Pattern: Guard array operations that assume non-empty input
+   - Note: Domain "localhost" has no TLD; email "user@localhost" should mask to "u***@l***" not "u***@l***."
+
+5. **String vs Number Comparison in YAML** (1 occurrence - Bug)
+   - Root cause: GitHub Actions outputs are strings; `== 4` may not match `'4'`
+   - Prevention: Use quoted string literals in workflow conditions: `== '4'`
+   - Pattern: `if: steps.x.outputs.y == 'value'` not `if: steps.x.outputs.y == value`
+   - Note: YAML type coercion is unreliable; always use explicit string comparison
+
+6. **Git Pathspec Separator** (1 occurrence - Robustness)
+   - Root cause: `git diff --cached *.md` without `--` can interpret patterns as options
+   - Prevention: Always use `--` before pathspec: `git diff --cached -- '*.md'`
+   - Pattern: `git <cmd> [options] -- <pathspec>`
+   - Note: Required for safety if pathspec could start with `-`
+
+**Key Insight:** Security hardening is iterative - each review round catches edge cases missed by pattern-based approaches. Defense-in-depth means explicit blocklists alongside pattern matching, fail-closed error handling for security-critical functions, and comprehensive escape sequence stripping. Even "low severity" items like trailing dots or string comparisons can cause production issues.
 
 ---

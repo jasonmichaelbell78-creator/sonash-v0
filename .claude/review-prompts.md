@@ -700,7 +700,7 @@ if git diff --cached --name-only | grep -qE '\.md$'; then
       in_section && $0 ~ /^## [0-9]+\./ && $0 !~ /^## 1\./ {exit}
       in_section {print}
     ' .claude/review-prompts.md
-  )" --input "$(git diff --cached '*.md')"
+  )" --input "$(git diff --cached -- '*.md')"
 fi
 
 # Configuration review
@@ -712,7 +712,7 @@ if git diff --cached --name-only | grep -qE 'package\.json$|\.env|firebase\.json
       in_section && $0 ~ /^## [0-9]+\./ && $0 !~ /^## 2\./ {exit}
       in_section {print}
     ' .claude/review-prompts.md
-  )" --input "$(git diff --cached package.json .env* firebase.json 2>/dev/null)"
+  )" --input "$(git diff --cached -- package.json .env* firebase.json 2>/dev/null)"
 fi
 ```
 
