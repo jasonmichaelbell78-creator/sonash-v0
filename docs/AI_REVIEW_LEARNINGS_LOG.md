@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.41
+**Document Version:** 1.42
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-04
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.42 | 2026-01-04 | Review #46: Symlink protection, realpath hardening, buffer overflow, jq/awk fixes |
 | 1.41 | 2026-01-04 | Review #45: TOCTOU fix, error.message handling, path containment, tier matching, PR spam |
 | 1.40 | 2026-01-03 | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added) |
 | 1.39 | 2026-01-03 | Review #40: Qodo archive security, path containment, CRLF handling |
@@ -81,7 +82,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5
+**Reviews since last consolidation:** 6
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -3093,5 +3094,72 @@ The error persisted because of multiple interacting issues:
    - Note: Error handlers must never throw
 
 **Key Insight:** Security hardening requires multiple passes - initial review often catches obvious issues, but TOCTOU vulnerabilities, error handling edge cases, and cross-file conflicts require deeper analysis. Block lists and allow lists must be kept in sync. Event-specific logic prevents CI noise. Error handlers need defensive wrappers because they're the last line of defense.
+
+---
+
+#### Review #46: Advanced Security Hardening & Script Robustness (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Second round of fixes from PR Compliance Guide, addressing symlink attacks, buffer overflows, jq bugs, and sed fragility.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Symlink path escapes in assign-review-tier.js | 🔴 High | Security | Added realpathSync verification |
+| 2 | Symlink escapes in ai-review.js isPathContained | 🔴 High | Security | Added realpathSync with fallback |
+| 3 | execSync buffer overflow risk | 🟠 Medium | Robustness | Added maxBuffer: 10MB |
+| 4 | Missing ANSI/control char stripping | 🟠 Medium | Security | Strip escape sequences in sanitizeOutput |
+| 5 | jq counting logic bug | 🟠 Medium | Bug | Fixed array wrapping and -gt comparison |
+| 6 | sed prompt extraction fragility | 🟠 Medium | Bug | Replaced with awk for section extraction |
+| 7 | Argument parsing truncates = values | 🟡 Low | Bug | Use spread operator to rejoin value |
+| 8 | Missing review prompts file check | 🟡 Low | Robustness | Added existsSync check |
+| 9 | Warning message lacks file context | 🟡 Low | UX | Added file name to skip warning |
+| 10 | Defensive sanitizeError wrappers | 🟡 Low | Robustness | Added try-catch in 2 files |
+| 11 | Broken archive link | 🟡 Low | Bug | Fixed relative path |
+| 12 | Shell variable expansion issues | 🟡 Low | Bug | Added separator: "\n" to workflow |
+| 13 | Unexpanded $HOME in config | 🟡 Low | Bug | Replaced with explicit placeholder |
+
+**Patterns Identified:**
+
+1. **Symlink Escape Prevention with realpathSync** (2 occurrences - Security)
+   - Root cause: resolve() creates canonical path, but file could be symlink pointing outside
+   - Prevention: After resolve(), use realpathSync() and verify relative path
+   - Pattern: `const real = fs.realpathSync(resolved); const rel = path.relative(realRoot, real);`
+   - Note: Falls back to resolved path when file doesn't exist yet
+
+2. **maxBuffer for execSync** (2 occurrences - Robustness)
+   - Root cause: Default maxBuffer is 1MB, large outputs cause ENOBUFS error
+   - Prevention: Set maxBuffer: 10 * 1024 * 1024 for 10MB
+   - Pattern: `execSync(cmd, { encoding: 'utf-8', stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })`
+   - Note: Especially important for lint/test output which can be verbose
+
+3. **ANSI Escape Sequence Stripping** (1 occurrence - Security)
+   - Root cause: Terminal escape sequences can inject content in CI logs
+   - Prevention: Strip with regex before sanitizing paths
+   - Pattern: `.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')`
+   - Note: eslint-disable comment needed for no-control-regex rule
+
+4. **jq Array Counting Pattern** (1 occurrence - Bug)
+   - Root cause: `.findings[] | select(...) | length` gives length of each object, not count
+   - Prevention: Wrap in array and get length: `[.findings[]? | select(...)] | length`
+   - Pattern: `jq -r '[.findings[]? | select(.severity=="HIGH")] | length'`
+   - Note: Use -gt 0 instead of -n for numeric comparison
+
+5. **awk vs sed for Multi-Section Extraction** (1 occurrence - Bug)
+   - Root cause: sed `/start/,/end/p` stops at first end marker, truncating content
+   - Prevention: Use awk with state variable to capture until next section header
+   - Pattern: `awk '$0 ~ /^## 1\./ {in=1} in && $0 ~ /^## [0-9]/ && $0 !~ /^## 1/ {exit} in {print}'`
+   - Note: More robust for documents with internal separators
+
+6. **Argument Parsing with = Values** (1 occurrence - Bug)
+   - Root cause: `arg.split('=')` returns array, destructuring loses extra parts
+   - Prevention: Use spread operator and rejoin: `const [key, ...rest] = arg.split('='); const value = rest.join('=')`
+   - Pattern: Handles `--file=some=path=with=equals.md`
+
+**Key Insight:** Symlinks are a blind spot in path validation - resolve() creates a canonical path but doesn't reveal what's actually on disk. Always use realpathSync() after resolve() when reading files. Command output can be large and contain escape sequences that bypass simple sanitization. Use maxBuffer and strip ANSI sequences before other processing.
 
 ---
