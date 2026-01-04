@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.42
+**Document Version:** 1.43
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-04
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.43 | 2026-01-04 | Review #47: PII masking, sensitive dirs, printf workflow, fault-tolerant labels |
 | 1.42 | 2026-01-04 | Review #46: Symlink protection, realpath hardening, buffer overflow, jq/awk fixes |
 | 1.41 | 2026-01-04 | Review #45: TOCTOU fix, error.message handling, path containment, tier matching, PR spam |
 | 1.40 | 2026-01-03 | CONSOLIDATION #3: Reviews #31-40 → claude.md v2.7 (14 patterns added) |
@@ -82,7 +83,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 7
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-03, Session #18)
 
@@ -3161,5 +3162,70 @@ The error persisted because of multiple interacting issues:
    - Pattern: Handles `--file=some=path=with=equals.md`
 
 **Key Insight:** Symlinks are a blind spot in path validation - resolve() creates a canonical path but doesn't reveal what's actually on disk. Always use realpathSync() after resolve() when reading files. Command output can be large and contain escape sequences that bypass simple sanitization. Use maxBuffer and strip ANSI sequences before other processing.
+
+---
+
+#### Review #47: PII Protection & Workflow Robustness (2026-01-04)
+
+**Source:** Qodo PR Compliance Guide + CodeRabbit
+**PR:** Session #23 (continued)
+**Tools:** Qodo, CodeRabbit
+
+**Context:** Third round of compliance fixes addressing PII logging, sensitive directory detection, shell scripting robustness, and documentation link accuracy.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Email logged in set-admin-claim.ts | 🔴 High | Privacy | Added maskEmail() function: `u***@e***.com` |
+| 2 | Sensitive files only checked by name | 🟠 Medium | Security | Added SENSITIVE_DIR_PATTERNS for secrets/, credentials/, private/ |
+| 3 | echo can mangle special chars | 🟠 Medium | Robustness | Replaced echo with printf '%s\n' in workflow |
+| 4 | Label removal can fail if already gone | 🟠 Medium | Robustness | Added try-catch for 404/422 errors |
+| 5 | Windows path sanitization only C: | 🟡 Low | Portability | Changed to [A-Z]:\\Users\\[^\\\\]+/gi |
+| 6 | CRLF only stripped at line end | 🟡 Low | Robustness | Normalize all \r\n to \n |
+| 7 | Broken link to ./claude.md | 🟡 Low | Docs | Changed to ../claude.md |
+| 8 | Broken links to ./ARCHITECTURE.md | 🟡 Low | Docs | Changed to ../ARCHITECTURE.md |
+| 9 | Regex caused markdown link false positive | 🟡 Low | Docs | Simplified regex pattern |
+| 10 | Missing docs/ prefix in template | 🟡 Low | Docs | Added docs/ prefix to file references |
+
+**Patterns Identified:**
+
+1. **PII Masking for Logs** (1 occurrence - Privacy)
+   - Root cause: Console.log/error directly output user email addresses
+   - Prevention: Create maskEmail() helper that preserves structure but hides content
+   - Pattern: `u***@e***.com` format - shows first char of local/domain, masks rest
+   - Note: Even in error cases, mask the email before logging
+
+2. **Sensitive Directory Detection** (1 occurrence - Security)
+   - Root cause: isSensitiveFile only checked basename, not path components
+   - Prevention: Add SENSITIVE_DIR_PATTERNS to catch files in sensitive directories
+   - Pattern: `/(^|\/)(secrets?|credentials?|private)(\/|$)/i`
+   - Note: Normalize backslashes before checking: `.replace(/\\/g, '/')`
+
+3. **printf vs echo in Shell Scripts** (4 occurrences - Robustness)
+   - Root cause: echo behavior varies across shells; can interpret escape sequences
+   - Prevention: Use `printf '%s\n' "$VAR"` for reliable output
+   - Pattern: Replace `echo "$FILES"` with `printf '%s\n' "$FILES"`
+   - Note: Especially important in GitHub Actions where shell may vary
+
+4. **Fault-Tolerant API Calls in Workflows** (1 occurrence - Robustness)
+   - Root cause: removeLabel fails if label already removed (404) or invalid (422)
+   - Prevention: Wrap in try-catch, only rethrow unexpected errors
+   - Pattern: `try { await api.call(); } catch (e) { if (e?.status !== 404 && e?.status !== 422) throw e; }`
+   - Note: GitHub API can return 422 for various "unprocessable" states
+
+5. **Drive-Agnostic Windows Path Sanitization** (1 occurrence - Portability)
+   - Root cause: Hardcoded `C:\\Users\\` misses D:, E:, etc.
+   - Prevention: Use character class for any drive letter, case-insensitive
+   - Pattern: `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`
+   - Note: Windows allows any letter A-Z for drive mappings
+
+6. **Relative Path Navigation in Docs** (3 occurrences - Docs)
+   - Root cause: Links assumed files were in same directory
+   - Prevention: Use `../` to navigate up from docs/ to repository root
+   - Pattern: `./file.md` → `../file.md` when linking to root from subdirectory
+   - Note: Link checkers in CI catch these; verify paths before commit
+
+**Key Insight:** Privacy compliance requires masking PII at the point of logging, not just in error handlers. Sensitive file detection should check both filename patterns AND directory location - a file named "config.json" inside a "secrets/" directory is sensitive. Shell scripts should use printf over echo for predictable behavior, and API calls in workflows should gracefully handle "already done" states like 404/422.
 
 ---
