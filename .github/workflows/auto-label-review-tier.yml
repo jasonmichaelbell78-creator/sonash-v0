@@ -50,28 +50,28 @@ jobs:
           # Run tier assignment (will be implemented in Phase 1)
           # For now, output a placeholder result
           echo "Changed files:"
-          echo "$FILES"
+          printf '%s\n' "$FILES"
 
-          # TODO: Uncomment when script is ready
-          # RESULT=$(node scripts/assign-review-tier.js $FILES)
-          # echo "result=$RESULT" >> $GITHUB_OUTPUT
+          # TODO: Uncomment when script is ready (preserves spaces/newlines)
+          # RESULT=$(printf '%s\n' "$FILES" | node scripts/assign-review-tier.js --stdin)
+          # echo "tier=$RESULT" >> "$GITHUB_OUTPUT"
 
           # TEMPORARY PLACEHOLDER: Remove when scripts/assign-review-tier.js is integrated
           # This logic duplicates TIER_RULES in assign-review-tier.js
-          # Use echo to pipe newline-separated files to grep ^ anchors
-          if echo "$FILES" | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$)'; then
+          # Use printf to safely pipe newline-separated files to grep ^ anchors
+          if printf '%s\n' "$FILES" | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$)'; then
             TIER=4
-          elif echo "$FILES" | grep -qE '(firestore\.rules$|functions/src/auth/|middleware/)'; then
+          elif printf '%s\n' "$FILES" | grep -qE '(firestore\.rules$|functions/src/auth/|middleware/)'; then
             TIER=3
-          elif echo "$FILES" | grep -qE '^(app/|components/|lib/|hooks/)'; then
+          elif printf '%s\n' "$FILES" | grep -qE '^(app/|components/|lib/|hooks/)'; then
             TIER=2
-          elif echo "$FILES" | grep -qE '(\.test\.(ts|tsx)$|^docs/.*\.md$)'; then
+          elif printf '%s\n' "$FILES" | grep -qE '(\.test\.(ts|tsx)$|^docs/.*\.md$)'; then
             TIER=1
           else
             TIER=0
           fi
 
-          echo "tier=$TIER" >> $GITHUB_OUTPUT
+          echo "tier=$TIER" >> "$GITHUB_OUTPUT"
           echo "Assigned tier: $TIER"
 
       - name: Remove existing tier labels
@@ -82,13 +82,19 @@ jobs:
             const currentLabels = context.payload.pull_request.labels.map(l => l.name);
 
             for (const label of labels) {
-              if (currentLabels.includes(label)) {
+              if (!currentLabels.includes(label)) continue;
+
+              try {
                 await github.rest.issues.removeLabel({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: context.payload.pull_request.number,
                   name: label
                 });
+              } catch (e) {
+                // Avoid failing the job if the label is already gone / not removable
+                const status = e?.status;
+                if (status !== 404 && status !== 422) throw e;
               }
             }
 

@@ -28,7 +28,8 @@ function sanitizePath(filePath) {
   return String(filePath)
     .replace(/\/home\/[^/\s]+/g, '[HOME]')
     .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-    .replace(/C:\\Users\\[^\\]+/g, '[HOME]');
+    // Handle any Windows drive letter, case-insensitive
+    .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
 }
 
 /**

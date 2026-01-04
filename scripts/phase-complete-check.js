@@ -361,11 +361,13 @@ async function main() {
   const sanitizeOutput = (output) => {
     if (!output) return '';
     return String(output)
-      .replace(/\r$/, '') // strip trailing CR from Windows CRLF line endings
+      // Normalize Windows CRLF to LF everywhere
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '')
       // Strip ANSI escape sequences (colors/cursor movement) to prevent terminal injection in CI logs
       // eslint-disable-next-line no-control-regex
       .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
-      // Strip control chars while preserving safe whitespace (\t\n\r)
+      // Strip control chars while preserving safe whitespace (\t\n)
       // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       .replace(/\/home\/[^/\s]+/g, '[HOME]')

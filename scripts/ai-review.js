@@ -31,11 +31,25 @@ const SENSITIVE_FILE_PATTERNS = [
   /\.secret$/,                  // Secret files
 ];
 
+// Sensitive directory patterns (files in these directories should not be read)
+const SENSITIVE_DIR_PATTERNS = [
+  /(^|\/)(secrets?|credentials?|private)(\/|$)/i,
+];
+
 /**
  * Check if a file is sensitive (should not be read/printed)
+ * Checks both filename patterns and directory location
  */
 function isSensitiveFile(filePath) {
   const basename = path.basename(filePath);
+  const normalized = String(filePath).replace(/\\/g, '/');
+
+  // Check if file is in a sensitive directory
+  if (SENSITIVE_DIR_PATTERNS.some(pattern => pattern.test(normalized))) {
+    return true;
+  }
+
+  // Check filename patterns
   return SENSITIVE_FILE_PATTERNS.some(pattern => pattern.test(basename));
 }
 

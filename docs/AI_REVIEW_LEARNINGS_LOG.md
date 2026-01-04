@@ -10,7 +10,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 **Related Documents:**
 - **[AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)** - How to triage and handle reviews
-- **[claude.md](./claude.md)** - Distilled patterns (always in AI context)
+- **[claude.md](../claude.md)** - Distilled patterns (always in AI context)
 
 ---
 
@@ -1601,13 +1601,13 @@ The error persisted because of multiple interacting issues:
 ```markdown
 <!-- BAD: Mixed formats - one shows path, others don't -->
 **See also:**
-- [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [ARCHITECTURE.md](../ARCHITECTURE.md)
 - [docs/SECURITY.md](./SECURITY.md)  <!-- ❌ includes path -->
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
 
 <!-- GOOD: Consistent format - all show just filename -->
 **See also:**
-- [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [ARCHITECTURE.md](../ARCHITECTURE.md)
 - [SECURITY.md](./SECURITY.md)  <!-- ✅ clean display text -->
 - [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
 ```
@@ -2633,7 +2633,7 @@ The error persisted because of multiple interacting issues:
 4. **Normalize Quoted/Prefixed Paths** (1 occurrence - Robustness)
    - Root cause: Plan documents may wrap paths in quotes/backticks or use ./ prefix
    - Prevention: Strip quotes, backticks, and leading ./ during normalization
-   - Pattern: `.replace(/^\.\/+/, '').replace(/^['"\`](.+)['"\`]$/, '$1')`
+   - Pattern: Strip `./` prefix, then unwrap quotes: `path.replace(/^\.\/+/, '').replace(/^["'](.*)["']$/, '$1')`
    - Note: Apply before checking path existence
 
 5. **Never Recommend Committing .env Files** (1 occurrence - Security)

@@ -52,8 +52,8 @@ I am pasting AI code review feedback below. Process it using the following proto
 ---
 
 **PHASE 1: CONTEXT LOADING**
-1. Read `AI_REVIEW_PROCESS.md` for categorization matrix
-2. Read `AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) for recent patterns and next review number
+1. Read `docs/AI_REVIEW_PROCESS.md` for categorization matrix
+2. Read `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) for recent patterns and next review number
 3. Reference `claude.md` Section 4 for anti-patterns to avoid
 
 ---
@@ -85,14 +85,14 @@ Output a categorized summary with counts for each level.
 **PHASE 4: TODO TRACKING**
 Use **TodoWrite** to create a trackable list. The FIRST item must be:
 ```
-"Add Review #N stub to AI_REVIEW_LEARNINGS_LOG.md" - status: in_progress
+"Add Review #N stub to docs/AI_REVIEW_LEARNINGS_LOG.md" - status: in_progress
 ```
 Include ALL issues as todos, even trivial ones.
 
 ---
 
 **PHASE 5: LEARNING ENTRY STUB**
-BEFORE fixing any issues, create a stub entry in `AI_REVIEW_LEARNINGS_LOG.md`:
+BEFORE addressing any issues, create a stub entry in `docs/AI_REVIEW_LEARNINGS_LOG.md`:
 ```markdown
 #### Review #N: [Brief Description] (YYYY-MM-DD)
 
@@ -219,8 +219,8 @@ Review #N added to AI_REVIEW_LEARNINGS_LOG.md
 
 ## Related Documents
 
-- `AI_REVIEW_PROCESS.md` - Full process documentation
-- `AI_REVIEW_LEARNINGS_LOG.md` - Learning audit trail
+- `docs/AI_REVIEW_PROCESS.md` - Full process documentation
+- `docs/AI_REVIEW_LEARNINGS_LOG.md` - Learning audit trail
 - `claude.md` - Distilled patterns and project context
 - `.claude/commands/pr-review.md` - Slash command implementation
 - `.claude/skills/pr-review-processor/SKILL.md` - Skill implementation
