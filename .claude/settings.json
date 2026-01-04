@@ -26,6 +26,11 @@
           },
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.sh\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking pattern compliance..."
+          },
+          {
+            "type": "command",
             "command": "set -f; \"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" $ARGUMENTS",
             "statusMessage": "Running CodeRabbit review..."
           }
@@ -41,6 +46,11 @@
           },
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.sh\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking pattern compliance..."
+          },
+          {
+            "type": "command",
             "command": "set -f; \"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.sh\" $ARGUMENTS",
             "statusMessage": "Running CodeRabbit review..."
           }
@@ -53,6 +63,11 @@
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-edit-requirements.sh\" \"$ARGUMENTS\"",
             "statusMessage": "Checking agent requirements..."
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.sh\" \"$ARGUMENTS\"",
+            "statusMessage": "Checking pattern compliance..."
           },
           {
             "type": "command",

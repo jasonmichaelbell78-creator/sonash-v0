@@ -113,6 +113,10 @@ const ANTI_PATTERNS = [
     fix: 'Use: path.relative() and check for ".." prefix with regex',
     review: '#17, #18',
     fileTypes: ['.js', '.ts'],
+    // Exclude files that use startsWith for absolute path DETECTION (security checks), not containment
+    // - check-pattern-compliance.js: contains patterns as strings
+    // - archive-doc.js: uses startsWith('/'), startsWith('\\') to detect & reject absolute paths
+    pathExclude: /(?:check-pattern-compliance|archive-doc)\.js$/,
   },
   {
     id: 'regex-global-test-loop',
@@ -216,6 +220,88 @@ const ANTI_PATTERNS = [
     fileTypes: ['.js', '.ts'],
     pathFilter: /(?:^|\/)(?:pages|app|routes|api|functions)\/.*(?:api|routes|handlers|endpoints)?/i,
   },
+
+  // New patterns from Consolidation #3 (Reviews #31-40)
+  {
+    id: 'path-join-without-containment',
+    pattern: /path\.join\s*\([^)]*,\s*(?:deliverable|user|input|arg|param|file)\w*(?:\.path)?[^)]*\)(?![\s\S]{0,100}(?:relative|isWithin|contains|startsWith))/g,
+    message: 'Path joined with user input without containment check',
+    fix: 'Verify path.relative(root, resolved) does not start with ".." or equal ""',
+    review: '#33, #34, #38, #39, #40',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'error-without-first-line',
+    pattern: /String\s*\(\s*(?:err|error|e)(?:\?\.message|\s*\?\?\s*err|\s*\?\?\s*error)[\s\S]{0,30}\)(?![\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\))/g,
+    message: 'Error converted to string without extracting first line (stack trace leakage)',
+    fix: 'Use: String(err?.message ?? err).split("\\n")[0].replace(/\\r$/, "")',
+    review: '#36, #37, #38',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'console-log-file-content',
+    pattern: /console\.(?:log|error|warn)\s*\([^)]*(?:content|fileContent|data|text|body)(?:\s*[,)])/g,
+    message: 'File-derived content logged without control char sanitization',
+    fix: 'Sanitize with: content.replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, "")',
+    review: '#39, #40',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'split-newline-without-cr-strip',
+    pattern: /\.split\s*\(\s*['"`]\\n['"`]\s*\)\s*\[\s*0\s*\](?![\s\S]{0,30}\.replace\s*\(\s*\/\\r\$\/)/g,
+    message: 'Line split without stripping trailing \\r (Windows CRLF issue)',
+    fix: 'Add: .replace(/\\r$/, "") after split to handle CRLF',
+    review: '#39, #40',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'regex-newline-lookahead',
+    pattern: /\(\?=\\n(?!\?)/g,
+    message: 'Regex lookahead uses \\n without optional \\r (fails on CRLF)',
+    fix: 'Use: (?=\\r?\\n for cross-platform line endings',
+    review: '#40',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'path-split-without-normalize',
+    pattern: /\.split\s*\(\s*['"`]\/['"`]\s*\)[\s\S]{0,50}includes\s*\(\s*['"`]\.\.['"`]\s*\)(?![\s\S]{0,100}replace\s*\(\s*\/\\\\\/g)/g,
+    message: 'Path traversal check splits on / without normalizing Windows backslashes',
+    fix: 'First normalize: path.replace(/\\\\/g, "/").split("/").includes("..")',
+    review: '#39, #40',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'readfilesync-without-try',
+    pattern: /(?<!try\s*\{[\s\S]{0,200})fs\.readFileSync\s*\(/g,
+    message: 'readFileSync without try/catch - existsSync does not guarantee read success',
+    fix: 'Wrap in try/catch: race conditions, permissions, encoding errors',
+    review: '#36, #37',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'auto-mode-slice-truncation',
+    pattern: /(?:isAutoMode|isAuto|autoMode)\s*\?[\s\S]{0,50}\.slice\s*\(\s*0\s*,/g,
+    message: 'Auto/CI mode should check ALL items, not truncate - limits are for interactive only',
+    fix: 'Use: isAutoMode ? allItems : allItems.slice(0, MAX)',
+    review: '#35',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'readline-no-close',
+    pattern: /readline\.createInterface\s*\([\s\S]{0,500}process\.exit\s*\(\s*\d+\s*\)(?![\s\S]{0,50}close\s*\()/g,
+    message: 'Script exits without closing readline interface (may hang)',
+    fix: 'Create closeRl() helper and call before every process.exit()',
+    review: '#33',
+    fileTypes: ['.js', '.ts'],
+  },
+  {
+    id: 'empty-path-not-rejected',
+    pattern: /(?:startsWith\s*\(\s*['"`]\.\.['"`]\s*\)|\.isAbsolute\s*\(\s*rel\s*\))(?![\s\S]{0,50}===\s*['"`]['"`])/g,
+    message: 'Path validation may miss empty string edge case (rel === "")',
+    fix: 'Add: rel === "" || rel.startsWith("..") || path.isAbsolute(rel)',
+    review: '#40',
+    fileTypes: ['.js', '.ts'],
+  },
 ];
 
 /**
@@ -311,11 +397,25 @@ function getFilesToCheck() {
   }
 
   // Default: check common problem areas
+  // Expanded in Review Audit (Session #18) to cover scripts that caused most issues
   return [
     '.husky/pre-commit',
     '.github/workflows/docs-lint.yml',
     '.github/workflows/review-check.yml',
     '.github/workflows/sync-readme.yml',
+    // Scripts that have had repeated review issues (Reviews #31-40)
+    'scripts/phase-complete-check.js',
+    'scripts/surface-lessons-learned.js',
+    // Note: check-pattern-compliance.js excluded - contains pattern definitions as strings
+    // which cause false positives (meta-detection of its own patterns)
+    'scripts/suggest-pattern-automation.js',
+    'scripts/archive-doc.js',
+    'scripts/validate-phase-completion.js',
+    // Claude hooks that are security-critical
+    '.claude/hooks/check-edit-requirements.sh',
+    '.claude/hooks/check-write-requirements.sh',
+    '.claude/hooks/coderabbit-review.sh',
+    '.claude/hooks/check-mcp-servers.sh',
   ].filter(f => existsSync(join(ROOT, f)));
 }
 
@@ -361,6 +461,11 @@ function checkFile(filePath) {
 
     // Skip if path filter doesn't match (for patterns that only apply to specific directories)
     if (antiPattern.pathFilter && !antiPattern.pathFilter.test(filePath)) {
+      continue;
+    }
+
+    // Skip if path exclusion matches (for patterns that have false positives in specific files)
+    if (antiPattern.pathExclude && antiPattern.pathExclude.test(filePath)) {
       continue;
     }
 
