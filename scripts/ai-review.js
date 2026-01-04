@@ -18,6 +18,27 @@ import { execSync, execFileSync } from 'child_process';
 
 const REVIEW_PROMPTS_FILE = '.claude/review-prompts.md';
 
+// Sensitive file patterns that should NEVER be read/printed (security risk)
+const SENSITIVE_FILE_PATTERNS = [
+  /^\.env$/,                    // .env
+  /^\.env\..+$/,                // .env.local, .env.production, etc.
+  /\.env$/,                     // any file ending in .env
+  /credentials\.json$/i,        // Google credentials
+  /serviceAccount.*\.json$/i,   // Firebase service account
+  /\.pem$/,                     // Private keys
+  /\.key$/,                     // Private keys
+  /secrets?\.(json|ya?ml)$/i,   // Secrets files
+  /\.secret$/,                  // Secret files
+];
+
+/**
+ * Check if a file is sensitive (should not be read/printed)
+ */
+function isSensitiveFile(filePath) {
+  const basename = path.basename(filePath);
+  return SENSITIVE_FILE_PATTERNS.some(pattern => pattern.test(basename));
+}
+
 /**
  * Sanitize file paths in error messages to avoid exposing absolute paths
  */
@@ -150,7 +171,8 @@ function getFilesToReview() {
       });
     } catch (error) {
       console.error('Error getting staged files:', sanitizePath(error.message));
-      return [];
+      console.error('Ensure you are in a git repository with staged files.');
+      process.exit(1);  // Exit with error instead of silent empty return
     }
   }
 
@@ -160,8 +182,17 @@ function getFilesToReview() {
 
 /**
  * Read file content
+ * SECURITY: Blocks reading sensitive files (.env, credentials, keys, etc.)
  */
 function readFileContent(filePath) {
+  // SECURITY: Block reading sensitive files to prevent exfiltration
+  if (isSensitiveFile(filePath)) {
+    console.error(`🚫 BLOCKED: Refusing to read sensitive file: ${path.basename(filePath)}`);
+    console.error('   This file may contain secrets and should not be piped to external tools.');
+    console.error('   Remove this file from staging or use a different review method.');
+    return null;
+  }
+
   try {
     if (config.staged) {
       // Read staged version (use execFileSync to prevent command injection)

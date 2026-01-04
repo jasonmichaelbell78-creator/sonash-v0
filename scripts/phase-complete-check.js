@@ -357,23 +357,52 @@ async function main() {
   console.log('━━━ AUTOMATED CHECKS ━━━');
   console.log('');
 
-  // Lint check - rely on exit code, not output parsing
+  // Helper to sanitize paths in output
+  const sanitizeOutput = (output) => {
+    if (!output) return '';
+    return String(output)
+      .replace(/\/home\/[^/\s]+/g, '[HOME]')
+      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+  };
+
+  // Lint check - capture and sanitize output to avoid exposing paths
   console.log('▶ Running ESLint...');
   try {
-    execSync('npm run lint', { stdio: 'inherit' });
+    const lintOutput = execSync('npm run lint 2>&1', { encoding: 'utf-8' });
+    console.log(sanitizeOutput(lintOutput));
     console.log('  ✅ ESLint passed');
-  } catch {
+  } catch (err) {
+    // ESLint failed - show sanitized output
+    if (err.stdout) console.log(sanitizeOutput(err.stdout));
+    if (err.stderr) console.error(sanitizeOutput(err.stderr));
     console.log('  ❌ ESLint has errors');
     failures.push('ESLint errors must be fixed');
     allPassed = false;
   }
 
-  // Test check
+  // Test check - capture and sanitize output
   console.log('▶ Running tests...');
   try {
-    execSync('npm test 2>&1', { encoding: 'utf-8' });
+    const testOutput = execSync('npm test 2>&1', { encoding: 'utf-8' });
+    // Only show summary, not full output (too verbose)
+    const lines = testOutput.split('\n');
+    const summaryLines = lines.filter(l =>
+      l.includes('tests') || l.includes('pass') || l.includes('fail') || l.includes('skip')
+    );
+    if (summaryLines.length > 0) {
+      console.log(sanitizeOutput(summaryLines.join('\n')));
+    }
     console.log('  ✅ Tests passed');
-  } catch {
+  } catch (err) {
+    // Tests failed - show sanitized error output
+    if (err.stdout) {
+      const sanitized = sanitizeOutput(err.stdout);
+      // Show last 20 lines to see failure info
+      const lines = sanitized.split('\n').slice(-20);
+      console.log(lines.join('\n'));
+    }
+    if (err.stderr) console.error(sanitizeOutput(err.stderr));
     console.log('  ❌ Tests failed');
     failures.push('Tests must pass');
     allPassed = false;

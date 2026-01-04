@@ -18,7 +18,8 @@
  */
 
 import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, resolve, relative, isAbsolute } from 'path';
+import { pathToFileURL } from 'url';
 
 /**
  * Sanitize file paths in error messages to avoid exposing absolute paths
@@ -159,9 +160,9 @@ const FORBIDDEN_PATTERNS = [
     checkContent: true,
   },
   {
-    pattern: /(^|[/\\])\.env$/,
-    reason: '.env file should not be committed',
-    checkPath: true, // Path-only check (matches nested .env files too)
+    pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_-]+)?$/,
+    reason: '.env file (or variant like .env.local) should not be committed',
+    checkPath: true, // Path-only check (matches .env, .env.local, .env.production, etc.)
   },
 ];
 
@@ -263,9 +264,28 @@ function checkForbiddenPatterns(filePath, content) {
 }
 
 /**
+ * Check if a file path is safely contained within project root
+ * Prevents path traversal attacks when reading files from CLI args
+ */
+function isPathContained(filePath, projectRoot) {
+  try {
+    const resolvedPath = resolve(projectRoot, filePath);
+    const rel = relative(projectRoot, resolvedPath);
+    // Path is contained if:
+    // 1. Not empty (exact root match)
+    // 2. Doesn't start with '..' (traversal)
+    // 3. Isn't absolute (Windows edge case)
+    return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Main tier assignment logic
  */
 function assignReviewTier(files, options = {}) {
+  const projectRoot = options.projectRoot || process.cwd();
   let highestTier = 0;
   let reasons = [];
   let escalations = [];
@@ -273,6 +293,12 @@ function assignReviewTier(files, options = {}) {
   let warnings = [];
 
   for (const file of files) {
+    // SECURITY: Skip files outside project root (path traversal protection)
+    if (!isPathContained(file, projectRoot)) {
+      warnings.push(`Skipping file outside project root: ${sanitizePath(file)}`);
+      continue;
+    }
+
     // Assign tier by path (pass all files for conditional checks)
     const pathTier = assignTierByPath(file, files);
     if (pathTier.tier > highestTier) {
@@ -371,8 +397,8 @@ function main() {
   process.exit(0);
 }
 
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run if called directly (cross-platform: pathToFileURL handles Windows paths)
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main();
 }
 

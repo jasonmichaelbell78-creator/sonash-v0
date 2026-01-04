@@ -18,6 +18,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import { pathToFileURL } from 'url';
 
 const LEARNINGS_FILE = 'docs/AI_REVIEW_LEARNINGS_LOG.md';
 
@@ -350,8 +351,8 @@ export {
 };
 
 // Only run main() when executed directly (not when imported for testing)
-const isMainModule = import.meta.url === `file://${process.argv[1]}` ||
-                     process.argv[1]?.endsWith('surface-lessons-learned.js');
+// Cross-platform: pathToFileURL handles Windows paths correctly
+const isMainModule = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMainModule) {
   main().catch(err => {
