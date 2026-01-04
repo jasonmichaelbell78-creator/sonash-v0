@@ -241,4 +241,10 @@ function main() {
   }
 }
 
-main();
+// Run with top-level error handling
+try {
+  main();
+} catch (error) {
+  console.error(`Error: ${error.message}`);
+  process.exit(1);
+}

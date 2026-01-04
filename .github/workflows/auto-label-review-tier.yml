@@ -113,21 +113,27 @@ jobs:
 
             const tierInfo = tierDescriptions[tier] || 'Unknown tier';
 
-            const comment = `## 🏷️ Review Tier Assigned: **Tier ${tier}**
+            // Tier-specific details (avoids complex inline conditionals in template)
+            const tierDetails = {
+              0: '- This PR is eligible for auto-merge after CI passes\n- Estimated merge time: 4 hours',
+              1: '- AI review will run automatically\n- Human review is optional\n- Estimated merge time: 1-2 days',
+              2: '- AI review will run automatically\n- 1 human approval required\n- Estimated merge time: 2 days',
+              3: '- Exhaustive AI review will run\n- 2 human approvals required (1 must be codebase owner)\n- Security checklist must be completed\n- Estimated merge time: 3-5 days',
+              4: '- RFC document required\n- Multi-AI review (CodeRabbit + Qodo + custom)\n- All codebase owners must approve\n- Staging deployment + testing required\n- Estimated merge time: 1-2 weeks'
+            };
 
-${tierInfo}
-
-**What this means:**
-${tier === 0 ? '- This PR is eligible for auto-merge after CI passes\n- Estimated merge time: 4 hours' : ''}
-${tier === 1 ? '- AI review will run automatically\n- Human review is optional\n- Estimated merge time: 1-2 days' : ''}
-${tier === 2 ? '- AI review will run automatically\n- 1 human approval required\n- Estimated merge time: 2 days' : ''}
-${tier === 3 ? '- Exhaustive AI review will run\n- 2 human approvals required (1 must be codebase owner)\n- Security checklist must be completed\n- Estimated merge time: 3-5 days' : ''}
-${tier === 4 ? '- RFC document required\n- Multi-AI review (CodeRabbit + Qodo + custom)\n- All codebase owners must approve\n- Staging deployment + testing required\n- Estimated merge time: 1-2 weeks' : ''}
-
-**Review Policy:** See [REVIEW_POLICY_ARCHITECTURE.md](../docs/REVIEW_POLICY_ARCHITECTURE.md) for details.
-
-**Need tier adjustment?** Comment below with justification and tag a codeowner.
-`;
+            const comment = [
+              `## 🏷️ Review Tier Assigned: **Tier ${tier}**`,
+              '',
+              tierInfo,
+              '',
+              '**What this means:**',
+              tierDetails[tier] || '',
+              '',
+              '**Review Policy:** See [REVIEW_POLICY_ARCHITECTURE.md](docs/REVIEW_POLICY_ARCHITECTURE.md) for details.',
+              '',
+              '**Need tier adjustment?** Comment below with justification and tag a codeowner.'
+            ].join('\n');
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,

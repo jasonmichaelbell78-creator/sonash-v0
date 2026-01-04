@@ -144,8 +144,10 @@ const FORBIDDEN_PATTERNS = [
 
 /**
  * Assign tier based on file path
+ * @param {string} filePath - The file path to classify
+ * @param {string[]} allFiles - All changed files (for conditional checks)
  */
-function assignTierByPath(filePath) {
+function assignTierByPath(filePath, allFiles = []) {
   // Check Tier 4 first (highest priority)
   if (TIER_RULES.tier_4.patterns.some(p => p.test(filePath))) {
     return { tier: 4, reason: `Critical file: ${filePath}` };
@@ -166,9 +168,26 @@ function assignTierByPath(filePath) {
     return { tier: 1, reason: `Documentation/test file: ${filePath}` };
   }
 
-  // Tier 0
+  // Tier 0 - check both patterns and conditional rules
   if (TIER_RULES.tier_0.patterns.some(p => p.test(filePath))) {
     return { tier: 0, reason: `Low-risk file: ${filePath}` };
+  }
+
+  // Check conditional tier 0 rules (e.g., package-lock.json only if package.json unchanged)
+  if (TIER_RULES.tier_0.conditional) {
+    for (const rule of TIER_RULES.tier_0.conditional) {
+      if (rule.pattern.test(filePath)) {
+        // Check if required files are unchanged (not in allFiles)
+        const requiredUnchanged = rule.requires_unchanged || [];
+        const allUnchanged = requiredUnchanged.every(req => !allFiles.includes(req));
+        if (allUnchanged) {
+          return { tier: 0, reason: `Low-risk file (conditional): ${filePath}` };
+        } else {
+          // If conditional not met, escalate to Tier 2 (standard review)
+          return { tier: 2, reason: `${filePath} changed with ${requiredUnchanged.join(', ')} - requires standard review` };
+        }
+      }
+    }
   }
 
   // Default to Tier 2 for unknown files
@@ -224,8 +243,8 @@ function assignReviewTier(files, options = {}) {
   let violations = [];
 
   for (const file of files) {
-    // Assign tier by path
-    const pathTier = assignTierByPath(file);
+    // Assign tier by path (pass all files for conditional checks)
+    const pathTier = assignTierByPath(file, files);
     if (pathTier.tier > highestTier) {
       // Found a higher tier - reset reasons and update tier
       highestTier = pathTier.tier;
@@ -290,8 +309,15 @@ function main() {
     process.exit(1);
   }
 
-  // For now, just handle file arguments
-  // TODO: Add --pr flag support (fetch changed files from GitHub API)
+  // Check for --pr flag (not yet implemented)
+  const prIndex = args.indexOf('--pr');
+  if (prIndex !== -1) {
+    console.error('Error: --pr flag is not yet implemented');
+    console.error('Please specify files directly: assign-review-tier.js [files...]');
+    process.exit(1);
+  }
+
+  // Filter out any flags and their values
   const files = args.filter(arg => !arg.startsWith('--'));
 
   if (files.length === 0) {
