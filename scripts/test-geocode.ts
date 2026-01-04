@@ -26,7 +26,15 @@ async function testGeocode() {
         }
     } catch (error) {
         // Use sanitizeError to avoid exposing sensitive paths
-        console.error("Fetch error:", sanitizeError(error));
+        // Wrap in try-catch to prevent error handling from failing
+        const safeError = (() => {
+            try {
+                return sanitizeError(error);
+            } catch {
+                return "Unknown error";
+            }
+        })();
+        console.error("Fetch error:", safeError);
     }
 }
 

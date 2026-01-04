@@ -9,7 +9,7 @@
  *   npx ts-node scripts/migrate-to-journal.ts
  */
 
-import { sanitizeError } from './lib/sanitize-error';
+import { sanitizeError } from './lib/sanitize-error.js';
 
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';

@@ -299,6 +299,9 @@ function assignReviewTier(files, options = {}) {
       continue;
     }
 
+    // Resolve the path once for all file operations (prevents TOCTOU vulnerabilities)
+    const resolvedFile = resolve(projectRoot, file);
+
     // Assign tier by path (pass all files for conditional checks)
     const pathTier = assignTierByPath(file, files);
     if (pathTier.tier > highestTier) {
@@ -310,10 +313,10 @@ function assignReviewTier(files, options = {}) {
       reasons.push(pathTier.reason);
     }
 
-    // Check file content if it exists
-    if (existsSync(file)) {
+    // Check file content if it exists (use resolved path for security)
+    if (existsSync(resolvedFile)) {
       try {
-        const content = readFileSync(file, 'utf-8');
+        const content = readFileSync(resolvedFile, 'utf-8');
 
         // Check for escalation triggers
         const fileEscalations = checkEscalationTriggers(file, content);
@@ -339,7 +342,11 @@ function assignReviewTier(files, options = {}) {
 
       } catch (error) {
         // File might be binary or unreadable, skip content checks
-        warnings.push(`Could not read file: ${sanitizePath(error.message)}`);
+        // Handle non-Error throws safely
+        const errorMsg = error && typeof error === 'object' && 'message' in error
+          ? error.message
+          : String(error);
+        warnings.push(`Could not read file: ${sanitizePath(errorMsg)}`);
       }
     }
   }

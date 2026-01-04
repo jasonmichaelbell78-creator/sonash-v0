@@ -42,25 +42,29 @@ jobs:
       - name: Run tier assignment script
         id: assign-tier
         run: |
-          # Get list of changed files
-          FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+          # Get list of changed files (space-separated from action)
+          FILES_RAW="${{ steps.changed-files.outputs.all_changed_files }}"
+          # Convert to newline-separated for proper grep matching with ^ anchors
+          FILES="$(printf '%s\n' $FILES_RAW)"
 
           # Run tier assignment (will be implemented in Phase 1)
           # For now, output a placeholder result
-          echo "Changed files: $FILES"
+          echo "Changed files:"
+          printf '%s\n' $FILES_RAW
 
           # TODO: Uncomment when script is ready
-          # RESULT=$(node scripts/assign-review-tier.js $FILES)
+          # RESULT=$(node scripts/assign-review-tier.js $FILES_RAW)
           # echo "result=$RESULT" >> $GITHUB_OUTPUT
 
           # Placeholder: Extract tier from file paths
-          if echo "$FILES" | grep -qE "^\.github/workflows/|firebase\.json|package\.json"; then
+          # Use printf to ensure newline-separated files for grep ^ anchors
+          if printf '%s\n' $FILES_RAW | grep -qE '^(\.github/workflows/|firebase\.json$|package\.json$)'; then
             TIER=4
-          elif echo "$FILES" | grep -qE "firestore\.rules|functions/src/auth/|middleware/"; then
+          elif printf '%s\n' $FILES_RAW | grep -qE '(firestore\.rules$|functions/src/auth/|middleware/)'; then
             TIER=3
-          elif echo "$FILES" | grep -qE "^app/|^components/|^lib/|^hooks/"; then
+          elif printf '%s\n' $FILES_RAW | grep -qE '^(app/|components/|lib/|hooks/)'; then
             TIER=2
-          elif echo "$FILES" | grep -qE "\.test\.(ts|tsx)|^docs/.*\.md$"; then
+          elif printf '%s\n' $FILES_RAW | grep -qE '(\.test\.(ts|tsx)$|^docs/.*\.md$)'; then
             TIER=1
           else
             TIER=0
@@ -143,12 +147,15 @@ jobs:
               '**Need tier adjustment?** Comment below with justification and tag a codeowner.'
             ].join('\n');
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: comment
-            });
+            // Only post comment on PR open/reopen to avoid spamming on every push
+            if (context.payload.action === 'opened' || context.payload.action === 'reopened') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }
 
       - name: Check for security violations
         if: steps.assign-tier.outputs.tier == 4

@@ -367,13 +367,14 @@ async function main() {
   };
 
   // Lint check - capture and sanitize output to avoid exposing paths
+  // Note: Using stdio: 'pipe' for cross-platform compatibility (avoids shell-dependent 2>&1)
   console.log('▶ Running ESLint...');
   try {
-    const lintOutput = execSync('npm run lint 2>&1', { encoding: 'utf-8' });
+    const lintOutput = execSync('npm run lint', { encoding: 'utf-8', stdio: 'pipe' });
     console.log(sanitizeOutput(lintOutput));
     console.log('  ✅ ESLint passed');
   } catch (err) {
-    // ESLint failed - show sanitized output
+    // ESLint failed - show sanitized output (err.stdout/stderr captured by stdio: 'pipe')
     if (err.stdout) console.log(sanitizeOutput(err.stdout));
     if (err.stderr) console.error(sanitizeOutput(err.stderr));
     console.log('  ❌ ESLint has errors');
@@ -382,9 +383,10 @@ async function main() {
   }
 
   // Test check - capture and sanitize output
+  // Note: Using stdio: 'pipe' for cross-platform compatibility
   console.log('▶ Running tests...');
   try {
-    const testOutput = execSync('npm test 2>&1', { encoding: 'utf-8' });
+    const testOutput = execSync('npm test', { encoding: 'utf-8', stdio: 'pipe' });
     // Only show summary, not full output (too verbose)
     const lines = testOutput.split('\n');
     const summaryLines = lines.filter(l =>
@@ -395,7 +397,7 @@ async function main() {
     }
     console.log('  ✅ Tests passed');
   } catch (err) {
-    // Tests failed - show sanitized error output
+    // Tests failed - show sanitized error output (err.stdout/stderr captured by stdio: 'pipe')
     if (err.stdout) {
       const sanitized = sanitizeOutput(err.stdout);
       // Show last 20 lines to see failure info

@@ -82,7 +82,8 @@ const REVIEW_TYPES = {
   },
   'configuration': {
     section: '## 2. Configuration Review',
-    extensions: ['.json', '.env', '.yaml', '.yml'],
+    // Note: .env removed - blocked by SENSITIVE_FILE_PATTERNS for security
+    extensions: ['.json', '.yaml', '.yml'],
     filenames: [],
     description: 'Configuration files',
   },
@@ -142,10 +143,35 @@ function extractPrompt(type) {
 }
 
 /**
+ * Check if a file path is safely contained within project root
+ * Prevents path traversal attacks when reading files from CLI args
+ */
+function isPathContained(filePath) {
+  try {
+    const projectRoot = process.cwd();
+    const resolvedPath = path.resolve(projectRoot, filePath);
+    const rel = path.relative(projectRoot, resolvedPath);
+    // Path is contained if:
+    // 1. Not empty (exact root match)
+    // 2. Doesn't start with '..' (traversal)
+    // 3. Isn't absolute (Windows edge case)
+    return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get files to review
  */
 function getFilesToReview() {
   if (config.file) {
+    // SECURITY: Validate path containment to prevent path traversal attacks
+    if (!isPathContained(config.file)) {
+      console.error('Error: File path must be within the project root');
+      console.error('       Path traversal (../) and absolute paths are not allowed');
+      process.exit(1);
+    }
     return [config.file];
   }
 
@@ -163,14 +189,27 @@ function getFilesToReview() {
         if (reviewTypeConfig.filenames && reviewTypeConfig.filenames.includes(basename)) {
           return true;
         }
-        // For dotfiles without extension, use the filename itself
-        const effectiveExt = ext || basename;
         // Check extension match
-        return reviewTypeConfig.extensions.includes(ext) ||
-               (ext === '' && reviewTypeConfig.extensions.some(e => basename.endsWith(e)));
+        if (reviewTypeConfig.extensions.includes(ext)) {
+          return true;
+        }
+        // For files without extension (dotfiles), check if basename matches an extension pattern
+        // This handles cases like .env matching the .env extension
+        if (ext === '' && reviewTypeConfig.extensions.includes(basename)) {
+          return true;
+        }
+        // Explicitly handle common multi-suffix env files (.env.local, .env.production)
+        if (basename.startsWith('.env.')) {
+          return reviewTypeConfig.extensions.includes('.env');
+        }
+        return false;
       });
     } catch (error) {
-      console.error('Error getting staged files:', sanitizePath(error.message));
+      // Handle non-Error throws safely
+      const errorMsg = error && typeof error === 'object' && 'message' in error
+        ? error.message
+        : String(error);
+      console.error('Error getting staged files:', sanitizePath(errorMsg));
       console.error('Ensure you are in a git repository with staged files.');
       process.exit(1);  // Exit with error instead of silent empty return
     }
@@ -299,6 +338,10 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error(`Error: ${error.message}`);
+  // Handle non-Error throws and sanitize message to avoid exposing paths
+  const errorMsg = error && typeof error === 'object' && 'message' in error
+    ? error.message
+    : String(error);
+  console.error(`Error: ${sanitizePath(errorMsg)}`);
   process.exit(1);
 }

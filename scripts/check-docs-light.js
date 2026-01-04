@@ -637,5 +637,9 @@ try {
 } catch (error) {
   // Use sanitizeError to avoid exposing sensitive paths in CI logs
   console.error('❌ Unexpected error:', sanitizeError(error));
+  // Show sanitized stack trace in verbose mode for debugging
+  if (VERBOSE && error && typeof error === 'object' && 'stack' in error && error.stack) {
+    console.error(sanitizeError(error.stack));
+  }
   process.exit(1);
 }
