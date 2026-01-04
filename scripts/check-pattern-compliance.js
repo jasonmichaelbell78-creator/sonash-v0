@@ -458,6 +458,9 @@ function checkFile(filePath) {
 
   const violations = [];
 
+  // Normalize path separators for consistent regex matching on Windows
+  const normalizedPath = filePath.replace(/\\/g, '/');
+
   for (const antiPattern of ANTI_PATTERNS) {
     // Skip if file type doesn't match
     if (!antiPattern.fileTypes.includes(ext)) {
@@ -465,12 +468,12 @@ function checkFile(filePath) {
     }
 
     // Skip if path filter doesn't match (for patterns that only apply to specific directories)
-    if (antiPattern.pathFilter && !antiPattern.pathFilter.test(filePath)) {
+    if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) {
       continue;
     }
 
     // Skip if path exclusion matches (for patterns that have false positives in specific files)
-    if (antiPattern.pathExclude && antiPattern.pathExclude.test(filePath)) {
+    if (antiPattern.pathExclude && antiPattern.pathExclude.test(normalizedPath)) {
       continue;
     }
 

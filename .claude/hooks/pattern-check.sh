@@ -44,9 +44,10 @@ FILE_PATH="${FILE_PATH//\\//}"
 
 # SECURITY: Block absolute paths and traversal segments
 # Using specific patterns to avoid false positives (e.g., files with ".." in name)
+# Note: Backslashes are normalized to / above, so check for Windows/UNC paths too
 case "$FILE_PATH" in
-  /* )
-    # Absolute Unix path
+  /* | //* | [A-Za-z]:* )
+    # Absolute path (Unix), UNC path (//server), or Windows drive path (C:/)
     exit 0
     ;;
   *"/../"* | "../"* | *"/.." )
@@ -84,7 +85,8 @@ if [ -f "$REL_PATH" ]; then
   )"
 
   # Verify containment: REAL_PATH must start with REAL_PROJECT/
-  if [ -z "$REAL_PATH" ] || [ -z "$REAL_PROJECT" ]; then
+  # Also reject if REAL_PROJECT is root (/) to prevent bypass
+  if [ -z "$REAL_PATH" ] || [ -z "$REAL_PROJECT" ] || [ "$REAL_PROJECT" = "/" ]; then
     exit 0
   fi
   case "$REAL_PATH" in
@@ -111,7 +113,7 @@ if printf '%s' "$SAFE_OUTPUT" | grep -q "potential pattern violation"; then
   echo ""
   echo "⚠️  PATTERN CHECK REMINDER"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  printf '%s' "$SAFE_OUTPUT" | grep -A3 "📄\|Line\|✓ Fix\|📚 See" || true
+  printf '%s' "$SAFE_OUTPUT" | grep -E -A3 "📄|Line|✓ Fix|📚 See" || true
   echo ""
   echo "Review claude.md Section 4 (Tribal Knowledge) for documented patterns."
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
