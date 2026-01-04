@@ -22,6 +22,10 @@
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "lessons:surface": "node scripts/surface-lessons-learned.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "deps:circular": "madge --circular --extensions ts,tsx,js,jsx lib/ components/ app/",
+    "deps:unused": "knip",
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'"
   },
   "dependencies": {
@@ -75,7 +79,10 @@
     "firebase-admin": "^13.6.0",
     "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
+    "knip": "^5.79.0",
+    "madge": "^8.0.0",
     "postcss": "^8.5",
+    "prettier": "^3.7.4",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "tailwindcss": "^4.1.9",

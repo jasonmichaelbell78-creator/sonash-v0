@@ -19,6 +19,7 @@ import { execSync } from 'child_process';
 import * as readline from 'readline';
 import * as fs from 'fs';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -469,19 +470,32 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  // Sanitize error output - avoid exposing file paths, stack traces, and control characters
-  // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
-  // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
-  const safeMessage = String(err?.message ?? err ?? 'Unknown error')
-    .split('\n')[0]
-    .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
-    // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    .replace(/\/home\/[^/\s]+/g, '[HOME]')
-    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-    .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
-  console.error('Script error:', safeMessage);
-  closeRl();
-  process.exit(1);
-});
+// Export functions for testing
+export {
+  extractDeliverablesFromPlan,
+  verifyDeliverable,
+  runAutomatedDeliverableAudit
+};
+
+// Only run main() when executed directly (not when imported for testing)
+// Use pathToFileURL for cross-platform compatibility (Windows paths use backslashes)
+const isMainModule = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isMainModule) {
+  main().catch(err => {
+    // Sanitize error output - avoid exposing file paths, stack traces, and control characters
+    // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
+    // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
+    const safeMessage = String(err?.message ?? err ?? 'Unknown error')
+      .split('\n')[0]
+      .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
+      // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace (\t\n\r)
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+      .replace(/\/home\/[^/\s]+/g, '[HOME]')
+      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      .replace(/C:\\Users\\[^\\]+/gi, '[HOME]');
+    console.error('Script error:', safeMessage);
+    closeRl();
+    process.exit(1);
+  });
+}

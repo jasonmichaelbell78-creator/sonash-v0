@@ -27,6 +27,23 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Check code formatting (Prettier)
+        # Note: Non-blocking until initial codebase formatting is applied
+        # Run 'npm run format' to fix all files, then remove continue-on-error
+        # TODO: Remove continue-on-error after running initial format
+        continue-on-error: true
+        run: npm run format:check
+
+      - name: Check for circular dependencies
+        run: npm run deps:circular
+
+      - name: Check for unused dependencies/exports
+        # Note: Non-blocking as baseline has known issues to address incrementally
+        # Baseline: 7 unused deps, 2 unlisted deps in package.json
+        # TODO: Remove continue-on-error after baseline issues are resolved
+        continue-on-error: true
+        run: npm run deps:unused
+
       - name: Pattern compliance check
         # Note: Non-blocking while legacy violations exist in scripts/
         # Pre-existing code has issues that will be fixed incrementally

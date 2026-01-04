@@ -54,7 +54,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **Meeting Widgets**: Hoisting bugs in `setInterval` are common. Always define callbacks `useCallback` *before* the effect.
 
 ### Code Review Patterns (from 18+ reviews)
-*Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md)*
+*Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)*
 
 > ⚠️ **SELF-AUDIT**: Before writing shell scripts, workflow files, or security-sensitive code, scan the patterns below. If you've made an error covered here before, STOP and fix it.
 
@@ -140,7 +140,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **[DEVELOPMENT.md](./DEVELOPMENT.md)**: Setup, testing commands, directory structure.
 *   **[ROADMAP.md](./ROADMAP.md)**: What features are planned vs. completed.
 *   **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)**: Current sprint status, session tracking, recent context.
-*   **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)**: Manual verification steps.
+*   **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)**: Manual verification steps.
 
 ## 6. Available AI Capabilities
 

@@ -494,7 +494,7 @@ Track if overhead is worthwhile:
 >
 > **Session tracking** has been moved to [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) where it belongs.
 >
-> **PR/commit reviews** are tracked in [AI_REVIEW_LEARNINGS_LOG.md](../AI_REVIEW_LEARNINGS_LOG.md).
+> **PR/commit reviews** are tracked in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md).
 
 This coordinator should be used when:
 - Planning a full-repo security audit
@@ -513,7 +513,7 @@ It should NOT be used for:
 
 - **[AI_WORKFLOW.md](../AI_WORKFLOW.md)** - Master workflow guide (references this coordinator)
 - **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Mandatory security standards
-- **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Document formatting standards
+- **[DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)** - Document formatting standards
 - **Templates:**
   - [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)
   - [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)

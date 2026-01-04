@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'DOCUMENTATION_STANDARDIZATION_PLAN.md'
+      - 'docs/DOCUMENTATION_STANDARDIZATION_PLAN.md'
 
 jobs:
   validate-phase-completion:

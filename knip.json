@@ -1,0 +1,44 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "lib/**/*.ts"
+  ],
+  "project": [
+    "app/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "lib/**/*.ts"
+  ],
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "tests/**",
+    "dist-tests/**",
+    "scripts/**",
+    ".next/**"
+  ],
+  "ignoreDependencies": [
+    "@fontsource/*",
+    "tailwindcss-animate",
+    "tw-animate-css",
+    "autoprefixer",
+    "tsx",
+    "firebase-admin",
+    "remark-parse",
+    "remark-stringify",
+    "unified",
+    "tailwindcss"
+  ],
+  "ignoreBinaries": [
+    "printf",
+    "report"
+  ],
+  "next": {
+    "entry": [
+      "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",
+      "app/**/middleware.ts",
+      "instrumentation.ts"
+    ]
+  }
+}
