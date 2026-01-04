@@ -256,7 +256,8 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'regex-newline-lookahead',
-    pattern: /\(\?=\\n(?!\?)/g,
+    // Match lookaheads in regex literals `(?=\n` and in string patterns `"(?=\\n"`
+    pattern: /\(\?=(?:\\n|\\\\n)(?!\?)/g,
     message: 'Regex lookahead uses \\n without optional \\r (fails on CRLF)',
     fix: 'Use: (?=\\r?\\n for cross-platform line endings',
     review: '#40',
@@ -272,11 +273,15 @@ const ANTI_PATTERNS = [
   },
   {
     id: 'readfilesync-without-try',
-    pattern: /(?<!try\s*\{[\s\S]{0,200})fs\.readFileSync\s*\(/g,
+    // Avoid variable-length lookbehind (engine compatibility); match both fs.readFileSync and readFileSync
+    // Note: This will have false positives for wrapped calls - use judgment
+    pattern: /\b(?:fs\.)?readFileSync\s*\(/g,
     message: 'readFileSync without try/catch - existsSync does not guarantee read success',
     fix: 'Wrap in try/catch: race conditions, permissions, encoding errors',
     review: '#36, #37',
     fileTypes: ['.js', '.ts'],
+    // Exclude pattern checker itself (has proper try/catch but triggers on pattern definition)
+    pathExclude: /check-pattern-compliance\.js$/,
   },
   {
     id: 'auto-mode-slice-truncation',
