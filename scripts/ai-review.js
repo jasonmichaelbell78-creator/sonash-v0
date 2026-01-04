@@ -18,6 +18,16 @@ import { execSync, execFileSync } from 'child_process';
 
 const REVIEW_PROMPTS_FILE = '.claude/review-prompts.md';
 
+/**
+ * Sanitize file paths in error messages to avoid exposing absolute paths
+ */
+function sanitizePath(filePath) {
+  return String(filePath)
+    .replace(/\/home\/[^/\s]+/g, '[HOME]')
+    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+    .replace(/C:\\Users\\[^\\]+/g, '[HOME]');
+}
+
 // Parse command line arguments
 const args = process.argv.slice(2);
 const config = {
@@ -128,15 +138,18 @@ function getFilesToReview() {
       return stagedFiles.filter(file => {
         const basename = path.basename(file);
         const ext = path.extname(file);
-        // Check exact filename match
+        // Check exact filename match first
         if (reviewTypeConfig.filenames && reviewTypeConfig.filenames.includes(basename)) {
           return true;
         }
+        // For dotfiles without extension, use the filename itself
+        const effectiveExt = ext || basename;
         // Check extension match
-        return reviewTypeConfig.extensions.includes(ext);
+        return reviewTypeConfig.extensions.includes(ext) ||
+               (ext === '' && reviewTypeConfig.extensions.some(e => basename.endsWith(e)));
       });
     } catch (error) {
-      console.error('Error getting staged files:', error.message);
+      console.error('Error getting staged files:', sanitizePath(error.message));
       return [];
     }
   }
@@ -158,7 +171,7 @@ function readFileContent(filePath) {
       return fs.readFileSync(filePath, 'utf-8');
     }
   } catch (error) {
-    console.error(`Error reading file ${filePath}:`, error.message);
+    console.error(`Error reading file ${sanitizePath(filePath)}:`, sanitizePath(error.message));
     return null;
   }
 }
@@ -187,7 +200,7 @@ function formatReviewRequest(prompt, files) {
         request += content;
         request += '\n```\n\n';
       } else {
-        console.warn(`Warning: Skipping ${file} (could not read content)`);
+        console.warn(`Warning: Skipping file (could not read content)`);
       }
     });
   }

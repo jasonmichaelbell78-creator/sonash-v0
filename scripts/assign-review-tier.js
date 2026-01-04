@@ -20,6 +20,23 @@
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
+/**
+ * Sanitize file paths in error messages to avoid exposing absolute paths
+ */
+function sanitizePath(filePath) {
+  return String(filePath)
+    .replace(/\/home\/[^/\s]+/g, '[HOME]')
+    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+    .replace(/C:\\Users\\[^\\]+/g, '[HOME]');
+}
+
+/**
+ * Normalize path separators for cross-platform regex matching
+ */
+function normalizePath(filePath) {
+  return String(filePath).replace(/\\/g, '/');
+}
+
 // Tier classification rules
 const TIER_RULES = {
   // Tier 0: Exempt (auto-merge eligible)
@@ -142,9 +159,9 @@ const FORBIDDEN_PATTERNS = [
     checkContent: true,
   },
   {
-    pattern: /^\.env$/,
+    pattern: /(^|[/\\])\.env$/,
     reason: '.env file should not be committed',
-    checkPath: true, // Path-only check
+    checkPath: true, // Path-only check (matches nested .env files too)
   },
 ];
 
@@ -154,35 +171,38 @@ const FORBIDDEN_PATTERNS = [
  * @param {string[]} allFiles - All changed files (for conditional checks)
  */
 function assignTierByPath(filePath, allFiles = []) {
+  // Normalize path for cross-platform regex matching
+  const normalizedPath = normalizePath(filePath);
+
   // Check Tier 4 first (highest priority)
-  if (TIER_RULES.tier_4.patterns.some(p => p.test(filePath))) {
+  if (TIER_RULES.tier_4.patterns.some(p => p.test(normalizedPath))) {
     return { tier: 4, reason: `Critical file: ${filePath}` };
   }
 
   // Tier 3
-  if (TIER_RULES.tier_3.patterns.some(p => p.test(filePath))) {
+  if (TIER_RULES.tier_3.patterns.some(p => p.test(normalizedPath))) {
     return { tier: 3, reason: `Security-sensitive file: ${filePath}` };
   }
 
   // Tier 2
-  if (TIER_RULES.tier_2.patterns.some(p => p.test(filePath))) {
+  if (TIER_RULES.tier_2.patterns.some(p => p.test(normalizedPath))) {
     return { tier: 2, reason: `Standard code file: ${filePath}` };
   }
 
   // Tier 1
-  if (TIER_RULES.tier_1.patterns.some(p => p.test(filePath))) {
+  if (TIER_RULES.tier_1.patterns.some(p => p.test(normalizedPath))) {
     return { tier: 1, reason: `Documentation/test file: ${filePath}` };
   }
 
   // Tier 0 - check both patterns and conditional rules
-  if (TIER_RULES.tier_0.patterns.some(p => p.test(filePath))) {
+  if (TIER_RULES.tier_0.patterns.some(p => p.test(normalizedPath))) {
     return { tier: 0, reason: `Low-risk file: ${filePath}` };
   }
 
   // Check conditional tier 0 rules (e.g., package-lock.json only if package.json unchanged)
   if (TIER_RULES.tier_0.conditional) {
     for (const rule of TIER_RULES.tier_0.conditional) {
-      if (rule.pattern.test(filePath)) {
+      if (rule.pattern.test(normalizedPath)) {
         // Check if required files are unchanged (not in allFiles)
         const requiredUnchanged = rule.requires_unchanged || [];
         const allUnchanged = requiredUnchanged.every(req => !allFiles.includes(req));
@@ -225,10 +245,11 @@ function checkEscalationTriggers(filePath, content) {
  */
 function checkForbiddenPatterns(filePath, content) {
   const violations = [];
+  const normalizedPath = normalizePath(filePath);
 
   for (const forbidden of FORBIDDEN_PATTERNS) {
     const matchesContent = forbidden.checkContent && forbidden.pattern.test(content);
-    const matchesPath = forbidden.checkPath && forbidden.pattern.test(filePath);
+    const matchesPath = forbidden.checkPath && forbidden.pattern.test(normalizedPath);
     if (matchesContent || matchesPath) {
       violations.push({
         pattern: forbidden.pattern.toString(),
@@ -292,7 +313,7 @@ function assignReviewTier(files, options = {}) {
 
       } catch (error) {
         // File might be binary or unreadable, skip content checks
-        warnings.push(`Could not read ${file}: ${error.message}`);
+        warnings.push(`Could not read file: ${sanitizePath(error.message)}`);
       }
     }
   }
