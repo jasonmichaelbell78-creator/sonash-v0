@@ -462,6 +462,13 @@ The multi-AI review framework (created 2025-12-30) needs refresh:
 - **Aggregator exists but unlisted**: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (renamed 2026-01-05) needs content update and integration
 - **Coordinator baselines stale**: MULTI_AI_REVIEW_COORDINATOR.md has placeholder dates
 
+**SonarQube Analysis Backbone (2026-01-05):** Static analysis provides pre-identified targets:
+- **778 issues** documented in `docs/analysis/sonarqube-manifest.md` (condensed) and `sonarqube-issues.json` (full)
+- **47 CRITICAL**: Cognitive complexity violations (refactoring targets, functions exceeding 15-point threshold)
+- **216 MAJOR**: Code quality improvements
+- **Batch opportunities**: ~200+ ESLint auto-fixable, 79 replaceAll() replacements, 71 node: prefix imports
+- **False positive noted**: Firebase API key BLOCKER is intentional (public client key)
+
 **Execution Strategy**: 2-Tier Aggregation to ensure comprehensive coverage:
 
 ```
@@ -505,6 +512,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - Add reference to `docs/AI_REVIEW_LEARNINGS_LOG.md` (prior patterns)
   - Add reference to `npm run patterns:check` output as pre-context
   - Add reference to `npm run deps:circular` and `npm run deps:unused` baselines
+  - Add reference to `docs/analysis/sonarqube-manifest.md` (pre-identified issues)
   - Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex, Gemini 3 Pro)
 
 - [ ] **Task 4.1.2**: Update Security Audit template (0.5 hours)
@@ -526,6 +534,8 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - File: `docs/templates/MULTI_AI_REFACTORING_PLAN_TEMPLATE.md`
   - Add same references as Task 4.1.1
   - Add reference to prior EIGHT_PHASE_REFACTOR_PLAN.md CANON findings (archived)
+  - **Primary input**: SonarQube 47 CRITICAL cognitive complexity violations (see manifest)
+  - Add reference to batch fix opportunities (replaceAll, node: imports)
 
 #### New Templates (2 Categories)
 
@@ -570,6 +580,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - File: `docs/MULTI_AI_REVIEW_COORDINATOR.md`
   - Update "Last Updated" with actual date
   - Update baseline metrics (test count, lint warnings, pattern violations)
+  - **Add SonarQube baseline**: 778 issues (1 BLOCKER-FP, 47 CRITICAL, 216 MAJOR, 507 MINOR, 7 INFO)
   - Add new categories to category list (Documentation, Process)
   - Update aggregator reference to new location
   - Define audit cadence triggers (milestone, commit count, at discretion)
@@ -602,10 +613,11 @@ This ensures each category is thoroughly processed before moving on, preventing 
 #### Sub-Phase 4.1 Acceptance Criteria
 
 - [ ] All 4 existing templates updated with current tooling references
+- [ ] All templates reference `docs/analysis/sonarqube-manifest.md` as pre-context
 - [ ] 2 new templates created (Documentation, Process/Automation)
 - [ ] Dependency Audit added to Security template
 - [ ] Aggregator renamed and updated
-- [ ] Coordinator baselines refreshed
+- [ ] Coordinator baselines refreshed (including SonarQube baseline)
 - [ ] FIREBASE_CHANGE_POLICY.md created
 - [ ] Stale docs archived (IMPLEMENTATION_PROMPTS.md)
 
