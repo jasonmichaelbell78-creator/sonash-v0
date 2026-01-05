@@ -18,7 +18,7 @@ You want: long-context + strict instruction following + reliable tool/terminal b
 
 ### Best for Terminal + Verification
 
-**GPT-5.2-Codex** - Explicitly optimized for long-horizon coding, large refactors/migrations, and reliable tool calling.
+**GPT-5-Codex** - Explicitly optimized for long-horizon coding, large refactors/migrations, and reliable tool calling.
 
 **Alternative:** GPT-5 Thinking - Spare-no-compute option with strong long-context.
 
@@ -28,7 +28,7 @@ You want: long-context + strict instruction following + reliable tool/terminal b
 
 ### Recommended Setup
 
-**For Tier-1 Aggregation (per-category):** Claude Sonnet 4.5 or GPT-5.2-Codex
+**For Tier-1 Aggregation (per-category):** Claude Sonnet 4.5 or GPT-5-Codex
 **For Tier-2 Aggregation (cross-category):** Claude Opus 4.5 or GPT-5 Thinking
 
 ---
@@ -177,7 +177,7 @@ Record failures as SHORT evidence bullets (paths + brief message), not full logs
 - Performance: Bundle Size | Rendering | Data Fetching | Memory | Core Web Vitals
 - Refactoring: Hygiene/Duplication | Types/Correctness | Architecture/Boundaries | Security Hardening | Testing Infrastructure
 - Documentation: Cross-Reference | Staleness | Coverage Gaps | Tier Compliance | Frontmatter
-- Process: CI/CD | Hooks | Scripts | Pattern Checker | Triggers | Documentation
+- Process: CI/CD | Hooks | Scripts | Pattern Checker | Triggers | Workflow Docs
 
 **Severity:** S0–S3
 **Effort:** E0–E3
@@ -188,8 +188,10 @@ If a JSONL line is invalid JSON: drop it and record it in PARSE_ERRORS_JSON.
 
 A canonical finding can be CONFIRMED only if it has:
 - files[] non-empty AND
-- symbols[] non-empty (or specific issue indicator for docs/process) AND
-- verification finds those files exist (and ideally symbols appear via search)
+- EITHER:
+  - symbols[] non-empty (code findings), OR
+  - for docs/process findings: a concrete locator in evidence (e.g., markdown heading/anchor, broken link target, workflow name + job/step id, script name + command) AND
+- verification finds those files exist (and ideally the symbol/locator appears via search)
 
 Otherwise it is SUSPECTED.
 
@@ -295,17 +297,18 @@ Goal: small, reviewable PRs.
 
 ### OUTPUT FORMAT (STRICT ORDER)
 
-**Important:** Output each section in order. For JSONL sections, output raw JSON objects (one per line) without surrounding code fences. For markdown sections (summaries), normal markdown formatting is acceptable.
+**Important:** Output each section in order.
+- For ALL machine-readable sections (JSON and JSONL), output raw JSON (no surrounding code fences).
+- For JSONL sections, output one raw JSON object per line.
+- For Markdown sections (summaries), normal markdown formatting is acceptable.
 
 **TIER-1 Mode Output:**
 
 1) PARSE_ERRORS_JSON (if any)
-```json
 {
   "parse_errors": [{"model":"...","line":"...","reason":"..."}],
   "dropped_count": <int>
 }
-```
 
 2) CANON-<CATEGORY>.jsonl (e.g., CANON-CODE.jsonl)
 One JSON object per line. Schema:
@@ -360,7 +363,7 @@ Same schema as CANON-*.jsonl but with:
 
 **CANONICAL_ID ASSIGNMENT (DETERMINISTIC; BOTH TIERS)**
 - Recompute IDs from the final deduped set every run (do not preserve source IDs).
-- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc), then fingerprint (asc).
+- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc).
 - Assign sequential IDs: CANON-0001, CANON-0002, ...
 - In Tier-1, IDs are still `CANON-0001` style (the filename indicates the category); do NOT embed category into the ID.
 
@@ -401,7 +404,8 @@ Same schema as CANON-*.jsonl but with:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 2.0 | 2026-01-05 | Major rewrite for 2-tier aggregation (per-category → cross-category); Added 6-category framework; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro); Added tooling references (patterns:check, deps:circular, deps:unused, SonarQube); Explicit TIER-1 and TIER-2 modes with different inputs/outputs; Updated schema to match JSONL_SCHEMA_STANDARD.md | Claude |
+| 2.1 | 2026-01-05 | Review #66: Fixed model name (GPT-5-Codex), clarified evidence rules for docs/process findings, removed code fences from JSON output examples, fixed deterministic ID sort (removed fingerprint), renamed Process subcategory to Workflow Docs | Claude |
+| 2.0 | 2026-01-05 | Major rewrite for 2-tier aggregation (per-category → cross-category); Added 6-category framework; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added tooling references (patterns:check, deps:circular, deps:unused, SonarQube); Explicit TIER-1 and TIER-2 modes with different inputs/outputs; Updated schema to match JSONL_SCHEMA_STANDARD.md | Claude |
 | 1.0 | 2025-12-28 | Initial aggregator prompt creation | Original |
 
 ---

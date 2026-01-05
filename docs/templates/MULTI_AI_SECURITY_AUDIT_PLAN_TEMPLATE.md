@@ -263,9 +263,9 @@ REQUIRED CHECKS:
 [ ] .env.example exists (without values)
 
 VERIFICATION COMMANDS:
-- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
-- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
-- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY" --include="*.ts" --include="*.tsx"
+- grep -RIn --binary-files=without-match --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.next --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -RIn --binary-files=without-match --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.next --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -RIn --binary-files=without-match --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.next --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY" --include="*.ts" --include="*.tsx"
 - cat .gitignore | grep -i env
 - ls -la | grep env
 (Note: Grep patterns are heuristic only—secrets may be obfuscated, base64-encoded, or split across variables. Supplement with dedicated secret scanning tools like gitleaks, truffleHog, or detect-secrets.)
@@ -321,17 +321,11 @@ REQUIRED CHECKS:
 VERIFICATION COMMANDS:
 - npm audit --json
 - npm outdated
-- npm exec --yes license-checker -- --summary
-  (Or use repo-pinned script: npm run licenses:check if available)
+- npm run licenses:check
+  (Preferred: repo-pinned script. If unavailable, use a locally installed tool and record its version/output in evidence.)
 - npm ls --depth=1 (check direct dependencies)
 - Review package-lock.json for unexpected additions
-
-FOCUS AREAS:
-- Vulnerability severity (CRITICAL > HIGH > MEDIUM)
-- Outdated packages with security patches available
-- License compatibility issues
-- Suspicious or unmaintained packages
-- Large transitive dependency trees
+(Priority: CRITICAL > HIGH vulnerabilities; outdated packages with security patches; license compliance; suspicious/unmaintained packages)
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 Quote specific evidence for each finding.

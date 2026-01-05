@@ -168,9 +168,12 @@ firestore_rules: IMPLEMENTED
 
 # Code Quality
 lint_errors: 0
-lint_warnings: 181 (baseline as of 2026-01-04; treat ANY increase as regression; long-term goal: <20 after remediation)
+lint_warnings: 181
+lint_warnings_baseline_date: 2026-01-04
+lint_warnings_policy: "Treat any increase as regression; long-term goal: <20 after remediation"
 typescript_strict: true
-pattern_violations: 0 (npm run patterns:check)
+pattern_violations: 0
+pattern_violations_command: "npm run patterns:check"
 
 # Dependencies
 circular_dependencies: 0 (npm run deps:circular)
@@ -181,7 +184,7 @@ known_vulnerabilities: [Run: npm audit --json | jq '.metadata.vulnerabilities']
 
 # Static Analysis (SonarQube)
 sonarqube_total_issues: 778
-sonarqube_blocker: 1 (Firebase Web `apiKey` flagged; this is a public identifier, NOT a secret—DO NOT commit real secrets like service account keys, private keys, or server API keys)
+sonarqube_blocker: 1  # Firebase Web config apiKey flagged; in Firebase Web config this is a public identifier, not a secret. IMPORTANT: other apiKey values (non-Firebase providers, server API keys, private keys, service account JSON) MUST be treated as secrets and kept in Secret Manager—never commit them.
 sonarqube_critical: 47 (cognitive complexity violations, functions >15-point threshold)
 sonarqube_major: 216
 sonarqube_minor: 507

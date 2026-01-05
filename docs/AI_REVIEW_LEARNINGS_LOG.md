@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.65
+**Document Version:** 1.66
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.66 | 2026-01-05 | Review #66: 13 fixes - 4 MAJOR (evidence rules, output format, npm safety, apiKey guidance), 8 MINOR (counters, grep portability, YAML, model names), 1 TRIVIAL |
 | 1.65 | 2026-01-05 | Review #65: 19 fixes - 4 MAJOR (security doc hardening, deterministic CANON IDs), 10 MINOR (paths, assertions, category names), 5 TRIVIAL (model names) |
 | 1.64 | 2026-01-05 | Review #64: 31 fixes - 6 MAJOR (security pseudocode, Firebase key clarity, grep hardening), 8 MINOR (progress calc, paths), 17 TRIVIAL |
 | 1.63 | 2026-01-05 | Review #63: 15 fixes total - 7 broken relative paths, 8 minor improvements (version entries, secrets example, tier notes) |
@@ -139,7 +140,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3
+**Reviews since last consolidation:** 6
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CONSOLIDATED** (last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
 
@@ -281,7 +282,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-60 are actively maintained below. Older reviews are in the archive.
+Reviews #41-65 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -1539,7 +1540,7 @@ All 6 compliance guide items verified as COMPLIANT:
    - Pattern: Firestore uses query patterns and get()/exists() limits, not SQL
 
 **Resolution:**
-- Fixed: 10 items (1 Critical, 5 Major, 2 Minor, 2 Trivial)
+- Fixed: 10 items (1 Critical, 4 Major, 2 Minor, 3 Trivial)
 - Declined: 11 items (duplicates or not applicable)
 
 **Key Insight:** Security documentation must be explicit about prohibitions, not just implicit through context. Comments like "if using X on client" can be misread as permission rather than a hypothetical. Template creation should verify all referenced schemas exist. When documents move to archive, all relative paths need the `../` prefix adjustment.
