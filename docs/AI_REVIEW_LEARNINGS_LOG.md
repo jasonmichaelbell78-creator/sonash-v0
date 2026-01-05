@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.56
+**Document Version:** 1.60
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,10 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.60 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → claude.md v2.9 (10 patterns added) |
+| 1.59 | 2026-01-05 | Review #60: Document sync, grep exclusion fix, CANON-ID guidance, duplicate link removal |
+| 1.58 | 2026-01-05 | Review #59: Prompt schema improvements, grep --exclude, Quick Start section, link text consistency |
+| 1.57 | 2026-01-05 | Review #58: Template compliance (MULTI_AI_REFACTOR_AUDIT_PROMPT.md), link format consistency, American English |
 | 1.56 | 2026-01-05 | Review #57: CI fix (broken stub links), effort estimate arithmetic, optional artifact semantics |
 | 1.55 | 2026-01-05 | Review #56: Effort estimate correction, remaining code fences, stub path references (PARTIAL FIX - see #57) |
 | 1.54 | 2026-01-05 | Review #55: Nested code fence fixes, artifact naming, acceptance criteria, schema references |
@@ -55,7 +59,7 @@ This log uses a tiered structure to optimize context consumption:
 |------|---------|--------------|------|
 | **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-57) | Deep investigation | ~1050 lines |
+| **3** | Active Reviews (#41-60) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -129,9 +133,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
+**✅ STATUS: CONSOLIDATED** (last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
 
 ### When to Consolidate
 
@@ -151,17 +155,20 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-04 (Session #23)
-- **Reviews consolidated:** #41-#50 (10 reviews)
-- **Patterns added to claude.md v2.8:**
-  - Symlink escape prevention with realpathSync()
-  - Fail-closed on realpath errors
-  - PII masking (maskEmail, maskUid)
-  - Sensitive directory detection
-  - OSC escape stripping
-  - Label auto-creation in workflows
-  - Structured audit logging
-- **Next consolidation due:** At review #61
+- **Date:** 2026-01-05 (Session #23)
+- **Reviews consolidated:** #51-#60 (10 reviews)
+- **Patterns added to claude.md v2.9:**
+  - path.relative() bare ".." trap (security)
+  - Global flag required for exec() loops
+  - grep --exclude uses filename not path
+  - Path boundary anchoring in regex exclusions
+  - Audit CI/scripts after file moves
+  - Verify AI path suggestions before changing links
+  - Nested code fences in markdown (4-backtick outer)
+  - Effort estimate verification
+  - Complete pattern fix audit
+  - Regex scope for brace matching
+- **Next consolidation due:** After Review #70
 
 ---
 
@@ -174,8 +181,8 @@ Consolidation is needed when:
 |--------|-------|--------|--------|
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
-| Patterns in claude.md | 50+ | - | ✅ |
-| Reviews since last consolidation | 3 | <10 | ✅ |
+| Patterns in claude.md | 60+ | - | ✅ |
+| Reviews since last consolidation | 0 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
@@ -268,7 +275,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-53 are actively maintained below. Older reviews are in the archive.
+Reviews #41-60 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -1225,5 +1232,141 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
    - Pattern: "3 core artifacts + 1 optional" clearer than "4 artifacts (one conditional)"
 
 **Key Insight:** AI suggestions about file paths should be verified before applying - the CI failure was caused by trusting a path suggestion without checking if files exist. Effort estimates should use exact sums when sub-components are known, not approximate ranges. Conditional/optional artifacts need explicit labeling.
+
+---
+
+#### Review #58: Template Compliance & Documentation Consistency (2026-01-05)
+
+**Source:** Mixed - GitHub Actions CI + Qodo PR Suggestions + CodeRabbit PR
+**PR:** `docs: Pre-Step-4 document cleanup and audit backlog setup`
+**Tools:** CI docs-lint, Qodo (3 suggestions), CodeRabbit (2 issues)
+**Suggestions:** 12 total (Critical: 0, Major: 3, Minor: 6, Trivial: 3)
+
+**Context:** Document cleanup PR introduced a renamed file (`MULTI_AI_REFACTOR_AUDIT_PROMPT.md`) that failed CI docs-lint due to missing required template sections. Additional consistency issues in links, list formatting, and language.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Missing H1 heading | 🟠 Major | CI Blocker | Added H1 title to template |
+| 2 | Missing purpose/scope section | 🟠 Major | CI Blocker | Added Purpose section |
+| 3 | Missing version history | 🟠 Major | CI Blocker | Added Version History section |
+| 4 | Missing Last Updated metadata | 🟡 Minor | Compliance | Added metadata header |
+| 5 | Missing AI instructions section | 🟡 Minor | Compliance | Added AI Instructions |
+| 6 | Missing quick start section | 🟡 Minor | Compliance | Added Quick Start |
+| 7 | Missing list bullet in ROADMAP.md | 🟡 Minor | Formatting | Added `-` prefix |
+| 8 | Link format inconsistency | 🟡 Minor | Consistency | Added `./` prefix to link |
+| 9 | British "in future" | ⚪ Trivial | Language | Changed to "in the future" |
+| 10 | Grep command robustness | ⚪ Trivial | QA | Improved acceptance criteria grep |
+
+**Declined:**
+- [8] Link format inconsistency severity - S3 is appropriate for defensive non-blocking improvement
+- Grep command alternative syntax - Current `--exclude` format is acceptable and semantically correct
+
+**Patterns Identified:**
+
+1. **Renamed Files Need Compliance Check** (Reinforcement from #57)
+   - Root cause: File renamed without adding required template sections
+   - Prevention: After renaming, run `npm run docs:lint` on changed files
+   - Pattern: CI catches missing sections but verify locally first
+
+2. **Link Format Consistency**
+   - Root cause: Mixed `./docs/` and `docs/` link prefixes in same section
+   - Prevention: Use consistent `./` prefix for relative links
+   - Pattern: When editing Related Documentation sections, match neighboring link format
+
+**Resolution:**
+- Fixed: 10 items
+- Declined: 2 items (justified above)
+- Deferred: 0 items
+
+**Key Insight:** When renaming or moving documentation files, the new location may have different template requirements. Run docs-lint locally before pushing to catch compliance issues before CI fails.
+
+---
+
+#### Review #59: Prompt Schema & Documentation Consistency (2026-01-05)
+
+**Source:** Qodo PR Suggestions + CodeRabbit PR
+**PR:** `fix: Fix 10 broken internal links across 8 documentation files`
+**Suggestions:** 9 total (Critical: 0, Major: 0, Minor: 5, Trivial: 4)
+
+**Context:** Follow-up review after broken link fixes found additional improvements needed in prompt templates and documentation structure.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Grep -v unreliable for file filtering | 🟡 Minor | QA | Changed to `--exclude` flag |
+| 2 | JSON schema example not valid JSON | 🟡 Minor | Template | Converted to bullet list format |
+| 3 | Code fence contradiction | 🟡 Minor | Template | Clarified "no code fences in output" |
+| 4 | Missing is_cluster: false example | 🟡 Minor | Template | Added non-cluster format example |
+| 5 | Declined references inconsistent | 🟡 Minor | Consistency | Fixed reference labels |
+| 6 | Link text mismatch in ARCHITECTURE.md | ⚪ Trivial | Consistency | Added `docs/` prefix |
+| 7 | Missing Quick Start section | ⚪ Trivial | Compliance | Added Quick Start to backlog doc |
+| 8 | rate limiting unhyphenated | ⚪ Trivial | Grammar | Changed to "rate-limiting" |
+| 9 | Version header out of sync | ⚪ Trivial | Consistency | Updated to v1.58 |
+
+**Patterns Identified:**
+
+1. **Prompt Schema Clarity**
+   - Root cause: JSON examples in prompts can confuse AI about output format
+   - Prevention: Use bullet list format for schemas when showing structure
+   - Pattern: "Reference only" labels help prevent format copying
+
+2. **Grep File Exclusion**
+   - Root cause: `grep -v "pattern"` filters by line content, not filename
+   - Prevention: Use `--exclude="filename"` for file-based filtering
+   - Pattern: More reliable for acceptance criteria verification
+
+**Resolution:**
+- Fixed: 9 items
+- Declined: 0 items
+- Deferred: 0 items
+
+**Key Insight:** When writing prompt templates that include JSON schemas, prefer bullet list format with explicit "reference only" labels to prevent AI assistants from copying the formatting structure into their output.
+
+---
+
+#### Review #60: Document Sync & Documentation Clarity (2026-01-05)
+
+**Source:** Qodo PR Suggestions + CodeRabbit PR
+**PR:** `fix: Address PR Review #59 feedback`
+**Suggestions:** 9 total (Critical: 0, Major: 1, Minor: 5, Trivial: 3)
+
+**Context:** Follow-up review after Review #59 found document synchronization issues, duplicate links, and opportunities to improve documentation clarity.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Review count/range out of sync | 🟠 Major | Docs | Updated to #41-60, count to 10 |
+| 2 | grep --exclude uses full path | 🟡 Minor | QA | Changed to filename only |
+| 3 | Clarify output fence restriction | 🟡 Minor | Template | Added explicit wording |
+| 4 | Duplicate SECURITY.md reference | 🟡 Minor | Cleanup | Removed duplicate, added anchor |
+| 5 | session-begin.md link consistency | 🟡 Minor | Consistency | Standardized as markdown links |
+| 6 | Missing CANON-ID format guidance | ⚪ Trivial | Docs | Added ID convention notes |
+| 7 | No code fences negative example | ⚪ Trivial | Template | Added explicit prohibition |
+
+**Declined:**
+- Non-existent file references - SESSION_CONTEXT.md and ROADMAP.md exist at root (verified)
+
+**Patterns Identified:**
+
+1. **Document Counter Synchronization**
+   - Root cause: Adding reviews without updating range references
+   - Prevention: After adding review, grep for range patterns and update all
+   - Pattern: `grep -n "#[0-9]*-[0-9]*" docs/AI_REVIEW_LEARNINGS_LOG.md`
+
+2. **grep --exclude Path Behavior**
+   - Root cause: `--exclude` matches filename, not full path
+   - Prevention: Use just filename: `--exclude="storage.ts"` not `--exclude="lib/utils/storage.ts"`
+   - Pattern: grep exclusions use filename matching, not path matching
+
+**Resolution:**
+- Fixed: 7 items
+- Declined: 1 item (false positive - files exist)
+- Deferred: 0 items
+
+**Key Insight:** Document counters and range declarations must be updated together when adding new entries. grep's --exclude flag matches against filenames, not paths - using a path pattern will silently fail to exclude the intended file.
 
 ---

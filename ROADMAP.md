@@ -387,6 +387,18 @@ flowchart TD
 - ⏳ User analytics baseline (DAU, retention, feature usage)
 - ⏳ Alert thresholds defined (automated error/performance alerts)
 
+**Incident Response Automation** (Jan 2026):
+- ⏳ **Phase 1: Detection & Alerting** (2-3 hours, P1)
+  - GCP budget alerts with Slack/Discord webhook ($25, $50, $100, $500 thresholds)
+  - Log-based metrics for security events (RATE_LIMIT_EXCEEDED, APP_CHECK_FAILURE, AUTHORIZATION_FAILURE)
+  - Sentry alert rules for error rate spikes (>10/min → P2, >50/min → P1)
+  - **Reference:** [INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)
+- ⏳ **Phase 2: Response Automation** (3-4 hours, P2)
+  - Hot-loadable blocklist in Firestore (`/system/blocklist`) - no redeploy to block attackers
+  - Emergency response scripts (`scripts/emergency/block-user.sh`, `disable-function.sh`, `deploy-lockdown-rules.sh`)
+  - Incident timeline extractor (auto-export GCP logs to incident report format)
+  - Admin panel UI for blocklist management
+
 **From M1 - Code Quality & Automation:**
 - ⏳ CI/CD pipeline setup (GitHub Actions or similar)
 - ⏳ Automated testing in PR workflow
@@ -409,7 +421,7 @@ flowchart TD
     - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
     - Option B: Wait for throttle to clear, then re-enable App Check only
     - Option C: Accept weaker security posture (reCAPTCHA optional, no App Check)
-  - **Reference:** [recaptcha_removal_guide.md](./docs/recaptcha_removal_guide.md) for removal/implementation guides
+  - **Reference:** [RECAPTCHA_REMOVAL_GUIDE.md](./docs/RECAPTCHA_REMOVAL_GUIDE.md) for removal/implementation guides
 - **Priority:** P0 - CRITICAL security decision needed (App Check should be re-enabled)
 
 **Data Quality & Operations:**
@@ -896,7 +908,7 @@ flowchart TD
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
-- **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** - QA testing procedures
+- **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** - Testing strategy and QA procedures
 - **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
 - **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report
@@ -905,7 +917,7 @@ flowchart TD
 
 ### Detailed Documentation (in /docs)
 
-- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections
+- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections, Firestore rules
 - **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident procedures
 - **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue model research and recommendations (M10)
 - **[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)** - December 2025 journal refactor changelog
@@ -913,7 +925,6 @@ flowchart TD
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud Functions security patterns
 - **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent collaboration guide
 - **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
-- **[firestore-rules.md](./docs/firestore-rules.md)** - Firestore security rules documentation
 
 ### Archived Documentation
 

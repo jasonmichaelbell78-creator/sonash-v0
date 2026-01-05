@@ -182,7 +182,7 @@ Use these standard reasons when rejecting AI review suggestions:
 | **Out of scope** | Suggestion extends beyond PR scope | "Performance optimization is Phase 3 work" |
 | **Style preference** | Subjective style choice | "Project uses this naming convention" |
 | **Implementation detail** | Will be addressed during implementation | "Script implementation will determine best library" |
-| **Already planned** | Captured in backlog/plan | "Tracked in POST_PHASE_8_BACKLOG.md" |
+| **Already planned** | Captured in backlog/plan | "Tracked in AUDIT_FINDINGS_BACKLOG.md" |
 | **Not applicable** | Suggestion doesn't apply to this context | "This isn't production code, it's a template example" |
 
 ---
@@ -312,7 +312,7 @@ This keeps the process document lean. The learnings log contains:
 - Script robustness patterns
 - Full audit trail
 
-**Quick Reference - Key Patterns (distilled in [claude.md](./claude.md) section 4):**
+**Quick Reference - Key Patterns (distilled in [claude.md](../claude.md) section 4):**
 - Bash exit codes: Use `if ! OUT=$(cmd); then` not `OUT=$(cmd); if [ $? -ne 0 ]`
 - npm: Use `npm ci` not `npm install` in automation
 - Security: Validate paths within repo, sanitize shell inputs

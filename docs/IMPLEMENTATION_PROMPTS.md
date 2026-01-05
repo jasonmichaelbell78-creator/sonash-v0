@@ -12,7 +12,7 @@
 This document contains reusable prompts for implementing and reviewing each phase of the refactoring plan.
 
 **Related Documents**:
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Master tracking document
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) - Master tracking document (archived)
 - **[PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md) - START HERE! Complete workflow with checkboxes**
 
 ---

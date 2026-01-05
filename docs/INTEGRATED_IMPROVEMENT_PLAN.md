@@ -381,8 +381,8 @@ Install and configure developer tooling that was identified as missing during th
     - DOCUMENTATION_STANDARDIZATION_PLAN.md
     - DOCUMENTATION_STANDARDS.md
     - INTEGRATED_IMPROVEMENT_PLAN.md
-    - TESTING_CHECKLIST.md
-    - APPCHECK_FRESH_SETUP.md (consolidate with docs/APPCHECK_SETUP.md)
+    - TESTING_PLAN.md
+    - APPCHECK_FRESH_SETUP.md (merged into APPCHECK_SETUP.md, stub removed 2026-01-05)
   - **Archive** (3 files - duplicates/historical):
     - RECAPTCHA_PROBLEM_SUMMARY.md (already in docs/archive/)
     - SUPABASE_MIGRATION_ANALYSIS.md (already in docs/archive/)
@@ -459,7 +459,7 @@ Install and configure developer tooling that was identified as missing during th
 The multi-AI review framework (created 2025-12-30) needs refresh:
 - **Prompts are stale**: Don't reference claude.md Section 4, AI_REVIEW_LEARNINGS_LOG.md, or pattern compliance checker
 - **Categories incomplete**: Missing Documentation Audit and Process/Automation Audit
-- **Aggregator exists but unlisted**: `docs/code refactor aggregator prompt.md` needs renaming and integration
+- **Aggregator exists but unlisted**: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (renamed 2026-01-05) needs content update and integration
 - **Coordinator baselines stale**: MULTI_AI_REVIEW_COORDINATOR.md has placeholder dates
 
 **Execution Strategy**: 2-Tier Aggregation to ensure comprehensive coverage:
@@ -554,11 +554,11 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 #### Aggregator & Coordinator Updates
 
-- [ ] **Task 4.1.7**: Rename and update Aggregator prompt (1.5 hours)
-  - Rename: `docs/code refactor aggregator prompt.md` → `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md`
-  - Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex)
-  - Add reference to current tooling (pattern checker, madge, knip)
-  - Ensure CANON format is explicitly defined in template
+- [ ] **Task 4.1.7**: Update Aggregator prompt (1.5 hours)
+  - [x] Renamed: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (done 2026-01-05)
+  - [ ] Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex)
+  - [ ] Add reference to current tooling (pattern checker, madge, knip)
+  - [ ] Ensure CANON format is explicitly defined in template (link to MULTI_AI_REFACTOR_AUDIT_PROMPT.md schema)
   - **Support 2-tier aggregation modes:**
     - **Tier-1 mode**: Input = raw AI outputs (FINDINGS_JSONL × 3+), Output = CANON-CATEGORY.jsonl
     - **Tier-2 mode**: Input = 6 CANON-*.jsonl files, Output = unified DEDUPED_FINDINGS_JSONL
@@ -1277,3 +1277,4 @@ Items discovered during sprint execution that need tracking. Review at step boun
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - AI navigation guide
 - [DEVELOPMENT.md](../DEVELOPMENT.md) - Developer setup (tooling target)
 - [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md) - Review learnings
+- [AUDIT_FINDINGS_BACKLOG.md](./AUDIT_FINDINGS_BACKLOG.md) - CANON findings backlog (Step 4 output)

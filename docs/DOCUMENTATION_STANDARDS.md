@@ -96,7 +96,7 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 - Feature implementation plans (M1.6_SUPPORT_TAB_PLAN.md)
 - Initiative plans (LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)
 - Research documents (MONETIZATION_RESEARCH.md)
-- Backlog documents (POST_PHASE_8_BACKLOG.md)
+- Backlog documents (AUDIT_FINDINGS_BACKLOG.md)
 
 **Characteristics**:
 - ✅ **Must have**: Status dashboard with task tracking
@@ -588,7 +588,7 @@ Before marking ANY phase, milestone, or work package as complete:
 5. **Address gaps** - Fix or document why acceptable
 6. **Then mark complete** - Only after audit passes
 
-**See**: [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure" for full template.
+**See**: [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure" for full template.
 
 This is a **global standard** - applies to ALL phases, milestones, sections, and work packages throughout the entire project.
 
