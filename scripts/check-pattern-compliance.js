@@ -72,11 +72,11 @@ const ANTI_PATTERNS = [
   {
     id: 'retry-loop-no-success-tracking',
     // Use lazy quantifiers and word boundaries for accurate matching
-    // Note: No 'g' flag - using .test() which is stateful with global regexes
-    pattern: /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/,
+    // Note: Global flag required - checkFile uses exec() in a loop which needs /g to advance lastIndex
+    pattern: /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/g,
     message: 'Retry loop may silently succeed on failure - not tracking success',
     fix: 'Track: SUCCESS=false; for i in 1 2 3; do cmd && { SUCCESS=true; break; }; done; $SUCCESS || exit 1',
-    review: '#18, #19',
+    review: '#18, #19, #51',
     fileTypes: ['.sh', '.yml', '.yaml'],
   },
   {
@@ -92,10 +92,13 @@ const ANTI_PATTERNS = [
   // JavaScript/TypeScript patterns
   {
     id: 'unsafe-error-message',
-    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{[\s\S]{0,100}\1\.message(?![^}]*instanceof\s+Error)/g,
+    // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
+    // Uses [^}] to constrain search to current catch block (Review #53: prevents false negatives)
+    // Note: May miss deeply nested blocks, but safer than unbounded [\s\S]
+    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g,
     message: 'Unsafe error.message access - crashes if non-Error is thrown',
     fix: 'Use: error instanceof Error ? error.message : String(error)',
-    review: '#17',
+    review: '#17, #51, #53',
     fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
   },
   {
@@ -113,10 +116,11 @@ const ANTI_PATTERNS = [
     fix: 'Use: path.relative() and check for ".." prefix with regex',
     review: '#17, #18',
     fileTypes: ['.js', '.ts'],
-    // Exclude files that use startsWith for absolute path DETECTION (security checks), not containment
+    // Exclude files verified 2026-01-04:
     // - check-pattern-compliance.js: contains patterns as strings
     // - archive-doc.js: uses startsWith('/'), startsWith('\\') to detect & reject absolute paths
-    pathExclude: /(?:check-pattern-compliance|archive-doc)\.js$/,
+    // - phase-complete-check.js: uses path.relative() THEN startsWith('..') which is correct
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check)\.js$/,
   },
   {
     id: 'regex-global-test-loop',
@@ -167,8 +171,11 @@ const ANTI_PATTERNS = [
     pattern: /startsWith\s*\(\s*['"`]\.\.['"`]\s*\)/g,
     message: 'Simple ".." check has false positives (e.g., "..hidden.md")',
     fix: 'Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)',
-    review: '#18',
+    review: '#18, #53',
     fileTypes: ['.js', '.ts'],
+    // NOTE: Do NOT exclude files even if they use path.relative() first.
+    // path.relative() CAN return just ".." (no separator) for parent directories.
+    // All files must use the proper regex check: /^\.\.(?:[\/\\]|$)/.test(rel)
   },
   {
     id: 'hardcoded-api-key',
@@ -253,6 +260,10 @@ const ANTI_PATTERNS = [
     fix: 'Add: .replace(/\\r$/, "") after split to handle CRLF',
     review: '#39, #40',
     fileTypes: ['.js', '.ts'],
+    // Exclude files verified 2026-01-04 to have proper CRLF handling:
+    // - phase-complete-check.js: L555 has .replace(/\r$/, '')
+    // - surface-lessons-learned.js: L372 has .replace(/\r$/, '')
+    pathExclude: /(?:^|[\\/])(?:phase-complete-check|surface-lessons-learned)\.js$/,
   },
   {
     id: 'regex-newline-lookahead',
@@ -270,18 +281,30 @@ const ANTI_PATTERNS = [
     fix: 'First normalize: path.replace(/\\\\/g, "/").split("/").includes("..")',
     review: '#39, #40',
     fileTypes: ['.js', '.ts'],
+    // Exclude files verified 2026-01-04 to normalize before split:
+    // - phase-complete-check.js: L290 has .replace(/\\/g, '/').split('/').includes('..')
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
   {
     id: 'readfilesync-without-try',
     // Avoid variable-length lookbehind (engine compatibility); match both fs.readFileSync and readFileSync
-    // Note: This will have false positives for wrapped calls - use judgment
+    // Note: This pattern has HIGH false positive rate - regex can't detect try/catch context
+    // Files with verified proper error handling are excluded below
     pattern: /\b(?:fs\.)?readFileSync\s*\(/g,
     message: 'readFileSync without try/catch - existsSync does not guarantee read success',
     fix: 'Wrap in try/catch: race conditions, permissions, encoding errors',
     review: '#36, #37',
     fileTypes: ['.js', '.ts'],
-    // Exclude pattern checker itself (has proper try/catch but triggers on pattern definition)
-    pathExclude: /check-pattern-compliance\.js$/,
+    // Exclude files verified to have proper try/catch (2026-01-04 audit):
+    // - check-pattern-compliance.js: pattern definition + proper try/catch at L440
+    // - phase-complete-check.js: proper try/catch at L252-261, L147-192
+    // - surface-lessons-learned.js: proper try/catch at L313-318
+    // - suggest-pattern-automation.js: proper try/catch at L108-113, L171-176
+    // - archive-doc.js: safeReadFile wrapper at L126-154 with try/catch
+    // - validate-phase-completion.js: NOW HAS try/catch at L29-35 (fixed 2026-01-04)
+    // - update-readme-status.js: safeReadFile wrapper at L57-88 with try/catch (fixed 2026-01-04)
+    // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status)\.js$/,
   },
   {
     id: 'auto-mode-slice-truncation',
@@ -306,6 +329,9 @@ const ANTI_PATTERNS = [
     fix: 'Add: rel === "" || rel.startsWith("..") || path.isAbsolute(rel)',
     review: '#40',
     fileTypes: ['.js', '.ts'],
+    // Exclude files verified 2026-01-04 to check for empty string:
+    // - phase-complete-check.js: L55, L140, L165, L244 all have `rel === '' || rel.startsWith('..')`
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
 ];
 

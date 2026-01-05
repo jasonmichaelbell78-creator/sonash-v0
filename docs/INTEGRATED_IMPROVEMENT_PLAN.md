@@ -410,13 +410,13 @@ Install and configure developer tooling that was identified as missing during th
 | Pre-commit enhanced | ✅ | Prettier check (warning) added |
 | Pre-push enhanced | ✅ | Circular dependency check (blocking) added |
 | Script tests added | ✅ | 23 new tests for surface-lessons-learned.js and phase-complete-check.js |
-| Lint baseline documented | ✅ | 168 warnings in DEVELOPMENT.md |
+| Lint baseline documented | ✅ | 181 warnings in DEVELOPMENT.md (audited 2026-01-04) |
 | Docs reorganized | ✅ | 7 docs moved to docs/, 3 archived |
 
 #### Validation Results
-- npm run lint: PASS (0 errors, 168 warnings)
+- npm run lint: PASS (0 errors, 181 warnings - all false positives, audited 2026-01-04)
 - npm test: 115/116 passing (1 skipped)
-- npm run patterns:check: 26 legacy violations (non-blocking)
+- npm run patterns:check: **0 violations** (fixed 2026-01-04, Session #23)
 - npm run deps:circular: PASS (0 circular dependencies)
 
 #### Sign-off

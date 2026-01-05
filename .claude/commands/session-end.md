@@ -27,8 +27,9 @@ If you modified any of these, verify they still work:
   - Work completed this session
   - Any new blockers discovered
   - Next steps for future sessions
-- [ ] If applicable, update DOCUMENTATION_STANDARDIZATION_PLAN.md with phase progress
+- [ ] If applicable, update INTEGRATED_IMPROVEMENT_PLAN.md (`docs/INTEGRATED_IMPROVEMENT_PLAN.md`) with step progress
 - [ ] Log any significant learnings in AI_REVIEW_LEARNINGS_LOG.md
+- [ ] Archive completed/cancelled plans to `docs/archive/completed-plans/`
 
 ## 4. Learning Consolidation (IMPORTANT)
 Check if consolidation is due and perform it so patterns are in claude.md for next session:
@@ -127,7 +128,7 @@ Today's session reinforced these patterns:
 - Add path-based filtering for context-specific patterns
 - Use bounded regex (`{0,N}?`) instead of greedy (`.*`)
 - Spread ESLint plugin configs in flat config format
-- Exclude archive files from strict linting
+- Exclude archive files (`docs/archive/`) from strict linting
 - Add `continue-on-error` for pre-existing issues in CI
 
 ### DON'T:

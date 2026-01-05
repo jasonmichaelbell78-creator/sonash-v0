@@ -208,13 +208,13 @@ npm run test:coverage
 ```
 
 **Current Status:**
-- ✅ 89/91 tests passing (97.8%)
+- ✅ 115/116 tests passing (99.1%)
 - ✅ Security validation tests
 - ✅ Date utilities
 - ✅ Firebase type guards
 - ✅ Logger with PII redaction
 - ✅ Rate limiter
-- ⚠️ 2 Firebase initialization failures (require emulator setup)
+- ⚠️ 1 skipped test (Firebase emulator setup)
 
 ### Manual Testing Checklist
 
@@ -379,11 +379,11 @@ firebase deploy
 - **date-fns** - Date manipulation
 
 ### Development Tools
-- **ESLint** - Linting (168 warnings baseline, 0 errors)
+- **ESLint** - Linting (181 warnings baseline, 0 errors)
 - **Prettier** - Code formatting
 - **madge** - Circular dependency detection
 - **knip** - Unused export detection
-- **Node test runner** - Built-in testing (115 tests)
+- **Node test runner** - Built-in testing (116 tests)
 - **c8** - Code coverage
 - **Husky** - Git hooks (pre-commit, pre-push)
 
@@ -421,7 +421,7 @@ npm audit fix
 | `npm run format:check` | Prettier check | For CI (no changes) |
 | `npm run deps:circular` | Check circular deps | Uses madge |
 | `npm run deps:unused` | Find unused exports | Uses knip |
-| `npm test` | Run all tests | 115 tests (1 skipped) |
+| `npm test` | Run all tests | 116 tests (1 skipped) |
 | `npm run test:coverage` | Test with coverage | Uses c8 |
 
 ### Prettier (Code Formatting)
@@ -473,7 +473,15 @@ npm run deps:unused
 npm run lint
 ```
 
-**Current baseline:** 0 errors, 168 warnings (eslint-plugin-security rules)
+**Current baseline:** 0 errors, 181 warnings (eslint-plugin-security + TypeScript rules)
+
+**Warning breakdown (audited as false positives - 2026-01-04):**
+- `detect-object-injection` (91): Safe iteration/lookups with developer-defined keys
+- `detect-non-literal-fs-filename` (66): CLI scripts with controlled paths
+- `detect-unsafe-regex` (14): Bounded input, linear patterns
+- `detect-non-literal-regexp` (6): Intentional dynamic patterns
+- `detect-possible-timing-attacks` (1): Comparing user's own password inputs
+- `@typescript-eslint/no-unused-vars` (3): Legitimate unused variables in type definitions
 
 **Configuration:** `eslint.config.mjs` (flat config)
 

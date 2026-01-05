@@ -4,13 +4,22 @@ You are about to process AI code review feedback. This is a **standardized, thor
 
 ---
 
-## STEP 0: CONTEXT LOADING (Automatic)
+## STEP 0: CONTEXT LOADING (Tiered Access)
 
-Before processing, load critical context files:
+Before processing, load context using the tiered model:
 
-1. **Read** `docs/AI_REVIEW_PROCESS.md` - Review process and categorization
-2. **Read** `docs/AI_REVIEW_LEARNINGS_LOG.md` (last 200 lines) - Most recent patterns and consolidation status
-3. **Read** `claude.md` (root) Section 4 - Distilled anti-patterns to watch for
+**Tier 1 (Always):**
+1. **Read** `claude.md` (root) Section 4 - Distilled anti-patterns (~150 lines)
+
+**Tier 2 (Quick Lookup):**
+2. **Read** `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) - Quick Index + consolidation status
+
+**Tier 3 (When Investigating):**
+3. **Read** specific review entries only when checking similar past issues
+4. **Read** `docs/AI_REVIEW_PROCESS.md` only if process clarification needed
+
+**Tier 4 (Historical - rarely needed):**
+5. **Read** `docs/archive/REVIEWS_1-40.md` only for deep historical investigation
 
 ---
 
@@ -165,9 +174,22 @@ For any items NOT directly fixed in code, document:
 
 ### 7.1 Determine Next Review Number
 ```bash
-grep -c "#### Review #" AI_REVIEW_LEARNINGS_LOG.md
+# Count reviews in both active log and archive (robust edge case handling)
+active=0
+if [ -f docs/AI_REVIEW_LEARNINGS_LOG.md ]; then
+  active=$(grep -c "#### Review #" docs/AI_REVIEW_LEARNINGS_LOG.md || true)
+  active=${active:-0}
+fi
+
+archived=0
+if [ -f docs/archive/REVIEWS_1-40.md ]; then
+  archived=$(grep -c "#### Review #" docs/archive/REVIEWS_1-40.md || true)
+  archived=${archived:-0}
+fi
+
+echo "Total reviews: $((active + archived))"
 ```
-Add 1 to get the next review number.
+Add 1 to the total to get the next review number.
 
 ### 7.2 Create Learning Entry
 Add to `AI_REVIEW_LEARNINGS_LOG.md`:
@@ -194,8 +216,25 @@ Add to `AI_REVIEW_LEARNINGS_LOG.md`:
 - <Learning 2>
 ```
 
-### 7.3 Update Consolidation Counter
+### 7.3 Update Quick Index
+If a new pattern category emerges, add it to the Quick Pattern Index section.
+
+### 7.4 Update Consolidation Counter
 If "Reviews since last consolidation" reaches 10+, note that consolidation is due.
+
+### 7.5 Health Check (Every 10 Reviews)
+Check document health metrics:
+```bash
+wc -l docs/AI_REVIEW_LEARNINGS_LOG.md
+```
+
+**Archival Criteria** (ALL must be true before archiving reviews):
+1. Log exceeds 1500 lines
+2. Reviews have been consolidated into claude.md Section 4
+3. At least 10 reviews in the batch being archived
+4. Archive to `docs/archive/REVIEWS_X-Y.md`
+
+If criteria met, archive oldest consolidated batch and update Tiered Access table.
 
 ---
 
@@ -253,6 +292,7 @@ Create commit(s) following project conventions:
 5. **ALWAYS use TodoWrite** - Track every item
 6. **ALWAYS invoke specialized agents** - When issue matches their domain
 7. **NEVER silently ignore** - Document all decisions
+8. **MONITOR document health** - Archive when all criteria in Step 7.5 are met
 
 ---
 

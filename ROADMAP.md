@@ -21,7 +21,7 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 >
 > **⚠️ BLOCKER:** Integrated improvement initiative is active. See [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) for the unified roadmap covering documentation standardization, tooling setup, and architecture refactoring validation.
 >
-> **Architecture Refactoring:** Pending Delta Review validation (Step 4 of Integrated Improvement Plan). Original plan: [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md)
+> **Architecture Refactoring:** Pending Delta Review validation (Step 4 of Integrated Improvement Plan). Original plan archived: [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)
 
 ---
 

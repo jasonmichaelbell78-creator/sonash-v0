@@ -80,9 +80,10 @@ function safeReadFile(filePath, description) {
     verbose(`Successfully read ${content.length} characters from ${description}`);
     return { success: true, content };
   } catch (error) {
+    // Use sanitizeError for consistent, safe error logging (Review #51)
     return {
       success: false,
-      error: `Failed to read ${description}: ${error.message}`
+      error: `Failed to read ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -106,9 +107,10 @@ function safeWriteFile(filePath, content, description) {
     writeFileSync(filePath, content, 'utf-8');
     return { success: true };
   } catch (error) {
+    // Use sanitizeError for consistent, safe error logging (Review #51)
     return {
       success: false,
-      error: `Failed to write ${description}: ${error.message}`
+      error: `Failed to write ${description}: ${sanitizeError(error)}`
     };
   }
 }
@@ -382,7 +384,9 @@ See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.`;
 function updateReadme(readmeContent, newStatusSection) {
   // Find and replace the Project Status section
   // Match from "## Project Status" to the next "## " heading or end of file
-  const statusPattern = /## Project Status[\s\S]*?(?=\n## [^#]|\n## $|$)/;
+  // Note: Use \r?\n for cross-platform CRLF support
+  // Fixed in Review #51: Simplified lookahead - removed redundant |\r?\n## $ alternative
+  const statusPattern = /## Project Status[\s\S]*?(?=\r?\n## [^#]|$)/;
 
   if (statusPattern.test(readmeContent)) {
     const updated = readmeContent.replace(statusPattern, newStatusSection + '\n\n');
