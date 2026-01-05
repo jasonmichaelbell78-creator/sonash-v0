@@ -41,7 +41,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
 **Overall Progress:** 3/8 steps complete (37.5%)
-**Effort Tracking:** ~9 hours actual (Steps 1-3) + 28-44 hours remaining (Steps 4-7)
+**Effort Tracking:** ~9 hours actual (Steps 1-3) + 36-60 hours remaining (Steps 4, 4B, 5-7)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -733,11 +733,11 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - Input: 6 category-level CANON-*.jsonl files (NOT raw AI outputs)
   - Run with high-capability model (Claude Opus 4.5 or GPT-5.2-Codex)
   - Focus: Cross-category deduplication and coordination
-  - Output:
-    - PARSE_ERRORS_JSON (any dropped/invalid lines)
-    - DEDUPED_FINDINGS_JSONL (unified CANON items, re-numbered)
-    - PR_PLAN_JSON (staged, prioritized PRs considering all categories)
-    - HUMAN_SUMMARY (top wins, high-risk items, cross-cutting findings, demoted duplicates)
+  - Output artifacts (see MULTI_AI_AGGREGATOR_TEMPLATE.md for full schema):
+    - PARSE_ERRORS_JSON: Lines that failed validation `{line_num, raw, reason}`
+    - DEDUPED_FINDINGS_JSONL: Unified CANON items `{id, severity, effort, file, desc, ...}`
+    - PR_PLAN_JSON: Staged PRs `{pr_name, canon_ids[], risk, order}`
+    - HUMAN_SUMMARY: Markdown summary (top wins, high-risk, cross-cutting, demoted duplicates)
 
 - [ ] **Task 4.3.2**: Categorize CANON findings (1 hour)
   - Cross-reference with archived EIGHT_PHASE_REFACTOR_PLAN.md
@@ -1251,8 +1251,8 @@ Items discovered during sprint execution that need tracking. Review at step boun
 ## References
 
 ### Source Documents
-- [DOCUMENTATION_STANDARDIZATION_PLAN.md](./DOCUMENTATION_STANDARDIZATION_PLAN.md) - Detailed Phase 5-6 tasks
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (pending Delta Review)
+- [DOCUMENTATION_STANDARDIZATION_PLAN.md](./archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) - Detailed Phase 5-6 tasks (archived)
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (archived, pending Delta Review)
 - [ROADMAP.md](../ROADMAP.md) - Product roadmap (target for integration)
 - [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) - Session handoff document
 

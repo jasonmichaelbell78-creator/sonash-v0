@@ -253,7 +253,7 @@ Patterns identified in reviews don't reach claude.md context until manually cons
 
 #### Proposed Implementation
 
-```markdown
+````markdown
 ---
 description: Consolidate review patterns into claude.md (when 10+ reviews accumulated)
 ---
@@ -313,7 +313,7 @@ npm run patterns:suggest
 - Reset counter: "Reviews since last consolidation: 0"
 - Add consolidation note to version history
 - Commit: "docs: Consolidate Reviews #X-Y patterns into claude.md"
-```
+````
 
 #### Compliance Relevance
 - **Pattern Enforcement:** Ensures patterns reach AI context
