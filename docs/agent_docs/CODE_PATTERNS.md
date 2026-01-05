@@ -34,14 +34,14 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Exit code capture | `if ! OUT=$(cmd); then` NOT `OUT=$(cmd); if [ $? -ne 0 ]` | Captures assignment exit, not command |
 | HEAD~N commits | Use `COMMIT_COUNT - 1` as max | HEAD~N needs N+1 commits |
 | File iteration | `while IFS= read -r file` NOT `for file in $list` | Spaces break for loop |
-| Subshell scope | Use temp file or `while read; done < <(cmd)` | `cmd \| while read` loses variables |
+| Subshell scope | Use temp file or `while read; done < <(cmd)` | `cmd | while read` loses variables |
 | Temp file cleanup | `trap 'rm -f "$TMPFILE"' EXIT` | Guaranteed cleanup |
 | Exit code semantics | 0=success, 1=action-needed, 2=error | Check explicitly |
 | Retry loops | `for i in 1 2 3; do cmd && break; sleep 5; done` | Race condition handling |
 | printf over echo | `printf '%s' "$VAR"` NOT `echo "$VAR"` | -n/-e injection risk |
 | End-of-options | `basename -- "$PATH"` | Prevents `-` as options |
 | Portable word boundaries | `(^|[^[:alnum:]])(word)([^[:alnum:]]|$)` NOT `\b` | Not portable ERE |
-| Pipeline failure | Add `\|\| VAR=""` fallback | Commands may fail with pipefail |
+| Pipeline failure | Add `|| VAR=""` fallback | Commands may fail with pipefail |
 | Terminal sanitization | `tr -cd '[:alnum:] ,_-'` | Strip ANSI escapes |
 | grep --exclude | `--exclude="storage.ts"` NOT `--exclude="lib/utils/storage.ts"` | Matches basename only |
 
@@ -54,7 +54,7 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | CI installs | `npm ci` NOT `npm install` | Prevents lockfile drift |
 | Adding packages | Ask "does project actually use X?" | Avoid unnecessary deps |
 | Peer deps | Must be in lockfile | `npm ci` fails in Cloud Build |
-| Husky CI | `husky \|\| echo 'not available'` | Graceful degradation |
+| Husky CI | `husky || echo 'not available'` | Graceful degradation |
 | Lockfile corruption | `rm package-lock.json && npm install && npm ci` | Regenerate and verify |
 
 ---
@@ -67,14 +67,14 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Path traversal check | `/^\.\.(?:[\\/]|$)/.test(rel)` NOT `startsWith('..')` | Avoids false positives |
 | Reject traversal | `if [[ "$PATH" == *"../"* ]]; then exit; fi` | Don't strip `../` |
 | Containment | Apply path validation at ALL touch points | Not just entry point |
-| CLI arg validation | Check existence, non-empty, not another flag at parse | `if (!arg \|\| arg.startsWith('--')) { reject; }` |
+| CLI arg validation | Check existence, non-empty, not another flag at parse | `if (!arg || arg.startsWith('--')) { reject; }` |
 | Empty path edge case | Check `rel === ''` | Resolving `.` gives empty relative |
 | Windows cross-drive | Check drive letters match | Before path.relative() checks |
 | Shell interpolation | Sanitize inputs | Command injection risk |
 | External input | Never trust in execSync/spawn | Command injection |
 | Markdown output | Escape backticks, `${{ }}` | Injection risk |
 | Word boundary keywords | `(^|[^[:alnum:]])(auth|token|...)([^[:alnum:]]|$)` | "monkey" shouldn't match "key" |
-| Bound output | Limit count (`.[:50]`) and length (`${VAR:0:500}`) | Prevent DoS |
+| Bound output | Limit count (e.g., `jq '.[0:50]'`) and length (`${VAR:0:500}`) | Prevent DoS |
 | Hook output | Only output safe metadata | Never expose secrets |
 | .env files | Never recommend committing | Use environment vars |
 | Symlink escape | `realpathSync()` after resolve() | Verify real path in project |
@@ -108,7 +108,7 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Error sanitization | Use `scripts/lib/sanitize-error.js` | Strip sensitive paths |
 | Error first line | `.split('\n')[0].replace(/\r$/, '')` | Handles CRLF |
 | Control char strip | `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g` | Preserves \t\n\r |
-| OSC escape strip | `/\x1B\][^\x07\x1B]*(?:\x07\|\x1B\\)/g` | With ANSI CSI |
+| OSC escape strip | `/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g` | With ANSI CSI |
 | File-derived content | Strip control chars before console.log | Not just errors |
 | Safe error handling | `error instanceof Error ? error.message : String(error)` | Non-Error throws |
 | Robust non-Error | `error && typeof error === 'object' && 'message' in error` | Full check |
