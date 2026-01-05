@@ -463,7 +463,7 @@ The multi-AI review framework (created 2025-12-30) needs refresh:
 - **Coordinator baselines stale**: MULTI_AI_REVIEW_COORDINATOR.md has placeholder dates
 
 **SonarQube Analysis Backbone (2026-01-05):** Static analysis provides pre-identified targets:
-- **778 issues** documented in `docs/analysis/sonarqube-manifest.md` (condensed) and `sonarqube-issues.json` (full)
+- **778 issues** documented in `docs/analysis/sonarqube-manifest.md` (condensed) and `docs/analysis/sonarqube-issues.json` (full)
 - **47 CRITICAL**: Cognitive complexity violations (refactoring targets, functions exceeding 15-point threshold)
 - **216 MAJOR**: Code quality improvements
 - **Batch opportunities**: ~200+ ESLint auto-fixable, 79 replaceAll() replacements, 71 node: prefix imports
