@@ -381,7 +381,7 @@ Install and configure developer tooling that was identified as missing during th
     - DOCUMENTATION_STANDARDIZATION_PLAN.md
     - DOCUMENTATION_STANDARDS.md
     - INTEGRATED_IMPROVEMENT_PLAN.md
-    - TESTING_CHECKLIST.md
+    - TESTING_PLAN.md
     - APPCHECK_FRESH_SETUP.md (merged into APPCHECK_SETUP.md, stub removed 2026-01-05)
   - **Archive** (3 files - duplicates/historical):
     - RECAPTCHA_PROBLEM_SUMMARY.md (already in docs/archive/)
