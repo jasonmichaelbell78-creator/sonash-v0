@@ -22,10 +22,10 @@ Check AI_REVIEW_LEARNINGS_LOG.md for the "Consolidation Trigger" section:
 2. The patterns are still available in AI_REVIEW_LEARNINGS_LOG.md (read if needed)
 3. Consolidation will happen at THIS session's end
 
-## 3. Documentation Phase Awareness
-- [ ] Check DOCUMENTATION_STANDARDIZATION_PLAN.md for current phase
-- [ ] Note: CI uses `continue-on-error` for docs:check until Phase 6 complete
-- [ ] Archive files in `docs/archive/` are excluded from linting
+## 3. Documentation & Planning Awareness
+- [ ] Check [INTEGRATED_IMPROVEMENT_PLAN.md](../../docs/INTEGRATED_IMPROVEMENT_PLAN.md) for current step
+- [ ] Note: Archive files in `docs/archive/` are excluded from linting
+- [ ] Completed plans are archived to `docs/archive/completed-plans/`
 
 ## 4. Skill Selection (BEFORE starting work)
 ```

@@ -93,10 +93,9 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 5. **Planning Documents** (when working on specific features):
    - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) - **CURRENT BLOCKER** - Unified improvement roadmap
-   - [DOCUMENTATION_STANDARDIZATION_PLAN.md](docs/DOCUMENTATION_STANDARDIZATION_PLAN.md) - Coordinated under integrated plan
-   - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Pending Delta Review
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
+   - Archived plans: `docs/archive/completed-plans/`
 
 7. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design

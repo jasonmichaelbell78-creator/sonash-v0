@@ -413,4 +413,21 @@ See [AI_WORKFLOW.md](../../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Pro
 - Add phases as needed for complex features
 - Keep status dashboard updated throughout implementation
 - **Run deliverable audit before marking ANY phase complete**
-- Archive to docs/archive/plans/ when complete
+
+## 🗃️ Completion & Archival
+
+**When Status = COMPLETE or CANCELLED:**
+
+1. **Update status** to COMPLETE or CANCELLED at document top
+2. **Add completion summary** to Progress Tracking section
+3. **Archive the document**:
+   ```bash
+   mv docs/[THIS_PLAN].md docs/archive/completed-plans/
+   ```
+4. **Update references** - find and update any docs linking to this plan:
+   ```bash
+   grep -r "[THIS_PLAN]" --include="*.md" . | grep -v archive
+   ```
+5. **Commit** with message: `docs: Archive [PLAN_NAME] (COMPLETE)`
+
+**Why archive?** Completed/deprecated plans consume AI context when scanned. Moving to archive keeps active docs lean while preserving history.
