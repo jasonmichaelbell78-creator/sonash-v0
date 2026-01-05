@@ -426,7 +426,12 @@ See [AI_WORKFLOW.md](../../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Pro
    ```
 4. **Update references** - find and update any docs linking to this plan:
    ```bash
-   grep -RFn --include="*.md" --exclude-dir=archive -- "[THIS_PLAN]" .
+   grep -RFn --include="*.md" \
+     --exclude-dir=archive \
+     --exclude-dir=node_modules \
+     --exclude-dir=dist \
+     --exclude-dir=build \
+     -- "[THIS_PLAN]" docs
    ```
 5. **Commit** with message: `docs: Archive [PLAN_NAME] (COMPLETE)`
 
