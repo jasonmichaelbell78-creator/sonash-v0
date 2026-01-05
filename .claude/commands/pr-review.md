@@ -174,9 +174,19 @@ For any items NOT directly fixed in code, document:
 
 ### 7.1 Determine Next Review Number
 ```bash
-# Count reviews in both active log and archive
-active=$(grep -c "#### Review #" docs/AI_REVIEW_LEARNINGS_LOG.md 2>/dev/null || echo 0)
-archived=$(grep -c "#### Review #" docs/archive/REVIEWS_1-40.md 2>/dev/null || echo 0)
+# Count reviews in both active log and archive (robust edge case handling)
+active=0
+if [ -f docs/AI_REVIEW_LEARNINGS_LOG.md ]; then
+  active=$(grep -c "#### Review #" docs/AI_REVIEW_LEARNINGS_LOG.md || true)
+  active=${active:-0}
+fi
+
+archived=0
+if [ -f docs/archive/REVIEWS_1-40.md ]; then
+  archived=$(grep -c "#### Review #" docs/archive/REVIEWS_1-40.md || true)
+  archived=${archived:-0}
+fi
+
 echo "Total reviews: $((active + archived))"
 ```
 Add 1 to the total to get the next review number.

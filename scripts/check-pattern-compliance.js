@@ -93,12 +93,12 @@ const ANTI_PATTERNS = [
   {
     id: 'unsafe-error-message',
     // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
-    // Uses negative lookahead to check full block, then lazy quantifier to find first .message
-    // Fixed in Review #51: Removed 100-char limit that missed multi-line catch blocks
-    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![\s\S]*instanceof\s+Error)[\s\S]*?\1\.message/g,
+    // Uses [^}] to constrain search to current catch block (Review #53: prevents false negatives)
+    // Note: May miss deeply nested blocks, but safer than unbounded [\s\S]
+    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\1\.message/g,
     message: 'Unsafe error.message access - crashes if non-Error is thrown',
     fix: 'Use: error instanceof Error ? error.message : String(error)',
-    review: '#17, #51',
+    review: '#17, #51, #53',
     fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
   },
   {
@@ -171,12 +171,11 @@ const ANTI_PATTERNS = [
     pattern: /startsWith\s*\(\s*['"`]\.\.['"`]\s*\)/g,
     message: 'Simple ".." check has false positives (e.g., "..hidden.md")',
     fix: 'Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)',
-    review: '#18',
+    review: '#18, #53',
     fileTypes: ['.js', '.ts'],
-    // Exclude files that use startsWith('..') after path.relative() where it's safe
-    // (path.relative never returns ".." without a separator after it for traversal)
-    // Verified 2026-01-04: phase-complete-check.js uses path.relative() before the check
-    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
+    // NOTE: Do NOT exclude files even if they use path.relative() first.
+    // path.relative() CAN return just ".." (no separator) for parent directories.
+    // All files must use the proper regex check: /^\.\.(?:[\/\\]|$)/.test(rel)
   },
   {
     id: 'hardcoded-api-key',

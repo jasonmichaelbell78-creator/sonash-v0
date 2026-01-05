@@ -2,9 +2,9 @@
 /**
  * Validate Phase Completion - CI ENFORCEMENT
  *
- * This script runs in CI when DOCUMENTATION_STANDARDIZATION_PLAN.md is modified.
- * It ensures that when a phase is marked COMPLETE:
- * 1. A "What Was Accomplished" section exists
+ * This script runs in CI when INTEGRATED_IMPROVEMENT_PLAN.md is modified.
+ * It ensures that when a step is marked COMPLETE:
+ * 1. A "What Was Accomplished" or acceptance criteria section exists
  * 2. Acceptance criteria are checked
  * 3. The change isn't just flipping status without documentation
  *
@@ -21,7 +21,7 @@ import { sanitizeError } from './lib/sanitize-error.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
-const PLAN_PATH = join(ROOT, 'docs', 'DOCUMENTATION_STANDARDIZATION_PLAN.md');
+const PLAN_PATH = join(ROOT, 'docs', 'INTEGRATED_IMPROVEMENT_PLAN.md');
 
 function main() {
   console.log('🔍 Validating Phase Completion...\n');
@@ -35,9 +35,10 @@ function main() {
     process.exit(1);
   }
 
-  // Find all phases marked COMPLETE
+  // Find all steps marked COMPLETE
   // Note: Use \r?\n for cross-platform CRLF support (Review #51)
-  const phasePattern = /## 📋 (PHASE \d+(?:\.\d+)?:[^*\r\n]+)\r?\n\r?\n\*\*Status:\*\* COMPLETE/g;
+  // Updated for INTEGRATED_IMPROVEMENT_PLAN.md format (Review #53)
+  const phasePattern = /## (Step \d+:[^*\r\n]+)\r?\n\r?\n\*\*Status:\*\* COMPLETE/g;
   const completedPhases = [];
   let match;
 

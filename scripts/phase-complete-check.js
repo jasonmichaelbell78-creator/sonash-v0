@@ -52,7 +52,8 @@ if (rawPlanPath) {
   const resolvedPlan = path.resolve(projectRoot, rawPlanPath);
   const rel = path.relative(projectRoot, resolvedPlan);
   // Reject paths that escape project root or reference root itself
-  if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) {
+  // Use regex for traversal detection (Review #53)
+  if (rel === '' || /^\.\.(?:[/\\]|$)/.test(rel) || path.isAbsolute(rel)) {
     console.error('Error: --plan path must be a file within project root');
     process.exit(1);
   }
@@ -136,8 +137,9 @@ function verifyDeliverable(deliverable, projectRoot) {
   const resolvedPath = path.resolve(projectRoot, deliverable.path);
 
   // Security: Prevent path traversal using path.relative() (cross-platform safe)
+  // Use regex for traversal detection (Review #53)
   const rel = path.relative(projectRoot, resolvedPath);
-  if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) {
+  if (rel === '' || /^\.\.(?:[/\\]|$)/.test(rel) || path.isAbsolute(rel)) {
     return { exists: false, valid: false, reason: 'Invalid path (outside project root)' };
   }
 
@@ -159,10 +161,11 @@ function verifyDeliverable(deliverable, projectRoot) {
       const archiveRoot = path.join(projectRoot, 'docs/archive');
 
       // Containment check to prevent path traversal in archive lookups
+      // Use regex for traversal detection (Review #53)
       const isWithinArchive = (candidate) => {
         const resolved = path.resolve(candidate);
         const rel = path.relative(archiveRoot, resolved);
-        return rel && !rel.startsWith('..') && !path.isAbsolute(rel);
+        return rel && !/^\.\.(?:[/\\]|$)/.test(rel) && !path.isAbsolute(rel);
       };
 
       const archivePathExact = path.join(archiveRoot, deliverable.path);
@@ -238,10 +241,11 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
   }
 
   // Log relative path to avoid exposing filesystem info in CI logs
+  // Use regex for traversal detection (Review #53)
   const displayPlanPath = (() => {
     try {
       const rel = path.relative(projectRoot, planPath).replace(/\\/g, '/');
-      return rel && !rel.startsWith('..') ? rel : path.basename(planPath);
+      return rel && !/^\.\.(?:[/\\]|$)/.test(rel) ? rel : path.basename(planPath);
     } catch {
       return path.basename(planPath);
     }
