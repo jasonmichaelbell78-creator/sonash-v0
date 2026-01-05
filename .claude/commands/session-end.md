@@ -41,7 +41,7 @@ Check if consolidation is due and perform it so patterns are in claude.md for ne
 2. **If consolidation needed:**
    - Review all entries since last consolidation
    - Identify patterns appearing 3+ times across reviews
-   - Add new distilled patterns to claude.md Section 4 "Tribal Knowledge"
+   - Add critical patterns to claude.md Section 4 (top 5 only); full patterns go to docs/agent_docs/CODE_PATTERNS.md
    - **Run `npm run patterns:suggest`** to find automatable patterns
    - Add suggested patterns to check-pattern-compliance.js (with human review)
    - Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md

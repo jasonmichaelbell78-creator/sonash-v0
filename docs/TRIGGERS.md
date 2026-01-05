@@ -552,7 +552,7 @@ These are conditional rules written in documentation that require **manual compl
 
 | Directive | Trigger Condition | Required Action |
 |-----------|-------------------|-----------------|
-| Read claude.md first | New session starts | Read tribal knowledge before coding |
+| Read claude.md first | New session starts | Read critical patterns before coding |
 | Check ROADMAP.md | Before any feature work | Verify alignment with priorities |
 | Update docs | After completing feature | Update relevant documentation |
 | Run patterns:check | Before committing | Verify no anti-patterns introduced |

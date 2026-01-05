@@ -312,7 +312,7 @@ This keeps the process document lean. The learnings log contains:
 - Script robustness patterns
 - Full audit trail
 
-**Quick Reference - Key Patterns (distilled in [claude.md](../claude.md) section 4):**
+**Quick Reference - Key Patterns (see [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) for full reference):**
 - Bash exit codes: Use `if ! OUT=$(cmd); then` not `OUT=$(cmd); if [ $? -ne 0 ]`
 - npm: Use `npm ci` not `npm install` in automation
 - Security: Validate paths within repo, sanitize shell inputs

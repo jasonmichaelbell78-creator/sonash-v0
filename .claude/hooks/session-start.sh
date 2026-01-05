@@ -138,7 +138,7 @@ else
       sed 's/^/   /' "$PATTERN_ERR_TMP"
     fi
   else
-    echo "   ⚠️ Pattern violations detected - review claude.md Section 4"
+    echo "   ⚠️ Pattern violations detected - see docs/agent_docs/CODE_PATTERNS.md"
     echo "   Run: npm run patterns:check-all for details"
   fi
   WARNINGS=$((WARNINGS + 1))
@@ -174,6 +174,6 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "💡 Tips:"
-echo "   - Review claude.md Section 4 for known anti-patterns before writing code"
+echo "   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns"
 echo "   - Use TodoWrite for complex tasks (3+ steps)"
 echo "   - Update SESSION_CONTEXT.md at end of session"

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.60
+**Document Version:** 1.61
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.61 | 2026-01-05 | Review #61: Stale review assessment, path prefix fix, terminology update |
 | 1.60 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → claude.md v2.9 (10 patterns added) |
 | 1.59 | 2026-01-05 | Review #60: Document sync, grep exclusion fix, CANON-ID guidance, duplicate link removal |
 | 1.58 | 2026-01-05 | Review #59: Prompt schema improvements, grep --exclude, Quick Start section, link text consistency |
@@ -57,7 +58,8 @@ This log uses a tiered structure to optimize context consumption:
 
 | Tier | Content | When to Read | Size |
 |------|---------|--------------|------|
-| **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
+| **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
+| **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
 | **3** | Active Reviews (#41-60) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
@@ -119,7 +121,7 @@ Find patterns by category. Numbers reference review entries.
 
 1. **After addressing AI review feedback**, add a new Review #N entry
 2. **Reference previous entries** when similar patterns emerge
-3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
+3. **Extract key patterns** to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) when recurring (3+ occurrences); only critical 5 go in claude.md
 4. **Run pattern audit** periodically: `npm run patterns:check-all`
 
 ### Review Sources
@@ -133,7 +135,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0
+**Reviews since last consolidation:** 1
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CONSOLIDATED** (last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
 
@@ -148,7 +150,7 @@ Consolidation is needed when:
 
 1. Review all entries since last consolidation
 2. Identify recurring patterns (3+ mentions)
-3. Add new distilled patterns to claude.md Section 4
+3. Add patterns to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md); critical 5 only to claude.md
 4. Update pattern compliance checker if automatable
 5. Reset "Reviews since last consolidation" counter
 6. Note consolidation in version history
@@ -239,7 +241,7 @@ Consolidation is needed when:
 
 ### Tiered Reading Strategy
 
-1. **Always have:** claude.md Section 4 (distilled patterns)
+1. **Always have:** claude.md (critical patterns) + [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) for details
 2. **For pattern lookup:** Read Quick Index above
 3. **For investigation:** Read specific review by number
 4. **For history:** Access archive only when needed
@@ -247,7 +249,7 @@ Consolidation is needed when:
 ### When to Update
 
 1. **After each code review cycle** - Add a new Review #N entry
-2. **When patterns recur 3+ times** - Extract to claude.md Section 4
+2. **When patterns recur 3+ times** - Extract to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
 3. **Every 10 reviews** - Check consolidation trigger status
 4. **When version changes** - Update version history table
 
@@ -1368,5 +1370,46 @@ Reviews #41-60 are actively maintained below. Older reviews are in the archive.
 - Deferred: 0 items
 
 **Key Insight:** Document counters and range declarations must be updated together when adding new entries. grep's --exclude flag matches against filenames, not paths - using a path pattern will silently fail to exclude the intended file.
+
+---
+
+#### Review #61: Stale Review Assessment & Path/Terminology Fixes (2026-01-05)
+
+**Source:** Mixed - Qodo PR Suggestions + CodeRabbit PR
+**PR/Branch:** claude/new-session-ZK2eC (commit 3654f87 → HEAD 12bc974)
+**Suggestions:** 10+ total, but **8 STALE** (already fixed in 10 subsequent commits)
+
+**Assessment:**
+- Review feedback was 10 commits behind HEAD
+- Most issues (grep exclusion, code fence clarity, duplicate links, review counts, CANON-ID guidance) already fixed
+- Only 2 current issues identified
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | sonarqube-issues.json missing path prefix | 🟡 Minor | Docs | Added `docs/analysis/` prefix |
+| 2 | "tribal knowledge" stale terminology | 🟡 Minor | Docs | Changed to "critical patterns" |
+
+**False Positives Identified:**
+- claude.md agent references (`systematic-debugging`, `Explore`, `Plan`, `frontend-design`) - valid Claude Code built-in capabilities
+- session-begin.md file references - SESSION_CONTEXT.md and ROADMAP.md exist at root
+
+**Patterns Identified:**
+
+1. **Stale Review Detection** (New Pattern)
+   - Root cause: Reviews queued while development continues
+   - Prevention: Check HEAD vs review commit before processing
+   - Pattern: `git log --oneline REVIEW_COMMIT..HEAD | wc -l` - if >5 commits, verify each issue
+
+**Resolution:**
+- Fixed: 2 items
+- Stale: 8 items (already addressed)
+- Declined: 2 items (false positives)
+
+**Key Learnings:**
+- Always verify review commit vs HEAD before processing
+- Claude Code built-in agents (Explore, Plan, systematic-debugging) are valid references
+- Path references in docs should use full paths from repo root
 
 ---

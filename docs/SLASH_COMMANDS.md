@@ -104,7 +104,7 @@ Pre-session verification checklist that ensures context is loaded, consolidation
 3. **Documentation Awareness** - Check INTEGRATED_IMPROVEMENT_PLAN.md current step
 4. **Skill Selection** - Decision tree for appropriate agent/skill usage
 5. **Code Review Handling** - Procedures for processing review feedback
-6. **Anti-Pattern Awareness** - Scan claude.md Section 4 before writing code
+6. **Anti-Pattern Awareness** - Scan claude.md Section 4 + CODE_PATTERNS.md before writing code
 7. **Script Execution** - Run `npm run patterns:check`, `npm run review:check`, `npm run lessons:surface`
 8. **Incident Documentation** - Reminder to document significant errors
 
@@ -116,7 +116,7 @@ npm run lessons:surface   # Surface past lessons relevant to current work
 ```
 
 #### Compliance Relevance
-- **Pattern Enforcement:** Loads claude.md Section 4 anti-patterns into context
+- **Pattern Enforcement:** Loads claude.md Section 4 + CODE_PATTERNS.md anti-patterns into context
 - **Trigger Detection:** Identifies when multi-AI review is due
 - **Knowledge Continuity:** Ensures patterns from previous sessions are applied
 
@@ -187,7 +187,7 @@ Comprehensive protocol for processing AI code review feedback from CodeRabbit, Q
 - Handling any AI-generated code review
 
 #### Workflow Steps
-1. **Context Loading (Tiered)** - Read claude.md Section 4, learnings log quick index
+1. **Context Loading (Tiered)** - Read claude.md Section 4 + CODE_PATTERNS.md, learnings log quick index
 2. **Initial Intake** - Identify source, extract ALL suggestions, announce count
 3. **Categorization** - CRITICAL/MAJOR/MINOR/TRIVIAL with action requirements
 4. **Create Todo List** - Track every item including learning log entry
@@ -231,7 +231,7 @@ Commands that close major automation gaps and save significant time.
 **Gap Closed:** Pattern consolidation is manual 7-step process, often skipped
 
 #### Description
-Automates the pattern consolidation workflow that surfaces repeated patterns from AI_REVIEW_LEARNINGS_LOG.md into claude.md Section 4.
+Automates the pattern consolidation workflow that surfaces repeated patterns from AI_REVIEW_LEARNINGS_LOG.md into claude.md Section 4 + CODE_PATTERNS.md.
 
 #### Use Cases
 - When "Reviews since last consolidation" >= 10
@@ -246,7 +246,7 @@ Patterns identified in reviews don't reach claude.md context until manually cons
 1. Check consolidation counter in AI_REVIEW_LEARNINGS_LOG.md
 2. If >= 10: manually review all reviews since last consolidation
 3. Identify patterns with 3+ occurrences
-4. Manually add to claude.md Section 4
+4. Manually add to claude.md Section 4 + CODE_PATTERNS.md
 5. Run `npm run patterns:suggest`
 6. Manually add suggested patterns to check-pattern-compliance.js
 7. Reset counter
@@ -285,7 +285,7 @@ echo "Current count: $counter"
 **Consolidation Candidates (3+ occurrences):** 2 patterns
 
 ## Step 4: Check Existing Patterns
-- Read claude.md Section 4 "Tribal Knowledge"
+- Read claude.md Section 4 + CODE_PATTERNS.md Critical Anti-Patterns
 - Compare candidates against existing patterns
 - Flag: NEW (add) vs DUPLICATE (skip) vs ENHANCE (update existing)
 
@@ -298,7 +298,7 @@ npm run patterns:suggest
 
 ## Step 6: Preview Changes
 ```diff
-# claude.md Section 4
+# claude.md Section 4 + CODE_PATTERNS.md
 + ### Pattern: [New Pattern Name]
 + - **Issue:** [What causes this]
 + - **Solution:** [How to fix]
@@ -308,7 +308,7 @@ npm run patterns:suggest
 **Confirm changes? (y/n)**
 
 ## Step 7: Apply and Finalize
-- Update claude.md Section 4
+- Update claude.md Section 4 + CODE_PATTERNS.md
 - Update check-pattern-compliance.js (if applicable)
 - Reset counter: "Reviews since last consolidation: 0"
 - Add consolidation note to version history
@@ -452,7 +452,7 @@ Comprehensive security compliance check that verifies pattern adherence, ESLint 
 - Regular security hygiene check
 
 #### Problem Solved
-50+ security patterns documented in claude.md Section 4, but no automated verification. ESLint security baseline (181 warnings) can drift without detection.
+50+ security patterns documented in claude.md Section 4 + CODE_PATTERNS.md, but no automated verification. ESLint security baseline (181 warnings) can drift without detection.
 
 #### Proposed Implementation
 

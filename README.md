@@ -36,7 +36,8 @@ This README serves as the **entry point** for the SoNash Recovery Notebook proje
 ### AI & Development Workflow
 - **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - AI assistant navigation guide
 - **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - Code review process
-- **[claude.md](./claude.md)** - AI context and tribal knowledge
+- **[claude.md](./claude.md)** - AI context and critical patterns
+- **[docs/agent_docs/CODE_PATTERNS.md](./docs/agent_docs/CODE_PATTERNS.md)** - Full pattern reference (90+ patterns)
 
 ### Testing & QA
 - **[docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing guide (includes manual checklists)
@@ -297,7 +298,7 @@ When working on this project:
 
 1. **Read [AI_WORKFLOW.md](./AI_WORKFLOW.md)** first for navigation guidance
 2. **Check [ROADMAP.md](./ROADMAP.md)** for current priorities and planned features
-3. **Follow [claude.md](./claude.md)** patterns and tribal knowledge
+3. **Follow [claude.md](./claude.md)** patterns (see [CODE_PATTERNS.md](./docs/agent_docs/CODE_PATTERNS.md) for details)
 4. **Run `npm run patterns:check`** to verify compliance before committing
 5. **Update documentation** when making changes that affect project status
 6. **Use `npm run docs:update-readme`** to sync status section from ROADMAP.md

@@ -9,7 +9,7 @@ You are about to process AI code review feedback. This is a **standardized, thor
 Before processing, load context using the tiered model:
 
 **Tier 1 (Always):**
-1. **Read** `claude.md` (root) Section 4 - Distilled anti-patterns (~150 lines)
+1. **Read** `claude.md` (root) - Critical anti-patterns + progressive disclosure pointers
 
 **Tier 2 (Quick Lookup):**
 2. **Read** `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) - Quick Index + consolidation status
