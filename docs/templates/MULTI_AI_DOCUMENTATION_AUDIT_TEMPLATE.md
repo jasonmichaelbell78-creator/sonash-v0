@@ -569,10 +569,10 @@ When using this template:
 ## Related Documents
 
 - **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **DOCUMENTATION_STANDARDS.md** - Documentation standards (if exists)
-- **docs/README.md** - Documentation inventory
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
+- **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** - General code review template
+- **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Documentation standards (if exists)
+- **[docs/README.md](../README.md)** - Documentation inventory
 
 ---
 

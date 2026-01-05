@@ -71,7 +71,7 @@ The project uses a **6-category, 2-tier aggregation framework** for multi-AI cod
 | **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** | Performance | Runtime perf, memory, bundle size, load times | `docs/templates/` |
 | **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md** | Refactoring | Technical debt, SonarQube issues, large-scale refactors | `docs/templates/` |
 | **MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md** | Documentation | Cross-refs, staleness, coverage, tier compliance | `docs/templates/` |
-| **MULTI_AI_PROCESS_AUDIT_PLAN_TEMPLATE.md** | Process/Automation | CI/CD, hooks, scripts, triggers, guardrails | `docs/templates/` |
+| **MULTI_AI_PROCESS_AUDIT_TEMPLATE.md** | Process/Automation | CI/CD, hooks, scripts, triggers, guardrails | `docs/templates/` |
 
 ---
 
@@ -152,7 +152,7 @@ All templates located in `docs/templates/`:
 | **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** | v1.1 | Performance audit execution plan |
 | **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md** | v1.1 | Large-scale refactoring execution plan |
 | **MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md** | v1.0 | Documentation quality audit (5 categories) |
-| **MULTI_AI_PROCESS_AUDIT_PLAN_TEMPLATE.md** | v1.0 | Process/automation audit (6 categories) |
+| **MULTI_AI_PROCESS_AUDIT_TEMPLATE.md** | v1.0 | Process/automation audit (6 categories) |
 | **MULTI_AI_AGGREGATOR_TEMPLATE.md** | v2.0 | 2-tier aggregation process |
 | **JSONL_SCHEMA_STANDARD.md** | v1.0 | Canonical JSONL schema for findings |
 

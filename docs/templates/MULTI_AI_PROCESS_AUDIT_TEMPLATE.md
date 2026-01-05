@@ -547,6 +547,24 @@ OUTPUT
 1) CONSOLIDATED_METRICS_JSON
 2) DEDUPED_FINDINGS_JSONL (with canonical_id)
 3) IMPROVEMENT_PLAN_JSON (ordered by priority)
+```json
+{
+  "improvements": [
+    {
+      "improvement_id": "IMP-001",
+      "title": "...",
+      "goal": "...",
+      "priority": "high|medium|low",
+      "included_canonical_ids": ["CANON-PROC-001"],
+      "estimated_effort": "E0|E1|E2|E3",
+      "acceptance_tests": ["..."],
+      "notes": "implementation guidance"
+    }
+  ],
+  "execution_order": ["IMP-001", "IMP-002"]
+}
+```
+
 4) HUMAN_SUMMARY
 ```
 
@@ -626,7 +644,7 @@ When using this template:
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
 - **AI_WORKFLOW.md** - AI development workflow documentation
-- **.github/workflows/** - CI/CD workflow files
+- **GitHub workflows** - CI/CD workflow files (`.github/workflows/`)
 
 ---
 

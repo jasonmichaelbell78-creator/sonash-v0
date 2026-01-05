@@ -166,7 +166,7 @@ When reviewing Firestore Rules changes, verify:
   - [ ] Required fields are validated (`request.resource.data.field != null`)
   - [ ] Data types are checked (`is string`, `is number`, etc.)
   - [ ] String lengths validated for user input fields
-  - [ ] No SQL injection vectors in query construction
+  - [ ] Rules prevent insecure or overly broad queries (e.g., unbounded `get()` or `exists()` calls)
 
 - [ ] **Authentication**
   - [ ] `request.auth != null` checked for protected resources

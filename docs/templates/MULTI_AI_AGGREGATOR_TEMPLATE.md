@@ -20,7 +20,7 @@ You want: long-context + strict instruction following + reliable tool/terminal b
 
 **GPT-5.2-Codex** - Explicitly optimized for long-horizon coding, large refactors/migrations, and reliable tool calling.
 
-**Alternative:** GPT-5.2 Thinking - Spare-no-compute option with strong long-context.
+**Alternative:** GPT-5 Thinking - Spare-no-compute option with strong long-context.
 
 ### Best for Autonomous Execution
 
@@ -29,7 +29,7 @@ You want: long-context + strict instruction following + reliable tool/terminal b
 ### Recommended Setup
 
 **For Tier-1 Aggregation (per-category):** Claude Sonnet 4.5 or GPT-5.2-Codex
-**For Tier-2 Aggregation (cross-category):** Claude Opus 4.5 or GPT-5.2 Thinking
+**For Tier-2 Aggregation (cross-category):** Claude Opus 4.5 or GPT-5 Thinking
 
 ---
 

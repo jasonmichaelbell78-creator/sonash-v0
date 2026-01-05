@@ -100,7 +100,7 @@ Exclude: [directories, e.g., docs/, public/, tests/]
 |-------|--------------|-------------------|
 | Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive security audit, Firebase expertise, latest attack patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective security analysis, OWASP knowledge |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Deep code analysis, vulnerability detection |
+| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Comprehensive code analysis, vulnerability detection |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative security lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Pattern detection, quick verification |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad OWASP knowledge |

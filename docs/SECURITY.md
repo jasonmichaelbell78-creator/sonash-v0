@@ -222,7 +222,8 @@ Regular key rotation is a critical security practice that limits the impact of c
    # Redeploy Cloud Functions with new keys
    firebase deploy --only functions
 
-   # Redeploy web app (if using service account on client)
+   # If web app references server-side APIs affected by the change, redeploy
+   # NOTE: Service account credentials must NEVER be used in client-side code
    npm run deploy
    ```
 

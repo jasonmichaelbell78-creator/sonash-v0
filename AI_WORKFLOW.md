@@ -286,7 +286,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **How to Implement Features**:
 → [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
-→ [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived)
+→ [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived - historical reference only)
 
 **How to Process CodeRabbit Reviews**:
 → [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)

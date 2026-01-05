@@ -109,7 +109,7 @@ Exclude: [directories, e.g., docs/, tests/]
 |-------|--------------|---------------------|
 | Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive performance analysis, bundle optimization, React patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective performance audits, pattern detection |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Deep code analysis, optimization strategies |
+| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Comprehensive code analysis, optimization strategies |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative optimization perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Quick pattern detection |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad performance knowledge |
