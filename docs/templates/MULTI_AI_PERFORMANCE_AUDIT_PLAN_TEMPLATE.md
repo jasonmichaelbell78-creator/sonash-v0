@@ -107,10 +107,11 @@ Exclude: [directories, e.g., docs/, tests/]
 
 | Model | Capabilities | Performance Strength |
 |-------|--------------|---------------------|
-| Claude Code (Opus/Sonnet) | browse_files=yes, run_commands=yes | Bundle analysis, React patterns |
+| Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive performance analysis, bundle optimization, React patterns |
+| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective performance audits, pattern detection |
+| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Deep code analysis, optimization strategies |
+| Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative optimization perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Quick pattern detection |
-| Codex | browse_files=yes, run_commands=yes | Deep code analysis, optimization |
-| Gemini (Jules) | browse_files=yes, run_commands=yes | Alternative optimization lens |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad performance knowledge |
 
 **Selection criteria:**
@@ -140,6 +141,23 @@ STACK / CONTEXT
 - Styling: [e.g., Tailwind CSS v4]
 - Animation: [e.g., Framer Motion 12]
 - Backend: [e.g., Firebase/Firestore]
+
+PRE-REVIEW CONTEXT (REQUIRED READING)
+
+Before beginning performance analysis, review these project-specific resources:
+
+1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and performance lessons from past reviews
+2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented performance patterns from Reviews #1-60+
+3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
+4. **Dependency Health**:
+   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
+   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
+5. **Static Analysis** (docs/analysis/sonarqube-manifest.md): Pre-identified issues including performance concerns
+   - 47 CRITICAL cognitive complexity violations (refactoring targets)
+   - Performance-impacting patterns already identified
+6. **Bundle Analysis** (if available): Previous build output for comparison
+
+These resources provide essential context about known performance issues and optimization opportunities.
 
 BASELINE METRICS
 
@@ -584,6 +602,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest with 47 CRITICAL cognitive complexity items); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro) | Claude |
 | 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
 
 ---
