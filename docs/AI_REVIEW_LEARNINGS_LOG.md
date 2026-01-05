@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.59
+**Document Version:** 1.60
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.60 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → claude.md v2.9 (10 patterns added) |
 | 1.59 | 2026-01-05 | Review #60: Document sync, grep exclusion fix, CANON-ID guidance, duplicate link removal |
 | 1.58 | 2026-01-05 | Review #59: Prompt schema improvements, grep --exclude, Quick Start section, link text consistency |
 | 1.57 | 2026-01-05 | Review #58: Template compliance (MULTI_AI_REFACTOR_AUDIT_PROMPT.md), link format consistency, American English |
@@ -132,9 +133,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**⚠️ STATUS: CONSOLIDATION DUE** (last consolidated 2026-01-04, Session #22 - Reviews #41-50 → claude.md v2.8)
+**✅ STATUS: CONSOLIDATED** (last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
 
 ### When to Consolidate
 
@@ -154,17 +155,20 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-04 (Session #23)
-- **Reviews consolidated:** #41-#50 (10 reviews)
-- **Patterns added to claude.md v2.8:**
-  - Symlink escape prevention with realpathSync()
-  - Fail-closed on realpath errors
-  - PII masking (maskEmail, maskUid)
-  - Sensitive directory detection
-  - OSC escape stripping
-  - Label auto-creation in workflows
-  - Structured audit logging
-- **Next consolidation due:** NOW (at review #60, threshold reached)
+- **Date:** 2026-01-05 (Session #23)
+- **Reviews consolidated:** #51-#60 (10 reviews)
+- **Patterns added to claude.md v2.9:**
+  - path.relative() bare ".." trap (security)
+  - Global flag required for exec() loops
+  - grep --exclude uses filename not path
+  - Path boundary anchoring in regex exclusions
+  - Audit CI/scripts after file moves
+  - Verify AI path suggestions before changing links
+  - Nested code fences in markdown (4-backtick outer)
+  - Effort estimate verification
+  - Complete pattern fix audit
+  - Regex scope for brace matching
+- **Next consolidation due:** After Review #70
 
 ---
 
@@ -177,8 +181,8 @@ Consolidation is needed when:
 |--------|-------|--------|--------|
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
-| Patterns in claude.md | 50+ | - | ✅ |
-| Reviews since last consolidation | 3 | <10 | ✅ |
+| Patterns in claude.md | 60+ | - | ✅ |
+| Reviews since last consolidation | 0 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |

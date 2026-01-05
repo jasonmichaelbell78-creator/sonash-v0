@@ -1,7 +1,7 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 2.7
-**Last Updated:** 2026-01-03
+**Document Version:** 2.9
+**Last Updated:** 2026-01-05
 **Status:** ACTIVE
 
 ---
@@ -53,7 +53,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **Google OAuth**: Requires specific COOP/COEP headers in `firebase.json` to work correctly in popups. Do not remove them.
 *   **Meeting Widgets**: Hoisting bugs in `setInterval` are common. Always define callbacks `useCallback` *before* the effect.
 
-### Code Review Patterns (from 50 reviews)
+### Code Review Patterns (from 60 reviews)
 *Full audit trail in [AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)*
 
 > ⚠️ **SELF-AUDIT**: Before writing shell scripts, workflow files, or security-sensitive code, scan the patterns below. If you've made an error covered here before, STOP and fix it.
@@ -71,6 +71,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - **Portable word boundaries**: Use `(^|[^[:alnum:]])(word)([^[:alnum:]]|$)` NOT `\b` (not portable ERE)
 - **Pipeline failure handling**: Add `|| VAR=""` fallback for commands that may legitimately fail with pipefail
 - **Terminal output sanitization**: Pipe user/config data through `tr -cd '[:alnum:] ,_-'` to strip ANSI escapes
+- **grep --exclude uses filename not path**: Use `--exclude="storage.ts"` NOT `--exclude="lib/utils/storage.ts"` (matches basename only)
 
 **npm/Dependencies:**
 - Use `npm ci` NOT `npm install` in automation (prevents lockfile drift)
@@ -120,6 +121,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
 - **Robust non-Error catch**: `error && typeof error === 'object' && 'message' in error ? error.message : String(error)`
 - Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
+- **path.relative() bare ".." trap**: `path.relative('/a', '/')` returns `".."` (no separator) - never trust `startsWith('..')` alone after path.relative()
 - **Normalize backslashes before security checks**: `.replace(/\\/g, '/')` before splitting on `/` for path traversal
 - **CRLF in regex lookaheads**: Use `\r?\n` instead of `\n` for cross-platform regex patterns
 - Windows cross-drive: `path.relative()` returns absolute path across drives - check output for `/^[A-Za-z]:/`
@@ -129,12 +131,16 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Wrap ALL file reads in try/catch: existsSync doesn't guarantee readFileSync success (race, permissions)
 - **Main module detection**: Wrap in try-catch: `try { isMain = url === pathToFileURL(resolve(argv[1])).href } catch { isMain = false }`
 - **maxBuffer for execSync**: Set `maxBuffer: 10 * 1024 * 1024` (10MB) for large lint/test output
+- **Global flag for exec() loops**: `/g` REQUIRED when using exec() in while loops (no /g = infinite loop); conversely, REMOVE /g when using .test() in loops
+- **Regex scope for brace matching**: Use `[^}]` not `[\s\S]` for single-brace-level matching in pattern checkers
+- **Path boundary anchoring**: Use `(?:^|[\\/])` prefix for path-based regex exclusions to prevent substring matches
 
 **CI/Automation:**
 - **CI mode checks ALL, no truncation**: Limits are for interactive convenience only; `isAutoMode ? allItems : slice(0, MAX)`
 - **Invalid files should fail, not just missing**: `(exists && !valid && required)` is a failure, not just `(!exists && required)`
 - **Explicit flags should fail explicitly**: If user passes `--plan missing.md`, fail even in interactive mode
 - **Readline close on all paths**: Create `closeRl()` helper, call in success/failure/error paths to prevent script hang
+- **Audit CI/scripts after file moves**: Before archiving/renaming files, `grep -r "FILENAME" .github/ scripts/` to find CI references that need updating
 
 **Git:**
 - File renames: grep for old terminology in descriptions, not just filenames
@@ -144,6 +150,10 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - **🚨 UNDERSTAND WHY BEFORE FIXING** - Ask "Does this project actually use X?" before adding packages. Read full errors, not just package names. One correct fix > ten wrong ones. (See Review #12: The Jest Incident)
 - Before changing package.json: What's the REAL error? Is it a peer dep? Who runs this code?
 - Remove `g` flag from regex when using `.test()` in loops (stateful lastIndex)
+- **Verify AI path suggestions**: Always `ls -la path/to/file.md` before changing link paths - AI suggestions about file existence are hypothetical until verified
+- **Nested code fences in markdown**: Use 4-backtick outer fence ```````` when content contains triple backticks; escape or use extra backticks
+- **Effort estimate verification**: Verify rollup matches sum of component estimates - discrepancies (e.g., "12-16h" vs actual 28h sum) indicate stale estimates
+- **Complete pattern fix audit**: After fixing one instance of a pattern issue, audit entire file for other instances - partial fixes create false confidence
 
 ## 5. Documentation Index
 *Use these files to answer your own questions.*
@@ -271,6 +281,7 @@ If I skipped a MUST-use agent → Note it and explain why in session summary.
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.9 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → path.relative() trap, exec() global flag, grep --exclude, path boundary anchoring, CI reference audits, AI path verification, nested code fences |
 | 2.8 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 → symlink escape, PII masking, audit logging, label auto-creation, OSC stripping, main module detection, maxBuffer |
 | 2.7 | 2026-01-03 | Added mandatory Agent/Skill/MCP/Hook/Script audit to session-end workflow |
 | 2.6 | 2026-01-03 | Added CodeRabbit CLI integration for autonomous code review loop |
