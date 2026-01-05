@@ -126,11 +126,9 @@ If you cannot run tools, proceed with static browsing and keep confidence lower 
 
 ### OUTPUT FORMAT (STRICT)
 
-Return 3 sections in this exact order. In your **final response**, do **not** wrap FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, or HUMAN_SUMMARY in code fences.
+Return 3 sections in this exact order.
 
-**CRITICAL:** Do NOT wrap your output sections in Markdown fenced code blocks (including JSON-fenced blocks). Output raw JSONL lines directly.
-
-**Important:** The schema example below is for reference only. **Do not** wrap your FINDINGS_JSONL / SUSPECTED_FINDINGS_JSONL / HUMAN_SUMMARY output in code fences.
+**⚠️ NO CODE FENCES:** Output raw JSONL lines directly — do NOT wrap FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, or HUMAN_SUMMARY in Markdown fenced code blocks (including ` ```json ` blocks). The schema example below is for reference only.
 
 **1) FINDINGS_JSONL**
 

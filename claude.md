@@ -121,7 +121,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Safe error handling: `error instanceof Error ? error.message : String(error)` (non-Error throws crash)
 - **Robust non-Error catch**: `error && typeof error === 'object' && 'message' in error ? error.message : String(error)`
 - Cross-platform paths: Use `path.relative()` not string `startsWith()` for path validation
-- **path.relative() bare ".." trap**: `path.relative('/a', '/')` returns `".."` (no separator) - never trust `startsWith('..')` alone after path.relative()
+- **path.relative() bare ".." trap**: `path.relative('/a', '/')` returns `".."` (no separator) — check BOTH: `rel === '..'` OR `rel.startsWith('..' + path.sep)` (after normalizing `\` to `/`)
 - **Normalize backslashes before security checks**: `.replace(/\\/g, '/')` before splitting on `/` for path traversal
 - **CRLF in regex lookaheads**: Use `\r?\n` instead of `\n` for cross-platform regex patterns
 - Windows cross-drive: `path.relative()` returns absolute path across drives - check output for `/^[A-Za-z]:/`
@@ -151,7 +151,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 - Before changing package.json: What's the REAL error? Is it a peer dep? Who runs this code?
 - Remove `g` flag from regex when using `.test()` in loops (stateful lastIndex)
 - **Verify AI path suggestions**: Always `ls -la path/to/file.md` before changing link paths - AI suggestions about file existence are hypothetical until verified
-- **Nested code fences in markdown**: Use 4-backtick outer fence ```````` when content contains triple backticks; escape or use extra backticks
+- **Nested code fences in markdown**: When content contains triple backticks, wrap with 4+ backticks (e.g., outer fence uses ```````` while inner uses ``` ``` ```)
 - **Effort estimate verification**: Verify rollup matches sum of component estimates - discrepancies (e.g., "12-16h" vs actual 28h sum) indicate stale estimates
 - **Complete pattern fix audit**: After fixing one instance of a pattern issue, audit entire file for other instances - partial fixes create false confidence
 
