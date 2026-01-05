@@ -459,7 +459,7 @@ Install and configure developer tooling that was identified as missing during th
 The multi-AI review framework (created 2025-12-30) needs refresh:
 - **Prompts are stale**: Don't reference claude.md Section 4, AI_REVIEW_LEARNINGS_LOG.md, or pattern compliance checker
 - **Categories incomplete**: Missing Documentation Audit and Process/Automation Audit
-- **Aggregator exists but unlisted**: `docs/code refactor aggregator prompt.md` needs renaming and integration
+- **Aggregator exists but unlisted**: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (renamed 2026-01-05) needs content update and integration
 - **Coordinator baselines stale**: MULTI_AI_REVIEW_COORDINATOR.md has placeholder dates
 
 **Execution Strategy**: 2-Tier Aggregation to ensure comprehensive coverage:
@@ -554,8 +554,8 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 #### Aggregator & Coordinator Updates
 
-- [ ] **Task 4.1.7**: Rename and update Aggregator prompt (1.5 hours)
-  - Rename: `docs/code refactor aggregator prompt.md` → `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md`
+- [ ] **Task 4.1.7**: Update Aggregator prompt (1.5 hours)
+  - ✅ Renamed: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (done 2026-01-05)
   - Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex)
   - Add reference to current tooling (pattern checker, madge, knip)
   - Ensure CANON format is explicitly defined in template

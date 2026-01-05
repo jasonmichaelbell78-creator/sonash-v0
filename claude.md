@@ -153,7 +153,7 @@ This file defines the strict architectural and security rules for SoNash. It ser
 *   **[DEVELOPMENT.md](./DEVELOPMENT.md)**: Setup, testing commands, directory structure.
 *   **[ROADMAP.md](./ROADMAP.md)**: What features are planned vs. completed.
 *   **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)**: Current sprint status, session tracking, recent context.
-*   **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)**: Manual verification steps.
+*   **[TESTING_PLAN.md](docs/TESTING_PLAN.md)**: Testing strategy and manual verification steps.
 
 ## 6. Available AI Capabilities
 

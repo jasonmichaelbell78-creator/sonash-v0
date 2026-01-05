@@ -239,7 +239,7 @@ npm run lint
 
 **Test Status:** 89/91 passing (97.8%)
 
-See **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** for manual QA checklist.
+See **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** for testing strategy and manual QA checklist.
 
 ---
 
