@@ -57,7 +57,8 @@ This log uses a tiered structure to optimize context consumption:
 
 | Tier | Content | When to Read | Size |
 |------|---------|--------------|------|
-| **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
+| **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
+| **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
 | **3** | Active Reviews (#41-60) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
@@ -119,7 +120,7 @@ Find patterns by category. Numbers reference review entries.
 
 1. **After addressing AI review feedback**, add a new Review #N entry
 2. **Reference previous entries** when similar patterns emerge
-3. **Extract key patterns** to claude.md Section 4 when they become recurring (3+ occurrences)
+3. **Extract key patterns** to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) when recurring (3+ occurrences); only critical 5 go in claude.md
 4. **Run pattern audit** periodically: `npm run patterns:check-all`
 
 ### Review Sources
@@ -148,7 +149,7 @@ Consolidation is needed when:
 
 1. Review all entries since last consolidation
 2. Identify recurring patterns (3+ mentions)
-3. Add new distilled patterns to claude.md Section 4
+3. Add patterns to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md); critical 5 only to claude.md
 4. Update pattern compliance checker if automatable
 5. Reset "Reviews since last consolidation" counter
 6. Note consolidation in version history
@@ -239,7 +240,7 @@ Consolidation is needed when:
 
 ### Tiered Reading Strategy
 
-1. **Always have:** claude.md Section 4 (distilled patterns)
+1. **Always have:** claude.md (critical patterns) + [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) for details
 2. **For pattern lookup:** Read Quick Index above
 3. **For investigation:** Read specific review by number
 4. **For history:** Access archive only when needed
@@ -247,7 +248,7 @@ Consolidation is needed when:
 ### When to Update
 
 1. **After each code review cycle** - Add a new Review #N entry
-2. **When patterns recur 3+ times** - Extract to claude.md Section 4
+2. **When patterns recur 3+ times** - Extract to [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
 3. **Every 10 reviews** - Check consolidation trigger status
 4. **When version changes** - Update version history table
 

@@ -48,7 +48,7 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 5. **Test after changes** - Run `npm test` and `npm run lint` before committing
 
 ## 6. Anti-Pattern Awareness
-**Before writing code**, scan claude.md Section 4 "Tribal Knowledge" for patterns that have caused issues before. Key patterns to remember:
+**Before writing code**, scan claude.md Section 4 "Critical Anti-Patterns" and [CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) for issues. Key patterns:
 - **Read before edit** - Always read files before attempting to edit
 - **Regex performance** - Avoid greedy `.*` in patterns; use bounded `[\s\S]{0,N}?`
 - **ESLint flat config** - Spread plugin configs, don't use directly
