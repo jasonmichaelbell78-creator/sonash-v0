@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.58
+**Document Version:** 1.59
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.59 | 2026-01-05 | Review #60: Document sync, grep exclusion fix, CANON-ID guidance, duplicate link removal |
 | 1.58 | 2026-01-05 | Review #59: Prompt schema improvements, grep --exclude, Quick Start section, link text consistency |
 | 1.57 | 2026-01-05 | Review #58: Template compliance (MULTI_AI_REFACTOR_AUDIT_PROMPT.md), link format consistency, American English |
 | 1.56 | 2026-01-05 | Review #57: CI fix (broken stub links), effort estimate arithmetic, optional artifact semantics |
@@ -57,7 +58,7 @@ This log uses a tiered structure to optimize context consumption:
 |------|---------|--------------|------|
 | **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-57) | Deep investigation | ~1050 lines |
+| **3** | Active Reviews (#41-60) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -131,9 +132,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7
+**Reviews since last consolidation:** 10
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
+**⚠️ STATUS: CONSOLIDATION DUE** (last consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
 ### When to Consolidate
 
@@ -163,7 +164,7 @@ Consolidation is needed when:
   - OSC escape stripping
   - Label auto-creation in workflows
   - Structured audit logging
-- **Next consolidation due:** At review #61
+- **Next consolidation due:** NOW (at review #60, threshold reached)
 
 ---
 
@@ -270,7 +271,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-53 are actively maintained below. Older reviews are in the archive.
+Reviews #41-60 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -1319,5 +1320,49 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
 - Deferred: 0 items
 
 **Key Insight:** When writing prompt templates that include JSON schemas, prefer bullet list format with explicit "reference only" labels to prevent AI assistants from copying the formatting structure into their output.
+
+---
+
+#### Review #60: Document Sync & Documentation Clarity (2026-01-05)
+
+**Source:** Qodo PR Suggestions + CodeRabbit PR
+**PR:** `fix: Address PR Review #59 feedback`
+**Suggestions:** 9 total (Critical: 0, Major: 1, Minor: 5, Trivial: 3)
+
+**Context:** Follow-up review after Review #59 found document synchronization issues, duplicate links, and opportunities to improve documentation clarity.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Review count/range out of sync | 🟠 Major | Docs | Updated to #41-60, count to 10 |
+| 2 | grep --exclude uses full path | 🟡 Minor | QA | Changed to filename only |
+| 3 | Clarify output fence restriction | 🟡 Minor | Template | Added explicit wording |
+| 4 | Duplicate SECURITY.md reference | 🟡 Minor | Cleanup | Removed duplicate, added anchor |
+| 5 | session-begin.md link consistency | 🟡 Minor | Consistency | Standardized as markdown links |
+| 6 | Missing CANON-ID format guidance | ⚪ Trivial | Docs | Added ID convention notes |
+| 7 | No code fences negative example | ⚪ Trivial | Template | Added explicit prohibition |
+
+**Declined:**
+- Non-existent file references - SESSION_CONTEXT.md and ROADMAP.md exist at root (verified)
+
+**Patterns Identified:**
+
+1. **Document Counter Synchronization**
+   - Root cause: Adding reviews without updating range references
+   - Prevention: After adding review, grep for range patterns and update all
+   - Pattern: `grep -n "#[0-9]*-[0-9]*" docs/AI_REVIEW_LEARNINGS_LOG.md`
+
+2. **grep --exclude Path Behavior**
+   - Root cause: `--exclude` matches filename, not full path
+   - Prevention: Use just filename: `--exclude="storage.ts"` not `--exclude="lib/utils/storage.ts"`
+   - Pattern: grep exclusions use filename matching, not path matching
+
+**Resolution:**
+- Fixed: 7 items
+- Declined: 1 item (false positive - files exist)
+- Deferred: 0 items
+
+**Key Insight:** Document counters and range declarations must be updated together when adding new entries. grep's --exclude flag matches against filenames, not paths - using a path pattern will silently fail to exclude the intended file.
 
 ---

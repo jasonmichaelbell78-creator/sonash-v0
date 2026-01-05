@@ -7,12 +7,12 @@ description: Complete verification steps before starting any work session
 Before starting any work, complete these verification steps:
 
 ## 1. Context Loading (MANDATORY)
-- [ ] Read SESSION_CONTEXT.md - Current status, active blockers, next goals
-- [ ] Increment session counter in SESSION_CONTEXT.md
-- [ ] Check ROADMAP.md for priority changes
+- [ ] Read [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) - Current status, active blockers, next goals
+- [ ] Increment session counter in [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md)
+- [ ] Check [ROADMAP.md](../../ROADMAP.md) for priority changes
 
 ## 2. Consolidation Status Check
-Check AI_REVIEW_LEARNINGS_LOG.md for the "Consolidation Trigger" section:
+Check [AI_REVIEW_LEARNINGS_LOG.md](../../docs/AI_REVIEW_LEARNINGS_LOG.md) for the "Consolidation Trigger" section:
 - If "Reviews since last consolidation" >= 10: **⚠️ CONSOLIDATION WAS MISSED**
 - This means patterns from previous reviews are NOT in claude.md context
 - Previous session should have consolidated but didn't

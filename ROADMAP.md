@@ -917,7 +917,7 @@ flowchart TD
 
 ### Detailed Documentation (in /docs)
 
-- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections
+- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections, Firestore rules
 - **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident procedures
 - **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue model research and recommendations (M10)
 - **[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)** - December 2025 journal refactor changelog
@@ -925,7 +925,6 @@ flowchart TD
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud Functions security patterns
 - **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent collaboration guide
 - **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
-- **[SECURITY.md](./docs/SECURITY.md)** - Security documentation including Firestore rules
 
 ### Archived Documentation
 

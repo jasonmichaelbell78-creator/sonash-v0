@@ -75,7 +75,7 @@ When CANON findings are aggregated from Step 4, add them here with this format:
 ```markdown
 ### [Category] Item Name
 
-**CANON-ID**: CANON-XXX (from aggregator output)
+**CANON-ID**: CANON-NNN or LEGACY-NNN (see ID conventions below)
 **Severity**: S1/S2/S3
 **Effort**: E0/E1/E2/E3
 **Source**: Step 4.2.X (Category Audit)
@@ -96,6 +96,10 @@ Brief description of the finding.
 - [ ] Criterion 1
 - [ ] Criterion 2
 ```
+
+**ID Conventions:**
+- `CANON-NNN` - New findings from Step 4 multi-AI audit (e.g., CANON-001, CANON-042)
+- `LEGACY-NNN` - Pre-audit discoveries or findings from earlier phases (e.g., LEGACY-001)
 
 ### Processing Items (Step 4B Remediation)
 
@@ -161,7 +165,7 @@ Replace direct `localStorage` calls with SSR-safe utility functions. Existing co
 6. Test each file individually (no regressions expected)
 
 **Acceptance criteria**:
-- [ ] `grep -rn "localStorage\." components/ lib/ --include="*.ts" --include="*.tsx" --exclude="lib/utils/storage.ts"` → 0 results
+- [ ] `grep -rn "localStorage\." components/ lib/ --include="*.ts" --include="*.tsx" --exclude="storage.ts"` → 0 results
 - [ ] All existing functionality works (smart prompts, journal temp save, anonymous backup)
 - [ ] No new TypeScript errors
 

@@ -126,7 +126,9 @@ If you cannot run tools, proceed with static browsing and keep confidence lower 
 
 ### OUTPUT FORMAT (STRICT)
 
-Return 3 sections in this exact order, **with no code fences in your output**.
+Return 3 sections in this exact order. In your **final response**, do **not** wrap FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, or HUMAN_SUMMARY in code fences.
+
+**CRITICAL:** Do NOT emit triple backticks (` ``` ` or ` ```json `) around your output sections. Output raw JSONL lines directly.
 
 **Important:** The schema example below is for reference only. **Do not** wrap your FINDINGS_JSONL / SUSPECTED_FINDINGS_JSONL / HUMAN_SUMMARY output in code fences.
 
