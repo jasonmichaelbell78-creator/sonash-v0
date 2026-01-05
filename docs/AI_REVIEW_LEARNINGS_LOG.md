@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.52
+**Document Version:** 1.56
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,10 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.56 | 2026-01-05 | Review #57: CI fix (broken stub links), effort estimate arithmetic, optional artifact semantics |
+| 1.55 | 2026-01-05 | Review #56: Effort estimate correction, remaining code fences, stub path references (PARTIAL FIX - see #57) |
+| 1.54 | 2026-01-05 | Review #55: Nested code fence fixes, artifact naming, acceptance criteria, schema references |
+| 1.53 | 2026-01-05 | Review #54: Step 4B + SLASH_COMMANDS.md, broken archive links, code fence escaping |
 | 1.52 | 2026-01-05 | Review #53: CI fix, regex bounding, path.relative() security |
 | 1.51 | 2026-01-05 | Review #52: Document health/archival fixes from Qodo/CodeRabbit |
 | 1.50 | 2026-01-04 | RESTRUCTURE: Tiered access model, Reviews #1-40 archived (3544→~1000 lines) |
@@ -51,7 +55,7 @@ This log uses a tiered structure to optimize context consumption:
 |------|---------|--------------|------|
 | **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-53) | Deep investigation | ~900 lines |
+| **3** | Active Reviews (#41-57) | Deep investigation | ~1050 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -125,7 +129,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3
+**Reviews since last consolidation:** 6
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
@@ -1048,5 +1052,178 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
    - Pattern: Always audit CI/scripts when moving or renaming files
 
 **Key Insight:** path.relative() can return just ".." without a trailing separator - this is a subtle security trap. Any code path that trusts startsWith("..") after path.relative() should be flagged. CI scripts and workflows must be audited when archiving files they reference.
+
+---
+
+#### Review #54: Step 4B Addition & Slash Commands Reference (2026-01-05)
+
+**Source:** GitHub Actions docs-lint + Qodo PR Compliance + CodeRabbit
+**PR:** 244c25f (Step 4B + SLASH_COMMANDS.md creation)
+**Tools:** Qodo, CodeRabbit, docs-lint workflow
+**Suggestions:** 10 total (Critical: 2, Major: 1, Minor: 6, Trivial: 1)
+
+**Context:** Review of Step 4B (Remediation Sprint) addition to INTEGRATED_IMPROVEMENT_PLAN.md and creation of comprehensive SLASH_COMMANDS.md reference document. Identified broken links to archived files and documentation consistency issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Broken link to DOCUMENTATION_STANDARDIZATION_PLAN.md | 🔴 Critical | Docs | Updated path to ./archive/completed-plans/ |
+| 2 | Broken link to EIGHT_PHASE_REFACTOR_PLAN.md | 🔴 Critical | Docs | Updated path to ./archive/completed-plans/ |
+| 3 | Step 4 name inconsistency in status dashboard | 🟠 Major | Docs | Verified consistency - no actual mismatch |
+| 4 | Step range missing 4B in effort tracking | 🟡 Minor | Docs | Updated "Steps 4-7" to "Steps 4-4B-7" |
+| 5 | Effort estimate understates task hours | 🟡 Minor | Docs | Updated to reflect 8-16 additional hours for 4B |
+| 6 | Framework wording conflicts | 🟡 Minor | Docs | Clarified 6-category audit with 2-tier aggregation |
+| 7 | Tier-2 output schema lacks clarity | 🟡 Minor | Docs | Added explicit output artifact descriptions |
+| 8 | Nested code fence rendering broken | 🟡 Minor | Docs | Partial fix - Critical/High sections (256-778); Medium/Template sections (803+) fixed in Review #56 |
+| 9 | Invalid link fragment in TOC | 🟡 Minor | Docs | Fixed markdown link fragment |
+| 10 | GitHub capitalization | ⚪ Trivial | Docs | Corrected "Github" to "GitHub" |
+
+**Patterns Identified:**
+
+1. **Archive Link Updates** (Reinforcement from #53)
+   - Root cause: Links to archived files not updated when files moved
+   - Prevention: `grep -r "FILENAME" docs/` before marking archival complete
+   - Pattern: Always update references when archiving
+
+2. **Nested Code Fences in Markdown**
+   - Root cause: Markdown inside markdown uses same fence syntax
+   - Prevention: Use 4-backtick outer fence (e.g., \`\`\`\`) when content contains triple backticks
+   - Pattern: When documenting markdown syntax, escape or use extra backticks
+
+3. **Step Range in Effort Tracking**
+   - Root cause: Adding sub-steps (4B) requires updating all range references
+   - Prevention: Use explicit step lists rather than ranges
+   - Pattern: "Steps 4, 4B, 5-7" instead of "Steps 4-7"
+
+**Key Insight:** When adding sub-steps to a plan, all dashboard references, effort estimates, and range notation must be updated. Archival workflows must include link reference audits. Documentation that includes markdown examples requires careful fence escaping.
+
+---
+
+#### Review #55: Comprehensive Nested Code Fence Fix & Schema Clarity (2026-01-05)
+
+**Source:** Qodo PR Compliance + CodeRabbit
+**PR:** Commit after e0444ee (PR Review #55 fixes)
+**Tools:** Qodo (4 suggestions), CodeRabbit (6 suggestions)
+**Suggestions:** 10 total (Major: 1, Minor: 7, Trivial: 2)
+
+**Context:** Follow-up review after Review #54 fixes. Identified that nested code fence fix was incomplete (only 1 of 6 sections fixed), plus additional clarity issues in artifact naming, acceptance criteria, and schema references.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | 5 remaining nested code fence sections in SLASH_COMMANDS.md | 🟠 Major | Docs | Changed all remaining triple to quadruple backticks (lines 354-778) |
+| 2 | Output artifact naming inconsistent (JSON vs JSONL) | 🟡 Minor | Docs | Standardized to PARSE_ERRORS_JSONL, HUMAN_SUMMARY_MD |
+| 3 | Eight-backtick sequence unreadable in markdown | 🟡 Minor | Docs | Changed to escaped backticks `\`\`\`\`` |
+| 4 | INTEGRATED status not in documented set | 🟡 Minor | Docs | Changed to INCLUDE with clarifying notes |
+| 5 | Archive path inconsistent in Task 4.3.5 | 🟡 Minor | Docs | Updated to docs/archive/completed-plans/ |
+| 6 | Tasks 4.3.3/4.3.4 lack acceptance criteria | 🟡 Minor | Docs | Added explicit checkbox acceptance criteria |
+| 7 | Step 4B lacks schema reference | 🟡 Minor | Docs | Added DEDUPED_FINDINGS_JSONL schema reference |
+| 8 | TOC link fragment warning (MD051) | 🟡 Minor | Docs | Verified correct - false positive |
+| 9 | 2-tier diagram lacks legend | ⚪ Trivial | Docs | Added `→` sequential, `↓` tier transition legend |
+| 10 | Gap Analysis needs pre-implementation note | ⚪ Trivial | Docs | Added clarifying note about planned commands |
+
+**Patterns Identified:**
+
+1. **Comprehensive Code Fence Audit** (Reinforcement from #54)
+   - Root cause: Fixing one instance doesn't fix all - must search systematically
+   - Prevention: `grep -n '^\`\`\`' FILE | wc -l` to count all fence lines
+   - Pattern: After fixing code fences, audit entire file for other instances
+
+2. **Artifact Naming Consistency**
+   - Root cause: Output file format suffix not always explicit
+   - Prevention: Use format suffix in artifact names (JSONL, JSON, MD)
+   - Pattern: PARSE_ERRORS_JSONL, PR_PLAN_JSON, HUMAN_SUMMARY_MD
+
+3. **Acceptance Criteria Completeness**
+   - Root cause: Tasks defined without explicit completion criteria
+   - Prevention: Every task should have checkbox acceptance criteria
+   - Pattern: Tasks need explicit "done when" definitions
+
+**Key Insight:** When fixing a pattern issue, always audit the entire file/codebase for other instances. A partial fix creates false confidence. Artifact naming should include format suffixes for machine-parseability. All tasks need explicit acceptance criteria.
+
+---
+
+#### Review #56: Effort Estimate Accuracy & Complete Code Fence Fix (2026-01-05)
+
+**Source:** Qodo PR Compliance + CodeRabbit
+**PR:** Commit after a525c01 (PR Review #56 fixes)
+**Tools:** Qodo (4 suggestions), CodeRabbit (1 critical + duplicates)
+**Suggestions:** 8 total (Critical: 1, Major: 1, Minor: 6)
+
+**Context:** Follow-up review after Review #55 fixes. Identified that Step 4 effort estimate (12-16h) was significantly understated vs. actual task breakdown (~28h), and 4 additional nested code fence sections remained unfixed in SLASH_COMMANDS.md.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Step 4 effort estimate discrepancy (12-16h vs 28h actual) | 🔴 Critical | Docs | Updated to 24-30h with sub-phase breakdown; rollup updated to 48-72h |
+| 2 | 4 remaining nested code fence sections (lines 803-954, 1161-1177) | 🟠 Major | Docs | Changed to quadruple backticks in SLASH_COMMANDS.md |
+| 3 | Source document links point to archive instead of stubs | 🟡 Minor | Docs | Updated to use stub paths per archival strategy |
+| 4 | Sprint backlog uses ✅ DONE in Status column | 🟡 Minor | Docs | Moved ✅ to Notes; Status column uses DONE |
+| 5 | PARSE_ERRORS_JSONL missing from Step 4B artifact list | 🟡 Minor | Docs | Added as fourth artifact with schema |
+| 6 | DONE status missing from Disposition Options enum | 🟡 Minor | Docs | Added DONE with description |
+| 7 | Review #54 Issue #8 marked "Fixed" but was partial | 🟡 Minor | Docs | Updated to note "Partial fix" with Review #56 completion |
+| 8 | Three→Four artifacts count in Step 4B | 🟡 Minor | Docs | Updated count to four |
+
+**Patterns Identified:**
+
+1. **Effort Estimate Verification** (New Pattern)
+   - Root cause: Estimate stated without summing detailed task breakdown
+   - Prevention: Always verify rollup matches sum of component estimates
+   - Pattern: `grep -o "hours)" FILE | wc -l` to count task hours, then verify total
+
+2. **Complete Pattern Fix Audit** (Reinforcement from #55)
+   - Root cause: Fixing critical sections, missing lower-priority sections
+   - Prevention: Search entire file for pattern, not just flagged lines
+   - Pattern: After any fence fix, `grep -n '^\`\`\`' FILE` to find all instances
+
+3. **Stub Link Strategy** *(CORRECTED in Review #57)*
+   - Root cause: AI suggestion assumed stub files existed when they didn't
+   - Prevention: Verify target files exist before changing link paths
+   - Pattern: Only use `./FILENAME.md` if stub file exists; otherwise use direct archive path
+
+**Key Insight:** Effort estimates must be verified against detailed task breakdowns - a 100% discrepancy (12-16h vs 28h) was caught by CodeRabbit's arithmetic check. When fixing rendering issues, audit the entire file systematically. **CAUTION:** AI suggestions about file paths should be verified - the stub link strategy assumed files existed that didn't.
+
+---
+
+#### Review #57: CI Failure Fix & Effort Estimate Accuracy (2026-01-05)
+
+**Source:** Qodo PR Compliance + CodeRabbit + CI docs-lint failure
+**PR:** Commit after d582c76 (PR Review #57 fixes)
+**Tools:** Qodo (3 suggestions), CodeRabbit (1 critical), CI workflow
+**Suggestions:** 5 total (Critical: 1, Minor: 4) + 1 CI error
+
+**Context:** CI docs-lint workflow failed due to broken links introduced in Review #56. Qodo's suggestion to use stub file paths was incorrect - the stub files don't exist. Additional fixes for effort estimate arithmetic consistency.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | CI failure: Broken links to non-existent stub files | 🔴 Critical | CI | Reverted to direct archive paths (stubs don't exist) |
+| 2 | Estimate arithmetic: 24-30h doesn't match 9+13+6=28h | 🟡 Minor | Docs | Changed to "~28 hours" |
+| 3 | PARSE_ERRORS_JSONL counted as always-present artifact | 🟡 Minor | Docs | Clarified as optional (3 core + 1 optional) |
+| 4 | Rollup 48-72h inconsistent with step totals (43-55h) | 🟡 Minor | Docs | Updated rollup with per-step breakdown |
+| 5 | Version history doesn't note estimate correction | 🟡 Minor | Docs | Added v2.3 entry noting 12-16h→~28h correction |
+
+**Patterns Identified:**
+
+1. **Verify AI Suggestions About File Paths** (New Critical Pattern)
+   - Root cause: Qodo suggested using stub files that don't exist
+   - Prevention: Always verify target files exist before changing link paths: `ls -la path/to/file.md`
+   - Pattern: AI path suggestions are hypothetical until verified
+
+2. **Effort Estimate Arithmetic Verification** (Reinforcement from #56)
+   - Root cause: Range estimate (24-30h) didn't match exact sum (28h)
+   - Prevention: Use exact sum when sub-components are known: `~28h` not `24-30h`
+   - Pattern: Ranges only when components are uncertain
+
+3. **Optional vs Required Artifact Semantics**
+   - Root cause: Conditional artifacts described as always-present
+   - Prevention: Use "(optional)" label and describe presence conditions
+   - Pattern: "3 core artifacts + 1 optional" clearer than "4 artifacts (one conditional)"
+
+**Key Insight:** AI suggestions about file paths should be verified before applying - the CI failure was caused by trusting a path suggestion without checking if files exist. Effort estimates should use exact sums when sub-components are known, not approximate ranges. Conditional/optional artifacts need explicit labeling.
 
 ---
