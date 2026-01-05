@@ -96,7 +96,7 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 - Feature implementation plans (M1.6_SUPPORT_TAB_PLAN.md)
 - Initiative plans (LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)
 - Research documents (MONETIZATION_RESEARCH.md)
-- Backlog documents (POST_PHASE_8_BACKLOG.md)
+- Backlog documents (AUDIT_FINDINGS_BACKLOG.md)
 
 **Characteristics**:
 - ✅ **Must have**: Status dashboard with task tracking

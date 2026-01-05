@@ -182,7 +182,7 @@ Use these standard reasons when rejecting AI review suggestions:
 | **Out of scope** | Suggestion extends beyond PR scope | "Performance optimization is Phase 3 work" |
 | **Style preference** | Subjective style choice | "Project uses this naming convention" |
 | **Implementation detail** | Will be addressed during implementation | "Script implementation will determine best library" |
-| **Already planned** | Captured in backlog/plan | "Tracked in POST_PHASE_8_BACKLOG.md" |
+| **Already planned** | Captured in backlog/plan | "Tracked in AUDIT_FINDINGS_BACKLOG.md" |
 | **Not applicable** | Suggestion doesn't apply to this context | "This isn't production code, it's a template example" |
 
 ---

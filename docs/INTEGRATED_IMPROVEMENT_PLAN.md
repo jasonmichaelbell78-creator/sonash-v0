@@ -382,7 +382,7 @@ Install and configure developer tooling that was identified as missing during th
     - DOCUMENTATION_STANDARDS.md
     - INTEGRATED_IMPROVEMENT_PLAN.md
     - TESTING_CHECKLIST.md
-    - APPCHECK_FRESH_SETUP.md (consolidate with docs/APPCHECK_SETUP.md)
+    - APPCHECK_FRESH_SETUP.md (merged into APPCHECK_SETUP.md, stub removed 2026-01-05)
   - **Archive** (3 files - duplicates/historical):
     - RECAPTCHA_PROBLEM_SUMMARY.md (already in docs/archive/)
     - SUPABASE_MIGRATION_ANALYSIS.md (already in docs/archive/)
@@ -1277,3 +1277,4 @@ Items discovered during sprint execution that need tracking. Review at step boun
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - AI navigation guide
 - [DEVELOPMENT.md](../DEVELOPMENT.md) - Developer setup (tooling target)
 - [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md) - Review learnings
+- [AUDIT_FINDINGS_BACKLOG.md](./AUDIT_FINDINGS_BACKLOG.md) - CANON findings backlog (Step 4 output)
