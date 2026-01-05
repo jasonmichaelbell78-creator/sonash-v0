@@ -800,7 +800,7 @@ Auto-document session patterns and add to AI_REVIEW_LEARNINGS_LOG.md.
 
 #### Proposed Implementation
 
-```markdown
+````markdown
 ---
 description: Surface and document session learnings
 ---
@@ -850,7 +850,7 @@ Checking AI_REVIEW_LEARNINGS_LOG.md...
 ```
 
 **Add to log? (y/n)**
-```
+````
 
 ---
 
@@ -870,7 +870,7 @@ Quarterly ESLint baseline audit and update.
 
 #### Proposed Implementation
 
-```markdown
+````markdown
 ---
 description: Audit ESLint baseline and detect drift
 ---
@@ -907,7 +907,7 @@ If yes:
 - Update DEVELOPMENT.md: "181 warnings" → "183 warnings"
 - Update audit date: "2026-01-04" → "2026-01-05"
 - Commit: "docs: Update ESLint baseline to 183 warnings"
-```
+````
 
 ---
 
@@ -927,7 +927,7 @@ Quick cross-reference validation for documentation.
 
 #### Proposed Implementation
 
-```markdown
+````markdown
 ---
 description: Check for broken cross-references in documentation
 ---
@@ -952,7 +952,7 @@ description: Check for broken cross-references in documentation
 2. SESSION_CONTEXT.md:23 - Add missing section anchor
 
 **Apply fixes? (y/n)**
-```
+````
 
 ---
 
@@ -1158,7 +1158,7 @@ All custom commands go in `.claude/commands/`:
 
 ### Command Template
 
-```markdown
+````markdown
 ---
 description: Brief description for /help output
 args: arg1 - Description of argument
@@ -1174,7 +1174,7 @@ args: arg1 - Description of argument
 
 ## Summary
 ...
-```
+````
 
 ### Best Practices
 
