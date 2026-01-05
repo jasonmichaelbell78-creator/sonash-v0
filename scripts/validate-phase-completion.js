@@ -38,7 +38,7 @@ function main() {
   // Find all steps marked COMPLETE
   // Note: Use \r?\n for cross-platform CRLF support (Review #51)
   // Updated for INTEGRATED_IMPROVEMENT_PLAN.md format (Review #53)
-  const phasePattern = /## (Step \d+:[^*\r\n]+)\r?\n\r?\n\*\*Status:\*\* COMPLETE/g;
+  const phasePattern = /## (Step \d+:[^*\r\n]+)\r?\n(?:[ \t]*\r?\n)+\*\*Status:\*\* COMPLETE/g;
   const completedPhases = [];
   let match;
 
