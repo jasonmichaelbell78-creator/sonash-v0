@@ -293,7 +293,9 @@ Goal: small, reviewable PRs.
 - Front-load low-risk duplication/hygiene that unlocks later work
 - Always include acceptance_tests per PR (at least lint + typecheck + tests if available)
 
-### OUTPUT FORMAT (STRICT ORDER, NO CODE FENCES)
+### OUTPUT FORMAT (STRICT ORDER)
+
+**Important:** Output each section in order. For JSONL sections, output raw JSON objects (one per line) without surrounding code fences. For markdown sections (summaries), normal markdown formatting is acceptable.
 
 **TIER-1 Mode Output:**
 

@@ -379,9 +379,20 @@ Consider implementing automated key rotation for critical keys:
 
 ```typescript
 // Example: Cloud Function to auto-rotate service account key
+import { defineSecret } from 'firebase-functions/params';
+
+// Define secrets (stored in Firebase Secret Manager)
+const adminPrivateKey = defineSecret('FIREBASE_ADMIN_PRIVATE_KEY');
+const adminClientEmail = defineSecret('FIREBASE_ADMIN_CLIENT_EMAIL');
+
 export const rotateServiceAccountKey = functions
+  .runWith({ secrets: [adminPrivateKey, adminClientEmail] })
   .pubsub.schedule('0 0 1 */3 *') // Every 90 days
   .onRun(async (context) => {
+    // Access secrets via .value() - only available at runtime
+    const currentKey = adminPrivateKey.value();
+    const currentEmail = adminClientEmail.value();
+
     // 1. Generate new service account key via Admin SDK
     // 2. Update Secret Manager with new key
     // 3. Trigger redeployment with new keys
@@ -389,6 +400,8 @@ export const rotateServiceAccountKey = functions
     // 5. Send notification to security team
   });
 ```
+
+**Note:** Cloud Functions secrets are defined using `defineSecret()` and accessed via `.value()` at runtime. Never log secret values.
 
 **Benefits:**
 - Eliminates human error

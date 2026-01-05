@@ -278,6 +278,9 @@ Mark each check: GAP | COVERED | N/A
 List specific missing documentation areas.
 
 Category 4: Tier Compliance (if tier system exists)
+
+**Note:** This category is OPTIONAL. Skip and mark all checks as N/A if the project doesn't use a documentation tier system.
+
 CHECKS:
 [ ] Docs are in correct tier folders
 [ ] Tier 1 docs are root-level essentials only

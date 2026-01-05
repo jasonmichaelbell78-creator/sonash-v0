@@ -130,7 +130,7 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 Before beginning analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
@@ -695,7 +695,7 @@ When using this template:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro) | Claude |
-| 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
+| 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---
 

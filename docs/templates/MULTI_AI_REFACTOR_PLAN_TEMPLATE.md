@@ -152,7 +152,7 @@ Before beginning refactoring analysis, review these project-specific resources:
    - Batch fix opportunities: ~200+ ESLint auto-fixable, 79 replaceAll() replacements, 71 node: prefix imports
 6. **Prior Refactoring Work** (../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON findings
 
-**IMPORTANT**: The SonarQube CRITICAL cognitive complexity violations are the PRIMARY targets for this audit. Focus on the 47 functions that need refactoring due to excessive complexity.
+**IMPORTANT**: If SonarQube analysis is available, the CRITICAL cognitive complexity violations are the PRIMARY targets for this audit. Focus on functions that need refactoring due to excessive complexity. If no SonarQube data exists, focus on manual complexity assessment of large functions (>50 lines) and high-cyclomatic-complexity patterns.
 
 These resources provide essential context about what has been identified and what patterns to consolidate.
 
@@ -598,7 +598,7 @@ When using this template:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus (47 cognitive complexity violations as PRIMARY targets); Added batch fix opportunities (200+ ESLint, 79 replaceAll, 71 node: imports); Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro) | Claude |
-| 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
+| 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---
 

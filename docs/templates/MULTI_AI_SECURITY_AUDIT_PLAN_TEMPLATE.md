@@ -654,7 +654,7 @@ When using this template:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |
-| 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
+| 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---
 

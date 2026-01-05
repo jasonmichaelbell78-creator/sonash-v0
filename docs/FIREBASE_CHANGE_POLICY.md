@@ -25,6 +25,7 @@ This document defines the mandatory security review process for all changes to F
 
 ### In Scope
 - **Firestore Rules**: Any modification to `firestore.rules`
+- **Firestore Service Layer**: Changes to `lib/firestore-service.ts` (repository pattern implementation)
 - **Cloud Functions**: New functions, modifications to existing functions, dependency changes
 - **Firebase Configuration**: Changes to `firebase.json`, `.firebaserc`
 - **App Check**: Configuration changes, token management, throttle settings

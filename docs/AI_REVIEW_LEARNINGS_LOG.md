@@ -18,7 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
-| 1.63 | 2026-01-05 | Review #63: Documentation link fixes (7 broken relative paths in templates), category count fix |
+| 1.63 | 2026-01-05 | Review #63: 15 fixes total - 7 broken relative paths, 8 minor improvements (version entries, secrets example, tier notes) |
 | 1.62 | 2026-01-05 | Review #62: Multi-AI template fixes, security doc, broken links, wording improvements |
 | 1.61 | 2026-01-05 | Review #61: Stale review assessment, path prefix fix, terminology update |
 | 1.60 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → claude.md v2.9 (10 patterns added) |
@@ -1420,7 +1420,7 @@ Reviews #41-60 are actively maintained below. Older reviews are in the archive.
 
 **Source:** Qodo PR Code Suggestions + CodeRabbit
 **PR/Branch:** claude/pr-review-C5Usp
-**Suggestions:** 28 total (Critical: 0, Major: 6, Minor: 12, Trivial: 10)
+**Suggestions:** 28 total (Critical: 0, Major: 7, Minor: 11, Trivial: 10)
 
 **Context:** Review of Multi-AI template additions and documentation updates. Identified broken relative links in templates (docs/ paths need ../ prefix when in templates/ subdirectory), category count mismatch, and various minor improvements.
 
@@ -1429,20 +1429,32 @@ Reviews #41-60 are actively maintained below. Older reviews are in the archive.
 | # | Issue | Severity | Category | Fix |
 |---|-------|----------|----------|-----|
 | 1 | Broken link to sonarqube-manifest.md in CODE_REVIEW | 🟠 Major | Docs | Changed `docs/analysis/` to `../analysis/` |
-| 2 | Broken link to AI_REVIEW_LEARNINGS_LOG.md in SECURITY_AUDIT | 🟠 Major | Docs | Changed `docs/` to `../` |
-| 3 | Broken link to FIREBASE_CHANGE_POLICY.md in SECURITY_AUDIT | 🟠 Major | Docs | Added `../` prefix |
-| 4 | Broken links in PROCESS_AUDIT template | 🟠 Major | Docs | Changed `docs/` paths to `../` |
-| 5 | Broken links in REFACTOR_PLAN template | 🟠 Major | Docs | Changed `docs/` paths to `../` |
-| 6 | Category count wrong in SECURITY_AUDIT | 🟠 Major | Docs | Changed "6 mandatory categories" to "7" |
-| 7 | Test pass rate outdated in COORDINATOR | 🟡 Minor | Docs | Updated 97.8% → 99.1% |
+| 2 | Broken link to AI_REVIEW_LEARNINGS_LOG.md in CODE_REVIEW | 🟠 Major | Docs | Changed `docs/` to `../` |
+| 3 | Broken link to AI_REVIEW_LEARNINGS_LOG.md in SECURITY_AUDIT | 🟠 Major | Docs | Changed `docs/` to `../` |
+| 4 | Broken link to FIREBASE_CHANGE_POLICY.md in SECURITY_AUDIT | 🟠 Major | Docs | Added `../` prefix |
+| 5 | Broken links in PROCESS_AUDIT template | 🟠 Major | Docs | Changed `docs/` paths to `../` |
+| 6 | Broken links in REFACTOR_PLAN template | 🟠 Major | Docs | Changed `docs/` paths to `../` |
+| 7 | Category count wrong in SECURITY_AUDIT | 🟠 Major | Docs | Changed "6 mandatory categories" to "7" |
+| 8 | Test pass rate outdated in COORDINATOR | 🟡 Minor | Docs | Updated 97.8% → 99.1% |
+| 9 | Version 2.0/2.1 entries missing in SESSION_CONTEXT | 🟡 Minor | Docs | Added version history entries |
+| 10 | Output format unclear in AGGREGATOR | 🟡 Minor | Docs | Added clarification for JSONL vs markdown |
+| 11 | Secrets example missing in SECURITY.md | 🟡 Minor | Docs | Added defineSecret() example |
+| 12 | Firestore service layer missing from FIREBASE_CHANGE_POLICY | 🟡 Minor | Docs | Added lib/firestore-service.ts reference |
+| 13 | Tier system notes missing in DOC_AUDIT template | 🟡 Minor | Docs | Added "optional" note for Category 4 |
+| 14 | SonarQube conditional missing in REFACTOR template | 🟡 Minor | Docs | Added fallback for projects without SonarQube |
+| 15 | Version 1.0 placeholder dates in templates | 🟡 Minor | Docs | Changed YYYY-MM-DD to 2026-01-01 |
 
 **Patterns Identified:**
 
-1. **Relative Path Context in Templates** (6 occurrences - Major)
+1. **Relative Path Context in Templates** (7 occurrences - Major)
    - Root cause: Templates in `docs/templates/` using `docs/` paths instead of `../`
    - Prevention: When in subdirectory, use `../` to reference sibling directories
    - Pattern: Files in `docs/templates/` should use `../file.md` not `docs/file.md`
    - Note: Applies to all templates referencing other docs
+
+2. **Template Placeholder Hygiene** (3 occurrences - Minor)
+   - Root cause: Placeholder values (YYYY-MM-DD, [Author]) left in version history
+   - Prevention: Always fill in actual dates and author when creating templates
 
 **Key Insight:** Templates in subdirectories must use relative paths based on their location, not the repository root. A template in `docs/templates/` referencing `docs/analysis/` should use `../analysis/` since the template is already inside `docs/`.
 
