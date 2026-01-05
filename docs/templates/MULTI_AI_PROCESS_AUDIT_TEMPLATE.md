@@ -138,12 +138,12 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 Before beginning process analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Process patterns and lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented process issues from Reviews #1-60+
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented process issues from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (docs/analysis/sonarqube-manifest.md): Pre-identified script quality issues
+5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified script quality issues
 6. **Workflow Documentation** (if available): CI/CD process docs, hook documentation
 
 These resources provide essential context about automation expectations and known issues.

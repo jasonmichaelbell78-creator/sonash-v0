@@ -145,13 +145,13 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 Before beginning security analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and security lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented security patterns from Reviews #1-60+
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented security patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (docs/analysis/sonarqube-manifest.md): Pre-identified issues including security concerns
-6. **Firebase Policy** (FIREBASE_CHANGE_POLICY.md): Required security review process for Firebase changes
+5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues including security concerns
+6. **Firebase Policy** (../FIREBASE_CHANGE_POLICY.md): Required security review process for Firebase changes
 
 These resources provide essential context about known issues and security patterns to avoid.
 
@@ -216,7 +216,7 @@ At the end: "Phase 2 complete - Attack surface mapped: [count] endpoints"
 
 PHASE 3: MANDATORY STANDARDS VERIFICATION
 
-For each of the 6 mandatory categories, perform systematic verification:
+For each of the 7 mandatory categories, perform systematic verification:
 
 Category 1: Rate Limiting & Throttling
 REQUIRED CHECKS:

@@ -141,16 +141,16 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 Before beginning refactoring analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and refactoring lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented refactoring patterns from Reviews #1-60+
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented refactoring patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis (PRIMARY INPUT)** (docs/analysis/sonarqube-manifest.md): Pre-identified refactoring targets
+5. **Static Analysis (PRIMARY INPUT)** (../analysis/sonarqube-manifest.md): Pre-identified refactoring targets
    - **47 CRITICAL cognitive complexity violations** (functions exceeding 15-point threshold)
    - 216 MAJOR code quality issues
    - Batch fix opportunities: ~200+ ESLint auto-fixable, 79 replaceAll() replacements, 71 node: prefix imports
-6. **Prior Refactoring Work** (docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON findings
+6. **Prior Refactoring Work** (../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON findings
 
 **IMPORTANT**: The SonarQube CRITICAL cognitive complexity violations are the PRIMARY targets for this audit. Focus on the 47 functions that need refactoring due to excessive complexity.
 

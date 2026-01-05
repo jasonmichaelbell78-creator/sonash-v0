@@ -135,7 +135,7 @@ Before beginning analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (docs/analysis/sonarqube-manifest.md): Pre-identified issues from SonarQube
+5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues from SonarQube
    - 778 total issues (47 CRITICAL cognitive complexity, 216 MAJOR, 507 MINOR)
    - Focus on CRITICAL items for refactoring candidates
 
