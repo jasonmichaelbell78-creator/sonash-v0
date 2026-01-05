@@ -1,8 +1,8 @@
 # Integrated Improvement Plan
 
-**Document Version:** 2.0
+**Document Version:** 2.1
 **Created:** 2026-01-03
-**Last Updated:** 2026-01-04
+**Last Updated:** 2026-01-05
 **Status:** ACTIVE
 **Overall Completion:** 43% (3/7 steps)
 
@@ -40,7 +40,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
 **Overall Progress:** 3/7 steps complete (43%)
-**Effort Tracking:** ~9 hours actual (Steps 1-3) + 12-18 hours remaining (Steps 4-7)
+**Effort Tracking:** ~9 hours actual (Steps 1-3) + 20-28 hours remaining (Steps 4-7)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -55,8 +55,12 @@ flowchart LR
         S3[Step 3\nDeveloper Tooling]
     end
 
-    subgraph Phase2["Validation & Policy"]
-        S4[Step 4\nDelta Review\n+ Security Audit]
+    subgraph Phase2["Multi-AI Audit"]
+        subgraph S4["Step 4: Comprehensive Audit"]
+            S4a[4.1 Prep\nTemplate Updates]
+            S4b[4.2 Execute\n6-Category Audit]
+            S4c[4.3 Aggregate\nUnified CANON]
+        end
         S5[Step 5\nReview Policy\nExpansion]
     end
 
@@ -70,8 +74,10 @@ flowchart LR
 
     S1 --> S2
     S2 --> S3
-    S3 --> S4
-    S4 --> S5
+    S3 --> S4a
+    S4a --> S4b
+    S4b --> S4c
+    S4c --> S5
     S5 --> S6
     S6 --> S7
 
@@ -80,7 +86,9 @@ flowchart LR
     style S1 fill:#90EE90
     style S2 fill:#90EE90
     style S3 fill:#90EE90
-    style S4 fill:#FFE4B5
+    style S4a fill:#FFE4B5
+    style S4b fill:#FFE4B5
+    style S4c fill:#FFE4B5
     style S5 fill:#FFE4B5
     style S6 fill:#FFE4B5
     style S7 fill:#FFE4B5
@@ -89,7 +97,7 @@ flowchart LR
 
 **Legend:** 🟢 Complete | 🟡 Pending | 🔵 Future
 
-**Critical Path:** Step 1 → Step 2 → Step 3 → Step 4 → Step 5 → Step 6 → Step 7
+**Critical Path:** Step 1 → Step 2 → Step 3 → Step 4 (4.1→4.2→4.3) → Step 5 → Step 6 → Step 7
 
 ---
 
@@ -427,96 +435,368 @@ Install and configure developer tooling that was identified as missing during th
 
 ---
 
-## Step 4: Delta Review & Security Audit
+## Step 4: Multi-AI Delta Review & Comprehensive Audit
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 4-6 hours
+**Estimated Effort:** 12-16 hours
 **Dependencies:** Step 3
 **Risk Level:** Medium
 
 ### Objectives
 
-Re-evaluate the EIGHT_PHASE_REFACTOR_PLAN.md to determine which items are still valid, which are stale, and which have been completed by other work.
+1. Prepare the multi-AI review framework by updating all templates with current tooling references
+2. Execute a comprehensive 6-category audit using multiple AI models
+3. Aggregate findings into unified CANON backlog with prioritized PR plan
+4. Archive stale planning documents
 
 ### Background
 
-The EIGHT_PHASE_REFACTOR_PLAN.md was created 2025-12-30 based on a 6-AI code review. Since then:
-- Documentation standardization progressed significantly
-- Pattern automation scripts added
-- Security fixes applied (Qodo reviews #24-27)
-- App Check remains disabled (deferred)
+The multi-AI review framework (created 2025-12-30) needs refresh:
+- **Prompts are stale**: Don't reference claude.md Section 4, AI_REVIEW_LEARNINGS_LOG.md, or pattern compliance checker
+- **Categories incomplete**: Missing Documentation Audit and Process/Automation Audit
+- **Aggregator exists but unlisted**: `docs/code refactor aggregator prompt.md` needs renaming and integration
+- **Coordinator baselines stale**: MULTI_AI_REVIEW_COORDINATOR.md has placeholder dates
 
-A Delta Review will refresh this plan with current context.
+**Execution Strategy**: 2-Tier Aggregation to ensure comprehensive coverage:
 
-### Tasks
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  TIER 1: Per-Category Aggregation (one at a time)                │
+├──────────────────────────────────────────────────────────────────┤
+│  1. Run Code Review (3+ AIs) → Aggregate → CANON-CODE.jsonl      │
+│  2. Run Security (3+ AIs) → Aggregate → CANON-SECURITY.jsonl     │
+│  3. Run Performance (3+ AIs) → Aggregate → CANON-PERF.jsonl      │
+│  4. Run Refactoring (3+ AIs) → Aggregate → CANON-REFACTOR.jsonl  │
+│  5. Run Documentation (3+ AIs) → Aggregate → CANON-DOCS.jsonl    │
+│  6. Run Process (3+ AIs) → Aggregate → CANON-PROCESS.jsonl       │
+└──────────────────────────────────────────────────────────────────┘
+                              ↓
+┌──────────────────────────────────────────────────────────────────┐
+│  TIER 2: Cross-Category Aggregation (final pass)                 │
+├──────────────────────────────────────────────────────────────────┤
+│  Input: 6 aggregated CANON-*.jsonl files                         │
+│  - Deduplicate across categories                                 │
+│  - Identify cross-cutting issues                                 │
+│  - Produce unified CANON backlog                                 │
+│  - Generate coordinated PR plan                                  │
+└──────────────────────────────────────────────────────────────────┘
+```
 
-- [ ] **Task 4.1**: Extract current CANON findings from EIGHT_PHASE_REFACTOR_PLAN.md (1 hour)
-  - List all 45 CANON items with current status
-  - Categorize: DONE, STILL_VALID, STALE, SUPERSEDED
+This ensures each category is thoroughly processed before moving on, preventing findings from being lost in volume.
 
-- [ ] **Task 4.2**: Run fresh analysis on high-priority items (2 hours)
-  - Focus on S0/S1 severity items
-  - Verify file paths still exist
-  - Check if issues were fixed by recent work
-  - Document findings
+---
 
-- [ ] **Task 4.3**: Create refreshed refactor backlog (1 hour)
-  - List validated items that still need work
-  - Prioritize by severity and effort
-  - Group by category (security, architecture, testing)
-  - Format for ROADMAP.md integration
+### Sub-Phase 4.1: Preparation (Framework Updates)
 
-- [ ] **Task 4.4**: Document App Check re-enablement plan (1 hour)
-  - Current status: DISABLED
-  - Prerequisite: Throttle clearance (was Dec 31, verify status)
-  - Steps to re-enable
-  - Testing requirements
-  - Add to Step 5 ROADMAP integration
+**Objective:** Update all templates, create new categories, refresh coordinator before running audits.
 
-- [ ] **Task 4.5**: Archive EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours)
-  - Move full content to `docs/archive/EIGHT_PHASE_REFACTOR_PLAN.md` with superseded_by note
-  - Leave stub file at original `docs/EIGHT_PHASE_REFACTOR_PLAN.md` explaining archived status and linking to ROADMAP.md M2 (prevents broken external links)
-  - Update internal cross-references to point to ROADMAP.md
-  - No new planning document (avoid fragmentation)
+#### Template Updates (Existing 4 Categories)
 
-- [ ] **Task 4.6**: Key rotation policy documentation (0.5 hours) - *from Phase 6 backlog*
-  - Document key rotation schedule in SECURITY.md
-  - Add procedures for rotating Firebase, API keys
-  - Link from GLOBAL_SECURITY_STANDARDS.md
-  - Review alongside App Check re-enablement (Task 4.4)
+- [ ] **Task 4.1.1**: Update Code Review template (0.5 hours)
+  - File: `docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`
+  - Add reference to `claude.md` Section 4 (AI learnings access)
+  - Add reference to `docs/AI_REVIEW_LEARNINGS_LOG.md` (prior patterns)
+  - Add reference to `npm run patterns:check` output as pre-context
+  - Add reference to `npm run deps:circular` and `npm run deps:unused` baselines
+  - Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex, Gemini 3 Pro)
 
-- [ ] **Task 4.7**: Security audit (2 hours) - *from Sprint Backlog A2*
-  - 6 security-sensitive files changed since last review
-  - Use MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md
-  - Focus on: deploy-firebase.yml, SECURITY.md, SERVER_SIDE_SECURITY.md, lib/firebase.ts
-  - Document findings and remediation
+- [ ] **Task 4.1.2**: Update Security Audit template (0.5 hours)
+  - File: `docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`
+  - Add same references as Task 4.1.1
+  - **ADD Dependency Audit section** (shoehorned into Security):
+    - npm audit / yarn audit output analysis
+    - License compliance scanning
+    - Outdated package identification
+    - Supply chain risk assessment
+  - Add reference to FIREBASE_CHANGE_POLICY.md (created in Task 4.1.9)
 
-- [ ] **Task 4.8**: Review commit backlog (1 hour) - *from Sprint Backlog A4*
-  - 133 commits since last multi-AI review (threshold: 50)
-  - Combine with Delta Review (Task 4.1-4.3) for efficiency
-  - Focus on high-churn files and new patterns
-  - Log findings in AI_REVIEW_LEARNINGS_LOG.md
+- [ ] **Task 4.1.3**: Update Performance Audit template (0.5 hours)
+  - File: `docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md`
+  - Add same references as Task 4.1.1
+  - Add reference to bundle analysis output (if available)
 
-- [ ] **Task 4.9**: Create FIREBASE_CHANGE_POLICY.md (1 hour) - *foundation for Step 5*
+- [ ] **Task 4.1.4**: Update Refactoring template (0.5 hours)
+  - File: `docs/templates/MULTI_AI_REFACTORING_PLAN_TEMPLATE.md`
+  - Add same references as Task 4.1.1
+  - Add reference to prior EIGHT_PHASE_REFACTOR_PLAN.md CANON findings (archived)
+
+#### New Templates (2 Categories)
+
+- [ ] **Task 4.1.5**: Create Documentation Audit template (1 hour)
+  - Create: `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md`
+  - Focus areas:
+    - Cross-reference consistency (broken links, stale refs)
+    - Documentation staleness (outdated versions, deprecated info)
+    - Coverage gaps (undocumented features, missing guides)
+    - Tier compliance (docs in correct folders per tier)
+    - Frontmatter consistency (required fields present)
+  - Include same baseline references as other templates
+  - Output: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL
+
+- [ ] **Task 4.1.6**: Create Process/Automation Audit template (1 hour)
+  - Create: `docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md`
+  - Focus areas:
+    - CI/CD pipeline coverage and reliability
+    - Hook effectiveness (pre-commit, pre-push, session hooks)
+    - Script maintainability and test coverage
+    - Pattern checker completeness
+    - Trigger threshold appropriateness
+    - Workflow documentation accuracy
+  - Include same baseline references as other templates
+  - Output: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL
+
+#### Aggregator & Coordinator Updates
+
+- [ ] **Task 4.1.7**: Rename and update Aggregator prompt (1.5 hours)
+  - Rename: `docs/code refactor aggregator prompt.md` → `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md`
+  - Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex)
+  - Add reference to current tooling (pattern checker, madge, knip)
+  - Ensure CANON format is explicitly defined in template
+  - **Support 2-tier aggregation modes:**
+    - **Tier-1 mode**: Input = raw AI outputs (FINDINGS_JSONL × 3+), Output = CANON-CATEGORY.jsonl
+    - **Tier-2 mode**: Input = 6 CANON-*.jsonl files, Output = unified DEDUPED_FINDINGS_JSONL
+  - Add instructions for multiple passes if output is large
+  - Add section explaining 6-category framework
+  - Update PR planning section with current project structure
+
+- [ ] **Task 4.1.8**: Update Coordinator baselines (0.5 hours)
+  - File: `docs/MULTI_AI_REVIEW_COORDINATOR.md`
+  - Update "Last Updated" with actual date
+  - Update baseline metrics (test count, lint warnings, pattern violations)
+  - Add new categories to category list (Documentation, Process)
+  - Update aggregator reference to new location
+  - Define audit cadence triggers (milestone, commit count, at discretion)
+
+#### Policy & Cleanup
+
+- [ ] **Task 4.1.9**: Create FIREBASE_CHANGE_POLICY.md (1 hour)
   - Document requirements for firestore.rules changes
   - Document Cloud Functions security review process
   - Define when security-auditor agent is REQUIRED
   - Create review checklist for Firebase-related PRs
-  - **Benefits Task 4.7** (provides structure for security audit)
+  - **Benefits Task 4.2.2** (provides structure for security audit)
   - **Benefits Step 5** (foundation for correction framework)
 
-### Acceptance Criteria
+- [ ] **Task 4.1.10**: Key rotation policy documentation (0.5 hours)
+  - Document key rotation schedule in SECURITY.md
+  - Add procedures for rotating Firebase, API keys
+  - Link from GLOBAL_SECURITY_STANDARDS.md
 
-- [ ] All 45 CANON items categorized
-- [ ] Stale items documented and discarded
-- [ ] Valid items ready for ROADMAP.md integration
+- [ ] **Task 4.1.11**: Archive IMPLEMENTATION_PROMPTS.md (0.5 hours)
+  - File references archived EIGHT_PHASE_REFACTOR_PLAN.md
+  - Move to `docs/archive/IMPLEMENTATION_PROMPTS.md` with superseded_by note
+  - Update any references pointing to it
+
+- [ ] **Task 4.1.12**: Update docs/README.md inventory (0.5 hours)
+  - Add new templates to template inventory
+  - Update aggregator location reference
+  - Note the 6-category audit framework
+
+#### Sub-Phase 4.1 Acceptance Criteria
+
+- [ ] All 4 existing templates updated with current tooling references
+- [ ] 2 new templates created (Documentation, Process/Automation)
+- [ ] Dependency Audit added to Security template
+- [ ] Aggregator renamed and updated
+- [ ] Coordinator baselines refreshed
+- [ ] FIREBASE_CHANGE_POLICY.md created
+- [ ] Stale docs archived (IMPLEMENTATION_PROMPTS.md)
+
+---
+
+### Sub-Phase 4.2: Execution & Tier-1 Aggregation (Per-Category)
+
+**Objective:** Execute each audit category sequentially, aggregate each before proceeding to next.
+
+**Execution Order:** (one category fully complete before starting next)
+1. Code Review → Aggregate → 2. Security → Aggregate → 3. Performance → Aggregate → 4. Refactoring → Aggregate → 5. Documentation → Aggregate → 6. Process → Aggregate
+
+#### Category 1: Code Review
+
+- [ ] **Task 4.2.1a**: Execute Code Review audit (2 hours)
+  - Use updated `MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`
+  - Run with 3+ AI models for consensus
+  - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
+  - Focus: Hygiene, Types/Correctness, Framework Boundaries, Testing
+  - Include 133-commit backlog context (from Sprint Backlog A4)
+
+- [ ] **Task 4.2.1b**: Aggregate Code Review findings (1 hour)
+  - Run aggregator on 3+ AI outputs
+  - Deduplicate within category
+  - Verify file/symbol existence
+  - Output: `CANON-CODE.jsonl` (category-level CANON findings)
+
+#### Category 2: Security (w/Dependency)
+
+- [ ] **Task 4.2.2a**: Execute Security Audit (2 hours)
+  - Use updated `MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`
+  - Run with 3+ AI models for consensus
+  - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
+  - Focus: Rate Limiting, Input Validation, Secrets, Auth, Firebase, OWASP
+  - **Include Dependency Audit**: npm audit, license compliance, outdated packages
+  - Include 6 security-sensitive files changed (from Sprint Backlog A2)
+
+- [ ] **Task 4.2.2b**: Aggregate Security findings (1 hour)
+  - Run aggregator on 3+ AI outputs
+  - Deduplicate within category
+  - Verify file/symbol existence
+  - Output: `CANON-SECURITY.jsonl`
+
+#### Category 3: Performance
+
+- [ ] **Task 4.2.3a**: Execute Performance Audit (1.5 hours)
+  - Use updated `MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md`
+  - Run with 3+ AI models for consensus
+  - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
+  - Focus: Bundle Size, Rendering, Data Fetching, Memory, Web Vitals
+
+- [ ] **Task 4.2.3b**: Aggregate Performance findings (0.5 hours)
+  - Run aggregator on 3+ AI outputs
+  - Deduplicate within category
+  - Verify file/symbol existence
+  - Output: `CANON-PERF.jsonl`
+
+#### Category 4: Refactoring
+
+- [ ] **Task 4.2.4a**: Execute Refactoring Audit (1.5 hours)
+  - Use updated `MULTI_AI_REFACTORING_PLAN_TEMPLATE.md`
+  - Run with 3+ AI models for consensus
+  - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
+  - Focus: Duplication, Types, Architecture, Security Hardening
+  - Cross-reference with archived EIGHT_PHASE_REFACTOR_PLAN.md CANON items
+
+- [ ] **Task 4.2.4b**: Aggregate Refactoring findings (0.5 hours)
+  - Run aggregator on 3+ AI outputs
+  - Deduplicate within category
+  - Verify file/symbol existence
+  - Output: `CANON-REFACTOR.jsonl`
+
+#### Category 5: Documentation
+
+- [ ] **Task 4.2.5a**: Execute Documentation Audit (1 hour)
+  - Use new `MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md`
+  - Run with 3+ AI models for consensus
+  - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
+  - Focus: Cross-refs, Staleness, Coverage, Tier compliance
+
+- [ ] **Task 4.2.5b**: Aggregate Documentation findings (0.5 hours)
+  - Run aggregator on 3+ AI outputs
+  - Deduplicate within category
+  - Verify file/symbol existence
+  - Output: `CANON-DOCS.jsonl`
+
+#### Category 6: Process/Automation
+
+- [ ] **Task 4.2.6a**: Execute Process/Automation Audit (1 hour)
+  - Use new `MULTI_AI_PROCESS_AUDIT_TEMPLATE.md`
+  - Run with 3+ AI models for consensus
+  - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
+  - Focus: CI/CD, Hooks, Scripts, Pattern checker, Triggers
+
+- [ ] **Task 4.2.6b**: Aggregate Process findings (0.5 hours)
+  - Run aggregator on 3+ AI outputs
+  - Deduplicate within category
+  - Verify file/symbol existence
+  - Output: `CANON-PROCESS.jsonl`
+
+#### Sub-Phase 4.2 Acceptance Criteria
+
+- [ ] All 6 audit categories executed with 3+ AI models each
+- [ ] Each category aggregated into CANON-*.jsonl before proceeding
+- [ ] 6 category-level CANON files ready for final aggregation:
+  - `CANON-CODE.jsonl`
+  - `CANON-SECURITY.jsonl`
+  - `CANON-PERF.jsonl`
+  - `CANON-REFACTOR.jsonl`
+  - `CANON-DOCS.jsonl`
+  - `CANON-PROCESS.jsonl`
+
+---
+
+### Sub-Phase 4.3: Tier-2 Aggregation (Cross-Category Unification)
+
+**Objective:** Merge all 6 category-level CANON files into single deduped backlog with prioritized PR plan.
+
+**Input:** 6 aggregated files from Sub-Phase 4.2:
+- `CANON-CODE.jsonl`, `CANON-SECURITY.jsonl`, `CANON-PERF.jsonl`
+- `CANON-REFACTOR.jsonl`, `CANON-DOCS.jsonl`, `CANON-PROCESS.jsonl`
+
+#### Aggregation Tasks
+
+- [ ] **Task 4.3.1**: Execute Tier-2 Aggregator pass (2 hours)
+  - Use updated `MULTI_AI_AGGREGATOR_TEMPLATE.md`
+  - Input: 6 category-level CANON-*.jsonl files (NOT raw AI outputs)
+  - Run with high-capability model (Claude Opus 4.5 or GPT-5.2-Codex)
+  - Focus: Cross-category deduplication and coordination
+  - Output:
+    - PARSE_ERRORS_JSON (any dropped/invalid lines)
+    - DEDUPED_FINDINGS_JSONL (unified CANON items, re-numbered)
+    - PR_PLAN_JSON (staged, prioritized PRs considering all categories)
+    - HUMAN_SUMMARY (top wins, high-risk items, cross-cutting findings, demoted duplicates)
+
+- [ ] **Task 4.3.2**: Categorize CANON findings (1 hour)
+  - Cross-reference with archived EIGHT_PHASE_REFACTOR_PLAN.md
+  - Categorize each finding: DONE, STILL_VALID, STALE, NEW
+  - Document items already addressed by recent work
+  - Note items superseded by new tooling (pattern checker, etc.)
+
+- [ ] **Task 4.3.3**: Create refreshed refactor backlog (1 hour)
+  - List validated items that still need work
+  - Prioritize by severity (S0-S3) and effort (E0-E3)
+  - Group by category for ROADMAP.md integration
+  - Format: Ready for Step 6 ROADMAP.md tasks
+
+- [ ] **Task 4.3.4**: Document App Check re-enablement plan (1 hour)
+  - Current status: DISABLED
+  - Prerequisite: Throttle clearance verification
+  - Steps to re-enable
+  - Testing requirements
+  - Add to Step 6 ROADMAP integration
+
+- [ ] **Task 4.3.5**: Archive EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours)
+  - Move full content to `docs/archive/EIGHT_PHASE_REFACTOR_PLAN.md`
+  - Add superseded_by note pointing to new CANON backlog
+  - Leave stub at original location (prevent broken external links)
+  - Update internal cross-references
+
+- [ ] **Task 4.3.6**: Log findings in AI_REVIEW_LEARNINGS_LOG.md (0.5 hours)
+  - Add entry for this comprehensive audit
+  - Document key patterns identified
+  - Note any false positives/hallucinations caught by aggregator
+  - Update review count metrics
+
+#### Sub-Phase 4.3 Acceptance Criteria
+
+- [ ] Single aggregator pass completed
+- [ ] Unified CANON backlog produced
+- [ ] PR plan with staged, prioritized PRs
+- [ ] All prior CANON items categorized (DONE/STILL_VALID/STALE/NEW)
 - [ ] App Check plan documented
-- [ ] EIGHT_PHASE_REFACTOR_PLAN.md properly archived/superseded
-- [ ] Key rotation policy documented in SECURITY.md
-- [ ] Security audit completed for changed files (A2)
-- [ ] Commit backlog reviewed and findings logged (A4)
-- [ ] FIREBASE_CHANGE_POLICY.md created (foundation for Step 5)
+- [ ] EIGHT_PHASE_REFACTOR_PLAN.md archived with stub
+- [ ] Findings logged in AI_REVIEW_LEARNINGS_LOG.md
+
+---
+
+### Step 4 Overall Acceptance Criteria
+
+**Sub-Phase 4.1 (Preparation):**
+- [ ] All 6 audit templates ready (4 updated + 2 new)
+- [ ] Dependency Audit integrated into Security template
+- [ ] Aggregator renamed, updated, and documented
+- [ ] Coordinator baselines current
+- [ ] FIREBASE_CHANGE_POLICY.md and key rotation policy complete
+- [ ] Stale docs archived
+
+**Sub-Phase 4.2 (Execution):**
+- [ ] All 6 audit categories executed with multi-AI consensus
+- [ ] Structured output captured for each category
+
+**Sub-Phase 4.3 (Aggregation):**
+- [ ] Unified CANON backlog with deduplication
+- [ ] Prioritized PR plan ready for execution
+- [ ] Prior work cross-referenced and categorized
+- [ ] Findings logged for future reference
 
 ---
 
@@ -811,10 +1091,10 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | # | Item | Discovered | Target Step | Status | Notes |
 |---|------|------------|-------------|--------|-------|
-| A1 | Lint warning baseline | Session #11 | Step 3 | INCLUDE | 160 warnings from eslint-plugin-security; establish baseline or configure |
-| A2 | Security audit | Session #11 | Step 4 | INCLUDE | 6 security-sensitive files changed; combine with Delta Review |
-| A3 | Test coverage for new scripts | Session #11 | Step 3 | INCLUDE | `surface-lessons-learned.js`, `phase-complete-check.js` need tests; do FIRST |
-| A4 | Review commit backlog | Session #11 | Step 4 | INCLUDE | 133 commits since last review; combine with Delta Review |
+| A1 | Lint warning baseline | Session #11 | Step 3 | ✅ DONE | 181 warnings documented in DEVELOPMENT.md (audited 2026-01-04) |
+| A2 | Security audit | Session #11 | Step 4.2.2 | INTEGRATED | Expanded: Now part of 6-category audit in Task 4.2.2 |
+| A3 | Test coverage for new scripts | Session #11 | Step 3 | ✅ DONE | 23 tests added for surface-lessons-learned.js, phase-complete-check.js |
+| A4 | Review commit backlog | Session #11 | Step 4.2.1 | INTEGRATED | 133 commits now included in Task 4.2.1 Code Review context |
 
 ### Disposition Options
 - **INCLUDE** - Add to current/specific step
@@ -832,6 +1112,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-01-05 | Major Step 4 expansion: Restructured into 3 sub-phases (4.1 Prep, 4.2 Execute+Tier1-Agg, 4.3 Tier2-Agg); Added 6-category audit framework; Added 2-tier aggregation strategy (per-category → cross-category); Added 30 detailed tasks (12 per-category execute+aggregate pairs); Integrated Sprint Backlog A2/A4; Updated effort estimate to 12-16h |
 | 2.0 | 2026-01-04 | Major update: Step 3 COMPLETE; Added Step 5 (Review Policy Expansion); Renumbered Steps 5-6 to 6-7; Added Task 4.9 (FIREBASE_CHANGE_POLICY foundation) |
 | 1.9 | 2026-01-04 | Session #20: Step 3 work completed (Prettier, madge, knip, CI updates, docs reorganization) |
 | 1.8 | 2026-01-03 | Added A1-A4 from sprint backlog: Tasks 3.7-3.8 (Step 3), Tasks 4.7-4.8 (Step 4) |
