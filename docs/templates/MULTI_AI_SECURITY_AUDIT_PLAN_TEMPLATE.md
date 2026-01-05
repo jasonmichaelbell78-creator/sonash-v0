@@ -263,9 +263,9 @@ REQUIRED CHECKS:
 [ ] .env.example exists (without values)
 
 VERIFICATION COMMANDS:
-- grep -rn "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
-- grep -rn "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
-- grep -rn "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY" --include="*.ts" --include="*.tsx"
+- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY" --include="*.ts" --include="*.tsx"
 - cat .gitignore | grep -i env
 - ls -la | grep env
 (Note: Grep patterns are heuristic only—secrets may be obfuscated, base64-encoded, or split across variables. Supplement with dedicated secret scanning tools like gitleaks, truffleHog, or detect-secrets.)
@@ -496,8 +496,8 @@ Schema:
 SECURITY VERIFICATION (run if run_commands=yes)
 
 1) Secrets Detection:
-- grep -rn "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
-- grep -rn "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -RIn --binary-files=without-match --exclude-dir={node_modules,.git,.next,dist,build,coverage} "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
 (Note: Supplement with gitleaks, truffleHog, or detect-secrets for comprehensive coverage)
 
 2) Rate Limiting Coverage:
@@ -656,7 +656,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---

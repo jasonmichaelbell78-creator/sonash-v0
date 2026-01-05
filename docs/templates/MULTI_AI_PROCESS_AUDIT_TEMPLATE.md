@@ -102,7 +102,7 @@ Exclude: [e.g., node_modules/, archived workflows]
 |-------|--------------|-------------------------|
 | Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive process analysis, CI/CD expertise, automation patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective process review, script analysis |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Script quality analysis, workflow optimization |
+| GPT-5-Codex | browse_files=yes, run_commands=yes | Script quality analysis, workflow optimization |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative process perspective |
 
 **Selection criteria:**
@@ -555,7 +555,7 @@ OUTPUT
       "title": "...",
       "goal": "...",
       "priority": "high|medium|low",
-      "included_canonical_ids": ["CANON-PROC-001"],
+      "included_canonical_ids": ["CANON-0001"],
       "estimated_effort": "E0|E1|E2|E3",
       "acceptance_tests": ["..."],
       "notes": "implementation guidance"

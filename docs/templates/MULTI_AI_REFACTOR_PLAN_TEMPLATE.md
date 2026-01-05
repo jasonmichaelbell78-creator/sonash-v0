@@ -98,7 +98,7 @@ Exclude: [directories, e.g., docs/, public/, node_modules/]
 |-------|--------------|---------------------|
 | Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive refactor analysis, cross-cutting patterns, grep verification |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective pattern detection, duplication clusters |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Duplication detection, TypeScript deep analysis |
+| GPT-5-Codex | browse_files=yes, run_commands=yes | Duplication detection, TypeScript deep analysis |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative refactor lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Quick pattern confirmation |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
@@ -147,9 +147,10 @@ Before beginning refactoring analysis, review these project-specific resources:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
 5. **Static Analysis (PRIMARY INPUT)** (../analysis/sonarqube-manifest.md): Pre-identified refactoring targets
-   - **47 CRITICAL cognitive complexity violations** (functions exceeding 15-point threshold)
-   - 216 MAJOR code quality issues
-   - Batch fix opportunities: ~200+ ESLint auto-fixable, 79 replaceAll() replacements, 71 node: prefix imports
+   - **NOTE:** Run fresh SonarQube scan or verify metrics are current before each audit—numbers become stale as issues are fixed.
+   - CRITICAL cognitive complexity violations (functions exceeding 15-point threshold)
+   - MAJOR code quality issues
+   - Batch fix opportunities: ESLint auto-fixable, replaceAll() replacements, node: prefix imports
 6. **Prior Refactoring Work** (../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON findings
 
 **IMPORTANT**: If SonarQube analysis is available, the CRITICAL cognitive complexity violations are the PRIMARY targets for this audit. Focus on functions that need refactoring due to excessive complexity. If no SonarQube data exists, focus on manual complexity assessment of large functions (>50 lines) and high-cyclomatic-complexity patterns.
@@ -597,7 +598,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus (47 cognitive complexity violations as PRIMARY targets); Added batch fix opportunities (200+ ESLint, 79 replaceAll, 71 node: imports); Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro) | Claude |
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---

@@ -92,7 +92,7 @@ Exclude: [directories to skip, e.g., docs/, public/, node_modules/]
 |-------|--------------|------------------|
 | Claude Opus 4.5 | browse_files=yes, run_commands=yes | Repo-wide audits, grep-based proof, latest AI learnings |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective repo analysis, pattern detection |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Refactor detection, TS ergonomics |
+| GPT-5-Codex | browse_files=yes, run_commands=yes | Refactor detection, TS ergonomics |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative refactor lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Local pattern spotting, confirmations |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
@@ -696,7 +696,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro) | Claude |
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---

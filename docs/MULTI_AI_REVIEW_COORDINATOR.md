@@ -168,7 +168,7 @@ firestore_rules: IMPLEMENTED
 
 # Code Quality
 lint_errors: 0
-lint_warnings: 181 (baseline as of 2026-01-04; treat new warnings as regressions)
+lint_warnings: 181 (baseline as of 2026-01-04; treat ANY increase as regression; long-term goal: <20 after remediation)
 typescript_strict: true
 pattern_violations: 0 (npm run patterns:check)
 

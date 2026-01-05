@@ -144,15 +144,17 @@ STACK / CONTEXT
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
+**Note:** Adjust file paths below to match your project structure. Verify each file exists before proceeding. If unavailable, skip and note the limitation.
+
 Before beginning performance analysis, review these project-specific resources:
 
 1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and performance lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented performance patterns from Reviews #1-60+
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented performance patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (docs/analysis/sonarqube-manifest.md): Pre-identified issues including performance concerns
+5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues including performance concerns
    - 47 CRITICAL cognitive complexity violations (refactoring targets)
    - Performance-impacting patterns already identified
 6. **Bundle Analysis** (if available): Previous build output for comparison
@@ -602,7 +604,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest with 47 CRITICAL cognitive complexity items); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro) | Claude |
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude |
 | 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
 
 ---

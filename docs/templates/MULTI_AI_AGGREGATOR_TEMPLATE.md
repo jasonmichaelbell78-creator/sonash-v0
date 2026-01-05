@@ -96,8 +96,8 @@ You are the Multi-AI Audit Aggregator. Your job is to merge multiple AI audit ou
 MODE: <TIER-1 | TIER-2>
 
 **If TIER-1:**
-- Category: <CODE | SECURITY | PERFORMANCE | REFACTORING | DOCUMENTATION | PROCESS>
-- Input sources: <List model names, e.g., "Claude Opus 4.5, GPT-5.2-Codex, Gemini 3 Pro">
+- Category: <CODE | SECURITY | PERF | REFACTOR | DOCS | PROCESS>
+- Input sources: <List model names, e.g., "Claude Opus 4.5, GPT-5-Codex, Gemini 3 Pro">
 
 **If TIER-2:**
 - Input: 6 CANON-*.jsonl files (already category-aggregated)
@@ -357,6 +357,12 @@ One JSON object per line. Schema:
 Same schema as CANON-*.jsonl but with:
 - Cross-category notes in "notes" field
 - Updated dependencies showing cross-category prerequisites
+
+**CANONICAL_ID ASSIGNMENT (DETERMINISTIC; BOTH TIERS)**
+- Recompute IDs from the final deduped set every run (do not preserve source IDs).
+- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc), then fingerprint (asc).
+- Assign sequential IDs: CANON-0001, CANON-0002, ...
+- In Tier-1, IDs are still `CANON-0001` style (the filename indicates the category); do NOT embed category into the ID.
 
 3) PR_PLAN_JSON
 ```json

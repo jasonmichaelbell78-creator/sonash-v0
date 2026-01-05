@@ -378,32 +378,40 @@ Use this checklist for routine rotations:
 Consider implementing automated key rotation for critical keys:
 
 ```typescript
-// PSEUDOCODE ONLY - Do NOT implement as-is.
-// Automated rotation requires an EXTERNAL privileged identity (e.g., CI job or
-// dedicated rotation service account with narrowly scoped IAM permissions).
-// This running workload should CONSUME rotated secrets; generation/revocation
-// must be done by a separate process, not this function itself.
+// PSEUDOCODE ONLY — DO NOT COPY/PASTE INTO A DEPLOYED FUNCTION.
+// This example is documentation-only to illustrate *consumption* of rotated secrets.
+//
+// HARD SECURITY RULE:
+// - The running workload MUST NOT have IAM permissions to create/delete/revoke service account keys.
+// - Key generation/revocation MUST be performed by an external privileged process (e.g., CI job)
+//   using a dedicated rotation identity with narrowly scoped IAM permissions.
+// - This function (or any application runtime) should only *read* the currently active secret values.
 
 import { defineSecret } from 'firebase-functions/params';
 
-// Define secrets (stored in Firebase Secret Manager)
+// Secrets are stored in Secret Manager and injected at runtime.
 const adminPrivateKey = defineSecret('FIREBASE_ADMIN_PRIVATE_KEY');
 const adminClientEmail = defineSecret('FIREBASE_ADMIN_CLIENT_EMAIL');
 
 export const rotateServiceAccountKey = functions
   .runWith({ secrets: [adminPrivateKey, adminClientEmail] })
   .pubsub.schedule('0 0 1 */3 *') // Every 90 days
-  .onRun(async (context) => {
-    // Access secrets via .value() - only available at runtime
-    const currentKey = adminPrivateKey.value();
-    const currentEmail = adminClientEmail.value();
+  .onRun(async () => {
+    // IMPORTANT: Do not read/log secret values here. This function does NOT rotate keys.
+    // It may only perform a health check (e.g., verify app can authenticate) after an
+    // external rotation job has updated Secret Manager.
 
-    // Rotation must be performed OUTSIDE this function by privileged process:
+    // Rotation must be performed OUTSIDE this function by a privileged process:
     // 1. External job generates a new key using a dedicated rotation identity
+    //    - Use short-lived credentials (OIDC/workload identity), not long-lived static keys.
     // 2. External job updates Secret Manager values
+    //    - Record secret version IDs and timestamps in an immutable audit trail.
     // 3. External job triggers redeploy/restart so workloads pick up new secrets
+    //    - Ensure rollout is staged (staging → production) with health checks.
     // 4. External job revokes old key after grace period
+    //    - Grace period must be time-bounded and documented.
     // 5. External job notifies security team and writes audit trail
+    //    - Include who/what rotated, why, affected environments, and rollback steps.
   });
 ```
 
