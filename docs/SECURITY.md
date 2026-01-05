@@ -1,7 +1,7 @@
 # Security & Privacy Guide
 
-**Document Version:** 2.0
-**Last Updated:** 2026-01-02
+**Document Version:** 2.1
+**Last Updated:** 2026-01-05
 **Status:** ACTIVE
 
 ---
@@ -28,9 +28,10 @@ This document outlines security measures, privacy protections, and data handling
 2. [Security Layers](#security-layers)
 3. [Authentication](#authentication)
 4. [Data Protection](#data-protection)
-5. [User Privacy Rights](#user-privacy-rights)
-6. [Security Checklist](#security-checklist)
-7. [Incident Response](#incident-response)
+5. [Key Rotation Policy](#key-rotation-policy)
+6. [User Privacy Rights](#user-privacy-rights)
+7. [Security Checklist](#security-checklist)
+8. [Incident Response](#incident-response)
 
 ---
 
@@ -166,6 +167,235 @@ async function saveEncryptedEntry(userId: string, entry: InventoryEntry) {
 - Con: No server-side search
 - Con: Key management complexity
 - Con: Data unrecoverable if key lost
+
+---
+
+## Key Rotation Policy
+
+### Overview
+
+Regular key rotation is a critical security practice that limits the impact of compromised credentials. This section defines the rotation schedule and procedures for all application keys and secrets.
+
+### Key Types & Rotation Schedule
+
+| Key Type | Rotation Schedule | Owner | Critical Path |
+|----------|------------------|-------|---------------|
+| **Firebase Web API Key** | No rotation required* | Auto (Firebase) | No |
+| **Service Account Private Key** | Every 90 days (or immediately if compromised) | Manual | **YES** |
+| **reCAPTCHA Site Keys** | Every 12 months (or if compromised) | Manual | No |
+| **Sentry DSN** | As needed (if compromised) | Manual | No |
+| **Third-party API Keys** | Per provider policy | Manual | Depends |
+
+*Firebase Web API Keys are designed to be public and don't require rotation. They're protected by Firestore Rules and App Check.
+
+### Service Account Key Rotation
+
+**CRITICAL:** Service account keys (`FIREBASE_ADMIN_PRIVATE_KEY`, `FIREBASE_ADMIN_CLIENT_EMAIL`) have full access to Firebase resources and MUST be rotated regularly.
+
+#### Scheduled Rotation (Every 90 Days)
+
+1. **Generate New Service Account Key**
+   ```bash
+   # Via Firebase Console:
+   # 1. Go to Project Settings > Service Accounts
+   # 2. Click "Generate New Private Key"
+   # 3. Download JSON file
+   # 4. NEVER commit to git
+   ```
+
+2. **Update Environment Variables**
+   - Development: Update `.env.local` (local only, never committed)
+   - Staging: Update hosting provider env vars (Vercel/Netlify/etc.)
+   - Production: Update hosting provider env vars
+
+   ```bash
+   # Example: Vercel CLI
+   vercel env add FIREBASE_ADMIN_PRIVATE_KEY production
+   # Paste the new private key when prompted
+
+   vercel env add FIREBASE_ADMIN_CLIENT_EMAIL production
+   # Paste the new client email
+   ```
+
+3. **Deploy Updated Configuration**
+   ```bash
+   # Redeploy Cloud Functions with new keys
+   firebase deploy --only functions
+
+   # Redeploy web app (if using service account on client)
+   npm run deploy
+   ```
+
+4. **Verify New Keys Working**
+   - Test Cloud Functions authentication
+   - Check error logs for auth failures
+   - Verify Firestore operations succeed
+
+5. **Revoke Old Service Account Key**
+   ```bash
+   # Via Firebase Console:
+   # 1. Go to Project Settings > Service Accounts
+   # 2. Find old key by creation date
+   # 3. Click "Delete" to revoke
+   ```
+
+6. **Document Rotation**
+   - Record rotation date in `docs/security/KEY_ROTATION_LOG.md` (create if needed)
+   - Note any issues encountered
+   - Update next rotation date (90 days from today)
+
+#### Emergency Rotation (If Compromised)
+
+If a service account key is compromised (committed to git, leaked in logs, etc.):
+
+1. **IMMEDIATELY** generate new key (steps above)
+2. **IMMEDIATELY** deploy to all environments
+3. **IMMEDIATELY** revoke compromised key
+4. **Assess impact:**
+   - Review Firebase audit logs for unauthorized activity
+   - Check for unusual database writes/reads
+   - Verify no data was accessed or modified
+5. **Document incident** per [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md)
+6. **Update** [FIREBASE_CHANGE_POLICY.md](./FIREBASE_CHANGE_POLICY.md) if key exposure vector needs mitigation
+
+**NEVER:**
+- Commit service account keys to git (check with `git log -p | grep "private_key"`)
+- Log service account keys (sanitize before logging)
+- Share keys via Slack/email
+- Store keys in unencrypted files
+
+### Firebase Web API Key Management
+
+**Firebase Web API Keys are designed to be public** - they're safe to include in client-side code. They're protected by:
+- Firestore Security Rules (enforce user access control)
+- App Check (verify requests come from legitimate app)
+- Firebase Console domain restrictions (optional)
+
+**No rotation required**, but you can regenerate if needed:
+
+1. **Generate New Web API Key**
+   ```bash
+   # Via Firebase Console:
+   # 1. Go to Project Settings > General
+   # 2. Scroll to "Your apps"
+   # 3. Add new web app (or regenerate key)
+   ```
+
+2. **Update Environment Variables**
+   ```bash
+   # .env.local (not committed)
+   NEXT_PUBLIC_FIREBASE_API_KEY=new_key_here
+
+   # Update in hosting provider for production
+   ```
+
+3. **Deploy** and verify functionality
+
+4. **Optional:** Remove old web app from Firebase Console
+
+### reCAPTCHA Key Rotation
+
+reCAPTCHA keys (for App Check) should be rotated annually or if compromised:
+
+1. **Create New reCAPTCHA Keys**
+   - Go to [Google Cloud Console > reCAPTCHA Enterprise](https://console.cloud.google.com/security/recaptcha)
+   - Create new site key and secret key
+
+2. **Update Firebase App Check**
+   ```bash
+   # Via Firebase Console:
+   # 1. Go to App Check
+   # 2. Update reCAPTCHA Enterprise provider
+   # 3. Enter new site key
+   ```
+
+3. **Update Client Configuration**
+   ```typescript
+   // Update in app initialization
+   const appCheckInstance = initializeAppCheck(app, {
+     provider: new ReCaptchaEnterpriseProvider('NEW_SITE_KEY_HERE'),
+     isTokenAutoRefreshEnabled: true,
+   });
+   ```
+
+4. **Deploy** and verify App Check working
+
+5. **Revoke old keys** in Google Cloud Console
+
+### Third-Party API Keys
+
+For any third-party services (e.g., Sentry, analytics):
+
+1. **Check provider's rotation policy** (some auto-rotate)
+2. **Generate new key** in provider dashboard
+3. **Update environment variables** in all environments
+4. **Deploy** and verify integration working
+5. **Revoke old key** in provider dashboard
+
+### Key Rotation Checklist
+
+Use this checklist for routine rotations:
+
+- [ ] **30 days before rotation due:**
+  - [ ] Review current key inventory
+  - [ ] Verify rotation procedure is up-to-date
+  - [ ] Notify team of upcoming rotation
+
+- [ ] **Rotation day:**
+  - [ ] Generate new keys (service account, reCAPTCHA, etc.)
+  - [ ] Update all environment variables (dev, staging, prod)
+  - [ ] Deploy to all environments
+  - [ ] Verify functionality in each environment
+  - [ ] Monitor error logs for 24 hours
+  - [ ] Revoke old keys after 24-hour grace period
+  - [ ] Document rotation in KEY_ROTATION_LOG.md
+  - [ ] Schedule next rotation (90 days out)
+
+- [ ] **If issues detected:**
+  - [ ] Rollback to old keys immediately
+  - [ ] Investigate root cause
+  - [ ] Fix issue and retry rotation
+
+### Key Storage Best Practices
+
+**DO:**
+- ✅ Store keys in environment variables (`.env.local`, hosting provider env config)
+- ✅ Use secret managers (Firebase Secret Manager, Google Secret Manager, Vercel Secrets)
+- ✅ Encrypt keys at rest if stored in files
+- ✅ Restrict key access to minimum necessary personnel
+- ✅ Use different keys for dev/staging/prod
+
+**DON'T:**
+- ❌ Commit keys to git (check with `git log -p | grep -i "private_key"`)
+- ❌ Log keys in application logs
+- ❌ Share keys via Slack, email, or unencrypted channels
+- ❌ Store keys in plaintext files
+- ❌ Reuse keys across environments
+
+### Automated Rotation (Future Enhancement)
+
+Consider implementing automated key rotation for critical keys:
+
+```typescript
+// Example: Cloud Function to auto-rotate service account key
+export const rotateServiceAccountKey = functions
+  .pubsub.schedule('0 0 1 */3 *') // Every 90 days
+  .onRun(async (context) => {
+    // 1. Generate new service account key via Admin SDK
+    // 2. Update Secret Manager with new key
+    // 3. Trigger redeployment with new keys
+    // 4. Revoke old key after grace period
+    // 5. Send notification to security team
+  });
+```
+
+**Benefits:**
+- Eliminates human error
+- Ensures consistent rotation schedule
+- Reduces key compromise window
+- Provides audit trail
+
+**Implementation priority:** Medium (after manual rotation process established)
 
 ---
 
@@ -326,8 +556,10 @@ FIREBASE_ADMIN_CLIENT_EMAIL       # NEVER commit - server only
 ## Related Documentation
 
 - [SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Implementation details
+- [FIREBASE_CHANGE_POLICY.md](./FIREBASE_CHANGE_POLICY.md) - Firebase security review requirements
 - [BILLING_ALERTS_SETUP.md](./archive/2025-dec-reports/BILLING_ALERTS_SETUP.md) - GCP billing configuration
 - [INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md) - Response procedures
+- [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Mandatory security standards
 
 ---
 
@@ -359,6 +591,7 @@ When working with security-related code:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-01-05 | Added comprehensive Key Rotation Policy section - service account, Firebase API keys, reCAPTCHA, procedures, checklists, automation roadmap (Task 4.1.10) |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
 | 1.1 | 2025-12-19 | Added security checklist and current status |
 | 1.0 | 2025-12-17 | Initial security documentation |
