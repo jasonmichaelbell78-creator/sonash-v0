@@ -120,10 +120,12 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 - AI_WORKFLOW.md
 - SESSION_CONTEXT.md
 - PR_WORKFLOW_CHECKLIST.md
-- IMPLEMENTATION_PROMPTS.md
 - AI_REVIEW_PROCESS.md
 - MULTI_AI_REVIEW_COORDINATOR.md
 - claude.md
+
+**Archived**:
+- IMPLEMENTATION_PROMPTS.md (superseded by Multi-AI review templates)
 
 **Characteristics**:
 - ✅ **Must have**: Clear "When to Use" section

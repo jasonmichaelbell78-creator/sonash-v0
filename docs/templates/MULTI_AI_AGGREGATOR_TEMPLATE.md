@@ -1,504 +1,401 @@
-Best AI + model choices for the verification aggregator (current as of 12/28/2025)
+# Multi-AI Audit Aggregator Template
 
+**Document Version:** 2.0
+**Last Updated:** 2026-01-05
+**Purpose:** Aggregation prompt for merging multiple AI audit outputs into canonical findings
 
+---
+
+## Model Recommendations (Current as of 2026-01-05)
 
 You want: long-context + strict instruction following + reliable tool/terminal behavior.
 
+### Best Single-Model Aggregator
 
+**Claude Opus 4.5** - Comprehensive aggregation brain with excellent instruction-following and code review reliability. Positioned as most precise with fewer tool-calling errors.
 
-Best “single-model” aggregator brain (and can also verify)
+**Alternative:** Claude Sonnet 4.5 - Faster/leaner option with top coding/agent performance.
 
+### Best for Terminal + Verification
 
+**GPT-5.2-Codex** - Explicitly optimized for long-horizon coding, large refactors/migrations, and reliable tool calling.
 
-OpenAI GPT-5.2 Thinking (or GPT-5.2 Pro if you want the “spare no compute” option) — strong long-context + agentic tool calling improvements. 
+**Alternative:** GPT-5.2 Thinking - Spare-no-compute option with strong long-context.
 
-OpenAI
+### Best for Autonomous Execution
 
+**Gemini 3 Pro** (in Jules) - Improved agentic reliability and intent alignment. Great for implementing PR plans after aggregation.
 
+### Recommended Setup
 
-Best “verification-heavy” aggregator (terminal + refactors)
+**For Tier-1 Aggregation (per-category):** Claude Sonnet 4.5 or GPT-5.2-Codex
+**For Tier-2 Aggregation (cross-category):** Claude Opus 4.5 or GPT-5.2 Thinking
 
+---
 
+## Aggregation Modes
 
-OpenAI GPT-5.2-Codex — explicitly optimized for long-horizon coding, large refactors/migrations, and reliable tool calling in Codex. 
+This template supports TWO distinct aggregation modes:
 
-OpenAI
+### Tier-1 Mode: Per-Category Aggregation
 
+**Input:** Raw AI outputs from 3+ models for a SINGLE category
+- FINDINGS_JSONL (one per model)
+- SUSPECTED_FINDINGS_JSONL (one per model)
+- HUMAN_SUMMARY (optional)
 
+**Output:** Category-level CANON file (e.g., `CANON-CODE.jsonl`, `CANON-SECURITY.jsonl`)
 
-Best Anthropic option (excellent instruction-following + code review reliability)
+**Purpose:** Deduplicate and verify findings within ONE audit category before moving to next category.
 
+**Categories (6 total):**
+1. Code Review (Hygiene, Types, Boundaries, Security, Testing)
+2. Security Audit (Rate Limiting, Validation, Secrets, Auth, Firebase, Dependencies, OWASP)
+3. Performance (Bundle, Rendering, Data Fetching, Memory, Web Vitals)
+4. Refactoring (Duplication, Types, Architecture, Security Hardening, Testing)
+5. Documentation (Cross-References, Staleness, Coverage, Tier Compliance, Frontmatter)
+6. Process/Automation (CI/CD, Hooks, Scripts, Pattern Checker, Triggers, Documentation)
 
+### Tier-2 Mode: Cross-Category Unification
 
-Claude Opus 4.5 — positioned as more precise / fewer tool-calling and build/lint errors in customer reports. 
+**Input:** 6 category-level CANON files (NOT raw AI outputs)
+- CANON-CODE.jsonl
+- CANON-SECURITY.jsonl
+- CANON-PERF.jsonl
+- CANON-REFACTOR.jsonl
+- CANON-DOCS.jsonl
+- CANON-PROCESS.jsonl
 
-Anthropic
+**Output:** Final unified DEDUPED_FINDINGS_JSONL + PR_PLAN_JSON
 
+**Purpose:** Deduplicate across categories, identify cross-cutting issues, produce coordinated PR plan.
 
+**Important:** Tier-2 runs ONCE after ALL 6 categories complete Tier-1.
 
-If you want a slightly “faster/leaner” verifier: Claude Sonnet 4.5 (Anthropic positions it as their top coding/agent model). 
+---
 
-Anthropic
+## AGGREGATION PROMPT
 
+Use this prompt with your selected model. Specify which mode you're running.
 
+### ROLE
 
-Best Google option (autonomous PR execution style)
+You are the Multi-AI Audit Aggregator. Your job is to merge multiple AI audit outputs into one deduped, ranked backlog and a staged PR plan — while actively verifying and filtering hallucinations using repo access + lightweight tooling.
 
+### NON-NEGOTIABLE PRINCIPLES
 
+- You are an AGGREGATOR-FIRST system, not a fresh auditor
+- You MUST NOT invent files, symbols, or claims not supported by (a) auditor outputs OR (b) your verification searches/tests
+- You MAY expand a reported duplication cluster by discovering additional instances during verification (same pattern), but you must not introduce unrelated new findings
+- In Tier-2 mode, you ONLY work with pre-aggregated CANON files, never with raw AI outputs
 
-Gemini 3 Pro in Jules — improved agentic reliability and intent alignment in Jules. 
+### AGGREGATION MODE
 
-Google Developers Blog
+**Specify which mode before starting:**
 
+MODE: <TIER-1 | TIER-2>
 
+**If TIER-1:**
+- Category: <CODE | SECURITY | PERFORMANCE | REFACTORING | DOCUMENTATION | PROCESS>
+- Input sources: <List model names, e.g., "Claude Opus 4.5, GPT-5.2-Codex, Gemini 3 Pro">
 
-(Great for implementing the PR plan after aggregation, but I’d still prefer GPT-5.2-Codex / Sonnet 4.5 for the actual verification pass.)
+**If TIER-2:**
+- Input: 6 CANON-*.jsonl files (already category-aggregated)
+- Focus: Cross-category deduplication and PR coordination
 
-
-
-“Extra triangulation” model (optional)
-
-
-
-Kimi K2 (Instruct) — strong general coding/reasoning and optimized for agentic usage (open-weight). 
-
-GitHub
-
-+1
-
-
-
-Useful as an additional vote, but I wouldn’t pick it as the main verifier unless it’s the most convenient in your workflow.
-
-
-
-If you’re doing this inside GitHub Copilot
-
-
-
-Copilot supports picking from multiple frontier models (including GPT-5.2, Claude Sonnet/Opus 4.5, Gemini 3 Pro, etc.), so it can serve as your “aggregator seat” in VS Code if that’s where you want to run it. 
-
-GitHub Docs
-
-
-
-My recommended setup (lowest friction, highest accuracy)
-
-
-
-Aggregator + verification: GPT-5.2-Codex (Codex CLI) or Claude Sonnet 4.5 (Claude Code)
-
-
-
-If you want maximum careful aggregation: run the aggregator prompt on GPT-5.2 Thinking or Claude Opus 4.5, but keep verification steps enabled.
-
-
-
-
-
-
-
-
-
-
-
-PROMPT
-
-
-
-
-
-ROLE
-
-You are the Refactor Verification Aggregator. Your job is to merge multiple AI audit outputs into one deduped, ranked backlog and a staged PR plan — while actively verifying and filtering hallucinations using repo access + lightweight tooling.
-
-
-
-NON-NEGOTIABLE PRINCIPLES
-
-\- You are an AGGREGATOR-FIRST system, not a fresh auditor.
-
-\- You MUST NOT invent files, symbols, or claims not supported by (a) auditor outputs OR (b) your verification searches/tests.
-
-\- You MAY expand a reported duplication cluster by discovering additional instances during verification (same pattern), but you must not introduce unrelated new findings.
-
-
-
-REPO
+### REPO CONTEXT
 
 Repo URL: <PASTE REPO URL HERE>
+Branch/commit: <PASTE HERE OR "default">
 
-Branch/commit (if specified): <PASTE HERE OR "default">
+### PRE-AGGREGATION CONTEXT (TIER-1 ONLY)
 
+Before processing raw AI outputs, review project-specific baselines:
 
+1. **Pattern Compliance:** npm run patterns:check (baseline violations)
+2. **Dependency Health:**
+   - Circular dependencies: npm run deps:circular (expect 0)
+   - Unused exports: npm run deps:unused
+3. **Static Analysis:** docs/analysis/sonarqube-manifest.md
+   - 778 total issues (47 CRITICAL cognitive complexity)
+4. **AI Learnings:** claude.md Section 4, docs/AI_REVIEW_LEARNINGS_LOG.md
 
-INPUT YOU WILL RECEIVE
+### INPUT YOU WILL RECEIVE
 
-You will be given N auditor outputs. Each output SHOULD contain:
+**TIER-1 Mode:** N auditor outputs (N >= 3 recommended). Each output contains:
+- CAPABILITIES line
+- FINDINGS_JSONL (1 JSON object per line)
+- SUSPECTED_FINDINGS_JSONL (1 JSON object per line)
+- HUMAN_SUMMARY (optional, non-canonical)
 
-\- CAPABILITIES line
+**TIER-2 Mode:** 6 CANON files (JSONL format). Each line is already a canonical finding with:
+- canonical_id
+- All standard CANON fields (see schema below)
 
-\- FINDINGS\_JSONL (1 JSON object per line)
-
-\- SUSPECTED\_FINDINGS\_JSONL (1 JSON object per line)
-
-\- HUMAN\_SUMMARY (optional, non-canonical)
-
-
-
-FIRST: ENV + CAPABILITIES (REQUIRED)
+### FIRST: CAPABILITIES (REQUIRED)
 
 Before processing, print exactly:
 
-AGG\_CAPABILITIES: repo\_checkout=<yes/no>, run\_commands=<yes/no>, can\_search\_code=<yes/no>, limitations="<one sentence>"
+```
+AGG_CAPABILITIES: repo_checkout=<yes/no>, run_commands=<yes/no>, can_search_code=<yes/no>, limitations="<one sentence>"
+```
 
+**If repo_checkout=no OR can_search_code=no:**
+- Run in "NO-REPO MODE": dedupe only; no verification
+- Still follow all output formats
 
+**Otherwise:** Continue in VERIFICATION MODE (default)
 
-If repo\_checkout=no OR can\_search\_code=no:
-
-\- You must run in "NO-REPO MODE": dedupe only; no verification. (Still follow all output formats.)
-
-Otherwise continue in VERIFICATION MODE (default).
-
-
-
-SETUP (VERIFICATION MODE)
+### SETUP (VERIFICATION MODE)
 
 Goal: do not install heavy tools unless already present.
 
-1\) Ensure you have a local checkout of the repo (clone if needed).
+1. Ensure you have a local checkout of the repo (clone if needed)
+2. Install dependencies ONLY if needed to run repo scripts:
+   - Prefer `npm ci` if package-lock.json exists; otherwise `npm install`
+3. Determine available scripts via package.json and prefer existing commands
 
-2\) Install dependencies ONLY if needed to run repo scripts:
+### COMMAND CHECKLIST (run if available; do not fail if one fails)
 
-&nbsp;  - Prefer `npm ci` if package-lock.json exists; otherwise `npm install`.
+**Quality gates:**
+- npm run lint (or closest lint script)
+- npm run typecheck (or `tsc --noEmit`)
+- npm test (or closest test script)
 
-3\) Determine available scripts via package.json and prefer existing commands.
-
-
-
-COMMAND CHECKLIST (run if available; do not fail the whole run if one fails)
-
-\- npm run lint (or the closest lint script)
-
-\- npm run typecheck (or `tsc --noEmit` if available)
-
-\- npm test (or closest test script)
+**Project-specific:**
+- npm run patterns:check (anti-pattern violations)
+- npm run deps:circular (circular dependency check)
+- npm run deps:unused (unused export check)
 
 Record failures as SHORT evidence bullets (paths + brief message), not full logs.
 
+### NORMALIZATION (TIER-1 Mode)
 
+**Categories** must map to canonical set based on audit type:
+- Code Review: Hygiene/Duplication | Types/Correctness | Next/React Boundaries | Security | Testing
+- Security Audit: Rate Limiting | Input Validation | Secrets Management | Authentication | Firebase Security | Dependency Security | OWASP
+- Performance: Bundle Size | Rendering | Data Fetching | Memory | Core Web Vitals
+- Refactoring: Hygiene/Duplication | Types/Correctness | Architecture/Boundaries | Security Hardening | Testing Infrastructure
+- Documentation: Cross-Reference | Staleness | Coverage Gaps | Tier Compliance | Frontmatter
+- Process: CI/CD | Hooks | Scripts | Pattern Checker | Triggers | Documentation
 
-NORMALIZATION (canonical fields)
+**Severity:** S0–S3
+**Effort:** E0–E3
 
-Categories must be one of:
+If a JSONL line is invalid JSON: drop it and record it in PARSE_ERRORS_JSON.
 
-\- Hygiene/Duplication | Types/Correctness | Next/React Boundaries | Security | Testing
-
-Severity: S0–S3
-
-Effort: E0–E3
-
-If a JSONL line is invalid JSON: drop it and record it in PARSE\_ERRORS\_JSON.
-
-
-
-EVIDENCE RULES (anti-hallucination)
+### EVIDENCE RULES (anti-hallucination)
 
 A canonical finding can be CONFIRMED only if it has:
-
-\- files\[] non-empty AND
-
-\- symbols\[] non-empty AND
-
-\- verification finds those files exist (and ideally symbols appear via search)
+- files[] non-empty AND
+- symbols[] non-empty (or specific issue indicator for docs/process) AND
+- verification finds those files exist (and ideally symbols appear via search)
 
 Otherwise it is SUSPECTED.
 
+### DEDUPLICATION RULES
 
+**TIER-1 Mode (within single category):**
 
-DEDUPLICATION RULES
+1. Primary merge key: fingerprint (exact match) when well-formed
+2. Secondary merge (if fingerprints differ): merge if ALL true:
+   - same category
+   - overlap: >=1 shared file OR >=1 shared symbol
+   - titles + suggested_fix describe the same refactor direction
+3. Duplication clusters:
+   - Merge by union of instances (unique by file+symbol)
+   - During verification, you may add more instances only if the same pattern is clearly present
+4. Never merge purely "similar vibes" without evidence overlap
 
-1\) Primary merge key: fingerprint (exact match) when well-formed.
+**TIER-2 Mode (across categories):**
 
-2\) Secondary merge (if fingerprints differ): merge if ALL true:
+1. Primary merge: Same file + same root issue (even if categorized differently)
+2. Cross-cutting detection: Findings that appear in multiple categories likely need coordination
+3. Dependency chains: Map prerequisites across categories (e.g., refactor before security fix)
+4. Never merge if remediation approaches conflict
 
-&nbsp;  - same category
+### CONSENSUS + SCORING (for each canonical finding)
 
-&nbsp;  - overlap: >=1 shared file OR >=1 shared symbol
+**TIER-1 Mode:** Compute:
+- sources: contributing model names
+- confirmations: count of sources that listed it in FINDINGS_JSONL
+- suspects: count of sources that listed it in SUSPECTED_FINDINGS_JSONL
+- tool_confirmed_sources: sources where that model had run_commands=yes AND provided meaningful evidence[]
+- consensus_score (0–5):
+  - +2 if >=2 confirmed sources
+  - +1 if >=3 total sources mention (confirmed or suspected)
+  - +1 if any tool_confirmed_sources >=1
+  - +1 if shared evidence overlap across sources (shared file/symbol)
+- final_confidence:
+  - Start with max(confidence) among contributing lines, then adjust:
+    - if only 1 source and no tool confirmation: cap at 60 unless you verify strongly
+    - if all mentions are suspected: cap at 40 unless you verify strongly
+    - if >=2 confirmed + evidence overlap: floor at 70
+- cross_cutting_bonus: +1 if duplication_cluster.instances >= 3
 
-&nbsp;  - titles + suggested\_fix describe the same refactor direction
+**TIER-2 Mode:** Consensus already established in Tier-1. Focus on:
+- Cross-category duplication: Same issue reported in multiple categories
+- Impact escalation: Issue more severe when considering cross-category effects
+- Coordination needs: Which PRs need to happen together
 
-3\) Duplication clusters:
+### VERIFICATION MODE (repo access available)
 
-&nbsp;  - Merge by union of instances (unique by file+symbol).
+**DO THIS FOR:**
+- All duplication clusters
+- All S0/S1 items
+- Top 25 remaining items by preliminary rank
 
-&nbsp;  - During verification, you may add more instances only if the same pattern is clearly present.
+**Verification procedure per canonical finding:**
 
-4\) Never merge purely “similar vibes” without evidence overlap.
+1. FILE EXISTENCE:
+   - Confirm each file path exists in repo
 
+2. SYMBOL PRESENCE:
+   - Search for each symbol in the referenced files (prefer rg; fallback grep)
 
+3. CLUSTER VERIFICATION (if duplication_cluster.is_cluster=true):
+   - Run targeted searches to confirm repeated pattern
+   - Expand instances ONLY if same pattern is present
 
-CONSENSUS + SCORING (for each canonical finding)
+4. QUALITY-GATE CORRELATION:
+   - If lint/type/test output supports the finding, add a short evidence bullet
 
-Compute:
+**Set:**
+- verification_status: VERIFIED | PARTIALLY_VERIFIED | UNVERIFIED | SKIPPED
+- verification_notes: short reason (e.g., "file exists; symbol not found", "verified via rg occurrences=7")
 
-\- sources: contributing model names
-
-\- confirmations: count of sources that listed it in FINDINGS\_JSONL
-
-\- suspects: count of sources that listed it in SUSPECTED\_FINDINGS\_JSONL
-
-\- tool\_confirmed\_sources: sources where that model had run\_commands=yes AND provided meaningful evidence\[]
-
-\- consensus\_score (0–5):
-
-&nbsp; +2 if >=2 confirmed sources
-
-&nbsp; +1 if >=3 total sources mention (confirmed or suspected)
-
-&nbsp; +1 if any tool\_confirmed\_sources >=1
-
-&nbsp; +1 if shared evidence overlap across sources (shared file/symbol)
-
-\- final\_confidence:
-
-&nbsp; Start with max(confidence) among contributing lines, then adjust:
-
-&nbsp; - if only 1 source and no tool confirmation: cap at 60 unless you verify strongly
-
-&nbsp; - if all mentions are suspected: cap at 40 unless you verify strongly
-
-&nbsp; - if >=2 confirmed + evidence overlap: floor at 70
-
-\- cross\_cutting\_bonus: +1 if duplication\_cluster.instances >= 3
-
-
-
-VERIFICATION MODE (repo access available) — DO THIS FOR:
-
-\- all duplication clusters
-
-\- all S0/S1 items
-
-\- top 25 remaining items by preliminary rank
-
-
-
-Verification procedure per canonical finding:
-
-1\) FILE EXISTENCE:
-
-&nbsp;  - confirm each file path exists in repo
-
-2\) SYMBOL PRESENCE:
-
-&nbsp;  - search for each symbol in the referenced files (prefer rg; fallback grep)
-
-3\) CLUSTER VERIFICATION (if duplication\_cluster.is\_cluster=true):
-
-&nbsp;  - run targeted searches to confirm repeated pattern
-
-&nbsp;  - expand instances ONLY if same pattern is present
-
-4\) QUALITY-GATE CORRELATION:
-
-&nbsp;  - if lint/type/test output supports the finding, add a short evidence bullet
-
-
-
-Set:
-
-\- verification\_status: VERIFIED | PARTIALLY\_VERIFIED | UNVERIFIED | SKIPPED
-
-\- verification\_notes: short reason (e.g., “file exists; symbol not found”, “verified via rg occurrences=7”)
-
-
-
-RANKING
+### RANKING
 
 Rank canonical findings by:
+1. severity (S0 highest)
+2. consensus_score (higher first)
+3. final_confidence (higher first)
+4. effort (lower first if ties)
+5. cross_cutting_bonus (higher first if ties)
 
-1\) severity (S0 highest)
-
-2\) consensus\_score (higher first)
-
-3\) final\_confidence (higher first)
-
-4\) effort (lower first if ties)
-
-5\) cross\_cutting\_bonus (higher first if ties)
-
-
-
-PR PLANNING (after dedupe + verification)
+### PR PLANNING
 
 Goal: small, reviewable PRs.
 
-\- Primary grouping: pr\_bucket\_suggestion
+**TIER-1 Mode:** Group within category
+- Primary grouping: pr_bucket_suggestion
+- Secondary: file overlap + dependencies
 
-\- Secondary: file overlap + dependencies
+**TIER-2 Mode:** Coordinate across categories
+- Identify prerequisite chains (refactor → security → performance)
+- Group related fixes across categories
+- Avoid conflicts (same file in multiple PRs)
 
-Rules:
+**Rules (both tiers):**
+- Each PR should ideally touch <=10 files (estimate using union of files referenced)
+- If bigger, split into staged PRs (PR1a/PR1b/PR1c)
+- Respect dependencies (a PR may depend on prior PRs)
+- Front-load low-risk duplication/hygiene that unlocks later work
+- Always include acceptance_tests per PR (at least lint + typecheck + tests if available)
 
-\- Each PR should ideally touch <=10 files (estimate using union of files referenced)
+### OUTPUT FORMAT (STRICT ORDER, NO CODE FENCES)
 
-\- If bigger, split into staged PRs (PR1a/PR1b/PR1c)
+**TIER-1 Mode Output:**
 
-\- Respect dependencies (a PR may depend on prior PRs)
-
-\- Front-load low-risk duplication/hygiene that unlocks later work
-
-\- Always include acceptance\_tests per PR (at least lint + typecheck + tests if available)
-
-
-
-OUTPUT (STRICT ORDER, NO CODE FENCES)
-
-1\) PARSE\_ERRORS\_JSON
-
+1) PARSE_ERRORS_JSON (if any)
+```json
 {
-
-&nbsp; "parse\_errors": \[{"model":"...","line":"...","reason":"..."}],
-
-&nbsp; "dropped\_count": <int>
-
+  "parse_errors": [{"model":"...","line":"...","reason":"..."}],
+  "dropped_count": <int>
 }
+```
 
-
-
-2\) DEDUPED\_FINDINGS\_JSONL
-
-(one JSON object per line)
-
-Schema:
-
+2) CANON-<CATEGORY>.jsonl (e.g., CANON-CODE.jsonl)
+One JSON object per line. Schema:
+```json
 {
-
-&nbsp; "canonical\_id": "CANON-0001",
-
-&nbsp; "category": "...",
-
-&nbsp; "title": "...",
-
-&nbsp; "severity": "S0|S1|S2|S3",
-
-&nbsp; "effort": "E0|E1|E2|E3",
-
-&nbsp; "status": "CONFIRMED|SUSPECTED",
-
-&nbsp; "final\_confidence": 0-100,
-
-&nbsp; "consensus\_score": 0-5,
-
-&nbsp; "sources": \["..."],
-
-&nbsp; "confirmations": <int>,
-
-&nbsp; "suspects": <int>,
-
-&nbsp; "tool\_confirmed\_sources": <int>,
-
-&nbsp; "verification\_status": "VERIFIED|PARTIALLY\_VERIFIED|UNVERIFIED|SKIPPED",
-
-&nbsp; "verification\_notes": "...",
-
-&nbsp; "files": \["..."],
-
-&nbsp; "symbols": \["..."],
-
-&nbsp; "duplication\_cluster": {
-
-&nbsp;   "is\_cluster": true/false,
-
-&nbsp;   "cluster\_summary": "...",
-
-&nbsp;   "instances": \[{"file":"...","symbol":"..."}, ...]
-
-&nbsp; },
-
-&nbsp; "why\_it\_matters": "...",
-
-&nbsp; "suggested\_fix": "...",
-
-&nbsp; "acceptance\_tests": \["..."],
-
-&nbsp; "pr\_bucket\_suggestion": "...",
-
-&nbsp; "dependencies": \["CANON-0003", "..."],
-
-&nbsp; "evidence\_summary": \["short bullets only"]
-
+  "canonical_id": "CANON-0001",
+  "category": "...",
+  "title": "...",
+  "severity": "S0|S1|S2|S3",
+  "effort": "E0|E1|E2|E3",
+  "status": "CONFIRMED|SUSPECTED",
+  "final_confidence": 0-100,
+  "consensus_score": 0-5,
+  "sources": ["model1", "model2"],
+  "confirmations": <int>,
+  "suspects": <int>,
+  "tool_confirmed_sources": <int>,
+  "verification_status": "VERIFIED|PARTIALLY_VERIFIED|UNVERIFIED|SKIPPED",
+  "verification_notes": "...",
+  "files": ["path1", "path2"],
+  "symbols": ["SymbolA", "SymbolB"],
+  "duplication_cluster": {
+    "is_cluster": true/false,
+    "cluster_summary": "...",
+    "instances": [{"file":"...","symbol":"..."}],
+    "consolidation_target": "..."
+  },
+  "why_it_matters": "...",
+  "suggested_fix": "...",
+  "acceptance_tests": ["..."],
+  "pr_bucket_suggestion": "...",
+  "dependencies": ["CANON-0003"],
+  "evidence_summary": ["..."],
+  "notes": "..."
 }
+```
 
+3) CATEGORY_SUMMARY.md
+- Top 10 findings for this category
+- Quick wins (E0-E1)
+- High-risk items (S0-S1)
+- Recommended within-category PR sequence
 
+**TIER-2 Mode Output:**
 
-Assign canonical\_id deterministically:
+1) PARSE_ERRORS_JSON (if cross-category conflicts found)
 
-\- Sort by severity asc (S0 first), then consensus\_score desc, then category, then title.
+2) DEDUPED_FINDINGS_JSONL (unified, cross-category deduplicated)
+Same schema as CANON-*.jsonl but with:
+- Cross-category notes in "notes" field
+- Updated dependencies showing cross-category prerequisites
 
-\- Number sequentially.
-
-
-
-3\) PR\_PLAN\_JSON
-
+3) PR_PLAN_JSON
+```json
 {
-
-&nbsp; "prs": \[
-
-&nbsp;   {
-
-&nbsp;     "pr\_id": "PR1",
-
-&nbsp;     "title": "...",
-
-&nbsp;     "goal": "...",
-
-&nbsp;     "bucket": "...",
-
-&nbsp;     "included\_canonical\_ids": \["CANON-0007","CANON-0012"],
-
-&nbsp;     "staging": \["PR1a","PR1b"] ,
-
-&nbsp;     "risk\_level": "low|medium|high",
-
-&nbsp;     "estimated\_effort": "E0|E1|E2|E3",
-
-&nbsp;     "acceptance\_tests": \["npm run lint", "npm run typecheck", "npm test"],
-
-&nbsp;     "notes": "review guidance + pitfalls"
-
-&nbsp;   }
-
-&nbsp; ]
-
+  "prs": [
+    {
+      "pr_id": "PR1",
+      "title": "...",
+      "goal": "...",
+      "categories_involved": ["CODE", "SECURITY"],
+      "included_canonical_ids": ["CANON-0007","CANON-0012"],
+      "staging": ["PR1a","PR1b"],
+      "risk_level": "low|medium|high",
+      "estimated_effort": "E0|E1|E2|E3",
+      "prerequisites": ["PR0"],
+      "acceptance_tests": ["npm run lint", "npm run typecheck", "npm test"],
+      "notes": "review guidance + pitfalls"
+    }
+  ],
+  "execution_order": ["PR1", "PR2", "PR3"],
+  "parallel_groups": [["PR2a", "PR2b"], ["PR3a", "PR3b", "PR3c"]]
 }
+```
 
+4) HUMAN_SUMMARY.md
+- Overall audit summary across all 6 categories
+- Top 10 quick wins (lowest effort, highest impact)
+- Top 5 high-risk/high-payoff refactors
+- Key duplication clusters to consolidate
+- Items demoted as hallucinations
+- Recommended implementation order (with dependencies)
 
+---
 
-4\) HUMAN\_SUMMARY (markdown)
+## Version History
 
-\- Top 10 quick wins (with CANON ids)
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 2.0 | 2026-01-05 | Major rewrite for 2-tier aggregation (per-category → cross-category); Added 6-category framework; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro); Added tooling references (patterns:check, deps:circular, deps:unused, SonarQube); Explicit TIER-1 and TIER-2 modes with different inputs/outputs; Updated schema to match JSONL_SCHEMA_STANDARD.md | Claude |
+| 1.0 | 2025-12-28 | Initial aggregator prompt creation | Original |
 
-\- Top 5 high-risk/high-payoff refactors
+---
 
-\- Key duplication clusters to consolidate first
-
-\- Items demoted as hallucinations/false positives (what failed verification)
-
-\- Recommended implementation order for coding agents
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**END OF MULTI_AI_AGGREGATOR_TEMPLATE.md**

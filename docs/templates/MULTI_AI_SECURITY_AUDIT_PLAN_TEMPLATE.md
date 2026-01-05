@@ -21,13 +21,14 @@ This document serves as the **execution plan** for running a multi-AI security-f
 
 **This template enforces the mandatory standards from [GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md).**
 
-**Review Focus Areas (6 Mandatory Categories):**
+**Review Focus Areas (7 Mandatory Categories):**
 1. Rate Limiting & Throttling
 2. Input Validation & Sanitization
 3. API Keys & Secrets Management
 4. Authentication & Authorization
 5. Firebase Security (Rules, App Check, Functions)
-6. OWASP Top 10 Compliance
+6. Dependency Security & Supply Chain
+7. OWASP Top 10 Compliance
 
 **Expected Output:** Security findings with remediation plan, compliance status for each mandatory standard.
 
@@ -97,10 +98,11 @@ Exclude: [directories, e.g., docs/, public/, tests/]
 
 | Model | Capabilities | Security Strength |
 |-------|--------------|-------------------|
-| Claude Code (Opus/Sonnet) | browse_files=yes, run_commands=yes | Comprehensive audit, Firebase expertise |
+| Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive security audit, Firebase expertise, latest attack patterns |
+| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective security analysis, OWASP knowledge |
+| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Deep code analysis, vulnerability detection |
+| Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative security lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Pattern detection, quick verification |
-| Codex | browse_files=yes, run_commands=yes | Deep code analysis, OWASP mapping |
-| Gemini (Jules) | browse_files=yes, run_commands=yes | Alternative security perspective |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad OWASP knowledge |
 
 **Selection criteria:**
@@ -138,6 +140,21 @@ STACK / CONTEXT
 - [Database]: [Type]
 - [Security Tools]: [List]
 
+PRE-REVIEW CONTEXT (REQUIRED READING)
+
+Before beginning security analysis, review these project-specific resources:
+
+1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and security lessons from past reviews
+2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented security patterns from Reviews #1-60+
+3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
+4. **Dependency Health**:
+   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
+   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
+5. **Static Analysis** (docs/analysis/sonarqube-manifest.md): Pre-identified issues including security concerns
+6. **Firebase Policy** (FIREBASE_CHANGE_POLICY.md): Required security review process for Firebase changes
+
+These resources provide essential context about known issues and security patterns to avoid.
+
 SCOPE
 
 Security-Critical: [paths]
@@ -166,14 +183,15 @@ A security finding is CONFIRMED only if it includes:
 
 If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 
-FOCUS AREAS (use ONLY these 6 categories)
+FOCUS AREAS (use ONLY these 7 categories)
 
 1) Rate Limiting & Throttling
 2) Input Validation & Sanitization
 3) API Keys & Secrets Management
 4) Authentication & Authorization
 5) Firebase Security
-6) OWASP Top 10 Compliance
+6) Dependency Security & Supply Chain
+7) OWASP Top 10 Compliance
 ```
 
 ### Part 3: Security Audit Phases
@@ -289,7 +307,34 @@ VERIFICATION COMMANDS:
 Mark each check: PASS | FAIL | PARTIAL | N/A
 Quote specific evidence for each finding.
 
-Category 6: OWASP Top 10 Compliance
+Category 6: Dependency Security & Supply Chain
+REQUIRED CHECKS:
+[ ] npm audit shows no critical/high vulnerabilities
+[ ] All dependencies up to date or documented exceptions
+[ ] License compliance verified (no GPL in production without approval)
+[ ] No known vulnerable package versions
+[ ] Supply chain risk assessment completed
+[ ] Direct dependencies vetted for security practices
+[ ] Transitive dependency tree reviewed
+
+VERIFICATION COMMANDS:
+- npm audit --json
+- npm outdated
+- npx license-checker --summary
+- npm ls --depth=1 (check direct dependencies)
+- Review package-lock.json for unexpected additions
+
+FOCUS AREAS:
+- Vulnerability severity (CRITICAL > HIGH > MEDIUM)
+- Outdated packages with security patches available
+- License compatibility issues
+- Suspicious or unmaintained packages
+- Large transitive dependency trees
+
+Mark each check: PASS | FAIL | PARTIAL | N/A
+Quote specific evidence for each finding.
+
+Category 7: OWASP Top 10 Compliance
 Check each OWASP category:
 
 A01 - Broken Access Control:
@@ -608,6 +653,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5.2-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |
 | 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
 
 ---
