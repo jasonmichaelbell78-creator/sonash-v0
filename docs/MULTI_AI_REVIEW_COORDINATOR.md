@@ -1,8 +1,8 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-01
-**Last Updated:** 2026-01-01
+**Last Updated:** 2026-01-05
 **Document Tier:** Tier 2 (Foundation)
 **Purpose:** Master index and coordination for multi-AI code review system
 
@@ -30,9 +30,11 @@ This document serves as the **central coordination hub** for all multi-AI review
 | Review Type | Template | Use When |
 |-------------|----------|----------|
 | Code Review | [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | PRs, feature completion, tactical issues |
-| Security Audit | [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | Security concerns, auth changes, pre-release |
+| Security Audit | [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | Security concerns, auth changes, pre-release, dependency vulnerabilities |
 | Performance Audit | [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | Slow app, bundle growth, before traffic increase |
-| Refactoring Plan | [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | Tech debt, architecture consolidation, vibe coding cleanup |
+| Refactoring Plan | [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | Tech debt, architecture consolidation, vibe coding cleanup, SonarQube CRITICAL items |
+| Documentation Audit | [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | Broken links, stale docs, coverage gaps, quarterly doc health check |
+| Process Audit | [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | CI/CD reliability, hook effectiveness, automation health, quarterly process review |
 
 ### Template Selection Decision Tree
 
@@ -145,14 +147,14 @@ echo "=== Check triggers against thresholds above ==="
 
 ### Current Project Baseline
 
-**Last Updated:** 2026-01-01
+**Last Updated:** 2026-01-05
 
 ```yaml
 # Repository Stats
 total_files: [Run: find . -type f -name "*.ts" -o -name "*.tsx" | wc -l]
 total_lines: [Run: find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec cat {} + | wc -l]
-test_count: 91
-test_pass_rate: 97.8%
+test_count: 116
+test_pass_rate: 99.1% (115/116 passing, 1 skipped)
 
 # Bundle (Production Build)
 total_bundle_kb: [Run: npm run build, check output]
@@ -161,18 +163,33 @@ largest_chunk_kb: [Fill after build]
 # Security Posture
 rate_limiting: IMPLEMENTED
 input_validation: IMPLEMENTED
-app_check: IMPLEMENTED
+app_check: DISABLED (pending throttle clearance verification)
 firestore_rules: IMPLEMENTED
 
 # Code Quality
-lint_errors: [Run: npm run lint 2>&1 | grep -c "error"]
-lint_warnings: [Run: npm run lint 2>&1 | grep -c "warning"]
+lint_errors: 0
+lint_warnings: 181 (all false positives, audited 2026-01-04)
 typescript_strict: true
+pattern_violations: 0 (npm run patterns:check)
 
 # Dependencies
+circular_dependencies: 0 (npm run deps:circular)
+unused_exports: baseline documented in DEVELOPMENT.md (npm run deps:unused)
 direct_deps: [Run: npm ls --depth=0 | wc -l]
 dev_deps: [Run: npm ls --dev --depth=0 | wc -l]
 known_vulnerabilities: [Run: npm audit --json | jq '.metadata.vulnerabilities']
+
+# Static Analysis (SonarQube)
+sonarqube_total_issues: 778
+sonarqube_blocker: 1 (Firebase API key - false positive, intentional public client key)
+sonarqube_critical: 47 (cognitive complexity violations, functions >15-point threshold)
+sonarqube_major: 216
+sonarqube_minor: 507
+sonarqube_info: 7
+batch_fix_opportunities:
+  - eslint_auto_fixable: ~200+
+  - replaceAll_replacements: 79
+  - node_prefix_imports: 71
 ```
 
 ### Baseline Update Process
@@ -514,11 +531,15 @@ It should NOT be used for:
 - **[AI_WORKFLOW.md](../AI_WORKFLOW.md)** - Master workflow guide (references this coordinator)
 - **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Mandatory security standards
 - **[DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)** - Document formatting standards
-- **Templates:**
+- **Audit Templates:**
   - [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)
   - [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)
   - [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)
   - [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)
+  - [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)
+  - [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)
+- **Aggregation:**
+  - [MULTI_AI_AGGREGATOR_TEMPLATE.md](./templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) - 2-tier aggregation (per-category → cross-category)
 
 ---
 
@@ -526,9 +547,9 @@ It should NOT be used for:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.2 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
-| 1.1 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template | Claude |
-| 1.0 | 2026-01-01 | Initial coordinator creation with non-time-based triggers | Claude |
+| 1.2 | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator; Updated test pass rate 99.1%; Added App Check status (DISABLED); Added pattern/dependency health metrics | Claude |
+| 1.1 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
+| 1.0 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers | Claude |
 
 ---
 
