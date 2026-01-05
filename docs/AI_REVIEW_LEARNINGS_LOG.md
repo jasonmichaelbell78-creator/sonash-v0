@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.57 | 2026-01-05 | Review #58: Template compliance (MULTI_AI_REFACTOR_AUDIT_PROMPT.md), link format consistency, American English |
 | 1.56 | 2026-01-05 | Review #57: CI fix (broken stub links), effort estimate arithmetic, optional artifact semantics |
 | 1.55 | 2026-01-05 | Review #56: Effort estimate correction, remaining code fences, stub path references (PARTIAL FIX - see #57) |
 | 1.54 | 2026-01-05 | Review #55: Nested code fence fixes, artifact naming, acceptance criteria, schema references |
@@ -129,7 +130,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 7
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
@@ -1225,5 +1226,54 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
    - Pattern: "3 core artifacts + 1 optional" clearer than "4 artifacts (one conditional)"
 
 **Key Insight:** AI suggestions about file paths should be verified before applying - the CI failure was caused by trusting a path suggestion without checking if files exist. Effort estimates should use exact sums when sub-components are known, not approximate ranges. Conditional/optional artifacts need explicit labeling.
+
+---
+
+#### Review #58: Template Compliance & Documentation Consistency (2026-01-05)
+
+**Source:** Mixed - GitHub Actions CI + Qodo PR Suggestions + CodeRabbit PR
+**PR:** `docs: Pre-Step-4 document cleanup and audit backlog setup`
+**Tools:** CI docs-lint, Qodo (3 suggestions), CodeRabbit (2 issues)
+**Suggestions:** 12 total (Critical: 0, Major: 3, Minor: 6, Trivial: 3)
+
+**Context:** Document cleanup PR introduced a renamed file (`MULTI_AI_REFACTOR_AUDIT_PROMPT.md`) that failed CI docs-lint due to missing required template sections. Additional consistency issues in links, list formatting, and language.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Missing H1 heading | 🟠 Major | CI Blocker | Added H1 title to template |
+| 2 | Missing purpose/scope section | 🟠 Major | CI Blocker | Added Purpose section |
+| 3 | Missing version history | 🟠 Major | CI Blocker | Added Version History section |
+| 4 | Missing Last Updated metadata | 🟡 Minor | Compliance | Added metadata header |
+| 5 | Missing AI instructions section | 🟡 Minor | Compliance | Added AI Instructions |
+| 6 | Missing quick start section | 🟡 Minor | Compliance | Added Quick Start |
+| 7 | Missing list bullet in ROADMAP.md | 🟡 Minor | Formatting | Added `-` prefix |
+| 8 | Link format inconsistency | 🟡 Minor | Consistency | Added `./` prefix to link |
+| 9 | British "in future" | ⚪ Trivial | Language | Changed to "in the future" |
+| 10 | Grep command robustness | ⚪ Trivial | QA | Improved acceptance criteria grep |
+
+**Declined:**
+- [8] S2 severity suggestion - S3 is appropriate for defensive non-blocking improvement
+- [11] Task clarity rewrite - Current format is standard and semantically correct
+
+**Patterns Identified:**
+
+1. **Renamed Files Need Compliance Check** (Reinforcement from #57)
+   - Root cause: File renamed without adding required template sections
+   - Prevention: After renaming, run `npm run docs:lint` on changed files
+   - Pattern: CI catches missing sections but verify locally first
+
+2. **Link Format Consistency**
+   - Root cause: Mixed `./docs/` and `docs/` link prefixes in same section
+   - Prevention: Use consistent `./` prefix for relative links
+   - Pattern: When editing Related Documentation sections, match neighboring link format
+
+**Resolution:**
+- Fixed: 10 items
+- Declined: 2 items (justified above)
+- Deferred: 0 items
+
+**Key Insight:** When renaming or moving documentation files, the new location may have different template requirements. Run docs-lint locally before pushing to catch compliance issues before CI fails.
 
 ---

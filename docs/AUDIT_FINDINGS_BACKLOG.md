@@ -134,7 +134,7 @@ Replace direct `localStorage` calls with SSR-safe utility functions. Existing co
 
 **Risk if skipped**:
 - Low - existing code won't break
-- If components become server-rendered in future, could cause SSR crashes
+- If components become server-rendered in the future, could cause SSR crashes
 - New developers might copy old pattern instead of using utilities
 
 **Files affected**:
@@ -151,7 +151,7 @@ Replace direct `localStorage` calls with SSR-safe utility functions. Existing co
 6. Test each file individually (no regressions expected)
 
 **Acceptance criteria**:
-- [ ] `grep -r "localStorage\." components/notebook/ lib/utils/anonymous-backup.ts` → 0 results
+- [ ] `grep -rn "localStorage\." components/ lib/ --include="*.ts" --include="*.tsx" | grep -v "lib/utils/storage.ts"` → 0 results
 - [ ] All existing functionality works (smart prompts, journal temp save, anonymous backup)
 - [ ] No new TypeScript errors
 
