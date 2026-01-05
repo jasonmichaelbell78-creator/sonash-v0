@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.56
+**Document Version:** 1.58
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.58 | 2026-01-05 | Review #59: Prompt schema improvements, grep --exclude, Quick Start section, link text consistency |
 | 1.57 | 2026-01-05 | Review #58: Template compliance (MULTI_AI_REFACTOR_AUDIT_PROMPT.md), link format consistency, American English |
 | 1.56 | 2026-01-05 | Review #57: CI fix (broken stub links), effort estimate arithmetic, optional artifact semantics |
 | 1.55 | 2026-01-05 | Review #56: Effort estimate correction, remaining code fences, stub path references (PARTIAL FIX - see #57) |
@@ -1254,8 +1255,8 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
 | 10 | Grep command robustness | ⚪ Trivial | QA | Improved acceptance criteria grep |
 
 **Declined:**
-- [8] S2 severity suggestion - S3 is appropriate for defensive non-blocking improvement
-- [11] Task clarity rewrite - Current format is standard and semantically correct
+- [8] Link format inconsistency severity - S3 is appropriate for defensive non-blocking improvement
+- Grep command alternative syntax - Current `--exclude` format is acceptable and semantically correct
 
 **Patterns Identified:**
 
@@ -1275,5 +1276,48 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
 - Deferred: 0 items
 
 **Key Insight:** When renaming or moving documentation files, the new location may have different template requirements. Run docs-lint locally before pushing to catch compliance issues before CI fails.
+
+---
+
+#### Review #59: Prompt Schema & Documentation Consistency (2026-01-05)
+
+**Source:** Qodo PR Suggestions + CodeRabbit PR
+**PR:** `fix: Fix 10 broken internal links across 8 documentation files`
+**Suggestions:** 9 total (Critical: 0, Major: 0, Minor: 5, Trivial: 4)
+
+**Context:** Follow-up review after broken link fixes found additional improvements needed in prompt templates and documentation structure.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Grep -v unreliable for file filtering | 🟡 Minor | QA | Changed to `--exclude` flag |
+| 2 | JSON schema example not valid JSON | 🟡 Minor | Template | Converted to bullet list format |
+| 3 | Code fence contradiction | 🟡 Minor | Template | Clarified "no code fences in output" |
+| 4 | Missing is_cluster: false example | 🟡 Minor | Template | Added non-cluster format example |
+| 5 | Declined references inconsistent | 🟡 Minor | Consistency | Fixed reference labels |
+| 6 | Link text mismatch in ARCHITECTURE.md | ⚪ Trivial | Consistency | Added `docs/` prefix |
+| 7 | Missing Quick Start section | ⚪ Trivial | Compliance | Added Quick Start to backlog doc |
+| 8 | rate limiting unhyphenated | ⚪ Trivial | Grammar | Changed to "rate-limiting" |
+| 9 | Version header out of sync | ⚪ Trivial | Consistency | Updated to v1.58 |
+
+**Patterns Identified:**
+
+1. **Prompt Schema Clarity**
+   - Root cause: JSON examples in prompts can confuse AI about output format
+   - Prevention: Use bullet list format for schemas when showing structure
+   - Pattern: "Reference only" labels help prevent format copying
+
+2. **Grep File Exclusion**
+   - Root cause: `grep -v "pattern"` filters by line content, not filename
+   - Prevention: Use `--exclude="filename"` for file-based filtering
+   - Pattern: More reliable for acceptance criteria verification
+
+**Resolution:**
+- Fixed: 9 items
+- Declined: 0 items
+- Deferred: 0 items
+
+**Key Insight:** When writing prompt templates that include JSON schemas, prefer bullet list format with explicit "reference only" labels to prevent AI assistants from copying the formatting structure into their output.
 
 ---

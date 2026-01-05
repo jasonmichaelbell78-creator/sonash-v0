@@ -55,7 +55,7 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 - Next.js 16.1 (App Router), React 19.2.3, TypeScript 5.x
 - Tailwind CSS v4, Framer Motion 12, shadcn/ui
 - Firebase: Auth, Firestore, Cloud Functions v2, App Check
-- Security: reCAPTCHA v3, App Check, Firestore Rules, rate limiting
+- Security: reCAPTCHA v3, App Check, Firestore Rules, rate-limiting
 - Quality gates: npm run lint, npm test, npm run test:coverage
 - Client-side Firestore path validation mirrors rules: lib/security/firestore-validation.ts
 
@@ -126,37 +126,40 @@ If you cannot run tools, proceed with static browsing and keep confidence lower 
 
 ### OUTPUT FORMAT (STRICT)
 
-Return 3 sections in this exact order, no code fences:
+Return 3 sections in this exact order, **with no code fences in your output**.
+
+**Important:** The schema example below is for reference only. **Do not** wrap your FINDINGS_JSONL / SUSPECTED_FINDINGS_JSONL / HUMAN_SUMMARY output in code fences.
 
 **1) FINDINGS_JSONL**
 
 (one JSON object per line, each object must be valid JSON)
 
-Schema:
-```json
-{
-  "category": "Hygiene/Duplication|Types/Correctness|Next/React Boundaries|Security|Testing",
-  "title": "short, specific",
-  "fingerprint": "<category>::<primary_file>::<primary_symbol>::<problem_slug>",
-  "severity": "S0|S1|S2|S3",
-  "effort": "E0|E1|E2|E3",
-  "confidence": 0-100,
-  "files": ["path1", "path2"],
-  "symbols": ["SymbolA", "SymbolB"],
-  "duplication_cluster": {
-    "is_cluster": true,
-    "cluster_summary": "if true, describe the repeated pattern",
-    "instances": [{"file":"...","symbol":"..."}, ...]
-  },
-  "why_it_matters": "1-3 sentences",
-  "suggested_fix": "concrete refactor direction (no rewrite)",
-  "acceptance_tests": ["what to run/verify after change"],
-  "pr_bucket_suggestion": "firebase-access|ui-primitives|hooks-standardization|types-domain|boundaries|security-hardening|tests-hardening|misc",
-  "dependencies": ["fingerprint it depends on", "..."],
-  "evidence": ["optional: short grep output or tool output summary (no long logs)"],
-  "notes": "optional"
-}
-```
+Schema (reference only — do not copy formatting):
+
+- category: "Hygiene/Duplication" | "Types/Correctness" | "Next/React Boundaries" | "Security" | "Testing"
+- title: "short, specific description"
+- fingerprint: "<category>::<primary_file>::<primary_symbol>::<problem_slug>"
+- severity: "S0" | "S1" | "S2" | "S3"
+- effort: "E0" | "E1" | "E2" | "E3"
+- confidence: 0-100 (integer)
+- files: ["path/to/file1.ts", "path/to/file2.tsx"]
+- symbols: ["ComponentA", "functionB"]
+- duplication_cluster: see below
+- why_it_matters: "1-3 sentences explaining impact"
+- suggested_fix: "concrete refactor direction (no full rewrites)"
+- acceptance_tests: ["what to run/verify after change"]
+- pr_bucket_suggestion: "firebase-access" | "ui-primitives" | "hooks-standardization" | "types-domain" | "boundaries" | "security-hardening" | "tests-hardening" | "misc"
+- dependencies: [] (array of fingerprints this depends on, or empty)
+- evidence: [] (optional: short grep output or tool summary)
+- notes: "" (optional additional context)
+
+**duplication_cluster format:**
+
+When the finding IS a duplication cluster:
+`"duplication_cluster": { "is_cluster": true, "cluster_summary": "describe the repeated pattern", "instances": [{"file": "path1.ts", "symbol": "funcA"}, {"file": "path2.ts", "symbol": "funcB"}] }`
+
+When the finding is NOT a duplication cluster:
+`"duplication_cluster": { "is_cluster": false, "cluster_summary": "", "instances": [] }`
 
 **Severity guide:**
 - S0: high-risk security/data loss/major bug

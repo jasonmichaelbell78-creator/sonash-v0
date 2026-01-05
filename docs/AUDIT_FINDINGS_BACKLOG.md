@@ -8,6 +8,16 @@
 
 ---
 
+## Quick Start
+
+- **Purpose**: Track CANON findings from multi-AI audits for systematic remediation
+- **Add new findings**: Use the standard format in [How to Use This Backlog](#how-to-use-this-backlog)
+- **Triage items**: Sort by severity (S1→S2→S3), estimate effort (E0-E3)
+- **Process workflow**: See [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) Step 4B
+- **Related docs**: [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md), [MULTI_AI_REVIEW_COORDINATOR.md](./MULTI_AI_REVIEW_COORDINATOR.md)
+
+---
+
 ## Purpose & Scope
 
 ### What This Document Covers
@@ -151,7 +161,7 @@ Replace direct `localStorage` calls with SSR-safe utility functions. Existing co
 6. Test each file individually (no regressions expected)
 
 **Acceptance criteria**:
-- [ ] `grep -rn "localStorage\." components/ lib/ --include="*.ts" --include="*.tsx" | grep -v "lib/utils/storage.ts"` → 0 results
+- [ ] `grep -rn "localStorage\." components/ lib/ --include="*.ts" --include="*.tsx" --exclude="lib/utils/storage.ts"` → 0 results
 - [ ] All existing functionality works (smart prompts, journal temp save, anonymous backup)
 - [ ] No new TypeScript errors
 
