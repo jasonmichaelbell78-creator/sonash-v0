@@ -555,10 +555,10 @@ This ensures each category is thoroughly processed before moving on, preventing 
 #### Aggregator & Coordinator Updates
 
 - [ ] **Task 4.1.7**: Update Aggregator prompt (1.5 hours)
-  - Renamed: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (done 2026-01-05)
-  - Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex)
-  - Add reference to current tooling (pattern checker, madge, knip)
-  - Ensure CANON format is explicitly defined in template
+  - [x] Renamed: `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (done 2026-01-05)
+  - [ ] Update model recommendations (Claude Opus 4.5, GPT-5.2-Codex)
+  - [ ] Add reference to current tooling (pattern checker, madge, knip)
+  - [ ] Ensure CANON format is explicitly defined in template
   - **Support 2-tier aggregation modes:**
     - **Tier-1 mode**: Input = raw AI outputs (FINDINGS_JSONL × 3+), Output = CANON-CATEGORY.jsonl
     - **Tier-2 mode**: Input = 6 CANON-*.jsonl files, Output = unified DEDUPED_FINDINGS_JSONL
