@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.63
+**Document Version:** 1.64
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.64 | 2026-01-05 | Review #64: 31 fixes - 6 MAJOR (security pseudocode, Firebase key clarity, grep hardening), 8 MINOR (progress calc, paths), 17 TRIVIAL |
 | 1.63 | 2026-01-05 | Review #63: 15 fixes total - 7 broken relative paths, 8 minor improvements (version entries, secrets example, tier notes) |
 | 1.62 | 2026-01-05 | Review #62: Multi-AI template fixes, security doc, broken links, wording improvements |
 | 1.61 | 2026-01-05 | Review #61: Stale review assessment, path prefix fix, terminology update |

@@ -127,16 +127,18 @@ STACK / CONTEXT (treat as true)
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
+**Note:** Adjust file paths below to match your project structure. Verify each file exists and tool outputs are available before running the review. If a command is unavailable, skip it and note the limitation.
+
 Before beginning analysis, review these project-specific resources:
 
-1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and lessons from past reviews
+1. **AI Learnings** (<project_root>/claude.md Section 4): Critical anti-patterns and lessons from past reviews
 2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
 5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues from SonarQube
-   - 778 total issues (47 CRITICAL cognitive complexity, 216 MAJOR, 507 MINOR)
+   - Use current manifest counts (date-stamp your audit output)
    - Focus on CRITICAL items for refactoring candidates
 
 These resources provide essential context about what has already been identified and what patterns to avoid.

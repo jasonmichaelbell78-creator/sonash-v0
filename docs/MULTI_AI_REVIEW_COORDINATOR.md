@@ -168,7 +168,7 @@ firestore_rules: IMPLEMENTED
 
 # Code Quality
 lint_errors: 0
-lint_warnings: 181 (all false positives, audited 2026-01-04)
+lint_warnings: 181 (baseline as of 2026-01-04; treat new warnings as regressions)
 typescript_strict: true
 pattern_violations: 0 (npm run patterns:check)
 
@@ -181,7 +181,7 @@ known_vulnerabilities: [Run: npm audit --json | jq '.metadata.vulnerabilities']
 
 # Static Analysis (SonarQube)
 sonarqube_total_issues: 778
-sonarqube_blocker: 1 (Firebase API key - false positive, intentional public client key)
+sonarqube_blocker: 1 (Firebase Web `apiKey` flagged; this is a public identifier, NOT a secret—DO NOT commit real secrets like service account keys, private keys, or server API keys)
 sonarqube_critical: 47 (cognitive complexity violations, functions >15-point threshold)
 sonarqube_major: 216
 sonarqube_minor: 507

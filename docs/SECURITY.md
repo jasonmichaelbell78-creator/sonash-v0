@@ -378,7 +378,12 @@ Use this checklist for routine rotations:
 Consider implementing automated key rotation for critical keys:
 
 ```typescript
-// Example: Cloud Function to auto-rotate service account key
+// PSEUDOCODE ONLY - Do NOT implement as-is.
+// Automated rotation requires an EXTERNAL privileged identity (e.g., CI job or
+// dedicated rotation service account with narrowly scoped IAM permissions).
+// This running workload should CONSUME rotated secrets; generation/revocation
+// must be done by a separate process, not this function itself.
+
 import { defineSecret } from 'firebase-functions/params';
 
 // Define secrets (stored in Firebase Secret Manager)
@@ -393,11 +398,12 @@ export const rotateServiceAccountKey = functions
     const currentKey = adminPrivateKey.value();
     const currentEmail = adminClientEmail.value();
 
-    // 1. Generate new service account key via Admin SDK
-    // 2. Update Secret Manager with new key
-    // 3. Trigger redeployment with new keys
-    // 4. Revoke old key after grace period
-    // 5. Send notification to security team
+    // Rotation must be performed OUTSIDE this function by privileged process:
+    // 1. External job generates a new key using a dedicated rotation identity
+    // 2. External job updates Secret Manager values
+    // 3. External job triggers redeploy/restart so workloads pick up new secrets
+    // 4. External job revokes old key after grace period
+    // 5. External job notifies security team and writes audit trail
   });
 ```
 

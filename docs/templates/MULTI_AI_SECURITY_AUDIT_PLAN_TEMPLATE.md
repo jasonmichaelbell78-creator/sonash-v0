@@ -100,7 +100,7 @@ Exclude: [directories, e.g., docs/, public/, tests/]
 |-------|--------------|-------------------|
 | Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive security audit, Firebase expertise, latest attack patterns |
 | Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective security analysis, OWASP knowledge |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Comprehensive code analysis, vulnerability detection |
+| GPT-5-Codex | browse_files=yes, run_commands=yes | Comprehensive code analysis, vulnerability detection |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative security lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Pattern detection, quick verification |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad OWASP knowledge |
@@ -263,11 +263,12 @@ REQUIRED CHECKS:
 [ ] .env.example exists (without values)
 
 VERIFICATION COMMANDS:
-- grep -rn "sk_live\|sk_test\|api_key.*=.*['\"]" --include="*.ts"
-- grep -rn "password.*=.*['\"]" --include="*.ts"
-- grep -rn "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY" --include="*.ts"
+- grep -rn "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -rn "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -rn "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY" --include="*.ts" --include="*.tsx"
 - cat .gitignore | grep -i env
 - ls -la | grep env
+(Note: Grep patterns are heuristic only—secrets may be obfuscated, base64-encoded, or split across variables. Supplement with dedicated secret scanning tools like gitleaks, truffleHog, or detect-secrets.)
 
 Mark each check: PASS | FAIL | N/A
 Quote specific evidence for each finding.
@@ -320,7 +321,8 @@ REQUIRED CHECKS:
 VERIFICATION COMMANDS:
 - npm audit --json
 - npm outdated
-- npx license-checker --summary
+- npm exec --yes license-checker -- --summary
+  (Or use repo-pinned script: npm run licenses:check if available)
 - npm ls --depth=1 (check direct dependencies)
 - Review package-lock.json for unexpected additions
 
@@ -494,8 +496,9 @@ Schema:
 SECURITY VERIFICATION (run if run_commands=yes)
 
 1) Secrets Detection:
-- grep -rn "sk_live\|sk_test\|api_key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx"
-- grep -rn "password.*=.*['\"]" --include="*.ts" --include="*.tsx"
+- grep -rn "sk_live\|sk_test\|api[_-]?key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --include="*.tsx" --include="*.js"
+- grep -rn "password.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js"
+(Note: Supplement with gitleaks, truffleHog, or detect-secrets for comprehensive coverage)
 
 2) Rate Limiting Coverage:
 - grep -rn "RateLimiter\|rateLimit" --include="*.ts" | wc -l
