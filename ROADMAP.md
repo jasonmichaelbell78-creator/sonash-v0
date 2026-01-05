@@ -925,7 +925,7 @@ flowchart TD
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud Functions security patterns
 - **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent collaboration guide
 - **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
-- **[firestore-rules.md](./docs/firestore-rules.md)** - Firestore security rules documentation
+- **[SECURITY.md](./docs/SECURITY.md)** - Security documentation including Firestore rules
 
 ### Archived Documentation
 

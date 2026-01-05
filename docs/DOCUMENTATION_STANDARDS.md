@@ -588,7 +588,7 @@ Before marking ANY phase, milestone, or work package as complete:
 5. **Address gaps** - Fix or document why acceptable
 6. **Then mark complete** - Only after audit passes
 
-**See**: [AI_WORKFLOW.md](./AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure" for full template.
+**See**: [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure" for full template.
 
 This is a **global standard** - applies to ALL phases, milestones, sections, and work packages throughout the entire project.
 

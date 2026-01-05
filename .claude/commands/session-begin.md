@@ -79,7 +79,7 @@ npm run lessons:surface
 
 ## 8. Incident Documentation Reminder
 **After encountering any significant errors or issues:**
-- Document the issue in [AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)
+- Document the issue in [AI_REVIEW_LEARNINGS_LOG.md](../../docs/AI_REVIEW_LEARNINGS_LOG.md)
 - Use the standard "Review #XX" format
 - Include: cause, fix, pattern identified, prevention steps
 - This builds institutional knowledge for future sessions

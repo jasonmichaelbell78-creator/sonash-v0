@@ -608,7 +608,7 @@ This document contains the historical record of completed milestones, tasks, and
 - 🔴 **Security Decision Required:** How to handle App Check + optional reCAPTCHA (defense in depth vs. single layer)
 
 **Reference:**
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/EIGHT_PHASE_REFACTOR_PLAN.md) - Full plan with gap analysis
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) - Full plan with gap analysis (archived)
 - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md) - Implementation and review prompts
 - [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) - Monitoring spec
 
