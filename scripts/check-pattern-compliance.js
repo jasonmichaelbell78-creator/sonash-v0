@@ -120,7 +120,7 @@ const ANTI_PATTERNS = [
     // - check-pattern-compliance.js: contains patterns as strings
     // - archive-doc.js: uses startsWith('/'), startsWith('\\') to detect & reject absolute paths
     // - phase-complete-check.js: uses path.relative() THEN startsWith('..') which is correct
-    pathExclude: /(?:check-pattern-compliance|archive-doc|phase-complete-check)\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check)\.js$/,
   },
   {
     id: 'regex-global-test-loop',
@@ -176,7 +176,7 @@ const ANTI_PATTERNS = [
     // Exclude files that use startsWith('..') after path.relative() where it's safe
     // (path.relative never returns ".." without a separator after it for traversal)
     // Verified 2026-01-04: phase-complete-check.js uses path.relative() before the check
-    pathExclude: /phase-complete-check\.js$/,
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
   {
     id: 'hardcoded-api-key',
@@ -264,7 +264,7 @@ const ANTI_PATTERNS = [
     // Exclude files verified 2026-01-04 to have proper CRLF handling:
     // - phase-complete-check.js: L555 has .replace(/\r$/, '')
     // - surface-lessons-learned.js: L372 has .replace(/\r$/, '')
-    pathExclude: /(?:phase-complete-check|surface-lessons-learned)\.js$/,
+    pathExclude: /(?:^|[\\/])(?:phase-complete-check|surface-lessons-learned)\.js$/,
   },
   {
     id: 'regex-newline-lookahead',
@@ -284,7 +284,7 @@ const ANTI_PATTERNS = [
     fileTypes: ['.js', '.ts'],
     // Exclude files verified 2026-01-04 to normalize before split:
     // - phase-complete-check.js: L290 has .replace(/\\/g, '/').split('/').includes('..')
-    pathExclude: /phase-complete-check\.js$/,
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
   {
     id: 'readfilesync-without-try',
@@ -332,7 +332,7 @@ const ANTI_PATTERNS = [
     fileTypes: ['.js', '.ts'],
     // Exclude files verified 2026-01-04 to check for empty string:
     // - phase-complete-check.js: L55, L140, L165, L244 all have `rel === '' || rel.startsWith('..')`
-    pathExclude: /phase-complete-check\.js$/,
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
 ];
 

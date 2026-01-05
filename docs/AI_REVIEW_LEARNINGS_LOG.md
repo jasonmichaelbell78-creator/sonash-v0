@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.50
+**Document Version:** 1.51
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-04
+**Last Updated:** 2026-01-05
 
 ## Purpose
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.51 | 2026-01-05 | Review #52: Document health/archival fixes from Qodo/CodeRabbit |
 | 1.50 | 2026-01-04 | RESTRUCTURE: Tiered access model, Reviews #1-40 archived (3544→~1000 lines) |
 | 1.49 | 2026-01-04 | Review #51: ESLint audit follow-up, infinite loop fix, regex hardening |
 | 1.48 | 2026-01-04 | EFFECTIVENESS AUDIT: Fixed 26→0 violations in critical files; patterns:check now blocking |
@@ -49,7 +50,7 @@ This log uses a tiered structure to optimize context consumption:
 |------|---------|--------------|------|
 | **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-51) | Deep investigation | ~700 lines |
+| **3** | Active Reviews (#41-52) | Deep investigation | ~800 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -123,7 +124,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1
+**Reviews since last consolidation:** 2
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
@@ -262,7 +263,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-51 are actively maintained below. Older reviews are in the archive.
+Reviews #41-52 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -953,5 +954,52 @@ Reviews #41-51 are actively maintained below. Older reviews are in the archive.
    - Note: Also reduces CI log noise
 
 **Key Insight:** Pattern checkers that use exec() loops MUST have the global flag - this is a critical bug that causes infinite loops. Cross-platform regex robustness requires consistent `\r?\n` usage. Path-based exclusions need proper anchoring to prevent substring false positives. When documenting audits, use time-bound language ("audited as X on date") rather than absolute claims.
+
+---
+
+#### Review #52: Document Health & Archival Fixes (2026-01-05)
+
+**Source:** Qodo PR Compliance + CodeRabbit
+**PR:** Session after tiered access + archival commits
+**Tools:** Qodo, CodeRabbit
+**Suggestions:** 10 total (Critical: 0, Major: 2, Minor: 5, Trivial: 2, Deferred: 1)
+
+**Context:** Review of tiered access model implementation and planning doc archival work. Focus on documentation consistency, path handling in pattern checker, and maintaining archival standards.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | pathExclude lacks path-boundary anchor | 🟠 Major | Security | Added `(?:^|[\\/])` anchor to pathExclude regex |
+| 2 | Archival criteria unclear in pr-review | 🟠 Major | Docs | Clarified 1500-line threshold and consolidation requirement |
+| 3 | grep command portability in template | 🟡 Minor | Portability | Changed `grep -r` to `grep -rn` and removed `-v archive` |
+| 4 | Count command missing fallback | 🟡 Minor | Robustness | Added `|| echo 0` fallback for empty archive |
+| 5 | ESLint wording too absolute | 🟡 Minor | Docs | Changed "false positives" to "audited as false positives" |
+| 6 | Duplicate Rule 8 in pr-review | 🟡 Minor | Cleanup | Removed duplicate rule entry |
+| 7 | Test count stale in DEVELOPMENT.md | 🟡 Minor | Docs | Updated test count to current value |
+| 8 | Redundant backslash in pathExclude | ⚪ Trivial | Cleanup | Removed unnecessary escape |
+| 9 | Missing path reference in session-end | ⚪ Trivial | Docs | Added path to archived plans directory |
+
+**Deferred:**
+- None new (AST-based linting already deferred from #51)
+
+**Patterns Identified:**
+
+1. **Path Boundary Anchoring** (Reinforcement from #51)
+   - Root cause: pathExclude patterns without anchors match substrings
+   - Prevention: Always use `(?:^|[\\/])` for path-based exclusions
+   - Note: Same pattern from #51 applied to validate-phase-completion.js
+
+2. **Document Archival Standards**
+   - Root cause: Unclear when to archive vs keep active
+   - Prevention: Explicit thresholds (1500 lines, 20 active reviews, consolidation status)
+   - Pattern: Document + enforce archival triggers
+
+3. **Portable Shell Commands in Templates**
+   - Root cause: BSD vs GNU grep flag differences
+   - Prevention: Use common flags or document platform requirements
+   - Pattern: Test templates on multiple platforms or use node alternatives
+
+**Key Insight:** Documentation that prescribes behaviors (templates, session commands, review protocols) must have explicit, unambiguous criteria. "Archive when large" is unclear; "Archive when >1500 lines AND consolidated" is actionable. Path exclusion patterns need consistent anchoring across all files that use them.
 
 ---

@@ -128,7 +128,7 @@ Today's session reinforced these patterns:
 - Add path-based filtering for context-specific patterns
 - Use bounded regex (`{0,N}?`) instead of greedy (`.*`)
 - Spread ESLint plugin configs in flat config format
-- Exclude archive files from strict linting
+- Exclude archive files (`docs/archive/`) from strict linting
 - Add `continue-on-error` for pre-existing issues in CI
 
 ### DON'T:

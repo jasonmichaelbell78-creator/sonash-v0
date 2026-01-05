@@ -208,13 +208,13 @@ npm run test:coverage
 ```
 
 **Current Status:**
-- ✅ 89/91 tests passing (97.8%)
+- ✅ 115/116 tests passing (99.1%)
 - ✅ Security validation tests
 - ✅ Date utilities
 - ✅ Firebase type guards
 - ✅ Logger with PII redaction
 - ✅ Rate limiter
-- ⚠️ 2 Firebase initialization failures (require emulator setup)
+- ⚠️ 1 skipped test (Firebase emulator setup)
 
 ### Manual Testing Checklist
 
@@ -383,7 +383,7 @@ firebase deploy
 - **Prettier** - Code formatting
 - **madge** - Circular dependency detection
 - **knip** - Unused export detection
-- **Node test runner** - Built-in testing (115 tests)
+- **Node test runner** - Built-in testing (116 tests)
 - **c8** - Code coverage
 - **Husky** - Git hooks (pre-commit, pre-push)
 
@@ -421,7 +421,7 @@ npm audit fix
 | `npm run format:check` | Prettier check | For CI (no changes) |
 | `npm run deps:circular` | Check circular deps | Uses madge |
 | `npm run deps:unused` | Find unused exports | Uses knip |
-| `npm test` | Run all tests | 115 tests (1 skipped) |
+| `npm test` | Run all tests | 116 tests (1 skipped) |
 | `npm run test:coverage` | Test with coverage | Uses c8 |
 
 ### Prettier (Code Formatting)
