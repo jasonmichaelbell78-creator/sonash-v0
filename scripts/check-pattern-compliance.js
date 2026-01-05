@@ -95,7 +95,7 @@ const ANTI_PATTERNS = [
     // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
     // Uses [^}] to constrain search to current catch block (Review #53: prevents false negatives)
     // Note: May miss deeply nested blocks, but safer than unbounded [\s\S]
-    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\1\.message/g,
+    pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g,
     message: 'Unsafe error.message access - crashes if non-Error is thrown',
     fix: 'Use: error instanceof Error ? error.message : String(error)',
     review: '#17, #51, #53',
