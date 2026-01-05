@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.55
+**Document Version:** 1.56
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-05
 
@@ -18,7 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
-| 1.55 | 2026-01-05 | Review #56: Effort estimate correction, remaining code fences, stub path references |
+| 1.56 | 2026-01-05 | Review #57: CI fix (broken stub links), effort estimate arithmetic, optional artifact semantics |
+| 1.55 | 2026-01-05 | Review #56: Effort estimate correction, remaining code fences, stub path references (PARTIAL FIX - see #57) |
 | 1.54 | 2026-01-05 | Review #55: Nested code fence fixes, artifact naming, acceptance criteria, schema references |
 | 1.53 | 2026-01-05 | Review #54: Step 4B + SLASH_COMMANDS.md, broken archive links, code fence escaping |
 | 1.52 | 2026-01-05 | Review #53: CI fix, regex bounding, path.relative() security |
@@ -54,7 +55,7 @@ This log uses a tiered structure to optimize context consumption:
 |------|---------|--------------|------|
 | **1** | [claude.md](../claude.md) Section 4 | Always (in AI context) | ~150 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-56) | Deep investigation | ~1000 lines |
+| **3** | Active Reviews (#41-57) | Deep investigation | ~1050 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -128,7 +129,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5
+**Reviews since last consolidation:** 6
 **Consolidation threshold:** 10 reviews
 **✅ STATUS: CURRENT** (consolidated 2026-01-04, Session #23 - Reviews #41-50 → claude.md v2.8)
 
@@ -1178,11 +1179,51 @@ Reviews #41-53 are actively maintained below. Older reviews are in the archive.
    - Prevention: Search entire file for pattern, not just flagged lines
    - Pattern: After any fence fix, `grep -n '^\`\`\`' FILE` to find all instances
 
-3. **Stub Link Strategy**
-   - Root cause: Direct archive links bypass stub files designed for stable references
-   - Prevention: Always link to stub files, not directly to archive locations
-   - Pattern: Use `./FILENAME.md` not `./archive/path/FILENAME.md`
+3. **Stub Link Strategy** *(CORRECTED in Review #57)*
+   - Root cause: AI suggestion assumed stub files existed when they didn't
+   - Prevention: Verify target files exist before changing link paths
+   - Pattern: Only use `./FILENAME.md` if stub file exists; otherwise use direct archive path
 
-**Key Insight:** Effort estimates must be verified against detailed task breakdowns - a 100% discrepancy (12-16h vs 28h) was caught by CodeRabbit's arithmetic check. When fixing rendering issues, audit the entire file systematically rather than only addressing flagged sections. Stub files exist specifically to provide stable references - use them.
+**Key Insight:** Effort estimates must be verified against detailed task breakdowns - a 100% discrepancy (12-16h vs 28h) was caught by CodeRabbit's arithmetic check. When fixing rendering issues, audit the entire file systematically. **CAUTION:** AI suggestions about file paths should be verified - the stub link strategy assumed files existed that didn't.
+
+---
+
+#### Review #57: CI Failure Fix & Effort Estimate Accuracy (2026-01-05)
+
+**Source:** Qodo PR Compliance + CodeRabbit + CI docs-lint failure
+**PR:** Commit after d582c76 (PR Review #57 fixes)
+**Tools:** Qodo (3 suggestions), CodeRabbit (1 critical), CI workflow
+**Suggestions:** 5 total (Critical: 1, Minor: 4) + 1 CI error
+
+**Context:** CI docs-lint workflow failed due to broken links introduced in Review #56. Qodo's suggestion to use stub file paths was incorrect - the stub files don't exist. Additional fixes for effort estimate arithmetic consistency.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | CI failure: Broken links to non-existent stub files | 🔴 Critical | CI | Reverted to direct archive paths (stubs don't exist) |
+| 2 | Estimate arithmetic: 24-30h doesn't match 9+13+6=28h | 🟡 Minor | Docs | Changed to "~28 hours" |
+| 3 | PARSE_ERRORS_JSONL counted as always-present artifact | 🟡 Minor | Docs | Clarified as optional (3 core + 1 optional) |
+| 4 | Rollup 48-72h inconsistent with step totals (43-55h) | 🟡 Minor | Docs | Updated rollup with per-step breakdown |
+| 5 | Version history doesn't note estimate correction | 🟡 Minor | Docs | Added v2.3 entry noting 12-16h→~28h correction |
+
+**Patterns Identified:**
+
+1. **Verify AI Suggestions About File Paths** (New Critical Pattern)
+   - Root cause: Qodo suggested using stub files that don't exist
+   - Prevention: Always verify target files exist before changing link paths: `ls -la path/to/file.md`
+   - Pattern: AI path suggestions are hypothetical until verified
+
+2. **Effort Estimate Arithmetic Verification** (Reinforcement from #56)
+   - Root cause: Range estimate (24-30h) didn't match exact sum (28h)
+   - Prevention: Use exact sum when sub-components are known: `~28h` not `24-30h`
+   - Pattern: Ranges only when components are uncertain
+
+3. **Optional vs Required Artifact Semantics**
+   - Root cause: Conditional artifacts described as always-present
+   - Prevention: Use "(optional)" label and describe presence conditions
+   - Pattern: "3 core artifacts + 1 optional" clearer than "4 artifacts (one conditional)"
+
+**Key Insight:** AI suggestions about file paths should be verified before applying - the CI failure was caused by trusting a path suggestion without checking if files exist. Effort estimates should use exact sums when sub-components are known, not approximate ranges. Conditional/optional artifacts need explicit labeling.
 
 ---
