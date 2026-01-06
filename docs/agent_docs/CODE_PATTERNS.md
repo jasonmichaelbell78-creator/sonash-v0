@@ -163,7 +163,7 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Version history dates | Use actual commit date, not template creation date | Accurate audit trail |
 | Security doc explicitness | "NEVER use X" NOT "if using X on client" | Explicit prohibitions |
 | Tech-appropriate checks | Adapt security checklists to stack (Firestore ≠ SQL) | Avoid irrelevant checks |
-| Model name accuracy | Verify against provider docs (GPT-5.2 doesn't exist) | Use real model names |
+| Model name accuracy | Verify exact model identifiers against provider docs; avoid invented names | Prevent invalid/ambiguous model selection |
 | Stale review detection | `git log --oneline COMMIT..HEAD \| wc -l` - if >5, verify each | Review may be outdated |
 
 ---

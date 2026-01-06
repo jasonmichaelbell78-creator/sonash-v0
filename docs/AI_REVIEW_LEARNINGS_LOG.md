@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.73
+**Document Version:** 1.74
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.74 | 2026-01-06 | Review #73: 9 fixes - 2 MAJOR (model name self-inconsistency, NO-REPO MODE clarity), 4 MINOR (chunk sizing, regex, JSONL validation, stack versions), 3 TRIVIAL (documentation consistency) |
 | 1.73 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md v1.1 (10 Documentation patterns added) |
 | 1.72 | 2026-01-06 | Review #72: 21 fixes - 12 CRITICAL (broken links to JSONL_SCHEMA, GLOBAL_SECURITY_STANDARDS, SECURITY.md, EIGHT_PHASE_REFACTOR), 5 MAJOR (version/stack placeholders), 4 MINOR (paths, regex, commands) |
 | 1.71 | 2026-01-06 | Review #71: Documentation improvements |
@@ -147,7 +148,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0
+**Reviews since last consolidation:** 1
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -1679,5 +1680,61 @@ All 6 compliance guide items verified as COMPLIANT:
 ```
 
 **Note:** This review marks consolidation threshold reached (12 reviews since last consolidation). Next session should consolidate Reviews #61-72 into claude.md and CODE_PATTERNS.md.
+
+---
+
+#### Review #73: Multi-AI Audit Plan Polish (2026-01-06)
+
+**Source:** Mixed - Qodo PR Code Suggestions + CodeRabbit PR Review
+**PR/Branch:** claude/new-session-sKhzO (commits aceb43b → [current])
+**Suggestions:** 9 total (Major: 2, Minor: 4, Trivial: 3)
+
+**Context:** Post-Review #72 feedback on the updated multi-AI audit plan files. Review caught self-inconsistency where PR added "Model name accuracy" rule while violating it, plus several shell command robustness and documentation consistency issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | PERFORMANCE_AUDIT chunk sizing uses brittle `ls -lh` | 🟡 Minor | Shell | Changed to `wc -c \| sort -n` for portability |
+| 2 | DOCUMENTATION_AUDIT link regex over-matches | 🟡 Minor | Shell | Changed `.+` to `[^]]+` for correctness |
+| 3 | README JSONL validation lossy | 🟡 Minor | Shell | Used `IFS= read -r` + `printf` for safety |
+| 4 | CODE_PATTERNS model-name rule brittle | ⚪ Trivial | Docs | Made generic: "verify against provider docs" |
+| 5 | CODE_REVIEW_PLAN version mismatch | ⚪ Trivial | Docs | Updated header 1.0 → 1.1 |
+| 6 | DOCUMENTATION_AUDIT speculative model names | 🟠 Major | Docs | Changed to provider-neutral with runtime verification |
+| 7 | CODE_REVIEW_PLAN incorrect stack versions | 🟡 Minor | Docs | Corrected React 19.2.3, TypeScript 5.x |
+| 8 | PROCESS_AUDIT_PLAN stale date | ⚪ Trivial | Docs | Updated Last Updated to 2026-01-06 |
+| 9 | CODE_REVIEW_PLAN NO-REPO MODE ambiguous | 🟠 Major | Docs | Clarified output contract for aggregator |
+
+**Patterns Identified:**
+
+1. **Self-Inconsistency Detection** (1 occurrence - Major)
+   - Root cause: PR adds documentation rule in CODE_PATTERNS.md while violating it in audit plans
+   - Prevention: Cross-check new rules against files being modified in same PR
+   - Pattern: When adding/updating pattern rules, grep for violations in PR diff
+   - Fix: Made all model names provider-neutral ("Claude Opus (verify at runtime)")
+
+2. **Shell Command Portability** (3 occurrences - Minor)
+   - Root cause: Using non-portable commands (`ls -lh | sort -k5`, `while read line`, `cat | while`)
+   - Prevention: Use POSIX-compliant alternatives
+   - Patterns:
+     - File size sorting: `wc -c | sort -n` (not `ls -lh | sort -k5 -h`)
+     - Line reading: `while IFS= read -r line` (not `while read line`)
+     - Regex character classes: `[^]]+` (not `.+` for greedy matching)
+
+3. **Documentation Metadata Consistency** (3 occurrences - Trivial)
+   - Root cause: Header metadata not synced with version history table
+   - Prevention: Update header dates and versions when adding version history entries
+   - Pattern: Document Version and Last Updated must match latest version history entry
+
+**Resolution:**
+- Fixed: 9 items (2 Major, 4 Minor, 3 Trivial)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Self-consistency check:** When adding/updating pattern rules, always check if PR violates them
+- **Shell portability matters:** Even in documentation examples, use POSIX-compliant commands
+- **Metadata discipline:** Version history updates must trigger header metadata updates
+- **Provider-neutral specs:** Use "verify at runtime" for AI model names to prevent obsolescence
 
 ---

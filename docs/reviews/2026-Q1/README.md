@@ -92,7 +92,9 @@ docs/reviews/2026-Q1/outputs/
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
 # If jq is available:
-cat [model-name]_findings.jsonl | while read line; do echo "$line" | jq . || echo "Parse error on line: $line"; done
+while IFS= read -r line; do
+  printf '%s\n' "$line" | jq . >/dev/null || printf 'Parse error on line: %s\n' "$line"
+done < [model-name]_findings.jsonl
 
 # If jq is not available, use python:
 python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' < [model-name]_findings.jsonl

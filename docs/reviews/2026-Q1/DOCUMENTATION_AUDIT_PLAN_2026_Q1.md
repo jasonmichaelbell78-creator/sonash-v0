@@ -99,10 +99,10 @@ Known issues prompting this audit:
 
 | Model | Capabilities | Documentation Strength |
 |-------|--------------|----------------------|
-| Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive doc analysis, link validation, consistency checking |
-| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective doc review, pattern detection |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Coverage analysis, structure validation |
-| Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative perspective, freshness assessment |
+| Claude Opus (verify exact version at runtime) | browse_files=yes, run_commands=yes | Comprehensive doc analysis, link validation, consistency checking |
+| Claude Sonnet (verify exact version at runtime) | browse_files=yes, run_commands=yes | Cost-effective doc review, pattern detection |
+| OpenAI Codex-class model (verify exact name at runtime) | browse_files=yes, run_commands=yes | Coverage analysis, structure validation |
+| Google Gemini-class model (verify exact name at runtime) | browse_files=yes, run_commands=yes | Alternative perspective, freshness assessment |
 
 **Selection criteria:**
 - At least 2 models with `run_commands=yes` for link validation
@@ -220,7 +220,7 @@ ANALYSIS:
 - Identify stale references to renamed files
 
 VERIFICATION COMMANDS (if available):
-- grep -Er '\[.+\]\([^)]+\)' --include="*.md" (extract all links using non-greedy pattern)
+- grep -Er '\[[^]]+\]\([^)]+\)' --include="*.md" (extract markdown links; avoids over-matching)
 - For each link, check if target file exists
 - npm run docs:check (if validation script exists)
 

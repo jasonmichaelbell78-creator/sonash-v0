@@ -464,7 +464,7 @@ PERFORMANCE VERIFICATION (run if run_commands=yes)
 
 1) Bundle Analysis:
 - npm run build 2>&1 | tail -50
-- find .next/static/chunks -name "*.js" -type f -exec ls -lh {} \; | sort -k5 -h | tail -20
+- find .next/static/chunks -name "*.js" -type f -exec wc -c {} \; | sort -n | tail -20
 
 2) Dependency Size:
 - npx depcheck (unused dependencies)

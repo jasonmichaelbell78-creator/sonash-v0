@@ -1,6 +1,6 @@
 # SoNash Multi-AI Code Review Plan
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-06
 **Last Updated:** 2026-01-06
 **Status:** PENDING
@@ -122,9 +122,9 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 STACK / CONTEXT (treat as true)
 
 - Next.js: 16.1.1
-- React: 16.1.1
-- TypeScript: 16.1.1
-- - Framer Motion: 12.23.0
+- React: 19.2.3
+- TypeScript: 5.x
+- Framer Motion: 12.23.0
 - Sentry: 10.30.0
 - Testing: Node.js built-in test runner (115/116 passing, 99.1%)
 - Quality gates: npm run lint, npm test, npm run test:coverage
@@ -161,7 +161,9 @@ CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/n
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete this review without repo access
-- Stop immediately and report limitation
+- Output CAPABILITIES header with limitation noted
+- Output empty FINDINGS_JSONL and SUSPECTED_FINDINGS_JSONL sections (for aggregator detection)
+- Do not attempt repository analysis
 ```
 
 ### Part 2: Anti-Hallucination Rules
