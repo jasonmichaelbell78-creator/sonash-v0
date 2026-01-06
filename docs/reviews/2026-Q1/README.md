@@ -42,7 +42,7 @@ Each plan includes:
 **Recommended configuration:**
 - **Claude Opus 4.5** (browse_files=yes, run_commands=yes) - Comprehensive analysis
 - **Claude Sonnet 4.5** (browse_files=yes, run_commands=yes) - Cost-effective
-- **GPT-5.2-Codex** (browse_files=yes, run_commands=yes) - Code analysis
+- **GPT-5-Codex** (browse_files=yes, run_commands=yes) - Code analysis
 - **Gemini 3 Pro** (browse_files=yes, run_commands=yes) - Alternative perspective
 - **GPT-4o** (browse_files=no, run_commands=no) - Broad coverage (optional)
   - **Note**: GPT-4o capabilities vary by platform. ChatGPT web UI typically does NOT support file browsing or command execution. Use only for general knowledge queries, not detailed code analysis.
@@ -94,9 +94,9 @@ docs/reviews/2026-Q1/outputs/
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
 # If jq is available (fails fast on first error):
-grep -v '^$' [model-name]_findings.jsonl | while IFS= read -r line; do
+while IFS= read -r line; do
   printf '%s\n' "$line" | jq . >/dev/null || { printf 'Parse error on line: %s\n' "$line"; exit 1; }
-done
+done < <(grep -v '^$' [model-name]_findings.jsonl)
 
 # If jq is not available, use python (fails fast on first error):
 grep -v '^$' [model-name]_findings.jsonl | python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' || { echo "JSON parse error"; exit 1; }

@@ -97,7 +97,7 @@ Since last major review (Session #26, 2026-01-05):
 | GPT-5-Codex | browse_files=yes, run_commands=yes | Refactor detection, TS ergonomics |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative refactor lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Local pattern spotting, confirmations |
-| ChatGPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
+| GPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
 
 **Selection criteria:**
 - At least 2 models with `run_commands=yes` for tool evidence
@@ -135,7 +135,7 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 
 Before beginning analysis, review these project-specific resources:
 
-1. **AI Learnings** (../../../claude.md Section 4): Critical anti-patterns and lessons from past reviews
+1. **AI Learnings** (../../claude.md Section 4): Critical anti-patterns and lessons from past reviews
 2. **Pattern History** (../../AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
@@ -414,7 +414,11 @@ Merge findings only if ALL of these conditions are met:
 - Set `duplication_cluster.is_cluster = true`
 - List all instances in `duplication_cluster.instances[]`
 - Take union of all files/symbols across findings
-- **Transitive Closure Rule**: If Finding A shares files/symbols with Finding B, and Finding B shares with Finding C, merge all three into one cluster (use transitive closure for cluster membership)
+- **Transitive Closure Rule**: If Finding A shares files/symbols with Finding B, and Finding B shares with Finding C, merge all three into one cluster ONLY if:
+  - All findings have the same category (e.g., all "Code Duplication")
+  - All findings suggest the same root cause pattern (e.g., "Missing utility function")
+  - The linkage is direct and specific (shared files/symbols, not just similar category)
+  - Use transitive closure for cluster membership when these criteria hold
 
 **Never Merge If:**
 - Only "similar vibes" - require concrete file/symbol overlap

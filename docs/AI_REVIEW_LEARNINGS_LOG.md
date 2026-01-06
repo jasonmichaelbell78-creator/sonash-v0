@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.75
+**Document Version:** 1.77
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.77 | 2026-01-06 | Review #76: 13 fixes - 3 MAJOR (model naming, broken link paths, PERFORMANCE doc links), 8 MINOR (SECURITY root cause evidence, shell exit codes, transitive closure, division-by-zero, NO-REPO contract, category enum, model standardization, vulnerability type), 2 TRIVIAL (version metadata, review range) |
+| 1.76 | 2026-01-06 | Review #75: 17 fixes - 2 MAJOR (SECURITY schema category names, vulnerability deduplication), 8 MINOR (regex robustness, JSONL validation, deduplication rules, averaging methodology, model matrix, link paths), 2 TRIVIAL (version verification, duplicate check), 1 REJECTED (incorrect path suggestion) |
 | 1.75 | 2026-01-06 | Review #74: 18 fixes - 6 MAJOR (broken links, schema fields, deduplication clarity, observability, placeholders, GPT-4o capabilities), 9 MINOR (fail-fast, URL filtering, NO-REPO MODE, environment, methodology, output specs, links, alignment), 3 TRIVIAL (version, dates, context) |
 | 1.74 | 2026-01-06 | Review #73: 9 fixes - 2 MAJOR (model name self-inconsistency, NO-REPO MODE clarity), 4 MINOR (chunk sizing, regex, JSONL validation, stack versions), 3 TRIVIAL (documentation consistency) |
 | 1.73 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md v1.1 (10 Documentation patterns added) |
@@ -293,7 +295,92 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-74 are actively maintained below. Older reviews are in the archive.
+Reviews #41-75 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #76: Multi-AI Audit Plan Polish - Round 3 (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** [pending]
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Third-round review of Multi-AI Audit Plan files (2026-Q1) addressing model naming accuracy, broken documentation links, shell script robustness, and methodology clarity. Review identified 13 suggestions spanning 6 files with focus on cross-reference integrity and edge case handling.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | SECURITY root cause merge needs evidence requirement | 🟡 Minor | Methodology | Added concrete evidence + severity constraints for root cause merges |
+| 2 | README JSONL validation shell script fails silently | 🟡 Minor | Automation | Changed pipe to process substitution for proper exit code propagation |
+| 3 | CODE_REVIEW transitive closure rule allows over-merging | 🟡 Minor | Methodology | Refined rule to require stronger linkage evidence |
+| 4 | PERFORMANCE weighted average lacks division-by-zero guards | 🟡 Minor | Methodology | Added fallback to simple average when confidence sum = 0 |
+| 5 | PERFORMANCE NO-REPO MODE output contract undefined | 🟡 Minor | Methodology | Defined strict output requirements for repo-less models |
+| 6 | PERFORMANCE category enum inconsistent with docs | 🟡 Minor | Schema | Changed short names to full names matching documentation |
+| 7 | REFACTORING version metadata contradictory | ⚪ Trivial | Documentation | Fixed header v1.0/date conflict with version history v1.1 |
+| 8 | README model name "GPT-5.2-Codex" non-standard | 🟡 Minor | Documentation | Standardized to GPT-5-Codex |
+| 9 | LEARNINGS_LOG review range outdated | ⚪ Trivial | Documentation | Updated "Reviews #41-74" → "Reviews #41-75" |
+| 10 | CODE_REVIEW "ChatGPT-4o" incorrect model name | 🟠 Major | Accuracy | Changed to official "GPT-4o" per OpenAI nomenclature |
+| 11 | CODE_REVIEW broken claude.md link path | 🟠 Major | Documentation | Fixed ../../../claude.md → ../../claude.md (one level too deep) |
+| 12 | PERFORMANCE Related Documents links broken | 🟠 Major | Documentation | Added ../../ prefix to all Related Documents markdown links |
+| 13 | SECURITY "vulnerability type" definition vague | 🟡 Minor | Methodology | Added formal definition with classification taxonomy |
+
+**Patterns Identified:**
+
+1. **Shell Script Exit Code Propagation** (1 occurrence - Automation Robustness)
+   - Root cause: Pipes don't propagate exit codes in bash; `grep | while` swallows failures
+   - Prevention: Use process substitution `while IFS= read -r line; do ...; done < <(grep ...)`
+   - Pattern: Exit codes preserved through process substitution, not through pipes
+   - Note: Critical for CI/CD reliability where script failures must halt execution
+   - Reference: Review #73 established shell portability patterns, this extends to exit codes
+
+2. **Relative Path Calculation Errors** (2 occurrences - Documentation Links)
+   - Root cause: Incorrect directory depth calculation when creating relative links
+   - Prevention: Count levels explicitly: `docs/reviews/2026-Q1/` to `docs/` = up 2 levels = `../../`
+   - Examples:
+     - CODE_REVIEW_PLAN `../../../claude.md` → `../../claude.md` (was going up 3 instead of 2)
+     - PERFORMANCE_AUDIT_PLAN missing `../../` prefix on Related Documents links
+   - Note: Pattern established in Reviews #72, #74, #75; reinforced with additional examples
+   - Verification: Use `test -f` from source directory to validate link targets exist
+
+3. **Model Name Standardization** (2 occurrences - Accuracy)
+   - Root cause: AI model nomenclature inconsistency across documentation
+   - Prevention: Always use official provider naming conventions
+   - Examples:
+     - "ChatGPT-4o" → "GPT-4o" (OpenAI's official name excludes "Chat")
+     - "GPT-5.2-Codex" → "GPT-5-Codex" (standardized version format)
+   - Note: Complements Review #75 pattern on provider-neutral specs; this focuses on correct official names
+   - Reference: CODE_PATTERNS.md Section 2.4 "Model Name Verification"
+
+4. **Methodology Edge Case Handling** (5 occurrences - Robustness)
+   - Root cause: Aggregation methodology lacked explicit edge case handling
+   - Prevention: Document fallback behavior for edge cases
+   - Examples:
+     - Division by zero: When all confidence scores = 0, fall back to simple average
+     - Root cause merges: Require concrete evidence + severity within 1 level
+     - Transitive closure: Require stronger linkage than just category overlap
+     - NO-REPO MODE: Define exact output format (empty JSONL + capability statement)
+     - Vulnerability type: Formal taxonomy (CWE, OWASP, custom classification)
+   - Pattern: Explicit edge case documentation prevents aggregator hallucination
+   - Note: Builds on Review #74 deduplication rules and Review #75 methodology decisions
+
+5. **Version Metadata Consistency** (1 occurrence - Documentation Quality)
+   - Root cause: REFACTORING_AUDIT_PLAN header showed v1.0 created 2026-01-06, but version history showed v1.1 on same date
+   - Prevention: When adding version history entries, update header metadata to match latest
+   - Pattern: Document Version and Last Updated must reflect latest version history entry
+   - Reference: Established in Review #73, continues to surface in subsequent reviews
+
+6. **Cross-File Consistency for Enums** (1 occurrence - Schema Accuracy)
+   - Root cause: PERFORMANCE schema used short category names while documentation used full names
+   - Prevention: Schema enum values must match documentation section headers exactly
+   - Example: "Bundle Size" in schema vs "Bundle Size & Tree-Shaking" in documentation
+   - Note: Aggregators rely on exact string matching for categorization
+   - Reference: Review #75 addressed same pattern in SECURITY schema
+
+**Key Insight:** Documentation link paths remain the most common multi-AI audit plan issue (3 occurrences across Reviews #72-76), suggesting systematic review needed for all relative path references in nested directory structures. Shell script robustness patterns (exit code propagation, POSIX compliance) continue to surface, indicating need for comprehensive shell script audit. Model naming accuracy is critical for multi-AI workflows where participants verify model capabilities against provider documentation.
+
+**Recommendation:** Create automated link validation tool to run in pre-commit hook. Add shell script linting to CI/CD pipeline using shellcheck with exit code verification. Consolidate model name standards into central reference document.
 
 ---
 

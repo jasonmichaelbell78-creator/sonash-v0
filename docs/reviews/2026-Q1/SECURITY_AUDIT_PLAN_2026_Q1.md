@@ -547,12 +547,24 @@ For each of the 4 mandatory standards:
 
 DEDUPLICATION RULES
 
+**Vulnerability Type Definition:**
+A vulnerability type is the specific security weakness classification, defined by one of:
+- **CWE ID** (e.g., CWE-79 for XSS, CWE-89 for SQL Injection)
+- **OWASP Category** (e.g., A03:2021 Injection, A07:2021 Identification and Authentication Failures)
+- **Custom Classification** (e.g., "Firebase Rules Missing Row-Level Security", "Missing Rate Limiting")
+
+Two findings have the "same vulnerability type" if they share the same CWE ID OR same OWASP category OR same custom classification. Different manifestations of the same type (e.g., XSS in different input fields) should use the same type identifier.
+
 1) Primary merge: same file + same vulnerability type
 2) Secondary merge: same OWASP category + same remediation
 3) **Root Cause Merge**: Allow merging across different endpoints if same root cause
    - Example: "Missing input validation on /api/users POST" + "Missing input validation on /api/posts POST" → Merge as "Systemic input validation gap across API endpoints"
-   - Requirement: Both must share same vulnerability_type AND same remediation pattern
+   - Requirements:
+     - Both must share same vulnerability_type AND same remediation pattern
+     - Must have concrete evidence linking the findings (e.g., same code pattern, same missing library usage)
+     - Severity must be within 1 level (CRITICAL can merge with HIGH, but not with MEDIUM)
    - Set files[] to union of all affected endpoints
+   - Confidence: Use weighted average of all merged findings
 4) Never merge if different root causes (even if similar symptoms)
 
 SEVERITY ESCALATION

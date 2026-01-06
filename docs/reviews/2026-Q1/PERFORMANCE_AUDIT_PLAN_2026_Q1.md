@@ -213,7 +213,12 @@ CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/n
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Limited analysis without code access
-- Provide general recommendations only
+- **Required Output Contract**:
+  - METRICS_BASELINE_JSON: Output `{}` (empty object - no metrics without repo)
+  - FINDINGS_JSONL: Output empty file with comment `# (empty - no repo access for evidence-based findings)`
+  - SUSPECTED_FINDINGS_JSONL: MAY include general observations (clearly marked "NO REPO ACCESS")
+  - HUMAN_SUMMARY: Explain limitation and provide generic best practices only
+- Do NOT invent file-specific findings without repo access
 ```
 
 ### Part 2: Anti-Hallucination Rules
@@ -496,7 +501,7 @@ Return 4 sections in this exact order:
 
 Schema:
 {
-  "category": "Bundle Size|Rendering|Data Fetching|Memory|Core Web Vitals|Observability",
+  "category": "Bundle Size & Loading|Rendering Performance|Data Fetching & Caching|Memory Management|Core Web Vitals|Observability & Monitoring",
   "title": "short, specific issue",
   "fingerprint": "<category>::<primary_file>::<issue_type>",
   "severity": "S0|S1|S2|S3",
@@ -626,6 +631,7 @@ If models disagree on severity/impact:
 - Take HIGHER severity if 2+ models agree
 - **Weighted Average Impact Estimates**: Use confidence-weighted average
   - Formula: `impact = Σ(impact_i × confidence_i) / Σ(confidence_i)`
+  - **Division-by-Zero Guardrail**: If Σ(confidence_i) = 0, fall back to simple average: `impact = Σ(impact_i) / count`
   - Rationale: Trust high-confidence models more than low-confidence estimates
   - Example: Model A (impact=50%, conf=90) + Model B (impact=20%, conf=40) → (50×90 + 20×40)/(90+40) = 40% impact
 
@@ -698,10 +704,10 @@ When using this template:
 ## Related Documents
 
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
-- **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System architecture
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
+- **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](../../templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** - General code review template
+- **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](../../templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** - Security-focused reviews
+- **[ARCHITECTURE.md](../../ARCHITECTURE.md)** - System architecture
 
 ---
 
