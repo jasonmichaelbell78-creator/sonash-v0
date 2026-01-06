@@ -25,7 +25,7 @@ This document defines the mandatory security review process for all changes to F
 
 ### In Scope
 - **Firestore Rules**: Any modification to `firestore.rules`
-- **Firestore Service Layer**: Changes to `lib/firestore-service.ts` (repository pattern implementation)
+- **Firestore Service Layer**: Changes to Firestore data access layer (e.g., `lib/firestore-*.ts`, repository pattern implementations)
 - **Cloud Functions**: New functions, modifications to existing functions, dependency changes
 - **Firebase Configuration**: Changes to `firebase.json`, `.firebaserc`
 - **App Check**: Configuration changes, token management, throttle settings
@@ -626,6 +626,7 @@ This policy should be reviewed and updated:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-06 | Review #67: Generalized firestore-service.ts reference to pattern-based path | Claude |
 | 1.0 | 2026-01-05 | Initial policy creation - Firestore rules, Cloud Functions, App Check coverage | Claude (Session #25) |
 
 ---

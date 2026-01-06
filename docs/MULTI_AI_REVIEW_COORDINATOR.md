@@ -1,8 +1,8 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Created:** 2026-01-01
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-06
 **Document Tier:** Tier 2 (Foundation)
 **Purpose:** Master index and coordination for multi-AI code review system
 
@@ -163,7 +163,8 @@ largest_chunk_kb: [Fill after build]
 # Security Posture
 rate_limiting: IMPLEMENTED
 input_validation: IMPLEMENTED
-app_check: DISABLED (pending throttle clearance verification)
+app_check: DISABLED
+app_check_remediation: "See EIGHT_PHASE_REFACTOR_PLAN.md CANON-0002 for re-enablement plan"
 firestore_rules: IMPLEMENTED
 
 # Code Quality
@@ -184,8 +185,10 @@ known_vulnerabilities: [Run: npm audit --json | jq '.metadata.vulnerabilities']
 
 # Static Analysis (SonarQube)
 sonarqube_total_issues: 778
-sonarqube_blocker: 1  # Firebase Web config apiKey flagged; in Firebase Web config this is a public identifier, not a secret. IMPORTANT: other apiKey values (non-Firebase providers, server API keys, private keys, service account JSON) MUST be treated as secrets and kept in Secret Manager—never commit them.
-sonarqube_critical: 47 (cognitive complexity violations, functions >15-point threshold)
+sonarqube_blocker: 1
+sonarqube_blocker_note: "Firebase Web apiKey (public identifier, not a secret). See SECURITY.md for other apiKey handling."
+sonarqube_critical: 47
+sonarqube_critical_note: "Cognitive complexity violations (>15 threshold). See EIGHT_PHASE_REFACTOR_PLAN.md for remediation plan."
 sonarqube_major: 216
 sonarqube_minor: 507
 sonarqube_info: 7
@@ -550,7 +553,9 @@ It should NOT be used for:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.2 | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator; Updated test pass rate 99.1%; Added App Check status (DISABLED); Added pattern/dependency health metrics | Claude |
+| 1.3 | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability | Claude |
+| 1.2b | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator | Claude |
+| 1.2a | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics | Claude |
 | 1.1 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
 | 1.0 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers | Claude |
 

@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.66
+**Document Version:** 1.67
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-06
 
 ## Purpose
 
@@ -18,11 +18,12 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.67 | 2026-01-06 | Review #67: 14 fixes - 4 MAJOR (grep -E, deterministic IDs, App Check tracking, SonarQube tracking), 7 MINOR (verification, enums, paths, ordering), 3 TRIVIAL |
 | 1.66 | 2026-01-05 | Review #66: 13 fixes - 4 MAJOR (evidence rules, output format, npm safety, apiKey guidance), 8 MINOR (counters, grep portability, YAML, model names), 1 TRIVIAL |
 | 1.65 | 2026-01-05 | Review #65: 19 fixes - 4 MAJOR (security doc hardening, deterministic CANON IDs), 10 MINOR (paths, assertions, category names), 5 TRIVIAL (model names) |
 | 1.64 | 2026-01-05 | Review #64: 31 fixes - 6 MAJOR (security pseudocode, Firebase key clarity, grep hardening), 8 MINOR (progress calc, paths), 17 TRIVIAL |
 | 1.63 | 2026-01-05 | Review #63: 15 fixes total - 7 broken relative paths, 8 minor improvements (version entries, secrets example, tier notes) |
-| 1.62 | 2026-01-05 | Review #62: Multi-AI template fixes, security doc, broken links, wording improvements |
+| 1.62 | 2026-01-05 | Review #62: 9 fixes - 1 CRITICAL (client-side credentials), 4 MAJOR (schema, links, model), 4 MINOR/TRIVIAL (filename, SQL check) |
 | 1.61 | 2026-01-05 | Review #61: Stale review assessment, path prefix fix, terminology update |
 | 1.60 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → claude.md v2.9 (10 patterns added) |
 | 1.59 | 2026-01-05 | Review #60: Document sync, grep exclusion fix, CANON-ID guidance, duplicate link removal |
@@ -66,7 +67,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-60) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-67) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**

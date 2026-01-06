@@ -190,7 +190,7 @@ A canonical finding can be CONFIRMED only if it has:
 - files[] non-empty AND
 - EITHER:
   - symbols[] non-empty (code findings), OR
-  - for docs/process findings: a concrete locator in evidence (e.g., markdown heading/anchor, broken link target, workflow name + job/step id, script name + command) AND
+  - for docs/process findings: a concrete locator in evidence (e.g., Markdown heading/anchor, broken link target, workflow name + job/step id, script name + command) AND
 - verification finds those files exist (and ideally the symbol/locator appears via search)
 
 Otherwise it is SUSPECTED.
@@ -251,9 +251,11 @@ Otherwise it is SUSPECTED.
 
 1. FILE EXISTENCE:
    - Confirm each file path exists in repo
+   - For non-file locators (workflow names, script names): verify via `ls .github/workflows/` or `ls scripts/`
 
-2. SYMBOL PRESENCE:
-   - Search for each symbol in the referenced files (prefer rg; fallback grep)
+2. SYMBOL/LOCATOR PRESENCE:
+   - For code findings: search for each symbol in the referenced files (prefer rg; fallback grep)
+   - For docs/process findings: verify the locator exists (heading anchor, workflow job/step, script command)
 
 3. CLUSTER VERIFICATION (if duplication_cluster.is_cluster=true):
    - Run targeted searches to confirm repeated pattern
@@ -311,7 +313,7 @@ Goal: small, reviewable PRs.
 }
 
 2) CANON-<CATEGORY>.jsonl (e.g., CANON-CODE.jsonl)
-One JSON object per line. Schema:
+One JSON object per line. Schema (fenced here for readability; actual output has no fences):
 ```json
 {
   "canonical_id": "CANON-0001",
@@ -363,11 +365,11 @@ Same schema as CANON-*.jsonl but with:
 
 **CANONICAL_ID ASSIGNMENT (DETERMINISTIC; BOTH TIERS)**
 - Recompute IDs from the final deduped set every run (do not preserve source IDs).
-- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc).
+- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc), files[0] (asc). Final tiebreaker ensures deterministic ordering.
 - Assign sequential IDs: CANON-0001, CANON-0002, ...
 - In Tier-1, IDs are still `CANON-0001` style (the filename indicates the category); do NOT embed category into the ID.
 
-3) PR_PLAN_JSON
+3) PR_PLAN_JSON (fenced for readability; output raw JSON)
 ```json
 {
   "prs": [
@@ -404,6 +406,7 @@ Same schema as CANON-*.jsonl but with:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.2 | 2026-01-06 | Review #67: Added deterministic tiebreaker (files[0]) to ID sorting; Clarified verification for non-file locators; Capitalized Markdown proper noun | Claude |
 | 2.1 | 2026-01-05 | Review #66: Fixed model name (GPT-5-Codex), clarified evidence rules for docs/process findings, removed code fences from JSON output examples, fixed deterministic ID sort (removed fingerprint), renamed Process subcategory to Workflow Docs | Claude |
 | 2.0 | 2026-01-05 | Major rewrite for 2-tier aggregation (per-category → cross-category); Added 6-category framework; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added tooling references (patterns:check, deps:circular, deps:unused, SonarQube); Explicit TIER-1 and TIER-2 modes with different inputs/outputs; Updated schema to match JSONL_SCHEMA_STANDARD.md | Claude |
 | 1.0 | 2025-12-28 | Initial aggregator prompt creation | Original |

@@ -447,7 +447,7 @@ Return 4 sections in this exact order:
 
 Schema:
 {
-  "category": "CI/CD|Hooks|Scripts|Pattern Checker|Triggers|Documentation",
+  "category": "CI/CD|Hooks|Scripts|Pattern Checker|Triggers|Workflow Docs",
   "title": "short, specific issue",
   "fingerprint": "<category>::<file_or_workflow>::<issue_type>",
   "severity": "S0|S1|S2|S3",
@@ -652,6 +652,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-06 | Review #67: Aligned category enum (Documentation → Workflow Docs) to match AGGREGATOR | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Process & Automation audit category added to multi-AI review framework | Claude |
 
 ---
