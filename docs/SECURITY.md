@@ -1,6 +1,6 @@
 # Security & Privacy Guide
 
-**Document Version:** 2.1
+**Document Version:** 2.2
 **Last Updated:** 2026-01-05
 **Status:** ACTIVE
 
@@ -393,12 +393,12 @@ import { defineSecret } from 'firebase-functions/params';
 const adminPrivateKey = defineSecret('FIREBASE_ADMIN_PRIVATE_KEY');
 const adminClientEmail = defineSecret('FIREBASE_ADMIN_CLIENT_EMAIL');
 
-export const rotateServiceAccountKey = functions
+export const serviceAccountKeyRotationHealthCheck = functions
   .runWith({ secrets: [adminPrivateKey, adminClientEmail] })
   .pubsub.schedule('0 0 1 */3 *') // Every 90 days
   .onRun(async () => {
     // IMPORTANT: Do not read/log secret values here. This function does NOT rotate keys.
-    // It may only perform a health check (e.g., verify app can authenticate) after an
+    // It only performs a health check (e.g., verify app can authenticate) after an
     // external rotation job has updated Secret Manager.
 
     // Rotation must be performed OUTSIDE this function by a privileged process:
@@ -619,6 +619,7 @@ When working with security-related code:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.2 | 2026-01-06 | Review #68: Renamed misleading rotateServiceAccountKey → serviceAccountKeyRotationHealthCheck (function does NOT rotate keys, only verifies after external rotation) |
 | 2.1 | 2026-01-05 | Added comprehensive Key Rotation Policy section - service account, Firebase API keys, reCAPTCHA, procedures, checklists, automation roadmap (Task 4.1.10) |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
 | 1.1 | 2025-12-19 | Added security checklist and current status |

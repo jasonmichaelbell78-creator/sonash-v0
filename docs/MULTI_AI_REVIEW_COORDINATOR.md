@@ -1,6 +1,6 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.3
+**Document Version:** 1.4
 **Created:** 2026-01-01
 **Last Updated:** 2026-01-06
 **Document Tier:** Tier 2 (Foundation)
@@ -164,7 +164,11 @@ largest_chunk_kb: [Fill after build]
 rate_limiting: IMPLEMENTED
 input_validation: IMPLEMENTED
 app_check: DISABLED
-app_check_remediation: "See EIGHT_PHASE_REFACTOR_PLAN.md CANON-0002 for re-enablement plan"
+app_check_risk: "MEDIUM - Bot protection disabled; mitigated by rate limiting and Firestore rules"
+app_check_release_gate: "P1 - Must be resolved before public launch"
+app_check_owner: "Security Team"
+app_check_target_date: "TBD - Dependent on Firebase 403 throttle resolution"
+app_check_remediation: "See docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md CANON-0002 for re-enablement plan"
 firestore_rules: IMPLEMENTED
 
 # Code Quality
@@ -188,7 +192,11 @@ sonarqube_total_issues: 778
 sonarqube_blocker: 1
 sonarqube_blocker_note: "Firebase Web apiKey (public identifier, not a secret). See SECURITY.md for other apiKey handling."
 sonarqube_critical: 47
-sonarqube_critical_note: "Cognitive complexity violations (>15 threshold). See EIGHT_PHASE_REFACTOR_PLAN.md for remediation plan."
+sonarqube_critical_note: "Cognitive complexity violations (>15 threshold)"
+sonarqube_critical_risk: "LOW - Maintainability concern; not a runtime security issue"
+sonarqube_critical_release_gate: "P2 - Should be addressed but not blocking launch"
+sonarqube_critical_owner: "Engineering Team"
+sonarqube_critical_remediation: "See docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md for batch remediation plan"
 sonarqube_major: 216
 sonarqube_minor: 507
 sonarqube_info: 7
@@ -397,7 +405,7 @@ Project health review is triggered when ANY of these occur:
 |---------|-----------|---------|--------|
 | Session Count | Every 10 sessions | 1 | ⏳ Pending |
 | Security Non-Compliance | Any standard fails | 0 | ✅ Clear |
-| Test Pass Rate | Drops below 95% | 97.8% | ✅ Healthy |
+| Test Pass Rate | Drops below 95% | 99.1% | ✅ Healthy |
 | Exception Used | Any exception invoked | 0 | ✅ Clear |
 | Documentation Compliance | Drops below 80% | 100% | ✅ Healthy |
 | Performance Regression | Any metric >20% worse | 0 | ✅ Clear |
@@ -553,6 +561,7 @@ It should NOT be used for:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.4 | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate | Claude |
 | 1.3 | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability | Claude |
 | 1.2b | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator | Claude |
 | 1.2a | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics | Claude |

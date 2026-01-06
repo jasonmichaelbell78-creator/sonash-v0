@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.67
+**Document Version:** 1.68
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,12 +18,13 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.68 | 2026-01-06 | Review #68: 17 fixes - 4 MAJOR (App Check path, SonarQube remediation, function rename, review ordering), 10 MINOR (sorting, grep, versions, regex, ranges), 3 TRIVIAL |
 | 1.67 | 2026-01-06 | Review #67: 14 fixes - 4 MAJOR (grep -E, deterministic IDs, App Check tracking, SonarQube tracking), 7 MINOR (verification, enums, paths, ordering), 3 TRIVIAL |
 | 1.66 | 2026-01-05 | Review #66: 13 fixes - 4 MAJOR (evidence rules, output format, npm safety, apiKey guidance), 8 MINOR (counters, grep portability, YAML, model names), 1 TRIVIAL |
 | 1.65 | 2026-01-05 | Review #65: 19 fixes - 4 MAJOR (security doc hardening, deterministic CANON IDs), 10 MINOR (paths, assertions, category names), 5 TRIVIAL (model names) |
 | 1.64 | 2026-01-05 | Review #64: 31 fixes - 6 MAJOR (security pseudocode, Firebase key clarity, grep hardening), 8 MINOR (progress calc, paths), 17 TRIVIAL |
 | 1.63 | 2026-01-05 | Review #63: 15 fixes total - 7 broken relative paths, 8 minor improvements (version entries, secrets example, tier notes) |
-| 1.62 | 2026-01-05 | Review #62: 9 fixes - 1 CRITICAL (client-side credentials), 4 MAJOR (schema, links, model), 4 MINOR/TRIVIAL (filename, SQL check) |
+| 1.62 | 2026-01-05 | Review #62: 10 fixes - 1 CRITICAL (client-side credentials), 4 MAJOR (schema, links, model), 5 MINOR/TRIVIAL (2 Minor, 3 Trivial) |
 | 1.61 | 2026-01-05 | Review #61: Stale review assessment, path prefix fix, terminology update |
 | 1.60 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 → claude.md v2.9 (10 patterns added) |
 | 1.59 | 2026-01-05 | Review #60: Document sync, grep exclusion fix, CANON-ID guidance, duplicate link removal |
@@ -67,7 +68,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-67) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-68) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -141,9 +142,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 8
 **Consolidation threshold:** 10 reviews
-**✅ STATUS: CONSOLIDATED** (last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
+**Status:** ✅ NOT DUE (8 < 10 threshold; last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
 
 ### When to Consolidate
 
@@ -283,7 +284,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-65 are actively maintained below. Older reviews are in the archive.
+Reviews #41-68 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -1420,6 +1421,69 @@ Reviews #41-65 are actively maintained below. Older reviews are in the archive.
 
 ---
 
+#### Review #62: Multi-AI Template & Security Doc Fixes (2026-01-05)
+
+**Source:** Qodo PR Code Suggestions + CodeRabbit
+**PR/Branch:** claude/new-session-UjAUs → claude/pr-review-C5Usp
+**Suggestions:** 21 total (Critical: 1, Major: 5, Minor: 4, Trivial: 11)
+
+**Context:** Review of Multi-AI audit template additions and documentation updates. Required branch merge before processing since reviewed files were in source branch.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | SECURITY.md implies client-side service accounts | 🔴 Critical | Security | Rewrote comment to explicitly prohibit client-side credentials |
+| 2 | Missing IMPROVEMENT_PLAN_JSON schema | 🟠 Major | Template | Added complete schema to MULTI_AI_PROCESS_AUDIT_TEMPLATE.md |
+| 3 | Broken relative links in archived doc | 🟠 Major | Docs | Changed `./templates/` to `../templates/` in IMPLEMENTATION_PROMPTS.md |
+| 4 | GPT-5.2 Thinking (nonexistent model) | 🟠 Major | Template | Changed to GPT-5 Thinking in MULTI_AI_AGGREGATOR_TEMPLATE.md |
+| 5 | Broken Related Documents paths | 🟠 Major | Template | Added `../` prefix in MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md |
+| 6 | SQL injection check irrelevant to Firestore | 🟡 Minor | Docs | Changed to query pattern check in FIREBASE_CHANGE_POLICY.md |
+| 7 | Template filename mismatch in README | 🟡 Minor | Docs | Fixed MULTI_AI_PROCESS_AUDIT_PLAN_TEMPLATE → MULTI_AI_PROCESS_AUDIT_TEMPLATE |
+| 8 | Inconsistent archival notation | ⚪ Trivial | Docs | Standardized to "(archived - historical reference only)" in AI_WORKFLOW.md |
+| 9 | "Deep code analysis" vague wording | ⚪ Trivial | Template | Changed to "Comprehensive code analysis" in security/perf templates |
+| 10 | Github vs GitHub capitalization | ⚪ Trivial | Docs | Standardized to "GitHub" in MULTI_AI_PROCESS_AUDIT_TEMPLATE.md |
+
+**Not Applicable:**
+- Several trivial suggestions were duplicates or not relevant to current files
+
+**Patterns Identified:**
+
+1. **Security Documentation Must Be Explicit** (1 occurrence - Critical)
+   - Root cause: Ambiguous comment could imply unsafe practice
+   - Prevention: Security docs must explicitly state prohibitions, not just hint
+   - Pattern: "NOTE: Service account credentials must NEVER be used in client-side code"
+   - Note: Even comments can create security misconceptions
+
+2. **Archived Document Path Handling** (1 occurrence - Major)
+   - Root cause: Moving files to archive/ breaks relative `./` paths
+   - Prevention: Update all relative paths when archiving documents
+   - Pattern: When moving `docs/X.md` to `docs/archive/X.md`, change `./file` to `../file`
+   - Note: Verify links still work after archival
+
+3. **Template Schema Completeness** (1 occurrence - Major)
+   - Root cause: New template based on another but missing required schema
+   - Prevention: When creating templates with JSON output, always include schema
+   - Pattern: Check IMPROVEMENT_PLAN_JSON, CANON_JSONL_SCHEMA exist if referenced
+
+4. **Model Name Accuracy** (1 occurrence - Major)
+   - Root cause: Referencing nonexistent model version (GPT-5.2)
+   - Prevention: Use only known model names; update templates when models released
+   - Pattern: Verify model names against provider documentation
+
+5. **Technology-Appropriate Security Checks** (1 occurrence - Minor)
+   - Root cause: SQL injection check copied to NoSQL/Firestore context
+   - Prevention: Adapt security checklists to actual technology stack
+   - Pattern: Firestore uses query patterns and get()/exists() limits, not SQL
+
+**Resolution:**
+- Fixed: 10 items (1 Critical, 4 Major, 2 Minor, 3 Trivial)
+- Declined: 11 items (duplicates or not applicable)
+
+**Key Insight:** Security documentation must be explicit about prohibitions, not just implicit through context. Comments like "if using X on client" can be misread as permission rather than a hypothetical. Template creation should verify all referenced schemas exist. When documents move to archive, all relative paths need the `../` prefix adjustment.
+
+---
+
 #### Review #63: Documentation Link Fixes & Template Updates (2026-01-05)
 
 **Source:** Qodo PR Code Suggestions + CodeRabbit
@@ -1482,68 +1546,5 @@ All 6 compliance guide items verified as COMPLIANT:
 - Import organization suggestions - Dismissed: Current organization follows project convention
 
 **Resolution Summary:** 15 code/documentation issues fixed + 6 compliance items verified = 21/28 items addressed. Remaining 7 trivial items dismissed as not applicable or not needed.
-
----
-
-#### Review #62: Multi-AI Template & Security Doc Fixes (2026-01-05)
-
-**Source:** Qodo PR Code Suggestions + CodeRabbit
-**PR/Branch:** claude/new-session-UjAUs → claude/pr-review-C5Usp
-**Suggestions:** 21 total (Critical: 1, Major: 5, Minor: 4, Trivial: 11)
-
-**Context:** Review of Multi-AI audit template additions and documentation updates. Required branch merge before processing since reviewed files were in source branch.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | SECURITY.md implies client-side service accounts | 🔴 Critical | Security | Rewrote comment to explicitly prohibit client-side credentials |
-| 2 | Missing IMPROVEMENT_PLAN_JSON schema | 🟠 Major | Template | Added complete schema to MULTI_AI_PROCESS_AUDIT_TEMPLATE.md |
-| 3 | Broken relative links in archived doc | 🟠 Major | Docs | Changed `./templates/` to `../templates/` in IMPLEMENTATION_PROMPTS.md |
-| 4 | GPT-5.2 Thinking (nonexistent model) | 🟠 Major | Template | Changed to GPT-5 Thinking in MULTI_AI_AGGREGATOR_TEMPLATE.md |
-| 5 | Broken Related Documents paths | 🟠 Major | Template | Added `../` prefix in MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md |
-| 6 | SQL injection check irrelevant to Firestore | 🟡 Minor | Docs | Changed to query pattern check in FIREBASE_CHANGE_POLICY.md |
-| 7 | Template filename mismatch in README | 🟡 Minor | Docs | Fixed MULTI_AI_PROCESS_AUDIT_PLAN_TEMPLATE → MULTI_AI_PROCESS_AUDIT_TEMPLATE |
-| 8 | Inconsistent archival notation | ⚪ Trivial | Docs | Standardized to "(archived - historical reference only)" in AI_WORKFLOW.md |
-| 9 | "Deep code analysis" vague wording | ⚪ Trivial | Template | Changed to "Comprehensive code analysis" in security/perf templates |
-| 10 | Github vs GitHub capitalization | ⚪ Trivial | Docs | Standardized to "GitHub" in MULTI_AI_PROCESS_AUDIT_TEMPLATE.md |
-
-**Not Applicable:**
-- Several trivial suggestions were duplicates or not relevant to current files
-
-**Patterns Identified:**
-
-1. **Security Documentation Must Be Explicit** (1 occurrence - Critical)
-   - Root cause: Ambiguous comment could imply unsafe practice
-   - Prevention: Security docs must explicitly state prohibitions, not just hint
-   - Pattern: "NOTE: Service account credentials must NEVER be used in client-side code"
-   - Note: Even comments can create security misconceptions
-
-2. **Archived Document Path Handling** (1 occurrence - Major)
-   - Root cause: Moving files to archive/ breaks relative `./` paths
-   - Prevention: Update all relative paths when archiving documents
-   - Pattern: When moving `docs/X.md` to `docs/archive/X.md`, change `./file` to `../file`
-   - Note: Verify links still work after archival
-
-3. **Template Schema Completeness** (1 occurrence - Major)
-   - Root cause: New template based on another but missing required schema
-   - Prevention: When creating templates with JSON output, always include schema
-   - Pattern: Check IMPROVEMENT_PLAN_JSON, CANON_JSONL_SCHEMA exist if referenced
-
-4. **Model Name Accuracy** (1 occurrence - Major)
-   - Root cause: Referencing nonexistent model version (GPT-5.2)
-   - Prevention: Use only known model names; update templates when models released
-   - Pattern: Verify model names against provider documentation
-
-5. **Technology-Appropriate Security Checks** (1 occurrence - Minor)
-   - Root cause: SQL injection check copied to NoSQL/Firestore context
-   - Prevention: Adapt security checklists to actual technology stack
-   - Pattern: Firestore uses query patterns and get()/exists() limits, not SQL
-
-**Resolution:**
-- Fixed: 10 items (1 Critical, 4 Major, 2 Minor, 3 Trivial)
-- Declined: 11 items (duplicates or not applicable)
-
-**Key Insight:** Security documentation must be explicit about prohibitions, not just implicit through context. Comments like "if using X on client" can be misread as permission rather than a hypothetical. Template creation should verify all referenced schemas exist. When documents move to archive, all relative paths need the `../` prefix adjustment.
 
 ---

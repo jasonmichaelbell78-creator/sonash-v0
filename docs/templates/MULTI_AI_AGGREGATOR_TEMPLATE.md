@@ -1,6 +1,6 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.0
+**Document Version:** 2.3
 **Last Updated:** 2026-01-05
 **Purpose:** Aggregation prompt for merging multiple AI audit outputs into canonical findings
 
@@ -300,9 +300,10 @@ Goal: small, reviewable PRs.
 ### OUTPUT FORMAT (STRICT ORDER)
 
 **Important:** Output each section in order.
-- For ALL machine-readable sections (JSON and JSONL), output raw JSON (no surrounding code fences).
-- For JSONL sections, output one raw JSON object per line.
-- For Markdown sections (summaries), normal markdown formatting is acceptable.
+**Output rules:**
+- Machine-readable sections (JSON and JSONL): output raw JSON without surrounding code fences.
+- JSONL sections: output one raw JSON object per line.
+- Markdown sections (summaries): normal Markdown formatting is acceptable.
 
 **TIER-1 Mode Output:**
 
@@ -365,7 +366,7 @@ Same schema as CANON-*.jsonl but with:
 
 **CANONICAL_ID ASSIGNMENT (DETERMINISTIC; BOTH TIERS)**
 - Recompute IDs from the final deduped set every run (do not preserve source IDs).
-- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc), files[0] (asc). Final tiebreaker ensures deterministic ordering.
+- Sort findings by: severity (S0→S3), consensus_score (desc), final_confidence (desc), effort (E0→E3), category (asc), title (asc), files[0] or "" if empty (asc). Final tiebreaker ensures deterministic ordering.
 - Assign sequential IDs: CANON-0001, CANON-0002, ...
 - In Tier-1, IDs are still `CANON-0001` style (the filename indicates the category); do NOT embed category into the ID.
 
@@ -406,6 +407,7 @@ Same schema as CANON-*.jsonl but with:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 2.3 | 2026-01-06 | Review #68: Added empty files[] fallback to sorting; Varied bullet starters in output format section; Capitalized Markdown consistently | Claude |
 | 2.2 | 2026-01-06 | Review #67: Added deterministic tiebreaker (files[0]) to ID sorting; Clarified verification for non-file locators; Capitalized Markdown proper noun | Claude |
 | 2.1 | 2026-01-05 | Review #66: Fixed model name (GPT-5-Codex), clarified evidence rules for docs/process findings, removed code fences from JSON output examples, fixed deterministic ID sort (removed fingerprint), renamed Process subcategory to Workflow Docs | Claude |
 | 2.0 | 2026-01-05 | Major rewrite for 2-tier aggregation (per-category → cross-category); Added 6-category framework; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added tooling references (patterns:check, deps:circular, deps:unused, SonarQube); Explicit TIER-1 and TIER-2 modes with different inputs/outputs; Updated schema to match JSONL_SCHEMA_STANDARD.md | Claude |

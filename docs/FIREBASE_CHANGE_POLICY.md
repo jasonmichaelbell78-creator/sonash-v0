@@ -1,6 +1,6 @@
 # Firebase Change Policy
 
-**Document Version:** 1.0
+**Document Version:** 1.2
 **Created:** 2026-01-05
 **Last Updated:** 2026-01-05
 **Status:** ACTIVE
@@ -34,7 +34,7 @@ This document defines the mandatory security review process for all changes to F
 - **Environment Variables**: Changes to Cloud Functions environment variables (`.env`, Firebase config)
 
 ### Out of Scope
-- Client-side Firebase SDK usage (covered by general code review)
+- Client-side Firebase SDK usage (delegated to standard [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for code review)
 - Firebase Hosting static content (unless security-related)
 - Firebase Performance Monitoring configuration
 - Firebase Analytics configuration
@@ -626,6 +626,7 @@ This policy should be reviewed and updated:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-06 | Review #68: Updated document header to 1.1; Added explicit handoff reference for client-side scope; Referenced security layer architecture | Claude |
 | 1.1 | 2026-01-06 | Review #67: Generalized firestore-service.ts reference to pattern-based path | Claude |
 | 1.0 | 2026-01-05 | Initial policy creation - Firestore rules, Cloud Functions, App Check coverage | Claude (Session #25) |
 

@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Process & Automation Audit Plan
 
-**Document Version:** 1.0
+**Document Version:** 1.2
 **Created:** 2026-01-05
 **Last Updated:** 2026-01-05
 **Status:** PENDING | IN_PROGRESS | COMPLETE
@@ -566,6 +566,10 @@ OUTPUT
 ```
 
 4) HUMAN_SUMMARY
+- Narrative summary of process health
+- Top 3 process risks identified
+- Quick wins (E0-E1 improvements)
+- Recommended improvement sequence
 ```
 
 ### Step 3: Create Process Findings Document
@@ -652,6 +656,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-06 | Review #68: Updated document header to 1.1; Added HUMAN_SUMMARY content description | Claude |
 | 1.1 | 2026-01-06 | Review #67: Aligned category enum (Documentation → Workflow Docs) to match AGGREGATOR | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Process & Automation audit category added to multi-AI review framework | Claude |
 

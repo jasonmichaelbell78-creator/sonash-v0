@@ -1,8 +1,8 @@
 # [Project Name] Multi-AI Documentation Audit Plan
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-06
 **Status:** PENDING | IN_PROGRESS | COMPLETE
 **Overall Completion:** 0%
 
@@ -218,7 +218,7 @@ ANALYSIS:
 - Identify stale references to renamed files
 
 VERIFICATION COMMANDS (if available):
-- grep -r "\[.*\](.*)" --include="*.md" (extract all links)
+- grep -Er "\[.*\]\(.*\)" --include="*.md" (extract all links)
 - For each link, check if target file exists
 - npm run docs:check (if validation script exists)
 
@@ -583,6 +583,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1 | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex; Escaped brackets in pattern | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Documentation audit category added to multi-AI review framework | Claude |
 
 ---
