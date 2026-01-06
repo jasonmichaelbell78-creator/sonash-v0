@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.72
+**Document Version:** 1.73
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.73 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md v1.1 (10 Documentation patterns added) |
 | 1.72 | 2026-01-06 | Review #72: 21 fixes - 12 CRITICAL (broken links to JSONL_SCHEMA, GLOBAL_SECURITY_STANDARDS, SECURITY.md, EIGHT_PHASE_REFACTOR), 5 MAJOR (version/stack placeholders), 4 MINOR (paths, regex, commands) |
 | 1.71 | 2026-01-06 | Review #71: Documentation improvements |
 | 1.70 | 2026-01-06 | Review #70: Template refinements |
@@ -146,9 +147,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 12
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ DUE (12 >= 10 threshold; last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
+**Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
 ### When to Consolidate
 
@@ -168,20 +169,22 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-05 (Session #23)
-- **Reviews consolidated:** #51-#60 (10 reviews)
-- **Patterns added to claude.md v2.9:**
-  - path.relative() bare ".." trap (security)
-  - Global flag required for exec() loops
-  - grep --exclude uses filename not path
-  - Path boundary anchoring in regex exclusions
-  - Audit CI/scripts after file moves
-  - Verify AI path suggestions before changing links
-  - Nested code fences in markdown (4-backtick outer)
-  - Effort estimate verification
-  - Complete pattern fix audit
-  - Regex scope for brace matching
-- **Next consolidation due:** After Review #70
+- **Date:** 2026-01-06 (Session #27)
+- **Reviews consolidated:** #61-#72 (12 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.1:**
+  - Relative paths in subdirectories (files in `docs/templates/` use `../file.md` not `docs/file.md`)
+  - Path calculation from different directory levels
+  - Link verification before committing (`test -f path`)
+  - Template placeholder replacement (all tokens before use)
+  - Archived document path adjustment (`./file` → `../file` when moving to archive/)
+  - Version history date accuracy (use actual commit date)
+  - Security documentation explicitness ("NEVER use X" not "if using X")
+  - Technology-appropriate security checks (adapt to stack)
+  - Model name accuracy (verify against provider docs)
+  - Stale review detection (check commit count since review)
+- **Patterns updated in claude.md v3.1:**
+  - Updated pattern count reference (90+ → 100+ patterns from 72 reviews)
+- **Next consolidation due:** After Review #82
 
 ---
 
