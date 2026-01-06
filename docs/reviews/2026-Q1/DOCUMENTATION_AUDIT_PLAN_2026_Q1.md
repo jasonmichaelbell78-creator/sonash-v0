@@ -435,11 +435,13 @@ Schema:
 ```markdown
 DOCUMENTATION VERIFICATION (run if run_commands=yes)
 
-1) Link Extraction:
-- grep -rn "\[.*\](.*)" --include="*.md" | head -50
+1) Link Extraction (internal links only):
+- grep -rn "\[.*\](.*)" --include="*.md" | grep -v "http://" | grep -v "https://" | head -50
+  (Filters out external URLs, showing only internal/relative links)
 
 2) Broken Link Detection:
-- For each extracted link, check: test -f [target_path]
+- For each extracted internal link, check: test -f [target_path]
+- External links (http/https) should be verified separately if needed
 
 3) Stale Content Detection:
 - grep -rn "TODO:\|FIXME:\|WIP:" --include="*.md"
@@ -574,10 +576,10 @@ When using this template:
 ## Related Documents
 
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
-- **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** - General code review template
-- **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Documentation standards (if exists)
-- **[docs/README.md](../README.md)** - Documentation inventory
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
+- **[CODE_REVIEW_PLAN_2026_Q1.md](./CODE_REVIEW_PLAN_2026_Q1.md)** - General code review template
+- **[DOCUMENTATION_STANDARDS.md](../../DOCUMENTATION_STANDARDS.md)** - Documentation standards (if exists)
+- **[docs/README.md](../../README.md)** - Documentation inventory
 
 ---
 

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.74
+**Document Version:** 1.75
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.75 | 2026-01-06 | Review #74: 18 fixes - 6 MAJOR (broken links, schema fields, deduplication clarity, observability, placeholders, GPT-4o capabilities), 9 MINOR (fail-fast, URL filtering, NO-REPO MODE, environment, methodology, output specs, links, alignment), 3 TRIVIAL (version, dates, context) |
 | 1.74 | 2026-01-06 | Review #73: 9 fixes - 2 MAJOR (model name self-inconsistency, NO-REPO MODE clarity), 4 MINOR (chunk sizing, regex, JSONL validation, stack versions), 3 TRIVIAL (documentation consistency) |
 | 1.73 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md v1.1 (10 Documentation patterns added) |
 | 1.72 | 2026-01-06 | Review #72: 21 fixes - 12 CRITICAL (broken links to JSONL_SCHEMA, GLOBAL_SECURITY_STANDARDS, SECURITY.md, EIGHT_PHASE_REFACTOR), 5 MAJOR (version/stack placeholders), 4 MINOR (paths, regex, commands) |
@@ -148,7 +149,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1
+**Reviews since last consolidation:** 2
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -292,11 +293,85 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-72 are actively maintained below. Older reviews are in the archive.
+Reviews #41-74 are actively maintained below. Older reviews are in the archive.
 
 ---
 
-#### Review #41: Qodo/CodeRabbit Security Hardening + Doc Migration (2026-01-04)
+#### Review #74: Multi-AI Audit Plan Polish (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** fd4de02
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Comprehensive review of 6 Multi-AI Audit Plan files (2026-Q1) after Step 4.1 completion. Review identified 18 issues spanning documentation accuracy, schema completeness, template usability, and cross-reference integrity.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Version mismatch in PERFORMANCE_AUDIT_PLAN header | ⚪ Trivial | Documentation | Updated header to 1.1 to match version history |
+| 2 | JSONL validation lacks fail-fast behavior | 🟡 Minor | Automation | Added exit 1 on first parse error in validation scripts |
+| 3 | Missing schema fields for progress markers | 🟠 Major | Schema | Added status + progress_markers (start_date, end_date, pr_number) |
+| 4 | Link extraction includes external URLs | 🟡 Minor | Automation | Added grep -v http filtering for internal-only links |
+| 5 | Broken related-document links (self-inconsistent paths) | 🟠 Major | Documentation | Fixed ../ path depth (2026-Q1 subdir requires ../../) |
+| 6 | Schema categories misaligned with 7 focus areas | 🟡 Minor | Schema | Added "Dependency Security" to SECURITY schema enum |
+| 7 | Version history date mismatch (1.3 says "updated to 1.2") | ⚪ Trivial | Documentation | Fixed self-reference: 1.3 entry now says "updated to 1.3" |
+| 8 | Unclear deduplication rules | 🟠 Major | Methodology | Added structured rules: exact match, evidence overlap, clusters, never-merge conditions |
+| 9 | NO-REPO MODE lacks completeness spec | 🟡 Minor | Methodology | Added required output format for models without repo access |
+| 10 | Missing observability category (5 vs 6) | 🟠 Major | Template | Added Category 6: Observability & Monitoring with full checklist |
+| 11 | Missing environment context in performance metrics | 🟡 Minor | Methodology | Added build/runtime environment documentation requirements |
+| 12 | Methodology clarity improvements needed | 🟡 Minor | Methodology | Added METHODOLOGY OVERVIEW: 6-phase approach with evidence standards |
+| 13 | Output specification completeness | 🟡 Minor | Template | Added structured HUMAN_SUMMARY format with required sections |
+| 14 | Unfilled placeholder values | 🟠 Major | Template | Filled tech stack, scope, baseline metrics with SoNash values |
+| 15 | Context fields clarification (when to fill) | ⚪ Trivial | Methodology | Changed "Fill Before Audit" → "Fill During Audit" with instructions |
+| 16 | Missing markdown links in process workflow | 🟡 Minor | Documentation | Linked CODE_REVIEW_PLAN, MULTI_AI_REVIEW_COORDINATOR, AI_WORKFLOW |
+| 17 | Incorrect GitHub capitalization | 🟡 Minor | Documentation | Verified all instances correct (already capitalized) |
+| 18 | Uniform GPT-4o capability assumptions | 🟠 Major | Accuracy | Added note clarifying GPT-4o platform differences (browse_files=no) |
+
+**Patterns Identified:**
+
+1. **Relative Path Calculation from Subdirectories** (1 occurrence - Documentation)
+   - Root cause: Files in `docs/reviews/2026-Q1/` linking to `docs/` need `../../` not `../`
+   - Prevention: Count directory levels when creating relative links
+   - Pattern: From `docs/reviews/2026-Q1/FILE.md` to `docs/TARGET.md` = `../../TARGET.md`
+   - Note: Already established in Consolidation #6, reinforced here
+
+2. **Schema Progress Tracking Fields** (1 occurrence - Schema Design)
+   - Root cause: Findings schemas lacked progress/implementation tracking
+   - Prevention: Add status + progress_markers to FINDINGS_JSONL schema
+   - Fields: `status`, `start_date`, `end_date`, `pr_number`, `implementation_notes`
+   - Note: Enables tracking from finding → implementation → verification
+
+3. **Explicit Deduplication Rules** (1 occurrence - Methodology)
+   - Root cause: Aggregators had vague "similar findings" merge criteria
+   - Prevention: Document concrete rules: exact fingerprint match, evidence overlap requirements, cluster handling
+   - Pattern: 4 sections: Primary Merge, Secondary Merge, Clusters, Never Merge
+   - Note: Reduces hallucination in aggregation phase
+
+4. **NO-REPO MODE Output Completeness** (1 occurrence - Methodology)
+   - Root cause: Models without repo access had unclear output requirements
+   - Prevention: Specify exact output format: CAPABILITIES header + empty FINDINGS_JSONL + explanatory HUMAN_SUMMARY
+   - Pattern: Explicit "(empty - no repo access)" markers for aggregator detection
+   - Note: Prevents models from inventing findings without evidence
+
+5. **Environment Context for Performance Metrics** (1 occurrence - Methodology)
+   - Root cause: Performance metrics lacked hardware/environment documentation
+   - Prevention: Require documenting build environment, runtime environment, network conditions, hardware
+   - Pattern: Metrics must specify: OS, Node version, RAM, network conditions
+   - Note: Makes performance comparisons meaningful across different audits
+
+6. **Structured HUMAN_SUMMARY Requirements** (1 occurrence - Template Design)
+   - Root cause: HUMAN_SUMMARY sections had vague "summarize findings" guidance
+   - Prevention: Provide structured template with required sections
+   - Sections: Status, Metrics Baseline, Top 5 Opportunities, Quick Wins, Bottlenecks, Total Improvement, Implementation Order
+   - Note: Standardizes output format across different AI models
+
+**Key Insight:** Multi-AI audit templates require extremely explicit instructions to prevent model hallucination and ensure consistent output across models with different capabilities. This includes: concrete examples for all placeholders, exact output format specifications, explicit NO-REPO MODE handling, structured deduplication rules, and progress tracking fields in schemas.
+
+---
+
+#### Review #73: Multi-AI Audit Plan Scaffold (2026-01-06)
 
 **Source:** Qodo PR Compliance Guide + CodeRabbit
 **PR:** Session #19

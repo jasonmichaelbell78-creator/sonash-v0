@@ -161,9 +161,13 @@ CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/n
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete this review without repo access
-- Output CAPABILITIES header with limitation noted
-- Output empty FINDINGS_JSONL and SUSPECTED_FINDINGS_JSONL sections (for aggregator detection)
-- Do not attempt repository analysis
+- **Required NO-REPO MODE Output**:
+  1. CAPABILITIES header with limitation clearly noted
+  2. Empty FINDINGS_JSONL section (literally the text "FINDINGS_JSONL\n(empty - no repo access)")
+  3. Empty SUSPECTED_FINDINGS_JSONL section (literally the text "SUSPECTED_FINDINGS_JSONL\n(empty - no repo access)")
+  4. HUMAN_SUMMARY explaining limitation: "Unable to perform code review without repository access. This model cannot browse files or checkout the repository. To include this model's analysis, either: (a) provide code snippets manually, or (b) use a model with repository access capabilities."
+- Do NOT attempt repository analysis or invent findings
+- Do NOT provide generic advice without grounding in actual code
 ```
 
 ### Part 2: Anti-Hallucination Rules
@@ -295,6 +299,13 @@ Schema:
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": 0-100,
+  "status": "pending|in_progress|completed|deferred",
+  "progress_markers": {
+    "start_date": "YYYY-MM-DD or null",
+    "end_date": "YYYY-MM-DD or null",
+    "pr_number": "PR number if implemented, null otherwise",
+    "implementation_notes": "brief status update"
+  },
   "files": ["path1", "path2"],
   "symbols": ["SymbolA", "SymbolB"],
   "duplication_cluster": {
@@ -388,13 +399,27 @@ Effort: E0-E3
 
 DEDUPLICATION RULES
 
-1) Primary merge: fingerprint (exact match)
-2) Secondary merge if ALL true:
-   - same category
-   - >=1 shared file OR >=1 shared symbol
-   - titles + suggested_fix describe same refactor
-3) Duplication clusters: merge by union of instances
-4) Never merge "similar vibes" without evidence overlap
+**Primary Merge Strategy (Exact Match):**
+1) Merge findings with identical fingerprints (same category + primary_file + primary_symbol + problem_slug)
+
+**Secondary Merge Strategy (Evidence Overlap):**
+Merge findings only if ALL of these conditions are met:
+- Same category (e.g., both "Hygiene/Duplication")
+- At least 1 shared file OR at least 1 shared symbol
+- Both titles + suggested_fix describe the same underlying refactor (e.g., both recommend extracting same helper)
+- Implementation would address both findings in single PR
+
+**Duplication Clusters (Special Case):**
+- If multiple findings report the same pattern across different files, merge into ONE finding
+- Set `duplication_cluster.is_cluster = true`
+- List all instances in `duplication_cluster.instances[]`
+- Take union of all files/symbols across findings
+
+**Never Merge If:**
+- Only "similar vibes" - require concrete file/symbol overlap
+- Different root causes (even if same symptom)
+- Would require separate PRs to implement
+- Disagree on severity by 2+ levels (S0 vs S2, S1 vs S3)
 
 CONSENSUS SCORING (per canonical finding)
 

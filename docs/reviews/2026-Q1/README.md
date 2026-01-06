@@ -45,8 +45,10 @@ Each plan includes:
 - **GPT-5.2-Codex** (browse_files=yes, run_commands=yes) - Code analysis
 - **Gemini 3 Pro** (browse_files=yes, run_commands=yes) - Alternative perspective
 - **GPT-4o** (browse_files=no, run_commands=no) - Broad coverage (optional)
+  - **Note**: GPT-4o capabilities vary by platform. ChatGPT web UI typically does NOT support file browsing or command execution. Use only for general knowledge queries, not detailed code analysis.
 
 **Minimum**: 3 models (at least 2 with run_commands=yes)
+**Important**: Models with browse_files=no will run in "NO-REPO MODE" and provide limited analysis. Prioritize models with full repo access for best results.
 
 ### Step 2: Run Each Audit
 
@@ -91,16 +93,16 @@ docs/reviews/2026-Q1/outputs/
 
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
-# If jq is available:
+# If jq is available (fails fast on first error):
 while IFS= read -r line; do
-  printf '%s\n' "$line" | jq . >/dev/null || printf 'Parse error on line: %s\n' "$line"
+  printf '%s\n' "$line" | jq . >/dev/null || { printf 'Parse error on line: %s\n' "$line"; exit 1; }
 done < [model-name]_findings.jsonl
 
-# If jq is not available, use python:
-python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' < [model-name]_findings.jsonl
+# If jq is not available, use python (fails fast on first error):
+python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' < [model-name]_findings.jsonl || { echo "JSON parse error"; exit 1; }
 ```
 
-Fix any parse errors before aggregation.
+**Note**: Scripts will exit immediately on first parse error. Fix any parse errors before aggregation.
 
 ### Step 5: Run Tier-1 Aggregation
 

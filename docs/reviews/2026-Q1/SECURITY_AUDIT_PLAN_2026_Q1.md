@@ -449,7 +449,7 @@ Return 4 sections in this exact order:
 
 Schema:
 {
-  "category": "Rate Limiting|Input Validation|Secrets Management|Authentication|Firebase Security|OWASP",
+  "category": "Rate Limiting|Input Validation|Secrets Management|Authentication|Firebase Security|Dependency Security|OWASP",
   "title": "short, specific vulnerability",
   "fingerprint": "<category>::<primary_file>::<vulnerability_type>",
   "severity": "S0|S1|S2|S3",
@@ -650,7 +650,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.3 | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.2 | Claude |
+| 1.3 | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.3 | Claude |
 | 1.2 | 2026-01-06 | Review #67: Added -E flag for extended regex; Made grep --exclude-dir portable (repeated flags vs brace expansion) | Claude |
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |

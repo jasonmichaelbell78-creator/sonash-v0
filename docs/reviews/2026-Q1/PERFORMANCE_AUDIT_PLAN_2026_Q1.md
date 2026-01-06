@@ -1,6 +1,6 @@
 # SoNash Multi-AI Performance Audit Plan
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-06
 **Last Updated:** 2026-01-06
 **Status:** PENDING
@@ -19,12 +19,13 @@ This document serves as the **execution plan** for running a multi-AI performanc
 - After adding significant new features
 - Quarterly performance review
 
-**Review Focus Areas (5 Categories):**
+**Review Focus Areas (6 Categories):**
 1. Bundle Size & Loading
 2. Rendering Performance
 3. Data Fetching & Caching
 4. Memory Management
 5. Core Web Vitals
+6. Observability & Monitoring
 
 **Expected Output:** Performance findings with optimization plan, baseline metrics, and improvement targets.
 
@@ -59,39 +60,53 @@ Last Performance Audit: 2026-01-05
 ### Tech Stack Performance Considerations
 
 ```
-- Framework: [e.g., Next.js 16.1] - SSR/CSR/ISR strategies
-- UI Library: [e.g., React 19.2.3] - Rendering patterns
-- Styling: [e.g., Tailwind CSS v4] - CSS bundle size
-- Animation: [e.g., Framer Motion 12] - Animation performance
-- Backend: [e.g., Firestore] - Query optimization
-- Bundler: [e.g., Turbopack/Webpack] - Build optimization
+- Framework: Next.js 16.1.1 (App Router) - SSR/CSR/ISR strategies, route loading
+- UI Library: React 19.2.3 - Rendering patterns, Suspense boundaries
+- Styling: Tailwind CSS v4 - CSS bundle size, utility tree-shaking
+- Animation: Framer Motion 12.23.0 - Animation performance, layout shifts
+- Backend: Firestore (Firebase 12.6.0) - Query optimization, real-time listeners
+- Bundler: Turbopack (Next.js 16) - Build optimization, code splitting
+- Monitoring: Sentry 10.30.0 - Error tracking, performance monitoring
 ```
 
-### Baseline Metrics (Fill Before Audit)
+### Baseline Metrics (Fill During Audit)
+
+**Instructions:** These metrics should be measured at the start of PHASE 1 of the audit. Models with `run_commands=yes` can measure these directly. Models without repo access should note "UNMEASURED" and proceed with analysis.
+
+**Environment Context:** All metrics should be measured in:
+- **Build Environment**: Local development machine (document: OS, Node version, available RAM)
+- **Runtime Environment**: Production build running locally (npm run build && npm run start)
+- **Network Conditions**: Standard connection (note if measuring on slow/fast network)
+- **Hardware Context**: Document CPU/RAM if significantly different from typical deployment target
 
 ```
 Bundle Size:
-- Total JS: TBD - Run npm run build to establish baseline during audit
+- Total JS: [To be measured via npm run build]
+- Largest chunks: [To be measured]
+- CSS size: [To be measured]
 
-Expected areas to measure:
-- Bundle size: Total JS, largest chunks, CSS
-- Core Web Vitals: LCP, FID, CLS (via Lighthouse)
-- Performance score: /100
-- Known heavy dependencies: Framer Motion, Firebase, Leaflet, Sentry
+Core Web Vitals (measure with Lighthouse if available):
+- LCP: [X] s
+- FID: [X] ms
+- CLS: [X]
+- Performance score: [X]/100
 
 Build Times:
-- Dev build: [X] s
-- Production build: [X] s
+- Dev build: [X] s (measure: time npm run dev)
+- Production build: [X] s (measure: time npm run build)
+
+Known Heavy Dependencies (for context):
+- Framer Motion, Firebase, Leaflet, Sentry
 ```
 
 ### Scope
 
 ```
 Performance-Critical Paths:
-- Initial page load: [list routes]
-- High-traffic pages: [list routes]
-- Data-heavy components: [list components]
-- Animation-heavy components: [list components]
+- Initial page load: app/page.tsx (landing), app/dashboard/page.tsx
+- High-traffic pages: /dashboard, /journal, /inventory, /growth
+- Data-heavy components: JournalEntryList, InventoryTable, GrowthCardsGrid
+- Animation-heavy components: FadeIn, SlideIn, MeetingWidget, growth card animations
 
 Include: app/, components/, hooks/, lib/, functions/src/
 Exclude: docs/, tests/, public/, node_modules/, .next/
@@ -193,18 +208,35 @@ A performance finding is CONFIRMED only if it includes:
 
 If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 
-FOCUS AREAS (use ONLY these 5 categories)
+FOCUS AREAS (use ONLY these 6 categories)
 
 1) Bundle Size & Loading
 2) Rendering Performance
 3) Data Fetching & Caching
 4) Memory Management
 5) Core Web Vitals
+6) Observability & Monitoring
 ```
 
 ### Part 3: Performance Audit Phases
 
 ```markdown
+METHODOLOGY OVERVIEW
+
+This audit uses a systematic 6-phase approach:
+1. **Validation**: Confirm you can access the repo and measure metrics
+2. **Mapping**: Identify all performance-critical areas (routes, components, dependencies)
+3. **Category Analysis**: Check each of the 6 categories systematically using checklists
+4. **Findings**: Document each issue with evidence, impact estimates, and optimization recommendations
+5. **Opportunities**: Identify quick wins vs major refactors, prioritize by impact/effort ratio
+6. **Summary**: Rank findings and create actionable recommendations
+
+**Evidence Standard**: Every finding must include file paths + specific metrics (bundle size, render count, etc.)
+**Impact Focus**: Prioritize findings that affect Core Web Vitals or user-perceived performance
+**Optimization Philosophy**: Measure → Identify → Recommend → Estimate improvement
+
+---
+
 PHASE 1: REPOSITORY ACCESS VALIDATION
 
 Before beginning, verify you can access the repository:
@@ -350,6 +382,33 @@ VERIFICATION COMMANDS (if available):
 Mark each check: ISSUE | OK | N/A
 Quote specific evidence.
 
+Category 6: Observability & Monitoring
+CHECKS:
+[ ] Error tracking configured (Sentry)
+[ ] Performance monitoring in place
+[ ] Core Web Vitals tracked in production
+[ ] Build time metrics tracked
+[ ] Bundle size monitoring set up
+[ ] User-centric metrics collected
+[ ] Analytics integration proper
+[ ] No performance tracking gaps
+
+ANALYSIS:
+- Check Sentry configuration
+- Look for performance monitoring tools
+- Identify missing observability
+- Check analytics setup
+- Verify metrics collection
+
+PATTERNS TO FIND:
+- Missing error boundaries
+- No performance tracking
+- Gaps in analytics
+- Unmeasured critical paths
+
+Mark each check: ISSUE | OK | N/A
+Quote specific evidence.
+
 After each category: "Category X complete - Issues found: [number]"
 
 PHASE 4: DRAFT PERFORMANCE FINDINGS
@@ -418,7 +477,7 @@ Return 4 sections in this exact order:
 
 Schema:
 {
-  "category": "Bundle Size|Rendering|Data Fetching|Memory|Core Web Vitals",
+  "category": "Bundle Size|Rendering|Data Fetching|Memory|Core Web Vitals|Observability",
   "title": "short, specific issue",
   "fingerprint": "<category>::<primary_file>::<issue_type>",
   "severity": "S0|S1|S2|S3",
@@ -450,11 +509,37 @@ Severity guide (performance-specific):
 (same schema, but confidence <= 40; needs profiling to confirm)
 
 4) HUMAN_SUMMARY (markdown)
-- Current performance status
-- Top 5 optimization opportunities (by impact/effort)
-- Quick wins list (E0-E1)
-- Estimated total improvement if all addressed
-- Recommended optimization order
+
+**Required Structure:**
+
+## Performance Audit Summary
+
+**Current Status**: [1-2 sentences on overall performance health]
+
+**Metrics Baseline**:
+- Bundle size: [X] KB
+- LCP: [X] s
+- Performance score: [X]/100
+- [Other measured metrics]
+
+**Top 5 Optimization Opportunities** (ranked by impact/effort ratio):
+1. [Title] - Impact: [S0/S1/S2/S3], Effort: [E0/E1/E2/E3], Expected gain: [X]
+2. [...]
+
+**Quick Wins** (E0-E1 effort, measurable gains):
+- [List 3-5 optimizations that can be done quickly]
+
+**Performance Bottlenecks Identified**:
+- [Summarize major issues by category]
+
+**Estimated Total Improvement**:
+- If all S0/S1 issues addressed: [X]% performance gain, [Y] KB bundle reduction
+- If all issues addressed: [X]% performance gain, [Y] KB bundle reduction
+
+**Recommended Implementation Order**:
+1. [Critical fixes first - S0 items]
+2. [High-impact optimizations - S1 items with low effort]
+3. [Other optimizations - ranked by impact/effort]
 ```
 
 ### Part 5: Performance Verification Commands
