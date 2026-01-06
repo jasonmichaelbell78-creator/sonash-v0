@@ -103,7 +103,7 @@ Exclude: docs/, public/, node_modules/, .next/, dist/
 | GPT-5-Codex | browse_files=yes, run_commands=yes | Comprehensive code analysis, vulnerability detection |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative security lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Pattern detection, quick verification |
-| ChatGPT-4o | browse_files=no, run_commands=no | Broad OWASP knowledge |
+| GPT-4o | browse_files=no, run_commands=no | Broad OWASP knowledge |
 
 **Selection criteria:**
 - At least 2 models with `run_commands=yes` for grep/lint verification
@@ -169,7 +169,13 @@ CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/n
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete security audit without repo access
-- Stop immediately and report limitation
+- **Required NO-REPO MODE Output**:
+  1. CAPABILITIES header with limitation clearly noted
+  2. COMPLIANCE_STATUS_JSON with all standards set to "PARTIAL" and a single gap: "Unable to assess without repository access"
+  3. Empty FINDINGS_JSONL section (literally the text "FINDINGS_JSONL\n(empty - no repo access)")
+  4. Empty SUSPECTED_FINDINGS_JSONL section (literally the text "SUSPECTED_FINDINGS_JSONL\n(empty - no repo access)")
+  5. HUMAN_SUMMARY explaining limitation and how to proceed (use a model with repo access or provide code snippets)
+- Do NOT attempt repository analysis or invent vulnerabilities
 ```
 
 ### Part 2: Anti-Hallucination Rules

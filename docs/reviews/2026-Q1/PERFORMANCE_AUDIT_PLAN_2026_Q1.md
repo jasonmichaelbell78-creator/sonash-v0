@@ -108,8 +108,8 @@ Performance-Critical Paths:
 - Data-heavy components: JournalEntryList, InventoryTable, GrowthCardsGrid
 - Animation-heavy components: FadeIn, SlideIn, MeetingWidget, growth card animations
 
-Include: app/, components/, hooks/, lib/, functions/src/
-Exclude: docs/, tests/, public/, node_modules/, .next/
+Include: app/, components/, hooks/, lib/, functions/src/, tests/, types/
+Exclude: docs/, public/, node_modules/, .next/
 ```
 
 ---
@@ -217,7 +217,7 @@ If browse_files=no OR repo_checkout=no:
   - METRICS_BASELINE_JSON: Output `{}` (empty object - no metrics without repo)
   - FINDINGS_JSONL: Output exactly:
     - `FINDINGS_JSONL`
-    - `(empty - no repo access)`
+    - (no lines — leave this section empty)
   - SUSPECTED_FINDINGS_JSONL: MAY include general observations (clearly marked "NO REPO ACCESS")
   - HUMAN_SUMMARY: Explain limitation and provide generic best practices only
 - Do NOT invent file-specific findings without repo access
@@ -282,7 +282,7 @@ At the end: "Phase 2 complete - Performance surface mapped"
 
 PHASE 3: CATEGORY-BY-CATEGORY ANALYSIS
 
-For each of the 5 categories, perform systematic analysis:
+For each of the 6 categories, perform systematic analysis:
 
 Category 1: Bundle Size & Loading
 CHECKS:
@@ -490,12 +490,12 @@ Return 4 sections in this exact order:
 1) METRICS_BASELINE_JSON
 {
   "audit_date": "2026-01-06",
-  "bundle_size_kb": X,
-  "lcp_seconds": X,
-  "fid_ms": X,
-  "cls": X,
-  "performance_score": X,
-  "build_time_seconds": X,
+  "bundle_size_kb": null,
+  "lcp_seconds": null,
+  "fid_ms": null,
+  "cls": null,
+  "performance_score": null,
+  "build_time_seconds": null,
   "device_profile": "mobile|desktop|both",
   "measurement_tool": "lighthouse|webvitals|custom",
   "environment": "development|staging|production"

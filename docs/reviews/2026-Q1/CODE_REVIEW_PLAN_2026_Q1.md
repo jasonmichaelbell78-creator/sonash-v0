@@ -738,11 +738,11 @@ When using this template:
 ## 🔗 Related Documents
 
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
-- **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
-- **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
-- **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** - Performance-focused reviews
-- **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md** - Large-scale refactoring plans
-- **AI_REVIEW_PROCESS.md** - Process for individual PR reviews (CodeRabbit, Qodo)
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
+- **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](../../templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** - Security-focused reviews
+- **[MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](../../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)** - Performance-focused reviews
+- **[MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](../../templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)** - Large-scale refactoring plans
+- **[AI_REVIEW_PROCESS.md](../../AI_REVIEW_PROCESS.md)** - Process for individual PR reviews (CodeRabbit, Qodo)
 - **[EIGHT_PHASE_REFACTOR_PLAN.md](../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)** - Example of review output in action
 
 ---

@@ -94,9 +94,10 @@ docs/reviews/2026-Q1/outputs/
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
 # If jq is available (fails fast on first error):
-grep -v -E '^[[:space:]]*$' [model-name]_findings.jsonl | nl -ba | while IFS=$'\t' read -r n line; do
+set -o pipefail
+while IFS=$'\t' read -r n line; do
   printf '%s\n' "$line" | jq . >/dev/null || { printf 'Parse error on line %s: %s\n' "$n" "$line"; exit 1; }
-done
+done < <(grep -v -E '^[[:space:]]*$' [model-name]_findings.jsonl | nl -ba)
 
 # If jq is not available, use python (fails fast on first error):
 grep -v '^$' [model-name]_findings.jsonl | python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' || { echo "JSON parse error"; exit 1; }

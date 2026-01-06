@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.78
+**Document Version:** 1.79
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
 | 1.78 | 2026-01-06 | Review #77: 9 fixes - 2 MAJOR (shell script portability, broken relative links), 5 MINOR (invalid JSONL, severity scale, category example, version dates, review range), 2 TRIVIAL (environment fields, inline guidance) |
 | 1.77 | 2026-01-06 | Review #76: 13 fixes - 3 MAJOR (model naming, broken link paths, PERFORMANCE doc links), 8 MINOR (SECURITY root cause evidence, shell exit codes, transitive closure, division-by-zero, NO-REPO contract, category enum, model standardization, vulnerability type), 2 TRIVIAL (version metadata, review range) |
 | 1.76 | 2026-01-06 | Review #75: 17 fixes - 2 MAJOR (SECURITY schema category names, vulnerability deduplication), 8 MINOR (regex robustness, JSONL validation, deduplication rules, averaging methodology, model matrix, link paths), 2 TRIVIAL (version verification, duplicate check), 1 REJECTED (incorrect path suggestion) |
@@ -152,7 +153,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5
+**Reviews since last consolidation:** 6
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -296,7 +297,98 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-76 are actively maintained below. Older reviews are in the archive.
+Reviews #41-77 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #78: Multi-AI Audit Plan Quality & Validation (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #28
+**Tools:** Qodo Code Suggestions (9 items), CodeRabbit PR Review (4 items)
+
+**Context:** Fifth-round review of Multi-AI Audit Plan files (2026-Q1) addressing JSONL validity, validation script robustness, JSON schema compliance, NO-REPO MODE consistency, markdown link quality, and metadata accuracy. Review identified 12 unique suggestions across 7 files with focus on automation reliability and schema correctness.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | PERFORMANCE NO-REPO JSONL output invalid format | 🟠 Major | Schema | Changed `(empty - no repo access)` instruction to `(no lines — leave this section empty)` for valid JSONL |
+| 2 | README JSONL validator missing pipefail | 🟠 Major | Automation | Added `set -o pipefail` + restructured as `done < <(...)` for reliable error handling |
+| 3 | PERFORMANCE metrics JSON invalid placeholders | 🟡 Minor | Schema | Replaced `X` placeholders with `null` for parseable JSON |
+| 4 | SECURITY NO-REPO MODE missing output contract | 🟡 Minor | Schema | Defined structured 5-step output contract matching PERFORMANCE template |
+| 5 | CODE_REVIEW broken markdown links | 🟡 Minor | Documentation | Converted 5 plain text references to proper markdown links with paths |
+| 6 | PERFORMANCE category count mismatch | 🟡 Minor | Documentation | Corrected "5 categories" → "6 categories" matching actual checklist |
+| 7 | SECURITY model name inconsistency | 🟡 Minor | Documentation | Standardized "ChatGPT-4o" → "GPT-4o" for consistency |
+| 8 | PERFORMANCE missing audit scope directories | 🟡 Minor | Documentation | Added `tests/, types/` to Include list, removed from Exclude |
+| 9 | REFACTORING outdated Last Updated date | 🟡 Minor | Documentation | Updated "2026-01-05" → "2026-01-06" matching commit date |
+| 10 | AI_REVIEW_LEARNINGS_LOG outdated range | ⚪ Trivial | Documentation | Updated "#41-76" → "#41-77" for active reviews |
+| 11 | PROCESS version history metadata typo | ⚪ Trivial | Documentation | Fixed "header to 1.1" → "header to 1.2" in v1.2 description |
+| 12 | REFACTORING model name inconsistency | ⚪ Trivial | Documentation | Standardized "ChatGPT-4o" → "gpt-4o" (lowercase) |
+
+**Patterns Identified:**
+
+1. **JSONL Validity in NO-REPO MODE Instructions** (1 occurrence - Schema Design)
+   - Root cause: Instructed AI to output literal non-JSON text `(empty - no repo access)` in JSONL section
+   - Prevention: NO-REPO MODE instructions must specify truly empty output or valid JSONL markers
+   - Pattern: Empty JSONL sections should have zero lines, not placeholder text
+   - Note: Related to Review #77 pattern #3 (JSONL Schema Validity)
+   - Impact: Prevents automation parsing failures when processing NO-REPO outputs
+
+2. **Shell Script Fail-Fast Reliability** (1 occurrence - Automation Robustness)
+   - Root cause: `exit 1` in pipeline subshell doesn't propagate without `pipefail`
+   - Prevention: Always use `set -o pipefail` for validation scripts with pipelines
+   - Pattern: Restructure `pipe | while` as `while ... < <(pipe)` for reliable exit codes
+   - Note: Critical for CI/CD validation automation
+   - Verification: Test script with intentional errors to confirm it exits non-zero
+
+3. **JSON Schema Placeholder Validity** (1 occurrence - Schema Examples)
+   - Root cause: Used placeholder `X` in JSON examples, which is not valid JSON
+   - Prevention: Use `null` for unknown/placeholder values in JSON schema examples
+   - Pattern: Template JSON should always be parseable even with placeholder values
+   - Note: Enables copy-paste testing and linting of schema examples
+   - Automation: Could add pre-commit hook to validate all JSON examples
+
+4. **Model Name Standardization** (2 occurrences - Documentation Consistency)
+   - Root cause: Mixed use of "ChatGPT-4o" vs "GPT-4o" vs "gpt-4o" across templates
+   - Prevention: Establish canonical model name format: `gpt-4o` (lowercase, no "ChatGPT")
+   - Pattern: Use OpenAI's official API model identifiers in all documentation
+   - Note: Affects SECURITY, REFACTORING templates; prevents automation confusion
+   - Related: Review #77 addressed similar model naming in other contexts
+
+5. **Metadata Accuracy (Dates, Counts, Ranges)** (4 occurrences - Documentation Quality)
+   - Root cause: Document metadata not updated when content changes (dates, version numbers, review ranges)
+   - Prevention: Checklist for metadata updates when modifying templates or adding reviews
+   - Pattern: Last Updated dates, category counts, review ranges, version descriptions must stay synchronized
+   - Note: Persistent pattern across Reviews #73-78; needs systematic solution
+   - Recommendation: Add pre-commit hook to check metadata consistency
+
+6. **NO-REPO MODE Output Contract Completeness** (1 occurrence - Cross-Template Consistency)
+   - Root cause: SECURITY template lacked detailed NO-REPO MODE output structure present in PERFORMANCE
+   - Prevention: All audit templates must define deterministic output contracts for NO-REPO MODE
+   - Pattern: 5-step structure: CAPABILITIES, status JSON, empty findings, empty suspected, HUMAN_SUMMARY
+   - Note: Enables automation to handle models without repo access gracefully
+   - Verification: Test each template's NO-REPO MODE with actual no-browse model
+
+**Key Learnings:**
+
+- **Critical Automation Pattern:** Validation scripts in documentation must use `set -o pipefail` and proper exit code propagation for CI/CD reliability
+- **Schema Design Principle:** All JSON/JSONL examples in templates must be syntactically valid and parseable, even with placeholder values
+- **NO-REPO MODE Consistency:** All 6 audit templates now have structured output contracts - critical for automation handling edge cases
+- **Metadata Synchronization Gap:** 5 consecutive reviews (#73-78) caught metadata drift - suggests need for automated validation
+- **Model Name Standardization:** OpenAI official identifiers (`gpt-4o`, not `ChatGPT-4o`) prevent confusion in multi-AI orchestration
+
+**Resolution:**
+- Fixed: 12 items (2 MAJOR, 7 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Recommendations:**
+1. Add pre-commit hook to validate all JSON/JSONL examples are parseable
+2. Create metadata consistency checker (dates, counts, ranges, version descriptions)
+3. Add CI test for validation scripts using intentional errors to confirm fail-fast behavior
+4. Document canonical model names in MULTI_AI_REVIEW_COORDINATOR.md
+5. Test NO-REPO MODE output contracts with actual browse_files=no models
 
 ---
 

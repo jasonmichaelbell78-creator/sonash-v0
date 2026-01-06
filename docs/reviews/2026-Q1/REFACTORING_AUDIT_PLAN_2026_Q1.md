@@ -2,7 +2,7 @@
 
 **Document Version:** 1.1
 **Created:** 2026-01-01
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-06
 **Status:** PENDING
 **Overall Completion:** 0/X phases complete (0%)
 
@@ -101,7 +101,7 @@ Exclude: [directories, e.g., docs/, public/, node_modules/]
 | GPT-5-Codex | browse_files=yes, run_commands=yes | Duplication detection, TypeScript deep analysis |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative refactor lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Quick pattern confirmation |
-| ChatGPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
+| gpt-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
 
 **Selection criteria:**
 - At least 2 models with `run_commands=yes` for grep/lint evidence
