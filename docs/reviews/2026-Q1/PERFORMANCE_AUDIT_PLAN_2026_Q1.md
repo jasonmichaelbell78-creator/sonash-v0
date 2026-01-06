@@ -214,7 +214,7 @@ CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/n
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Limited analysis without code access
 - **Required Output Contract**:
-  - METRICS_BASELINE_JSON: Output `{}` (empty object - no metrics without repo)
+  - METRICS_BASELINE_JSON: Output the STRICT schema with `null` metrics (do not invent values)
   - FINDINGS_JSONL: Output exactly:
     - `FINDINGS_JSONL`
     - (no lines — leave this section empty)
@@ -701,7 +701,7 @@ When using this template:
 
 **Quality checks before finalizing:**
 - [ ] Baseline metrics recorded
-- [ ] All 5 categories covered
+- [ ] All 6 categories covered
 - [ ] Impact estimates justified
 - [ ] Optimization steps actionable
 - [ ] Verification methods specified

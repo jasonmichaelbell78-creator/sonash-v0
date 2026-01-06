@@ -60,9 +60,9 @@ For each of the 6 plans:
 4. **Wait for completion** (AIs will output 3-4 sections: FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, HUMAN_SUMMARY, and for performance audits: METRICS_BASELINE_JSON)
 5. **Save outputs** to:
    ```
-   outputs/code-review/[model-name]_findings.jsonl
-   outputs/code-review/[model-name]_suspected.jsonl
-   outputs/code-review/[model-name]_summary.md
+   docs/reviews/2026-Q1/outputs/code-review/[model-name]_findings.jsonl
+   docs/reviews/2026-Q1/outputs/code-review/[model-name]_suspected.jsonl
+   docs/reviews/2026-Q1/outputs/code-review/[model-name]_summary.md
    ```
 
 Repeat for all 6 categories and all selected models.
@@ -94,10 +94,12 @@ docs/reviews/2026-Q1/outputs/
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
 # If jq is available (fails fast on first error):
+bash -lc '
 set -o pipefail
-while IFS=$'\t' read -r n line; do
-  printf '%s\n' "$line" | jq . >/dev/null || { printf 'Parse error on line %s: %s\n' "$n" "$line"; exit 1; }
-done < <(grep -v -E '^[[:space:]]*$' [model-name]_findings.jsonl | nl -ba)
+while IFS=$'\''\t'\'' read -r n line; do
+  printf "%s\n" "$line" | jq . >/dev/null || { printf "Parse error on line %s: %s\n" "$n" "$line"; exit 1; }
+done < <(grep -v -E "^[[:space:]]*$" [model-name]_findings.jsonl | nl -ba)
+'
 
 # If jq is not available, use python (fails fast on first error):
 grep -v '^$' [model-name]_findings.jsonl | python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' || { echo "JSON parse error"; exit 1; }

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.79
+**Document Version:** 1.80
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
 | 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
 | 1.78 | 2026-01-06 | Review #77: 9 fixes - 2 MAJOR (shell script portability, broken relative links), 5 MINOR (invalid JSONL, severity scale, category example, version dates, review range), 2 TRIVIAL (environment fields, inline guidance) |
 | 1.77 | 2026-01-06 | Review #76: 13 fixes - 3 MAJOR (model naming, broken link paths, PERFORMANCE doc links), 8 MINOR (SECURITY root cause evidence, shell exit codes, transitive closure, division-by-zero, NO-REPO contract, category enum, model standardization, vulnerability type), 2 TRIVIAL (version metadata, review range) |
@@ -153,7 +154,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 7
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -297,7 +298,102 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-77 are actively maintained below. Older reviews are in the archive.
+Reviews #41-78 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #79: Multi-AI Audit Plan JSONL & Schema Corrections (2026-01-06)
+
+**Source:** Qodo PR Code Suggestions
+**PR:** Session #28
+**Tools:** Qodo PR (10 suggestions)
+
+**Context:** Sixth-round review of Multi-AI Audit Plan files (2026-Q1) addressing JSONL parser compatibility, schema consistency, bash portability, JSON validity, path clarity, and metadata accuracy. Review identified 10 suggestions from Qodo PR with 1 rejection due to contradiction with established canonical format.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | SECURITY NO-REPO JSONL placeholder breaks parser | 🔴 Major | Schema | Changed non-JSON text to instructions for truly empty output |
+| 2 | PERFORMANCE NO-REPO schema contradiction | 🔴 Major | Schema | Changed `{}` instruction to "output STRICT schema with null metrics" |
+| 7 | CODE_REVIEW NO-REPO JSONL placeholder breaks parser | 🔴 Major | Schema | Changed non-JSON text to instructions for header + zero lines |
+| 3 | README validation script not bash-safe | 🟡 Minor | Automation | Wrapped in `bash -lc '...'` with proper quote escaping |
+| 8 | CODE_REVIEW JSON schema has invalid tokens | 🟡 Minor | Schema | Replaced `true/false`, `...` with valid `false`, `null`, `[]` |
+| 9 | README output paths ambiguous | 🟡 Minor | Documentation | Added full `docs/reviews/2026-Q1/` prefix |
+| 10 | PERFORMANCE category count mismatch | 🟡 Minor | Documentation | Corrected "5 categories" → "6 categories" in checklist |
+| 4 | Review #78 log entry inconsistent | ⚪ Trivial | Documentation | Changed "GPT-4o" → "gpt-4o" to match canonical format |
+| 6 | Active review range outdated | ⚪ Trivial | Documentation | Updated "#41-77" → "#41-78" |
+| 11 | SECURITY model name not canonical (self-identified) | ⚪ Trivial | Documentation | Changed "GPT-4o" → "gpt-4o" for consistency |
+
+**Rejected:**
+| # | Issue | Severity | Reason |
+|---|-------|----------|--------|
+| 5 | REFACTORING model name casing | Low | Suggestion to change `gpt-4o` → `GPT-4o` contradicts Review #78 canonical format (`gpt-4o` lowercase) |
+
+**Patterns Identified:**
+
+1. **NO-REPO MODE Parser-Breaking Output Instructions** (3 occurrences - Critical Schema Issue)
+   - Root cause: Instructions told AI to output literal non-JSON text in JSONL sections
+   - Prevention: NO-REPO MODE instructions must specify header + zero lines, not placeholder text
+   - Pattern: "Print the header `FINDINGS_JSONL` and then output zero lines — leave the section empty"
+   - Note: Same root cause as Review #78 issue #1; affects SECURITY, CODE_REVIEW templates
+   - Impact: Without fix, automation parsing NO-REPO outputs would fail silently or crash
+   - Cross-reference: Review #78 fixed PERFORMANCE template; this review fixes remaining 2 templates
+
+2. **Schema Contradiction in NO-REPO Instructions** (1 occurrence - Schema Integrity)
+   - Root cause: PERFORMANCE NO-REPO MODE said output `{}` but schema requires defined structure with nulls
+   - Prevention: NO-REPO output must match the STRICT schema definition, not simplify to empty object
+   - Pattern: "Output the STRICT schema with `null` metrics (do not invent values)"
+   - Note: Critical for automation that parses metrics baseline JSON
+   - Verification: All NO-REPO modes now output valid schema structures (not simplified alternatives)
+
+3. **Bash-Specific Features in Documentation Scripts** (1 occurrence - Portability)
+   - Root cause: Validation script used `set -o pipefail` and process substitution without bash wrapper
+   - Prevention: Wrap bash-specific scripts in `bash -lc '...'` with proper quote escaping
+   - Pattern: Multi-line bash scripts need `$'\t'` → `$'\''\t'\''` and `"` → `"` escaping inside wrapper
+   - Note: Prevents execution failures when users run script in non-bash shells (dash, sh)
+   - Related: Review #77 addressed POSIX vs bash portability for inline scripts
+
+4. **Invalid JSON Tokens in Schema Examples** (1 occurrence - Usability)
+   - Root cause: JSON schema example used placeholder tokens `true/false`, `...` that aren't valid JSON
+   - Prevention: Schema examples must be copy-paste testable with tools like `jq` and linters
+   - Pattern: Use `false`/`true`, `null`, `[]` for boolean, missing, and empty array placeholders
+   - Note: Improves developer experience by enabling schema validation during development
+   - Automation opportunity: Pre-commit hook to validate all JSON examples in markdown code blocks
+
+5. **Model Name Canonical Format Establishment** (2 occurrences + 1 rejection - Standardization)
+   - Root cause: Review #78 established `gpt-4o` (lowercase) as canonical but SECURITY used `GPT-4o` (capital)
+   - Prevention: Apply canonical format consistently across all templates when identified
+   - Pattern: Use OpenAI API identifiers directly: `gpt-4o`, not `GPT-4o` or `ChatGPT-4o`
+   - Note: Rejected Qodo suggestion #5 because it contradicted the canonical format
+   - Lesson: When establishing a pattern, immediately audit all related occurrences for consistency
+
+6. **Metadata Drift Across Reviews** (2 occurrences - Ongoing Issue)
+   - Root cause: Review range and version metadata not updated when new reviews/versions added
+   - Prevention: Automated checks for metadata consistency (ranges, counts, dates)
+   - Pattern: Active review ranges, category counts, version descriptions must be updated atomically
+   - Note: 6 consecutive reviews (#73-79) have caught metadata drift
+   - Recommendation: Add CI check for metadata synchronization (blocked until automation priority shifts)
+
+**Key Learnings:**
+
+- **Critical Pattern Completion:** NO-REPO MODE JSONL output instructions fixed across all 3 remaining templates (SECURITY, CODE_REVIEW, and completion of PERFORMANCE schema fix) - 6 consecutive reviews have refined this pattern
+- **Schema First Principle:** All documentation examples (JSON, JSONL) must be syntactically valid and parseable - enables developer testing and automation validation
+- **Canonical Format Enforcement:** When establishing a standard (e.g., `gpt-4o` lowercase), immediately audit and fix all related occurrences to prevent inconsistency - includes rejecting suggestions that contradict the standard
+- **Bash Portability Trade-off:** Wrapping bash-specific scripts adds verbosity but ensures cross-shell compatibility - necessary for documentation intended for diverse user environments
+- **Metadata Synchronization Gap Persists:** 6 reviews in a row caught metadata drift - strong signal for automation need, but currently deprioritized due to improvement plan blocker
+
+**Resolution:**
+- Fixed: 10 items (3 MAJOR, 4 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 1 item (contradicts established canonical format)
+
+**Recommendations:**
+1. Consider adding `make validate-docs` target that runs `jq` on all JSON examples in markdown
+2. Create metadata consistency checker (part of larger automation backlog)
+3. Document bash wrapper pattern in CONTRIBUTING.md for future script additions
+4. Add all 3 NO-REPO MODE fixes to pre-flight checklist for new audit templates
+5. Cross-template grep audit when establishing new canonical formats (prevent inconsistency proactively)
 
 ---
 
@@ -320,7 +416,7 @@ Reviews #41-77 are actively maintained below. Older reviews are in the archive.
 | 4 | SECURITY NO-REPO MODE missing output contract | 🟡 Minor | Schema | Defined structured 5-step output contract matching PERFORMANCE template |
 | 5 | CODE_REVIEW broken markdown links | 🟡 Minor | Documentation | Converted 5 plain text references to proper markdown links with paths |
 | 6 | PERFORMANCE category count mismatch | 🟡 Minor | Documentation | Corrected "5 categories" → "6 categories" matching actual checklist |
-| 7 | SECURITY model name inconsistency | 🟡 Minor | Documentation | Standardized "ChatGPT-4o" → "GPT-4o" for consistency |
+| 7 | SECURITY model name inconsistency | 🟡 Minor | Documentation | Standardized "ChatGPT-4o" → "gpt-4o" (lowercase) for consistency |
 | 8 | PERFORMANCE missing audit scope directories | 🟡 Minor | Documentation | Added `tests/, types/` to Include list, removed from Exclude |
 | 9 | REFACTORING outdated Last Updated date | 🟡 Minor | Documentation | Updated "2026-01-05" → "2026-01-06" matching commit date |
 | 10 | AI_REVIEW_LEARNINGS_LOG outdated range | ⚪ Trivial | Documentation | Updated "#41-76" → "#41-77" for active reviews |

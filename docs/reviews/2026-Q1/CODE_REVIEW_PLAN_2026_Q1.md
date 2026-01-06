@@ -163,8 +163,8 @@ If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete this review without repo access
 - **Required NO-REPO MODE Output**:
   1. CAPABILITIES header with limitation clearly noted
-  2. Empty FINDINGS_JSONL section (literally the text "FINDINGS_JSONL\n(empty - no repo access)")
-  3. Empty SUSPECTED_FINDINGS_JSONL section (literally the text "SUSPECTED_FINDINGS_JSONL\n(empty - no repo access)")
+  2. FINDINGS_JSONL section header, then **no lines** (leave this section empty)
+  3. SUSPECTED_FINDINGS_JSONL section header, then **no lines** (leave this section empty)
   4. HUMAN_SUMMARY explaining limitation: "Unable to perform code review without repository access. This model cannot browse files or checkout the repository. To include this model's analysis, either: (a) provide code snippets manually, or (b) use a model with repository access capabilities."
 - Do NOT attempt repository analysis or invent findings
 - Do NOT provide generic advice without grounding in actual code
@@ -309,9 +309,9 @@ Schema:
   "files": ["path1", "path2"],
   "symbols": ["SymbolA", "SymbolB"],
   "duplication_cluster": {
-    "is_cluster": true/false,
-    "cluster_summary": "if true, describe the repeated pattern",
-    "instances": [{"file":"...","symbol":"..."}, ...]
+    "is_cluster": false,
+    "cluster_summary": null,
+    "instances": []
   },
   "why_it_matters": "1-3 sentences",
   "suggested_fix": "concrete refactor direction (no rewrite)",
