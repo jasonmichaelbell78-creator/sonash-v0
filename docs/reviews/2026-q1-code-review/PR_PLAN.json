@@ -1,0 +1,144 @@
+{
+  "prs": [
+    {
+      "pr_id": "PR1",
+      "title": "S0 security: restore App Check end-to-end (client + functions)",
+      "goal": "Re-enable App Check in client initialization and require it in all callable Cloud Functions.",
+      "bucket": "security-hardening",
+      "included_canonical_ids": ["CANON-0003", "CANON-0001"],
+      "staging": ["PR1a (client init)", "PR1b (functions requireAppCheck)", "PR1c (monitoring/docs)"],
+      "risk_level": "high",
+      "estimated_effort": "E2",
+      "acceptance_tests": [
+        "Enable App Check site key in env, load client and confirm _appCheck is created without console warnings.",
+        "All 4 Cloud Functions have requireAppCheck: true",
+        "Manual test confirms App Check tokens are validated"
+      ],
+      "notes": "Do client init first to avoid breaking production callers when functions enforcement flips."
+    },
+    {
+      "pr_id": "PR2",
+      "title": "S0 security: lock down legacy journalEntries direct writes",
+      "goal": "Remove direct client writes for legacy journalEntries and restore function-only posture.",
+      "bucket": "security-hardening",
+      "included_canonical_ids": ["CANON-0002"],
+      "staging": ["PR2a (audit usage + migration plan)", "PR2b (rules change + deploy)"],
+      "risk_level": "high",
+      "estimated_effort": "E2",
+      "acceptance_tests": [
+        "Verify no active code writes to journalEntries directly",
+        "Rules block direct writes"
+      ],
+      "notes": "Coordinate rollout with any deployed clients still writing the legacy path."
+    },
+    {
+      "pr_id": "PR3",
+      "title": "Bot mitigation enforcement: reCAPTCHA behavior",
+      "goal": "Ensure reCAPTCHA is actually enforced when configured and aligned with App Check posture.",
+      "bucket": "security-hardening",
+      "included_canonical_ids": ["CANON-0004", "CANON-0038"],
+      "staging": ["PR3a (enforce missing-token failure path)", "PR3b (verify end-to-end validation)"],
+      "risk_level": "medium",
+      "estimated_effort": "E1",
+      "acceptance_tests": [
+        "Call a function wrapped with recaptchaAction and no token; expect failed-precondition error.",
+        "Call same function with valid token; expect success path to execute."
+      ],
+      "notes": "Keep PR scoped to wrapper enforcement to reduce risk of incidental function behavior changes."
+    },
+    {
+      "pr_id": "PR4",
+      "title": "Data integrity: fix Step 1 journal save path + schema support",
+      "goal": "Unbreak Step 1 worksheet saves and ensure entries include searchable metadata.",
+      "bucket": "hooks-standardization",
+      "included_canonical_ids": ["CANON-0007", "CANON-0006"],
+      "staging": ["PR4a (schema enum fix)", "PR4b (refactor callers to use useJournal)"],
+      "risk_level": "medium",
+      "estimated_effort": "E2",
+      "acceptance_tests": [
+        "Test saving a step-1-worksheet entry via Cloud Function",
+        "Verify in Firestore console that 'searchableText' and 'tags' fields are populated"
+      ],
+      "notes": "Ship the enum fix first (E0) so users stop hitting server-side validation failures even before the larger refactor lands."
+    },
+    {
+      "pr_id": "PR5",
+      "title": "Standardize Cloud Function error handling + logging",
+      "goal": "Deduplicate CF error mapping and eliminate console logging in production components in favor of logger.",
+      "bucket": "security-hardening",
+      "included_canonical_ids": ["CANON-0041", "CANON-0005"],
+      "staging": ["PR5a (shared CF error helper)", "PR5b (logger migration by directory)"],
+      "risk_level": "medium",
+      "estimated_effort": "E2",
+      "acceptance_tests": [
+        "Single helper used in all listed error-handling locations",
+        "Zero console.* in components/ (except logger implementation)",
+        "Errors logged don't contain file paths/tokens/UIDs"
+      ],
+      "notes": "Keep helper extraction separate from large logger migration if reviewers prefer smaller diffs."
+    },
+    {
+      "pr_id": "PR6",
+      "title": "Testing hardening: functions/rules + coverage for critical auth/data paths",
+      "goal": "Raise confidence in security and auth/data flows via tests and coverage improvements.",
+      "bucket": "tests-hardening",
+      "included_canonical_ids": ["CANON-0010", "CANON-0011", "CANON-0024", "CANON-0043"],
+      "staging": ["PR6a (rules emulator tests)", "PR6b (functions security tests)", "PR6c (coverage targets for critical libs)"],
+      "risk_level": "high",
+      "estimated_effort": "E3",
+      "acceptance_tests": [
+        "Rules emulator tests pass in CI",
+        "Functions security paths are covered by tests",
+        "Skipped integration test is addressed (implemented or removed with rationale)",
+        "Coverage for listed critical files improves materially"
+      ],
+      "notes": "Start from the existing skipped test as a concrete harness entry point."
+    },
+    {
+      "pr_id": "PR7",
+      "title": "Duplication cleanup: quotes/slogans rotation + DailyQuoteCard consolidation",
+      "goal": "Reduce duplicated logic/components to prevent drift and simplify maintenance.",
+      "bucket": "ui-primitives",
+      "included_canonical_ids": ["CANON-0014", "CANON-0013"],
+      "staging": ["PR7a (rotation utility + tests)", "PR7b (DailyQuoteCard consolidation)"],
+      "risk_level": "low",
+      "estimated_effort": "E2",
+      "acceptance_tests": [
+        "Rotation unit tests cover schedule + fallback paths",
+        "Quote displays correctly wherever used; no broken imports"
+      ],
+      "notes": "Do after the S0/S1 security items so UI refactors don't mix with production security changes."
+    },
+    {
+      "pr_id": "PR8",
+      "title": "Types cleanup: unsafe casts, schema validation, and suppression removal",
+      "goal": "Reduce runtime failures by tightening types and removing suppressions.",
+      "bucket": "types-domain",
+      "included_canonical_ids": ["CANON-0018", "CANON-0022", "CANON-0044", "CANON-0045", "CANON-0019", "CANON-0026", "CANON-0016"],
+      "staging": ["PR8a (remove ts-expect-error + quick safety fixes)", "PR8b (add runtime validation where casting occurs)", "PR8c (schema tightening)"],
+      "risk_level": "medium",
+      "estimated_effort": "E3",
+      "acceptance_tests": [
+        "No @ts-expect-error in production code",
+        "Unsafe casts are paired with runtime validation",
+        "Invalid entry payloads are rejected by schema"
+      ],
+      "notes": "Sequence: quick wins first, then introduce schema tightening to avoid breaking payload compatibility unexpectedly."
+    },
+    {
+      "pr_id": "PR9",
+      "title": "Scripts lint-security cleanup",
+      "goal": "Reduce ESLint security warnings in scripts/ by addressing the highest-risk patterns.",
+      "bucket": "security-hardening",
+      "included_canonical_ids": ["CANON-0021"],
+      "staging": ["PR9a"],
+      "risk_level": "low",
+      "estimated_effort": "E2",
+      "acceptance_tests": [
+        "npm run lint shows materially fewer security warnings",
+        "All non-literal fs paths validated against allowlist"
+      ],
+      "notes": "Keep changes isolated to scripts/ to reduce review surface."
+    }
+  ]
+}
