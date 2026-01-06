@@ -700,7 +700,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
+| 1.1 | 2026-01-06 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---

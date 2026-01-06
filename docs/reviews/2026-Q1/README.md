@@ -122,10 +122,20 @@ After Tier-1, can optionally merge all 6 CANON files into single master backlog 
 
 ## 📊 Expected Timeline
 
-- **Audit execution**: 18-36 runs × 15-30 min each = 4.5-18 hours (can parallelize)
-- **Output validation**: 1 hour
-- **Tier-1 aggregation**: 6 categories × 1 hour = 6 hours
-- **Total**: ~12-25 hours for Step 4.2
+**Conservative Estimates:**
+- **Audit execution**:
+  - Sequential: 36 runs × 20 min avg = 12 hours
+  - Parallel (3 concurrent models): 4-6 hours
+- **Output validation**: 1-2 hours
+- **Tier-1 aggregation**: 2-4 hours per category = 12-24 hours total
+- **Total**:
+  - Sequential: ~25-38 hours
+  - Parallel: ~17-32 hours
+
+**Contingencies:**
+- Add 25% buffer for model failures, timeouts, or API rate limits
+- Budget extra time for fixing invalid JSONL outputs
+- Plan for multiple aggregation iterations if models significantly disagree
 
 ---
 
