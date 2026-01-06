@@ -449,7 +449,7 @@ Return 4 sections in this exact order:
 
 Schema:
 {
-  "category": "Rate Limiting|Input Validation|Secrets Management|Authentication|Firebase Security|Dependency Security|OWASP",
+  "category": "Rate Limiting & Throttling|Input Validation & Sanitization|API Keys & Secrets Management|Authentication & Authorization|Firebase Security|Dependency Security & Supply Chain|OWASP Top 10 Compliance",
   "title": "short, specific vulnerability",
   "fingerprint": "<category>::<primary_file>::<vulnerability_type>",
   "severity": "S0|S1|S2|S3",
@@ -549,7 +549,11 @@ DEDUPLICATION RULES
 
 1) Primary merge: same file + same vulnerability type
 2) Secondary merge: same OWASP category + same remediation
-3) Never merge different vulnerability types
+3) **Root Cause Merge**: Allow merging across different endpoints if same root cause
+   - Example: "Missing input validation on /api/users POST" + "Missing input validation on /api/posts POST" → Merge as "Systemic input validation gap across API endpoints"
+   - Requirement: Both must share same vulnerability_type AND same remediation pattern
+   - Set files[] to union of all affected endpoints
+4) Never merge if different root causes (even if similar symptoms)
 
 SEVERITY ESCALATION
 

@@ -125,12 +125,31 @@ Exclude: docs/, tests/, public/, node_modules/, .next/
 | GPT-5-Codex | browse_files=yes, run_commands=yes | Comprehensive code analysis, optimization strategies |
 | Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative optimization perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Quick pattern detection |
-| ChatGPT-4o | browse_files=no, run_commands=no | Broad performance knowledge |
+| GPT-4o | browse_files=no, run_commands=no | Broad performance knowledge |
 
 **Selection criteria:**
 - At least 2 models with `run_commands=yes` for build/bundle analysis
 - At least 1 model with strong React/Next.js expertise
 - Total 4-6 models for good consensus
+
+**Model Capability Matrix (Performance Categories):**
+
+| Model | Bundle Size | Rendering | Data Fetching | Memory | Core Web Vitals | Observability |
+|-------|-------------|-----------|---------------|--------|-----------------|---------------|
+| Claude Opus 4.5 | ★★★ | ★★★ | ★★★ | ★★ | ★★★ | ★★ |
+| Claude Sonnet 4.5 | ★★★ | ★★★ | ★★ | ★★ | ★★ | ★★ |
+| GPT-5-Codex | ★★ | ★★★ | ★★ | ★★★ | ★★ | ★ |
+| Gemini 3 Pro | ★★ | ★★ | ★★★ | ★★ | ★★ | ★★★ |
+| GPT-4o | ★ | ★ | ★★ | ★ | ★★ | ★ |
+
+**Legend:** ★★★ = Excellent, ★★ = Good, ★ = Limited
+
+**Usage Guidance:**
+- Bundle Size analysis: Prioritize Claude models (best at dependency analysis)
+- Rendering optimization: Use Claude Opus or GPT-5-Codex (deep React knowledge)
+- Data Fetching patterns: Gemini 3 Pro excels at caching strategies
+- Memory profiling: GPT-5-Codex strong at leak detection
+- Observability setup: Gemini 3 Pro for monitoring architecture
 
 ---
 
@@ -605,7 +624,10 @@ SEVERITY HANDLING
 
 If models disagree on severity/impact:
 - Take HIGHER severity if 2+ models agree
-- Average impact estimates
+- **Weighted Average Impact Estimates**: Use confidence-weighted average
+  - Formula: `impact = Σ(impact_i × confidence_i) / Σ(confidence_i)`
+  - Rationale: Trust high-confidence models more than low-confidence estimates
+  - Example: Model A (impact=50%, conf=90) + Model B (impact=20%, conf=40) → (50×90 + 20×40)/(90+40) = 40% impact
 
 OUTPUT
 

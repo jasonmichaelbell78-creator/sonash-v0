@@ -436,11 +436,12 @@ Schema:
 DOCUMENTATION VERIFICATION (run if run_commands=yes)
 
 1) Link Extraction (internal links only):
-- grep -rn "\[.*\](.*)" --include="*.md" | grep -v "http://" | grep -v "https://" | head -50
-  (Filters out external URLs, showing only internal/relative links)
+- grep -rn -E "\[.*?\]\(.*?\)" --include="*.md" | grep -v "http://" | grep -v "https://" | head -50
+  (Filters out external URLs, showing only internal/relative links. Uses non-greedy .*? to avoid over-matching)
 
 2) Broken Link Detection:
 - For each extracted internal link, check: test -f [target_path]
+- Strip anchor fragments (#section) before checking file existence: path="${link%#*}"
 - External links (http/https) should be verified separately if needed
 
 3) Stale Content Detection:

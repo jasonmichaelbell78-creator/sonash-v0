@@ -8,7 +8,7 @@
 
 ## 📋 Overview
 
-This directory contains **6 complete, filled audit plans** ready for multi-AI execution. All placeholders have been replaced with SoNash-specific context.
+This directory contains **6 complete, filled audit plans** ready for multi-AI execution. SoNash-specific context (tech stack, scope, focus areas) has been filled. Baseline metrics and audit results are filled during execution.
 
 **Audit Categories:**
 1. **CODE_REVIEW_PLAN_2026_Q1.md** - Code quality, duplication, types, boundaries, testing
@@ -94,15 +94,15 @@ docs/reviews/2026-Q1/outputs/
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
 # If jq is available (fails fast on first error):
-while IFS= read -r line; do
+grep -v '^$' [model-name]_findings.jsonl | while IFS= read -r line; do
   printf '%s\n' "$line" | jq . >/dev/null || { printf 'Parse error on line: %s\n' "$line"; exit 1; }
-done < [model-name]_findings.jsonl
+done
 
 # If jq is not available, use python (fails fast on first error):
-python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' < [model-name]_findings.jsonl || { echo "JSON parse error"; exit 1; }
+grep -v '^$' [model-name]_findings.jsonl | python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' || { echo "JSON parse error"; exit 1; }
 ```
 
-**Note**: Scripts will exit immediately on first parse error. Fix any parse errors before aggregation.
+**Note**: Scripts filter empty lines before parsing (JSONL allows blank lines), then exit immediately on first parse error. Fix any parse errors before aggregation.
 
 ### Step 5: Run Tier-1 Aggregation
 
@@ -177,7 +177,7 @@ docs/reviews/2026-Q1/
 
 - **[INTEGRATED_IMPROVEMENT_PLAN.md](../../INTEGRATED_IMPROVEMENT_PLAN.md)** - Step 4.2 context
 - **[MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)** - Aggregation prompt
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../../templates/MULTI_AI_REVIEW_COORDINATOR.md)** - Master index
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index
 
 ---
 

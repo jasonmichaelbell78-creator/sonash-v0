@@ -414,6 +414,7 @@ Merge findings only if ALL of these conditions are met:
 - Set `duplication_cluster.is_cluster = true`
 - List all instances in `duplication_cluster.instances[]`
 - Take union of all files/symbols across findings
+- **Transitive Closure Rule**: If Finding A shares files/symbols with Finding B, and Finding B shares with Finding C, merge all three into one cluster (use transitive closure for cluster membership)
 
 **Never Merge If:**
 - Only "similar vibes" - require concrete file/symbol overlap
@@ -615,6 +616,10 @@ OUTPUT FORMAT
 - SHOULD_FIX (bullets)
 - NICE_TO_HAVE (bullets)
 - MERGE_DECISION (MERGE / DO_NOT_MERGE + 1 sentence)
+
+**Fallback Procedure:**
+- If MERGE_DECISION = DO_NOT_MERGE: Defer PR to backlog, address MUST_FIX items before retrying
+- Document deferred items in tracking issue for future sprint
 ```
 
 ### Step 3: Hallucination Check (Prompt R2)
@@ -640,6 +645,11 @@ OUTPUT FORMAT
 - PROVEN (bullets with file+symbol)
 - UNPROVEN (bullets with what evidence is missing)
 - RISKY_SIDE_EFFECTS (bullets)
+
+**Fallback Procedure:**
+- If any claims are labeled UNPROVEN: Move those findings to SUSPECTED_FINDINGS_JSONL (not FINDINGS_JSONL)
+- Set confidence <= 40 for UNPROVEN items
+- Document what evidence is missing for future investigation
 ```
 
 ### Step 4: Between-PR Checklist
@@ -663,6 +673,16 @@ Run 2-3 searches to ensure old pattern is gone:
 - Old Firestore paths: `grep -r "users/\${" --include="*.ts"`
 - Direct callables: `grep -r "httpsCallable(" --include="*.ts"`
 - Auth listeners: `grep -r "onAuthStateChanged(" --include="*.ts"`
+
+**Pass/Fail Criteria:**
+- **CRITICAL violations** (HARD FAIL - block merge):
+  - Old security-critical patterns still present (auth bypasses, unvalidated writes)
+  - Deprecated APIs with known vulnerabilities
+  - Direct contradictions to PR goal (e.g., PR removes pattern but grep still finds it)
+- **WARNINGS** (SOFT FAIL - proceed with note):
+  - Legacy patterns in non-critical paths (defer cleanup to future PR)
+  - Comment-only matches (false positives)
+  - Test file matches (acceptable if tests verify old behavior)
 
 4) UPDATE AGGREGATOR STATE
 Feed the aggregator:

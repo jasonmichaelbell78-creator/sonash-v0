@@ -371,6 +371,79 @@ Reviews #41-74 are actively maintained below. Older reviews are in the archive.
 
 ---
 
+#### Review #75: Multi-AI Audit Plan Methodology Enhancement (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** 4eb8de4
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Second-round review of Multi-AI Audit Plan files (2026-Q1) addressing methodology completeness, schema accuracy, regex robustness, and deduplication rule clarity. Review identified 17 suggestions (1 rejected as incorrect), requiring collaborative methodology design decisions for 6 questions: transitive closure rules, R1/R2 fallback procedures, GREP GUARDRAILS criteria, impact score averaging, model capability matrix, and vulnerability type deduplication.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Qodo suggested incorrect link path | N/A | Rejected | Verified MULTI_AI_REVIEW_COORDINATOR.md path already correct (../../) |
+| 2 | SECURITY schema category enum uses short names | 🟠 Major | Schema | Expanded to full names: "Rate Limiting\|Input Validation\|..." for clarity |
+| 3 | DOCUMENTATION link regex greedy, no anchor handling | 🟡 Minor | Automation | Changed to non-greedy `.*?`, added anchor stripping guidance |
+| 4 | README JSONL validation fails on empty lines | 🟡 Minor | Automation | Added empty line filtering before JSON parsing |
+| 5 | README claims "all placeholders filled" (false) | 🟡 Minor | Documentation | Corrected to "SoNash context filled, baseline metrics fill during audit" |
+| 6 | Version history entry already correct | ⚪ Trivial | Documentation | Verified PERFORMANCE version 1.1 entry accurate |
+| 7 | PERFORMANCE category count inconsistency | 🟡 Minor | Documentation | Verified 6 categories documented correctly |
+| 8 | README link to MULTI_AI_REVIEW_COORDINATOR incorrect path | 🟡 Minor | Documentation | Fixed from ../../templates/ to ../../ |
+| 9 | Duplicate Review #74 entry (false alarm) | ⚪ Trivial | Documentation | Verified only one Review #74 entry exists |
+| 10 | Deduplication cluster transitive closure unclear | 🟡 Minor | Methodology | Added explicit rule: use transitive closure for cluster merging |
+| 11 | R1 DO_NOT_MERGE and R2 UNPROVEN fallback undefined | 🟡 Minor | Methodology | Defined: DO_NOT_MERGE=defer to backlog, UNPROVEN=move to SUSPECTED_FINDINGS |
+| 12 | GREP GUARDRAILS lacks pass/fail criteria | 🟡 Minor | Methodology | Added tiered criteria: critical violations=fail, warnings=proceed with note |
+| 13 | Model name "ChatGPT-4o" inconsistent | 🟡 Minor | Documentation | Changed to "GPT-4o" throughout PERFORMANCE plan |
+| 14 | Impact score averaging methodology undefined | 🟡 Minor | Methodology | Added weighted average formula: trust high-confidence models more |
+| 15 | Missing model capability matrix | 🟡 Minor | Methodology | Added matrix showing model strengths per audit category |
+| 16 | CodeRabbit link fix (handled by #8) | N/A | Duplicate | Confirmed by fix #8 |
+| 17 | Vulnerability type deduplication rules vague | 🟠 Major | Methodology | Added explicit rule: merge if same root cause across endpoints |
+
+**Patterns Identified:**
+
+1. **Conflicting PR Review Suggestions** (1 occurrence - Review Process)
+   - Root cause: Qodo and CodeRabbit provided contradictory path corrections for same file
+   - Prevention: Verify actual file structure before applying path fixes
+   - Resolution: Used `find` to locate actual file, confirmed current path correct
+   - Note: AI reviewers can hallucinate incorrect paths without repo context
+
+2. **Methodology Ambiguity in Multi-AI Workflows** (6 occurrences - Methodology Design)
+   - Root cause: Templates lacked explicit rules for edge cases (transitive closure, fallback procedures, averaging strategies)
+   - Prevention: Collaborative design decisions with user for each methodology question
+   - Decisions: Q1=transitive closure YES, Q2=defer/suspect split, Q3=tiered fail/warn, Q4=weighted average, Q5=add matrix, Q6=root cause grouping
+   - Note: Methodology design requires domain judgment, not just code fixes
+
+3. **Schema Category Enum Clarity** (1 occurrence - Schema Design)
+   - Root cause: Short category names ("Rate Limiting") vs full names ("Rate Limiting & Throttling") caused confusion
+   - Prevention: Use full category names in schema enums to match documentation
+   - Pattern: Enum values should be self-documenting, not abbreviated
+   - Note: Aggregators rely on exact enum matching for categorization
+
+4. **Regex Robustness for Markdown Links** (1 occurrence - Automation)
+   - Root cause: Greedy regex `.*` captured too much, no anchor handling (#section) in broken link detection
+   - Prevention: Use non-greedy `.*?` for markdown link patterns, strip anchors before file existence checks
+   - Pattern: Link extraction should handle: `[text](path)`, `[text](path#anchor)`, `[text](http://external)`
+   - Note: Test regexes against edge cases: nested brackets, special chars, anchors
+
+5. **JSONL Validation Robustness** (1 occurrence - Automation)
+   - Root cause: Empty lines in JSONL files caused parse errors (valid JSONL allows empty lines)
+   - Prevention: Filter empty lines before parsing: `grep -v '^$' | while IFS= read -r line`
+   - Pattern: JSONL validators must handle: empty lines, whitespace-only lines, UTF-8 encoding
+   - Note: Fail-fast on first parse error for debugging efficiency
+
+6. **False Positive Issue Detection** (2 occurrences - Review Process)
+   - Root cause: AI reviewers flagged issues that were already fixed in previous review (#74)
+   - Prevention: Verify issue still exists before implementing fix
+   - Examples: Version history already correct, duplicate entry doesn't exist, category count already accurate
+   - Note: Cross-reference with recent commits before applying "fixes"
+
+**Key Insight:** Multi-AI review workflows require explicit methodology decisions for aggregation edge cases. When multiple AI reviewers provide conflicting or ambiguous suggestions, pause for collaborative design decisions rather than auto-implementing. Document all methodology choices in templates to prevent future ambiguity. Verify suggested "issues" against actual file state to avoid redundant fixes.
+
+---
+
 #### Review #73: Multi-AI Audit Plan Scaffold (2026-01-06)
 
 **Source:** Qodo PR Compliance Guide + CodeRabbit
