@@ -464,7 +464,7 @@ PERFORMANCE VERIFICATION (run if run_commands=yes)
 
 1) Bundle Analysis:
 - npm run build 2>&1 | tail -50
-- du -sh .next/static/chunks/*.js | sort -h | tail -20
+- find .next/static/chunks -name "*.js" -type f -exec ls -lh {} \; | sort -k5 -h | tail -20
 
 2) Dependency Size:
 - npx depcheck (unused dependencies)
@@ -590,7 +590,7 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
 - **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews

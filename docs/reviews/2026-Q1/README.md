@@ -44,7 +44,7 @@ Each plan includes:
 - **Claude Sonnet 4.5** (browse_files=yes, run_commands=yes) - Cost-effective
 - **GPT-5.2-Codex** (browse_files=yes, run_commands=yes) - Code analysis
 - **Gemini 3 Pro** (browse_files=yes, run_commands=yes) - Alternative perspective
-- **ChatGPT-4o** (browse_files=no, run_commands=no) - Broad coverage
+- **GPT-4o** (browse_files=no, run_commands=no) - Broad coverage (optional)
 
 **Minimum**: 3 models (at least 2 with run_commands=yes)
 
@@ -55,7 +55,7 @@ For each of the 6 plans:
 1. **Open the plan file** (e.g., `CODE_REVIEW_PLAN_2026_Q1.md`)
 2. **Copy the "Review Prompt" section** (starts at "## 📝 Review Prompt")
 3. **Paste into AI platform** (include all Parts 1-5)
-4. **Wait for completion** (AIs will output 3 sections: FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, HUMAN_SUMMARY)
+4. **Wait for completion** (AIs will output 3-4 sections: FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, HUMAN_SUMMARY, and for performance audits: METRICS_BASELINE_JSON)
 5. **Save outputs** to:
    ```
    outputs/code-review/[model-name]_findings.jsonl
@@ -91,7 +91,11 @@ docs/reviews/2026-Q1/outputs/
 
 For each JSONL file, validate it's proper JSON-per-line:
 ```bash
-cat [model-name]_findings.jsonl | while read line; do echo "$line" | jq .; done
+# If jq is available:
+cat [model-name]_findings.jsonl | while read line; do echo "$line" | jq . || echo "Parse error on line: $line"; done
+
+# If jq is not available, use python:
+python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' < [model-name]_findings.jsonl
 ```
 
 Fix any parse errors before aggregation.

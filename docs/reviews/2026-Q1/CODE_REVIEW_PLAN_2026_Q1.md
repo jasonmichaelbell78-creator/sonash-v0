@@ -58,12 +58,12 @@ Last Review Date: 2026-01-05
 ### Tech Stack (Update for your project)
 
 ```
-- Next.js: 16.1.1 (Next.js 16.1)
-- React: 16.1.1 (React 19.2.3)
-- TypeScript: 16.1.1 (TypeScript 5.x)
-- Tailwind CSS: 16.1.1 (Tailwind CSS v4)
-- Firebase: Auth, Firestore, Cloud Functions (Firebase Auth, Firestore, Cloud Functions)
-- reCAPTCHA Enterprise, App Check, Firestore Rules: [Tools] (reCAPTCHA, App Check, Firestore Rules)
+- Next.js: 16.1.1
+- React: 19.2.3
+- TypeScript: 5.x
+- Tailwind CSS: v4
+- Firebase: 12.6.0 (Auth, Firestore, Cloud Functions)
+- Security Tools: reCAPTCHA Enterprise, App Check (disabled), Firestore Rules (active)
 ```
 
 ### Scope
@@ -135,13 +135,13 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 
 Before beginning analysis, review these project-specific resources:
 
-1. **AI Learnings** (/home/user/sonash-v0/claude.md Section 4): Critical anti-patterns and lessons from past reviews
-2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
+1. **AI Learnings** (../../../claude.md Section 4): Critical anti-patterns and lessons from past reviews
+2. **Pattern History** (../../AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues from SonarQube
+5. **Static Analysis** (../../analysis/sonarqube-manifest.md): Pre-identified issues from SonarQube
    - Use current manifest counts (date-stamp your audit output)
    - Focus on CRITICAL items for refactoring candidates
 
@@ -686,13 +686,13 @@ When using this template:
 
 ## 🔗 Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
 - **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** - Performance-focused reviews
 - **MULTI_AI_REFACTOR_PLAN_TEMPLATE.md** - Large-scale refactoring plans
 - **AI_REVIEW_PROCESS.md** - Process for individual PR reviews (CodeRabbit, Qodo)
-- **EIGHT_PHASE_REFACTOR_PLAN.md** - Example of review output in action
+- **[EIGHT_PHASE_REFACTOR_PLAN.md](../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)** - Example of review output in action
 
 ---
 

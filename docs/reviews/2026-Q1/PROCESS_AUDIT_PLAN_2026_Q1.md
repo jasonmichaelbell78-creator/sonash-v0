@@ -61,27 +61,27 @@ Last Process Audit: 2026-01-05
 
 ```
 CI/CD Pipelines:
-- Workflow files: [e.g., .github/workflows/*.yml]
-- Pipeline runners: [e.g., GitHub Actions, CircleCI]
-- Deployment targets: [e.g., Firebase, Vercel]
+- Workflow files: .github/workflows/ (docs-lint.yml, test.yml)
+- Pipeline runners: GitHub Actions
+- Deployment targets: Firebase Hosting, Firebase Functions
 
 Git Hooks:
-- Pre-commit: [location, e.g., .git/hooks/pre-commit or package.json scripts]
-- Pre-push: [location]
-- Commit-msg: [location]
-- Session hooks: [location, e.g., .claude/hooks/]
+- Pre-commit: Not configured (opportunity for improvement)
+- Pre-push: Not configured
+- Commit-msg: Not configured
+- Session hooks: .claude/hooks/ (SessionStart.md)
 
 Automation Scripts:
-- Location: [e.g., scripts/]
-- Languages: [e.g., JavaScript, Bash, Python]
-- Test coverage: [e.g., tests/scripts/]
+- Location: scripts/
+- Languages: JavaScript, Bash
+- Test coverage: tests/scripts/ (some coverage exists)
 
 Quality Gates:
-- Linting: [e.g., ESLint, Prettier]
-- Testing: [e.g., Node test runner, Jest]
-- Type checking: [e.g., TypeScript]
-- Pattern checking: [e.g., scripts/check-pattern-compliance.js]
-- Dependency checking: [e.g., npm audit, madge, knip]
+- Linting: ESLint, Prettier
+- Testing: Node.js test runner (115/116 tests passing)
+- Type checking: TypeScript 5.x
+- Pattern checking: scripts/check-pattern-compliance.js
+- Dependency checking: npm audit, madge (circular deps), knip (unused exports)
 ```
 
 ### Scope
@@ -127,11 +127,11 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 
 PROCESS STACK
 
-- CI/CD: [Platform, e.g., GitHub Actions]
-- Testing: Next.js
-- Linting: [Tools]
-- Deployment: [Platform]
-- Automation: [Languages/tools]
+- CI/CD: GitHub Actions
+- Testing: Node.js test runner (115/116 tests passing)
+- Linting: ESLint, Prettier
+- Deployment: Firebase (Hosting + Functions)
+- Automation: JavaScript/Bash scripts, GitHub Actions workflows
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
@@ -644,7 +644,7 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
 - **AI_WORKFLOW.md** - AI development workflow documentation

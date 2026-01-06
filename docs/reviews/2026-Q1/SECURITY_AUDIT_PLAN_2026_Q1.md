@@ -19,7 +19,7 @@ This document serves as the **execution plan** for running a multi-AI security-f
 - After adding new public endpoints or user inputs
 - Compliance requirements demand audit
 
-**This template enforces the mandatory standards from [GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md).**
+**This template enforces the mandatory standards from [GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md).**
 
 **Review Focus Areas (7 Mandatory Categories):**
 1. Rate Limiting & Throttling
@@ -637,11 +637,11 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
-- **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** - Mandatory standards being verified
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
+- **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** - Mandatory standards being verified
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **[SECURITY.md](../SECURITY.md)** - Additional security documentation
+- **[SECURITY.md](../../SECURITY.md)** - Additional security documentation
 - **firestore.rules** - Firebase security rules
 
 ---

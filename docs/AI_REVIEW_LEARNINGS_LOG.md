@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.68
+**Document Version:** 1.72
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,10 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.72 | 2026-01-06 | Review #72: 21 fixes - 12 CRITICAL (broken links to JSONL_SCHEMA, GLOBAL_SECURITY_STANDARDS, SECURITY.md, EIGHT_PHASE_REFACTOR), 5 MAJOR (version/stack placeholders), 4 MINOR (paths, regex, commands) |
+| 1.71 | 2026-01-06 | Review #71: Documentation improvements |
+| 1.70 | 2026-01-06 | Review #70: Template refinements |
+| 1.69 | 2026-01-06 | Review #69: Multi-AI audit plan setup |
 | 1.68 | 2026-01-06 | Review #68: 17 fixes - 4 MAJOR (App Check path, SonarQube remediation, function rename, review ordering), 10 MINOR (sorting, grep, versions, regex, ranges), 3 TRIVIAL |
 | 1.67 | 2026-01-06 | Review #67: 14 fixes - 4 MAJOR (grep -E, deterministic IDs, App Check tracking, SonarQube tracking), 7 MINOR (verification, enums, paths, ordering), 3 TRIVIAL |
 | 1.66 | 2026-01-05 | Review #66: 13 fixes - 4 MAJOR (evidence rules, output format, npm safety, apiKey guidance), 8 MINOR (counters, grep portability, YAML, model names), 1 TRIVIAL |
@@ -142,9 +146,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 12
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ NOT DUE (8 < 10 threshold; last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
+**Status:** ⚠️ DUE (12 >= 10 threshold; last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
 
 ### When to Consolidate
 
@@ -284,7 +288,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-68 are actively maintained below. Older reviews are in the archive.
+Reviews #41-72 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -1546,5 +1550,131 @@ All 6 compliance guide items verified as COMPLIANT:
 - Import organization suggestions - Dismissed: Current organization follows project convention
 
 **Resolution Summary:** 15 code/documentation issues fixed + 6 compliance items verified = 21/28 items addressed. Remaining 7 trivial items dismissed as not applicable or not needed.
+
+---
+
+#### Review #72: 2026 Q1 Multi-AI Audit Plans - Documentation Lint & AI Review Fixes (2026-01-06)
+
+**Context:**
+- **Source:** Documentation Lint, Qodo PR suggestions, CodeRabbit PR review
+- **Scope:** 6 multi-AI audit plan files + README.md in `docs/reviews/2026-Q1/`
+- **Trigger:** Step 4.2 completion - comprehensive multi-AI review feedback
+- **Session:** #27
+- **Branch:** `claude/new-session-sKhzO`
+
+**Total Fixes:** 21 issues (12 CRITICAL, 5 MAJOR, 4 MINOR)
+
+**🔴 CRITICAL - Broken Documentation Links (12 fixes)**
+
+1. **JSONL_SCHEMA_STANDARD.md broken links** (6 occurrences)
+   - Root cause: All 6 plan files referenced `./JSONL_SCHEMA_STANDARD.md` but file is in `../../templates/`
+   - Files: SECURITY_AUDIT, CODE_REVIEW, PROCESS, PERFORMANCE, DOCUMENTATION, REFACTORING plans
+   - Fix: Changed all to `../../templates/JSONL_SCHEMA_STANDARD.md`
+   - Prevention: Verify relative paths match actual file location in directory structure
+
+2. **GLOBAL_SECURITY_STANDARDS.md broken links** (3 occurrences)
+   - Root cause: Used `../GLOBAL_SECURITY_STANDARDS.md` but should be `../../` from `docs/reviews/2026-Q1/`
+   - Files: SECURITY_AUDIT_PLAN (lines 22, 641), REFACTORING_AUDIT_PLAN (line 593)
+   - Fix: Corrected to `../../GLOBAL_SECURITY_STANDARDS.md`
+
+3. **SECURITY.md broken link** (1 occurrence)
+   - Root cause: Used `../SECURITY.md` should be `../../SECURITY.md`
+   - File: SECURITY_AUDIT_PLAN:644
+   - Fix: Corrected path
+
+4. **EIGHT_PHASE_REFACTOR_PLAN.md broken links** (2 occurrences)
+   - Root cause: Referenced without path, but file is in `../../archive/completed-plans/`
+   - Files: CODE_REVIEW_PLAN:695, REFACTORING_AUDIT_PLAN:592
+   - Fix: Added full relative path `../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md`
+
+**🟠 MAJOR - Unfilled Placeholders (5 fixes)**
+
+5. **CODE_REVIEW version placeholders** (lines 61-66)
+   - Issue: All version fields showed "16.1.1" instead of actual versions
+   - Fix: Replaced with correct values (Next.js: 16.1.1, React: 19.2.3, TypeScript: 5.x, Tailwind: v4, Firebase: 12.6.0)
+
+6. **DOCUMENTATION audit structure placeholders** (lines 62-90)
+   - Issue: Placeholder tokens like "[Root-level docs, e.g., README.md]" left unfilled
+   - Fix: Filled with actual SoNash documentation structure and tiers
+
+7. **PROCESS automation inventory placeholders** (lines 63-85)
+   - Issue: Placeholder text like "[e.g., .github/workflows/*.yml]" not replaced
+   - Fix: Filled with actual CI/CD setup (GitHub Actions, Firebase, ESLint, TypeScript)
+
+8. **PROCESS stack placeholders** (lines 130-134)
+   - Issue: Stack versions showing "16.1.1" placeholders
+   - Fix: Updated to actual stack (GitHub Actions, Node.js test runner, ESLint, Firebase)
+
+9. **REFACTORING stack placeholders** (lines 134-136)
+   - Issue: Outdated "16.1.1" placeholders
+   - Fix: Updated to correct versions (React: 19.2.3, TypeScript: 5.x, Firebase: 12.6.0)
+
+**🟡 MINOR - Code Quality Issues (4 fixes)**
+
+10. **CODE_REVIEW absolute paths** (line 138)
+    - Issue: Used absolute path `/home/user/sonash-v0/claude.md`
+    - Fix: Changed to relative path `../../../claude.md`
+    - Prevention: Always use relative paths in documentation
+
+11. **DOCUMENTATION greedy regex** (line 221)
+    - Issue: Pattern `grep -Er "\[.*\]\(.*\)"` is too greedy
+    - Fix: Changed to non-greedy `grep -Er '\[.+\]\([^)]+\)'`
+    - Prevention: Use bounded character classes in regex
+
+12. **PERFORMANCE non-portable du command** (line 467)
+    - Issue: `du -sh` not portable across all systems
+    - Fix: Replaced with `find ... -exec ls -lh {} \; | sort -k5 -h`
+    - Prevention: Use POSIX-compliant commands in shared scripts
+
+13. **README model names and output clarifications**
+    - ChatGPT-4o → GPT-4o (line 47)
+    - Added METRICS_BASELINE_JSON to output description (line 58)
+    - Added jq fallback with python3 alternative (lines 94-98)
+
+**Additional Updates:**
+
+14. **DOCUMENTATION audit history table** (line 544-548)
+    - Filled placeholder with actual status: "Pending execution | Not yet run"
+
+15. **DOCUMENTATION known issues section** (lines 86-92)
+    - Replaced placeholder bullets with actual issues that prompted this review
+
+**Key Patterns:**
+
+1. **Relative Path Calculation**
+   - From `docs/reviews/2026-Q1/` to `docs/`:  Use `../../`
+   - From `docs/reviews/2026-Q1/` to root: Use `../../../`
+   - Always verify with `test -f` from target directory
+
+2. **Documentation Link Hygiene**
+   - All internal links must use relative paths
+   - Verify link targets exist before committing
+   - Use markdown link syntax `[text](path)` consistently
+
+3. **Template Completion Checklist**
+   - Replace ALL placeholder tokens before using template
+   - Fill version numbers with actual values
+   - Update directory/file inventories with project specifics
+   - Verify all referenced files exist
+
+**Learnings:**
+
+- **Multi-pass review effectiveness:** Processing 40+ review items required systematic categorization (CRITICAL → MAJOR → MINOR) to ensure nothing was missed
+- **Link validation is critical:** 12/21 issues were broken links that would block documentation navigation
+- **Placeholder discipline:** Templates must be fully filled when creating derivative documents
+
+**Verification:**
+
+```bash
+# All fixed links verified to exist:
+✓ ../../GLOBAL_SECURITY_STANDARDS.md
+✓ ../../SECURITY.md
+✓ ../../templates/JSONL_SCHEMA_STANDARD.md
+✓ ../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md
+✓ ../../../claude.md
+✓ ../../AI_REVIEW_LEARNINGS_LOG.md
+```
+
+**Note:** This review marks consolidation threshold reached (12 reviews since last consolidation). Next session should consolidate Reviews #61-72 into claude.md and CODE_PATTERNS.md.
 
 ---

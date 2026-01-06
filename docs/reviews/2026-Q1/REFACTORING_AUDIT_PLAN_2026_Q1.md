@@ -132,8 +132,9 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 STACK / CONTEXT (treat as true)
 
 - Next.js: 16.1.1
-- React: 16.1.1
-- [Language]: 16.1.1
+- React: 19.2.3
+- TypeScript: 5.x
+- Firebase: 12.6.0
 - Quality gates: npm run lint, npm test, npm run test:coverage
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
@@ -584,13 +585,13 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - Tactical code review (smaller issues)
 - **MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** - Security-focused reviews
 - **MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** - Performance-focused reviews
-- **EIGHT_PHASE_REFACTOR_PLAN.md** - Example of this template in action
-- **[GLOBAL_SECURITY_STANDARDS.md](../GLOBAL_SECURITY_STANDARDS.md)** - Security standards to maintain during refactoring
+- **[EIGHT_PHASE_REFACTOR_PLAN.md](../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)** - Example of this template in action
+- **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** - Security standards to maintain during refactoring
 
 ---
 

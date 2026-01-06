@@ -59,19 +59,20 @@ Last Documentation Audit: 2026-01-05
 ### Documentation Structure
 
 ```
-Documentation Tiers (if applicable):
-- Tier 1: [Root-level docs, e.g., README.md, ROADMAP.md]
-- Tier 2: [Core guides, e.g., ARCHITECTURE.md, DEVELOPMENT.md]
-- Tier 3: [Specialized docs, e.g., docs/guides/]
-- Tier 4: [Reference docs, e.g., docs/templates/, docs/decisions/]
-- Tier 5: [Archive, e.g., docs/archive/]
+Documentation Tiers:
+- Tier 1: Root-level docs (README.md, ROADMAP.md, ARCHITECTURE.md, SECURITY.md)
+- Tier 2: Core standards (GLOBAL_SECURITY_STANDARDS.md, DEVELOPMENT.md, INTEGRATED_IMPROVEMENT_PLAN.md)
+- Tier 3: Specialized docs (AI_REVIEW_LEARNINGS_LOG.md, AI_WORKFLOW.md, SESSION_CONTEXT.md)
+- Tier 4: Reference docs (docs/templates/, docs/decisions/, docs/guides/)
+- Tier 5: Archive (docs/archive/completed-plans/, docs/archive/old-reviews/)
 
 Documentation Directories:
-- docs/: [Purpose]
-- docs/guides/: [Purpose]
-- docs/templates/: [Purpose]
-- docs/decisions/: [Purpose]
-- docs/archive/: [Purpose]
+- docs/: Core project documentation and standards
+- docs/guides/: How-to guides and tutorials
+- docs/templates/: Reusable document templates for audits and reviews
+- docs/decisions/: Architecture decision records (ADRs)
+- docs/archive/: Completed plans and historical documents
+- docs/reviews/: Multi-AI audit plans and results
 ```
 
 ### Scope
@@ -84,10 +85,11 @@ Exclude: [directories, e.g., node_modules/, build artifacts]
 
 ### Known Documentation Issues
 
-[Document any known issues that prompted this audit:]
-- [Issue 1]
-- [Issue 2]
-- [Issue 3]
+Known issues prompting this audit:
+- 4 broken links identified in SECURITY_AUDIT_PLAN_2026_Q1.md (Documentation Lint)
+- Multiple placeholder tokens remaining in 2026-Q1 audit plans
+- Missing quick start sections in some audit plans
+- Inconsistent relative path usage across plan files
 
 ---
 
@@ -218,7 +220,7 @@ ANALYSIS:
 - Identify stale references to renamed files
 
 VERIFICATION COMMANDS (if available):
-- grep -Er "\[.*\]\(.*\)" --include="*.md" (extract all links)
+- grep -Er '\[.+\]\([^)]+\)' --include="*.md" (extract all links using non-greedy pattern)
 - For each link, check if target file exists
 - npm run docs:check (if validation script exists)
 
@@ -543,7 +545,7 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 
 | Date | Type | Trigger | Models Used | Findings | Quality Score |
 |------|------|---------|-------------|----------|---------------|
-| 2026-01-06 | Documentation Audit | [Reason] | [Models] | [X findings] | [Before → After] |
+| 2026-01-06 | Documentation Audit | Step 4.2 Multi-AI Audit | Pending execution | Not yet run | N/A |
 
 ---
 
@@ -571,7 +573,7 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
+- **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **[MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
 - **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** - General code review template
 - **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Documentation standards (if exists)
