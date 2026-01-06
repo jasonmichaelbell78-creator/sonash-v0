@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.77
+**Document Version:** 1.78
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.78 | 2026-01-06 | Review #77: 9 fixes - 2 MAJOR (shell script portability, broken relative links), 5 MINOR (invalid JSONL, severity scale, category example, version dates, review range), 2 TRIVIAL (environment fields, inline guidance) |
 | 1.77 | 2026-01-06 | Review #76: 13 fixes - 3 MAJOR (model naming, broken link paths, PERFORMANCE doc links), 8 MINOR (SECURITY root cause evidence, shell exit codes, transitive closure, division-by-zero, NO-REPO contract, category enum, model standardization, vulnerability type), 2 TRIVIAL (version metadata, review range) |
 | 1.76 | 2026-01-06 | Review #75: 17 fixes - 2 MAJOR (SECURITY schema category names, vulnerability deduplication), 8 MINOR (regex robustness, JSONL validation, deduplication rules, averaging methodology, model matrix, link paths), 2 TRIVIAL (version verification, duplicate check), 1 REJECTED (incorrect path suggestion) |
 | 1.75 | 2026-01-06 | Review #74: 18 fixes - 6 MAJOR (broken links, schema fields, deduplication clarity, observability, placeholders, GPT-4o capabilities), 9 MINOR (fail-fast, URL filtering, NO-REPO MODE, environment, methodology, output specs, links, alignment), 3 TRIVIAL (version, dates, context) |
@@ -151,7 +152,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2
+**Reviews since last consolidation:** 5
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -295,7 +296,88 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-75 are actively maintained below. Older reviews are in the archive.
+Reviews #41-76 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #77: Multi-AI Audit Plan Refinement (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** [pending]
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Fourth-round review of Multi-AI Audit Plan files (2026-Q1) addressing shell script portability, broken relative links, JSONL validity, consistency issues, and schema completeness. Review identified 9 unique suggestions (10 total with 1 duplicate) across 5 files.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | README JSONL validation non-portable | 🟠 Major | Shell Script | Changed `< <(grep)` to pipe + `nl -ba` for line numbers; used `grep -E` for whitespace |
+| 2 | SECURITY PRE-REVIEW links broken | 🟠 Major | Documentation | Fixed `../` → `../../` for claude.md, AI_REVIEW_LEARNINGS_LOG, analysis/, FIREBASE_CHANGE_POLICY |
+| 3 | PERFORMANCE NO-REPO JSONL comment invalid | 🟡 Minor | Schema | Changed comment syntax to non-JSON marker format |
+| 4 | SECURITY severity scale inconsistent | 🟡 Minor | Documentation | Changed "CRITICAL/HIGH/MEDIUM" → "S0/S1/S2/S3" matching schema |
+| 5 | CODE_REVIEW category example invalid | 🟡 Minor | Documentation | Changed "Code Duplication" → "Hygiene/Duplication" |
+| 6 | PERFORMANCE version dates illogical | 🟡 Minor | Documentation | Swapped v1.0/v1.1 dates for chronological order |
+| 7 | LEARNINGS_LOG review range outdated | 🟡 Minor | Documentation | Updated "#41-75" → "#41-76" |
+| 8 | PERFORMANCE METRICS schema incomplete | ⚪ Trivial | Schema | Added optional `device_profile`, `measurement_tool`, `environment` fields |
+| 9 | REFACTORING EIGHT_PHASE ref unclear | ⚪ Trivial | Documentation | Added inline phase structure example + link |
+
+**Patterns Identified:**
+
+1. **Shell Script Portability (Bash-specific Constructs)** (1 occurrence - Automation)
+   - Root cause: Used bash-specific `< <(...)` process substitution which is not POSIX-compliant
+   - Prevention: Use standard pipe + `nl -ba` for line numbers instead of bash-specific constructs
+   - Pattern: `grep ... | nl -ba | while IFS=$'\t' read -r n line` for portable line-numbered iteration
+   - Note: Also improved error messages with line numbers and filtered whitespace-only lines
+   - Reference: Review #73 addressed similar shell portability (POSIX compliance)
+
+2. **Relative Path Calculation from Nested Directories** (1 occurrence - Documentation Links)
+   - Root cause: SECURITY_AUDIT_PLAN in `docs/reviews/2026-Q1/` used `../` instead of `../../` to reach `docs/`
+   - Prevention: Count directory levels explicitly when creating relative links
+   - Pattern: From `docs/reviews/2026-Q1/` to `docs/`: up 2 levels = `../../`
+   - Note: Same pattern as Reviews #72, #74, #75, #76 - persistent documentation issue
+   - Verification: Use `test -f` to validate link targets before committing
+
+3. **JSONL Schema Validity** (1 occurrence - Schema Design)
+   - Root cause: Instructed to output comment `# (empty ...)` in `.jsonl` file, which is invalid JSON
+   - Prevention: Use non-JSON marker format or structured metadata for empty outputs
+   - Pattern: For empty JSONL, output filename + description on separate lines (not JSON comments)
+   - Note: Prevents automation failures when parsing empty outputs
+
+4. **Documentation Consistency (Severity Scales)** (1 occurrence - Standardization)
+   - Root cause: Used informal severity names (CRITICAL/HIGH/MEDIUM) instead of documented S0/S1/S2/S3 scale
+   - Prevention: Always use the schema-defined severity scale in all documentation
+   - Pattern: Cross-reference schema enums when writing examples
+   - Note: Similar to Review #75 pattern on cross-file consistency
+
+5. **Version History Date Logic** (1 occurrence - Documentation Quality)
+   - Root cause: Version 1.1 dated before version 1.0 (illogical chronology)
+   - Prevention: Ensure version numbers and dates follow chronological order (newest first or oldest first, consistently)
+   - Pattern: v1.0 created first (earlier date), v1.1 updated later (later date)
+   - Reference: Review #76 identified similar version metadata issues in REFACTORING_AUDIT_PLAN
+
+6. **Schema Completeness for Reproducibility** (1 occurrence - Schema Design)
+   - Root cause: METRICS_BASELINE_JSON lacked environment context fields for reproducible audits
+   - Prevention: Include optional context fields (device, tool, environment) in audit schemas
+   - Pattern: Add optional but recommended fields with documentation of their purpose
+   - Note: Improves baseline comparison across different measurement contexts
+
+**Resolution:**
+- Fixed: 9 items (2 Major, 5 Minor, 2 Trivial)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Relative path errors persist**: 5 consecutive reviews (#72-76 + now #77) have caught broken relative links in nested directories, suggesting need for automated link validation
+- **Shell script portability matters**: Even in documentation examples, bash-specific constructs create execution barriers on non-bash systems
+- **Schema validity critical**: Invalid JSON in JSONL files breaks automation; non-JSON markers needed for empty outputs
+- **Pattern repetition indicates systematic issue**: Same relative path error across 5 reviews suggests a pre-commit link validation hook would prevent recurrence
+
+**Recommendation:** Create pre-commit hook to validate:
+1. All markdown relative links resolve to existing files
+2. Shell scripts use POSIX-compliant syntax (run through shellcheck)
+3. JSONL examples contain valid JSON (run through jq --slurp)
 
 ---
 

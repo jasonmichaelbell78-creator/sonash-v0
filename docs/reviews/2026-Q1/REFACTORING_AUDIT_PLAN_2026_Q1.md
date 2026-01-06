@@ -460,10 +460,18 @@ REFACTORING-SPECIFIC AGGREGATION RULES
 
 ### Step 3: Create Canonical Findings Document
 
-Create a document following EIGHT_PHASE_REFACTOR_PLAN.md structure:
-- Phase-by-phase breakdown
-- CANON findings for each phase
-- Acceptance criteria
+Create a document following EIGHT_PHASE_REFACTOR_PLAN.md structure (see [../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md](../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)):
+
+**Phase Structure Example:**
+- Phase 1: Type Safety Consolidation → CANON findings → acceptance criteria → gap analysis
+- Phase 2: Security Hardening → CANON findings → acceptance criteria → gap analysis
+- Phase 3: Architecture Cleanup → CANON findings → acceptance criteria → gap analysis
+- (Continue for all identified phases)
+
+**Each Phase Should Include:**
+- Phase-by-phase breakdown with clear goals
+- CANON findings for each phase (deduplicated, prioritized)
+- Acceptance criteria (how to verify phase completion)
 - Gap analysis template (for tracking what's done vs. planned)
 
 ---

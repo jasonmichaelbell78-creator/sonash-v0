@@ -415,7 +415,7 @@ Merge findings only if ALL of these conditions are met:
 - List all instances in `duplication_cluster.instances[]`
 - Take union of all files/symbols across findings
 - **Transitive Closure Rule**: If Finding A shares files/symbols with Finding B, and Finding B shares with Finding C, merge all three into one cluster ONLY if:
-  - All findings have the same category (e.g., all "Code Duplication")
+  - All findings have the same category (e.g., all "Hygiene/Duplication")
   - All findings suggest the same root cause pattern (e.g., "Missing utility function")
   - The linkage is direct and specific (shared files/symbols, not just similar category)
   - Use transitive closure for cluster membership when these criteria hold

@@ -215,7 +215,9 @@ If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Limited analysis without code access
 - **Required Output Contract**:
   - METRICS_BASELINE_JSON: Output `{}` (empty object - no metrics without repo)
-  - FINDINGS_JSONL: Output empty file with comment `# (empty - no repo access for evidence-based findings)`
+  - FINDINGS_JSONL: Output exactly:
+    - `FINDINGS_JSONL`
+    - `(empty - no repo access)`
   - SUSPECTED_FINDINGS_JSONL: MAY include general observations (clearly marked "NO REPO ACCESS")
   - HUMAN_SUMMARY: Explain limitation and provide generic best practices only
 - Do NOT invent file-specific findings without repo access
@@ -493,8 +495,13 @@ Return 4 sections in this exact order:
   "fid_ms": X,
   "cls": X,
   "performance_score": X,
-  "build_time_seconds": X
+  "build_time_seconds": X,
+  "device_profile": "mobile|desktop|both",
+  "measurement_tool": "lighthouse|webvitals|custom",
+  "environment": "development|staging|production"
 }
+
+**Note:** Fields `device_profile`, `measurement_tool`, and `environment` are optional but recommended for reproducible audits and baseline comparison across different measurement contexts.
 
 2) FINDINGS_JSONL
 (one JSON object per line, each must be valid JSON)
@@ -715,8 +722,8 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude |
-| 1.0 | 2026-01-06 | Initial template creation | [Author] |
+| 1.1 | 2026-01-06 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude |
+| 1.0 | 2026-01-05 | Initial template creation | [Author] |
 
 ---
 

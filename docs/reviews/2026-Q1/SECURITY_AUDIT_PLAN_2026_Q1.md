@@ -144,14 +144,14 @@ PRE-REVIEW CONTEXT (REQUIRED READING)
 
 Before beginning security analysis, review these project-specific resources:
 
-1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and security lessons from past reviews
-2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented security patterns from Reviews #1-60+
+1. **AI Learnings** (../../claude.md Section 4): Critical anti-patterns and security lessons from past reviews
+2. **Pattern History** (../../AI_REVIEW_LEARNINGS_LOG.md): Documented security patterns from Reviews #1-60+
 3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues including security concerns
-6. **Firebase Policy** (../FIREBASE_CHANGE_POLICY.md): Required security review process for Firebase changes
+5. **Static Analysis** (../../analysis/sonarqube-manifest.md): Pre-identified issues including security concerns
+6. **Firebase Policy** (../../FIREBASE_CHANGE_POLICY.md): Required security review process for Firebase changes
 
 These resources provide essential context about known issues and security patterns to avoid.
 
@@ -562,7 +562,7 @@ Two findings have the "same vulnerability type" if they share the same CWE ID OR
    - Requirements:
      - Both must share same vulnerability_type AND same remediation pattern
      - Must have concrete evidence linking the findings (e.g., same code pattern, same missing library usage)
-     - Severity must be within 1 level (CRITICAL can merge with HIGH, but not with MEDIUM)
+     - Severity must be within 1 level (`S0` with `S1`, `S1` with `S2`, `S2` with `S3`; but never `S0` with `S2/S3`)
    - Set files[] to union of all affected endpoints
    - Confidence: Use weighted average of all merged findings
 4) Never merge if different root causes (even if similar symptoms)
