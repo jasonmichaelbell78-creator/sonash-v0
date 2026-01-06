@@ -96,10 +96,11 @@ Exclude: [directories, e.g., docs/, public/, node_modules/]
 
 | Model | Capabilities | Refactoring Strength |
 |-------|--------------|---------------------|
-| Claude Code (Opus/Sonnet) | browse_files=yes, run_commands=yes | Cross-cutting analysis, grep verification |
-| GitHub Copilot | browse_files=yes, run_commands=limited | Pattern detection, quick confirmation |
-| Codex | browse_files=yes, run_commands=yes | Duplication detection, TS analysis |
-| Gemini (Jules) | browse_files=yes, run_commands=yes | Alternative refactor perspective |
+| Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive refactor analysis, cross-cutting patterns, grep verification |
+| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective pattern detection, duplication clusters |
+| GPT-5-Codex | browse_files=yes, run_commands=yes | Duplication detection, TypeScript deep analysis |
+| Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative refactor lens, fresh perspective |
+| GitHub Copilot | browse_files=yes, run_commands=limited | Quick pattern confirmation |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
 
 **Selection criteria:**
@@ -134,6 +135,27 @@ STACK / CONTEXT (treat as true)
 - [UI Library]: [Version]
 - [Language]: [Version]
 - Quality gates: npm run lint, npm test, npm run test:coverage
+
+PRE-REVIEW CONTEXT (REQUIRED READING)
+
+Before beginning refactoring analysis, review these project-specific resources:
+
+1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and refactoring lessons from past reviews
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented refactoring patterns from Reviews #1-60+
+3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
+4. **Dependency Health**:
+   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
+   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
+5. **Static Analysis (PRIMARY INPUT)** (../analysis/sonarqube-manifest.md): Pre-identified refactoring targets
+   - **NOTE:** Run fresh SonarQube scan or verify metrics are current before each audit—numbers become stale as issues are fixed.
+   - CRITICAL cognitive complexity violations (functions exceeding 15-point threshold)
+   - MAJOR code quality issues
+   - Batch fix opportunities: ESLint auto-fixable, replaceAll() replacements, node: prefix imports
+6. **Prior Refactoring Work** (../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON findings
+
+**IMPORTANT**: If SonarQube analysis is available, the CRITICAL cognitive complexity violations are the PRIMARY targets for this audit. Focus on functions that need refactoring due to excessive complexity. If no SonarQube data exists, focus on manual complexity assessment of large functions (>50 lines) and high-cyclomatic-complexity patterns.
+
+These resources provide essential context about what has been identified and what patterns to consolidate.
 
 SCOPE
 
@@ -576,7 +598,8 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
+| 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---
 

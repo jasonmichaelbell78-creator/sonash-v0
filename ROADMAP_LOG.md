@@ -609,7 +609,7 @@ This document contains the historical record of completed milestones, tasks, and
 
 **Reference:**
 - [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) - Full plan with gap analysis (archived)
-- [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md) - Implementation and review prompts
+- [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) - Implementation and review prompts (archived)
 - [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) - Monitoring spec
 
 ---

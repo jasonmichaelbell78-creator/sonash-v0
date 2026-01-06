@@ -90,12 +90,12 @@ Exclude: [directories to skip, e.g., docs/, public/, node_modules/]
 
 | Model | Capabilities | Primary Strength |
 |-------|--------------|------------------|
-| Claude Code (Opus/Sonnet) | browse_files=yes, run_commands=yes | Repo-wide audits, grep-based proof |
+| Claude Opus 4.5 | browse_files=yes, run_commands=yes | Repo-wide audits, grep-based proof, latest AI learnings |
+| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective repo analysis, pattern detection |
+| GPT-5-Codex | browse_files=yes, run_commands=yes | Refactor detection, TS ergonomics |
+| Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative refactor lens, fresh perspective |
 | GitHub Copilot | browse_files=yes, run_commands=limited | Local pattern spotting, confirmations |
-| Codex | browse_files=yes, run_commands=yes | Refactor detection, TS ergonomics |
-| Gemini (Jules) | browse_files=yes, run_commands=yes | Alternative refactor lens |
 | ChatGPT-4o | browse_files=no, run_commands=no | Broad coverage, suspected findings |
-| Kimi K2 | browse_files=limited | Extra triangulation |
 
 **Selection criteria:**
 - At least 2 models with `run_commands=yes` for tool evidence
@@ -124,6 +124,24 @@ STACK / CONTEXT (treat as true)
 - [Language]: [Version]
 - [Additional tech stack details...]
 - Quality gates: npm run lint, npm test, npm run test:coverage
+
+PRE-REVIEW CONTEXT (REQUIRED READING)
+
+**Note:** Adjust file paths below to match your project structure. Verify each file exists and tool outputs are available before running the review. If a command is unavailable, skip it and note the limitation.
+
+Before beginning analysis, review these project-specific resources:
+
+1. **AI Learnings** (<project_root>/claude.md Section 4): Critical anti-patterns and lessons from past reviews
+2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented patterns from Reviews #1-60+
+3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
+4. **Dependency Health**:
+   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
+   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
+5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues from SonarQube
+   - Use current manifest counts (date-stamp your audit output)
+   - Focus on CRITICAL items for refactoring candidates
+
+These resources provide essential context about what has already been identified and what patterns to avoid.
 
 SCOPE
 
@@ -678,7 +696,8 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | YYYY-MM-DD | Initial template creation | [Author] |
+| 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
+| 1.0 | 2026-01-01 | Initial template creation | Claude |
 
 ---
 

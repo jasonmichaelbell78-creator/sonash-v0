@@ -105,7 +105,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-   - [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
+   - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived - historical reference only)
 
 9. **Standards** (when creating/updating docs):
    - [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
@@ -286,7 +286,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **How to Implement Features**:
 → [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
-→ [IMPLEMENTATION_PROMPTS.md](./docs/IMPLEMENTATION_PROMPTS.md)
+→ [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived - historical reference only)
 
 **How to Process CodeRabbit Reviews**:
 → [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)

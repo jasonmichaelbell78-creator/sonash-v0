@@ -1,8 +1,8 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.1
+**Document Version:** 1.4
 **Created:** 2026-01-01
-**Last Updated:** 2026-01-01
+**Last Updated:** 2026-01-06
 **Document Tier:** Tier 2 (Foundation)
 **Purpose:** Master index and coordination for multi-AI code review system
 
@@ -30,9 +30,11 @@ This document serves as the **central coordination hub** for all multi-AI review
 | Review Type | Template | Use When |
 |-------------|----------|----------|
 | Code Review | [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | PRs, feature completion, tactical issues |
-| Security Audit | [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | Security concerns, auth changes, pre-release |
+| Security Audit | [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | Security concerns, auth changes, pre-release, dependency vulnerabilities |
 | Performance Audit | [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | Slow app, bundle growth, before traffic increase |
-| Refactoring Plan | [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | Tech debt, architecture consolidation, vibe coding cleanup |
+| Refactoring Plan | [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | Tech debt, architecture consolidation, vibe coding cleanup, SonarQube CRITICAL items |
+| Documentation Audit | [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | Broken links, stale docs, coverage gaps, quarterly doc health check |
+| Process Audit | [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | CI/CD reliability, hook effectiveness, automation health, quarterly process review |
 
 ### Template Selection Decision Tree
 
@@ -145,14 +147,14 @@ echo "=== Check triggers against thresholds above ==="
 
 ### Current Project Baseline
 
-**Last Updated:** 2026-01-01
+**Last Updated:** 2026-01-05
 
 ```yaml
 # Repository Stats
 total_files: [Run: find . -type f -name "*.ts" -o -name "*.tsx" | wc -l]
 total_lines: [Run: find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec cat {} + | wc -l]
-test_count: 91
-test_pass_rate: 97.8%
+test_count: 116
+test_pass_rate: 99.1% (115/116 passing, 1 skipped)
 
 # Bundle (Production Build)
 total_bundle_kb: [Run: npm run build, check output]
@@ -161,18 +163,47 @@ largest_chunk_kb: [Fill after build]
 # Security Posture
 rate_limiting: IMPLEMENTED
 input_validation: IMPLEMENTED
-app_check: IMPLEMENTED
+app_check: DISABLED
+app_check_risk: "MEDIUM - Bot protection disabled; mitigated by rate limiting and Firestore rules"
+app_check_release_gate: "P1 - Must be resolved before public launch"
+app_check_owner: "Security Team"
+app_check_target_date: "TBD - Dependent on Firebase 403 throttle resolution"
+app_check_remediation: "See docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md CANON-0002 for re-enablement plan"
 firestore_rules: IMPLEMENTED
 
 # Code Quality
-lint_errors: [Run: npm run lint 2>&1 | grep -c "error"]
-lint_warnings: [Run: npm run lint 2>&1 | grep -c "warning"]
+lint_errors: 0
+lint_warnings: 181
+lint_warnings_baseline_date: 2026-01-04
+lint_warnings_policy: "Treat any increase as regression; long-term goal: <20 after remediation"
 typescript_strict: true
+pattern_violations: 0
+pattern_violations_command: "npm run patterns:check"
 
 # Dependencies
+circular_dependencies: 0 (npm run deps:circular)
+unused_exports: baseline documented in DEVELOPMENT.md (npm run deps:unused)
 direct_deps: [Run: npm ls --depth=0 | wc -l]
 dev_deps: [Run: npm ls --dev --depth=0 | wc -l]
 known_vulnerabilities: [Run: npm audit --json | jq '.metadata.vulnerabilities']
+
+# Static Analysis (SonarQube)
+sonarqube_total_issues: 778
+sonarqube_blocker: 1
+sonarqube_blocker_note: "Firebase Web apiKey (public identifier, not a secret). See SECURITY.md for other apiKey handling."
+sonarqube_critical: 47
+sonarqube_critical_note: "Cognitive complexity violations (>15 threshold)"
+sonarqube_critical_risk: "LOW - Maintainability concern; not a runtime security issue"
+sonarqube_critical_release_gate: "P2 - Should be addressed but not blocking launch"
+sonarqube_critical_owner: "Engineering Team"
+sonarqube_critical_remediation: "See docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md for batch remediation plan"
+sonarqube_major: 216
+sonarqube_minor: 507
+sonarqube_info: 7
+batch_fix_opportunities:
+  - eslint_auto_fixable: ~200+
+  - replaceAll_replacements: 79
+  - node_prefix_imports: 71
 ```
 
 ### Baseline Update Process
@@ -263,7 +294,7 @@ grep -rn "apiKey.*=.*['\"]" --include="*.ts" --include="*.tsx" | grep -v ".env"
 
 | Metric | Target | Current | Status | Last Checked |
 |--------|--------|---------|--------|--------------|
-| Test Pass Rate | ≥95% | 97.8% | ✅ Healthy | 2026-01-01 |
+| Test Pass Rate | ≥95% | 99.1% | ✅ Healthy | 2026-01-05 |
 | Test Coverage | ≥80% | [Run test:coverage] | ⏳ Check | — |
 | Lint Errors | 0 | [Run npm run lint] | ⏳ Check | — |
 | Lint Warnings | <20 | [Run npm run lint] | ⏳ Check | — |
@@ -374,7 +405,7 @@ Project health review is triggered when ANY of these occur:
 |---------|-----------|---------|--------|
 | Session Count | Every 10 sessions | 1 | ⏳ Pending |
 | Security Non-Compliance | Any standard fails | 0 | ✅ Clear |
-| Test Pass Rate | Drops below 95% | 97.8% | ✅ Healthy |
+| Test Pass Rate | Drops below 95% | 99.1% | ✅ Healthy |
 | Exception Used | Any exception invoked | 0 | ✅ Clear |
 | Documentation Compliance | Drops below 80% | 100% | ✅ Healthy |
 | Performance Regression | Any metric >20% worse | 0 | ✅ Clear |
@@ -514,11 +545,15 @@ It should NOT be used for:
 - **[AI_WORKFLOW.md](../AI_WORKFLOW.md)** - Master workflow guide (references this coordinator)
 - **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Mandatory security standards
 - **[DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)** - Document formatting standards
-- **Templates:**
+- **Audit Templates:**
   - [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)
   - [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)
   - [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)
   - [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)
+  - [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)
+  - [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)
+- **Aggregation:**
+  - [MULTI_AI_AGGREGATOR_TEMPLATE.md](./templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) - 2-tier aggregation (per-category → cross-category)
 
 ---
 
@@ -526,9 +561,12 @@ It should NOT be used for:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.2 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
-| 1.1 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template | Claude |
-| 1.0 | 2026-01-01 | Initial coordinator creation with non-time-based triggers | Claude |
+| 1.4 | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate | Claude |
+| 1.3 | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability | Claude |
+| 1.2b | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator | Claude |
+| 1.2a | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics | Claude |
+| 1.1 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
+| 1.0 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers | Claude |
 
 ---
 
