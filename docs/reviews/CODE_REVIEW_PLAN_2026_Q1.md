@@ -151,7 +151,7 @@ BASELINE CONTEXT (treat as true - gathered 2026-01-06)
 KNOWN FALSE POSITIVES (do not flag these)
 
 1. Firebase API key in .env.production - This is intentional (public client key secured via Firebase Security Rules + App Check)
-2. ESLint security warnings (181) - Audited 2026-01-04, all are false positives (safe object iteration patterns)
+2. ESLint security warnings (181) - Audited 2026-01-04; the *object-iteration* warnings are false positives (safe patterns), but other eslint-security findings (e.g., unsafe regex / non-literal fs / object injection) should still be reported when evidenced
 
 SCOPE
 

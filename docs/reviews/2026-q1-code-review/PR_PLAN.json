@@ -10,9 +10,21 @@
       "risk_level": "high",
       "estimated_effort": "E2",
       "acceptance_tests": [
-        "Enable App Check site key in env, load client and confirm _appCheck is created without console warnings.",
-        "All 4 Cloud Functions have requireAppCheck: true",
-        "Manual test confirms App Check tokens are validated"
+        {
+          "area": "client",
+          "assertion": "App Check instance is created with no warnings",
+          "how_to_verify": "Enable App Check site key in env, load client, confirm _appCheck instance exists and console has no warnings"
+        },
+        {
+          "area": "functions",
+          "assertion": "All callable functions require App Check",
+          "how_to_verify": "Verify all 4 functions set requireAppCheck=true and reject calls without valid token"
+        },
+        {
+          "area": "e2e",
+          "assertion": "App Check tokens validated end-to-end",
+          "how_to_verify": "Manual test confirms App Check token is sent and verified for calls"
+        }
       ],
       "notes": "Do client init first to avoid breaking production callers when functions enforcement flips."
     },
@@ -26,8 +38,16 @@
       "risk_level": "high",
       "estimated_effort": "E2",
       "acceptance_tests": [
-        "Verify no active code writes to journalEntries directly",
-        "Rules block direct writes"
+        {
+          "area": "code-audit",
+          "assertion": "No active code writes to journalEntries directly",
+          "how_to_verify": "Search codebase for direct journalEntries writes; confirm none exist in active paths"
+        },
+        {
+          "area": "rules",
+          "assertion": "Rules block direct writes",
+          "how_to_verify": "Deploy rules and test that direct client writes to journalEntries fail with permission denied"
+        }
       ],
       "notes": "Coordinate rollout with any deployed clients still writing the legacy path."
     },
@@ -41,8 +61,16 @@
       "risk_level": "medium",
       "estimated_effort": "E1",
       "acceptance_tests": [
-        "Call a function wrapped with recaptchaAction and no token; expect failed-precondition error.",
-        "Call same function with valid token; expect success path to execute."
+        {
+          "area": "functions",
+          "assertion": "Missing token causes failure",
+          "how_to_verify": "Call a function wrapped with recaptchaAction and no token; expect failed-precondition error"
+        },
+        {
+          "area": "e2e",
+          "assertion": "Valid token allows success",
+          "how_to_verify": "Call same function with valid token; expect success path to execute"
+        }
       ],
       "notes": "Keep PR scoped to wrapper enforcement to reduce risk of incidental function behavior changes."
     },
@@ -56,8 +84,16 @@
       "risk_level": "medium",
       "estimated_effort": "E2",
       "acceptance_tests": [
-        "Test saving a step-1-worksheet entry via Cloud Function",
-        "Verify in Firestore console that 'searchableText' and 'tags' fields are populated"
+        {
+          "area": "functions",
+          "assertion": "Step 1 worksheet saves successfully",
+          "how_to_verify": "Test saving a step-1-worksheet entry via Cloud Function; confirm no validation errors"
+        },
+        {
+          "area": "data",
+          "assertion": "Metadata fields are populated",
+          "how_to_verify": "Verify in Firestore console that searchableText and tags fields are populated on saved entries"
+        }
       ],
       "notes": "Ship the enum fix first (E0) so users stop hitting server-side validation failures even before the larger refactor lands."
     },
@@ -71,9 +107,21 @@
       "risk_level": "medium",
       "estimated_effort": "E2",
       "acceptance_tests": [
-        "Single helper used in all listed error-handling locations",
-        "Zero console.* in components/ (except logger implementation)",
-        "Errors logged don't contain file paths/tokens/UIDs"
+        {
+          "area": "code",
+          "assertion": "Single helper used in all error-handling locations",
+          "how_to_verify": "Search codebase and confirm handleCloudFunctionError() is used consistently"
+        },
+        {
+          "area": "security",
+          "assertion": "Zero console.* in components/ (except logger)",
+          "how_to_verify": "Run lint or grep; confirm no direct console usage in components directory"
+        },
+        {
+          "area": "security",
+          "assertion": "Errors do not leak sensitive data",
+          "how_to_verify": "Review logged errors and confirm they do not contain file paths, tokens, or UIDs"
+        }
       ],
       "notes": "Keep helper extraction separate from large logger migration if reviewers prefer smaller diffs."
     },
@@ -87,10 +135,26 @@
       "risk_level": "high",
       "estimated_effort": "E3",
       "acceptance_tests": [
-        "Rules emulator tests pass in CI",
-        "Functions security paths are covered by tests",
-        "Skipped integration test is addressed (implemented or removed with rationale)",
-        "Coverage for listed critical files improves materially"
+        {
+          "area": "ci",
+          "assertion": "Rules emulator tests pass in CI",
+          "how_to_verify": "Run CI pipeline; confirm rules tests execute and pass"
+        },
+        {
+          "area": "coverage",
+          "assertion": "Functions security paths are covered",
+          "how_to_verify": "Run coverage report; confirm security wrapper and auth paths have tests"
+        },
+        {
+          "area": "tests",
+          "assertion": "Skipped integration test is addressed",
+          "how_to_verify": "Confirm test is either implemented or removed with documented rationale"
+        },
+        {
+          "area": "coverage",
+          "assertion": "Coverage for critical files improves",
+          "how_to_verify": "Compare coverage before/after for listed critical files"
+        }
       ],
       "notes": "Start from the existing skipped test as a concrete harness entry point."
     },
@@ -104,8 +168,16 @@
       "risk_level": "low",
       "estimated_effort": "E2",
       "acceptance_tests": [
-        "Rotation unit tests cover schedule + fallback paths",
-        "Quote displays correctly wherever used; no broken imports"
+        {
+          "area": "tests",
+          "assertion": "Rotation unit tests cover schedule and fallback paths",
+          "how_to_verify": "Run tests and confirm coverage for time-of-day rotation and fallback scenarios"
+        },
+        {
+          "area": "ui",
+          "assertion": "Quote displays correctly wherever used",
+          "how_to_verify": "Manual test all locations where quotes are displayed; confirm no broken imports"
+        }
       ],
       "notes": "Do after the S0/S1 security items so UI refactors don't mix with production security changes."
     },
@@ -119,9 +191,21 @@
       "risk_level": "medium",
       "estimated_effort": "E3",
       "acceptance_tests": [
-        "No @ts-expect-error in production code",
-        "Unsafe casts are paired with runtime validation",
-        "Invalid entry payloads are rejected by schema"
+        {
+          "area": "code",
+          "assertion": "No @ts-expect-error in production code",
+          "how_to_verify": "Search codebase for @ts-expect-error; confirm none in production files"
+        },
+        {
+          "area": "code",
+          "assertion": "Unsafe casts are paired with runtime validation",
+          "how_to_verify": "Review remaining 'as' casts; confirm Zod parse or type guard precedes them"
+        },
+        {
+          "area": "validation",
+          "assertion": "Invalid entry payloads are rejected by schema",
+          "how_to_verify": "Test submitting malformed entries; confirm schema validation rejects them"
+        }
       ],
       "notes": "Sequence: quick wins first, then introduce schema tightening to avoid breaking payload compatibility unexpectedly."
     },
@@ -135,8 +219,16 @@
       "risk_level": "low",
       "estimated_effort": "E2",
       "acceptance_tests": [
-        "npm run lint shows materially fewer security warnings",
-        "All non-literal fs paths validated against allowlist"
+        {
+          "area": "lint",
+          "assertion": "Materially fewer security warnings",
+          "how_to_verify": "Run npm run lint; compare warning count before/after"
+        },
+        {
+          "area": "security",
+          "assertion": "Non-literal fs paths validated against allowlist",
+          "how_to_verify": "Review scripts; confirm dynamic paths are checked against allowlist before use"
+        }
       ],
       "notes": "Keep changes isolated to scripts/ to reduce review surface."
     }
