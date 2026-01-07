@@ -12,7 +12,7 @@
 This document captures the aggregated results of the Phase 4.2 multi-AI security audit for SoNash. The audit evaluates compliance across rate limiting, input validation, secrets management, and OWASP standards using consensus from multiple AI models (Claude Opus 4.5 and ChatGPT 5.2).
 
 **Scope:** Firebase Cloud Functions, Firestore Rules, client-side security integrations
-**Output:** Canonical findings (CANON-SECURITY.jsonl) with prioritized remediation plan
+**Output:** Canonical findings (`docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl`) with prioritized remediation plan
 
 ---
 
@@ -213,7 +213,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 | 1.0 | 2026-01-07 | Initial multi-AI security audit | Claude |
 | 1.1 | 2026-01-07 | F-010 severity S0→S3 (risk accepted), secrets_management adjudication | Claude |
 | 1.2 | 2026-01-07 | Added severity_normalization field to F-010 | Claude |
-| 1.3 | 2026-01-07 | Moved to canonical location, added Purpose section | Claude |
+| 1.3 | 2026-01-07 | Moved report to `docs/reviews/2026-Q1/outputs/security/`, canonical findings to `docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl`, added Purpose section | Claude |
 
 ---
 
