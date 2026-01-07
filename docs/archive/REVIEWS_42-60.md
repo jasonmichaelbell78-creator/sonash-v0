@@ -4,7 +4,7 @@
 **Coverage:** 2026-01-03 to 2026-01-05
 **Status:** Reviews #42-60 archived (audit trail preserved).
 
-**Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest as of 2026-01-07: v1.2).
+**Consolidation note:** See [CODE_PATTERNS.md](../agent_docs/CODE_PATTERNS.md) for consolidated patterns (latest as of 2026-01-07: v1.2).
 
 ---
 

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.87
+**Document Version:** 1.88
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.88 | 2026-01-07 | Review #86: Qodo follow-up on Review #85 (3 fixes, 1 rejected) - 1 MINOR (broken link), 2 TRIVIAL (Bash-only clarity, copy-safe snippet), 1 REJECTED (duplicate pathspec separator) |
 | 1.87 | 2026-01-07 | Review #84-85: Process quality improvements - #84: Review #83 follow-up (4 metadata fixes), #85: Qodo suggestions on Review #84 commit (3 fixes: git verification, threshold clarity, archive status) |
 | 1.86 | 2026-01-07 | Review #83: Archive & Consolidation Metadata Fixes (5 fixes) - 1 REJECTED (false positive: #41 data loss), 1 MAJOR (broken links), 1 MINOR (status sync), 2 TRIVIAL (line count, wording) |
 | 1.85 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 → CODE_PATTERNS.md v1.2 (9 patterns: 3 Bash/Shell portability, 6 Documentation quality) |
@@ -161,7 +162,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3
+**Reviews since last consolidation:** 4
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-07, Session #29 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
@@ -243,7 +244,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | 1386 | 1500 | Archive oldest reviews |
-| Active reviews | 25 (#61-85) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Active reviews | 26 (#61-86) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -313,7 +314,7 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-85 are actively maintained below. Older reviews are in the archive.
+Reviews #61-86 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -346,6 +347,50 @@ Reviews #61-85 are actively maintained below. Older reviews are in the archive.
    - Pattern: `git log --all --follow -p` for file tracking, `--grep="Review #N" --grep="Review N"` for pattern matching
 
 **Key Learning:** Process documentation benefits from precision. Review #83 added validation steps for false positives; Review #85 enhanced those steps with robust git commands and clear operational triggers.
+
+---
+
+#### Review #86: Documentation Quality Improvements (2026-01-07)
+
+**Source:** Qodo PR
+**PR:** Commit 85619b7 (Review #85 fixes)
+**Suggestions:** 4 total (0 Critical, 0 Major, 1 Minor, 2 Trivial, 1 Rejected)
+
+**Context:** Qodo review of Review #85 commit identified documentation improvements: broken archive reference link, shell pattern clarity, and git verification snippet usability. One suggestion rejected as false positive (duplicate pathspec separator).
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Broken consolidation reference link in REVIEWS_42-60.md | 🟡 Minor | Documentation | Changed "See CODE_PATTERNS.md" → "See [CODE_PATTERNS.md](../agent_docs/CODE_PATTERNS.md)" at line 6 |
+| 2 | Bash-only shell patterns unclear | ⚪ Trivial | Documentation Clarity | Added "(Bash-only)" label to process substitution, "(Bash/Zsh/Ksh)" to set -o pipefail, improved example code |
+| 3 | Verification snippet not copy-paste safe | ⚪ Trivial | Process Usability | Added `N=41` variable declaration, changed grep patterns to use `$N` instead of literal `N` |
+
+**Rejected:**
+
+| # | Issue | Severity | Category | Reason |
+|---|-------|----------|----------|--------|
+| 1 | Missing pathspec separator in git log command | 🟡 Minor | False Positive | Command already has pathspec separator (`-- docs/`). Qodo suggested adding duplicate (`-- -- docs/`) which would be incorrect syntax. |
+
+**Patterns Identified:**
+
+1. **AI Review False Positives - Git Command Misinterpretation** (2nd occurrence - Reinforcement of #83)
+   - Root cause: AI reviewer scanned for `--` separator pattern but didn't recognize `-- docs/` as already having it
+   - Prevention: Always verify AI suggestions against actual code before applying (STEP 1.4 protocol)
+   - Pattern: AI reviewers can misinterpret existing code, especially when looking for specific patterns
+   - Note: Second false positive in 3 reviews (#83: data loss claim, #86: duplicate separator)
+
+2. **Documentation Link Completeness** (Enhancement to relative path patterns #73-82)
+   - Root cause: Archive file created with plain text reference instead of markdown link
+   - Prevention: When creating documentation files, convert all cross-references to proper markdown links
+   - Pattern: `See X.md` → `See [X.md](relative/path/to/X.md)` for better navigation
+
+3. **Shell Portability Clarity** (Enhancement to shell pattern documentation)
+   - Root cause: Shell patterns didn't explicitly label which shells support which features
+   - Prevention: Add explicit shell labels to patterns that aren't POSIX-compatible
+   - Pattern: Document "(Bash-only)", "(Bash/Zsh/Ksh)", or "(POSIX)" for each shell pattern
+
+**Key Learning:** This is the second AI review false positive in 3 reviews, reinforcing the validation protocol from Review #83. The pathspec separator false positive shows AI reviewers can miss existing syntax when pattern-matching. The STEP 1.4 protocol (validate via git history, verify actual code) continues to catch these false positives effectively.
 
 ---
 

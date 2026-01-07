@@ -45,9 +45,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Pipeline failure | Add `|| VAR=""` fallback | Commands may fail with pipefail |
 | Terminal sanitization | `tr -cd '[:alnum:] ,_-'` | Strip ANSI escapes |
 | grep --exclude | `--exclude="storage.ts"` NOT `--exclude="lib/utils/storage.ts"` | Matches basename only |
-| Process substitution | `while read; done < <(cmd)` NOT `cmd | while read` | Preserves exit codes |
-| Bash wrapper for scripts | Wrap bash-specific code in `bash -lc '...'` with quote escaping | POSIX compliance |
-| set -o pipefail | Add before pipes in validation scripts | Catch pipe failures |
+| Process substitution (Bash-only) | `while IFS= read -r line; do ...; done < <(cmd)` NOT `cmd | while read` | Preserves exit codes + safe reads |
+| Bash wrapper for scripts | Wrap bash-specific code in `bash -lc '...'` with quote escaping | Avoids breaking POSIX sh |
+| set -o pipefail (Bash/Zsh/Ksh) | Add before pipes in bash-based validation scripts | Catch pipe failures |
 
 ---
 
