@@ -254,7 +254,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | ~1530 | 1500 | Archive oldest reviews |
-| Active reviews | 34 (#61-97) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Active reviews | 37 (#61-97) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -324,7 +324,7 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-97 are actively maintained below. Older reviews are in the archive.
+Reviews #61-97 are actively maintained below. Older reviews are in the archive.
 
 ---
 
