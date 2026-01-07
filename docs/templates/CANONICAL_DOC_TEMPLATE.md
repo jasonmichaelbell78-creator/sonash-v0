@@ -2,8 +2,8 @@
 
 **Project**: SoNash Recovery Notebook
 **Document Version**: 1.0
-**Created**: YYYY-MM-DD
-**Last Updated**: YYYY-MM-DD
+**Created**: [Creation Date]
+**Last Updated**: [Last Update Date]
 **Status**: [ACTIVE | COMPLETE | ARCHIVED | DEPRECATED]
 **Overall Completion**: X/Y items complete (Z%)
 

@@ -5,6 +5,19 @@
 
 ---
 
+## Purpose
+
+This document provides essential context and rules for AI assistants working on the SoNash project. It contains:
+- Bleeding-edge stack versions to prevent false "outdated" warnings
+- Critical security rules and anti-patterns to prevent vulnerabilities
+- Architecture patterns and coding standards
+- Required agent/skill triggers for specific tasks
+- Documentation index and navigation guides
+
+This is a **Tier 4 document** - always loaded in AI context to prevent repeated violations and ensure consistency across sessions.
+
+---
+
 ## 1. Stack Versions (Bleeding Edge)
 
 **DO NOT** flag these as invalid - they're newer than your training cutoff:

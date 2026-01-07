@@ -50,6 +50,44 @@ Create a numbered master list:
 ### 1.3 Announce Count
 State: "I identified **N total suggestions** from this review. Proceeding with categorization."
 
+### 1.4 Validate Critical Claims (IMPORTANT)
+
+> ⚠️ **AI reviewers can generate false positives** by inferring problems from current state without verifying historical context.
+
+**BEFORE accepting "data loss", "missing content", or "missing files" claims:**
+
+1. **Verify via git history** - Don't trust current state alone:
+   ```bash
+   N=41
+
+   # Check if file/review ever existed (search common variants)
+   git log --all --oneline --grep="Review #$N" --grep="Review $N" -- docs/
+
+   # Optional: case-insensitive search if naming varies
+   git log --all --oneline -i --grep="review #$N" --grep="review $N" -- docs/
+
+   # Follow renames/moves when inspecting file history
+   git log --all --follow -p -- path/to/file.ext | head -100
+   ```
+
+2. **Common false positives to watch for:**
+   - **Range gap misinterpretation**: "Archive #42-60, active #61-82" → AI infers "#41 missing" without checking if #41 was ever created
+   - **Numbering skips**: Review numbers or IDs may have intentional/accidental gaps
+   - **File moves**: AI sees "file missing from location X" without checking if it moved to location Y
+
+3. **If claim is FALSE POSITIVE:**
+   - Mark as **REJECTED** in categorization
+   - Document the verification in the review entry
+   - Include pattern in learning entry (helps train future reviews)
+
+**Example from Review #83:**
+- Qodo flagged "Review #41 data loss" (Critical severity)
+- Investigation: `git log --grep "#41"` showed Review #41 was NEVER created
+- Reality: Numbering jumped #40→#42 (intentional/accidental skip)
+- Result: REJECTED as false positive, documented as new pattern
+
+**When in doubt**: Spend 2 minutes verifying via git history rather than wasting hours fixing non-existent problems.
+
 ---
 
 ## STEP 2: CATEGORIZATION (Per AI_REVIEW_PROCESS.md)

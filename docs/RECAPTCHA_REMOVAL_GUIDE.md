@@ -46,7 +46,7 @@ App Check with reCAPTCHA Enterprise is causing persistent authentication failure
 
 #### 1.1 Update Firebase Configuration File
 
-**File:** [`lib/firebase.ts`](file:///c:/Users/jason/Workspace/dev-projects/sonash-v0/lib/firebase.ts)
+**File:** [`lib/firebase.ts`](../lib/firebase.ts)
 
 1. Remove the import for App Check:
 
@@ -73,7 +73,7 @@ App Check with reCAPTCHA Enterprise is causing persistent authentication failure
 
 #### 1.2 Remove Environment Variables
 
-**File:** [`.env.local`](file:///c:/Users/jason/Workspace/dev-projects/sonash-v0/.env.local)
+**File:** [`.env.local`](../.env.local)
 
 Delete these lines:
 
@@ -417,7 +417,7 @@ NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6L[your-new-site-key-here]
 
 #### Step 5.1: Update Firebase Initialization
 
-**File:** [`lib/firebase.ts`](file:///c:/Users/jason/Workspace/dev-projects/sonash-v0/lib/firebase.ts)
+**File:** [`lib/firebase.ts`](../lib/firebase.ts)
 
 ```typescript
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
@@ -690,7 +690,7 @@ After full deployment, monitor these metrics:
 - [Firebase App Check Documentation](https://firebase.google.com/docs/app-check)
 - [reCAPTCHA Enterprise Documentation](https://cloud.google.com/recaptcha-enterprise/docs)
 - [Firebase Functions v2 - App Check](https://firebase.google.com/docs/functions/callable-reference#app-check)
-- [SoNash Security Documentation](file:///c:/Users/jason/Workspace/dev-projects/sonash-v0/docs/SECURITY.md)
+- [SoNash Security Documentation](./SECURITY.md)
 
 ---
 

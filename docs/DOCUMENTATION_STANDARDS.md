@@ -271,7 +271,7 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 
 ### Internal Links
 
-**Format**: `[Link Text](./path/to/file.md)`
+**Format**: `[Link Text](<relative-path-to-file.md>)`
 
 **Best Practices**:
 - ✅ Use relative paths
@@ -281,16 +281,16 @@ All documentation is organized into 5 tiers based on purpose, update frequency, 
 
 **Examples**:
 ```markdown
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design.
-See the [Dependencies section](./ROADMAP.md#dependencies) for prerequisites.
+See [ARCHITECTURE.md](../ARCHITECTURE.md) for system design.
+See the [Dependencies section](../ROADMAP.md#dependencies) for prerequisites.
 ```
 
 ### External Links
 
-**Format**: `[Link Text](https://full-url.com)`
+**Format**: `[Link Text](<https://full-url.com>)`
 
 **Best Practices**:
-- ✅ Include link purpose: `[Firebase Auth Docs](url) - User management`
+- ✅ Include link purpose: `[Firebase Auth Docs](<https://firebase.google.com>) - User management`
 - ✅ Use official documentation when available
 - ✅ Check links periodically for rot
 
@@ -558,9 +558,9 @@ When updating project status in **any** document, immediately update **all relat
 
 Before committing:
 1. List all Markdown references (all formats):
-   - Inline links: `[text](path)` and `[text](#anchor)`
-   - Reference-style links: `[text][id]` and definitions like `[id]: path-or-url`
-   - Images: `![alt](path)`
+   - Inline links: `[text](<path>)` and `[text](#anchor)`
+   - Reference-style links: `[text][id]` and definitions like `[id]: <path-or-url>`
+   - Images: `![alt](<path>)`
    - Autolinks: `<https://...>`
 2. For each **internal path**:
    - Verify the target file exists in the repository

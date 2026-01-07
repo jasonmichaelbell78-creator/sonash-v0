@@ -1,7 +1,18 @@
 # Review Policy Visual Guide
 
-**Last Updated:** 2026-01-04
-**Purpose:** Visual diagrams and flowcharts for review policy
+**Last Updated:** 2026-01-07
+
+---
+
+## Purpose
+
+This document provides **visual diagrams and flowcharts** for the SoNash review policy. Use it to:
+- Visualize the review tier pyramid and decision flows
+- Understand PR workflows through diagrams
+- Explain the review process to new team members
+- Quick visual reference for tier-specific requirements
+
+For full policy details, see [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md).
 
 ---
 
@@ -520,6 +531,15 @@ Time: 3-5 days
 - **Full Policy:** [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md)
 - **Quick Reference:** [REVIEW_POLICY_QUICK_REF.md](./REVIEW_POLICY_QUICK_REF.md)
 - **Security Standards:** [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-01-07 | Added Purpose and Version History sections for documentation standards compliance |
+| 1.0 | 2026-01-04 | Initial visual guide creation with tier pyramid, decision trees, and workflow diagrams |
 
 ---
 

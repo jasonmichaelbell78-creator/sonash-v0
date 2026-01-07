@@ -216,8 +216,8 @@ All templates located in `docs/templates/`:
 - **Make Firebase changes** → [FIREBASE_CHANGE_POLICY.md](./FIREBASE_CHANGE_POLICY.md)
 - **Submit a PR** → [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md)
 - **Run a multi-AI audit** → [MULTI_AI_REVIEW_COORDINATOR.md](./MULTI_AI_REVIEW_COORDINATOR.md)
-- **Fix anti-patterns** → [CODE_PATTERNS.md](./CODE_PATTERNS.md)
-- **Understand current session** → [SESSION_CONTEXT.md](./SESSION_CONTEXT.md)
+- **Fix anti-patterns** → [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)
+- **Understand current session** → [SESSION_CONTEXT.md](../SESSION_CONTEXT.md)
 - **See project roadmap** → [ROADMAP.md](../ROADMAP.md)
 
 ### Contributing to Documentation
@@ -253,7 +253,7 @@ Update this inventory when:
 
 - [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md) - Documentation formatting and structure standards
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - How to use documentation in AI workflow
-- [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Current session state
+- [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) - Current session state
 
 ---
 

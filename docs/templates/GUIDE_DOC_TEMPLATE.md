@@ -293,8 +293,8 @@ Once you're comfortable with the basics, you might want to explore:
 - [Doc 2] - [URL] - [What it covers]
 
 **Internal Docs**:
-- [ARCHITECTURE.md](../ARCHITECTURE.md) - [Relevant section]
-- [DEVELOPMENT.md](../DEVELOPMENT.md) - [Relevant section]
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - [Relevant section]
+- [DEVELOPMENT.md](../../DEVELOPMENT.md) - [Relevant section]
 
 ### Tutorials & Examples
 
