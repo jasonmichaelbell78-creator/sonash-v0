@@ -220,12 +220,45 @@ BASELINE METRICS
 
 SCOPE
 
-Performance-Critical: app/page.tsx (landing), app/dashboard/page.tsx, /journal, /inventory, /growth
-High-traffic pages: /dashboard, /journal, /inventory, /growth
-Data-heavy components: JournalEntryList, InventoryTable, GrowthCardsGrid
-Animation-heavy components: FadeIn, SlideIn, MeetingWidget, growth card animations
-Include: app/, components/, hooks/, lib/, functions/src/, tests/, types/
-Exclude: docs/, public/, node_modules/, .next/
+**Performance-Critical Pages:**
+- app/page.tsx (landing page)
+- app/journal/page.tsx (journal hub)
+- app/admin/page.tsx (admin dashboard)
+- app/meetings/all/page.tsx (meetings directory)
+
+**High-Traffic Routes:**
+- / (landing)
+- /journal (journal hub)
+- /admin (admin dashboard)
+- /meetings/all (meetings directory)
+
+**Data-Heavy Components:**
+- entry-feed.tsx (journal entries list)
+- admin-crud-table.tsx (admin CRUD operations)
+- meeting-map.tsx (map with meeting markers)
+- timeline.tsx (journal timeline)
+
+**Animation-Heavy Components:**
+- celebration-overlay.tsx (celebration animations)
+- confetti-burst.tsx (confetti particles)
+- firework-burst.tsx (firework effects)
+- floating-pen.tsx (floating pen animation)
+- success-pulse.tsx (success pulse animation)
+
+**Include:**
+- app/ (Next.js routes and layouts)
+- components/ (React components)
+- hooks/ (custom React hooks)
+- lib/ (utility libraries)
+- functions/src/ (Firebase Cloud Functions)
+- types/ (TypeScript type definitions)
+
+**Exclude:**
+- tests/ (test files - not runtime code)
+- docs/ (documentation)
+- public/ (static assets)
+- node_modules/ (dependencies)
+- .next/ (build artifacts)
 
 CAPABILITIES (REQUIRED FIRST OUTPUT)
 

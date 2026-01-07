@@ -60,8 +60,8 @@ Last Documentation Audit: 2026-01-05
 
 ```
 Documentation Tiers:
-- Tier 1: Root-level docs (README.md, ROADMAP.md, ARCHITECTURE.md, SECURITY.md)
-- Tier 2: Core standards (GLOBAL_SECURITY_STANDARDS.md, DEVELOPMENT.md, INTEGRATED_IMPROVEMENT_PLAN.md)
+- Tier 1: Root-level docs (README.md, ROADMAP.md, ARCHITECTURE.md)
+- Tier 2: Core standards (docs/SECURITY.md, docs/GLOBAL_SECURITY_STANDARDS.md, DEVELOPMENT.md, INTEGRATED_IMPROVEMENT_PLAN.md)
 - Tier 3: Specialized docs (AI_REVIEW_LEARNINGS_LOG.md, AI_WORKFLOW.md, SESSION_CONTEXT.md)
 - Tier 4: Reference docs (docs/templates/, docs/decisions/, docs/guides/)
 - Tier 5: Archive (docs/archive/completed-plans/, docs/archive/old-reviews/)
@@ -127,8 +127,13 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 DOCUMENTATION STRUCTURE
 
 - Tier system: 5-tier hierarchy (Tier 1-2: Root-level, Tier 3-5: docs/ subdirectories)
-- Main directories: docs/, docs/templates/, docs/reviews/, docs/archive/, docs/agent_docs/
-- Documentation standards: docs/DOCUMENTATION_STANDARDS.md (v1.0)
+- Main directories:
+  - docs/
+  - docs/templates/
+  - docs/reviews/
+  - docs/archive/
+  - docs/agent_docs/
+- Documentation standards: docs/DOCUMENTATION_STANDARDS.md (v1.2)
 
 PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
@@ -146,10 +151,10 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 - README.md - Project overview, quick start
 - ROADMAP.md - Current sprint, priorities
 - ARCHITECTURE.md - System design
-- SECURITY.md - Security policies
 
 **Tier 2 (Core standards, developer-facing):**
-- GLOBAL_SECURITY_STANDARDS.md - Mandatory security requirements
+- docs/SECURITY.md - Security policies
+- docs/GLOBAL_SECURITY_STANDARDS.md - Mandatory security requirements
 - DEVELOPMENT.md - Development setup, workflows
 - INTEGRATED_IMPROVEMENT_PLAN.md - Multi-phase improvement tracking
 
