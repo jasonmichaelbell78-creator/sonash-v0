@@ -1,8 +1,8 @@
 # SoNash Multi-AI Performance Audit Plan
 
-**Document Version:** 1.1
+**Document Version:** 1.3
 **Created:** 2026-01-06
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 **Status:** PENDING
 **Overall Completion:** 0%
 
@@ -174,24 +174,41 @@ STACK / CONTEXT
 - Animation: [e.g., Framer Motion 12]
 - Backend: [e.g., Firebase/Firestore]
 
-PRE-REVIEW CONTEXT (REQUIRED READING)
+PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
-**Note:** Adjust file paths below to match your project structure. Verify each file exists before proceeding. If unavailable, skip and note the limitation.
+**IF browse_files=yes:** Read these files BEFORE starting analysis:
+1. docs/AI_REVIEW_LEARNINGS_LOG.md (documented performance patterns from Reviews #1-80+)
+2. docs/analysis/sonarqube-manifest.md (47 CRITICAL cognitive complexity issues)
+3. ARCHITECTURE.md (system architecture and component boundaries - root level)
 
-Before beginning performance analysis, review these project-specific resources:
+**IF browse_files=no:** Use this inline context instead:
 
-1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and performance lessons from past reviews
-2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented performance patterns from Reviews #1-60+
-3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
-4. **Dependency Health**:
-   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
-   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified issues including performance concerns
-   - 47 CRITICAL cognitive complexity violations (refactoring targets)
-   - Performance-impacting patterns already identified
-6. **Bundle Analysis** (if available): Previous build output for comparison
+<inline-context id="known-performance-issues">
+## Known Performance Issues (from prior Code Review + SonarQube)
 
-These resources provide essential context about known performance issues and optimization opportunities.
+**Cognitive Complexity (47 CRITICAL):**
+- High-complexity functions impacting maintainability and potential runtime perf
+- Target files: components/growth/Step1WorksheetCard.tsx, hooks/use-journal.ts
+
+**Bundle/Rendering Issues:**
+- Landing page forced to client component (app/page.tsx) - affects FCP
+- Server layout composes client providers - boundary clarity issue
+- Environment variables accessed directly in components
+
+**React Optimization Opportunities:**
+- useJournal sets up its own auth listener (redundant subscriptions)
+- Duplicated DailyQuoteCard components (bundle bloat)
+- Console.* usage in components (unnecessary in production)
+
+**Firebase/Data:**
+- Inconsistent Firebase Functions import pattern (static vs dynamic)
+- Cloud Function error handling duplicated in 4 locations
+</inline-context>
+
+**Additional context (for models with run_commands=yes):**
+- Run: npm run build (capture bundle size output)
+- Run: npm run deps:circular (expect 0 cycles)
+- Run: npm run deps:unused (identify dead code)
 
 BASELINE METRICS
 
@@ -722,6 +739,8 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-07 | Review #81: Fixed ARCHITECTURE.md path (docs/ARCHITECTURE.md → root-level ARCHITECTURE.md); added CAPABILITIES example format | Claude |
+| 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of known performance issues | Claude |
 | 1.1 | 2026-01-06 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude |
 | 1.0 | 2026-01-05 | Initial template creation | [Author] |
 

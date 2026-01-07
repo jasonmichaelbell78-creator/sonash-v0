@@ -1,8 +1,8 @@
 # SoNash Multi-AI Security Audit Plan
 
-**Document Version:** 1.3
+**Document Version:** 1.6
 **Created:** 2026-01-06
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 **Status:** PENDING
 **Overall Completion:** 0%
 
@@ -140,20 +140,65 @@ STACK / CONTEXT
 - Firestore: Firestore (Firebase 12.6.0)
 - reCAPTCHA Enterprise, Firestore Rules, App Check (currently disabled), Sentry 10.30.0: reCAPTCHA Enterprise, Firestore Rules, App Check (currently disabled), Sentry 10.30.0
 
-PRE-REVIEW CONTEXT (REQUIRED READING)
+PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
-Before beginning security analysis, review these project-specific resources:
+**IF browse_files=yes:** Read these files BEFORE starting analysis:
+1. docs/GLOBAL_SECURITY_STANDARDS.md (mandatory standards with full checklists)
+2. docs/AI_REVIEW_LEARNINGS_LOG.md (documented security patterns from Reviews #1-80+)
+3. docs/analysis/sonarqube-manifest.md (pre-identified security issues)
+4. docs/FIREBASE_CHANGE_POLICY.md (Firebase security review process)
 
-1. **AI Learnings** (../../claude.md Section 4): Critical anti-patterns and security lessons from past reviews
-2. **Pattern History** (../../AI_REVIEW_LEARNINGS_LOG.md): Documented security patterns from Reviews #1-60+
-3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
-4. **Dependency Health**:
-   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
-   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../../analysis/sonarqube-manifest.md): Pre-identified issues including security concerns
-6. **Firebase Policy** (../../FIREBASE_CHANGE_POLICY.md): Required security review process for Firebase changes
+**IF browse_files=no:** Use this inline context instead:
 
-These resources provide essential context about known issues and security patterns to avoid.
+<inline-context id="global-security-standards">
+## GLOBAL_SECURITY_STANDARDS.md Summary (v1.0)
+
+**4 Mandatory Standards - ALL code must comply:**
+
+### Standard 1: Rate Limiting & Throttling
+- All public endpoints have IP + user-based limits
+- Sensible defaults: Auth 5/min, Writes 10/min, Reads 30/min
+- Graceful 429 responses with Retry-After header
+- Rate limit violations logged
+- Verification: grep -rn "RateLimiter|rateLimit" --include="*.ts"
+
+### Standard 2: Input Validation & Sanitization
+- Schema-based validation (Zod) on all API inputs
+- Type enforcement at runtime, length limits on strings
+- Unknown fields rejected (.strict())
+- XSS prevention on displayed content
+- Verification: grep -rEn "\.(safeParse|parse)\(" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --include="*.json"
+
+### Standard 3: API Keys & Secrets Management
+- No hardcoded API keys in code
+- All secrets in environment variables
+- No secrets in NEXT_PUBLIC_ variables
+- .env files in .gitignore, .env.example exists
+- Verification: grep -rEn "sk_live|sk_test|api_key.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --include="*.json"
+
+### Standard 4: OWASP Top 10 Compliance
+- A01: Auth checks on all protected routes
+- A02: Use Firebase Auth, no custom crypto
+- A03: Parameterized queries, no string concat for paths
+- A05: Firestore rules match code assumptions
+- A06: npm audit clean or documented
+- A09: Log security events, no sensitive data in logs
+</inline-context>
+
+<inline-context id="known-security-issues">
+## Known Security Issues (from prior Code Review)
+- App Check disabled on all Cloud Functions (S0)
+- Legacy journalEntries allows direct client writes (S0)
+- Client App Check initialization disabled (S1)
+- reCAPTCHA verification logged but not enforced (S1)
+- Admin-claim Firestore rules lack function-only defense (S1)
+- console.* usage leaks sensitive data (S1)
+</inline-context>
+
+**Additional context (for models with run_commands=yes):**
+- Run: npm run patterns:check (baseline anti-pattern violations)
+- Run: npm run deps:circular (expect 0 cycles)
+- Run: npm audit (dependency vulnerabilities)
 
 SCOPE
 
@@ -166,6 +211,8 @@ CAPABILITIES (REQUIRED FIRST OUTPUT)
 Before any findings, print exactly:
 
 CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
+
+Example: CAPABILITIES: browse_files=no, run_commands=no, repo_checkout=no, limitations="No file access; analysis limited to provided inline context."
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete security audit without repo access
@@ -672,6 +719,9 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.6 | 2026-01-07 | Review #82: Broadened grep .safeParse/.parse extensions to match secrets grep (.ts,.tsx,.js,.jsx,.json) | Claude |
+| 1.5 | 2026-01-07 | Review #81: Added CAPABILITIES example format; broadened grep file extensions (.ts → .ts,.tsx,.js,.jsx,.json); added -E flag for extended regex | Claude |
+| 1.4 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summaries of GLOBAL_SECURITY_STANDARDS.md and known issues | Claude |
 | 1.3 | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.3 | Claude |
 | 1.2 | 2026-01-06 | Review #67: Added -E flag for extended regex; Made grep --exclude-dir portable (repeated flags vs brace expansion) | Claude |
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |

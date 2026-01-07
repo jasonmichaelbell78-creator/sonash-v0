@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.88
+**Document Version:** 1.89
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.89 | 2026-01-07 | Review #87: Schema symmetry & markdown syntax (4 fixes) - 1 MAJOR (QUALITY_METRICS_JSON null schema), 3 MINOR (stray code fences in PROCESS/REFACTORING/DOCUMENTATION) |
 | 1.88 | 2026-01-07 | Review #86: Qodo follow-up on Review #85 (3 fixes, 1 rejected) - 1 MINOR (broken link), 2 TRIVIAL (Bash-only clarity, copy-safe snippet), 1 REJECTED (duplicate pathspec separator) |
 | 1.87 | 2026-01-07 | Review #84-85: Process quality improvements - #84: Review #83 follow-up (4 metadata fixes), #85: Qodo suggestions on Review #84 commit (3 fixes: git verification, threshold clarity, archive status) |
 | 1.86 | 2026-01-07 | Review #83: Archive & Consolidation Metadata Fixes (5 fixes) - 1 REJECTED (false positive: #41 data loss), 1 MAJOR (broken links), 1 MINOR (status sync), 2 TRIVIAL (line count, wording) |
@@ -88,7 +89,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-80) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-81) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -162,9 +163,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4
+**Reviews since last consolidation:** 5
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ CURRENT (last consolidated 2026-01-07, Session #29 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
+**Status:** ✅ OK (last consolidated 2026-01-07 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
 ### When to Consolidate
 
@@ -213,7 +214,7 @@ Consolidation is needed when:
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
 | Patterns in claude.md | 60+ | - | ✅ |
-| Reviews since last consolidation | 0 | <10 | ✅ |
+| Reviews since last consolidation | 5 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
@@ -314,336 +315,145 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-86 are actively maintained below. Older reviews are in the archive.
+Reviews #41-87 are actively maintained below. Older reviews are in the archive.
 
 ---
 
-#### Review #85: Process Quality Improvements (2026-01-07)
+#### Review #87: Schema Symmetry & Markdown Syntax (2026-01-07)
 
-**Source:** Qodo PR
-**PR:** Commit eef4b62 (Review #84 fixes)
-**Suggestions:** 3 total (0 Critical, 0 Major, 2 Minor, 1 Trivial)
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR/Branch:** claude/new-session-YUxGa
+**Suggestions:** 4 total (Critical: 0, Major: 1, Minor: 3, Trivial: 0)
 
-**Context:** Qodo review of Review #84 commit identified process improvements for git verification reliability, threshold action clarity, and archive metadata organization.
+**Context:** Review identified missing QUALITY_METRICS_JSON null schema in DOCUMENTATION plan (inconsistent with REFACTORING which has REFACTORING_METRICS_JSON), and stray code fences in PROCESS/REFACTORING/DOCUMENTATION plans breaking markdown rendering.
 
 **Issues Fixed:**
 
 | # | Issue | Severity | Category | Fix |
 |---|-------|----------|----------|-----|
-| 1 | Git verification commands missing --follow and variant patterns | 🟡 Minor | Process Robustness | Added `--follow` flag for rename tracking, broadened grep to match "Review #N" and "Review N" variants |
-| 2 | Threshold action unclear ("Consider archiving") | 🟡 Minor | Process Clarity | Changed to explicit instruction: "Archive oldest active reviews until ≤20 remain" |
-| 3 | Archive status conflates archive content with unrelated consolidation | ⚪ Trivial | Metadata Organization | Separated status line from consolidation note for clarity |
+| 1 | DOCUMENTATION missing QUALITY_METRICS_JSON null schema | 🔴 Major | Schema | Added null schema with doc_count, broken_link_count fields |
+| 2 | PROCESS plan stray code fence line 208 | 🟡 Minor | Syntax | Removed stray closing ``` |
+| 3 | REFACTORING plan stray code fence line 225 | 🟡 Minor | Syntax | Removed stray closing ``` |
+| 4 | DOCUMENTATION plan stray code fence line 194 | 🟡 Minor | Syntax | Removed stray closing ``` |
 
 **Patterns Identified:**
 
-1. **Process Documentation Precision** (Reinforcement)
-   - Root cause: Advisory language ("Consider") in operational triggers creates ambiguity
-   - Prevention: Use explicit, actionable instructions in threshold actions
-   - Pattern: Operational triggers should be imperative ("Archive until ≤20") not suggestive ("Consider archiving")
+1. **Schema Symmetry Across Plans** (1 occurrence - Major)
+   - Root cause: Added REFACTORING_METRICS_JSON in Review #82 but forgot DOCUMENTATION equivalent
+   - Prevention: When adding schema to one plan, check all similar plans for same gap
+   - Pattern: All audit plans with metrics output need explicit null-structure schemas
 
-2. **Git History Verification Robustness** (Enhancement to #83)
-   - Root cause: Initial verification commands didn't handle file renames or pattern variants
-   - Prevention: Always use `--follow` flag when tracking file history; search multiple grep patterns
-   - Pattern: `git log --all --follow -p` for file tracking, `--grep="Review #N" --grep="Review N"` for pattern matching
-
-**Key Learning:** Process documentation benefits from precision. Review #83 added validation steps for false positives; Review #85 enhanced those steps with robust git commands and clear operational triggers.
-
----
-
-#### Review #86: Documentation Quality Improvements (2026-01-07)
-
-**Source:** Qodo PR
-**PR:** Commit 85619b7 (Review #85 fixes)
-**Suggestions:** 4 total (0 Critical, 0 Major, 1 Minor, 2 Trivial, 1 Rejected)
-
-**Context:** Qodo review of Review #85 commit identified documentation improvements: broken archive reference link, shell pattern clarity, and git verification snippet usability. One suggestion rejected as false positive (duplicate pathspec separator).
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Broken consolidation reference link in REVIEWS_42-60.md | 🟡 Minor | Documentation | Changed "See CODE_PATTERNS.md" → "See [CODE_PATTERNS.md](../agent_docs/CODE_PATTERNS.md)" at line 6 |
-| 2 | Bash-only shell patterns unclear | ⚪ Trivial | Documentation Clarity | Added "(Bash-only)" label to process substitution, "(Bash/Zsh/Ksh)" to set -o pipefail, improved example code |
-| 3 | Verification snippet not copy-paste safe | ⚪ Trivial | Process Usability | Added `N=41` variable declaration, changed grep patterns to use `$N` instead of literal `N` |
-
-**Rejected:**
-
-| # | Issue | Severity | Category | Reason |
-|---|-------|----------|----------|--------|
-| 1 | Missing pathspec separator in git log command | 🟡 Minor | False Positive | Command already has pathspec separator (`-- docs/`). Qodo suggested adding duplicate (`-- -- docs/`) which would be incorrect syntax. |
-
-**Patterns Identified:**
-
-1. **AI Review False Positives - Git Command Misinterpretation** (2nd occurrence - Reinforcement of #83)
-   - Root cause: AI reviewer scanned for `--` separator pattern but didn't recognize `-- docs/` as already having it
-   - Prevention: Always verify AI suggestions against actual code before applying (STEP 1.4 protocol)
-   - Pattern: AI reviewers can misinterpret existing code, especially when looking for specific patterns
-   - Note: Second false positive in 3 reviews (#83: data loss claim, #86: duplicate separator)
-
-2. **Documentation Link Completeness** (Enhancement to relative path patterns #73-82)
-   - Root cause: Archive file created with plain text reference instead of markdown link
-   - Prevention: When creating documentation files, convert all cross-references to proper markdown links
-   - Pattern: `See X.md` → `See [X.md](relative/path/to/X.md)` for better navigation
-
-3. **Shell Portability Clarity** (Enhancement to shell pattern documentation)
-   - Root cause: Shell patterns didn't explicitly label which shells support which features
-   - Prevention: Add explicit shell labels to patterns that aren't POSIX-compatible
-   - Pattern: Document "(Bash-only)", "(Bash/Zsh/Ksh)", or "(POSIX)" for each shell pattern
-
-**Key Learning:** This is the second AI review false positive in 3 reviews, reinforcing the validation protocol from Review #83. The pathspec separator false positive shows AI reviewers can miss existing syntax when pattern-matching. The STEP 1.4 protocol (validate via git history, verify actual code) continues to catch these false positives effectively.
-
----
-
-#### Review #84: Review #83 Follow-up Metadata Corrections (2026-01-07)
-
-**Source:** Qodo PR (follow-up on commit eb8ffee)
-**PR:** Commit eb8ffee (Review #83 fixes)
-**Suggestions:** 4 total (0 Critical, 0 Major, 0 Minor, 4 Trivial)
-
-**Context:** Quick follow-up from Qodo on Review #83 commit, catching additional metadata inconsistencies that emerged from the archival work.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Archive header consolidation scope confusing (#73-82 vs #42-60) | ⚪ Trivial | Metadata Clarity | Clarified that #42-60 are archived reviews, #73-82 was separate consolidation event |
-| 2 | Archive coverage dates incorrect (2026-01-04 vs 2026-01-03) | ⚪ Trivial | Metadata Accuracy | Corrected to 2026-01-03 (verified via content: Process Pivot #1 dated 2026-01-03) |
-| 3 | Active review count not updated after adding Review #83 | ⚪ Trivial | Metadata Consistency | Updated 22→23, #61-82→#61-83 |
-| 4 | Archive reference in main log not updated | ⚪ Trivial | Cross-file Sync | Updated Archive 2 reference with corrected dates and status |
-
-**Pattern Reinforcement:**
-
-- **Cross-File Metadata Synchronization** (from #83): All 4 fixes involved updating metadata in multiple locations (archive header + main log reference)
-
-**Key Learning:** Metadata changes often have cascading effects across multiple files. When updating archive-related metadata, verify ALL locations: archive file header, main log archive reference, and current metrics table.
-
----
-
-#### Review #83: Archive & Consolidation Metadata Fixes (2026-01-07)
-
-**Source:** Mixed (Qodo PR Compliance + CodeRabbit PR)
-**PR:** Commits d531883 (consolidation), 1be1d04 (merge), 628fafb (archival)
-**Tools:** Qodo (6 suggestions), CodeRabbit (3 inline comments)
-
-**Context:** Review of archival and consolidation work (commits 628fafb, 1be1d04, d531883). Qodo identified metadata inconsistencies, broken links, and false positive (#41 "data loss"). CodeRabbit caught cross-file status synchronization and line count discrepancies.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Broken relative links in REVIEWS_42-60.md (./decisions, ./INTEGRATED) | 🟠 Major | Documentation | Added ../ prefix for archive subdirectory context |
-| 2 | Archive status outdated in both files (PRE-CONSOLIDATION vs reality) | 🟡 Minor | Cross-file Consistency | Updated to "CONSOLIDATED (patterns extracted to CODE_PATTERNS.md v1.2, 2026-01-07)" in both files |
-| 3 | Line count inaccuracy (1377 vs actual 1386) | ⚪ Trivial | Metadata | Corrected in Current Metrics and Restructure History tables |
-| 4 | Threshold action wording unclear | ⚪ Trivial | Clarity | Changed "Consolidate + archive" → "Consider archiving older reviews (even if consolidation current)" |
-
-**Rejected:**
-
-| # | Issue | Severity | Category | Reason |
-|---|-------|----------|----------|--------|
-| 1 | Review #41 "data loss" (archive #42-60, active #61-82) | 🔴 Critical | False Positive | Reviews #41 and #44 were NEVER created - numbering gaps, not data loss. Verified via git history. |
-
-**Deferred:**
-
-| # | Suggestion | Reason | Future Action |
-|---|-----------|--------|---------------|
-| 1 | Migrate documentation to wiki/database system | Valid long-term improvement but premature - fix immediate bugs first, revisit at >150 reviews or if manual process becomes blocking | Add to ROADMAP.md as "Future Improvement" |
-
-**Patterns Identified:**
-
-1. **AI Review False Positives from Range Notation** (1 occurrence - New)
-   - Root cause: Qodo interpreted range #42-60 vs #61-82 as "missing #41" without checking if #41 ever existed
-   - Prevention: AI reviewers can misinterpret range gaps as data loss when numbering has intentional/accidental skips
-   - Pattern: Always verify "data loss" claims by checking git history, not just current state
-   - Note: Reviews #41 and #44 were never created; numbering jumped from #40→#42 and #43→#45
-
-2. **Cross-File Metadata Synchronization** (Reinforcement from #76-79)
-   - Root cause: Archive status updated in one file but not mirrored copy in main log
-   - Prevention: When archiving, update status in BOTH archive file header AND main log archive reference
-   - Pattern: `grep -n "Archive 2" docs/AI_REVIEW_LEARNINGS_LOG.md docs/archive/REVIEWS_42-60.md` to find both instances
-   - Note: Consolidation status changes affect archive metadata in multiple locations
-
-3. **Relative Path Depth After File Movement** (Reinforcement from #73-79)
-   - Root cause: Content moved to subdirectory without adjusting relative links
-   - Prevention: After archiving content, update ALL relative links from `./` to `../` (one level up)
-   - Pattern: When moving to `docs/archive/`, links to `docs/decisions/` need `../decisions/` not `./decisions/`
-   - Note: This is the most common link breakage pattern (8+ occurrences in #73-82, now #83)
-
-**Key Insight:** AI code reviewers (Qodo, CodeRabbit) can generate false positives by inferring problems from current state without verifying historical context. Always validate "data loss" or "missing content" claims via git history before accepting them as true issues. Metadata synchronization across files (archive header + main log reference) is critical for maintaining audit trail integrity.
-
----
-
-#### Review #82: Post-Commit Review Feedback (2026-01-07)
-
-**Source:** Qodo + CodeRabbit (PR Code Suggestions + inline comments)
-**PR:** Session #29
-**Commit:** 2f4a0ce
-**Tools:** Qodo (3 suggestions), CodeRabbit (3 inline comments)
-
-**Context:** Post-commit review feedback on Review #81 changes. Qodo identified process improvement opportunity (fix generator vs fixing output manually) and formatting issues. CodeRabbit caught metadata consistency issues (review range, Last Updated date) and incorrect relative path.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Active review range outdated (#41-79 vs #41-80) | 🟡 Minor | Metadata | Updated AI_REVIEW_LEARNINGS_LOG.md header to #41-80 |
-| 2 | Last Updated date inconsistent in REVIEW_POLICY_VISUAL_GUIDE | 🟡 Minor | Metadata | Changed 2026-01-04 → 2026-01-07 to match Version History |
-| 3 | SECURITY.md path incorrect in FOUNDATION_DOC_TEMPLATE | 🟡 Minor | Documentation | Fixed ../../SECURITY.md → ../SECURITY.md (docs/ vs root) |
-| 4 | HUMAN_SUMMARY missing markdown heading | 🟡 Minor | Documentation | Added ### heading and blank line for proper formatting |
-| 5 | CANON-0032 status mismatch in gemini-chatgpt-aggregation.md | 🟡 Minor | Data Consistency | Removed CANON-0032 from suspected items list (JSONL shows CONFIRMED not SUSPECTED) |
-| 6 | Malformed JSON code fence (### + ```json combined) | ⚪ Trivial | Documentation | Separated heading from code fence, added PARSE_ERRORS_JSON label |
-
-**Process Recommendation (High-Level):**
-
-| # | Recommendation | Severity | Category | Action |
-|---|----------------|----------|----------|--------|
-| 1 | Fix generator not output files | 🔴 High | Process | gemini-chatgpt-aggregation.md is generated; should fix multi-AI coordinator tool to output correct format from start. DEFERRED: No current generator script exists - file was manually created in Review #81 |
-
-**Patterns Identified:**
-
-1. **Post-Commit Review Timeliness** (1 occurrence - Process Improvement)
-   - Root cause: Review feedback arrived immediately after Review #81 commit
-   - Prevention: Allow review tools time to analyze before next commit
-   - Pattern: CodeRabbit/Qodo provide feedback within minutes of push
-   - Note: Fast turnaround is valuable - catch issues before next session
-
-2. **Metadata Consistency Tracking** (2 occurrences - Quality Issue)
-   - Root cause: Version History updated but header "Last Updated" not updated
-   - Prevention: Create checklist for metadata updates (both places)
-   - Pattern: When adding Version History entry, update document header simultaneously
-   - Cross-reference: Similar issue in Review #79 with review range (#41-78 vs #41-79)
-
-3. **Generator vs Manual Fix Decision** (1 occurrence - Strategic Issue)
-   - Root cause: No generator exists for gemini-chatgpt-aggregation.md (file was manually created)
-   - Prevention: Distinguish between "fix generator" (when one exists) vs "fix file" (when manually created)
-   - Pattern: Qodo suggested fixing generator, but audit aggregation is manual process currently
-   - Resolution: DEFERRED - Multi-AI aggregation tooling planned for Step 4.3 of Integrated Improvement Plan
-
-4. **JSONL Data and Human Summary Consistency** (1 occurrence - Data Integrity)
-   - Root cause: HUMAN_SUMMARY listed CANON-0032 as "suspected" but JSONL entry showed "CONFIRMED"
-   - Prevention: Cross-validate structured data (JSONL) with human summaries during review
-   - Pattern: When maintaining parallel data representations, ensure status fields are synchronized
-   - Note: CodeRabbit caught the discrepancy between JSONL status and summary narrative
-
-**Resolution:**
-- Fixed: 6 items (5 MINOR, 1 TRIVIAL)
-- Deferred: 1 item (generator fix - no generator exists yet, planned for Step 4.3)
-- Rejected: 0 items
+2. **Validate Markdown After Code Block Edits** (3 occurrences - Minor)
+   - Root cause: Adding content above code blocks left orphan closing fences
+   - Prevention: When editing near fenced blocks, verify open/close matching
+   - Pattern: Run markdown preview or linter after code block edits
 
 **Key Learnings:**
-- Post-commit reviews catch metadata drift that automated linters miss
-- "Last Updated" and Version History must be updated together (create checklist)
-- Distinguish "fix generator" suggestions (when generator exists) from manual file improvements
-- Review tool feedback turnaround is very fast (< 5 minutes) - valuable for immediate fixes
-- JSONL data and human summaries must be cross-validated for consistency (status fields especially)
-
----
-
-#### Review #81: Documentation Linter Systematic Cleanup (2026-01-07)
-
-**Source:** Automated Documentation Linter (`npm run docs:check`)
-**PR:** Session #28
-**Commit:** 19c06fa
-**Tools:** docs:check (57 errors, 96 warnings across 67 files)
-
-**Context:** Systematic cleanup of documentation quality issues identified by automated linting. The linter detected 57 errors across 25 files, including broken links to non-existent files (ARCHITECTURE.md, DEVELOPMENT.md), missing required sections (Purpose/Overview, Version History), invalid date placeholders (YYYY-MM-DD), and metadata consistency issues.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1-2 | Broken links to ARCHITECTURE.md/DEVELOPMENT.md (8 files) | 🔴 Major | Documentation | Fixed relative paths in FIREBASE_CHANGE_POLICY, templates, audit plans |
-| 3 | Missing Purpose section in claude.md | 🔴 Major | Compliance | Added Purpose section explaining Tier 4 document role |
-| 4 | Broken links in docs/README.md | 🟡 Minor | Documentation | Fixed CODE_PATTERNS.md and SESSION_CONTEXT.md relative paths |
-| 5 | Placeholder links in DOCUMENTATION_STANDARDS.md | 🟡 Minor | Documentation | Replaced with angle bracket placeholders |
-| 6 | Windows absolute file:// paths in RECAPTCHA guide | 🟡 Minor | Documentation | Converted to relative paths (../lib/firebase.ts, etc.) |
-| 7 | Placeholder links in AI_REVIEW_LEARNINGS_LOG.md | 🟡 Minor | Documentation | Updated to angle bracket format |
-| 8-9 | Missing sections in REVIEW_POLICY docs | 🟡 Minor | Compliance | Added Purpose and Version History to quick ref and visual guide |
-| 10 | YYYY-MM-DD placeholders in 9 templates | ⚪ Trivial | Templates | Replaced with [Date] placeholder format |
-| 11 | gemini-chatgpt-aggregation.md structure | ⚪ Trivial | Compliance | Added H1, Purpose, and Version History sections |
-
-**Patterns Identified:**
-
-1. **Incorrect Relative Paths from Subdirectories** (8 occurrences - Navigation Issue)
-   - Root cause: Files in docs/ and docs/subdirs/ using wrong relative depth to root files
-   - Prevention: Test links before committing; use `../` for each directory level
-   - Pattern: `docs/` files need `../ARCHITECTURE.md`, `docs/templates/` need `../../ARCHITECTURE.md`
-   - Fix: Corrected all paths based on directory depth
-
-2. **Missing Required Sections in Documentation** (6+ occurrences - Compliance Issue)
-   - Root cause: Docs created without following DOCUMENTATION_STANDARDS.md requirements
-   - Prevention: Use templates consistently, validate before committing
-   - Pattern: Purpose/Overview and Version History are most commonly missing
-   - Fix: Added required sections to claude.md, REVIEW_POLICY docs, gemini-chatgpt-aggregation.md
-
-3. **Template Placeholder Format Inconsistency** (9 occurrences - Quality Issue)
-   - Root cause: Templates with `YYYY-MM-DD` literal that users might not recognize as placeholder
-   - Prevention: Use clearly distinguishable placeholder format in templates
-   - Pattern: "Last Updated: YYYY-MM-DD" in templates
-   - Fix: Changed to `[Date]` format to make placeholders more obvious
+- **Cross-Plan Consistency**: When adding features to one audit plan, verify all similar plans
+- **Markdown Fence Hygiene**: Code block edits require open/close verification
 
 **Resolution:**
-- Fixed: 24 errors (57 → 33 errors, 42% reduction)
-- Remaining: 33 errors (mostly placeholder syntax, template compliance, and brainstorm/decision docs)
-- Rejected: 0 items
-
-**Key Learnings:**
-- Relative path depth must match directory nesting level (`docs/` = `../`, `docs/subdir/` = `../../`)
-- Template placeholders should use format that's clearly non-functional (`[Placeholder]` better than `YYYY-MM-DD`)
-- Purpose and Version History sections are frequently missing from non-template docs
-- Automated linting catches systematic issues across large documentation sets
-
----
-
-#### Review #80: Multi-AI Code Review Audit Refinements (2026-01-07)
-
-**Source:** PR Code Review Feedback
-**PR:** Session #28 (different branch)
-**Commit:** f6211f7
-**Tools:** Manual review feedback
-
-**Context:** Post-review refinements for Multi-AI Code Review audit files addressing structured test specifications, source identifier standardization, and metadata consistency. Review identified need for machine-parseable acceptance tests and controlled vocabulary for AI model sources.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | PR_PLAN.json acceptance_tests were strings | 🟡 Minor | Schema | Restructured to objects with area/assertion/how_to_verify fields for machine parsing |
-| 2 | CANON-CODE.jsonl sources not standardized | 🟡 Minor | Data Quality | Standardized to controlled vocabulary (lowercase-hyphenated: claude-sonnet-4.5, github-copilot, etc.) |
-| 3 | Document version outdated (1.69 vs 1.81) | ⚪ Trivial | Metadata | Updated AI_REVIEW_LEARNINGS_LOG.md version to 1.81 |
-| 4 | Active reviews range outdated | ⚪ Trivial | Metadata | Updated range to #41-80 |
-| 5 | Documentation examples causing false positives | ⚪ Trivial | Documentation | Escaped markdown examples to prevent broken link detection |
-| 6 | Consolidation counter outdated | ⚪ Trivial | Metadata | Updated counter from 7 to 8 |
-
-**Patterns Identified:**
-
-1. **Structured Test Specifications for Automation** (1 occurrence - Schema Design)
-   - Root cause: Acceptance tests as strings aren't machine-parseable
-   - Prevention: Define structured schema with area/assertion/verification fields
-   - Pattern: Test specifications should support both human readability and automated validation
-   - Note: Enables future automation of PR acceptance criteria checking
-
-2. **Controlled Vocabulary for AI Model Sources** (1 occurrence - Data Quality)
-   - Root cause: Inconsistent source identifiers make aggregation difficult
-   - Prevention: Establish canonical naming convention (lowercase-hyphenated)
-   - Pattern: claude-sonnet-4.5, github-copilot, gpt-4o, gemini-2.0-flash-thinking
-   - Note: Critical for multi-AI audit result deduplication and attribution
-
-3. **Documentation Example Escaping** (1 occurrence - False Positive Prevention)
-   - Root cause: Markdown examples in docs triggered broken link detection
-   - Prevention: Escape example markdown syntax in documentation
-   - Pattern: Use code formatting or backslash escaping for example links
-   - Note: Prevents linter false positives while maintaining documentation clarity
-
-**Resolution:**
-- Fixed: 6 items (2 MINOR, 4 TRIVIAL)
+- Fixed: 4 items (1 MAJOR, 3 MINOR)
 - Deferred: 0 items
 - Rejected: 0 items
 
+---
+
+#### Review #82: Inline-Context Completeness & Schema Definitions (2026-01-07)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR/Branch:** claude/new-session-YUxGa
+**Suggestions:** 8 total (Critical: 0, Major: 2, Minor: 5, Trivial: 1)
+
+**Context:** Post-implementation review of PR Review #81 fixes. Review identified incomplete inline-context inventory (approximations instead of exact counts), undefined REFACTORING_METRICS_JSON schema, grep command coverage gaps, and path ambiguity in inline documentation.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | REFACTORING inline-context uses approximations ("2-3") | 🔴 Major | Completeness | Expanded with exact file:line counts for all 47 CRITICAL issues |
+| 2 | REFACTORING_METRICS_JSON schema undefined | 🔴 Major | Schema | Added null schema with gap_reason field |
+| 3 | SECURITY grep .safeParse/.parse missing extensions | 🟡 Minor | Coverage | Added .tsx, .js, .jsx, .json coverage |
+| 4 | REFACTORING CAPABILITIES example copy-paste risk | 🟡 Minor | Clarity | Reformatted as fenced code block with explicit instruction |
+| 5 | DOCUMENTATION NO-REPO headers implicit | 🟡 Minor | Contract | Made FINDINGS_JSONL/SUSPECTED headers explicit |
+| 6 | DOCUMENTATION Tier 3 paths missing docs/ prefix | 🟡 Minor | Paths | Added full paths to AI_REVIEW_LEARNINGS_LOG.md, AI_WORKFLOW.md |
+| 7 | Review #81 duplicate fix counted twice | 🟡 Minor | Accuracy | Fixed counts (12→11, 2 TRIVIAL→1 TRIVIAL) |
+| 8 | Review #81 count mismatch | ⚪ Trivial | Documentation | Corrected totals to match table |
+
+**Patterns Identified:**
+
+1. **Inline-Context Must Have Exact Counts** (1 occurrence - Critical)
+   - Root cause: Initial inline-context used approximations like "2-3 locations"
+   - Prevention: Always use grep to verify exact counts before documenting
+   - Pattern: "DailyQuoteCard: 2 locations" not "DailyQuoteCard: 2-3 locations"
+
+2. **Schema Must Precede Usage** (1 occurrence - Major)
+   - Root cause: NO-REPO MODE referenced REFACTORING_METRICS_JSON without defining structure
+   - Prevention: When adding new JSON outputs, define schema immediately
+   - Pattern: Include null-structure example for NO-REPO MODE outputs
+
 **Key Learnings:**
-- Test specifications benefit from structured schemas that support both human and machine consumption
-- Controlled vocabularies for cross-cutting attributes (sources, models) enable better data aggregation
-- Documentation examples need escaping to avoid triggering validation tools
-- ESLint false positive scope should be explicitly documented (object-iteration vs other findings)
+- **Verify Before Documenting**: Run grep/find to get exact counts, don't estimate
+- **Schema First**: Define JSON structure before referencing in instructions
+- **Grep Coverage Consistency**: When broadening one grep, check related greps for same gap
+
+**Resolution:**
+- Fixed: 8 items (2 MAJOR, 5 MINOR, 1 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+---
+
+#### Review #81: Capability-Tiered Context & NO-REPO MODE Standardization (2026-01-07)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR/Branch:** claude/new-session-YUxGa
+**Suggestions:** 11 total (Critical: 0, Major: 5, Minor: 5, Trivial: 1)
+
+**Context:** Post-implementation review of capability-tiered PRE-REVIEW CONTEXT added to all 5 audit plans. Review identified inconsistencies in NO-REPO MODE terminology, incomplete inline-context blocks, and grep command robustness issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | MODE naming inconsistent (LIMITED vs NO-REPO) | 🔴 Major | Consistency | Standardized to "NO-REPO MODE" across all 5 plans |
+| 2 | NO-REPO MODE output contract varies by plan | 🔴 Major | Contract | Added consistent output format requirements |
+| 3 | REFACTORING CAPABILITIES missing example | 🔴 Major | Documentation | Added example CAPABILITIES format |
+| 4 | PROCESS inline-context missing hooks/scripts | 🔴 Major | Completeness | Added all 7 hooks and 11 scripts |
+| 5 | SECURITY grep missing file extensions | 🟡 Minor | Coverage | Added .tsx, .js, .jsx, .json to grep |
+| 6 | SECURITY grep regex missing -E flag | 🟡 Minor | Correctness | Fixed parse/safeParse pattern with -E |
+| 7 | PERFORMANCE ARCHITECTURE.md wrong path | 🟡 Minor | Path | Changed docs/ARCHITECTURE.md → ARCHITECTURE.md |
+| 8 | PROCESS cat command fails on missing files | 🟡 Minor | Robustness | Changed to find -exec pattern |
+| 9 | REFACTORING inline-context incomplete | 🟡 Minor | Completeness | Expanded with more context |
+| 10 | DOCUMENTATION version history detail | ⚪ Trivial | Documentation | Added NO-REPO MODE mention |
+| 11 | SECURITY version history detail | ⚪ Trivial | Documentation | Added NO-REPO MODE mention |
+
+**Patterns Identified:**
+
+1. **Cross-Template Consistency Required** (5 occurrences - Critical)
+   - Root cause: Each template evolved independently, creating terminology drift
+   - Prevention: When adding features to multiple templates, audit all for consistency
+   - Pattern: "NO-REPO MODE" is canonical; "LIMITED MODE" deprecated
+
+2. **Inline-Context Must Be Complete** (2 occurrences - Usability)
+   - Root cause: Inline summaries only covered highlights, not full inventory
+   - Prevention: When providing fallback context, list ALL relevant items
+   - Pattern: Scripts/hooks lists must enumerate all current files, not just highlights
+
+3. **Grep Commands Need Full File Coverage** (1 occurrence - Security)
+   - Root cause: Secrets grep only checked .ts files, missing .tsx, .js, .jsx, .json
+   - Prevention: Security-related grep patterns should cover all code file types
+   - Pattern: Use --include="*.{ts,tsx,js,jsx,json}" for comprehensive search
+
+**Key Learnings:**
+- **Terminology Drift Detection**: When 5 templates use 2 different terms for the same concept, standardize immediately
+- **Output Contract Clarity**: NO-REPO MODE must specify exact output format, not vague "general recommendations"
+- **File Type Coverage**: Security audits must check all relevant file extensions, not just primary language
+
+**Resolution:**
+- Fixed: 11 items (5 MAJOR, 5 MINOR, 1 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
 
 ---
 

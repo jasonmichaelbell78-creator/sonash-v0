@@ -1,8 +1,8 @@
 # SoNash Multi-AI Process & Automation Audit Plan
 
-**Document Version:** 1.2
+**Document Version:** 1.5
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 **Status:** PENDING
 **Overall Completion:** 0%
 
@@ -133,20 +133,56 @@ PROCESS STACK
 - Deployment: Firebase (Hosting + Functions)
 - Automation: JavaScript/Bash scripts, GitHub Actions workflows
 
-PRE-REVIEW CONTEXT (REQUIRED READING)
+PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
-Before beginning process analysis, review these project-specific resources:
+**IF browse_files=yes:** Read these files BEFORE starting analysis:
+1. docs/AI_WORKFLOW.md (AI session workflow documentation)
+2. docs/AI_REVIEW_LEARNINGS_LOG.md (documented process issues from Reviews #1-80+)
+3. .claude/settings.json (hook configurations)
+4. .github/workflows/ (CI/CD pipeline definitions)
 
-1. **AI Learnings** (claude.md Section 4): Process patterns and lessons from past reviews
-2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented process issues from Reviews #1-60+
-3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
-4. **Dependency Health**:
-   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
-   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis** (../analysis/sonarqube-manifest.md): Pre-identified script quality issues
-6. **Workflow Documentation** (if available): CI/CD process docs, hook documentation
+**IF browse_files=no:** Use this inline context instead:
 
-These resources provide essential context about automation expectations and known issues.
+<inline-context id="automation-structure">
+## Process/Automation Structure
+
+**Hook System (.claude/hooks/) - 7 hooks:**
+- session-start.sh - SessionStart: npm ci, build, pattern check (120s timeout)
+- check-mcp-servers.sh - SessionStart: Lists available MCP servers
+- pattern-check.sh - PostToolUse: Pattern compliance check on Write/Edit
+- coderabbit-review.sh - PostToolUse: CodeRabbit review on Write/Edit (20s/file)
+- check-write-requirements.sh - PostToolUse: Agent requirements on Write
+- check-edit-requirements.sh - PostToolUse: Agent requirements on Edit
+- analyze-user-request.sh - UserPromptSubmit: Pre-task trigger analysis
+
+**Scripts (scripts/) - Key Automation Scripts (11):**
+- check-pattern-compliance.js - Pattern violation detection (30 patterns, 14 files)
+- check-review-needed.js - Multi-AI review trigger detection
+- suggest-pattern-automation.js - Pattern automation suggestions
+- validate-phase-completion.js - Phase completion validation
+- update-readme-status.js - README status updates
+- surface-lessons-learned.js - Lesson surfacing from reviews
+- ai-review.js - AI review processing
+- archive-doc.js - Document archiving automation
+- assign-review-tier.js - Review tier assignment
+- check-docs-light.js - Lightweight documentation checking
+- phase-complete-check.js - Phase completion verification
+
+**CI/CD (GitHub Actions):**
+- Main workflow: lint, test, build, deploy
+- Coverage reporting with threshold enforcement
+- Security scanning (npm audit)
+
+**Known Process Issues:**
+- ESLint security warnings in scripts/ (non-literal fs, object injection)
+- Some scripts lack proper error handling
+- Hook timeout handling could be improved
+</inline-context>
+
+**Additional context (for models with run_commands=yes):**
+- Run: npm run patterns:check (baseline violations)
+- Run: ls -la scripts/ (script inventory)
+- Run: find .github/workflows -name "*.yml" -exec head -50 {} + 2>/dev/null (CI structure)
 
 SCOPE
 
@@ -161,9 +197,14 @@ Before any findings, print exactly:
 CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
 
 If browse_files=no OR repo_checkout=no:
-- Run in "LIMITED MODE": Provide general recommendations only
-- Note: Script testing requires repo access
-```
+- Run in "NO-REPO MODE": Cannot complete full audit without repo access
+- **Required NO-REPO MODE Output**:
+  1. CAPABILITIES header with limitation clearly noted
+  2. QUALITY_METRICS_JSON with null values and gap: "Unable to assess without repository access"
+  3. Empty FINDINGS_JSONL section (print header, output zero lines)
+  4. Empty SUSPECTED_FINDINGS_JSONL section (print header, output zero lines)
+  5. HUMAN_SUMMARY explaining limitation and how to proceed
+- Do NOT attempt script analysis or invent automation issues
 
 ### Part 2: Anti-Hallucination Rules
 
@@ -656,6 +697,9 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-07 | Review #87: Removed stray code fence in NO-REPO section | Claude |
+| 1.4 | 2026-01-07 | Review #81: Standardized "LIMITED MODE" → "NO-REPO MODE"; added 5-point NO-REPO MODE output contract; expanded inline-context (5→7 hooks, 5→11 scripts); replaced cat with find for robustness | Claude |
+| 1.3 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of hook and script structure | Claude |
 | 1.2 | 2026-01-06 | Review #68: Updated document header to 1.2; Added HUMAN_SUMMARY content description | Claude |
 | 1.1 | 2026-01-06 | Review #67: Aligned category enum (Documentation → Workflow Docs) to match AGGREGATOR | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Process & Automation audit category added to multi-AI review framework | Claude |
