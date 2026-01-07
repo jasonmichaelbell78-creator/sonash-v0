@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.80
+**Document Version:** 1.81
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 
 ## Purpose
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.81 | 2026-01-07 | Review #80: 3 fixes - 2 MINOR (PR_PLAN.json structured acceptance_tests, CANON-CODE.jsonl source identifiers), 1 TRIVIAL (document version sync) |
 | 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
 | 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
 | 1.78 | 2026-01-06 | Review #77: 9 fixes - 2 MAJOR (shell script portability, broken relative links), 5 MINOR (invalid JSONL, severity scale, category example, version dates, review range), 2 TRIVIAL (environment fields, inline guidance) |
@@ -80,7 +81,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-68) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-80) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -154,7 +155,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7
+**Reviews since last consolidation:** 8
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -236,7 +237,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | ~1000 | 1500 | Archive oldest reviews |
-| Active reviews | 11 | 20 | Consolidate + archive |
+| Active reviews | 13 | 20 | Consolidate + archive |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -298,7 +299,7 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-78 are actively maintained below. Older reviews are in the archive.
+Reviews #41-80 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -784,7 +785,7 @@ Reviews #41-78 are actively maintained below. Older reviews are in the archive.
 4. **Regex Robustness for Markdown Links** (1 occurrence - Automation)
    - Root cause: Greedy regex `.*` captured too much, no anchor handling (#section) in broken link detection
    - Prevention: Use non-greedy `.*?` for markdown link patterns, strip anchors before file existence checks
-   - Pattern: Link extraction should handle: `[text](path)`, `[text](path#anchor)`, `[text](http://external)`
+   - Pattern: Link extraction should handle: `\[text\](path)`, `\[text\](path#anchor)`, `\[text\](http://external)`
    - Note: Test regexes against edge cases: nested brackets, special chars, anchors
 
 5. **JSONL Validation Robustness** (1 occurrence - Automation)
@@ -2160,7 +2161,7 @@ All 6 compliance guide items verified as COMPLIANT:
 2. **Documentation Link Hygiene**
    - All internal links must use relative paths
    - Verify link targets exist before committing
-   - Use markdown link syntax `[text](path)` consistently
+   - Use markdown link syntax `\[text\](path)` consistently
 
 3. **Template Completion Checklist**
    - Replace ALL placeholder tokens before using template
