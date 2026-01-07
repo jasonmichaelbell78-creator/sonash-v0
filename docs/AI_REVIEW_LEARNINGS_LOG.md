@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.68
+**Document Version:** 1.80
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-06
 
@@ -18,6 +18,18 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
+| 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
+| 1.78 | 2026-01-06 | Review #77: 9 fixes - 2 MAJOR (shell script portability, broken relative links), 5 MINOR (invalid JSONL, severity scale, category example, version dates, review range), 2 TRIVIAL (environment fields, inline guidance) |
+| 1.77 | 2026-01-06 | Review #76: 13 fixes - 3 MAJOR (model naming, broken link paths, PERFORMANCE doc links), 8 MINOR (SECURITY root cause evidence, shell exit codes, transitive closure, division-by-zero, NO-REPO contract, category enum, model standardization, vulnerability type), 2 TRIVIAL (version metadata, review range) |
+| 1.76 | 2026-01-06 | Review #75: 17 fixes - 2 MAJOR (SECURITY schema category names, vulnerability deduplication), 8 MINOR (regex robustness, JSONL validation, deduplication rules, averaging methodology, model matrix, link paths), 2 TRIVIAL (version verification, duplicate check), 1 REJECTED (incorrect path suggestion) |
+| 1.75 | 2026-01-06 | Review #74: 18 fixes - 6 MAJOR (broken links, schema fields, deduplication clarity, observability, placeholders, GPT-4o capabilities), 9 MINOR (fail-fast, URL filtering, NO-REPO MODE, environment, methodology, output specs, links, alignment), 3 TRIVIAL (version, dates, context) |
+| 1.74 | 2026-01-06 | Review #73: 9 fixes - 2 MAJOR (model name self-inconsistency, NO-REPO MODE clarity), 4 MINOR (chunk sizing, regex, JSONL validation, stack versions), 3 TRIVIAL (documentation consistency) |
+| 1.73 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md v1.1 (10 Documentation patterns added) |
+| 1.72 | 2026-01-06 | Review #72: 21 fixes - 12 CRITICAL (broken links to JSONL_SCHEMA, GLOBAL_SECURITY_STANDARDS, SECURITY.md, EIGHT_PHASE_REFACTOR), 5 MAJOR (version/stack placeholders), 4 MINOR (paths, regex, commands) |
+| 1.71 | 2026-01-06 | Review #71: Documentation improvements |
+| 1.70 | 2026-01-06 | Review #70: Template refinements |
+| 1.69 | 2026-01-06 | Review #69: Multi-AI audit plan setup |
 | 1.68 | 2026-01-06 | Review #68: 17 fixes - 4 MAJOR (App Check path, SonarQube remediation, function rename, review ordering), 10 MINOR (sorting, grep, versions, regex, ranges), 3 TRIVIAL |
 | 1.67 | 2026-01-06 | Review #67: 14 fixes - 4 MAJOR (grep -E, deterministic IDs, App Check tracking, SonarQube tracking), 7 MINOR (verification, enums, paths, ordering), 3 TRIVIAL |
 | 1.66 | 2026-01-05 | Review #66: 13 fixes - 4 MAJOR (evidence rules, output format, npm safety, apiKey guidance), 8 MINOR (counters, grep portability, YAML, model names), 1 TRIVIAL |
@@ -142,9 +154,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 7
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ NOT DUE (8 < 10 threshold; last consolidated 2026-01-05, Session #23 - Reviews #51-60 → claude.md v2.9)
+**Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
 ### When to Consolidate
 
@@ -164,20 +176,22 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-05 (Session #23)
-- **Reviews consolidated:** #51-#60 (10 reviews)
-- **Patterns added to claude.md v2.9:**
-  - path.relative() bare ".." trap (security)
-  - Global flag required for exec() loops
-  - grep --exclude uses filename not path
-  - Path boundary anchoring in regex exclusions
-  - Audit CI/scripts after file moves
-  - Verify AI path suggestions before changing links
-  - Nested code fences in markdown (4-backtick outer)
-  - Effort estimate verification
-  - Complete pattern fix audit
-  - Regex scope for brace matching
-- **Next consolidation due:** After Review #70
+- **Date:** 2026-01-06 (Session #27)
+- **Reviews consolidated:** #61-#72 (12 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.1:**
+  - Relative paths in subdirectories (files in `docs/templates/` use `../file.md` not `docs/file.md`)
+  - Path calculation from different directory levels
+  - Link verification before committing (`test -f path`)
+  - Template placeholder replacement (all tokens before use)
+  - Archived document path adjustment (`./file` → `../file` when moving to archive/)
+  - Version history date accuracy (use actual commit date)
+  - Security documentation explicitness ("NEVER use X" not "if using X")
+  - Technology-appropriate security checks (adapt to stack)
+  - Model name accuracy (verify against provider docs)
+  - Stale review detection (check commit count since review)
+- **Patterns updated in claude.md v3.1:**
+  - Updated pattern count reference (90+ → 100+ patterns from 72 reviews)
+- **Next consolidation due:** After Review #82
 
 ---
 
@@ -284,11 +298,512 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-68 are actively maintained below. Older reviews are in the archive.
+Reviews #41-78 are actively maintained below. Older reviews are in the archive.
 
 ---
 
-#### Review #41: Qodo/CodeRabbit Security Hardening + Doc Migration (2026-01-04)
+#### Review #79: Multi-AI Audit Plan JSONL & Schema Corrections (2026-01-06)
+
+**Source:** Qodo PR Code Suggestions
+**PR:** Session #28
+**Commit:** 7753d6a
+**Tools:** Qodo PR (10 suggestions)
+
+**Context:** Sixth-round review of Multi-AI Audit Plan files (2026-Q1) addressing JSONL parser compatibility, schema consistency, bash portability, JSON validity, path clarity, and metadata accuracy. Review identified 10 suggestions from Qodo PR with 1 rejection due to contradiction with established canonical format.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | SECURITY NO-REPO JSONL placeholder breaks parser | 🔴 Major | Schema | Changed non-JSON text to instructions for truly empty output |
+| 2 | PERFORMANCE NO-REPO schema contradiction | 🔴 Major | Schema | Changed `{}` instruction to "output STRICT schema with null metrics" |
+| 7 | CODE_REVIEW NO-REPO JSONL placeholder breaks parser | 🔴 Major | Schema | Changed non-JSON text to instructions for header + zero lines |
+| 3 | README validation script not bash-safe | 🟡 Minor | Automation | Wrapped in `bash -lc '...'` with proper quote escaping |
+| 8 | CODE_REVIEW JSON schema has invalid tokens | 🟡 Minor | Schema | Replaced `true/false`, `...` with valid `false`, `null`, `[]` |
+| 9 | README output paths ambiguous | 🟡 Minor | Documentation | Added full `docs/reviews/2026-Q1/` prefix |
+| 10 | PERFORMANCE category count mismatch | 🟡 Minor | Documentation | Corrected "5 categories" → "6 categories" in checklist |
+| 4 | Review #78 log entry inconsistent | ⚪ Trivial | Documentation | Changed "GPT-4o" → "gpt-4o" to match canonical format |
+| 6 | Active review range outdated | ⚪ Trivial | Documentation | Updated "#41-77" → "#41-78" |
+| 11 | SECURITY model name not canonical (self-identified) | ⚪ Trivial | Documentation | Changed "GPT-4o" → "gpt-4o" for consistency |
+
+**Rejected:**
+| # | Issue | Severity | Reason |
+|---|-------|----------|--------|
+| 5 | REFACTORING model name casing | Low | Suggestion to change `gpt-4o` → `GPT-4o` contradicts Review #78 canonical format (`gpt-4o` lowercase) |
+
+**Patterns Identified:**
+
+1. **NO-REPO MODE Parser-Breaking Output Instructions** (3 occurrences - Critical Schema Issue)
+   - Root cause: Instructions told AI to output literal non-JSON text in JSONL sections
+   - Prevention: NO-REPO MODE instructions must specify header + zero lines, not placeholder text
+   - Pattern: "Print the header `FINDINGS_JSONL` and then output zero lines — leave the section empty"
+   - Note: Same root cause as Review #78 issue #1; affects SECURITY, CODE_REVIEW templates
+   - Impact: Without fix, automation parsing NO-REPO outputs would fail silently or crash
+   - Cross-reference: Review #78 fixed PERFORMANCE template; this review fixes remaining 2 templates
+
+2. **Schema Contradiction in NO-REPO Instructions** (1 occurrence - Schema Integrity)
+   - Root cause: PERFORMANCE NO-REPO MODE said output `{}` but schema requires defined structure with nulls
+   - Prevention: NO-REPO output must match the STRICT schema definition, not simplify to empty object
+   - Pattern: "Output the STRICT schema with `null` metrics (do not invent values)"
+   - Note: Critical for automation that parses metrics baseline JSON
+   - Verification: All NO-REPO modes now output valid schema structures (not simplified alternatives)
+
+3. **Bash-Specific Features in Documentation Scripts** (1 occurrence - Portability)
+   - Root cause: Validation script used `set -o pipefail` and process substitution without bash wrapper
+   - Prevention: Wrap bash-specific scripts in `bash -lc '...'` with proper quote escaping
+   - Pattern: Multi-line bash scripts need `$'\t'` → `$'\''\t'\''` and `"` → `"` escaping inside wrapper
+   - Note: Prevents execution failures when users run script in non-bash shells (dash, sh)
+   - Related: Review #77 addressed POSIX vs bash portability for inline scripts
+
+4. **Invalid JSON Tokens in Schema Examples** (1 occurrence - Usability)
+   - Root cause: JSON schema example used placeholder tokens `true/false`, `...` that aren't valid JSON
+   - Prevention: Schema examples must be copy-paste testable with tools like `jq` and linters
+   - Pattern: Use `false`/`true`, `null`, `[]` for boolean, missing, and empty array placeholders
+   - Note: Improves developer experience by enabling schema validation during development
+   - Automation opportunity: Pre-commit hook to validate all JSON examples in markdown code blocks
+
+5. **Model Name Canonical Format Establishment** (2 occurrences + 1 rejection - Standardization)
+   - Root cause: Review #78 established `gpt-4o` (lowercase) as canonical but SECURITY used `GPT-4o` (capital)
+   - Prevention: Apply canonical format consistently across all templates when identified
+   - Pattern: Use OpenAI API identifiers directly: `gpt-4o`, not `GPT-4o` or `ChatGPT-4o`
+   - Note: Rejected Qodo suggestion #5 because it contradicted the canonical format
+   - Lesson: When establishing a pattern, immediately audit all related occurrences for consistency
+
+6. **Metadata Drift Across Reviews** (2 occurrences - Ongoing Issue)
+   - Root cause: Review range and version metadata not updated when new reviews/versions added
+   - Prevention: Automated checks for metadata consistency (ranges, counts, dates)
+   - Pattern: Active review ranges, category counts, version descriptions must be updated atomically
+   - Note: 6 consecutive reviews (#73-79) have caught metadata drift
+   - Recommendation: Add CI check for metadata synchronization (blocked until automation priority shifts)
+
+**Key Learnings:**
+
+- **Critical Pattern Completion:** NO-REPO MODE JSONL output instructions fixed across all 3 remaining templates (SECURITY, CODE_REVIEW, and completion of PERFORMANCE schema fix) - 6 consecutive reviews have refined this pattern
+- **Schema First Principle:** All documentation examples (JSON, JSONL) must be syntactically valid and parseable - enables developer testing and automation validation
+- **Canonical Format Enforcement:** When establishing a standard (e.g., `gpt-4o` lowercase), immediately audit and fix all related occurrences to prevent inconsistency - includes rejecting suggestions that contradict the standard
+- **Bash Portability Trade-off:** Wrapping bash-specific scripts adds verbosity but ensures cross-shell compatibility - necessary for documentation intended for diverse user environments
+- **Metadata Synchronization Gap Persists:** 6 reviews in a row caught metadata drift - strong signal for automation need, but currently deprioritized due to improvement plan blocker
+
+**Resolution:**
+- Fixed: 10 items (3 MAJOR, 4 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 1 item (contradicts established canonical format)
+
+**Recommendations:**
+1. Consider adding `make validate-docs` target that runs `jq` on all JSON examples in markdown
+2. Create metadata consistency checker (part of larger automation backlog)
+3. Document bash wrapper pattern in CONTRIBUTING.md for future script additions
+4. Add all 3 NO-REPO MODE fixes to pre-flight checklist for new audit templates
+5. Cross-template grep audit when establishing new canonical formats (prevent inconsistency proactively)
+
+---
+
+#### Review #78: Multi-AI Audit Plan Quality & Validation (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #28
+**Commit:** 83002b5
+**Tools:** Qodo Code Suggestions (9 items), CodeRabbit PR Review (4 items)
+
+**Context:** Fifth-round review of Multi-AI Audit Plan files (2026-Q1) addressing JSONL validity, validation script robustness, JSON schema compliance, NO-REPO MODE consistency, markdown link quality, and metadata accuracy. Review identified 12 unique suggestions across 7 files with focus on automation reliability and schema correctness.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | PERFORMANCE NO-REPO JSONL output invalid format | 🟠 Major | Schema | Changed `(empty - no repo access)` instruction to `(no lines — leave this section empty)` for valid JSONL |
+| 2 | README JSONL validator missing pipefail | 🟠 Major | Automation | Added `set -o pipefail` + restructured as `done < <(...)` for reliable error handling |
+| 3 | PERFORMANCE metrics JSON invalid placeholders | 🟡 Minor | Schema | Replaced `X` placeholders with `null` for parseable JSON |
+| 4 | SECURITY NO-REPO MODE missing output contract | 🟡 Minor | Schema | Defined structured 5-step output contract matching PERFORMANCE template |
+| 5 | CODE_REVIEW broken markdown links | 🟡 Minor | Documentation | Converted 5 plain text references to proper markdown links with paths |
+| 6 | PERFORMANCE category count mismatch | 🟡 Minor | Documentation | Corrected "5 categories" → "6 categories" matching actual checklist |
+| 7 | SECURITY model name inconsistency | 🟡 Minor | Documentation | Standardized "ChatGPT-4o" → "gpt-4o" (lowercase) for consistency |
+| 8 | PERFORMANCE missing audit scope directories | 🟡 Minor | Documentation | Added `tests/, types/` to Include list, removed from Exclude |
+| 9 | REFACTORING outdated Last Updated date | 🟡 Minor | Documentation | Updated "2026-01-05" → "2026-01-06" matching commit date |
+| 10 | AI_REVIEW_LEARNINGS_LOG outdated range | ⚪ Trivial | Documentation | Updated "#41-76" → "#41-77" for active reviews |
+| 11 | PROCESS version history metadata typo | ⚪ Trivial | Documentation | Fixed "header to 1.1" → "header to 1.2" in v1.2 description |
+| 12 | REFACTORING model name inconsistency | ⚪ Trivial | Documentation | Standardized "ChatGPT-4o" → "gpt-4o" (lowercase) |
+
+**Patterns Identified:**
+
+1. **JSONL Validity in NO-REPO MODE Instructions** (1 occurrence - Schema Design)
+   - Root cause: Instructed AI to output literal non-JSON text `(empty - no repo access)` in JSONL section
+   - Prevention: NO-REPO MODE instructions must specify truly empty output or valid JSONL markers
+   - Pattern: Empty JSONL sections should have zero lines, not placeholder text
+   - Note: Related to Review #77 pattern #3 (JSONL Schema Validity)
+   - Impact: Prevents automation parsing failures when processing NO-REPO outputs
+
+2. **Shell Script Fail-Fast Reliability** (1 occurrence - Automation Robustness)
+   - Root cause: `exit 1` in pipeline subshell doesn't propagate without `pipefail`
+   - Prevention: Always use `set -o pipefail` for validation scripts with pipelines
+   - Pattern: Restructure `pipe | while` as `while ... < <(pipe)` for reliable exit codes
+   - Note: Critical for CI/CD validation automation
+   - Verification: Test script with intentional errors to confirm it exits non-zero
+
+3. **JSON Schema Placeholder Validity** (1 occurrence - Schema Examples)
+   - Root cause: Used placeholder `X` in JSON examples, which is not valid JSON
+   - Prevention: Use `null` for unknown/placeholder values in JSON schema examples
+   - Pattern: Template JSON should always be parseable even with placeholder values
+   - Note: Enables copy-paste testing and linting of schema examples
+   - Automation: Could add pre-commit hook to validate all JSON examples
+
+4. **Model Name Standardization** (2 occurrences - Documentation Consistency)
+   - Root cause: Mixed use of "ChatGPT-4o" vs "GPT-4o" vs "gpt-4o" across templates
+   - Prevention: Establish canonical model name format: `gpt-4o` (lowercase, no "ChatGPT")
+   - Pattern: Use OpenAI's official API model identifiers in all documentation
+   - Note: Affects SECURITY, REFACTORING templates; prevents automation confusion
+   - Related: Review #77 addressed similar model naming in other contexts
+
+5. **Metadata Accuracy (Dates, Counts, Ranges)** (4 occurrences - Documentation Quality)
+   - Root cause: Document metadata not updated when content changes (dates, version numbers, review ranges)
+   - Prevention: Checklist for metadata updates when modifying templates or adding reviews
+   - Pattern: Last Updated dates, category counts, review ranges, version descriptions must stay synchronized
+   - Note: Persistent pattern across Reviews #73-78; needs systematic solution
+   - Recommendation: Add pre-commit hook to check metadata consistency
+
+6. **NO-REPO MODE Output Contract Completeness** (1 occurrence - Cross-Template Consistency)
+   - Root cause: SECURITY template lacked detailed NO-REPO MODE output structure present in PERFORMANCE
+   - Prevention: All audit templates must define deterministic output contracts for NO-REPO MODE
+   - Pattern: 5-step structure: CAPABILITIES, status JSON, empty findings, empty suspected, HUMAN_SUMMARY
+   - Note: Enables automation to handle models without repo access gracefully
+   - Verification: Test each template's NO-REPO MODE with actual no-browse model
+
+**Key Learnings:**
+
+- **Critical Automation Pattern:** Validation scripts in documentation must use `set -o pipefail` and proper exit code propagation for CI/CD reliability
+- **Schema Design Principle:** All JSON/JSONL examples in templates must be syntactically valid and parseable, even with placeholder values
+- **NO-REPO MODE Consistency:** All 6 audit templates now have structured output contracts - critical for automation handling edge cases
+- **Metadata Synchronization Gap:** 5 consecutive reviews (#73-78) caught metadata drift - suggests need for automated validation
+- **Model Name Standardization:** OpenAI official identifiers (`gpt-4o`, not `ChatGPT-4o`) prevent confusion in multi-AI orchestration
+
+**Resolution:**
+- Fixed: 12 items (2 MAJOR, 7 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Recommendations:**
+1. Add pre-commit hook to validate all JSON/JSONL examples are parseable
+2. Create metadata consistency checker (dates, counts, ranges, version descriptions)
+3. Add CI test for validation scripts using intentional errors to confirm fail-fast behavior
+4. Document canonical model names in MULTI_AI_REVIEW_COORDINATOR.md
+5. Test NO-REPO MODE output contracts with actual browse_files=no models
+
+---
+
+#### Review #77: Multi-AI Audit Plan Refinement (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** 421c31b
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Fourth-round review of Multi-AI Audit Plan files (2026-Q1) addressing shell script portability, broken relative links, JSONL validity, consistency issues, and schema completeness. Review identified 9 unique suggestions (10 total with 1 duplicate) across 5 files.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | README JSONL validation non-portable | 🟠 Major | Shell Script | Changed `< <(grep)` to pipe + `nl -ba` for line numbers; used `grep -E` for whitespace |
+| 2 | SECURITY PRE-REVIEW links broken | 🟠 Major | Documentation | Fixed `../` → `../../` for claude.md, AI_REVIEW_LEARNINGS_LOG, analysis/, FIREBASE_CHANGE_POLICY |
+| 3 | PERFORMANCE NO-REPO JSONL comment invalid | 🟡 Minor | Schema | Changed comment syntax to non-JSON marker format |
+| 4 | SECURITY severity scale inconsistent | 🟡 Minor | Documentation | Changed "CRITICAL/HIGH/MEDIUM" → "S0/S1/S2/S3" matching schema |
+| 5 | CODE_REVIEW category example invalid | 🟡 Minor | Documentation | Changed "Code Duplication" → "Hygiene/Duplication" |
+| 6 | PERFORMANCE version dates illogical | 🟡 Minor | Documentation | Swapped v1.0/v1.1 dates for chronological order |
+| 7 | LEARNINGS_LOG review range outdated | 🟡 Minor | Documentation | Updated "#41-75" → "#41-76" |
+| 8 | PERFORMANCE METRICS schema incomplete | ⚪ Trivial | Schema | Added optional `device_profile`, `measurement_tool`, `environment` fields |
+| 9 | REFACTORING EIGHT_PHASE ref unclear | ⚪ Trivial | Documentation | Added inline phase structure example + link |
+
+**Patterns Identified:**
+
+1. **Shell Script Portability (Bash-specific Constructs)** (1 occurrence - Automation)
+   - Root cause: Used bash-specific `< <(...)` process substitution which is not POSIX-compliant
+   - Prevention: Use standard pipe + `nl -ba` for line numbers instead of bash-specific constructs
+   - Pattern: `grep ... | nl -ba | while IFS=$'\t' read -r n line` for portable line-numbered iteration
+   - Note: Also improved error messages with line numbers and filtered whitespace-only lines
+   - Reference: Review #73 addressed similar shell portability (POSIX compliance)
+
+2. **Relative Path Calculation from Nested Directories** (1 occurrence - Documentation Links)
+   - Root cause: SECURITY_AUDIT_PLAN in `docs/reviews/2026-Q1/` used `../` instead of `../../` to reach `docs/`
+   - Prevention: Count directory levels explicitly when creating relative links
+   - Pattern: From `docs/reviews/2026-Q1/` to `docs/`: up 2 levels = `../../`
+   - Note: Same pattern as Reviews #72, #74, #75, #76 - persistent documentation issue
+   - Verification: Use `test -f` to validate link targets before committing
+
+3. **JSONL Schema Validity** (1 occurrence - Schema Design)
+   - Root cause: Instructed to output comment `# (empty ...)` in `.jsonl` file, which is invalid JSON
+   - Prevention: Use non-JSON marker format or structured metadata for empty outputs
+   - Pattern: For empty JSONL, output filename + description on separate lines (not JSON comments)
+   - Note: Prevents automation failures when parsing empty outputs
+
+4. **Documentation Consistency (Severity Scales)** (1 occurrence - Standardization)
+   - Root cause: Used informal severity names (CRITICAL/HIGH/MEDIUM) instead of documented S0/S1/S2/S3 scale
+   - Prevention: Always use the schema-defined severity scale in all documentation
+   - Pattern: Cross-reference schema enums when writing examples
+   - Note: Similar to Review #75 pattern on cross-file consistency
+
+5. **Version History Date Logic** (1 occurrence - Documentation Quality)
+   - Root cause: Version 1.1 dated before version 1.0 (illogical chronology)
+   - Prevention: Ensure version numbers and dates follow chronological order (newest first or oldest first, consistently)
+   - Pattern: v1.0 created first (earlier date), v1.1 updated later (later date)
+   - Reference: Review #76 identified similar version metadata issues in REFACTORING_AUDIT_PLAN
+
+6. **Schema Completeness for Reproducibility** (1 occurrence - Schema Design)
+   - Root cause: METRICS_BASELINE_JSON lacked environment context fields for reproducible audits
+   - Prevention: Include optional context fields (device, tool, environment) in audit schemas
+   - Pattern: Add optional but recommended fields with documentation of their purpose
+   - Note: Improves baseline comparison across different measurement contexts
+
+**Resolution:**
+- Fixed: 9 items (2 Major, 5 Minor, 2 Trivial)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Relative path errors persist**: 5 consecutive reviews (#72-76 + now #77) have caught broken relative links in nested directories, suggesting need for automated link validation
+- **Shell script portability matters**: Even in documentation examples, bash-specific constructs create execution barriers on non-bash systems
+- **Schema validity critical**: Invalid JSON in JSONL files breaks automation; non-JSON markers needed for empty outputs
+- **Pattern repetition indicates systematic issue**: Same relative path error across 5 reviews suggests a pre-commit link validation hook would prevent recurrence
+
+**Recommendation:** Create pre-commit hook to validate:
+1. All markdown relative links resolve to existing files
+2. Shell scripts use POSIX-compliant syntax (run through shellcheck)
+3. JSONL examples contain valid JSON (run through jq --slurp)
+
+---
+
+#### Review #76: Multi-AI Audit Plan Polish - Round 3 (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** 25da0fe
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Third-round review of Multi-AI Audit Plan files (2026-Q1) addressing model naming accuracy, broken documentation links, shell script robustness, and methodology clarity. Review identified 13 suggestions spanning 6 files with focus on cross-reference integrity and edge case handling.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | SECURITY root cause merge needs evidence requirement | 🟡 Minor | Methodology | Added concrete evidence + severity constraints for root cause merges |
+| 2 | README JSONL validation shell script fails silently | 🟡 Minor | Automation | Changed pipe to process substitution for proper exit code propagation |
+| 3 | CODE_REVIEW transitive closure rule allows over-merging | 🟡 Minor | Methodology | Refined rule to require stronger linkage evidence |
+| 4 | PERFORMANCE weighted average lacks division-by-zero guards | 🟡 Minor | Methodology | Added fallback to simple average when confidence sum = 0 |
+| 5 | PERFORMANCE NO-REPO MODE output contract undefined | 🟡 Minor | Methodology | Defined strict output requirements for repo-less models |
+| 6 | PERFORMANCE category enum inconsistent with docs | 🟡 Minor | Schema | Changed short names to full names matching documentation |
+| 7 | REFACTORING version metadata contradictory | ⚪ Trivial | Documentation | Fixed header v1.0/date conflict with version history v1.1 |
+| 8 | README model name "GPT-5.2-Codex" non-standard | 🟡 Minor | Documentation | Standardized to GPT-5-Codex |
+| 9 | LEARNINGS_LOG review range outdated | ⚪ Trivial | Documentation | Updated "Reviews #41-74" → "Reviews #41-75" |
+| 10 | CODE_REVIEW "ChatGPT-4o" incorrect model name | 🟠 Major | Accuracy | Changed to official "GPT-4o" per OpenAI nomenclature |
+| 11 | CODE_REVIEW broken claude.md link path | 🟠 Major | Documentation | Fixed ../../../claude.md → ../../claude.md (one level too deep) |
+| 12 | PERFORMANCE Related Documents links broken | 🟠 Major | Documentation | Added ../../ prefix to all Related Documents markdown links |
+| 13 | SECURITY "vulnerability type" definition vague | 🟡 Minor | Methodology | Added formal definition with classification taxonomy |
+
+**Patterns Identified:**
+
+1. **Shell Script Exit Code Propagation** (1 occurrence - Automation Robustness)
+   - Root cause: Pipes don't propagate exit codes in bash; `grep | while` swallows failures
+   - Prevention: Use process substitution `while IFS= read -r line; do ...; done < <(grep ...)`
+   - Pattern: Exit codes preserved through process substitution, not through pipes
+   - Note: Critical for CI/CD reliability where script failures must halt execution
+   - Reference: Review #73 established shell portability patterns, this extends to exit codes
+
+2. **Relative Path Calculation Errors** (2 occurrences - Documentation Links)
+   - Root cause: Incorrect directory depth calculation when creating relative links
+   - Prevention: Count levels explicitly: `docs/reviews/2026-Q1/` to `docs/` = up 2 levels = `../../`
+   - Examples:
+     - CODE_REVIEW_PLAN `../../../claude.md` → `../../claude.md` (was going up 3 instead of 2)
+     - PERFORMANCE_AUDIT_PLAN missing `../../` prefix on Related Documents links
+   - Note: Pattern established in Reviews #72, #74, #75; reinforced with additional examples
+   - Verification: Use `test -f` from source directory to validate link targets exist
+
+3. **Model Name Standardization** (2 occurrences - Accuracy)
+   - Root cause: AI model nomenclature inconsistency across documentation
+   - Prevention: Always use official provider naming conventions
+   - Examples:
+     - "ChatGPT-4o" → "GPT-4o" (OpenAI's official name excludes "Chat")
+     - "GPT-5.2-Codex" → "GPT-5-Codex" (standardized version format)
+   - Note: Complements Review #75 pattern on provider-neutral specs; this focuses on correct official names
+   - Reference: CODE_PATTERNS.md Section 2.4 "Model Name Verification"
+
+4. **Methodology Edge Case Handling** (5 occurrences - Robustness)
+   - Root cause: Aggregation methodology lacked explicit edge case handling
+   - Prevention: Document fallback behavior for edge cases
+   - Examples:
+     - Division by zero: When all confidence scores = 0, fall back to simple average
+     - Root cause merges: Require concrete evidence + severity within 1 level
+     - Transitive closure: Require stronger linkage than just category overlap
+     - NO-REPO MODE: Define exact output format (empty JSONL + capability statement)
+     - Vulnerability type: Formal taxonomy (CWE, OWASP, custom classification)
+   - Pattern: Explicit edge case documentation prevents aggregator hallucination
+   - Note: Builds on Review #74 deduplication rules and Review #75 methodology decisions
+
+5. **Version Metadata Consistency** (1 occurrence - Documentation Quality)
+   - Root cause: REFACTORING_AUDIT_PLAN header showed v1.0 created 2026-01-06, but version history showed v1.1 on same date
+   - Prevention: When adding version history entries, update header metadata to match latest
+   - Pattern: Document Version and Last Updated must reflect latest version history entry
+   - Reference: Established in Review #73, continues to surface in subsequent reviews
+
+6. **Cross-File Consistency for Enums** (1 occurrence - Schema Accuracy)
+   - Root cause: PERFORMANCE schema used short category names while documentation used full names
+   - Prevention: Schema enum values must match documentation section headers exactly
+   - Example: "Bundle Size" in schema vs "Bundle Size & Tree-Shaking" in documentation
+   - Note: Aggregators rely on exact string matching for categorization
+   - Reference: Review #75 addressed same pattern in SECURITY schema
+
+**Key Insight:** Documentation link paths remain the most common multi-AI audit plan issue (3 occurrences across Reviews #72-76), suggesting systematic review needed for all relative path references in nested directory structures. Shell script robustness patterns (exit code propagation, POSIX compliance) continue to surface, indicating need for comprehensive shell script audit. Model naming accuracy is critical for multi-AI workflows where participants verify model capabilities against provider documentation.
+
+**Recommendation:** Create automated link validation tool to run in pre-commit hook. Add shell script linting to CI/CD pipeline using shellcheck with exit code verification. Consolidate model name standards into central reference document.
+
+---
+
+#### Review #74: Multi-AI Audit Plan Polish (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** fd4de02
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Comprehensive review of 6 Multi-AI Audit Plan files (2026-Q1) after Step 4.1 completion. Review identified 18 issues spanning documentation accuracy, schema completeness, template usability, and cross-reference integrity.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Version mismatch in PERFORMANCE_AUDIT_PLAN header | ⚪ Trivial | Documentation | Updated header to 1.1 to match version history |
+| 2 | JSONL validation lacks fail-fast behavior | 🟡 Minor | Automation | Added exit 1 on first parse error in validation scripts |
+| 3 | Missing schema fields for progress markers | 🟠 Major | Schema | Added status + progress_markers (start_date, end_date, pr_number) |
+| 4 | Link extraction includes external URLs | 🟡 Minor | Automation | Added grep -v http filtering for internal-only links |
+| 5 | Broken related-document links (self-inconsistent paths) | 🟠 Major | Documentation | Fixed ../ path depth (2026-Q1 subdir requires ../../) |
+| 6 | Schema categories misaligned with 7 focus areas | 🟡 Minor | Schema | Added "Dependency Security" to SECURITY schema enum |
+| 7 | Version history date mismatch (1.3 says "updated to 1.2") | ⚪ Trivial | Documentation | Fixed self-reference: 1.3 entry now says "updated to 1.3" |
+| 8 | Unclear deduplication rules | 🟠 Major | Methodology | Added structured rules: exact match, evidence overlap, clusters, never-merge conditions |
+| 9 | NO-REPO MODE lacks completeness spec | 🟡 Minor | Methodology | Added required output format for models without repo access |
+| 10 | Missing observability category (5 vs 6) | 🟠 Major | Template | Added Category 6: Observability & Monitoring with full checklist |
+| 11 | Missing environment context in performance metrics | 🟡 Minor | Methodology | Added build/runtime environment documentation requirements |
+| 12 | Methodology clarity improvements needed | 🟡 Minor | Methodology | Added METHODOLOGY OVERVIEW: 6-phase approach with evidence standards |
+| 13 | Output specification completeness | 🟡 Minor | Template | Added structured HUMAN_SUMMARY format with required sections |
+| 14 | Unfilled placeholder values | 🟠 Major | Template | Filled tech stack, scope, baseline metrics with SoNash values |
+| 15 | Context fields clarification (when to fill) | ⚪ Trivial | Methodology | Changed "Fill Before Audit" → "Fill During Audit" with instructions |
+| 16 | Missing markdown links in process workflow | 🟡 Minor | Documentation | Linked CODE_REVIEW_PLAN, MULTI_AI_REVIEW_COORDINATOR, AI_WORKFLOW |
+| 17 | Incorrect GitHub capitalization | 🟡 Minor | Documentation | Verified all instances correct (already capitalized) |
+| 18 | Uniform GPT-4o capability assumptions | 🟠 Major | Accuracy | Added note clarifying GPT-4o platform differences (browse_files=no) |
+
+**Patterns Identified:**
+
+1. **Relative Path Calculation from Subdirectories** (1 occurrence - Documentation)
+   - Root cause: Files in `docs/reviews/2026-Q1/` linking to `docs/` need `../../` not `../`
+   - Prevention: Count directory levels when creating relative links
+   - Pattern: From `docs/reviews/2026-Q1/FILE.md` to `docs/TARGET.md` = `../../TARGET.md`
+   - Note: Already established in Consolidation #6, reinforced here
+
+2. **Schema Progress Tracking Fields** (1 occurrence - Schema Design)
+   - Root cause: Findings schemas lacked progress/implementation tracking
+   - Prevention: Add status + progress_markers to FINDINGS_JSONL schema
+   - Fields: `status`, `start_date`, `end_date`, `pr_number`, `implementation_notes`
+   - Note: Enables tracking from finding → implementation → verification
+
+3. **Explicit Deduplication Rules** (1 occurrence - Methodology)
+   - Root cause: Aggregators had vague "similar findings" merge criteria
+   - Prevention: Document concrete rules: exact fingerprint match, evidence overlap requirements, cluster handling
+   - Pattern: 4 sections: Primary Merge, Secondary Merge, Clusters, Never Merge
+   - Note: Reduces hallucination in aggregation phase
+
+4. **NO-REPO MODE Output Completeness** (1 occurrence - Methodology)
+   - Root cause: Models without repo access had unclear output requirements
+   - Prevention: Specify exact output format: CAPABILITIES header + empty FINDINGS_JSONL + explanatory HUMAN_SUMMARY
+   - Pattern: Explicit "(empty - no repo access)" markers for aggregator detection
+   - Note: Prevents models from inventing findings without evidence
+
+5. **Environment Context for Performance Metrics** (1 occurrence - Methodology)
+   - Root cause: Performance metrics lacked hardware/environment documentation
+   - Prevention: Require documenting build environment, runtime environment, network conditions, hardware
+   - Pattern: Metrics must specify: OS, Node version, RAM, network conditions
+   - Note: Makes performance comparisons meaningful across different audits
+
+6. **Structured HUMAN_SUMMARY Requirements** (1 occurrence - Template Design)
+   - Root cause: HUMAN_SUMMARY sections had vague "summarize findings" guidance
+   - Prevention: Provide structured template with required sections
+   - Sections: Status, Metrics Baseline, Top 5 Opportunities, Quick Wins, Bottlenecks, Total Improvement, Implementation Order
+   - Note: Standardizes output format across different AI models
+
+**Key Insight:** Multi-AI audit templates require extremely explicit instructions to prevent model hallucination and ensure consistent output across models with different capabilities. This includes: concrete examples for all placeholders, exact output format specifications, explicit NO-REPO MODE handling, structured deduplication rules, and progress tracking fields in schemas.
+
+---
+
+#### Review #75: Multi-AI Audit Plan Methodology Enhancement (2026-01-06)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR:** Session #27
+**Commit:** 4eb8de4
+**Tools:** Qodo Code Suggestions, CodeRabbit PR Review
+
+**Context:** Second-round review of Multi-AI Audit Plan files (2026-Q1) addressing methodology completeness, schema accuracy, regex robustness, and deduplication rule clarity. Review identified 17 suggestions (1 rejected as incorrect), requiring collaborative methodology design decisions for 6 questions: transitive closure rules, R1/R2 fallback procedures, GREP GUARDRAILS criteria, impact score averaging, model capability matrix, and vulnerability type deduplication.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Qodo suggested incorrect link path | N/A | Rejected | Verified MULTI_AI_REVIEW_COORDINATOR.md path already correct (../../) |
+| 2 | SECURITY schema category enum uses short names | 🟠 Major | Schema | Expanded to full names: "Rate Limiting\|Input Validation\|..." for clarity |
+| 3 | DOCUMENTATION link regex greedy, no anchor handling | 🟡 Minor | Automation | Changed to non-greedy `.*?`, added anchor stripping guidance |
+| 4 | README JSONL validation fails on empty lines | 🟡 Minor | Automation | Added empty line filtering before JSON parsing |
+| 5 | README claims "all placeholders filled" (false) | 🟡 Minor | Documentation | Corrected to "SoNash context filled, baseline metrics fill during audit" |
+| 6 | Version history entry already correct | ⚪ Trivial | Documentation | Verified PERFORMANCE version 1.1 entry accurate |
+| 7 | PERFORMANCE category count inconsistency | 🟡 Minor | Documentation | Verified 6 categories documented correctly |
+| 8 | README link to MULTI_AI_REVIEW_COORDINATOR incorrect path | 🟡 Minor | Documentation | Fixed from ../../templates/ to ../../ |
+| 9 | Duplicate Review #74 entry (false alarm) | ⚪ Trivial | Documentation | Verified only one Review #74 entry exists |
+| 10 | Deduplication cluster transitive closure unclear | 🟡 Minor | Methodology | Added explicit rule: use transitive closure for cluster merging |
+| 11 | R1 DO_NOT_MERGE and R2 UNPROVEN fallback undefined | 🟡 Minor | Methodology | Defined: DO_NOT_MERGE=defer to backlog, UNPROVEN=move to SUSPECTED_FINDINGS |
+| 12 | GREP GUARDRAILS lacks pass/fail criteria | 🟡 Minor | Methodology | Added tiered criteria: critical violations=fail, warnings=proceed with note |
+| 13 | Model name "ChatGPT-4o" inconsistent | 🟡 Minor | Documentation | Changed to "GPT-4o" throughout PERFORMANCE plan |
+| 14 | Impact score averaging methodology undefined | 🟡 Minor | Methodology | Added weighted average formula: trust high-confidence models more |
+| 15 | Missing model capability matrix | 🟡 Minor | Methodology | Added matrix showing model strengths per audit category |
+| 16 | CodeRabbit link fix (handled by #8) | N/A | Duplicate | Confirmed by fix #8 |
+| 17 | Vulnerability type deduplication rules vague | 🟠 Major | Methodology | Added explicit rule: merge if same root cause across endpoints |
+
+**Patterns Identified:**
+
+1. **Conflicting PR Review Suggestions** (1 occurrence - Review Process)
+   - Root cause: Qodo and CodeRabbit provided contradictory path corrections for same file
+   - Prevention: Verify actual file structure before applying path fixes
+   - Resolution: Used `find` to locate actual file, confirmed current path correct
+   - Note: AI reviewers can hallucinate incorrect paths without repo context
+
+2. **Methodology Ambiguity in Multi-AI Workflows** (6 occurrences - Methodology Design)
+   - Root cause: Templates lacked explicit rules for edge cases (transitive closure, fallback procedures, averaging strategies)
+   - Prevention: Collaborative design decisions with user for each methodology question
+   - Decisions: Q1=transitive closure YES, Q2=defer/suspect split, Q3=tiered fail/warn, Q4=weighted average, Q5=add matrix, Q6=root cause grouping
+   - Note: Methodology design requires domain judgment, not just code fixes
+
+3. **Schema Category Enum Clarity** (1 occurrence - Schema Design)
+   - Root cause: Short category names ("Rate Limiting") vs full names ("Rate Limiting & Throttling") caused confusion
+   - Prevention: Use full category names in schema enums to match documentation
+   - Pattern: Enum values should be self-documenting, not abbreviated
+   - Note: Aggregators rely on exact enum matching for categorization
+
+4. **Regex Robustness for Markdown Links** (1 occurrence - Automation)
+   - Root cause: Greedy regex `.*` captured too much, no anchor handling (#section) in broken link detection
+   - Prevention: Use non-greedy `.*?` for markdown link patterns, strip anchors before file existence checks
+   - Pattern: Link extraction should handle: `[text](path)`, `[text](path#anchor)`, `[text](http://external)`
+   - Note: Test regexes against edge cases: nested brackets, special chars, anchors
+
+5. **JSONL Validation Robustness** (1 occurrence - Automation)
+   - Root cause: Empty lines in JSONL files caused parse errors (valid JSONL allows empty lines)
+   - Prevention: Filter empty lines before parsing: `grep -v '^$' | while IFS= read -r line`
+   - Pattern: JSONL validators must handle: empty lines, whitespace-only lines, UTF-8 encoding
+   - Note: Fail-fast on first parse error for debugging efficiency
+
+6. **False Positive Issue Detection** (2 occurrences - Review Process)
+   - Root cause: AI reviewers flagged issues that were already fixed in previous review (#74)
+   - Prevention: Verify issue still exists before implementing fix
+   - Examples: Version history already correct, duplicate entry doesn't exist, category count already accurate
+   - Note: Cross-reference with recent commits before applying "fixes"
+
+**Key Insight:** Multi-AI review workflows require explicit methodology decisions for aggregation edge cases. When multiple AI reviewers provide conflicting or ambiguous suggestions, pause for collaborative design decisions rather than auto-implementing. Document all methodology choices in templates to prevent future ambiguity. Verify suggested "issues" against actual file state to avoid redundant fixes.
+
+---
+
+#### Review #73: Multi-AI Audit Plan Scaffold (2026-01-06)
 
 **Source:** Qodo PR Compliance Guide + CodeRabbit
 **PR:** Session #19
@@ -1546,5 +2061,187 @@ All 6 compliance guide items verified as COMPLIANT:
 - Import organization suggestions - Dismissed: Current organization follows project convention
 
 **Resolution Summary:** 15 code/documentation issues fixed + 6 compliance items verified = 21/28 items addressed. Remaining 7 trivial items dismissed as not applicable or not needed.
+
+---
+
+#### Review #72: 2026 Q1 Multi-AI Audit Plans - Documentation Lint & AI Review Fixes (2026-01-06)
+
+**Context:**
+- **Source:** Documentation Lint, Qodo PR suggestions, CodeRabbit PR review
+- **Scope:** 6 multi-AI audit plan files + README.md in `docs/reviews/2026-Q1/`
+- **Trigger:** Step 4.2 completion - comprehensive multi-AI review feedback
+- **Session:** #27
+- **Branch:** `claude/new-session-sKhzO`
+
+**Total Fixes:** 21 issues (12 CRITICAL, 5 MAJOR, 4 MINOR)
+
+**🔴 CRITICAL - Broken Documentation Links (12 fixes)**
+
+1. **JSONL_SCHEMA_STANDARD.md broken links** (6 occurrences)
+   - Root cause: All 6 plan files referenced `./JSONL_SCHEMA_STANDARD.md` but file is in `../../templates/`
+   - Files: SECURITY_AUDIT, CODE_REVIEW, PROCESS, PERFORMANCE, DOCUMENTATION, REFACTORING plans
+   - Fix: Changed all to `../../templates/JSONL_SCHEMA_STANDARD.md`
+   - Prevention: Verify relative paths match actual file location in directory structure
+
+2. **GLOBAL_SECURITY_STANDARDS.md broken links** (3 occurrences)
+   - Root cause: Used `../GLOBAL_SECURITY_STANDARDS.md` but should be `../../` from `docs/reviews/2026-Q1/`
+   - Files: SECURITY_AUDIT_PLAN (lines 22, 641), REFACTORING_AUDIT_PLAN (line 593)
+   - Fix: Corrected to `../../GLOBAL_SECURITY_STANDARDS.md`
+
+3. **SECURITY.md broken link** (1 occurrence)
+   - Root cause: Used `../SECURITY.md` should be `../../SECURITY.md`
+   - File: SECURITY_AUDIT_PLAN:644
+   - Fix: Corrected path
+
+4. **EIGHT_PHASE_REFACTOR_PLAN.md broken links** (2 occurrences)
+   - Root cause: Referenced without path, but file is in `../../archive/completed-plans/`
+   - Files: CODE_REVIEW_PLAN:695, REFACTORING_AUDIT_PLAN:592
+   - Fix: Added full relative path `../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md`
+
+**🟠 MAJOR - Unfilled Placeholders (5 fixes)**
+
+5. **CODE_REVIEW version placeholders** (lines 61-66)
+   - Issue: All version fields showed "16.1.1" instead of actual versions
+   - Fix: Replaced with correct values (Next.js: 16.1.1, React: 19.2.3, TypeScript: 5.x, Tailwind: v4, Firebase: 12.6.0)
+
+6. **DOCUMENTATION audit structure placeholders** (lines 62-90)
+   - Issue: Placeholder tokens like "[Root-level docs, e.g., README.md]" left unfilled
+   - Fix: Filled with actual SoNash documentation structure and tiers
+
+7. **PROCESS automation inventory placeholders** (lines 63-85)
+   - Issue: Placeholder text like "[e.g., .github/workflows/*.yml]" not replaced
+   - Fix: Filled with actual CI/CD setup (GitHub Actions, Firebase, ESLint, TypeScript)
+
+8. **PROCESS stack placeholders** (lines 130-134)
+   - Issue: Stack versions showing "16.1.1" placeholders
+   - Fix: Updated to actual stack (GitHub Actions, Node.js test runner, ESLint, Firebase)
+
+9. **REFACTORING stack placeholders** (lines 134-136)
+   - Issue: Outdated "16.1.1" placeholders
+   - Fix: Updated to correct versions (React: 19.2.3, TypeScript: 5.x, Firebase: 12.6.0)
+
+**🟡 MINOR - Code Quality Issues (4 fixes)**
+
+10. **CODE_REVIEW absolute paths** (line 138)
+    - Issue: Used absolute path `/home/user/sonash-v0/claude.md`
+    - Fix: Changed to relative path `../../../claude.md`
+    - Prevention: Always use relative paths in documentation
+
+11. **DOCUMENTATION greedy regex** (line 221)
+    - Issue: Pattern `grep -Er "\[.*\]\(.*\)"` is too greedy
+    - Fix: Changed to non-greedy `grep -Er '\[.+\]\([^)]+\)'`
+    - Prevention: Use bounded character classes in regex
+
+12. **PERFORMANCE non-portable du command** (line 467)
+    - Issue: `du -sh` not portable across all systems
+    - Fix: Replaced with `find ... -exec ls -lh {} \; | sort -k5 -h`
+    - Prevention: Use POSIX-compliant commands in shared scripts
+
+13. **README model names and output clarifications**
+    - ChatGPT-4o → GPT-4o (line 47)
+    - Added METRICS_BASELINE_JSON to output description (line 58)
+    - Added jq fallback with python3 alternative (lines 94-98)
+
+**Additional Updates:**
+
+14. **DOCUMENTATION audit history table** (line 544-548)
+    - Filled placeholder with actual status: "Pending execution | Not yet run"
+
+15. **DOCUMENTATION known issues section** (lines 86-92)
+    - Replaced placeholder bullets with actual issues that prompted this review
+
+**Key Patterns:**
+
+1. **Relative Path Calculation**
+   - From `docs/reviews/2026-Q1/` to `docs/`:  Use `../../`
+   - From `docs/reviews/2026-Q1/` to root: Use `../../../`
+   - Always verify with `test -f` from target directory
+
+2. **Documentation Link Hygiene**
+   - All internal links must use relative paths
+   - Verify link targets exist before committing
+   - Use markdown link syntax `[text](path)` consistently
+
+3. **Template Completion Checklist**
+   - Replace ALL placeholder tokens before using template
+   - Fill version numbers with actual values
+   - Update directory/file inventories with project specifics
+   - Verify all referenced files exist
+
+**Learnings:**
+
+- **Multi-pass review effectiveness:** Processing 40+ review items required systematic categorization (CRITICAL → MAJOR → MINOR) to ensure nothing was missed
+- **Link validation is critical:** 12/21 issues were broken links that would block documentation navigation
+- **Placeholder discipline:** Templates must be fully filled when creating derivative documents
+
+**Verification:**
+
+```bash
+# All fixed links verified to exist:
+✓ ../../GLOBAL_SECURITY_STANDARDS.md
+✓ ../../SECURITY.md
+✓ ../../templates/JSONL_SCHEMA_STANDARD.md
+✓ ../../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md
+✓ ../../../claude.md
+✓ ../../AI_REVIEW_LEARNINGS_LOG.md
+```
+
+**Note:** This review marks consolidation threshold reached (12 reviews since last consolidation). Next session should consolidate Reviews #61-72 into claude.md and CODE_PATTERNS.md.
+
+---
+
+#### Review #73: Multi-AI Audit Plan Polish (2026-01-06)
+
+**Source:** Mixed - Qodo PR Code Suggestions + CodeRabbit PR Review
+**PR/Branch:** claude/new-session-sKhzO (commits aceb43b → [current])
+**Suggestions:** 9 total (Major: 2, Minor: 4, Trivial: 3)
+
+**Context:** Post-Review #72 feedback on the updated multi-AI audit plan files. Review caught self-inconsistency where PR added "Model name accuracy" rule while violating it, plus several shell command robustness and documentation consistency issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | PERFORMANCE_AUDIT chunk sizing uses brittle `ls -lh` | 🟡 Minor | Shell | Changed to `wc -c \| sort -n` for portability |
+| 2 | DOCUMENTATION_AUDIT link regex over-matches | 🟡 Minor | Shell | Changed `.+` to `[^]]+` for correctness |
+| 3 | README JSONL validation lossy | 🟡 Minor | Shell | Used `IFS= read -r` + `printf` for safety |
+| 4 | CODE_PATTERNS model-name rule brittle | ⚪ Trivial | Docs | Made generic: "verify against provider docs" |
+| 5 | CODE_REVIEW_PLAN version mismatch | ⚪ Trivial | Docs | Updated header 1.0 → 1.1 |
+| 6 | DOCUMENTATION_AUDIT speculative model names | 🟠 Major | Docs | Changed to provider-neutral with runtime verification |
+| 7 | CODE_REVIEW_PLAN incorrect stack versions | 🟡 Minor | Docs | Corrected React 19.2.3, TypeScript 5.x |
+| 8 | PROCESS_AUDIT_PLAN stale date | ⚪ Trivial | Docs | Updated Last Updated to 2026-01-06 |
+| 9 | CODE_REVIEW_PLAN NO-REPO MODE ambiguous | 🟠 Major | Docs | Clarified output contract for aggregator |
+
+**Patterns Identified:**
+
+1. **Self-Inconsistency Detection** (1 occurrence - Major)
+   - Root cause: PR adds documentation rule in CODE_PATTERNS.md while violating it in audit plans
+   - Prevention: Cross-check new rules against files being modified in same PR
+   - Pattern: When adding/updating pattern rules, grep for violations in PR diff
+   - Fix: Made all model names provider-neutral ("Claude Opus (verify at runtime)")
+
+2. **Shell Command Portability** (3 occurrences - Minor)
+   - Root cause: Using non-portable commands (`ls -lh | sort -k5`, `while read line`, `cat | while`)
+   - Prevention: Use POSIX-compliant alternatives
+   - Patterns:
+     - File size sorting: `wc -c | sort -n` (not `ls -lh | sort -k5 -h`)
+     - Line reading: `while IFS= read -r line` (not `while read line`)
+     - Regex character classes: `[^]]+` (not `.+` for greedy matching)
+
+3. **Documentation Metadata Consistency** (3 occurrences - Trivial)
+   - Root cause: Header metadata not synced with version history table
+   - Prevention: Update header dates and versions when adding version history entries
+   - Pattern: Document Version and Last Updated must match latest version history entry
+
+**Resolution:**
+- Fixed: 9 items (2 Major, 4 Minor, 3 Trivial)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Self-consistency check:** When adding/updating pattern rules, always check if PR violates them
+- **Shell portability matters:** Even in documentation examples, use POSIX-compliant commands
+- **Metadata discipline:** Version history updates must trigger header metadata updates
+- **Provider-neutral specs:** Use "verify at runtime" for AI model names to prevent obsolescence
 
 ---

@@ -1,7 +1,7 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.0
-**Last Updated:** 2026-01-05
+**Document Version:** 3.1
+**Last Updated:** 2026-01-06
 
 ---
 
@@ -46,7 +46,7 @@
 | File reads | Wrap ALL in try/catch (existsSync race condition) |
 | exec() loops | `/g` flag REQUIRED (no /g = infinite loop) |
 
-**Full Reference**: [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (90+ patterns from 60 reviews)
+**Full Reference**: [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (100+ patterns from 72 reviews)
 
 **App-Specific:**
 - `migrateAnonymousUserData` handles merges - don't merge manually
@@ -103,6 +103,7 @@
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.1 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns) |
 | 3.0 | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md |
 | 2.9 | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60 |
 | 2.8 | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50 |

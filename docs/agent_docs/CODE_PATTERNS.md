@@ -1,8 +1,8 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.0
-**Last Updated:** 2026-01-05
-**Source:** Distilled from 60+ AI code reviews
+**Document Version:** 1.1
+**Last Updated:** 2026-01-06
+**Source:** Distilled from 72 AI code reviews
 
 ---
 
@@ -23,6 +23,7 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 - [JavaScript/TypeScript](#javascripttypescript)
 - [CI/Automation](#ciautomation)
 - [Git](#git)
+- [Documentation](#documentation)
 - [General](#general)
 
 ---
@@ -150,6 +151,23 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 
 ---
 
+## Documentation
+
+| Pattern | Rule | Why |
+|---------|------|-----|
+| Relative paths in subdirs | Files in `docs/templates/` use `../file.md` NOT `docs/file.md` | Path relative to file location |
+| Path calculation | From `docs/reviews/2026-Q1/`: to `docs/` = `../../`, to root = `../../../` | Count directory levels |
+| Link verification | `test -f path` from target directory before committing | Prevent broken links |
+| Template placeholders | Replace ALL tokens before use (`[e.g., X]`, `YYYY-MM-DD`, `16.1.1`) | Fill with actual values |
+| Archived doc paths | Moving `docs/X.md` → `docs/archive/X.md` requires `./file` → `../file` | Path prefix adjustment |
+| Version history dates | Use actual commit date, not template creation date | Accurate audit trail |
+| Security doc explicitness | "NEVER use X" NOT "if using X on client" | Explicit prohibitions |
+| Tech-appropriate checks | Adapt security checklists to stack (Firestore ≠ SQL) | Avoid irrelevant checks |
+| Model name accuracy | Verify exact model identifiers against provider docs; avoid invented names | Prevent invalid/ambiguous model selection |
+| Stale review detection | `git log --oneline COMMIT..HEAD \| wc -l` - if >5, verify each | Review may be outdated |
+
+---
+
 ## General
 
 | Pattern | Rule | Why |
@@ -179,6 +197,7 @@ When a violation is flagged, reference this document for the pattern details and
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns) |
 | 1.0 | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews) |
 
 ---
