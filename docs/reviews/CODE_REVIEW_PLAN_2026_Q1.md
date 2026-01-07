@@ -35,9 +35,9 @@ This document serves as the **execution plan** for running a multi-AI code quali
 **Overall Progress:** 6/6 steps complete
 
 **Output Files:**
-- `2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md` - Canonical findings document
-- `2026-Q1/canonical/CANON-CODE.jsonl` - Raw JSONL findings
-- `2026-Q1/outputs/code-review/PR_PLAN.json` - Implementation roadmap
+- `docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md` - Canonical findings document
+- `docs/reviews/2026-Q1/canonical/CANON-CODE.jsonl` - Raw JSONL findings
+- `docs/reviews/2026-Q1/outputs/code-review/PR_PLAN.json` - Implementation roadmap
 
 ---
 
