@@ -1,8 +1,8 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.1
-**Last Updated:** 2026-01-06
-**Source:** Distilled from 72 AI code reviews
+**Document Version:** 1.2
+**Last Updated:** 2026-01-07
+**Source:** Distilled from 82 AI code reviews
 
 ---
 
@@ -45,6 +45,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Pipeline failure | Add `|| VAR=""` fallback | Commands may fail with pipefail |
 | Terminal sanitization | `tr -cd '[:alnum:] ,_-'` | Strip ANSI escapes |
 | grep --exclude | `--exclude="storage.ts"` NOT `--exclude="lib/utils/storage.ts"` | Matches basename only |
+| Process substitution | `while read; done < <(cmd)` NOT `cmd | while read` | Preserves exit codes |
+| Bash wrapper for scripts | Wrap bash-specific code in `bash -lc '...'` with quote escaping | POSIX compliance |
+| set -o pipefail | Add before pipes in validation scripts | Catch pipe failures |
 
 ---
 
@@ -165,6 +168,12 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Tech-appropriate checks | Adapt security checklists to stack (Firestore ≠ SQL) | Avoid irrelevant checks |
 | Model name accuracy | Verify exact model identifiers against provider docs; avoid invented names | Prevent invalid/ambiguous model selection |
 | Stale review detection | `git log --oneline COMMIT..HEAD \| wc -l` - if >5, verify each | Review may be outdated |
+| Relative path depth | Test links from actual file location; count `../` for each level up | Most common link breakage source (8+ occurrences #73-82) |
+| Metadata synchronization | Update ranges/counts/dates atomically with content changes | 6 consecutive reviews caught drift (#73-79) |
+| Model name consistency | Use API identifiers: `gpt-4o` not `GPT-4o` or `ChatGPT-4o` | Standardization across all docs |
+| JSON/JSONL validity | All schema examples must be valid, parseable JSON/JSONL | Enable copy-paste testing with jq |
+| NO-REPO MODE output | Specify "header + zero lines" not placeholder text | Prevents parser-breaking invalid JSONL |
+| Template placeholders | Use `[Date]` not `YYYY-MM-DD`, use `null` not `X` in JSON | Clear, valid examples |
 
 ---
 
@@ -197,6 +206,7 @@ When a violation is flagged, reference this document for the pattern details and
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews |
 | 1.1 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns) |
 | 1.0 | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews) |
 

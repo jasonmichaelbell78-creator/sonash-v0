@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.84
+**Document Version:** 1.85
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.85 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 → CODE_PATTERNS.md v1.2 (9 patterns: 3 Bash/Shell portability, 6 Documentation quality) |
 | 1.84 | 2026-01-07 | ARCHIVE #2: Reviews #42-60 → REVIEWS_42-60.md (1048 lines removed, 2425→1377 lines) |
 | 1.83 | 2026-01-07 | Review #82: Post-commit review fixes (6 items) - 0 MAJOR, 5 MINOR (review range, Last Updated date, SECURITY.md path, markdown formatting, CANON-0032 status), 1 TRIVIAL (code fence), 1 HIGH-LEVEL (generator fix recommendation) |
 | 1.82 | 2026-01-07 | Review #81: Documentation linter fixes (57 errors) - 3 MAJOR (missing ARCHITECTURE.md/DEVELOPMENT.md links, missing Purpose in claude.md), 8 MINOR (broken links, missing sections), 4 TRIVIAL (date placeholders, metadata) |
@@ -158,9 +159,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION NEEDED (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
+**Status:** ✅ CURRENT (last consolidated 2026-01-07, Session #29 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
 ### When to Consolidate
 
@@ -180,22 +181,22 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-06 (Session #27)
-- **Reviews consolidated:** #61-#72 (12 reviews)
-- **Patterns added to CODE_PATTERNS.md v1.1:**
-  - Relative paths in subdirectories (files in `docs/templates/` use `../file.md` not `docs/file.md`)
-  - Path calculation from different directory levels
-  - Link verification before committing (`test -f path`)
-  - Template placeholder replacement (all tokens before use)
-  - Archived document path adjustment (`./file` → `../file` when moving to archive/)
-  - Version history date accuracy (use actual commit date)
-  - Security documentation explicitness ("NEVER use X" not "if using X")
-  - Technology-appropriate security checks (adapt to stack)
-  - Model name accuracy (verify against provider docs)
-  - Stale review detection (check commit count since review)
-- **Patterns updated in claude.md v3.1:**
-  - Updated pattern count reference (90+ → 100+ patterns from 72 reviews)
-- **Next consolidation due:** After Review #82
+- **Date:** 2026-01-07 (Session #29)
+- **Reviews consolidated:** #73-#82 (10 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.2:**
+  - **Bash/Shell (3 patterns):**
+    - Process substitution for exit code preservation (`while read; done < <(cmd)`)
+    - Bash wrapper for POSIX compliance (`bash -lc '...'` with quote escaping)
+    - `set -o pipefail` in validation scripts
+  - **Documentation (6 patterns):**
+    - Relative path depth calculation (most common issue: 8+ occurrences)
+    - Metadata synchronization (6 consecutive reviews caught drift #73-79)
+    - Model name consistency (API identifiers: `gpt-4o` not `GPT-4o`)
+    - JSON/JSONL schema validity (enable copy-paste testing)
+    - NO-REPO MODE output specification (header + zero lines)
+    - Template placeholder clarity (`[Date]` not `YYYY-MM-DD`, `null` not `X`)
+- **Key themes:** Multi-AI audit template refinement, documentation linter cleanup, metadata consistency
+- **Next consolidation due:** After Review #92
 
 ---
 
