@@ -1,6 +1,6 @@
 # SoNash Multi-AI Process & Automation Audit Plan
 
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Created:** 2026-01-05
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -205,7 +205,6 @@ If browse_files=no OR repo_checkout=no:
   4. Empty SUSPECTED_FINDINGS_JSONL section (print header, output zero lines)
   5. HUMAN_SUMMARY explaining limitation and how to proceed
 - Do NOT attempt script analysis or invent automation issues
-```
 
 ### Part 2: Anti-Hallucination Rules
 
@@ -698,6 +697,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-07 | Review #87: Removed stray code fence in NO-REPO section | Claude |
 | 1.4 | 2026-01-07 | Review #81: Standardized "LIMITED MODE" → "NO-REPO MODE"; added 5-point NO-REPO MODE output contract; expanded inline-context (5→7 hooks, 5→11 scripts); replaced cat with find for robustness | Claude |
 | 1.3 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of hook and script structure | Claude |
 | 1.2 | 2026-01-06 | Review #68: Updated document header to 1.2; Added HUMAN_SUMMARY content description | Claude |

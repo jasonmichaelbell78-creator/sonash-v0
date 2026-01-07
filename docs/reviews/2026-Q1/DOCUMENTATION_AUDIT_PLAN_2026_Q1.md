@@ -1,6 +1,6 @@
 # SoNash Multi-AI Documentation Audit Plan
 
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Created:** 2026-01-05
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -186,12 +186,20 @@ If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete full audit without repo access
 - **Required NO-REPO MODE Output**:
   1. CAPABILITIES header with limitation clearly noted
-  2. QUALITY_METRICS_JSON with null values and gap: "Unable to assess without repository access"
+  2. QUALITY_METRICS_JSON with null values:
+     ```json
+     {
+       "doc_count": null,
+       "broken_link_count": null,
+       "missing_required_sections_count": null,
+       "stale_reference_count": null,
+       "gap_reason": "Unable to assess without repository access"
+     }
+     ```
   3. Empty FINDINGS_JSONL section (print header `FINDINGS_JSONL` and output zero lines)
   4. Empty SUSPECTED_FINDINGS_JSONL section (print header `SUSPECTED_FINDINGS_JSONL` and output zero lines)
   5. HUMAN_SUMMARY explaining limitation and how to proceed
 - Do NOT attempt link validation or invent documentation issues
-```
 
 ### Part 2: Anti-Hallucination Rules
 
@@ -622,6 +630,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-07 | Review #87: Added QUALITY_METRICS_JSON null schema; removed stray code fence in NO-REPO section | Claude |
 | 1.4 | 2026-01-07 | Review #82: Made NO-REPO headers explicit (FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL); added docs/ prefix to Tier 3 paths | Claude |
 | 1.3 | 2026-01-07 | Review #81: Standardized "LIMITED MODE" → "NO-REPO MODE"; added 5-point NO-REPO MODE output contract | Claude |
 | 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of documentation tier system | Claude |

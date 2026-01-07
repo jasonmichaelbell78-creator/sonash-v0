@@ -1,6 +1,6 @@
 # SoNash Multi-AI Refactoring Plan
 
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Created:** 2026-01-01
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -222,7 +222,6 @@ If browse_files=no OR repo_checkout=no:
   4. Empty SUSPECTED_FINDINGS_JSONL section (print header `SUSPECTED_FINDINGS_JSONL` and output zero lines)
   5. HUMAN_SUMMARY explaining limitation and how to proceed
 - Do NOT attempt code analysis or invent refactoring targets
-```
 
 ### Part 2: Anti-Hallucination Rules
 
@@ -656,6 +655,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-07 | Review #87: Removed stray code fence in NO-REPO section | Claude |
 | 1.4 | 2026-01-07 | Review #82: Expanded inline-context with exact file:line counts for all CRITICAL issues; added REFACTORING_METRICS_JSON null schema; reformatted CAPABILITIES example as code block | Claude |
 | 1.3 | 2026-01-07 | Review #81: Added CAPABILITIES example format; added 5-point NO-REPO MODE output contract | Claude |
 | 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of 47 CRITICAL issues and duplications | Claude |

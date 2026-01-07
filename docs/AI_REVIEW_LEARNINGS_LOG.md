@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.88
+**Document Version:** 1.89
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.89 | 2026-01-07 | Review #87: Schema symmetry & markdown syntax (4 fixes) - 1 MAJOR (QUALITY_METRICS_JSON null schema), 3 MINOR (stray code fences in PROCESS/REFACTORING/DOCUMENTATION) |
 | 1.88 | 2026-01-07 | Review #86: Qodo follow-up on Review #85 (3 fixes, 1 rejected) - 1 MINOR (broken link), 2 TRIVIAL (Bash-only clarity, copy-safe snippet), 1 REJECTED (duplicate pathspec separator) |
 | 1.87 | 2026-01-07 | Review #84-85: Process quality improvements - #84: Review #83 follow-up (4 metadata fixes), #85: Qodo suggestions on Review #84 commit (3 fixes: git verification, threshold clarity, archive status) |
 | 1.86 | 2026-01-07 | Review #83: Archive & Consolidation Metadata Fixes (5 fixes) - 1 REJECTED (false positive: #41 data loss), 1 MAJOR (broken links), 1 MINOR (status sync), 2 TRIVIAL (line count, wording) |
@@ -162,9 +163,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10
+**Reviews since last consolidation:** 5
 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
+**Status:** ✅ OK (last consolidated 2026-01-07 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
 ### When to Consolidate
 
@@ -213,7 +214,7 @@ Consolidation is needed when:
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
 | Patterns in claude.md | 60+ | - | ✅ |
-| Reviews since last consolidation | 0 | <10 | ✅ |
+| Reviews since last consolidation | 5 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
@@ -314,7 +315,47 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-82 are actively maintained below. Older reviews are in the archive.
+Reviews #41-87 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #87: Schema Symmetry & Markdown Syntax (2026-01-07)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR/Branch:** claude/new-session-YUxGa
+**Suggestions:** 4 total (Critical: 0, Major: 1, Minor: 3, Trivial: 0)
+
+**Context:** Review identified missing QUALITY_METRICS_JSON null schema in DOCUMENTATION plan (inconsistent with REFACTORING which has REFACTORING_METRICS_JSON), and stray code fences in PROCESS/REFACTORING/DOCUMENTATION plans breaking markdown rendering.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | DOCUMENTATION missing QUALITY_METRICS_JSON null schema | 🔴 Major | Schema | Added null schema with doc_count, broken_link_count fields |
+| 2 | PROCESS plan stray code fence line 208 | 🟡 Minor | Syntax | Removed stray closing ``` |
+| 3 | REFACTORING plan stray code fence line 225 | 🟡 Minor | Syntax | Removed stray closing ``` |
+| 4 | DOCUMENTATION plan stray code fence line 194 | 🟡 Minor | Syntax | Removed stray closing ``` |
+
+**Patterns Identified:**
+
+1. **Schema Symmetry Across Plans** (1 occurrence - Major)
+   - Root cause: Added REFACTORING_METRICS_JSON in Review #82 but forgot DOCUMENTATION equivalent
+   - Prevention: When adding schema to one plan, check all similar plans for same gap
+   - Pattern: All audit plans with metrics output need explicit null-structure schemas
+
+2. **Validate Markdown After Code Block Edits** (3 occurrences - Minor)
+   - Root cause: Adding content above code blocks left orphan closing fences
+   - Prevention: When editing near fenced blocks, verify open/close matching
+   - Pattern: Run markdown preview or linter after code block edits
+
+**Key Learnings:**
+- **Cross-Plan Consistency**: When adding features to one audit plan, verify all similar plans
+- **Markdown Fence Hygiene**: Code block edits require open/close verification
+
+**Resolution:**
+- Fixed: 4 items (1 MAJOR, 3 MINOR)
+- Deferred: 0 items
+- Rejected: 0 items
 
 ---
 
