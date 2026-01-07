@@ -1,8 +1,8 @@
 # SoNash Multi-AI Documentation Audit Plan
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 **Status:** PENDING
 **Overall Completion:** 0%
 
@@ -130,17 +130,45 @@ DOCUMENTATION STRUCTURE
 - Main directories: [List]
 - Documentation standards: [Reference if available]
 
-PRE-REVIEW CONTEXT (REQUIRED READING)
+PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
-Before beginning documentation analysis, review these project-specific resources:
+**IF browse_files=yes:** Read these files BEFORE starting analysis:
+1. docs/AI_REVIEW_LEARNINGS_LOG.md (documented documentation issues from Reviews #1-80+)
+2. docs/DOCUMENTATION_STANDARDS.md (if exists - documentation requirements)
+3. SESSION_CONTEXT.md (example of required structure)
 
-1. **AI Learnings** (claude.md Section 4): Documentation patterns and lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented documentation issues from Reviews #1-60+
-3. **Documentation Standards** (if available): DOCUMENTATION_STANDARDS.md or similar
-4. **Tier System** (if applicable): Understand the documentation hierarchy
-5. **Recent Changes**: Git log for documentation file changes
+**IF browse_files=no:** Use this inline context instead:
 
-These resources provide essential context about documentation expectations and known issues.
+<inline-context id="documentation-structure">
+## Documentation Tier System
+
+**Tier 1 (Root-level, user-facing):**
+- README.md - Project overview, quick start
+- ROADMAP.md - Current sprint, priorities
+- ARCHITECTURE.md - System design
+- SECURITY.md - Security policies
+
+**Tier 2 (Core standards, developer-facing):**
+- GLOBAL_SECURITY_STANDARDS.md - Mandatory security requirements
+- DEVELOPMENT.md - Development setup, workflows
+- INTEGRATED_IMPROVEMENT_PLAN.md - Multi-phase improvement tracking
+
+**Tier 3 (Specialized, AI/automation):**
+- AI_REVIEW_LEARNINGS_LOG.md - Pattern history from 80+ reviews
+- AI_WORKFLOW.md - AI session workflow
+- SESSION_CONTEXT.md - Quick session context
+
+**Known Documentation Issues:**
+- Cross-references may be stale (file moves, renames)
+- Version history sections may be incomplete
+- Some template placeholders remain unfilled
+- Audit plans reference docs without inline summaries
+</inline-context>
+
+**Additional context (for models with run_commands=yes):**
+- Run: find docs -name "*.md" | wc -l (count total docs)
+- Run: grep -rn "TODO\|FIXME\|TBD" docs/ (find incomplete sections)
+- Run: git log --oneline docs/ | head -20 (recent doc changes)
 
 SCOPE
 
@@ -588,6 +616,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of documentation tier system | Claude |
 | 1.1 | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex; Escaped brackets in pattern | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Documentation audit category added to multi-AI review framework | Claude |
 

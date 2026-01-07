@@ -1,8 +1,8 @@
 # SoNash Multi-AI Refactoring Plan
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-01
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 **Status:** PENDING
 **Overall Completion:** 0/X phases complete (0%)
 
@@ -137,26 +137,45 @@ STACK / CONTEXT (treat as true)
 - Firebase: 12.6.0
 - Quality gates: npm run lint, npm test, npm run test:coverage
 
-PRE-REVIEW CONTEXT (REQUIRED READING)
+PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
-Before beginning refactoring analysis, review these project-specific resources:
+**IF browse_files=yes:** Read these files BEFORE starting analysis:
+1. docs/analysis/sonarqube-manifest.md (PRIMARY INPUT - 47 CRITICAL issues)
+2. docs/AI_REVIEW_LEARNINGS_LOG.md (documented refactoring patterns from Reviews #1-80+)
+3. docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md (prior CANON findings)
 
-1. **AI Learnings** (claude.md Section 4): Critical anti-patterns and refactoring lessons from past reviews
-2. **Pattern History** (../AI_REVIEW_LEARNINGS_LOG.md): Documented refactoring patterns from Reviews #1-60+
-3. **Current Compliance** (npm run patterns:check output): Known anti-pattern violations baseline
-4. **Dependency Health**:
-   - Circular dependencies: npm run deps:circular (baseline: 0 expected)
-   - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis (PRIMARY INPUT)** (../analysis/sonarqube-manifest.md): Pre-identified refactoring targets
-   - **NOTE:** Run fresh SonarQube scan or verify metrics are current before each audit—numbers become stale as issues are fixed.
-   - CRITICAL cognitive complexity violations (functions exceeding 15-point threshold)
-   - MAJOR code quality issues
-   - Batch fix opportunities: ESLint auto-fixable, replaceAll() replacements, node: prefix imports
-6. **Prior Refactoring Work** (../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md): Previous CANON findings
+**IF browse_files=no:** Use this inline context instead:
 
-**IMPORTANT**: If SonarQube analysis is available, the CRITICAL cognitive complexity violations are the PRIMARY targets for this audit. Focus on functions that need refactoring due to excessive complexity. If no SonarQube data exists, focus on manual complexity assessment of large functions (>50 lines) and high-cyclomatic-complexity patterns.
+<inline-context id="sonarqube-critical-issues">
+## SonarQube CRITICAL Issues Summary (PRIMARY INPUT)
 
-These resources provide essential context about what has been identified and what patterns to consolidate.
+**47 CRITICAL Cognitive Complexity Violations** - functions exceeding 15-point threshold:
+
+Top Priority Files (highest complexity):
+- components/growth/Step1WorksheetCard.tsx - complex form state management
+- hooks/use-journal.ts - auth listener + CRUD operations combined
+- lib/firestore-service.ts - multiple error handling branches
+- components/notebook/pages/today-page.tsx - complex save/load logic
+- functions/src/security-wrapper.ts - nested security checks
+
+**Batch Fix Opportunities:**
+- 23 ESLint auto-fixable issues (run: npm run lint:fix)
+- 15 replaceAll() replacements (regex → string method)
+- 12 node: prefix imports (modernization)
+
+**Known Duplications to Consolidate:**
+- DailyQuoteCard exists in 2-3 locations
+- Time-of-day rotation logic duplicated in quotes.ts/slogans.ts
+- CloudFunctionError type defined twice
+- Journal entry types duplicated across client/server
+</inline-context>
+
+**IMPORTANT**: The 47 CRITICAL cognitive complexity violations are the PRIMARY targets. Focus on functions exceeding the 15-point threshold.
+
+**Additional context (for models with run_commands=yes):**
+- Run: npm run lint (capture current violation count)
+- Run: npm run deps:circular (expect 0 cycles)
+- Run: npm run test:coverage (identify low-coverage refactoring targets)
 
 SCOPE
 
@@ -607,6 +626,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of 47 CRITICAL issues and duplications | Claude |
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |
 
