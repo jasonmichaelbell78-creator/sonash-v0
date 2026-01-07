@@ -2,7 +2,7 @@
 
 **Archived:** 2026-01-07
 **Coverage:** 2026-01-04 to 2026-01-05
-**Status:** PRE-CONSOLIDATION (Reviews #73-82 pending pattern extraction)
+**Status:** CONSOLIDATED (Reviews #73-82 patterns extracted to CODE_PATTERNS.md v1.2, 2026-01-07)
 
 ---
 
@@ -101,8 +101,8 @@ This archive contains the full audit trail for Reviews #42-60. These reviews cov
 #### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
 
 **Source:** Staff-engineer audit (Session #5)
-**Decision:** [ADR-001](./decisions/ADR-001-integrated-improvement-plan-approach.md)
-**Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
+**Decision:** [ADR-001](../decisions/ADR-001-integrated-improvement-plan-approach.md)
+**Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md)
 
 **Context:** After completing 57% of documentation standardization (Phases 1-4), we faced a decision point: continue with fragmented planning documents (Doc Standardization Plan + Eight-Phase Refactor Plan + missing tooling) or consolidate into a unified path.
 
