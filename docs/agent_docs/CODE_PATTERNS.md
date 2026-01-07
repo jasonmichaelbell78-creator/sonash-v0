@@ -1,8 +1,8 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Last Updated:** 2026-01-07
-**Source:** Distilled from 82 AI code reviews
+**Source:** Distilled from 97 AI code reviews
 
 ---
 
@@ -24,6 +24,7 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 - [CI/Automation](#ciautomation)
 - [Git](#git)
 - [Documentation](#documentation)
+- [Security Audit (Canonical Findings)](#security-audit-canonical-findings)
 - [General](#general)
 
 ---
@@ -174,6 +175,19 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | JSON/JSONL validity | All schema examples must be valid, parseable JSON/JSONL | Enable copy-paste testing with jq |
 | NO-REPO MODE output | Specify "header + zero lines" not placeholder text | Prevents parser-breaking invalid JSONL |
 | Template placeholders | Use `[Date]` not `YYYY-MM-DD`, use `null` not `X` in JSON | Clear, valid examples |
+
+---
+
+## Security Audit (Canonical Findings)
+
+| Pattern | Rule | Why |
+|---------|------|-----|
+| OWASP field format | Use JSON arrays `["A01", "A05"]` not strings `"A01/A05"` | Machine parsing, filtering, aggregation |
+| severity_normalization | Add field when models disagree: `{"canonical": "S0", "reported": ["S0", "S1"], "reason": "..."}` | Audit trail for adjudication decisions |
+| Conditional risk acceptance | Include `dependencies` array and `contingency` note for risk-accepted findings | Risk acceptance valid only when prerequisites met |
+| file_globs vs files | Use `files` for concrete paths, `file_globs` for search patterns | Globs for searching, paths for linking |
+| Schema design for automation | Design fields for machine parsing from start (arrays over strings) | Enables automated aggregation and filtering |
+| Severity divergence tracking | Document when AI models assign different severities | Transparency in multi-model audit process |
 
 ---
 

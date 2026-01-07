@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.93
+**Document Version:** 2.0
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.0 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 → CODE_PATTERNS.md v1.3 (6 Security Audit patterns, new category). Session #33 session-end cleanup. |
+| 1.99 | 2026-01-07 | Reviews #92-97: Security audit PR review feedback (6 reviews, 24 items total). Schema improvements: OWASP string→array, file_globs field, severity_normalization for divergent findings, F-010 conditional risk acceptance with dependencies. |
 | 1.93 | 2026-01-07 | Review #91: Audit traceability improvements (5 items) - 5 MINOR (severity_normalization field, adjudication field, F-010 severity in remediation, item count, log lines metric), 6 REJECTED (⚪ compliance items - doc-only PR, code fixes in Step 4B) |
 | 1.92 | 2026-01-07 | Review #90: Security audit metadata fixes (7 items) - 5 MINOR (log lines metric, severity breakdown, secrets_management status, F-010 duplicate, Review #88 severity clarity), 1 TRIVIAL (hyphenation), 1 REJECTED (consolidation count) |
 | 1.91 | 2026-01-07 | Review #89: Security audit documentation fixes (9 items) - 8 MINOR (F-010 severity, secrets_management status, duplicate model entry, SESSION_CONTEXT dates/status, active review range/count, progress percentage), 1 TRIVIAL (hyphenation) |
@@ -167,9 +169,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 9
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ OK (last consolidated 2026-01-07 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
+**Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
 
 ### When to Consolidate
 
@@ -189,22 +191,25 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-07 (Session #33)
+- **Reviews consolidated:** #83-#97 (15 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.3:**
+  - **Security Audit (6 patterns - NEW CATEGORY):**
+    - OWASP field format (arrays over strings for machine parsing)
+    - severity_normalization field for model disagreement tracking
+    - Conditional risk acceptance with dependencies array
+    - file_globs vs files separation
+    - Schema design for automation principle
+    - Severity divergence tracking requirement
+- **Key themes:** Canonical finding schema improvements, multi-AI audit traceability, risk acceptance documentation
+- **Next consolidation due:** After Review #107
+
+### Previous Consolidation (#7)
+
 - **Date:** 2026-01-07 (Session #29)
 - **Reviews consolidated:** #73-#82 (10 reviews)
-- **Patterns added to CODE_PATTERNS.md v1.2:**
-  - **Bash/Shell (3 patterns):**
-    - Process substitution for exit code preservation (`while read; done < <(cmd)`)
-    - Bash wrapper for POSIX compliance (`bash -lc '...'` with quote escaping)
-    - `set -o pipefail` in validation scripts
-  - **Documentation (6 patterns):**
-    - Relative path depth calculation (most common issue: 8+ occurrences)
-    - Metadata synchronization (6 consecutive reviews caught drift #73-79)
-    - Model name consistency (API identifiers: `gpt-4o` not `GPT-4o`)
-    - JSON/JSONL schema validity (enable copy-paste testing)
-    - NO-REPO MODE output specification (header + zero lines)
-    - Template placeholder clarity (`[Date]` not `YYYY-MM-DD`, `null` not `X`)
-- **Key themes:** Multi-AI audit template refinement, documentation linter cleanup, metadata consistency
-- **Next consolidation due:** After Review #92
+- **Patterns added:** Bash/Shell (3), Documentation (6)
+- **Key themes:** Multi-AI audit template refinement, documentation linter cleanup
 
 ---
 
@@ -218,7 +223,7 @@ Consolidation is needed when:
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
 | Patterns in claude.md | 60+ | - | ✅ |
-| Reviews since last consolidation | 9 | <10 | ✅ |
+| Reviews since last consolidation | 0 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
@@ -248,8 +253,8 @@ Consolidation is needed when:
 
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
-| Main log lines | 1441 | 1500 | Archive oldest reviews |
-| Active reviews | 28 (#61-88) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Main log lines | ~1530 | 1500 | Archive oldest reviews |
+| Active reviews | 37 (#61-97) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -319,7 +324,86 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-88 are actively maintained below. Older reviews are in the archive.
+Reviews #61-97 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Reviews #92-97: Security Audit PR Review Feedback (2026-01-07)
+
+**Source:** Qodo PR + CodeRabbit PR
+**PR/Branch:** claude/new-session-YUxGa
+**Commits:** 644723b (R#92), 844e1cc (R#93), 7241314 (R#94), 2d8cc19 (R#95), 5bac39a (R#96), 439e827 (R#97)
+**Suggestions:** 24 total (3 MAJOR, 18 MINOR, 3 REJECTED)
+
+**Context:** Six rounds of PR review feedback on the security audit documentation (security-audit-2026-01-07.md and CANON-SECURITY.jsonl). These reviews drove schema improvements and traceability enhancements for the canonical findings format.
+
+**Issues Fixed:**
+
+| Review | Items | Category | Key Changes |
+|--------|-------|----------|-------------|
+| #92 | 3 | Structure | Added missing Purpose/Version History sections, fixed Step 4 progress 17%→33%, path format consistency |
+| #93 | 3 | Traceability | Added explicit file paths to version 1.3, full JSONL path in Purpose, "Canonical JSONL" terminology |
+| #94 | 4 | Schema | Converted OWASP strings to JSON arrays (10 findings), added file_globs field to F-007, clickable links |
+| #95 | 5 | Schema | Added severity_normalization to F-001 (S0/S1 divergence), OWASP arrays in markdown JSON blocks |
+| #96 | 5 | Risk Acceptance | F-010 contingency on F-002/F-003, dependencies field, stable link text, severity_normalization to F-007 |
+| #97 | 4 | Exit Criteria | F-010 conditional notes strengthened, verification criteria reference, exit criteria requirements |
+
+**Rejected:**
+
+| Review | Issue | Reason |
+|--------|-------|--------|
+| #94 | Revert OWASP to string format | Intentional improvement from #94 (arrays better for machine parsing) |
+| #96 | OWASP back to slash-delimited | Same - array format is intentional schema improvement |
+| #97 | Merge file_globs back into files | Intentional separation of glob patterns from concrete file paths |
+
+**Schema Improvements Introduced:**
+
+1. **OWASP Field Format** (Review #94)
+   - Changed: `"owasp": "A01/A05"` → `"owasp": ["A01", "A05"]`
+   - Rationale: JSON arrays enable machine parsing, filter operations, aggregation
+   - Applied to: All 10 canonical findings in CANON-SECURITY.jsonl
+
+2. **file_globs Field** (Review #94)
+   - Added: `"file_globs": ["components/**", "functions/src/**", "lib/**"]` to F-007
+   - Rationale: Separates glob patterns (for searching) from concrete file paths (for linking)
+   - Pattern: Use `files` for exact paths, `file_globs` for patterns
+
+3. **severity_normalization Field** (Reviews #95-96)
+   - Structure: `{"canonical": "S0", "reported": ["S0", "S1"], "reason": "...", "contingency": "..."}`
+   - Applied to: F-001 (S0/S1 divergence), F-007 (S2/S3 divergence), F-010 (S0→S3 risk acceptance)
+   - Purpose: Tracks when AI models disagree on severity and documents adjudication rationale
+
+4. **Conditional Risk Acceptance** (Reviews #96-97)
+   - Added: `"dependencies": ["F-002", "F-003"]` to F-010
+   - Added: `"contingency": "Risk acceptance contingent on F-002/F-003 remediation"` in severity_normalization
+   - Pattern: Risk acceptance must specify compensating controls and prerequisites
+
+**Patterns Identified:**
+
+1. **Schema Evolution Through Review** (6 reviews - Process)
+   - Root cause: Initial canonical format lacked machine-parseable fields
+   - Prevention: Design schemas for automation from start (arrays over strings)
+   - Pattern: PR review is valid mechanism for schema refinement
+
+2. **Severity Divergence Documentation** (2 findings - Audit Quality)
+   - Root cause: Different AI models assessed severity differently
+   - Prevention: Always document when models disagree; require adjudication rationale
+   - Pattern: severity_normalization field captures canonical decision + reasoning
+
+3. **Conditional Risk Acceptance** (1 finding - Security)
+   - Root cause: Risk acceptance without prerequisites can leave gaps
+   - Prevention: Risk acceptance must specify dependencies and contingencies
+   - Pattern: F-010 pattern - acceptance valid only after F-002/F-003 resolved
+
+**Key Learnings:**
+- **Schema Refinement Through Review**: PR feedback successfully improved canonical format
+- **Reject Reversions**: When reviewers suggest reverting intentional improvements, document rejection reason
+- **Traceability Matters**: Explicit file paths, links, and version history enable audit trail
+
+**Resolution:**
+- Fixed: 24 items (3 MAJOR, 18 MINOR, 3 TRIVIAL)
+- Rejected: 3 items (intentional schema improvements)
+- All commits pushed to claude/new-session-YUxGa
 
 ---
 
