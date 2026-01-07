@@ -156,7 +156,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 ### F-010: App Check Disabled (S3 - Risk Accepted)
 
 ```json
-{"canonical_id":"F-010","vulnerability_type":{"custom":"App Check disabled (risk accepted / hardening)","owasp":["A04","A05"]},"title":"App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)","severity":"S3","severity_normalization":{"canonical":"S3","reported":["S0","S0"],"reason":"Risk accepted due to public API intent; tracked as optional hardening provided compensating controls exist.","contingency":"Risk acceptance is contingent on F-002 (rate limiting) and F-003 (reCAPTCHA fail-closed) being resolved first."},"effort":"E1","confidence":100,"files":["functions/src/index.ts","lib/firebase.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S0","confidence":100}],"evidence":["Both models: requireAppCheck:false on callables; client App Check initialization commented out."],"impact":"Reduces device-attestation defense-in-depth and increases automated abuse feasibility.","remediation":{"steps":["(If you later choose to enforce) enable App Check on server wrappers + restore client init.","Add monitoring for App Check failures and volume anomalies."],"verification":["Calls without App Check token are rejected (if enabled); legit clients succeed."],"notes":"Explicitly stated NOT a violation because the API is intended to be public-facing. Included as optional hardening / risk-tracked item, not as a compliance blocker.","dependencies":["F-002","F-003"]}}
+{"canonical_id":"F-010","vulnerability_type":{"custom":"App Check disabled (risk accepted / hardening)","owasp":["A04","A05"]},"title":"App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)","severity":"S3","severity_normalization":{"canonical":"S3","reported":["S0","S0"],"reason":"Risk accepted due to public API intent; tracked as optional hardening provided compensating controls exist.","contingency":"Risk acceptance is contingent on F-002 (rate limiting) and F-003 (reCAPTCHA fail-closed) being resolved first."},"effort":"E1","confidence":100,"files":["functions/src/index.ts","lib/firebase.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S0","confidence":100}],"evidence":["Both models: requireAppCheck:false on callables; client App Check initialization commented out."],"impact":"Reduces device-attestation defense-in-depth and increases automated abuse feasibility.","remediation":{"steps":["(If you later choose to enforce) enable App Check on server wrappers + restore client init.","Add monitoring for App Check failures and volume anomalies."],"verification":["Calls without App Check token are rejected (if enabled); legit clients succeed."],"notes":"Explicitly stated NOT a violation because the API is intended to be public-facing. Included as optional hardening / risk-tracked item, not as a compliance blocker. Risk acceptance becomes effective only after F-002 and F-003 are remediated and verified; until then F-010 remains a tracked risk requiring compensating controls.","dependencies":["F-002","F-003"]}}
 ```
 
 ---
@@ -172,7 +172,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 | **5** | Eliminate console.* from production | F-007 | E1 | No console.* in production; CI fails on new |
 | **6** | Harden admin write model (prefer Functions) | F-008 | E1 | Admin writes follow validated policy path |
 | **7** | Remove hardcoded reCAPTCHA fallback | F-009 | E1 | Missing env vars produce explicit failure |
-| **8** | Document App Check risk acceptance | F-010 | E1 | Decision documented + compensating controls verified (requires F-002, F-003 complete) |
+| **8** | Document App Check risk acceptance | F-010 | E1 | F-002 and F-003 remediated and validated per their verification criteria; risk acceptance documented; monitoring baseline established |
 
 ---
 
@@ -196,7 +196,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 
 - **Committed .env.production** is NOT a secrets violation (treated as public config); Secrets Management is marked COMPLIANT, with F-009 tracked as configuration integrity/hardening (not a secrets leak).
 
-- **App Check disabled** is included as optional hardening / risk-tracked item (both models call it critical), but NOT treated as a compliance blocker given "public API" intent. **F-010 risk acceptance is contingent on F-002 (complete rate limiting including IP throttling and admin protection) and F-003 (reCAPTCHA fail-closed) being resolved first; risk acceptance status becomes valid only after remediation completion and verification.**
+- **App Check disabled** is included as optional hardening / risk-tracked item (both models call it critical), but NOT treated as a compliance blocker given "public API" intent. **F-010 risk acceptance is contingent on F-002 (complete rate limiting including IP throttling and admin protection) and F-003 (reCAPTCHA fail-closed) being resolved first; risk acceptance status becomes valid only after remediation completion and validation per the verification criteria defined in F-002 and F-003 sections above.**
 
 ---
 
