@@ -126,9 +126,9 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 
 DOCUMENTATION STRUCTURE
 
-- Tier system: [If applicable]
-- Main directories: [List]
-- Documentation standards: [Reference if available]
+- Tier system: 5-tier hierarchy (Tier 1-2: Root-level, Tier 3-5: docs/ subdirectories)
+- Main directories: docs/, docs/templates/, docs/reviews/, docs/archive/, docs/agent_docs/
+- Documentation standards: docs/DOCUMENTATION_STANDARDS.md (v1.0)
 
 PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 

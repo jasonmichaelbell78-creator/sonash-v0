@@ -168,11 +168,13 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 
 STACK / CONTEXT
 
-- Framework: [e.g., Next.js 16.1 (App Router)]
-- UI Library: [e.g., React 19.2.3]
-- Styling: [e.g., Tailwind CSS v4]
-- Animation: [e.g., Framer Motion 12]
-- Backend: [e.g., Firebase/Firestore]
+- Framework: Next.js 16.1.1 (App Router) - SSR/CSR/ISR strategies, route loading
+- UI Library: React 19.2.3 - Rendering patterns, Suspense boundaries
+- Styling: Tailwind CSS v4 - CSS bundle size, utility tree-shaking
+- Animation: Framer Motion 12.23.0 - Animation performance, layout shifts
+- Backend: Firestore (Firebase 12.6.0) - Query optimization, real-time listeners
+- Bundler: Turbopack (Next.js 16) - Build optimization, code splitting
+- Monitoring: Sentry 10.30.0 - Error tracking, performance monitoring
 
 PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
@@ -212,15 +214,18 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
 BASELINE METRICS
 
-- Bundle size: [X] KB
-- LCP: [X] s
-- Performance score: [X]/100
+- Bundle size: [To be measured via npm run build]
+- LCP: [To be measured with Lighthouse]
+- Performance score: [To be measured with Lighthouse]
 
 SCOPE
 
-Performance-Critical: [paths]
-Include: [directories]
-Exclude: [directories]
+Performance-Critical: app/page.tsx (landing), app/dashboard/page.tsx, /journal, /inventory, /growth
+High-traffic pages: /dashboard, /journal, /inventory, /growth
+Data-heavy components: JournalEntryList, InventoryTable, GrowthCardsGrid
+Animation-heavy components: FadeIn, SlideIn, MeetingWidget, growth card animations
+Include: app/, components/, hooks/, lib/, functions/src/, tests/, types/
+Exclude: docs/, public/, node_modules/, .next/
 
 CAPABILITIES (REQUIRED FIRST OUTPUT)
 
