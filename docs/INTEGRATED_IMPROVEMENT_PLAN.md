@@ -645,7 +645,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - Deduplicate within category
   - Verify file/symbol existence
   - Output: `CANON-CODE.jsonl` (category-level CANON findings)
-  - **Result**: Aggregated to `docs/reviews/2026-q1-code-review/CANON-CODE.jsonl`
+  - **Result**: Aggregated to `docs/reviews/2026-Q1/canonical/CANON-CODE.jsonl`
 
 #### Category 2: Security (w/Dependency)
 
@@ -660,7 +660,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 - [x] **Task 4.2.2b**: Aggregate Security findings (1 hour) ✅ COMPLETE 2026-01-07
   - Run aggregator on 3+ AI outputs
-  - **Result**: Aggregated to `docs/audits/security-audit-2026-01-07.md`; Review #88 in AI_REVIEW_LEARNINGS_LOG.md
+  - **Result**: Aggregated to `docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl` (full report: `outputs/security/security-audit-2026-01-07.md`); Review #88 in AI_REVIEW_LEARNINGS_LOG.md
   - Deduplicate within category
   - Verify file/symbol existence
   - Output: `CANON-SECURITY.jsonl`
@@ -1264,7 +1264,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.4 | 2026-01-07 | Step 4.2 Security Audit complete (Tasks 4.2.2a, 4.2.2b); 10 canonical findings aggregated to docs/audits/security-audit-2026-01-07.md; Review #88 logged; Step 4 now IN PROGRESS at 17% (1/6 categories) |
+| 2.4 | 2026-01-07 | Step 4.2 Security Audit complete (Tasks 4.2.2a, 4.2.2b); 10 canonical findings aggregated to docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl; Review #88 logged; Step 4 now IN PROGRESS at 33% (2/6 categories) |
 | 2.3 | 2026-01-05 | Effort estimate correction: Step 4 (12-16h→~28h based on task sum); Rollup (48-72h→43-55h verified against per-step estimates); Clarified PARSE_ERRORS_JSONL as optional artifact |
 | 2.2 | 2026-01-05 | Added Step 4B (Remediation Sprint) to execute CANON findings from Step 4; Updated step count (7→8); Updated dependencies (Step 5 now depends on Step 4B); Updated effort estimate (+8-16h for remediation) |
 | 2.1 | 2026-01-05 | Major Step 4 expansion: Restructured into 3 sub-phases (4.1 Prep, 4.2 Execute+Tier1-Agg, 4.3 Tier2-Agg); Added 6-category audit framework; Added 2-tier aggregation strategy (per-category → cross-category); Added 30 detailed tasks (12 per-category execute+aggregate pairs); Integrated Sprint Backlog A2/A4; **NOTE:** Initial estimate of 12-16h was corrected in v2.3 |

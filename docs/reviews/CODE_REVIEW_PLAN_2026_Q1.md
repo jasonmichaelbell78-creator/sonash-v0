@@ -35,9 +35,9 @@ This document serves as the **execution plan** for running a multi-AI code quali
 **Overall Progress:** 6/6 steps complete
 
 **Output Files:**
-- `2026-q1-code-review/CODE_REVIEW_2026_Q1.md` - Canonical findings document
-- `2026-q1-code-review/CANON-CODE.jsonl` - Raw JSONL findings
-- `2026-q1-code-review/PR_PLAN.json` - Implementation roadmap
+- `2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md` - Canonical findings document
+- `2026-Q1/canonical/CANON-CODE.jsonl` - Raw JSONL findings
+- `2026-Q1/outputs/code-review/PR_PLAN.json` - Implementation roadmap
 
 ---
 
@@ -312,7 +312,7 @@ After running on each model, save outputs as:
 | GPT-5-Codex | `gpt5-codex_findings.jsonl` | `gpt5-codex_suspected.jsonl` | `gpt5-codex_summary.md` |
 | Gemini 3 Pro | `gemini3_findings.jsonl` | `gemini3_suspected.jsonl` | `gemini3_summary.md` |
 
-Save all outputs to: `docs/reviews/2026-q1-code-review/`
+Save all outputs to: `docs/reviews/2026-Q1/outputs/code-review/`
 
 ---
 

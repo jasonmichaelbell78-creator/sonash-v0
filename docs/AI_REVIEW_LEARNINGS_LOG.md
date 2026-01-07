@@ -391,7 +391,7 @@ Reviews #41-88 are actively maintained below. Older reviews are in the archive.
 **Resolution:**
 - Documented: 10 findings (action required for 9, 1 risk-accepted)
 - Remediation Plan: 8 prioritized items generated
-- Full audit stored: `docs/audits/security-audit-2026-01-07.md`
+- Full audit stored: `docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md`
 - Next Step: Step 4B (Remediation Sprint)
 
 **Remediation Priority Order:**
