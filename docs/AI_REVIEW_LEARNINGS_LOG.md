@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.81
+**Document Version:** 1.82
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.82 | 2026-01-07 | Review #81: Post-commit review fixes (5 items) - 0 MAJOR, 4 MINOR (review range, Last Updated date, SECURITY.md path, markdown formatting), 1 TRIVIAL (code fence), 1 HIGH-LEVEL (generator fix recommendation) |
 | 1.81 | 2026-01-07 | Review #80: Documentation linter fixes (57 errors) - 3 MAJOR (missing ARCHITECTURE.md/DEVELOPMENT.md links, missing Purpose in claude.md), 8 MINOR (broken links, missing sections), 4 TRIVIAL (date placeholders, metadata) |
 | 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
 | 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
@@ -155,7 +156,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 9
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -299,7 +300,65 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-79 are actively maintained below. Older reviews are in the archive.
+Reviews #41-81 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #81: Post-Commit Review Feedback (2026-01-07)
+
+**Source:** Qodo + CodeRabbit (PR Code Suggestions + inline comments)
+**PR:** Session #29
+**Commit:** TBD
+**Tools:** Qodo (3 suggestions), CodeRabbit (3 inline comments)
+
+**Context:** Post-commit review feedback on Review #80 changes. Qodo identified process improvement opportunity (fix generator vs fixing output manually) and formatting issues. CodeRabbit caught metadata consistency issues (review range, Last Updated date) and incorrect relative path.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Active review range outdated (#41-79 vs #41-80) | 🟡 Minor | Metadata | Updated AI_REVIEW_LEARNINGS_LOG.md header to #41-80 |
+| 2 | Last Updated date inconsistent in REVIEW_POLICY_VISUAL_GUIDE | 🟡 Minor | Metadata | Changed 2026-01-04 → 2026-01-07 to match Version History |
+| 3 | SECURITY.md path incorrect in FOUNDATION_DOC_TEMPLATE | 🟡 Minor | Documentation | Fixed ../../SECURITY.md → ../SECURITY.md (docs/ vs root) |
+| 4 | HUMAN_SUMMARY missing markdown heading | 🟡 Minor | Documentation | Added ### heading and blank line for proper formatting |
+| 5 | Malformed JSON code fence (### + ```json combined) | ⚪ Trivial | Documentation | Separated heading from code fence, added PARSE_ERRORS_JSON label |
+
+**Process Recommendation (High-Level):**
+
+| # | Recommendation | Severity | Category | Action |
+|---|----------------|----------|----------|--------|
+| 1 | Fix generator not output files | 🔴 High | Process | gemini-chatgpt-aggregation.md is generated; should fix multi-AI coordinator tool to output correct format from start. DEFERRED: No current generator script exists - file was manually created in Review #80 |
+
+**Patterns Identified:**
+
+1. **Post-Commit Review Timeliness** (1 occurrence - Process Improvement)
+   - Root cause: Review feedback arrived immediately after Review #80 commit
+   - Prevention: Allow review tools time to analyze before next commit
+   - Pattern: CodeRabbit/Qodo provide feedback within minutes of push
+   - Note: Fast turnaround is valuable - catch issues before next session
+
+2. **Metadata Consistency Tracking** (2 occurrences - Quality Issue)
+   - Root cause: Version History updated but header "Last Updated" not updated
+   - Prevention: Create checklist for metadata updates (both places)
+   - Pattern: When adding Version History entry, update document header simultaneously
+   - Cross-reference: Similar issue in Review #79 with review range (#41-78 vs #41-79)
+
+3. **Generator vs Manual Fix Decision** (1 occurrence - Strategic Issue)
+   - Root cause: No generator exists for gemini-chatgpt-aggregation.md (file was manually created)
+   - Prevention: Distinguish between "fix generator" (when one exists) vs "fix file" (when manually created)
+   - Pattern: Qodo suggested fixing generator, but audit aggregation is manual process currently
+   - Resolution: DEFERRED - Multi-AI aggregation tooling planned for Step 4.3 of Integrated Improvement Plan
+
+**Resolution:**
+- Fixed: 5 items (4 MINOR, 1 TRIVIAL)
+- Deferred: 1 item (generator fix - no generator exists yet, planned for Step 4.3)
+- Rejected: 0 items
+
+**Key Learnings:**
+- Post-commit reviews catch metadata drift that automated linters miss
+- "Last Updated" and Version History must be updated together (create checklist)
+- Distinguish "fix generator" suggestions (when generator exists) from manual file improvements
+- Review tool feedback turnaround is very fast (< 5 minutes) - valuable for immediate fixes
 
 ---
 

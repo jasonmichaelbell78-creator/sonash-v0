@@ -27,7 +27,9 @@ This is a generated output file from the multi-AI review coordinator.
 
 ## Audit Output
 
-### ```json
+### PARSE_ERRORS_JSON
+
+```json
 {
   "parse_errors": [],
   "dropped_count": 0
@@ -184,10 +186,12 @@ PR_PLAN_JSON
     }
   ]
 }
+```
 
-HUMAN_SUMMARY
+### HUMAN_SUMMARY
+
 - Top 10 quick wins: CANON-0002 (enable App Check), CANON-0011 (localStorage SSR guard), CANON-0007 (shared admin init), CANON-0014 (centralize storage keys), CANON-0006 (batch gratitude writes), CANON-0013/CANON-0026 (align rate limiters), CANON-0030 (centralize Cloud Function wrapper), CANON-0035 (badge primitive), CANON-0040 (journal path constants), CANON-0042 (remove Date.now fallback in useJournal).
 - Top 5 high-risk/high-payoff refactors: CANON-0001 (journal writes via Cloud Function), CANON-0002 (App Check enforcement), CANON-0043 (journal write validation/limiting), CANON-0044 (rules/comment alignment for journal), CANON-0033 (Cloud Functions test coverage).
 - Key duplication clusters to consolidate: Firestore access patterns (CANON-0005), admin SDK initialization (CANON-0007), rate limiter implementations/configs (CANON-0013, CANON-0026, CANON-0041), storage key scatter (CANON-0014), journal type definitions (CANON-0008), growth card wizard/save logic (CANON-0018), quote rotation/widgets (CANON-0020, CANON-0022, CANON-0045), CRUD boilerplate (CANON-0021), Cloud Function wrapper usage (CANON-0030), meeting countdown/widgets (CANON-0029), static data vs Firestore content (CANON-0031), loading-state boilerplate (CANON-0032), snapshot mapping helper (CANON-0039), journal path constants (CANON-0040), badge primitive reuse (CANON-0035), validation schema drift (CANON-0036).
 - Items demoted as hallucinations/false positives: None; suspected items remain flagged (CANON-0003, CANON-0015, CANON-0016, CANON-0017, CANON-0032, CANON-0038) pending verification.
-- Recommended implementation order: 1) Address security posture (CANON-0001, CANON-0002, CANON-0041, CANON-0043, CANON-0044), 2) Remove client/server duplication and dual writes (CANON-0005, CANON-0006, CANON-0007, CANON-0024, CANON-0028, CANON-0030, CANON-0040), 3) Reconcile journal types/nullability and tighten typings (CANON-0008, CANON-0009, CANON-0010, CANON-0011, CANON-0023, CANON-0042), 4) Improve coverage and guardrails (CANON-0012, CANON-0019, CANON-0027, CANON-0033, CANON-0045), 5) Tackle remaining hygiene clusters (CANON-0013, CANON-0014, CANON-0015, CANON-0016, CANON-0017, CANON-0018, CANON-0020, CANON-0021, CANON-0022, CANON-0025, CANON-0026, CANON-0029, CANON-0031, CANON-0032, CANON-0034, CANON-0035, CANON-0036, CANON-0037, CANON-0038, CANON-0039).```
+- Recommended implementation order: 1) Address security posture (CANON-0001, CANON-0002, CANON-0041, CANON-0043, CANON-0044), 2) Remove client/server duplication and dual writes (CANON-0005, CANON-0006, CANON-0007, CANON-0024, CANON-0028, CANON-0030, CANON-0040), 3) Reconcile journal types/nullability and tighten typings (CANON-0008, CANON-0009, CANON-0010, CANON-0011, CANON-0023, CANON-0042), 4) Improve coverage and guardrails (CANON-0012, CANON-0019, CANON-0027, CANON-0033, CANON-0045), 5) Tackle remaining hygiene clusters (CANON-0013, CANON-0014, CANON-0015, CANON-0016, CANON-0017, CANON-0018, CANON-0020, CANON-0021, CANON-0022, CANON-0025, CANON-0026, CANON-0029, CANON-0031, CANON-0032, CANON-0034, CANON-0035, CANON-0036, CANON-0037, CANON-0038, CANON-0039).

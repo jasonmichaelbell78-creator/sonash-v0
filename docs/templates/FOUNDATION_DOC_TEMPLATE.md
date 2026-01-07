@@ -260,7 +260,7 @@ Example:
 
 **Foundation Documents**:
 - [ARCHITECTURE.md](../../ARCHITECTURE.md) - System architecture
-- [SECURITY.md](../../SECURITY.md) - Security guidelines
+- [SECURITY.md](../SECURITY.md) - Security guidelines
 - [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development procedures
 
 **Planning Documents**:
