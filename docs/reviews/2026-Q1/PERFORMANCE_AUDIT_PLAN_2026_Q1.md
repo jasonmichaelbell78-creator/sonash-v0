@@ -714,7 +714,7 @@ When using this template:
 - **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
 - **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](../../templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** - General code review template
 - **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](../../templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** - Security-focused reviews
-- **[ARCHITECTURE.md](../../ARCHITECTURE.md)** - System architecture
+- **[ARCHITECTURE.md](../../../ARCHITECTURE.md)** - System architecture
 
 ---
 

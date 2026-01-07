@@ -1,6 +1,6 @@
 # [Workflow/Reference Name]
 
-**Last Updated**: YYYY-MM-DD
+**Last Updated**: [Date]
 **Document Version**: X.Y
 **Purpose**: [Brief one-line description]
 **When to Use**: [Specific trigger or scenario]

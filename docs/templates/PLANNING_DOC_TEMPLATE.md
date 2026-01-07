@@ -331,8 +331,8 @@ This plan is complete when all of the following are true:
 - [Related plan 1] - [Connection]
 
 **Implementation**:
-- [ARCHITECTURE.md](../ARCHITECTURE.md) - System architecture
-- [DEVELOPMENT.md](../DEVELOPMENT.md) - Development procedures
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - System architecture
+- [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development procedures
 
 **Reference**:
 - [Relevant reference docs]
