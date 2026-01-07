@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-Multi-AI security audit identified **10 canonical findings** with deduplication across models. 3 findings are Critical/High priority requiring immediate attention:
+Multi-AI security audit identified **10 canonical findings** with deduplication across models. 3 findings are Critical/High-priority requiring immediate attention:
 
 1. **F-001 (S0)**: Legacy Firestore path allows direct client writes bypassing server validation
 2. **F-002 (S1)**: Rate-limiting gaps - no IP throttling, admin endpoints unprotected
@@ -52,7 +52,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
       ]
     },
     "secrets_management": {
-      "status": "PARTIAL",
+      "status": "COMPLIANT",
       "model_votes": {
         "claude_opus_4_5": "COMPLIANT",
         "chatgpt_5_2": "NON_COMPLIANT"
@@ -60,7 +60,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
       "rationale": [
         "Claude Opus found no hardcoded secrets and proper env-var usage.",
         "ChatGPT 5.2 flagged committed .env.production as a policy issue; explicitly stated NOT a violation because it contains public-facing configuration.",
-        "Remaining item: remove hardcoded reCAPTCHA fallback key (ChatGPT 5.2)."
+        "F-009 is tracked as configuration integrity/hardening (rotation and environment isolation), not as a secrets leak."
       ],
       "assumptions": [
         ".env.production contains only intentionally-public configuration values (e.g., Firebase web config / public IDs) and no private secrets."
@@ -144,7 +144,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 ### F-010: App Check Disabled (S3 - Risk Accepted)
 
 ```json
-{"canonical_id":"F-010","vulnerability_type":{"custom":"App Check disabled (risk accepted / hardening)","owasp":"A04/A05"},"title":"App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)","severity":"S3","effort":"E1","confidence":100,"files":["functions/src/index.ts","lib/firebase.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S2","confidence":100}],"evidence":["Both models: requireAppCheck:false on callables; client App Check initialization commented out."],"impact":"Reduces device-attestation defense-in-depth and increases automated abuse feasibility.","remediation":{"steps":["(If you later choose to enforce) enable App Check on server wrappers + restore client init.","Add monitoring for App Check failures and volume anomalies."],"verification":["Calls without App Check token are rejected (if enabled); legit clients succeed."],"notes":"Explicitly stated NOT a violation because the API is intended to be public-facing. Included as optional hardening / risk-tracked item, not as a compliance blocker."}}
+{"canonical_id":"F-010","vulnerability_type":{"custom":"App Check disabled (risk accepted / hardening)","owasp":"A04/A05"},"title":"App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)","severity":"S3","effort":"E1","confidence":100,"files":["functions/src/index.ts","lib/firebase.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S0","confidence":100}],"evidence":["Both models: requireAppCheck:false on callables; client App Check initialization commented out."],"impact":"Reduces device-attestation defense-in-depth and increases automated abuse feasibility.","remediation":{"steps":["(If you later choose to enforce) enable App Check on server wrappers + restore client init.","Add monitoring for App Check failures and volume anomalies."],"verification":["Calls without App Check token are rejected (if enabled); legit clients succeed."],"notes":"Explicitly stated NOT a violation because the API is intended to be public-facing. Included as optional hardening / risk-tracked item, not as a compliance blocker."}}
 ```
 
 ---
@@ -182,7 +182,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 
 ### Explicit decisions captured:
 
-- **Committed .env.production** is NOT a secrets violation (treated as public config); Secrets Management is marked PARTIAL due to hardcoded reCAPTCHA fallback key (F-009).
+- **Committed .env.production** is NOT a secrets violation (treated as public config); Secrets Management is marked COMPLIANT, with F-009 tracked as configuration integrity/hardening (not a secrets leak).
 
 - **App Check disabled** is included as optional hardening / risk-tracked item (both models call it critical), but NOT treated as a compliance blocker given "public API" intent—as long as compensating controls (rate limiting + fail-closed bot gating + monitoring) are implemented well.
 
@@ -196,6 +196,6 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 
 ---
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-07
 **Last Updated:** 2026-01-07
