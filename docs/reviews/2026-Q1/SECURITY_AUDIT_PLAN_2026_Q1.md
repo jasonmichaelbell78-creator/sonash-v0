@@ -1,6 +1,6 @@
 # SoNash Multi-AI Security Audit Plan
 
-**Document Version:** 1.5
+**Document Version:** 1.6
 **Created:** 2026-01-06
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -167,7 +167,7 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 - Type enforcement at runtime, length limits on strings
 - Unknown fields rejected (.strict())
 - XSS prevention on displayed content
-- Verification: grep -rEn "\.(safeParse|parse)\(" --include="*.ts"
+- Verification: grep -rEn "\.(safeParse|parse)\(" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --include="*.json"
 
 ### Standard 3: API Keys & Secrets Management
 - No hardcoded API keys in code
@@ -719,6 +719,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.6 | 2026-01-07 | Review #82: Broadened grep .safeParse/.parse extensions to match secrets grep (.ts,.tsx,.js,.jsx,.json) | Claude |
 | 1.5 | 2026-01-07 | Review #81: Added CAPABILITIES example format; broadened grep file extensions (.ts → .ts,.tsx,.js,.jsx,.json); added -E flag for extended regex | Claude |
 | 1.4 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summaries of GLOBAL_SECURITY_STANDARDS.md and known issues | Claude |
 | 1.3 | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.3 | Claude |

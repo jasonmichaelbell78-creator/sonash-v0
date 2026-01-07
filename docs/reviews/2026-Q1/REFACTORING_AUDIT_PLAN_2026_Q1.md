@@ -1,6 +1,6 @@
 # SoNash Multi-AI Refactoring Plan
 
-**Document Version:** 1.3
+**Document Version:** 1.4
 **Created:** 2026-01-01
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -151,23 +151,33 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
 **47 CRITICAL Cognitive Complexity Violations** - functions exceeding 15-point threshold:
 
-Top Priority Files (highest complexity):
-- components/growth/Step1WorksheetCard.tsx - complex form state management
-- hooks/use-journal.ts - auth listener + CRUD operations combined
-- lib/firestore-service.ts - multiple error handling branches
-- components/notebook/pages/today-page.tsx - complex save/load logic
-- functions/src/security-wrapper.ts - nested security checks
+**Scripts (highest issue density - 19 violations):**
+- scripts/assign-review-tier.js:289 (Complexity 38/15), :176 (16/15)
+- scripts/phase-complete-check.js:131 (27/15), :227 (25/15), :348 (22/15)
+- scripts/suggest-pattern-automation.js:100 (27/15)
+- scripts/check-pattern-compliance.js:457 (26/15), :143 (22/15)
+- scripts/validate-phase-completion.js:26 (20/15)
+- scripts/surface-lessons-learned.js:75 (20/15)
+- scripts/check-docs-light.js:152 (23/15), :43 (21/15), :218 (19/15), :345 (16/15)
+- scripts/check-review-needed.js:114 (22/15), :236 (16/15)
+
+**Application Code (28 violations):**
+- hooks/use-journal.ts - Multiple functions > 15 complexity
+- lib/firestore-service.ts - Multiple error handling branches
+- components/growth/Step1WorksheetCard.tsx - Complex form state
+- components/notebook/pages/today-page.tsx - Complex save/load logic
+- functions/src/security-wrapper.ts - Nested security checks
 
 **Batch Fix Opportunities:**
-- 23 ESLint auto-fixable issues (run: npm run lint:fix)
-- 15 replaceAll() replacements (regex → string method)
-- 12 node: prefix imports (modernization)
+- 200+ ESLint auto-fixable issues (run: npm run lint:fix)
+- 79 replaceAll() replacements (regex → string method)
+- 71 node: prefix imports (modernization)
 
-**Known Duplications to Consolidate:**
-- DailyQuoteCard exists in 2-3 locations
-- Time-of-day rotation logic duplicated in quotes.ts/slogans.ts
-- CloudFunctionError type defined twice
-- Journal entry types duplicated across client/server
+**Known Duplications to Consolidate (exact counts):**
+- DailyQuoteCard: 2 component files (components/notebook/features/, components/widgets/)
+- CloudFunctionError: 2 interfaces in same file (lib/firestore-service.ts:200, :423)
+- Time-of-day rotation logic: duplicated in quotes.ts and slogans.ts
+- Journal entry types: duplicated across client hooks and server functions
 </inline-context>
 
 **IMPORTANT**: The 47 CRITICAL cognitive complexity violations are the PRIMARY targets. Focus on functions exceeding the 15-point threshold.
@@ -189,15 +199,27 @@ Before any findings, print exactly:
 
 CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
 
-Example: CAPABILITIES: browse_files=no, run_commands=no, repo_checkout=no, limitations="No file access; analysis limited to provided inline context."
+Example (do NOT include "Example:" in your output):
+```text
+CAPABILITIES: browse_files=no, run_commands=no, repo_checkout=no, limitations="No file access; analysis limited to provided inline context."
+```
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete full audit without repo access
 - **Required NO-REPO MODE Output**:
   1. CAPABILITIES header with limitation clearly noted
-  2. REFACTORING_METRICS_JSON with null values and gap: "Unable to assess without repository access"
-  3. Empty FINDINGS_JSONL section (print header, output zero lines)
-  4. Empty SUSPECTED_FINDINGS_JSONL section (print header, output zero lines)
+  2. REFACTORING_METRICS_JSON with null values:
+     ```json
+     {
+       "cognitive_complexity_violations": null,
+       "duplication_clusters": null,
+       "architecture_boundary_issues": null,
+       "test_coverage_gaps": null,
+       "gap_reason": "Unable to assess without repository access"
+     }
+     ```
+  3. Empty FINDINGS_JSONL section (print header `FINDINGS_JSONL` and output zero lines)
+  4. Empty SUSPECTED_FINDINGS_JSONL section (print header `SUSPECTED_FINDINGS_JSONL` and output zero lines)
   5. HUMAN_SUMMARY explaining limitation and how to proceed
 - Do NOT attempt code analysis or invent refactoring targets
 ```
@@ -634,6 +656,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.4 | 2026-01-07 | Review #82: Expanded inline-context with exact file:line counts for all CRITICAL issues; added REFACTORING_METRICS_JSON null schema; reformatted CAPABILITIES example as code block | Claude |
 | 1.3 | 2026-01-07 | Review #81: Added CAPABILITIES example format; added 5-point NO-REPO MODE output contract | Claude |
 | 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of 47 CRITICAL issues and duplications | Claude |
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |

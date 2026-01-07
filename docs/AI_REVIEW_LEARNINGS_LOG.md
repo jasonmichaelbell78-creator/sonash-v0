@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.82
+**Document Version:** 1.83
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.83 | 2026-01-07 | Review #82: 8 fixes - 2 MAJOR (REFACTORING inline-context expansion, REFACTORING_METRICS_JSON schema), 5 MINOR (SECURITY grep coverage, CAPABILITIES example format, NO-REPO headers, docs/ path prefixes), 1 TRIVIAL (Review #81 counts) |
 | 1.82 | 2026-01-07 | Review #81: 11 fixes - 5 MAJOR (NO-REPO MODE standardization, output contracts, CAPABILITIES example, hooks/scripts inventory), 5 MINOR (grep coverage, path fixes, command robustness), 1 TRIVIAL (version history) |
 | 1.81 | 2026-01-07 | Review #80: 3 fixes - 2 MINOR (PR_PLAN.json structured acceptance_tests, CANON-CODE.jsonl source identifiers), 1 TRIVIAL (document version sync) |
 | 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
@@ -156,9 +157,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 9
+**Reviews since last consolidation:** 10
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
+**Status:** ⚠️ CONSOLIDATION DUE (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
 ### When to Consolidate
 
@@ -300,7 +301,52 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-81 are actively maintained below. Older reviews are in the archive.
+Reviews #41-82 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #82: Inline-Context Completeness & Schema Definitions (2026-01-07)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR/Branch:** claude/new-session-YUxGa
+**Suggestions:** 8 total (Critical: 0, Major: 2, Minor: 5, Trivial: 1)
+
+**Context:** Post-implementation review of PR Review #81 fixes. Review identified incomplete inline-context inventory (approximations instead of exact counts), undefined REFACTORING_METRICS_JSON schema, grep command coverage gaps, and path ambiguity in inline documentation.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | REFACTORING inline-context uses approximations ("2-3") | 🔴 Major | Completeness | Expanded with exact file:line counts for all 47 CRITICAL issues |
+| 2 | REFACTORING_METRICS_JSON schema undefined | 🔴 Major | Schema | Added null schema with gap_reason field |
+| 3 | SECURITY grep .safeParse/.parse missing extensions | 🟡 Minor | Coverage | Added .tsx, .js, .jsx, .json coverage |
+| 4 | REFACTORING CAPABILITIES example copy-paste risk | 🟡 Minor | Clarity | Reformatted as fenced code block with explicit instruction |
+| 5 | DOCUMENTATION NO-REPO headers implicit | 🟡 Minor | Contract | Made FINDINGS_JSONL/SUSPECTED headers explicit |
+| 6 | DOCUMENTATION Tier 3 paths missing docs/ prefix | 🟡 Minor | Paths | Added full paths to AI_REVIEW_LEARNINGS_LOG.md, AI_WORKFLOW.md |
+| 7 | Review #81 duplicate fix counted twice | 🟡 Minor | Accuracy | Fixed counts (12→11, 2 TRIVIAL→1 TRIVIAL) |
+| 8 | Review #81 count mismatch | ⚪ Trivial | Documentation | Corrected totals to match table |
+
+**Patterns Identified:**
+
+1. **Inline-Context Must Have Exact Counts** (1 occurrence - Critical)
+   - Root cause: Initial inline-context used approximations like "2-3 locations"
+   - Prevention: Always use grep to verify exact counts before documenting
+   - Pattern: "DailyQuoteCard: 2 locations" not "DailyQuoteCard: 2-3 locations"
+
+2. **Schema Must Precede Usage** (1 occurrence - Major)
+   - Root cause: NO-REPO MODE referenced REFACTORING_METRICS_JSON without defining structure
+   - Prevention: When adding new JSON outputs, define schema immediately
+   - Pattern: Include null-structure example for NO-REPO MODE outputs
+
+**Key Learnings:**
+- **Verify Before Documenting**: Run grep/find to get exact counts, don't estimate
+- **Schema First**: Define JSON structure before referencing in instructions
+- **Grep Coverage Consistency**: When broadening one grep, check related greps for same gap
+
+**Resolution:**
+- Fixed: 8 items (2 MAJOR, 5 MINOR, 1 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
 
 ---
 
@@ -308,7 +354,7 @@ Reviews #41-81 are actively maintained below. Older reviews are in the archive.
 
 **Source:** Mixed (Qodo PR + CodeRabbit PR)
 **PR/Branch:** claude/new-session-YUxGa
-**Suggestions:** 12 total (Critical: 0, Major: 5, Minor: 5, Trivial: 2)
+**Suggestions:** 11 total (Critical: 0, Major: 5, Minor: 5, Trivial: 1)
 
 **Context:** Post-implementation review of capability-tiered PRE-REVIEW CONTEXT added to all 5 audit plans. Review identified inconsistencies in NO-REPO MODE terminology, incomplete inline-context blocks, and grep command robustness issues.
 
@@ -351,7 +397,7 @@ Reviews #41-81 are actively maintained below. Older reviews are in the archive.
 - **File Type Coverage**: Security audits must check all relevant file extensions, not just primary language
 
 **Resolution:**
-- Fixed: 11 items (5 MAJOR, 5 MINOR, 2 TRIVIAL)
+- Fixed: 11 items (5 MAJOR, 5 MINOR, 1 TRIVIAL)
 - Deferred: 0 items
 - Rejected: 0 items
 
