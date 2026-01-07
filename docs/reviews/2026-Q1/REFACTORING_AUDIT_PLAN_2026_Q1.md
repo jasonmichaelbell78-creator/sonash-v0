@@ -1,6 +1,6 @@
 # SoNash Multi-AI Refactoring Plan
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Created:** 2026-01-01
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -189,9 +189,17 @@ Before any findings, print exactly:
 
 CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
 
+Example: CAPABILITIES: browse_files=no, run_commands=no, repo_checkout=no, limitations="No file access; analysis limited to provided inline context."
+
 If browse_files=no OR repo_checkout=no:
-- Run in "NO-REPO MODE": Cannot complete refactoring audit without repo access
-- Stop immediately and report limitation
+- Run in "NO-REPO MODE": Cannot complete full audit without repo access
+- **Required NO-REPO MODE Output**:
+  1. CAPABILITIES header with limitation clearly noted
+  2. REFACTORING_METRICS_JSON with null values and gap: "Unable to assess without repository access"
+  3. Empty FINDINGS_JSONL section (print header, output zero lines)
+  4. Empty SUSPECTED_FINDINGS_JSONL section (print header, output zero lines)
+  5. HUMAN_SUMMARY explaining limitation and how to proceed
+- Do NOT attempt code analysis or invent refactoring targets
 ```
 
 ### Part 2: Anti-Hallucination Rules
@@ -626,6 +634,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-07 | Review #81: Added CAPABILITIES example format; added 5-point NO-REPO MODE output contract | Claude |
 | 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of 47 CRITICAL issues and duplications | Claude |
 | 1.1 | 2026-01-05 | Added PRE-REVIEW CONTEXT with SonarQube CRITICAL focus; Added batch fix opportunities; Referenced archived EIGHT_PHASE_REFACTOR_PLAN.md; Updated AI models (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added staleness warning for SonarQube metrics | Claude |
 | 1.0 | 2026-01-01 | Initial template creation | Claude |

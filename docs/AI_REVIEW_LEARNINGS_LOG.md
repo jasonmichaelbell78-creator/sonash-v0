@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.81
+**Document Version:** 1.82
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.82 | 2026-01-07 | Review #81: 11 fixes - 5 MAJOR (NO-REPO MODE standardization, output contracts, CAPABILITIES example, hooks/scripts inventory), 5 MINOR (grep coverage, path fixes, command robustness), 1 TRIVIAL (version history) |
 | 1.81 | 2026-01-07 | Review #80: 3 fixes - 2 MINOR (PR_PLAN.json structured acceptance_tests, CANON-CODE.jsonl source identifiers), 1 TRIVIAL (document version sync) |
 | 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
 | 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
@@ -81,7 +82,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-80) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-81) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -155,7 +156,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 9
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
@@ -299,7 +300,60 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-80 are actively maintained below. Older reviews are in the archive.
+Reviews #41-81 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #81: Capability-Tiered Context & NO-REPO MODE Standardization (2026-01-07)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR)
+**PR/Branch:** claude/new-session-YUxGa
+**Suggestions:** 12 total (Critical: 0, Major: 5, Minor: 5, Trivial: 2)
+
+**Context:** Post-implementation review of capability-tiered PRE-REVIEW CONTEXT added to all 5 audit plans. Review identified inconsistencies in NO-REPO MODE terminology, incomplete inline-context blocks, and grep command robustness issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | MODE naming inconsistent (LIMITED vs NO-REPO) | 🔴 Major | Consistency | Standardized to "NO-REPO MODE" across all 5 plans |
+| 2 | NO-REPO MODE output contract varies by plan | 🔴 Major | Contract | Added consistent output format requirements |
+| 3 | REFACTORING CAPABILITIES missing example | 🔴 Major | Documentation | Added example CAPABILITIES format |
+| 4 | PROCESS inline-context missing hooks/scripts | 🔴 Major | Completeness | Added all 7 hooks and 11 scripts |
+| 5 | SECURITY grep missing file extensions | 🟡 Minor | Coverage | Added .tsx, .js, .jsx, .json to grep |
+| 6 | SECURITY grep regex missing -E flag | 🟡 Minor | Correctness | Fixed parse/safeParse pattern with -E |
+| 7 | PERFORMANCE ARCHITECTURE.md wrong path | 🟡 Minor | Path | Changed docs/ARCHITECTURE.md → ARCHITECTURE.md |
+| 8 | PROCESS cat command fails on missing files | 🟡 Minor | Robustness | Changed to find -exec pattern |
+| 9 | REFACTORING inline-context incomplete | 🟡 Minor | Completeness | Expanded with more context |
+| 10 | DOCUMENTATION version history detail | ⚪ Trivial | Documentation | Added NO-REPO MODE mention |
+| 11 | SECURITY version history detail | ⚪ Trivial | Documentation | Added NO-REPO MODE mention |
+
+**Patterns Identified:**
+
+1. **Cross-Template Consistency Required** (5 occurrences - Critical)
+   - Root cause: Each template evolved independently, creating terminology drift
+   - Prevention: When adding features to multiple templates, audit all for consistency
+   - Pattern: "NO-REPO MODE" is canonical; "LIMITED MODE" deprecated
+
+2. **Inline-Context Must Be Complete** (2 occurrences - Usability)
+   - Root cause: Inline summaries only covered highlights, not full inventory
+   - Prevention: When providing fallback context, list ALL relevant items
+   - Pattern: Scripts/hooks lists must enumerate all current files, not just highlights
+
+3. **Grep Commands Need Full File Coverage** (1 occurrence - Security)
+   - Root cause: Secrets grep only checked .ts files, missing .tsx, .js, .jsx, .json
+   - Prevention: Security-related grep patterns should cover all code file types
+   - Pattern: Use --include="*.{ts,tsx,js,jsx,json}" for comprehensive search
+
+**Key Learnings:**
+- **Terminology Drift Detection**: When 5 templates use 2 different terms for the same concept, standardize immediately
+- **Output Contract Clarity**: NO-REPO MODE must specify exact output format, not vague "general recommendations"
+- **File Type Coverage**: Security audits must check all relevant file extensions, not just primary language
+
+**Resolution:**
+- Fixed: 11 items (5 MAJOR, 5 MINOR, 2 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
 
 ---
 

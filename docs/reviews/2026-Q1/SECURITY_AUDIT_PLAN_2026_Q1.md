@@ -1,6 +1,6 @@
 # SoNash Multi-AI Security Audit Plan
 
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Created:** 2026-01-06
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -167,14 +167,14 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 - Type enforcement at runtime, length limits on strings
 - Unknown fields rejected (.strict())
 - XSS prevention on displayed content
-- Verification: grep -rn "\.parse(|\.safeParse(" --include="*.ts"
+- Verification: grep -rEn "\.(safeParse|parse)\(" --include="*.ts"
 
 ### Standard 3: API Keys & Secrets Management
 - No hardcoded API keys in code
 - All secrets in environment variables
 - No secrets in NEXT_PUBLIC_ variables
 - .env files in .gitignore, .env.example exists
-- Verification: grep -rn "sk_live|sk_test|api_key.*=.*['\"]" --include="*.ts"
+- Verification: grep -rEn "sk_live|sk_test|api_key.*=.*['\"]" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --include="*.json"
 
 ### Standard 4: OWASP Top 10 Compliance
 - A01: Auth checks on all protected routes
@@ -211,6 +211,8 @@ CAPABILITIES (REQUIRED FIRST OUTPUT)
 Before any findings, print exactly:
 
 CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
+
+Example: CAPABILITIES: browse_files=no, run_commands=no, repo_checkout=no, limitations="No file access; analysis limited to provided inline context."
 
 If browse_files=no OR repo_checkout=no:
 - Run in "NO-REPO MODE": Cannot complete security audit without repo access
@@ -717,6 +719,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.5 | 2026-01-07 | Review #81: Added CAPABILITIES example format; broadened grep file extensions (.ts → .ts,.tsx,.js,.jsx,.json); added -E flag for extended regex | Claude |
 | 1.4 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summaries of GLOBAL_SECURITY_STANDARDS.md and known issues | Claude |
 | 1.3 | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.3 | Claude |
 | 1.2 | 2026-01-06 | Review #67: Added -E flag for extended regex; Made grep --exclude-dir portable (repeated flags vs brace expansion) | Claude |

@@ -1,6 +1,6 @@
 # SoNash Multi-AI Performance Audit Plan
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Created:** 2026-01-06
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -179,7 +179,7 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 **IF browse_files=yes:** Read these files BEFORE starting analysis:
 1. docs/AI_REVIEW_LEARNINGS_LOG.md (documented performance patterns from Reviews #1-80+)
 2. docs/analysis/sonarqube-manifest.md (47 CRITICAL cognitive complexity issues)
-3. docs/ARCHITECTURE.md (system architecture and component boundaries)
+3. ARCHITECTURE.md (system architecture and component boundaries - root level)
 
 **IF browse_files=no:** Use this inline context instead:
 
@@ -739,6 +739,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-07 | Review #81: Fixed ARCHITECTURE.md path (docs/ARCHITECTURE.md → root-level ARCHITECTURE.md); added CAPABILITIES example format | Claude |
 | 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of known performance issues | Claude |
 | 1.1 | 2026-01-06 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude |
 | 1.0 | 2026-01-05 | Initial template creation | [Author] |

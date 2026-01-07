@@ -1,6 +1,6 @@
 # SoNash Multi-AI Documentation Audit Plan
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Created:** 2026-01-05
 **Last Updated:** 2026-01-07
 **Status:** PENDING
@@ -183,8 +183,14 @@ Before any findings, print exactly:
 CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
 
 If browse_files=no OR repo_checkout=no:
-- Run in "LIMITED MODE": Provide general recommendations only
-- Note: Link validation requires repo access
+- Run in "NO-REPO MODE": Cannot complete full audit without repo access
+- **Required NO-REPO MODE Output**:
+  1. CAPABILITIES header with limitation clearly noted
+  2. QUALITY_METRICS_JSON with null values and gap: "Unable to assess without repository access"
+  3. Empty FINDINGS_JSONL section (print header, output zero lines)
+  4. Empty SUSPECTED_FINDINGS_JSONL section (print header, output zero lines)
+  5. HUMAN_SUMMARY explaining limitation and how to proceed
+- Do NOT attempt link validation or invent documentation issues
 ```
 
 ### Part 2: Anti-Hallucination Rules
@@ -616,6 +622,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-07 | Review #81: Standardized "LIMITED MODE" → "NO-REPO MODE"; added 5-point NO-REPO MODE output contract | Claude |
 | 1.2 | 2026-01-07 | Added capability-tiered PRE-REVIEW CONTEXT: browse_files=yes models read files, browse_files=no models get inline summary of documentation tier system | Claude |
 | 1.1 | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex; Escaped brackets in pattern | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Documentation audit category added to multi-AI review framework | Claude |
