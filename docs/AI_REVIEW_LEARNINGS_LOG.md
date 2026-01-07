@@ -242,7 +242,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | 1386 | 1500 | Archive oldest reviews |
-| Active reviews | 22 (#61-82) | 20 | Consider archiving older reviews (even if consolidation current) |
+| Active reviews | 23 (#61-83) | 20 | Consider archiving older reviews (even if consolidation current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -302,8 +302,8 @@ Consolidation is needed when:
 
 ### Archive 2: Reviews #42-60
 - **Archive location:** [docs/archive/REVIEWS_42-60.md](./archive/REVIEWS_42-60.md)
-- **Coverage:** 2026-01-04 to 2026-01-05
-- **Status:** CONSOLIDATED (Reviews #73-82 patterns extracted to CODE_PATTERNS.md v1.2, 2026-01-07)
+- **Coverage:** 2026-01-03 to 2026-01-05
+- **Status:** Reviews #42-60 archived (audit trail preserved). Consolidation #7 completed 2026-01-07 (patterns from Reviews #73-82 captured in CODE_PATTERNS.md v1.2)
 
 Access archives only for historical investigation of specific patterns.
 
