@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.92
+**Document Version:** 1.93
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,7 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
-| 1.92 | 2026-01-07 | Review #90: Security audit metadata fixes (6 items) - 5 MINOR (log lines metric, severity breakdown, secrets_management status, F-010 duplicate, Review #88 severity clarity), 1 TRIVIAL (hyphenation), 1 REJECTED (consolidation count) |
+| 1.93 | 2026-01-07 | Review #91: Audit traceability improvements (5 items) - 5 MINOR (severity_normalization field, adjudication field, F-010 severity in remediation, item count, log lines metric), 6 REJECTED (⚪ compliance items - doc-only PR, code fixes in Step 4B) |
+| 1.92 | 2026-01-07 | Review #90: Security audit metadata fixes (7 items) - 5 MINOR (log lines metric, severity breakdown, secrets_management status, F-010 duplicate, Review #88 severity clarity), 1 TRIVIAL (hyphenation), 1 REJECTED (consolidation count) |
 | 1.91 | 2026-01-07 | Review #89: Security audit documentation fixes (9 items) - 8 MINOR (F-010 severity, secrets_management status, duplicate model entry, SESSION_CONTEXT dates/status, active review range/count, progress percentage), 1 TRIVIAL (hyphenation) |
 | 1.90 | 2026-01-07 | Review #88: SECURITY AUDIT (Phase 4.2) - Multi-AI aggregated audit (Claude Opus 4.5 + ChatGPT 5.2), 10 canonical findings. Severity: S0 (1): F-001 Firestore bypass; S1 (2): F-002 rate-limiting, F-003 reCAPTCHA; S2 (6): F-004–F-009; S3 (1): F-010 risk-accepted. Overall: NON_COMPLIANT |
 | 1.89 | 2026-01-07 | Review #87: Schema symmetry & markdown syntax (4 fixes) - 1 MAJOR (QUALITY_METRICS_JSON null schema), 3 MINOR (stray code fences in PROCESS/REFACTORING/DOCUMENTATION) |
@@ -166,7 +167,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 9
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (last consolidated 2026-01-07 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
@@ -217,7 +218,7 @@ Consolidation is needed when:
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
 | Patterns in claude.md | 60+ | - | ✅ |
-| Reviews since last consolidation | 8 | <10 | ✅ |
+| Reviews since last consolidation | 9 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
@@ -247,7 +248,7 @@ Consolidation is needed when:
 
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
-| Main log lines | 1439 | 1500 | Archive oldest reviews |
+| Main log lines | 1441 | 1500 | Archive oldest reviews |
 | Active reviews | 28 (#61-88) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
@@ -401,7 +402,7 @@ Reviews #41-88 are actively maintained below. Older reviews are in the archive.
 5. F-007: Console removal + lint (S2, E1)
 6. F-008: Admin write hardening (S2, E1)
 7. F-009: Remove hardcoded fallback (S2, E1)
-8. F-010: Document risk acceptance (S0, E1 - optional)
+8. F-010: Document risk acceptance (S3, E1 - optional)
 
 ---
 
