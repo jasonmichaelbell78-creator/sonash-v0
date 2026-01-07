@@ -58,9 +58,11 @@ State: "I identified **N total suggestions** from this review. Proceeding with c
 
 1. **Verify via git history** - Don't trust current state alone:
    ```bash
-   # Check if file/review ever existed
-   git log --all --oneline --grep="Review #N" -- docs/
-   git log --all -p -- path/to/file.ext | head -100
+   # Check if file/review ever existed (search common variants)
+   git log --all --oneline --grep="Review #N" --grep="Review N" -- docs/
+
+   # Follow renames/moves when inspecting file history
+   git log --all --follow -p -- path/to/file.ext | head -100
    ```
 
 2. **Common false positives to watch for:**

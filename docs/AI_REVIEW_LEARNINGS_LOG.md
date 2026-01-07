@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.86
+**Document Version:** 1.87
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.87 | 2026-01-07 | Review #84-85: Process quality improvements - #84: Review #83 follow-up (4 metadata fixes), #85: Qodo suggestions on Review #84 commit (3 fixes: git verification, threshold clarity, archive status) |
 | 1.86 | 2026-01-07 | Review #83: Archive & Consolidation Metadata Fixes (5 fixes) - 1 REJECTED (false positive: #41 data loss), 1 MAJOR (broken links), 1 MINOR (status sync), 2 TRIVIAL (line count, wording) |
 | 1.85 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 → CODE_PATTERNS.md v1.2 (9 patterns: 3 Bash/Shell portability, 6 Documentation quality) |
 | 1.84 | 2026-01-07 | ARCHIVE #2: Reviews #42-60 → REVIEWS_42-60.md (1048 lines removed, 2425→1377 lines) |
@@ -160,7 +161,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1
+**Reviews since last consolidation:** 3
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ CURRENT (last consolidated 2026-01-07, Session #29 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
@@ -242,7 +243,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | 1386 | 1500 | Archive oldest reviews |
-| Active reviews | 23 (#61-83) | 20 | Consider archiving older reviews (even if consolidation current) |
+| Active reviews | 25 (#61-85) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -303,7 +304,8 @@ Consolidation is needed when:
 ### Archive 2: Reviews #42-60
 - **Archive location:** [docs/archive/REVIEWS_42-60.md](./archive/REVIEWS_42-60.md)
 - **Coverage:** 2026-01-03 to 2026-01-05
-- **Status:** Reviews #42-60 archived (audit trail preserved). Consolidation #7 completed 2026-01-07 (patterns from Reviews #73-82 captured in CODE_PATTERNS.md v1.2)
+- **Status:** Reviews #42-60 archived (audit trail preserved).
+- **Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest as of 2026-01-07: v1.2).
 
 Access archives only for historical investigation of specific patterns.
 
@@ -311,7 +313,64 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-83 are actively maintained below. Older reviews are in the archive.
+Reviews #61-85 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #85: Process Quality Improvements (2026-01-07)
+
+**Source:** Qodo PR
+**PR:** Commit eef4b62 (Review #84 fixes)
+**Suggestions:** 3 total (0 Critical, 0 Major, 2 Minor, 1 Trivial)
+
+**Context:** Qodo review of Review #84 commit identified process improvements for git verification reliability, threshold action clarity, and archive metadata organization.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Git verification commands missing --follow and variant patterns | 🟡 Minor | Process Robustness | Added `--follow` flag for rename tracking, broadened grep to match "Review #N" and "Review N" variants |
+| 2 | Threshold action unclear ("Consider archiving") | 🟡 Minor | Process Clarity | Changed to explicit instruction: "Archive oldest active reviews until ≤20 remain" |
+| 3 | Archive status conflates archive content with unrelated consolidation | ⚪ Trivial | Metadata Organization | Separated status line from consolidation note for clarity |
+
+**Patterns Identified:**
+
+1. **Process Documentation Precision** (Reinforcement)
+   - Root cause: Advisory language ("Consider") in operational triggers creates ambiguity
+   - Prevention: Use explicit, actionable instructions in threshold actions
+   - Pattern: Operational triggers should be imperative ("Archive until ≤20") not suggestive ("Consider archiving")
+
+2. **Git History Verification Robustness** (Enhancement to #83)
+   - Root cause: Initial verification commands didn't handle file renames or pattern variants
+   - Prevention: Always use `--follow` flag when tracking file history; search multiple grep patterns
+   - Pattern: `git log --all --follow -p` for file tracking, `--grep="Review #N" --grep="Review N"` for pattern matching
+
+**Key Learning:** Process documentation benefits from precision. Review #83 added validation steps for false positives; Review #85 enhanced those steps with robust git commands and clear operational triggers.
+
+---
+
+#### Review #84: Review #83 Follow-up Metadata Corrections (2026-01-07)
+
+**Source:** Qodo PR (follow-up on commit eb8ffee)
+**PR:** Commit eb8ffee (Review #83 fixes)
+**Suggestions:** 4 total (0 Critical, 0 Major, 0 Minor, 4 Trivial)
+
+**Context:** Quick follow-up from Qodo on Review #83 commit, catching additional metadata inconsistencies that emerged from the archival work.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Archive header consolidation scope confusing (#73-82 vs #42-60) | ⚪ Trivial | Metadata Clarity | Clarified that #42-60 are archived reviews, #73-82 was separate consolidation event |
+| 2 | Archive coverage dates incorrect (2026-01-04 vs 2026-01-03) | ⚪ Trivial | Metadata Accuracy | Corrected to 2026-01-03 (verified via content: Process Pivot #1 dated 2026-01-03) |
+| 3 | Active review count not updated after adding Review #83 | ⚪ Trivial | Metadata Consistency | Updated 22→23, #61-82→#61-83 |
+| 4 | Archive reference in main log not updated | ⚪ Trivial | Cross-file Sync | Updated Archive 2 reference with corrected dates and status |
+
+**Pattern Reinforcement:**
+
+- **Cross-File Metadata Synchronization** (from #83): All 4 fixes involved updating metadata in multiple locations (archive header + main log reference)
+
+**Key Learning:** Metadata changes often have cascading effects across multiple files. When updating archive-related metadata, verify ALL locations: archive file header, main log archive reference, and current metrics table.
 
 ---
 
