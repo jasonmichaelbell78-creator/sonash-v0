@@ -84,7 +84,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-68) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-80) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
