@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.81
+**Document Version:** 1.83
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.83 | 2026-01-07 | Review #82: Post-commit review fixes (6 items) - 0 MAJOR, 5 MINOR (review range, Last Updated date, SECURITY.md path, markdown formatting, CANON-0032 status), 1 TRIVIAL (code fence), 1 HIGH-LEVEL (generator fix recommendation) |
+| 1.82 | 2026-01-07 | Review #81: Documentation linter fixes (57 errors) - 3 MAJOR (missing ARCHITECTURE.md/DEVELOPMENT.md links, missing Purpose in claude.md), 8 MINOR (broken links, missing sections), 4 TRIVIAL (date placeholders, metadata) |
 | 1.81 | 2026-01-07 | Review #80: 3 fixes - 2 MINOR (PR_PLAN.json structured acceptance_tests, CANON-CODE.jsonl source identifiers), 1 TRIVIAL (document version sync) |
 | 1.80 | 2026-01-06 | Review #79: 10 fixes, 1 rejected - 3 MAJOR (JSONL parser-breaking output in 3 templates), 4 MINOR (bash portability, JSON validity, path clarity, count accuracy), 3 TRIVIAL (metadata consistency) - rejected 1 suggestion contradicting established canonical format |
 | 1.79 | 2026-01-06 | Review #78: 12 fixes - 2 MAJOR (invalid JSONL NO-REPO output, missing pipefail in validator), 7 MINOR (JSON placeholders, NO-REPO contract, markdown links, category count, model names, audit scope, last updated date), 3 TRIVIAL (review range, version history, model name consistency) |
@@ -155,9 +157,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8
+**Reviews since last consolidation:** 10
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ CURRENT (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
+**Status:** ⚠️ CONSOLIDATION NEEDED (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
 
 ### When to Consolidate
 
@@ -299,7 +301,182 @@ Access the archive only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-80 are actively maintained below. Older reviews are in the archive.
+Reviews #41-82 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #82: Post-Commit Review Feedback (2026-01-07)
+
+**Source:** Qodo + CodeRabbit (PR Code Suggestions + inline comments)
+**PR:** Session #29
+**Commit:** 2f4a0ce
+**Tools:** Qodo (3 suggestions), CodeRabbit (3 inline comments)
+
+**Context:** Post-commit review feedback on Review #81 changes. Qodo identified process improvement opportunity (fix generator vs fixing output manually) and formatting issues. CodeRabbit caught metadata consistency issues (review range, Last Updated date) and incorrect relative path.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Active review range outdated (#41-79 vs #41-80) | 🟡 Minor | Metadata | Updated AI_REVIEW_LEARNINGS_LOG.md header to #41-80 |
+| 2 | Last Updated date inconsistent in REVIEW_POLICY_VISUAL_GUIDE | 🟡 Minor | Metadata | Changed 2026-01-04 → 2026-01-07 to match Version History |
+| 3 | SECURITY.md path incorrect in FOUNDATION_DOC_TEMPLATE | 🟡 Minor | Documentation | Fixed ../../SECURITY.md → ../SECURITY.md (docs/ vs root) |
+| 4 | HUMAN_SUMMARY missing markdown heading | 🟡 Minor | Documentation | Added ### heading and blank line for proper formatting |
+| 5 | CANON-0032 status mismatch in gemini-chatgpt-aggregation.md | 🟡 Minor | Data Consistency | Removed CANON-0032 from suspected items list (JSONL shows CONFIRMED not SUSPECTED) |
+| 6 | Malformed JSON code fence (### + ```json combined) | ⚪ Trivial | Documentation | Separated heading from code fence, added PARSE_ERRORS_JSON label |
+
+**Process Recommendation (High-Level):**
+
+| # | Recommendation | Severity | Category | Action |
+|---|----------------|----------|----------|--------|
+| 1 | Fix generator not output files | 🔴 High | Process | gemini-chatgpt-aggregation.md is generated; should fix multi-AI coordinator tool to output correct format from start. DEFERRED: No current generator script exists - file was manually created in Review #81 |
+
+**Patterns Identified:**
+
+1. **Post-Commit Review Timeliness** (1 occurrence - Process Improvement)
+   - Root cause: Review feedback arrived immediately after Review #81 commit
+   - Prevention: Allow review tools time to analyze before next commit
+   - Pattern: CodeRabbit/Qodo provide feedback within minutes of push
+   - Note: Fast turnaround is valuable - catch issues before next session
+
+2. **Metadata Consistency Tracking** (2 occurrences - Quality Issue)
+   - Root cause: Version History updated but header "Last Updated" not updated
+   - Prevention: Create checklist for metadata updates (both places)
+   - Pattern: When adding Version History entry, update document header simultaneously
+   - Cross-reference: Similar issue in Review #79 with review range (#41-78 vs #41-79)
+
+3. **Generator vs Manual Fix Decision** (1 occurrence - Strategic Issue)
+   - Root cause: No generator exists for gemini-chatgpt-aggregation.md (file was manually created)
+   - Prevention: Distinguish between "fix generator" (when one exists) vs "fix file" (when manually created)
+   - Pattern: Qodo suggested fixing generator, but audit aggregation is manual process currently
+   - Resolution: DEFERRED - Multi-AI aggregation tooling planned for Step 4.3 of Integrated Improvement Plan
+
+4. **JSONL Data and Human Summary Consistency** (1 occurrence - Data Integrity)
+   - Root cause: HUMAN_SUMMARY listed CANON-0032 as "suspected" but JSONL entry showed "CONFIRMED"
+   - Prevention: Cross-validate structured data (JSONL) with human summaries during review
+   - Pattern: When maintaining parallel data representations, ensure status fields are synchronized
+   - Note: CodeRabbit caught the discrepancy between JSONL status and summary narrative
+
+**Resolution:**
+- Fixed: 6 items (5 MINOR, 1 TRIVIAL)
+- Deferred: 1 item (generator fix - no generator exists yet, planned for Step 4.3)
+- Rejected: 0 items
+
+**Key Learnings:**
+- Post-commit reviews catch metadata drift that automated linters miss
+- "Last Updated" and Version History must be updated together (create checklist)
+- Distinguish "fix generator" suggestions (when generator exists) from manual file improvements
+- Review tool feedback turnaround is very fast (< 5 minutes) - valuable for immediate fixes
+- JSONL data and human summaries must be cross-validated for consistency (status fields especially)
+
+---
+
+#### Review #81: Documentation Linter Systematic Cleanup (2026-01-07)
+
+**Source:** Automated Documentation Linter (`npm run docs:check`)
+**PR:** Session #28
+**Commit:** 19c06fa
+**Tools:** docs:check (57 errors, 96 warnings across 67 files)
+
+**Context:** Systematic cleanup of documentation quality issues identified by automated linting. The linter detected 57 errors across 25 files, including broken links to non-existent files (ARCHITECTURE.md, DEVELOPMENT.md), missing required sections (Purpose/Overview, Version History), invalid date placeholders (YYYY-MM-DD), and metadata consistency issues.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1-2 | Broken links to ARCHITECTURE.md/DEVELOPMENT.md (8 files) | 🔴 Major | Documentation | Fixed relative paths in FIREBASE_CHANGE_POLICY, templates, audit plans |
+| 3 | Missing Purpose section in claude.md | 🔴 Major | Compliance | Added Purpose section explaining Tier 4 document role |
+| 4 | Broken links in docs/README.md | 🟡 Minor | Documentation | Fixed CODE_PATTERNS.md and SESSION_CONTEXT.md relative paths |
+| 5 | Placeholder links in DOCUMENTATION_STANDARDS.md | 🟡 Minor | Documentation | Replaced with angle bracket placeholders |
+| 6 | Windows absolute file:// paths in RECAPTCHA guide | 🟡 Minor | Documentation | Converted to relative paths (../lib/firebase.ts, etc.) |
+| 7 | Placeholder links in AI_REVIEW_LEARNINGS_LOG.md | 🟡 Minor | Documentation | Updated to angle bracket format |
+| 8-9 | Missing sections in REVIEW_POLICY docs | 🟡 Minor | Compliance | Added Purpose and Version History to quick ref and visual guide |
+| 10 | YYYY-MM-DD placeholders in 9 templates | ⚪ Trivial | Templates | Replaced with [Date] placeholder format |
+| 11 | gemini-chatgpt-aggregation.md structure | ⚪ Trivial | Compliance | Added H1, Purpose, and Version History sections |
+
+**Patterns Identified:**
+
+1. **Incorrect Relative Paths from Subdirectories** (8 occurrences - Navigation Issue)
+   - Root cause: Files in docs/ and docs/subdirs/ using wrong relative depth to root files
+   - Prevention: Test links before committing; use `../` for each directory level
+   - Pattern: `docs/` files need `../ARCHITECTURE.md`, `docs/templates/` need `../../ARCHITECTURE.md`
+   - Fix: Corrected all paths based on directory depth
+
+2. **Missing Required Sections in Documentation** (6+ occurrences - Compliance Issue)
+   - Root cause: Docs created without following DOCUMENTATION_STANDARDS.md requirements
+   - Prevention: Use templates consistently, validate before committing
+   - Pattern: Purpose/Overview and Version History are most commonly missing
+   - Fix: Added required sections to claude.md, REVIEW_POLICY docs, gemini-chatgpt-aggregation.md
+
+3. **Template Placeholder Format Inconsistency** (9 occurrences - Quality Issue)
+   - Root cause: Templates with `YYYY-MM-DD` literal that users might not recognize as placeholder
+   - Prevention: Use clearly distinguishable placeholder format in templates
+   - Pattern: "Last Updated: YYYY-MM-DD" in templates
+   - Fix: Changed to `[Date]` format to make placeholders more obvious
+
+**Resolution:**
+- Fixed: 24 errors (57 → 33 errors, 42% reduction)
+- Remaining: 33 errors (mostly placeholder syntax, template compliance, and brainstorm/decision docs)
+- Rejected: 0 items
+
+**Key Learnings:**
+- Relative path depth must match directory nesting level (`docs/` = `../`, `docs/subdir/` = `../../`)
+- Template placeholders should use format that's clearly non-functional (`[Placeholder]` better than `YYYY-MM-DD`)
+- Purpose and Version History sections are frequently missing from non-template docs
+- Automated linting catches systematic issues across large documentation sets
+
+---
+
+#### Review #80: Multi-AI Code Review Audit Refinements (2026-01-07)
+
+**Source:** PR Code Review Feedback
+**PR:** Session #28 (different branch)
+**Commit:** f6211f7
+**Tools:** Manual review feedback
+
+**Context:** Post-review refinements for Multi-AI Code Review audit files addressing structured test specifications, source identifier standardization, and metadata consistency. Review identified need for machine-parseable acceptance tests and controlled vocabulary for AI model sources.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | PR_PLAN.json acceptance_tests were strings | 🟡 Minor | Schema | Restructured to objects with area/assertion/how_to_verify fields for machine parsing |
+| 2 | CANON-CODE.jsonl sources not standardized | 🟡 Minor | Data Quality | Standardized to controlled vocabulary (lowercase-hyphenated: claude-sonnet-4.5, github-copilot, etc.) |
+| 3 | Document version outdated (1.69 vs 1.81) | ⚪ Trivial | Metadata | Updated AI_REVIEW_LEARNINGS_LOG.md version to 1.81 |
+| 4 | Active reviews range outdated | ⚪ Trivial | Metadata | Updated range to #41-80 |
+| 5 | Documentation examples causing false positives | ⚪ Trivial | Documentation | Escaped markdown examples to prevent broken link detection |
+| 6 | Consolidation counter outdated | ⚪ Trivial | Metadata | Updated counter from 7 to 8 |
+
+**Patterns Identified:**
+
+1. **Structured Test Specifications for Automation** (1 occurrence - Schema Design)
+   - Root cause: Acceptance tests as strings aren't machine-parseable
+   - Prevention: Define structured schema with area/assertion/verification fields
+   - Pattern: Test specifications should support both human readability and automated validation
+   - Note: Enables future automation of PR acceptance criteria checking
+
+2. **Controlled Vocabulary for AI Model Sources** (1 occurrence - Data Quality)
+   - Root cause: Inconsistent source identifiers make aggregation difficult
+   - Prevention: Establish canonical naming convention (lowercase-hyphenated)
+   - Pattern: claude-sonnet-4.5, github-copilot, gpt-4o, gemini-2.0-flash-thinking
+   - Note: Critical for multi-AI audit result deduplication and attribution
+
+3. **Documentation Example Escaping** (1 occurrence - False Positive Prevention)
+   - Root cause: Markdown examples in docs triggered broken link detection
+   - Prevention: Escape example markdown syntax in documentation
+   - Pattern: Use code formatting or backslash escaping for example links
+   - Note: Prevents linter false positives while maintaining documentation clarity
+
+**Resolution:**
+- Fixed: 6 items (2 MINOR, 4 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- Test specifications benefit from structured schemas that support both human and machine consumption
+- Controlled vocabularies for cross-cutting attributes (sources, models) enable better data aggregation
+- Documentation examples need escaping to avoid triggering validation tools
+- ESLint false positive scope should be explicitly documented (object-iteration vs other findings)
 
 ---
 
@@ -785,7 +962,7 @@ Reviews #41-80 are actively maintained below. Older reviews are in the archive.
 4. **Regex Robustness for Markdown Links** (1 occurrence - Automation)
    - Root cause: Greedy regex `.*` captured too much, no anchor handling (#section) in broken link detection
    - Prevention: Use non-greedy `.*?` for markdown link patterns, strip anchors before file existence checks
-   - Pattern: Link extraction should handle: `\[text\](path)`, `\[text\](path#anchor)`, `\[text\](http://external)`
+   - Pattern: Link extraction should handle: `[text](<path>)`, `[text](<path>#anchor)`, `[text](<http://external>)`
    - Note: Test regexes against edge cases: nested brackets, special chars, anchors
 
 5. **JSONL Validation Robustness** (1 occurrence - Automation)
@@ -2161,7 +2338,7 @@ All 6 compliance guide items verified as COMPLIANT:
 2. **Documentation Link Hygiene**
    - All internal links must use relative paths
    - Verify link targets exist before committing
-   - Use markdown link syntax `\[text\](path)` consistently
+   - Use markdown link syntax `[text](<path>)` consistently
 
 3. **Template Completion Checklist**
    - Replace ALL placeholder tokens before using template

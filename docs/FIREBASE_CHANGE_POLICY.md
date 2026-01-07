@@ -582,10 +582,10 @@ All Firebase changes are tracked via:
 ## Related Documents
 
 - **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Global security policy (this policy is a specialization)
-- **[FIREBASE_ARCHITECTURE.md](./FIREBASE_ARCHITECTURE.md)** - Firebase architecture and data model
+- **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System architecture and data model
 - **[SECURITY.md](./SECURITY.md)** - Security vulnerability reporting and key rotation
 - **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** - Security audit template (references this policy)
-- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Development workflow and testing procedures
+- **[DEVELOPMENT.md](../DEVELOPMENT.md)** - Development workflow and testing procedures
 
 ---
 

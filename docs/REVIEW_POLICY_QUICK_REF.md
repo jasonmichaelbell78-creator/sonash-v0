@@ -1,7 +1,18 @@
 # Review Policy Quick Reference
 
 **Last Updated:** 2026-01-04
-**Purpose:** One-page cheat sheet for review tiers and workflows
+
+---
+
+## Purpose
+
+This is a **one-page quick reference** for the SoNash review policy. Use it to:
+- Quickly determine which review tier applies to your changes
+- Find the right reviewers for your PR
+- Understand target merge times and workflows
+- Access tier-specific checklists
+
+For full policy details, see [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md).
 
 ---
 
@@ -261,6 +272,15 @@ A: You can mark as "Won't Fix" with explanation. For Tier 2+, human reviewer wil
 - **Security Standards:** [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)
 - **AI Review Process:** [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md)
 - **PR Workflow:** [PR_WORKFLOW_CHECKLIST.md](./PR_WORKFLOW_CHECKLIST.md)
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-01-07 | Added Purpose and Version History sections for documentation standards compliance |
+| 1.0 | 2026-01-04 | Initial quick reference creation |
 
 ---
 

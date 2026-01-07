@@ -259,9 +259,9 @@ Example:
 ### Internal Documentation
 
 **Foundation Documents**:
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
-- [SECURITY.md](./SECURITY.md) - Security guidelines
-- [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - System architecture
+- [SECURITY.md](../SECURITY.md) - Security guidelines
+- [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development procedures
 
 **Planning Documents**:
 - [ROADMAP.md](../ROADMAP.md) - Product roadmap

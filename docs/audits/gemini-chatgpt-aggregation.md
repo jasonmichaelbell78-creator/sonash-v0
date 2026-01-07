@@ -1,13 +1,44 @@
-Audit Aggregation: Gemini + ChatGPT
-===================================
+# Audit Aggregation: Gemini + ChatGPT
 
-PARSE_ERRORS_JSON
+**Created:** 2026-01-05
+**Last Updated:** 2026-01-05
+
+---
+
+## Purpose
+
+This document contains aggregated findings from a multi-AI code audit combining results from Gemini and ChatGPT. It includes:
+- Parse errors from the aggregation process
+- Deduplicated findings in JSONL format
+- Canonical IDs (CANON-NNNN) for cross-referencing issues
+- Verification status and consensus scores for each finding
+
+This is a generated output file from the multi-AI review coordinator.
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-01-05 | Initial aggregation output |
+
+---
+
+## Audit Output
+
+### PARSE_ERRORS_JSON
+
+```json
 {
   "parse_errors": [],
   "dropped_count": 0
 }
+```
 
-DEDUPED_FINDINGS_JSONL
+### DEDUPED_FINDINGS_JSONL
+
+```jsonl
 {"canonical_id":"CANON-0001","category":"Security","title":"Inconsistent Write Security for Notebook Entries","severity":"S1","effort":"E2","status":"CONFIRMED","final_confidence":85,"consensus_score":2,"sources":["Gemini","Copilot"],"confirmations":2,"suspects":0,"tool_confirmed_sources":0,"verification_status":"VERIFIED","verification_notes":"saveNotebookJournalEntry uses addDoc while other writes use httpsCallable Cloud Functions with validation and rate limiting","files":["lib/firestore-service.ts","functions/src/index.ts"],"symbols":["saveNotebookJournalEntry","saveJournalEntry","saveDailyLog","saveInventoryEntry"],"duplication_cluster":{"is_cluster":true,"cluster_summary":"Mixed direct Firestore writes and Cloud Function backed writes in FirestoreService","instances":[{"file":"lib/firestore-service.ts","symbol":"saveNotebookJournalEntry"},{"file":"lib/firestore-service.ts","symbol":"saveJournalEntry"},{"file":"lib/firestore-service.ts","symbol":"saveDailyLog"},{"file":"lib/firestore-service.ts","symbol":"saveInventoryEntry"}]},"why_it_matters":"Direct client writes bypass the server-side validation and rate limiting used elsewhere, creating inconsistent security guarantees.","suggested_fix":"Route notebook journal writes through the existing saveJournalEntry Cloud Function or apply equivalent server-side checks for all write paths.","acceptance_tests":["Verify notebook journal writes are processed via Cloud Function","Rate limiting still applies to notebook entries"],"pr_bucket_suggestion":"security-hardening","dependencies":[],"evidence_summary":["saveDailyLog/saveInventoryEntry use httpsCallable","saveNotebookJournalEntry currently uses addDoc directly"]}
 {"canonical_id":"CANON-0002","category":"Security","title":"App Check disabled on key Cloud Functions","severity":"S1","effort":"E1","status":"CONFIRMED","final_confidence":92,"consensus_score":2,"sources":["Copilot","Claude"],"confirmations":2,"suspects":0,"tool_confirmed_sources":1,"verification_status":"VERIFIED","verification_notes":"functions/src/index.ts explicitly sets requireAppCheck: false for saveDailyLog and saveInventoryEntry","files":["functions/src/index.ts"],"symbols":["saveDailyLog","saveInventoryEntry","requireAppCheck"],"duplication_cluster":{"is_cluster":false,"cluster_summary":"","instances":[]},"why_it_matters":"Disabling App Check allows untrusted callers to hit production Cloud Functions directly, bypassing bot protections.","suggested_fix":"Enable App Check enforcement on affected functions; use debug tokens for local development instead of disabling in production.","acceptance_tests":["Calling functions without App Check token fails with 403","Debug token works in local/dev"],"pr_bucket_suggestion":"security-hardening","dependencies":[],"evidence_summary":["requireAppCheck set to false with TEMPORARY comment"]}
 {"canonical_id":"CANON-0003","category":"Security","title":"Firestore rules may not rate limit journal writes (suspected)","severity":"S1","effort":"E2","status":"SUSPECTED","final_confidence":40,"consensus_score":1,"sources":["Copilot"],"confirmations":0,"suspects":1,"tool_confirmed_sources":0,"verification_status":"UNVERIFIED","verification_notes":"Rules content not yet reviewed for journal rate limiting","files":["firestore.rules"],"symbols":["match /users/{userId}/journal/{entryId}"],"duplication_cluster":{"is_cluster":false,"cluster_summary":"","instances":[]},"why_it_matters":"If journal writes bypass Cloud Functions and rules lack throttling, clients could write unlimited entries.","suggested_fix":"Review and update Firestore rules to ensure journal writes are properly constrained or enforced via callable functions.","acceptance_tests":["Firestore Rules Simulator shows journal write limits"],"pr_bucket_suggestion":"security-hardening","dependencies":["CANON-0001"],"evidence_summary":["Rules file exists; rate limiting not confirmed"]}
@@ -155,10 +186,12 @@ PR_PLAN_JSON
     }
   ]
 }
+```
 
-HUMAN_SUMMARY
+### HUMAN_SUMMARY
+
 - Top 10 quick wins: CANON-0002 (enable App Check), CANON-0011 (localStorage SSR guard), CANON-0007 (shared admin init), CANON-0014 (centralize storage keys), CANON-0006 (batch gratitude writes), CANON-0013/CANON-0026 (align rate limiters), CANON-0030 (centralize Cloud Function wrapper), CANON-0035 (badge primitive), CANON-0040 (journal path constants), CANON-0042 (remove Date.now fallback in useJournal).
 - Top 5 high-risk/high-payoff refactors: CANON-0001 (journal writes via Cloud Function), CANON-0002 (App Check enforcement), CANON-0043 (journal write validation/limiting), CANON-0044 (rules/comment alignment for journal), CANON-0033 (Cloud Functions test coverage).
 - Key duplication clusters to consolidate: Firestore access patterns (CANON-0005), admin SDK initialization (CANON-0007), rate limiter implementations/configs (CANON-0013, CANON-0026, CANON-0041), storage key scatter (CANON-0014), journal type definitions (CANON-0008), growth card wizard/save logic (CANON-0018), quote rotation/widgets (CANON-0020, CANON-0022, CANON-0045), CRUD boilerplate (CANON-0021), Cloud Function wrapper usage (CANON-0030), meeting countdown/widgets (CANON-0029), static data vs Firestore content (CANON-0031), loading-state boilerplate (CANON-0032), snapshot mapping helper (CANON-0039), journal path constants (CANON-0040), badge primitive reuse (CANON-0035), validation schema drift (CANON-0036).
-- Items demoted as hallucinations/false positives: None; suspected items remain flagged (CANON-0003, CANON-0015, CANON-0016, CANON-0017, CANON-0032, CANON-0038) pending verification.
+- Items demoted as hallucinations/false positives: None; suspected items remain flagged (CANON-0003, CANON-0015, CANON-0016, CANON-0017, CANON-0038) pending verification.
 - Recommended implementation order: 1) Address security posture (CANON-0001, CANON-0002, CANON-0041, CANON-0043, CANON-0044), 2) Remove client/server duplication and dual writes (CANON-0005, CANON-0006, CANON-0007, CANON-0024, CANON-0028, CANON-0030, CANON-0040), 3) Reconcile journal types/nullability and tighten typings (CANON-0008, CANON-0009, CANON-0010, CANON-0011, CANON-0023, CANON-0042), 4) Improve coverage and guardrails (CANON-0012, CANON-0019, CANON-0027, CANON-0033, CANON-0045), 5) Tackle remaining hygiene clusters (CANON-0013, CANON-0014, CANON-0015, CANON-0016, CANON-0017, CANON-0018, CANON-0020, CANON-0021, CANON-0022, CANON-0025, CANON-0026, CANON-0029, CANON-0031, CANON-0032, CANON-0034, CANON-0035, CANON-0036, CANON-0037, CANON-0038, CANON-0039).
