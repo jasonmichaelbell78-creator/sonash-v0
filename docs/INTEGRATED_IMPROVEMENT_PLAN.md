@@ -40,7 +40,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 6 | ROADMAP.md Integration & Doc Updates | **PENDING** | 0% | Step 5 |
 | Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
-**Overall Progress:** 3/8 steps complete (37.5%)
+**Overall Progress:** 3/8 steps complete + Step 4 in progress (~40%)
 **Effort Tracking:** ~9 hours actual (Steps 1-3) + ~43-55 hours remaining (Step 4: 28h, 4B: 8-16h, 5: 4-6h, 6: 2-3h, 7: 1-2h)
 **Target Completion:** TBD (no costly deadlines - solo project)
 

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.90
+**Document Version:** 1.91
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.91 | 2026-01-07 | Review #89: Security audit documentation fixes (9 items) - 8 MINOR (F-010 severity, secrets_management status, duplicate model entry, SESSION_CONTEXT dates/status, active review range/count, progress percentage), 1 TRIVIAL (hyphenation) |
 | 1.90 | 2026-01-07 | Review #88: SECURITY AUDIT (Phase 4.2) - Multi-AI aggregated audit (Claude Opus 4.5 + ChatGPT 5.2), 10 canonical findings, 8 remediation items. Overall: NON_COMPLIANT. Critical: F-001 Firestore bypass, F-002 rate limiting gaps, F-003 reCAPTCHA fail-open |
 | 1.89 | 2026-01-07 | Review #87: Schema symmetry & markdown syntax (4 fixes) - 1 MAJOR (QUALITY_METRICS_JSON null schema), 3 MINOR (stray code fences in PROCESS/REFACTORING/DOCUMENTATION) |
 | 1.88 | 2026-01-07 | Review #86: Qodo follow-up on Review #85 (3 fixes, 1 rejected) - 1 MINOR (broken link), 2 TRIVIAL (Bash-only clarity, copy-safe snippet), 1 REJECTED (duplicate pathspec separator) |
@@ -90,7 +91,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-81) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#41-88) | Deep investigation | ~1300 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -164,7 +165,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6
+**Reviews since last consolidation:** 7
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (last consolidated 2026-01-07 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
@@ -215,7 +216,7 @@ Consolidation is needed when:
 | Critical files (14) violations | 0 | 0 | ✅ |
 | Full repo violations | 63 | <50 | ⚠️ |
 | Patterns in claude.md | 60+ | - | ✅ |
-| Reviews since last consolidation | 6 | <10 | ✅ |
+| Reviews since last consolidation | 7 | <10 | ✅ |
 
 **ESLint Security Warnings Audit (2026-01-04):**
 | Rule | Count | Verdict |
@@ -246,7 +247,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | 1386 | 1500 | Archive oldest reviews |
-| Active reviews | 26 (#61-86) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Active reviews | 28 (#61-88) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process

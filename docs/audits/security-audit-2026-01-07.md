@@ -12,7 +12,7 @@
 Multi-AI security audit identified **10 canonical findings** with deduplication across models. 3 findings are Critical/High priority requiring immediate attention:
 
 1. **F-001 (S0)**: Legacy Firestore path allows direct client writes bypassing server validation
-2. **F-002 (S1)**: Rate limiting gaps - no IP throttling, admin endpoints unprotected
+2. **F-002 (S1)**: Rate-limiting gaps - no IP throttling, admin endpoints unprotected
 3. **F-003 (S1)**: reCAPTCHA logs missing token but continues (fail-open)
 
 One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** given the public API intent.
@@ -52,7 +52,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
       ]
     },
     "secrets_management": {
-      "status": "COMPLIANT",
+      "status": "PARTIAL",
       "model_votes": {
         "claude_opus_4_5": "COMPLIANT",
         "chatgpt_5_2": "NON_COMPLIANT"
@@ -93,10 +93,10 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 {"canonical_id":"F-001","vulnerability_type":{"custom":"Legacy Firestore direct writes bypass server-side controls","owasp":"A01/A05"},"title":"Legacy journalEntries collection allows direct client writes (bypasses Functions validation/rate limits)","severity":"S0","effort":"E2","confidence":100,"files":["firestore.rules"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S1","confidence":100}],"evidence":["firestore.rules allows owner create/update on /users/{userId}/journalEntries/{entryId} (both models)."],"impact":"Owners can write unvalidated/untethered payloads directly to Firestore, bypassing any server-side schema/rate-limit/bot controls used elsewhere.","remediation":{"steps":["Migrate off /users/{userId}/journalEntries/* to the validated path (or Functions-only write path).","Update firestore.rules to deny create/update on legacy path (align with newer collections).","Add emulator/rules tests to prevent regression."],"verification":["Attempt direct client create/update to legacy path → denied.","All journal writes succeed only via the intended secured path."]}}
 ```
 
-### F-002: Rate Limiting Gaps (S1 - High)
+### F-002: Rate-Limiting Gaps (S1 - High)
 
 ```json
-{"canonical_id":"F-002","vulnerability_type":{"custom":"Systemic rate limiting gaps across callable endpoints","owasp":"A04/A07"},"title":"Rate limiting is incomplete (no IP throttling, admin endpoints unthrottled, inconsistent 429-equivalent handling)","severity":"S1","effort":"E2","confidence":100,"files":["functions/src/security-wrapper.ts","functions/src/firestore-rate-limiter.ts","functions/src/admin.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S1","confidence":100},{"model":"ChatGPT 5.2","severity":"S1","confidence":100},{"model":"ChatGPT 5.2","severity":"S2","confidence":95}],"evidence":["Admin callables have no limiter (both models).","Limiter keyed by userId only; no IP-based throttling (ChatGPT 5.2).","Limiter/wrapper mismatch can surface internal errors instead of stable resource-exhausted/429-equivalent (ChatGPT 5.2)."],"impact":"Higher abuse/DoS and cost risk; weaker resilience due to unstable backoff signaling.","remediation":{"steps":["Add a secondary limiter keyed by IP (and/or App Check token/device) in addition to userId.","Wrap admin callables with the same centralized limiter policy (admin-tier limits).","Standardize limiter error mapping so rate-limit exceed always returns resource-exhausted (429-equivalent) with retry guidance."],"verification":["Burst calls produce consistent resource-exhausted responses.","Account cycling no longer trivially bypasses throttles (IP limiter triggers).","Admin callables throttle under burst."]}}
+{"canonical_id":"F-002","vulnerability_type":{"custom":"Systemic rate limiting gaps across callable endpoints","owasp":"A04/A07"},"title":"Rate limiting is incomplete (no IP throttling, admin endpoints unthrottled, inconsistent 429-equivalent handling)","severity":"S1","effort":"E2","confidence":100,"files":["functions/src/security-wrapper.ts","functions/src/firestore-rate-limiter.ts","functions/src/admin.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S1","confidence":100},{"model":"ChatGPT 5.2","severity":"S1","confidence":100}],"evidence":["Admin callables have no limiter (both models).","Limiter keyed by userId only; no IP-based throttling (ChatGPT 5.2).","Limiter/wrapper mismatch can surface internal errors instead of stable resource-exhausted/429-equivalent (ChatGPT 5.2)."],"impact":"Higher abuse/DoS and cost risk; weaker resilience due to unstable backoff signaling.","remediation":{"steps":["Add a secondary limiter keyed by IP (and/or App Check token/device) in addition to userId.","Wrap admin callables with the same centralized limiter policy (admin-tier limits).","Standardize limiter error mapping so rate-limit exceed always returns resource-exhausted (429-equivalent) with retry guidance."],"verification":["Burst calls produce consistent resource-exhausted responses.","Account cycling no longer trivially bypasses throttles (IP limiter triggers).","Admin callables throttle under burst."]}}
 ```
 
 ### F-003: reCAPTCHA Fail-Open (S1 - High)
@@ -141,10 +141,10 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 {"canonical_id":"F-009","vulnerability_type":{"custom":"Hardcoded reCAPTCHA site key fallback (config integrity)","owasp":"A05"},"title":"Hardcoded fallback reCAPTCHA site key in server verification code (config integrity/rotation risk)","severity":"S2","effort":"E1","confidence":100,"files":["functions/src/recaptcha-verify.ts"],"merged_from":[{"model":"ChatGPT 5.2","severity":"S2","confidence":100}],"evidence":["ChatGPT 5.2 reports a hardcoded fallback site key path in recaptcha verification."],"impact":"Silent misconfiguration risk and harder key rotation/environment isolation (not treated here as a secret leak).","remediation":{"steps":["Remove hardcoded fallback; require env vars to be set.","Fail closed with a clear failed-precondition error if required config is missing."],"verification":["Unset env var → function refuses to proceed with clear error; set env var → verification succeeds."]}}
 ```
 
-### F-010: App Check Disabled (S0 - Risk Accepted)
+### F-010: App Check Disabled (S3 - Risk Accepted)
 
 ```json
-{"canonical_id":"F-010","vulnerability_type":{"custom":"App Check disabled (risk accepted / hardening)","owasp":"A04/A05"},"title":"App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)","severity":"S0","effort":"E1","confidence":100,"files":["functions/src/index.ts","lib/firebase.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S2","confidence":100}],"evidence":["Both models: requireAppCheck:false on callables; client App Check initialization commented out."],"impact":"Reduces device-attestation defense-in-depth and increases automated abuse feasibility.","remediation":{"steps":["(If you later choose to enforce) enable App Check on server wrappers + restore client init.","Add monitoring for App Check failures and volume anomalies."],"verification":["Calls without App Check token are rejected (if enabled); legit clients succeed."],"notes":"Explicitly stated NOT a violation because the API is intended to be public-facing. Included as optional hardening / risk-tracked item, not as a compliance blocker."}}
+{"canonical_id":"F-010","vulnerability_type":{"custom":"App Check disabled (risk accepted / hardening)","owasp":"A04/A05"},"title":"App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)","severity":"S3","effort":"E1","confidence":100,"files":["functions/src/index.ts","lib/firebase.ts"],"merged_from":[{"model":"Claude Opus 4.5","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S0","confidence":100},{"model":"ChatGPT 5.2","severity":"S2","confidence":100}],"evidence":["Both models: requireAppCheck:false on callables; client App Check initialization commented out."],"impact":"Reduces device-attestation defense-in-depth and increases automated abuse feasibility.","remediation":{"steps":["(If you later choose to enforce) enable App Check on server wrappers + restore client init.","Add monitoring for App Check failures and volume anomalies."],"verification":["Calls without App Check token are rejected (if enabled); legit clients succeed."],"notes":"Explicitly stated NOT a violation because the API is intended to be public-facing. Included as optional hardening / risk-tracked item, not as a compliance blocker."}}
 ```
 
 ---
@@ -170,7 +170,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 
 1. **Legacy Firestore bypass**: `/users/{userId}/journalEntries/*` allows direct client writes, bypassing server-side security pattern. (S0, both models) → Block direct writes + migrate.
 
-2. **Rate limiting gaps**: Admin endpoints aren't throttled; throttling is userId-only (no IP limits); and rate-limit errors aren't consistently returned as stable "429-equivalent." (S1, both models) → IP + user throttling, cover admin, stabilize error mapping.
+2. **Rate-limiting gaps**: Admin endpoints aren't throttled; throttling is userId-only (no IP limits); and rate-limit errors aren't consistently returned as stable "429-equivalent." (S1, both models) → IP + user throttling, cover admin, stabilize error mapping.
 
 3. **reCAPTCHA fail-open**: Missing token logs but does not block. (S1, Claude Opus) → Fail closed wherever configured.
 
@@ -182,7 +182,7 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 
 ### Explicit decisions captured:
 
-- **Committed .env.production** is NOT a secrets violation (treated as public config), so Secrets Management is marked COMPLIANT.
+- **Committed .env.production** is NOT a secrets violation (treated as public config); Secrets Management is marked PARTIAL due to hardcoded reCAPTCHA fallback key (F-009).
 
 - **App Check disabled** is included as optional hardening / risk-tracked item (both models call it critical), but NOT treated as a compliance blocker given "public API" intent—as long as compensating controls (rate limiting + fail-closed bot gating + monitoring) are implemented well.
 
@@ -196,6 +196,6 @@ One finding (**F-010**: App Check disabled) is documented as **Risk Accepted** g
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-07
 **Last Updated:** 2026-01-07
