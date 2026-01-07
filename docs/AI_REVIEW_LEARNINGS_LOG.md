@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 1.83
+**Document Version:** 1.88
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-07
 
@@ -18,6 +18,11 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.88 | 2026-01-07 | Review #86: Qodo follow-up on Review #85 (3 fixes, 1 rejected) - 1 MINOR (broken link), 2 TRIVIAL (Bash-only clarity, copy-safe snippet), 1 REJECTED (duplicate pathspec separator) |
+| 1.87 | 2026-01-07 | Review #84-85: Process quality improvements - #84: Review #83 follow-up (4 metadata fixes), #85: Qodo suggestions on Review #84 commit (3 fixes: git verification, threshold clarity, archive status) |
+| 1.86 | 2026-01-07 | Review #83: Archive & Consolidation Metadata Fixes (5 fixes) - 1 REJECTED (false positive: #41 data loss), 1 MAJOR (broken links), 1 MINOR (status sync), 2 TRIVIAL (line count, wording) |
+| 1.85 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 → CODE_PATTERNS.md v1.2 (9 patterns: 3 Bash/Shell portability, 6 Documentation quality) |
+| 1.84 | 2026-01-07 | ARCHIVE #2: Reviews #42-60 → REVIEWS_42-60.md (1048 lines removed, 2425→1377 lines) |
 | 1.83 | 2026-01-07 | Review #82: Post-commit review fixes (6 items) - 0 MAJOR, 5 MINOR (review range, Last Updated date, SECURITY.md path, markdown formatting, CANON-0032 status), 1 TRIVIAL (code fence), 1 HIGH-LEVEL (generator fix recommendation) |
 | 1.82 | 2026-01-07 | Review #81: Documentation linter fixes (57 errors) - 3 MAJOR (missing ARCHITECTURE.md/DEVELOPMENT.md links, missing Purpose in claude.md), 8 MINOR (broken links, missing sections), 4 TRIVIAL (date placeholders, metadata) |
 | 1.81 | 2026-01-07 | Review #80: 3 fixes - 2 MINOR (PR_PLAN.json structured acceptance_tests, CANON-CODE.jsonl source identifiers), 1 TRIVIAL (document version sync) |
@@ -157,9 +162,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10
+**Reviews since last consolidation:** 4
 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION NEEDED (last consolidated 2026-01-06, Session #27 - Reviews #61-72 → CODE_PATTERNS.md v1.1)
+**Status:** ✅ CURRENT (last consolidated 2026-01-07, Session #29 - Reviews #73-82 → CODE_PATTERNS.md v1.2)
 
 ### When to Consolidate
 
@@ -179,22 +184,22 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
-- **Date:** 2026-01-06 (Session #27)
-- **Reviews consolidated:** #61-#72 (12 reviews)
-- **Patterns added to CODE_PATTERNS.md v1.1:**
-  - Relative paths in subdirectories (files in `docs/templates/` use `../file.md` not `docs/file.md`)
-  - Path calculation from different directory levels
-  - Link verification before committing (`test -f path`)
-  - Template placeholder replacement (all tokens before use)
-  - Archived document path adjustment (`./file` → `../file` when moving to archive/)
-  - Version history date accuracy (use actual commit date)
-  - Security documentation explicitness ("NEVER use X" not "if using X")
-  - Technology-appropriate security checks (adapt to stack)
-  - Model name accuracy (verify against provider docs)
-  - Stale review detection (check commit count since review)
-- **Patterns updated in claude.md v3.1:**
-  - Updated pattern count reference (90+ → 100+ patterns from 72 reviews)
-- **Next consolidation due:** After Review #82
+- **Date:** 2026-01-07 (Session #29)
+- **Reviews consolidated:** #73-#82 (10 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.2:**
+  - **Bash/Shell (3 patterns):**
+    - Process substitution for exit code preservation (`while read; done < <(cmd)`)
+    - Bash wrapper for POSIX compliance (`bash -lc '...'` with quote escaping)
+    - `set -o pipefail` in validation scripts
+  - **Documentation (6 patterns):**
+    - Relative path depth calculation (most common issue: 8+ occurrences)
+    - Metadata synchronization (6 consecutive reviews caught drift #73-79)
+    - Model name consistency (API identifiers: `gpt-4o` not `GPT-4o`)
+    - JSON/JSONL schema validity (enable copy-paste testing)
+    - NO-REPO MODE output specification (header + zero lines)
+    - Template placeholder clarity (`[Date]` not `YYYY-MM-DD`, `null` not `X`)
+- **Key themes:** Multi-AI audit template refinement, documentation linter cleanup, metadata consistency
+- **Next consolidation due:** After Review #92
 
 ---
 
@@ -238,8 +243,8 @@ Consolidation is needed when:
 
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
-| Main log lines | ~1000 | 1500 | Archive oldest reviews |
-| Active reviews | 13 | 20 | Consolidate + archive |
+| Main log lines | 1386 | 1500 | Archive oldest reviews |
+| Active reviews | 26 (#61-86) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -255,6 +260,7 @@ Consolidation is needed when:
 
 | Date | Change | Before → After |
 |------|--------|----------------|
+| 2026-01-07 | Document health maintenance, archived #42-60 | 2425 → 1386 lines |
 | 2026-01-04 | Tiered access model, archived #1-40 | 3544 → ~1000 lines |
 
 ---
@@ -289,19 +295,180 @@ Consolidation is needed when:
 
 ## 📁 Archive Reference
 
-**Reviews #1-40** have been archived after consolidation into claude.md.
+**Reviews #1-60** have been archived in two files:
 
+### Archive 1: Reviews #1-40
 - **Archive location:** [docs/archive/REVIEWS_1-40.md](./archive/REVIEWS_1-40.md)
 - **Coverage:** 2026-01-01 to 2026-01-03
 - **Status:** Fully consolidated into claude.md v2.7
 
-Access the archive only for historical investigation of specific patterns.
+### Archive 2: Reviews #42-60
+- **Archive location:** [docs/archive/REVIEWS_42-60.md](./archive/REVIEWS_42-60.md)
+- **Coverage:** 2026-01-03 to 2026-01-05
+- **Status:** Reviews #42-60 archived (audit trail preserved).
+- **Consolidation note:** See CODE_PATTERNS.md for consolidated patterns (latest as of 2026-01-07: v1.2).
+
+Access archives only for historical investigation of specific patterns.
 
 ---
 
 ## Active Reviews (Tier 3)
 
-Reviews #41-82 are actively maintained below. Older reviews are in the archive.
+Reviews #61-86 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #85: Process Quality Improvements (2026-01-07)
+
+**Source:** Qodo PR
+**PR:** Commit eef4b62 (Review #84 fixes)
+**Suggestions:** 3 total (0 Critical, 0 Major, 2 Minor, 1 Trivial)
+
+**Context:** Qodo review of Review #84 commit identified process improvements for git verification reliability, threshold action clarity, and archive metadata organization.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Git verification commands missing --follow and variant patterns | 🟡 Minor | Process Robustness | Added `--follow` flag for rename tracking, broadened grep to match "Review #N" and "Review N" variants |
+| 2 | Threshold action unclear ("Consider archiving") | 🟡 Minor | Process Clarity | Changed to explicit instruction: "Archive oldest active reviews until ≤20 remain" |
+| 3 | Archive status conflates archive content with unrelated consolidation | ⚪ Trivial | Metadata Organization | Separated status line from consolidation note for clarity |
+
+**Patterns Identified:**
+
+1. **Process Documentation Precision** (Reinforcement)
+   - Root cause: Advisory language ("Consider") in operational triggers creates ambiguity
+   - Prevention: Use explicit, actionable instructions in threshold actions
+   - Pattern: Operational triggers should be imperative ("Archive until ≤20") not suggestive ("Consider archiving")
+
+2. **Git History Verification Robustness** (Enhancement to #83)
+   - Root cause: Initial verification commands didn't handle file renames or pattern variants
+   - Prevention: Always use `--follow` flag when tracking file history; search multiple grep patterns
+   - Pattern: `git log --all --follow -p` for file tracking, `--grep="Review #N" --grep="Review N"` for pattern matching
+
+**Key Learning:** Process documentation benefits from precision. Review #83 added validation steps for false positives; Review #85 enhanced those steps with robust git commands and clear operational triggers.
+
+---
+
+#### Review #86: Documentation Quality Improvements (2026-01-07)
+
+**Source:** Qodo PR
+**PR:** Commit 85619b7 (Review #85 fixes)
+**Suggestions:** 4 total (0 Critical, 0 Major, 1 Minor, 2 Trivial, 1 Rejected)
+
+**Context:** Qodo review of Review #85 commit identified documentation improvements: broken archive reference link, shell pattern clarity, and git verification snippet usability. One suggestion rejected as false positive (duplicate pathspec separator).
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Broken consolidation reference link in REVIEWS_42-60.md | 🟡 Minor | Documentation | Changed "See CODE_PATTERNS.md" → "See [CODE_PATTERNS.md](../agent_docs/CODE_PATTERNS.md)" at line 6 |
+| 2 | Bash-only shell patterns unclear | ⚪ Trivial | Documentation Clarity | Added "(Bash-only)" label to process substitution, "(Bash/Zsh/Ksh)" to set -o pipefail, improved example code |
+| 3 | Verification snippet not copy-paste safe | ⚪ Trivial | Process Usability | Added `N=41` variable declaration, changed grep patterns to use `$N` instead of literal `N` |
+
+**Rejected:**
+
+| # | Issue | Severity | Category | Reason |
+|---|-------|----------|----------|--------|
+| 1 | Missing pathspec separator in git log command | 🟡 Minor | False Positive | Command already has pathspec separator (`-- docs/`). Qodo suggested adding duplicate (`-- -- docs/`) which would be incorrect syntax. |
+
+**Patterns Identified:**
+
+1. **AI Review False Positives - Git Command Misinterpretation** (2nd occurrence - Reinforcement of #83)
+   - Root cause: AI reviewer scanned for `--` separator pattern but didn't recognize `-- docs/` as already having it
+   - Prevention: Always verify AI suggestions against actual code before applying (STEP 1.4 protocol)
+   - Pattern: AI reviewers can misinterpret existing code, especially when looking for specific patterns
+   - Note: Second false positive in 3 reviews (#83: data loss claim, #86: duplicate separator)
+
+2. **Documentation Link Completeness** (Enhancement to relative path patterns #73-82)
+   - Root cause: Archive file created with plain text reference instead of markdown link
+   - Prevention: When creating documentation files, convert all cross-references to proper markdown links
+   - Pattern: `See X.md` → `See [X.md](relative/path/to/X.md)` for better navigation
+
+3. **Shell Portability Clarity** (Enhancement to shell pattern documentation)
+   - Root cause: Shell patterns didn't explicitly label which shells support which features
+   - Prevention: Add explicit shell labels to patterns that aren't POSIX-compatible
+   - Pattern: Document "(Bash-only)", "(Bash/Zsh/Ksh)", or "(POSIX)" for each shell pattern
+
+**Key Learning:** This is the second AI review false positive in 3 reviews, reinforcing the validation protocol from Review #83. The pathspec separator false positive shows AI reviewers can miss existing syntax when pattern-matching. The STEP 1.4 protocol (validate via git history, verify actual code) continues to catch these false positives effectively.
+
+---
+
+#### Review #84: Review #83 Follow-up Metadata Corrections (2026-01-07)
+
+**Source:** Qodo PR (follow-up on commit eb8ffee)
+**PR:** Commit eb8ffee (Review #83 fixes)
+**Suggestions:** 4 total (0 Critical, 0 Major, 0 Minor, 4 Trivial)
+
+**Context:** Quick follow-up from Qodo on Review #83 commit, catching additional metadata inconsistencies that emerged from the archival work.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Archive header consolidation scope confusing (#73-82 vs #42-60) | ⚪ Trivial | Metadata Clarity | Clarified that #42-60 are archived reviews, #73-82 was separate consolidation event |
+| 2 | Archive coverage dates incorrect (2026-01-04 vs 2026-01-03) | ⚪ Trivial | Metadata Accuracy | Corrected to 2026-01-03 (verified via content: Process Pivot #1 dated 2026-01-03) |
+| 3 | Active review count not updated after adding Review #83 | ⚪ Trivial | Metadata Consistency | Updated 22→23, #61-82→#61-83 |
+| 4 | Archive reference in main log not updated | ⚪ Trivial | Cross-file Sync | Updated Archive 2 reference with corrected dates and status |
+
+**Pattern Reinforcement:**
+
+- **Cross-File Metadata Synchronization** (from #83): All 4 fixes involved updating metadata in multiple locations (archive header + main log reference)
+
+**Key Learning:** Metadata changes often have cascading effects across multiple files. When updating archive-related metadata, verify ALL locations: archive file header, main log archive reference, and current metrics table.
+
+---
+
+#### Review #83: Archive & Consolidation Metadata Fixes (2026-01-07)
+
+**Source:** Mixed (Qodo PR Compliance + CodeRabbit PR)
+**PR:** Commits d531883 (consolidation), 1be1d04 (merge), 628fafb (archival)
+**Tools:** Qodo (6 suggestions), CodeRabbit (3 inline comments)
+
+**Context:** Review of archival and consolidation work (commits 628fafb, 1be1d04, d531883). Qodo identified metadata inconsistencies, broken links, and false positive (#41 "data loss"). CodeRabbit caught cross-file status synchronization and line count discrepancies.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Broken relative links in REVIEWS_42-60.md (./decisions, ./INTEGRATED) | 🟠 Major | Documentation | Added ../ prefix for archive subdirectory context |
+| 2 | Archive status outdated in both files (PRE-CONSOLIDATION vs reality) | 🟡 Minor | Cross-file Consistency | Updated to "CONSOLIDATED (patterns extracted to CODE_PATTERNS.md v1.2, 2026-01-07)" in both files |
+| 3 | Line count inaccuracy (1377 vs actual 1386) | ⚪ Trivial | Metadata | Corrected in Current Metrics and Restructure History tables |
+| 4 | Threshold action wording unclear | ⚪ Trivial | Clarity | Changed "Consolidate + archive" → "Consider archiving older reviews (even if consolidation current)" |
+
+**Rejected:**
+
+| # | Issue | Severity | Category | Reason |
+|---|-------|----------|----------|--------|
+| 1 | Review #41 "data loss" (archive #42-60, active #61-82) | 🔴 Critical | False Positive | Reviews #41 and #44 were NEVER created - numbering gaps, not data loss. Verified via git history. |
+
+**Deferred:**
+
+| # | Suggestion | Reason | Future Action |
+|---|-----------|--------|---------------|
+| 1 | Migrate documentation to wiki/database system | Valid long-term improvement but premature - fix immediate bugs first, revisit at >150 reviews or if manual process becomes blocking | Add to ROADMAP.md as "Future Improvement" |
+
+**Patterns Identified:**
+
+1. **AI Review False Positives from Range Notation** (1 occurrence - New)
+   - Root cause: Qodo interpreted range #42-60 vs #61-82 as "missing #41" without checking if #41 ever existed
+   - Prevention: AI reviewers can misinterpret range gaps as data loss when numbering has intentional/accidental skips
+   - Pattern: Always verify "data loss" claims by checking git history, not just current state
+   - Note: Reviews #41 and #44 were never created; numbering jumped from #40→#42 and #43→#45
+
+2. **Cross-File Metadata Synchronization** (Reinforcement from #76-79)
+   - Root cause: Archive status updated in one file but not mirrored copy in main log
+   - Prevention: When archiving, update status in BOTH archive file header AND main log archive reference
+   - Pattern: `grep -n "Archive 2" docs/AI_REVIEW_LEARNINGS_LOG.md docs/archive/REVIEWS_42-60.md` to find both instances
+   - Note: Consolidation status changes affect archive metadata in multiple locations
+
+3. **Relative Path Depth After File Movement** (Reinforcement from #73-79)
+   - Root cause: Content moved to subdirectory without adjusting relative links
+   - Prevention: After archiving content, update ALL relative links from `./` to `../` (one level up)
+   - Pattern: When moving to `docs/archive/`, links to `docs/decisions/` need `../decisions/` not `./decisions/`
+   - Note: This is the most common link breakage pattern (8+ occurrences in #73-82, now #83)
+
+**Key Insight:** AI code reviewers (Qodo, CodeRabbit) can generate false positives by inferring problems from current state without verifying historical context. Always validate "data loss" or "missing content" claims via git history before accepting them as true issues. Metadata synchronization across files (archive header + main log reference) is critical for maintaining audit trail integrity.
 
 ---
 
@@ -1022,1054 +1189,6 @@ Reviews #41-82 are actively maintained below. Older reviews are in the archive.
    - Note: Preserves \t\n\r for formatting
 
 **Key Insight:** Hooks that process external input (like file paths from JSON) need the same security discipline as the scripts they invoke. Path containment, input validation, and output sanitization must all happen at the hook layer before passing to downstream tools.
-
----
-
-#### Review #42: Qodo/CodeRabbit Hook Hardening Round 2 (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #19 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Follow-up review with additional security hardening for pattern-check.sh.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Option-like paths bypass | 🟠 Medium | Security | Block paths starting with `-` |
-| 2 | Multiline path spoofing | 🟠 Medium | Security | Block paths with `\n` or `\r` |
-| 3 | Overly broad `*..*` pattern | 🟡 Low | Correctness | Use specific `/../`, `../`, `/..` patterns |
-| 4 | Redundant `//*` pattern (SC2221) | 🟡 Low | Cleanup | Remove redundant pattern |
-| 5 | `realpath -m` not portable | 🟡 Low | Portability | Use Node.js `fs.realpathSync()` |
-| 6 | Backslash not normalized | 🟡 Low | Robustness | Normalize `\` to `/` before checks |
-
-**Patterns Identified:**
-
-1. **Block CLI Option-Like Paths** (1 occurrence - Security)
-   - Root cause: Path starting with `-` could be interpreted as CLI option
-   - Prevention: Reject paths matching `-*` before further processing
-   - Pattern: `case "$path" in -*) exit 0 ;; esac`
-   - Note: Also block newlines to prevent multi-line spoofing
-
-2. **Use Specific Traversal Patterns** (1 occurrence - Correctness)
-   - Root cause: `*..*` matches legitimate filenames like `foo..bar.js`
-   - Prevention: Match actual traversal segments: `/../`, `../`, `/..`
-   - Pattern: `*"/../"* | "../"* | *"/.."`
-   - Note: Quote patterns in case to prevent glob expansion
-
-3. **Portable Path Resolution** (1 occurrence - Portability)
-   - Root cause: `realpath -m` is GNU-specific, fails on macOS
-   - Prevention: Use Node.js fs.realpathSync() which is always available
-   - Pattern: `node -e 'fs.realpathSync(process.argv[1])'`
-   - Note: Already using node for JSON parsing, so no new dependency
-
-**Key Insight:** Shell script security requires multiple layers: input rejection (option-like, multiline), normalization (backslashes), specific pattern matching (traversal segments not broad globs), and portable implementations (Node.js over GNU-specific tools).
-
----
-
-#### Review #43: Qodo/CodeRabbit Additional Hardening (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #19 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Third round of hardening for pattern-check.sh and check-pattern-compliance.js.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | grep alternation pattern failing | 🔴 High | Bug | Use `grep -E` for extended regex |
-| 2 | Windows drive paths bypass | 🟠 Medium | Security | Block `C:/...` after backslash normalization |
-| 3 | UNC paths bypass | 🟠 Medium | Security | Block `//server/...` paths |
-| 4 | Root project dir bypass | 🟡 Low | Security | Reject if `REAL_PROJECT = "/"` |
-| 5 | Path regex fails on Windows | 🟡 Low | Portability | Normalize backslashes before pathFilter/pathExclude |
-
-**Patterns Identified:**
-
-1. **grep -E for Alternation** (1 occurrence - Bug)
-   - Root cause: Basic grep treats `\|` literally, not as alternation
-   - Prevention: Always use `grep -E` for alternation patterns
-   - Pattern: `grep -E "a|b|c"` not `grep "a\|b\|c"`
-   - Note: This was silently failing, outputting nothing
-
-2. **Block Post-Normalization Absolute Paths** (2 occurrences - Security)
-   - Root cause: `C:\foo` becomes `C:/foo` after normalization, still absolute
-   - Prevention: Check for `[A-Za-z]:*` and `//*` after backslash conversion
-   - Pattern: `case "$path" in /* | //* | [A-Za-z]:* ) reject ;; esac`
-   - Note: Must check AFTER normalization, not before
-
-**Key Insight:** Post-normalization validation is critical - converting backslashes to forward slashes changes the attack surface. Windows paths like `C:\foo` become `C:/foo` which bypasses Unix-style `/` prefix checks. Always validate after all normalization is complete.
-
----
-
-#### Process Pivot #1: Integrated Improvement Plan Approach (2026-01-03)
-
-**Source:** Staff-engineer audit (Session #5)
-**Decision:** [ADR-001](./decisions/ADR-001-integrated-improvement-plan-approach.md)
-**Outcome:** Created [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md)
-
-**Context:** After completing 57% of documentation standardization (Phases 1-4), we faced a decision point: continue with fragmented planning documents (Doc Standardization Plan + Eight-Phase Refactor Plan + missing tooling) or consolidate into a unified path.
-
-**Staff-Engineer Audit Findings:**
-
-| Finding | Assessment | Decision |
-|---------|------------|----------|
-| 57% doc work completed | Valuable, don't discard | Preserve Phases 1-4 |
-| Eight-Phase Refactor 0% started | Potentially stale | Validate via Delta Review first |
-| Missing dev tooling | Gap identified | Add Prettier, madge, knip |
-| Multiple planning docs | Fragmented priorities | Consolidate into one plan |
-| App Check disabled | Security gap | Plan re-enablement in Step 4 |
-
-**Decision: Integrate, Don't Restart**
-
-- **Alternative rejected:** Full planning restart (wastes 57% work, demoralizing)
-- **Alternative rejected:** Aggressive consolidation 197→30 docs (too disruptive)
-- **Alternative rejected:** Numbered folder structure (breaks all links, low value)
-- **Alternative rejected:** Immediate refactoring (acting on stale findings)
-
-**What We Created:**
-
-1. **INTEGRATED_IMPROVEMENT_PLAN.md** - Single source of truth with 6 sequential steps:
-   - Step 1: Quick Wins & Cleanup (this session)
-   - Step 2: Doc Standardization Completion (Phases 5-6)
-   - Step 3: Developer Tooling Setup (Prettier, madge, knip)
-   - Step 4: Delta Review & Refactor Validation
-   - Step 5: ROADMAP.md Integration
-   - Step 6: Verification & Feature Resumption
-
-2. **ADR Folder Structure** - For documenting future significant decisions
-
-3. **ADR-001** - Documents this decision with alternatives considered
-
-**Patterns Identified:**
-
-1. **Preserve Investment, Adjust Course** (Planning)
-   - Root cause: Planning paralysis when faced with partial progress + new information
-   - Prevention: Evaluate "integrate" option before "restart" option
-   - Insight: Completed work has value; course correction beats restart
-
-2. **Validate Before Acting on Stale Plans** (Planning)
-   - Root cause: Multi-AI refactor findings may be outdated after weeks of other work
-   - Prevention: Delta Review step to categorize findings as DONE/VALID/STALE/SUPERSEDED
-   - Pattern: Old plans need refresh before execution
-
-3. **Single Source of Truth for Improvement Work** (Documentation)
-   - Root cause: Multiple planning docs with unclear dependencies
-   - Prevention: One canonical improvement roadmap with explicit dependency map
-   - Insight: Linear execution path beats parallel fragmented tracks
-
-4. **Explicit "What We Decided NOT To Do"** (Planning)
-   - Root cause: Without documenting rejected alternatives, decisions get re-litigated
-   - Prevention: ADRs capture alternatives and why they were rejected
-   - Benefit: Future sessions don't waste time reconsidering closed decisions
-
-**Key Insight:** When facing planning paralysis after partial progress, evaluate "course correction" options before "restart" options. Completed work has value. Use ADRs to capture decisions and prevent re-litigation. A single integrated plan with explicit dependencies beats multiple fragmented plans with unclear priority ordering.
-
----
-
-
-
-### Review #44: Hook Refinements & Output Limiting
-
-**Date:** 2026-01-04
-**Source:** Qodo PR Compliance Guide
-**PR:** Session #19 (continued)
-**Tools:** Qodo
-
-**Context:** Fourth round of refinements for pattern-check.sh and check-pattern-compliance.js after hook security hardening.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | pattern-check.sh not in scan list | 🟡 Low | Completeness | Added to default scan list |
-| 2 | Windows drive path colon false positive | 🟡 Low | Portability | Changed `[A-Za-z]:*` to `[A-Za-z]:/*` |
-| 3 | No output size limit | 🟡 Low | UX | Added `head -c 20000` (20KB limit) |
-
-**Patterns Identified:**
-
-1. **Self-Monitoring for Pattern Checkers** (1 occurrence - Completeness)
-   - Root cause: Scripts that enforce patterns should be checked themselves
-   - Prevention: Add enforcement scripts to their own scan list
-   - Pattern: Include `pattern-check.sh` in default files for `check-pattern-compliance.js`
-
-2. **Windows Path Pattern Precision** (1 occurrence - Portability)
-   - Root cause: `[A-Za-z]:*` matches valid POSIX files containing colons (e.g., `foo:bar`)
-   - Prevention: Check for `[A-Za-z]:/*` to require the slash after drive letter
-   - Pattern: Windows drive paths always have `/` after the colon when normalized
-
-3. **Output Limiting for Terminal Safety** (1 occurrence - UX)
-   - Root cause: Large pattern checker output can spam terminal
-   - Prevention: Pipe through `head -c BYTES` to cap output
-   - Pattern: `| head -c 20000` caps at 20KB, reasonable for hook feedback
-
-**Key Insight:** Self-monitoring creates a feedback loop - enforcement scripts should enforce rules on themselves. Windows path detection needs precision to avoid false positives on valid Unix filenames with colons. Output limiting is both UX and security (prevents terminal DoS from malicious files with excessive violations).
-
----
-
-#### Review #45: Comprehensive Security & Compliance Hardening (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #23 (continued from #19)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Comprehensive multi-pass review of all scripts for security and compliance issues. Initial fix (commit 4ada4c6) addressed 10 scripts with sanitizeError, followed by deep review addressing TOCTOU, error handling, workflow fixes, and more (commit 2e38796).
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | TOCTOU vulnerability in assign-review-tier.js | 🔴 High | Security | Resolve path once, use for all operations |
-| 2 | error.message assumption in catch blocks | 🟠 Medium | Robustness | Check `error && typeof error === 'object' && 'message' in error` |
-| 3 | Path containment missing in ai-review.js | 🟠 Medium | Security | Added isPathContained() validation |
-| 4 | .env in config extensions conflicts with block list | 🟠 Medium | Bug | Removed .env from configuration extensions |
-| 5 | Tier matching fails with space-separated files | 🟠 Medium | Bug | Use `printf '%s\n'` before grep for newline separation |
-| 6 | PR comment spam on every synchronize | 🟡 Low | UX | Only comment on opened/reopened events |
-| 7 | Shell-dependent `2>&1` redirection | 🟡 Low | Portability | Use `stdio: 'pipe'` instead |
-| 8 | Verbose stack traces lost after sanitization | 🟡 Low | Debugging | Restore sanitized stack output in verbose mode |
-| 9 | ESM import path missing .js extension | 🟡 Low | Bug | Fixed migrate-to-journal.ts import |
-| 10 | sanitizeError could throw | 🟡 Low | Robustness | Added defensive try-catch wrapper |
-| 11 | Top-level error handling unsanitized | 🟡 Low | Security | Wrap main() in try-catch with sanitizePath |
-| 12 | Dotfile matching for .env variants broken | 🟡 Low | Bug | Fixed multi-suffix detection |
-
-**Patterns Identified:**
-
-1. **TOCTOU Prevention** (1 occurrence - Security)
-   - Root cause: Using original path for existsSync after security check allows race condition
-   - Prevention: Resolve path once at validation, use resolved path for all subsequent operations
-   - Pattern: `const resolvedFile = resolve(projectRoot, file); if (existsSync(resolvedFile)) { readFileSync(resolvedFile, ...) }`
-   - Note: Attacker could swap file between security check and read
-
-2. **Safe Error Property Access** (5 occurrences - Robustness)
-   - Root cause: Catch blocks assume `error.message` exists, but throws can be any value
-   - Prevention: Check type before accessing: `error && typeof error === 'object' && 'message' in error`
-   - Pattern: `const errorMsg = error && typeof error === 'object' && 'message' in error ? error.message : String(error);`
-   - Note: Someone might `throw "string"` or `throw null`
-
-3. **Block List vs Allow List Conflicts** (1 occurrence - Bug)
-   - Root cause: .env in configuration extensions list, but also in SENSITIVE_FILE_PATTERNS block list
-   - Prevention: When adding to block list, check for conflicts in allow lists
-   - Pattern: Remove from allow list when adding to block list
-   - Note: Block list is checked first, so extension match was never reached anyway
-
-4. **Space-to-Newline for grep Anchors** (1 occurrence - Bug)
-   - Root cause: Shell variable expansion gives space-separated list, but `^` anchor needs newlines
-   - Prevention: Use `printf '%s\n' $VAR` before piping to grep
-   - Pattern: `printf '%s\n' $FILES_RAW | grep -qE '^pattern'`
-   - Note: grep `^` and `$` anchors work on lines, not words
-
-5. **Event-Specific Actions in CI** (1 occurrence - UX)
-   - Root cause: GitHub Actions on: [opened, synchronize, reopened] runs same steps for all
-   - Prevention: Check `context.payload.action` to limit side effects
-   - Pattern: `if (context.payload.action === 'opened' || context.payload.action === 'reopened')`
-   - Note: Posting comments on every push creates noise
-
-6. **Defensive Error Handler Wrappers** (1 occurrence - Robustness)
-   - Root cause: Error sanitization helper could itself throw (e.g., if passed unusual object)
-   - Prevention: Wrap sanitization call in try-catch with fallback
-   - Pattern: `const safeError = (() => { try { return sanitizeError(error); } catch { return "Unknown error"; } })();`
-   - Note: Error handlers must never throw
-
-**Key Insight:** Security hardening requires multiple passes - initial review often catches obvious issues, but TOCTOU vulnerabilities, error handling edge cases, and cross-file conflicts require deeper analysis. Block lists and allow lists must be kept in sync. Event-specific logic prevents CI noise. Error handlers need defensive wrappers because they're the last line of defense.
-
----
-
-#### Review #46: Advanced Security Hardening & Script Robustness (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #23 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Second round of fixes from PR Compliance Guide, addressing symlink attacks, buffer overflows, jq bugs, and sed fragility.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Symlink path escapes in assign-review-tier.js | 🔴 High | Security | Added realpathSync verification |
-| 2 | Symlink escapes in ai-review.js isPathContained | 🔴 High | Security | Added realpathSync with fallback |
-| 3 | execSync buffer overflow risk | 🟠 Medium | Robustness | Added maxBuffer: 10MB |
-| 4 | Missing ANSI/control char stripping | 🟠 Medium | Security | Strip escape sequences in sanitizeOutput |
-| 5 | jq counting logic bug | 🟠 Medium | Bug | Fixed array wrapping and -gt comparison |
-| 6 | sed prompt extraction fragility | 🟠 Medium | Bug | Replaced with awk for section extraction |
-| 7 | Argument parsing truncates = values | 🟡 Low | Bug | Use spread operator to rejoin value |
-| 8 | Missing review prompts file check | 🟡 Low | Robustness | Added existsSync check |
-| 9 | Warning message lacks file context | 🟡 Low | UX | Added file name to skip warning |
-| 10 | Defensive sanitizeError wrappers | 🟡 Low | Robustness | Added try-catch in 2 files |
-| 11 | Broken archive link | 🟡 Low | Bug | Fixed relative path |
-| 12 | Shell variable expansion issues | 🟡 Low | Bug | Added separator: "\n" to workflow |
-| 13 | Unexpanded $HOME in config | 🟡 Low | Bug | Replaced with explicit placeholder |
-
-**Patterns Identified:**
-
-1. **Symlink Escape Prevention with realpathSync** (2 occurrences - Security)
-   - Root cause: resolve() creates canonical path, but file could be symlink pointing outside
-   - Prevention: After resolve(), use realpathSync() and verify relative path
-   - Pattern: `const real = fs.realpathSync(resolved); const rel = path.relative(realRoot, real);`
-   - Note: Falls back to resolved path when file doesn't exist yet
-
-2. **maxBuffer for execSync** (2 occurrences - Robustness)
-   - Root cause: Default maxBuffer is 1MB, large outputs cause ENOBUFS error
-   - Prevention: Set maxBuffer: `10 * 1024 * 1024` for 10MB
-   - Pattern: `execSync(cmd, { encoding: 'utf-8', stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })`
-   - Note: Especially important for lint/test output which can be verbose
-
-3. **ANSI Escape Sequence Stripping** (1 occurrence - Security)
-   - Root cause: Terminal escape sequences can inject content in CI logs
-   - Prevention: Strip with regex before sanitizing paths
-   - Pattern: `.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')`
-   - Note: eslint-disable comment needed for no-control-regex rule
-
-4. **jq Array Counting Pattern** (1 occurrence - Bug)
-   - Root cause: `.findings[] | select(...) | length` gives length of each object, not count
-   - Prevention: Wrap in array and get length: `[.findings[]? | select(...)] | length`
-   - Pattern: `jq -r '[.findings[]? | select(.severity=="HIGH")] | length'`
-   - Note: Use -gt 0 instead of -n for numeric comparison
-
-5. **awk vs sed for Multi-Section Extraction** (1 occurrence - Bug)
-   - Root cause: sed `/start/,/end/p` stops at first end marker, truncating content
-   - Prevention: Use awk with state variable to capture until next section header
-   - Pattern: `awk '$0 ~ /^## 1\./ {in=1} in && $0 ~ /^## [0-9]/ && $0 !~ /^## 1/ {exit} in {print}'`
-   - Note: More robust for documents with internal separators
-
-6. **Argument Parsing with = Values** (1 occurrence - Bug)
-   - Root cause: `arg.split('=')` returns array, destructuring loses extra parts
-   - Prevention: Use spread operator and rejoin: `const [key, ...rest] = arg.split('='); const value = rest.join('=')`
-   - Pattern: Handles `--file=some=path=with=equals.md`
-
-**Key Insight:** Symlinks are a blind spot in path validation - resolve() creates a canonical path but doesn't reveal what's actually on disk. Always use realpathSync() after resolve() when reading files. Command output can be large and contain escape sequences that bypass simple sanitization. Use maxBuffer and strip ANSI sequences before other processing.
-
----
-
-#### Review #47: PII Protection & Workflow Robustness (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #23 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Third round of compliance fixes addressing PII logging, sensitive directory detection, shell scripting robustness, and documentation link accuracy.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Email logged in set-admin-claim.ts | 🔴 High | Privacy | Added maskEmail() function: `u***@e***.com` |
-| 2 | Sensitive files only checked by name | 🟠 Medium | Security | Added SENSITIVE_DIR_PATTERNS for secrets/, credentials/, private/ |
-| 3 | echo can mangle special chars | 🟠 Medium | Robustness | Replaced echo with printf '%s\n' in workflow |
-| 4 | Label removal can fail if already gone | 🟠 Medium | Robustness | Added try-catch for 404/422 errors |
-| 5 | Windows path sanitization only C: | 🟡 Low | Portability | Changed to [A-Z]:\\Users\\[^\\\\]+/gi |
-| 6 | CRLF only stripped at line end | 🟡 Low | Robustness | Normalize all \r\n to \n |
-| 7 | Broken link to ./claude.md | 🟡 Low | Docs | Changed to ../claude.md |
-| 8 | Broken links to ./ARCHITECTURE.md | 🟡 Low | Docs | Changed to ../ARCHITECTURE.md |
-| 9 | Regex caused markdown link false positive | 🟡 Low | Docs | Simplified regex pattern |
-| 10 | Missing docs/ prefix in template | 🟡 Low | Docs | Added docs/ prefix to file references |
-
-**Patterns Identified:**
-
-1. **PII Masking for Logs** (1 occurrence - Privacy)
-   - Root cause: Console.log/error directly output user email addresses
-   - Prevention: Create maskEmail() helper that preserves structure but hides content
-   - Pattern: `u***@e***.com` format - shows first char of local/domain, masks rest
-   - Note: Even in error cases, mask the email before logging
-
-2. **Sensitive Directory Detection** (1 occurrence - Security)
-   - Root cause: isSensitiveFile only checked basename, not path components
-   - Prevention: Add SENSITIVE_DIR_PATTERNS to catch files in sensitive directories
-   - Pattern: `/(^|\/)(secrets?|credentials?|private)(\/|$)/i`
-   - Note: Normalize backslashes before checking: `.replace(/\\/g, '/')`
-
-3. **printf vs echo in Shell Scripts** (4 occurrences - Robustness)
-   - Root cause: echo behavior varies across shells; can interpret escape sequences
-   - Prevention: Use `printf '%s\n' "$VAR"` for reliable output
-   - Pattern: Replace `echo "$FILES"` with `printf '%s\n' "$FILES"`
-   - Note: Especially important in GitHub Actions where shell may vary
-
-4. **Fault-Tolerant API Calls in Workflows** (1 occurrence - Robustness)
-   - Root cause: removeLabel fails if label already removed (404) or invalid (422)
-   - Prevention: Wrap in try-catch, only rethrow unexpected errors
-   - Pattern: `try { await api.call(); } catch (e) { if (e?.status !== 404 && e?.status !== 422) throw e; }`
-   - Note: GitHub API can return 422 for various "unprocessable" states
-
-5. **Drive-Agnostic Windows Path Sanitization** (1 occurrence - Portability)
-   - Root cause: Hardcoded `C:\\Users\\` misses D:, E:, etc.
-   - Prevention: Use character class for any drive letter, case-insensitive
-   - Pattern: `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`
-   - Note: Windows allows any letter A-Z for drive mappings
-
-6. **Relative Path Navigation in Docs** (3 occurrences - Docs)
-   - Root cause: Links assumed files were in same directory
-   - Prevention: Use `../` to navigate up from docs/ to repository root
-   - Pattern: `./file.md` → `../file.md` when linking to root from subdirectory
-   - Note: Link checkers in CI catch these; verify paths before commit
-
-**Key Insight:** Privacy compliance requires masking PII at the point of logging, not just in error handlers. Sensitive file detection should check both filename patterns AND directory location - a file named "config.json" inside a "secrets/" directory is sensitive. Shell scripts should use printf over echo for predictable behavior, and API calls in workflows should gracefully handle "already done" states like 404/422.
-
----
-
-#### Review #48: Security Hardening & Documentation Fixes (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #23 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Fourth round of compliance fixes addressing secret exfiltration risks, escape sequence security, fail-closed security patterns, and documentation accuracy.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Pattern blocklist non-exhaustive for firebase-service-account.json | ⚪ Low | Security | Added explicit `/^firebase-service-account\.json$/i` pattern |
-| 2 | maskEmail trailing dot for domains without TLD | ⚪ Low | Bug | Handle empty tld array: `tld.length > 0 ? '.'+tld.join('.') : ''` |
-| 3 | Fail-open on realpath failures for existing files | ⚪ Low | Security | Added `fs.existsSync` check before fallback |
-| 4 | OSC escape sequences not stripped | ⚪ Low | Security | Added OSC stripping regex to sanitizeOutput |
-| 5 | Incomplete Windows path sanitization (lowercase drives) | ⚪ Low | Portability | Changed `C:\\` to `[A-Z]:\\` with `/gi` flag |
-| 6 | Tier comparison uses integer instead of string | ⚪ Low | Bug | Changed `== 4` to `== '4'` in workflow |
-| 7 | Documentation file paths missing docs/ prefix | ⚪ Low | Docs | Added `docs/` prefix to AI_REVIEW_PROCESS.md refs |
-| 8 | Markdown lint: unescaped asterisks in code | ⚪ Low | Docs | Wrapped `10 * 1024 * 1024` in backticks |
-| 9 | Git diff missing pathspec separator | ⚪ Low | Robustness | Added `--` before file patterns |
-
-**Patterns Identified:**
-
-1. **Explicit Filename Blocklists** (1 occurrence - Security)
-   - Root cause: Regex patterns with wildcards can miss common exact filenames
-   - Prevention: Add explicit exact-match patterns for known sensitive files
-   - Pattern: `/^firebase-service-account\.json$/i` alongside `/serviceAccount.*\.json$/i`
-   - Note: Defense-in-depth - both pattern-based and exact-match protection
-
-2. **Fail-Closed Security for realpath** (1 occurrence - Security)
-   - Root cause: When realpathSync fails on existing file (permissions), falling back to resolved path is dangerous
-   - Prevention: Check `fs.existsSync(resolvedPath)` in catch block - if file exists but realpath fails, return false
-   - Pattern: `catch { if (fs.existsSync(path)) return false; /* else fallback for non-existent */ }`
-   - Note: Non-existent files can still use resolved path (for creation scenarios)
-
-3. **OSC Escape Sequence Stripping** (1 occurrence - Security)
-   - Root cause: ANSI CSI sequences stripped but OSC (Operating System Command) sequences not
-   - Prevention: Add OSC regex: `/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g`
-   - Pattern: Strip both CSI (`\x1B[...`) and OSC (`\x1B]...BEL/ST`)
-   - Note: OSC can set terminal title, which could be exploited for log injection
-
-4. **Edge Case Handling in String Functions** (1 occurrence - Bug)
-   - Root cause: `tld.join('.')` returns empty string when tld is empty, leading to trailing dot
-   - Prevention: Check array length before joining: `tld.length > 0 ? '.'+tld.join('.') : ''`
-   - Pattern: Guard array operations that assume non-empty input
-   - Note: Domain "localhost" has no TLD; email "user@localhost" should mask to "u***@l***" not "u***@l***."
-
-5. **String vs Number Comparison in YAML** (1 occurrence - Bug)
-   - Root cause: GitHub Actions outputs are strings; `== 4` may not match `'4'`
-   - Prevention: Use quoted string literals in workflow conditions: `== '4'`
-   - Pattern: `if: steps.x.outputs.y == 'value'` not `if: steps.x.outputs.y == value`
-   - Note: YAML type coercion is unreliable; always use explicit string comparison
-
-6. **Git Pathspec Separator** (1 occurrence - Robustness)
-   - Root cause: `git diff --cached *.md` without `--` can interpret patterns as options
-   - Prevention: Always use `--` before pathspec: `git diff --cached -- '*.md'`
-   - Pattern: `git <cmd> [options] -- <pathspec>`
-   - Note: Required for safety if pathspec could start with `-`
-
-**Key Insight:** Security hardening is iterative - each review round catches edge cases missed by pattern-based approaches. Defense-in-depth means explicit blocklists alongside pattern matching, fail-closed error handling for security-critical functions, and comprehensive escape sequence stripping. Even "low severity" items like trailing dots or string comparisons can cause production issues.
-
----
-
-#### Review #49: Workflow Hardening & Code Cleanup (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #23 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Fifth round of compliance fixes addressing workflow tier detection gaps, module detection robustness, dead code removal, and documentation accuracy.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | next.config.js missing from Tier 4 detection | 🟠 Medium | Bug | Added `next\.config\.(js\|mjs)$` to Tier 4 pattern |
-| 2 | Tier 3 regex could match substrings | 🟡 Low | Bug | Added `(^\|/)` path boundary anchor |
-| 3 | Node.js version mismatch (20 vs 22) | 🟡 Low | Compatibility | Updated workflow to node-version: '22' |
-| 4 | Misleading step name "Check for security violations" | 🟡 Low | Clarity | Renamed to "Tier 4 informational warnings" |
-| 5 | isMainModule detection could crash | 🟡 Low | Robustness | Added try-catch wrapper in 3 scripts |
-| 6 | pr-review.md reads first 200 lines (not most recent) | 🟡 Low | Bug | Changed to "last 200 lines" |
-| 7 | Broken relative path in INTEGRATED_IMPROVEMENT_PLAN.md | 🟡 Low | Docs | Changed `docs/brainstorm/...` to `./brainstorm/...` |
-| 8 | Dead .env filtering code in ai-review.js | 🟡 Low | Cleanup | Removed unreachable branch |
-| 9 | Unsanitized file path in warning message | 🟡 Low | Security | Added sanitizePath() wrapper |
-
-**Patterns Identified:**
-
-1. **Critical File Pattern Coverage** (1 occurrence - Bug)
-   - Root cause: Tier 4 patterns missing next.config.js/mjs which is a critical infrastructure file
-   - Prevention: When defining tier patterns, cross-reference with documented TIER_RULES constant
-   - Pattern: `next\.config\.(js|mjs)$` - covers both CommonJS and ESM configs
-   - Note: Temporary workflow patterns should match the authoritative script
-
-2. **Path Boundary Anchoring in Regex** (1 occurrence - Bug)
-   - Root cause: Pattern `functions/src/auth/` matches `somefunctions/src/auth/` substring
-   - Prevention: Add `(^|/)` prefix to anchor at path boundary
-   - Pattern: `(^|/)(firestore\.rules$|functions/src/auth/|middleware/)`
-   - Note: Prevents over-classification from partial path matches
-
-3. **Robust Main Module Detection** (3 occurrences - Robustness)
-   - Root cause: `pathToFileURL(process.argv[1])` can throw on unusual paths (symlinks, relative)
-   - Prevention: Wrap in try-catch, use `path.resolve()` first, default to false on error
-   - Pattern: `let isMain=false; try { isMain = !!argv[1] && url === pathToFileURL(resolve(argv[1])).href } catch { isMain=false }`
-   - Note: Essential for scripts that export functions for testing
-
-4. **Log File Reading Direction** (1 occurrence - Bug)
-   - Root cause: Log files append at the end, but instruction said "first 200 lines"
-   - Prevention: When referencing logs, always read from the end (tail) not beginning (head)
-   - Pattern: "Read `file.log` (last N lines)" for logs; "(first N lines)" only for header-heavy docs
-   - Note: Recent patterns are at the end of AI_REVIEW_LEARNINGS_LOG.md
-
-5. **Relative Path Context in Docs** (1 occurrence - Docs)
-   - Root cause: File in docs/ used `docs/brainstorm/...` instead of `./brainstorm/...`
-   - Prevention: Paths in docs/ should be relative to docs/, not repo root
-   - Pattern: Use `./sibling/` for files in same parent, `../root-file` for repo root
-   - Note: Test links with markdown preview to catch broken references
-
-6. **Dead Code from Security Hardening** (1 occurrence - Cleanup)
-   - Root cause: .env removed from extensions array but filtering code remained
-   - Prevention: After removing config items, grep for code that references them
-   - Pattern: When removing `X` from config: `grep -r "X" scripts/` to find stale code
-   - Note: Dead branches can confuse readers and trigger false linter warnings
-
-**Key Insight:** Workflow automation requires the same rigor as application code - tier detection patterns must be comprehensive and anchored correctly, Node.js versions must match across CI config, and step names should accurately reflect behavior. When scripts are imported for testing, main module detection must be robust against edge cases. Documentation paths need careful attention to the file's location context.
-
----
-
-#### Review #50: Audit Trails & Comprehensive Hardening (2026-01-04)
-
-**Source:** Qodo PR Compliance Guide + CodeRabbit
-**PR:** Session #23 (continued)
-**Tools:** Qodo, CodeRabbit
-
-**Context:** Sixth round of compliance fixes addressing audit trail requirements, PII logging, label management, pattern completeness, and linter compliance.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Windows path sanitization missing in ai-review.js | 🟠 Medium | Security | Changed `C:\\` to `[A-Z]:\\` with gi flag |
-| 2 | Missing audit trail in set-admin-claim.ts | 🟠 Medium | Compliance | Added JSON audit entry with timestamp, operator, action, result |
-| 3 | user.uid logged as PII | 🟡 Low | Privacy | Added maskUid() function to mask UID in logs |
-| 4 | Workflow fails if tier label doesn't exist | 🟠 Medium | Robustness | Added label auto-creation before addLabels |
-| 5 | .env pattern misses multi-segment variants | 🟡 Low | Bug | Changed `[a-zA-Z0-9_-]+` to `[a-zA-Z0-9_.-]+` |
-| 6 | Unknown CLI flags silently ignored | 🟡 Low | Robustness | Added explicit flag validation with error message |
-| 7 | Flag filtering doesn't skip flag values | 🟡 Low | Bug | Explicit loop to skip --pr value |
-| 8 | Biome complains about control char regexes | 🟡 Low | Linter | Added biome-ignore comments |
-| 9 | Case-sensitive summary filtering | 🟡 Low | Bug | Changed to case-insensitive with toLowerCase() |
-| 10 | Backtick path not a clickable link | 🟡 Low | Docs | Converted to markdown link syntax |
-
-**Patterns Identified:**
-
-1. **Structured Audit Logging** (1 occurrence - Compliance)
-   - Root cause: Admin actions logged only human-readable messages without machine-parseable records
-   - Prevention: Emit JSON audit entries with timestamp, operator, action, target, result
-   - Pattern: `console.log('[AUDIT]', JSON.stringify({ timestamp: new Date().toISOString(), operator, action, target, result }))`
-   - Note: Mask all identifiers (email, uid) in audit entries too
-
-2. **Label Auto-Creation in Workflows** (1 occurrence - Robustness)
-   - Root cause: addLabels fails if label doesn't exist in fresh repos/forks
-   - Prevention: Try getLabel first, create on 404
-   - Pattern: `try { await getLabel() } catch (e) { if (e?.status !== 404) throw e; await createLabel() }`
-   - Note: Include tier-specific colors for visual distinction
-
-3. **Multi-Segment .env Pattern** (1 occurrence - Bug)
-   - Root cause: Character class `[a-zA-Z0-9_-]` doesn't include `.` for .env.development.local
-   - Prevention: Add `.` to character class: `[a-zA-Z0-9_.-]`
-   - Pattern: `/(^|[/\\])\.env(\.[a-zA-Z0-9_.-]+)?$/`
-   - Note: Real-world projects use multi-segment env files
-
-4. **Explicit Flag Validation** (1 occurrence - Robustness)
-   - Root cause: Unknown flags silently filtered, user doesn't know about typos
-   - Prevention: Check against knownFlags array, exit with error for unknown
-   - Pattern: `if (arg.startsWith('--') && !knownFlags.includes(arg.split('=')[0])) { error(); exit(1); }`
-   - Note: Also properly skip flag values (e.g., value after --pr)
-
-5. **UID Masking for Logs** (1 occurrence - Privacy)
-   - Root cause: Firebase UIDs are identifiers that some policies consider PII
-   - Prevention: Create maskUid() helper showing first 3 + *** + last 3 chars
-   - Pattern: `uid.slice(0, 3) + '***' + uid.slice(-3)`
-   - Note: Maintains some traceability while reducing exposure
-
-6. **Biome-Ignore for Security Regexes** (3 occurrences - Linter)
-   - Root cause: Control character regexes intentional for sanitization, but Biome flags them
-   - Prevention: Add biome-ignore comment alongside eslint-disable
-   - Pattern: `// biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters`
-   - Note: Both linters need suppression comments for intentional security code
-
-**Key Insight:** Security fixes are iterative and touch multiple concerns simultaneously - a single audit trail requirement expands to timestamp formatting, operator identification, identifier masking, and structured logging. Pattern-based blocklists need comprehensive character classes for real-world variants. Workflow robustness requires graceful handling of missing resources (labels) rather than assuming infrastructure exists. When multiple linters are in use, each needs appropriate suppression comments for intentional security patterns.
-
----
-
-#### Review #51: ESLint Audit Follow-up & Pattern Checker Fixes (2026-01-04)
-
-**Source:** Qodo PR Compliance + CodeRabbit
-**PR:** Session #23 (ESLint audit commit)
-**Tools:** Qodo, CodeRabbit
-**Suggestions:** 12 total (Critical: 1, Major: 5, Minor: 5, Deferred: 1)
-
-**Context:** Follow-up review of ESLint warning audit commit (71a4390) and pattern effectiveness audit commit (f3dbcb2). Identified critical infinite loop bug and several regex robustness issues.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Non-global pattern causes infinite loop | 🔴 Critical | Bug | Added `/g` flag to retry-loop-no-success-tracking pattern |
-| 2 | unsafe-error-message regex 100-char limit | 🟠 Major | Bug | Removed limit, use `[\s\S]*?` for full catch block |
-| 3 | CRLF in phase matching regex | 🟠 Major | Bug | Added `\r?` for cross-platform line endings |
-| 4 | pathExclude needs path boundary | 🟠 Major | Bug | Added `(?:^|[\\/])` anchor |
-| 5 | Flawed regex lookahead in statusPattern | 🟠 Major | Bug | Simplified to `(?=\r?\n## [^#]|$)` |
-| 6 | Triple command invocation in pre-push | 🟠 Major | Performance | Capture output once, reuse for grep/tail |
-| 7 | Missing sanitizeError import | 🟡 Minor | Consistency | Added import in validate-phase-completion.js |
-| 8 | Inline error handling vs sanitizeError | 🟡 Minor | Consistency | Use sanitizeError in update-readme-status.js helpers |
-| 9 | Document version out of sync | 🟡 Minor | Docs | Updated 1.46 → 1.49 |
-| 10 | Warning count mismatch (65 vs 66) | 🟡 Minor | Docs | Reconciled: 66 + 3 no-unused-vars = 181 |
-| 11 | Time-bound audit claims | 🟡 Minor | Docs | Changed to "Audited as false positives (2026-01-04)" |
-
-**Deferred:**
-- AST-based linting migration (architectural suggestion for future)
-
-**Patterns Identified:**
-
-1. **Global Flag Required for exec() Loops** (1 occurrence - Critical)
-   - Root cause: Pattern without `/g` flag used in `while (exec())` loop never advances lastIndex
-   - Prevention: Every pattern used with exec() must have `/g` flag
-   - Pattern: Always add `/g` when pattern will be used in a loop
-   - Note: The comment said "using .test()" but checkFile uses exec()
-
-2. **Regex Scope Limits Miss Multi-line Catch Blocks** (1 occurrence - Major)
-   - Root cause: `{0,100}` limit truncates match in large catch blocks
-   - Prevention: Use `[\s\S]*?` (lazy) instead of fixed limits
-   - Pattern: `/catch\s*\(\s*(\w+)\s*\)\s*\{(?![\s\S]*instanceof\s+Error)[\s\S]*?\1\.message/g`
-   - Note: Lookahead checks full block, lazy quantifier finds first .message
-
-3. **CRLF Cross-Platform Regex** (3 occurrences - Major)
-   - Root cause: `\n` pattern fails on Windows CRLF files
-   - Prevention: Always use `\r?\n` for newline matching
-   - Pattern: Phase patterns, lookaheads, any newline-dependent regex
-   - Note: Already documented in claude.md but not applied consistently
-
-4. **Path Boundary Anchoring in Exclusions** (1 occurrence - Major)
-   - Root cause: Substring match excludes unintended files
-   - Prevention: Anchor with `(?:^|[\\/])` at path boundary
-   - Pattern: `/(?:^|[\\/])(?:filename1|filename2)\.js$/`
-   - Note: Prevents "somefile.js" matching "otherfile.js" substring
-
-5. **Redundant Regex Alternatives** (1 occurrence - Major)
-   - Root cause: `|\r?\n## $` alternative never matches realistically
-   - Prevention: Simplify to just `(?=\r?\n## [^#]|$)` - next section OR end
-   - Pattern: Remove impossible alternatives from lookaheads
-   - Note: Cleaner regex = fewer edge cases
-
-6. **Command Output Caching in Hooks** (1 occurrence - Major)
-   - Root cause: Running same command multiple times wastes time and may give inconsistent results
-   - Prevention: Capture output once: `output=$(cmd 2>&1)`
-   - Pattern: `output=$(npm run patterns:check 2>&1); echo "$output" | grep ... || echo "$output" | tail`
-   - Note: Also reduces CI log noise
-
-**Key Insight:** Pattern checkers that use exec() loops MUST have the global flag - this is a critical bug that causes infinite loops. Cross-platform regex robustness requires consistent `\r?\n` usage. Path-based exclusions need proper anchoring to prevent substring false positives. When documenting audits, use time-bound language ("audited as X on date") rather than absolute claims.
-
----
-
-#### Review #52: Document Health & Archival Fixes (2026-01-05)
-
-**Source:** Qodo PR Compliance + CodeRabbit
-**PR:** Session after tiered access + archival commits
-**Tools:** Qodo, CodeRabbit
-**Suggestions:** 10 total (Critical: 0, Major: 2, Minor: 5, Trivial: 2, Deferred: 1)
-
-**Context:** Review of tiered access model implementation and planning doc archival work. Focus on documentation consistency, path handling in pattern checker, and maintaining archival standards.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | pathExclude lacks path-boundary anchor | 🟠 Major | Security | Added `(?:^|[\\/])` anchor to pathExclude regex |
-| 2 | Archival criteria unclear in pr-review | 🟠 Major | Docs | Clarified 1500-line threshold and consolidation requirement |
-| 3 | grep command portability in template | 🟡 Minor | Portability | Changed `grep -r` to `grep -rn` and removed `-v archive` |
-| 4 | Count command missing fallback | 🟡 Minor | Robustness | Added `|| echo 0` fallback for empty archive |
-| 5 | ESLint wording too absolute | 🟡 Minor | Docs | Changed "false positives" to "audited as false positives" |
-| 6 | Duplicate Rule 8 in pr-review | 🟡 Minor | Cleanup | Removed duplicate rule entry |
-| 7 | Test count stale in DEVELOPMENT.md | 🟡 Minor | Docs | Updated test count to current value |
-| 8 | Redundant backslash in pathExclude | ⚪ Trivial | Cleanup | Removed unnecessary escape |
-| 9 | Missing path reference in session-end | ⚪ Trivial | Docs | Added path to archived plans directory |
-
-**Deferred:**
-- None new (AST-based linting already deferred from #51)
-
-**Patterns Identified:**
-
-1. **Path Boundary Anchoring** (Reinforcement from #51)
-   - Root cause: pathExclude patterns without anchors match substrings
-   - Prevention: Always use `(?:^|[\\/])` for path-based exclusions
-   - Note: Same pattern from #51 applied to validate-phase-completion.js
-
-2. **Document Archival Standards**
-   - Root cause: Unclear when to archive vs keep active
-   - Prevention: Explicit thresholds (1500 lines, 20 active reviews, consolidation status)
-   - Pattern: Document + enforce archival triggers
-
-3. **Portable Shell Commands in Templates**
-   - Root cause: BSD vs GNU grep flag differences
-   - Prevention: Use common flags or document platform requirements
-   - Pattern: Test templates on multiple platforms or use node alternatives
-
-**Key Insight:** Documentation that prescribes behaviors (templates, session commands, review protocols) must have explicit, unambiguous criteria. "Archive when large" is unclear; "Archive when >1500 lines AND consolidated" is actionable. Path exclusion patterns need consistent anchoring across all files that use them.
-
----
-
-#### Review #53: CI Fix & Security Pattern Corrections (2026-01-05)
-
-**Source:** Qodo PR Compliance + CodeRabbit + CI Feedback
-**PR:** Session after tiered access + archival commits
-**Tools:** Qodo, CodeRabbit
-**Suggestions:** 8 total (Critical: 1, Major: 2, Minor: 4, Trivial: 1)
-
-**Context:** Review of document archival commit that broke CI (validate-phase-completion.js referenced archived file). Also caught security issues with path.relative() assumptions and regex patterns.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | CI failing - script references archived file | 🔴 Critical | CI | Updated validate-phase-completion.js to use INTEGRATED_IMPROVEMENT_PLAN.md |
-| 2 | Unsafe pathExclude based on false path.relative() assumption | 🟠 Major | Security | Removed exclusion - path.relative() CAN return just ".." |
-| 3 | Unbounded regex in unsafe-error-message pattern | 🟠 Major | Performance | Changed [\s\S] to [^}] to constrain to catch block |
-| 4 | grep interprets [THIS_PLAN] as character class | 🟡 Minor | Bug | Added -F flag for fixed-string search |
-| 5 | Review counting edge case | 🟡 Minor | Robustness | Added file existence checks and ${var:-0} fallbacks |
-| 6 | Inconsistent review count metric | 🟡 Minor | Docs | Updated audit table to match consolidation trigger |
-| 7 | Missing path reference in session-end.md | ⚪ Trivial | Docs | Added parenthetical path for INTEGRATED_IMPROVEMENT_PLAN.md |
-
-**Not Applicable:**
-- Pre-push set +e/set -e: Script doesn't use set -e, current code works correctly
-
-**Patterns Identified:**
-
-1. **path.relative() Security Misconception** (1 occurrence - Critical)
-   - Root cause: False belief that path.relative() never returns bare ".."
-   - Reality: `path.relative('/a', '/')` returns ".." (no separator)
-   - Prevention: Never exclude files from security scans based on this assumption
-   - Pattern: All files using startsWith('..') must use proper regex
-
-2. **Regex Scope in Pattern Checkers** (1 occurrence - Major)
-   - Root cause: [\s\S] is unbounded, can look past intended block boundaries
-   - Prevention: Use [^}] for single-brace-level matching
-   - Trade-off: May miss deeply nested blocks, but safer than false negatives
-
-3. **CI Reference Updates After Archival** (1 occurrence - Critical)
-   - Root cause: Archiving docs without updating referencing scripts/workflows
-   - Prevention: Search for file references before archiving: `grep -r "FILENAME" .github/ scripts/`
-   - Pattern: Always audit CI/scripts when moving or renaming files
-
-**Key Insight:** path.relative() can return just ".." without a trailing separator - this is a subtle security trap. Any code path that trusts startsWith("..") after path.relative() should be flagged. CI scripts and workflows must be audited when archiving files they reference.
-
----
-
-#### Review #54: Step 4B Addition & Slash Commands Reference (2026-01-05)
-
-**Source:** GitHub Actions docs-lint + Qodo PR Compliance + CodeRabbit
-**PR:** 244c25f (Step 4B + SLASH_COMMANDS.md creation)
-**Tools:** Qodo, CodeRabbit, docs-lint workflow
-**Suggestions:** 10 total (Critical: 2, Major: 1, Minor: 6, Trivial: 1)
-
-**Context:** Review of Step 4B (Remediation Sprint) addition to INTEGRATED_IMPROVEMENT_PLAN.md and creation of comprehensive SLASH_COMMANDS.md reference document. Identified broken links to archived files and documentation consistency issues.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Broken link to DOCUMENTATION_STANDARDIZATION_PLAN.md | 🔴 Critical | Docs | Updated path to ./archive/completed-plans/ |
-| 2 | Broken link to EIGHT_PHASE_REFACTOR_PLAN.md | 🔴 Critical | Docs | Updated path to ./archive/completed-plans/ |
-| 3 | Step 4 name inconsistency in status dashboard | 🟠 Major | Docs | Verified consistency - no actual mismatch |
-| 4 | Step range missing 4B in effort tracking | 🟡 Minor | Docs | Updated "Steps 4-7" to "Steps 4-4B-7" |
-| 5 | Effort estimate understates task hours | 🟡 Minor | Docs | Updated to reflect 8-16 additional hours for 4B |
-| 6 | Framework wording conflicts | 🟡 Minor | Docs | Clarified 6-category audit with 2-tier aggregation |
-| 7 | Tier-2 output schema lacks clarity | 🟡 Minor | Docs | Added explicit output artifact descriptions |
-| 8 | Nested code fence rendering broken | 🟡 Minor | Docs | Partial fix - Critical/High sections (256-778); Medium/Template sections (803+) fixed in Review #56 |
-| 9 | Invalid link fragment in TOC | 🟡 Minor | Docs | Fixed markdown link fragment |
-| 10 | GitHub capitalization | ⚪ Trivial | Docs | Corrected "Github" to "GitHub" |
-
-**Patterns Identified:**
-
-1. **Archive Link Updates** (Reinforcement from #53)
-   - Root cause: Links to archived files not updated when files moved
-   - Prevention: `grep -r "FILENAME" docs/` before marking archival complete
-   - Pattern: Always update references when archiving
-
-2. **Nested Code Fences in Markdown**
-   - Root cause: Markdown inside markdown uses same fence syntax
-   - Prevention: Use 4-backtick outer fence (e.g., \`\`\`\`) when content contains triple backticks
-   - Pattern: When documenting markdown syntax, escape or use extra backticks
-
-3. **Step Range in Effort Tracking**
-   - Root cause: Adding sub-steps (4B) requires updating all range references
-   - Prevention: Use explicit step lists rather than ranges
-   - Pattern: "Steps 4, 4B, 5-7" instead of "Steps 4-7"
-
-**Key Insight:** When adding sub-steps to a plan, all dashboard references, effort estimates, and range notation must be updated. Archival workflows must include link reference audits. Documentation that includes markdown examples requires careful fence escaping.
-
----
-
-#### Review #55: Comprehensive Nested Code Fence Fix & Schema Clarity (2026-01-05)
-
-**Source:** Qodo PR Compliance + CodeRabbit
-**PR:** Commit after e0444ee (PR Review #55 fixes)
-**Tools:** Qodo (4 suggestions), CodeRabbit (6 suggestions)
-**Suggestions:** 10 total (Major: 1, Minor: 7, Trivial: 2)
-
-**Context:** Follow-up review after Review #54 fixes. Identified that nested code fence fix was incomplete (only 1 of 6 sections fixed), plus additional clarity issues in artifact naming, acceptance criteria, and schema references.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | 5 remaining nested code fence sections in SLASH_COMMANDS.md | 🟠 Major | Docs | Changed all remaining triple to quadruple backticks (lines 354-778) |
-| 2 | Output artifact naming inconsistent (JSON vs JSONL) | 🟡 Minor | Docs | Standardized to PARSE_ERRORS_JSONL, HUMAN_SUMMARY_MD |
-| 3 | Eight-backtick sequence unreadable in markdown | 🟡 Minor | Docs | Changed to escaped backticks `\`\`\`\`` |
-| 4 | INTEGRATED status not in documented set | 🟡 Minor | Docs | Changed to INCLUDE with clarifying notes |
-| 5 | Archive path inconsistent in Task 4.3.5 | 🟡 Minor | Docs | Updated to docs/archive/completed-plans/ |
-| 6 | Tasks 4.3.3/4.3.4 lack acceptance criteria | 🟡 Minor | Docs | Added explicit checkbox acceptance criteria |
-| 7 | Step 4B lacks schema reference | 🟡 Minor | Docs | Added DEDUPED_FINDINGS_JSONL schema reference |
-| 8 | TOC link fragment warning (MD051) | 🟡 Minor | Docs | Verified correct - false positive |
-| 9 | 2-tier diagram lacks legend | ⚪ Trivial | Docs | Added `→` sequential, `↓` tier transition legend |
-| 10 | Gap Analysis needs pre-implementation note | ⚪ Trivial | Docs | Added clarifying note about planned commands |
-
-**Patterns Identified:**
-
-1. **Comprehensive Code Fence Audit** (Reinforcement from #54)
-   - Root cause: Fixing one instance doesn't fix all - must search systematically
-   - Prevention: `grep -n '^\`\`\`' FILE | wc -l` to count all fence lines
-   - Pattern: After fixing code fences, audit entire file for other instances
-
-2. **Artifact Naming Consistency**
-   - Root cause: Output file format suffix not always explicit
-   - Prevention: Use format suffix in artifact names (JSONL, JSON, MD)
-   - Pattern: PARSE_ERRORS_JSONL, PR_PLAN_JSON, HUMAN_SUMMARY_MD
-
-3. **Acceptance Criteria Completeness**
-   - Root cause: Tasks defined without explicit completion criteria
-   - Prevention: Every task should have checkbox acceptance criteria
-   - Pattern: Tasks need explicit "done when" definitions
-
-**Key Insight:** When fixing a pattern issue, always audit the entire file/codebase for other instances. A partial fix creates false confidence. Artifact naming should include format suffixes for machine-parseability. All tasks need explicit acceptance criteria.
-
----
-
-#### Review #56: Effort Estimate Accuracy & Complete Code Fence Fix (2026-01-05)
-
-**Source:** Qodo PR Compliance + CodeRabbit
-**PR:** Commit after a525c01 (PR Review #56 fixes)
-**Tools:** Qodo (4 suggestions), CodeRabbit (1 critical + duplicates)
-**Suggestions:** 8 total (Critical: 1, Major: 1, Minor: 6)
-
-**Context:** Follow-up review after Review #55 fixes. Identified that Step 4 effort estimate (12-16h) was significantly understated vs. actual task breakdown (~28h), and 4 additional nested code fence sections remained unfixed in SLASH_COMMANDS.md.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Step 4 effort estimate discrepancy (12-16h vs 28h actual) | 🔴 Critical | Docs | Updated to 24-30h with sub-phase breakdown; rollup updated to 48-72h |
-| 2 | 4 remaining nested code fence sections (lines 803-954, 1161-1177) | 🟠 Major | Docs | Changed to quadruple backticks in SLASH_COMMANDS.md |
-| 3 | Source document links point to archive instead of stubs | 🟡 Minor | Docs | Updated to use stub paths per archival strategy |
-| 4 | Sprint backlog uses ✅ DONE in Status column | 🟡 Minor | Docs | Moved ✅ to Notes; Status column uses DONE |
-| 5 | PARSE_ERRORS_JSONL missing from Step 4B artifact list | 🟡 Minor | Docs | Added as fourth artifact with schema |
-| 6 | DONE status missing from Disposition Options enum | 🟡 Minor | Docs | Added DONE with description |
-| 7 | Review #54 Issue #8 marked "Fixed" but was partial | 🟡 Minor | Docs | Updated to note "Partial fix" with Review #56 completion |
-| 8 | Three→Four artifacts count in Step 4B | 🟡 Minor | Docs | Updated count to four |
-
-**Patterns Identified:**
-
-1. **Effort Estimate Verification** (New Pattern)
-   - Root cause: Estimate stated without summing detailed task breakdown
-   - Prevention: Always verify rollup matches sum of component estimates
-   - Pattern: `grep -o "hours)" FILE | wc -l` to count task hours, then verify total
-
-2. **Complete Pattern Fix Audit** (Reinforcement from #55)
-   - Root cause: Fixing critical sections, missing lower-priority sections
-   - Prevention: Search entire file for pattern, not just flagged lines
-   - Pattern: After any fence fix, `grep -n '^\`\`\`' FILE` to find all instances
-
-3. **Stub Link Strategy** *(CORRECTED in Review #57)*
-   - Root cause: AI suggestion assumed stub files existed when they didn't
-   - Prevention: Verify target files exist before changing link paths
-   - Pattern: Only use `./FILENAME.md` if stub file exists; otherwise use direct archive path
-
-**Key Insight:** Effort estimates must be verified against detailed task breakdowns - a 100% discrepancy (12-16h vs 28h) was caught by CodeRabbit's arithmetic check. When fixing rendering issues, audit the entire file systematically. **CAUTION:** AI suggestions about file paths should be verified - the stub link strategy assumed files existed that didn't.
-
----
-
-#### Review #57: CI Failure Fix & Effort Estimate Accuracy (2026-01-05)
-
-**Source:** Qodo PR Compliance + CodeRabbit + CI docs-lint failure
-**PR:** Commit after d582c76 (PR Review #57 fixes)
-**Tools:** Qodo (3 suggestions), CodeRabbit (1 critical), CI workflow
-**Suggestions:** 5 total (Critical: 1, Minor: 4) + 1 CI error
-
-**Context:** CI docs-lint workflow failed due to broken links introduced in Review #56. Qodo's suggestion to use stub file paths was incorrect - the stub files don't exist. Additional fixes for effort estimate arithmetic consistency.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | CI failure: Broken links to non-existent stub files | 🔴 Critical | CI | Reverted to direct archive paths (stubs don't exist) |
-| 2 | Estimate arithmetic: 24-30h doesn't match 9+13+6=28h | 🟡 Minor | Docs | Changed to "~28 hours" |
-| 3 | PARSE_ERRORS_JSONL counted as always-present artifact | 🟡 Minor | Docs | Clarified as optional (3 core + 1 optional) |
-| 4 | Rollup 48-72h inconsistent with step totals (43-55h) | 🟡 Minor | Docs | Updated rollup with per-step breakdown |
-| 5 | Version history doesn't note estimate correction | 🟡 Minor | Docs | Added v2.3 entry noting 12-16h→~28h correction |
-
-**Patterns Identified:**
-
-1. **Verify AI Suggestions About File Paths** (New Critical Pattern)
-   - Root cause: Qodo suggested using stub files that don't exist
-   - Prevention: Always verify target files exist before changing link paths: `ls -la path/to/file.md`
-   - Pattern: AI path suggestions are hypothetical until verified
-
-2. **Effort Estimate Arithmetic Verification** (Reinforcement from #56)
-   - Root cause: Range estimate (24-30h) didn't match exact sum (28h)
-   - Prevention: Use exact sum when sub-components are known: `~28h` not `24-30h`
-   - Pattern: Ranges only when components are uncertain
-
-3. **Optional vs Required Artifact Semantics**
-   - Root cause: Conditional artifacts described as always-present
-   - Prevention: Use "(optional)" label and describe presence conditions
-   - Pattern: "3 core artifacts + 1 optional" clearer than "4 artifacts (one conditional)"
-
-**Key Insight:** AI suggestions about file paths should be verified before applying - the CI failure was caused by trusting a path suggestion without checking if files exist. Effort estimates should use exact sums when sub-components are known, not approximate ranges. Conditional/optional artifacts need explicit labeling.
-
----
-
-#### Review #58: Template Compliance & Documentation Consistency (2026-01-05)
-
-**Source:** Mixed - GitHub Actions CI + Qodo PR Suggestions + CodeRabbit PR
-**PR:** `docs: Pre-Step-4 document cleanup and audit backlog setup`
-**Tools:** CI docs-lint, Qodo (3 suggestions), CodeRabbit (2 issues)
-**Suggestions:** 12 total (Critical: 0, Major: 3, Minor: 6, Trivial: 3)
-
-**Context:** Document cleanup PR introduced a renamed file (`MULTI_AI_REFACTOR_AUDIT_PROMPT.md`) that failed CI docs-lint due to missing required template sections. Additional consistency issues in links, list formatting, and language.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Missing H1 heading | 🟠 Major | CI Blocker | Added H1 title to template |
-| 2 | Missing purpose/scope section | 🟠 Major | CI Blocker | Added Purpose section |
-| 3 | Missing version history | 🟠 Major | CI Blocker | Added Version History section |
-| 4 | Missing Last Updated metadata | 🟡 Minor | Compliance | Added metadata header |
-| 5 | Missing AI instructions section | 🟡 Minor | Compliance | Added AI Instructions |
-| 6 | Missing quick start section | 🟡 Minor | Compliance | Added Quick Start |
-| 7 | Missing list bullet in ROADMAP.md | 🟡 Minor | Formatting | Added `-` prefix |
-| 8 | Link format inconsistency | 🟡 Minor | Consistency | Added `./` prefix to link |
-| 9 | British "in future" | ⚪ Trivial | Language | Changed to "in the future" |
-| 10 | Grep command robustness | ⚪ Trivial | QA | Improved acceptance criteria grep |
-
-**Declined:**
-- [8] Link format inconsistency severity - S3 is appropriate for defensive non-blocking improvement
-- Grep command alternative syntax - Current `--exclude` format is acceptable and semantically correct
-
-**Patterns Identified:**
-
-1. **Renamed Files Need Compliance Check** (Reinforcement from #57)
-   - Root cause: File renamed without adding required template sections
-   - Prevention: After renaming, run `npm run docs:lint` on changed files
-   - Pattern: CI catches missing sections but verify locally first
-
-2. **Link Format Consistency**
-   - Root cause: Mixed `./docs/` and `docs/` link prefixes in same section
-   - Prevention: Use consistent `./` prefix for relative links
-   - Pattern: When editing Related Documentation sections, match neighboring link format
-
-**Resolution:**
-- Fixed: 10 items
-- Declined: 2 items (justified above)
-- Deferred: 0 items
-
-**Key Insight:** When renaming or moving documentation files, the new location may have different template requirements. Run docs-lint locally before pushing to catch compliance issues before CI fails.
-
----
-
-#### Review #59: Prompt Schema & Documentation Consistency (2026-01-05)
-
-**Source:** Qodo PR Suggestions + CodeRabbit PR
-**PR:** `fix: Fix 10 broken internal links across 8 documentation files`
-**Suggestions:** 9 total (Critical: 0, Major: 0, Minor: 5, Trivial: 4)
-
-**Context:** Follow-up review after broken link fixes found additional improvements needed in prompt templates and documentation structure.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Grep -v unreliable for file filtering | 🟡 Minor | QA | Changed to `--exclude` flag |
-| 2 | JSON schema example not valid JSON | 🟡 Minor | Template | Converted to bullet list format |
-| 3 | Code fence contradiction | 🟡 Minor | Template | Clarified "no code fences in output" |
-| 4 | Missing is_cluster: false example | 🟡 Minor | Template | Added non-cluster format example |
-| 5 | Declined references inconsistent | 🟡 Minor | Consistency | Fixed reference labels |
-| 6 | Link text mismatch in ARCHITECTURE.md | ⚪ Trivial | Consistency | Added `docs/` prefix |
-| 7 | Missing Quick Start section | ⚪ Trivial | Compliance | Added Quick Start to backlog doc |
-| 8 | rate limiting unhyphenated | ⚪ Trivial | Grammar | Changed to "rate-limiting" |
-| 9 | Version header out of sync | ⚪ Trivial | Consistency | Updated to v1.58 |
-
-**Patterns Identified:**
-
-1. **Prompt Schema Clarity**
-   - Root cause: JSON examples in prompts can confuse AI about output format
-   - Prevention: Use bullet list format for schemas when showing structure
-   - Pattern: "Reference only" labels help prevent format copying
-
-2. **Grep File Exclusion**
-   - Root cause: `grep -v "pattern"` filters by line content, not filename
-   - Prevention: Use `--exclude="filename"` for file-based filtering
-   - Pattern: More reliable for acceptance criteria verification
-
-**Resolution:**
-- Fixed: 9 items
-- Declined: 0 items
-- Deferred: 0 items
-
-**Key Insight:** When writing prompt templates that include JSON schemas, prefer bullet list format with explicit "reference only" labels to prevent AI assistants from copying the formatting structure into their output.
-
----
-
-#### Review #60: Document Sync & Documentation Clarity (2026-01-05)
-
-**Source:** Qodo PR Suggestions + CodeRabbit PR
-**PR:** `fix: Address PR Review #59 feedback`
-**Suggestions:** 9 total (Critical: 0, Major: 1, Minor: 5, Trivial: 3)
-
-**Context:** Follow-up review after Review #59 found document synchronization issues, duplicate links, and opportunities to improve documentation clarity.
-
-**Issues Fixed:**
-
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Review count/range out of sync | 🟠 Major | Docs | Updated to #41-60, count to 10 |
-| 2 | grep --exclude uses full path | 🟡 Minor | QA | Changed to filename only |
-| 3 | Clarify output fence restriction | 🟡 Minor | Template | Added explicit wording |
-| 4 | Duplicate SECURITY.md reference | 🟡 Minor | Cleanup | Removed duplicate, added anchor |
-| 5 | session-begin.md link consistency | 🟡 Minor | Consistency | Standardized as markdown links |
-| 6 | Missing CANON-ID format guidance | ⚪ Trivial | Docs | Added ID convention notes |
-| 7 | No code fences negative example | ⚪ Trivial | Template | Added explicit prohibition |
-
-**Declined:**
-- Non-existent file references - SESSION_CONTEXT.md and ROADMAP.md exist at root (verified)
-
-**Patterns Identified:**
-
-1. **Document Counter Synchronization**
-   - Root cause: Adding reviews without updating range references
-   - Prevention: After adding review, grep for range patterns and update all
-   - Pattern: `grep -n "#[0-9]*-[0-9]*" docs/AI_REVIEW_LEARNINGS_LOG.md`
-
-2. **grep --exclude Path Behavior**
-   - Root cause: `--exclude` matches filename, not full path
-   - Prevention: Use just filename: `--exclude="storage.ts"` not `--exclude="lib/utils/storage.ts"`
-   - Pattern: grep exclusions use filename matching, not path matching
-
-**Resolution:**
-- Fixed: 7 items
-- Declined: 1 item (false positive - files exist)
-- Deferred: 0 items
-
-**Key Insight:** Document counters and range declarations must be updated together when adding new entries. grep's --exclude flag matches against filenames, not paths - using a path pattern will silently fail to exclude the intended file.
 
 ---
 
