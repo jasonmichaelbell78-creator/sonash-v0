@@ -169,7 +169,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 (Review #98)
+**Reviews since last consolidation:** 3 (Reviews #98-100)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
 **Next consolidation due:** After Review #107
@@ -408,6 +408,62 @@ Reviews #61-97 are actively maintained below. Older reviews are in the archive.
 
 ---
 
+#### Review #100: Review #99 Post-Commit Refinements (2026-01-08)
+
+**Source:** Mixed (Qodo PR + CodeRabbit PR + SonarQube)
+**PR/Branch:** claude/new-session-BGK06 (post-commit e06b918 review)
+**Suggestions:** 6 total (Major: 1, Minor: 2, Trivial: 1, Process: 1, Rejected: 1)
+
+**Context:** Follow-up review of Review #99 commit (e06b918) identified dead code, severity mismatches, and documentation inconsistencies.
+
+**Patterns Identified:**
+
+1. **Dead Code After Exception-Throwing Calls** (Major pattern - Qodo + CodeRabbit)
+   - Root cause: existsSync check placed after successful realpathSync (which throws if file missing)
+   - Prevention: Remember realpathSync throws on non-existent paths; success = file exists
+   - Pattern: Code after try/catch with throwing functions may be unreachable
+
+2. **Error Severity Mismatches** (Minor pattern - Qodo)
+   - Root cause: Invalid date format treated as MINOR staleness issue instead of MAJOR parse error
+   - Prevention: Use parseError flag to escalate severity for data validation failures
+   - Pattern: Parse failures ≠ stale data; different error types need different severities
+
+3. **Ineffective Validation Conditions** (Minor pattern - Qodo)
+   - Root cause: `rel === validatedPath` check doesn't detect path escapes (path.relative behavior)
+   - Prevention: Understand library return values; path.relative returns relative path, not original
+   - Pattern: Don't add redundant checks without understanding what they validate
+
+4. **Review Numbering Conflicts** (Process pattern - CodeRabbit)
+   - Root cause: Two different reviews both labeled #89 (commit 336b9b3 + commit 346e19c in different sessions)
+   - Prevention: Verify last review number before creating new review entry; use sequential numbering
+   - Pattern: Session boundaries can cause numbering collisions if not carefully tracked
+   - Resolution: Renumbered duplicate to #89b to preserve audit trail continuity
+
+**Key Learnings:**
+- **Exception Semantics**: realpathSync throws on missing files; no need for existsSync after success
+- **Error Type Differentiation**: Parse errors (data quality) ≠ Business logic errors (staleness)
+- **Validation Redundancy**: Adding extra checks without understanding library behavior creates noise
+- **Audit Trail Integrity**: Review numbering conflicts must be resolved without breaking git history
+
+**Resolution:**
+- Fixed: 4 items (1 MAJOR, 2 MINOR, 1 TRIVIAL)
+- Process: 1 item (Review #89 numbering conflict resolved - renumbered to #89b)
+- Deferred: None
+- Rejected: 1 item (SonarQube ReDoS duplicate of Review #98)
+
+**Fixes Applied:**
+
+| # | Severity | Issue | File | Fix |
+|---|----------|-------|------|-----|
+| 1 | MAJOR | Dead code after realpathSync | check-document-sync.js:260-269 | Removed redundant existsSync check (realpathSync success = file exists) |
+| 2 | MINOR | Invalid date severity mismatch | check-document-sync.js:356-362 | Escalate parse errors to MAJOR using parseError flag, type changed to 'invalid_last_synced' |
+| 3 | MINOR | Ineffective path containment check | check-document-sync.js:87,98,232,242 | Removed `rel === validatedPath/targetPath` conditions (path.relative doesn't return original path) |
+| 4 | TRIVIAL | Consolidation counter out of date | AI_REVIEW_LEARNINGS_LOG.md:172 | Updated counter from 1 to 2 (Reviews #98-99) |
+| 5 | PROCESS | Review #89 numbering conflict | AI_REVIEW_LEARNINGS_LOG.md:583 | Renumbered duplicate entry to #89b, added conflict documentation |
+| 6 | REJECTED | SonarQube ReDoS hotspot | check-document-sync.js:68 | **DUPLICATE** of Review #98 item #8 - regex uses bounded quantifiers, no ReDoS risk |
+
+---
+
 #### Review #99: Document Sync Validator - Follow-up Security & Quality Issues (2026-01-08)
 
 **Source:** Mixed (Qodo Compliance + Qodo PR + CodeRabbit PR x2)
@@ -540,7 +596,9 @@ Reviews #61-97 are actively maintained below. Older reviews are in the archive.
 
 ---
 
-#### Review #89: Audit Plan Placeholder Validation (2026-01-07)
+#### Review #89b: Audit Plan Placeholder Validation (2026-01-07)
+
+**⚠️ NOTE**: This review was incorrectly numbered #89 in commit 346e19c (Session #34), creating a duplicate with the actual Review #89 ("Security audit documentation fixes", commit 336b9b3, Session #33). Renumbered to #89b to preserve audit trail continuity. See Review #100 for documentation of this numbering conflict.
 
 **Source:** CodeRabbit PR Review
 **PR/Branch:** claude/new-session-BGK06 (commit f01a78b)

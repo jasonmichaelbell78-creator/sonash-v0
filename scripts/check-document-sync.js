@@ -84,8 +84,8 @@ function parseDocumentDependencies() {
       const normalizedRoot = realpathSync(ROOT);
       const rel = relative(normalizedRoot, validatedPath);
 
-      // If path escapes ROOT, it will start with '..' or be absolute (unchanged)
-      if (rel.startsWith('..') || rel === validatedPath) {
+      // If path escapes ROOT, it will start with '..'
+      if (rel.startsWith('..')) {
         console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
         continue;
       }
@@ -95,8 +95,8 @@ function parseDocumentDependencies() {
       const normalizedPath = join(normalizedRoot, location.trim(), instance.trim());
       const rel = relative(normalizedRoot, normalizedPath);
 
-      // If path escapes ROOT, it will start with '..' or be absolute (unchanged)
-      if (rel.startsWith('..') || rel === normalizedPath) {
+      // If path escapes ROOT, it will start with '..'
+      if (rel.startsWith('..')) {
         console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
         continue;
       }
@@ -228,8 +228,8 @@ function checkBrokenLinks(filePath) {
         const resolvedTarget = realpathSync(targetPath);
         const rel = relative(normalizedRoot, resolvedTarget);
 
-        // If path escapes ROOT, it will start with '..' or be absolute
-        if (rel.startsWith('..') || rel === resolvedTarget) {
+        // If path escapes ROOT, it will start with '..'
+        if (rel.startsWith('..')) {
           if (VERBOSE) {
             console.error(`⚠️  Skipping link outside repository: ${path} (line ${lineNum})`);
           }
@@ -239,7 +239,8 @@ function checkBrokenLinks(filePath) {
         // File doesn't exist - validate constructed path manually
         const rel = relative(normalizedRoot, targetPath);
 
-        if (rel.startsWith('..') || rel === targetPath) {
+        // If path escapes ROOT, it will start with '..'
+        if (rel.startsWith('..')) {
           if (VERBOSE) {
             console.error(`⚠️  Skipping link outside repository: ${path} (line ${lineNum})`);
           }
@@ -257,16 +258,8 @@ function checkBrokenLinks(filePath) {
         continue;
       }
 
-      // Path exists and is within ROOT - check if it exists
-      if (!existsSync(targetPath)) {
-        issues.push({
-          line: lineNum,
-          type: 'broken_link',
-          text: `[${text}](${path})`,
-          path: path,
-          severity: 'MAJOR'
-        });
-      }
+      // If we reach here, realpathSync succeeded, so file exists and is within ROOT
+      // No need for additional existsSync check
     }
   });
 
@@ -361,8 +354,8 @@ function validateDocumentSync() {
     const stalenessCheck = checkStaleness(pair.lastSynced);
     if (stalenessCheck.isStale) {
       result.issues.push({
-        type: 'stale',
-        severity: 'MINOR',
+        type: stalenessCheck.parseError ? 'invalid_last_synced' : 'stale',
+        severity: stalenessCheck.parseError ? 'MAJOR' : 'MINOR',
         message: stalenessCheck.reason,
         daysSinceSync: stalenessCheck.daysSinceSync
       });
