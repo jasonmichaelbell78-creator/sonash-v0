@@ -52,6 +52,14 @@ This document tracks all **derived document relationships** in the repository to
 | **REFERENCE_DOC_TEMPLATE.md** | AI_WORKFLOW.md, AI_REVIEW_PROCESS.md | docs/ | N/A | ⚠️ NOT TRACKED |
 | **GUIDE_DOC_TEMPLATE.md** | (None currently) | N/A | N/A | N/A |
 
+**Why NOT TRACKED:**
+Core document templates define high-level structure (metadata fields, section organization, quality protocols) but instances diverge significantly in content and purpose. Unlike audit plan templates (which maintain tight structural coupling), core templates have **looser coupling** where:
+- Instances inherit metadata structure but not specific content
+- Section names vary based on document purpose
+- Content evolution is independent after initial template instantiation
+
+These templates are **structural guides**, not strict blueprints requiring continuous synchronization. They are excluded from automated validation to avoid false positives.
+
 **Sync Requirements:**
 - **Metadata standards** → MUST sync (version, created, last updated, status)
 - **Section requirements** → MUST sync (required sections)
@@ -123,19 +131,30 @@ This document tracks all **derived document relationships** in the repository to
 
 ## Automated Validation
 
-### Validation Script (Future Enhancement)
+### Validation Script
+
+**Implementation**: `scripts/check-document-sync.js` (Session #35 - 2026-01-08)
 
 **Goal**: Detect template-instance drift automatically
 
-**Proposed**: `scripts/check-document-sync.js`
-
 **Checks**:
-1. **Section structure** - Do instance sections match template sections?
-2. **Placeholder detection** - Any `[...]` or `[e.g., ...]` remaining?
-3. **Metadata compliance** - Required fields present?
-4. **Last synced age** - Any instances >90 days out of sync?
+1. **Placeholder detection** - Scans for `[e.g., ...]`, `[X]`, `[Project Name]`, etc. (7 patterns)
+2. **Broken links** - Verifies all relative markdown links point to existing files
+3. **Last synced age** - Flags instances >90 days out of sync
 
-**Integration**: Add to `npm run docs:lint` or create `npm run docs:sync-check`
+**Integration**: Available via `npm run docs:sync-check`
+
+**Exit Codes**:
+- `0` - All documents synced
+- `1` - Sync issues found
+- `2` - Error during validation
+
+**Usage**:
+```bash
+npm run docs:sync-check           # Standard check
+npm run docs:sync-check -- --verbose  # Detailed line numbers
+npm run docs:sync-check -- --json     # JSON output
+```
 
 ### Manual Validation Procedure
 

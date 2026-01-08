@@ -6,7 +6,10 @@ Run the automated document template-instance synchronization validator.
 
 Executes `npm run docs:sync-check` to validate that:
 1. Template-derived documents are properly synchronized
-2. No placeholder content remains ([e.g., ...], [X])
+2. No placeholder content remains (7 patterns detected):
+   - `[e.g., ...]` - example placeholders (CRITICAL)
+   - `[X]` - value placeholders (CRITICAL)
+   - `[Project Name]`, `[GITHUB_REPO_URL]`, `[Repository]`, `[Framework]`, `[TODO]` - generic placeholders (MAJOR)
 3. All relative links point to existing files
 4. Sync dates are recent (<90 days)
 
@@ -20,7 +23,11 @@ The script reads `docs/DOCUMENT_DEPENDENCIES.md` to identify template-instance p
 - **Exit 1**: Sync issues found ⚠️
 - **Exit 2**: Error during check ❌
 
-Add `--verbose` flag for detailed line numbers.
+**Flags:**
+- `--verbose` - Show detailed line numbers (use `npm run docs:sync-check -- --verbose`)
+- `--json` - Output as JSON (use `npm run docs:sync-check -- --json`)
+
+**Note:** When using npm scripts, pass flags after `--` separator.
 
 ## When to Use
 

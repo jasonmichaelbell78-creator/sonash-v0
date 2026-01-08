@@ -907,8 +907,8 @@ flowchart TD
 ### Document Dependency Automation (Future Enhancement)
 
 **Current State (Session #35 - 2026-01-08):**
-- ✅ Manual validation via `/docs-sync` slash command
-- ✅ Script: `npm run docs:sync-check` (detects placeholder content, broken links, stale sync dates)
+- ✅ Manual validation via `/docs-sync` slash command (wrapper that executes `npm run docs:sync-check`)
+- ✅ Script: `npm run docs:sync-check` → `scripts/check-document-sync.js` (detects placeholder content, broken links, stale sync dates)
 - ✅ Documentation: `docs/DOCUMENT_DEPENDENCIES.md` tracks all template-instance relationships
 - ✅ Integration: DOCUMENTATION_AUDIT Category 6 validates sync status
 

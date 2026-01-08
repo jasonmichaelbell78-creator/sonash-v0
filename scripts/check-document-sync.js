@@ -16,10 +16,9 @@
  * Exit codes: 0 = all synced, 1 = sync issues found, 2 = error
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, realpathSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,6 +29,14 @@ const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose');
 const JSON_OUTPUT = args.includes('--json');
 const FIX = args.includes('--fix');
+
+// Block unimplemented --fix flag to prevent false confidence
+if (FIX) {
+  console.error('❌ --fix flag is not implemented yet');
+  console.error('   Refusing to run to avoid giving false confidence that issues were fixed');
+  console.error('   Please fix issues manually by editing the affected files');
+  process.exit(2);
+}
 
 const DEPS_FILE = join(ROOT, 'docs', 'DOCUMENT_DEPENDENCIES.md');
 
@@ -46,7 +53,8 @@ function parseDocumentDependencies() {
   const pairs = [];
 
   // Extract Multi-AI Audit Plan templates (table format)
-  const tableRegex = /\|\s*\*\*([^*]+)\*\*\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g;
+  // Fixed ReDoS: bounded quantifiers {1,500} prevent exponential backtracking
+  const tableRegex = /\|\s*\*\*([^*]{1,200})\*\*\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,200})\s*\|\s*([^|]{1,50})\s*\|\s*([^|]{1,50})\s*\|/g;
   let match;
 
   while ((match = tableRegex.exec(content)) !== null) {
@@ -55,13 +63,38 @@ function parseDocumentDependencies() {
     // Skip header rows
     if (template.includes('Template') || template.includes('---')) continue;
 
+    // Construct path and validate it stays within ROOT (prevent path traversal)
+    const constructedPath = join(ROOT, location.trim(), instance.trim());
+    let validatedPath;
+
+    try {
+      // Resolve to absolute path and verify it's within ROOT
+      validatedPath = realpathSync(constructedPath);
+      const normalizedRoot = realpathSync(ROOT);
+
+      if (!validatedPath.startsWith(normalizedRoot + '/') && validatedPath !== normalizedRoot) {
+        console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
+        continue;
+      }
+    } catch (error) {
+      // File doesn't exist yet - validate constructed path manually
+      const normalizedRoot = realpathSync(ROOT);
+      const normalizedPath = join(normalizedRoot, location.trim(), instance.trim());
+
+      if (!normalizedPath.startsWith(normalizedRoot + '/') && normalizedPath !== normalizedRoot) {
+        console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
+        continue;
+      }
+      validatedPath = normalizedPath;
+    }
+
     pairs.push({
       template: template.trim(),
       instance: instance.trim(),
       location: location.trim(),
       lastSynced: lastSynced.trim(),
       syncStatus: syncStatus.trim(),
-      fullPath: join(ROOT, location.trim(), instance.trim())
+      fullPath: validatedPath
     });
   }
 
@@ -80,15 +113,21 @@ function checkPlaceholders(filePath) {
   const lines = content.split('\n');
   const issues = [];
 
-  // Pattern 1: [e.g., ...] - example placeholders
-  const examplePattern = /\[e\.g\.,\s*[^\]]+\]/g;
+  // Pattern 1: [e.g., ...] - example placeholders (bounded to prevent ReDoS)
+  const examplePattern = /\[e\.g\.,\s*[^\]]{1,200}\]/g;
   // Pattern 2: [X] - placeholder values
   const valuePlaceholder = /\[X\]/g;
-  // Pattern 3: [Project Name] - generic placeholders
+  // Pattern 3: [Project Name] - generic placeholders (bounded to prevent ReDoS)
+  // Note: [TODO] matches exact placeholder, NOT checklist items like "[ ] TODO: fix"
   const genericPlaceholder = /\[(Project Name|GITHUB_REPO_URL|Repository|Framework|TODO)\]/gi;
 
   lines.forEach((line, idx) => {
     const lineNum = idx + 1;
+
+    // Reset regex lastIndex to prevent state leak across iterations
+    examplePattern.lastIndex = 0;
+    valuePlaceholder.lastIndex = 0;
+    genericPlaceholder.lastIndex = 0;
 
     let match;
     while ((match = examplePattern.exec(line)) !== null) {
@@ -134,18 +173,30 @@ function checkBrokenLinks(filePath) {
   const lines = content.split('\n');
   const issues = [];
 
-  // Markdown link pattern: [text](path)
-  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  // Markdown link pattern: [text](path) - bounded to prevent ReDoS
+  const linkPattern = /\[([^\]]{1,200})\]\(([^)]{1,500})\)/g;
 
   lines.forEach((line, idx) => {
     const lineNum = idx + 1;
+
+    // Reset regex lastIndex to prevent state leak
+    linkPattern.lastIndex = 0;
+
     let match;
 
     while ((match = linkPattern.exec(line)) !== null) {
       const [, text, path] = match;
 
-      // Skip external URLs
-      if (path.startsWith('http://') || path.startsWith('https://')) continue;
+      // Skip external URLs and non-file URI schemes
+      if (
+        path.startsWith('http://') ||
+        path.startsWith('https://') ||
+        path.startsWith('mailto:') ||
+        path.startsWith('tel:') ||
+        path.startsWith('data:')
+      ) {
+        continue;
+      }
 
       // Skip anchors
       if (path.startsWith('#')) continue;

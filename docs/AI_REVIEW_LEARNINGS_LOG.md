@@ -407,6 +407,72 @@ Reviews #61-97 are actively maintained below. Older reviews are in the archive.
 
 ---
 
+#### Review #98: Document Sync Validation Script - Security & Quality Fixes (2026-01-08)
+
+**Source:** Mixed (Qodo Compliance + Qodo PR + CodeRabbit PR x2 + SonarQube)
+**PR/Branch:** claude/new-session-BGK06 (commits 044c990, 1d65912)
+**Suggestions:** 18 total (Critical: 5, Major: 1, Minor: 8, Trivial: 4)
+
+**Context:** Multi-source review of Session #35 commits implementing document dependency tracking system. Primary feedback on scripts/check-document-sync.js security vulnerabilities (regex state leak, path traversal, ReDoS patterns) and documentation clarity improvements.
+
+**Patterns Identified:**
+
+1. **Regex State Leak** (Critical pattern - Qodo Compliance)
+   - Root cause: Global regex patterns reused across forEach iterations without resetting lastIndex
+   - Prevention: Reset lastIndex before each line or use non-global patterns in forEach
+   - Pattern: `/g` flag + .exec() in loops = stateful lastIndex causes missed matches
+
+2. **Path Traversal in Dependency Files** (Critical pattern - Qodo Compliance)
+   - Root cause: Paths from DOCUMENT_DEPENDENCIES.md joined without validation
+   - Prevention: Validate all file paths resolve within ROOT before use
+   - Pattern: External file data = untrusted, validate before filesystem operations
+
+3. **ReDoS Vulnerabilities** (Critical pattern - SonarQube x3)
+   - Root cause: Unbounded quantifiers in regex patterns (e.g., `[^\]]+`, `[^)]+`)
+   - Prevention: Use bounded quantifiers `{0,N}` or simpler character classes
+   - Pattern: User-controlled input + backtracking regex = denial of service risk
+
+4. **Unimplemented CLI Flags** (Major pattern - Qodo)
+   - Root cause: --fix flag parsed but not implemented
+   - Prevention: Block unimplemented flags with error message
+   - Pattern: Documented flags without implementation = false confidence
+
+**Key Learnings:**
+- **Regex Security Triad**: State leak + ReDoS + unbounded input = critical vulnerability class
+- **Documentation Validation**: All referenced files/patterns must be verified for completeness
+- **Timestamp Precision**: Date-only fields insufficient for sub-day duplicate detection
+
+**Resolution:**
+- Fixed: ALL 18 items (5 CRITICAL, 1 MAJOR, 8 MINOR, 4 TRIVIAL)
+- Deferred: None
+- Rejected: None
+
+**Fixes Applied:**
+
+| # | Severity | Issue | File | Fix |
+|---|----------|-------|------|-----|
+| 1 | CRITICAL | Regex state leak | check-document-sync.js:127-129 | Reset lastIndex before each line iteration |
+| 2 | CRITICAL | Path traversal risk | check-document-sync.js:66-89 | Added realpathSync validation, verify paths within ROOT |
+| 8 | CRITICAL | tableRegex ReDoS | check-document-sync.js:57 | Bounded quantifiers `{1,500}` prevent exponential backtracking |
+| 9 | CRITICAL | examplePattern ReDoS | check-document-sync.js:117 | Bounded quantifier `{1,200}` |
+| 10 | CRITICAL | linkPattern ReDoS | check-document-sync.js:176 | Bounded quantifiers `{1,200}` and `{1,500}` |
+| 3 | MAJOR | --fix flag unimplemented | check-document-sync.js:34-39 | Block with error message, exit code 2 |
+| 4 | MINOR | Non-file URI schemes | check-document-sync.js:189-197 | Skip mailto:, tel:, data: schemes |
+| 5 | MINOR | CLI flag docs | docs-sync.md:26-30 | Documented `npm run docs:sync-check -- --verbose` syntax |
+| 16 | MINOR | Document 7 patterns | docs-sync.md:9-12 | Listed all 7 placeholder patterns with severity |
+| 11 | MINOR | Core Templates scope | DOCUMENT_DEPENDENCIES.md:55-61 | Added "Why NOT TRACKED" explanation (looser coupling) |
+| 12 | MINOR | Automated Validation | DOCUMENT_DEPENDENCIES.md:134-157 | Changed "Future Enhancement" → "Implementation" |
+| 13 | MINOR | Last Updated date | INTEGRATED_IMPROVEMENT_PLAN.md:3-5 | Updated to 2026-01-08, version 2.4→2.5 |
+| 17 | MINOR | Timestamp limitation | session-begin.md:12-13 | Documented date-only field, sub-day relies on context |
+| 14 | TRIVIAL | Unused import | check-document-sync.js:19-21 | Removed execSync import |
+| 15 | TRIVIAL | TODO pattern review | check-document-sync.js:121 | Added comment: matches `[TODO]` not checklist items |
+| 6 | TRIVIAL | Placeholder tokens | session-begin.md:21 | Changed to example: "Session #35 already active..." |
+| 7 | TRIVIAL | /docs-sync wrapper | ROADMAP.md:910-911 | Clarified command chain: slash → npm → script |
+
+**Commit:** 8508c3d - fix: Security hardening and quality improvements for document sync validator (Review #98)
+
+---
+
 #### Review #89: Audit Plan Placeholder Validation (2026-01-07)
 
 **Source:** CodeRabbit PR Review
