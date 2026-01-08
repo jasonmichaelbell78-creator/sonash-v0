@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.1 | 2026-01-08 | Review #101: PR Review Processing - 36 items (12 regex DoS, 5 major, 17 JSDoc). Session #38. |
 | 2.0 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 → CODE_PATTERNS.md v1.3 (6 Security Audit patterns, new category). Session #33 session-end cleanup. |
 | 1.99 | 2026-01-07 | Reviews #92-97: Security audit PR review feedback (6 reviews, 24 items total). Schema improvements: OWASP string→array, file_globs field, severity_normalization for divergent findings, F-010 conditional risk acceptance with dependencies. |
 | 1.93 | 2026-01-07 | Review #91: Audit traceability improvements (5 items) - 5 MINOR (severity_normalization field, adjudication field, F-010 severity in remediation, item count, log lines metric), 6 REJECTED (⚪ compliance items - doc-only PR, code fixes in Step 4B) |
@@ -169,7 +170,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 (Reviews #98-100)
+**Reviews since last consolidation:** 4 (Reviews #98-101)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
 **Next consolidation due:** After Review #107
@@ -325,7 +326,7 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-97 are actively maintained below. Older reviews are in the archive.
+Reviews #61-101 are actively maintained below. Older reviews are in the archive.
 
 ---
 
@@ -405,6 +406,67 @@ Reviews #61-97 are actively maintained below. Older reviews are in the archive.
 - Fixed: 24 items (3 MAJOR, 18 MINOR, 3 TRIVIAL)
 - Rejected: 3 items (intentional schema improvements)
 - All commits pushed to claude/new-session-YUxGa
+
+---
+
+#### Review #101: PR Review Processing - SonarQube, Qodo, CodeRabbit (2026-01-08)
+
+**Source:** Mixed (SonarQube S5852 + Qodo Compliance + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Suggestions:** 36 total (Critical: 12, Major: 5, Minor: 17, Trivial: 2)
+
+**Context:** Comprehensive PR review feedback from SonarQube (12 regex DoS), Qodo (secure logging), and CodeRabbit (workflow compatibility, documentation). Multi-pass analysis (3 passes) to ensure complete coverage.
+
+**Patterns Identified:**
+
+1. **Regex Backtracking DoS (SonarQube S5852)** (Critical pattern - 12 instances)
+   - Root cause: `[\s\S]*?` patterns in regex can cause super-linear runtime on crafted input
+   - Prevention: Use bounded line-by-line parsing via `extractSection()` helper function
+   - Pattern: Replace unbounded regex with iterative line processing for security-critical code
+
+2. **JSON Output Corruption** (Major pattern - Qodo)
+   - Root cause: `console.error()` mixed with JSON output when `--json` flag is set
+   - Prevention: Check `JSON_OUTPUT` flag before any stderr output; use `console.log(JSON.stringify())` for errors
+   - Pattern: Guard all console.error calls when JSON mode is active
+
+3. **Workflow-Incompatible JSON Schema** (Major pattern - CodeRabbit)
+   - Root cause: GitHub Actions workflow expected `triggers` object and `recommendation` string
+   - Prevention: Document expected JSON schema; add required fields for workflow consumers
+   - Pattern: JSON output contracts must match consumer expectations
+
+4. **False Positive on Fresh Projects** (Major pattern - CodeRabbit)
+   - Root cause: Multi-AI commit trigger fires when no audit history exists (empty `allDates`)
+   - Prevention: Guard trigger logic inside `allDates.length > 0` check
+   - Pattern: Empty-state guards prevent false positives in threshold systems
+
+5. **Single-Session Audit Threshold Confusion** (Minor pattern - Documentation)
+   - Root cause: 6 audit command files incorrectly stated "Reset Threshold: YES"
+   - Prevention: Single-session audits do NOT reset thresholds (only multi-AI audits do)
+   - Pattern: Document threshold reset policy clearly at point of use
+
+**Key Learnings:**
+- **Bounded Parsing**: Replace `[\s\S]*?` regex with line-by-line iteration for security
+- **Output Isolation**: JSON mode requires ALL output go through JSON, not just success
+- **Contract Documentation**: Workflow consumers need documented schema expectations
+- **Empty-State Guards**: Always handle "no prior data" case in threshold/trigger systems
+
+**Resolution:**
+- Fixed: 34 items (12 Critical regex, 5 Major logic, 17 Minor JSDoc/docs)
+- Deferred: 5 items (Performance audit action items → Step 4.2.3a)
+- Rejected: None
+
+**Fixes Applied:**
+
+| # | Severity | Issue | File(s) | Fix |
+|---|----------|-------|---------|-----|
+| 1-12 | CRITICAL | Regex backtracking DoS (S5852) | check-review-needed.js | Added `extractSection()` with line-by-line parsing |
+| 13 | MAJOR | console.error corrupts JSON output | check-review-needed.js:557-561 | Guard with `if (JSON_OUTPUT)` check |
+| 14 | MAJOR | Missing workflow JSON fields | check-review-needed.js:636-649 | Added `triggers` object and `recommendation` string |
+| 15 | MAJOR | False positive on no audit history | check-review-needed.js:461 | Guard inside `allDates.length > 0` |
+| 16 | MAJOR | Special-case if/else for categories | check-review-needed.js:372-415 | Refactored to generic file matching |
+| 17 | MINOR | Missing checkBundle logic | check-review-needed.js:398-401 | Added `isBundleChanged()` call |
+| 18-23 | MINOR | Incorrect threshold reset docs | 6 audit-*.md files | Changed "Reset: YES" to "NO (single-session)" |
+| 24-40 | MINOR | Missing JSDoc documentation | check-review-needed.js | Added 17 complete JSDoc blocks |
 
 ---
 

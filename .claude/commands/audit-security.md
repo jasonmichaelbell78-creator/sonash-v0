@@ -131,7 +131,7 @@ Full markdown report with all findings, baselines, and remediation plan.
    - Commits Covered: Number of commits since last security audit
    - Files Covered: Number of security-sensitive files analyzed
    - Findings: Total count (e.g., "1 S0, 2 S1, 3 S2")
-   - Reset Threshold: YES
+   - Reset Threshold: NO (single-session audits do not reset thresholds)
 4. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate remediation."
 5. Ask: "Would you like me to fix any of these issues now?"
 
@@ -141,7 +141,7 @@ Full markdown report with all findings, baselines, and remediation plan.
 
 ### Category-Specific Thresholds
 
-This audit resets ONLY the **Security** category threshold in `docs/AUDIT_TRACKER.md`.
+This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
 
 **Security audit triggers (check AUDIT_TRACKER.md):**
 - ANY security-sensitive file modified, OR

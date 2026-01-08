@@ -136,7 +136,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Commits Covered: Number of commits since last refactoring audit
    - Files Covered: Number of files analyzed for refactoring
    - Findings: Total count (e.g., "1 S1, 3 S2, 5 S3")
-   - Reset Threshold: YES
+   - Reset Threshold: NO (single-session audits do not reset thresholds)
 4. Ask: "Would you like me to tackle any of these refactoring tasks now? (Recommend starting with batch fixes)"
 
 ---
@@ -145,7 +145,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
 
 ### Category-Specific Thresholds
 
-This audit resets ONLY the **Refactoring** category threshold in `docs/AUDIT_TRACKER.md`.
+This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
 
 **Refactoring audit triggers (check AUDIT_TRACKER.md):**
 - 40+ commits since last refactoring audit, OR

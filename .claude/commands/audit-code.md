@@ -120,7 +120,7 @@ Full markdown report with all findings, baselines, and recommendations.
    - Commits Covered: Number of commits since last code audit
    - Files Covered: Number of files analyzed
    - Findings: Total count (e.g., "3 S1, 5 S2, 2 S3")
-   - Reset Threshold: YES
+   - Reset Threshold: NO (single-session audits do not reset thresholds)
 4. Ask: "Would you like me to fix any of these issues now?"
 
 ---
@@ -129,7 +129,7 @@ Full markdown report with all findings, baselines, and recommendations.
 
 ### Category-Specific Thresholds
 
-This audit resets ONLY the **Code** category threshold in `docs/AUDIT_TRACKER.md`.
+This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
 
 **Code audit triggers (check AUDIT_TRACKER.md):**
 - 25+ commits since last code audit, OR

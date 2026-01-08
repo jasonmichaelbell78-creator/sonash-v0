@@ -137,7 +137,7 @@ Full markdown report with all findings, baselines, and fix plan.
    - Commits Covered: Number of commits since last documentation audit
    - Files Covered: Number of documentation files analyzed
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
-   - Reset Threshold: YES
+   - Reset Threshold: NO (single-session audits do not reset thresholds)
 4. Ask: "Would you like me to fix any of these documentation issues now?"
 
 ---
@@ -146,7 +146,7 @@ Full markdown report with all findings, baselines, and fix plan.
 
 ### Category-Specific Thresholds
 
-This audit resets ONLY the **Documentation** category threshold in `docs/AUDIT_TRACKER.md`.
+This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
 
 **Documentation audit triggers (check AUDIT_TRACKER.md):**
 - 20+ doc files changed since last documentation audit, OR

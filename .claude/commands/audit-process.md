@@ -140,7 +140,7 @@ Full markdown report with all findings, baselines, and improvement plan.
    - Commits Covered: Number of commits since last process audit
    - Files Covered: Number of CI/hook/script files analyzed
    - Findings: Total count (e.g., "1 S1, 2 S2, 4 S3")
-   - Reset Threshold: YES
+   - Reset Threshold: NO (single-session audits do not reset thresholds)
 4. Ask: "Would you like me to fix any of these process issues now?"
 
 ---
@@ -149,7 +149,7 @@ Full markdown report with all findings, baselines, and improvement plan.
 
 ### Category-Specific Thresholds
 
-This audit resets ONLY the **Process** category threshold in `docs/AUDIT_TRACKER.md`.
+This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
 
 **Process audit triggers (check AUDIT_TRACKER.md):**
 - ANY CI/hook file changed since last process audit, OR

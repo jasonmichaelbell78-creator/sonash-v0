@@ -136,7 +136,7 @@ Full markdown report with all findings, baselines, and optimization plan.
    - Commits Covered: Number of commits since last performance audit
    - Files Covered: Number of performance-critical files analyzed
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
-   - Reset Threshold: YES
+   - Reset Threshold: NO (single-session audits do not reset thresholds)
 4. Ask: "Would you like me to fix any of these issues now? (Quick wins recommended first)"
 
 ---
@@ -145,7 +145,7 @@ Full markdown report with all findings, baselines, and optimization plan.
 
 ### Category-Specific Thresholds
 
-This audit resets ONLY the **Performance** category threshold in `docs/AUDIT_TRACKER.md`.
+This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
 
 **Performance audit triggers (check AUDIT_TRACKER.md):**
 - 30+ commits since last performance audit, OR
