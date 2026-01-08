@@ -30,10 +30,10 @@
  * Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,7 +55,9 @@ const CATEGORY_THRESHOLDS = {
   security: {
     commits: 20,
     files: 1, // ANY security file triggers
-    filePattern: /(auth|security|firebase|api|secrets|env|token|credential|\.env)/i
+    // Targeted patterns: match paths like lib/auth.ts, firestore.rules, .env.local
+    // Excludes generic "api" and "env" substrings that cause false positives
+    filePattern: /(auth|security|firebase|secrets|\.env|credential|token)/i
   },
   performance: {
     commits: 30,
@@ -86,6 +88,17 @@ const MULTI_AI_THRESHOLDS = {
   singleAuditCount: 3,    // Single audits before multi-AI
   totalCommits: 100,      // Total commits across all categories
   daysSinceAudit: 14      // Days since any audit
+};
+
+// Shared category section header patterns (bounded, no backtracking risk)
+// Used by getCategoryAuditDates() and getSingleAuditCounts()
+const CATEGORY_HEADERS = {
+  code: /^### Code Audits/,
+  security: /^### Security Audits/,
+  performance: /^### Performance Audits/,
+  refactoring: /^### Refactoring Audits/,
+  documentation: /^### Documentation Audits/,
+  process: /^### Process Audits/
 };
 
 // Parse command line arguments
@@ -220,24 +233,15 @@ function getCategoryAuditDates(content) {
     process: null
   };
 
-  // Section header patterns (bounded, no backtracking risk)
-  const categoryHeaders = {
-    code: /^### Code Audits/,
-    security: /^### Security Audits/,
-    performance: /^### Performance Audits/,
-    refactoring: /^### Refactoring Audits/,
-    documentation: /^### Documentation Audits/,
-    process: /^### Process Audits/
-  };
-
-  for (const [category, headerPattern] of Object.entries(categoryHeaders)) {
+  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
     const sectionContent = extractSection(content, headerPattern);
     if (sectionContent) {
       // Find the most recent date in the table
       const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
       if (dateMatches && dateMatches.length > 0) {
-        // Get the most recent date
-        const dates = dateMatches.map(d => new Date(d));
+        // Get the most recent date, filtering out invalid dates
+        const dates = dateMatches.map(d => new Date(d).getTime()).filter(t => !Number.isNaN(t));
+        if (dates.length === 0) continue;
         const mostRecent = new Date(Math.max(...dates));
         categories[category] = mostRecent.toISOString().split('T')[0];
         verbose(`Found ${category} last audit: ${categories[category]}`);
@@ -264,17 +268,7 @@ function getSingleAuditCounts(content) {
     process: 0
   };
 
-  // Reuse bounded section header patterns
-  const categoryHeaders = {
-    code: /^### Code Audits/,
-    security: /^### Security Audits/,
-    performance: /^### Performance Audits/,
-    refactoring: /^### Refactoring Audits/,
-    documentation: /^### Documentation Audits/,
-    process: /^### Process Audits/
-  };
-
-  for (const [category, headerPattern] of Object.entries(categoryHeaders)) {
+  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
     const sectionContent = extractSection(content, headerPattern);
     if (sectionContent) {
       // Count rows with dates (excluding header and "No audits yet")
@@ -296,7 +290,7 @@ function getCommitsSince(sinceDate) {
     `git rev-list --count --since="${sinceDate}" HEAD`,
     'count commits'
   );
-  return result.success ? parseInt(result.output, 10) || 0 : 0;
+  return result.success ? Number.parseInt(result.output, 10) || 0 : 0;
 }
 
 /**
@@ -325,8 +319,10 @@ function getFilesModifiedSince(sinceDate, pattern) {
  * @returns {string[]} Array of security-related file paths that changed
  */
 function getSecuritySensitiveChanges(sinceDate) {
+  // Note: This grep pattern intentionally uses broader terms (api, env) than CATEGORY_THRESHOLDS.security.filePattern
+  // to cast a wider net for security-sensitive changes in git history (grep is fast, precision matters less here)
   const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | grep -iE "(auth|security|firebase|api|secrets|env|token|credential|\\.env)" | sort -u`,
+    String.raw`git log --since="${sinceDate}" --name-only --pretty=format: | grep -iE "(auth|security|firebase|api|secrets|env|token|credential|\.env)" | sort -u`,
     'security changes'
   );
 
@@ -344,7 +340,7 @@ function getSecuritySensitiveChanges(sinceDate) {
  */
 function getProcessChanges(sinceDate) {
   const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | grep -E "(\\.github|\\.claude|\\.husky|scripts/)" | sort -u`,
+    String.raw`git log --since="${sinceDate}" --name-only --pretty=format: | grep -E "(\.github|\.claude|\.husky|scripts/)" | sort -u`,
     'process changes'
   );
 
@@ -461,7 +457,11 @@ function checkMultiAITriggers(auditCounts, categoryDates) {
   // Only check if there's at least one previous audit to avoid false positives on fresh projects
   const allDates = Object.values(categoryDates).filter(d => d !== null);
   if (allDates.length > 0) {
-    const mostRecentAudit = new Date(Math.max(...allDates.map(d => new Date(d))));
+    // Filter out invalid dates to prevent runtime crashes
+    const validTimestamps = allDates.map(d => new Date(d).getTime()).filter(t => !Number.isNaN(t));
+    if (validTimestamps.length === 0) return triggers;
+
+    const mostRecentAudit = new Date(Math.max(...validTimestamps));
     const daysSince = Math.floor((Date.now() - mostRecentAudit.getTime()) / (1000 * 60 * 60 * 24));
 
     if (daysSince >= MULTI_AI_THRESHOLDS.daysSinceAudit) {
@@ -474,7 +474,7 @@ function checkMultiAITriggers(auditCounts, categoryDates) {
     }
 
     // Check total commits since oldest category audit (only when audit history exists)
-    const oldestDate = new Date(Math.min(...allDates.map(d => new Date(d))))
+    const oldestDate = new Date(Math.min(...validTimestamps))
       .toISOString().split('T')[0];
     const totalCommits = getCommitsSince(oldestDate);
     if (totalCommits >= MULTI_AI_THRESHOLDS.totalCommits) {
@@ -491,57 +491,57 @@ function checkMultiAITriggers(auditCounts, categoryDates) {
 }
 
 /**
- * Format human-readable output to console
- * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, reasons: string[], sinceDate: string}>} categoryResults - Results for each category
- * @param {Array<{type: string, message: string, threshold: number}>} multiAITriggers - Active multi-AI triggers
- * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * Print category results as formatted table
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, sinceDate: string}>} categoryResults - Results for each category
  * @returns {void}
  */
-function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
-  console.log('🔍 Checking Review Triggers...\n');
-  console.log('=== Per-Category Single-Session Audit Triggers ===\n');
-
-  // Category table
-  const rows = [
-    ['Category', 'Last Audit', 'Commits', 'Files', 'Status']
-  ];
+function printCategoryTable(categoryResults) {
+  const rows = [['Category', 'Last Audit', 'Commits', 'Files', 'Status']];
 
   for (const result of categoryResults) {
-    rows.push([
-      result.category.charAt(0).toUpperCase() + result.category.slice(1),
-      result.sinceDate === '2025-01-01' ? 'Never' : result.sinceDate,
-      result.commits.toString(),
-      result.filesChanged.toString(),
-      result.triggered ? '⚠️  TRIGGERED' : '✅ OK'
-    ]);
+    const categoryName = result.category.charAt(0).toUpperCase() + result.category.slice(1);
+    const lastAudit = result.sinceDate === '2025-01-01' ? 'Never' : result.sinceDate;
+    const status = result.triggered ? '⚠️  TRIGGERED' : '✅ OK';
+    rows.push([categoryName, lastAudit, result.commits.toString(), result.filesChanged.toString(), status]);
   }
 
-  // Print table
-  const colWidths = rows[0].map((_, i) =>
-    Math.max(...rows.map(r => r[i].length)) + 2
-  );
-
+  const colWidths = rows[0].map((_, i) => Math.max(...rows.map(r => r[i].length)) + 2);
   for (const row of rows) {
     console.log(row.map((cell, i) => cell.padEnd(colWidths[i])).join(''));
   }
+}
 
-  // Triggered categories
-  const triggeredCategories = categoryResults.filter(r => r.triggered);
-  if (triggeredCategories.length > 0) {
-    console.log('\n--- Triggered Categories ---');
-    for (const result of triggeredCategories) {
-      console.log(`\n📋 ${result.category.toUpperCase()}:`);
-      for (const reason of result.reasons) {
-        console.log(`   - ${reason}`);
-      }
-      console.log(`   → Run: /audit-${result.category}`);
+/**
+ * Print triggered category details with reasons
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{category: string, reasons: string[]}>} triggeredCategories - Categories with triggered thresholds
+ * @returns {void}
+ */
+function printTriggeredDetails(triggeredCategories) {
+  if (triggeredCategories.length === 0) return;
+
+  console.log('\n--- Triggered Categories ---');
+  for (const result of triggeredCategories) {
+    console.log(`\n📋 ${result.category.toUpperCase()}:`);
+    for (const reason of result.reasons) {
+      console.log(`   - ${reason}`);
     }
+    console.log(`   → Run: /audit-${result.category}`);
   }
+}
 
-  // Multi-AI escalation
+/**
+ * Print multi-AI escalation section
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{message: string}>} multiAITriggers - Active multi-AI triggers
+ * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * @returns {void}
+ */
+function printMultiAISection(multiAITriggers, auditCounts) {
   console.log('\n=== Multi-AI Audit Escalation ===\n');
-
   console.log('Single-Session Audit Counts:');
+
   for (const [category, count] of Object.entries(auditCounts)) {
     const status = count >= MULTI_AI_THRESHOLDS.singleAuditCount ? '⚠️ ' : '✅';
     console.log(`  ${status} ${category}: ${count}/${MULTI_AI_THRESHOLDS.singleAuditCount}`);
@@ -555,21 +555,52 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
   } else {
     console.log('\n✅ No multi-AI escalation triggers active.');
   }
+}
 
-  // Summary
+/**
+ * Print final recommendation summary
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{category: string}>} triggeredCategories - Categories with triggered thresholds
+ * @param {Array<Object>} multiAITriggers - Active multi-AI triggers
+ * @returns {void}
+ */
+function printRecommendation(triggeredCategories, multiAITriggers) {
   console.log('\n--- Recommendation ---');
-  const singleTriggered = triggeredCategories.length;
-  const multiTriggered = multiAITriggers.length;
 
-  if (singleTriggered === 0 && multiTriggered === 0) {
+  if (triggeredCategories.length === 0 && multiAITriggers.length === 0) {
     console.log('✅ No review triggers active. Continue development.');
-  } else if (multiTriggered > 0) {
-    console.log(`🔴 ${multiTriggered} multi-AI trigger(s) active!`);
-    console.log('   Consider running full multi-AI audit.');
-  } else {
-    console.log(`🟡 ${singleTriggered} single-session trigger(s) active.`);
-    console.log(`   Run: /audit-${triggeredCategories[0].category}`);
+    return;
   }
+
+  if (multiAITriggers.length > 0) {
+    console.log(`🔴 ${multiAITriggers.length} multi-AI trigger(s) active!`);
+    console.log('   Consider running full multi-AI audit.');
+    return;
+  }
+
+  console.log(`🟡 ${triggeredCategories.length} single-session trigger(s) active.`);
+  const commands = triggeredCategories.map(c => `/audit-${c.category}`).join(', ');
+  console.log(`   Run: ${commands}`);
+}
+
+/**
+ * Format human-readable output to console
+ * Refactored to reduce cognitive complexity by extracting helper functions (SonarQube S3776)
+ * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, reasons: string[], sinceDate: string}>} categoryResults - Results for each category
+ * @param {Array<{type: string, message: string, threshold: number}>} multiAITriggers - Active multi-AI triggers
+ * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * @returns {void}
+ */
+function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
+  console.log('🔍 Checking Review Triggers...\n');
+  console.log('=== Per-Category Single-Session Audit Triggers ===\n');
+
+  printCategoryTable(categoryResults);
+
+  const triggeredCategories = categoryResults.filter(r => r.triggered);
+  printTriggeredDetails(triggeredCategories);
+  printMultiAISection(multiAITriggers, auditCounts);
+  printRecommendation(triggeredCategories, multiAITriggers);
 }
 
 /**
