@@ -129,16 +129,30 @@ Full markdown report with all findings, baselines, and optimization plan.
 ## Post-Audit
 
 1. Display summary to user
-2. Confirm files saved
-3. Ask: "Would you like me to fix any of these issues now? (Quick wins recommended first)"
+2. Confirm files saved to `docs/audits/single-session/performance/`
+3. **Update AUDIT_TRACKER.md** - Add entry to "Performance Audits" table:
+   - Date: Today's date
+   - Session: Current session number from SESSION_CONTEXT.md
+   - Commits Covered: Number of commits since last performance audit
+   - Files Covered: Number of performance-critical files analyzed
+   - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
+   - Reset Threshold: YES
+4. Ask: "Would you like me to fix any of these issues now? (Quick wins recommended first)"
 
 ---
 
-## Threshold Reset Note
+## Threshold System
 
-Single-session audits do NOT reset multi-AI review thresholds. Those reset only after:
-- Full multi-AI audit (3+ models) completed
-- Logged in AI_REVIEW_LEARNINGS_LOG.md with Review # entry
-- CANON findings aggregated
+### Category-Specific Thresholds
 
-This audit provides interim visibility between major reviews.
+This audit resets ONLY the **Performance** category threshold in `docs/AUDIT_TRACKER.md`.
+
+**Performance audit triggers (check AUDIT_TRACKER.md):**
+- 30+ commits since last performance audit, OR
+- Bundle size change detected, OR
+- New heavy dependencies added
+
+### Multi-AI Escalation
+
+After 3 single-session performance audits, a full multi-AI Performance Audit is recommended.
+Track this in AUDIT_TRACKER.md "Single audits completed" counter.

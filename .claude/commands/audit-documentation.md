@@ -130,16 +130,29 @@ Full markdown report with all findings, baselines, and fix plan.
 ## Post-Audit
 
 1. Display summary to user
-2. Confirm files saved
-3. Ask: "Would you like me to fix any of these documentation issues now?"
+2. Confirm files saved to `docs/audits/single-session/documentation/`
+3. **Update AUDIT_TRACKER.md** - Add entry to "Documentation Audits" table:
+   - Date: Today's date
+   - Session: Current session number from SESSION_CONTEXT.md
+   - Commits Covered: Number of commits since last documentation audit
+   - Files Covered: Number of documentation files analyzed
+   - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
+   - Reset Threshold: YES
+4. Ask: "Would you like me to fix any of these documentation issues now?"
 
 ---
 
-## Threshold Reset Note
+## Threshold System
 
-Single-session audits do NOT reset multi-AI review thresholds. Those reset only after:
-- Full multi-AI audit (3+ models) completed
-- Logged in AI_REVIEW_LEARNINGS_LOG.md with Review # entry
-- CANON findings aggregated
+### Category-Specific Thresholds
 
-This audit provides interim visibility between major reviews.
+This audit resets ONLY the **Documentation** category threshold in `docs/AUDIT_TRACKER.md`.
+
+**Documentation audit triggers (check AUDIT_TRACKER.md):**
+- 20+ doc files changed since last documentation audit, OR
+- 30+ commits since last documentation audit
+
+### Multi-AI Escalation
+
+After 3 single-session documentation audits, a full multi-AI Documentation Audit is recommended.
+Track this in AUDIT_TRACKER.md "Single audits completed" counter.

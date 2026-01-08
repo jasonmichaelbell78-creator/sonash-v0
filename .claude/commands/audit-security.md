@@ -124,17 +124,30 @@ Full markdown report with all findings, baselines, and remediation plan.
 ## Post-Audit
 
 1. Display summary to user
-2. Confirm files saved
-3. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate remediation."
-4. Ask: "Would you like me to fix any of these issues now?"
+2. Confirm files saved to `docs/audits/single-session/security/`
+3. **Update AUDIT_TRACKER.md** - Add entry to "Security Audits" table:
+   - Date: Today's date
+   - Session: Current session number from SESSION_CONTEXT.md
+   - Commits Covered: Number of commits since last security audit
+   - Files Covered: Number of security-sensitive files analyzed
+   - Findings: Total count (e.g., "1 S0, 2 S1, 3 S2")
+   - Reset Threshold: YES
+4. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate remediation."
+5. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 
-## Threshold Reset Note
+## Threshold System
 
-Single-session audits do NOT reset multi-AI review thresholds. Those reset only after:
-- Full multi-AI audit (3+ models) completed
-- Logged in AI_REVIEW_LEARNINGS_LOG.md with Review # entry
-- CANON findings aggregated
+### Category-Specific Thresholds
 
-This audit provides interim visibility between major reviews.
+This audit resets ONLY the **Security** category threshold in `docs/AUDIT_TRACKER.md`.
+
+**Security audit triggers (check AUDIT_TRACKER.md):**
+- ANY security-sensitive file modified, OR
+- 20+ commits since last security audit
+
+### Multi-AI Escalation
+
+After 3 single-session security audits, a full multi-AI Security Audit is recommended.
+Track this in AUDIT_TRACKER.md "Single audits completed" counter.

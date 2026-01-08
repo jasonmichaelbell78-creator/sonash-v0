@@ -113,16 +113,29 @@ Full markdown report with all findings, baselines, and recommendations.
 ## Post-Audit
 
 1. Display summary to user
-2. Confirm files saved
-3. Ask: "Would you like me to fix any of these issues now?"
+2. Confirm files saved to `docs/audits/single-session/code/`
+3. **Update AUDIT_TRACKER.md** - Add entry to "Code Audits" table:
+   - Date: Today's date
+   - Session: Current session number from SESSION_CONTEXT.md
+   - Commits Covered: Number of commits since last code audit
+   - Files Covered: Number of files analyzed
+   - Findings: Total count (e.g., "3 S1, 5 S2, 2 S3")
+   - Reset Threshold: YES
+4. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 
-## Threshold Reset Note
+## Threshold System
 
-Single-session audits do NOT reset multi-AI review thresholds. Those reset only after:
-- Full multi-AI audit (3+ models) completed
-- Logged in AI_REVIEW_LEARNINGS_LOG.md with Review # entry
-- CANON findings aggregated
+### Category-Specific Thresholds
 
-This audit provides interim visibility between major reviews.
+This audit resets ONLY the **Code** category threshold in `docs/AUDIT_TRACKER.md`.
+
+**Code audit triggers (check AUDIT_TRACKER.md):**
+- 25+ commits since last code audit, OR
+- 15+ code files modified since last code audit
+
+### Multi-AI Escalation
+
+After 3 single-session code audits, a full multi-AI Code Review is recommended.
+Track this in AUDIT_TRACKER.md "Single audits completed" counter.

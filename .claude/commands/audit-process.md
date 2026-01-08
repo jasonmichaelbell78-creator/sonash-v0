@@ -133,16 +133,29 @@ Full markdown report with all findings, baselines, and improvement plan.
 ## Post-Audit
 
 1. Display summary to user
-2. Confirm files saved
-3. Ask: "Would you like me to fix any of these process issues now?"
+2. Confirm files saved to `docs/audits/single-session/process/`
+3. **Update AUDIT_TRACKER.md** - Add entry to "Process Audits" table:
+   - Date: Today's date
+   - Session: Current session number from SESSION_CONTEXT.md
+   - Commits Covered: Number of commits since last process audit
+   - Files Covered: Number of CI/hook/script files analyzed
+   - Findings: Total count (e.g., "1 S1, 2 S2, 4 S3")
+   - Reset Threshold: YES
+4. Ask: "Would you like me to fix any of these process issues now?"
 
 ---
 
-## Threshold Reset Note
+## Threshold System
 
-Single-session audits do NOT reset multi-AI review thresholds. Those reset only after:
-- Full multi-AI audit (3+ models) completed
-- Logged in AI_REVIEW_LEARNINGS_LOG.md with Review # entry
-- CANON findings aggregated
+### Category-Specific Thresholds
 
-This audit provides interim visibility between major reviews.
+This audit resets ONLY the **Process** category threshold in `docs/AUDIT_TRACKER.md`.
+
+**Process audit triggers (check AUDIT_TRACKER.md):**
+- ANY CI/hook file changed since last process audit, OR
+- 30+ commits since last process audit
+
+### Multi-AI Escalation
+
+After 3 single-session process audits, a full multi-AI Process Audit is recommended.
+Track this in AUDIT_TRACKER.md "Single audits completed" counter.
