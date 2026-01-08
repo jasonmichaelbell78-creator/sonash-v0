@@ -48,6 +48,23 @@ function validateRegexPattern(pattern) {
 }
 
 /**
+ * Heuristic check for potentially unsafe regex patterns (ReDoS protection)
+ * Prevents common catastrophic backtracking patterns
+ * @param {string} pattern - Regex pattern to check
+ * @returns {boolean} True if pattern appears unsafe
+ */
+function isLikelyUnsafeRegex(pattern) {
+  if (typeof pattern !== 'string') return true;
+  // Length limit to prevent very large patterns
+  if (pattern.length > 500) return true;
+  // Nested quantifiers like (a+)+, (.*)+, ([\s\S]*)* etc.
+  if (/\((?:[^()]|\\.)*[+*?](?:[^()]|\\.)*\)[+*?]/.test(pattern)) return true;
+  // Extremely broad dot-star with additional quantifiers
+  if (/(?:\.\*|\[\s\S\]\*)[+*?]/.test(pattern)) return true;
+  return false;
+}
+
+/**
  * Validate that a string is a valid YYYY-MM-DD date
  * @param {string} dateStr - The date string to validate
  * @returns {{valid: boolean, error?: string}}
@@ -84,7 +101,9 @@ function loadFalsePositives() {
       try {
         return JSON.parse(line);
       } catch {
+        const truncated = line.length > 80 ? line.slice(0, 80) + '...' : line;
         console.warn(`⚠️  Skipping invalid JSONL at ${FP_FILE}:${idx + 1}`);
+        console.warn(`   Raw: ${truncated}`);
         return null;
       }
     })
@@ -157,6 +176,21 @@ async function interactiveMode() {
   const pattern = await question('Pattern (regex): ');
   if (!pattern.trim()) {
     console.error('Error: Pattern is required');
+    rl.close();
+    process.exit(1);
+  }
+
+  // Validate pattern is valid regex
+  const patternValidation = validateRegexPattern(pattern);
+  if (!patternValidation.valid) {
+    console.error(`Error: ${patternValidation.error}`);
+    rl.close();
+    process.exit(1);
+  }
+
+  // ReDoS protection
+  if (isLikelyUnsafeRegex(pattern)) {
+    console.error('Error: Pattern may cause ReDoS (nested quantifiers or unbounded repetition)');
     rl.close();
     process.exit(1);
   }
@@ -285,6 +319,12 @@ async function main() {
   const patternValidation = validateRegexPattern(args.pattern);
   if (!patternValidation.valid) {
     console.error(`Error: ${patternValidation.error}`);
+    process.exit(1);
+  }
+
+  // ReDoS protection: reject patterns with nested quantifiers or unbounded repetition
+  if (isLikelyUnsafeRegex(args.pattern)) {
+    console.error('Error: Pattern may cause ReDoS (nested quantifiers or unbounded repetition)');
     process.exit(1);
   }
 

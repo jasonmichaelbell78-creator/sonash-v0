@@ -214,7 +214,7 @@ Full markdown report with all findings, baselines, and recommendations.
 
 ### Category-Specific Thresholds
 
-This audit **resets the code category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
+This audit **resets the code category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
 
 **Code audit triggers (check AUDIT_TRACKER.md):**
 - 25+ commits since last code audit, OR

@@ -108,6 +108,30 @@ function isLikelyUnsafeRegex(pattern) {
 }
 
 /**
+ * Check if a file path is safe (no path traversal)
+ * Uses path normalization and resolved path validation
+ * @param {string} filePath - File path to validate
+ * @returns {boolean} True if path is safe
+ */
+function isSafeFilePath(filePath) {
+  if (!filePath || typeof filePath !== 'string') return false;
+
+  const normalized = node_path.normalize(filePath);
+
+  // Reject absolute paths (POSIX/Windows) after normalization
+  if (node_path.isAbsolute(normalized)) return false;
+
+  // Reject traversal segments explicitly
+  const parts = normalized.split(/[\\/]+/);
+  if (parts.includes('..')) return false;
+
+  // Reject paths starting with a separator
+  if (/^[/\\]/.test(normalized)) return false;
+
+  return true;
+}
+
+/**
  * Check findings against false positives database
  * Includes ReDoS protection and date validation
  * @param {Array<Object>} findings - Audit findings to check
@@ -221,22 +245,6 @@ function validateRequiredFields(findings) {
       }
     }
 
-/**
- * Check if a file path is safe (no path traversal)
- * @param {string} filePath - File path to validate
- * @returns {boolean} True if path is safe
- */
-function isSafeFilePath(filePath) {
-  if (!filePath || typeof filePath !== 'string') return false;
-  // Reject path traversal patterns
-  if (filePath.includes('..')) return false;
-  // Reject absolute paths
-  if (node_path.isAbsolute(filePath)) return false;
-  // Reject paths starting with / or \
-  if (/^[/\\]/.test(filePath)) return false;
-  return true;
-}
-
     // Validate file exists if specified (with path traversal protection)
     if (finding.file && !finding.file.includes('*')) {
       if (!isSafeFilePath(finding.file)) {
@@ -247,8 +255,18 @@ function isSafeFilePath(filePath) {
           message: `Potentially unsafe file path (traversal attempt): ${finding.file}`
         });
       } else {
-        const fullPath = node_path.join(__dirname, '..', finding.file);
-        if (!node_fs.existsSync(fullPath)) {
+        const repoRoot = node_path.resolve(__dirname, '..');
+        const fullPath = node_path.resolve(repoRoot, finding.file);
+
+        // Ensure resolved path stays within repo root
+        if (fullPath !== repoRoot && !fullPath.startsWith(repoRoot + node_path.sep)) {
+          issues.push({
+            type: 'UNSAFE_PATH',
+            findingId: finding.id,
+            file: finding.file,
+            message: `Potentially unsafe file path (traversal attempt): ${finding.file}`
+          });
+        } else if (!node_fs.existsSync(fullPath)) {
           issues.push({
             type: 'FILE_NOT_FOUND',
             findingId: finding.id,
@@ -447,6 +465,11 @@ function generateReport(filePath, findings, results) {
     // Show first 5 details
     for (const issue of fieldIssues.slice(0, 5)) {
       console.log(`      - ${issue.findingId || 'Line ' + issue.line}: ${issue.message}`);
+      // For PARSE_ERROR issues, show the raw content to aid debugging
+      if (issue.type === 'PARSE_ERROR' && issue.raw) {
+        const truncated = issue.raw.length > 100 ? issue.raw.slice(0, 100) + '...' : issue.raw;
+        console.log(`        Raw: ${truncated}`);
+      }
     }
     if (fieldIssues.length > 5) {
       console.log(`      ... and ${fieldIssues.length - 5} more`);

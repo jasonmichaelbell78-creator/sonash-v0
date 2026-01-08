@@ -101,7 +101,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#61-105) | Deep investigation | ~1400 lines |
+| **3** | Active Reviews (#61-106) | Deep investigation | ~1450 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -261,7 +261,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | ~1530 | 1500 | Archive oldest reviews |
-| Active reviews | 45 (#61-105) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Active reviews | 46 (#61-106) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -331,7 +331,61 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-105 are actively maintained below. Older reviews are in the archive.
+Reviews #61-106 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #106: PR Review Processing - ReDoS & Path Security Hardening (2026-01-08)
+
+**Source:** Mixed (Qodo PR Compliance + Qodo PR Suggestions + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Commit:** 8ebb293 (Review #105)
+**Suggestions:** 16 total (Major: 8, Minor: 6, Trivial: 2)
+
+**Context:** Post-commit review of PR Review #105 fixes. Focus on ReDoS protection completeness, path traversal security, ID parsing robustness, and threshold consistency.
+
+**Patterns Identified:**
+
+1. **ReDoS Protection in add-false-positive.js** (Major pattern - Qodo)
+   - Root cause: Only validate-audit.js had ReDoS heuristic; add-false-positive.js missing same protection
+   - Prevention: Apply same `isLikelyUnsafeRegex` check to all regex entry points
+   - Pattern: Security patterns must be applied consistently across all entry points
+
+2. **Path Traversal with resolve() Escapes** (Major pattern - Qodo)
+   - Root cause: `path.join` preserves `../` sequences; resolve doesn't guarantee containment
+   - Prevention: Use resolve(), then verify result stays within expected root
+   - Pattern: Path resolution must include post-resolution containment check
+
+3. **Number.parseInt Strict Base** (Major pattern - SonarQube)
+   - Root cause: parseInt without radix can misinterpret strings starting with 0
+   - Prevention: Always specify radix 10 for decimal parsing
+   - Pattern: Use Number.parseInt(str, 10) not parseInt(str)
+
+4. **ID Parsing Fault Tolerance** (Major pattern - Qodo)
+   - Root cause: FP-XXX ID extraction assumed format, crashed on malformed entries
+   - Prevention: Guard against malformed entries with null checks
+   - Pattern: Parse untrusted data defensively with explicit validation
+
+5. **Threshold Reset Documentation Consistency** (Minor pattern - CodeRabbit)
+   - Root cause: Different audit templates described threshold reset differently
+   - Prevention: Standardize threshold reset semantics across all templates
+   - Pattern: Cross-template consistency for shared concepts
+
+6. **Shell Pipeline Portability** (Major pattern - Qodo)
+   - Root cause: `| sort -u | grep -v` pipelines don't work on Windows
+   - Prevention: Replace shell pipelines with JavaScript array operations
+   - Pattern: Use language-native filtering instead of shell utilities
+
+**Resolution:**
+- Fixed: 16 items (8 MAJOR, 6 MINOR, 2 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Security patterns need consistency**: If one file has ReDoS protection, all entry points need it
+- **Path containment requires post-resolution check**: resolve() alone doesn't prevent escapes
+- **Shell portability matters**: JavaScript filtering is more portable than shell pipes
+- **Parse defensively**: External/user data should be validated before processing
 
 ---
 

@@ -233,7 +233,7 @@ Full markdown report with all findings, baselines, and remediation plan.
 
 ### Category-Specific Thresholds
 
-This audit **resets the security category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
+This audit **resets the security category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
 
 **Security audit triggers (check AUDIT_TRACKER.md):**
 - ANY security-sensitive file modified, OR

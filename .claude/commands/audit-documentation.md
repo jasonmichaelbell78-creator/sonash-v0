@@ -223,7 +223,7 @@ Full markdown report with all findings, baselines, and fix plan.
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
    - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: NO (single-session audits do not reset thresholds)
+   - Reset Threshold: YES (single-session audits reset that category's threshold)
 5. Ask: "Would you like me to fix any of these documentation issues now?"
 
 ---
@@ -232,7 +232,7 @@ Full markdown report with all findings, baselines, and fix plan.
 
 ### Category-Specific Thresholds
 
-This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
+This audit **resets the documentation category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
 
 **Documentation audit triggers (check AUDIT_TRACKER.md):**
 - 20+ doc files changed since last documentation audit, OR

@@ -226,7 +226,7 @@ Full markdown report with all findings, baselines, and improvement plan.
    - Findings: Total count (e.g., "1 S1, 2 S2, 4 S3")
    - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: NO (single-session audits do not reset thresholds)
+   - Reset Threshold: YES (single-session audits reset that category's threshold)
 5. Ask: "Would you like me to fix any of these process issues now?"
 
 ---
@@ -235,7 +235,7 @@ Full markdown report with all findings, baselines, and improvement plan.
 
 ### Category-Specific Thresholds
 
-This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
+This audit **resets the process category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
 
 **Process audit triggers (check AUDIT_TRACKER.md):**
 - ANY CI/hook file changed since last process audit, OR

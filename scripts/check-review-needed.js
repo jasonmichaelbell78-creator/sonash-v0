@@ -334,18 +334,11 @@ function getFilesModifiedSince(sinceDate, pattern) {
  * @returns {string[]} Array of security-related file paths that changed
  */
 function getSecuritySensitiveChanges(sinceDate) {
-  // Note: This grep pattern intentionally uses broader terms (api, env) than CATEGORY_THRESHOLDS.security.filePattern
-  // to cast a wider net for security-sensitive changes in git history (grep is fast, precision matters less here)
-  const result = safeExec(
-    String.raw`git log --since="${sinceDate}" --name-only --pretty=format: | grep -iE "(auth|security|firebase|api|secrets|env|token|credential|\.env)" | sort -u`,
-    'security changes'
-  );
-
-  if (!result.success || !result.output.trim()) {
-    return [];
-  }
-
-  return result.output.split('\n').filter(f => f.trim());
+  // Use JavaScript filtering for cross-platform portability (no shell pipes)
+  // Broad pattern to cast a wide net for security-sensitive changes
+  const files = getFilesModifiedSince(sinceDate, /.*/);
+  const securityPattern = /(auth|security|firebase|api|secrets|env|token|credential|\.env)/i;
+  return files.filter(f => securityPattern.test(f));
 }
 
 /**
@@ -354,16 +347,10 @@ function getSecuritySensitiveChanges(sinceDate) {
  * @returns {string[]} Array of process-related file paths that changed
  */
 function getProcessChanges(sinceDate) {
-  const result = safeExec(
-    String.raw`git log --since="${sinceDate}" --name-only --pretty=format: | grep -E "(\.github|\.claude|\.husky|scripts/)" | sort -u`,
-    'process changes'
-  );
-
-  if (!result.success || !result.output.trim()) {
-    return [];
-  }
-
-  return result.output.split('\n').filter(f => f.trim());
+  // Use JavaScript filtering for cross-platform portability (no shell pipes)
+  const files = getFilesModifiedSince(sinceDate, /.*/);
+  const processPattern = /(\.github|\.claude|\.husky|scripts\/)/;
+  return files.filter(f => processPattern.test(f));
 }
 
 /**

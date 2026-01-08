@@ -231,7 +231,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
 
 ### Category-Specific Thresholds
 
-This audit **resets the refactoring category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
+This audit **resets the refactoring category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
 
 **Refactoring audit triggers (check AUDIT_TRACKER.md):**
 - 40+ commits since last refactoring audit, OR
