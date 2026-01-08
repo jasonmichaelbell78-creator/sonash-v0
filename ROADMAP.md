@@ -902,6 +902,56 @@ flowchart TD
 
 ---
 
+## 🛠️ Process & Tooling Improvements
+
+### Document Dependency Automation (Future Enhancement)
+
+**Current State (Session #35 - 2026-01-08):**
+- ✅ Manual validation via `/docs-sync` slash command
+- ✅ Script: `npm run docs:sync-check` (detects placeholder content, broken links, stale sync dates)
+- ✅ Documentation: `docs/DOCUMENT_DEPENDENCIES.md` tracks all template-instance relationships
+- ✅ Integration: DOCUMENTATION_AUDIT Category 6 validates sync status
+
+**Future Automation Options:**
+
+1. **Pre-Commit Hook Integration** (Low Priority)
+   - Run `docs:sync-check` before each commit
+   - Block commits if critical sync issues found
+   - **Pros**: Catches issues early
+   - **Cons**: Adds ~2-3s to commit latency
+
+2. **Pre-Push Hook Integration** (Medium Priority)
+   - Run `docs:sync-check` before push
+   - Warn on issues but don't block (exit 0 always)
+   - **Pros**: Less intrusive than pre-commit
+   - **Cons**: Issues found later in workflow
+
+3. **CI/CD Integration** (Recommended)
+   - Add `npm run docs:sync-check` to GitHub Actions
+   - Run on PRs that modify docs/templates/ or docs/reviews/
+   - Report issues as PR comments
+   - **Pros**: No local latency impact, thorough validation
+   - **Cons**: Requires CI/CD setup
+
+4. **Scheduled Validation** (Low Priority)
+   - Weekly cron job runs `docs:sync-check`
+   - Reports to Slack/email if issues found
+   - **Pros**: Regular validation without manual intervention
+   - **Cons**: Delayed detection (up to 7 days)
+
+**Recommendation**:
+- Keep manual (`/docs-sync`) for immediate use
+- Add to CI/CD when GitHub Actions is configured (post-M3)
+- Consider pre-push hook if sync issues become frequent (quarterly review)
+
+**Discussion**:
+- Document sync is quality-focused, not critical to functionality
+- Manual checks are sufficient for current team size (solo developer)
+- Automation becomes valuable when multiple contributors update templates
+- Revisit in Q2 2026 or when team expands
+
+---
+
 ## 📚 References
 
 ### Core Documentation

@@ -4,6 +4,27 @@ description: Complete verification steps before starting any work session
 
 # Session Begin Checklist
 
+**⚠️ IMPORTANT - Duplicate Detection:**
+
+Before proceeding with the full checklist, check if this session was already started:
+
+1. **Read the current conversation context** - Have I already completed this checklist in the current conversation?
+2. **Check SESSION_CONTEXT.md timestamp** - Was "Last Updated" modified within the last 4 hours?
+3. **Check session counter** - Did I already increment the session counter earlier in this conversation?
+
+**If ANY of these are true:**
+- ✅ Session is already active
+- ⚠️ DO NOT re-run the checklist
+- ⚠️ DO NOT re-increment the session counter
+- ⚠️ DO NOT re-run startup scripts
+- 💬 Simply respond: "Session #XX already active (started [time] ago). Checklist completed earlier. What would you like to work on?"
+
+**If ALL are false:**
+- ✅ This is a new session
+- ✅ Proceed with full checklist below
+
+---
+
 Before starting any work, complete these verification steps:
 
 ## 1. Context Loading (MANDATORY)
