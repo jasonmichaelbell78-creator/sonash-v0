@@ -487,15 +487,54 @@ npm run lint
 
 ### Git Hooks (Husky)
 
-**Pre-commit hook runs:**
-1. ESLint (must pass with 0 errors)
-2. Full test suite
+**Location:** `.husky/`
 
-**Pre-push hook runs:**
-1. Pattern compliance check
-2. Full test suite
+**Pre-commit hook (`.husky/pre-commit`) runs:**
+
+| Step | Command | Blocking? |
+|------|---------|-----------|
+| ESLint | `npm run lint` | YES - blocks commit |
+| Prettier | `npm run format:check` | NO - warning only |
+| Tests | `npm test` | YES - blocks commit |
+
+**Pre-push hook (`.husky/pre-push`) runs:**
+
+| Step | Command | Blocking? |
+|------|---------|-----------|
+| Tests | `npm test` | YES - blocks push |
+| Circular deps | `npm run deps:circular` | YES - blocks push |
+| Pattern compliance | `npm run patterns:check` | YES - blocks push |
+| Type check | `npx tsc --noEmit` | YES - blocks push |
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
+
+### CI/CD Workflows
+
+**Location:** `.github/workflows/`
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | Push/PR to main | Lint, test, build |
+| `deploy-firebase.yml` | Manual/Release | Deploy to Firebase |
+| `docs-lint.yml` | PR with .md changes | Documentation linting |
+| `review-check.yml` | Scheduled/Manual | Check review triggers |
+| `auto-label-review-tier.yml` | PR opened | Auto-label PRs |
+| `sync-readme.yml` | Push to main | Sync README status |
+| `validate-plan.yml` | Manual | Validate improvement plan |
+
+**CI Workflow (`ci.yml`) steps:**
+
+| Step | Blocking? | Notes |
+|------|-----------|-------|
+| ESLint | YES | |
+| Prettier | NO | `continue-on-error: true` |
+| Circular deps | YES | |
+| Unused deps | NO | `continue-on-error: true` |
+| Pattern check | NO | `continue-on-error: true` |
+| Docs check | NO | `continue-on-error: true` |
+| Type check | YES | |
+| Tests | YES | |
+| Build | YES | |
 
 ---
 

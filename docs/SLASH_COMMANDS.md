@@ -1,8 +1,8 @@
 # Slash Commands Reference
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-08
 **Status:** ACTIVE
 
 ---
@@ -215,6 +215,174 @@ Comprehensive protocol for processing AI code review feedback from CodeRabbit, Q
 #### Gap Closed
 - Previously: Review items cherry-picked, some skipped
 - Now: All items addressed or explicitly justified
+
+---
+
+### `/docs-sync`
+
+**File:** `.claude/commands/docs-sync.md`
+**Created:** Session #35
+
+#### Description
+Synchronize documentation and check for consistency issues.
+
+#### Use Cases
+- After moving/renaming documents
+- Ensuring cross-references are valid
+- Syncing related documents
+
+---
+
+### `/audit-code` (IMPLEMENTED)
+
+**File:** `.claude/commands/audit-code.md`
+**Created:** Session #37 (2026-01-08)
+
+#### Description
+Single-session code review audit. Checks code hygiene, types, framework patterns, testing, and security surface.
+
+#### Features
+1. Checks category-specific thresholds (25 commits OR 15 files)
+2. Gathers current baselines (test counts, lint status, versions)
+3. Performs focused audit with file:line evidence
+4. Outputs markdown summary + JSONL findings
+5. Saves to `docs/audits/single-session/code/`
+6. Updates AUDIT_TRACKER.md to reset category threshold
+
+#### Focus Areas
+- Code Hygiene (unused imports, dead code, console.logs)
+- Types & Correctness (any types, type safety, null checks)
+- Framework Best Practices (React patterns, Next.js conventions)
+- Testing Coverage (untested functions, missing edge cases)
+- Security Surface (input validation, auth checks)
+
+---
+
+### `/audit-security` (IMPLEMENTED)
+
+**File:** `.claude/commands/audit-security.md`
+**Created:** Session #37 (2026-01-08)
+
+#### Description
+Single-session security audit. Checks authentication, input validation, data protection, Firebase security, dependencies, and OWASP coverage.
+
+#### Features
+1. Checks security-sensitive file changes
+2. Runs npm audit for vulnerabilities
+3. Verifies Firebase/Firestore rules
+4. Outputs markdown summary + JSONL findings
+5. Saves to `docs/audits/single-session/security/`
+6. Updates AUDIT_TRACKER.md to reset category threshold
+
+#### Focus Areas
+- Authentication & Authorization
+- Input Validation
+- Data Protection
+- Firebase/Firestore Security
+- Dependency Security
+- OWASP Top 10 Coverage
+
+---
+
+### `/audit-performance` (IMPLEMENTED)
+
+**File:** `.claude/commands/audit-performance.md`
+**Created:** Session #37 (2026-01-08)
+
+#### Description
+Single-session performance audit. Checks bundle size, rendering performance, data fetching, memory management, and Core Web Vitals optimization.
+
+#### Features
+1. Checks bundle sizes and build output
+2. Counts client vs server components
+3. Identifies performance anti-patterns
+4. Outputs markdown summary + JSONL findings
+5. Saves to `docs/audits/single-session/performance/`
+6. Updates AUDIT_TRACKER.md to reset category threshold
+
+#### Focus Areas
+- Bundle Size & Loading
+- Rendering Performance
+- Data Fetching & Caching
+- Memory Management
+- Core Web Vitals
+
+---
+
+### `/audit-refactoring` (IMPLEMENTED)
+
+**File:** `.claude/commands/audit-refactoring.md`
+**Created:** Session #37 (2026-01-08)
+
+#### Description
+Single-session refactoring audit. Identifies god objects, code duplication, cognitive complexity, architecture violations, and technical debt markers.
+
+#### Features
+1. Finds large files (>300 lines)
+2. Detects circular dependencies
+3. Identifies TODO/FIXME/HACK markers
+4. Outputs markdown summary + JSONL findings
+5. Saves to `docs/audits/single-session/refactoring/`
+6. Updates AUDIT_TRACKER.md to reset category threshold
+
+#### Focus Areas
+- God Objects
+- Code Duplication
+- Cognitive Complexity
+- Architecture Violations
+- Technical Debt Markers
+
+---
+
+### `/audit-documentation` (IMPLEMENTED)
+
+**File:** `.claude/commands/audit-documentation.md`
+**Created:** Session #37 (2026-01-08)
+
+#### Description
+Single-session documentation audit. Checks broken links, stale content, coverage gaps, tier compliance, frontmatter consistency, and template-instance sync.
+
+#### Features
+1. Runs docs:check and docs:sync-check
+2. Validates cross-references
+3. Checks for outdated content
+4. Outputs markdown summary + JSONL findings
+5. Saves to `docs/audits/single-session/documentation/`
+6. Updates AUDIT_TRACKER.md to reset category threshold
+
+#### Focus Areas
+- Broken Links
+- Stale Content
+- Coverage Gaps
+- Tier Compliance
+- Frontmatter Consistency
+- Template-Instance Sync
+
+---
+
+### `/audit-process` (IMPLEMENTED)
+
+**File:** `.claude/commands/audit-process.md`
+**Created:** Session #37 (2026-01-08)
+
+#### Description
+Single-session process/automation audit. Checks CI/CD pipelines, git hooks, Claude hooks, scripts, triggers, and process documentation.
+
+#### Features
+1. Inventories all automation (workflows, hooks, scripts)
+2. Validates hook configurations
+3. Checks trigger thresholds
+4. Outputs markdown summary + JSONL findings
+5. Saves to `docs/audits/single-session/process/`
+6. Updates AUDIT_TRACKER.md to reset category threshold
+
+#### Focus Areas
+- CI/CD Pipeline
+- Git Hooks
+- Claude Hooks
+- Script Health
+- Trigger Thresholds
+- Process Documentation
 
 ---
 
@@ -1218,6 +1386,7 @@ args: arg1 - Description of argument
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-01-08 | Added 6 single-session audit commands (/audit-code, /audit-security, /audit-performance, /audit-refactoring, /audit-documentation, /audit-process) with AUDIT_TRACKER.md integration |
 | 1.0 | 2026-01-05 | Initial creation - comprehensive slash command reference |
 
 ---
