@@ -139,7 +139,7 @@ These templates are **structural guides**, not strict blueprints requiring conti
 
 **Checks**:
 1. **Placeholder detection** - Scans for `[e.g., ...]`, `[X]`, `[Project Name]`, etc. (7 patterns)
-2. **Broken links** - Verifies all relative markdown links point to existing files
+2. **Broken links** - Verifies all relative Markdown links point to existing files
 3. **Last synced age** - Flags instances >90 days out of sync
 
 **Integration**: Available via `npm run docs:sync-check`

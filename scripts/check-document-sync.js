@@ -17,7 +17,7 @@
  */
 
 import { readFileSync, existsSync, realpathSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,12 +52,23 @@ function parseDocumentDependencies() {
   const content = readFileSync(DEPS_FILE, 'utf-8');
   const pairs = [];
 
+  // Extract only Section 1 (Multi-AI Audit Plan Templates) to prevent false matches
+  // from other sections like Core Document Templates
+  const section1Match = content.match(/### 1\. Multi-AI Audit Plan Templates([\s\S]*?)(?=###|$)/);
+  if (!section1Match) {
+    console.error('⚠️  Could not find "Multi-AI Audit Plan Templates" section in DOCUMENT_DEPENDENCIES.md');
+    return pairs;
+  }
+
+  const section1Content = section1Match[1];
+
   // Extract Multi-AI Audit Plan templates (table format)
   // Fixed ReDoS: bounded quantifiers {1,500} prevent exponential backtracking
-  const tableRegex = /\|\s*\*\*([^*]{1,200})\*\*\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,200})\s*\|\s*([^|]{1,50})\s*\|\s*([^|]{1,50})\s*\|/g;
+  // Sync status column increased to {1,100} to accommodate longer descriptions
+  const tableRegex = /\|\s*\*\*([^*]{1,200})\*\*\s*\|\s*([^|]{1,500})\s*\|\s*([^|]{1,200})\s*\|\s*([^|]{1,50})\s*\|\s*([^|]{1,100})\s*\|/g;
   let match;
 
-  while ((match = tableRegex.exec(content)) !== null) {
+  while ((match = tableRegex.exec(section1Content)) !== null) {
     const [, template, instance, location, lastSynced, syncStatus] = match;
 
     // Skip header rows
@@ -71,8 +82,10 @@ function parseDocumentDependencies() {
       // Resolve to absolute path and verify it's within ROOT
       validatedPath = realpathSync(constructedPath);
       const normalizedRoot = realpathSync(ROOT);
+      const rel = relative(normalizedRoot, validatedPath);
 
-      if (!validatedPath.startsWith(normalizedRoot + '/') && validatedPath !== normalizedRoot) {
+      // If path escapes ROOT, it will start with '..' or be absolute (unchanged)
+      if (rel.startsWith('..') || rel === validatedPath) {
         console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
         continue;
       }
@@ -80,8 +93,10 @@ function parseDocumentDependencies() {
       // File doesn't exist yet - validate constructed path manually
       const normalizedRoot = realpathSync(ROOT);
       const normalizedPath = join(normalizedRoot, location.trim(), instance.trim());
+      const rel = relative(normalizedRoot, normalizedPath);
 
-      if (!normalizedPath.startsWith(normalizedRoot + '/') && normalizedPath !== normalizedRoot) {
+      // If path escapes ROOT, it will start with '..' or be absolute (unchanged)
+      if (rel.startsWith('..') || rel === normalizedPath) {
         console.error(`⚠️  Skipping path outside repository: ${constructedPath}`);
         continue;
       }
@@ -176,6 +191,9 @@ function checkBrokenLinks(filePath) {
   // Markdown link pattern: [text](path) - bounded to prevent ReDoS
   const linkPattern = /\[([^\]]{1,200})\]\(([^)]{1,500})\)/g;
 
+  // Get normalized root for path traversal validation
+  const normalizedRoot = realpathSync(ROOT);
+
   lines.forEach((line, idx) => {
     const lineNum = idx + 1;
 
@@ -205,6 +223,41 @@ function checkBrokenLinks(filePath) {
       const fileDir = dirname(filePath);
       const targetPath = join(fileDir, path.split('#')[0]); // Remove anchor
 
+      // Validate path stays within ROOT (prevent path traversal)
+      try {
+        const resolvedTarget = realpathSync(targetPath);
+        const rel = relative(normalizedRoot, resolvedTarget);
+
+        // If path escapes ROOT, it will start with '..' or be absolute
+        if (rel.startsWith('..') || rel === resolvedTarget) {
+          if (VERBOSE) {
+            console.error(`⚠️  Skipping link outside repository: ${path} (line ${lineNum})`);
+          }
+          continue;
+        }
+      } catch (error) {
+        // File doesn't exist - validate constructed path manually
+        const rel = relative(normalizedRoot, targetPath);
+
+        if (rel.startsWith('..') || rel === targetPath) {
+          if (VERBOSE) {
+            console.error(`⚠️  Skipping link outside repository: ${path} (line ${lineNum})`);
+          }
+          continue;
+        }
+
+        // Path is within ROOT but doesn't exist - report as broken link
+        issues.push({
+          line: lineNum,
+          type: 'broken_link',
+          text: `[${text}](${path})`,
+          path: path,
+          severity: 'MAJOR'
+        });
+        continue;
+      }
+
+      // Path exists and is within ROOT - check if it exists
       if (!existsSync(targetPath)) {
         issues.push({
           line: lineNum,
@@ -227,7 +280,13 @@ function checkStaleness(lastSyncedStr) {
   // Parse date like "2026-01-08"
   const match = lastSyncedStr.match(/(\d{4})-(\d{2})-(\d{2})/);
   if (!match) {
-    return { isStale: false, reason: 'Unable to parse date' };
+    // Surface parse error instead of silently treating as "not stale"
+    return {
+      isStale: true,
+      parseError: true,
+      daysSinceSync: null,
+      reason: `Unable to parse date: "${lastSyncedStr}" (expected YYYY-MM-DD format)`
+    };
   }
 
   const [, year, month, day] = match;
@@ -237,6 +296,7 @@ function checkStaleness(lastSyncedStr) {
 
   return {
     isStale: daysDiff > 90,
+    parseError: false,
     daysSinceSync: daysDiff,
     reason: daysDiff > 90 ? `${daysDiff} days since last sync (>90 day threshold)` : null
   };
