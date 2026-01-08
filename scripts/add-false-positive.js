@@ -30,6 +30,11 @@ const FP_FILE = node_path.join(__dirname, '..', 'docs', 'audits', 'FALSE_POSITIV
 
 const VALID_CATEGORIES = ['security', 'code', 'documentation', 'performance', 'schema', 'refactoring', 'process'];
 
+/**
+ * Load false positives from JSONL file with fault-tolerant parsing
+ * Skips malformed lines instead of crashing
+ * @returns {Array<Object>} Array of false positive entries
+ */
 function loadFalsePositives() {
   if (!node_fs.existsSync(FP_FILE)) {
     return [];
@@ -38,7 +43,15 @@ function loadFalsePositives() {
   return content
     .split('\n')
     .filter(line => line.trim())
-    .map(line => JSON.parse(line));
+    .map((line, idx) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        console.warn(`⚠️  Skipping invalid JSONL at ${FP_FILE}:${idx + 1}`);
+        return null;
+      }
+    })
+    .filter(Boolean);
 }
 
 function saveFalsePositive(entry) {

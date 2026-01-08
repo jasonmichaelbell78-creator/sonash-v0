@@ -82,11 +82,12 @@ If outdated, note discrepancies but proceed with current values.
 - `lib/firebase*.ts`
 - `lib/auth*.ts`
 - `middleware.ts`
-- Any file with "security", "auth", "token", "secret" in name
+- `.env*` files (environment variables)
+- Any file with "security", "auth", "token", "secret", "credential" in name
 
 **Scope:**
 - Include: `app/`, `components/`, `lib/`, `functions/`, `firestore.rules`
-- Exclude: `node_modules/`, `.next/`, `docs/`
+- Exclude: `node_modules/`, `.next/`, `docs/`, `tests/`
 
 ---
 
@@ -222,9 +223,7 @@ Full markdown report with all findings, baselines, and remediation plan.
    - Commits Covered: Number of commits since last security audit
    - Files Covered: Number of security-sensitive files analyzed
    - Findings: Total count (e.g., "1 S0, 2 S1, 3 S2")
-   - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
-   - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: NO (single-session audits do not reset thresholds)
+   - Reset Threshold: YES (single-session audits reset that category's threshold)
 5. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate remediation."
 6. Ask: "Would you like me to fix any of these issues now?"
 
@@ -234,7 +233,7 @@ Full markdown report with all findings, baselines, and remediation plan.
 
 ### Category-Specific Thresholds
 
-This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
+This audit **resets the security category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
 
 **Security audit triggers (check AUDIT_TRACKER.md):**
 - ANY security-sensitive file modified, OR

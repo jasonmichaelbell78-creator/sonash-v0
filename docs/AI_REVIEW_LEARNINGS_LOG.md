@@ -18,10 +18,11 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.5 | 2026-01-08 | Review #105: PR Review Processing - 17 items (4 MAJOR ReDoS/JSONL/schema, 9 MINOR docs/patterns, 4 TRIVIAL). Session #39. |
 | 2.4 | 2026-01-08 | Review #104: PR Review Processing - 18 items (4 MAJOR security pattern/baselines/JSON metrics, 9 MINOR shell portability/INP metrics, 5 TRIVIAL). Session #38. |
 | 2.3 | 2026-01-08 | Review #103: PR Review Processing - 10 items (2 MAJOR hasComplexityWarnings+getRepoStartDate, 5 MINOR JSON/docs, 3 TRIVIAL). Session #38. |
 | 2.2 | 2026-01-08 | Review #102: PR Review Processing - 19 items (1 MAJOR cognitive complexity refactor, 5 MINOR date validation/node: prefix/Number.parseInt/String.raw, 10 TRIVIAL code style). Session #38. |
-| 2.1 | 2026-01-08 | Review #101: PR Review Processing - 36 items (12 regex DoS, 5 major, 17 JSDoc). Session #38. |
+| 2.1 | 2026-01-08 | Review #101: PR Review Processing - 36 items (12 Critical, 5 Major, 17 Minor, 2 Trivial). Session #38. |
 | 2.0 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 → CODE_PATTERNS.md v1.3 (6 Security Audit patterns, new category). Session #33 session-end cleanup. |
 | 1.99 | 2026-01-07 | Reviews #92-97: Security audit PR review feedback (6 reviews, 24 items total). Schema improvements: OWASP string→array, file_globs field, severity_normalization for divergent findings, F-010 conditional risk acceptance with dependencies. |
 | 1.93 | 2026-01-07 | Review #91: Audit traceability improvements (5 items) - 5 MINOR (severity_normalization field, adjudication field, F-010 severity in remediation, item count, log lines metric), 6 REJECTED (⚪ compliance items - doc-only PR, code fixes in Step 4B) |
@@ -99,7 +100,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-102) | Deep investigation | ~1400 lines |
+| **3** | Active Reviews (#61-105) | Deep investigation | ~1400 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -173,7 +174,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 (Reviews #98-103)
+**Reviews since last consolidation:** 8 (Reviews #98-105)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
 **Next consolidation due:** After Review #107
@@ -259,7 +260,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | ~1530 | 1500 | Archive oldest reviews |
-| Active reviews | 37 (#61-97) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Active reviews | 45 (#61-105) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -329,7 +330,50 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-104 are actively maintained below. Older reviews are in the archive.
+Reviews #61-105 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #105: PR Review Processing - validate-audit.js Hardening (2026-01-08)
+
+**Source:** Mixed (Qodo PR Compliance + Qodo PR Suggestions + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Commit:** 3f69691 (Review #104)
+**Suggestions:** 17 total (Major: 4, Minor: 9, Trivial: 4)
+
+**Context:** Post-commit review of PR Review #104 fixes. Focus on validate-audit.js ReDoS protection, error handling, and documentation consistency.
+
+**Patterns Identified:**
+
+1. **ReDoS Protection in Pattern Matching** (Major pattern - Qodo)
+   - Root cause: User-editable FALSE_POSITIVES.jsonl patterns could contain catastrophic backtracking regex
+   - Prevention: Add heuristic detection for dangerous patterns (nested quantifiers, length limits)
+   - Pattern: Validate regex patterns from untrusted sources before execution
+
+2. **Falsy Check vs Missing Check** (Major pattern - Qodo)
+   - Root cause: `!finding[field]` returns true for value 0, false empty string detection
+   - Prevention: Use explicit null/undefined check for numeric fields like `line`
+   - Pattern: Use `=== undefined || === null` for fields that can have 0 value
+
+3. **JSONL Parse Resilience** (Major pattern - Qodo)
+   - Root cause: Single malformed line in JSONL crashes script
+   - Prevention: Wrap individual line parsing in try/catch, continue with valid entries
+   - Pattern: Parse JSONL lines individually to isolate failures
+
+4. **Schema Documentation Consistency** (Minor pattern - CodeRabbit)
+   - Root cause: audit-performance.md referenced AUDIT_TRACKER.md fields that don't exist
+   - Prevention: Verify referenced fields exist in target documents
+   - Pattern: Cross-reference documentation schemas before publishing
+
+**Resolution:**
+- Fixed: 17 items (4 MAJOR, 9 MINOR, 4 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Validate user-provided regex**: Add ReDoS detection before executing patterns
+- **Numeric fields need explicit checks**: `!field` fails for value 0
+- **JSONL should be fault-tolerant**: Skip bad lines, don't crash
 
 ---
 

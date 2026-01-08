@@ -41,7 +41,7 @@ Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
 - Category: `performance`
 - Expired entries (skip if `expires` date passed)
 
-Note patterns to exclude from final findings.
+Note patterns to exclude from final findings. If file doesn't exist, proceed with no exclusions.
 
 **Step 4: Check Template Currency**
 
@@ -175,7 +175,7 @@ Create file: `docs/audits/single-session/performance/audit-[YYYY-MM-DD].jsonl`
 
 Each line (UPDATED SCHEMA with confidence and verification):
 ```json
-{"id":"PERF-001","category":"Bundle|Rendering|DataFetch|Memory|WebVitals","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"path/to/file.ts","line":123,"title":"Short description","description":"Detailed issue","affected_metric":"LCP|FID|CLS|bundle|render|memory","estimated_improvement":"X%","recommendation":"How to fix","evidence":["code snippet","build output","profiling data"],"cross_ref":"build|lighthouse|profiler|MANUAL_ONLY"}
+{"id":"PERF-001","category":"Bundle|Rendering|DataFetch|Memory|WebVitals","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"path/to/file.ts","line":123,"title":"Short description","description":"Detailed issue","affected_metric":"LCP|INP|CLS|bundle|render|memory","estimated_improvement":"X%","recommendation":"How to fix","evidence":["code snippet","build output","profiling data"],"cross_ref":"build|lighthouse|profiler|MANUAL_ONLY"}
 ```
 
 **3. Markdown Report (save to file):**
@@ -220,9 +220,7 @@ Full markdown report with all findings, baselines, and optimization plan.
    - Commits Covered: Number of commits since last performance audit
    - Files Covered: Number of performance-critical files analyzed
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
-   - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
-   - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: NO (single-session audits do not reset thresholds)
+   - Reset Threshold: YES (single-session audits reset that category's threshold)
 5. Ask: "Would you like me to fix any of these issues now? (Quick wins recommended first)"
 
 ---
@@ -231,7 +229,7 @@ Full markdown report with all findings, baselines, and optimization plan.
 
 ### Category-Specific Thresholds
 
-This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
+This audit **resets the performance category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
 
 **Performance audit triggers (check AUDIT_TRACKER.md):**
 - 30+ commits since last performance audit, OR

@@ -76,6 +76,40 @@ function loadAuditFindings(filePath) {
     });
 }
 
+/**
+ * Check if a date string is valid ISO format
+ * @param {string} dateStr - Date string to validate
+ * @returns {boolean} True if valid ISO date
+ */
+function isValidDate(dateStr) {
+  const timestamp = new Date(dateStr).getTime();
+  return !Number.isNaN(timestamp);
+}
+
+/**
+ * Heuristic check for potentially unsafe regex patterns (ReDoS protection)
+ * Not perfect, but prevents common catastrophic backtracking patterns
+ * @param {string} pattern - Regex pattern to check
+ * @returns {boolean} True if pattern appears unsafe
+ */
+function isLikelyUnsafeRegex(pattern) {
+  if (typeof pattern !== 'string') return true;
+  // Length limit to prevent very large patterns
+  if (pattern.length > 500) return true;
+  // Nested quantifiers like (a+)+, (.*)+, ([\s\S]*)* etc.
+  if (/\((?:[^()]|\\.)*[+*?](?:[^()]|\\.)*\)[+*?]/.test(pattern)) return true;
+  // Extremely broad dot-star with additional quantifiers
+  if (/(?:\.\*|\[\s\S\]\*)[+*?]/.test(pattern)) return true;
+  return false;
+}
+
+/**
+ * Check findings against false positives database
+ * Includes ReDoS protection and date validation
+ * @param {Array<Object>} findings - Audit findings to check
+ * @param {Array<Object>} falsePositives - False positive patterns
+ * @returns {Array<{finding: Object, falsePositive: Object, match: string}>} Matched false positives
+ */
 function checkFalsePositives(findings, falsePositives) {
   const flagged = [];
 
@@ -83,8 +117,20 @@ function checkFalsePositives(findings, falsePositives) {
     if (finding._parseError) continue;
 
     for (const fp of falsePositives) {
-      // Check if expired
-      if (fp.expires && new Date(fp.expires) < new Date()) continue;
+      // Validate and check expiration
+      if (fp.expires) {
+        if (!isValidDate(fp.expires)) {
+          console.warn(`⚠️  Invalid expires date in ${fp.id}: ${fp.expires} (skipping entry)`);
+          continue;
+        }
+        if (new Date(fp.expires) < new Date()) continue;
+      }
+
+      // ReDoS protection: skip potentially unsafe patterns
+      if (isLikelyUnsafeRegex(fp.pattern)) {
+        console.warn(`⚠️  Skipping potentially unsafe regex in ${fp.id}`);
+        continue;
+      }
 
       try {
         const regex = new RegExp(fp.pattern, 'i');
@@ -95,15 +141,16 @@ function checkFalsePositives(findings, falsePositives) {
           ...(finding.evidence || [])
         ].join(' ');
 
-        if (regex.test(searchText)) {
+        const match = regex.exec(searchText);
+        if (match) {
           flagged.push({
             finding,
             falsePositive: fp,
-            match: searchText.match(regex)?.[0]
+            match: match[0]
           });
         }
-      } catch (err) {
-        console.warn(`⚠️  Invalid regex in FP-${fp.id}: ${fp.pattern}`);
+      } catch {
+        console.warn(`⚠️  Invalid regex in ${fp.id}: ${fp.pattern}`);
       }
     }
   }
@@ -129,7 +176,14 @@ function validateRequiredFields(findings) {
     const required = REQUIRED_FIELDS_BY_SEVERITY[severity] || REQUIRED_FIELDS_BY_SEVERITY.S3;
 
     for (const field of required) {
-      if (!finding[field]) {
+      // Use explicit check for undefined/null/empty-string to allow value 0 (e.g., line: 0)
+      const value = finding[field];
+      const isMissing =
+        value === undefined ||
+        value === null ||
+        (typeof value === 'string' && value.trim() === '');
+
+      if (isMissing) {
         issues.push({
           type: 'MISSING_FIELD',
           findingId: finding.id,
@@ -207,6 +261,12 @@ function checkDuplicates(findings) {
   return duplicates;
 }
 
+/**
+ * Cross-reference findings against npm audit output
+ * Uses portable command execution (no shell-specific redirection)
+ * @param {Array<Object>} findings - Audit findings to cross-reference
+ * @returns {{validated: Array, unvalidated: Array}} Cross-reference results
+ */
 function crossReferenceNpmAudit(findings) {
   const securityFindings = findings.filter(f =>
     !f._parseError && f.category?.toLowerCase().includes('dep')
@@ -214,37 +274,49 @@ function crossReferenceNpmAudit(findings) {
 
   if (securityFindings.length === 0) return { validated: [], unvalidated: [] };
 
+  let auditData = {};
   try {
-    const output = execSync('npm audit --json 2>/dev/null || true', {
+    // Use stdio config instead of shell redirection for portability
+    const output = execSync('npm audit --json', {
       encoding: 'utf8',
-      cwd: node_path.join(__dirname, '..')
+      cwd: node_path.join(__dirname, '..'),
+      stdio: ['ignore', 'pipe', 'pipe']
     });
 
-    const auditData = JSON.parse(output);
-    const vulnerabilities = auditData.vulnerabilities || {};
-
-    const validated = [];
-    const unvalidated = [];
-
-    for (const finding of securityFindings) {
-      // Try to match against npm audit results
-      const packageMatch = Object.keys(vulnerabilities).find(pkg =>
-        finding.title?.toLowerCase().includes(pkg.toLowerCase()) ||
-        finding.description?.toLowerCase().includes(pkg.toLowerCase())
-      );
-
-      if (packageMatch) {
-        validated.push({ finding, npmMatch: vulnerabilities[packageMatch] });
-      } else {
-        unvalidated.push(finding);
-      }
+    try {
+      auditData = JSON.parse(output);
+    } catch {
+      auditData = {};
     }
-
-    return { validated, unvalidated };
-  } catch {
-    console.warn('⚠️  npm audit cross-reference failed');
-    return { validated: [], unvalidated: securityFindings };
+  } catch (err) {
+    // npm audit can exit non-zero while still printing JSON to stdout
+    const stdout = err?.stdout ? String(err.stdout) : '';
+    try {
+      auditData = stdout ? JSON.parse(stdout) : {};
+    } catch {
+      auditData = {};
+    }
   }
+
+  const vulnerabilities = auditData.vulnerabilities || {};
+  const validated = [];
+  const unvalidated = [];
+
+  for (const finding of securityFindings) {
+    // Try to match against npm audit results
+    const packageMatch = Object.keys(vulnerabilities).find(pkg =>
+      finding.title?.toLowerCase().includes(pkg.toLowerCase()) ||
+      finding.description?.toLowerCase().includes(pkg.toLowerCase())
+    );
+
+    if (packageMatch) {
+      validated.push({ finding, npmMatch: vulnerabilities[packageMatch] });
+    } else {
+      unvalidated.push(finding);
+    }
+  }
+
+  return { validated, unvalidated };
 }
 
 function crossReferenceEslint(findings) {
