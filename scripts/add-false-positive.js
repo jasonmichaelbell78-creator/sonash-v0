@@ -1,0 +1,254 @@
+#!/usr/bin/env node
+/**
+ * add-false-positive.js - Add new entries to the FALSE_POSITIVES.jsonl database
+ *
+ * Usage:
+ *   node scripts/add-false-positive.js --pattern "regex" --category "security|code|documentation|performance|schema" --reason "why this is a false positive"
+ *   node scripts/add-false-positive.js --interactive
+ *   node scripts/add-false-positive.js --list
+ *   node scripts/add-false-positive.js --list --category security
+ *
+ * Options:
+ *   --pattern     Regex pattern to match false positive (required unless --list or --interactive)
+ *   --category    Category: security, code, documentation, performance, schema, refactoring, process
+ *   --reason      Explanation of why this is a false positive
+ *   --source      Optional source reference (e.g., "AI_REVIEW_LEARNINGS_LOG.md#review-103")
+ *   --expires     Optional expiration date (YYYY-MM-DD) for temporary false positives
+ *   --list        List all false positives (optionally filtered by --category)
+ *   --interactive Interactive mode for adding entries
+ */
+
+import node_fs from 'node:fs';
+import node_path from 'node:path';
+import node_url from 'node:url';
+import node_readline from 'node:readline';
+
+const __filename = node_url.fileURLToPath(import.meta.url);
+const __dirname = node_path.dirname(__filename);
+
+const FP_FILE = node_path.join(__dirname, '..', 'docs', 'audits', 'FALSE_POSITIVES.jsonl');
+
+const VALID_CATEGORIES = ['security', 'code', 'documentation', 'performance', 'schema', 'refactoring', 'process'];
+
+function loadFalsePositives() {
+  if (!node_fs.existsSync(FP_FILE)) {
+    return [];
+  }
+  const content = node_fs.readFileSync(FP_FILE, 'utf8');
+  return content
+    .split('\n')
+    .filter(line => line.trim())
+    .map(line => JSON.parse(line));
+}
+
+function saveFalsePositive(entry) {
+  const existing = loadFalsePositives();
+  const maxId = existing.reduce((max, fp) => {
+    const num = Number.parseInt(fp.id.replace('FP-', ''), 10);
+    return num > max ? num : max;
+  }, 0);
+
+  entry.id = `FP-${String(maxId + 1).padStart(3, '0')}`;
+  entry.added = new Date().toISOString().split('T')[0];
+
+  node_fs.appendFileSync(FP_FILE, JSON.stringify(entry) + '\n');
+  return entry;
+}
+
+function listFalsePositives(categoryFilter) {
+  const fps = loadFalsePositives();
+  const filtered = categoryFilter
+    ? fps.filter(fp => fp.category === categoryFilter)
+    : fps;
+
+  if (filtered.length === 0) {
+    console.log(categoryFilter
+      ? `No false positives found for category: ${categoryFilter}`
+      : 'No false positives found');
+    return;
+  }
+
+  console.log(`\n${'='.repeat(80)}`);
+  console.log(`FALSE POSITIVES DATABASE (${filtered.length} entries)`);
+  console.log(`${'='.repeat(80)}\n`);
+
+  const byCategory = {};
+  for (const fp of filtered) {
+    if (!byCategory[fp.category]) byCategory[fp.category] = [];
+    byCategory[fp.category].push(fp);
+  }
+
+  for (const [category, entries] of Object.entries(byCategory)) {
+    console.log(`\n## ${category.toUpperCase()} (${entries.length})\n`);
+    for (const fp of entries) {
+      console.log(`  ${fp.id}: ${fp.pattern}`);
+      console.log(`       Reason: ${fp.reason}`);
+      if (fp.source) console.log(`       Source: ${fp.source}`);
+      if (fp.expires) console.log(`       Expires: ${fp.expires}`);
+      console.log('');
+    }
+  }
+}
+
+async function interactiveMode() {
+  const rl = node_readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
+
+  console.log('\n=== Add False Positive (Interactive Mode) ===\n');
+
+  const pattern = await question('Pattern (regex): ');
+  if (!pattern.trim()) {
+    console.error('Error: Pattern is required');
+    rl.close();
+    process.exit(1);
+  }
+
+  console.log(`\nCategories: ${VALID_CATEGORIES.join(', ')}`);
+  const category = await question('Category: ');
+  if (!VALID_CATEGORIES.includes(category)) {
+    console.error(`Error: Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`);
+    rl.close();
+    process.exit(1);
+  }
+
+  const reason = await question('Reason (why is this a false positive): ');
+  if (!reason.trim()) {
+    console.error('Error: Reason is required');
+    rl.close();
+    process.exit(1);
+  }
+
+  const source = await question('Source reference (optional, e.g., AI_REVIEW_LEARNINGS_LOG.md#review-103): ');
+  const expires = await question('Expiration date (optional, YYYY-MM-DD): ');
+
+  rl.close();
+
+  const entry = {
+    pattern,
+    category,
+    reason,
+    expires: expires.trim() || null
+  };
+  if (source.trim()) entry.source = source.trim();
+
+  const saved = saveFalsePositive(entry);
+  console.log(`\n✅ Added false positive: ${saved.id}`);
+  console.log(JSON.stringify(saved, null, 2));
+}
+
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const parsed = {};
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--list') {
+      parsed.list = true;
+    } else if (arg === '--interactive') {
+      parsed.interactive = true;
+    } else if (arg === '--pattern' && args[i + 1]) {
+      parsed.pattern = args[++i];
+    } else if (arg === '--category' && args[i + 1]) {
+      parsed.category = args[++i];
+    } else if (arg === '--reason' && args[i + 1]) {
+      parsed.reason = args[++i];
+    } else if (arg === '--source' && args[i + 1]) {
+      parsed.source = args[++i];
+    } else if (arg === '--expires' && args[i + 1]) {
+      parsed.expires = args[++i];
+    } else if (arg === '--help' || arg === '-h') {
+      parsed.help = true;
+    }
+  }
+
+  return parsed;
+}
+
+function showHelp() {
+  console.log(`
+add-false-positive.js - Add entries to the FALSE_POSITIVES.jsonl database
+
+Usage:
+  node scripts/add-false-positive.js --pattern "regex" --category "security" --reason "explanation"
+  node scripts/add-false-positive.js --interactive
+  node scripts/add-false-positive.js --list [--category <category>]
+
+Options:
+  --pattern     Regex pattern to match (required for adding)
+  --category    Category: ${VALID_CATEGORIES.join(', ')}
+  --reason      Why this is a false positive
+  --source      Optional source reference
+  --expires     Optional expiration date (YYYY-MM-DD)
+  --list        List all false positives
+  --interactive Add entry interactively
+  --help        Show this help
+
+Examples:
+  # Add a new false positive
+  node scripts/add-false-positive.js \\
+    --pattern "console\\.log.*debug" \\
+    --category "code" \\
+    --reason "Debug logs in development files are intentional"
+
+  # List all security false positives
+  node scripts/add-false-positive.js --list --category security
+
+  # Interactive mode
+  node scripts/add-false-positive.js --interactive
+`);
+}
+
+async function main() {
+  const args = parseArgs();
+
+  if (args.help) {
+    showHelp();
+    process.exit(0);
+  }
+
+  if (args.list) {
+    listFalsePositives(args.category);
+    process.exit(0);
+  }
+
+  if (args.interactive) {
+    await interactiveMode();
+    process.exit(0);
+  }
+
+  // Command-line mode
+  if (!args.pattern) {
+    console.error('Error: --pattern is required');
+    showHelp();
+    process.exit(1);
+  }
+  if (!args.category || !VALID_CATEGORIES.includes(args.category)) {
+    console.error(`Error: --category must be one of: ${VALID_CATEGORIES.join(', ')}`);
+    process.exit(1);
+  }
+  if (!args.reason) {
+    console.error('Error: --reason is required');
+    process.exit(1);
+  }
+
+  const entry = {
+    pattern: args.pattern,
+    category: args.category,
+    reason: args.reason,
+    expires: args.expires || null
+  };
+  if (args.source) entry.source = args.source;
+
+  const saved = saveFalsePositive(entry);
+  console.log(`✅ Added false positive: ${saved.id}`);
+  console.log(JSON.stringify(saved, null, 2));
+}
+
+main().catch(err => {
+  console.error('Error:', err.message);
+  process.exit(1);
+});

@@ -34,7 +34,15 @@ npm run patterns:check 2>&1
 ls -la .env* 2>/dev/null || echo "No .env files found"
 ```
 
-**Step 3: Check Template Currency**
+**Step 3: Load False Positives Database**
+
+Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+- Category: `security`
+- Expired entries (skip if `expires` date passed)
+
+Note patterns to exclude from final findings.
+
+**Step 4: Check Template Currency**
 
 Read `docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md` and verify:
 - [ ] FIREBASE_CHANGE_POLICY.md reference is valid
@@ -62,6 +70,7 @@ If outdated, note discrepancies but proceed with current values.
 3. Classify severity: S0 (Critical) | S1 (High) | S2 (Medium) | S3 (Low)
 4. Classify OWASP category if applicable
 5. Estimate effort: E0 (trivial) | E1 (hours) | E2 (day) | E3 (major)
+6. **Assign confidence level** (see Evidence Requirements below)
 
 **Security-Sensitive Files to Check:**
 - `firestore.rules`
@@ -77,6 +86,54 @@ If outdated, note discrepancies but proceed with current values.
 
 ---
 
+## Evidence Requirements (MANDATORY)
+
+**All findings MUST include:**
+1. **File:Line Reference** - Exact location (e.g., `lib/auth.ts:45`)
+2. **Code Snippet** - The actual vulnerable code (3-5 lines of context)
+3. **Verification Method** - How you confirmed this is an issue (grep output, tool output)
+4. **Standard Reference** - CWE number, OWASP category, or security best practice citation
+
+**Confidence Levels:**
+- **HIGH (90%+)**: Confirmed by external tool (npm audit, ESLint security), verified file exists, code snippet matches
+- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no tool confirmation
+- **LOW (<70%)**: Pattern match only, needs manual verification
+
+**S0/S1 findings require:**
+- HIGH or MEDIUM confidence (LOW confidence S0/S1 must be escalated)
+- Dual-pass verification (re-read the code after initial finding)
+- Cross-reference with npm audit, ESLint, or patterns:check output
+
+---
+
+## Cross-Reference Validation
+
+Before finalizing findings, cross-reference with:
+
+1. **npm audit output** - Mark dependency findings as "TOOL_VALIDATED" if npm audit agrees
+2. **ESLint security warnings** - Mark code findings as "TOOL_VALIDATED" if ESLint flagged same issue
+3. **patterns:check output** - Mark pattern violations as "TOOL_VALIDATED" if patterns:check flagged
+4. **Prior audits** - Check `docs/audits/single-session/security/` for duplicate findings
+
+Findings without tool validation should note: `"cross_ref": "MANUAL_ONLY"`
+
+---
+
+## Dual-Pass Verification (S0/S1 Only)
+
+For all S0 (Critical) and S1 (High) findings:
+
+1. **First Pass**: Identify the issue, note file:line and initial evidence
+2. **Second Pass**: Re-read the actual code in context
+   - Verify the vulnerability is exploitable
+   - Check for existing mitigations (validation, sanitization, auth checks)
+   - Confirm file and line still exist
+3. **Decision**: Mark as CONFIRMED or DOWNGRADE (with reason)
+
+Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"verified": "DOWNGRADED_TO_S2"`
+
+---
+
 ## Output Requirements
 
 **1. Markdown Summary (display to user):**
@@ -89,16 +146,19 @@ If outdated, note discrepancies but proceed with current values.
 - Security-sensitive files: X changed since last audit
 
 ### Findings Summary
-| Severity | Count | OWASP Category |
-|----------|-------|----------------|
-| S0 | X | ... |
-| S1 | X | ... |
-| S2 | X | ... |
-| S3 | X | ... |
+| Severity | Count | OWASP Category | Confidence |
+|----------|-------|----------------|------------|
+| S0 | X | ... | HIGH/MEDIUM |
+| S1 | X | ... | HIGH/MEDIUM |
+| S2 | X | ... | ... |
+| S3 | X | ... | ... |
 
 ### Critical/High Findings (Immediate Action)
-1. [file:line] - Description (S0/OWASP-A01)
+1. [file:line] - Description (S0/OWASP-A01) - DUAL_PASS_CONFIRMED
 2. ...
+
+### False Positives Filtered
+- X findings excluded (matched FALSE_POSITIVES.jsonl patterns)
 
 ### Dependency Vulnerabilities
 - ...
@@ -111,9 +171,9 @@ If outdated, note discrepancies but proceed with current values.
 
 Create file: `docs/audits/single-session/security/audit-[YYYY-MM-DD].jsonl`
 
-Each line:
+Each line (UPDATED SCHEMA with confidence and verification):
 ```json
-{"id":"SEC-001","category":"Auth|Input|Data|Firebase|Deps|OWASP","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","owasp":["A01","A03"],"file":"path/to/file.ts","line":123,"title":"Short description","description":"Detailed vulnerability","recommendation":"How to fix","cwe":"CWE-XXX","evidence":["code snippet"]}
+{"id":"SEC-001","category":"Auth|Input|Data|Firebase|Deps|OWASP","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","owasp":["A01","A03"],"file":"path/to/file.ts","line":123,"title":"Short description","description":"Detailed vulnerability","recommendation":"How to fix","cwe":"CWE-XXX","evidence":["code snippet","grep output","tool output"],"cross_ref":"npm_audit|eslint|patterns_check|MANUAL_ONLY"}
 ```
 
 **3. Markdown Report (save to file):**
@@ -124,19 +184,45 @@ Full markdown report with all findings, baselines, and remediation plan.
 
 ---
 
+## Post-Audit Validation
+
+**Before finalizing the audit:**
+
+1. **Run Validation Script:**
+   ```bash
+   node scripts/validate-audit.js docs/audits/single-session/security/audit-[YYYY-MM-DD].jsonl
+   ```
+
+2. **Validation Checks:**
+   - All findings have required fields
+   - No matches in FALSE_POSITIVES.jsonl (or documented override)
+   - No duplicate findings
+   - All S0/S1 have HIGH or MEDIUM confidence
+   - All S0/S1 have DUAL_PASS_CONFIRMED or TOOL_VALIDATED
+
+3. **If validation fails:**
+   - Review flagged findings
+   - Fix or document exceptions
+   - Re-run validation
+
+---
+
 ## Post-Audit
 
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/security/`
-3. **Update AUDIT_TRACKER.md** - Add entry to "Security Audits" table:
+3. Run `node scripts/validate-audit.js` on the JSONL file
+4. **Update AUDIT_TRACKER.md** - Add entry to "Security Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last security audit
    - Files Covered: Number of security-sensitive files analyzed
    - Findings: Total count (e.g., "1 S0, 2 S1, 3 S2")
+   - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
+   - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: NO (single-session audits do not reset thresholds)
-4. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate remediation."
-5. Ask: "Would you like me to fix any of these issues now?"
+5. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate remediation."
+6. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 
@@ -154,3 +240,17 @@ This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold r
 
 After 3 single-session security audits, a full multi-AI Security Audit is recommended.
 Track this in AUDIT_TRACKER.md "Single audits completed" counter.
+
+---
+
+## Adding New False Positives
+
+If you encounter a pattern that should be excluded from future audits:
+
+```bash
+node scripts/add-false-positive.js \
+  --pattern "regex-pattern" \
+  --category "security" \
+  --reason "Explanation of why this is not a security issue" \
+  --source "AI_REVIEW_LEARNINGS_LOG.md#review-XXX"
+```

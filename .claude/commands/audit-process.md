@@ -34,7 +34,15 @@ ls -la .claude/commands/ 2>/dev/null
 grep -A 50 '"scripts"' package.json | head -60
 ```
 
-**Step 3: Check Template Currency**
+**Step 3: Load False Positives Database**
+
+Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+- Category: `process`
+- Expired entries (skip if `expires` date passed)
+
+Note patterns to exclude from final findings.
+
+**Step 4: Check Template Currency**
 
 Read `docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md` and verify:
 - [ ] CI/CD workflow list is current
@@ -60,6 +68,7 @@ If outdated, note discrepancies but proceed with current values.
 2. Identify specific issues with file:line references
 3. Classify severity: S0 (breaks CI) | S1 (reduces effectiveness) | S2 (inconvenient) | S3 (polish)
 4. Estimate effort: E0 (trivial) | E1 (hours) | E2 (day) | E3 (major)
+5. **Assign confidence level** (see Evidence Requirements below)
 
 **Process Checks:**
 - All CI workflows pass on current branch
@@ -72,6 +81,54 @@ If outdated, note discrepancies but proceed with current values.
 **Scope:**
 - Include: `.github/`, `.claude/`, `.husky/`, `scripts/`, `package.json`
 - Exclude: `node_modules/`
+
+---
+
+## Evidence Requirements (MANDATORY)
+
+**All findings MUST include:**
+1. **File:Line Reference** - Exact location (e.g., `.github/workflows/ci.yml:45`)
+2. **Code/Config Snippet** - The actual problematic configuration (3-5 lines of context)
+3. **Verification Method** - How you confirmed this is an issue (workflow run, script test, grep)
+4. **Impact Description** - What breaks or degrades if not fixed
+
+**Confidence Levels:**
+- **HIGH (90%+)**: Confirmed by CI run, script execution, or hook test; verified file exists, issue reproducible
+- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no execution test
+- **LOW (<70%)**: Pattern match only, needs manual testing to confirm
+
+**S0/S1 findings require:**
+- HIGH or MEDIUM confidence (LOW confidence S0/S1 must be escalated)
+- Dual-pass verification (re-read the config/script after initial finding)
+- Cross-reference with CI logs or script output
+
+---
+
+## Cross-Reference Validation
+
+Before finalizing findings, cross-reference with:
+
+1. **CI workflow logs** - Mark findings as "TOOL_VALIDATED" if CI logs show failure
+2. **Script execution** - Mark findings as "TOOL_VALIDATED" if script test confirms issue
+3. **Hook test runs** - Mark findings as "TOOL_VALIDATED" if hook execution reveals problem
+4. **Prior audits** - Check `docs/audits/single-session/process/` for duplicate findings
+
+Findings without tool validation should note: `"cross_ref": "MANUAL_ONLY"`
+
+---
+
+## Dual-Pass Verification (S0/S1 Only)
+
+For all S0 (breaks CI) and S1 (reduces effectiveness) findings:
+
+1. **First Pass**: Identify the issue, note file:line and initial evidence
+2. **Second Pass**: Re-read the actual config/script in context
+   - Verify the process issue is real
+   - Check for intentional configurations or workarounds
+   - Confirm file and line still exist
+3. **Decision**: Mark as CONFIRMED or DOWNGRADE (with reason)
+
+Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"verified": "DOWNGRADED_TO_S2"`
 
 ---
 
@@ -90,16 +147,19 @@ If outdated, note discrepancies but proceed with current values.
 - npm scripts: X scripts
 
 ### Findings Summary
-| Severity | Count | Category |
-|----------|-------|----------|
-| S0 | X | ... |
-| S1 | X | ... |
-| S2 | X | ... |
-| S3 | X | ... |
+| Severity | Count | Category | Confidence |
+|----------|-------|----------|------------|
+| S0 | X | ... | HIGH/MEDIUM |
+| S1 | X | ... | HIGH/MEDIUM |
+| S2 | X | ... | ... |
+| S3 | X | ... | ... |
 
 ### CI/CD Issues
-1. [workflow.yml:line] - Description
+1. [workflow.yml:line] - Description - DUAL_PASS_CONFIRMED
 2. ...
+
+### False Positives Filtered
+- X findings excluded (matched FALSE_POSITIVES.jsonl patterns)
 
 ### Hook Issues
 1. [hook.sh:line] - Description
@@ -117,9 +177,9 @@ If outdated, note discrepancies but proceed with current values.
 
 Create file: `docs/audits/single-session/process/audit-[YYYY-MM-DD].jsonl`
 
-Each line:
+Each line (UPDATED SCHEMA with confidence and verification):
 ```json
-{"id":"PROC-001","category":"CI|GitHooks|ClaudeHooks|Scripts|Triggers|ProcessDocs","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","file":"path/to/file","line":123,"title":"Short description","description":"Detailed issue","recommendation":"How to fix","evidence":["relevant code or config"]}
+{"id":"PROC-001","category":"CI|GitHooks|ClaudeHooks|Scripts|Triggers|ProcessDocs","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"path/to/file","line":123,"title":"Short description","description":"Detailed issue","recommendation":"How to fix","evidence":["config snippet","CI log output","script output"],"cross_ref":"ci_logs|script_test|hook_test|MANUAL_ONLY"}
 ```
 
 **3. Markdown Report (save to file):**
@@ -130,18 +190,44 @@ Full markdown report with all findings, baselines, and improvement plan.
 
 ---
 
+## Post-Audit Validation
+
+**Before finalizing the audit:**
+
+1. **Run Validation Script:**
+   ```bash
+   node scripts/validate-audit.js docs/audits/single-session/process/audit-[YYYY-MM-DD].jsonl
+   ```
+
+2. **Validation Checks:**
+   - All findings have required fields
+   - No matches in FALSE_POSITIVES.jsonl (or documented override)
+   - No duplicate findings
+   - All S0/S1 have HIGH or MEDIUM confidence
+   - All S0/S1 have DUAL_PASS_CONFIRMED or TOOL_VALIDATED
+
+3. **If validation fails:**
+   - Review flagged findings
+   - Fix or document exceptions
+   - Re-run validation
+
+---
+
 ## Post-Audit
 
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/process/`
-3. **Update AUDIT_TRACKER.md** - Add entry to "Process Audits" table:
+3. Run `node scripts/validate-audit.js` on the JSONL file
+4. **Update AUDIT_TRACKER.md** - Add entry to "Process Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last process audit
    - Files Covered: Number of CI/hook/script files analyzed
    - Findings: Total count (e.g., "1 S1, 2 S2, 4 S3")
+   - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
+   - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: NO (single-session audits do not reset thresholds)
-4. Ask: "Would you like me to fix any of these process issues now?"
+5. Ask: "Would you like me to fix any of these process issues now?"
 
 ---
 
@@ -159,3 +245,17 @@ This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold r
 
 After 3 single-session process audits, a full multi-AI Process Audit is recommended.
 Track this in AUDIT_TRACKER.md "Single audits completed" counter.
+
+---
+
+## Adding New False Positives
+
+If you encounter a pattern that should be excluded from future audits:
+
+```bash
+node scripts/add-false-positive.js \
+  --pattern "regex-pattern" \
+  --category "process" \
+  --reason "Explanation of why this is not a process issue" \
+  --source "AI_REVIEW_LEARNINGS_LOG.md#review-XXX"
+```
