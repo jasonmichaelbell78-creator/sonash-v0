@@ -25,7 +25,18 @@ else
   echo "  ✅ Code formatting passed"
 fi
 
-# 3. Run tests - stream output using temp file
+# 3. Run pattern compliance check (catches issues before PR review tools)
+echo "  ▶ Running pattern compliance..."
+if ! npm run patterns:check > /dev/null 2>&1; then
+  echo "  ❌ Pattern compliance failed"
+  npm run patterns:check 2>&1 | tail -15
+  echo ""
+  echo "  Fix pattern issues before committing. Run: npm run patterns:check"
+  exit 1
+fi
+echo "  ✅ Pattern compliance passed"
+
+# 4. Run tests - stream output using temp file
 echo "  ▶ Running tests..."
 TEST_TMPFILE=$(mktemp)
 trap 'rm -f "$TEST_TMPFILE"' EXIT
