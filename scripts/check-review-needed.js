@@ -3,36 +3,34 @@
  * Check if code review trigger thresholds have been reached
  *
  * Reads:
- * - MULTI_AI_REVIEW_COORDINATOR.md (last review date/baseline)
+ * - AUDIT_TRACKER.md (per-category last audit dates)
+ * - MULTI_AI_REVIEW_COORDINATOR.md (baseline metrics)
  * - git log since last review
  * - ESLint current warnings
- * - Test coverage report (if available)
  *
- * Checks:
- * - Commits since last review
- * - Lines changed (git diff --stat)
- * - Files modified count
- * - New files count (*.tsx, *.ts, *.jsx, *.js)
- * - New components (files in components/)
- * - ESLint warning delta
- * - Test coverage percentage
+ * Checks per-category thresholds:
+ * - Code: 25 commits OR 15 code files
+ * - Security: ANY security file OR 20 commits
+ * - Performance: 30 commits OR bundle change
+ * - Refactoring: 40 commits OR complexity warnings
+ * - Documentation: 20 doc files OR 30 commits
+ * - Process: ANY CI/hook file OR 30 commits
  *
- * Outputs:
- * - Trigger status (reached/not reached)
- * - Current metrics vs thresholds
- * - Recommendation (which review type to run)
+ * Multi-AI escalation triggers:
+ * - 3+ single audits in same category
+ * - 100+ total commits
+ * - 14+ days since any audit
  *
  * Usage: node scripts/check-review-needed.js [options]
  * Options:
- *   --update          Update MULTI_AI_REVIEW_COORDINATOR.md with current metrics
+ *   --category=X      Check specific category only (code|security|performance|refactoring|documentation|process)
  *   --json            Output as JSON instead of human-readable
- *   --dry-run         Show what would change without writing
  *   --verbose         Show detailed logging
  *
  * Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -43,30 +41,62 @@ const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 
 // File paths
+const TRACKER_PATH = join(ROOT, 'docs', 'AUDIT_TRACKER.md');
 const COORDINATOR_PATH = join(ROOT, 'docs', 'MULTI_AI_REVIEW_COORDINATOR.md');
-const COVERAGE_PATH = join(ROOT, 'coverage', 'coverage-summary.json');
 
-// Thresholds for triggering reviews
-const THRESHOLDS = {
-  commits: 50,          // Commits since last review
-  linesChanged: 1000,   // Lines changed
-  filesModified: 25,    // Files modified
-  newFiles: 10,         // New code files
-  newComponents: 5,     // New component files
-  lintWarningDelta: 10, // Increase in lint warnings
-  coverageDrop: 5       // Percentage points drop in coverage
+// Category-specific thresholds
+const CATEGORY_THRESHOLDS = {
+  code: {
+    commits: 25,
+    files: 15,
+    filePattern: /\.(tsx?|jsx?|js)$/,
+    excludePattern: /^(docs|tests|\.)/
+  },
+  security: {
+    commits: 20,
+    files: 1, // ANY security file triggers
+    filePattern: /(auth|security|firebase|api|secrets|env|token|credential|\.env)/i
+  },
+  performance: {
+    commits: 30,
+    files: 10,
+    filePattern: /\.(tsx?|jsx?)$/,
+    checkBundle: true
+  },
+  refactoring: {
+    commits: 40,
+    files: 20,
+    filePattern: /\.(tsx?|jsx?)$/,
+    checkComplexity: true
+  },
+  documentation: {
+    commits: 30,
+    files: 20,
+    filePattern: /\.md$/
+  },
+  process: {
+    commits: 30,
+    files: 1, // ANY CI/hook file triggers
+    filePattern: /(\.github|\.claude|\.husky|scripts\/)/
+  }
+};
+
+// Multi-AI escalation thresholds
+const MULTI_AI_THRESHOLDS = {
+  singleAuditCount: 3,    // Single audits before multi-AI
+  totalCommits: 100,      // Total commits across all categories
+  daysSinceAudit: 14      // Days since any audit
 };
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const UPDATE = args.includes('--update');
 const JSON_OUTPUT = args.includes('--json');
-const DRY_RUN = args.includes('--dry-run');
 const VERBOSE = args.includes('--verbose');
+const CATEGORY_ARG = args.find(a => a.startsWith('--category='));
+const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] : null;
 
 /**
  * Safely log verbose messages
- * @param {...any} messages - Messages to log
  */
 function verbose(...messages) {
   if (VERBOSE && !JSON_OUTPUT) {
@@ -75,30 +105,22 @@ function verbose(...messages) {
 }
 
 /**
- * Validate and sanitize ISO date string to prevent command injection
- * @param {string} dateString - Date string to validate
- * @returns {string} - Validated date string or safe fallback
+ * Validate and sanitize ISO date string
  */
 function sanitizeDateString(dateString) {
-  // Only allow ISO date format: YYYY-MM-DD (with optional time)
   const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
 
   if (!dateString || typeof dateString !== 'string') {
-    verbose('Invalid date string, using fallback');
     return '2025-01-01';
   }
 
   const trimmed = dateString.trim();
-
   if (!isoDatePattern.test(trimmed)) {
-    verbose(`Date string "${trimmed}" does not match ISO format, using fallback`);
     return '2025-01-01';
   }
 
-  // Additional validation: ensure it parses to a valid date
   const parsed = new Date(trimmed);
   if (isNaN(parsed.getTime())) {
-    verbose(`Date string "${trimmed}" is not a valid date, using fallback`);
     return '2025-01-01';
   }
 
@@ -106,66 +128,25 @@ function sanitizeDateString(dateString) {
 }
 
 /**
- * Safely read a file with error handling
- * @param {string} filePath - Path to file
- * @param {string} description - Human-readable description for errors
- * @returns {{success: boolean, content?: string, error?: string}}
+ * Safely read a file
  */
 function safeReadFile(filePath, description) {
   verbose(`Reading ${description} from ${filePath}`);
 
   if (!existsSync(filePath)) {
-    return {
-      success: false,
-      error: `${description} not found at: ${filePath}`
-    };
+    return { success: false, error: `${description} not found` };
   }
 
   try {
     const content = readFileSync(filePath, 'utf-8');
-    verbose(`Successfully read ${content.length} characters from ${description}`);
     return { success: true, content };
   } catch (error) {
-    return {
-      success: false,
-      error: `Failed to read ${description}: ${sanitizeError(error)}`
-    };
-  }
-}
-
-/**
- * Safely write a file with error handling
- * @param {string} filePath - Path to file
- * @param {string} content - Content to write
- * @param {string} description - Human-readable description for errors
- * @returns {{success: boolean, error?: string}}
- */
-function safeWriteFile(filePath, content, description) {
-  if (DRY_RUN) {
-    if (!JSON_OUTPUT) {
-      console.log(`[DRY RUN] Would write ${content.length} characters to ${description}`);
-    }
-    return { success: true };
-  }
-
-  verbose(`Writing ${content.length} characters to ${description}`);
-
-  try {
-    writeFileSync(filePath, content, 'utf-8');
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: `Failed to write ${description}: ${sanitizeError(error)}`
-    };
+    return { success: false, error: sanitizeError(error) };
   }
 }
 
 /**
  * Run a shell command safely
- * @param {string} command - Command to run
- * @param {string} description - Description for logging
- * @returns {{success: boolean, output?: string, error?: string}}
  */
 function safeExec(command, description) {
   verbose(`Running: ${command}`);
@@ -176,216 +157,124 @@ function safeExec(command, description) {
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe']
     });
-    verbose(`${description}: ${output.trim().slice(0, 100)}...`);
     return { success: true, output: output.trim() };
   } catch (error) {
-    // Some commands return non-zero but still have useful output
     if (error.stdout) {
       return { success: true, output: error.stdout.trim() };
     }
-    return {
-      success: false,
-      error: `Failed to run ${description}: ${sanitizeError(error)}`
-    };
+    return { success: false, error: sanitizeError(error) };
   }
 }
 
 /**
- * Get the last review date from coordinator
- * @param {string} content - Coordinator file content
- * @returns {string|null} - ISO date string or null
+ * Parse AUDIT_TRACKER.md to get per-category last audit dates
  */
-function getLastReviewDate(content) {
-  // Try to find date in baseline section
-  const baselineMatch = content.match(/### Current Project Baseline[\s\S]*?\*\*Last Updated:\*\*\s*(\d{4}-\d{2}-\d{2})/);
-  if (baselineMatch) {
-    verbose(`Found baseline date: ${baselineMatch[1]}`);
-    return baselineMatch[1];
+function getCategoryAuditDates(content) {
+  const categories = {
+    code: null,
+    security: null,
+    performance: null,
+    refactoring: null,
+    documentation: null,
+    process: null
+  };
+
+  // Pattern to find audit tables for each category
+  const categoryPatterns = {
+    code: /### Code Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    security: /### Security Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    performance: /### Performance Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    refactoring: /### Refactoring Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    documentation: /### Documentation Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    process: /### Process Audits[\s\S]*?\|([\s\S]*?)\n\n/
+  };
+
+  for (const [category, pattern] of Object.entries(categoryPatterns)) {
+    const match = content.match(pattern);
+    if (match) {
+      // Find the most recent date in the table
+      const dateMatches = match[1].match(/\d{4}-\d{2}-\d{2}/g);
+      if (dateMatches && dateMatches.length > 0) {
+        // Get the most recent date
+        const dates = dateMatches.map(d => new Date(d));
+        const mostRecent = new Date(Math.max(...dates));
+        categories[category] = mostRecent.toISOString().split('T')[0];
+        verbose(`Found ${category} last audit: ${categories[category]}`);
+      }
+    }
   }
 
-  // Try audit history
-  const auditMatch = content.match(/### Completed Reviews[\s\S]*?\|\s*(\d{4}-\d{2}-\d{2})\s*\|/);
-  if (auditMatch) {
-    verbose(`Found audit date: ${auditMatch[1]}`);
-    return auditMatch[1];
-  }
-
-  // Fall back to document Last Updated
-  const docMatch = content.match(/\*\*Last Updated:\*\*\s*(\d{4}-\d{2}-\d{2})/);
-  if (docMatch) {
-    verbose(`Found document date: ${docMatch[1]}`);
-    return docMatch[1];
-  }
-
-  return null;
+  return categories;
 }
 
 /**
- * Get baseline lint warnings from coordinator
- * @param {string} content - Coordinator file content
- * @returns {number} - Baseline warning count or 0
+ * Count single-session audits per category
  */
-function getBaselineLintWarnings(content) {
-  const match = content.match(/lint_warnings:\s*(\d+)/);
-  return match ? parseInt(match[1], 10) : 0;
+function getSingleAuditCounts(content) {
+  const counts = {
+    code: 0,
+    security: 0,
+    performance: 0,
+    refactoring: 0,
+    documentation: 0,
+    process: 0
+  };
+
+  const categoryPatterns = {
+    code: /### Code Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    security: /### Security Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    performance: /### Performance Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    refactoring: /### Refactoring Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    documentation: /### Documentation Audits[\s\S]*?\|([\s\S]*?)\n\n/,
+    process: /### Process Audits[\s\S]*?\|([\s\S]*?)\n\n/
+  };
+
+  for (const [category, pattern] of Object.entries(categoryPatterns)) {
+    const match = content.match(pattern);
+    if (match) {
+      // Count rows with dates (excluding header and "No audits yet")
+      const dateMatches = match[1].match(/\d{4}-\d{2}-\d{2}/g);
+      counts[category] = dateMatches ? dateMatches.length : 0;
+    }
+  }
+
+  return counts;
 }
 
 /**
- * Get baseline test coverage from coordinator
- * @param {string} content - Coordinator file content
- * @returns {number} - Baseline coverage percentage or 0
- */
-function getBaselineCoverage(content) {
-  const match = content.match(/test_pass_rate:\s*([\d.]+)%/);
-  return match ? parseFloat(match[1]) : 0;
-}
-
-/**
- * Count commits since a given date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - Commit count
+ * Get commits since a date
  */
 function getCommitsSince(sinceDate) {
   const result = safeExec(
     `git rev-list --count --since="${sinceDate}" HEAD`,
     'count commits'
   );
-
-  if (!result.success) {
-    verbose(`Warning: ${result.error}`);
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
+  return result.success ? parseInt(result.output, 10) || 0 : 0;
 }
 
 /**
- * Get lines changed since a date
- * @param {string} sinceDate - ISO date string
- * @returns {{added: number, deleted: number}}
+ * Get files modified since a date matching a pattern
  */
-function getLinesChanged(sinceDate) {
+function getFilesModifiedSince(sinceDate, pattern) {
   const result = safeExec(
-    `git log --since="${sinceDate}" --shortstat --oneline | grep -E "\\d+ insertion|\\d+ deletion" | awk '{s+=$4; d+=$6} END {print s, d}'`,
-    'lines changed'
-  );
-
-  if (!result.success || !result.output.trim()) {
-    return { added: 0, deleted: 0 };
-  }
-
-  const [added, deleted] = result.output.split(' ').map(n => parseInt(n, 10) || 0);
-  return { added, deleted };
-}
-
-/**
- * Get files modified since a date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - File count
- */
-function getFilesModified(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | sort -u | grep -v "^$" | wc -l`,
+    `git log --since="${sinceDate}" --name-only --pretty=format: | sort -u | grep -v "^$"`,
     'files modified'
   );
 
-  if (!result.success) {
-    return 0;
+  if (!result.success || !result.output) {
+    return [];
   }
 
-  return parseInt(result.output, 10) || 0;
+  const files = result.output.split('\n').filter(f => f.trim());
+  return files.filter(f => pattern.test(f));
 }
 
 /**
- * Get new code files since a date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - New file count
- */
-function getNewFiles(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --diff-filter=A --name-only --pretty=format: | grep -E "\\.(tsx?|jsx?|js)$" | sort -u | wc -l`,
-    'new files'
-  );
-
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get new component files since a date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - New component count
- */
-function getNewComponents(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --diff-filter=A --name-only --pretty=format: | grep -E "^components/.*\\.(tsx?|jsx?)$" | sort -u | wc -l`,
-    'new components'
-  );
-
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get current lint warning count
- * @returns {number} - Warning count
- */
-function getCurrentLintWarnings() {
-  const result = safeExec(
-    'npm run lint 2>&1 | grep -c "warning" || echo 0',
-    'lint warnings'
-  );
-
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get current test coverage
- * @returns {number|null} - Coverage percentage or null if not available
- */
-function getCurrentCoverage() {
-  const readResult = safeReadFile(COVERAGE_PATH, 'coverage summary');
-
-  if (!readResult.success) {
-    verbose('Coverage file not found, skipping coverage check');
-    return null;
-  }
-
-  try {
-    const coverage = JSON.parse(readResult.content);
-    // NYC/Jest format: coverage.total.lines.pct
-    if (coverage.total && coverage.total.lines) {
-      return coverage.total.lines.pct;
-    }
-    // Alternative format
-    if (coverage.lines) {
-      return coverage.lines.pct;
-    }
-    return null;
-  } catch (error) {
-    verbose(`Failed to parse coverage: ${sanitizeError(error)}`);
-    return null;
-  }
-}
-
-/**
- * Analyze security-sensitive changes
- * @param {string} sinceDate - ISO date string
- * @returns {string[]} - List of security-sensitive files changed
+ * Get security-sensitive file changes
  */
 function getSecuritySensitiveChanges(sinceDate) {
   const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | grep -iE "(auth|security|firebase|api|secrets|env|token|credential)" | sort -u`,
+    `git log --since="${sinceDate}" --name-only --pretty=format: | grep -iE "(auth|security|firebase|api|secrets|env|token|credential|\\.env)" | sort -u`,
     'security changes'
   );
 
@@ -397,102 +286,142 @@ function getSecuritySensitiveChanges(sinceDate) {
 }
 
 /**
- * Determine which review type is recommended
- * @param {object} metrics - Collected metrics
- * @param {object} triggers - Active triggers
- * @returns {string} - Review type recommendation
+ * Get CI/hook file changes
  */
-function getReviewRecommendation(metrics, triggers) {
-  const activeCount = Object.values(triggers).filter(t => t.triggered).length;
-
-  if (activeCount === 0) {
-    return 'No review needed';
-  }
-
-  // Security takes priority
-  if (metrics.securityFiles && metrics.securityFiles.length > 0) {
-    return 'Security Audit recommended';
-  }
-
-  // Performance if significant changes
-  if (triggers.linesChanged.triggered || triggers.newComponents.triggered) {
-    return 'Performance Audit recommended';
-  }
-
-  // Default to code review
-  return 'Code Review recommended';
-}
-
-/**
- * Update coordinator with current metrics
- * @param {string} content - Current coordinator content
- * @param {object} metrics - Collected metrics
- * @returns {string} - Updated content
- */
-function updateCoordinatorMetrics(content, metrics) {
-  const today = new Date().toISOString().split('T')[0];
-
-  // Update last updated date in baseline section
-  let updated = content.replace(
-    /(### Current Project Baseline[\s\S]*?\*\*Last Updated:\*\*\s*)(\d{4}-\d{2}-\d{2})/,
-    `$1${today}`
+function getProcessChanges(sinceDate) {
+  const result = safeExec(
+    `git log --since="${sinceDate}" --name-only --pretty=format: | grep -E "(\\.github|\\.claude|\\.husky|scripts/)" | sort -u`,
+    'process changes'
   );
 
-  // Update lint warnings if we have them
-  if (metrics.currentLintWarnings !== undefined) {
-    updated = updated.replace(
-      /lint_warnings:\s*\[?[^\n\]]*\]?/,
-      `lint_warnings: ${metrics.currentLintWarnings}`
-    );
+  if (!result.success || !result.output.trim()) {
+    return [];
   }
 
-  // Update coverage if we have it
-  if (metrics.currentCoverage !== null) {
-    updated = updated.replace(
-      /test_pass_rate:\s*[\d.]+%/,
-      `test_pass_rate: ${metrics.currentCoverage.toFixed(1)}%`
-    );
-  }
-
-  return updated;
+  return result.output.split('\n').filter(f => f.trim());
 }
 
 /**
- * Format output as human-readable text
- * @param {object} metrics - Collected metrics
- * @param {object} triggers - Trigger statuses
- * @param {string} recommendation - Review recommendation
+ * Check triggers for a specific category
  */
-function formatTextOutput(metrics, triggers, recommendation) {
-  console.log('=== Multi-AI Review Trigger Check ===\n');
+function checkCategoryTriggers(category, sinceDate, thresholds) {
+  const commits = getCommitsSince(sinceDate);
+  let files = [];
+  let triggered = false;
+  const reasons = [];
 
-  console.log(`Last Review: ${metrics.lastReviewDate || 'Unknown'}`);
-  console.log(`Days Since: ${metrics.daysSinceReview || 'N/A'}\n`);
+  // Get category-specific files
+  if (category === 'security') {
+    files = getSecuritySensitiveChanges(sinceDate);
+    if (files.length >= thresholds.files) {
+      triggered = true;
+      reasons.push(`${files.length} security-sensitive file(s) changed`);
+    }
+  } else if (category === 'process') {
+    files = getProcessChanges(sinceDate);
+    if (files.length >= thresholds.files) {
+      triggered = true;
+      reasons.push(`${files.length} CI/hook file(s) changed`);
+    }
+  } else {
+    files = getFilesModifiedSince(sinceDate, thresholds.filePattern);
+    if (thresholds.excludePattern) {
+      files = files.filter(f => !thresholds.excludePattern.test(f));
+    }
+    if (files.length >= thresholds.files) {
+      triggered = true;
+      reasons.push(`${files.length} files modified (threshold: ${thresholds.files})`);
+    }
+  }
 
-  console.log('--- Metrics vs Thresholds ---\n');
+  // Check commit threshold
+  if (commits >= thresholds.commits) {
+    triggered = true;
+    reasons.push(`${commits} commits (threshold: ${thresholds.commits})`);
+  }
 
+  return {
+    category,
+    triggered,
+    commits,
+    filesChanged: files.length,
+    reasons,
+    sinceDate
+  };
+}
+
+/**
+ * Check multi-AI escalation triggers
+ */
+function checkMultiAITriggers(auditCounts, categoryDates) {
+  const triggers = [];
+
+  // Check if any category has 3+ single audits
+  for (const [category, count] of Object.entries(auditCounts)) {
+    if (count >= MULTI_AI_THRESHOLDS.singleAuditCount) {
+      triggers.push({
+        type: 'single_audit_count',
+        category,
+        count,
+        threshold: MULTI_AI_THRESHOLDS.singleAuditCount,
+        message: `${category}: ${count} single audits (threshold: ${MULTI_AI_THRESHOLDS.singleAuditCount})`
+      });
+    }
+  }
+
+  // Check days since ANY audit
+  const allDates = Object.values(categoryDates).filter(d => d !== null);
+  if (allDates.length > 0) {
+    const mostRecentAudit = new Date(Math.max(...allDates.map(d => new Date(d))));
+    const daysSince = Math.floor((Date.now() - mostRecentAudit.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysSince >= MULTI_AI_THRESHOLDS.daysSinceAudit) {
+      triggers.push({
+        type: 'time_elapsed',
+        daysSince,
+        threshold: MULTI_AI_THRESHOLDS.daysSinceAudit,
+        message: `${daysSince} days since last audit (threshold: ${MULTI_AI_THRESHOLDS.daysSinceAudit})`
+      });
+    }
+  }
+
+  // Check total commits since oldest category audit
+  const oldestDate = allDates.length > 0
+    ? new Date(Math.min(...allDates.map(d => new Date(d)))).toISOString().split('T')[0]
+    : '2025-01-01';
+
+  const totalCommits = getCommitsSince(oldestDate);
+  if (totalCommits >= MULTI_AI_THRESHOLDS.totalCommits) {
+    triggers.push({
+      type: 'total_commits',
+      commits: totalCommits,
+      threshold: MULTI_AI_THRESHOLDS.totalCommits,
+      message: `${totalCommits} total commits (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`
+    });
+  }
+
+  return triggers;
+}
+
+/**
+ * Format human-readable output
+ */
+function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
+  console.log('🔍 Checking Review Triggers...\n');
+  console.log('=== Per-Category Single-Session Audit Triggers ===\n');
+
+  // Category table
   const rows = [
-    ['Metric', 'Current', 'Threshold', 'Status'],
-    ['Commits', metrics.commits.toString(), THRESHOLDS.commits.toString(),
-     triggers.commits.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['Lines Changed', (metrics.linesAdded + metrics.linesDeleted).toString(), THRESHOLDS.linesChanged.toString(),
-     triggers.linesChanged.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['Files Modified', metrics.filesModified.toString(), THRESHOLDS.filesModified.toString(),
-     triggers.filesModified.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['New Files', metrics.newFiles.toString(), THRESHOLDS.newFiles.toString(),
-     triggers.newFiles.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['New Components', metrics.newComponents.toString(), THRESHOLDS.newComponents.toString(),
-     triggers.newComponents.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['Lint Warning Δ', metrics.lintDelta.toString(), THRESHOLDS.lintWarningDelta.toString(),
-     triggers.lintWarnings.triggered ? '⚠️  TRIGGERED' : '✅ OK']
+    ['Category', 'Last Audit', 'Commits', 'Files', 'Status']
   ];
 
-  if (metrics.currentCoverage !== null) {
+  for (const result of categoryResults) {
     rows.push([
-      'Coverage Drop',
-      `${metrics.coverageDrop.toFixed(1)}%`,
-      `${THRESHOLDS.coverageDrop}%`,
-      triggers.coverageDrop.triggered ? '⚠️  TRIGGERED' : '✅ OK'
+      result.category.charAt(0).toUpperCase() + result.category.slice(1),
+      result.sinceDate === '2025-01-01' ? 'Never' : result.sinceDate,
+      result.commits.toString(),
+      result.filesChanged.toString(),
+      result.triggered ? '⚠️  TRIGGERED' : '✅ OK'
     ]);
   }
 
@@ -505,24 +434,50 @@ function formatTextOutput(metrics, triggers, recommendation) {
     console.log(row.map((cell, i) => cell.padEnd(colWidths[i])).join(''));
   }
 
-  if (metrics.securityFiles && metrics.securityFiles.length > 0) {
-    console.log('\n--- Security-Sensitive Changes ---');
-    for (const file of metrics.securityFiles.slice(0, 10)) {
-      console.log(`  🔒 ${file}`);
-    }
-    if (metrics.securityFiles.length > 10) {
-      console.log(`  ... and ${metrics.securityFiles.length - 10} more`);
+  // Triggered categories
+  const triggeredCategories = categoryResults.filter(r => r.triggered);
+  if (triggeredCategories.length > 0) {
+    console.log('\n--- Triggered Categories ---');
+    for (const result of triggeredCategories) {
+      console.log(`\n📋 ${result.category.toUpperCase()}:`);
+      for (const reason of result.reasons) {
+        console.log(`   - ${reason}`);
+      }
+      console.log(`   → Run: /audit-${result.category}`);
     }
   }
 
-  console.log('\n--- Recommendation ---');
-  const triggeredCount = Object.values(triggers).filter(t => t.triggered).length;
+  // Multi-AI escalation
+  console.log('\n=== Multi-AI Audit Escalation ===\n');
 
-  if (triggeredCount === 0) {
-    console.log('✅ No review triggers active. Continue development.');
+  console.log('Single-Session Audit Counts:');
+  for (const [category, count] of Object.entries(auditCounts)) {
+    const status = count >= MULTI_AI_THRESHOLDS.singleAuditCount ? '⚠️ ' : '✅';
+    console.log(`  ${status} ${category}: ${count}/${MULTI_AI_THRESHOLDS.singleAuditCount}`);
+  }
+
+  if (multiAITriggers.length > 0) {
+    console.log('\n⚠️  Multi-AI Audit Recommended:');
+    for (const trigger of multiAITriggers) {
+      console.log(`   - ${trigger.message}`);
+    }
   } else {
-    console.log(`⚠️  ${triggeredCount} trigger(s) active!`);
-    console.log(`📋 ${recommendation}`);
+    console.log('\n✅ No multi-AI escalation triggers active.');
+  }
+
+  // Summary
+  console.log('\n--- Recommendation ---');
+  const singleTriggered = triggeredCategories.length;
+  const multiTriggered = multiAITriggers.length;
+
+  if (singleTriggered === 0 && multiTriggered === 0) {
+    console.log('✅ No review triggers active. Continue development.');
+  } else if (multiTriggered > 0) {
+    console.log(`🔴 ${multiTriggered} multi-AI trigger(s) active!`);
+    console.log('   Consider running full multi-AI audit.');
+  } else {
+    console.log(`🟡 ${singleTriggered} single-session trigger(s) active.`);
+    console.log(`   Run: /audit-${triggeredCategories[0].category}`);
   }
 }
 
@@ -530,149 +485,59 @@ function formatTextOutput(metrics, triggers, recommendation) {
  * Main function
  */
 function main() {
-  if (!JSON_OUTPUT) {
-    console.log('🔍 Checking Review Triggers...');
-    if (DRY_RUN) console.log('   (DRY RUN - no files will be modified)\n');
-    else console.log('');
+  // Read AUDIT_TRACKER.md
+  const trackerResult = safeReadFile(TRACKER_PATH, 'AUDIT_TRACKER.md');
+  const trackerContent = trackerResult.success ? trackerResult.content : '';
+
+  if (!trackerResult.success && !JSON_OUTPUT) {
+    console.warn(`⚠️  Warning: ${trackerResult.error}`);
+    console.warn('   Using default baseline values (no prior audits)\n');
   }
 
-  // Step 1: Read coordinator file
-  const coordResult = safeReadFile(COORDINATOR_PATH, 'MULTI_AI_REVIEW_COORDINATOR.md');
-  if (!coordResult.success) {
-    if (JSON_OUTPUT) {
-      console.log(JSON.stringify({ error: coordResult.error }));
-    } else {
-      console.warn(`⚠️  Warning: ${coordResult.error}`);
-      console.warn('   Using default baseline values\n');
-    }
-  }
+  // Get per-category audit dates
+  const categoryDates = getCategoryAuditDates(trackerContent);
+  const auditCounts = getSingleAuditCounts(trackerContent);
 
-  const coordContent = coordResult.success ? coordResult.content : '';
+  // Check each category
+  const categoriesToCheck = SPECIFIC_CATEGORY
+    ? [SPECIFIC_CATEGORY]
+    : Object.keys(CATEGORY_THRESHOLDS);
 
-  // Step 2: Get baseline values
-  // Sanitize date to prevent command injection in git commands
-  const lastReviewDate = sanitizeDateString(getLastReviewDate(coordContent) || '2025-01-01');
-  const baselineLintWarnings = getBaselineLintWarnings(coordContent);
-  const baselineCoverage = getBaselineCoverage(coordContent);
+  const categoryResults = [];
 
-  verbose(`Baseline - Date: ${lastReviewDate}, Warnings: ${baselineLintWarnings}, Coverage: ${baselineCoverage}%`);
-
-  // Calculate days since review
-  const daysSinceReview = Math.floor(
-    (Date.now() - new Date(lastReviewDate).getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  // Step 3: Collect current metrics
-  const commits = getCommitsSince(lastReviewDate);
-  const { added: linesAdded, deleted: linesDeleted } = getLinesChanged(lastReviewDate);
-  const filesModified = getFilesModified(lastReviewDate);
-  const newFiles = getNewFiles(lastReviewDate);
-  const newComponents = getNewComponents(lastReviewDate);
-  const currentLintWarnings = getCurrentLintWarnings();
-  const currentCoverage = getCurrentCoverage();
-  const securityFiles = getSecuritySensitiveChanges(lastReviewDate);
-
-  const lintDelta = currentLintWarnings - baselineLintWarnings;
-  const coverageDrop = baselineCoverage - (currentCoverage || baselineCoverage);
-
-  const metrics = {
-    lastReviewDate,
-    daysSinceReview,
-    commits,
-    linesAdded,
-    linesDeleted,
-    filesModified,
-    newFiles,
-    newComponents,
-    currentLintWarnings,
-    baselineLintWarnings,
-    lintDelta,
-    currentCoverage,
-    baselineCoverage,
-    coverageDrop,
-    securityFiles
-  };
-
-  // Step 4: Check triggers
-  const triggers = {
-    commits: {
-      triggered: commits >= THRESHOLDS.commits,
-      value: commits,
-      threshold: THRESHOLDS.commits
-    },
-    linesChanged: {
-      triggered: (linesAdded + linesDeleted) >= THRESHOLDS.linesChanged,
-      value: linesAdded + linesDeleted,
-      threshold: THRESHOLDS.linesChanged
-    },
-    filesModified: {
-      triggered: filesModified >= THRESHOLDS.filesModified,
-      value: filesModified,
-      threshold: THRESHOLDS.filesModified
-    },
-    newFiles: {
-      triggered: newFiles >= THRESHOLDS.newFiles,
-      value: newFiles,
-      threshold: THRESHOLDS.newFiles
-    },
-    newComponents: {
-      triggered: newComponents >= THRESHOLDS.newComponents,
-      value: newComponents,
-      threshold: THRESHOLDS.newComponents
-    },
-    lintWarnings: {
-      triggered: lintDelta >= THRESHOLDS.lintWarningDelta,
-      value: lintDelta,
-      threshold: THRESHOLDS.lintWarningDelta
-    },
-    coverageDrop: {
-      triggered: currentCoverage !== null && coverageDrop >= THRESHOLDS.coverageDrop,
-      value: coverageDrop,
-      threshold: THRESHOLDS.coverageDrop
-    }
-  };
-
-  const recommendation = getReviewRecommendation(metrics, triggers);
-  const reviewNeeded = Object.values(triggers).some(t => t.triggered);
-
-  // Step 5: Output results
-  if (JSON_OUTPUT) {
-    console.log(JSON.stringify({
-      metrics,
-      triggers,
-      recommendation,
-      reviewNeeded
-    }, null, 2));
-  } else {
-    formatTextOutput(metrics, triggers, recommendation);
-  }
-
-  // Step 6: Update coordinator if requested
-  if (UPDATE && coordResult.success) {
-    if (!JSON_OUTPUT) {
-      console.log('\n--- Updating Coordinator ---');
-    }
-
-    const updatedContent = updateCoordinatorMetrics(coordContent, metrics);
-    const writeResult = safeWriteFile(COORDINATOR_PATH, updatedContent, 'MULTI_AI_REVIEW_COORDINATOR.md');
-
-    if (!writeResult.success) {
-      if (!JSON_OUTPUT) {
-        console.error(`❌ Error: ${writeResult.error}`);
-      }
+  for (const category of categoriesToCheck) {
+    const thresholds = CATEGORY_THRESHOLDS[category];
+    if (!thresholds) {
+      console.error(`Unknown category: ${category}`);
       process.exit(2);
     }
 
-    if (!JSON_OUTPUT && !DRY_RUN) {
-      console.log('✅ Updated MULTI_AI_REVIEW_COORDINATOR.md with current metrics');
-    }
+    const sinceDate = sanitizeDateString(categoryDates[category] || '2025-01-01');
+    const result = checkCategoryTriggers(category, sinceDate, thresholds);
+    categoryResults.push(result);
   }
 
-  // Exit with appropriate code
+  // Check multi-AI escalation
+  const multiAITriggers = checkMultiAITriggers(auditCounts, categoryDates);
+
+  // Output results
+  if (JSON_OUTPUT) {
+    console.log(JSON.stringify({
+      categoryResults,
+      multiAITriggers,
+      auditCounts,
+      reviewNeeded: categoryResults.some(r => r.triggered) || multiAITriggers.length > 0
+    }, null, 2));
+  } else {
+    formatTextOutput(categoryResults, multiAITriggers, auditCounts);
+  }
+
+  // Exit code
+  const reviewNeeded = categoryResults.some(r => r.triggered) || multiAITriggers.length > 0;
   process.exit(reviewNeeded ? 1 : 0);
 }
 
-// Run main function
+// Run
 try {
   main();
 } catch (error) {
