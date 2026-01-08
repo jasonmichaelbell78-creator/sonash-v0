@@ -57,12 +57,12 @@ Last Refactoring Audit: 2026-01-05
 ### Tech Stack
 
 ```
-- Framework: [e.g., Next.js 16.1 (App Router)]
-- UI Library: [e.g., React 19.2.3]
-- Language: [e.g., TypeScript 5.x]
-- Styling: [e.g., Tailwind CSS v4]
-- Backend: [e.g., Firebase Auth, Firestore, Cloud Functions]
-- Testing: [e.g., Node test runner, c8 coverage]
+- Framework: Next.js 16.1.1 (App Router) - SSR/CSR patterns, route structure
+- UI Library: React 19.2.3 - Component composition, hooks, context
+- Language: TypeScript 5.x - Type safety, interfaces, generics
+- Styling: Tailwind CSS v4 - Utility classes, custom theme
+- Backend: Firebase (Auth, Firestore, Cloud Functions 12.6.0) - Serverless architecture
+- Testing: Node test runner, c8 coverage - Built-in test framework
 ```
 
 ### Scope

@@ -710,7 +710,7 @@ When using this template:
 - **[GLOBAL_SECURITY_STANDARDS.md](../../GLOBAL_SECURITY_STANDARDS.md)** - Mandatory standards being verified
 - **MULTI_AI_REVIEW_COORDINATOR.md** - Master index and trigger tracking
 - **MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** - General code review template
-- **[SECURITY.md](../../SECURITY.md)** - Additional security documentation
+- **[SECURITY.md](../SECURITY.md)** - Additional security documentation
 - **firestore.rules** - Firebase security rules
 
 ---

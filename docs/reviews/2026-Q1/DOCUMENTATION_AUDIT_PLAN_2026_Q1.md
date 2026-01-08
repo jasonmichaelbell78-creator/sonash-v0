@@ -378,6 +378,39 @@ List specific frontmatter issues.
 
 After each category: "Category X complete - Issues found: [number]"
 
+---
+
+Category 6: Template-Instance Synchronization
+
+**Note:** This category validates that documents derived from templates are properly synced. Check DOCUMENT_DEPENDENCIES.md for template-instance relationships.
+
+CHECKS:
+[ ] All template-derived instances are listed in DOCUMENT_DEPENDENCIES.md
+[ ] No `[e.g., ...]` or `[X]` placeholders remaining in instances
+[ ] Instances follow template section structure
+[ ] "Last Synced" dates in DOCUMENT_DEPENDENCIES.md are recent (<90 days)
+[ ] Broken links to moved files (e.g., ../../SECURITY.md should be ../SECURITY.md)
+
+ANALYSIS:
+- Read DOCUMENT_DEPENDENCIES.md to identify template-instance pairs
+- For each instance, grep for `[e.g.,` and `[X]` patterns
+- Verify instances have same section structure as templates
+- Check if any templates were updated but instances weren't
+- Identify any broken relative links
+
+VERIFICATION COMMANDS (if available):
+- `grep -r "\[e\.g\.," docs/reviews/2026-Q1/*.md | wc -l` (should be 0)
+- `grep -r "\[X\]" docs/reviews/2026-Q1/*.md | wc -l` (should be 0)
+- Check DOCUMENT_DEPENDENCIES.md "Last Synced" dates
+- Verify all sync statuses are ✅ SYNCED
+
+Mark each check: ISSUE | OK | N/A
+List specific template-instance sync issues.
+
+After each category: "Category X complete - Issues found: [number]"
+
+---
+
 PHASE 4: DRAFT DOCUMENTATION FINDINGS
 
 For each issue, create detailed entry:
