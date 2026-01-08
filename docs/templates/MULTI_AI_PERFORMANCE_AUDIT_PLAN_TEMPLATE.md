@@ -169,9 +169,39 @@ BASELINE METRICS
 
 SCOPE
 
-Performance-Critical: [paths]
-Include: [directories]
-Exclude: [directories]
+**Performance-Critical Pages:**
+- [e.g., app/page.tsx (landing page)]
+- [e.g., app/dashboard/page.tsx (main dashboard)]
+- [e.g., app/analytics/page.tsx (data-heavy page)]
+
+**High-Traffic Routes:**
+- [e.g., / (landing)]
+- [e.g., /dashboard (main dashboard)]
+- [e.g., /analytics (data visualization)]
+
+**Data-Heavy Components:**
+- [e.g., data-table.tsx (large dataset rendering)]
+- [e.g., chart-panel.tsx (visualization components)]
+- [e.g., infinite-scroll-list.tsx (paginated data)]
+
+**Animation-Heavy Components:**
+- [e.g., hero-animation.tsx (landing page animations)]
+- [e.g., transition-wrapper.tsx (page transitions)]
+- [e.g., modal-overlay.tsx (modal animations)]
+
+**Include:**
+- app/ (Next.js routes and layouts)
+- components/ (React components)
+- hooks/ (custom React hooks)
+- lib/ (utility libraries)
+- types/ (TypeScript type definitions)
+
+**Exclude:**
+- tests/ (test files - not runtime code)
+- docs/ (documentation)
+- public/ (static assets)
+- node_modules/ (dependencies)
+- .next/ (build artifacts)
 
 CAPABILITIES (REQUIRED FIRST OUTPUT)
 

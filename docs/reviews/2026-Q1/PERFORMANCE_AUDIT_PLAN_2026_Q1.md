@@ -168,11 +168,13 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 
 STACK / CONTEXT
 
-- Framework: [e.g., Next.js 16.1 (App Router)]
-- UI Library: [e.g., React 19.2.3]
-- Styling: [e.g., Tailwind CSS v4]
-- Animation: [e.g., Framer Motion 12]
-- Backend: [e.g., Firebase/Firestore]
+- Framework: Next.js 16.1.1 (App Router) - SSR/CSR/ISR strategies, route loading
+- UI Library: React 19.2.3 - Rendering patterns, Suspense boundaries
+- Styling: Tailwind CSS v4 - CSS bundle size, utility tree-shaking
+- Animation: Framer Motion 12.23.0 - Animation performance, layout shifts
+- Backend: Firestore (Firebase 12.6.0) - Query optimization, real-time listeners
+- Bundler: Turbopack (Next.js 16) - Build optimization, code splitting
+- Monitoring: Sentry 10.30.0 - Error tracking, performance monitoring
 
 PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
@@ -212,15 +214,51 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
 BASELINE METRICS
 
-- Bundle size: [X] KB
-- LCP: [X] s
-- Performance score: [X]/100
+- Bundle size: [To be measured via npm run build]
+- LCP: [To be measured with Lighthouse]
+- Performance score: [To be measured with Lighthouse]
 
 SCOPE
 
-Performance-Critical: [paths]
-Include: [directories]
-Exclude: [directories]
+**Performance-Critical Pages:**
+- app/page.tsx (landing page)
+- app/journal/page.tsx (journal hub)
+- app/admin/page.tsx (admin dashboard)
+- app/meetings/all/page.tsx (meetings directory)
+
+**High-Traffic Routes:**
+- / (landing)
+- /journal (journal hub)
+- /admin (admin dashboard)
+- /meetings/all (meetings directory)
+
+**Data-Heavy Components:**
+- entry-feed.tsx (journal entries list)
+- admin-crud-table.tsx (admin CRUD operations)
+- meeting-map.tsx (map with meeting markers)
+- timeline.tsx (journal timeline)
+
+**Animation-Heavy Components:**
+- celebration-overlay.tsx (celebration animations)
+- confetti-burst.tsx (confetti particles)
+- firework-burst.tsx (firework effects)
+- floating-pen.tsx (floating pen animation)
+- success-pulse.tsx (success pulse animation)
+
+**Include:**
+- app/ (Next.js routes and layouts)
+- components/ (React components)
+- hooks/ (custom React hooks)
+- lib/ (utility libraries)
+- functions/src/ (Firebase Cloud Functions)
+- types/ (TypeScript type definitions)
+
+**Exclude:**
+- tests/ (test files - not runtime code)
+- docs/ (documentation)
+- public/ (static assets)
+- node_modules/ (dependencies)
+- .next/ (build artifacts)
 
 CAPABILITIES (REQUIRED FIRST OUTPUT)
 

@@ -68,10 +68,10 @@ Documentation Tiers (if applicable):
 
 Documentation Directories:
 - docs/: [Purpose]
-- docs/guides/: [Purpose]
-- docs/templates/: [Purpose]
-- docs/decisions/: [Purpose]
-- docs/archive/: [Purpose]
+  - docs/guides/: [Purpose]
+  - docs/templates/: [Purpose]
+  - docs/decisions/: [Purpose]
+  - docs/archive/: [Purpose]
 ```
 
 ### Scope
@@ -124,9 +124,14 @@ REPO
 
 DOCUMENTATION STRUCTURE
 
-- Tier system: [If applicable]
-- Main directories: [List]
-- Documentation standards: [Reference if available]
+- Tier system: [e.g., 5-tier hierarchy (Tier 1-2: Root-level, Tier 3-5: docs/ subdirectories)]
+- Main directories:
+  - [e.g., docs/]
+  - [e.g., docs/templates/]
+  - [e.g., docs/reviews/]
+  - [e.g., docs/archive/]
+  - [e.g., docs/guides/]
+- Documentation standards: [e.g., docs/DOCUMENTATION_STANDARDS.md (vX.Y)]
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 

@@ -1,8 +1,8 @@
 # Integrated Improvement Plan
 
-**Document Version:** 2.4
+**Document Version:** 2.5
 **Created:** 2026-01-03
-**Last Updated:** 2026-01-07
+**Last Updated:** 2026-01-08
 **Status:** ACTIVE
 **Overall Completion:** 42% (Step 4 in progress - 2/6 audits complete)
 
@@ -442,7 +442,7 @@ Install and configure developer tooling that was identified as missing during th
 ## Step 4: Multi-AI Delta Review & Comprehensive Audit
 
 **Status:** IN PROGRESS
-**Completion:** 17% (Security audit complete - 1/6 categories)
+**Completion:** 33% (2/6 audit categories complete + document dependency tracking)
 **Estimated Effort:** ~28 hours (Sub-Phase 4.1: 9h, 4.2: 13h, 4.3: 6h)
 **Dependencies:** Step 3
 **Risk Level:** Medium
@@ -629,6 +629,37 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 **Execution Order:** (one category fully complete before starting next)
 1. Code Review → Aggregate → 2. Security → Aggregate → 3. Performance → Aggregate → 4. Refactoring → Aggregate → 5. Documentation → Aggregate → 6. Process → Aggregate
+
+#### Foundation: Document Dependency Tracking System
+
+- [x] **Task 4.2.0a**: Create DOCUMENT_DEPENDENCIES.md (1 hour) ✅ COMPLETE Session #35 (2026-01-08)
+  - Map all template→instance relationships (6 audit plans initially)
+  - Document sync protocols (template propagation, instance feedback, new creation)
+  - Define validation procedures and common sync issues
+  - **Result**: Created `docs/DOCUMENT_DEPENDENCIES.md` (Tier 4 Reference doc)
+
+- [x] **Task 4.2.0b**: Audit all 6 audit plan templates (0.5 hours) ✅ COMPLETE Session #35
+  - Verify template-instance synchronization
+  - Replace placeholder content with actual SoNash values
+  - Fix broken relative links
+  - **Result**: Found & fixed 3 sync issues (SECURITY broken link, REFACTORING/PROCESS placeholders)
+
+- [x] **Task 4.2.0c**: Create automated validation script (1 hour) ✅ COMPLETE Session #35
+  - Build check-document-sync.js script
+  - Detect placeholder content ([e.g., ...], [X])
+  - Verify relative link targets
+  - Check staleness (>90 days since sync)
+  - Add `npm run docs:sync-check` command
+  - **Result**: Automated detection prevents future template-instance drift
+
+- [x] **Task 4.2.0d**: Enhance DOCUMENTATION_AUDIT (0.5 hours) ✅ COMPLETE Session #35
+  - Add Category 6: Template-Instance Synchronization
+  - Include placeholder detection checks
+  - Add sync status validation from DOCUMENT_DEPENDENCIES.md
+  - Provide grep commands for automated verification
+  - **Result**: Future documentation audits include sync validation
+
+**Rationale**: Template-instance drift (discovered in Review #89) needed systematic prevention. All 6 audit plans must be 100% synced before multi-AI execution to ensure accurate findings.
 
 #### Category 1: Code Review
 

@@ -63,11 +63,11 @@ Last Security Audit: 2026-01-05
 ### Tech Stack Security Considerations
 
 ```
-- Framework: [e.g., Next.js 16.1] - SSR/CSR boundaries, API routes
-- Authentication: [e.g., Firebase Auth] - Session management, token handling
-- Database: [e.g., Firestore] - Rules, access patterns
-- Security Tools: [e.g., App Check, reCAPTCHA] - Enforcement status
-- Rate Limiting: [e.g., Custom RateLimiter] - Coverage status
+- Framework: Next.js 16.1.1 (App Router) - SSR/CSR boundaries, Server Actions
+- Authentication: Firebase Auth 12.6.0 - Google OAuth, Email/Password, session tokens
+- Database: Firestore (Firebase 12.6.0) - Security rules, role-based access patterns
+- Security Tools: reCAPTCHA v3 (fail-closed), App Check (disabled - F-010 risk-accepted)
+- Rate Limiting: Custom RateLimiter (lib/security/rate-limiter.ts) - Admin/user differentiation
 ```
 
 ### Scope

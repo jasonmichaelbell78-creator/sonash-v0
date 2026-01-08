@@ -60,8 +60,8 @@ Last Documentation Audit: 2026-01-05
 
 ```
 Documentation Tiers:
-- Tier 1: Root-level docs (README.md, ROADMAP.md, ARCHITECTURE.md, SECURITY.md)
-- Tier 2: Core standards (GLOBAL_SECURITY_STANDARDS.md, DEVELOPMENT.md, INTEGRATED_IMPROVEMENT_PLAN.md)
+- Tier 1: Root-level docs (README.md, ROADMAP.md, ARCHITECTURE.md)
+- Tier 2: Core standards (docs/SECURITY.md, docs/GLOBAL_SECURITY_STANDARDS.md, DEVELOPMENT.md, INTEGRATED_IMPROVEMENT_PLAN.md)
 - Tier 3: Specialized docs (AI_REVIEW_LEARNINGS_LOG.md, AI_WORKFLOW.md, SESSION_CONTEXT.md)
 - Tier 4: Reference docs (docs/templates/, docs/decisions/, docs/guides/)
 - Tier 5: Archive (docs/archive/completed-plans/, docs/archive/old-reviews/)
@@ -126,9 +126,14 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 
 DOCUMENTATION STRUCTURE
 
-- Tier system: [If applicable]
-- Main directories: [List]
-- Documentation standards: [Reference if available]
+- Tier system: 5-tier hierarchy (Tier 1-2: Root-level, Tier 3-5: docs/ subdirectories)
+- Main directories:
+  - docs/
+  - docs/templates/
+  - docs/reviews/
+  - docs/archive/
+  - docs/agent_docs/
+- Documentation standards: docs/DOCUMENTATION_STANDARDS.md (v1.2)
 
 PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 
@@ -146,10 +151,10 @@ PRE-REVIEW CONTEXT (CAPABILITY-TIERED)
 - README.md - Project overview, quick start
 - ROADMAP.md - Current sprint, priorities
 - ARCHITECTURE.md - System design
-- SECURITY.md - Security policies
 
 **Tier 2 (Core standards, developer-facing):**
-- GLOBAL_SECURITY_STANDARDS.md - Mandatory security requirements
+- docs/SECURITY.md - Security policies
+- docs/GLOBAL_SECURITY_STANDARDS.md - Mandatory security requirements
 - DEVELOPMENT.md - Development setup, workflows
 - INTEGRATED_IMPROVEMENT_PLAN.md - Multi-phase improvement tracking
 
@@ -372,6 +377,39 @@ Mark each check: ISSUE | OK | N/A
 List specific frontmatter issues.
 
 After each category: "Category X complete - Issues found: [number]"
+
+---
+
+Category 6: Template-Instance Synchronization
+
+**Note:** This category validates that documents derived from templates are properly synced. Check DOCUMENT_DEPENDENCIES.md for template-instance relationships.
+
+CHECKS:
+[ ] All template-derived instances are listed in DOCUMENT_DEPENDENCIES.md
+[ ] No `[e.g., ...]` or `[X]` placeholders remaining in instances
+[ ] Instances follow template section structure
+[ ] "Last Synced" dates in DOCUMENT_DEPENDENCIES.md are recent (<90 days)
+[ ] Broken links to moved files (e.g., ../../SECURITY.md should be ../SECURITY.md)
+
+ANALYSIS:
+- Read DOCUMENT_DEPENDENCIES.md to identify template-instance pairs
+- For each instance, grep for `[e.g.,` and `[X]` patterns
+- Verify instances have same section structure as templates
+- Check if any templates were updated but instances weren't
+- Identify any broken relative links
+
+VERIFICATION COMMANDS (if available):
+- `grep -r "\[e\.g\.," docs/reviews/2026-Q1/*.md | wc -l` (should be 0)
+- `grep -r "\[X\]" docs/reviews/2026-Q1/*.md | wc -l` (should be 0)
+- Check DOCUMENT_DEPENDENCIES.md "Last Synced" dates
+- Verify all sync statuses are ✅ SYNCED
+
+Mark each check: ISSUE | OK | N/A
+List specific template-instance sync issues.
+
+After each category: "Category X complete - Issues found: [number]"
+
+---
 
 PHASE 4: DRAFT DOCUMENTATION FINDINGS
 

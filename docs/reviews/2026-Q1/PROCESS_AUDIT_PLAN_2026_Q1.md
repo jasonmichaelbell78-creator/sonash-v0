@@ -87,9 +87,23 @@ Quality Gates:
 ### Scope
 
 ```
-Include: [e.g., .github/workflows/, scripts/, hooks/, package.json scripts, docs/workflows/]
-Secondary: [optional, e.g., tool configurations]
-Exclude: [e.g., node_modules/, archived workflows]
+Include:
+- .github/workflows/ (CI/CD pipelines: ci.yml, docs-lint.yml, deploy.yml)
+- scripts/ (Automation: check-*.js, surface-*.js, multi-ai review scripts)
+- .claude/ (Session hooks: stop-hook-git-check.sh, start-hook.sh)
+- package.json scripts (npm run commands, git hooks configuration)
+- docs/workflows/ (Process documentation and guidelines)
+- Git hooks (pre-commit, pre-push, post-merge via Husky)
+
+Secondary:
+- .husky/ (Git hooks infrastructure)
+- .github/CODEOWNERS (Review ownership)
+- Tool configs (eslint.config.mjs, tsconfig.json for process-related rules)
+
+Exclude:
+- node_modules/ (third-party dependencies)
+- docs/archive/ (archived/deprecated workflows)
+- .next/ (build artifacts)
 ```
 
 ---
