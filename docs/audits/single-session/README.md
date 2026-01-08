@@ -85,7 +85,7 @@ Single-session audits are **complementary** to multi-AI audits:
 | Threshold Reset | No | Yes |
 | Frequency | On-demand | Threshold-triggered |
 | Output Location | `docs/audits/single-session/` | `docs/reviews/YYYY-QX/` |
-| Logged in | Not logged | AI_REVIEW_LEARNINGS_LOG.md |
+| Logged in | `docs/AUDIT_TRACKER.md` | `AI_REVIEW_LEARNINGS_LOG.md` |
 
 ## When to Use
 

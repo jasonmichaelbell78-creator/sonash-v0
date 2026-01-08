@@ -18,8 +18,11 @@ Run `npm run review:check` and report results. Check for security-sensitive file
 Collect these metrics by running commands:
 
 ```bash
-# Dependency vulnerabilities
-npm audit --json 2>&1 | head -50
+# Dependency vulnerabilities (extract summary without truncating JSON)
+npm audit --json 2>/dev/null | node -e '
+const d = JSON.parse(require("fs").readFileSync(0,"utf8"));
+console.log(JSON.stringify(d.metadata?.vulnerabilities ?? d.vulnerabilities ?? {}, null, 2));
+'
 
 # Security lint warnings
 npm run lint 2>&1 | grep -i "security" | head -10

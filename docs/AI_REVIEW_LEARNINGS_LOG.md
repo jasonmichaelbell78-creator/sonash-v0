@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 2.2
+**Document Version:** 2.3
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-08
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.3 | 2026-01-08 | Review #103: PR Review Processing - 10 items (2 MAJOR hasComplexityWarnings+getRepoStartDate, 5 MINOR JSON/docs, 3 TRIVIAL). Session #38. |
 | 2.2 | 2026-01-08 | Review #102: PR Review Processing - 19 items (1 MAJOR cognitive complexity refactor, 5 MINOR date validation/node: prefix/Number.parseInt/String.raw, 10 TRIVIAL code style). Session #38. |
 | 2.1 | 2026-01-08 | Review #101: PR Review Processing - 36 items (12 regex DoS, 5 major, 17 JSDoc). Session #38. |
 | 2.0 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 → CODE_PATTERNS.md v1.3 (6 Security Audit patterns, new category). Session #33 session-end cleanup. |
@@ -171,7 +172,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4 (Reviews #98-101)
+**Reviews since last consolidation:** 6 (Reviews #98-103)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
 **Next consolidation due:** After Review #107
@@ -327,7 +328,76 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-101 are actively maintained below. Older reviews are in the archive.
+Reviews #61-103 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #103: PR Review Processing - Qodo, SonarQube, CodeRabbit (2026-01-08)
+
+**Source:** Mixed (Qodo PR + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Suggestions:** 10 total (Major: 2, Minor: 5, Trivial: 3)
+
+**Context:** Follow-up PR review on commit 2d7d466 (Review #102). Focus on completing TODO placeholders, improving baseline detection, and fixing output inconsistencies.
+
+**Patterns Identified:**
+
+1. **TODO Placeholder Completion** (Major pattern - SonarQube + Qodo)
+   - Root cause: hasComplexityWarnings() returned false unconditionally with TODO comment
+   - Prevention: Implement functionality when creating placeholder; don't defer forever
+   - Pattern: Complete TODOs during the session that creates them
+
+2. **Dynamic Baseline vs Hardcoded Fallback** (Major pattern - Qodo)
+   - Root cause: Missing AUDIT_TRACKER.md caused all triggers to fire from 2025-01-01
+   - Prevention: Use git log to get actual repo start date as smart fallback
+   - Pattern: Use dynamic fallbacks for missing configuration files
+
+3. **Output Mode Consistency** (Minor pattern - CodeRabbit)
+   - Root cause: JSON recommendation showed only first category; text showed all
+   - Prevention: Extract command list logic to shared helper or duplicate consistently
+   - Pattern: Text and JSON output should convey equivalent information
+
+**Resolution:**
+- Fixed: 10 items (2 MAJOR, 5 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Complete TODOs immediately**: Don't leave placeholder functions; implement or remove
+- **Smart fallbacks**: Use git history for dynamic defaults instead of hardcoded dates
+- **Output parity**: JSON and text modes should provide equivalent information
+
+---
+
+#### Review #102: PR Review Processing - Qodo, SonarQube, CodeRabbit (2026-01-08)
+
+**Source:** Mixed (Qodo PR + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Suggestions:** 19 total (Major: 1, Minor: 5, Trivial: 10)
+
+**Context:** Post-Review #101 feedback on commit 36fd20f. Primary focus on cognitive complexity refactoring and code style improvements.
+
+**Patterns Identified:**
+
+1. **Cognitive Complexity Refactoring** (Major pattern - SonarQube S3776)
+   - Root cause: formatTextOutput() had complexity 23 (threshold 15) due to nested loops/conditionals
+   - Prevention: Extract helper functions for distinct output sections
+   - Pattern: Keep functions under 15 cognitive complexity by extracting helpers
+
+2. **Node.js Built-in Module Prefixes** (Minor pattern - SonarQube S6803)
+   - Root cause: Using `fs` instead of `node:fs` for built-in imports
+   - Prevention: Always use `node:` prefix for built-in modules
+   - Pattern: `node:fs`, `node:path`, `node:url`, `node:child_process`
+
+3. **Number Methods on Global** (Minor pattern - SonarQube S6759)
+   - Root cause: Using `parseInt()` instead of `Number.parseInt()`
+   - Prevention: Prefer explicit `Number.parseInt()` and `Number.isNaN()`
+   - Pattern: Use Number methods for parsing and validation
+
+**Resolution:**
+- Fixed: 15 items (1 MAJOR, 5 MINOR, 9 TRIVIAL)
+- Deferred: 1 item (JSONL schema alignment - Step 4 scope)
+- Rejected: 0 items
 
 ---
 

@@ -57,7 +57,7 @@ const CATEGORY_THRESHOLDS = {
     files: 1, // ANY security file triggers
     // Targeted patterns: match paths like lib/auth.ts, firestore.rules, .env.local
     // Excludes generic "api" and "env" substrings that cause false positives
-    filePattern: /(auth|security|firebase|secrets|\.env|credential|token)/i
+    filePattern: /\b(auth|security|firebase|secrets|credential|token)\b|\.env/i
   },
   performance: {
     commits: 30,
@@ -106,7 +106,7 @@ const args = process.argv.slice(2);
 const JSON_OUTPUT = args.includes('--json');
 const VERBOSE = args.includes('--verbose');
 const CATEGORY_ARG = args.find(a => a.startsWith('--category='));
-const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] : null;
+const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] || null : null;
 
 /**
  * Safely log verbose messages (only when --verbose flag is set and not in JSON mode)
@@ -422,13 +422,18 @@ function isBundleChanged(sinceDate) {
 }
 
 /**
- * Check for complexity warnings (placeholder - can integrate with ESLint complexity rules)
- * @returns {boolean} True if complexity warnings detected (currently always false - TODO integration)
+ * Check for complexity warnings via ESLint output
+ * Searches for complexity-related warnings in lint output
+ * @returns {boolean} True if complexity warnings detected
  */
 function hasComplexityWarnings() {
-  // TODO: Integrate with ESLint complexity rules or cyclomatic complexity checker
-  // For now, return false to avoid false positives
-  return false;
+  const result = safeExec(
+    'npm run lint 2>&1 | grep -iE "(\\bcomplexity\\b|cyclomatic)" | head -1',
+    'complexity warnings'
+  );
+
+  if (!result.success) return false;
+  return Boolean(result.output && result.output.trim());
 }
 
 /**
@@ -604,6 +609,21 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
 }
 
 /**
+ * Get the repository's first commit date as a fallback baseline
+ * Prevents false-positive triggers when AUDIT_TRACKER.md is missing
+ * @returns {string} ISO date string of first commit, or '2025-01-01' if unavailable
+ */
+function getRepoStartDate() {
+  const result = safeExec(
+    'git log --reverse --format=%cs | head -1',
+    'repository start date'
+  );
+  return result.success && result.output
+    ? sanitizeDateString(result.output)
+    : '2025-01-01';
+}
+
+/**
  * Main function - orchestrates review trigger checking
  * Reads AUDIT_TRACKER.md, checks per-category thresholds, and outputs results
  * @returns {void} Exits with code 0 (no review needed), 1 (review recommended), or 2 (error)
@@ -617,6 +637,9 @@ function main() {
     console.warn(`⚠️  Warning: ${trackerResult.error}`);
     console.warn('   Using default baseline values (no prior audits)\n');
   }
+
+  // Get repository start date as fallback for missing audit dates
+  const repoStartDate = getRepoStartDate();
 
   // Get per-category audit dates
   const categoryDates = getCategoryAuditDates(trackerContent);
@@ -632,7 +655,6 @@ function main() {
   for (const category of categoriesToCheck) {
     const thresholds = CATEGORY_THRESHOLDS[category];
     if (!thresholds) {
-      // Output error in JSON format when --json flag is used to avoid corrupting output
       if (JSON_OUTPUT) {
         console.log(JSON.stringify({ error: `Unknown category: ${category}` }));
       } else {
@@ -641,7 +663,9 @@ function main() {
       process.exit(2);
     }
 
-    const sinceDate = sanitizeDateString(categoryDates[category] || '2025-01-01');
+    // Use repo start date as fallback instead of hardcoded '2025-01-01'
+    const baselineDate = categoryDates[category] || repoStartDate;
+    const sinceDate = sanitizeDateString(baselineDate);
     const result = checkCategoryTriggers(category, sinceDate, thresholds);
     categoryResults.push(result);
   }
@@ -660,7 +684,8 @@ function main() {
   } else if (multiAITriggers.length > 0) {
     recommendation = `${multiAITriggers.length} multi-AI trigger(s) active. Consider running full multi-AI audit.`;
   } else {
-    recommendation = `${triggeredCategories.length} single-session trigger(s) active. Run: /audit-${triggeredCategories[0].category}`;
+    const commands = triggeredCategories.map(c => `/audit-${c.category}`).join(', ');
+    recommendation = `${triggeredCategories.length} single-session trigger(s) active. Run: ${commands}`;
   }
 
   // Output results
