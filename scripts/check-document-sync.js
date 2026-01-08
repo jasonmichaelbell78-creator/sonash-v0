@@ -1,0 +1,343 @@
+#!/usr/bin/env node
+/**
+ * Document Template-Instance Sync Checker
+ *
+ * Validates that template-derived documents are properly synchronized.
+ * Reads DOCUMENT_DEPENDENCIES.md to identify template-instance pairs,
+ * then checks for common sync issues.
+ *
+ * Usage: node scripts/check-document-sync.js [options]
+ *
+ * Options:
+ *   --verbose    Show detailed output
+ *   --json       Output as JSON
+ *   --fix        Auto-fix simple issues (placeholder detection)
+ *
+ * Exit codes: 0 = all synced, 1 = sync issues found, 2 = error
+ */
+
+import { readFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const ROOT = join(__dirname, '..');
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const VERBOSE = args.includes('--verbose');
+const JSON_OUTPUT = args.includes('--json');
+const FIX = args.includes('--fix');
+
+const DEPS_FILE = join(ROOT, 'docs', 'DOCUMENT_DEPENDENCIES.md');
+
+/**
+ * Parse DOCUMENT_DEPENDENCIES.md to extract template-instance pairs
+ */
+function parseDocumentDependencies() {
+  if (!existsSync(DEPS_FILE)) {
+    console.error('❌ DOCUMENT_DEPENDENCIES.md not found');
+    process.exit(2);
+  }
+
+  const content = readFileSync(DEPS_FILE, 'utf-8');
+  const pairs = [];
+
+  // Extract Multi-AI Audit Plan templates (table format)
+  const tableRegex = /\|\s*\*\*([^*]+)\*\*\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g;
+  let match;
+
+  while ((match = tableRegex.exec(content)) !== null) {
+    const [, template, instance, location, lastSynced, syncStatus] = match;
+
+    // Skip header rows
+    if (template.includes('Template') || template.includes('---')) continue;
+
+    pairs.push({
+      template: template.trim(),
+      instance: instance.trim(),
+      location: location.trim(),
+      lastSynced: lastSynced.trim(),
+      syncStatus: syncStatus.trim(),
+      fullPath: join(ROOT, location.trim(), instance.trim())
+    });
+  }
+
+  return pairs;
+}
+
+/**
+ * Check for placeholder patterns that should have been replaced
+ */
+function checkPlaceholders(filePath) {
+  if (!existsSync(filePath)) {
+    return { error: 'File not found', placeholders: [] };
+  }
+
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const issues = [];
+
+  // Pattern 1: [e.g., ...] - example placeholders
+  const examplePattern = /\[e\.g\.,\s*[^\]]+\]/g;
+  // Pattern 2: [X] - placeholder values
+  const valuePlaceholder = /\[X\]/g;
+  // Pattern 3: [Project Name] - generic placeholders
+  const genericPlaceholder = /\[(Project Name|GITHUB_REPO_URL|Repository|Framework|TODO)\]/gi;
+
+  lines.forEach((line, idx) => {
+    const lineNum = idx + 1;
+
+    let match;
+    while ((match = examplePattern.exec(line)) !== null) {
+      issues.push({
+        line: lineNum,
+        type: 'example_placeholder',
+        text: match[0],
+        severity: 'CRITICAL'
+      });
+    }
+
+    while ((match = valuePlaceholder.exec(line)) !== null) {
+      issues.push({
+        line: lineNum,
+        type: 'value_placeholder',
+        text: match[0],
+        severity: 'CRITICAL'
+      });
+    }
+
+    while ((match = genericPlaceholder.exec(line)) !== null) {
+      issues.push({
+        line: lineNum,
+        type: 'generic_placeholder',
+        text: match[0],
+        severity: 'MAJOR'
+      });
+    }
+  });
+
+  return { placeholders: issues };
+}
+
+/**
+ * Check for broken relative links
+ */
+function checkBrokenLinks(filePath) {
+  if (!existsSync(filePath)) {
+    return { error: 'File not found', brokenLinks: [] };
+  }
+
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const issues = [];
+
+  // Markdown link pattern: [text](path)
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+  lines.forEach((line, idx) => {
+    const lineNum = idx + 1;
+    let match;
+
+    while ((match = linkPattern.exec(line)) !== null) {
+      const [, text, path] = match;
+
+      // Skip external URLs
+      if (path.startsWith('http://') || path.startsWith('https://')) continue;
+
+      // Skip anchors
+      if (path.startsWith('#')) continue;
+
+      // Check relative paths
+      const fileDir = dirname(filePath);
+      const targetPath = join(fileDir, path.split('#')[0]); // Remove anchor
+
+      if (!existsSync(targetPath)) {
+        issues.push({
+          line: lineNum,
+          type: 'broken_link',
+          text: `[${text}](${path})`,
+          path: path,
+          severity: 'MAJOR'
+        });
+      }
+    }
+  });
+
+  return { brokenLinks: issues };
+}
+
+/**
+ * Check if last synced date is stale (>90 days)
+ */
+function checkStaleness(lastSyncedStr) {
+  // Parse date like "2026-01-08"
+  const match = lastSyncedStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) {
+    return { isStale: false, reason: 'Unable to parse date' };
+  }
+
+  const [, year, month, day] = match;
+  const lastSynced = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const now = new Date();
+  const daysDiff = Math.floor((now - lastSynced) / (1000 * 60 * 60 * 24));
+
+  return {
+    isStale: daysDiff > 90,
+    daysSinceSync: daysDiff,
+    reason: daysDiff > 90 ? `${daysDiff} days since last sync (>90 day threshold)` : null
+  };
+}
+
+/**
+ * Main validation logic
+ */
+function validateDocumentSync() {
+  const pairs = parseDocumentDependencies();
+
+  if (pairs.length === 0) {
+    console.error('⚠️  No template-instance pairs found in DOCUMENT_DEPENDENCIES.md');
+    return { pairs: [], issues: 0, success: true };
+  }
+
+  const results = [];
+  let totalIssues = 0;
+
+  for (const pair of pairs) {
+    const result = {
+      template: pair.template,
+      instance: pair.instance,
+      location: pair.location,
+      lastSynced: pair.lastSynced,
+      syncStatus: pair.syncStatus,
+      issues: []
+    };
+
+    // Check 1: Placeholder detection
+    const placeholderCheck = checkPlaceholders(pair.fullPath);
+    if (placeholderCheck.error) {
+      result.issues.push({
+        type: 'file_missing',
+        severity: 'CRITICAL',
+        message: `Instance file not found: ${pair.fullPath}`
+      });
+      totalIssues++;
+    } else if (placeholderCheck.placeholders.length > 0) {
+      result.issues.push({
+        type: 'placeholders',
+        severity: 'CRITICAL',
+        count: placeholderCheck.placeholders.length,
+        details: placeholderCheck.placeholders
+      });
+      totalIssues += placeholderCheck.placeholders.length;
+    }
+
+    // Check 2: Broken links
+    const linkCheck = checkBrokenLinks(pair.fullPath);
+    if (!linkCheck.error && linkCheck.brokenLinks.length > 0) {
+      result.issues.push({
+        type: 'broken_links',
+        severity: 'MAJOR',
+        count: linkCheck.brokenLinks.length,
+        details: linkCheck.brokenLinks
+      });
+      totalIssues += linkCheck.brokenLinks.length;
+    }
+
+    // Check 3: Staleness
+    const stalenessCheck = checkStaleness(pair.lastSynced);
+    if (stalenessCheck.isStale) {
+      result.issues.push({
+        type: 'stale',
+        severity: 'MINOR',
+        message: stalenessCheck.reason,
+        daysSinceSync: stalenessCheck.daysSinceSync
+      });
+      totalIssues++;
+    }
+
+    results.push(result);
+  }
+
+  return {
+    pairs: results,
+    totalPairs: pairs.length,
+    issueCount: totalIssues,
+    success: totalIssues === 0
+  };
+}
+
+/**
+ * Output formatting
+ */
+function formatOutput(results) {
+  if (JSON_OUTPUT) {
+    console.log(JSON.stringify(results, null, 2));
+    return;
+  }
+
+  console.log('\n🔍 Document Template-Instance Sync Check\n');
+  console.log(`Checked ${results.totalPairs} template-instance pair(s)\n`);
+
+  if (results.success) {
+    console.log('✅ All documents are in sync');
+    console.log(`   No placeholders, broken links, or stale sync dates found\n`);
+    return;
+  }
+
+  console.log(`⚠️  Found ${results.issueCount} issue(s):\n`);
+
+  for (const pair of results.pairs) {
+    if (pair.issues.length === 0) continue;
+
+    console.log(`📄 ${pair.instance}`);
+    console.log(`   Template: ${pair.template}`);
+    console.log(`   Location: ${pair.location}`);
+    console.log(`   Last Synced: ${pair.lastSynced}\n`);
+
+    for (const issue of pair.issues) {
+      const icon = issue.severity === 'CRITICAL' ? '❌' : issue.severity === 'MAJOR' ? '⚠️' : 'ℹ️';
+
+      if (issue.type === 'placeholders') {
+        console.log(`   ${icon} PLACEHOLDERS: ${issue.count} placeholder(s) need replacement`);
+        if (VERBOSE) {
+          issue.details.forEach(p => {
+            console.log(`      Line ${p.line}: ${p.text}`);
+          });
+        }
+      } else if (issue.type === 'broken_links') {
+        console.log(`   ${icon} BROKEN LINKS: ${issue.count} broken link(s) found`);
+        if (VERBOSE) {
+          issue.details.forEach(l => {
+            console.log(`      Line ${l.line}: ${l.path}`);
+          });
+        }
+      } else if (issue.type === 'stale') {
+        console.log(`   ${icon} STALE: ${issue.message}`);
+      } else if (issue.type === 'file_missing') {
+        console.log(`   ${icon} MISSING: ${issue.message}`);
+      }
+    }
+    console.log();
+  }
+
+  console.log('Run with --verbose for detailed line numbers');
+  console.log('See docs/DOCUMENT_DEPENDENCIES.md for sync protocols\n');
+}
+
+/**
+ * Main execution
+ */
+try {
+  const results = validateDocumentSync();
+  formatOutput(results);
+  process.exit(results.success ? 0 : 1);
+} catch (error) {
+  console.error('❌ Error during document sync check:', error.message);
+  if (VERBOSE) {
+    console.error(error.stack);
+  }
+  process.exit(2);
+}
