@@ -4,7 +4,7 @@
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-08
 **Status:** ACTIVE
-**Overall Completion:** 42% (Step 4 in progress - 2/6 audits complete)
+**Overall Completion:** ~40% (Step 4 in progress - 2/6 audits complete)
 
 ---
 
@@ -41,7 +41,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
 **Overall Progress:** 3/8 steps complete + Step 4 in progress (~40%)
-**Effort Tracking:** ~9 hours actual (Steps 1-3) + ~43-55 hours remaining (Step 4: 28h, 4B: 8-16h, 5: 4-6h, 6: 2-3h, 7: 1-2h)
+**Effort Tracking:** ~9 hours actual (Steps 1-3) + ~45-60 hours remaining (Step 4: 28h, 4B: 8-16h, 5: 6-9h, 6: 2-3h, 7: 1-2h)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -992,13 +992,13 @@ Deferred items MUST be:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 4-6 hours
+**Estimated Effort:** 6-9 hours
 **Dependencies:** Step 4B
 **Risk Level:** Low
 
 ### Objectives
 
-Expand review policies beyond code to cover skills, agents, procedures, and configurations. Implement event-based triggers, usage verification, and correction mechanisms.
+Expand review policies beyond code to cover skills, agents, procedures, and configurations. Additionally, improve the PR review process to reduce false positive noise from AI review tools. Implement event-based triggers, usage verification, and correction mechanisms.
 
 ### Background
 
@@ -1072,6 +1072,16 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
   - Add override review prompt
   - Integrate with trigger checking
 
+- [ ] **Task 5.8**: PR Review Process Improvements (2-3 hours)
+  - Reference: [PR_REVIEW_IMPROVEMENT_OPTIONS.md](./brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md)
+  - Implement Phase 2 options:
+    - Add ESLint security plugin locally (Option A2)
+    - Create tool-specific configurations for CodeRabbit/Qodo (Option B3)
+    - Add 10+ false positives from recent review patterns (Option C2)
+  - Configure `.coderabbit.yaml` and `.pr_agent.toml`
+  - Update FALSE_POSITIVES.jsonl with recurring patterns
+  - Document chosen approach in AI_REVIEW_PROCESS.md
+
 ### Acceptance Criteria
 
 - [ ] Session activity logging operational
@@ -1081,6 +1091,7 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
 - [ ] Override mechanism with logging
 - [ ] SKILL_AGENT_POLICY.md created
 - [ ] Pre-commit/pre-push hooks updated
+- [ ] PR review noise reduced via tool configuration and false positives expansion
 
 ---
 
@@ -1301,6 +1312,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.5 | 2026-01-08 | Added Task 5.8 (PR Review Process Improvements); Created PR_REVIEW_IMPROVEMENT_OPTIONS.md with 14 options across 5 categories; Added patterns:check to pre-commit hook; Updated Step 5 effort estimate (4-6h → 6-9h) |
 | 2.4 | 2026-01-07 | Step 4.2 Security Audit complete (Tasks 4.2.2a, 4.2.2b); 10 canonical findings aggregated to docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl; Review #88 logged; Step 4 now IN PROGRESS at 33% (2/6 categories) |
 | 2.3 | 2026-01-05 | Effort estimate correction: Step 4 (12-16h→~28h based on task sum); Rollup (48-72h→43-55h verified against per-step estimates); Clarified PARSE_ERRORS_JSONL as optional artifact |
 | 2.2 | 2026-01-05 | Added Step 4B (Remediation Sprint) to execute CANON findings from Step 4; Updated step count (7→8); Updated dependencies (Step 5 now depends on Step 4B); Updated effort estimate (+8-16h for remediation) |
