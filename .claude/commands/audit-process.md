@@ -18,17 +18,17 @@ Collect these metrics by running commands:
 
 ```bash
 # CI workflow status
-ls -la .github/workflows/ 2>/dev/null
+ls -la .github/workflows/ 2>/dev/null || echo "No .github/workflows/ directory"
 
 # Hook inventory
-ls -la .claude/hooks/ 2>/dev/null
-ls -la .husky/ 2>/dev/null
+ls -la .claude/hooks/ 2>/dev/null || echo "No .claude/hooks/ directory"
+ls -la .husky/ 2>/dev/null || echo "No .husky/ directory"
 
 # Script inventory
-ls -la scripts/*.js scripts/*.sh 2>/dev/null | head -20
+ls -la scripts/*.js scripts/*.sh 2>/dev/null || echo "No scripts found"
 
 # Slash command inventory
-ls -la .claude/commands/ 2>/dev/null
+ls -la .claude/commands/ 2>/dev/null || echo "No .claude/commands/ directory"
 
 # npm scripts
 grep -A 50 '"scripts"' package.json | head -60

@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.4 | 2026-01-08 | Review #104: PR Review Processing - 18 items (4 MAJOR security pattern/baselines/JSON metrics, 9 MINOR shell portability/INP metrics, 5 TRIVIAL). Session #38. |
 | 2.3 | 2026-01-08 | Review #103: PR Review Processing - 10 items (2 MAJOR hasComplexityWarnings+getRepoStartDate, 5 MINOR JSON/docs, 3 TRIVIAL). Session #38. |
 | 2.2 | 2026-01-08 | Review #102: PR Review Processing - 19 items (1 MAJOR cognitive complexity refactor, 5 MINOR date validation/node: prefix/Number.parseInt/String.raw, 10 TRIVIAL code style). Session #38. |
 | 2.1 | 2026-01-08 | Review #101: PR Review Processing - 36 items (12 regex DoS, 5 major, 17 JSDoc). Session #38. |
@@ -328,7 +329,57 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-103 are actively maintained below. Older reviews are in the archive.
+Reviews #61-104 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #104: PR Review Processing - Single-Session Audit Checks (2026-01-08)
+
+**Source:** Mixed (Qodo PR Compliance + Qodo PR Suggestions + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Commit:** 018c39b (Review #103) + 2560ceb (audit improvements)
+**Suggestions:** 18 total (Major: 4, Minor: 9, Trivial: 5)
+
+**Context:** Post-commit review of single-session audit improvements and previous Review #103 fixes. Focus on security patterns, shell portability, and JSON output consistency.
+
+**Patterns Identified:**
+
+1. **Security File Pattern Completeness** (Major pattern - Qodo)
+   - Root cause: Security-sensitive file regex missed critical files like firestore.rules, middleware.ts
+   - Prevention: Explicitly include known security files, not just keyword patterns
+   - Pattern: Security patterns should whitelist critical files by name
+
+2. **JSON Parsing Robustness** (Major pattern - Qodo)
+   - Root cause: npm audit --json can output non-JSON on error, causing parse failures
+   - Prevention: Wrap JSON.parse in try/catch with fallback to empty object
+   - Pattern: External command output should always have parse error handling
+
+3. **Shell Portability** (Minor pattern - Qodo)
+   - Root cause: `| head -1` and `| sort -u | grep -v` are not portable across all systems
+   - Prevention: Use git native flags (-1) or JavaScript logic instead of shell pipes
+   - Pattern: Prefer language-native operations over shell pipelines
+
+4. **Web Vitals Metric Updates** (Minor pattern - Qodo)
+   - Root cause: FID is deprecated, INP is the modern replacement
+   - Prevention: Keep up with Core Web Vitals changes
+   - Pattern: Use current metrics (INP not FID) in audit schemas
+
+5. **JSON Output Structure Clarity** (Major pattern - CodeRabbit)
+   - Root cause: Flat trigger structure with ambiguous value/threshold pairs
+   - Prevention: Restructure JSON to have explicit commits/files sub-objects
+   - Pattern: Machine-parseable output should have unambiguous field semantics
+
+**Resolution:**
+- Fixed: 13 items (4 MAJOR, 6 MINOR, 3 TRIVIAL)
+- Deferred: 3 items (metric key alignment, doc path - unclear requirements)
+- Already OK: 2 items (JSONL schema already formatted)
+
+**Key Learnings:**
+- **Security patterns need explicit file lists**: Don't rely only on keyword matching
+- **Always handle parse errors**: External commands can produce unexpected output
+- **Shell portability matters**: Use native language features when possible
+- **Keep metrics current**: Web Vitals evolve; update schemas accordingly
+- **JSON output needs unambiguous structure**: Nested objects clarify metric semantics
 
 ---
 
@@ -373,7 +424,7 @@ Reviews #61-103 are actively maintained below. Older reviews are in the archive.
 
 **Source:** Mixed (Qodo PR + SonarQube + CodeRabbit PR)
 **PR/Branch:** claude/new-session-70MS0
-**Suggestions:** 19 total (Major: 1, Minor: 5, Trivial: 10)
+**Suggestions:** 16 total (Major: 1, Minor: 5, Trivial: 9, Deferred: 1)
 
 **Context:** Post-Review #101 feedback on commit 36fd20f. Primary focus on cognitive complexity refactoring and code style improvements.
 

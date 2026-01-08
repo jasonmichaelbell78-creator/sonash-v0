@@ -61,7 +61,7 @@ If outdated, note discrepancies but proceed with current values.
 2. Rendering Performance (re-renders, memoization, virtualization)
 3. Data Fetching & Caching (query optimization, caching strategy)
 4. Memory Management (effect cleanup, subscription leaks)
-5. Core Web Vitals (LCP, FID, CLS optimization)
+5. Core Web Vitals (LCP, INP, CLS optimization)
 
 **For each category:**
 1. Search relevant files using Grep/Glob

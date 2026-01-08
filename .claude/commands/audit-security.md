@@ -20,8 +20,12 @@ Collect these metrics by running commands:
 ```bash
 # Dependency vulnerabilities (extract summary without truncating JSON)
 npm audit --json 2>/dev/null | node -e '
-const d = JSON.parse(require("fs").readFileSync(0,"utf8"));
-console.log(JSON.stringify(d.metadata?.vulnerabilities ?? d.vulnerabilities ?? {}, null, 2));
+try {
+  const d = JSON.parse(require("fs").readFileSync(0,"utf8"));
+  console.log(JSON.stringify(d.metadata?.vulnerabilities ?? d.vulnerabilities ?? {}, null, 2));
+} catch (e) {
+  console.log("{\"error\": \"Invalid JSON from npm audit\"}");
+}
 '
 
 # Security lint warnings

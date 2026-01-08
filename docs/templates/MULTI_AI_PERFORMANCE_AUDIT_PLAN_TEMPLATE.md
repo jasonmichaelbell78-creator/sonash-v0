@@ -77,7 +77,7 @@ Bundle Size:
 
 Core Web Vitals (Lighthouse):
 - LCP: [X] s (target: < 2.5s)
-- FID: [X] ms (target: < 100ms)
+- INP: [X] ms (target: < 200ms)
 - CLS: [X] (target: < 0.1)
 - Performance Score: [X]/100
 
@@ -361,7 +361,7 @@ Quote specific evidence.
 Category 5: Core Web Vitals
 CHECKS:
 [ ] LCP: Largest content loads fast
-[ ] FID: Interactions responsive
+[ ] INP: Interactions responsive
 [ ] CLS: No layout shifts
 [ ] Images use next/image with sizes
 [ ] Fonts use next/font
@@ -461,7 +461,7 @@ Schema:
   "performance_details": {
     "current_metric": "what it is now",
     "expected_improvement": "estimated improvement",
-    "affected_metric": "LCP|FID|CLS|bundle|render|memory"
+    "affected_metric": "LCP|INP|CLS|bundle|render|memory"
   },
   "optimization": {
     "description": "what to do",

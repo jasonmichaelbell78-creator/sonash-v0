@@ -55,9 +55,9 @@ const CATEGORY_THRESHOLDS = {
   security: {
     commits: 20,
     files: 1, // ANY security file triggers
-    // Targeted patterns: match paths like lib/auth.ts, firestore.rules, .env.local
-    // Excludes generic "api" and "env" substrings that cause false positives
-    filePattern: /\b(auth|security|firebase|secrets|credential|token)\b|\.env/i
+    // Targeted patterns: explicitly match critical security files by name or path
+    // Includes: firestore.rules, middleware.ts, .env files, functions/, auth/firebase libs
+    filePattern: /(^|\/)(firestore\.rules|middleware\.ts)$|(^|\/)\.env(\.|$)|(^|\/)functions\/|(^|\/)lib\/(auth|firebase)[^/]*\.(ts|tsx|js|jsx)$|\b(auth|security|secrets|credential|token)\b/i
   },
   performance: {
     commits: 30,
@@ -182,7 +182,9 @@ function safeExec(command, description) {
     });
     return { success: true, output: output.trim() };
   } catch (error) {
-    if (error.stdout) {
+    // grep/git commands return exit code 1 for "no matches" with empty or partial stdout
+    // Only treat this specific case as success; other failures should be reported
+    if (error.status === 1 && error.stdout !== undefined) {
       return { success: true, output: error.stdout.trim() };
     }
     return { success: false, error: sanitizeError(error) };
@@ -300,8 +302,9 @@ function getCommitsSince(sinceDate) {
  * @returns {string[]} Array of matching file paths
  */
 function getFilesModifiedSince(sinceDate, pattern) {
+  // Use git native output and JavaScript for filtering (more portable than shell pipes)
   const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | sort -u | grep -v "^$"`,
+    `git log --since="${sinceDate}" --name-only --pretty=format:`,
     'files modified'
   );
 
@@ -309,8 +312,20 @@ function getFilesModifiedSince(sinceDate, pattern) {
     return [];
   }
 
-  const files = result.output.split('\n').filter(f => f.trim());
-  return files.filter(f => pattern.test(f));
+  // Use Set for deduplication (replaces | sort -u)
+  // Filter empty lines (replaces | grep -v "^$")
+  const uniqueFiles = new Set(
+    result.output
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean)
+  );
+
+  // Reset pattern.lastIndex before each test to prevent stateful regex issues
+  return [...uniqueFiles].filter(f => {
+    pattern.lastIndex = 0;
+    return pattern.test(f);
+  });
 }
 
 /**
@@ -427,8 +442,9 @@ function isBundleChanged(sinceDate) {
  * @returns {boolean} True if complexity warnings detected
  */
 function hasComplexityWarnings() {
+  // Use String.raw to avoid escaping backslashes (SonarQube S6610)
   const result = safeExec(
-    'npm run lint 2>&1 | grep -iE "(\\bcomplexity\\b|cyclomatic)" | head -1',
+    String.raw`npm run lint 2>&1 | grep -iE "(\bcomplexity\b|cyclomatic)" | head -1`,
     'complexity warnings'
   );
 
@@ -506,7 +522,8 @@ function printCategoryTable(categoryResults) {
 
   for (const result of categoryResults) {
     const categoryName = result.category.charAt(0).toUpperCase() + result.category.slice(1);
-    const lastAudit = result.sinceDate === '2025-01-01' ? 'Never' : result.sinceDate;
+    // Use hadPriorAudit flag instead of comparing to hardcoded date
+    const lastAudit = result.hadPriorAudit ? result.sinceDate : 'Never';
     const status = result.triggered ? '⚠️  TRIGGERED' : '✅ OK';
     rows.push([categoryName, lastAudit, result.commits.toString(), result.filesChanged.toString(), status]);
   }
@@ -614,8 +631,9 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
  * @returns {string} ISO date string of first commit, or '2025-01-01' if unavailable
  */
 function getRepoStartDate() {
+  // Use git native -1 flag instead of shell pipe (more portable)
   const result = safeExec(
-    'git log --reverse --format=%cs | head -1',
+    'git log --reverse -1 --format=%cs',
     'repository start date'
   );
   return result.success && result.output
@@ -664,9 +682,11 @@ function main() {
     }
 
     // Use repo start date as fallback instead of hardcoded '2025-01-01'
+    const hadPriorAudit = categoryDates[category] !== null;
     const baselineDate = categoryDates[category] || repoStartDate;
     const sinceDate = sanitizeDateString(baselineDate);
     const result = checkCategoryTriggers(category, sinceDate, thresholds);
+    result.hadPriorAudit = hadPriorAudit;
     categoryResults.push(result);
   }
 
@@ -690,14 +710,23 @@ function main() {
 
   // Output results
   if (JSON_OUTPUT) {
-    // Build workflow-compatible triggers object
+    // Build workflow-compatible triggers object with unambiguous metric structure
     const triggers = {};
     for (const result of categoryResults) {
+      const thresholds = CATEGORY_THRESHOLDS[result.category];
       triggers[result.category] = {
         triggered: result.triggered,
-        value: result.commits,
-        threshold: CATEGORY_THRESHOLDS[result.category].commits,
-        filesChanged: result.filesChanged,
+        hadPriorAudit: result.hadPriorAudit,
+        // Explicit commit metrics
+        commits: {
+          value: result.commits,
+          threshold: thresholds.commits
+        },
+        // Explicit file metrics
+        files: {
+          value: result.filesChanged,
+          threshold: thresholds.files
+        },
         reasons: result.reasons
       };
     }
