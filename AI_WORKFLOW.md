@@ -1,7 +1,7 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-03
-**Document Version**: 1.7
+**Last Updated**: 2026-01-08
+**Document Version**: 1.8
 **Purpose**: Master navigation and workflow guide for AI assistants
 **When to Use**: Start of EVERY session
 
@@ -37,18 +37,21 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
 ☐ 3. Check MULTI_AI_REVIEW_COORDINATOR.md:
-     - Check review triggers active?
      - Increment session counter
      - Note any health issues
-☐ 4. Check Available Capabilities (MANDATORY):
+☐ 4. Check AUDIT_TRACKER.md:
+     - Check audit thresholds for each category
+     - Note if any single-session audits are due
+     - Check multi-AI audit scheduling triggers
+☐ 5. Check Available Capabilities (MANDATORY):
      - Scan .claude/skills/ for applicable skills
      - Scan .claude/agents/ for specialist agents
      - Note any MCP servers configured
      - If task matches a capability, USE IT (not optional)
-☐ 5. Check ROADMAP.md (verify milestone priorities)
-☐ 6. Check active blockers (INTEGRATED_IMPROVEMENT_PLAN.md - current blocker)
-☐ 7. Consult specific planning docs as needed
-☐ 8. Begin work following documented procedures
+☐ 6. Check ROADMAP.md (verify milestone priorities)
+☐ 7. Check active blockers (INTEGRATED_IMPROVEMENT_PLAN.md - current blocker)
+☐ 8. Consult specific planning docs as needed
+☐ 9. Begin work following documented procedures
 ```
 
 **Time**: 5-10 minutes
@@ -57,7 +60,9 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 >
 > **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
 >
-> **MANDATORY**: Step 4 ensures you leverage ALL available tools. If a skill or agent clearly applies to your task, you MUST use it. See "Available AI Capabilities" section below.
+> **AUDIT TRACKING**: Step 4 tracks audit thresholds by category. Single-session audits can be run via `/audit-code`, `/audit-security`, etc. See [AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md).
+>
+> **MANDATORY**: Step 5 ensures you leverage ALL available tools. If a skill or agent clearly applies to your task, you MUST use it. See "Available AI Capabilities" section below.
 
 ---
 
@@ -80,18 +85,22 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 3. **[MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)** - Project health & reviews
    - Session counter (increment each session)
-   - Review triggers
    - Project Health Dashboard
    - Compliance log
 
-4. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
+4. **[AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md)** - Audit thresholds & scheduling
+   - Per-category threshold tracking (code, security, performance, refactoring, documentation, process)
+   - Single-session audit history
+   - Multi-AI audit scheduling triggers
+
+5. **[ROADMAP.md](./ROADMAP.md)** - Project priorities
    - Current milestones
    - Feature priorities
    - Dependencies
 
 **As Needed** (Reference When Relevant):
 
-5. **Planning Documents** (when working on specific features):
+6. **Planning Documents** (when working on specific features):
    - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) - **CURRENT BLOCKER** - Unified improvement roadmap
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
@@ -100,11 +109,13 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 7. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
    - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
-   - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures
+   - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures, Git hooks, CI/CD workflows
+   - [.claude/HOOKS.md](./.claude/HOOKS.md) - Claude hooks documentation
 
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
+   - [docs/SLASH_COMMANDS.md](./docs/SLASH_COMMANDS.md) - Slash commands reference (including audit commands)
    - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived - historical reference only)
 
 9. **Standards** (when creating/updating docs):
@@ -701,6 +712,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.8 | 2026-01-08 | Added AUDIT_TRACKER.md to hierarchy (step 4); added .claude/HOOKS.md and SLASH_COMMANDS.md references; updated startup checklist for per-category audit tracking | Claude |
 | 1.7 | 2026-01-03 | Added database-architect, debugger to PRE-TASK; split documentation triggers in POST-TASK; aligned with claude.md | Claude |
 | 1.6 | 2026-01-03 | Added PRE-TASK and POST-TASK mandatory checklists for agent/skill usage; strengthened enforcement language | Claude |
 | 1.5 | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation to use SESSION_CONTEXT.md for recent work | Claude |

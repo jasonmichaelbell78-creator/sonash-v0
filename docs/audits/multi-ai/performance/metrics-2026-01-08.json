@@ -1,0 +1,98 @@
+{
+  "aggregation_date": "2026-01-08",
+  "audits_expected_total": 5,
+  "audits_included_count": 5,
+  "audits_included": [
+    {
+      "source": "Copilot",
+      "audit_date": "2026-01-08",
+      "measurement_tool": "lighthouse",
+      "environment": "production",
+      "device_profile": "both",
+      "metrics": {
+        "bundle_size_kb": null,
+        "lcp_seconds": null,
+        "fid_ms": null,
+        "cls": null,
+        "performance_score": null,
+        "build_time_seconds": null
+      }
+    },
+    {
+      "source": "Claude Sonnet 4.5",
+      "audit_date": "2026-01-08",
+      "measurement_tool": "not_measured",
+      "environment": "code_analysis_only",
+      "device_profile": "both",
+      "metrics": {
+        "bundle_size_kb": null,
+        "lcp_seconds": null,
+        "fid_ms": null,
+        "cls": null,
+        "performance_score": null,
+        "build_time_seconds": null
+      }
+    },
+    {
+      "source": "Codex",
+      "audit_date": "2026-01-08",
+      "measurement_tool": "custom",
+      "environment": "production",
+      "device_profile": "desktop",
+      "metrics": {
+        "bundle_size_kb": 2373,
+        "lcp_seconds": null,
+        "fid_ms": null,
+        "cls": null,
+        "performance_score": null,
+        "build_time_seconds": null
+      },
+      "notes": "bundle_size_kb computed as sum of .next/static/chunks JS output"
+    },
+    {
+      "source": "Claude Code Opus 4.5",
+      "audit_date": "2026-01-08",
+      "measurement_tool": "next build + find/du analysis",
+      "environment": "production",
+      "device_profile": "both",
+      "metrics": {
+        "bundle_size_kb": 2764,
+        "lcp_seconds": null,
+        "fid_ms": null,
+        "cls": null,
+        "performance_score": null,
+        "build_time_seconds": 7.8
+      },
+      "notes": "bundle_size_kb measured as total .next/static assets (reported ~2.7M)"
+    },
+    {
+      "source": "ChatGPT 5.2 Thinking",
+      "audit_date": "2026-01-06",
+      "measurement_tool": "custom",
+      "environment": "production",
+      "device_profile": "both",
+      "metrics": {
+        "bundle_size_kb": null,
+        "lcp_seconds": null,
+        "fid_ms": null,
+        "cls": null,
+        "performance_score": null,
+        "build_time_seconds": null
+      },
+      "notes": "Build/chunk metrics unavailable in that environment due to missing Next CLI/bin in node_modules/next."
+    }
+  ],
+  "consolidated_baseline": {
+    "bundle_size_kb_range": {
+      "min": 2373,
+      "max": 2764
+    },
+    "bundle_size_note": "Two different measurement methods are present (JS chunks sum vs total .next/static). Treat as a baseline band until standardized.",
+    "build_time_seconds": 7.8,
+    "missing_metrics": ["lcp_seconds", "fid_ms", "cls", "performance_score"],
+    "recommended_next_measurements": [
+      "Run Lighthouse mobile+desktop and record LCP/CLS/INP (or FID) baselines.",
+      "Standardize bundle metric: (A) sum of .next/static/chunks JS bytes OR (B) per-route 'First Load JS' from next build output."
+    ]
+  }
+}

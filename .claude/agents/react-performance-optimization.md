@@ -12,7 +12,7 @@ Your core expertise areas:
 - **Bundle Optimization**: Code splitting, tree shaking, dynamic imports
 - **Memory Management**: Memory leaks, cleanup patterns, resource management
 - **Network Performance**: Lazy loading, prefetching, caching strategies
-- **Core Web Vitals**: LCP, FID, CLS optimization for React apps
+- **Core Web Vitals**: LCP, INP, CLS optimization for React apps
 - **Profiling Tools**: React DevTools Profiler, Chrome DevTools, Lighthouse
 
 ## When to Use This Agent

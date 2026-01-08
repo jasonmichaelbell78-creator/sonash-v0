@@ -703,6 +703,12 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - Run with 3+ AI models for consensus
   - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
   - Focus: Bundle Size, Rendering, Data Fetching, Memory, Web Vitals
+  - **Pre-identified items from PR Review #101 (2026-01-08):**
+    1. Bundle analysis integration with `npm run build` output
+    2. Memory leak detection in React components (useEffect cleanup)
+    3. Large component re-render optimization (React.memo candidates)
+    4. Image optimization audit (next/image usage)
+    5. Data fetching patterns review (caching, deduplication)
 
 - [ ] **Task 4.2.3b**: Aggregate Performance findings (0.5 hours)
   - Run aggregator on 3+ AI outputs

@@ -146,7 +146,7 @@ Each review type MAY add domain-specific fields. These are OPTIONAL and suppleme
   "performance_details": {
     "current_metric": "string (current value)",
     "expected_improvement": "string (estimated improvement)",
-    "affected_metric": "LCP|FID|CLS|bundle|render|memory"
+    "affected_metric": "LCP|INP|CLS|bundle|render|memory"
   },
   "optimization": {
     "description": "string (what to do)",

@@ -3,39 +3,37 @@
  * Check if code review trigger thresholds have been reached
  *
  * Reads:
- * - MULTI_AI_REVIEW_COORDINATOR.md (last review date/baseline)
+ * - AUDIT_TRACKER.md (per-category last audit dates)
+ * - MULTI_AI_REVIEW_COORDINATOR.md (baseline metrics)
  * - git log since last review
  * - ESLint current warnings
- * - Test coverage report (if available)
  *
- * Checks:
- * - Commits since last review
- * - Lines changed (git diff --stat)
- * - Files modified count
- * - New files count (*.tsx, *.ts, *.jsx, *.js)
- * - New components (files in components/)
- * - ESLint warning delta
- * - Test coverage percentage
+ * Checks per-category thresholds:
+ * - Code: 25 commits OR 15 code files
+ * - Security: ANY security file OR 20 commits
+ * - Performance: 30 commits OR bundle change
+ * - Refactoring: 40 commits OR complexity warnings
+ * - Documentation: 20 doc files OR 30 commits
+ * - Process: ANY CI/hook file OR 30 commits
  *
- * Outputs:
- * - Trigger status (reached/not reached)
- * - Current metrics vs thresholds
- * - Recommendation (which review type to run)
+ * Multi-AI escalation triggers:
+ * - 3+ single audits in same category
+ * - 100+ total commits
+ * - 14+ days since any audit
  *
  * Usage: node scripts/check-review-needed.js [options]
  * Options:
- *   --update          Update MULTI_AI_REVIEW_COORDINATOR.md with current metrics
+ *   --category=X      Check specific category only (code|security|performance|refactoring|documentation|process)
  *   --json            Output as JSON instead of human-readable
- *   --dry-run         Show what would change without writing
  *   --verbose         Show detailed logging
  *
  * Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import { sanitizeError } from './lib/sanitize-error.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,30 +41,77 @@ const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 
 // File paths
+const TRACKER_PATH = join(ROOT, 'docs', 'AUDIT_TRACKER.md');
 const COORDINATOR_PATH = join(ROOT, 'docs', 'MULTI_AI_REVIEW_COORDINATOR.md');
-const COVERAGE_PATH = join(ROOT, 'coverage', 'coverage-summary.json');
 
-// Thresholds for triggering reviews
-const THRESHOLDS = {
-  commits: 50,          // Commits since last review
-  linesChanged: 1000,   // Lines changed
-  filesModified: 25,    // Files modified
-  newFiles: 10,         // New code files
-  newComponents: 5,     // New component files
-  lintWarningDelta: 10, // Increase in lint warnings
-  coverageDrop: 5       // Percentage points drop in coverage
+// Category-specific thresholds
+const CATEGORY_THRESHOLDS = {
+  code: {
+    commits: 25,
+    files: 15,
+    filePattern: /\.(tsx?|jsx?|js)$/,
+    excludePattern: /^(docs|tests|\.)/
+  },
+  security: {
+    commits: 20,
+    files: 1, // ANY security file triggers
+    // Targeted patterns: explicitly match critical security files by name or path
+    // Includes: firestore.rules, middleware.ts, .env files, functions/, auth/firebase libs
+    filePattern: /(^|\/)(firestore\.rules|middleware\.ts)$|(^|\/)\.env(\.|$)|(^|\/)functions\/|(^|\/)lib\/(auth|firebase)[^/]*\.(ts|tsx|js|jsx)$|\b(auth|security|secrets|credential|token)\b/i
+  },
+  performance: {
+    commits: 30,
+    files: 10,
+    filePattern: /\.(tsx?|jsx?)$/,
+    checkBundle: true
+  },
+  refactoring: {
+    commits: 40,
+    files: 20,
+    filePattern: /\.(tsx?|jsx?)$/,
+    checkComplexity: true
+  },
+  documentation: {
+    commits: 30,
+    files: 20,
+    filePattern: /\.md$/
+  },
+  process: {
+    commits: 30,
+    files: 1, // ANY CI/hook file triggers
+    filePattern: /(\.github|\.claude|\.husky|scripts\/)/
+  }
+};
+
+// Multi-AI escalation thresholds
+const MULTI_AI_THRESHOLDS = {
+  singleAuditCount: 3,    // Single audits before multi-AI
+  totalCommits: 100,      // Total commits across all categories
+  daysSinceAudit: 14      // Days since any audit
+};
+
+// Shared category section header patterns (bounded, no backtracking risk)
+// Used by getCategoryAuditDates() and getSingleAuditCounts()
+const CATEGORY_HEADERS = {
+  code: /^### Code Audits/,
+  security: /^### Security Audits/,
+  performance: /^### Performance Audits/,
+  refactoring: /^### Refactoring Audits/,
+  documentation: /^### Documentation Audits/,
+  process: /^### Process Audits/
 };
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const UPDATE = args.includes('--update');
 const JSON_OUTPUT = args.includes('--json');
-const DRY_RUN = args.includes('--dry-run');
 const VERBOSE = args.includes('--verbose');
+const CATEGORY_ARG = args.find(a => a.startsWith('--category='));
+const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] || null : null;
 
 /**
- * Safely log verbose messages
- * @param {...any} messages - Messages to log
+ * Safely log verbose messages (only when --verbose flag is set and not in JSON mode)
+ * @param {...unknown} messages - Messages to log
+ * @returns {void}
  */
 function verbose(...messages) {
   if (VERBOSE && !JSON_OUTPUT) {
@@ -75,30 +120,24 @@ function verbose(...messages) {
 }
 
 /**
- * Validate and sanitize ISO date string to prevent command injection
- * @param {string} dateString - Date string to validate
- * @returns {string} - Validated date string or safe fallback
+ * Validate and sanitize ISO date string
+ * @param {string|null|undefined} dateString - Date string to validate (ISO format: YYYY-MM-DD or ISO 8601)
+ * @returns {string} Sanitized date string or default '2025-01-01' if invalid
  */
 function sanitizeDateString(dateString) {
-  // Only allow ISO date format: YYYY-MM-DD (with optional time)
   const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
 
   if (!dateString || typeof dateString !== 'string') {
-    verbose('Invalid date string, using fallback');
     return '2025-01-01';
   }
 
   const trimmed = dateString.trim();
-
   if (!isoDatePattern.test(trimmed)) {
-    verbose(`Date string "${trimmed}" does not match ISO format, using fallback`);
     return '2025-01-01';
   }
 
-  // Additional validation: ensure it parses to a valid date
   const parsed = new Date(trimmed);
   if (isNaN(parsed.getTime())) {
-    verbose(`Date string "${trimmed}" is not a valid date, using fallback`);
     return '2025-01-01';
   }
 
@@ -107,65 +146,30 @@ function sanitizeDateString(dateString) {
 
 /**
  * Safely read a file with error handling
- * @param {string} filePath - Path to file
- * @param {string} description - Human-readable description for errors
- * @returns {{success: boolean, content?: string, error?: string}}
+ * @param {string} filePath - Absolute path to the file to read
+ * @param {string} description - Human-readable description for error messages
+ * @returns {{success: boolean, content?: string, error?: string}} Result object with content or error
  */
 function safeReadFile(filePath, description) {
   verbose(`Reading ${description} from ${filePath}`);
 
   if (!existsSync(filePath)) {
-    return {
-      success: false,
-      error: `${description} not found at: ${filePath}`
-    };
+    return { success: false, error: `${description} not found` };
   }
 
   try {
     const content = readFileSync(filePath, 'utf-8');
-    verbose(`Successfully read ${content.length} characters from ${description}`);
     return { success: true, content };
   } catch (error) {
-    return {
-      success: false,
-      error: `Failed to read ${description}: ${sanitizeError(error)}`
-    };
+    return { success: false, error: sanitizeError(error) };
   }
 }
 
 /**
- * Safely write a file with error handling
- * @param {string} filePath - Path to file
- * @param {string} content - Content to write
- * @param {string} description - Human-readable description for errors
- * @returns {{success: boolean, error?: string}}
- */
-function safeWriteFile(filePath, content, description) {
-  if (DRY_RUN) {
-    if (!JSON_OUTPUT) {
-      console.log(`[DRY RUN] Would write ${content.length} characters to ${description}`);
-    }
-    return { success: true };
-  }
-
-  verbose(`Writing ${content.length} characters to ${description}`);
-
-  try {
-    writeFileSync(filePath, content, 'utf-8');
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: `Failed to write ${description}: ${sanitizeError(error)}`
-    };
-  }
-}
-
-/**
- * Run a shell command safely
- * @param {string} command - Command to run
- * @param {string} description - Description for logging
- * @returns {{success: boolean, output?: string, error?: string}}
+ * Run a shell command safely with error handling
+ * @param {string} command - Shell command to execute
+ * @param {string} description - Human-readable description for logging
+ * @returns {{success: boolean, output?: string, error?: string}} Result object with output or error
  */
 function safeExec(command, description) {
   verbose(`Running: ${command}`);
@@ -176,503 +180,563 @@ function safeExec(command, description) {
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe']
     });
-    verbose(`${description}: ${output.trim().slice(0, 100)}...`);
     return { success: true, output: output.trim() };
   } catch (error) {
-    // Some commands return non-zero but still have useful output
-    if (error.stdout) {
+    // grep/git commands return exit code 1 for "no matches" with empty or partial stdout
+    // Only treat this specific case as success; other failures should be reported
+    if (error.status === 1 && error.stdout !== undefined) {
       return { success: true, output: error.stdout.trim() };
     }
-    return {
-      success: false,
-      error: `Failed to run ${description}: ${sanitizeError(error)}`
-    };
+    return { success: false, error: sanitizeError(error) };
   }
 }
 
 /**
- * Get the last review date from coordinator
- * @param {string} content - Coordinator file content
- * @returns {string|null} - ISO date string or null
+ * Extract section content between a header and the next section
+ * Uses bounded line-by-line matching to avoid regex backtracking DoS (SonarQube S5852)
+ * @param {string} content - Full file content to search
+ * @param {RegExp} headerPattern - Pattern to match section header (e.g., /^### Code Audits/)
+ * @returns {string} Section content (empty string if section not found)
  */
-function getLastReviewDate(content) {
-  // Try to find date in baseline section
-  const baselineMatch = content.match(/### Current Project Baseline[\s\S]*?\*\*Last Updated:\*\*\s*(\d{4}-\d{2}-\d{2})/);
-  if (baselineMatch) {
-    verbose(`Found baseline date: ${baselineMatch[1]}`);
-    return baselineMatch[1];
+function extractSection(content, headerPattern) {
+  const lines = content.split('\n');
+  let inSection = false;
+  const sectionLines = [];
+
+  for (const line of lines) {
+    if (headerPattern.test(line)) {
+      inSection = true;
+      continue;
+    }
+    if (inSection) {
+      // Stop at next section header (### or ##)
+      if (/^#{2,3}\s/.test(line)) {
+        break;
+      }
+      sectionLines.push(line);
+    }
   }
 
-  // Try audit history
-  const auditMatch = content.match(/### Completed Reviews[\s\S]*?\|\s*(\d{4}-\d{2}-\d{2})\s*\|/);
-  if (auditMatch) {
-    verbose(`Found audit date: ${auditMatch[1]}`);
-    return auditMatch[1];
-  }
-
-  // Fall back to document Last Updated
-  const docMatch = content.match(/\*\*Last Updated:\*\*\s*(\d{4}-\d{2}-\d{2})/);
-  if (docMatch) {
-    verbose(`Found document date: ${docMatch[1]}`);
-    return docMatch[1];
-  }
-
-  return null;
+  return sectionLines.join('\n');
 }
 
 /**
- * Get baseline lint warnings from coordinator
- * @param {string} content - Coordinator file content
- * @returns {number} - Baseline warning count or 0
+ * Parse AUDIT_TRACKER.md to get per-category last audit dates
+ * @param {string} content - Full content of AUDIT_TRACKER.md
+ * @returns {Object<string, string|null>} Map of category names to ISO date strings (null if never audited)
  */
-function getBaselineLintWarnings(content) {
-  const match = content.match(/lint_warnings:\s*(\d+)/);
-  return match ? parseInt(match[1], 10) : 0;
+function getCategoryAuditDates(content) {
+  const categories = {
+    code: null,
+    security: null,
+    performance: null,
+    refactoring: null,
+    documentation: null,
+    process: null
+  };
+
+  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
+    const sectionContent = extractSection(content, headerPattern);
+    if (sectionContent) {
+      // Find the most recent date in the table
+      const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
+      if (dateMatches && dateMatches.length > 0) {
+        // Get the most recent date, filtering out invalid dates
+        const dates = dateMatches.map(d => new Date(d).getTime()).filter(t => !Number.isNaN(t));
+        if (dates.length === 0) continue;
+        const mostRecent = new Date(Math.max(...dates));
+        categories[category] = mostRecent.toISOString().split('T')[0];
+        verbose(`Found ${category} last audit: ${categories[category]}`);
+      }
+    }
+  }
+
+  return categories;
 }
 
 /**
- * Get baseline test coverage from coordinator
- * @param {string} content - Coordinator file content
- * @returns {number} - Baseline coverage percentage or 0
+ * Count single-session audits per category
+ * Uses extractSection() to avoid regex backtracking DoS (SonarQube S5852)
+ * @param {string} content - Full content of AUDIT_TRACKER.md
+ * @returns {Object<string, number>} Map of category names to audit counts
  */
-function getBaselineCoverage(content) {
-  const match = content.match(/test_pass_rate:\s*([\d.]+)%/);
-  return match ? parseFloat(match[1]) : 0;
+function getSingleAuditCounts(content) {
+  const counts = {
+    code: 0,
+    security: 0,
+    performance: 0,
+    refactoring: 0,
+    documentation: 0,
+    process: 0
+  };
+
+  for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
+    const sectionContent = extractSection(content, headerPattern);
+    if (sectionContent) {
+      // Count rows with dates (excluding header and "No audits yet")
+      const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
+      counts[category] = dateMatches ? dateMatches.length : 0;
+    }
+  }
+
+  return counts;
 }
 
 /**
- * Count commits since a given date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - Commit count
+ * Get count of commits since a specific date
+ * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to count commits from
+ * @returns {number} Number of commits since the date (0 if error or none)
  */
 function getCommitsSince(sinceDate) {
   const result = safeExec(
     `git rev-list --count --since="${sinceDate}" HEAD`,
     'count commits'
   );
-
-  if (!result.success) {
-    verbose(`Warning: ${result.error}`);
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
+  return result.success ? Number.parseInt(result.output, 10) || 0 : 0;
 }
 
 /**
- * Get lines changed since a date
- * @param {string} sinceDate - ISO date string
- * @returns {{added: number, deleted: number}}
+ * Get files modified since a date that match a given pattern
+ * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to find modifications from
+ * @param {RegExp} pattern - Regex pattern to filter file paths
+ * @returns {string[]} Array of matching file paths
  */
-function getLinesChanged(sinceDate) {
+function getFilesModifiedSince(sinceDate, pattern) {
+  // Use git native output and JavaScript for filtering (more portable than shell pipes)
   const result = safeExec(
-    `git log --since="${sinceDate}" --shortstat --oneline | grep -E "\\d+ insertion|\\d+ deletion" | awk '{s+=$4; d+=$6} END {print s, d}'`,
-    'lines changed'
-  );
-
-  if (!result.success || !result.output.trim()) {
-    return { added: 0, deleted: 0 };
-  }
-
-  const [added, deleted] = result.output.split(' ').map(n => parseInt(n, 10) || 0);
-  return { added, deleted };
-}
-
-/**
- * Get files modified since a date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - File count
- */
-function getFilesModified(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | sort -u | grep -v "^$" | wc -l`,
+    `git log --since="${sinceDate}" --name-only --pretty=format:`,
     'files modified'
   );
 
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get new code files since a date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - New file count
- */
-function getNewFiles(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --diff-filter=A --name-only --pretty=format: | grep -E "\\.(tsx?|jsx?|js)$" | sort -u | wc -l`,
-    'new files'
-  );
-
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get new component files since a date
- * @param {string} sinceDate - ISO date string
- * @returns {number} - New component count
- */
-function getNewComponents(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --diff-filter=A --name-only --pretty=format: | grep -E "^components/.*\\.(tsx?|jsx?)$" | sort -u | wc -l`,
-    'new components'
-  );
-
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get current lint warning count
- * @returns {number} - Warning count
- */
-function getCurrentLintWarnings() {
-  const result = safeExec(
-    'npm run lint 2>&1 | grep -c "warning" || echo 0',
-    'lint warnings'
-  );
-
-  if (!result.success) {
-    return 0;
-  }
-
-  return parseInt(result.output, 10) || 0;
-}
-
-/**
- * Get current test coverage
- * @returns {number|null} - Coverage percentage or null if not available
- */
-function getCurrentCoverage() {
-  const readResult = safeReadFile(COVERAGE_PATH, 'coverage summary');
-
-  if (!readResult.success) {
-    verbose('Coverage file not found, skipping coverage check');
-    return null;
-  }
-
-  try {
-    const coverage = JSON.parse(readResult.content);
-    // NYC/Jest format: coverage.total.lines.pct
-    if (coverage.total && coverage.total.lines) {
-      return coverage.total.lines.pct;
-    }
-    // Alternative format
-    if (coverage.lines) {
-      return coverage.lines.pct;
-    }
-    return null;
-  } catch (error) {
-    verbose(`Failed to parse coverage: ${sanitizeError(error)}`);
-    return null;
-  }
-}
-
-/**
- * Analyze security-sensitive changes
- * @param {string} sinceDate - ISO date string
- * @returns {string[]} - List of security-sensitive files changed
- */
-function getSecuritySensitiveChanges(sinceDate) {
-  const result = safeExec(
-    `git log --since="${sinceDate}" --name-only --pretty=format: | grep -iE "(auth|security|firebase|api|secrets|env|token|credential)" | sort -u`,
-    'security changes'
-  );
-
-  if (!result.success || !result.output.trim()) {
+  if (!result.success || !result.output) {
     return [];
   }
 
-  return result.output.split('\n').filter(f => f.trim());
-}
-
-/**
- * Determine which review type is recommended
- * @param {object} metrics - Collected metrics
- * @param {object} triggers - Active triggers
- * @returns {string} - Review type recommendation
- */
-function getReviewRecommendation(metrics, triggers) {
-  const activeCount = Object.values(triggers).filter(t => t.triggered).length;
-
-  if (activeCount === 0) {
-    return 'No review needed';
-  }
-
-  // Security takes priority
-  if (metrics.securityFiles && metrics.securityFiles.length > 0) {
-    return 'Security Audit recommended';
-  }
-
-  // Performance if significant changes
-  if (triggers.linesChanged.triggered || triggers.newComponents.triggered) {
-    return 'Performance Audit recommended';
-  }
-
-  // Default to code review
-  return 'Code Review recommended';
-}
-
-/**
- * Update coordinator with current metrics
- * @param {string} content - Current coordinator content
- * @param {object} metrics - Collected metrics
- * @returns {string} - Updated content
- */
-function updateCoordinatorMetrics(content, metrics) {
-  const today = new Date().toISOString().split('T')[0];
-
-  // Update last updated date in baseline section
-  let updated = content.replace(
-    /(### Current Project Baseline[\s\S]*?\*\*Last Updated:\*\*\s*)(\d{4}-\d{2}-\d{2})/,
-    `$1${today}`
+  // Use Set for deduplication (replaces | sort -u)
+  // Filter empty lines (replaces | grep -v "^$")
+  const uniqueFiles = new Set(
+    result.output
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean)
   );
 
-  // Update lint warnings if we have them
-  if (metrics.currentLintWarnings !== undefined) {
-    updated = updated.replace(
-      /lint_warnings:\s*\[?[^\n\]]*\]?/,
-      `lint_warnings: ${metrics.currentLintWarnings}`
-    );
-  }
-
-  // Update coverage if we have it
-  if (metrics.currentCoverage !== null) {
-    updated = updated.replace(
-      /test_pass_rate:\s*[\d.]+%/,
-      `test_pass_rate: ${metrics.currentCoverage.toFixed(1)}%`
-    );
-  }
-
-  return updated;
+  // Reset pattern.lastIndex before each test to prevent stateful regex issues
+  return [...uniqueFiles].filter(f => {
+    pattern.lastIndex = 0;
+    return pattern.test(f);
+  });
 }
 
 /**
- * Format output as human-readable text
- * @param {object} metrics - Collected metrics
- * @param {object} triggers - Trigger statuses
- * @param {string} recommendation - Review recommendation
+ * Get security-sensitive file changes since a date
+ * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to find changes from
+ * @returns {string[]} Array of security-related file paths that changed
  */
-function formatTextOutput(metrics, triggers, recommendation) {
-  console.log('=== Multi-AI Review Trigger Check ===\n');
+function getSecuritySensitiveChanges(sinceDate) {
+  // Use JavaScript filtering for cross-platform portability (no shell pipes)
+  // Broad pattern to cast a wide net for security-sensitive changes
+  const files = getFilesModifiedSince(sinceDate, /.*/);
+  const securityPattern = /(auth|security|firebase|api|secrets|env|token|credential|\.env)/i;
+  return files.filter(f => securityPattern.test(f));
+}
 
-  console.log(`Last Review: ${metrics.lastReviewDate || 'Unknown'}`);
-  console.log(`Days Since: ${metrics.daysSinceReview || 'N/A'}\n`);
+/**
+ * Get CI/CD and hook file changes since a date
+ * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to find changes from
+ * @returns {string[]} Array of process-related file paths that changed
+ */
+function getProcessChanges(sinceDate) {
+  // Use JavaScript filtering for cross-platform portability (no shell pipes)
+  const files = getFilesModifiedSince(sinceDate, /.*/);
+  const processPattern = /(\.github|\.claude|\.husky|scripts\/)/;
+  return files.filter(f => processPattern.test(f));
+}
 
-  console.log('--- Metrics vs Thresholds ---\n');
+/**
+ * Check triggers for a specific category
+ * Refactored to use generic file matching for all categories (removes special-case logic)
+ * @param {string} category - Category name (code, security, performance, etc.)
+ * @param {string} sinceDate - ISO date string of last audit for this category
+ * @param {Object} thresholds - Category-specific threshold configuration
+ * @param {number} thresholds.commits - Commit count threshold
+ * @param {number} thresholds.files - File count threshold
+ * @param {RegExp} thresholds.filePattern - Pattern to match relevant files
+ * @param {RegExp} [thresholds.excludePattern] - Optional pattern to exclude files
+ * @param {boolean} [thresholds.checkBundle] - Whether to check bundle config changes
+ * @param {boolean} [thresholds.checkComplexity] - Whether to check for complexity warnings
+ * @returns {{category: string, triggered: boolean, commits: number, filesChanged: number, reasons: string[], sinceDate: string}}
+ */
+function checkCategoryTriggers(category, sinceDate, thresholds) {
+  const commits = getCommitsSince(sinceDate);
+  let files = [];
+  let triggered = false;
+  const reasons = [];
 
-  const rows = [
-    ['Metric', 'Current', 'Threshold', 'Status'],
-    ['Commits', metrics.commits.toString(), THRESHOLDS.commits.toString(),
-     triggers.commits.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['Lines Changed', (metrics.linesAdded + metrics.linesDeleted).toString(), THRESHOLDS.linesChanged.toString(),
-     triggers.linesChanged.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['Files Modified', metrics.filesModified.toString(), THRESHOLDS.filesModified.toString(),
-     triggers.filesModified.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['New Files', metrics.newFiles.toString(), THRESHOLDS.newFiles.toString(),
-     triggers.newFiles.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['New Components', metrics.newComponents.toString(), THRESHOLDS.newComponents.toString(),
-     triggers.newComponents.triggered ? '⚠️  TRIGGERED' : '✅ OK'],
-    ['Lint Warning Δ', metrics.lintDelta.toString(), THRESHOLDS.lintWarningDelta.toString(),
-     triggers.lintWarnings.triggered ? '⚠️  TRIGGERED' : '✅ OK']
-  ];
-
-  if (metrics.currentCoverage !== null) {
-    rows.push([
-      'Coverage Drop',
-      `${metrics.coverageDrop.toFixed(1)}%`,
-      `${THRESHOLDS.coverageDrop}%`,
-      triggers.coverageDrop.triggered ? '⚠️  TRIGGERED' : '✅ OK'
-    ]);
+  // Get files matching the category's file pattern (generic for all categories)
+  files = getFilesModifiedSince(sinceDate, thresholds.filePattern);
+  if (thresholds.excludePattern) {
+    files = files.filter(f => !thresholds.excludePattern.test(f));
   }
 
-  // Print table
-  const colWidths = rows[0].map((_, i) =>
-    Math.max(...rows.map(r => r[i].length)) + 2
+  // Check file threshold
+  if (files.length >= thresholds.files) {
+    triggered = true;
+    reasons.push(`${files.length} ${category} file(s) changed (threshold: ${thresholds.files})`);
+  }
+
+  // Check commit threshold
+  if (commits >= thresholds.commits) {
+    triggered = true;
+    reasons.push(`${commits} commits (threshold: ${thresholds.commits})`);
+  }
+
+  // Check bundle changes for performance category
+  if (thresholds.checkBundle && isBundleChanged(sinceDate)) {
+    triggered = true;
+    reasons.push('Bundle configuration changed');
+  }
+
+  // Check complexity warnings for refactoring category
+  if (thresholds.checkComplexity && hasComplexityWarnings()) {
+    triggered = true;
+    reasons.push('Complexity warnings detected');
+  }
+
+  return {
+    category,
+    triggered,
+    commits,
+    filesChanged: files.length,
+    reasons,
+    sinceDate
+  };
+}
+
+/**
+ * Check if bundle configuration files changed since a date
+ * @param {string} sinceDate - ISO date string (YYYY-MM-DD) to check from
+ * @returns {boolean} True if package.json, next.config.*, or webpack.config.js changed
+ */
+function isBundleChanged(sinceDate) {
+  const bundleFiles = getFilesModifiedSince(sinceDate, /^(package\.json|next\.config\.(js|mjs|ts)|webpack\.config\.js)$/);
+  return bundleFiles.length > 0;
+}
+
+/**
+ * Check for complexity warnings via ESLint output
+ * Searches for complexity-related warnings in lint output
+ * @returns {boolean} True if complexity warnings detected
+ */
+function hasComplexityWarnings() {
+  // Use String.raw to avoid escaping backslashes (SonarQube S6610)
+  const result = safeExec(
+    String.raw`npm run lint 2>&1 | grep -iE "(\bcomplexity\b|cyclomatic)" | head -1`,
+    'complexity warnings'
   );
 
+  if (!result.success) return false;
+  return Boolean(result.output && result.output.trim());
+}
+
+/**
+ * Check multi-AI escalation triggers (3+ single audits, 100+ commits, 14+ days)
+ * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * @param {Object<string, string|null>} categoryDates - Map of category names to last audit dates
+ * @returns {Array<{type: string, category?: string, count?: number, daysSince?: number, commits?: number, threshold: number, message: string}>}
+ */
+function checkMultiAITriggers(auditCounts, categoryDates) {
+  const triggers = [];
+
+  // Check if any category has 3+ single audits
+  for (const [category, count] of Object.entries(auditCounts)) {
+    if (count >= MULTI_AI_THRESHOLDS.singleAuditCount) {
+      triggers.push({
+        type: 'single_audit_count',
+        category,
+        count,
+        threshold: MULTI_AI_THRESHOLDS.singleAuditCount,
+        message: `${category}: ${count} single audits (threshold: ${MULTI_AI_THRESHOLDS.singleAuditCount})`
+      });
+    }
+  }
+
+  // Check days since ANY audit and total commits
+  // Only check if there's at least one previous audit to avoid false positives on fresh projects
+  const allDates = Object.values(categoryDates).filter(d => d !== null);
+  if (allDates.length > 0) {
+    // Filter out invalid dates to prevent runtime crashes
+    const validTimestamps = allDates.map(d => new Date(d).getTime()).filter(t => !Number.isNaN(t));
+    if (validTimestamps.length === 0) return triggers;
+
+    const mostRecentAudit = new Date(Math.max(...validTimestamps));
+    const daysSince = Math.floor((Date.now() - mostRecentAudit.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysSince >= MULTI_AI_THRESHOLDS.daysSinceAudit) {
+      triggers.push({
+        type: 'time_elapsed',
+        daysSince,
+        threshold: MULTI_AI_THRESHOLDS.daysSinceAudit,
+        message: `${daysSince} days since last audit (threshold: ${MULTI_AI_THRESHOLDS.daysSinceAudit})`
+      });
+    }
+
+    // Check total commits since oldest category audit (only when audit history exists)
+    const oldestDate = new Date(Math.min(...validTimestamps))
+      .toISOString().split('T')[0];
+    const totalCommits = getCommitsSince(oldestDate);
+    if (totalCommits >= MULTI_AI_THRESHOLDS.totalCommits) {
+      triggers.push({
+        type: 'total_commits',
+        commits: totalCommits,
+        threshold: MULTI_AI_THRESHOLDS.totalCommits,
+        message: `${totalCommits} total commits (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`
+      });
+    }
+  }
+
+  return triggers;
+}
+
+/**
+ * Print category results as formatted table
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, sinceDate: string}>} categoryResults - Results for each category
+ * @returns {void}
+ */
+function printCategoryTable(categoryResults) {
+  const rows = [['Category', 'Last Audit', 'Commits', 'Files', 'Status']];
+
+  for (const result of categoryResults) {
+    const categoryName = result.category.charAt(0).toUpperCase() + result.category.slice(1);
+    // Use hadPriorAudit flag instead of comparing to hardcoded date
+    const lastAudit = result.hadPriorAudit ? result.sinceDate : 'Never';
+    const status = result.triggered ? '⚠️  TRIGGERED' : '✅ OK';
+    rows.push([categoryName, lastAudit, result.commits.toString(), result.filesChanged.toString(), status]);
+  }
+
+  const colWidths = rows[0].map((_, i) => Math.max(...rows.map(r => r[i].length)) + 2);
   for (const row of rows) {
     console.log(row.map((cell, i) => cell.padEnd(colWidths[i])).join(''));
   }
+}
 
-  if (metrics.securityFiles && metrics.securityFiles.length > 0) {
-    console.log('\n--- Security-Sensitive Changes ---');
-    for (const file of metrics.securityFiles.slice(0, 10)) {
-      console.log(`  🔒 ${file}`);
+/**
+ * Print triggered category details with reasons
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{category: string, reasons: string[]}>} triggeredCategories - Categories with triggered thresholds
+ * @returns {void}
+ */
+function printTriggeredDetails(triggeredCategories) {
+  if (triggeredCategories.length === 0) return;
+
+  console.log('\n--- Triggered Categories ---');
+  for (const result of triggeredCategories) {
+    console.log(`\n📋 ${result.category.toUpperCase()}:`);
+    for (const reason of result.reasons) {
+      console.log(`   - ${reason}`);
     }
-    if (metrics.securityFiles.length > 10) {
-      console.log(`  ... and ${metrics.securityFiles.length - 10} more`);
-    }
-  }
-
-  console.log('\n--- Recommendation ---');
-  const triggeredCount = Object.values(triggers).filter(t => t.triggered).length;
-
-  if (triggeredCount === 0) {
-    console.log('✅ No review triggers active. Continue development.');
-  } else {
-    console.log(`⚠️  ${triggeredCount} trigger(s) active!`);
-    console.log(`📋 ${recommendation}`);
+    console.log(`   → Run: /audit-${result.category}`);
   }
 }
 
 /**
- * Main function
+ * Print multi-AI escalation section
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{message: string}>} multiAITriggers - Active multi-AI triggers
+ * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * @returns {void}
+ */
+function printMultiAISection(multiAITriggers, auditCounts) {
+  console.log('\n=== Multi-AI Audit Escalation ===\n');
+  console.log('Single-Session Audit Counts:');
+
+  for (const [category, count] of Object.entries(auditCounts)) {
+    const status = count >= MULTI_AI_THRESHOLDS.singleAuditCount ? '⚠️ ' : '✅';
+    console.log(`  ${status} ${category}: ${count}/${MULTI_AI_THRESHOLDS.singleAuditCount}`);
+  }
+
+  if (multiAITriggers.length > 0) {
+    console.log('\n⚠️  Multi-AI Audit Recommended:');
+    for (const trigger of multiAITriggers) {
+      console.log(`   - ${trigger.message}`);
+    }
+  } else {
+    console.log('\n✅ No multi-AI escalation triggers active.');
+  }
+}
+
+/**
+ * Print final recommendation summary
+ * Extracted to reduce cognitive complexity of formatTextOutput (SonarQube S3776)
+ * @param {Array<{category: string}>} triggeredCategories - Categories with triggered thresholds
+ * @param {Array<Object>} multiAITriggers - Active multi-AI triggers
+ * @returns {void}
+ */
+function printRecommendation(triggeredCategories, multiAITriggers) {
+  console.log('\n--- Recommendation ---');
+
+  if (triggeredCategories.length === 0 && multiAITriggers.length === 0) {
+    console.log('✅ No review triggers active. Continue development.');
+    return;
+  }
+
+  if (multiAITriggers.length > 0) {
+    console.log(`🔴 ${multiAITriggers.length} multi-AI trigger(s) active!`);
+    console.log('   Consider running full multi-AI audit.');
+    return;
+  }
+
+  console.log(`🟡 ${triggeredCategories.length} single-session trigger(s) active.`);
+  const commands = triggeredCategories.map(c => `/audit-${c.category}`).join(', ');
+  console.log(`   Run: ${commands}`);
+}
+
+/**
+ * Format human-readable output to console
+ * Refactored to reduce cognitive complexity by extracting helper functions (SonarQube S3776)
+ * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, reasons: string[], sinceDate: string}>} categoryResults - Results for each category
+ * @param {Array<{type: string, message: string, threshold: number}>} multiAITriggers - Active multi-AI triggers
+ * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * @returns {void}
+ */
+function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
+  console.log('🔍 Checking Review Triggers...\n');
+  console.log('=== Per-Category Single-Session Audit Triggers ===\n');
+
+  printCategoryTable(categoryResults);
+
+  const triggeredCategories = categoryResults.filter(r => r.triggered);
+  printTriggeredDetails(triggeredCategories);
+  printMultiAISection(multiAITriggers, auditCounts);
+  printRecommendation(triggeredCategories, multiAITriggers);
+}
+
+/**
+ * Get the repository's first commit date as a fallback baseline
+ * Prevents false-positive triggers when AUDIT_TRACKER.md is missing
+ * @returns {string} ISO date string of first commit, or '2025-01-01' if unavailable
+ */
+function getRepoStartDate() {
+  // Use git native -1 flag instead of shell pipe (more portable)
+  const result = safeExec(
+    'git log --reverse -1 --format=%cs',
+    'repository start date'
+  );
+  return result.success && result.output
+    ? sanitizeDateString(result.output)
+    : '2025-01-01';
+}
+
+/**
+ * Main function - orchestrates review trigger checking
+ * Reads AUDIT_TRACKER.md, checks per-category thresholds, and outputs results
+ * @returns {void} Exits with code 0 (no review needed), 1 (review recommended), or 2 (error)
  */
 function main() {
-  if (!JSON_OUTPUT) {
-    console.log('🔍 Checking Review Triggers...');
-    if (DRY_RUN) console.log('   (DRY RUN - no files will be modified)\n');
-    else console.log('');
+  // Read AUDIT_TRACKER.md
+  const trackerResult = safeReadFile(TRACKER_PATH, 'AUDIT_TRACKER.md');
+  const trackerContent = trackerResult.success ? trackerResult.content : '';
+
+  if (!trackerResult.success && !JSON_OUTPUT) {
+    console.warn(`⚠️  Warning: ${trackerResult.error}`);
+    console.warn('   Using default baseline values (no prior audits)\n');
   }
 
-  // Step 1: Read coordinator file
-  const coordResult = safeReadFile(COORDINATOR_PATH, 'MULTI_AI_REVIEW_COORDINATOR.md');
-  if (!coordResult.success) {
-    if (JSON_OUTPUT) {
-      console.log(JSON.stringify({ error: coordResult.error }));
-    } else {
-      console.warn(`⚠️  Warning: ${coordResult.error}`);
-      console.warn('   Using default baseline values\n');
-    }
-  }
+  // Get repository start date as fallback for missing audit dates
+  const repoStartDate = getRepoStartDate();
 
-  const coordContent = coordResult.success ? coordResult.content : '';
+  // Get per-category audit dates
+  const categoryDates = getCategoryAuditDates(trackerContent);
+  const auditCounts = getSingleAuditCounts(trackerContent);
 
-  // Step 2: Get baseline values
-  // Sanitize date to prevent command injection in git commands
-  const lastReviewDate = sanitizeDateString(getLastReviewDate(coordContent) || '2025-01-01');
-  const baselineLintWarnings = getBaselineLintWarnings(coordContent);
-  const baselineCoverage = getBaselineCoverage(coordContent);
+  // Check each category
+  const categoriesToCheck = SPECIFIC_CATEGORY
+    ? [SPECIFIC_CATEGORY]
+    : Object.keys(CATEGORY_THRESHOLDS);
 
-  verbose(`Baseline - Date: ${lastReviewDate}, Warnings: ${baselineLintWarnings}, Coverage: ${baselineCoverage}%`);
+  const categoryResults = [];
 
-  // Calculate days since review
-  const daysSinceReview = Math.floor(
-    (Date.now() - new Date(lastReviewDate).getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  // Step 3: Collect current metrics
-  const commits = getCommitsSince(lastReviewDate);
-  const { added: linesAdded, deleted: linesDeleted } = getLinesChanged(lastReviewDate);
-  const filesModified = getFilesModified(lastReviewDate);
-  const newFiles = getNewFiles(lastReviewDate);
-  const newComponents = getNewComponents(lastReviewDate);
-  const currentLintWarnings = getCurrentLintWarnings();
-  const currentCoverage = getCurrentCoverage();
-  const securityFiles = getSecuritySensitiveChanges(lastReviewDate);
-
-  const lintDelta = currentLintWarnings - baselineLintWarnings;
-  const coverageDrop = baselineCoverage - (currentCoverage || baselineCoverage);
-
-  const metrics = {
-    lastReviewDate,
-    daysSinceReview,
-    commits,
-    linesAdded,
-    linesDeleted,
-    filesModified,
-    newFiles,
-    newComponents,
-    currentLintWarnings,
-    baselineLintWarnings,
-    lintDelta,
-    currentCoverage,
-    baselineCoverage,
-    coverageDrop,
-    securityFiles
-  };
-
-  // Step 4: Check triggers
-  const triggers = {
-    commits: {
-      triggered: commits >= THRESHOLDS.commits,
-      value: commits,
-      threshold: THRESHOLDS.commits
-    },
-    linesChanged: {
-      triggered: (linesAdded + linesDeleted) >= THRESHOLDS.linesChanged,
-      value: linesAdded + linesDeleted,
-      threshold: THRESHOLDS.linesChanged
-    },
-    filesModified: {
-      triggered: filesModified >= THRESHOLDS.filesModified,
-      value: filesModified,
-      threshold: THRESHOLDS.filesModified
-    },
-    newFiles: {
-      triggered: newFiles >= THRESHOLDS.newFiles,
-      value: newFiles,
-      threshold: THRESHOLDS.newFiles
-    },
-    newComponents: {
-      triggered: newComponents >= THRESHOLDS.newComponents,
-      value: newComponents,
-      threshold: THRESHOLDS.newComponents
-    },
-    lintWarnings: {
-      triggered: lintDelta >= THRESHOLDS.lintWarningDelta,
-      value: lintDelta,
-      threshold: THRESHOLDS.lintWarningDelta
-    },
-    coverageDrop: {
-      triggered: currentCoverage !== null && coverageDrop >= THRESHOLDS.coverageDrop,
-      value: coverageDrop,
-      threshold: THRESHOLDS.coverageDrop
-    }
-  };
-
-  const recommendation = getReviewRecommendation(metrics, triggers);
-  const reviewNeeded = Object.values(triggers).some(t => t.triggered);
-
-  // Step 5: Output results
-  if (JSON_OUTPUT) {
-    console.log(JSON.stringify({
-      metrics,
-      triggers,
-      recommendation,
-      reviewNeeded
-    }, null, 2));
-  } else {
-    formatTextOutput(metrics, triggers, recommendation);
-  }
-
-  // Step 6: Update coordinator if requested
-  if (UPDATE && coordResult.success) {
-    if (!JSON_OUTPUT) {
-      console.log('\n--- Updating Coordinator ---');
-    }
-
-    const updatedContent = updateCoordinatorMetrics(coordContent, metrics);
-    const writeResult = safeWriteFile(COORDINATOR_PATH, updatedContent, 'MULTI_AI_REVIEW_COORDINATOR.md');
-
-    if (!writeResult.success) {
-      if (!JSON_OUTPUT) {
-        console.error(`❌ Error: ${writeResult.error}`);
+  for (const category of categoriesToCheck) {
+    const thresholds = CATEGORY_THRESHOLDS[category];
+    if (!thresholds) {
+      if (JSON_OUTPUT) {
+        console.log(JSON.stringify({ error: `Unknown category: ${category}` }));
+      } else {
+        console.error(`Unknown category: ${category}`);
       }
       process.exit(2);
     }
 
-    if (!JSON_OUTPUT && !DRY_RUN) {
-      console.log('✅ Updated MULTI_AI_REVIEW_COORDINATOR.md with current metrics');
-    }
+    // Use repo start date as fallback instead of hardcoded '2025-01-01'
+    const hadPriorAudit = categoryDates[category] !== null;
+    const baselineDate = categoryDates[category] || repoStartDate;
+    const sinceDate = sanitizeDateString(baselineDate);
+    const result = checkCategoryTriggers(category, sinceDate, thresholds);
+    result.hadPriorAudit = hadPriorAudit;
+    categoryResults.push(result);
   }
 
-  // Exit with appropriate code
+  // Check multi-AI escalation
+  const multiAITriggers = checkMultiAITriggers(auditCounts, categoryDates);
+
+  // Calculate review needed
+  const reviewNeeded = categoryResults.some(r => r.triggered) || multiAITriggers.length > 0;
+
+  // Build recommendation string
+  const triggeredCategories = categoryResults.filter(r => r.triggered);
+  let recommendation = '';
+  if (!reviewNeeded) {
+    recommendation = 'No review triggers active. Continue development.';
+  } else if (multiAITriggers.length > 0) {
+    recommendation = `${multiAITriggers.length} multi-AI trigger(s) active. Consider running full multi-AI audit.`;
+  } else {
+    const commands = triggeredCategories.map(c => `/audit-${c.category}`).join(', ');
+    recommendation = `${triggeredCategories.length} single-session trigger(s) active. Run: ${commands}`;
+  }
+
+  // Output results
+  if (JSON_OUTPUT) {
+    // Build workflow-compatible triggers object with unambiguous metric structure
+    const triggers = {};
+    for (const result of categoryResults) {
+      const thresholds = CATEGORY_THRESHOLDS[result.category];
+      triggers[result.category] = {
+        triggered: result.triggered,
+        hadPriorAudit: result.hadPriorAudit,
+        // Explicit commit metrics
+        commits: {
+          value: result.commits,
+          threshold: thresholds.commits
+        },
+        // Explicit file metrics
+        files: {
+          value: result.filesChanged,
+          threshold: thresholds.files
+        },
+        reasons: result.reasons
+      };
+    }
+
+    console.log(JSON.stringify({
+      // Workflow-compatible fields
+      triggers,
+      recommendation,
+      // Detailed fields
+      categoryResults,
+      multiAITriggers,
+      auditCounts,
+      reviewNeeded
+    }, null, 2));
+  } else {
+    formatTextOutput(categoryResults, multiAITriggers, auditCounts);
+  }
+
+  // Exit code
   process.exit(reviewNeeded ? 1 : 0);
 }
 
-// Run main function
+// Run
 try {
   main();
 } catch (error) {

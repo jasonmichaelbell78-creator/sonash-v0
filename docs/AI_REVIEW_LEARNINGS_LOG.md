@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 2.0
+**Document Version:** 2.6
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-07
+**Last Updated:** 2026-01-08
 
 ## Purpose
 
@@ -18,6 +18,12 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.6 | 2026-01-08 | Review #106: PR Review Processing - 16 items (8 MAJOR ReDoS/path-traversal/ID-parsing/validation/threshold-consistency, 6 MINOR env-metadata/FP-patterns/scope-clarity, 2 TRIVIAL). Session #40. |
+| 2.5 | 2026-01-08 | Review #105: PR Review Processing - 17 items (4 MAJOR ReDoS/JSONL/schema, 9 MINOR docs/patterns, 4 TRIVIAL). Session #39. |
+| 2.4 | 2026-01-08 | Review #104: PR Review Processing - 18 items (4 MAJOR security pattern/baselines/JSON metrics, 9 MINOR shell portability/INP metrics, 5 TRIVIAL). Session #38. |
+| 2.3 | 2026-01-08 | Review #103: PR Review Processing - 10 items (2 MAJOR hasComplexityWarnings+getRepoStartDate, 5 MINOR JSON/docs, 3 TRIVIAL). Session #38. |
+| 2.2 | 2026-01-08 | Review #102: PR Review Processing - 19 items (1 MAJOR cognitive complexity refactor, 5 MINOR date validation/node: prefix/Number.parseInt/String.raw, 10 TRIVIAL code style). Session #38. |
+| 2.1 | 2026-01-08 | Review #101: PR Review Processing - 36 items (12 Critical, 5 Major, 17 Minor, 2 Trivial). Session #38. |
 | 2.0 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 → CODE_PATTERNS.md v1.3 (6 Security Audit patterns, new category). Session #33 session-end cleanup. |
 | 1.99 | 2026-01-07 | Reviews #92-97: Security audit PR review feedback (6 reviews, 24 items total). Schema improvements: OWASP string→array, file_globs field, severity_normalization for divergent findings, F-010 conditional risk acceptance with dependencies. |
 | 1.93 | 2026-01-07 | Review #91: Audit traceability improvements (5 items) - 5 MINOR (severity_normalization field, adjudication field, F-010 severity in remediation, item count, log lines metric), 6 REJECTED (⚪ compliance items - doc-only PR, code fixes in Step 4B) |
@@ -95,7 +101,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1** | [claude.md](../claude.md) | Always (in AI context) | ~115 lines |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines |
 | **2** | Quick Index (below) | Pattern lookup | ~50 lines |
-| **3** | Active Reviews (#41-88) | Deep investigation | ~1300 lines |
+| **3** | Active Reviews (#61-106) | Deep investigation | ~1450 lines |
 | **4** | [Archive](./archive/REVIEWS_1-40.md) | Historical research | ~2600 lines |
 
 **Read Tier 3 only when:**
@@ -169,7 +175,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 (Reviews #98-100)
+**Reviews since last consolidation:** 8 (Reviews #98-105)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
 **Next consolidation due:** After Review #107
@@ -255,7 +261,7 @@ Consolidation is needed when:
 | Metric | Value | Threshold | Action if Exceeded |
 |--------|-------|-----------|-------------------|
 | Main log lines | ~1530 | 1500 | Archive oldest reviews |
-| Active reviews | 37 (#61-97) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
+| Active reviews | 46 (#61-106) | 20 | Archive oldest active reviews until ≤20 remain (even if consolidation is current) |
 | Quick Index entries | ~25 | 50 | Prune or categorize |
 
 ### Health Check Process
@@ -325,7 +331,223 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-97 are actively maintained below. Older reviews are in the archive.
+Reviews #61-106 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #106: PR Review Processing - ReDoS & Path Security Hardening (2026-01-08)
+
+**Source:** Mixed (Qodo PR Compliance + Qodo PR Suggestions + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Commit:** 8ebb293 (Review #105)
+**Suggestions:** 16 total (Major: 8, Minor: 6, Trivial: 2)
+
+**Context:** Post-commit review of PR Review #105 fixes. Focus on ReDoS protection completeness, path traversal security, ID parsing robustness, and threshold consistency.
+
+**Patterns Identified:**
+
+1. **ReDoS Protection in add-false-positive.js** (Major pattern - Qodo)
+   - Root cause: Only validate-audit.js had ReDoS heuristic; add-false-positive.js missing same protection
+   - Prevention: Apply same `isLikelyUnsafeRegex` check to all regex entry points
+   - Pattern: Security patterns must be applied consistently across all entry points
+
+2. **Path Traversal with resolve() Escapes** (Major pattern - Qodo)
+   - Root cause: `path.join` preserves `../` sequences; resolve doesn't guarantee containment
+   - Prevention: Use resolve(), then verify result stays within expected root
+   - Pattern: Path resolution must include post-resolution containment check
+
+3. **Number.parseInt Strict Base** (Major pattern - SonarQube)
+   - Root cause: parseInt without radix can misinterpret strings starting with 0
+   - Prevention: Always specify radix 10 for decimal parsing
+   - Pattern: Use Number.parseInt(str, 10) not parseInt(str)
+
+4. **ID Parsing Fault Tolerance** (Major pattern - Qodo)
+   - Root cause: FP-XXX ID extraction assumed format, crashed on malformed entries
+   - Prevention: Guard against malformed entries with null checks
+   - Pattern: Parse untrusted data defensively with explicit validation
+
+5. **Threshold Reset Documentation Consistency** (Minor pattern - CodeRabbit)
+   - Root cause: Different audit templates described threshold reset differently
+   - Prevention: Standardize threshold reset semantics across all templates
+   - Pattern: Cross-template consistency for shared concepts
+
+6. **Shell Pipeline Portability** (Major pattern - Qodo)
+   - Root cause: `| sort -u | grep -v` pipelines don't work on Windows
+   - Prevention: Replace shell pipelines with JavaScript array operations
+   - Pattern: Use language-native filtering instead of shell utilities
+
+**Resolution:**
+- Fixed: 16 items (8 MAJOR, 6 MINOR, 2 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Security patterns need consistency**: If one file has ReDoS protection, all entry points need it
+- **Path containment requires post-resolution check**: resolve() alone doesn't prevent escapes
+- **Shell portability matters**: JavaScript filtering is more portable than shell pipes
+- **Parse defensively**: External/user data should be validated before processing
+
+---
+
+#### Review #105: PR Review Processing - validate-audit.js Hardening (2026-01-08)
+
+**Source:** Mixed (Qodo PR Compliance + Qodo PR Suggestions + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Commit:** 3f69691 (Review #104)
+**Suggestions:** 17 total (Major: 4, Minor: 9, Trivial: 4)
+
+**Context:** Post-commit review of PR Review #104 fixes. Focus on validate-audit.js ReDoS protection, error handling, and documentation consistency.
+
+**Patterns Identified:**
+
+1. **ReDoS Protection in Pattern Matching** (Major pattern - Qodo)
+   - Root cause: User-editable FALSE_POSITIVES.jsonl patterns could contain catastrophic backtracking regex
+   - Prevention: Add heuristic detection for dangerous patterns (nested quantifiers, length limits)
+   - Pattern: Validate regex patterns from untrusted sources before execution
+
+2. **Falsy Check vs Missing Check** (Major pattern - Qodo)
+   - Root cause: `!finding[field]` returns true for value 0, false empty string detection
+   - Prevention: Use explicit null/undefined check for numeric fields like `line`
+   - Pattern: Use `=== undefined || === null` for fields that can have 0 value
+
+3. **JSONL Parse Resilience** (Major pattern - Qodo)
+   - Root cause: Single malformed line in JSONL crashes script
+   - Prevention: Wrap individual line parsing in try/catch, continue with valid entries
+   - Pattern: Parse JSONL lines individually to isolate failures
+
+4. **Schema Documentation Consistency** (Minor pattern - CodeRabbit)
+   - Root cause: audit-performance.md referenced AUDIT_TRACKER.md fields that don't exist
+   - Prevention: Verify referenced fields exist in target documents
+   - Pattern: Cross-reference documentation schemas before publishing
+
+**Resolution:**
+- Fixed: 17 items (4 MAJOR, 9 MINOR, 4 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Validate user-provided regex**: Add ReDoS detection before executing patterns
+- **Numeric fields need explicit checks**: `!field` fails for value 0
+- **JSONL should be fault-tolerant**: Skip bad lines, don't crash
+
+---
+
+#### Review #104: PR Review Processing - Single-Session Audit Checks (2026-01-08)
+
+**Source:** Mixed (Qodo PR Compliance + Qodo PR Suggestions + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Commit:** 018c39b (Review #103) + 2560ceb (audit improvements)
+**Suggestions:** 18 total (Major: 4, Minor: 9, Trivial: 5)
+
+**Context:** Post-commit review of single-session audit improvements and previous Review #103 fixes. Focus on security patterns, shell portability, and JSON output consistency.
+
+**Patterns Identified:**
+
+1. **Security File Pattern Completeness** (Major pattern - Qodo)
+   - Root cause: Security-sensitive file regex missed critical files like firestore.rules, middleware.ts
+   - Prevention: Explicitly include known security files, not just keyword patterns
+   - Pattern: Security patterns should whitelist critical files by name
+
+2. **JSON Parsing Robustness** (Major pattern - Qodo)
+   - Root cause: npm audit --json can output non-JSON on error, causing parse failures
+   - Prevention: Wrap JSON.parse in try/catch with fallback to empty object
+   - Pattern: External command output should always have parse error handling
+
+3. **Shell Portability** (Minor pattern - Qodo)
+   - Root cause: `| head -1` and `| sort -u | grep -v` are not portable across all systems
+   - Prevention: Use git native flags (-1) or JavaScript logic instead of shell pipes
+   - Pattern: Prefer language-native operations over shell pipelines
+
+4. **Web Vitals Metric Updates** (Minor pattern - Qodo)
+   - Root cause: FID is deprecated, INP is the modern replacement
+   - Prevention: Keep up with Core Web Vitals changes
+   - Pattern: Use current metrics (INP not FID) in audit schemas
+
+5. **JSON Output Structure Clarity** (Major pattern - CodeRabbit)
+   - Root cause: Flat trigger structure with ambiguous value/threshold pairs
+   - Prevention: Restructure JSON to have explicit commits/files sub-objects
+   - Pattern: Machine-parseable output should have unambiguous field semantics
+
+**Resolution:**
+- Fixed: 13 items (4 MAJOR, 6 MINOR, 3 TRIVIAL)
+- Deferred: 3 items (metric key alignment, doc path - unclear requirements)
+- Already OK: 2 items (JSONL schema already formatted)
+
+**Key Learnings:**
+- **Security patterns need explicit file lists**: Don't rely only on keyword matching
+- **Always handle parse errors**: External commands can produce unexpected output
+- **Shell portability matters**: Use native language features when possible
+- **Keep metrics current**: Web Vitals evolve; update schemas accordingly
+- **JSON output needs unambiguous structure**: Nested objects clarify metric semantics
+
+---
+
+#### Review #103: PR Review Processing - Qodo, SonarQube, CodeRabbit (2026-01-08)
+
+**Source:** Mixed (Qodo PR + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Suggestions:** 10 total (Major: 2, Minor: 5, Trivial: 3)
+
+**Context:** Follow-up PR review on commit 2d7d466 (Review #102). Focus on completing TODO placeholders, improving baseline detection, and fixing output inconsistencies.
+
+**Patterns Identified:**
+
+1. **TODO Placeholder Completion** (Major pattern - SonarQube + Qodo)
+   - Root cause: hasComplexityWarnings() returned false unconditionally with TODO comment
+   - Prevention: Implement functionality when creating placeholder; don't defer forever
+   - Pattern: Complete TODOs during the session that creates them
+
+2. **Dynamic Baseline vs Hardcoded Fallback** (Major pattern - Qodo)
+   - Root cause: Missing AUDIT_TRACKER.md caused all triggers to fire from 2025-01-01
+   - Prevention: Use git log to get actual repo start date as smart fallback
+   - Pattern: Use dynamic fallbacks for missing configuration files
+
+3. **Output Mode Consistency** (Minor pattern - CodeRabbit)
+   - Root cause: JSON recommendation showed only first category; text showed all
+   - Prevention: Extract command list logic to shared helper or duplicate consistently
+   - Pattern: Text and JSON output should convey equivalent information
+
+**Resolution:**
+- Fixed: 10 items (2 MAJOR, 5 MINOR, 3 TRIVIAL)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Key Learnings:**
+- **Complete TODOs immediately**: Don't leave placeholder functions; implement or remove
+- **Smart fallbacks**: Use git history for dynamic defaults instead of hardcoded dates
+- **Output parity**: JSON and text modes should provide equivalent information
+
+---
+
+#### Review #102: PR Review Processing - Qodo, SonarQube, CodeRabbit (2026-01-08)
+
+**Source:** Mixed (Qodo PR + SonarQube + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Suggestions:** 16 total (Major: 1, Minor: 5, Trivial: 9, Deferred: 1)
+
+**Context:** Post-Review #101 feedback on commit 36fd20f. Primary focus on cognitive complexity refactoring and code style improvements.
+
+**Patterns Identified:**
+
+1. **Cognitive Complexity Refactoring** (Major pattern - SonarQube S3776)
+   - Root cause: formatTextOutput() had complexity 23 (threshold 15) due to nested loops/conditionals
+   - Prevention: Extract helper functions for distinct output sections
+   - Pattern: Keep functions under 15 cognitive complexity by extracting helpers
+
+2. **Node.js Built-in Module Prefixes** (Minor pattern - SonarQube S6803)
+   - Root cause: Using `fs` instead of `node:fs` for built-in imports
+   - Prevention: Always use `node:` prefix for built-in modules
+   - Pattern: `node:fs`, `node:path`, `node:url`, `node:child_process`
+
+3. **Number Methods on Global** (Minor pattern - SonarQube S6759)
+   - Root cause: Using `parseInt()` instead of `Number.parseInt()`
+   - Prevention: Prefer explicit `Number.parseInt()` and `Number.isNaN()`
+   - Pattern: Use Number methods for parsing and validation
+
+**Resolution:**
+- Fixed: 15 items (1 MAJOR, 5 MINOR, 9 TRIVIAL)
+- Deferred: 1 item (JSONL schema alignment - Step 4 scope)
+- Rejected: 0 items
 
 ---
 
@@ -405,6 +627,67 @@ Reviews #61-97 are actively maintained below. Older reviews are in the archive.
 - Fixed: 24 items (3 MAJOR, 18 MINOR, 3 TRIVIAL)
 - Rejected: 3 items (intentional schema improvements)
 - All commits pushed to claude/new-session-YUxGa
+
+---
+
+#### Review #101: PR Review Processing - SonarQube, Qodo, CodeRabbit (2026-01-08)
+
+**Source:** Mixed (SonarQube S5852 + Qodo Compliance + CodeRabbit PR)
+**PR/Branch:** claude/new-session-70MS0
+**Suggestions:** 36 total (Critical: 12, Major: 5, Minor: 17, Trivial: 2)
+
+**Context:** Comprehensive PR review feedback from SonarQube (12 regex DoS), Qodo (secure logging), and CodeRabbit (workflow compatibility, documentation). Multi-pass analysis (3 passes) to ensure complete coverage.
+
+**Patterns Identified:**
+
+1. **Regex Backtracking DoS (SonarQube S5852)** (Critical pattern - 12 instances)
+   - Root cause: `[\s\S]*?` patterns in regex can cause super-linear runtime on crafted input
+   - Prevention: Use bounded line-by-line parsing via `extractSection()` helper function
+   - Pattern: Replace unbounded regex with iterative line processing for security-critical code
+
+2. **JSON Output Corruption** (Major pattern - Qodo)
+   - Root cause: `console.error()` mixed with JSON output when `--json` flag is set
+   - Prevention: Check `JSON_OUTPUT` flag before any stderr output; use `console.log(JSON.stringify())` for errors
+   - Pattern: Guard all console.error calls when JSON mode is active
+
+3. **Workflow-Incompatible JSON Schema** (Major pattern - CodeRabbit)
+   - Root cause: GitHub Actions workflow expected `triggers` object and `recommendation` string
+   - Prevention: Document expected JSON schema; add required fields for workflow consumers
+   - Pattern: JSON output contracts must match consumer expectations
+
+4. **False Positive on Fresh Projects** (Major pattern - CodeRabbit)
+   - Root cause: Multi-AI commit trigger fires when no audit history exists (empty `allDates`)
+   - Prevention: Guard trigger logic inside `allDates.length > 0` check
+   - Pattern: Empty-state guards prevent false positives in threshold systems
+
+5. **Single-Session Audit Threshold Confusion** (Minor pattern - Documentation)
+   - Root cause: 6 audit command files incorrectly stated "Reset Threshold: YES"
+   - Prevention: Single-session audits do NOT reset thresholds (only multi-AI audits do)
+   - Pattern: Document threshold reset policy clearly at point of use
+
+**Key Learnings:**
+- **Bounded Parsing**: Replace `[\s\S]*?` regex with line-by-line iteration for security
+- **Output Isolation**: JSON mode requires ALL output go through JSON, not just success
+- **Contract Documentation**: Workflow consumers need documented schema expectations
+- **Empty-State Guards**: Always handle "no prior data" case in threshold/trigger systems
+
+**Resolution:**
+- Fixed: 34 items (12 Critical regex, 5 Major logic, 17 Minor JSDoc/docs)
+- Deferred: 5 items (Performance audit action items → Step 4.2.3a)
+- Rejected: None
+
+**Fixes Applied:**
+
+| # | Severity | Issue | File(s) | Fix |
+|---|----------|-------|---------|-----|
+| 1-12 | CRITICAL | Regex backtracking DoS (S5852) | check-review-needed.js | Added `extractSection()` with line-by-line parsing |
+| 13 | MAJOR | console.error corrupts JSON output | check-review-needed.js:557-561 | Guard with `if (JSON_OUTPUT)` check |
+| 14 | MAJOR | Missing workflow JSON fields | check-review-needed.js:636-649 | Added `triggers` object and `recommendation` string |
+| 15 | MAJOR | False positive on no audit history | check-review-needed.js:461 | Guard inside `allDates.length > 0` |
+| 16 | MAJOR | Special-case if/else for categories | check-review-needed.js:372-415 | Refactored to generic file matching |
+| 17 | MINOR | Missing checkBundle logic | check-review-needed.js:398-401 | Added `isBundleChanged()` call |
+| 18-23 | MINOR | Incorrect threshold reset docs | 6 audit-*.md files | Changed "Reset: YES" to "NO (single-session)" |
+| 24-40 | MINOR | Missing JSDoc documentation | check-review-needed.js | Added 17 complete JSDoc blocks |
 
 ---
 
