@@ -34,8 +34,8 @@ npm run lint 2>&1 | grep -i "security" | head -10
 # Pattern compliance (security patterns)
 npm run patterns:check 2>&1
 
-# Check for .env files
-ls -la .env* 2>/dev/null || echo "No .env files found"
+# Check for .env files (existence only - no permission/owner metadata needed)
+ls .env* 2>/dev/null || echo "No .env files found"
 ```
 
 **Step 3: Load False Positives Database**

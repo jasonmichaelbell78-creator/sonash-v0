@@ -68,7 +68,8 @@ If outdated, note discrepancies but proceed with current values.
 
 **Scope:**
 - Include: `app/`, `components/`, `lib/`, `hooks/`, `types/`
-- Exclude: `node_modules/`, `.next/`, `docs/`, `tests/` (unless testing coverage check)
+- Exclude: `node_modules/`, `.next/`, `docs/`
+- Conditional: `tests/` excluded for code hygiene, but included when analyzing Testing Coverage (category 4)
 
 ---
 

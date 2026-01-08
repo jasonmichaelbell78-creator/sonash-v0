@@ -229,7 +229,7 @@ Full markdown report with all findings, baselines, and optimization plan.
 
 ### Category-Specific Thresholds
 
-This audit **resets the performance category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
+This audit **resets the performance category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
 
 **Performance audit triggers (check AUDIT_TRACKER.md):**
 - 30+ commits since last performance audit, OR

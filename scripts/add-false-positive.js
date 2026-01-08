@@ -31,6 +31,43 @@ const FP_FILE = node_path.join(__dirname, '..', 'docs', 'audits', 'FALSE_POSITIV
 const VALID_CATEGORIES = ['security', 'code', 'documentation', 'performance', 'schema', 'refactoring', 'process'];
 
 /**
+ * Validate that a string is a valid regex pattern
+ * @param {string} pattern - The pattern to validate
+ * @returns {{valid: boolean, error?: string}}
+ */
+function validateRegexPattern(pattern) {
+  if (!pattern || typeof pattern !== 'string') {
+    return { valid: false, error: 'Pattern must be a non-empty string' };
+  }
+  try {
+    new RegExp(pattern);
+    return { valid: true };
+  } catch (err) {
+    return { valid: false, error: `Invalid regex: ${err.message}` };
+  }
+}
+
+/**
+ * Validate that a string is a valid YYYY-MM-DD date
+ * @param {string} dateStr - The date string to validate
+ * @returns {{valid: boolean, error?: string}}
+ */
+function validateDateFormat(dateStr) {
+  if (!dateStr) return { valid: true }; // Optional field
+  if (typeof dateStr !== 'string') {
+    return { valid: false, error: 'Date must be a string' };
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return { valid: false, error: 'Date must be in YYYY-MM-DD format' };
+  }
+  const timestamp = new Date(`${dateStr}T00:00:00.000Z`).getTime();
+  if (Number.isNaN(timestamp)) {
+    return { valid: false, error: 'Invalid date value' };
+  }
+  return { valid: true };
+}
+
+/**
  * Load false positives from JSONL file with fault-tolerant parsing
  * Skips malformed lines instead of crashing
  * @returns {Array<Object>} Array of false positive entries
@@ -57,8 +94,12 @@ function loadFalsePositives() {
 function saveFalsePositive(entry) {
   const existing = loadFalsePositives();
   const maxId = existing.reduce((max, fp) => {
-    const num = Number.parseInt(fp.id.replace('FP-', ''), 10);
-    return num > max ? num : max;
+    // Guard against malformed entries without id or non-string id
+    if (!fp || typeof fp.id !== 'string') return max;
+    const match = fp.id.match(/^FP-(\d+)$/);
+    if (!match) return max;
+    const num = Number.parseInt(match[1], 10);
+    return Number.isNaN(num) ? max : Math.max(num, max);
   }, 0);
 
   entry.id = `FP-${String(maxId + 1).padStart(3, '0')}`;
@@ -239,12 +280,27 @@ async function main() {
     showHelp();
     process.exit(1);
   }
+
+  // Validate pattern is valid regex
+  const patternValidation = validateRegexPattern(args.pattern);
+  if (!patternValidation.valid) {
+    console.error(`Error: ${patternValidation.error}`);
+    process.exit(1);
+  }
+
   if (!args.category || !VALID_CATEGORIES.includes(args.category)) {
     console.error(`Error: --category must be one of: ${VALID_CATEGORIES.join(', ')}`);
     process.exit(1);
   }
   if (!args.reason) {
     console.error('Error: --reason is required');
+    process.exit(1);
+  }
+
+  // Validate expires date format if provided
+  const dateValidation = validateDateFormat(args.expires);
+  if (!dateValidation.valid) {
+    console.error(`Error: --expires ${dateValidation.error}`);
     process.exit(1);
   }
 

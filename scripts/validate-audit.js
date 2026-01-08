@@ -77,12 +77,16 @@ function loadAuditFindings(filePath) {
 }
 
 /**
- * Check if a date string is valid ISO format
+ * Check if a date string is valid ISO format (strict YYYY-MM-DD)
  * @param {string} dateStr - Date string to validate
  * @returns {boolean} True if valid ISO date
  */
 function isValidDate(dateStr) {
-  const timestamp = new Date(dateStr).getTime();
+  if (typeof dateStr !== 'string') return false;
+  const trimmed = dateStr.trim();
+  // Strict YYYY-MM-DD format for deterministic expiry semantics
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return false;
+  const timestamp = new Date(`${trimmed}T00:00:00.000Z`).getTime();
   return !Number.isNaN(timestamp);
 }
 
@@ -217,16 +221,41 @@ function validateRequiredFields(findings) {
       }
     }
 
-    // Validate file exists if specified
+/**
+ * Check if a file path is safe (no path traversal)
+ * @param {string} filePath - File path to validate
+ * @returns {boolean} True if path is safe
+ */
+function isSafeFilePath(filePath) {
+  if (!filePath || typeof filePath !== 'string') return false;
+  // Reject path traversal patterns
+  if (filePath.includes('..')) return false;
+  // Reject absolute paths
+  if (node_path.isAbsolute(filePath)) return false;
+  // Reject paths starting with / or \
+  if (/^[/\\]/.test(filePath)) return false;
+  return true;
+}
+
+    // Validate file exists if specified (with path traversal protection)
     if (finding.file && !finding.file.includes('*')) {
-      const fullPath = node_path.join(__dirname, '..', finding.file);
-      if (!node_fs.existsSync(fullPath)) {
+      if (!isSafeFilePath(finding.file)) {
         issues.push({
-          type: 'FILE_NOT_FOUND',
+          type: 'UNSAFE_PATH',
           findingId: finding.id,
           file: finding.file,
-          message: `Referenced file does not exist: ${finding.file}`
+          message: `Potentially unsafe file path (traversal attempt): ${finding.file}`
         });
+      } else {
+        const fullPath = node_path.join(__dirname, '..', finding.file);
+        if (!node_fs.existsSync(fullPath)) {
+          issues.push({
+            type: 'FILE_NOT_FOUND',
+            findingId: finding.id,
+            file: finding.file,
+            message: `Referenced file does not exist: ${finding.file}`
+          });
+        }
       }
     }
   }
@@ -327,10 +356,20 @@ function crossReferenceEslint(findings) {
   if (codeFindings.length === 0) return { validated: [], unvalidated: [] };
 
   try {
-    const output = execSync('npm run lint 2>&1 || true', {
-      encoding: 'utf8',
-      cwd: node_path.join(__dirname, '..')
-    });
+    // Use stdio config for portability (no shell-specific syntax)
+    let output = '';
+    try {
+      output = execSync('npm run lint', {
+        encoding: 'utf8',
+        cwd: node_path.join(__dirname, '..'),
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+    } catch (err) {
+      // lint often exits non-zero; still use its output for matching
+      const stdout = err?.stdout ? String(err.stdout) : '';
+      const stderr = err?.stderr ? String(err.stderr) : '';
+      output = `${stdout}\n${stderr}`.trim();
+    }
 
     const eslintLines = output.split('\n');
     const validated = [];

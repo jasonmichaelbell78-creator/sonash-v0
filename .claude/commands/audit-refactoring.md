@@ -222,7 +222,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Findings: Total count (e.g., "1 S1, 3 S2, 5 S3")
    - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: NO (single-session audits do not reset thresholds)
+   - Reset Threshold: YES (single-session audits reset that category's threshold)
 5. Ask: "Would you like me to tackle any of these refactoring tasks now? (Recommend starting with batch fixes)"
 
 ---
@@ -231,7 +231,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
 
 ### Category-Specific Thresholds
 
-This audit does **NOT** reset thresholds in `docs/AUDIT_TRACKER.md` (threshold resets are reserved for multi-AI audits only).
+This audit **resets the refactoring category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds).
 
 **Refactoring audit triggers (check AUDIT_TRACKER.md):**
 - 40+ commits since last refactoring audit, OR
