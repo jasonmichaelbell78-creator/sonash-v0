@@ -513,6 +513,9 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   const lines = [];
   const now = new Date().toISOString().split('T')[0];
 
+  // Create path->doc lookup Map for O(1) lookups instead of O(n) docs.find()
+  const docsByPath = new Map(docs.map(d => [d.path, d]));
+
   // Header
   lines.push('# Documentation Index');
   lines.push('');
@@ -646,7 +649,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push('| Document | Inbound Links | Referenced By |');
   lines.push('|----------|---------------|---------------|');
   for (const { path, count, refs } of byInbound) {
-    const doc = docs.find(d => d.path === path);
+    const doc = docsByPath.get(path);
     const title = doc ? doc.title : basename(path, '.md');
     const linkPath = path.replace(/ /g, '%20');
     const refList = refs.slice(0, 3).map(r => basename(r, '.md')).join(', ');
@@ -669,7 +672,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push('| Document | Outbound Links |');
   lines.push('|----------|----------------|');
   for (const { path, count } of byOutbound) {
-    const doc = docs.find(d => d.path === path);
+    const doc = docsByPath.get(path);
     const title = doc ? doc.title : basename(path, '.md');
     const linkPath = path.replace(/ /g, '%20');
     lines.push(`| [${escapeTableCell(title)}](${linkPath}) | ${count} |`);
@@ -695,7 +698,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     lines.push(`**${orphaned.length} orphaned documents:**`);
     lines.push('');
     for (const path of orphaned) {
-      const doc = docs.find(d => d.path === path);
+      const doc = docsByPath.get(path);
       const title = doc ? doc.title : basename(path, '.md');
       const linkPath = path.replace(/ /g, '%20');
       lines.push(`- [${escapeTableCell(title)}](${linkPath})`);

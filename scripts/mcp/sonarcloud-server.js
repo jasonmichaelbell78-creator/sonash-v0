@@ -21,6 +21,33 @@ import {
 const SONAR_BASE_URL = process.env.SONAR_URL || 'https://sonarcloud.io';
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
+// SSRF protection: Only allow known SonarCloud/SonarQube domains
+const ALLOWED_SONAR_HOSTS = [
+  'sonarcloud.io',
+  'sonarqube.com',
+  'localhost',
+  '127.0.0.1',
+];
+
+function isAllowedSonarHost(urlString) {
+  try {
+    const url = new URL(urlString);
+    const hostname = url.hostname.toLowerCase();
+    return ALLOWED_SONAR_HOSTS.some(allowed =>
+      hostname === allowed || hostname.endsWith(`.${allowed}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
+// Validate SONAR_BASE_URL at startup
+if (!isAllowedSonarHost(SONAR_BASE_URL)) {
+  console.error(`Error: SONAR_URL "${SONAR_BASE_URL}" is not in the allowed hosts list.`);
+  console.error(`Allowed hosts: ${ALLOWED_SONAR_HOSTS.join(', ')}`);
+  process.exit(1);
+}
+
 // Helper to make authenticated requests to SonarCloud API
 // SonarCloud uses Basic auth: token as username, empty password
 async function sonarFetch(endpoint, params = {}) {
@@ -44,8 +71,14 @@ async function sonarFetch(endpoint, params = {}) {
   const response = await fetch(url.toString(), { headers });
 
   if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
-    throw new Error(`SonarCloud API error: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
+    // Sanitize error response - don't expose full upstream error details
+    const status = response.status;
+    let message = 'Request failed';
+    if (status === 401) message = 'Authentication failed - check SONAR_TOKEN';
+    else if (status === 403) message = 'Access denied - insufficient permissions';
+    else if (status === 404) message = 'Resource not found';
+    else if (status >= 500) message = 'SonarCloud server error';
+    throw new Error(`SonarCloud API error: ${status} - ${message}`);
   }
 
   return response.json();
@@ -56,6 +89,7 @@ async function sonarFetchAll(endpoint, params = {}, itemsKey = 'items') {
   const allItems = [];
   let page = 1;
   const pageSize = 100;
+  let truncated = false;
 
   while (true) {
     const data = await sonarFetch(endpoint, { ...params, p: page, ps: pageSize });
@@ -71,18 +105,31 @@ async function sonarFetchAll(endpoint, params = {}, itemsKey = 'items') {
 
     // Safety limit to prevent infinite loops
     if (page > 100) {
+      truncated = true;
+      console.error(`Warning: Results truncated at ${allItems.length} items (page limit reached)`);
       break;
     }
   }
 
-  return allItems;
+  return { items: allItems, truncated };
 }
+
+// Input validation constants
+const MAX_INPUT_LENGTH = 500; // Maximum length for string inputs
 
 // Input validation helper
 function validateRequired(args, ...requiredFields) {
+  // Guard against undefined/null args
+  if (!args || typeof args !== 'object') {
+    throw new Error('Invalid request: missing arguments');
+  }
   for (const field of requiredFields) {
-    if (!args[field] || typeof args[field] !== 'string' || args[field].trim() === '') {
+    const value = args[field];
+    if (!value || typeof value !== 'string' || value.trim() === '') {
       throw new Error(`Missing or invalid required parameter: ${field}`);
+    }
+    if (value.length > MAX_INPUT_LENGTH) {
+      throw new Error(`Parameter ${field} exceeds maximum length of ${MAX_INPUT_LENGTH}`);
     }
   }
 }
@@ -206,7 +253,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
 
         // Use pagination to get all hotspots
-        const allHotspots = await sonarFetchAll('/api/hotspots/search', params, 'hotspots');
+        const { items: allHotspots, truncated } = await sonarFetchAll('/api/hotspots/search', params, 'hotspots');
 
         // Format hotspots with relevant details
         const hotspots = allHotspots.map(h => ({
@@ -226,6 +273,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: 'text',
               text: JSON.stringify({
                 total: hotspots.length,
+                truncated,
                 hotspots,
               }, null, 2),
             },
@@ -246,7 +294,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
 
         // Use pagination to get all issues
-        const allIssues = await sonarFetchAll('/api/issues/search', params, 'issues');
+        const { items: allIssues, truncated } = await sonarFetchAll('/api/issues/search', params, 'issues');
 
         const issues = allIssues.map(i => ({
           key: i.key,
@@ -265,6 +313,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: 'text',
               text: JSON.stringify({
                 total: issues.length,
+                truncated,
                 issues,
               }, null, 2),
             },
@@ -355,6 +404,9 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('SonarCloud MCP server running on stdio');
+  if (!SONAR_TOKEN) {
+    console.error('Warning: SONAR_TOKEN not set. Set it via environment variable for authenticated access.');
+  }
 }
 
 main().catch(console.error);
