@@ -1,8 +1,8 @@
 # [Project Name] Multi-AI Documentation Audit Plan
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-09
 **Status:** PENDING | IN_PROGRESS | COMPLETE
 **Overall Completion:** 0%
 
@@ -19,12 +19,13 @@ This document serves as the **execution plan** for running a multi-AI documentat
 - Quarterly documentation health check
 - Before major release or documentation publication
 
-**Review Focus Areas (5 Categories):**
+**Review Focus Areas (6 Categories):**
 1. Cross-Reference Consistency (broken links, outdated references)
 2. Documentation Staleness (outdated content, deprecated info)
 3. Coverage Gaps (missing docs, undocumented features)
 4. Tier Compliance (structure and organization)
 5. Frontmatter & Metadata Consistency
+6. Content Quality (coherence, bloat, contradictions, flow)
 
 **Expected Output:** Documentation findings with remediation plan, coverage analysis, and quality metrics.
 
@@ -173,13 +174,14 @@ A documentation finding is CONFIRMED only if it includes:
 
 If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 
-FOCUS AREAS (use ONLY these 5 categories)
+FOCUS AREAS (use ONLY these 6 categories)
 
 1) Cross-Reference Consistency
 2) Documentation Staleness
 3) Coverage Gaps
 4) Tier Compliance
 5) Frontmatter & Metadata
+6) Content Quality
 ```
 
 ### Part 3: Documentation Audit Phases
@@ -332,6 +334,41 @@ VERIFICATION COMMANDS (if available):
 Mark each check: ISSUE | OK | N/A
 List specific frontmatter issues.
 
+Category 6: Content Quality
+CHECKS:
+[ ] No circular documentation (docs referencing each other in confusing loops)
+[ ] No redundant/duplicate content across documents
+[ ] No contradictory information across documents
+[ ] Documentation narrative is cohesive and logical
+[ ] Document relationships are navigable (clear paths to related content)
+[ ] No bloated content (overly verbose, could be condensed)
+[ ] Consistent terminology across documents
+[ ] Information flows logically (no orphaned concepts)
+
+ANALYSIS:
+- Map document reference chains to find circular patterns
+- Compare similar sections across docs for duplication
+- Check for conflicting guidance (e.g., different instructions for same task)
+- Evaluate readability and flow of key user journeys
+- Identify content that could be consolidated or removed
+- Check if terminology is used consistently
+
+PATTERNS TO FIND:
+- A.md→B.md→C.md→A.md circular chains
+- Same paragraph/section appearing in multiple docs
+- "Do X" in one doc but "Don't do X" in another
+- Excessive boilerplate that could be templated
+- Orphaned docs with no incoming links and no clear purpose
+- Verbose explanations that repeat information
+
+VERIFICATION COMMANDS (if available):
+- Build link graph: grep -rn "\[.*\](.*)" --include="*.md" | extract targets
+- Find duplicates: Compare doc sections for similarity
+- Check terminology: grep for key terms and verify consistent usage
+
+Mark each check: ISSUE | OK | N/A
+List specific content quality issues with file references and recommendations.
+
 After each category: "Category X complete - Issues found: [number]"
 
 PHASE 4: DRAFT DOCUMENTATION FINDINGS
@@ -402,7 +439,7 @@ Return 4 sections in this exact order:
 
 Schema:
 {
-  "category": "Cross-Reference|Staleness|Coverage Gaps|Tier Compliance|Frontmatter",
+  "category": "Cross-Reference|Staleness|Coverage Gaps|Tier Compliance|Frontmatter|Content Quality",
   "title": "short, specific issue",
   "fingerprint": "<category>::<primary_file>::<issue_type>",
   "severity": "S0|S1|S2|S3",
@@ -566,10 +603,11 @@ When using this template:
 8. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
 
 **Quality checks before finalizing:**
-- [ ] All 5 categories covered
+- [ ] All 6 categories covered
 - [ ] Broken links verified manually
 - [ ] Coverage gaps validated against code
 - [ ] Tier compliance checked
+- [ ] Content quality assessed (bloat, contradictions, flow)
 - [ ] Remediation steps actionable
 
 ---
@@ -588,6 +626,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2 | 2026-01-09 | Added Category 6: Content Quality covering circular docs, bloat detection, contradiction checking, coherence/flow assessment, and terminology consistency | Claude |
 | 1.1 | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex; Escaped brackets in pattern | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Documentation audit category added to multi-AI review framework | Claude |
 
