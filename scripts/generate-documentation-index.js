@@ -213,8 +213,8 @@ function extractFrontmatter(content) {
  * Extract title from markdown content
  */
 function extractTitle(content, filename) {
-  // Look for first H1 heading
-  const h1Match = content.match(/^#\s+(.+)$/m);
+  // Look for first H1 heading (bounded to prevent ReDoS)
+  const h1Match = content.match(/^#\s+(.{1,500})$/m);
   if (h1Match) {
     return h1Match[1].trim();
   }
@@ -225,10 +225,11 @@ function extractTitle(content, filename) {
 
 /**
  * Extract description from markdown content
+ * All regex patterns use bounded quantifiers to prevent ReDoS
  */
 function extractDescription(content) {
-  // Try to find Purpose section
-  const purposeMatch = content.match(/##\s*Purpose\s*\r?\n\r?\n([\s\S]*?)(?=\r?\n##|\r?\n---|$)/i);
+  // Try to find Purpose section (bounded to 2000 chars to prevent ReDoS)
+  const purposeMatch = content.match(/##\s*Purpose\s*\r?\n\r?\n([\s\S]{0,2000}?)(?=\r?\n##|\r?\n---|$)/i);
   if (purposeMatch) {
     const purpose = purposeMatch[1].trim().split('\n')[0];
     if (purpose.length > 0 && purpose.length <= CONFIG.maxDescriptionLength) {
@@ -239,11 +240,11 @@ function extractDescription(content) {
     }
   }
 
-  // Try to find first paragraph after title
-  const titleMatch = content.match(/^#\s+.+$/m);
+  // Try to find first paragraph after title (bounded to prevent ReDoS)
+  const titleMatch = content.match(/^#\s+.{1,500}$/m);
   if (titleMatch) {
     const afterTitle = content.slice(titleMatch.index + titleMatch[0].length);
-    const firstPara = afterTitle.match(/\r?\n\r?\n([^#\n][^\n]+)/);
+    const firstPara = afterTitle.match(/\r?\n\r?\n([^#\n][^\n]{1,500})/);
     if (firstPara) {
       const para = firstPara[1].trim();
       // Skip metadata lines
