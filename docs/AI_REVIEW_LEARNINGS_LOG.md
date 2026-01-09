@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 3.2
+**Document Version:** 3.3
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-09
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.3 | 2026-01-09 | Review #112: PR #225 Final Compliance - 6 items (3 HIGH injection/SSRF/stack-trace, 3 MEDIUM timeout/logging/archived-paths). Session #39. |
 | 3.2 | 2026-01-09 | Review #111: PR #225 Compliance Fixes - 8 items (2 HIGH SSRF/secret exposure, 5 MEDIUM error handling/validation/performance, 1 LOW unstructured logging). Session #39. |
 | 3.1 | 2026-01-09 | Review #110: PR #225 Follow-up - 6 items (3 MAJOR path canonicalization/archive boundary/exclude boundary, 3 MINOR indented code blocks/recursion deferred). Session #39. |
 | 3.0 | 2026-01-09 | Review #109: PR #225 Feedback - 16 items (2 CRITICAL FS error handling/error exposure, 4 MAJOR JSON mode/ReDoS/symlink/cross-platform, 9 MINOR, 1 TRIVIAL). Rejected framework suggestion. Session #39. |
@@ -181,7 +182,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 (Reviews #109-111)
+**Reviews since last consolidation:** 4 (Reviews #109-112)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current
 **Next consolidation due:** After Review #118
@@ -360,7 +361,55 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-111 are actively maintained below. Older reviews are in the archive.
+Reviews #61-112 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #112: PR #225 Final Compliance - Injection & SSRF Hardening (2026-01-09)
+
+**Source:** PR Compliance Review (WebFetch)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 10 items (High: 3, Medium: 3, Verified: 4) - 6 fixed, 4 already compliant
+
+**Context:** Final compliance pass addressing remaining "not compliant" and "requires human verification" items from PR #225.
+
+**Patterns Identified:**
+
+1. **Complete Markdown Injection Prevention** (High pattern)
+   - Root cause: escapeTableCell only escaped pipe/brackets, not parens/backticks/angles
+   - Prevention: Add escaping for backslash, parentheses (prevents link injection), backticks (code), and HTML angle brackets
+   - Pattern: Comprehensive markdown escaping includes `\`, `|`, `[]`, `()`, `` ` ``, `<>`
+
+2. **Request Timeout Protection** (High pattern)
+   - Root cause: No timeout on HTTP fetch could hang indefinitely
+   - Prevention: Use AbortController with setTimeout for fetch operations
+   - Pattern: Always add timeout to external HTTP requests (30s default)
+
+3. **Stack Trace Sanitization** (High pattern)
+   - Root cause: main().catch(console.error) exposes full stack traces
+   - Prevention: Wrap in error handler that only logs error.message
+   - Pattern: Sanitize caught errors at process boundary
+
+4. **Environment-Controlled SSRF Allowlist** (Medium pattern)
+   - Root cause: localhost in allowlist could leak credentials in shared environments
+   - Prevention: Add SONAR_ALLOW_LOCAL env var to enable localhost (default: disabled)
+   - Pattern: Use env vars to control security-sensitive features per-environment
+
+5. **Archived Table Path Escaping** (Medium pattern)
+   - Root cause: Archived file paths not escaped in markdown table
+   - Prevention: Apply escapeTableCell to all table cell content including file paths
+   - Pattern: Escape all user-controlled content in markdown, not just obvious fields
+
+**Resolution:**
+- Fixed: 6 items (3 HIGH, 3 MEDIUM)
+- Already Compliant: 4 items (FS error handling verified as already guarded)
+
+**Commit:** 29c593a
+
+**Key Learnings:**
+- **Markdown injection is comprehensive**: Not just pipes - parens enable `](javascript:...)`, backticks enable code injection
+- **Timeout at network boundary**: All external requests need explicit timeout; AbortController is the modern approach
+- **SSRF allowlists should be minimal**: Only enable localhost via opt-in env var, not by default
 
 ---
 
