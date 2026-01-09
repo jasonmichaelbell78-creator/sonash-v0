@@ -41,6 +41,31 @@ gh api repos/{owner}/{repo}/pulls/$PR_NUMBER/comments --paginate
 gh pr checks $PR_NUMBER
 ```
 
+### Step 2b: Fetch SonarCloud Details via MCP (if available)
+
+If the `sonarcloud` MCP server is available, use it to get detailed SonarQube analysis:
+
+```
+# Get quality gate status
+mcp__sonarcloud__get_quality_gate(projectKey="owner_repo", pullRequest="PR_NUMBER")
+
+# Get security hotspots with exact line numbers
+mcp__sonarcloud__get_security_hotspots(projectKey="owner_repo", pullRequest="PR_NUMBER")
+
+# Get code issues (bugs, vulnerabilities, code smells)
+mcp__sonarcloud__get_issues(projectKey="owner_repo", pullRequest="PR_NUMBER")
+```
+
+**Project Key Format:** `{github-owner}_{repo-name}` (e.g., `jasonmichaelbell78-creator_sonash-v0`)
+
+**MCP Benefits:**
+- Exact file:line numbers for each issue
+- Full rule descriptions and fix recommendations
+- Structured JSON data (not scraped HTML)
+- No authentication issues with dynamic JavaScript
+
+**Fallback:** If MCP unavailable, ask user for SonarCloud URL or screenshot.
+
 ### Step 3: Parse and Categorize
 
 Extract suggestions from each source:
@@ -53,9 +78,10 @@ Extract suggestions from each source:
 - Comments from `qodo-merge-pro[bot]` or `codiumai-pr-agent[bot]`
 - Look for "PR Analysis", "Code Suggestions", compliance checks
 
-**SonarQube indicators:**
-- Check runs with "sonarcloud" or "sonarqube" in name
-- Quality gate status
+**SonarQube indicators (from MCP or checks):**
+- Security hotspots with file:line from MCP
+- Quality gate status (PASSED/FAILED)
+- Issue counts by severity
 
 ### Step 4: Output Format
 
@@ -124,5 +150,28 @@ When updating this command, also update:
 |----------|----------------|-----|
 | `docs/SLASH_COMMANDS.md` | `/fetch-pr-feedback` section, workflow steps | Documentation of this command |
 | `.claude/commands/pr-review.md` | Referenced steps (if protocol changes) | This command invokes pr-review |
+| `.mcp.json` | SonarCloud MCP server config | MCP integration for SonarQube |
+| `scripts/mcp/sonarcloud-server.js` | MCP tool implementations | SonarCloud API integration |
 
 **Why this matters:** This command auto-invokes `/pr-review`. Changes to workflow or protocol must stay synchronized.
+
+---
+
+## MCP Server Setup
+
+To enable SonarCloud MCP integration:
+
+1. **Install dependencies:**
+   ```bash
+   cd scripts/mcp && npm install
+   ```
+
+2. **Set environment variable:**
+   ```bash
+   export SONAR_TOKEN="your-sonarcloud-token"
+   ```
+
+   Get token from: https://sonarcloud.io/account/security
+
+3. **Verify MCP server:**
+   The server is configured in `.mcp.json` and will be available as `mcp__sonarcloud__*` tools.

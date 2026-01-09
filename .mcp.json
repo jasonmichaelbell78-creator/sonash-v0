@@ -3,6 +3,14 @@
     "ccusage": {
       "command": "bunx",
       "args": ["@ccusage/mcp@latest"]
+    },
+    "sonarcloud": {
+      "command": "node",
+      "args": ["scripts/mcp/sonarcloud-server.js"],
+      "env": {
+        "SONAR_TOKEN": "${SONAR_TOKEN}",
+        "SONAR_URL": "https://sonarcloud.io"
+      }
     }
   }
 }
