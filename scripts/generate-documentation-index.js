@@ -90,6 +90,20 @@ function canonicalizePath(inputPath) {
 }
 
 /**
+ * Escape special characters for markdown table cells
+ * Prevents markdown injection via untrusted content (e.g., doc titles)
+ */
+function escapeTableCell(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/\|/g, '\\|')      // Escape pipe (table delimiter)
+    .replace(/\[/g, '\\[')      // Escape opening bracket
+    .replace(/\]/g, '\\]')      // Escape closing bracket
+    .replace(/\n/g, ' ')        // Replace newlines with spaces
+    .replace(/\r/g, '');        // Remove carriage returns
+}
+
+/**
  * Find all markdown files in the repository
  * Returns { active: [], archived: [] }
  */
@@ -637,7 +651,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     const linkPath = path.replace(/ /g, '%20');
     const refList = refs.slice(0, 3).map(r => basename(r, '.md')).join(', ');
     const more = refs.length > 3 ? ` +${refs.length - 3} more` : '';
-    lines.push(`| [${title}](${linkPath}) | ${count} | ${refList}${more} |`);
+    lines.push(`| [${escapeTableCell(title)}](${linkPath}) | ${count} | ${refList}${more} |`);
   }
   lines.push('');
 
@@ -658,7 +672,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     const doc = docs.find(d => d.path === path);
     const title = doc ? doc.title : basename(path, '.md');
     const linkPath = path.replace(/ /g, '%20');
-    lines.push(`| [${title}](${linkPath}) | ${count} |`);
+    lines.push(`| [${escapeTableCell(title)}](${linkPath}) | ${count} |`);
   }
   lines.push('');
   lines.push('---');
@@ -684,7 +698,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       const doc = docs.find(d => d.path === path);
       const title = doc ? doc.title : basename(path, '.md');
       const linkPath = path.replace(/ /g, '%20');
-      lines.push(`- [${title}](${linkPath})`);
+      lines.push(`- [${escapeTableCell(title)}](${linkPath})`);
     }
   }
   lines.push('');
@@ -705,7 +719,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   for (const doc of sortedDocs) {
     const status = doc.frontmatter.status || '-';
     const linkPath = doc.path.replace(/ /g, '%20');
-    lines.push(`| ${i++} | [${doc.path}](${linkPath}) | ${doc.title} | ${doc.category.tier} | ${status} |`);
+    lines.push(`| ${i++} | [${escapeTableCell(doc.path)}](${linkPath}) | ${escapeTableCell(doc.title)} | ${doc.category.tier} | ${escapeTableCell(status)} |`);
   }
 
   lines.push('');
@@ -814,8 +828,13 @@ function main() {
     const markdown = generateMarkdown(docs, referenceGraph, archivedFiles);
 
     const outputPath = join(ROOT, CONFIG.outputFile);
-    writeFileSync(outputPath, markdown, 'utf-8');
-    log(`   Written to ${CONFIG.outputFile}`);
+    try {
+      writeFileSync(outputPath, markdown, 'utf-8');
+      log(`   Written to ${CONFIG.outputFile}`);
+    } catch (writeError) {
+      console.error(`Error writing to ${CONFIG.outputFile}: ${writeError.message}`);
+      process.exit(1);
+    }
 
     // Summary
     log('');
