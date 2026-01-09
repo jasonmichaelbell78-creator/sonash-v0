@@ -267,3 +267,16 @@ node scripts/add-false-positive.js \
   --reason "Explanation of why this is not a documentation issue" \
   --source "AI_REVIEW_LEARNINGS_LOG.md#review-XXX"
 ```
+
+---
+
+## ⚠️ Update Dependencies
+
+When updating this command (categories, checklist items), also update:
+
+| Document | What to Update | Why |
+|----------|----------------|-----|
+| `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` | Category list, checklist structure | Multi-AI version of this audit |
+| `docs/SLASH_COMMANDS.md` | `/audit-documentation` section | Documentation of this command |
+
+**Why this matters:** This is the single-session version of the documentation audit. Category changes should stay synchronized with the multi-AI template.

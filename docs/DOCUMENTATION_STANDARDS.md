@@ -554,6 +554,31 @@ When updating project status in **any** document, immediately update **all relat
 | ROADMAP.md | SESSION_CONTEXT.md, README.md | Active milestones, completion %, current sprint |
 | Any plan document | AI_WORKFLOW.md | Navigation map (if new doc added) |
 
+**⚠️ Update Dependencies Protocol (MANDATORY for tightly-coupled docs)**
+
+Documents with tight coupling to other documents MUST include an **"Update Dependencies"** section that explicitly lists what else needs updating. This prevents missed updates when editing related documents.
+
+**When Required:**
+- Templates with derived instances (audit templates → slash commands)
+- Slash commands that invoke other commands (fetch-pr-feedback → pr-review)
+- Documents with parallel versions (multi-AI vs single-session audits)
+- Schema definitions with consumers
+
+**Required Section Format:**
+```markdown
+## ⚠️ Update Dependencies
+
+When updating this document, also update:
+
+| Document | What to Update | Why |
+|----------|----------------|-----|
+| `path/to/related.md` | [specific field/section] | [reason for coupling] |
+```
+
+**Placement:** After "Related Documents" section, before "Version History"
+
+**Key Principle:** If you've updated this document multiple times and forgotten to update a related document, ADD IT to the Update Dependencies table. This is institutional memory.
+
 **Cross-Reference Validation**
 
 Before committing:

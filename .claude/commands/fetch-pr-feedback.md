@@ -113,3 +113,16 @@ After presenting the summary, **automatically proceed** with the full `/pr-revie
 
 **Quick mode**: If only checking status (no fixes needed), state:
 "No actionable items found. Skipping PR review protocol."
+
+---
+
+## ⚠️ Update Dependencies
+
+When updating this command, also update:
+
+| Document | What to Update | Why |
+|----------|----------------|-----|
+| `docs/SLASH_COMMANDS.md` | `/fetch-pr-feedback` section, workflow steps | Documentation of this command |
+| `.claude/commands/pr-review.md` | Referenced steps (if protocol changes) | This command invokes pr-review |
+
+**Why this matters:** This command auto-invokes `/pr-review`. Changes to workflow or protocol must stay synchronized.
