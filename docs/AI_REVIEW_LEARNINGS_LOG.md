@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 3.1
+**Document Version:** 3.2
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-09
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.2 | 2026-01-09 | Review #111: PR #225 Compliance Fixes - 8 items (2 HIGH SSRF/secret exposure, 5 MEDIUM error handling/validation/performance, 1 LOW unstructured logging). Session #39. |
 | 3.1 | 2026-01-09 | Review #110: PR #225 Follow-up - 6 items (3 MAJOR path canonicalization/archive boundary/exclude boundary, 3 MINOR indented code blocks/recursion deferred). Session #39. |
 | 3.0 | 2026-01-09 | Review #109: PR #225 Feedback - 16 items (2 CRITICAL FS error handling/error exposure, 4 MAJOR JSON mode/ReDoS/symlink/cross-platform, 9 MINOR, 1 TRIVIAL). Rejected framework suggestion. Session #39. |
 | 2.9 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 → CODE_PATTERNS.md v1.4 (18 patterns: 6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General). Session #39. |
@@ -180,7 +181,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2 (Reviews #109-110)
+**Reviews since last consolidation:** 3 (Reviews #109-111)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current
 **Next consolidation due:** After Review #118
@@ -359,7 +360,61 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-110 are actively maintained below. Older reviews are in the archive.
+Reviews #61-111 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #111: PR #225 Compliance Fixes - Security & Performance (2026-01-09)
+
+**Source:** PR Compliance Review (WebFetch)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 12 total (High: 2, Medium: 7, Low: 2) - 8 fixed, 1 already fixed, 3 not applicable
+
+**Context:** Follow-up compliance review focusing on security hardening and performance optimization. Addressing "Requires Further Human Verification" items.
+
+**Patterns Identified:**
+
+1. **SSRF Protection with URL Allowlisting** (High pattern)
+   - Root cause: SONAR_URL env var could redirect auth headers to attacker-controlled servers
+   - Prevention: Add explicit domain allowlist (sonarcloud.io, sonarqube.com, localhost)
+   - Pattern: Validate external URLs against allowlist before fetching
+
+2. **Secret Exposure in Config** (High pattern - previously fixed)
+   - Root cause: Token placeholder in .mcp.json encourages storing secrets in repo
+   - Prevention: Remove placeholder; rely on environment variable or Claude desktop config
+   - Pattern: Never commit even placeholder secrets; use env vars
+
+3. **Error Response Sanitization** (Medium pattern)
+   - Root cause: Upstream error details returned directly to callers
+   - Prevention: Map status codes to generic messages; don't expose upstream error text
+   - Pattern: Sanitize external API errors before returning to users
+
+4. **Pagination Truncation Warning** (Medium pattern)
+   - Root cause: Silent truncation at page 100 without notification
+   - Prevention: Return `truncated: true` flag when limit reached; log warning
+   - Pattern: Surface incomplete results to callers
+
+5. **Input Argument Validation** (Medium pattern)
+   - Root cause: MCP tool arguments forwarded without validation
+   - Prevention: Add null check, type validation, and length limits (MAX_INPUT_LENGTH = 500)
+   - Pattern: Validate all external inputs at system boundaries
+
+6. **O(n²) to O(1) Lookup Optimization** (Medium pattern)
+   - Root cause: Repeated docs.find() inside loops creates O(n²) complexity
+   - Prevention: Create docsByPath Map once; use Map.get() for O(1) lookups
+   - Pattern: Precompute lookup Maps for repeated searches
+
+**Resolution:**
+- Fixed: 8 items (2 HIGH, 5 MEDIUM, 1 LOW)
+- Already Fixed: 2 items (ReDoS, writeFileSync)
+- Not Applicable: 2 items (unstructured logging - acceptable for CLI tool)
+
+**Commit:** 0f990b2
+
+**Key Learnings:**
+- **SSRF requires explicit allowlists**: Environment variables should be validated, not trusted
+- **Error sanitization at boundaries**: External API errors should never propagate raw to users
+- **Precompute for performance**: Convert O(n) lookups to O(1) with Map for repeated access
 
 ---
 
