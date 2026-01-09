@@ -258,7 +258,7 @@ If no PR number provided, automatically finds the PR for the current branch.
 2. **Fetch Details** - Get PR info, comments, review comments, and check runs
 3. **Parse Sources** - Categorize by source (CodeRabbit, Qodo, SonarQube)
 4. **Output Summary** - Present structured summary with counts per source
-5. **Offer Next Steps** - Prompt to process with `/pr-review` protocol
+5. **Auto-Invoke `/pr-review`** - Automatically proceeds with full PR review protocol (categorization, TodoWrite, agents, learning capture, verification)
 
 #### Output Format
 ```markdown
