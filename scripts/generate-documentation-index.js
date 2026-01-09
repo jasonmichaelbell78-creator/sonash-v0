@@ -227,10 +227,42 @@ function extractDescription(content) {
 
 /**
  * Strip code blocks from content to avoid parsing links inside them
+ * Uses line-by-line parsing to avoid ReDoS with backreference regex
  */
 function stripCodeBlocks(content) {
-  // Remove fenced code blocks (``` or ~~~)
-  return content.replace(/^(`{3,}|~{3,})[\s\S]*?^\1/gm, '');
+  const lines = content.split('\n');
+  const result = [];
+  let inCodeBlock = false;
+  let codeBlockFence = null;
+
+  for (const line of lines) {
+    // Check for code block fence (``` or ~~~)
+    const fenceMatch = line.match(/^(`{3,}|~{3,})/);
+
+    if (fenceMatch) {
+      const fence = fenceMatch[1][0]; // Get the fence character (` or ~)
+      const fenceLength = fenceMatch[1].length;
+
+      if (!inCodeBlock) {
+        // Starting a code block
+        inCodeBlock = true;
+        codeBlockFence = { char: fence, length: fenceLength };
+      } else if (fence === codeBlockFence.char && fenceLength >= codeBlockFence.length) {
+        // Ending the code block (same or longer fence)
+        inCodeBlock = false;
+        codeBlockFence = null;
+      }
+      // Skip fence lines
+      continue;
+    }
+
+    // Only include lines outside code blocks
+    if (!inCodeBlock) {
+      result.push(line);
+    }
+  }
+
+  return result.join('\n');
 }
 
 /**
@@ -295,6 +327,12 @@ function extractLinks(content, currentFile) {
 
     // Normalize path (cross-platform)
     resolvedPath = resolvedPath.replace(/\\/g, '/');
+
+    // Path containment check: reject paths that escape repository root
+    // After normalization, paths starting with '..' or containing '/../' escape the root
+    if (resolvedPath.startsWith('..') || resolvedPath.includes('/../') || resolvedPath === '..') {
+      continue;
+    }
 
     // Only include .md files
     if (resolvedPath.endsWith('.md')) {
