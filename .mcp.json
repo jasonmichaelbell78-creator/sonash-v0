@@ -8,7 +8,7 @@
       "command": "node",
       "args": ["scripts/mcp/sonarcloud-server.js"],
       "env": {
-        "SONAR_TOKEN": "sqpe7423bccb312727e5e5eb22457d8350f5b53b43c",
+        "SONAR_TOKEN": "e7423bccb312727e5e5eb22457d8350f5b53b43c",
         "SONAR_URL": "https://sonarcloud.io"
       }
     }
