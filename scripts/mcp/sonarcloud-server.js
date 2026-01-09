@@ -22,11 +22,12 @@ const SONAR_BASE_URL = process.env.SONAR_URL || 'https://sonarcloud.io';
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
 // Helper to make authenticated requests to SonarCloud API
+// SonarCloud uses Basic auth: token as username, empty password
 async function sonarFetch(endpoint, params = {}) {
   const url = new URL(`${SONAR_BASE_URL}${endpoint}`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
-      url.searchParams.append(key, value);
+      url.searchParams.append(key, String(value));
     }
   });
 
@@ -35,16 +36,55 @@ async function sonarFetch(endpoint, params = {}) {
   };
 
   if (SONAR_TOKEN) {
-    headers['Authorization'] = `Bearer ${SONAR_TOKEN}`;
+    // SonarCloud API uses Basic auth with token as username, empty password
+    const credentials = Buffer.from(`${SONAR_TOKEN}:`).toString('base64');
+    headers['Authorization'] = `Basic ${credentials}`;
   }
 
   const response = await fetch(url.toString(), { headers });
 
   if (!response.ok) {
-    throw new Error(`SonarCloud API error: ${response.status} ${response.statusText}`);
+    const errorText = await response.text().catch(() => '');
+    throw new Error(`SonarCloud API error: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
   }
 
   return response.json();
+}
+
+// Helper to fetch all pages of paginated results
+async function sonarFetchAll(endpoint, params = {}, itemsKey = 'items') {
+  const allItems = [];
+  let page = 1;
+  const pageSize = 100;
+
+  while (true) {
+    const data = await sonarFetch(endpoint, { ...params, p: page, ps: pageSize });
+    const items = data[itemsKey] || [];
+    allItems.push(...items);
+
+    // Check if we have more pages
+    const total = data.paging?.total || data.total || items.length;
+    if (allItems.length >= total || items.length < pageSize) {
+      break;
+    }
+    page++;
+
+    // Safety limit to prevent infinite loops
+    if (page > 100) {
+      break;
+    }
+  }
+
+  return allItems;
+}
+
+// Input validation helper
+function validateRequired(args, ...requiredFields) {
+  for (const field of requiredFields) {
+    if (!args[field] || typeof args[field] !== 'string' || args[field].trim() === '') {
+      throw new Error(`Missing or invalid required parameter: ${field}`);
+    }
+  }
 }
 
 // Create the MCP server
@@ -156,17 +196,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'get_security_hotspots': {
+        // Validate required inputs
+        validateRequired(args, 'projectKey');
+
         const params = {
-          projectKey: args.projectKey,
-          pullRequest: args.pullRequest,
+          projectKey: args.projectKey.trim(),
+          pullRequest: args.pullRequest?.trim(),
           status: args.status || 'TO_REVIEW',
-          ps: 100, // Page size
         };
 
-        const data = await sonarFetch('/api/hotspots/search', params);
+        // Use pagination to get all hotspots
+        const allHotspots = await sonarFetchAll('/api/hotspots/search', params, 'hotspots');
 
         // Format hotspots with relevant details
-        const hotspots = (data.hotspots || []).map(h => ({
+        const hotspots = allHotspots.map(h => ({
           key: h.key,
           message: h.message,
           file: h.component?.split(':').pop() || h.component,
@@ -182,7 +225,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: JSON.stringify({
-                total: data.paging?.total || hotspots.length,
+                total: hotspots.length,
                 hotspots,
               }, null, 2),
             },
@@ -191,18 +234,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_issues': {
+        // Validate required inputs
+        validateRequired(args, 'projectKey');
+
         const params = {
-          componentKeys: args.projectKey,
-          pullRequest: args.pullRequest,
-          types: args.types,
-          severities: args.severities,
-          ps: 100,
+          componentKeys: args.projectKey.trim(),
+          pullRequest: args.pullRequest?.trim(),
+          types: args.types?.trim(),
+          severities: args.severities?.trim(),
           resolved: 'false',
         };
 
-        const data = await sonarFetch('/api/issues/search', params);
+        // Use pagination to get all issues
+        const allIssues = await sonarFetchAll('/api/issues/search', params, 'issues');
 
-        const issues = (data.issues || []).map(i => ({
+        const issues = allIssues.map(i => ({
           key: i.key,
           type: i.type,
           severity: i.severity,
@@ -218,7 +264,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: JSON.stringify({
-                total: data.total || issues.length,
+                total: issues.length,
                 issues,
               }, null, 2),
             },
@@ -227,9 +273,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_quality_gate': {
+        // Validate required inputs
+        validateRequired(args, 'projectKey');
+
         const params = {
-          projectKey: args.projectKey,
-          pullRequest: args.pullRequest,
+          projectKey: args.projectKey.trim(),
+          pullRequest: args.pullRequest?.trim(),
         };
 
         const data = await sonarFetch('/api/qualitygates/project_status', params);
@@ -253,8 +302,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_hotspot_details': {
+        // Validate required inputs
+        validateRequired(args, 'hotspotKey');
+
         const data = await sonarFetch('/api/hotspots/show', {
-          hotspot: args.hotspotKey,
+          hotspot: args.hotspotKey.trim(),
         });
 
         return {
