@@ -334,4 +334,18 @@ Create commit(s) following project conventions:
 
 ---
 
+## ⚠️ Update Dependencies
+
+When updating this command (steps, rules, protocol), also update:
+
+| Document | What to Update | Why |
+|----------|----------------|-----|
+| `.claude/commands/fetch-pr-feedback.md` | Step 5 (invoked steps list) | fetch-pr-feedback auto-invokes this protocol |
+| `docs/SLASH_COMMANDS.md` | `/pr-review` section | Documentation of this command |
+| `docs/AI_REVIEW_PROCESS.md` | Related workflow sections | Process documentation |
+
+**Why this matters:** This is the core PR review protocol. Changes here affect all commands that invoke it.
+
+---
+
 ## NOW: Paste the review feedback below and I will process it using this protocol.

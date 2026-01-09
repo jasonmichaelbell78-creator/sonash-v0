@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 2.6
+**Document Version:** 2.8
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 
 ## Purpose
 
@@ -18,6 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.8 | 2026-01-09 | Review #108: Update Dependencies Protocol - new mandatory pattern for tightly-coupled docs. Added ⚠️ Update Dependencies to 4 key documents. Session #39. |
+| 2.7 | 2026-01-09 | Review #107: PR #224 Feedback - 2 items (SSR guard, status label) + process fix (/fetch-pr-feedback auto-invoke). Consolidation threshold reached (10 reviews). Session #39. |
 | 2.6 | 2026-01-08 | Review #106: PR Review Processing - 16 items (8 MAJOR ReDoS/path-traversal/ID-parsing/validation/threshold-consistency, 6 MINOR env-metadata/FP-patterns/scope-clarity, 2 TRIVIAL). Session #40. |
 | 2.5 | 2026-01-08 | Review #105: PR Review Processing - 17 items (4 MAJOR ReDoS/JSONL/schema, 9 MINOR docs/patterns, 4 TRIVIAL). Session #39. |
 | 2.4 | 2026-01-08 | Review #104: PR Review Processing - 18 items (4 MAJOR security pattern/baselines/JSON metrics, 9 MINOR shell portability/INP metrics, 5 TRIVIAL). Session #38. |
@@ -175,10 +177,10 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8 (Reviews #98-105)
+**Reviews since last consolidation:** 11 (Reviews #98-108)
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ OK (consolidated 2026-01-07 - Reviews #83-97 → CODE_PATTERNS.md v1.3)
-**Next consolidation due:** After Review #107
+**Status:** ⚠️ CONSOLIDATION DUE (threshold exceeded - Reviews #98-108 ready for consolidation)
+**Next consolidation due:** NOW (at session end)
 
 ### When to Consolidate
 
@@ -331,7 +333,76 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-106 are actively maintained below. Older reviews are in the archive.
+Reviews #61-108 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #108: Process Improvement - Update Dependencies Protocol (2026-01-09)
+
+**Source:** Self-identified (User feedback + pattern analysis)
+**PR/Branch:** claude/new-session-DJX87
+**Commit:** 59590f9
+**Suggestions:** 1 process improvement (self-identified)
+
+**Context:** User identified recurring issue where document updates weren't propagating to related documents (e.g., adding Category 6 to multi-AI audit template but forgetting to update single-session audit command). Root cause: no explicit instructions in documents telling what else to update.
+
+**Patterns Identified:**
+
+1. **Missing Update Dependencies Instructions** (Process pattern - User-identified)
+   - Root cause: Tightly-coupled documents don't have explicit "also update X" instructions
+   - Impact: Repeated misses when updating templates/commands (user had to remind multiple times)
+   - Prevention: Added "Update Dependencies Protocol" to DOCUMENTATION_STANDARDS.md
+   - Fix: Added ⚠️ Update Dependencies sections to 4 key documents
+
+**Resolution:**
+- Process: 1 item (new protocol + 4 document updates)
+
+**Files Modified:**
+| File | Change |
+|------|--------|
+| `docs/DOCUMENTATION_STANDARDS.md` | Added "Update Dependencies Protocol" as mandatory for tightly-coupled docs |
+| `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` | Added ⚠️ Update Dependencies section |
+| `.claude/commands/audit-documentation.md` | Added ⚠️ Update Dependencies section |
+| `.claude/commands/fetch-pr-feedback.md` | Added ⚠️ Update Dependencies section |
+| `.claude/commands/pr-review.md` | Added ⚠️ Update Dependencies section |
+
+**Key Learnings:**
+- Centralized tracking (DOCUMENT_DEPENDENCIES.md) is not enough - decentralized instructions in each document are needed
+- "Related Documents" sections are for reference; "Update Dependencies" sections are for action
+- When a sync miss happens multiple times, add explicit instructions to prevent future misses (institutional memory)
+
+---
+
+#### Review #107: PR #224 Feedback - SSR Safety & Process Gap Identification (2026-01-09)
+
+**Source:** Mixed (Qodo PR Suggestions via WebFetch)
+**PR/Branch:** PR #224 / claude/new-session-DJX87
+**Commit:** e168a87
+**Suggestions:** 2 total (Minor: 2)
+
+**Context:** Processed remaining Qodo feedback on PR #224 after multi-AI performance audit aggregation. During processing, identified process gap where `/fetch-pr-feedback` doesn't auto-invoke `/pr-review`, causing learnings to be missed.
+
+**Patterns Identified:**
+
+1. **SSR-Safe Browser API Access** (Minor pattern - Qodo)
+   - Root cause: Code example used `window.matchMedia()` without checking if running in browser
+   - Prevention: Always guard browser APIs with `typeof window !== 'undefined'`
+   - Fix: Added SSR guard to PERF-006 code example in performance audit findings
+
+2. **Process Gap: /fetch-pr-feedback Skips Protocol** (Process pattern - Self-identified)
+   - Root cause: `/fetch-pr-feedback` only "offered" to run `/pr-review` instead of auto-invoking
+   - Impact: When user says "yes" to quick fixes, full protocol (including learnings) was bypassed
+   - Prevention: Updated `/fetch-pr-feedback` Step 5 to auto-invoke `/pr-review` protocol
+   - Fix: Modified `.claude/commands/fetch-pr-feedback.md` to automatically proceed with full protocol
+
+**Resolution:**
+- Fixed: 2 items (SSR guard, status label)
+- Process: 1 item (updated /fetch-pr-feedback to auto-invoke /pr-review)
+
+**Key Learnings:**
+- Browser API code examples in documentation should include SSR guards
+- Slash commands that "offer" next steps can create protocol gaps; prefer auto-invoke when the next step is expected
+- Retroactive learnings capture is valid when process gap is identified
 
 ---
 

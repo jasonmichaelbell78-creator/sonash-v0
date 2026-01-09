@@ -1,8 +1,8 @@
 # Slash Commands Reference
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 **Status:** ACTIVE
 
 ---
@@ -230,6 +230,63 @@ Synchronize documentation and check for consistency issues.
 - After moving/renaming documents
 - Ensuring cross-references are valid
 - Syncing related documents
+
+---
+
+### `/fetch-pr-feedback` (IMPLEMENTED)
+
+**File:** `.claude/commands/fetch-pr-feedback.md`
+**Created:** Session #38
+
+#### Description
+Fetch AI code review feedback (CodeRabbit, Qodo, SonarQube) from a GitHub PR and prepare it for processing with `/pr-review`.
+
+#### Syntax
+```
+/fetch-pr-feedback [PR_NUMBER]
+```
+
+If no PR number provided, automatically finds the PR for the current branch.
+
+#### Use Cases
+- When CodeRabbit/Qodo comments arrive on a PR
+- Before processing PR review feedback
+- Gathering all AI feedback from multiple sources
+
+#### Workflow Steps
+1. **Determine PR** - Use provided number or find PR for current branch via `gh pr list`
+2. **Fetch Details** - Get PR info, comments, review comments, and check runs
+3. **Parse Sources** - Categorize by source (CodeRabbit, Qodo, SonarQube)
+4. **Output Summary** - Present structured summary with counts per source
+5. **Auto-Invoke `/pr-review`** - Automatically proceeds with full PR review protocol (categorization, TodoWrite, agents, learning capture, verification)
+
+#### Output Format
+```markdown
+## PR #N Feedback Summary
+
+**PR:** <title>
+**Branch:** <branch>
+**State:** <open/merged>
+
+### CodeRabbit Feedback
+- [count] actionable comments
+- [list each with file:line and summary]
+
+### Qodo Feedback
+- [count] suggestions
+- [list each with file:line and summary]
+
+### SonarQube Status
+- Quality Gate: PASSED/FAILED
+
+### CI Status
+- [list failed checks if any]
+```
+
+#### Compliance Relevance
+- **Unified View:** All AI feedback sources in one place
+- **Workflow Integration:** Feeds directly into `/pr-review`
+- **Complete Coverage:** Ensures no feedback source is missed
 
 ---
 
@@ -1386,6 +1443,7 @@ args: arg1 - Description of argument
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-01-09 | Added /fetch-pr-feedback command documentation |
 | 1.1 | 2026-01-08 | Added 6 single-session audit commands (/audit-code, /audit-security, /audit-performance, /audit-refactoring, /audit-documentation, /audit-process) with AUDIT_TRACKER.md integration |
 | 1.0 | 2026-01-05 | Initial creation - comprehensive slash command reference |
 

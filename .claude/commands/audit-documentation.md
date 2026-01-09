@@ -54,13 +54,14 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (6 Categories):**
+**Focus Areas (7 Categories):**
 1. Broken Links (internal cross-references that 404)
 2. Stale Content (outdated versions, deprecated info)
 3. Coverage Gaps (undocumented features, missing guides)
 4. Tier Compliance (docs in correct folders per tier)
 5. Frontmatter Consistency (required fields present)
 6. Template-Instance Sync (templates match instances)
+7. Content Quality (coherence, bloat, contradictions, flow)
 
 **For each category:**
 1. Search relevant files using Grep/Glob
@@ -76,6 +77,16 @@ If outdated, note discrepancies but proceed with current values.
 - Required sections present (Purpose, Usage, etc.)
 - No placeholder content ([TODO], [PLACEHOLDER], [X])
 - Archive docs properly excluded from lint
+
+**Content Quality Checks (Category 7):**
+- No circular documentation (A→B→C→A reference loops that confuse readers)
+- No redundant/duplicate content across documents
+- No contradictory information (conflicting guidance for same task)
+- Documentation narrative is cohesive and flows logically
+- Document relationships are navigable (clear paths to related content)
+- No bloated content (overly verbose, could be condensed)
+- Consistent terminology across documents
+- No orphaned docs (no incoming links, unclear purpose)
 
 **Scope:**
 - Include: `docs/`, `README.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `DEVELOPMENT.md`
@@ -176,7 +187,7 @@ Create file: `docs/audits/single-session/documentation/audit-[YYYY-MM-DD].jsonl`
 
 Each line (UPDATED SCHEMA with confidence and verification):
 ```json
-{"id":"DOC-001","category":"Links|Stale|Coverage|Tier|Frontmatter|Sync","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"docs/path/to/file.md","line":123,"title":"Short description","description":"Detailed issue","recommendation":"How to fix","evidence":["broken link text","grep output","git log output"],"cross_ref":"docs_check|docs_sync|git_log|MANUAL_ONLY"}
+{"id":"DOC-001","category":"Links|Stale|Coverage|Tier|Frontmatter|Sync|Quality","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"docs/path/to/file.md","line":123,"title":"Short description","description":"Detailed issue","recommendation":"How to fix","evidence":["broken link text","grep output","git log output"],"cross_ref":"docs_check|docs_sync|git_log|MANUAL_ONLY"}
 ```
 
 **3. Markdown Report (save to file):**
@@ -256,3 +267,16 @@ node scripts/add-false-positive.js \
   --reason "Explanation of why this is not a documentation issue" \
   --source "AI_REVIEW_LEARNINGS_LOG.md#review-XXX"
 ```
+
+---
+
+## ⚠️ Update Dependencies
+
+When updating this command (categories, checklist items), also update:
+
+| Document | What to Update | Why |
+|----------|----------------|-----|
+| `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` | Category list, checklist structure | Multi-AI version of this audit |
+| `docs/SLASH_COMMANDS.md` | `/audit-documentation` section | Documentation of this command |
+
+**Why this matters:** This is the single-session version of the documentation audit. Category changes should stay synchronized with the multi-AI template.

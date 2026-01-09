@@ -1,8 +1,8 @@
 # Integrated Improvement Plan
 
-**Document Version:** 2.5
+**Document Version:** 2.7
 **Created:** 2026-01-03
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 **Status:** ACTIVE
 **Overall Completion:** ~40% (Step 4 in progress - 2/6 audits complete)
 
@@ -1082,6 +1082,20 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
   - Update FALSE_POSITIVES.jsonl with recurring patterns
   - Document chosen approach in AI_REVIEW_PROCESS.md
 
+- [x] **Task 5.9**: Documentation Content Review ~~(1.5 hours)~~ **INTEGRATED**
+  - **Status:** Merged into Task 4.2.5 (Documentation Audit) as "Category 6: Content Quality"
+  - **Rationale:** Content quality review benefits from multi-AI consensus and recurring audit triggers
+  - **Updates made:**
+    - Added Category 6 to `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` (v1.2)
+    - Added Category 7 to `.claude/commands/audit-documentation.md` (single-session)
+  - **Content quality checks now include:**
+    - Circular documentation detection (confusing reference loops)
+    - Bloat/redundancy detection across documents
+    - Contradiction checking (conflicting guidance)
+    - Coherence/flow assessment
+    - Terminology consistency
+    - Orphaned document identification
+
 ### Acceptance Criteria
 
 - [ ] Session activity logging operational
@@ -1092,6 +1106,7 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
 - [ ] SKILL_AGENT_POLICY.md created
 - [ ] Pre-commit/pre-push hooks updated
 - [ ] PR review noise reduced via tool configuration and false positives expansion
+- [x] Documentation content review integrated into recurring audit framework (Task 4.2.5)
 
 ---
 
@@ -1312,6 +1327,8 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.7 | 2026-01-09 | Integrated Task 5.9 into recurring Documentation Audit (Task 4.2.5); Added Category 6 (Content Quality) to multi-AI and single-session audit templates; Effort returned to 6-9h (content review now part of recurring audits) |
+| 2.6 | 2026-01-09 | Added Task 5.9 (Documentation Content Review) covering reference validation, circular documentation detection, content freshness, linkage quality, flow coherence, bloat detection, and contradiction checking; Updated Step 5 effort estimate (6-9h → 7.5-10.5h) |
 | 2.5 | 2026-01-08 | Added Task 5.8 (PR Review Process Improvements); Created PR_REVIEW_IMPROVEMENT_OPTIONS.md with 14 options across 5 categories; Added patterns:check to pre-commit hook; Updated Step 5 effort estimate (4-6h → 6-9h) |
 | 2.4 | 2026-01-07 | Step 4.2 Security Audit complete (Tasks 4.2.2a, 4.2.2b); 10 canonical findings aggregated to docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl; Review #88 logged; Step 4 now IN PROGRESS at 33% (2/6 categories) |
 | 2.3 | 2026-01-05 | Effort estimate correction: Step 4 (12-16h→~28h based on task sum); Rollup (48-72h→43-55h verified against per-step estimates); Clarified PARSE_ERRORS_JSONL as optional artifact |
