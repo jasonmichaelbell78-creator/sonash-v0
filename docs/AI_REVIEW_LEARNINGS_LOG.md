@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 3.0
+**Document Version:** 3.1
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-09
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.1 | 2026-01-09 | Review #110: PR #225 Follow-up - 6 items (3 MAJOR path canonicalization/archive boundary/exclude boundary, 3 MINOR indented code blocks/recursion deferred). Session #39. |
 | 3.0 | 2026-01-09 | Review #109: PR #225 Feedback - 16 items (2 CRITICAL FS error handling/error exposure, 4 MAJOR JSON mode/ReDoS/symlink/cross-platform, 9 MINOR, 1 TRIVIAL). Rejected framework suggestion. Session #39. |
 | 2.9 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 → CODE_PATTERNS.md v1.4 (18 patterns: 6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General). Session #39. |
 | 2.8 | 2026-01-09 | Review #108: Update Dependencies Protocol - new mandatory pattern for tightly-coupled docs. Added ⚠️ Update Dependencies to 4 key documents. Session #39. |
@@ -179,7 +180,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 (Review #109)
+**Reviews since last consolidation:** 2 (Reviews #109-110)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current
 **Next consolidation due:** After Review #118
@@ -358,7 +359,48 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-108 are actively maintained below. Older reviews are in the archive.
+Reviews #61-110 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #110: PR #225 Follow-up - Path Canonicalization & Boundary Checks (2026-01-09)
+
+**Source:** Qodo PR Suggestions (post-commit b56cd42)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 6 total (Major: 3, Minor: 2, Deferred: 1)
+
+**Context:** Follow-up Qodo suggestions after initial PR #225 fixes. Focus on path security hardening and edge case handling.
+
+**Patterns Identified:**
+
+1. **Path Canonicalization** (Major pattern - Qodo)
+   - Root cause: join() doesn't resolve `..` segments, allowing `docs/../scripts/file.md` to bypass checks
+   - Prevention: Implement canonicalizePath() that resolves `.` and `..` segments
+   - Pattern: Always canonicalize paths after join() before boundary checks
+
+2. **Archive Directory Boundary Check** (Major pattern - Qodo)
+   - Root cause: startsWith('docs/archive') matches 'docs/archiveXYZ'
+   - Prevention: Check for exact match OR starts with prefix + '/'
+   - Pattern: Use `path === prefix || path.startsWith(prefix + '/')` for directory matching
+
+3. **Excluded Directory Boundary Check** (Major pattern - Qodo)
+   - Root cause: Same prefix matching issue as archive directories
+   - Prevention: Apply same boundary check pattern
+   - Pattern: Consistent boundary checking across all path filters
+
+4. **Indented Code Block Detection** (Minor pattern - Qodo)
+   - Root cause: CommonMark allows 0-3 spaces before fence
+   - Prevention: Update regex to `^( {0,3})(\`{3,}|~{3,})`
+   - Pattern: Follow spec for indented fenced code blocks
+
+**Resolution:**
+- Fixed: 5 items (3 MAJOR, 2 MINOR)
+- Deferred: 1 item (recursion avoidance - theoretical edge case for extremely deep directories)
+
+**Key Learnings:**
+- **Canonicalize after join**: join() preserves `..` segments; must resolve them explicitly
+- **Boundary checks need separators**: `startsWith(prefix)` is insufficient; add path separator check
+- **CommonMark compliance**: Fenced code blocks can have 0-3 space indent
 
 ---
 

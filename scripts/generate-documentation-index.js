@@ -54,9 +54,39 @@ const verbose = args.includes('--verbose');
 
 /**
  * Check if a path is in an archive directory
+ * Uses proper path boundary check to avoid matching "docs/archiveXYZ"
  */
 function isArchived(relativePath) {
-  return CONFIG.archiveDirs.some(archiveDir => relativePath.startsWith(archiveDir));
+  return CONFIG.archiveDirs.some(archiveDir =>
+    relativePath === archiveDir ||
+    relativePath.startsWith(archiveDir + '/')
+  );
+}
+
+/**
+ * Canonicalize a path by resolving . and .. segments
+ * Returns null if path escapes root (starts with ..)
+ */
+function canonicalizePath(inputPath) {
+  const segments = inputPath.split('/');
+  const result = [];
+
+  for (const segment of segments) {
+    if (segment === '' || segment === '.') {
+      continue;
+    }
+    if (segment === '..') {
+      if (result.length === 0) {
+        // Path escapes root
+        return null;
+      }
+      result.pop();
+    } else {
+      result.push(segment);
+    }
+  }
+
+  return result.join('/');
 }
 
 /**
@@ -82,8 +112,12 @@ function findMarkdownFiles(dir, result = { active: [], archived: [] }) {
     const fullPath = join(dir, entry);
     const relativePath = relative(ROOT, fullPath).replace(/\\/g, '/'); // Cross-platform normalization
 
-    // Skip excluded directories
-    if (CONFIG.excludeDirs.some(exc => relativePath.startsWith(exc) || entry === exc)) {
+    // Skip excluded directories (with proper boundary check)
+    if (CONFIG.excludeDirs.some(exc =>
+      entry === exc ||
+      relativePath === exc ||
+      relativePath.startsWith(exc + '/')
+    )) {
       continue;
     }
 
@@ -228,6 +262,7 @@ function extractDescription(content) {
 /**
  * Strip code blocks from content to avoid parsing links inside them
  * Uses line-by-line parsing to avoid ReDoS with backreference regex
+ * Handles indented fenced code blocks (0-3 spaces before fence per CommonMark)
  */
 function stripCodeBlocks(content) {
   const lines = content.split('\n');
@@ -236,17 +271,19 @@ function stripCodeBlocks(content) {
   let codeBlockFence = null;
 
   for (const line of lines) {
-    // Check for code block fence (``` or ~~~)
-    const fenceMatch = line.match(/^(`{3,}|~{3,})/);
+    // Check for code block fence (``` or ~~~) with optional 0-3 space indent
+    // CommonMark allows up to 3 spaces before the fence
+    const fenceMatch = line.match(/^( {0,3})(`{3,}|~{3,})/);
 
     if (fenceMatch) {
-      const fence = fenceMatch[1][0]; // Get the fence character (` or ~)
-      const fenceLength = fenceMatch[1].length;
+      const indent = fenceMatch[1].length;
+      const fence = fenceMatch[2][0]; // Get the fence character (` or ~)
+      const fenceLength = fenceMatch[2].length;
 
       if (!inCodeBlock) {
         // Starting a code block
         inCodeBlock = true;
-        codeBlockFence = { char: fence, length: fenceLength };
+        codeBlockFence = { char: fence, length: fenceLength, indent };
       } else if (fence === codeBlockFence.char && fenceLength >= codeBlockFence.length) {
         // Ending the code block (same or longer fence)
         inCodeBlock = false;
@@ -328,9 +365,12 @@ function extractLinks(content, currentFile) {
     // Normalize path (cross-platform)
     resolvedPath = resolvedPath.replace(/\\/g, '/');
 
-    // Path containment check: reject paths that escape repository root
-    // After normalization, paths starting with '..' or containing '/../' escape the root
-    if (resolvedPath.startsWith('..') || resolvedPath.includes('/../') || resolvedPath === '..') {
+    // Canonicalize path to resolve . and .. segments properly
+    // This handles cases like "docs/../scripts/file.md" → "scripts/file.md"
+    resolvedPath = canonicalizePath(resolvedPath);
+
+    // Path containment check: canonicalizePath returns null if path escapes root
+    if (resolvedPath === null) {
       continue;
     }
 

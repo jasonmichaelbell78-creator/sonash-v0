@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate.
 
 **Generated:** 2026-01-09
-**Active Documents:** 186
+**Active Documents:** 189
 **Archived Documents:** 62
 
 ---
@@ -28,7 +28,7 @@
 | Tier 1 | 8 | Essential |
 | Tier 2 | 36 | Core |
 | Tier 3 | 109 | Specialized |
-| Tier 4 | 33 | Reference |
+| Tier 4 | 36 | Reference |
 | Tier 5 | 0 | Archive |
 
 ### By Category
@@ -43,6 +43,7 @@
 | 2026 Q1 Reviews | 11 |
 | Root Documents | 8 |
 | .claude | 4 |
+| .github | 3 |
 | Brainstorm | 2 |
 | Reviews & Audits | 2 |
 | .agent > workflows | 1 |
@@ -313,6 +314,16 @@
 | [technical writer](.claude/agents/technical-writer.md) | - | ↓0 ↑0 | 2026-01-08 |
 | [ui ux designer](.claude/agents/ui-ux-designer.md) | - | ↓0 ↑0 | 2026-01-08 |
 
+### .github (Tier 4)
+
+*Uncategorized*
+
+| Document | Description | References | Last Modified |
+|----------|-------------|------------|---------------|
+| [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md) | - | ↓0 ↑0 | 2026-01-08 |
+| [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md) | - | ↓0 ↑0 | 2026-01-08 |
+| [pull request template](.github/pull_request_template.md) | - | ↓0 ↑0 | 2026-01-08 |
+
 ### Analysis (Tier 4)
 
 *Code analysis and metrics*
@@ -402,7 +413,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**131 orphaned documents:**
+**134 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [backend architect](.claude/agents/backend-architect.md)
@@ -509,6 +520,9 @@ Documents with no inbound links (not referenced by any other document):
 - [Using Skills](.claude/skills/using-superpowers/SKILL.md)
 - [UX Researcher & Designer](.claude/skills/ux-researcher-designer/SKILL.md)
 - [Web Application Testing](.claude/skills/webapp-testing/SKILL.md)
+- [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
+- [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md)
+- [pull request template](.github/pull_request_template.md)
 - [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)
 - [Local Recovery Resources Implementation Plan](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)
@@ -655,82 +669,85 @@ Documents with no inbound links (not referenced by any other document):
 | 108 | [.claude/skills/using-superpowers/SKILL.md](.claude/skills/using-superpowers/SKILL.md) | Using Skills | 3 | - |
 | 109 | [.claude/skills/ux-researcher-designer/SKILL.md](.claude/skills/ux-researcher-designer/SKILL.md) | UX Researcher & Designer | 3 | - |
 | 110 | [.claude/skills/webapp-testing/SKILL.md](.claude/skills/webapp-testing/SKILL.md) | Web Application Testing | 3 | - |
-| 111 | [AI_WORKFLOW.md](AI_WORKFLOW.md) | AI Workflow Guide | 1 | - |
-| 112 | [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture Documentation | 1 | ACTIVE |
-| 113 | [claude.md](claude.md) | AI Context & Rules for SoNash | 1 | - |
-| 114 | [DEVELOPMENT.md](DEVELOPMENT.md) | Development Guide | 1 | ACTIVE |
-| 115 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | Admin Panel Security & Monitoring Requirements | 2 | - |
-| 116 | [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) | Code Review Patterns Reference | 3 | - |
-| 117 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md) | AI Review Learnings Log | 2 | ✅ Current |
-| 118 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) | 🤖 AI Code Review Process | 2 | - |
-| 119 | [docs/analysis/sonarqube-manifest.md](docs/analysis/sonarqube-manifest.md) | SonarQube Issues Manifest for Phase 4 Multi-AI Review | 4 | - |
-| 120 | [docs/ANTIGRAVITY_GUIDE.md](docs/ANTIGRAVITY_GUIDE.md) | Getting the Most Out of Antigravity | 2 | Active |
-| 121 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md) | App Check Setup Guide | 2 | Active |
-| 122 | [docs/AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md) | Audit Findings Backlog | 2 | - |
-| 123 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md) | Audit Tracker | 2 | - |
-| 124 | [docs/audits/multi-ai/performance/audit-2026-01-08.md](docs/audits/multi-ai/performance/audit-2026-01-08.md) | Multi-AI Performance Audit Report | 2 | COMPLETED |
-| 125 | [docs/audits/single-session/README.md](docs/audits/single-session/README.md) | Single-Session Audit Results | 2 | - |
-| 126 | [docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md](docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md) | PR Review Improvement Options | 4 | DRAFT - Options for evaluation |
-| 127 | [docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md](docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md) | Review Policy Expansion - Draft Design | 4 | DRAFT - For refinement before integration |
-| 128 | [docs/decisions/ADR-001-integrated-improvement-plan-approach.md](docs/decisions/ADR-001-integrated-improvement-plan-approach.md) | ADR-001: Integrated Improvement Plan Approach | 2 | Accepted |
-| 129 | [docs/decisions/README.md](docs/decisions/README.md) | Architecture Decision Records (ADRs) | 2 | - |
-| 130 | [docs/decisions/TEMPLATE.md](docs/decisions/TEMPLATE.md) | ADR-NNN: [Short Title] | 2 | Proposed | Accepted | Deprecated | Superseded by [ADR-XXX] |
-| 131 | [docs/DOCUMENT_DEPENDENCIES.md](docs/DOCUMENT_DEPENDENCIES.md) | Document Dependencies | 2 | ACTIVE |
-| 132 | [docs/DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) | SoNash Documentation Standards | 2 | - |
-| 133 | [docs/FIREBASE_CHANGE_POLICY.md](docs/FIREBASE_CHANGE_POLICY.md) | Firebase Change Policy | 2 | ACTIVE |
-| 134 | [docs/GLOBAL_SECURITY_STANDARDS.md](docs/GLOBAL_SECURITY_STANDARDS.md) | Global Security Standards | 2 | ACTIVE |
-| 135 | [docs/INCIDENT_RESPONSE.md](docs/INCIDENT_RESPONSE.md) | Incident Response Runbook | 2 | Active |
-| 136 | [docs/INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) | Integrated Improvement Plan | 2 | ACTIVE |
-| 137 | [docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md) | Local Recovery Resources Implementation Plan | 2 | - |
-| 138 | [docs/M1.6_SUPPORT_TAB_PLAN.md](docs/M1.6_SUPPORT_TAB_PLAN.md) | M1.6 Support Tab Foundation Plan | 2 | - |
-| 139 | [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md) | Monetization Strategy Research Initiative | 2 | - |
-| 140 | [docs/MULTI_AI_REVIEW_COORDINATOR.md](docs/MULTI_AI_REVIEW_COORDINATOR.md) | Multi-AI Review Coordinator | 2 | - |
-| 141 | [docs/PR_REVIEW_PROMPT_TEMPLATE.md](docs/PR_REVIEW_PROMPT_TEMPLATE.md) | PR Review Prompt Template | 2 | - |
-| 142 | [docs/PR_WORKFLOW_CHECKLIST.md](docs/PR_WORKFLOW_CHECKLIST.md) | PR Workflow Checklist - MANDATORY FOR ALL PHASES | 2 | - |
-| 143 | [docs/README.md](docs/README.md) | Documentation Inventory | 2 | ACTIVE |
-| 144 | [docs/RECAPTCHA_REMOVAL_GUIDE.md](docs/RECAPTCHA_REMOVAL_GUIDE.md) | reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide | 2 | Deferred - App Check blocking critical functionality |
-| 145 | [docs/REVIEW_POLICY_ARCHITECTURE.md](docs/REVIEW_POLICY_ARCHITECTURE.md) | Review Policy Architecture | 2 | UNDER IMPLEMENTATION (Phase 1 in progress) |
-| 146 | [docs/REVIEW_POLICY_INDEX.md](docs/REVIEW_POLICY_INDEX.md) | Review Policy Index | 2 | Active |
-| 147 | [docs/REVIEW_POLICY_QUICK_REF.md](docs/REVIEW_POLICY_QUICK_REF.md) | Review Policy Quick Reference | 2 | - |
-| 148 | [docs/REVIEW_POLICY_VISUAL_GUIDE.md](docs/REVIEW_POLICY_VISUAL_GUIDE.md) | Review Policy Visual Guide | 2 | - |
-| 149 | [docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | SoNash Multi-AI Code Review Plan | 3 | PENDING |
-| 150 | [docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Documentation Audit Plan | 3 | PENDING |
-| 151 | [docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md) | SoNash Code Review - 2026 Q1 | 3 | COMPLETE |
-| 152 | [docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md) | Audit Aggregation: Gemini + ChatGPT | 3 | - |
-| 153 | [docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md) | Phase 4.2 Security Audit Results | 3 | - |
-| 154 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md) | SoNash Multi-AI Performance Audit - Aggregated Findings | 3 | COMPLETE |
-| 155 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Performance Audit Plan | 3 | COMPLETE |
-| 156 | [docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Process & Automation Audit Plan | 3 | PENDING |
-| 157 | [docs/reviews/2026-Q1/README.md](docs/reviews/2026-Q1/README.md) | 2026 Q1 Multi-AI Audit - Execution Guide | 3 | - |
-| 158 | [docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Refactoring Plan | 3 | PENDING |
-| 159 | [docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Security Audit Plan | 3 | PENDING |
-| 160 | [docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md) | SoNash Multi-AI Code Review Plan - 2026 Q1 | 3 | COMPLETE |
-| 161 | [docs/reviews/README.md](docs/reviews/README.md) | Multi-AI Reviews Directory | 3 | - |
-| 162 | [docs/SECURITY.md](docs/SECURITY.md) | Security & Privacy Guide | 2 | ACTIVE |
-| 163 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md) | Sentry Integration Guide for SoNash Admin Panel | 2 | Active |
-| 164 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md) | Server-Side Security Implementation Guide | 2 | 🟡 RECOMMENDED BEFORE PUBLIC LAUNCH |
-| 165 | [docs/SLASH_COMMANDS.md](docs/SLASH_COMMANDS.md) | Slash Commands Reference | 2 | ACTIVE |
-| 166 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md) | [Document Title] | 3 | - |
-| 167 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md) | [Document Title] | 3 | - |
-| 168 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md) | How to [Accomplish Task] | 3 | - |
-| 169 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) | Multi-AI Review JSONL Schema Standard | 3 | - |
-| 170 | [docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) | Multi-AI Audit Aggregator Template | 3 | - |
-| 171 | [docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Code Review Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 172 | [docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | [Project Name] Multi-AI Documentation Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 173 | [docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Performance Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 174 | [docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | [Project Name] Multi-AI Process & Automation Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 175 | [docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md) | Multi-AI Refactor Audit Prompt Template | 3 | Active |
-| 176 | [docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Refactoring Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 177 | [docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Security Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 178 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md) | [Feature/Initiative Name] Plan | 3 | - |
-| 179 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md) | [Workflow/Reference Name] | 3 | - |
-| 180 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md) | Testing Plan | 2 | Active |
-| 181 | [docs/TRIGGERS.md](docs/TRIGGERS.md) | TRIGGERS.md - Automation & Enforcement Reference | 2 | - |
-| 182 | [README.md](README.md) | SoNash - Sober Nashville Recovery Notebook | 1 | ACTIVE |
-| 183 | [ROADMAP_LOG.md](ROADMAP_LOG.md) | SoNash Roadmap Log | 1 | ACTIVE (append-only archive) |
-| 184 | [ROADMAP.md](ROADMAP.md) | SoNash Product Roadmap | 1 | ACTIVE |
-| 185 | [scripts/README.md](scripts/README.md) | Scripts Reference | 4 | - |
-| 186 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md) | Session Context | 1 | - |
+| 111 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Copilot Instructions - SoNash Recovery Notebook | 4 | - |
+| 112 | [.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md) | ISSUE TEMPLATE APP CHECK REENABLE | 4 | - |
+| 113 | [.github/pull_request_template.md](.github/pull_request_template.md) | pull request template | 4 | - |
+| 114 | [AI_WORKFLOW.md](AI_WORKFLOW.md) | AI Workflow Guide | 1 | - |
+| 115 | [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture Documentation | 1 | ACTIVE |
+| 116 | [claude.md](claude.md) | AI Context & Rules for SoNash | 1 | - |
+| 117 | [DEVELOPMENT.md](DEVELOPMENT.md) | Development Guide | 1 | ACTIVE |
+| 118 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | Admin Panel Security & Monitoring Requirements | 2 | - |
+| 119 | [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) | Code Review Patterns Reference | 3 | - |
+| 120 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md) | AI Review Learnings Log | 2 | ✅ Current |
+| 121 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) | 🤖 AI Code Review Process | 2 | - |
+| 122 | [docs/analysis/sonarqube-manifest.md](docs/analysis/sonarqube-manifest.md) | SonarQube Issues Manifest for Phase 4 Multi-AI Review | 4 | - |
+| 123 | [docs/ANTIGRAVITY_GUIDE.md](docs/ANTIGRAVITY_GUIDE.md) | Getting the Most Out of Antigravity | 2 | Active |
+| 124 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md) | App Check Setup Guide | 2 | Active |
+| 125 | [docs/AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md) | Audit Findings Backlog | 2 | - |
+| 126 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md) | Audit Tracker | 2 | - |
+| 127 | [docs/audits/multi-ai/performance/audit-2026-01-08.md](docs/audits/multi-ai/performance/audit-2026-01-08.md) | Multi-AI Performance Audit Report | 2 | COMPLETED |
+| 128 | [docs/audits/single-session/README.md](docs/audits/single-session/README.md) | Single-Session Audit Results | 2 | - |
+| 129 | [docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md](docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md) | PR Review Improvement Options | 4 | DRAFT - Options for evaluation |
+| 130 | [docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md](docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md) | Review Policy Expansion - Draft Design | 4 | DRAFT - For refinement before integration |
+| 131 | [docs/decisions/ADR-001-integrated-improvement-plan-approach.md](docs/decisions/ADR-001-integrated-improvement-plan-approach.md) | ADR-001: Integrated Improvement Plan Approach | 2 | Accepted |
+| 132 | [docs/decisions/README.md](docs/decisions/README.md) | Architecture Decision Records (ADRs) | 2 | - |
+| 133 | [docs/decisions/TEMPLATE.md](docs/decisions/TEMPLATE.md) | ADR-NNN: [Short Title] | 2 | Proposed | Accepted | Deprecated | Superseded by [ADR-XXX] |
+| 134 | [docs/DOCUMENT_DEPENDENCIES.md](docs/DOCUMENT_DEPENDENCIES.md) | Document Dependencies | 2 | ACTIVE |
+| 135 | [docs/DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) | SoNash Documentation Standards | 2 | - |
+| 136 | [docs/FIREBASE_CHANGE_POLICY.md](docs/FIREBASE_CHANGE_POLICY.md) | Firebase Change Policy | 2 | ACTIVE |
+| 137 | [docs/GLOBAL_SECURITY_STANDARDS.md](docs/GLOBAL_SECURITY_STANDARDS.md) | Global Security Standards | 2 | ACTIVE |
+| 138 | [docs/INCIDENT_RESPONSE.md](docs/INCIDENT_RESPONSE.md) | Incident Response Runbook | 2 | Active |
+| 139 | [docs/INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) | Integrated Improvement Plan | 2 | ACTIVE |
+| 140 | [docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md) | Local Recovery Resources Implementation Plan | 2 | - |
+| 141 | [docs/M1.6_SUPPORT_TAB_PLAN.md](docs/M1.6_SUPPORT_TAB_PLAN.md) | M1.6 Support Tab Foundation Plan | 2 | - |
+| 142 | [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md) | Monetization Strategy Research Initiative | 2 | - |
+| 143 | [docs/MULTI_AI_REVIEW_COORDINATOR.md](docs/MULTI_AI_REVIEW_COORDINATOR.md) | Multi-AI Review Coordinator | 2 | - |
+| 144 | [docs/PR_REVIEW_PROMPT_TEMPLATE.md](docs/PR_REVIEW_PROMPT_TEMPLATE.md) | PR Review Prompt Template | 2 | - |
+| 145 | [docs/PR_WORKFLOW_CHECKLIST.md](docs/PR_WORKFLOW_CHECKLIST.md) | PR Workflow Checklist - MANDATORY FOR ALL PHASES | 2 | - |
+| 146 | [docs/README.md](docs/README.md) | Documentation Inventory | 2 | ACTIVE |
+| 147 | [docs/RECAPTCHA_REMOVAL_GUIDE.md](docs/RECAPTCHA_REMOVAL_GUIDE.md) | reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide | 2 | Deferred - App Check blocking critical functionality |
+| 148 | [docs/REVIEW_POLICY_ARCHITECTURE.md](docs/REVIEW_POLICY_ARCHITECTURE.md) | Review Policy Architecture | 2 | UNDER IMPLEMENTATION (Phase 1 in progress) |
+| 149 | [docs/REVIEW_POLICY_INDEX.md](docs/REVIEW_POLICY_INDEX.md) | Review Policy Index | 2 | Active |
+| 150 | [docs/REVIEW_POLICY_QUICK_REF.md](docs/REVIEW_POLICY_QUICK_REF.md) | Review Policy Quick Reference | 2 | - |
+| 151 | [docs/REVIEW_POLICY_VISUAL_GUIDE.md](docs/REVIEW_POLICY_VISUAL_GUIDE.md) | Review Policy Visual Guide | 2 | - |
+| 152 | [docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | SoNash Multi-AI Code Review Plan | 3 | PENDING |
+| 153 | [docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Documentation Audit Plan | 3 | PENDING |
+| 154 | [docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md) | SoNash Code Review - 2026 Q1 | 3 | COMPLETE |
+| 155 | [docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md) | Audit Aggregation: Gemini + ChatGPT | 3 | - |
+| 156 | [docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md) | Phase 4.2 Security Audit Results | 3 | - |
+| 157 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md) | SoNash Multi-AI Performance Audit - Aggregated Findings | 3 | COMPLETE |
+| 158 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Performance Audit Plan | 3 | COMPLETE |
+| 159 | [docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Process & Automation Audit Plan | 3 | PENDING |
+| 160 | [docs/reviews/2026-Q1/README.md](docs/reviews/2026-Q1/README.md) | 2026 Q1 Multi-AI Audit - Execution Guide | 3 | - |
+| 161 | [docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Refactoring Plan | 3 | PENDING |
+| 162 | [docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Security Audit Plan | 3 | PENDING |
+| 163 | [docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md) | SoNash Multi-AI Code Review Plan - 2026 Q1 | 3 | COMPLETE |
+| 164 | [docs/reviews/README.md](docs/reviews/README.md) | Multi-AI Reviews Directory | 3 | - |
+| 165 | [docs/SECURITY.md](docs/SECURITY.md) | Security & Privacy Guide | 2 | ACTIVE |
+| 166 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md) | Sentry Integration Guide for SoNash Admin Panel | 2 | Active |
+| 167 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md) | Server-Side Security Implementation Guide | 2 | 🟡 RECOMMENDED BEFORE PUBLIC LAUNCH |
+| 168 | [docs/SLASH_COMMANDS.md](docs/SLASH_COMMANDS.md) | Slash Commands Reference | 2 | ACTIVE |
+| 169 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md) | [Document Title] | 3 | - |
+| 170 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md) | [Document Title] | 3 | - |
+| 171 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md) | How to [Accomplish Task] | 3 | - |
+| 172 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) | Multi-AI Review JSONL Schema Standard | 3 | - |
+| 173 | [docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) | Multi-AI Audit Aggregator Template | 3 | - |
+| 174 | [docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Code Review Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
+| 175 | [docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | [Project Name] Multi-AI Documentation Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
+| 176 | [docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Performance Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
+| 177 | [docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | [Project Name] Multi-AI Process & Automation Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
+| 178 | [docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md) | Multi-AI Refactor Audit Prompt Template | 3 | Active |
+| 179 | [docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Refactoring Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
+| 180 | [docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Security Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
+| 181 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md) | [Feature/Initiative Name] Plan | 3 | - |
+| 182 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md) | [Workflow/Reference Name] | 3 | - |
+| 183 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md) | Testing Plan | 2 | Active |
+| 184 | [docs/TRIGGERS.md](docs/TRIGGERS.md) | TRIGGERS.md - Automation & Enforcement Reference | 2 | - |
+| 185 | [README.md](README.md) | SoNash - Sober Nashville Recovery Notebook | 1 | ACTIVE |
+| 186 | [ROADMAP_LOG.md](ROADMAP_LOG.md) | SoNash Roadmap Log | 1 | ACTIVE (append-only archive) |
+| 187 | [ROADMAP.md](ROADMAP.md) | SoNash Product Roadmap | 1 | ACTIVE |
+| 188 | [scripts/README.md](scripts/README.md) | Scripts Reference | 4 | - |
+| 189 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md) | Session Context | 1 | - |
 
 </details>
 
