@@ -1,6 +1,7 @@
 {
   "name": "sonarcloud-mcp",
   "version": "1.0.0",
+  "private": true,
   "description": "MCP server for SonarCloud/SonarQube integration",
   "type": "module",
   "main": "sonarcloud-server.js",

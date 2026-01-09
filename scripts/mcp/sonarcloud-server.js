@@ -34,6 +34,14 @@ function isAllowedSonarHost(urlString) {
   try {
     const url = new URL(urlString);
     const hostname = url.hostname.toLowerCase();
+    const protocol = url.protocol.toLowerCase();
+
+    // Enforce HTTPS for non-local hosts (security requirement)
+    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
+    if (!isLocalHost && protocol !== 'https:') {
+      return false;
+    }
+
     return ALLOWED_SONAR_HOSTS.some(allowed =>
       hostname === allowed || hostname.endsWith(`.${allowed}`)
     );
@@ -99,7 +107,11 @@ async function sonarFetch(endpoint, params = {}) {
     throw new Error(`SonarCloud API error: ${status} - ${message}`);
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    throw new Error('SonarCloud API error: Invalid JSON response');
+  }
 }
 
 // Helper to fetch all pages of paginated results
@@ -114,8 +126,8 @@ async function sonarFetchAll(endpoint, params = {}, itemsKey = 'items') {
     const items = data[itemsKey] || [];
     allItems.push(...items);
 
-    // Check if we have more pages
-    const total = data.paging?.total || data.total || items.length;
+    // Check if we have more pages (use ?? for nullish coalescing to handle 0 correctly)
+    const total = data.paging?.total ?? data.total ?? items.length;
     if (allItems.length >= total || items.length < pageSize) {
       break;
     }

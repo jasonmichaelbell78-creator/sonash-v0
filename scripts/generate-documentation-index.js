@@ -92,12 +92,13 @@ function canonicalizePath(inputPath) {
 /**
  * Escape special characters for markdown table cells
  * Prevents markdown injection via untrusted content (e.g., doc titles)
- * Escapes: pipes, brackets, parentheses, backticks, angle brackets, backslashes
+ * Escapes: ampersands, pipes, brackets, parentheses, backticks, angle brackets, backslashes
  */
 function escapeTableCell(text) {
   if (!text) return '';
   return String(text)
-    .replace(/\\/g, '\\\\')     // Escape backslash first
+    .replace(/&/g, '&amp;')     // Escape ampersand FIRST (before other HTML entities)
+    .replace(/\\/g, '\\\\')     // Escape backslash second
     .replace(/\|/g, '\\|')      // Escape pipe (table delimiter)
     .replace(/\[/g, '\\[')      // Escape opening bracket
     .replace(/\]/g, '\\]')      // Escape closing bracket
@@ -628,7 +629,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       // Escape pipe characters in description for markdown table
       let desc = doc.description ? doc.description.slice(0, 60) + (doc.description.length > 60 ? '...' : '') : '-';
       desc = desc.replace(/\|/g, '\\|');
-      const linkPath = doc.path.replace(/ /g, '%20');
+      const linkPath = encodeURI(doc.path);
       // Escape pipe characters in title for markdown table
       const safeTitle = doc.title.replace(/\|/g, '\\|');
       lines.push(`| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`);
@@ -658,7 +659,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   for (const { path, count, refs } of byInbound) {
     const doc = docsByPath.get(path);
     const title = doc ? doc.title : basename(path, '.md');
-    const linkPath = path.replace(/ /g, '%20');
+    const linkPath = encodeURI(path);
     const refList = refs.slice(0, 3).map(r => basename(r, '.md')).join(', ');
     const more = refs.length > 3 ? ` +${refs.length - 3} more` : '';
     lines.push(`| [${escapeTableCell(title)}](${linkPath}) | ${count} | ${refList}${more} |`);
@@ -681,7 +682,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   for (const { path, count } of byOutbound) {
     const doc = docsByPath.get(path);
     const title = doc ? doc.title : basename(path, '.md');
-    const linkPath = path.replace(/ /g, '%20');
+    const linkPath = encodeURI(path);
     lines.push(`| [${escapeTableCell(title)}](${linkPath}) | ${count} |`);
   }
   lines.push('');
@@ -707,7 +708,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     for (const path of orphaned) {
       const doc = docsByPath.get(path);
       const title = doc ? doc.title : basename(path, '.md');
-      const linkPath = path.replace(/ /g, '%20');
+      const linkPath = encodeURI(path);
       lines.push(`- [${escapeTableCell(title)}](${linkPath})`);
     }
   }
@@ -728,7 +729,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   let i = 1;
   for (const doc of sortedDocs) {
     const status = doc.frontmatter.status || '-';
-    const linkPath = doc.path.replace(/ /g, '%20');
+    const linkPath = encodeURI(doc.path);
     lines.push(`| ${i++} | [${escapeTableCell(doc.path)}](${linkPath}) | ${escapeTableCell(doc.title)} | ${doc.category.tier} | ${escapeTableCell(status)} |`);
   }
 
@@ -755,7 +756,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     const sortedArchived = [...archivedFiles].sort();
     let archiveNum = 1;
     for (const filePath of sortedArchived) {
-      const linkPath = filePath.replace(/ /g, '%20');
+      const linkPath = encodeURI(filePath);
       lines.push(`| ${archiveNum++} | [${escapeTableCell(filePath)}](${linkPath}) |`);
     }
     lines.push('');
