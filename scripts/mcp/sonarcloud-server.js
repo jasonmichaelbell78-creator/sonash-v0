@@ -22,11 +22,12 @@ const SONAR_BASE_URL = process.env.SONAR_URL || 'https://sonarcloud.io';
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
 // SSRF protection: Only allow known SonarCloud/SonarQube domains
+// localhost/127.0.0.1 only allowed when SONAR_ALLOW_LOCAL=true (for development)
+const ALLOW_LOCAL = process.env.SONAR_ALLOW_LOCAL === 'true';
 const ALLOWED_SONAR_HOSTS = [
   'sonarcloud.io',
   'sonarqube.com',
-  'localhost',
-  '127.0.0.1',
+  ...(ALLOW_LOCAL ? ['localhost', '127.0.0.1'] : []),
 ];
 
 function isAllowedSonarHost(urlString) {
@@ -48,6 +49,9 @@ if (!isAllowedSonarHost(SONAR_BASE_URL)) {
   process.exit(1);
 }
 
+// Request timeout in milliseconds
+const REQUEST_TIMEOUT_MS = 30000;
+
 // Helper to make authenticated requests to SonarCloud API
 // SonarCloud uses Basic auth: token as username, empty password
 async function sonarFetch(endpoint, params = {}) {
@@ -68,7 +72,21 @@ async function sonarFetch(endpoint, params = {}) {
     headers['Authorization'] = `Basic ${credentials}`;
   }
 
-  const response = await fetch(url.toString(), { headers });
+  // Add timeout using AbortController
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  let response;
+  try {
+    response = await fetch(url.toString(), { headers, signal: controller.signal });
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('SonarCloud API error: Request timed out');
+    }
+    throw new Error('SonarCloud API error: Network request failed');
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     // Sanitize error response - don't expose full upstream error details
@@ -409,4 +427,8 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+main().catch(error => {
+  // Sanitize error output - don't expose stack traces
+  console.error(`Fatal error: ${error.message || 'Unknown error'}`);
+  process.exit(1);
+});

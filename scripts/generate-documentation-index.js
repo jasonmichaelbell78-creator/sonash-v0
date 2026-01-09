@@ -92,13 +92,20 @@ function canonicalizePath(inputPath) {
 /**
  * Escape special characters for markdown table cells
  * Prevents markdown injection via untrusted content (e.g., doc titles)
+ * Escapes: pipes, brackets, parentheses, backticks, angle brackets, backslashes
  */
 function escapeTableCell(text) {
   if (!text) return '';
   return String(text)
+    .replace(/\\/g, '\\\\')     // Escape backslash first
     .replace(/\|/g, '\\|')      // Escape pipe (table delimiter)
     .replace(/\[/g, '\\[')      // Escape opening bracket
     .replace(/\]/g, '\\]')      // Escape closing bracket
+    .replace(/\(/g, '\\(')      // Escape opening paren (prevents link injection)
+    .replace(/\)/g, '\\)')      // Escape closing paren
+    .replace(/`/g, '\\`')       // Escape backticks (prevents code injection)
+    .replace(/</g, '&lt;')      // Escape angle brackets (prevents HTML)
+    .replace(/>/g, '&gt;')
     .replace(/\n/g, ' ')        // Replace newlines with spaces
     .replace(/\r/g, '');        // Remove carriage returns
 }
@@ -749,7 +756,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     let archiveNum = 1;
     for (const filePath of sortedArchived) {
       const linkPath = filePath.replace(/ /g, '%20');
-      lines.push(`| ${archiveNum++} | [${filePath}](${linkPath}) |`);
+      lines.push(`| ${archiveNum++} | [${escapeTableCell(filePath)}](${linkPath}) |`);
     }
     lines.push('');
     lines.push('</details>');
