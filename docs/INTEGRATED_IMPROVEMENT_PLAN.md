@@ -1,8 +1,8 @@
 # Integrated Improvement Plan
 
-**Document Version:** 2.5
+**Document Version:** 2.6
 **Created:** 2026-01-03
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 **Status:** ACTIVE
 **Overall Completion:** ~40% (Step 4 in progress - 2/6 audits complete)
 
@@ -992,13 +992,13 @@ Deferred items MUST be:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6-9 hours
+**Estimated Effort:** 7.5-10.5 hours
 **Dependencies:** Step 4B
 **Risk Level:** Low
 
 ### Objectives
 
-Expand review policies beyond code to cover skills, agents, procedures, and configurations. Additionally, improve the PR review process to reduce false positive noise from AI review tools. Implement event-based triggers, usage verification, and correction mechanisms.
+Expand review policies beyond code to cover skills, agents, procedures, and configurations. Additionally, improve the PR review process to reduce false positive noise from AI review tools. Implement event-based triggers, usage verification, and correction mechanisms. Also perform a documentation content review to ensure quality, coherence, and accuracy across all docs.
 
 ### Background
 
@@ -1082,6 +1082,20 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
   - Update FALSE_POSITIVES.jsonl with recurring patterns
   - Document chosen approach in AI_REVIEW_PROCESS.md
 
+- [ ] **Task 5.9**: Documentation Content Review (1.5 hours)
+  - Review documentation for content quality (distinct from structural audit in Task 4.2.5)
+  - Focus areas:
+    - **Reference validation**: broken internal/external links, outdated refs
+    - **Circular documentation**: identify docs referencing each other in confusing loops
+    - **Content freshness**: flag outdated information, deprecated sections
+    - **Linkage quality**: ensure document relationships are logical and navigable
+    - **Overall flow**: verify documentation narrative is cohesive and makes sense
+    - **Bloat detection**: identify redundant/duplicate content across documents
+    - **Contradiction check**: ensure consistent information (no conflicting guidance)
+  - Output: List of content issues with specific fix recommendations
+  - Update affected documents inline
+  - Note: This complements the structural Documentation Audit (Step 4) by focusing on prose quality, accuracy, and coherence rather than format/structure
+
 ### Acceptance Criteria
 
 - [ ] Session activity logging operational
@@ -1092,6 +1106,7 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
 - [ ] SKILL_AGENT_POLICY.md created
 - [ ] Pre-commit/pre-push hooks updated
 - [ ] PR review noise reduced via tool configuration and false positives expansion
+- [ ] Documentation content reviewed for quality, coherence, and accuracy
 
 ---
 
@@ -1312,6 +1327,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.6 | 2026-01-09 | Added Task 5.9 (Documentation Content Review) covering reference validation, circular documentation detection, content freshness, linkage quality, flow coherence, bloat detection, and contradiction checking; Updated Step 5 effort estimate (6-9h → 7.5-10.5h) |
 | 2.5 | 2026-01-08 | Added Task 5.8 (PR Review Process Improvements); Created PR_REVIEW_IMPROVEMENT_OPTIONS.md with 14 options across 5 categories; Added patterns:check to pre-commit hook; Updated Step 5 effort estimate (4-6h → 6-9h) |
 | 2.4 | 2026-01-07 | Step 4.2 Security Audit complete (Tasks 4.2.2a, 4.2.2b); 10 canonical findings aggregated to docs/reviews/2026-Q1/canonical/CANON-SECURITY.jsonl; Review #88 logged; Step 4 now IN PROGRESS at 33% (2/6 categories) |
 | 2.3 | 2026-01-05 | Effort estimate correction: Step 4 (12-16h→~28h based on task sum); Rollup (48-72h→43-55h verified against per-step estimates); Clarified PARSE_ERRORS_JSONL as optional artifact |
