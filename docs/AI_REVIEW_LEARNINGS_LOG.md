@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.4 | 2026-01-09 | Review #113: PR #225 Comprehensive Compliance - 6 items (1 HIGH ampersand entity injection, 2 MEDIUM HTTPS enforcement/JSON parsing, 3 MINOR encodeURI/private:true/nullish coalescing). Session #39 continued. |
 | 3.3 | 2026-01-09 | Review #112: PR #225 Final Compliance - 6 items (3 HIGH injection/SSRF/stack-trace, 3 MEDIUM timeout/logging/archived-paths). Session #39. |
 | 3.2 | 2026-01-09 | Review #111: PR #225 Compliance Fixes - 8 items (2 HIGH SSRF/secret exposure, 5 MEDIUM error handling/validation/performance, 1 LOW unstructured logging). Session #39. |
 | 3.1 | 2026-01-09 | Review #110: PR #225 Follow-up - 6 items (3 MAJOR path canonicalization/archive boundary/exclude boundary, 3 MINOR indented code blocks/recursion deferred). Session #39. |
@@ -182,7 +183,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4 (Reviews #109-112)
+**Reviews since last consolidation:** 5 (Reviews #109-113)
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current
 **Next consolidation due:** After Review #118
@@ -410,6 +411,59 @@ Reviews #61-112 are actively maintained below. Older reviews are in the archive.
 - **Markdown injection is comprehensive**: Not just pipes - parens enable `](javascript:...)`, backticks enable code injection
 - **Timeout at network boundary**: All external requests need explicit timeout; AbortController is the modern approach
 - **SSRF allowlists should be minimal**: Only enable localhost via opt-in env var, not by default
+
+---
+
+#### Review #113: PR #225 Comprehensive Compliance - Recurring Issues Resolution (2026-01-09)
+
+**Source:** PR Compliance Review (recurring suggestions)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 6 items (High: 1, Medium: 2, Minor: 3) - all fixed
+
+**Context:** Addressing recurring compliance issues that kept appearing in PR feedback. User noted "we keep getting these compliance issues over and over again." This review comprehensively addresses all remaining items.
+
+**Patterns Identified:**
+
+1. **Ampersand HTML Entity Injection** (High pattern)
+   - Root cause: `&` not escaped before other HTML entities, allowing `&lt;` → `<` injection
+   - Prevention: Add `&` → `&amp;` as FIRST replacement in escapeTableCell (before backslash)
+   - Pattern: Order of HTML entity escaping matters: ampersand MUST be first
+
+2. **HTTPS Enforcement for SSRF Protection** (Medium pattern)
+   - Root cause: URL allowlist checked hostname but not protocol
+   - Prevention: Enforce `https:` protocol for non-local hosts in `isAllowedSonarHost()`
+   - Pattern: SSRF protection must validate both host AND protocol
+
+3. **JSON Response Parsing Safety** (Medium pattern)
+   - Root cause: `response.json()` can throw on malformed responses
+   - Prevention: Wrap in try/catch with sanitized error message
+   - Pattern: All JSON parsing at system boundary needs error handling
+
+4. **Proper URL Encoding with encodeURI** (Minor pattern)
+   - Root cause: Manual `.replace(/ /g, '%20')` only handles spaces
+   - Prevention: Use `encodeURI()` which handles all special characters correctly
+   - Pattern: Use built-in encoding functions; don't roll your own
+
+5. **Private Package Prevention** (Minor pattern)
+   - Root cause: Missing `private: true` could lead to accidental npm publishing
+   - Prevention: Add `"private": true` to package.json for internal packages
+   - Pattern: Always mark internal packages as private
+
+6. **Nullish Coalescing for Zero Values** (Minor pattern)
+   - Root cause: `||` treats 0 as falsy, breaking pagination when total is 0
+   - Prevention: Use `??` (nullish coalescing) to only fall back on null/undefined
+   - Pattern: Use `??` instead of `||` when 0 is a valid value
+
+**Resolution:**
+- Fixed: 6 items (1 HIGH, 2 MEDIUM, 3 MINOR)
+- All recurring compliance issues addressed comprehensively
+
+**Commit:** b99cb85
+
+**Key Learnings:**
+- **Entity escaping order is critical**: Ampersand must be escaped first or it corrupts other HTML entities
+- **SSRF is multi-dimensional**: Host allowlisting alone is insufficient; protocol enforcement is equally important
+- **Recurring issues indicate incomplete fixes**: Each compliance iteration should aim for comprehensive coverage, not incremental patches
 
 ---
 
