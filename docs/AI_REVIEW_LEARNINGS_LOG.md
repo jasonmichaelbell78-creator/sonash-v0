@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 2.9
+**Document Version:** 3.0
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-09
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.0 | 2026-01-09 | Review #109: PR #225 Feedback - 16 items (2 CRITICAL FS error handling/error exposure, 4 MAJOR JSON mode/ReDoS/symlink/cross-platform, 9 MINOR, 1 TRIVIAL). Rejected framework suggestion. Session #39. |
 | 2.9 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 → CODE_PATTERNS.md v1.4 (18 patterns: 6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General). Session #39. |
 | 2.8 | 2026-01-09 | Review #108: Update Dependencies Protocol - new mandatory pattern for tightly-coupled docs. Added ⚠️ Update Dependencies to 4 key documents. Session #39. |
 | 2.7 | 2026-01-09 | Review #107: PR #224 Feedback - 2 items (SSR guard, status label) + process fix (/fetch-pr-feedback auto-invoke). Consolidation threshold reached (10 reviews). Session #39. |
@@ -178,9 +179,9 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0
+**Reviews since last consolidation:** 1 (Review #109)
 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current (consolidated 2026-01-09)
+**Status:** ✅ Current
 **Next consolidation due:** After Review #118
 
 ### When to Consolidate
@@ -358,6 +359,58 @@ Access archives only for historical investigation of specific patterns.
 ## Active Reviews (Tier 3)
 
 Reviews #61-108 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #109: PR #225 Feedback - Documentation Index Generator Hardening (2026-01-09)
+
+**Source:** Qodo PR Compliance + Qodo PR Suggestions + SonarQube
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 16 total (Critical: 2, Major: 4, Minor: 9, Trivial: 1) + 1 REJECTED
+
+**Context:** First PR review of the new documentation index generator script. Focus on filesystem error handling, security hardening, and JSON output isolation.
+
+**Patterns Identified:**
+
+1. **FS Error Handling with lstatSync** (Critical pattern - Qodo)
+   - Root cause: statSync doesn't detect symlinks; permission errors unhandled
+   - Prevention: Use lstatSync to detect symlinks; wrap in try/catch with error codes
+   - Pattern: Use lstatSync + try/catch for safe directory traversal
+
+2. **Error Detail Exposure** (Critical pattern - Qodo)
+   - Root cause: Raw error.message may expose filesystem paths
+   - Prevention: Log only error.code, not full message
+   - Pattern: Sanitize errors to codes only in output
+
+3. **JSON Output Isolation** (Major pattern - Qodo)
+   - Root cause: console.log calls mixed with JSON output break parsers
+   - Prevention: Create log() helper that checks jsonOutput flag
+   - Pattern: Guard ALL logging when JSON mode is active
+
+4. **ReDoS in Link Regex** (Major pattern - Qodo)
+   - Root cause: Unbounded `[^\]]+` quantifiers in markdown link regex
+   - Prevention: Add bounded quantifiers `{1,500}`
+   - Pattern: Bound all regex quantifiers processing external content
+
+5. **Link Deduplication** (Minor pattern - Qodo)
+   - Root cause: Same link target counted multiple times
+   - Prevention: Use Set to track seen targets
+   - Pattern: Deduplicate reference counts for accurate metrics
+
+6. **Code Block Stripping** (Minor pattern - Qodo)
+   - Root cause: Links in code examples counted as real references
+   - Prevention: Strip fenced code blocks before parsing links
+   - Pattern: Clean content before parsing for structured data
+
+**Resolution:**
+- Fixed: 16 items (2 CRITICAL, 4 MAJOR, 9 MINOR, 1 TRIVIAL)
+- Rejected: 1 item (standard framework suggestion - architecture change out of scope)
+
+**Key Learnings:**
+- **lstatSync over statSync**: Detects symlinks without following them
+- **Error sanitization**: Only expose error codes, not full messages
+- **JSON mode isolation**: Create log() helper to guard all output
+- **Bounded regex**: Always bound quantifiers when processing external content
 
 ---
 

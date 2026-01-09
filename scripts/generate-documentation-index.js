@@ -13,7 +13,7 @@
  *   --verbose  Show detailed processing information
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, lstatSync } from 'node:fs';
 import { join, relative, dirname, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -64,20 +64,50 @@ function isArchived(relativePath) {
  * Returns { active: [], archived: [] }
  */
 function findMarkdownFiles(dir, result = { active: [], archived: [] }) {
-  const entries = readdirSync(dir);
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch (error) {
+    // Handle permission denied, not a directory, etc.
+    if (!jsonOutput) {
+      console.error(`   Warning: Cannot read directory ${relative(ROOT, dir)}: ${error.code || 'unknown error'}`);
+    }
+    return result;
+  }
+
+  // Sort entries for deterministic output
+  entries.sort();
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);
-    const relativePath = relative(ROOT, fullPath);
+    const relativePath = relative(ROOT, fullPath).replace(/\\/g, '/'); // Cross-platform normalization
 
     // Skip excluded directories
     if (CONFIG.excludeDirs.some(exc => relativePath.startsWith(exc) || entry === exc)) {
       continue;
     }
 
-    const stat = statSync(fullPath);
+    // Use lstatSync to detect symlinks without following them
+    let lstat;
+    try {
+      lstat = lstatSync(fullPath);
+    } catch (error) {
+      // Handle permission denied, broken symlinks, etc.
+      if (verbose && !jsonOutput) {
+        console.error(`   Warning: Cannot stat ${relativePath}: ${error.code || 'unknown error'}`);
+      }
+      continue;
+    }
 
-    if (stat.isDirectory()) {
+    // Skip symlinks to prevent recursion and escape
+    if (lstat.isSymbolicLink()) {
+      if (verbose && !jsonOutput) {
+        console.log(`   Skipping symlink: ${relativePath}`);
+      }
+      continue;
+    }
+
+    if (lstat.isDirectory()) {
       findMarkdownFiles(fullPath, result);
     } else if (extname(entry).toLowerCase() === '.md') {
       // Skip excluded files
@@ -110,7 +140,12 @@ function extractFrontmatter(content) {
       const colonIndex = line.indexOf(':');
       if (colonIndex > 0) {
         const key = line.slice(0, colonIndex).trim().toLowerCase();
-        const value = line.slice(colonIndex + 1).trim();
+        let value = line.slice(colonIndex + 1).trim();
+        // Handle quoted values (single or double quotes)
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
         frontmatter[key] = value;
       }
     }
@@ -191,26 +226,49 @@ function extractDescription(content) {
 }
 
 /**
+ * Strip code blocks from content to avoid parsing links inside them
+ */
+function stripCodeBlocks(content) {
+  // Remove fenced code blocks (``` or ~~~)
+  return content.replace(/^(`{3,}|~{3,})[\s\S]*?^\1/gm, '');
+}
+
+/**
  * Extract all markdown links from content
  */
 function extractLinks(content, currentFile) {
   const links = [];
+  const seenTargets = new Set(); // Deduplicate links to same target
   const currentDir = dirname(currentFile);
 
-  // Match markdown links: [text](path) - excluding external URLs and anchors
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  // Strip code blocks to avoid parsing links in code examples
+  const strippedContent = stripCodeBlocks(content);
+
+  // Match markdown links with bounded quantifiers: [text](path)
+  // Bounded to prevent ReDoS: text max 500 chars, href max 500 chars
+  const linkRegex = /\[([^\]]{1,500})\]\(([^)]{1,500})\)/g;
   let match;
 
-  while ((match = linkRegex.exec(content)) !== null) {
+  while ((match = linkRegex.exec(strippedContent)) !== null) {
     const [, text, href] = match;
 
-    // Skip external URLs
-    if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:')) {
+    // Skip external URLs and special schemes
+    if (href.startsWith('http://') || href.startsWith('https://') ||
+        href.startsWith('mailto:') || href.startsWith('tel:') ||
+        href.startsWith('data:')) {
       continue;
     }
 
     // Skip pure anchors
     if (href.startsWith('#')) {
+      continue;
+    }
+
+    // Skip image links (common image extensions)
+    const lowerHref = href.toLowerCase();
+    if (lowerHref.endsWith('.png') || lowerHref.endsWith('.jpg') ||
+        lowerHref.endsWith('.jpeg') || lowerHref.endsWith('.gif') ||
+        lowerHref.endsWith('.svg') || lowerHref.endsWith('.webp')) {
       continue;
     }
 
@@ -220,28 +278,35 @@ function extractLinks(content, currentFile) {
     // Skip empty paths
     if (!path) continue;
 
+    // URL-decode path for special characters
+    try {
+      path = decodeURIComponent(path);
+    } catch {
+      // Keep original if decode fails
+    }
+
     // Resolve relative path
     let resolvedPath;
     if (path.startsWith('/')) {
       resolvedPath = path.slice(1); // Remove leading slash
-    } else if (path.startsWith('./')) {
-      resolvedPath = join(currentDir, path.slice(2));
-    } else if (path.startsWith('../')) {
-      resolvedPath = join(currentDir, path);
     } else {
       resolvedPath = join(currentDir, path);
     }
 
-    // Normalize path
+    // Normalize path (cross-platform)
     resolvedPath = resolvedPath.replace(/\\/g, '/');
 
     // Only include .md files
     if (resolvedPath.endsWith('.md')) {
-      links.push({
-        text,
-        target: resolvedPath,
-        raw: href,
-      });
+      // Deduplicate links to same target
+      if (!seenTargets.has(resolvedPath)) {
+        seenTargets.add(resolvedPath);
+        links.push({
+          text,
+          target: resolvedPath,
+          raw: href,
+        });
+      }
     }
   }
 
@@ -309,7 +374,11 @@ function processFile(filePath) {
       size: stat.size,
     };
   } catch (error) {
-    console.error(`Error processing ${filePath}: ${error.message}`);
+    // Sanitize error: only show error code, not full message which may expose paths
+    const errorCode = error.code || 'UNKNOWN';
+    if (!jsonOutput) {
+      console.error(`   Warning: Cannot process ${filePath}: ${errorCode}`);
+    }
     return null;
   }
 }
@@ -453,9 +522,13 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       const inCount = refs ? refs.inbound.length : 0;
       const outCount = refs ? refs.outbound.length : 0;
       const refStr = `↓${inCount} ↑${outCount}`;
-      const desc = doc.description ? doc.description.slice(0, 60) + (doc.description.length > 60 ? '...' : '') : '-';
+      // Escape pipe characters in description for markdown table
+      let desc = doc.description ? doc.description.slice(0, 60) + (doc.description.length > 60 ? '...' : '') : '-';
+      desc = desc.replace(/\|/g, '\\|');
       const linkPath = doc.path.replace(/ /g, '%20');
-      lines.push(`| [${doc.title}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`);
+      // Escape pipe characters in title for markdown table
+      const safeTitle = doc.title.replace(/\|/g, '\\|');
+      lines.push(`| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`);
     }
     lines.push('');
   }
@@ -595,23 +668,32 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
 }
 
 /**
+ * Log helper that respects JSON mode
+ */
+function log(message) {
+  if (!jsonOutput) {
+    console.log(message);
+  }
+}
+
+/**
  * Main execution
  */
 function main() {
-  console.log('📚 Documentation Index Generator');
-  console.log('================================');
-  console.log('');
+  log('📚 Documentation Index Generator');
+  log('================================');
+  log('');
 
   // Find all markdown files (separated into active and archived)
-  console.log('🔍 Scanning for markdown files...');
+  log('🔍 Scanning for markdown files...');
   const { active: activeFiles, archived: archivedFiles } = findMarkdownFiles(ROOT);
-  console.log(`   Found ${activeFiles.length} active files, ${archivedFiles.length} archived files`);
+  log(`   Found ${activeFiles.length} active files, ${archivedFiles.length} archived files`);
 
   // Process each active file (archived files just get listed, not processed)
-  console.log('📄 Processing active files...');
+  log('📄 Processing active files...');
   const docs = [];
   for (const file of activeFiles) {
-    if (verbose) {
+    if (verbose && !jsonOutput) {
       console.log(`   Processing: ${file}`);
     }
     const doc = processFile(file);
@@ -619,17 +701,17 @@ function main() {
       docs.push(doc);
     }
   }
-  console.log(`   Processed ${docs.length} active documents`);
+  log(`   Processed ${docs.length} active documents`);
 
   // Build reference graph (only for active docs)
-  console.log('🔗 Building reference graph...');
+  log('🔗 Building reference graph...');
   const referenceGraph = buildReferenceGraph(docs);
 
   let totalLinks = 0;
   for (const [, refs] of referenceGraph) {
     totalLinks += refs.outbound.length;
   }
-  console.log(`   Found ${totalLinks} internal links`);
+  log(`   Found ${totalLinks} internal links`);
 
   // Generate output
   if (jsonOutput) {
@@ -649,24 +731,24 @@ function main() {
     };
     console.log(JSON.stringify(output, null, 2));
   } else {
-    console.log('📝 Generating markdown index...');
+    log('📝 Generating markdown index...');
     const markdown = generateMarkdown(docs, referenceGraph, archivedFiles);
 
     const outputPath = join(ROOT, CONFIG.outputFile);
     writeFileSync(outputPath, markdown, 'utf-8');
-    console.log(`   Written to ${CONFIG.outputFile}`);
+    log(`   Written to ${CONFIG.outputFile}`);
 
     // Summary
-    console.log('');
-    console.log('✅ Documentation index generated successfully!');
-    console.log('');
-    console.log('Summary:');
-    console.log(`   📄 Active documents: ${docs.length}`);
-    console.log(`   📦 Archived documents: ${archivedFiles.length}`);
-    console.log(`   🔗 Internal links: ${totalLinks}`);
+    log('');
+    log('✅ Documentation index generated successfully!');
+    log('');
+    log('Summary:');
+    log(`   📄 Active documents: ${docs.length}`);
+    log(`   📦 Archived documents: ${archivedFiles.length}`);
+    log(`   🔗 Internal links: ${totalLinks}`);
 
     const orphaned = [...referenceGraph.entries()].filter(([, refs]) => refs.inbound.length === 0).length;
-    console.log(`   ⚠️  Orphaned docs: ${orphaned}`);
+    log(`   ⚠️  Orphaned docs: ${orphaned}`);
   }
 }
 
