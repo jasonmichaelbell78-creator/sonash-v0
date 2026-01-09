@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 2.8
+**Document Version:** 2.9
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-09
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 2.9 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 → CODE_PATTERNS.md v1.4 (18 patterns: 6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General). Session #39. |
 | 2.8 | 2026-01-09 | Review #108: Update Dependencies Protocol - new mandatory pattern for tightly-coupled docs. Added ⚠️ Update Dependencies to 4 key documents. Session #39. |
 | 2.7 | 2026-01-09 | Review #107: PR #224 Feedback - 2 items (SSR guard, status label) + process fix (/fetch-pr-feedback auto-invoke). Consolidation threshold reached (10 reviews). Session #39. |
 | 2.6 | 2026-01-08 | Review #106: PR Review Processing - 16 items (8 MAJOR ReDoS/path-traversal/ID-parsing/validation/threshold-consistency, 6 MINOR env-metadata/FP-patterns/scope-clarity, 2 TRIVIAL). Session #40. |
@@ -177,10 +178,10 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11 (Reviews #98-108)
+**Reviews since last consolidation:** 0
 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE (threshold exceeded - Reviews #98-108 ready for consolidation)
-**Next consolidation due:** NOW (at session end)
+**Status:** ✅ Current (consolidated 2026-01-09)
+**Next consolidation due:** After Review #118
 
 ### When to Consolidate
 
@@ -200,18 +201,41 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-09 (Session #39)
+- **Reviews consolidated:** #98-#108 (11 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.4:**
+  - **JavaScript/TypeScript (6 patterns):**
+    - Falsy vs missing check (`!field` fails for 0)
+    - Node.js module prefix (`node:fs`, `node:path`)
+    - Number.parseInt with radix
+    - Dead code after throwing functions
+    - SSR-safe browser APIs
+    - Cognitive complexity extraction
+  - **Security (4 patterns):**
+    - Regex state leak prevention
+    - ReDoS protection for user patterns
+    - Path containment post-resolution
+    - JSONL parse resilience
+  - **CI/Automation (3 patterns):**
+    - JSON output isolation
+    - Empty-state guards
+    - Unimplemented CLI flags blocking
+  - **Documentation (3 patterns):**
+    - Update Dependencies sections
+    - Verify AI reviewer claims
+    - Threshold reset policy
+  - **General (2 patterns):**
+    - Complete TODOs immediately
+    - Smart fallbacks
+- **Key themes:** Document sync validation, regex security (ReDoS/state), path containment, process improvements (auto-invoke, update dependencies)
+- **Next consolidation due:** After Review #118
+
+### Previous Consolidation (#8)
+
 - **Date:** 2026-01-07 (Session #33)
 - **Reviews consolidated:** #83-#97 (15 reviews)
-- **Patterns added to CODE_PATTERNS.md v1.3:**
-  - **Security Audit (6 patterns - NEW CATEGORY):**
-    - OWASP field format (arrays over strings for machine parsing)
-    - severity_normalization field for model disagreement tracking
-    - Conditional risk acceptance with dependencies array
-    - file_globs vs files separation
-    - Schema design for automation principle
-    - Severity divergence tracking requirement
-- **Key themes:** Canonical finding schema improvements, multi-AI audit traceability, risk acceptance documentation
-- **Next consolidation due:** After Review #107
+- **Patterns added:** Security Audit (6 patterns)
+- **Key themes:** Canonical finding schema, multi-AI audit traceability
 
 ### Previous Consolidation (#7)
 
