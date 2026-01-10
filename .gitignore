@@ -59,3 +59,7 @@ scripts/suggested-patterns.json
 # firebase credentials (NEVER commit!)
 firebase-service-account.json
 serviceAccountKey.json
+
+# Claude Code session hook cache files
+.claude/.lockfile-hash
+.claude/.functions-lockfile-hash
