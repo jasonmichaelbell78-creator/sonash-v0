@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 2.8
+**Document Version:** 3.3
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-09
 
@@ -18,6 +18,12 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 3.4 | 2026-01-09 | Review #113: PR #225 Comprehensive Compliance - 6 items (1 HIGH ampersand entity injection, 2 MEDIUM HTTPS enforcement/JSON parsing, 3 MINOR encodeURI/private:true/nullish coalescing). Session #39 continued. |
+| 3.3 | 2026-01-09 | Review #112: PR #225 Final Compliance - 6 items (3 HIGH injection/SSRF/stack-trace, 3 MEDIUM timeout/logging/archived-paths). Session #39. |
+| 3.2 | 2026-01-09 | Review #111: PR #225 Compliance Fixes - 8 items (2 HIGH SSRF/secret exposure, 5 MEDIUM error handling/validation/performance, 1 LOW unstructured logging). Session #39. |
+| 3.1 | 2026-01-09 | Review #110: PR #225 Follow-up - 6 items (3 MAJOR path canonicalization/archive boundary/exclude boundary, 3 MINOR indented code blocks/recursion deferred). Session #39. |
+| 3.0 | 2026-01-09 | Review #109: PR #225 Feedback - 16 items (2 CRITICAL FS error handling/error exposure, 4 MAJOR JSON mode/ReDoS/symlink/cross-platform, 9 MINOR, 1 TRIVIAL). Rejected framework suggestion. Session #39. |
+| 2.9 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 → CODE_PATTERNS.md v1.4 (18 patterns: 6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General). Session #39. |
 | 2.8 | 2026-01-09 | Review #108: Update Dependencies Protocol - new mandatory pattern for tightly-coupled docs. Added ⚠️ Update Dependencies to 4 key documents. Session #39. |
 | 2.7 | 2026-01-09 | Review #107: PR #224 Feedback - 2 items (SSR guard, status label) + process fix (/fetch-pr-feedback auto-invoke). Consolidation threshold reached (10 reviews). Session #39. |
 | 2.6 | 2026-01-08 | Review #106: PR Review Processing - 16 items (8 MAJOR ReDoS/path-traversal/ID-parsing/validation/threshold-consistency, 6 MINOR env-metadata/FP-patterns/scope-clarity, 2 TRIVIAL). Session #40. |
@@ -177,10 +183,10 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 11 (Reviews #98-108)
+**Reviews since last consolidation:** 5 (Reviews #109-113)
 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE (threshold exceeded - Reviews #98-108 ready for consolidation)
-**Next consolidation due:** NOW (at session end)
+**Status:** ✅ Current
+**Next consolidation due:** After Review #118
 
 ### When to Consolidate
 
@@ -200,18 +206,41 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-09 (Session #39)
+- **Reviews consolidated:** #98-#108 (11 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.4:**
+  - **JavaScript/TypeScript (6 patterns):**
+    - Falsy vs missing check (`!field` fails for 0)
+    - Node.js module prefix (`node:fs`, `node:path`)
+    - Number.parseInt with radix
+    - Dead code after throwing functions
+    - SSR-safe browser APIs
+    - Cognitive complexity extraction
+  - **Security (4 patterns):**
+    - Regex state leak prevention
+    - ReDoS protection for user patterns
+    - Path containment post-resolution
+    - JSONL parse resilience
+  - **CI/Automation (3 patterns):**
+    - JSON output isolation
+    - Empty-state guards
+    - Unimplemented CLI flags blocking
+  - **Documentation (3 patterns):**
+    - Update Dependencies sections
+    - Verify AI reviewer claims
+    - Threshold reset policy
+  - **General (2 patterns):**
+    - Complete TODOs immediately
+    - Smart fallbacks
+- **Key themes:** Document sync validation, regex security (ReDoS/state), path containment, process improvements (auto-invoke, update dependencies)
+- **Next consolidation due:** After Review #118
+
+### Previous Consolidation (#8)
+
 - **Date:** 2026-01-07 (Session #33)
 - **Reviews consolidated:** #83-#97 (15 reviews)
-- **Patterns added to CODE_PATTERNS.md v1.3:**
-  - **Security Audit (6 patterns - NEW CATEGORY):**
-    - OWASP field format (arrays over strings for machine parsing)
-    - severity_normalization field for model disagreement tracking
-    - Conditional risk acceptance with dependencies array
-    - file_globs vs files separation
-    - Schema design for automation principle
-    - Severity divergence tracking requirement
-- **Key themes:** Canonical finding schema improvements, multi-AI audit traceability, risk acceptance documentation
-- **Next consolidation due:** After Review #107
+- **Patterns added:** Security Audit (6 patterns)
+- **Key themes:** Canonical finding schema, multi-AI audit traceability
 
 ### Previous Consolidation (#7)
 
@@ -333,7 +362,255 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-108 are actively maintained below. Older reviews are in the archive.
+Reviews #61-112 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #112: PR #225 Final Compliance - Injection & SSRF Hardening (2026-01-09)
+
+**Source:** PR Compliance Review (WebFetch)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 10 items (High: 3, Medium: 3, Verified: 4) - 6 fixed, 4 already compliant
+
+**Context:** Final compliance pass addressing remaining "not compliant" and "requires human verification" items from PR #225.
+
+**Patterns Identified:**
+
+1. **Complete Markdown Injection Prevention** (High pattern)
+   - Root cause: escapeTableCell only escaped pipe/brackets, not parens/backticks/angles
+   - Prevention: Add escaping for backslash, parentheses (prevents link injection), backticks (code), and HTML angle brackets
+   - Pattern: Comprehensive markdown escaping includes `\`, `|`, `[]`, `()`, `` ` ``, `<>`
+
+2. **Request Timeout Protection** (High pattern)
+   - Root cause: No timeout on HTTP fetch could hang indefinitely
+   - Prevention: Use AbortController with setTimeout for fetch operations
+   - Pattern: Always add timeout to external HTTP requests (30s default)
+
+3. **Stack Trace Sanitization** (High pattern)
+   - Root cause: main().catch(console.error) exposes full stack traces
+   - Prevention: Wrap in error handler that only logs error.message
+   - Pattern: Sanitize caught errors at process boundary
+
+4. **Environment-Controlled SSRF Allowlist** (Medium pattern)
+   - Root cause: localhost in allowlist could leak credentials in shared environments
+   - Prevention: Add SONAR_ALLOW_LOCAL env var to enable localhost (default: disabled)
+   - Pattern: Use env vars to control security-sensitive features per-environment
+
+5. **Archived Table Path Escaping** (Medium pattern)
+   - Root cause: Archived file paths not escaped in markdown table
+   - Prevention: Apply escapeTableCell to all table cell content including file paths
+   - Pattern: Escape all user-controlled content in markdown, not just obvious fields
+
+**Resolution:**
+- Fixed: 6 items (3 HIGH, 3 MEDIUM)
+- Already Compliant: 4 items (FS error handling verified as already guarded)
+
+**Commit:** 29c593a
+
+**Key Learnings:**
+- **Markdown injection is comprehensive**: Not just pipes - parens enable `](javascript:...)`, backticks enable code injection
+- **Timeout at network boundary**: All external requests need explicit timeout; AbortController is the modern approach
+- **SSRF allowlists should be minimal**: Only enable localhost via opt-in env var, not by default
+
+---
+
+#### Review #113: PR #225 Comprehensive Compliance - Recurring Issues Resolution (2026-01-09)
+
+**Source:** PR Compliance Review (recurring suggestions)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 6 items (High: 1, Medium: 2, Minor: 3) - all fixed
+
+**Context:** Addressing recurring compliance issues that kept appearing in PR feedback. User noted "we keep getting these compliance issues over and over again." This review comprehensively addresses all remaining items.
+
+**Patterns Identified:**
+
+1. **Ampersand HTML Entity Injection** (High pattern)
+   - Root cause: `&` not escaped before other HTML entities, allowing `&lt;` → `<` injection
+   - Prevention: Add `&` → `&amp;` as FIRST replacement in escapeTableCell (before backslash)
+   - Pattern: Order of HTML entity escaping matters: ampersand MUST be first
+
+2. **HTTPS Enforcement for SSRF Protection** (Medium pattern)
+   - Root cause: URL allowlist checked hostname but not protocol
+   - Prevention: Enforce `https:` protocol for non-local hosts in `isAllowedSonarHost()`
+   - Pattern: SSRF protection must validate both host AND protocol
+
+3. **JSON Response Parsing Safety** (Medium pattern)
+   - Root cause: `response.json()` can throw on malformed responses
+   - Prevention: Wrap in try/catch with sanitized error message
+   - Pattern: All JSON parsing at system boundary needs error handling
+
+4. **Proper URL Encoding with encodeURI** (Minor pattern)
+   - Root cause: Manual `.replace(/ /g, '%20')` only handles spaces
+   - Prevention: Use `encodeURI()` which handles all special characters correctly
+   - Pattern: Use built-in encoding functions; don't roll your own
+
+5. **Private Package Prevention** (Minor pattern)
+   - Root cause: Missing `private: true` could lead to accidental npm publishing
+   - Prevention: Add `"private": true` to package.json for internal packages
+   - Pattern: Always mark internal packages as private
+
+6. **Nullish Coalescing for Zero Values** (Minor pattern)
+   - Root cause: `||` treats 0 as falsy, breaking pagination when total is 0
+   - Prevention: Use `??` (nullish coalescing) to only fall back on null/undefined
+   - Pattern: Use `??` instead of `||` when 0 is a valid value
+
+**Resolution:**
+- Fixed: 6 items (1 HIGH, 2 MEDIUM, 3 MINOR)
+- All recurring compliance issues addressed comprehensively
+
+**Commit:** b99cb85
+
+**Key Learnings:**
+- **Entity escaping order is critical**: Ampersand must be escaped first or it corrupts other HTML entities
+- **SSRF is multi-dimensional**: Host allowlisting alone is insufficient; protocol enforcement is equally important
+- **Recurring issues indicate incomplete fixes**: Each compliance iteration should aim for comprehensive coverage, not incremental patches
+
+---
+
+#### Review #111: PR #225 Compliance Fixes - Security & Performance (2026-01-09)
+
+**Source:** PR Compliance Review (WebFetch)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 12 total (High: 2, Medium: 7, Low: 2) - 8 fixed, 1 already fixed, 3 not applicable
+
+**Context:** Follow-up compliance review focusing on security hardening and performance optimization. Addressing "Requires Further Human Verification" items.
+
+**Patterns Identified:**
+
+1. **SSRF Protection with URL Allowlisting** (High pattern)
+   - Root cause: SONAR_URL env var could redirect auth headers to attacker-controlled servers
+   - Prevention: Add explicit domain allowlist (sonarcloud.io, sonarqube.com, localhost)
+   - Pattern: Validate external URLs against allowlist before fetching
+
+2. **Secret Exposure in Config** (High pattern - previously fixed)
+   - Root cause: Token placeholder in .mcp.json encourages storing secrets in repo
+   - Prevention: Remove placeholder; rely on environment variable or Claude desktop config
+   - Pattern: Never commit even placeholder secrets; use env vars
+
+3. **Error Response Sanitization** (Medium pattern)
+   - Root cause: Upstream error details returned directly to callers
+   - Prevention: Map status codes to generic messages; don't expose upstream error text
+   - Pattern: Sanitize external API errors before returning to users
+
+4. **Pagination Truncation Warning** (Medium pattern)
+   - Root cause: Silent truncation at page 100 without notification
+   - Prevention: Return `truncated: true` flag when limit reached; log warning
+   - Pattern: Surface incomplete results to callers
+
+5. **Input Argument Validation** (Medium pattern)
+   - Root cause: MCP tool arguments forwarded without validation
+   - Prevention: Add null check, type validation, and length limits (MAX_INPUT_LENGTH = 500)
+   - Pattern: Validate all external inputs at system boundaries
+
+6. **O(n²) to O(1) Lookup Optimization** (Medium pattern)
+   - Root cause: Repeated docs.find() inside loops creates O(n²) complexity
+   - Prevention: Create docsByPath Map once; use Map.get() for O(1) lookups
+   - Pattern: Precompute lookup Maps for repeated searches
+
+**Resolution:**
+- Fixed: 8 items (2 HIGH, 5 MEDIUM, 1 LOW)
+- Already Fixed: 2 items (ReDoS, writeFileSync)
+- Not Applicable: 2 items (unstructured logging - acceptable for CLI tool)
+
+**Commit:** 0f990b2
+
+**Key Learnings:**
+- **SSRF requires explicit allowlists**: Environment variables should be validated, not trusted
+- **Error sanitization at boundaries**: External API errors should never propagate raw to users
+- **Precompute for performance**: Convert O(n) lookups to O(1) with Map for repeated access
+
+---
+
+#### Review #110: PR #225 Follow-up - Path Canonicalization & Boundary Checks (2026-01-09)
+
+**Source:** Qodo PR Suggestions (post-commit b56cd42)
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 6 total (Major: 3, Minor: 2, Deferred: 1)
+
+**Context:** Follow-up Qodo suggestions after initial PR #225 fixes. Focus on path security hardening and edge case handling.
+
+**Patterns Identified:**
+
+1. **Path Canonicalization** (Major pattern - Qodo)
+   - Root cause: join() doesn't resolve `..` segments, allowing `docs/../scripts/file.md` to bypass checks
+   - Prevention: Implement canonicalizePath() that resolves `.` and `..` segments
+   - Pattern: Always canonicalize paths after join() before boundary checks
+
+2. **Archive Directory Boundary Check** (Major pattern - Qodo)
+   - Root cause: startsWith('docs/archive') matches 'docs/archiveXYZ'
+   - Prevention: Check for exact match OR starts with prefix + '/'
+   - Pattern: Use `path === prefix || path.startsWith(prefix + '/')` for directory matching
+
+3. **Excluded Directory Boundary Check** (Major pattern - Qodo)
+   - Root cause: Same prefix matching issue as archive directories
+   - Prevention: Apply same boundary check pattern
+   - Pattern: Consistent boundary checking across all path filters
+
+4. **Indented Code Block Detection** (Minor pattern - Qodo)
+   - Root cause: CommonMark allows 0-3 spaces before fence
+   - Prevention: Update regex to `^( {0,3})(\`{3,}|~{3,})`
+   - Pattern: Follow spec for indented fenced code blocks
+
+**Resolution:**
+- Fixed: 5 items (3 MAJOR, 2 MINOR)
+- Deferred: 1 item (recursion avoidance - theoretical edge case for extremely deep directories)
+
+**Key Learnings:**
+- **Canonicalize after join**: join() preserves `..` segments; must resolve them explicitly
+- **Boundary checks need separators**: `startsWith(prefix)` is insufficient; add path separator check
+- **CommonMark compliance**: Fenced code blocks can have 0-3 space indent
+
+---
+
+#### Review #109: PR #225 Feedback - Documentation Index Generator Hardening (2026-01-09)
+
+**Source:** Qodo PR Compliance + Qodo PR Suggestions + SonarQube
+**PR/Branch:** PR #225 / claude/new-session-DJX87
+**Suggestions:** 16 total (Critical: 2, Major: 4, Minor: 9, Trivial: 1) + 1 REJECTED
+
+**Context:** First PR review of the new documentation index generator script. Focus on filesystem error handling, security hardening, and JSON output isolation.
+
+**Patterns Identified:**
+
+1. **FS Error Handling with lstatSync** (Critical pattern - Qodo)
+   - Root cause: statSync doesn't detect symlinks; permission errors unhandled
+   - Prevention: Use lstatSync to detect symlinks; wrap in try/catch with error codes
+   - Pattern: Use lstatSync + try/catch for safe directory traversal
+
+2. **Error Detail Exposure** (Critical pattern - Qodo)
+   - Root cause: Raw error.message may expose filesystem paths
+   - Prevention: Log only error.code, not full message
+   - Pattern: Sanitize errors to codes only in output
+
+3. **JSON Output Isolation** (Major pattern - Qodo)
+   - Root cause: console.log calls mixed with JSON output break parsers
+   - Prevention: Create log() helper that checks jsonOutput flag
+   - Pattern: Guard ALL logging when JSON mode is active
+
+4. **ReDoS in Link Regex** (Major pattern - Qodo)
+   - Root cause: Unbounded `[^\]]+` quantifiers in markdown link regex
+   - Prevention: Add bounded quantifiers `{1,500}`
+   - Pattern: Bound all regex quantifiers processing external content
+
+5. **Link Deduplication** (Minor pattern - Qodo)
+   - Root cause: Same link target counted multiple times
+   - Prevention: Use Set to track seen targets
+   - Pattern: Deduplicate reference counts for accurate metrics
+
+6. **Code Block Stripping** (Minor pattern - Qodo)
+   - Root cause: Links in code examples counted as real references
+   - Prevention: Strip fenced code blocks before parsing links
+   - Pattern: Clean content before parsing for structured data
+
+**Resolution:**
+- Fixed: 16 items (2 CRITICAL, 4 MAJOR, 9 MINOR, 1 TRIVIAL)
+- Rejected: 1 item (standard framework suggestion - architecture change out of scope)
+
+**Key Learnings:**
+- **lstatSync over statSync**: Detects symlinks without following them
+- **Error sanitization**: Only expose error codes, not full messages
+- **JSON mode isolation**: Create log() helper to guard all output
+- **Bounded regex**: Always bound quantifiers when processing external content
 
 ---
 

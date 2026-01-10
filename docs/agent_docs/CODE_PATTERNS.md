@@ -1,8 +1,8 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.3
-**Last Updated:** 2026-01-07
-**Source:** Distilled from 97 AI code reviews
+**Document Version:** 1.4
+**Last Updated:** 2026-01-09
+**Source:** Distilled from 108 AI code reviews
 
 ---
 
@@ -86,6 +86,10 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Fail-closed realpath | If realpathSync fails but file exists, reject | `catch { if (existsSync(path)) return false; }` |
 | PII masking | `maskEmail()` → `u***@d***.com` | Privacy in logs |
 | Audit logging | JSON with timestamp, operator, action, target, result | Structured logs |
+| Regex state leak | Reset lastIndex before each iteration with /g + .exec() | Stateful lastIndex skips matches |
+| ReDoS user patterns | Add heuristic detection (nested quantifiers, length limits) | User regex can have catastrophic backtracking |
+| Path containment check | After resolve(), verify result stays within root | resolve() doesn't guarantee containment |
+| JSONL parse resilience | try/catch per line, continue with valid entries | Single bad line shouldn't crash script |
 
 ---
 
@@ -131,6 +135,12 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Global flag for exec() | `/g` REQUIRED in while loops | No /g = infinite loop |
 | Regex brace matching | `[^}]` not `[\s\S]` | Single-brace-level |
 | Path boundary anchor | `(?:^|[\\/])` prefix | Prevent substring matches |
+| Falsy vs missing check | `=== undefined \|\| === null` for numeric fields | `!field` returns true for 0 |
+| Node.js module prefix | `node:fs`, `node:path`, `node:url` | SonarQube S6803 best practice |
+| Number.parseInt radix | `Number.parseInt(str, 10)` not `parseInt(str)` | Strings starting with 0 misinterpret |
+| Dead code after throw | Code after realpathSync success is unreachable | realpathSync throws on missing files |
+| SSR-safe browser APIs | Guard with `typeof window !== 'undefined'` | Prevent SSR crashes |
+| Cognitive complexity | Keep functions under 15; extract helpers | SonarQube S3776 threshold |
 
 ---
 
@@ -143,6 +153,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Explicit flags | Fail explicitly if flag target missing | Even interactive |
 | Readline close | Create helper, call on all paths | Prevent hang |
 | File moves | grep for filename in .github/, scripts/ | Update CI refs |
+| JSON output isolation | Guard all console.error when JSON mode active | Mixed output breaks parsers |
+| Empty-state guards | Handle "no prior data" case in triggers | Prevents false positives on fresh projects |
+| Unimplemented CLI flags | Block with error message, exit code 2 | Silent acceptance = false confidence |
 
 ---
 
@@ -175,6 +188,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | JSON/JSONL validity | All schema examples must be valid, parseable JSON/JSONL | Enable copy-paste testing with jq |
 | NO-REPO MODE output | Specify "header + zero lines" not placeholder text | Prevents parser-breaking invalid JSONL |
 | Template placeholders | Use `[Date]` not `YYYY-MM-DD`, use `null` not `X` in JSON | Clear, valid examples |
+| Update Dependencies sections | Tightly-coupled docs need explicit "also update X" instructions | Prevents sync misses |
+| Verify AI reviewer claims | AI tools can miss content in large files; verify via git/grep | Prevents wasted effort on false positives |
+| Threshold reset policy | Document at point of use: single-session = NO reset | Prevents confusion on audit semantics |
 
 ---
 
@@ -202,6 +218,8 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Nested code fences | Use `````  or `~~~` | When content has ``` |
 | Effort estimates | Verify rollup = sum of components | Catch stale estimates |
 | Pattern fix audit | Audit entire file | Partial fixes = false confidence |
+| Complete TODOs immediately | Don't leave placeholder functions with TODO comments | Deferred forever = forgotten |
+| Smart fallbacks | Use dynamic defaults (e.g., git log for dates) not hardcoded | Graceful degradation |
 
 ---
 
@@ -220,6 +238,8 @@ When a violation is flagged, reference this document for the pattern details and
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General) |
+| 1.3 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 - Added Security Audit category (6 patterns) |
 | 1.2 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews |
 | 1.1 | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns) |
 | 1.0 | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews) |
