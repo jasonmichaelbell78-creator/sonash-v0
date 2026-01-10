@@ -7,6 +7,7 @@
  * - MULTI_AI_REVIEW_COORDINATOR.md (baseline metrics)
  * - git log since last review
  * - ESLint current warnings
+ * - SonarCloud API (optional, when --sonarcloud flag is used)
  *
  * Checks per-category thresholds:
  * - Code: 25 commits OR 15 code files
@@ -26,6 +27,12 @@
  *   --category=X      Check specific category only (code|security|performance|refactoring|documentation|process)
  *   --json            Output as JSON instead of human-readable
  *   --verbose         Show detailed logging
+ *   --sonarcloud      Query SonarCloud for issue counts (requires SONAR_TOKEN env var)
+ *
+ * Environment variables (for --sonarcloud):
+ *   SONAR_TOKEN       SonarCloud authentication token
+ *   SONAR_PROJECT_KEY Project key (default: jasonmichaelbell78-creator_sonash-v0)
+ *   SONAR_URL         SonarCloud URL (default: https://sonarcloud.io)
  *
  * Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
  */
@@ -105,8 +112,17 @@ const CATEGORY_HEADERS = {
 const args = process.argv.slice(2);
 const JSON_OUTPUT = args.includes('--json');
 const VERBOSE = args.includes('--verbose');
+const SONARCLOUD_ENABLED = args.includes('--sonarcloud');
 const CATEGORY_ARG = args.find(a => a.startsWith('--category='));
 const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] || null : null;
+
+// SonarCloud configuration
+const SONAR_CONFIG = {
+  token: process.env.SONAR_TOKEN,
+  projectKey: process.env.SONAR_PROJECT_KEY || 'jasonmichaelbell78-creator_sonash-v0',
+  baseUrl: process.env.SONAR_URL || 'https://sonarcloud.io',
+  timeout: 30000
+};
 
 /**
  * Safely log verbose messages (only when --verbose flag is set and not in JSON mode)
@@ -188,6 +204,114 @@ function safeExec(command, description) {
       return { success: true, output: error.stdout.trim() };
     }
     return { success: false, error: sanitizeError(error) };
+  }
+}
+
+/**
+ * Fetch issue counts from SonarCloud API
+ * @returns {Promise<{success: boolean, data?: {bugs: number, vulnerabilities: number, codeSmells: number, hotspots: number, qualityGate: string}, error?: string}>}
+ */
+async function fetchSonarCloudData() {
+  if (!SONARCLOUD_ENABLED) {
+    return { success: false, error: 'SonarCloud not enabled (use --sonarcloud flag)' };
+  }
+
+  if (!SONAR_CONFIG.token) {
+    return { success: false, error: 'SONAR_TOKEN environment variable not set' };
+  }
+
+  verbose(`Fetching SonarCloud data for project: ${SONAR_CONFIG.projectKey}`);
+
+  const headers = {
+    'Accept': 'application/json',
+    'Authorization': `Basic ${Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64')}`
+  };
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), SONAR_CONFIG.timeout);
+
+  try {
+    // Fetch issues summary
+    const issuesUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/issues/search`);
+    issuesUrl.searchParams.append('componentKeys', SONAR_CONFIG.projectKey);
+    issuesUrl.searchParams.append('resolved', 'false');
+    issuesUrl.searchParams.append('ps', '1'); // Only need counts, not items
+    issuesUrl.searchParams.append('facets', 'types,severities');
+
+    const issuesResponse = await fetch(issuesUrl.toString(), {
+      headers,
+      signal: controller.signal
+    });
+
+    if (!issuesResponse.ok) {
+      const status = issuesResponse.status;
+      let message = 'Request failed';
+      if (status === 401) message = 'Authentication failed - check SONAR_TOKEN';
+      else if (status === 403) message = 'Access denied - insufficient permissions';
+      else if (status === 404) message = 'Project not found';
+      return { success: false, error: `SonarCloud API: ${status} - ${message}` };
+    }
+
+    const issuesData = await issuesResponse.json();
+
+    // Extract counts from facets
+    const typeFacet = issuesData.facets?.find(f => f.property === 'types');
+    const typeValues = typeFacet?.values || [];
+
+    const bugs = typeValues.find(v => v.val === 'BUG')?.count || 0;
+    const vulnerabilities = typeValues.find(v => v.val === 'VULNERABILITY')?.count || 0;
+    const codeSmells = typeValues.find(v => v.val === 'CODE_SMELL')?.count || 0;
+
+    // Fetch security hotspots count
+    const hotspotsUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/hotspots/search`);
+    hotspotsUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
+    hotspotsUrl.searchParams.append('status', 'TO_REVIEW');
+    hotspotsUrl.searchParams.append('ps', '1');
+
+    const hotspotsResponse = await fetch(hotspotsUrl.toString(), {
+      headers,
+      signal: controller.signal
+    });
+
+    let hotspots = 0;
+    if (hotspotsResponse.ok) {
+      const hotspotsData = await hotspotsResponse.json();
+      hotspots = hotspotsData.paging?.total || 0;
+    }
+
+    // Fetch quality gate status
+    const gateUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/qualitygates/project_status`);
+    gateUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
+
+    const gateResponse = await fetch(gateUrl.toString(), {
+      headers,
+      signal: controller.signal
+    });
+
+    let qualityGate = 'UNKNOWN';
+    if (gateResponse.ok) {
+      const gateData = await gateResponse.json();
+      qualityGate = gateData.projectStatus?.status || 'UNKNOWN';
+    }
+
+    return {
+      success: true,
+      data: {
+        bugs,
+        vulnerabilities,
+        codeSmells,
+        hotspots,
+        qualityGate,
+        total: bugs + vulnerabilities + codeSmells
+      }
+    };
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      return { success: false, error: 'SonarCloud API: Request timed out' };
+    }
+    return { success: false, error: `SonarCloud API: ${error.message || 'Network error'}` };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -593,14 +717,44 @@ function printRecommendation(triggeredCategories, multiAITriggers) {
 }
 
 /**
+ * Print SonarCloud metrics section
+ * @param {{bugs: number, vulnerabilities: number, codeSmells: number, hotspots: number, qualityGate: string, total: number}|null} sonarData - SonarCloud data or null if unavailable
+ * @param {string|null} sonarError - Error message if fetch failed
+ * @returns {void}
+ */
+function printSonarCloudSection(sonarData, sonarError) {
+  console.log('\n=== SonarCloud Metrics ===\n');
+
+  if (sonarError) {
+    console.log(`⚠️  ${sonarError}`);
+    return;
+  }
+
+  if (!sonarData) {
+    console.log('ℹ️  SonarCloud not queried (use --sonarcloud flag)');
+    return;
+  }
+
+  const gateIcon = sonarData.qualityGate === 'OK' ? '✅' : sonarData.qualityGate === 'ERROR' ? '❌' : '⚠️';
+  console.log(`Quality Gate: ${gateIcon} ${sonarData.qualityGate}`);
+  console.log(`\nIssue Counts:`);
+  console.log(`  Bugs:            ${sonarData.bugs}`);
+  console.log(`  Vulnerabilities: ${sonarData.vulnerabilities}`);
+  console.log(`  Code Smells:     ${sonarData.codeSmells}`);
+  console.log(`  Security Hotspots: ${sonarData.hotspots} (TO_REVIEW)`);
+  console.log(`  Total Issues:    ${sonarData.total}`);
+}
+
+/**
  * Format human-readable output to console
  * Refactored to reduce cognitive complexity by extracting helper functions (SonarQube S3776)
  * @param {Array<{category: string, triggered: boolean, commits: number, filesChanged: number, reasons: string[], sinceDate: string}>} categoryResults - Results for each category
  * @param {Array<{type: string, message: string, threshold: number}>} multiAITriggers - Active multi-AI triggers
  * @param {Object<string, number>} auditCounts - Map of category names to audit counts
+ * @param {{data?: Object, error?: string}|null} sonarResult - SonarCloud fetch result (optional)
  * @returns {void}
  */
-function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
+function formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarResult = null) {
   console.log('🔍 Checking Review Triggers...\n');
   console.log('=== Per-Category Single-Session Audit Triggers ===\n');
 
@@ -609,6 +763,12 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts) {
   const triggeredCategories = categoryResults.filter(r => r.triggered);
   printTriggeredDetails(triggeredCategories);
   printMultiAISection(multiAITriggers, auditCounts);
+
+  // Show SonarCloud section if enabled or data available
+  if (SONARCLOUD_ENABLED || sonarResult) {
+    printSonarCloudSection(sonarResult?.data || null, sonarResult?.error || null);
+  }
+
   printRecommendation(triggeredCategories, multiAITriggers);
 }
 
@@ -631,9 +791,9 @@ function getRepoStartDate() {
 /**
  * Main function - orchestrates review trigger checking
  * Reads AUDIT_TRACKER.md, checks per-category thresholds, and outputs results
- * @returns {void} Exits with code 0 (no review needed), 1 (review recommended), or 2 (error)
+ * @returns {Promise<void>} Exits with code 0 (no review needed), 1 (review recommended), or 2 (error)
  */
-function main() {
+async function main() {
   // Read AUDIT_TRACKER.md
   const trackerResult = safeReadFile(TRACKER_PATH, 'AUDIT_TRACKER.md');
   const trackerContent = trackerResult.success ? trackerResult.content : '';
@@ -680,6 +840,12 @@ function main() {
   // Check multi-AI escalation
   const multiAITriggers = checkMultiAITriggers(auditCounts, categoryDates);
 
+  // Fetch SonarCloud data if enabled
+  let sonarResult = null;
+  if (SONARCLOUD_ENABLED) {
+    sonarResult = await fetchSonarCloudData();
+  }
+
   // Calculate review needed
   const reviewNeeded = categoryResults.some(r => r.triggered) || multiAITriggers.length > 0;
 
@@ -718,7 +884,7 @@ function main() {
       };
     }
 
-    console.log(JSON.stringify({
+    const output = {
       // Workflow-compatible fields
       triggers,
       recommendation,
@@ -727,9 +893,18 @@ function main() {
       multiAITriggers,
       auditCounts,
       reviewNeeded
-    }, null, 2));
+    };
+
+    // Include SonarCloud data if available
+    if (sonarResult) {
+      output.sonarcloud = sonarResult.success
+        ? { success: true, data: sonarResult.data }
+        : { success: false, error: sonarResult.error };
+    }
+
+    console.log(JSON.stringify(output, null, 2));
   } else {
-    formatTextOutput(categoryResults, multiAITriggers, auditCounts);
+    formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarResult);
   }
 
   // Exit code
@@ -737,9 +912,7 @@ function main() {
 }
 
 // Run
-try {
-  main();
-} catch (error) {
+main().catch(error => {
   const msg = sanitizeError(error);
   if (JSON_OUTPUT) {
     console.log(JSON.stringify({ error: msg }));
@@ -747,4 +920,4 @@ try {
     console.error('❌ Unexpected error:', msg);
   }
   process.exit(2);
-}
+});
