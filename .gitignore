@@ -54,6 +54,7 @@ scripts/suggested-patterns.json
 
 # MCP configuration (contains tokens)
 .vscode/mcp.json
+.mcp.json
 
 # firebase credentials (NEVER commit!)
 firebase-service-account.json

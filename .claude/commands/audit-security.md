@@ -38,6 +38,18 @@ npm run patterns:check 2>&1
 ls .env* 2>/dev/null || echo "No .env files found"
 ```
 
+**Step 2b: Query SonarCloud Security (if MCP available)**
+
+If `mcp__sonarcloud__get_security_hotspots` is available:
+- Query with `status: "TO_REVIEW"` to get unresolved security hotspots
+- Note hotspot count and severity distribution
+
+If `mcp__sonarcloud__get_issues` is available:
+- Query with `types: "VULNERABILITY"` to get security-specific issues
+- Cross-reference with npm audit findings for comprehensive coverage
+
+This provides real-time security issue data from static analysis.
+
 **Step 3: Load False Positives Database**
 
 Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:

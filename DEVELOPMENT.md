@@ -538,6 +538,58 @@ npm run lint
 
 ---
 
+## 🔌 MCP Servers (Model Context Protocol)
+
+MCP servers extend Claude Code's capabilities with external integrations.
+
+### Setup
+
+1. **Copy the example config:**
+   ```bash
+   cp .mcp.json.example .mcp.json
+   ```
+
+2. **Add your tokens:**
+   Edit `.mcp.json` and replace placeholder values with real tokens.
+
+3. **Restart Claude Code** to load the new configuration.
+
+### Available Servers
+
+| Server | Purpose | Token Required |
+|--------|---------|----------------|
+| `ccusage` | Claude usage tracking | No |
+| `sonarcloud` | Code quality metrics | Yes (SONAR_TOKEN) |
+
+### SonarCloud Setup
+
+1. Get a token from https://sonarcloud.io/account/security
+2. Add to `.mcp.json`:
+   ```json
+   "sonarcloud": {
+     "env": {
+       "SONAR_TOKEN": "your-token-here"
+     }
+   }
+   ```
+
+### Security
+
+- **`.mcp.json` is gitignored** - Never commit tokens
+- **Use `.mcp.json.example`** as a template (committed, no secrets)
+- **Rotate tokens** if accidentally exposed
+
+### Adding New MCP Servers
+
+Recommended servers for this project:
+- **Next.js DevTools MCP** - Error detection, build status
+- **Firebase MCP** - Firestore, Auth, Storage access
+- **GitHub MCP** - PR management, issue tracking
+
+See: https://github.com/modelcontextprotocol/servers
+
+---
+
 ## 🎨 Code Style
 
 ### TypeScript
