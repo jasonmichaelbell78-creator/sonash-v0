@@ -1,4 +1,5 @@
 {
+  "disabledMcpjsonServers": ["rube"],
   "hooks": {
     "SessionStart": [
       {

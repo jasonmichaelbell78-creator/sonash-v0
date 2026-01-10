@@ -1,7 +1,7 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.0
-**Last Updated:** 2026-01-02
+**Document Version:** 2.1
+**Last Updated:** 2026-01-10
 **Status:** ACTIVE
 **Overall Completion:** ~35%
 
@@ -56,7 +56,7 @@ Build a comprehensive, secure digital recovery notebook that helps individuals t
 |-----------|--------|----------|--------|----------|
 | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
 | **M1 - Foundation** | ✅ Complete | 100% | Q1 2026 | P0 |
-| **Doc Standardization** | 🔄 In Progress | 57% (4/7) | Q1 2026 | P0 BLOCKER |
+| **Integrated Improvement Plan** | 🔄 In Progress | ~44% (3.5/8 steps) | Q1 2026 | P0 BLOCKER |
 | **M1.5 - Quick Wins** | ⏸️ BLOCKED | ~50% | Q1 2026 | P0 |
 | **M1.6 - Admin Panel + UX** | ⏸️ BLOCKED | ~75% | Q1 2026 | P1 |
 | **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
@@ -82,7 +82,7 @@ flowchart TD
     end
 
     subgraph Active["🔄 Active/Blocked"]
-        DOC[Doc Standardization\nP0 BLOCKER]
+        DOC[Integrated Improvement Plan\nP0 BLOCKER]
         M15[M1.5 - Quick Wins]
         M16[M1.6 - Admin Panel]
     end
@@ -1010,6 +1010,7 @@ When working on roadmap items:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram |
 | 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
 | 1.5 | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1 |
 | 1.4 | 2025-12-23 | M1.6 Phases 1-3 complete |

@@ -31,6 +31,7 @@
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'"
   },
   "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
     "@emotion/is-prop-valid": "^1.4.0",
     "@fontsource/handlee": "^5.2.7",
     "@fontsource/rock-salt": "^5.2.8",

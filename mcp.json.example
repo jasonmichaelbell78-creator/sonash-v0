@@ -1,0 +1,57 @@
+{
+  "mcpServers": {
+    "ccusage": {
+      "command": "bunx",
+      "args": ["@ccusage/mcp@latest"]
+    },
+    "sonarcloud": {
+      "command": "node",
+      "args": ["scripts/mcp/sonarcloud-server.js"],
+      "env": {
+        "SONAR_TOKEN": "your_sonarcloud_token_here",
+        "SONAR_URL": "https://sonarcloud.io"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_github_token_here"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/sonash-v0"]
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/firebase-mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/your/firebase-adminsdk.json",
+        "FIREBASE_PROJECT_ID": "your-project-id"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@context7/mcp@latest"],
+      "env": {
+        "CONTEXT7_API_KEY": "ctx7sk-your-api-key-here"
+      }
+    },
+    "nextjs-devtools": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/nextjs-devtools-mcp"],
+      "env": {
+        "NEXTJS_DEV_URL": "http://localhost:3000"
+      }
+    }
+  }
+}

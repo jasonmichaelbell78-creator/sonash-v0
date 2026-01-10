@@ -1,8 +1,8 @@
 # Audit Tracker
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Created:** 2026-01-08
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-10
 **Purpose:** Track single-session and multi-AI audit completions for threshold management
 
 ---
@@ -26,8 +26,8 @@ This document tracks:
 
 | Category | Last Audit | Commits Since | Files Since | Trigger At |
 |----------|------------|---------------|-------------|------------|
-| Code | Never | — | — | 25 commits OR 15 files |
-| Security | Never | — | — | Any security-sensitive file OR 20 commits |
+| Code | 2026-01-06 (Multi-AI) | 0 | 0 | 25 commits OR 15 files |
+| Security | 2026-01-07 (Multi-AI) | 0 | 0 | Any security-sensitive file OR 20 commits |
 | Performance | 2026-01-08 (Multi-AI) | 0 | 0 | 30 commits OR bundle change |
 | Refactoring | Never | — | — | 40 commits OR 3 complexity warnings |
 | Documentation | Never | — | — | 20 doc files changed OR 30 commits |
@@ -56,19 +56,19 @@ This document tracks:
 
 | Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
 |------|---------|-----------------|---------------|----------|-----------------|
-| *No audits yet* | | | | | |
+| 2026-01-06 | Multi-AI | Full codebase | All TS/TSX | See CANON-CODE.jsonl | ✅ |
 
 ### Security Audits (`/audit-security`)
 
 | Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
 |------|---------|-----------------|---------------|----------|-----------------|
-| *No audits yet* | | | | | |
+| 2026-01-07 | Multi-AI | Full codebase | All TS/TSX | 10 (CANON-SECURITY.jsonl) | ✅ |
 
 ### Performance Audits (`/audit-performance`)
 
 | Date | Session | Commits Covered | Files Covered | Findings | Reset Threshold |
 |------|---------|-----------------|---------------|----------|-----------------|
-| *No audits yet* | | | | | |
+| 2026-01-08 | Multi-AI (#37) | Full codebase | All TS/TSX | 20 (CANON-PERF.jsonl) | ✅ |
 
 ### Refactoring Audits (`/audit-refactoring`)
 
@@ -94,7 +94,7 @@ This document tracks:
 
 | Date | Categories | Models Used | Total Findings | Aggregated To |
 |------|------------|-------------|----------------|---------------|
-| 2026-01-08 | Performance | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 Thinking | 28 (1 S0, 7 S1, 17 S2, 3 S3) | [audit-2026-01-08.jsonl](./audits/multi-ai/performance/audit-2026-01-08.jsonl) |
+| 2026-01-08 | Performance | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 Thinking | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](../reviews/2026-Q1/canonical/CANON-PERF.jsonl) |
 | 2026-01-07 | Security | Claude Opus 4.5, ChatGPT 5.2 | 10 | CANON-SECURITY.jsonl |
 | 2026-01-06 | Code Review | Claude Opus 4.5, ChatGPT 5.2 | — | CANON-CODE.jsonl |
 
@@ -133,9 +133,22 @@ npm run review:reset -- --category=code --type=single
 
 ---
 
+---
+
+## Terminology
+
+**Raw Findings**: Total findings reported by all AI models before deduplication/aggregation (e.g., 28 raw findings from 5 models).
+
+**Canonical Findings**: Deduplicated, verified findings in CANON-*.jsonl format (e.g., 28 raw → 20 canonical after removing duplicates and false positives).
+
+**Always report both**: "28 raw → 20 canonical" to show the aggregation process.
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | 2026-01-10 | Updated thresholds with completion dates for Code/Security/Performance audits; clarified raw vs canonical findings terminology; updated audit logs |
 | 1.1 | 2026-01-08 | Added Performance multi-AI audit results (28 findings from 5 models) |
 | 1.0 | 2026-01-08 | Initial creation - separate tracking for single vs multi-AI audits |
