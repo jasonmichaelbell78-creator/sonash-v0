@@ -30,6 +30,15 @@ npm run patterns:check 2>&1
 grep -E '"(next|react|typescript)"' package.json | head -5
 ```
 
+**Step 2b: Query SonarCloud (if MCP available)**
+
+If `mcp__sonarcloud__get_issues` is available, fetch current issue counts:
+- Query with `types: "CODE_SMELL,BUG"` and `severities: "CRITICAL,MAJOR"`
+- Compare against baseline in `docs/analysis/sonarqube-manifest.md` (778 issues as of 2026-01-05)
+- Note any significant changes (>10% increase/decrease)
+
+This provides real-time issue data to cross-reference with audit findings.
+
 **Step 3: Load False Positives Database**
 
 Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:

@@ -33,6 +33,16 @@ find app components lib -name "*.ts" -o -name "*.tsx" 2>/dev/null | xargs wc -l 
 grep -rn "TODO\|FIXME\|HACK" --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l
 ```
 
+**Step 2b: Query SonarCloud for Cognitive Complexity (if MCP available)**
+
+If `mcp__sonarcloud__get_issues` is available:
+- Query with `types: "CODE_SMELL"` and `severities: "CRITICAL"` to get cognitive complexity violations
+- These are the primary refactoring targets (47 CRITICAL as of 2026-01-05 baseline)
+- Compare current count against baseline - significant changes indicate code quality trends
+- Use issue file paths to prioritize audit focus areas
+
+This provides real-time cognitive complexity data for targeted refactoring.
+
 **Step 3: Load False Positives Database**
 
 Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:

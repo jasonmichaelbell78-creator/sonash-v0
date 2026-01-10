@@ -117,8 +117,13 @@ Before processing raw AI outputs, review project-specific baselines:
    - Circular dependencies: npm run deps:circular (expect 0)
    - Unused exports: npm run deps:unused
 3. **Static Analysis:** docs/analysis/sonarqube-manifest.md
-   - 778 total issues (47 CRITICAL cognitive complexity)
-4. **AI Learnings:** claude.md Section 4, docs/AI_REVIEW_LEARNINGS_LOG.md
+   - 778 total issues (47 CRITICAL cognitive complexity) as of 2026-01-05
+4. **SonarCloud MCP (if available):** Query real-time issue counts via MCP server
+   - `mcp__sonarcloud__get_issues` with `types: "CODE_SMELL,BUG,VULNERABILITY"` and `severities: "CRITICAL,MAJOR"`
+   - `mcp__sonarcloud__get_security_hotspots` with `status: "TO_REVIEW"`
+   - Compare current counts against manifest baseline to identify drift
+   - Server config: `scripts/mcp/sonarcloud-server.js` (requires SONAR_TOKEN)
+5. **AI Learnings:** claude.md Section 4, docs/AI_REVIEW_LEARNINGS_LOG.md
 
 ### INPUT YOU WILL RECEIVE
 

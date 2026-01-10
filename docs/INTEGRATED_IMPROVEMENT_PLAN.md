@@ -469,6 +469,15 @@ The multi-AI review framework (created 2025-12-30) needs refresh:
 - **Batch opportunities**: ~200+ ESLint auto-fixable, 79 replaceAll() replacements, 71 node: prefix imports
 - **False positive noted**: Firebase API key BLOCKER is intentional (public client key)
 
+**SonarCloud MCP Integration (2026-01-10):** Real-time access to SonarCloud issues via MCP server:
+- **MCP Server**: `scripts/mcp/sonarcloud-server.js` (configured in `.mcp.json`)
+- **Available Tools**:
+  - `mcp__sonarcloud__get_issues` - Fetch code issues (bugs, vulnerabilities, code smells) with severity filtering
+  - `mcp__sonarcloud__get_security_hotspots` - Fetch security hotspots requiring review
+  - `mcp__sonarcloud__get_quality_gates` - Check quality gate status
+- **Usage in Audits**: Query SonarCloud at start of each audit to get current issue counts and compare against baseline
+- **Environment**: Requires `SONAR_TOKEN` and `SONAR_PROJECT_KEY` environment variables
+
 **Execution Strategy**: 2-Tier Aggregation to ensure comprehensive coverage:
 
 ```
