@@ -117,6 +117,45 @@ const CATEGORY_ARG = args.find(a => a.startsWith('--category='));
 const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] || null : null;
 
 // SonarCloud configuration
+// SECURITY: Allowlist of valid SonarCloud/SonarQube hosts to prevent SSRF
+const ALLOWED_SONAR_HOSTS = [
+  'sonarcloud.io',
+  'sonarqube.com',
+  'localhost'  // For local SonarQube instances
+];
+
+/**
+ * Validate that SONAR_URL is a trusted host
+ * @param {string} urlString - URL to validate
+ * @returns {{valid: boolean, error?: string}} Validation result
+ */
+function validateSonarUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+
+    // Must be HTTPS (except localhost for local dev)
+    if (url.protocol !== 'https:' && url.hostname !== 'localhost') {
+      return { valid: false, error: 'SONAR_URL must use HTTPS protocol' };
+    }
+
+    // Check against allowlist
+    const isAllowed = ALLOWED_SONAR_HOSTS.some(allowed =>
+      url.hostname === allowed || url.hostname.endsWith(`.${allowed}`)
+    );
+
+    if (!isAllowed) {
+      return {
+        valid: false,
+        error: `SONAR_URL host '${url.hostname}' not in allowlist. Allowed: ${ALLOWED_SONAR_HOSTS.join(', ')}`
+      };
+    }
+
+    return { valid: true };
+  } catch {
+    return { valid: false, error: 'SONAR_URL is not a valid URL' };
+  }
+}
+
 const SONAR_CONFIG = {
   token: process.env.SONAR_TOKEN,
   projectKey: process.env.SONAR_PROJECT_KEY || 'jasonmichaelbell78-creator_sonash-v0',
@@ -220,6 +259,12 @@ async function fetchSonarCloudData() {
     return { success: false, error: 'SONAR_TOKEN environment variable not set' };
   }
 
+  // SECURITY: Validate SONAR_URL before sending token
+  const urlValidation = validateSonarUrl(SONAR_CONFIG.baseUrl);
+  if (!urlValidation.valid) {
+    return { success: false, error: `Security: ${urlValidation.error}` };
+  }
+
   verbose(`Fetching SonarCloud data for project: ${SONAR_CONFIG.projectKey}`);
 
   const headers = {
@@ -231,18 +276,33 @@ async function fetchSonarCloudData() {
   const timeoutId = setTimeout(() => controller.abort(), SONAR_CONFIG.timeout);
 
   try {
-    // Fetch issues summary
+    // Build URLs for all three API calls
     const issuesUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/issues/search`);
     issuesUrl.searchParams.append('componentKeys', SONAR_CONFIG.projectKey);
     issuesUrl.searchParams.append('resolved', 'false');
     issuesUrl.searchParams.append('ps', '1'); // Only need counts, not items
     issuesUrl.searchParams.append('facets', 'types,severities');
 
-    const issuesResponse = await fetch(issuesUrl.toString(), {
-      headers,
-      signal: controller.signal
-    });
+    const hotspotsUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/hotspots/search`);
+    hotspotsUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
+    hotspotsUrl.searchParams.append('status', 'TO_REVIEW');
+    hotspotsUrl.searchParams.append('ps', '1');
 
+    const gateUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/qualitygates/project_status`);
+    gateUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
+
+    // PERFORMANCE: Run all API calls in parallel with AbortSignal.timeout()
+    const fetchOptions = { headers, signal: controller.signal };
+    const [issuesResponse, hotspotsResponse, gateResponse] = await Promise.all([
+      fetch(issuesUrl.toString(), fetchOptions),
+      fetch(hotspotsUrl.toString(), fetchOptions),
+      fetch(gateUrl.toString(), fetchOptions)
+    ]);
+
+    // Collect warnings for partial failures (don't silently ignore)
+    const warnings = [];
+
+    // Process issues response (primary - fail if this fails)
     if (!issuesResponse.ok) {
       const status = issuesResponse.status;
       let message = 'Request failed';
@@ -254,44 +314,33 @@ async function fetchSonarCloudData() {
 
     const issuesData = await issuesResponse.json();
 
-    // Extract counts from facets
+    // Use paging.total for accurate count (instead of summing facets)
+    const totalIssues = issuesData.paging?.total ?? 0;
+
+    // Extract counts from facets for breakdown
     const typeFacet = issuesData.facets?.find(f => f.property === 'types');
     const typeValues = typeFacet?.values || [];
 
-    const bugs = typeValues.find(v => v.val === 'BUG')?.count || 0;
-    const vulnerabilities = typeValues.find(v => v.val === 'VULNERABILITY')?.count || 0;
-    const codeSmells = typeValues.find(v => v.val === 'CODE_SMELL')?.count || 0;
+    const bugs = typeValues.find(v => v.val === 'BUG')?.count ?? 0;
+    const vulnerabilities = typeValues.find(v => v.val === 'VULNERABILITY')?.count ?? 0;
+    const codeSmells = typeValues.find(v => v.val === 'CODE_SMELL')?.count ?? 0;
 
-    // Fetch security hotspots count
-    const hotspotsUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/hotspots/search`);
-    hotspotsUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
-    hotspotsUrl.searchParams.append('status', 'TO_REVIEW');
-    hotspotsUrl.searchParams.append('ps', '1');
-
-    const hotspotsResponse = await fetch(hotspotsUrl.toString(), {
-      headers,
-      signal: controller.signal
-    });
-
+    // Process hotspots response (warn on failure, don't silently default)
     let hotspots = 0;
     if (hotspotsResponse.ok) {
       const hotspotsData = await hotspotsResponse.json();
-      hotspots = hotspotsData.paging?.total || 0;
+      hotspots = hotspotsData.paging?.total ?? 0;
+    } else {
+      warnings.push(`Hotspots API returned ${hotspotsResponse.status} - count unavailable`);
     }
 
-    // Fetch quality gate status
-    const gateUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/qualitygates/project_status`);
-    gateUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
-
-    const gateResponse = await fetch(gateUrl.toString(), {
-      headers,
-      signal: controller.signal
-    });
-
+    // Process quality gate response (warn on failure, don't silently default)
     let qualityGate = 'UNKNOWN';
     if (gateResponse.ok) {
       const gateData = await gateResponse.json();
       qualityGate = gateData.projectStatus?.status || 'UNKNOWN';
+    } else {
+      warnings.push(`Quality gate API returned ${gateResponse.status} - status unavailable`);
     }
 
     return {
@@ -302,7 +351,8 @@ async function fetchSonarCloudData() {
         codeSmells,
         hotspots,
         qualityGate,
-        total: bugs + vulnerabilities + codeSmells
+        total: totalIssues,  // Use paging.total for accuracy
+        warnings: warnings.length > 0 ? warnings : undefined
       }
     };
   } catch (error) {
@@ -743,6 +793,14 @@ function printSonarCloudSection(sonarData, sonarError) {
   console.log(`  Code Smells:     ${sonarData.codeSmells}`);
   console.log(`  Security Hotspots: ${sonarData.hotspots} (TO_REVIEW)`);
   console.log(`  Total Issues:    ${sonarData.total}`);
+
+  // Show warnings for partial API failures
+  if (sonarData.warnings && sonarData.warnings.length > 0) {
+    console.log('\n⚠️  Warnings:');
+    for (const warning of sonarData.warnings) {
+      console.log(`   - ${warning}`);
+    }
+  }
 }
 
 /**
