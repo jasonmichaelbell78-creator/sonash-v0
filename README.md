@@ -163,16 +163,16 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 
 ## Project Status
 
-**Last Updated:** January 8, 2026
+**Last Updated:** January 10, 2026
 **Overall Progress:** ~35%
-**Current Focus:** Doc Standardization
+**Current Focus:** Integrated Improvement Plan
 
 ### Milestone Status
 
 | Milestone | Status | Progress |
 |-----------|--------|----------|
 | M1 - Foundation | ✅ Complete | 100% |
-| Doc Standardization | 🔄 In Progress | 57% |
+| Integrated Improvement Plan | 🔄 In Progress | 44% |
 | M1.5 - Quick Wins | ⏸️ BLOCKED | 50% |
 | M1.6 - Admin Panel + UX | ⏸️ BLOCKED | 75% |
 | M2 - Architecture | ⏸️ Optional | 0% |
@@ -188,7 +188,7 @@ SoNash is a personalized digital recovery notebook that helps individuals track 
 - ✅ M1 - Foundation
 
 ### Current Sprint
-- 🔄 Doc Standardization (57%)
+- 🔄 Integrated Improvement Plan (44%)
 
 See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
 
