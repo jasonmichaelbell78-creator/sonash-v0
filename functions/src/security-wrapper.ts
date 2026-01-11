@@ -26,9 +26,15 @@ interface SecurityOptions<T> {
     functionName: string;
 
     /**
-     * Rate limiter instance (optional, skips rate limiting if not provided)
+     * Rate limiter instance by userId (optional, skips rate limiting if not provided)
      */
     rateLimiter?: FirestoreRateLimiter;
+
+    /**
+     * CANON-0036: IP-based rate limiter (optional, secondary defense against account cycling)
+     * Applied in addition to userId-based rate limiting
+     */
+    ipRateLimiter?: FirestoreRateLimiter;
 
     /**
      * Zod schema for input validation (optional, skips validation if not provided)
@@ -105,6 +111,7 @@ export async function withSecurityChecks<TInput, TOutput>(
     const {
         functionName,
         rateLimiter,
+        ipRateLimiter,
         validationSchema,
         requireAppCheck = true,
         recaptchaAction,
@@ -126,7 +133,7 @@ export async function withSecurityChecks<TInput, TOutput>(
 
     const userId = request.auth.uid;
 
-    // 2. Check rate limit (if rate limiter provided)
+    // 2. Check user-based rate limit (if rate limiter provided)
     if (rateLimiter) {
         try {
             await rateLimiter.consume(userId, functionName);
@@ -145,6 +152,36 @@ export async function withSecurityChecks<TInput, TOutput>(
                 "resource-exhausted",
                 errorMessage
             );
+        }
+    }
+
+    // 2.5. CANON-0036: Check IP-based rate limit (secondary defense against account cycling)
+    if (ipRateLimiter) {
+        // Get client IP from Cloud Functions request
+        // rawRequest.ip is set by Cloud Functions from X-Forwarded-For header
+        const clientIp = request.rawRequest?.ip ||
+                         request.rawRequest?.headers?.['x-forwarded-for']?.toString().split(',')[0]?.trim() ||
+                         'unknown';
+
+        if (clientIp && clientIp !== 'unknown') {
+            try {
+                await ipRateLimiter.consumeByIp(clientIp, functionName);
+            } catch (rateLimitError) {
+                const errorMessage = rateLimitError instanceof Error
+                    ? rateLimitError.message
+                    : "Rate limit exceeded";
+
+                logSecurityEvent(
+                    "RATE_LIMIT_EXCEEDED",
+                    functionName,
+                    `IP-based rate limit: ${errorMessage}`,
+                    { userId, metadata: { clientIp: clientIp.substring(0, 20) + '...' } }
+                );
+                throw new HttpsError(
+                    "resource-exhausted",
+                    errorMessage
+                );
+            }
         }
     }
 
