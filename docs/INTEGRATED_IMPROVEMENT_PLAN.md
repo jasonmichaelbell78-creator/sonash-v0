@@ -1,10 +1,10 @@
 # Integrated Improvement Plan
 
-**Document Version:** 3.2
+**Document Version:** 3.4
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-11
 **Status:** ACTIVE
-**Overall Completion:** ~56% (Step 4.2 complete - 6/6 audits; Sub-Phase 4.3 pending)
+**Overall Completion:** ~60% (Step 4 COMPLETE - Sub-Phase 4.3 finished; Ready for Step 4B)
 
 ---
 
@@ -34,14 +34,14 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 1 | Quick Wins & Cleanup | **COMPLETE** | 100% | None |
 | Step 2 | Documentation Standardization Completion | **COMPLETE** | 100% | ~~Step 1~~ |
 | Step 3 | Developer Tooling Setup | **COMPLETE** | 100% | ~~Step 2~~ |
-| Step 4 | Multi-AI Delta Review & Comprehensive Audit | **IN PROGRESS** | 95% | ~~Step 3~~ |
+| Step 4 | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE** | 100% | ~~Step 3~~ |
 | Step 4B | Remediation Sprint | **PENDING** | 0% | Step 4 |
 | Step 5 | Review Policy Expansion | **PENDING** | 0% | Step 4B |
 | Step 6 | ROADMAP.md Integration & Doc Updates | **PENDING** | 0% | Step 5 |
 | Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
-**Overall Progress:** 3/8 steps complete + Step 4 at 95% (~56%)
-**Effort Tracking:** ~9 hours actual (Steps 1-3) + ~45-60 hours remaining (Step 4: 28h, 4B: 8-16h, 5: 6-9h, 6: 2-3h, 7: 1-2h)
+**Overall Progress:** 4/8 steps complete (~60%)
+**Effort Tracking:** ~9 hours actual (Steps 1-3) + ~47-62 hours remaining (Step 4: 28h ✅, 4B: 8-16h, 5: 8-11h, 6: 2-3h, 7: 1-2h)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -441,9 +441,9 @@ Install and configure developer tooling that was identified as missing during th
 
 ## Step 4: Multi-AI Delta Review & Comprehensive Audit
 
-**Status:** IN PROGRESS
-**Completion:** 95% (Sub-Phase 4.1 ✅, Sub-Phase 4.2 ✅ - 6/6 audits complete; Sub-Phase 4.3 pending)
-**Estimated Effort:** ~28 hours (Sub-Phase 4.1: 9h ✅, 4.2: 13h ✅, 4.3: 6h pending)
+**Status:** COMPLETE
+**Completion:** 100% (Sub-Phase 4.1 ✅, Sub-Phase 4.2 ✅ - 6/6 audits, Sub-Phase 4.3 ✅ - Tier-2 aggregation)
+**Estimated Effort:** ~28 hours (Sub-Phase 4.1: 9h ✅, 4.2: 13h ✅, 4.3: 6h ✅)
 **Dependencies:** Step 3 ✅
 **Risk Level:** Medium
 
@@ -817,7 +817,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
     - `models_agreeing` / `consensus` → `consensus_score`
     - `merged_from` / `audits` → `sources`
 
-- [ ] **Task 4.3.1**: Execute Tier-2 Aggregator pass (2 hours)
+- [x] **Task 4.3.1**: Execute Tier-2 Aggregator pass (2 hours) ✅ COMPLETE 2026-01-11
   - Use updated `MULTI_AI_AGGREGATOR_TEMPLATE.md`
   - Input: 6 category-level CANON-*.jsonl files (NOT raw AI outputs)
   - Run with high-capability model (Claude Opus 4.5 or GPT-5.2-Codex)
@@ -827,51 +827,59 @@ This ensures each category is thoroughly processed before moving on, preventing 
     - DEDUPED_FINDINGS_JSONL: Unified CANON items `{id, severity, effort, file, desc, ...}`
     - PR_PLAN_JSON: Staged PRs `{pr_name, canon_ids[], risk, order}`
     - HUMAN_SUMMARY_MD: Markdown summary (top wins, high-risk, cross-cutting, demoted duplicates)
+  - **Output:** `docs/reviews/2026-Q1/canonical/tier2-output/` (HUMAN_SUMMARY.md, PR_PLAN.json, DEDUPED_FINDINGS.jsonl)
+  - **Result:** 118 → 97 unique findings (21 merged as duplicates), 12 duplicate clusters, 21 PRs planned
 
-- [ ] **Task 4.3.2**: Categorize CANON findings (1 hour)
+- [x] **Task 4.3.2**: Categorize CANON findings (1 hour) ✅ COMPLETE 2026-01-11
   - Cross-reference with archived EIGHT_PHASE_REFACTOR_PLAN.md
   - Categorize each finding: DONE, STILL_VALID, STALE, NEW
   - Document items already addressed by recent work
   - Note items superseded by new tooling (pattern checker, etc.)
+  - **Output:** `docs/reviews/2026-Q1/canonical/tier2-output/CANON_CATEGORIZATION.md`
+  - **Result:** 8 DONE, 67 STILL_VALID, 3 STALE, 19 NEW
 
-- [ ] **Task 4.3.3**: Create refreshed refactor backlog (1 hour)
+- [x] **Task 4.3.3**: Create refreshed refactor backlog (1 hour) ✅ COMPLETE 2026-01-11
   - List validated items that still need work
   - Prioritize by severity (S0-S3) and effort (E0-E3)
   - Group by category for ROADMAP.md integration
   - Format: Ready for Step 6 ROADMAP.md tasks
+  - **Output:** `docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md`
   - **Acceptance Criteria:**
-    - [ ] Backlog exported as structured list
-    - [ ] All items prioritized (S0-S3 severity, E0-E3 effort)
-    - [ ] Items grouped by category (security, architecture, testing, docs)
-    - [ ] Format compatible with ROADMAP.md M2 section
-    - [ ] Ready for Step 6 handoff
+    - [x] Backlog exported as structured list
+    - [x] All items prioritized (S0-S3 severity, E0-E3 effort)
+    - [x] Items grouped by category (security, architecture, testing, docs)
+    - [x] Format compatible with ROADMAP.md M2 section
+    - [x] Ready for Step 6 handoff
 
-- [ ] **Task 4.3.4**: Document App Check re-enablement plan (1 hour)
+- [x] **Task 4.3.4**: Document App Check re-enablement plan (1 hour) ✅ COMPLETE 2026-01-11
   - Current status: DISABLED
   - Prerequisite: Throttle clearance verification
   - Steps to re-enable
   - Testing requirements
   - Add to Step 6 ROADMAP integration
+  - **Output:** `docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md`
   - **Acceptance Criteria:**
-    - [ ] Current status documented with timestamp
-    - [ ] Prerequisite verification steps defined
-    - [ ] Step-by-step re-enable instructions written
-    - [ ] Testing requirements specified (manual + automated)
-    - [ ] Entry added to Step 6 ROADMAP tracking
+    - [x] Current status documented with timestamp
+    - [x] Prerequisite verification steps defined
+    - [x] Step-by-step re-enable instructions written
+    - [x] Testing requirements specified (manual + automated)
+    - [x] Entry added to Step 6 ROADMAP tracking
 
-- [ ] **Task 4.3.5**: Archive EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours)
+- [x] **Task 4.3.5**: Archive EIGHT_PHASE_REFACTOR_PLAN.md (0.5 hours) ✅ COMPLETE 2026-01-11
   - Move full content to `docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md`
   - Add superseded_by note pointing to new CANON backlog
   - Leave stub at original location (prevent broken external links)
   - Update internal cross-references
+  - **Result:** Already archived at `docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md`
 
-- [ ] **Task 4.3.6**: Log findings in AI_REVIEW_LEARNINGS_LOG.md (0.5 hours)
+- [x] **Task 4.3.6**: Log findings in AI_REVIEW_LEARNINGS_LOG.md (0.5 hours) ✅ COMPLETE 2026-01-11
   - Add entry for this comprehensive audit
   - Document key patterns identified
   - Note any false positives/hallucinations caught by aggregator
   - Update review count metrics
+  - **Result:** Review #123 added; counter incremented to 3
 
-- [ ] **Task 4.3.7**: Analyze Multi-AI Audit Retrospective & Improve Process (1.5 hours)
+- [x] **Task 4.3.7**: Analyze Multi-AI Audit Retrospective & Improve Process (1.5 hours) ✅ COMPLETE 2026-01-11
   - **Input:** `docs/reviews/2026-Q1/MULTI_AI_AUDIT_RETROSPECTIVE_2026_Q1.md` (created 2026-01-11)
   - **Retrospective Key Findings:**
     - Schema compliance at 35% average before normalization (now 80%)
@@ -879,54 +887,54 @@ This ensures each category is thoroughly processed before moving on, preventing 
     - Template (400+ lines) led to selective reading
     - Multi-session drift degraded quality without checkpoints
   - **Process Improvements to Implement:**
-    - [ ] Create 1-page "CANON Quick Reference" card from MULTI_AI_AGGREGATOR_TEMPLATE.md
-    - [ ] Add schema validation step to audit templates (require `npm run validate:canon`)
-    - [ ] Add mid-process compliance checkpoint (review prior CANON file before starting next)
-    - [ ] Document lessons in AI_REVIEW_LEARNINGS_LOG.md (Consolidation #10 candidate)
-  - **Single-Session Audit Improvements:**
-    - [ ] Update single-session audit templates (security, performance, code) with validation requirement
-    - [ ] Add schema validation to pre-commit for docs/reviews/**/*.jsonl
+    - [x] Create 1-page "CANON Quick Reference" card from MULTI_AI_AGGREGATOR_TEMPLATE.md ✅ COMPLETE
+    - [x] Add schema validation step to audit templates (require `npm run validate:canon`) ✅ DOCUMENTED
+    - [x] Add mid-process compliance checkpoint (review prior CANON file before starting next) ✅ DOCUMENTED
+    - [x] Document lessons in AI_REVIEW_LEARNINGS_LOG.md (Consolidation #10 candidate) ✅ Review #123
+  - **Single-Session Audit Improvements:** *(tracked in Step 5)*
+    - [ ] Update single-session audit templates (security, performance, code) with validation requirement → Task 5.11
+    - [ ] Add schema validation to pre-commit for docs/reviews/**/*.jsonl → Task 5.12
   - **Tooling Additions:**
     - [x] `scripts/validate-canon-schema.js` - CREATED 2026-01-11
     - [x] `scripts/normalize-canon-ids.js` - CREATED 2026-01-11
-    - [ ] Add `npm run validate:canon` script to package.json
+    - [ ] Add `npm run validate:canon` script to package.json → Task 5.10
   - **Acceptance Criteria:**
-    - [ ] Quick reference card created (docs/templates/CANON_QUICK_REFERENCE.md)
-    - [ ] Validation integrated into process docs
-    - [ ] Lessons logged in AI_REVIEW_LEARNINGS_LOG.md
+    - [x] Quick reference card created (docs/templates/CANON_QUICK_REFERENCE.md) ✅
+    - [x] Validation integrated into process docs (AUDIT_PROCESS_IMPROVEMENTS.md) ✅
+    - [x] Lessons logged in AI_REVIEW_LEARNINGS_LOG.md (Review #123) ✅
 
 #### Sub-Phase 4.3 Acceptance Criteria
 
 - [x] Schema fields normalized across all 6 CANON files ✅ 2026-01-11
-- [ ] Single aggregator pass completed
-- [ ] Unified CANON backlog produced
-- [ ] PR plan with staged, prioritized PRs
-- [ ] All prior CANON items categorized (DONE/STILL_VALID/STALE/NEW)
-- [ ] App Check plan documented
-- [ ] EIGHT_PHASE_REFACTOR_PLAN.md archived with stub
-- [ ] Findings logged in AI_REVIEW_LEARNINGS_LOG.md
+- [x] Single aggregator pass completed ✅ 2026-01-11
+- [x] Unified CANON backlog produced ✅ 2026-01-11
+- [x] PR plan with staged, prioritized PRs ✅ 2026-01-11
+- [x] All prior CANON items categorized (DONE/STILL_VALID/STALE/NEW) ✅ 2026-01-11
+- [x] App Check plan documented ✅ 2026-01-11
+- [x] EIGHT_PHASE_REFACTOR_PLAN.md archived with stub ✅ 2026-01-11
+- [x] Findings logged in AI_REVIEW_LEARNINGS_LOG.md ✅ 2026-01-11
 
 ---
 
 ### Step 4 Overall Acceptance Criteria
 
-**Sub-Phase 4.1 (Preparation):**
-- [ ] All 6 audit templates ready (4 updated + 2 new)
-- [ ] Dependency Audit integrated into Security template
-- [ ] Aggregator renamed, updated, and documented
-- [ ] Coordinator baselines current
-- [ ] FIREBASE_CHANGE_POLICY.md and key rotation policy complete
-- [ ] Stale docs archived
+**Sub-Phase 4.1 (Preparation):** ✅ COMPLETE
+- [x] All 6 audit templates ready (4 updated + 2 new) ✅
+- [x] Dependency Audit integrated into Security template ✅
+- [x] Aggregator renamed, updated, and documented ✅
+- [x] Coordinator baselines current ✅
+- [x] FIREBASE_CHANGE_POLICY.md and key rotation policy complete ✅
+- [x] Stale docs archived ✅
 
-**Sub-Phase 4.2 (Execution):**
-- [ ] All 6 audit categories executed with multi-AI consensus
-- [ ] Structured output captured for each category
+**Sub-Phase 4.2 (Execution):** ✅ COMPLETE
+- [x] All 6 audit categories executed with multi-AI consensus ✅
+- [x] Structured output captured for each category ✅
 
-**Sub-Phase 4.3 (Aggregation):**
-- [ ] Unified CANON backlog with deduplication
-- [ ] Prioritized PR plan ready for execution
-- [ ] Prior work cross-referenced and categorized
-- [ ] Findings logged for future reference
+**Sub-Phase 4.3 (Aggregation):** ✅ COMPLETE
+- [x] Unified CANON backlog with deduplication ✅ (97 unique findings)
+- [x] Prioritized PR plan ready for execution ✅ (21 PRs in PR_PLAN.json)
+- [x] Prior work cross-referenced and categorized ✅ (CANON_CATEGORIZATION.md)
+- [x] Findings logged for future reference ✅ (Review #123)
 
 ---
 
@@ -1051,7 +1059,7 @@ Deferred items MUST be:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6-9 hours
+**Estimated Effort:** 8-11 hours (6-9h original + 2h for Tasks 5.10-5.12)
 **Dependencies:** Step 4B
 **Risk Level:** Low
 
@@ -1155,6 +1163,25 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
     - Terminology consistency
     - Orphaned document identification
 
+- [ ] **Task 5.10**: Add `npm run validate:canon` script (0.5 hours) - *from Task 4.3.7*
+  - Add script entry to package.json pointing to `scripts/validate-canon-schema.js`
+  - Verify script runs correctly on existing CANON files
+  - Document usage in DEVELOPMENT.md
+
+- [ ] **Task 5.11**: Update single-session audit templates with validation (1 hour) - *from Task 4.3.7*
+  - Update `.claude/commands/audit-code.md` with `npm run validate:canon` requirement
+  - Update `.claude/commands/audit-security.md` with validation requirement
+  - Update `.claude/commands/audit-performance.md` with validation requirement
+  - Update `.claude/commands/audit-refactoring.md` with validation requirement
+  - Update `.claude/commands/audit-documentation.md` with validation requirement
+  - Update `.claude/commands/audit-process.md` with validation requirement
+  - Add validation step to output checklist in each template
+
+- [ ] **Task 5.12**: Add CANON schema validation to pre-commit (0.5 hours) - *from Task 4.3.7*
+  - Update `.husky/pre-commit` to run validation on `docs/reviews/**/*.jsonl`
+  - Only run if JSONL files are staged
+  - Non-blocking initially (warning only)
+
 ### Acceptance Criteria
 
 - [ ] Session activity logging operational
@@ -1166,6 +1193,9 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
 - [ ] Pre-commit/pre-push hooks updated
 - [ ] PR review noise reduced via tool configuration and false positives expansion
 - [x] Documentation content review integrated into recurring audit framework (Task 4.2.5)
+- [ ] `npm run validate:canon` script added to package.json (Task 5.10)
+- [ ] Single-session audit templates updated with validation requirement (Task 5.11)
+- [ ] CANON schema validation integrated into pre-commit (Task 5.12)
 
 ---
 
@@ -1368,6 +1398,11 @@ Items discovered during sprint execution that need tracking. Review at step boun
 | A2 | Security audit | Session #11 | Step 4.2.2 | INCLUDE | Integrated into 6-category audit in Task 4.2.2 |
 | A3 | Test coverage for new scripts | Session #11 | Step 3 | DONE | ✅ 23 tests added for surface-lessons-learned.js, phase-complete-check.js |
 | A4 | Review commit backlog | Session #11 | Step 4.2.1 | INCLUDE | 133 commits integrated into Task 4.2.1 Code Review context |
+| A5 | Step 2 deferred: Task 6.7-6.11 (automation improvements) | Step 2 | ROADMAP M2 | DEFER | Template consolidation, lessons learned surfacing, session hooks - low priority automation |
+| A6 | Step 2 deferred: Task 6.13-6.17 (review items) | Step 2 | ROADMAP M2 | DEFER | Dependency graphs, dashboards, CI lint enforcement - partial overlap with Step 3 |
+| A7 | Feature folder refactoring | Plan creation | ROADMAP M2 | DEFER | From "What We Decided NOT To Do" - validate via Delta Review first |
+| A8 | God object splitting | Plan creation | ROADMAP M2 | DEFER | From "What We Decided NOT To Do" - no friction yet, tracked in M2 |
+| A9 | Task 4.3.7 CANON validation improvements | Session #49 | Step 5 | INCLUDE | Added Tasks 5.10-5.12 for npm script, template updates, pre-commit |
 
 ### Disposition Options
 - **INCLUDE** - Add to current/specific step
@@ -1379,6 +1414,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 | Session | Items Reviewed | Decisions |
 |---------|----------------|-----------|
 | #11 | A1-A4 | A1,A3→Step 3; A2,A4→Step 4 |
+| #49 | A5-A9 | A5-A8→DEFER to ROADMAP M2; A9→INCLUDE in Step 5 (Tasks 5.10-5.12) |
 
 ---
 
@@ -1386,6 +1422,8 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.4 | 2026-01-11 | Added Tasks 5.10-5.12 from Task 4.3.7 (CANON validation improvements); Updated Step 5 effort (6-9h→8-11h); Added Sprint Backlog items A5-A9 tracking deferred work from Step 2 and "What We Decided NOT To Do"; All deferred items now tracked |
+| 3.3 | 2026-01-11 | **STEP 4 COMPLETE** - Sub-Phase 4.3 Tier-2 Aggregation finished; 118 → 97 unique findings (21 merged as 12 duplicate clusters); 21 PRs planned; Comprehensive scope: CANON + SonarQube (548) + ESLint (246) = ~891 total issues tracked; Output: HUMAN_SUMMARY.md, PR_PLAN.json, REFACTOR_BACKLOG.md, CANON_CATEGORIZATION.md, APP_CHECK_REENABLE_PLAN.md; Created CANON_QUICK_REFERENCE.md; Review #123 logged; Step 4 100%; Overall ~60%; Ready for Step 4B |
 | 3.2 | 2026-01-11 | Task 4.3.0 COMPLETE - Schema normalization: 118 findings renumbered to CANON-XXXX format; Created validate-canon-schema.js and normalize-canon-ids.js; Added Task 4.3.7 for retrospective analysis; Multi-AI Audit Retrospective created (35%→80% compliance); 6/6 CANON files pass validation |
 | 3.1 | 2026-01-11 | **SUB-PHASE 4.2 COMPLETE** - Process/Automation Audit (Tasks 4.2.6a, 4.2.6b); 5-model audit; 38 raw findings → 14 canonical in CANON-PROCESS.jsonl; All 6 categories complete; 6 CANON files ready for Tier-2 aggregation; Step 4 at 90%; Overall ~56%; Review #116 logged |
 | 3.0 | 2026-01-11 | Step 4.2 Documentation Audit complete (Tasks 4.2.5a, 4.2.5b); 5-model multi-AI audit; 37 raw findings → 14 canonical in CANON-DOCS.jsonl; Review #115 logged; Step 4 now at 83% (5/6 categories); Overall ~52%; Only Process/Automation audit (4.2.6) remaining |
