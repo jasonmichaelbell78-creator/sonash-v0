@@ -1,8 +1,8 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.5
+**Document Version:** 1.6
 **Created:** 2026-01-01
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-01-11
 **Document Tier:** Tier 2 (Foundation)
 **Purpose:** Master index and coordination for multi-AI code review system
 
@@ -147,7 +147,7 @@ echo "=== Check triggers against thresholds above ==="
 
 ### Current Project Baseline
 
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-01-11
 
 ```yaml
 # Repository Stats
@@ -189,22 +189,25 @@ dev_deps: [Run: npm ls --dev --depth=0 | wc -l]
 known_vulnerabilities: [Run: npm audit --json | jq '.metadata.vulnerabilities']
 
 # Static Analysis (SonarQube)
-sonarqube_total_issues: 778
+sonarqube_scan_date: "2026-01-11"
+sonarqube_total_issues: 941
+sonarqube_delta_from_jan5: "+163 (new audit scripts added)"
 sonarqube_blocker: 1
-sonarqube_blocker_note: "Firebase Web apiKey (public identifier, not a secret). See SECURITY.md for other apiKey handling."
-sonarqube_critical: 47
+sonarqube_blocker_note: "GitHub token in mcp.json (gitignored file, false positive)"
+sonarqube_critical: 61
 sonarqube_critical_note: "Cognitive complexity violations (>15 threshold)"
 sonarqube_critical_risk: "LOW - Maintainability concern; not a runtime security issue"
 sonarqube_critical_release_gate: "P2 - Should be addressed but not blocking launch"
 sonarqube_critical_owner: "Engineering Team"
-sonarqube_critical_remediation: "See docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md for batch remediation plan"
-sonarqube_major: 216
-sonarqube_minor: 507
-sonarqube_info: 7
+sonarqube_critical_remediation: "See docs/analysis/sonarqube-manifest.md for prioritized list"
+sonarqube_major: 246
+sonarqube_minor: 625
+sonarqube_info: 8
 batch_fix_opportunities:
-  - eslint_auto_fixable: ~200+
-  - replaceAll_replacements: 79
-  - node_prefix_imports: 71
+  - eslint_auto_fixable: ~150+
+  - replaceAll_replacements: ~100
+  - node_prefix_imports: ~70
+  - array_at_negative_index: ~84
 ```
 
 ### Baseline Update Process
@@ -562,6 +565,7 @@ It should NOT be used for:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.6 | 2026-01-11 | Updated SonarQube baseline (778→941 issues, 47→61 CRITICAL); delta due to new audit scripts; updated batch fix estimates | Claude |
 | 1.5 | 2026-01-10 | Updated baseline metrics (lint warnings 181→224, baseline date to 2026-01-10); added note about +43 false positive warnings | Claude |
 | 1.4 | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate | Claude |
 | 1.3 | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability | Claude |
