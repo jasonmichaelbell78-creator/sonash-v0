@@ -72,6 +72,8 @@
 
 **Command:** `npm run normalize:canon`
 
+> **Note:** The `normalize:canon` npm script will be added in Step 5 (Task 5.10). Until then, use the direct script path: `node scripts/normalize-canon-ids.js`
+
 **Script:** `scripts/normalize-canon-ids.js`
 
 **Function:**

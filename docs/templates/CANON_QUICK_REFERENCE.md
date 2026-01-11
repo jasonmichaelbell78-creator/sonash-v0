@@ -71,8 +71,10 @@
 
 ## Category Values by Audit Type
 
-| Audit Type | Valid Categories |
-|------------|------------------|
+> **Important:** The `category` field must match allowed values in `docs/standards/JSONL_SCHEMA_STANDARD.md` exactly (treat as enum, not free text). When unsure, open the schema standard and copy/paste the exact value.
+
+| Audit Type | Valid Categories (must match schema exactly) |
+|------------|----------------------------------------------|
 | Code Review | Hygiene/Duplication, Types/Correctness, Next/React Boundaries, Security, Testing |
 | Security | Rate Limiting, Input Validation, Secrets Management, Authentication, Firebase Security, Dependency Security, OWASP |
 | Performance | Bundle Size, Rendering, Data Fetching, Memory Management, Core Web Vitals, Observability |
