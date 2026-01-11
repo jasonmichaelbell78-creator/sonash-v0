@@ -1,10 +1,10 @@
 # Audit Findings Backlog
 
-**Document Version**: 3.1
+**Document Version**: 3.2
 **Created**: 2025-12-30
 **Last Updated**: 2026-01-11
 **Status**: ACTIVE
-**Total Items**: 4 (5-8 hours estimated effort)
+**Total Items**: 7 (7-10 hours estimated effort)
 
 ---
 
@@ -238,6 +238,95 @@ The docs:check linter reports false positive "broken links" for instructional pl
 
 ---
 
+### [Process] Add Missing Script Triggers to Session Start
+
+**CANON-ID**: CANON-0104 (Process Audit finding)
+**Severity**: S2
+**Effort**: E0 (15 min)
+**Source**: Session #48 script trigger audit
+**Status**: PENDING
+
+**Description**:
+Two useful scripts run manually but should auto-run at session start:
+- `surface-lessons-learned.js` - Surfaces relevant past lessons
+- `check-document-sync.js` - Checks template-instance sync (with --quick flag)
+
+**Files affected**: `.claude/hooks/session-start.sh`
+
+**Implementation notes**:
+```bash
+# Add after consolidation check in session-start.sh
+echo "🔍 Surfacing relevant lessons..."
+node scripts/surface-lessons-learned.js 2>/dev/null || true
+
+echo "🔍 Checking document sync..."
+node scripts/check-document-sync.js --quick 2>/dev/null || true
+```
+
+**Acceptance criteria**:
+- [ ] Both scripts run during session start
+- [ ] Failures are non-blocking (warnings only)
+
+---
+
+### [Process] Add CANON Validation to CI Pipeline
+
+**CANON-ID**: CANON-0105 (Process Audit finding)
+**Severity**: S2
+**Effort**: E1 (30 min)
+**Source**: Session #48 script trigger audit
+**Status**: PENDING
+
+**Description**:
+CANON schema validation scripts exist but only run manually. Should run in CI when CANON files change.
+
+**Scripts**:
+- `validate-canon-schema.js` - Validates CANON JSONL schema
+- `validate-audit.js` - Validates audit file structure
+
+**Files affected**: `.github/workflows/ci.yml`
+
+**Implementation notes**:
+```yaml
+- name: Validate CANON schema
+  run: node scripts/validate-canon-schema.js
+  if: contains(github.event.head_commit.modified, 'CANON') || contains(github.event.head_commit.modified, 'canonical')
+
+- name: Validate audit files
+  run: node scripts/validate-audit.js
+  if: contains(github.event.head_commit.modified, 'AUDIT') || contains(github.event.head_commit.modified, 'audit')
+```
+
+**Acceptance criteria**:
+- [ ] CI runs validation on relevant file changes
+- [ ] Invalid CANON files fail the build
+
+---
+
+### [Process] Add npm Commands for Undocumented Scripts
+
+**CANON-ID**: CANON-0106 (Process Audit finding)
+**Severity**: S3
+**Effort**: E0 (10 min)
+**Source**: Session #48 script trigger audit
+**Status**: PENDING
+
+**Description**:
+Several scripts lack npm run commands, making them harder to discover and use.
+
+**Scripts needing npm commands**:
+- `validate-audit.js` → `npm run audit:validate`
+- `validate-canon-schema.js` → `npm run canon:validate`
+- `normalize-canon-ids.js` → `npm run canon:normalize`
+
+**Files affected**: `package.json`
+
+**Acceptance criteria**:
+- [ ] All validation scripts have npm run commands
+- [ ] Commands documented in relevant docs
+
+---
+
 ## Backlog Statistics
 
 | Category | Count | Effort |
@@ -247,10 +336,10 @@ The docs:check linter reports false positive "broken links" for instructional pl
 | Performance | 0 | - |
 | Refactoring | 0 | - |
 | Documentation | 2 | E3 |
-| Process | 1 | E1 |
+| Process | 4 | E2 |
 
-**Total items**: 4
-**Total estimated effort**: 5-8 hours
+**Total items**: 7
+**Total estimated effort**: 7-10 hours
 
 ---
 

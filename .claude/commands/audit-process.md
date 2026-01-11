@@ -55,13 +55,14 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (6 Categories):**
+**Focus Areas (7 Categories):**
 1. CI/CD Pipeline (workflow coverage, reliability, speed)
 2. Git Hooks (pre-commit, pre-push effectiveness)
 3. Claude Hooks (session hooks, tool hooks)
 4. Script Health (test coverage, error handling, documentation)
-5. Trigger Thresholds (appropriateness, coverage)
-6. Process Documentation (accuracy, completeness)
+5. **Script Trigger Coverage** (automatic triggers, npm commands, orphan scripts)
+6. Trigger Thresholds (appropriateness, coverage)
+7. Process Documentation (accuracy, completeness)
 
 **For each category:**
 1. Search relevant files using Grep/Glob
