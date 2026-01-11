@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 4.8
+**Document Version:** 5.0
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-11
 
@@ -18,6 +18,8 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 5.0 | 2026-01-11 | Review #128: PR #236 Follow-up (Qodo) - 5 items (1 HIGH: Sentry IP privacy fix; 1 MEDIUM: CI arg separator; 1 DEFERRED: doc ID hashing; 2 ALREADY DONE from #127). New patterns: Third-party PII hygiene, CLI arg injection prevention. Session #52. |
+| 4.9 | 2026-01-11 | Review #127: PR #236 Comprehensive Review (SonarQube + Qodo) - 14 items (3 CRITICAL: pin GitHub Action SHA, harden reCAPTCHA bypass, fix IPv6 normalization; 4 MAJOR: regex precedence, sanitize error messages, reset journalLoading; 6 MINOR: operationName granularity, CI main-only push, simplify IP retrieval, audit trails, log sensitivity). Session #50. |
 | 4.8 | 2026-01-11 | Review #126: Tier-2 Output PR Feedback Round 3 (Qodo) - 4 items (3 MINOR: HUMAN_SUMMARY merged IDs column for traceability, CANON_QUICK_REFERENCE enum clarification, AUDIT_PROCESS_IMPROVEMENTS normalize:canon fallback note; 1 TRIVIAL: version header already 4.7). All applied. Session #49. |
 | 4.7 | 2026-01-11 | Review #125: Tier-2 Output PR Feedback Round 2 (Qodo) - 4 items (2 MINOR: HUMAN_SUMMARY DEDUP IDs in Top 5 table, PR_PLAN.json PR3 dedup IDs; 1 TRIVIAL: version header 4.5→4.6). 1 rejected (assign PR19 to App Check items - PR19 doesn't exist, "-" is correct). Session #49. |
 | 4.6 | 2026-01-11 | Review #124: Tier-2 Output PR Feedback (Qodo) - 9 items (1 MAJOR rejected: project management tools - static docs intentional for AI context; 6 MINOR: PR_PLAN dedup IDs, REFACTOR_BACKLOG PR associations, PR-LINT reference, HUMAN_SUMMARY next steps, included_dedup_ids field; 2 TRIVIAL: npm script note, hardcoded count). 1 rejected (CANON-0005 distinct from DEDUP-0001: client vs server App Check). New pattern: Dedup IDs should be explicitly linked in PR plans. Session #49. |
@@ -387,7 +389,127 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-112 are actively maintained below. Older reviews are in the archive.
+Reviews #61-127 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #127: PR #236 Comprehensive Review - Security Hardening & SonarQube Fixes (2026-01-11)
+
+**Source:** Mixed - SonarQube Cloud + Qodo Compliance + Qodo Code Suggestions
+**PR/Branch:** PR #236 / claude/new-session-azYVp
+**Suggestions:** 14 items (Critical: 3, Major: 4, Minor: 6, Low: 1) - all fixed
+
+**Context:** Comprehensive PR review addressing SonarQube Quality Gate failure (1 Security Hotspot, C Reliability Rating) and Qodo compliance/code suggestions for the Step 4B Remediation Sprint PR.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | Unpinned GitHub Action (tj-actions/changed-files@v46) - supply chain risk | 🔴 Critical | Security | Pinned to SHA `26a38635...` (v46.0.2) with CVE note |
+| 2 | reCAPTCHA bypass toggle could be enabled in production | 🔴 Critical | Security | Added isEmulator + isProduction checks |
+| 3 | IPv6 normalization flaw (DoS via incorrect rate limiting) | 🔴 Critical | Security | Rewrote to preserve full IPv6, strip port from IPv4 only |
+| 4 | Regex precedence not explicit (SonarQube) | 🟠 Major | Reliability | Used `replaceAll()` with clearer logic |
+| 5 | Leaky error messages to users | 🟠 Major | Security | Return generic "Too many requests" to client |
+| 6 | Rate limit error messages expose internals | 🟠 Major | Security | Sanitized all 3 rate limit error paths |
+| 7 | Missing loading reset on user change | 🟠 Major | UX | Added `setJournalLoading(true)` before new subscription |
+| 8 | Missing distinct operationName in admin functions | 🟡 Minor | Observability | Added unique names to all 15 admin functions |
+| 9 | Push pattern check runs on all branches | 🟡 Minor | CI | Limited to main branch only |
+| 10 | IP retrieval fallback to x-forwarded-for | 🟡 Minor | Code Quality | Simplified to use rawRequest.ip only |
+| 11 | IP truncation in logs | 🟡 Minor | Security | Removed truncation, log full IP for security analysis |
+| 12 | Missing audit trail for successful admin auth | 🟡 Minor | Security | Added ADMIN_ACTION log after requireAdmin passes |
+| 13 | Spoofable IP not documented | 🟡 Minor | Documentation | Added comment noting secondary defense limitation |
+| 14 | Secure Logging (doc.id sensitivity) | ⚪ Low | Security | Reviewed - doc.id is non-PII, kept for debugging |
+
+**Patterns Identified:**
+
+1. **Supply Chain Security for GitHub Actions** (Critical)
+   - Root cause: Using `@v46` tag instead of SHA allows tag retargeting attacks (CVE-2025-30066)
+   - Prevention: Always pin third-party actions to full commit SHA
+   - Pattern: `uses: action@SHA # vX.Y.Z` with version comment
+
+2. **Defense-in-Depth Bypass Protection** (Critical)
+   - Root cause: Single env var could disable security control in all environments
+   - Prevention: Multi-condition bypass requiring emulator OR non-production context
+   - Pattern: `bypass = flagSet && (isEmulator || !isProduction)`
+
+3. **IPv6-Safe IP Normalization** (Critical)
+   - Root cause: Splitting by `:` breaks IPv6 addresses (2001:db8:... becomes just 2001)
+   - Prevention: Only strip port from IPv4 (contains `.`), preserve full IPv6
+   - Pattern: `lastIndexOf(':')` + `.includes('.')` check for IPv4 detection
+
+4. **Error Message Sanitization** (Major)
+   - Root cause: Throwing internal error messages to clients leaks implementation details
+   - Prevention: Log detailed error server-side, return generic message to client
+   - Pattern: `logSecurityEvent(internalMessage); throw HttpsError(genericMessage)`
+
+5. **Admin Function Granularity** (Minor)
+   - Root cause: All admin functions used default "admin_operation" name
+   - Prevention: Pass unique operation name to rate limiter/logger
+   - Pattern: `requireAdmin(request, 'specificFunctionName')`
+
+**Resolution:**
+- Fixed: 14 items (3 Critical, 4 Major, 6 Minor, 1 Low)
+- Deferred: 0 items
+- Rejected: 0 items
+
+**Verification:**
+- ESLint: 0 errors (warnings are pre-existing)
+- Firebase Functions build: Success
+- Tests: 115/115 pass
+
+**Key Learnings:**
+- **GitHub Action supply chain:** The tj-actions/changed-files compromise (CVE-2025-30066) shows why SHA pinning matters
+- **Production bypass prevention:** Multi-condition checks prevent accidental security bypass in production
+- **IPv6 awareness:** IP normalization code must handle both IPv4 and IPv6 correctly
+- **Error message hygiene:** Always sanitize before returning to client, log detail server-side
+
+---
+
+#### Review #128: PR #236 Follow-up - IP Privacy & CI Hardening (2026-01-11)
+
+**Source:** Qodo Code Suggestions (post-commit 93ed9f5)
+**PR/Branch:** PR #236 / claude/continue-session-azYVp-KmwmN
+**Suggestions:** 5 items (High: 1, Medium: 3, Deferred: 1)
+
+**Context:** Follow-up feedback on commit 93ed9f5 identifying additional security and hardening improvements after the initial Review #127 fixes.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | IP addresses sent to Sentry (third-party PII leak) | 🟠 High | Privacy | Added `captureToSentry: false` to IP rate limit logs |
+| 2 | Missing `--` separator in CI file arg passing | 🟡 Medium | Security | Added `--` to prevent `-filename` injection |
+
+**Deferred:**
+
+| # | Issue | Severity | Reason |
+|---|-------|----------|--------|
+| 3 | Hash rate-limit document IDs | 🟡 Medium | Low risk - Firestore doc IDs not client-accessible; rate_limits collection is admin-only |
+
+**Already Fixed (from Review #127):**
+- GitHub Action SHA pinning ✅
+- journalLoading reset on user change ✅
+
+**Patterns Identified:**
+
+1. **Third-Party PII Hygiene** (High)
+   - Root cause: Raw IP addresses in logSecurityEvent metadata sent to Sentry
+   - Prevention: Set `captureToSentry: false` for logs containing PII
+   - Pattern: `logSecurityEvent(..., { metadata: { ip }, captureToSentry: false })`
+
+2. **CLI Argument Injection Prevention** (Medium)
+   - Root cause: File paths passed directly to node script could start with `-`
+   - Prevention: Use `--` separator to mark end of options
+   - Pattern: `node script.js -- $FILES` instead of `node script.js $FILES`
+
+**Resolution:**
+- Fixed: 2 items (1 High, 1 Medium)
+- Deferred: 1 item (with justification)
+- Already done: 2 items (from Review #127)
+
+**Key Learnings:**
+- **PII in logging:** Even internal logs may flow to third parties (Sentry); explicitly disable for sensitive data
+- **Shell injection vectors:** The `--` separator is a critical defense against filename-based injection
 
 ---
 

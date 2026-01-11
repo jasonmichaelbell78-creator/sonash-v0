@@ -17,7 +17,7 @@ export type DailyLogInput = z.infer<typeof dailyLogSchema>;
 // Schema for journal entry validation
 // Supports all journal entry types with flexible data structure
 export const journalEntrySchema = z.object({
-    type: z.enum(['mood', 'gratitude', 'inventory', 'spot-check', 'night-review', 'free-write', 'meeting-note', 'daily-log', 'check-in']),
+    type: z.enum(['mood', 'gratitude', 'inventory', 'spot-check', 'night-review', 'free-write', 'meeting-note', 'daily-log', 'check-in', 'step-1-worksheet']),
     data: z.record(z.string(), z.unknown()), // Flexible object, validated per-type in function
     dateLabel: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
     isPrivate: z.boolean().optional().default(true),
