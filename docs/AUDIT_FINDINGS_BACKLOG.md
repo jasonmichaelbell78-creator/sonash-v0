@@ -1,10 +1,10 @@
 # Audit Findings Backlog
 
-**Document Version**: 3.0
+**Document Version**: 3.2
 **Created**: 2025-12-30
-**Last Updated**: 2026-01-05
+**Last Updated**: 2026-01-11
 **Status**: ACTIVE
-**Total Items**: 1 (1-2 hours estimated effort)
+**Total Items**: 7 (7-10 hours estimated effort)
 
 ---
 
@@ -171,6 +171,179 @@ Replace direct `localStorage` calls with SSR-safe utility functions. Existing co
 
 ---
 
+### [Documentation] Missing "Quick Start" Sections
+
+**CANON-ID**: CANON-0101 (Documentation Audit finding)
+**Severity**: S3
+**Effort**: E2 (2-3 hours)
+**Source**: docs:check lint (Session #48 analysis)
+**Status**: PENDING
+
+**Description**:
+~40 Tier 2 documents are missing recommended "Quick Start" sections. These sections help users quickly understand how to use the document.
+
+**Files affected**: Run `npm run docs:check` for full list (warning: "Missing recommended section matching: /quick start/i")
+
+**Implementation notes**:
+1. Batch add "## Quick Start" sections with 3-5 bullet points
+2. Prioritize high-traffic docs first (templates, guides)
+3. Template docs with YYYY-MM-DD dates are false positives - exclude
+
+**Acceptance criteria**:
+- [ ] Core Tier 1-2 docs have Quick Start sections
+- [ ] Warning count reduced by 50%+
+
+---
+
+### [Documentation] Missing "AI Instructions" Sections
+
+**CANON-ID**: CANON-0102 (Documentation Audit finding)
+**Severity**: S3
+**Effort**: E1 (1-2 hours)
+**Source**: docs:check lint (Session #48 analysis)
+**Status**: PENDING
+
+**Description**:
+~25 Tier 2 documents are missing "AI Instructions" sections. These sections guide AI assistants on how to use the document.
+
+**Files affected**: Run `npm run docs:check` for full list (warning: "Missing recommended section matching: /ai instructions/i")
+
+**Implementation notes**:
+1. Batch add "## AI Instructions" sections
+2. Can use standard template: "When referencing this document: [context]. Key points: [bullets]"
+3. Focus on docs AI is likely to reference
+
+---
+
+### [Process] Fix docs:check False Positives
+
+**CANON-ID**: CANON-0103 (Process Audit finding)
+**Severity**: S2
+**Effort**: E1 (1 hour)
+**Source**: Session #48 analysis
+**Status**: PENDING
+
+**Description**:
+The docs:check linter reports false positive "broken links" for instructional placeholder text like `[text](path)` in templates. This creates noise in the validation output.
+
+**Files affected**: `scripts/check-docs-light.js`
+
+**Implementation notes**:
+1. Add heuristic to skip links containing literal placeholders (`path`, `<path>`, `<http://`)
+2. Or add template-specific exclusions for known instructional patterns
+3. Alternatively, mark template placeholder sections with HTML comments
+
+**Acceptance criteria**:
+- [ ] `npm run docs:check` on template files doesn't report instructional placeholders as broken
+
+---
+
+### [Process] Add Missing Script Triggers to Session Start
+
+**CANON-ID**: CANON-0104 (Process Audit finding)
+**Severity**: S2
+**Effort**: E0 (15 min)
+**Source**: Session #48 script trigger audit
+**Status**: PENDING
+
+**Description**:
+Two useful scripts run manually but should auto-run at session start:
+- `surface-lessons-learned.js` - Surfaces relevant past lessons
+- `check-document-sync.js` - Checks template-instance sync (with --quick flag)
+
+**Files affected**: `.claude/hooks/session-start.sh`
+
+**Implementation notes**:
+```bash
+# Add after consolidation check in session-start.sh
+echo "🔍 Surfacing relevant lessons..."
+node scripts/surface-lessons-learned.js 2>/dev/null || true
+
+echo "🔍 Checking document sync..."
+node scripts/check-document-sync.js --quick 2>/dev/null || true
+```
+
+**Acceptance criteria**:
+- [ ] Both scripts run during session start
+- [ ] Failures are non-blocking (warnings only)
+
+---
+
+### [Process] Add CANON Validation to CI Pipeline
+
+**CANON-ID**: CANON-0105 (Process Audit finding)
+**Severity**: S2
+**Effort**: E1 (30 min)
+**Source**: Session #48 script trigger audit
+**Status**: PENDING
+
+**Description**:
+CANON schema validation scripts exist but only run manually. Should run in CI when CANON files change.
+
+**Scripts**:
+- `validate-canon-schema.js` - Validates CANON JSONL schema
+- `validate-audit.js` - Validates audit file structure
+
+**Files affected**: `.github/workflows/ci.yml`
+
+**Implementation notes**:
+```yaml
+# Option 1: Use paths-filter action for conditional runs
+- name: Check changed files
+  uses: dorny/paths-filter@v3
+  id: changes
+  with:
+    filters: |
+      canon:
+        - '**/CANON*.jsonl'
+        - '**/canonical/**'
+      audit:
+        - '**/AUDIT*.md'
+        - '**/audit/**'
+
+- name: Validate CANON schema
+  if: steps.changes.outputs.canon == 'true'
+  run: node scripts/validate-canon-schema.js
+
+- name: Validate audit files
+  if: steps.changes.outputs.audit == 'true'
+  run: node scripts/validate-audit.js
+
+# Option 2: Always run validation (simpler, recommended for fast scripts)
+- name: Validate CANON schema
+  run: node scripts/validate-canon-schema.js
+```
+
+**Acceptance criteria**:
+- [ ] CI runs validation on relevant file changes
+- [ ] Invalid CANON files fail the build
+
+---
+
+### [Process] Add npm Commands for Undocumented Scripts
+
+**CANON-ID**: CANON-0106 (Process Audit finding)
+**Severity**: S3
+**Effort**: E0 (10 min)
+**Source**: Session #48 script trigger audit
+**Status**: PENDING
+
+**Description**:
+Several scripts lack npm run commands, making them harder to discover and use.
+
+**Scripts needing npm commands**:
+- `validate-audit.js` → `npm run audit:validate`
+- `validate-canon-schema.js` → `npm run canon:validate`
+- `normalize-canon-ids.js` → `npm run canon:normalize`
+
+**Files affected**: `package.json`
+
+**Acceptance criteria**:
+- [ ] All validation scripts have npm run commands
+- [ ] Commands documented in relevant docs
+
+---
+
 ## Backlog Statistics
 
 | Category | Count | Effort |
@@ -179,11 +352,11 @@ Replace direct `localStorage` calls with SSR-safe utility functions. Existing co
 | Security | 0 | - |
 | Performance | 0 | - |
 | Refactoring | 0 | - |
-| Documentation | 0 | - |
-| Process | 0 | - |
+| Documentation | 2 | E3 |
+| Process | 4 | E2 |
 
-**Total items**: 1
-**Total estimated effort**: 1-2 hours
+**Total items**: 7
+**Total estimated effort**: 7-10 hours
 
 ---
 

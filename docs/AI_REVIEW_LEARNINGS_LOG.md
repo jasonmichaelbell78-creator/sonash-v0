@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 4.1
+**Document Version:** 4.4
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-11
 
@@ -18,6 +18,9 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 4.4 | 2026-01-11 | Review #122: PR #232 Round 2 - 3 items (1 MEDIUM: CRLF normalization + regex whitespace; 2 LOW: process.exitCode for buffer flush, bash version check). New patterns: Normalize CRLF for cross-platform, use process.exitCode over process.exit(), check BASH_VERSION for bash-specific scripts. Session #48. |
+| 4.3 | 2026-01-11 | Review #121: PR #232 Qodo/SonarCloud - 13 items (4 MAJOR: exit code docs, stderr suppression, large JSON gitignore, CI trigger syntax; 5 MINOR: line counting, script detection, archive parsing, repo-root path, try/catch; 3 LOW: NaN guard, glob reliability, merge conflict). New patterns: Document all exit codes, capture stderr for debugging, gitignore large generated files. Session #48. |
+| 4.2 | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 → CODE_PATTERNS.md v1.6 (5 new patterns: 3 Security, 2 JS/TS). Counter reset. Session #48. |
 | 4.1 | 2026-01-11 | Review #120: PR #228 Qodo Round 3 - 4 items (2 URGENT prototype pollution/secure logging, 1 HIGH fail-fast validation, 1 MEDIUM GitHub Actions workflow undefined fix). CANON-0043 verified correct. New patterns: Use Map for untrusted keys, never log raw input content, fail-fast on parse errors. Session #47. |
 | 4.0 | 2026-01-11 | Review #119: PR #228 Qodo Round 2 - 9 items (2 MAJOR NaN-safe sorting/missing-ID validation, 6 MINOR category normalization/coverage output/session tracking/finding count, 1 TRIVIAL trailing newline). Deferred: JSON Schema migration. New pattern: Ensure numeric fields have robust fallbacks for sorting. Session #47. |
 | 3.9 | 2026-01-11 | Review #118: PR #228 Follow-up Feedback - 1 item (1 HIGH report-to-JSONL ID mismatches). Updated 3 markdown audit reports + CANON-REFACTOR.jsonl to use normalized CANON-XXXX IDs. Session #47. |
@@ -190,10 +193,10 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5 (Reviews #109-113)
+**Reviews since last consolidation:** 2
 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current
-**Next consolidation due:** After Review #118
+**Next consolidation due:** After Review #130
 
 ### When to Consolidate
 
@@ -212,6 +215,24 @@ Consolidation is needed when:
 6. Note consolidation in version history
 
 ### Last Consolidation
+
+- **Date:** 2026-01-11 (Session #48)
+- **Reviews consolidated:** #109-#120 (12 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.6:**
+  - **Security (3 patterns):**
+    - Entity escaping order (ampersand first)
+    - SSRF explicit allowlist + protocol enforcement
+    - External request timeout (AbortController)
+  - **JavaScript/TypeScript (2 patterns):**
+    - lstatSync for symlink detection
+    - NaN-safe numeric sorting
+  - **Security Audit (3 patterns, already added in v1.5):**
+    - Prototype pollution prevention
+    - Secure error logging
+    - Fail-fast validation
+
+<details>
+<summary>Previous Consolidation (#9)</summary>
 
 - **Date:** 2026-01-09 (Session #39)
 - **Reviews consolidated:** #98-#108 (11 reviews)
@@ -232,15 +253,8 @@ Consolidation is needed when:
     - JSON output isolation
     - Empty-state guards
     - Unimplemented CLI flags blocking
-  - **Documentation (3 patterns):**
-    - Update Dependencies sections
-    - Verify AI reviewer claims
-    - Threshold reset policy
-  - **General (2 patterns):**
-    - Complete TODOs immediately
-    - Smart fallbacks
-- **Key themes:** Document sync validation, regex security (ReDoS/state), path containment, process improvements (auto-invoke, update dependencies)
-- **Next consolidation due:** After Review #118
+
+</details>
 
 ### Previous Consolidation (#8)
 
