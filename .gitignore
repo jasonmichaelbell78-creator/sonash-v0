@@ -52,9 +52,9 @@ dataconnect/
 # auto-generated pattern suggestions
 scripts/suggested-patterns.json
 
-# MCP configuration (contains tokens)
+# MCP configuration (VS Code - not used by Claude Code)
 .vscode/mcp.json
-.mcp.json
+# NOTE: .mcp.json is intentionally tracked - required for MCP persistence in cloud environments
 
 # firebase credentials (NEVER commit!)
 firebase-service-account.json
