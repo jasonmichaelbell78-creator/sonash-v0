@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 3.3
+**Document Version:** 3.4
 **Created:** 2026-01-03
 **Last Updated:** 2026-01-11
 **Status:** ACTIVE
@@ -41,7 +41,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 7 | Verification & Feature Resumption | **PENDING** | 0% | Step 6 |
 
 **Overall Progress:** 4/8 steps complete (~60%)
-**Effort Tracking:** ~9 hours actual (Steps 1-3) + ~45-60 hours remaining (Step 4: 28h, 4B: 8-16h, 5: 6-9h, 6: 2-3h, 7: 1-2h)
+**Effort Tracking:** ~9 hours actual (Steps 1-3) + ~47-62 hours remaining (Step 4: 28h ✅, 4B: 8-16h, 5: 8-11h, 6: 2-3h, 7: 1-2h)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -891,13 +891,13 @@ This ensures each category is thoroughly processed before moving on, preventing 
     - [x] Add schema validation step to audit templates (require `npm run validate:canon`) ✅ DOCUMENTED
     - [x] Add mid-process compliance checkpoint (review prior CANON file before starting next) ✅ DOCUMENTED
     - [x] Document lessons in AI_REVIEW_LEARNINGS_LOG.md (Consolidation #10 candidate) ✅ Review #123
-  - **Single-Session Audit Improvements:**
-    - [ ] Update single-session audit templates (security, performance, code) with validation requirement
-    - [ ] Add schema validation to pre-commit for docs/reviews/**/*.jsonl
+  - **Single-Session Audit Improvements:** *(tracked in Step 5)*
+    - [ ] Update single-session audit templates (security, performance, code) with validation requirement → Task 5.11
+    - [ ] Add schema validation to pre-commit for docs/reviews/**/*.jsonl → Task 5.12
   - **Tooling Additions:**
     - [x] `scripts/validate-canon-schema.js` - CREATED 2026-01-11
     - [x] `scripts/normalize-canon-ids.js` - CREATED 2026-01-11
-    - [ ] Add `npm run validate:canon` script to package.json
+    - [ ] Add `npm run validate:canon` script to package.json → Task 5.10
   - **Acceptance Criteria:**
     - [x] Quick reference card created (docs/templates/CANON_QUICK_REFERENCE.md) ✅
     - [x] Validation integrated into process docs (AUDIT_PROCESS_IMPROVEMENTS.md) ✅
@@ -1059,7 +1059,7 @@ Deferred items MUST be:
 
 **Status:** PENDING
 **Completion:** 0%
-**Estimated Effort:** 6-9 hours
+**Estimated Effort:** 8-11 hours (6-9h original + 2h for Tasks 5.10-5.12)
 **Dependencies:** Step 4B
 **Risk Level:** Low
 
@@ -1163,6 +1163,25 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
     - Terminology consistency
     - Orphaned document identification
 
+- [ ] **Task 5.10**: Add `npm run validate:canon` script (0.5 hours) - *from Task 4.3.7*
+  - Add script entry to package.json pointing to `scripts/validate-canon-schema.js`
+  - Verify script runs correctly on existing CANON files
+  - Document usage in DEVELOPMENT.md
+
+- [ ] **Task 5.11**: Update single-session audit templates with validation (1 hour) - *from Task 4.3.7*
+  - Update `.claude/commands/audit-code.md` with `npm run validate:canon` requirement
+  - Update `.claude/commands/audit-security.md` with validation requirement
+  - Update `.claude/commands/audit-performance.md` with validation requirement
+  - Update `.claude/commands/audit-refactoring.md` with validation requirement
+  - Update `.claude/commands/audit-documentation.md` with validation requirement
+  - Update `.claude/commands/audit-process.md` with validation requirement
+  - Add validation step to output checklist in each template
+
+- [ ] **Task 5.12**: Add CANON schema validation to pre-commit (0.5 hours) - *from Task 4.3.7*
+  - Update `.husky/pre-commit` to run validation on `docs/reviews/**/*.jsonl`
+  - Only run if JSONL files are staged
+  - Non-blocking initially (warning only)
+
 ### Acceptance Criteria
 
 - [ ] Session activity logging operational
@@ -1174,6 +1193,9 @@ See: [REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRA
 - [ ] Pre-commit/pre-push hooks updated
 - [ ] PR review noise reduced via tool configuration and false positives expansion
 - [x] Documentation content review integrated into recurring audit framework (Task 4.2.5)
+- [ ] `npm run validate:canon` script added to package.json (Task 5.10)
+- [ ] Single-session audit templates updated with validation requirement (Task 5.11)
+- [ ] CANON schema validation integrated into pre-commit (Task 5.12)
 
 ---
 
@@ -1376,6 +1398,11 @@ Items discovered during sprint execution that need tracking. Review at step boun
 | A2 | Security audit | Session #11 | Step 4.2.2 | INCLUDE | Integrated into 6-category audit in Task 4.2.2 |
 | A3 | Test coverage for new scripts | Session #11 | Step 3 | DONE | ✅ 23 tests added for surface-lessons-learned.js, phase-complete-check.js |
 | A4 | Review commit backlog | Session #11 | Step 4.2.1 | INCLUDE | 133 commits integrated into Task 4.2.1 Code Review context |
+| A5 | Step 2 deferred: Task 6.7-6.11 (automation improvements) | Step 2 | ROADMAP M2 | DEFER | Template consolidation, lessons learned surfacing, session hooks - low priority automation |
+| A6 | Step 2 deferred: Task 6.13-6.17 (review items) | Step 2 | ROADMAP M2 | DEFER | Dependency graphs, dashboards, CI lint enforcement - partial overlap with Step 3 |
+| A7 | Feature folder refactoring | Plan creation | ROADMAP M2 | DEFER | From "What We Decided NOT To Do" - validate via Delta Review first |
+| A8 | God object splitting | Plan creation | ROADMAP M2 | DEFER | From "What We Decided NOT To Do" - no friction yet, tracked in M2 |
+| A9 | Task 4.3.7 CANON validation improvements | Session #49 | Step 5 | INCLUDE | Added Tasks 5.10-5.12 for npm script, template updates, pre-commit |
 
 ### Disposition Options
 - **INCLUDE** - Add to current/specific step
@@ -1387,6 +1414,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 | Session | Items Reviewed | Decisions |
 |---------|----------------|-----------|
 | #11 | A1-A4 | A1,A3→Step 3; A2,A4→Step 4 |
+| #49 | A5-A9 | A5-A8→DEFER to ROADMAP M2; A9→INCLUDE in Step 5 (Tasks 5.10-5.12) |
 
 ---
 
@@ -1394,6 +1422,7 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.4 | 2026-01-11 | Added Tasks 5.10-5.12 from Task 4.3.7 (CANON validation improvements); Updated Step 5 effort (6-9h→8-11h); Added Sprint Backlog items A5-A9 tracking deferred work from Step 2 and "What We Decided NOT To Do"; All deferred items now tracked |
 | 3.3 | 2026-01-11 | **STEP 4 COMPLETE** - Sub-Phase 4.3 Tier-2 Aggregation finished; 118 → 97 unique findings (21 merged as 12 duplicate clusters); 21 PRs planned; Comprehensive scope: CANON + SonarQube (548) + ESLint (246) = ~891 total issues tracked; Output: HUMAN_SUMMARY.md, PR_PLAN.json, REFACTOR_BACKLOG.md, CANON_CATEGORIZATION.md, APP_CHECK_REENABLE_PLAN.md; Created CANON_QUICK_REFERENCE.md; Review #123 logged; Step 4 100%; Overall ~60%; Ready for Step 4B |
 | 3.2 | 2026-01-11 | Task 4.3.0 COMPLETE - Schema normalization: 118 findings renumbered to CANON-XXXX format; Created validate-canon-schema.js and normalize-canon-ids.js; Added Task 4.3.7 for retrospective analysis; Multi-AI Audit Retrospective created (35%→80% compliance); 6/6 CANON files pass validation |
 | 3.1 | 2026-01-11 | **SUB-PHASE 4.2 COMPLETE** - Process/Automation Audit (Tasks 4.2.6a, 4.2.6b); 5-model audit; 38 raw findings → 14 canonical in CANON-PROCESS.jsonl; All 6 categories complete; 6 CANON files ready for Tier-2 aggregation; Step 4 at 90%; Overall ~56%; Review #116 logged |
