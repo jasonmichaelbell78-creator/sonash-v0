@@ -1,0 +1,832 @@
+{
+  "generated": "2026-01-11T02:25:09.537Z",
+  "total_findings": 118,
+  "mapping": [
+    {
+      "old_id": "CANON-0001",
+      "new_id": "CANON-0001",
+      "category": "CODE",
+      "title": "App Check disabled on all production Cloud Functions",
+      "severity": "S0"
+    },
+    {
+      "old_id": "CANON-0002",
+      "new_id": "CANON-0002",
+      "category": "CODE",
+      "title": "Legacy journalEntries collection allows direct client writes (bypasses function security posture)",
+      "severity": "S0"
+    },
+    {
+      "old_id": "CANON-0005",
+      "new_id": "CANON-0003",
+      "category": "CODE",
+      "title": "Console.* usage in app components bypasses standardized logger/sanitization",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0007",
+      "new_id": "CANON-0004",
+      "category": "CODE",
+      "title": "Cloud Function schema missing 'step-1-worksheet' journal entry type (validation drift / feature break)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0003",
+      "new_id": "CANON-0005",
+      "category": "CODE",
+      "title": "Client App Check initialization is disabled/commented out",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0041",
+      "new_id": "CANON-0006",
+      "category": "CODE",
+      "title": "Cloud Function error handling duplicated (4 locations) + duplicate CloudFunctionError type definitions",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0006",
+      "new_id": "CANON-0007",
+      "category": "CODE",
+      "title": "Critical logic divergence in journal saving (deprecated FirestoreService path bypasses hook business logic)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0004",
+      "new_id": "CANON-0008",
+      "category": "CODE",
+      "title": "reCAPTCHA verification is logged but not enforced when configured",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0012",
+      "new_id": "CANON-0009",
+      "category": "CODE",
+      "title": "Server layout composes client providers; boundary should be explicit",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0008",
+      "new_id": "CANON-0010",
+      "category": "CODE",
+      "title": "Admin-claim Firestore rule writes lack function-only defense-in-depth",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0010",
+      "new_id": "CANON-0011",
+      "category": "CODE",
+      "title": "Missing automated tests for Cloud Function security layers (App Check / rate limiting / authz)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0011",
+      "new_id": "CANON-0012",
+      "category": "CODE",
+      "title": "No integration tests for Firestore rules (emulator-based)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0043",
+      "new_id": "CANON-0013",
+      "category": "CODE",
+      "title": "Security-critical files have low test coverage (account-linking, firestore-service, recaptcha, users DB)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0038",
+      "new_id": "CANON-0014",
+      "category": "CODE",
+      "title": "reCAPTCHA verification coverage may be incomplete when App Check is disabled (needs verification)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0046",
+      "new_id": "CANON-0015",
+      "category": "CODE",
+      "title": "Potential rate limit bypass via cycling anonymous accounts (needs threat-model validation)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0037",
+      "new_id": "CANON-0016",
+      "category": "CODE",
+      "title": "Potential sensitive data in localStorage (needs audit)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-0014",
+      "new_id": "CANON-0017",
+      "category": "CODE",
+      "title": "Duplicated time-of-day rotation logic for quotes and slogans",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0018",
+      "new_id": "CANON-0018",
+      "category": "CODE",
+      "title": "Unsafe type assertions with 'as unknown as' (worksheet + related components)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0021",
+      "new_id": "CANON-0019",
+      "category": "CODE",
+      "title": "ESLint security plugin warnings in scripts (unsafe regex / non-literal fs / object injection patterns)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0016",
+      "new_id": "CANON-0020",
+      "category": "CODE",
+      "title": "Journal entry type definitions duplicated across client types and server schemas (single-source refactor)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0026",
+      "new_id": "CANON-0021",
+      "category": "CODE",
+      "title": "Missing error.message null safety in TodayPage catch block",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0019",
+      "new_id": "CANON-0022",
+      "category": "CODE",
+      "title": "Unsafe localStorage JSON.parse in use-smart-prompts hook",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0013",
+      "new_id": "CANON-0023",
+      "category": "CODE",
+      "title": "Duplicated DailyQuoteCard component exists in multiple directories (2 confirmed; possible 3rd variant)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0042",
+      "new_id": "CANON-0024",
+      "category": "CODE",
+      "title": "Inconsistent Firebase Functions import pattern (static vs dynamic imports)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0017",
+      "new_id": "CANON-0025",
+      "category": "CODE",
+      "title": "Inconsistent httpsCallable typing (missing generic request/response types)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0023",
+      "new_id": "CANON-0026",
+      "category": "CODE",
+      "title": "useJournal sets up its own auth listener instead of using shared auth context",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0024",
+      "new_id": "CANON-0027",
+      "category": "CODE",
+      "title": "Cloud Function integration test is skipped in firestore-service test suite",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0022",
+      "new_id": "CANON-0028",
+      "category": "CODE",
+      "title": "Journal entry schema data is weakly typed (z.record unknown; per-type validation not enforced)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0025",
+      "new_id": "CANON-0029",
+      "category": "CODE",
+      "title": "No tests for useJournal hook",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-0045",
+      "new_id": "CANON-0030",
+      "category": "CODE",
+      "title": "@ts-expect-error suppression comment in production code",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-0034",
+      "new_id": "CANON-0031",
+      "category": "CODE",
+      "title": "Environment variables accessed directly in components (centralize in typed config)",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-0044",
+      "new_id": "CANON-0032",
+      "category": "CODE",
+      "title": "'any' types leaking into production code (needs tightening)",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-0033",
+      "new_id": "CANON-0033",
+      "category": "CODE",
+      "title": "Landing page forced to client component for top-level state",
+      "severity": "S3"
+    },
+    {
+      "old_id": "F-001",
+      "new_id": "CANON-0034",
+      "category": "SECURITY",
+      "title": "Legacy journalEntries collection allows direct client writes (bypasses Functions validation/rate limits)",
+      "severity": "S0"
+    },
+    {
+      "old_id": "F-003",
+      "new_id": "CANON-0035",
+      "category": "SECURITY",
+      "title": "reCAPTCHA token missing does not block requests (logs but continues)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "F-002",
+      "new_id": "CANON-0036",
+      "category": "SECURITY",
+      "title": "Rate limiting is incomplete (no IP throttling, admin endpoints unthrottled, inconsistent 429-equivalent handling)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "F-004",
+      "new_id": "CANON-0037",
+      "category": "SECURITY",
+      "title": "Zod schemas missing .strict() (unknown fields accepted)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "F-009",
+      "new_id": "CANON-0038",
+      "category": "SECURITY",
+      "title": "Hardcoded fallback reCAPTCHA site key in server verification code (config integrity/rotation risk)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "F-006",
+      "new_id": "CANON-0039",
+      "category": "SECURITY",
+      "title": "Server-side journal entry type enum missing 'step-1-worksheet' (validation drift)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "F-005",
+      "new_id": "CANON-0040",
+      "category": "SECURITY",
+      "title": "Permissive z.record(..., z.unknown()) allows arbitrary nested data in journal/inventory entries",
+      "severity": "S2"
+    },
+    {
+      "old_id": "F-008",
+      "new_id": "CANON-0041",
+      "category": "SECURITY",
+      "title": "Some admin-managed collections allow direct client writes without centralized schema/rate-limit protections",
+      "severity": "S2"
+    },
+    {
+      "old_id": "F-007",
+      "new_id": "CANON-0042",
+      "category": "SECURITY",
+      "title": "Console statements present; replace with structured logger and enforce no-console in production",
+      "severity": "S2"
+    },
+    {
+      "old_id": "F-010",
+      "new_id": "CANON-0043",
+      "category": "SECURITY",
+      "title": "App Check disabled on Functions and client init disabled (tracked as risk-accepted hardening item)",
+      "severity": "S3"
+    },
+    {
+      "old_id": "PERF-002",
+      "new_id": "CANON-0044",
+      "category": "PERF",
+      "title": "useJournal creates redundant auth listener + potential memory leak from nested cleanup",
+      "severity": "S0"
+    },
+    {
+      "old_id": "PERF-001",
+      "new_id": "CANON-0045",
+      "category": "PERF",
+      "title": "Landing page forced to client-side rendering blocks SSR for LCP route",
+      "severity": "S1"
+    },
+    {
+      "old_id": "PERF-011",
+      "new_id": "CANON-0046",
+      "category": "PERF",
+      "title": "Excessive 'use client' directives prevent SSR optimization",
+      "severity": "S1"
+    },
+    {
+      "old_id": "PERF-019",
+      "new_id": "CANON-0047",
+      "category": "PERF",
+      "title": "Static export disables Next.js image optimization",
+      "severity": "S1"
+    },
+    {
+      "old_id": "PERF-018",
+      "new_id": "CANON-0048",
+      "category": "PERF",
+      "title": "TodayPage re-subscribes on journalEntry change",
+      "severity": "S1"
+    },
+    {
+      "old_id": "PERF-016",
+      "new_id": "CANON-0049",
+      "category": "PERF",
+      "title": "Notebook module registry eagerly imports all pages",
+      "severity": "S1"
+    },
+    {
+      "old_id": "PERF-007",
+      "new_id": "CANON-0050",
+      "category": "PERF",
+      "title": "Sentry integration incomplete - no Web Vitals reporting",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-004",
+      "new_id": "CANON-0051",
+      "category": "PERF",
+      "title": "Duplicate DailyQuoteCard implementations + unbounded quotes fetch",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-006",
+      "new_id": "CANON-0052",
+      "category": "PERF",
+      "title": "Celebration animations create 150+ DOM elements without reduced-motion support",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-003",
+      "new_id": "CANON-0053",
+      "category": "PERF",
+      "title": "No React.memo usage causes unnecessary re-renders in list components",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-008",
+      "new_id": "CANON-0054",
+      "category": "PERF",
+      "title": "Hero background image bypasses Next.js image optimization",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-005",
+      "new_id": "CANON-0055",
+      "category": "PERF",
+      "title": "Large entry lists not virtualized - DOM grows linearly with data",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-013",
+      "new_id": "CANON-0056",
+      "category": "PERF",
+      "title": "Meeting map renders all markers without clustering",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-009",
+      "new_id": "CANON-0057",
+      "category": "PERF",
+      "title": "7 unused dependencies increasing bundle size",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-010",
+      "new_id": "CANON-0058",
+      "category": "PERF",
+      "title": "Console statements in production code",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-014",
+      "new_id": "CANON-0059",
+      "category": "PERF",
+      "title": "Firebase queries lack consistent indexing and limits",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-012",
+      "new_id": "CANON-0060",
+      "category": "PERF",
+      "title": "Admin CRUD table fetches entire collections without pagination",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-015",
+      "new_id": "CANON-0061",
+      "category": "PERF",
+      "title": "Step1WorksheetCard excessive complexity (804 lines)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-020",
+      "new_id": "CANON-0062",
+      "category": "PERF",
+      "title": "No route-level loading UI (loading.tsx) or Suspense boundaries",
+      "severity": "S2"
+    },
+    {
+      "old_id": "PERF-017",
+      "new_id": "CANON-0063",
+      "category": "PERF",
+      "title": "JournalHub eagerly imports all entry forms",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-008",
+      "new_id": "CANON-0064",
+      "category": "REFACTOR",
+      "title": "47 CRITICAL cognitive complexity violations in scripts (19 functions)",
+      "severity": "S0"
+    },
+    {
+      "old_id": "CANON-R-001",
+      "new_id": "CANON-0065",
+      "category": "REFACTOR",
+      "title": "Time-of-day rotation logic duplicated in quotes.ts and slogans.ts",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-004",
+      "new_id": "CANON-0066",
+      "category": "REFACTOR",
+      "title": "Cloud Function error handling pattern duplicated 4-6x across service and hooks",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-005",
+      "new_id": "CANON-0067",
+      "category": "REFACTOR",
+      "title": "Journal entry type definitions diverge between client types and server schemas",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-018",
+      "new_id": "CANON-0068",
+      "category": "REFACTOR",
+      "title": "No test coverage for high-complexity scripts",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-012",
+      "new_id": "CANON-0069",
+      "category": "REFACTOR",
+      "title": "App Check temporarily disabled across all Cloud Functions",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-013",
+      "new_id": "CANON-0070",
+      "category": "REFACTOR",
+      "title": "Deprecated saveNotebookJournalEntry still used in 6+ UI components",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-023",
+      "new_id": "CANON-0071",
+      "category": "REFACTOR",
+      "title": "useJournal mixes domain logic with transport (httpsCallable + retry + recaptcha)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-022",
+      "new_id": "CANON-0072",
+      "category": "REFACTOR",
+      "title": "TodayPage is a god component mixing 4+ responsibilities",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-R-002",
+      "new_id": "CANON-0073",
+      "category": "REFACTOR",
+      "title": "DailyQuoteCard component duplicated across 2-3 locations",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-017",
+      "new_id": "CANON-0074",
+      "category": "REFACTOR",
+      "title": "Critical paths have low test coverage (firestore-service 35.6%, account-linking 17.29%)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-007",
+      "new_id": "CANON-0075",
+      "category": "REFACTOR",
+      "title": "Direct Firebase SDK usage in UI components bypasses service layer",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-010",
+      "new_id": "CANON-0076",
+      "category": "REFACTOR",
+      "title": "reCAPTCHA token fetch/include pattern repeated 5x across codebase",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-006",
+      "new_id": "CANON-0077",
+      "category": "REFACTOR",
+      "title": "Firebase collection access scattered across 22+ files without type safety",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-011",
+      "new_id": "CANON-0078",
+      "category": "REFACTOR",
+      "title": "reCAPTCHA action strings duplicated as literals (no shared constants)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-009",
+      "new_id": "CANON-0079",
+      "category": "REFACTOR",
+      "title": "Growth card dialog/save pattern duplicated across 4 components",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-016",
+      "new_id": "CANON-0080",
+      "category": "REFACTOR",
+      "title": "CRUD service patterns repeated across lib/db modules",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-015",
+      "new_id": "CANON-0081",
+      "category": "REFACTOR",
+      "title": "Admin Cloud Function wiring duplicated across 5 admin tabs",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-014",
+      "new_id": "CANON-0082",
+      "category": "REFACTOR",
+      "title": "Dual-write pattern to inventory AND journal collections",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-027",
+      "new_id": "CANON-0083",
+      "category": "REFACTOR",
+      "title": "Deprecated API usage (31 instances) + Nested ternaries (41 instances)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-021",
+      "new_id": "CANON-0084",
+      "category": "REFACTOR",
+      "title": "safeReadFile/safeWriteFile utilities duplicated across 3 scripts",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-024",
+      "new_id": "CANON-0085",
+      "category": "REFACTOR",
+      "title": "FirestoreAdapter exists but is unused (realtime boundary unclear)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-019",
+      "new_id": "CANON-0086",
+      "category": "REFACTOR",
+      "title": "Searchable-text generation duplicated with inconsistent sanitization",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-R-003",
+      "new_id": "CANON-0087",
+      "category": "REFACTOR",
+      "title": "CloudFunctionError interface defined twice in same file",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-R-025",
+      "new_id": "CANON-0088",
+      "category": "REFACTOR",
+      "title": "Batch fix opportunities: 200+ ESLint auto-fixable issues",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-R-026",
+      "new_id": "CANON-0089",
+      "category": "REFACTOR",
+      "title": "Batch fix opportunities: 79 replaceAll() + 71 node: prefix modernizations",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-R-020",
+      "new_id": "CANON-0090",
+      "category": "REFACTOR",
+      "title": "parseTime() meeting helper duplicated in two pages",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-D-001",
+      "new_id": "CANON-0091",
+      "category": "DOCS",
+      "title": "Broken relative links in review/output docs (wrong ../ depth)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-D-002",
+      "new_id": "CANON-0092",
+      "category": "DOCS",
+      "title": "[X] placeholders remain in 2026-Q1 plan instances",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-D-004",
+      "new_id": "CANON-0093",
+      "category": "DOCS",
+      "title": "DOCUMENTATION_INDEX.md orphaned and missing required sections",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-003",
+      "new_id": "CANON-0094",
+      "category": "DOCS",
+      "title": "Tier 2 docs missing required metadata (Document Version, Applies To)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-007",
+      "new_id": "CANON-0095",
+      "category": "DOCS",
+      "title": "Standards/templates contain live placeholder links and incorrect anchors",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-006",
+      "new_id": "CANON-0096",
+      "category": "DOCS",
+      "title": "DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-008",
+      "new_id": "CANON-0097",
+      "category": "DOCS",
+      "title": "PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and version history",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-009",
+      "new_id": "CANON-0098",
+      "category": "DOCS",
+      "title": "CODE_PATTERNS.md referenced with incorrect path",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-010",
+      "new_id": "CANON-0099",
+      "category": "DOCS",
+      "title": "Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two locations",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-D-005",
+      "new_id": "CANON-0100",
+      "category": "DOCS",
+      "title": "Archive docs contain significant link rot after archival/moves",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-D-014",
+      "new_id": "CANON-0101",
+      "category": "DOCS",
+      "title": "Template date placeholders using literal YYYY-MM-DD format",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-D-012",
+      "new_id": "CANON-0102",
+      "category": "DOCS",
+      "title": "Template docs located outside docs/templates/ directory",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-D-011",
+      "new_id": "CANON-0103",
+      "category": "DOCS",
+      "title": "Test count mismatch between DEVELOPMENT.md and actual test suite",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-D-013",
+      "new_id": "CANON-0104",
+      "category": "DOCS",
+      "title": "ROADMAP anchor links may be fragile due to emoji/punctuation in headings",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-P-001",
+      "new_id": "CANON-0105",
+      "category": "PROCESS",
+      "title": "Multiple CI quality gates configured as non-blocking (continue-on-error: true)",
+      "severity": "S0"
+    },
+    {
+      "old_id": "CANON-P-002",
+      "new_id": "CANON-0106",
+      "category": "PROCESS",
+      "title": "Automation scripts have critically low test coverage (2-7% of ~31 scripts)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-P-003",
+      "new_id": "CANON-0107",
+      "category": "PROCESS",
+      "title": "Missing security scanning in CI (npm audit, CodeQL, Dependabot)",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-P-006",
+      "new_id": "CANON-0108",
+      "category": "PROCESS",
+      "title": "Deploy workflow calls gcloud without installing Google Cloud SDK",
+      "severity": "S1"
+    },
+    {
+      "old_id": "CANON-P-005",
+      "new_id": "CANON-0109",
+      "category": "PROCESS",
+      "title": "DEVELOPMENT.md workflow triggers don't match actual workflow YAML",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-P-004",
+      "new_id": "CANON-0110",
+      "category": "PROCESS",
+      "title": "Pre-commit hook runs full test suite causing slow commits (~50s+)",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-P-007",
+      "new_id": "CANON-0111",
+      "category": "PROCESS",
+      "title": "Pattern checker reports 93+ violations but CI check is non-blocking",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-P-008",
+      "new_id": "CANON-0112",
+      "category": "PROCESS",
+      "title": "Firebase CLI version unpinned in deploy workflow",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-P-009",
+      "new_id": "CANON-0113",
+      "category": "PROCESS",
+      "title": "Auto-label workflow has invalid if: expression syntax",
+      "severity": "S2"
+    },
+    {
+      "old_id": "CANON-P-010",
+      "new_id": "CANON-0114",
+      "category": "PROCESS",
+      "title": "DEVELOPMENT.md Husky section missing pattern compliance step",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-P-011",
+      "new_id": "CANON-0115",
+      "category": "PROCESS",
+      "title": "CI workflow lacks explicit permissions block (security hardening)",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-P-012",
+      "new_id": "CANON-0116",
+      "category": "PROCESS",
+      "title": "Pattern checker produces false positives for controlled npm install fallbacks",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-P-013",
+      "new_id": "CANON-0117",
+      "category": "PROCESS",
+      "title": "Review trigger thresholds may cause alert fatigue for process changes",
+      "severity": "S3"
+    },
+    {
+      "old_id": "CANON-P-014",
+      "new_id": "CANON-0118",
+      "category": "PROCESS",
+      "title": "Deploy workflow secret handling may be brittle for multiline JSON",
+      "severity": "S3"
+    }
+  ]
+}
