@@ -1,4 +1,5 @@
 {
+  "enableAllProjectMcpServers": true,
   "disabledMcpjsonServers": ["rube"],
   "hooks": {
     "SessionStart": [
