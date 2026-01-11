@@ -161,6 +161,13 @@ export async function withSecurityChecks<TInput, TOutput>(
     // 2.5. CANON-0036: Check IP-based rate limit (secondary defense against account cycling)
     // NOTE: IP from X-Forwarded-For can be spoofed in some deployments. This is a secondary
     // defense layer - primary protection is per-user rate limiting above.
+    //
+    // SECURITY LOG POLICY: IP addresses are logged to GCP Cloud Logging for security analysis
+    // (rate limit abuse detection, incident response). These logs are:
+    // - Stored in GCP Cloud Logging (restricted access, not user-facing)
+    // - Subject to retention policy (90 days)
+    // - Hashed in Sentry (via security-logger.ts) if userId is provided
+    // IP logging is necessary for effective rate limit enforcement and abuse detection.
     if (ipRateLimiter) {
         // Get client IP from Cloud Functions request
         // request.rawRequest.ip is the recommended approach (set by Cloud Functions)
@@ -212,27 +219,26 @@ export async function withSecurityChecks<TInput, TOutput>(
         const dataWithToken = request.data as { recaptchaToken?: string };
         const token = dataWithToken.recaptchaToken;
 
-        // Check for explicit bypass (dev/test environments only)
-        // SECURITY: Bypass only allowed when ALL conditions are true:
+        // Check for explicit bypass (Firebase emulator only)
+        // SECURITY: Bypass only allowed when BOTH conditions are true:
         // 1. RECAPTCHA_BYPASS=true is explicitly set
-        // 2. Running in Firebase emulator OR not in production
-        // This prevents accidental bypass in production deployments
+        // 2. Running in Firebase emulator (FUNCTIONS_EMULATOR=true)
+        // This is more restrictive than "not production" to prevent bypass in staging environments
         const isEmulator = process.env.FUNCTIONS_EMULATOR === 'true';
-        const isProduction = process.env.NODE_ENV === 'production';
         const bypassRequested = process.env.RECAPTCHA_BYPASS === 'true';
-        const allowBypass = bypassRequested && (isEmulator || !isProduction);
+        const allowBypass = bypassRequested && isEmulator;
 
         if (!token || token.trim() === '') {
             if (allowBypass) {
-                // Dev/test bypass - log but don't block
+                // Emulator bypass - log but don't block
                 logSecurityEvent(
                     "RECAPTCHA_BYPASSED",
                     functionName,
-                    "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - emulator/dev mode only",
+                    "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - emulator only",
                     {
                         userId,
                         severity: "WARNING",
-                        metadata: { action: recaptchaAction, isEmulator, isProduction }
+                        metadata: { action: recaptchaAction, isEmulator }
                     }
                 );
             } else {

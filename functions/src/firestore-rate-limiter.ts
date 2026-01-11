@@ -50,17 +50,25 @@ export class FirestoreRateLimiter {
         // - Remove brackets from IPv6 (e.g., [::1] -> ::1)
         // - For IPv4 with port (e.g., 192.168.1.1:8080), remove the port
         // - For IPv6, keep the full address (ports are outside brackets)
-        let normalizedIp = ipAddress.replaceAll(/^\[|\]$/g, ''); // Remove IPv6 brackets
+        // SonarQube S5850: Explicitly group regex alternatives with anchors
+        let normalizedIp = ipAddress.replaceAll(/(^\[)|(\]$)/g, ''); // Remove IPv6 brackets
 
-        // Only remove port for IPv4 addresses (contains dots, not colons in address part)
+        // Port extraction logic for IPv4 addresses only:
         // IPv4 with port looks like: 192.168.1.1:8080
         // IPv6 looks like: 2001:0db8:85a3::8a2e:0370:7334
+        // IPv4-mapped IPv6 looks like: ::ffff:192.168.1.1
         const lastColonIndex = normalizedIp.lastIndexOf(':');
-        if (lastColonIndex > -1 && normalizedIp.includes('.')) {
-            // This is IPv4 with port - extract just the IP
-            normalizedIp = normalizedIp.substring(0, lastColonIndex);
+        if (lastColonIndex > -1) {
+            const ipCandidate = normalizedIp.substring(0, lastColonIndex);
+            // Only strip port for pure IPv4 addresses (contains dots, no colons in IP part)
+            // This correctly handles:
+            // - IPv4 with port (e.g., "1.2.3.4:8080") -> "1.2.3.4"
+            // - IPv6 (e.g., "::1") -> unchanged
+            // - IPv4-mapped IPv6 (e.g., "::ffff:1.2.3.4") -> unchanged
+            if (ipCandidate.includes('.') && !ipCandidate.includes(':')) {
+                normalizedIp = ipCandidate;
+            }
         }
-        // For IPv6, the full address is used (no port stripping needed)
 
         return this.consumeByKey(`ip_${normalizedIp || ipAddress}`, operation);
     }
