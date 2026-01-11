@@ -46,13 +46,14 @@ function getCategoryFromFilename(filename) {
  */
 function rewriteIdReferences(finding, idMap) {
   // Handle dependencies array specifically
+  // SECURITY: idMap is a Map to prevent prototype pollution
   if (Array.isArray(finding.dependencies)) {
-    finding.dependencies = finding.dependencies.map(dep => idMap[dep] || dep);
+    finding.dependencies = finding.dependencies.map(dep => idMap.get(dep) || dep);
   }
 
   // Also check remediation.notes and other text fields that might reference IDs
   if (finding.remediation?.notes) {
-    for (const [oldId, newId] of Object.entries(idMap)) {
+    for (const [oldId, newId] of idMap.entries()) {
       finding.remediation.notes = finding.remediation.notes.replace(
         new RegExp(oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
         newId
@@ -62,7 +63,7 @@ function rewriteIdReferences(finding, idMap) {
 
   // Check severity_normalization.contingency field
   if (finding.severity_normalization?.contingency) {
-    for (const [oldId, newId] of Object.entries(idMap)) {
+    for (const [oldId, newId] of idMap.entries()) {
       finding.severity_normalization.contingency = finding.severity_normalization.contingency.replace(
         new RegExp(oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
         newId
@@ -127,7 +128,15 @@ function sortFindings(findings) {
   });
 }
 
-function parseJsonl(content, filename) {
+/**
+ * Parse JSONL content into findings array
+ * @param {string} content - Raw JSONL file content
+ * @param {string} filename - Filename for error reporting
+ * @param {boolean} failFast - If true, throw on parse errors (default: true for data safety)
+ * @returns {{findings: Object[], parseErrors: Object[]}} Parsed findings and any errors
+ * @throws {Error} If failFast is true and parse errors occur
+ */
+function parseJsonl(content, filename, failFast = true) {
   const lines = content.trim().split('\n').filter(line => line.trim());
   const findings = [];
   const parseErrors = [];
@@ -136,10 +145,12 @@ function parseJsonl(content, filename) {
     try {
       findings.push(JSON.parse(lines[i]));
     } catch (err) {
+      // SECURITY: Do not log raw JSONL content - it may contain sensitive data
+      // Only log line number, character count, and sanitized error message
       parseErrors.push({
         line: i + 1,
-        error: err.message,
-        content: lines[i].substring(0, 100) + (lines[i].length > 100 ? '...' : '')
+        error: err.message.replace(/position \d+/, 'position [redacted]'),
+        charCount: lines[i].length
       });
     }
   }
@@ -147,14 +158,21 @@ function parseJsonl(content, filename) {
   if (parseErrors.length > 0) {
     console.error(`\n  ⚠️ ${filename}: ${parseErrors.length} parse error(s):`);
     for (const err of parseErrors.slice(0, 3)) {
-      console.error(`    Line ${err.line}: ${err.error}`);
+      // SECURITY: Only log line number and error type, not content
+      console.error(`    Line ${err.line} (${err.charCount} chars): ${err.error}`);
     }
     if (parseErrors.length > 3) {
       console.error(`    ... and ${parseErrors.length - 3} more`);
     }
+
+    // SAFETY: Fail-fast to prevent silent data loss during normalization
+    // Malformed lines would be dropped without this check
+    if (failFast) {
+      throw new Error(`${filename}: Aborting due to ${parseErrors.length} parse error(s). Fix JSONL syntax before normalizing.`);
+    }
   }
 
-  return findings;
+  return { findings, parseErrors };
 }
 
 function toJsonl(findings) {
@@ -202,7 +220,9 @@ function main() {
   // PASS 1: Build ID mapping for all findings
   console.log('\nPass 1: Building ID mapping...');
   const idMapping = [];
-  const idMap = {}; // old_id -> new_id lookup
+  // SECURITY: Use Map instead of plain object to prevent prototype pollution
+  // When parsing untrusted JSONL, plain objects can be polluted via __proto__ keys
+  const idMap = new Map(); // old_id -> new_id lookup
   let globalCounter = 1;
   const fileData = []; // Store parsed data for pass 2
 
@@ -218,7 +238,9 @@ function main() {
       continue;
     }
 
-    const findings = parseJsonl(content, filename);
+    // parseJsonl throws on parse errors in fail-fast mode (default)
+    // This prevents silent data loss when normalizing malformed files
+    const { findings } = parseJsonl(content, filename);
     if (findings.length === 0) {
       console.warn(`  ⚠️ ${filename}: No valid findings`);
       continue;
@@ -239,7 +261,7 @@ function main() {
       const effectiveOldId = (typeof oldId === 'string' && oldId.trim()) ? oldId : `MISSING-${globalCounter}`;
       const newId = `CANON-${String(globalCounter).padStart(4, '0')}`;
 
-      idMap[effectiveOldId] = newId;
+      idMap.set(effectiveOldId, newId);
       idMapping.push({
         old_id: effectiveOldId,
         new_id: newId,
