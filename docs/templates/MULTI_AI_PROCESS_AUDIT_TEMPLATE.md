@@ -318,11 +318,16 @@ ANALYSIS:
 
 AUDIT COMMAND:
 ```bash
-# List scripts without npm commands
-for f in scripts/*.js scripts/*.sh; do
-  name=$(basename "$f" | sed 's/\.[^.]*$//')
-  grep -q "$name" package.json || echo "NO NPM: $f"
-done
+# List scripts without npm commands (use full path for reliable matching)
+shopt -s nullglob 2>/dev/null  # Prevent literal glob if no matches
+script_files=(scripts/*.js scripts/*.sh)
+if [ ${#script_files[@]} -eq 0 ]; then
+  echo "No scripts found under scripts/ (expected scripts/*.js or scripts/*.sh)"
+else
+  for f in "${script_files[@]}"; do
+    grep -q "$f" package.json || echo "NO NPM: $f"
+  done
+fi
 
 # Check session-start triggers
 grep -E "node scripts/|npm run" .claude/hooks/session-start.sh

@@ -288,13 +288,30 @@ CANON schema validation scripts exist but only run manually. Should run in CI wh
 
 **Implementation notes**:
 ```yaml
+# Option 1: Use paths-filter action for conditional runs
+- name: Check changed files
+  uses: dorny/paths-filter@v3
+  id: changes
+  with:
+    filters: |
+      canon:
+        - '**/CANON*.jsonl'
+        - '**/canonical/**'
+      audit:
+        - '**/AUDIT*.md'
+        - '**/audit/**'
+
 - name: Validate CANON schema
+  if: steps.changes.outputs.canon == 'true'
   run: node scripts/validate-canon-schema.js
-  if: contains(github.event.head_commit.modified, 'CANON') || contains(github.event.head_commit.modified, 'canonical')
 
 - name: Validate audit files
+  if: steps.changes.outputs.audit == 'true'
   run: node scripts/validate-audit.js
-  if: contains(github.event.head_commit.modified, 'AUDIT') || contains(github.event.head_commit.modified, 'audit')
+
+# Option 2: Always run validation (simpler, recommended for fast scripts)
+- name: Validate CANON schema
+  run: node scripts/validate-canon-schema.js
 ```
 
 **Acceptance criteria**:

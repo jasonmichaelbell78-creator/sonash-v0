@@ -52,6 +52,9 @@ dataconnect/
 # auto-generated pattern suggestions
 scripts/suggested-patterns.json
 
+# SonarQube/SonarCloud analysis data (large generated files - use CI artifacts instead)
+docs/analysis/sonarqube-issues-*.json
+
 # MCP configuration (VS Code - not used by Claude Code)
 .vscode/mcp.json
 # NOTE: .mcp.json is intentionally tracked - required for MCP persistence in cloud environments
