@@ -33,12 +33,31 @@ export class FirestoreRateLimiter {
     }
 
     /**
-     * Check and consume a rate limit point
+     * Check and consume a rate limit point by user ID
      * @throws Error if rate limit exceeded
      */
     async consume(userId: string, operation: string = "default"): Promise<void> {
+        return this.consumeByKey(`user_${userId}`, operation);
+    }
+
+    /**
+     * Check and consume a rate limit point by IP address
+     * CANON-0036: Secondary rate limiter keyed by IP to prevent account cycling attacks
+     * @throws Error if rate limit exceeded
+     */
+    async consumeByIp(ipAddress: string, operation: string = "default"): Promise<void> {
+        // Normalize IP address (handle IPv6 formatting, remove port if present)
+        const normalizedIp = ipAddress.replace(/^\[|\]$/g, '').split(':')[0] || ipAddress;
+        return this.consumeByKey(`ip_${normalizedIp}`, operation);
+    }
+
+    /**
+     * Internal: Check and consume by arbitrary key
+     * @throws Error if rate limit exceeded
+     */
+    private async consumeByKey(key: string, operation: string = "default"): Promise<void> {
         const db = admin.firestore();
-        const docId = `${userId}_${operation}`;
+        const docId = `${key}_${operation}`;
         const docRef = db.collection(this.collectionName).doc(docId);
 
         const now = Date.now();
