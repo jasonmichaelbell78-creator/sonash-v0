@@ -74,19 +74,29 @@ function rewriteIdReferences(finding, idMap) {
 }
 
 function getConfidence(finding) {
-  // Handle various confidence field names
-  return finding.confidence ?? finding.final_confidence ?? 50;
+  // Handle various confidence field names (ensure finite number to prevent NaN in sorting)
+  const raw = finding.confidence ?? finding.final_confidence ?? 50;
+  const n = typeof raw === 'number' ? raw : Number(raw);
+  return Number.isFinite(n) ? n : 50;
 }
 
 function getConsensus(finding) {
-  // Handle various consensus field names and formats
-  if (typeof finding.consensus_score === 'number') return finding.consensus_score;
-  if (typeof finding.consensus === 'number') return finding.consensus;
-  if (typeof finding.consensus === 'string' && finding.consensus.includes('/')) {
-    const [num] = finding.consensus.split('/');
-    return parseInt(num, 10);
+  // Handle various consensus field names and formats (ensure finite number)
+  const tryNumber = (v, fallback) => {
+    const n = typeof v === 'number' ? v : Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  };
+
+  if (finding.consensus_score != null) return tryNumber(finding.consensus_score, 1);
+  if (finding.consensus != null) {
+    if (typeof finding.consensus === 'string' && finding.consensus.includes('/')) {
+      const [num] = finding.consensus.split('/');
+      return tryNumber(num, 1);
+    }
+    return tryNumber(finding.consensus, 1);
   }
-  if (typeof finding.models_agreeing === 'number') return finding.models_agreeing;
+  if (finding.models_agreeing != null) return tryNumber(finding.models_agreeing, 1);
+
   return 1;
 }
 
@@ -217,13 +227,21 @@ function main() {
     const sortedFindings = sortFindings(findings);
 
     // Build mapping
-    const mappedFindings = sortedFindings.map(finding => {
-      const oldId = finding.canonical_id || `UNKNOWN-${globalCounter}`;
+    const mappedFindings = sortedFindings.map((finding, idx) => {
+      const oldId = finding.canonical_id;
+
+      // Validate canonical_id exists and is a non-empty string
+      if (typeof oldId !== 'string' || oldId.trim() === '') {
+        console.warn(`  ⚠️ ${filename} finding #${idx + 1}: Missing/invalid canonical_id (title: "${finding.title?.substring(0, 50)}...")`);
+        // Assign a placeholder ID for tracking but continue processing
+      }
+
+      const effectiveOldId = (typeof oldId === 'string' && oldId.trim()) ? oldId : `MISSING-${globalCounter}`;
       const newId = `CANON-${String(globalCounter).padStart(4, '0')}`;
 
-      idMap[oldId] = newId;
+      idMap[effectiveOldId] = newId;
       idMapping.push({
-        old_id: oldId,
+        old_id: effectiveOldId,
         new_id: newId,
         category,
         title: finding.title,

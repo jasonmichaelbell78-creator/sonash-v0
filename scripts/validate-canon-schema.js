@@ -240,14 +240,22 @@ function printResult(result) {
     }
   }
 
-  // Field coverage summary
+  // Field coverage summary (includes both required and recommended fields to match compliance calculation)
   if (process.argv.includes('--coverage')) {
     console.log('  Field Coverage:');
+    console.log('    Required:');
     for (const field of REQUIRED_FIELDS) {
       const count = result.fieldCoverage[field] || 0;
       const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
       const indicator = pct === 100 ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
-      console.log(`    ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
+      console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
+    }
+    console.log('    Recommended:');
+    for (const field of RECOMMENDED_FIELDS) {
+      const count = result.fieldCoverage[field] || 0;
+      const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
+      const indicator = pct === 100 ? '\x1b[32m✓\x1b[0m' : '\x1b[33m○\x1b[0m';
+      console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
     }
   }
 }
@@ -294,17 +302,36 @@ function main() {
       process.exit(2);
     }
 
-    const stat = statSync(arg);
+    let stat;
+    try {
+      stat = statSync(arg);
+    } catch (err) {
+      console.error(`Error accessing path ${arg}: ${err.message}`);
+      continue;
+    }
+
     if (stat.isDirectory()) {
       // Recursively find CANON-*.jsonl files
       const findCanonFiles = (dir) => {
-        for (const entry of readdirSync(dir)) {
+        let entries;
+        try {
+          entries = readdirSync(dir);
+        } catch (err) {
+          console.error(`Error reading directory ${dir}: ${err.message}`);
+          return;
+        }
+
+        for (const entry of entries) {
           const fullPath = join(dir, entry);
-          const entryStat = statSync(fullPath);
-          if (entryStat.isDirectory()) {
-            findCanonFiles(fullPath);
-          } else if (entry.startsWith('CANON-') && entry.endsWith('.jsonl')) {
-            files.push(fullPath);
+          try {
+            const entryStat = statSync(fullPath);
+            if (entryStat.isDirectory()) {
+              findCanonFiles(fullPath);
+            } else if (entry.startsWith('CANON-') && entry.endsWith('.jsonl')) {
+              files.push(fullPath);
+            }
+          } catch (err) {
+            console.error(`Error accessing path ${fullPath}: ${err.message}`);
           }
         }
       };
