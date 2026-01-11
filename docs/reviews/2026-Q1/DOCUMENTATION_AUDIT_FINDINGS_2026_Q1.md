@@ -55,20 +55,20 @@ These findings were identified by ALL five AI models:
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-D-001 | Broken relative links in review/output docs (wrong ../ depth) | S1 | E1 |
+| CANON-0091 | Broken relative links in review/output docs (wrong ../ depth) | S1 | E1 |
 
 ## High Consensus Findings (4/5 Audits)
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-D-002 | [X] placeholders remain in 2026-Q1 plan instances | S1 | E1 |
+| CANON-0092 | [X] placeholders remain in 2026-Q1 plan instances | S1 | E1 |
 
 ## Moderate Consensus Findings (3/5 Audits)
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-D-003 | Tier 2 docs missing required metadata (Document Version, Applies To) | S2 | E1 |
-| CANON-D-004 | DOCUMENTATION_INDEX.md orphaned and missing required sections | S2 | E1 |
+| CANON-0094 | Tier 2 docs missing required metadata (Document Version, Applies To) | S2 | E1 |
+| CANON-0093 | DOCUMENTATION_INDEX.md orphaned and missing required sections | S2 | E1 |
 
 ---
 
@@ -179,9 +179,9 @@ These items are lower priority or require policy decisions:
 
 | CANON ID | Title | Reason |
 |----------|-------|--------|
-| CANON-D-005 | Archive link rot | Needs policy decision (exclude from validation or repair) |
-| CANON-D-012 | Template location policy | Needs governance decision |
-| CANON-D-013 | Fragile anchor links | Low confidence (1/5), monitor only |
+| CANON-0100 | Archive link rot | Needs policy decision (exclude from validation or repair) |
+| CANON-0102 | Template location policy | Needs governance decision |
+| CANON-0104 | Fragile anchor links | Low confidence (1/5), monitor only |
 
 ---
 

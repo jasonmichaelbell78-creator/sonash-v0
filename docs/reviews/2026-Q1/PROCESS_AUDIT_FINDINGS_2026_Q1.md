@@ -58,24 +58,24 @@ These findings were identified by ALL five AI models:
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-P-001 | Multiple CI quality gates configured as non-blocking (continue-on-error: true) | S0 | E2 |
-| CANON-P-002 | Automation scripts have critically low test coverage (2-7% of ~31 scripts) | S1 | E2 |
+| CANON-0105 | Multiple CI quality gates configured as non-blocking (continue-on-error: true) | S0 | E2 |
+| CANON-0106 | Automation scripts have critically low test coverage (2-7% of ~31 scripts) | S1 | E2 |
 
 ## High Consensus Findings (4/5 Audits)
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-P-003 | Missing security scanning in CI (npm audit, CodeQL, Dependabot) | S1 | E2 |
-| CANON-P-004 | Pre-commit hook runs full test suite causing slow commits (~50s+) | S2 | E1 |
-| CANON-P-005 | DEVELOPMENT.md workflow triggers don't match actual workflow YAML | S2 | E1 |
+| CANON-0107 | Missing security scanning in CI (npm audit, CodeQL, Dependabot) | S1 | E2 |
+| CANON-0110 | Pre-commit hook runs full test suite causing slow commits (~50s+) | S2 | E1 |
+| CANON-0109 | DEVELOPMENT.md workflow triggers don't match actual workflow YAML | S2 | E1 |
 
 ## Moderate Consensus Findings (3/5 Audits)
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-P-006 | Deploy workflow calls gcloud without installing Google Cloud SDK | S1 | E1 |
-| CANON-P-007 | Pattern checker reports 93+ violations but CI check is non-blocking | S2 | E2 |
-| CANON-P-008 | Firebase CLI version unpinned in deploy workflow | S2 | E0 |
+| CANON-0108 | Deploy workflow calls gcloud without installing Google Cloud SDK | S1 | E1 |
+| CANON-0111 | Pattern checker reports 93+ violations but CI check is non-blocking | S2 | E2 |
+| CANON-0112 | Firebase CLI version unpinned in deploy workflow | S2 | E0 |
 
 ---
 
@@ -186,10 +186,10 @@ These items are lower priority or require policy decisions:
 
 | CANON ID | Title | Reason |
 |----------|-------|--------|
-| CANON-P-011 | CI permissions block | Best practice, not blocking |
-| CANON-P-012 | Pattern checker false positives | Noise reduction, low impact |
-| CANON-P-013 | Review trigger thresholds | Needs real-world data |
-| CANON-P-014 | Secret multiline handling | Low confidence (1/5) |
+| CANON-0115 | CI permissions block | Best practice, not blocking |
+| CANON-0116 | Pattern checker false positives | Noise reduction, low impact |
+| CANON-0117 | Review trigger thresholds | Needs real-world data |
+| CANON-0118 | Secret multiline handling | Low confidence (1/5) |
 
 ---
 
@@ -224,7 +224,7 @@ These items are lower priority or require policy decisions:
 
 ### Severity Escalation
 
-CANON-P-001 (non-blocking CI gates) was escalated from S2 (most audits) to S0 (Claude Sonnet 4.5 assessment) due to:
+CANON-0105 (non-blocking CI gates) was escalated from S2 (most audits) to S0 (Claude Sonnet 4.5 assessment) due to:
 - 93 pattern violations escaping to main
 - Fundamental quality gate bypass
 - Cascading effect on code quality

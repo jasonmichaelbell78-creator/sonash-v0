@@ -48,18 +48,18 @@ These findings were identified by ALL five AI models:
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-R-001 | Time-of-day rotation logic duplication (quotes/slogans) | S1 | E1 |
-| CANON-R-002 | DailyQuoteCard component duplication (2-3 locations) | S2 | E1 |
-| CANON-R-004 | Cloud Function error handling pattern (4-6x) | S1 | E1 |
+| CANON-0065 | Time-of-day rotation logic duplication (quotes/slogans) | S1 | E1 |
+| CANON-0073 | DailyQuoteCard component duplication (2-3 locations) | S2 | E1 |
+| CANON-0066 | Cloud Function error handling pattern (4-6x) | S1 | E1 |
 
 ## High Consensus Findings (4/5 Audits)
 
 | CANON ID | Title | Severity | Effort |
 |----------|-------|----------|--------|
-| CANON-R-003 | CloudFunctionError interface twice in same file | S3 | E0 |
-| CANON-R-005 | Journal entry type divergence (client/server) | S1 | E2 |
-| CANON-R-007 | Direct Firebase SDK usage bypasses service layer | S2 | E2 |
-| CANON-R-017 | Critical paths low test coverage (35%, 17%) | S2 | E2 |
+| CANON-0087 | CloudFunctionError interface twice in same file | S3 | E0 |
+| CANON-0067 | Journal entry type divergence (client/server) | S1 | E2 |
+| CANON-0075 | Direct Firebase SDK usage bypasses service layer | S2 | E2 |
+| CANON-0074 | Critical paths low test coverage (35%, 17%) | S2 | E2 |
 
 ---
 
@@ -204,8 +204,8 @@ These items are tracked elsewhere or deferred to later milestones:
 
 | CANON ID | Title | Reason |
 |----------|-------|--------|
-| CANON-R-012 | App Check re-enablement | Tracked in ROADMAP.md M2 |
-| CANON-R-027 | Deprecated APIs + nested ternaries | Lower priority, can batch later |
+| CANON-0069 | App Check re-enablement | Tracked in ROADMAP.md M2 |
+| CANON-0083 | Deprecated APIs + nested ternaries | Lower priority, can batch later |
 
 ---
 
