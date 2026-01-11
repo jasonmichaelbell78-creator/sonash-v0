@@ -798,6 +798,23 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 #### Aggregation Tasks
 
+- [ ] **Task 4.3.0**: Normalize CANON schema fields across audits (0.5 hours)
+  - Fix inconsistent field naming (`id` → `canonical_id`) ✅ FIXED 2026-01-11
+  - Add missing `fingerprint` fields where absent (Code, Security, Refactoring)
+  - Normalize ID formats during aggregation (map F-XXX, PERF-XXX to CANON-{TYPE}-XXX)
+  - Create field mapping table for alternative names:
+    - `impact` → `why_it_matters`
+    - `remediation.steps` → `suggested_fix`
+    - `remediation.verification` / `optimization.verification` → `acceptance_tests`
+    - `models_agreeing` / `consensus` → `consensus_score`
+    - `merged_from` / `audits` → `sources`
+  - Standardize summary file locations (recommend root `reviews/2026-Q1/`)
+  - **Identified Issues (from compliance review 2026-01-11):**
+    - 3/5 audits missing `fingerprint` (required per JSONL_SCHEMA_STANDARD.md)
+    - 2/5 audits used `id` instead of `canonical_id` (fixed)
+    - Aggregation metadata fields vary (consensus_score vs models_agreeing vs consensus)
+    - Summary files split between `outputs/` and root `reviews/` locations
+
 - [ ] **Task 4.3.1**: Execute Tier-2 Aggregator pass (2 hours)
   - Use updated `MULTI_AI_AGGREGATOR_TEMPLATE.md`
   - Input: 6 category-level CANON-*.jsonl files (NOT raw AI outputs)
@@ -854,6 +871,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 #### Sub-Phase 4.3 Acceptance Criteria
 
+- [ ] Schema fields normalized across all 6 CANON files
 - [ ] Single aggregator pass completed
 - [ ] Unified CANON backlog produced
 - [ ] PR plan with staged, prioritized PRs
