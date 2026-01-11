@@ -189,6 +189,10 @@ export function useJournal() {
             return;
         }
 
+        // Reset loading state when starting/restarting subscription for new user
+        // This prevents showing stale data during user change
+        setJournalLoading(true);
+
         // QUERY: Get entries for this user, ordered by newest first
         // Note: Using simple query without where clause to avoid composite index requirement
         // Client-side will filter out soft-deleted entries

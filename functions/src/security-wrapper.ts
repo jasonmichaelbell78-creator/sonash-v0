@@ -138,48 +138,54 @@ export async function withSecurityChecks<TInput, TOutput>(
         try {
             await rateLimiter.consume(userId, functionName);
         } catch (rateLimitError) {
-            const errorMessage = rateLimitError instanceof Error
+            // Log detailed error server-side for debugging
+            const internalMessage = rateLimitError instanceof Error
                 ? rateLimitError.message
                 : "Rate limit exceeded";
 
             logSecurityEvent(
                 "RATE_LIMIT_EXCEEDED",
                 functionName,
-                errorMessage,
+                internalMessage,
                 { userId }
             );
+
+            // Return generic message to client (prevent information leakage)
             throw new HttpsError(
                 "resource-exhausted",
-                errorMessage
+                "Too many requests. Please try again later."
             );
         }
     }
 
     // 2.5. CANON-0036: Check IP-based rate limit (secondary defense against account cycling)
+    // NOTE: IP from X-Forwarded-For can be spoofed in some deployments. This is a secondary
+    // defense layer - primary protection is per-user rate limiting above.
     if (ipRateLimiter) {
         // Get client IP from Cloud Functions request
-        // rawRequest.ip is set by Cloud Functions from X-Forwarded-For header
-        const clientIp = request.rawRequest?.ip ||
-                         request.rawRequest?.headers?.['x-forwarded-for']?.toString().split(',')[0]?.trim() ||
-                         'unknown';
+        // request.rawRequest.ip is the recommended approach (set by Cloud Functions)
+        const clientIp = request.rawRequest?.ip;
 
-        if (clientIp && clientIp !== 'unknown') {
+        if (clientIp) {
             try {
                 await ipRateLimiter.consumeByIp(clientIp, functionName);
             } catch (rateLimitError) {
-                const errorMessage = rateLimitError instanceof Error
+                // Log detailed error server-side for debugging
+                const internalMessage = rateLimitError instanceof Error
                     ? rateLimitError.message
                     : "Rate limit exceeded";
 
                 logSecurityEvent(
                     "RATE_LIMIT_EXCEEDED",
                     functionName,
-                    `IP-based rate limit: ${errorMessage}`,
-                    { userId, metadata: { clientIp: clientIp.substring(0, 20) + '...' } }
+                    `IP-based rate limit: ${internalMessage}`,
+                    { userId, metadata: { clientIp } }
                 );
+
+                // Return generic message to client (prevent information leakage)
                 throw new HttpsError(
                     "resource-exhausted",
-                    errorMessage
+                    "Too many requests. Please try again later."
                 );
             }
         }
@@ -207,8 +213,14 @@ export async function withSecurityChecks<TInput, TOutput>(
         const token = dataWithToken.recaptchaToken;
 
         // Check for explicit bypass (dev/test environments only)
-        // Set RECAPTCHA_BYPASS=true in .env.local or Firebase Functions config
-        const allowBypass = process.env.RECAPTCHA_BYPASS === 'true';
+        // SECURITY: Bypass only allowed when ALL conditions are true:
+        // 1. RECAPTCHA_BYPASS=true is explicitly set
+        // 2. Running in Firebase emulator OR not in production
+        // This prevents accidental bypass in production deployments
+        const isEmulator = process.env.FUNCTIONS_EMULATOR === 'true';
+        const isProduction = process.env.NODE_ENV === 'production';
+        const bypassRequested = process.env.RECAPTCHA_BYPASS === 'true';
+        const allowBypass = bypassRequested && (isEmulator || !isProduction);
 
         if (!token || token.trim() === '') {
             if (allowBypass) {
@@ -216,11 +228,11 @@ export async function withSecurityChecks<TInput, TOutput>(
                 logSecurityEvent(
                     "RECAPTCHA_BYPASSED",
                     functionName,
-                    "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - dev/test mode only",
+                    "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - emulator/dev mode only",
                     {
                         userId,
                         severity: "WARNING",
-                        metadata: { action: recaptchaAction }
+                        metadata: { action: recaptchaAction, isEmulator, isProduction }
                     }
                 );
             } else {

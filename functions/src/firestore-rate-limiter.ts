@@ -46,9 +46,23 @@ export class FirestoreRateLimiter {
      * @throws Error if rate limit exceeded
      */
     async consumeByIp(ipAddress: string, operation: string = "default"): Promise<void> {
-        // Normalize IP address (handle IPv6 formatting, remove port if present)
-        const normalizedIp = ipAddress.replace(/^\[|\]$/g, '').split(':')[0] || ipAddress;
-        return this.consumeByKey(`ip_${normalizedIp}`, operation);
+        // Normalize IP address:
+        // - Remove brackets from IPv6 (e.g., [::1] -> ::1)
+        // - For IPv4 with port (e.g., 192.168.1.1:8080), remove the port
+        // - For IPv6, keep the full address (ports are outside brackets)
+        let normalizedIp = ipAddress.replaceAll(/^\[|\]$/g, ''); // Remove IPv6 brackets
+
+        // Only remove port for IPv4 addresses (contains dots, not colons in address part)
+        // IPv4 with port looks like: 192.168.1.1:8080
+        // IPv6 looks like: 2001:0db8:85a3::8a2e:0370:7334
+        const lastColonIndex = normalizedIp.lastIndexOf(':');
+        if (lastColonIndex > -1 && normalizedIp.includes('.')) {
+            // This is IPv4 with port - extract just the IP
+            normalizedIp = normalizedIp.substring(0, lastColonIndex);
+        }
+        // For IPv6, the full address is used (no port stripping needed)
+
+        return this.consumeByKey(`ip_${normalizedIp || ipAddress}`, operation);
     }
 
     /**
