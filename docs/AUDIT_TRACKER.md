@@ -94,7 +94,7 @@ This document tracks:
 
 | Date | Categories | Models Used | Total Findings | Aggregated To |
 |------|------------|-------------|----------------|---------------|
-| 2026-01-08 | Performance | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 Thinking | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](../reviews/2026-Q1/canonical/CANON-PERF.jsonl) |
+| 2026-01-08 | Performance | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 Thinking | 28 raw → 20 canonical (1 S0, 7 S1, 17 S2, 3 S3) | [CANON-PERF.jsonl](./reviews/2026-Q1/canonical/CANON-PERF.jsonl) |
 | 2026-01-07 | Security | Claude Opus 4.5, ChatGPT 5.2 | 10 | CANON-SECURITY.jsonl |
 | 2026-01-06 | Code Review | Claude Opus 4.5, ChatGPT 5.2 | — | CANON-CODE.jsonl |
 

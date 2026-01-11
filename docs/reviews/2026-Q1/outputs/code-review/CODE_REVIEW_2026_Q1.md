@@ -748,10 +748,10 @@ These can be completed quickly with immediate benefit:
 
 ## Related Documents
 
-- [CODE_REVIEW_PLAN_2026_Q1.md](../CODE_REVIEW_PLAN_2026_Q1.md) - Execution plan
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../../INTEGRATED_IMPROVEMENT_PLAN.md) - Parent plan (Step 4.2)
-- [sonarqube-manifest.md](../../analysis/sonarqube-manifest.md) - Static analysis baseline
-- [MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) - Aggregation methodology
+- [CODE_REVIEW_PLAN_2026_Q1.md](../../CODE_REVIEW_PLAN_2026_Q1.md) - Execution plan
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../../../../INTEGRATED_IMPROVEMENT_PLAN.md) - Parent plan (Step 4.2)
+- [sonarqube-manifest.md](../../../../analysis/sonarqube-manifest.md) - Static analysis baseline
+- [MULTI_AI_AGGREGATOR_TEMPLATE.md](../../../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) - Aggregation methodology
 
 ---
 

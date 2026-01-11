@@ -24,6 +24,7 @@
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "lessons:surface": "node scripts/surface-lessons-learned.js",
+    "consolidation:check": "node scripts/check-consolidation-status.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "deps:circular": "madge --circular --extensions ts,tsx,js,jsx lib/ components/ app/",
