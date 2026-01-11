@@ -318,8 +318,14 @@ ANALYSIS:
 
 AUDIT COMMAND:
 ```bash
+# Requires bash (uses shopt + arrays)
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "This audit command requires bash; re-run with: bash -lc '<command>'" >&2
+  exit 2
+fi
+
 # List scripts without npm commands (use full path for reliable matching)
-shopt -s nullglob 2>/dev/null  # Prevent literal glob if no matches
+shopt -s nullglob  # Prevent literal glob if no matches
 script_files=(scripts/*.js scripts/*.sh)
 if [ ${#script_files[@]} -eq 0 ]; then
   echo "No scripts found under scripts/ (expected scripts/*.js or scripts/*.sh)"

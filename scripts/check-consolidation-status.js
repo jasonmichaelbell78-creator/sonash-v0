@@ -26,10 +26,12 @@ function main() {
   try {
     if (!existsSync(LOG_FILE)) {
       console.error('❌ AI_REVIEW_LEARNINGS_LOG.md not found');
-      process.exit(2);
+      process.exitCode = 2;
+      return;
     }
 
-    const content = readFileSync(LOG_FILE, 'utf8');
+    // Normalize CRLF to LF for cross-platform compatibility
+    const content = readFileSync(LOG_FILE, 'utf8').replace(/\r\n/g, '\n');
     const lines = content.split('\n');
 
     // Limit parsing to the active portion (before any archive section)
@@ -37,12 +39,12 @@ function main() {
     const activeLines = archiveHeaderIndex !== -1 ? lines.slice(0, archiveHeaderIndex) : lines;
     const activeContent = activeLines.join('\n');
 
-    // Extract consolidation counter (NaN-safe)
-    const counterMatch = activeContent.match(/\*\*Reviews since last consolidation:\*\* (\d+)/);
+    // Extract consolidation counter (NaN-safe, whitespace-flexible)
+    const counterMatch = activeContent.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
     const reviewCount = counterMatch ? (parseInt(counterMatch[1], 10) || 0) : 0;
 
-    // Extract status
-    const statusMatch = activeContent.match(/\*\*Status:\*\* ([^\n]+)/);
+    // Extract status (whitespace-flexible)
+    const statusMatch = activeContent.match(/\*\*Status:\*\*\s+([^\n]+)/);
     const status = statusMatch ? statusMatch[1].trim() : 'Unknown';
 
     // Count active lines (everything before archive section)
@@ -80,10 +82,10 @@ function main() {
     }
 
     console.log('');
-    process.exit(exitCode);
+    process.exitCode = exitCode;
   } catch (err) {
     console.error(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);
-    process.exit(2);
+    process.exitCode = 2;
   }
 }
 
