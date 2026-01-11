@@ -90,7 +90,13 @@ jobs:
             const triggers = data.triggers || {};
             const triggered = Object.entries(triggers)
               .filter(([_, v]) => v.triggered)
-              .map(([k, v]) => `- **${k}**: ${v.value} (threshold: ${v.threshold})`)
+              .map(([k, v]) => {
+                // Handle new nested structure: commits.value/threshold, files.value/threshold
+                const commitInfo = v.commits ? `${v.commits.value} commits (threshold: ${v.commits.threshold})` : '';
+                const fileInfo = v.files ? `${v.files.value} files (threshold: ${v.files.threshold})` : '';
+                const details = [commitInfo, fileInfo].filter(Boolean).join(', ');
+                return `- **${k}**: ${details || 'triggered'}`;
+              })
               .join('\n');
 
             const body = [

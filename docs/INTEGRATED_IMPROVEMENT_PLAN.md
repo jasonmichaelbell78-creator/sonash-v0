@@ -1,10 +1,10 @@
 # Integrated Improvement Plan
 
-**Document Version:** 2.8
+**Document Version:** 3.2
 **Created:** 2026-01-03
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-01-11
 **Status:** ACTIVE
-**Overall Completion:** ~44% (Step 4 in progress - 3/6 audits complete)
+**Overall Completion:** ~56% (Step 4.2 complete - 6/6 audits; Sub-Phase 4.3 pending)
 
 ---
 
@@ -34,7 +34,7 @@ This is the **CANONICAL** roadmap for all improvement work from the current mome
 | Step 1 | Quick Wins & Cleanup | **COMPLETE** | 100% | None |
 | Step 2 | Documentation Standardization Completion | **COMPLETE** | 100% | ~~Step 1~~ |
 | Step 3 | Developer Tooling Setup | **COMPLETE** | 100% | ~~Step 2~~ |
-| Step 4 | Multi-AI Delta Review & Comprehensive Audit | **IN PROGRESS** | 50% | ~~Step 3~~ |
+| Step 4 | Multi-AI Delta Review & Comprehensive Audit | **IN PROGRESS** | 90% | ~~Step 3~~ |
 | Step 4B | Remediation Sprint | **PENDING** | 0% | Step 4 |
 | Step 5 | Review Policy Expansion | **PENDING** | 0% | Step 4B |
 | Step 6 | ROADMAP.md Integration & Doc Updates | **PENDING** | 0% | Step 5 |
@@ -729,58 +729,64 @@ This ensures each category is thoroughly processed before moving on, preventing 
 
 #### Category 4: Refactoring
 
-- [ ] **Task 4.2.4a**: Execute Refactoring Audit (1.5 hours)
+- [x] **Task 4.2.4a**: Execute Refactoring Audit (1.5 hours) ✅ COMPLETE 2026-01-10
   - Use updated `MULTI_AI_REFACTORING_PLAN_TEMPLATE.md`
   - Run with 3+ AI models for consensus
   - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
   - Focus: Duplication, Types, Architecture, Security Hardening
   - Cross-reference with archived EIGHT_PHASE_REFACTOR_PLAN.md CANON items
+  - **Result**: 5 AI models executed (Copilot, Sonnet 4.5, Opus 4.5, Codex, ChatGPT 5.2); 65 raw findings
 
-- [ ] **Task 4.2.4b**: Aggregate Refactoring findings (0.5 hours)
+- [x] **Task 4.2.4b**: Aggregate Refactoring findings (0.5 hours) ✅ COMPLETE 2026-01-10
   - Run aggregator on 3+ AI outputs
   - Deduplicate within category
   - Verify file/symbol existence
   - Output: `CANON-REFACTOR.jsonl`
+  - **Result**: Aggregated to `docs/reviews/2026-Q1/canonical/CANON-REFACTOR.jsonl` (27 canonical findings); Full report: `docs/reviews/2026-Q1/REFACTORING_AUDIT_FINDINGS_2026_Q1.md`; Review #114 in AI_REVIEW_LEARNINGS_LOG.md
 
 #### Category 5: Documentation
 
-- [ ] **Task 4.2.5a**: Execute Documentation Audit (1 hour)
+- [x] **Task 4.2.5a**: Execute Documentation Audit (1 hour) ✅ COMPLETE 2026-01-11
   - Use new `MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md`
   - Run with 3+ AI models for consensus
   - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
   - Focus: Cross-refs, Staleness, Coverage, Tier compliance
+  - **Result**: 5 AI models executed (Copilot, Sonnet 4.5, Opus 4.5, Codex, ChatGPT 5.2); 37 raw findings
 
-- [ ] **Task 4.2.5b**: Aggregate Documentation findings (0.5 hours)
+- [x] **Task 4.2.5b**: Aggregate Documentation findings (0.5 hours) ✅ COMPLETE 2026-01-11
   - Run aggregator on 3+ AI outputs
   - Deduplicate within category
   - Verify file/symbol existence
   - Output: `CANON-DOCS.jsonl`
+  - **Result**: Aggregated to `docs/reviews/2026-Q1/canonical/CANON-DOCS.jsonl` (14 canonical findings); Full report: `docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_FINDINGS_2026_Q1.md`; Review #115 in AI_REVIEW_LEARNINGS_LOG.md
 
 #### Category 6: Process/Automation
 
-- [ ] **Task 4.2.6a**: Execute Process/Automation Audit (1 hour)
+- [x] **Task 4.2.6a**: Execute Process/Automation Audit (1 hour) ✅ COMPLETE 2026-01-11
   - Use new `MULTI_AI_PROCESS_AUDIT_TEMPLATE.md`
   - Run with 3+ AI models for consensus
   - Capture: FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL from each AI
   - Focus: CI/CD, Hooks, Scripts, Pattern checker, Triggers
+  - **Result**: 5 AI models executed (Copilot, Sonnet 4.5, Opus 4.5, Codex, ChatGPT 5.2); 38 raw findings
 
-- [ ] **Task 4.2.6b**: Aggregate Process findings (0.5 hours)
+- [x] **Task 4.2.6b**: Aggregate Process findings (0.5 hours) ✅ COMPLETE 2026-01-11
   - Run aggregator on 3+ AI outputs
   - Deduplicate within category
   - Verify file/symbol existence
   - Output: `CANON-PROCESS.jsonl`
+  - **Result**: Aggregated to `docs/reviews/2026-Q1/canonical/CANON-PROCESS.jsonl` (14 canonical findings); Full report: `docs/reviews/2026-Q1/PROCESS_AUDIT_FINDINGS_2026_Q1.md`; Review #116 in AI_REVIEW_LEARNINGS_LOG.md
 
-#### Sub-Phase 4.2 Acceptance Criteria
+#### Sub-Phase 4.2 Acceptance Criteria ✅ COMPLETE 2026-01-11
 
-- [ ] All 6 audit categories executed with 3+ AI models each
-- [ ] Each category aggregated into CANON-*.jsonl before proceeding
-- [ ] 6 category-level CANON files ready for final aggregation:
-  - `CANON-CODE.jsonl`
-  - `CANON-SECURITY.jsonl`
-  - `CANON-PERF.jsonl`
-  - `CANON-REFACTOR.jsonl`
-  - `CANON-DOCS.jsonl`
-  - `CANON-PROCESS.jsonl`
+- [x] All 6 audit categories executed with 3+ AI models each
+- [x] Each category aggregated into CANON-*.jsonl before proceeding
+- [x] 6 category-level CANON files ready for final aggregation:
+  - `CANON-CODE.jsonl` ✅ (Task 4.2.1)
+  - `CANON-SECURITY.jsonl` ✅ (Task 4.2.2)
+  - `CANON-PERF.jsonl` ✅ (Task 4.2.3)
+  - `CANON-REFACTOR.jsonl` ✅ (Task 4.2.4)
+  - `CANON-DOCS.jsonl` ✅ (Task 4.2.5)
+  - `CANON-PROCESS.jsonl` ✅ (Task 4.2.6)
 
 ---
 
@@ -793,6 +799,21 @@ This ensures each category is thoroughly processed before moving on, preventing 
 - `CANON-REFACTOR.jsonl`, `CANON-DOCS.jsonl`, `CANON-PROCESS.jsonl`
 
 #### Aggregation Tasks
+
+- [x] **Task 4.3.0**: Normalize CANON schema fields across audits (0.5 hours) ✅ COMPLETE 2026-01-11
+  - [x] Fix inconsistent field naming (`id` → `canonical_id`) ✅ FIXED 2026-01-11
+  - [x] Normalize ID formats to CANON-XXXX ✅ FIXED 2026-01-11 (118 findings renumbered)
+  - [x] Add missing `category` field to Security audit ✅ FIXED 2026-01-11
+  - [x] Create validation tooling: `scripts/validate-canon-schema.js`
+  - [x] Create normalization tooling: `scripts/normalize-canon-ids.js`
+  - [x] ID mapping preserved in `docs/reviews/2026-Q1/canonical/ID_MAPPING.json`
+  - **Final Status:** 6/6 files pass validation, 118 findings, 80% average schema compliance
+  - **Remaining field mapping notes for Tier-2:**
+    - `impact` → `why_it_matters`
+    - `remediation.steps` → `suggested_fix`
+    - `remediation.verification` / `optimization.verification` → `acceptance_tests`
+    - `models_agreeing` / `consensus` → `consensus_score`
+    - `merged_from` / `audits` → `sources`
 
 - [ ] **Task 4.3.1**: Execute Tier-2 Aggregator pass (2 hours)
   - Use updated `MULTI_AI_AGGREGATOR_TEMPLATE.md`
@@ -848,8 +869,33 @@ This ensures each category is thoroughly processed before moving on, preventing 
   - Note any false positives/hallucinations caught by aggregator
   - Update review count metrics
 
+- [ ] **Task 4.3.7**: Analyze Multi-AI Audit Retrospective & Improve Process (1.5 hours)
+  - **Input:** `docs/reviews/2026-Q1/MULTI_AI_AUDIT_RETROSPECTIVE_2026_Q1.md` (created 2026-01-11)
+  - **Retrospective Key Findings:**
+    - Schema compliance at 35% average before normalization (now 80%)
+    - 6 different ID formats used (now normalized to CANON-XXXX)
+    - Template (400+ lines) led to selective reading
+    - Multi-session drift degraded quality without checkpoints
+  - **Process Improvements to Implement:**
+    - [ ] Create 1-page "CANON Quick Reference" card from MULTI_AI_AGGREGATOR_TEMPLATE.md
+    - [ ] Add schema validation step to audit templates (require `npm run validate:canon`)
+    - [ ] Add mid-process compliance checkpoint (review prior CANON file before starting next)
+    - [ ] Document lessons in AI_REVIEW_LEARNINGS_LOG.md (Consolidation #10 candidate)
+  - **Single-Session Audit Improvements:**
+    - [ ] Update single-session audit templates (security, performance, code) with validation requirement
+    - [ ] Add schema validation to pre-commit for docs/reviews/**/*.jsonl
+  - **Tooling Additions:**
+    - [x] `scripts/validate-canon-schema.js` - CREATED 2026-01-11
+    - [x] `scripts/normalize-canon-ids.js` - CREATED 2026-01-11
+    - [ ] Add `npm run validate:canon` script to package.json
+  - **Acceptance Criteria:**
+    - [ ] Quick reference card created (docs/templates/CANON_QUICK_REFERENCE.md)
+    - [ ] Validation integrated into process docs
+    - [ ] Lessons logged in AI_REVIEW_LEARNINGS_LOG.md
+
 #### Sub-Phase 4.3 Acceptance Criteria
 
+- [x] Schema fields normalized across all 6 CANON files ✅ 2026-01-11
 - [ ] Single aggregator pass completed
 - [ ] Unified CANON backlog produced
 - [ ] PR plan with staged, prioritized PRs
@@ -1338,6 +1384,10 @@ Items discovered during sprint execution that need tracking. Review at step boun
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 3.2 | 2026-01-11 | Task 4.3.0 COMPLETE - Schema normalization: 118 findings renumbered to CANON-XXXX format; Created validate-canon-schema.js and normalize-canon-ids.js; Added Task 4.3.7 for retrospective analysis; Multi-AI Audit Retrospective created (35%→80% compliance); 6/6 CANON files pass validation |
+| 3.1 | 2026-01-11 | **SUB-PHASE 4.2 COMPLETE** - Process/Automation Audit (Tasks 4.2.6a, 4.2.6b); 5-model audit; 38 raw findings → 14 canonical in CANON-PROCESS.jsonl; All 6 categories complete; 6 CANON files ready for Tier-2 aggregation; Step 4 at 90%; Overall ~56%; Review #116 logged |
+| 3.0 | 2026-01-11 | Step 4.2 Documentation Audit complete (Tasks 4.2.5a, 4.2.5b); 5-model multi-AI audit; 37 raw findings → 14 canonical in CANON-DOCS.jsonl; Review #115 logged; Step 4 now at 83% (5/6 categories); Overall ~52%; Only Process/Automation audit (4.2.6) remaining |
+| 2.9 | 2026-01-10 | Step 4.2 Refactoring Audit complete (Tasks 4.2.4a, 4.2.4b); 5-model multi-AI audit (Copilot, Sonnet 4.5, Opus 4.5, Codex, ChatGPT 5.2); 65 raw findings → 27 canonical in CANON-REFACTOR.jsonl; Review #114 logged; Step 4 now at 67% (4/6 categories); Overall ~50% |
 | 2.8 | 2026-01-10 | Documentation consistency fixes: Updated Step 4.2 progress to 50% (3/6 categories complete); Updated overall completion to ~44%; Corrected audit completion dates in cross-references |
 | 2.7 | 2026-01-09 | Integrated Task 5.9 into recurring Documentation Audit (Task 4.2.5); Added Category 6 (Content Quality) to multi-AI and single-session audit templates; Effort returned to 6-9h (content review now part of recurring audits) |
 | 2.6 | 2026-01-09 | Added Task 5.9 (Documentation Content Review) covering reference validation, circular documentation detection, content freshness, linkage quality, flow coherence, bloat detection, and contradiction checking; Updated Step 5 effort estimate (6-9h → 7.5-10.5h) |

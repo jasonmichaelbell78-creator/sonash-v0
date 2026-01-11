@@ -1,8 +1,8 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.4
-**Last Updated:** 2026-01-09
-**Source:** Distilled from 108 AI code reviews
+**Document Version:** 1.6
+**Last Updated:** 2026-01-11
+**Source:** Distilled from 120 AI code reviews
 
 ---
 
@@ -90,6 +90,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | ReDoS user patterns | Add heuristic detection (nested quantifiers, length limits) | User regex can have catastrophic backtracking |
 | Path containment check | After resolve(), verify result stays within root | resolve() doesn't guarantee containment |
 | JSONL parse resilience | try/catch per line, continue with valid entries | Single bad line shouldn't crash script |
+| Prototype pollution | Use `new Map()` or `Object.create(null)` for untrusted keys | `__proto__` can pollute Object.prototype |
+| Secure error logging | Never log raw input content; log line numbers and char counts | Input may contain secrets or PII |
+| Fail-fast validation | Abort on parse errors to prevent silent data loss | Malformed data shouldn't be silently dropped |
 
 ---
 
@@ -204,6 +207,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | file_globs vs files | Use `files` for concrete paths, `file_globs` for search patterns | Globs for searching, paths for linking |
 | Schema design for automation | Design fields for machine parsing from start (arrays over strings) | Enables automated aggregation and filtering |
 | Severity divergence tracking | Document when AI models assign different severities | Transparency in multi-model audit process |
+| CANON ID normalization | When renumbering IDs, update ALL references: `dependencies`, `contingency`, `notes` fields | Broken references cause traceability loss |
+| ID format consistency | Use `CANON-XXXX` (4 digits) across all CANON files | Enables cross-file validation and sorting |
+| Duplicate ID detection | Validate no duplicate `canonical_id` within or across files | Each finding needs unique identifier |
 
 ---
 
