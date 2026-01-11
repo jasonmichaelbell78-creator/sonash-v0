@@ -25,7 +25,8 @@ const SEVERITY_ORDER = { S0: 0, S1: 1, S2: 2, S3: 3 };
 const EFFORT_ORDER = { E0: 0, E1: 1, E2: 2, E3: 3 };
 
 // Category order for processing (determines ID ranges)
-const CATEGORY_ORDER = ['CODE', 'SECURITY', 'PERF', 'REFACTOR', 'DOCS', 'PROCESS'];
+// UNKNOWN categories are sorted to the end
+const CATEGORY_ORDER = ['CODE', 'SECURITY', 'PERF', 'REFACTOR', 'DOCS', 'PROCESS', 'UNKNOWN'];
 
 function getCategoryFromFilename(filename) {
   if (filename.includes('CODE')) return 'CODE';
@@ -34,7 +35,42 @@ function getCategoryFromFilename(filename) {
   if (filename.includes('REFACTOR')) return 'REFACTOR';
   if (filename.includes('DOCS')) return 'DOCS';
   if (filename.includes('PROCESS')) return 'PROCESS';
+  // Handle unknown categories - sort to end
+  console.warn(`  ⚠️ Unknown category in filename: ${filename}`);
   return 'UNKNOWN';
+}
+
+/**
+ * Rewrites old IDs to new IDs in all string fields of a finding.
+ * Handles: dependencies array, text fields that reference other findings.
+ */
+function rewriteIdReferences(finding, idMap) {
+  // Handle dependencies array specifically
+  if (Array.isArray(finding.dependencies)) {
+    finding.dependencies = finding.dependencies.map(dep => idMap[dep] || dep);
+  }
+
+  // Also check remediation.notes and other text fields that might reference IDs
+  if (finding.remediation?.notes) {
+    for (const [oldId, newId] of Object.entries(idMap)) {
+      finding.remediation.notes = finding.remediation.notes.replace(
+        new RegExp(oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+        newId
+      );
+    }
+  }
+
+  // Check severity_normalization.contingency field
+  if (finding.severity_normalization?.contingency) {
+    for (const [oldId, newId] of Object.entries(idMap)) {
+      finding.severity_normalization.contingency = finding.severity_normalization.contingency.replace(
+        new RegExp(oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+        newId
+      );
+    }
+  }
+
+  return finding;
 }
 
 function getConfidence(finding) {
@@ -81,12 +117,34 @@ function sortFindings(findings) {
   });
 }
 
-function parseJsonl(content) {
-  return content
-    .trim()
-    .split('\n')
-    .filter(line => line.trim())
-    .map(line => JSON.parse(line));
+function parseJsonl(content, filename) {
+  const lines = content.trim().split('\n').filter(line => line.trim());
+  const findings = [];
+  const parseErrors = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      findings.push(JSON.parse(lines[i]));
+    } catch (err) {
+      parseErrors.push({
+        line: i + 1,
+        error: err.message,
+        content: lines[i].substring(0, 100) + (lines[i].length > 100 ? '...' : '')
+      });
+    }
+  }
+
+  if (parseErrors.length > 0) {
+    console.error(`\n  ⚠️ ${filename}: ${parseErrors.length} parse error(s):`);
+    for (const err of parseErrors.slice(0, 3)) {
+      console.error(`    Line ${err.line}: ${err.error}`);
+    }
+    if (parseErrors.length > 3) {
+      console.error(`    ... and ${parseErrors.length - 3} more`);
+    }
+  }
+
+  return findings;
 }
 
 function toJsonl(findings) {
@@ -106,13 +164,23 @@ function main() {
   }
 
   // Find all CANON files
-  const files = readdirSync(directory)
-    .filter(f => f.startsWith('CANON-') && f.endsWith('.jsonl'))
-    .sort((a, b) => {
-      const catA = CATEGORY_ORDER.indexOf(getCategoryFromFilename(a));
-      const catB = CATEGORY_ORDER.indexOf(getCategoryFromFilename(b));
-      return catA - catB;
-    });
+  let files;
+  try {
+    files = readdirSync(directory)
+      .filter(f => f.startsWith('CANON-') && f.endsWith('.jsonl'))
+      .sort((a, b) => {
+        const catA = CATEGORY_ORDER.indexOf(getCategoryFromFilename(a));
+        const catB = CATEGORY_ORDER.indexOf(getCategoryFromFilename(b));
+        // Handle categories not in CATEGORY_ORDER (sort to end)
+        if (catA === -1 && catB === -1) return a.localeCompare(b);
+        if (catA === -1) return 1;
+        if (catB === -1) return -1;
+        return catA - catB;
+      });
+  } catch (err) {
+    console.error(`Error reading directory: ${err.message}`);
+    process.exit(2);
+  }
 
   if (files.length === 0) {
     console.log('No CANON-*.jsonl files found.');
@@ -121,27 +189,39 @@ function main() {
 
   console.log(`${dryRun ? '[DRY RUN] ' : ''}Processing ${files.length} CANON files...`);
 
+  // PASS 1: Build ID mapping for all findings
+  console.log('\nPass 1: Building ID mapping...');
   const idMapping = [];
+  const idMap = {}; // old_id -> new_id lookup
   let globalCounter = 1;
+  const fileData = []; // Store parsed data for pass 2
 
   for (const filename of files) {
     const filepath = join(directory, filename);
     const category = getCategoryFromFilename(filename);
 
-    console.log(`\n  ${filename} (${category})`);
+    let content;
+    try {
+      content = readFileSync(filepath, 'utf-8');
+    } catch (err) {
+      console.error(`  Error reading ${filename}: ${err.message}`);
+      continue;
+    }
 
-    const content = readFileSync(filepath, 'utf-8');
-    const findings = parseJsonl(content);
+    const findings = parseJsonl(content, filename);
+    if (findings.length === 0) {
+      console.warn(`  ⚠️ ${filename}: No valid findings`);
+      continue;
+    }
+
     const sortedFindings = sortFindings(findings);
 
-    const updatedFindings = sortedFindings.map(finding => {
-      const oldId = finding.canonical_id;
+    // Build mapping
+    const mappedFindings = sortedFindings.map(finding => {
+      const oldId = finding.canonical_id || `UNKNOWN-${globalCounter}`;
       const newId = `CANON-${String(globalCounter).padStart(4, '0')}`;
 
-      if (verbose || oldId !== newId) {
-        console.log(`    ${oldId} → ${newId}`);
-      }
-
+      idMap[oldId] = newId;
       idMapping.push({
         old_id: oldId,
         new_id: newId,
@@ -151,19 +231,46 @@ function main() {
       });
 
       globalCounter++;
+      return { ...finding, canonical_id: newId };
+    });
 
-      return {
-        ...finding,
-        canonical_id: newId
-      };
+    fileData.push({ filepath, filename, category, findings: mappedFindings });
+  }
+
+  // PASS 2: Rewrite ID references using the complete mapping
+  console.log('\nPass 2: Rewriting ID references...');
+  let referencesUpdated = 0;
+
+  for (const { filepath, filename, category, findings } of fileData) {
+    console.log(`\n  ${filename} (${category})`);
+
+    const updatedFindings = findings.map(finding => {
+      const before = JSON.stringify(finding);
+      const updated = rewriteIdReferences(finding, idMap);
+      const after = JSON.stringify(updated);
+      if (before !== after) {
+        referencesUpdated++;
+        if (verbose) {
+          console.log(`    ${updated.canonical_id}: Updated references`);
+        }
+      }
+      return updated;
     });
 
     if (!dryRun) {
-      writeFileSync(filepath, toJsonl(updatedFindings));
-      console.log(`    ✓ Updated ${updatedFindings.length} findings`);
+      try {
+        writeFileSync(filepath, toJsonl(updatedFindings));
+        console.log(`    ✓ Updated ${updatedFindings.length} findings`);
+      } catch (err) {
+        console.error(`    Error writing ${filename}: ${err.message}`);
+      }
     } else {
       console.log(`    Would update ${updatedFindings.length} findings`);
     }
+  }
+
+  if (referencesUpdated > 0) {
+    console.log(`\n  ✓ Rewrote ${referencesUpdated} ID reference(s)`);
   }
 
   // Write ID mapping file
@@ -175,8 +282,12 @@ function main() {
   };
 
   if (!dryRun) {
-    writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
-    console.log(`\n✓ ID mapping saved to ${mappingPath}`);
+    try {
+      writeFileSync(mappingPath, JSON.stringify(mappingContent, null, 2));
+      console.log(`\n✓ ID mapping saved to ${mappingPath}`);
+    } catch (err) {
+      console.error(`Error writing ID mapping: ${err.message}`);
+    }
   }
 
   // Summary

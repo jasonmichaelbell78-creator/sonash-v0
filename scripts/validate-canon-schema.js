@@ -181,6 +181,7 @@ function validateFile(filepath) {
   }
 
   const lines = content.trim().split('\n');
+  const seenIds = new Map(); // Track seen IDs for duplicate detection
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -195,6 +196,20 @@ function validateFile(filepath) {
     }
 
     result.findings++;
+
+    // Check for duplicate IDs
+    if (finding.canonical_id) {
+      if (seenIds.has(finding.canonical_id)) {
+        result.addError(
+          i + 1,
+          'canonical_id',
+          `Duplicate ID: "${finding.canonical_id}" (first seen on line ${seenIds.get(finding.canonical_id)})`
+        );
+      } else {
+        seenIds.set(finding.canonical_id, i + 1);
+      }
+    }
+
     validateFinding(finding, i + 1, result);
   }
 
