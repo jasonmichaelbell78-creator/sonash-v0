@@ -9,6 +9,7 @@
  * - Quality gate status
  *
  * Requires SONAR_TOKEN environment variable for authentication.
+ * Supports HTTP_PROXY/HTTPS_PROXY for environments behind a proxy.
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -17,9 +18,15 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import { ProxyAgent, fetch as undiciFetch } from 'undici';
 
 const SONAR_BASE_URL = process.env.SONAR_URL || 'https://sonarcloud.io';
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
+
+// Proxy configuration - use HTTPS_PROXY for HTTPS URLs, HTTP_PROXY for HTTP
+const PROXY_URL = process.env.HTTPS_PROXY || process.env.https_proxy ||
+                  process.env.HTTP_PROXY || process.env.http_proxy;
+const proxyAgent = PROXY_URL ? new ProxyAgent(PROXY_URL) : undefined;
 
 // SSRF protection: Only allow known SonarCloud/SonarQube domains
 // localhost/127.0.0.1 only allowed when SONAR_ALLOW_LOCAL=true (for development)
@@ -86,12 +93,18 @@ async function sonarFetch(endpoint, params = {}) {
 
   let response;
   try {
-    response = await fetch(url.toString(), { headers, signal: controller.signal });
+    // Use undici fetch with proxy agent if configured
+    const fetchOptions = {
+      headers,
+      signal: controller.signal,
+      ...(proxyAgent && { dispatcher: proxyAgent }),
+    };
+    response = await undiciFetch(url.toString(), fetchOptions);
   } catch (error) {
     if (error.name === 'AbortError') {
       throw new Error('SonarCloud API error: Request timed out');
     }
-    throw new Error('SonarCloud API error: Network request failed');
+    throw new Error(`SonarCloud API error: Network request failed - ${error.message || 'unknown'}`);
   } finally {
     clearTimeout(timeoutId);
   }
@@ -434,6 +447,9 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('SonarCloud MCP server running on stdio');
+  if (proxyAgent) {
+    console.error('Using proxy for API requests');
+  }
   if (!SONAR_TOKEN) {
     console.error('Warning: SONAR_TOKEN not set. Set it via environment variable for authenticated access.');
   }
