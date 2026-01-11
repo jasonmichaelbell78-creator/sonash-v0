@@ -163,24 +163,45 @@ export async function withSecurityChecks<TInput, TOutput>(
     }
 
     // 3.5. Verify reCAPTCHA token (if action specified)
+    // CANON-0008/CANON-0035: Fail-closed enforcement - reject missing tokens unless
+    // explicitly bypassed in dev/test environments
     if (recaptchaAction) {
         const dataWithToken = request.data as { recaptchaToken?: string };
         const token = dataWithToken.recaptchaToken;
 
-        // Make reCAPTCHA optional - log but don't block when missing
-        // This allows app to work on corporate networks that block Google reCAPTCHA
+        // Check for explicit bypass (dev/test environments only)
+        // Set RECAPTCHA_BYPASS=true in .env.local or Firebase Functions config
+        const allowBypass = process.env.RECAPTCHA_BYPASS === 'true';
+
         if (!token || token.trim() === '') {
-            logSecurityEvent(
-                "RECAPTCHA_MISSING_TOKEN",
-                functionName,
-                "Request processed without reCAPTCHA token (may indicate network blocking)",
-                {
-                    userId,
-                    severity: "WARNING",
-                    metadata: { action: recaptchaAction }
-                }
-            );
-            // Continue without reCAPTCHA protection - rely on other security layers
+            if (allowBypass) {
+                // Dev/test bypass - log but don't block
+                logSecurityEvent(
+                    "RECAPTCHA_BYPASSED",
+                    functionName,
+                    "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - dev/test mode only",
+                    {
+                        userId,
+                        severity: "WARNING",
+                        metadata: { action: recaptchaAction }
+                    }
+                );
+            } else {
+                // Production: Fail-closed - reject missing tokens
+                logSecurityEvent(
+                    "RECAPTCHA_MISSING_TOKEN",
+                    functionName,
+                    "Request rejected: reCAPTCHA token required",
+                    {
+                        userId,
+                        metadata: { action: recaptchaAction }
+                    }
+                );
+                throw new HttpsError(
+                    "failed-precondition",
+                    "Security verification required. Please refresh the page and try again."
+                );
+            }
         } else {
             // Verify token if present
             await verifyRecaptchaToken(token, recaptchaAction, userId);
