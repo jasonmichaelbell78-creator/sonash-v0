@@ -69,13 +69,16 @@ service cloud.firestore {
     }
 
     // ============================================
-    // JOURNAL ENTRIES COLLECTION (Legacy)
+    // JOURNAL ENTRIES COLLECTION (Legacy - LOCKED)
     // Path: /users/{userId}/journalEntries/{entryId}
     // ============================================
     match /users/{userId}/journalEntries/{entryId} {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      // SECURITY: Legacy path locked down - all writes must use /journal via Cloud Functions
+      // Direct client writes are BLOCKED to prevent bypassing security controls
+      // See: CANON-0002, CANON-0034
+      allow create, update: if false;
+      // Keep delete for GDPR data deletion compliance
       allow delete: if isOwner(userId);
     }
 
