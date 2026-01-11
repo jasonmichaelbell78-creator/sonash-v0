@@ -66,7 +66,8 @@ jobs:
         run: |
           echo "Checking pattern compliance on changed files..."
           echo "Files to check: ${{ steps.changed-files.outputs.all_changed_files }}"
-          node scripts/check-pattern-compliance.js ${{ steps.changed-files.outputs.all_changed_files }}
+          # Use -- to prevent filenames starting with - from being interpreted as options
+          node scripts/check-pattern-compliance.js -- ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Pattern compliance check (PR - no relevant files changed)
         if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true' }}

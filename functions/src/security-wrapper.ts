@@ -166,7 +166,7 @@ export async function withSecurityChecks<TInput, TOutput>(
     // (rate limit abuse detection, incident response). These logs are:
     // - Stored in GCP Cloud Logging (restricted access, not user-facing)
     // - Subject to retention policy (90 days)
-    // - Hashed in Sentry (via security-logger.ts) if userId is provided
+    // - NOT sent to Sentry (captureToSentry: false) to prevent IP leakage to third parties
     // IP logging is necessary for effective rate limit enforcement and abuse detection.
     if (ipRateLimiter) {
         // Get client IP from Cloud Functions request
@@ -186,7 +186,11 @@ export async function withSecurityChecks<TInput, TOutput>(
                     "RATE_LIMIT_EXCEEDED",
                     functionName,
                     `IP-based rate limit: ${internalMessage}`,
-                    { userId, metadata: { clientIp } }
+                    {
+                        userId,
+                        metadata: { clientIp },
+                        captureToSentry: false // Don't send raw IP addresses to third-party services
+                    }
                 );
 
                 // Return generic message to client (prevent information leakage)

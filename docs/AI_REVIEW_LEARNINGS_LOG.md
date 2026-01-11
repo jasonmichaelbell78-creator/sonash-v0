@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 4.9
+**Document Version:** 5.0
 **Created:** 2026-01-02
 **Last Updated:** 2026-01-11
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 5.0 | 2026-01-11 | Review #128: PR #236 Follow-up (Qodo) - 5 items (1 HIGH: Sentry IP privacy fix; 1 MEDIUM: CI arg separator; 1 DEFERRED: doc ID hashing; 2 ALREADY DONE from #127). New patterns: Third-party PII hygiene, CLI arg injection prevention. Session #52. |
 | 4.9 | 2026-01-11 | Review #127: PR #236 Comprehensive Review (SonarQube + Qodo) - 14 items (3 CRITICAL: pin GitHub Action SHA, harden reCAPTCHA bypass, fix IPv6 normalization; 4 MAJOR: regex precedence, sanitize error messages, reset journalLoading; 6 MINOR: operationName granularity, CI main-only push, simplify IP retrieval, audit trails, log sensitivity). Session #50. |
 | 4.8 | 2026-01-11 | Review #126: Tier-2 Output PR Feedback Round 3 (Qodo) - 4 items (3 MINOR: HUMAN_SUMMARY merged IDs column for traceability, CANON_QUICK_REFERENCE enum clarification, AUDIT_PROCESS_IMPROVEMENTS normalize:canon fallback note; 1 TRIVIAL: version header already 4.7). All applied. Session #49. |
 | 4.7 | 2026-01-11 | Review #125: Tier-2 Output PR Feedback Round 2 (Qodo) - 4 items (2 MINOR: HUMAN_SUMMARY DEDUP IDs in Top 5 table, PR_PLAN.json PR3 dedup IDs; 1 TRIVIAL: version header 4.5→4.6). 1 rejected (assign PR19 to App Check items - PR19 doesn't exist, "-" is correct). Session #49. |
@@ -461,6 +462,54 @@ Reviews #61-127 are actively maintained below. Older reviews are in the archive.
 - **Production bypass prevention:** Multi-condition checks prevent accidental security bypass in production
 - **IPv6 awareness:** IP normalization code must handle both IPv4 and IPv6 correctly
 - **Error message hygiene:** Always sanitize before returning to client, log detail server-side
+
+---
+
+#### Review #128: PR #236 Follow-up - IP Privacy & CI Hardening (2026-01-11)
+
+**Source:** Qodo Code Suggestions (post-commit 93ed9f5)
+**PR/Branch:** PR #236 / claude/continue-session-azYVp-KmwmN
+**Suggestions:** 5 items (High: 1, Medium: 3, Deferred: 1)
+
+**Context:** Follow-up feedback on commit 93ed9f5 identifying additional security and hardening improvements after the initial Review #127 fixes.
+
+**Issues Fixed:**
+
+| # | Issue | Severity | Category | Fix |
+|---|-------|----------|----------|-----|
+| 1 | IP addresses sent to Sentry (third-party PII leak) | 🟠 High | Privacy | Added `captureToSentry: false` to IP rate limit logs |
+| 2 | Missing `--` separator in CI file arg passing | 🟡 Medium | Security | Added `--` to prevent `-filename` injection |
+
+**Deferred:**
+
+| # | Issue | Severity | Reason |
+|---|-------|----------|--------|
+| 3 | Hash rate-limit document IDs | 🟡 Medium | Low risk - Firestore doc IDs not client-accessible; rate_limits collection is admin-only |
+
+**Already Fixed (from Review #127):**
+- GitHub Action SHA pinning ✅
+- journalLoading reset on user change ✅
+
+**Patterns Identified:**
+
+1. **Third-Party PII Hygiene** (High)
+   - Root cause: Raw IP addresses in logSecurityEvent metadata sent to Sentry
+   - Prevention: Set `captureToSentry: false` for logs containing PII
+   - Pattern: `logSecurityEvent(..., { metadata: { ip }, captureToSentry: false })`
+
+2. **CLI Argument Injection Prevention** (Medium)
+   - Root cause: File paths passed directly to node script could start with `-`
+   - Prevention: Use `--` separator to mark end of options
+   - Pattern: `node script.js -- $FILES` instead of `node script.js $FILES`
+
+**Resolution:**
+- Fixed: 2 items (1 High, 1 Medium)
+- Deferred: 1 item (with justification)
+- Already done: 2 items (from Review #127)
+
+**Key Learnings:**
+- **PII in logging:** Even internal logs may flow to third parties (Sentry); explicitly disable for sensitive data
+- **Shell injection vectors:** The `--` separator is a critical defense against filename-based injection
 
 ---
 
