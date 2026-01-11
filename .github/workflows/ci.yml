@@ -44,12 +44,39 @@ jobs:
         continue-on-error: true
         run: npm run deps:unused
 
-      - name: Pattern compliance check
-        # Note: Non-blocking while legacy violations exist in scripts/
-        # Pre-existing code has issues that will be fixed incrementally
-        # TODO: Remove continue-on-error after legacy violations are resolved
+      - name: Get changed files for pattern check
+        if: ${{ github.event_name == 'pull_request' }}
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            **/*.js
+            **/*.ts
+            **/*.tsx
+            **/*.jsx
+            **/*.sh
+            **/*.yml
+            **/*.yaml
+            .husky/**
+          separator: " "
+
+      - name: Pattern compliance check (PR - changed files only)
+        if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true' }}
+        run: |
+          echo "Checking pattern compliance on changed files..."
+          echo "Files to check: ${{ steps.changed-files.outputs.all_changed_files }}"
+          node scripts/check-pattern-compliance.js ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Pattern compliance check (PR - no relevant files changed)
+        if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true' }}
+        run: echo "No pattern-checkable files changed, skipping pattern compliance"
+
+      - name: Pattern compliance check (push to main)
+        if: ${{ github.event_name == 'push' }}
+        # For push to main, run full check but don't block (baseline exists)
+        # This provides visibility without blocking merges
         continue-on-error: true
-        run: npm run patterns:check
+        run: npm run patterns:check-all
 
       - name: Documentation check
         # Note: Non-blocking until documentation migration complete
