@@ -35,7 +35,7 @@
       "command": "npx",
       "args": ["-y", "@anthropic/firebase-mcp"],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "C:\Users\jason\Workspace\dev-projects\sonash-app-firebase-adminsdk-fbsvc-ee2355062c.json",
+        "GOOGLE_APPLICATION_CREDENTIALS": "C:\\Users\\jason\\Workspace\\dev-projects\\sonash-app-firebase-adminsdk-fbsvc-ee2355062c.json",
         "FIREBASE_PROJECT_ID": "sonash-app"
       }
     },
