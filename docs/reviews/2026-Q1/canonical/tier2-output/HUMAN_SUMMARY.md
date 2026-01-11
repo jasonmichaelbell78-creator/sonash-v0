@@ -52,11 +52,11 @@ This Tier-2 aggregation consolidates findings from 6 Multi-AI audits into a unif
 
 | Rank | ID | Title | Severity | Effort | Impact |
 |------|----|----|----------|--------|--------|
-| 1 | CANON-0001 | App Check disabled on Cloud Functions | S0 | E2 | Security posture |
-| 2 | CANON-0002 | Legacy journalEntries bypasses validation | S0 | E2 | Data integrity |
-| 3 | CANON-0044 | useJournal memory leak | S0 | E1 | App stability |
-| 4 | CANON-0064 | 47 CRITICAL cognitive complexity violations | S0 | E3 | Maintainability |
-| 5 | CANON-0105 | CI quality gates non-blocking | S0 | E2 | Quality assurance |
+| 1 | DEDUP-0001 | App Check disabled on Cloud Functions + client init disabled | S0 | E2 | Security posture |
+| 2 | DEDUP-0002 | Legacy journalEntries bypasses validation | S0 | E2 | Data integrity |
+| 3 | DEDUP-0011 | useJournal memory leak + redundant auth listener | S0 | E1 | App stability |
+| 4 | DEDUP-0014 | 47 CRITICAL cognitive complexity violations | S0 | E3 | Maintainability |
+| 5 | DEDUP-0015 | CI quality gates non-blocking | S0 | E2 | Quality assurance |
 
 ---
 

@@ -38,6 +38,7 @@
       "goal": "Require valid reCAPTCHA token when configured, reject missing tokens",
       "categories_involved": ["SECURITY", "CODE"],
       "included_canonical_ids": ["CANON-0008", "CANON-0035"],
+      "included_dedup_ids": ["DEDUP-0003"],
       "staging": [],
       "risk_level": "medium",
       "estimated_effort": "E1",
