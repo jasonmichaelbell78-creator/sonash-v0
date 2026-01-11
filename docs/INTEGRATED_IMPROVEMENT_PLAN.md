@@ -941,7 +941,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
 ## Step 4B: Remediation Sprint
 
 **Status:** IN_PROGRESS
-**Completion:** ~24% (5/21 PRs from PR_PLAN.json)
+**Completion:** ~29% (6/21 PRs from PR_PLAN.json)
 **Estimated Effort:** 8-16 hours (depends on CANON finding count)
 **Dependencies:** Step 4
 **Risk Level:** Medium
@@ -962,7 +962,12 @@ Executed PRs following PR_PLAN.json prioritization:
 - [x] **PR5** (Process): Convert CI pattern compliance to blocking - Commit 454472e
   - CANON-0105, CANON-0111
 
-**Remaining:** 16 PRs (PR2, PR7-PR21 per PR_PLAN.json)
+**Session #51 (2026-01-11):**
+- [x] **PR2** (S0 Security): Lock down legacy journalEntries writes - Commit 4ad0a74
+  - CANON-0002, CANON-0034
+  - Risk mitigated: No active users (test data only)
+
+**Remaining:** 15 PRs (PR7-PR21 per PR_PLAN.json)
 
 ### Objectives
 
@@ -984,7 +989,7 @@ This step executes those findings. Every PR and commit must reference the origin
 PR_PLAN.json Structure (21 PRs from Tier-2 Output):
 ├── Security & Auth (4 PRs)
 │   ├── PR1: useJournal memory leak ✅ DONE
-│   ├── PR2: Legacy journalEntries path (HIGH RISK)
+│   ├── PR2: Legacy journalEntries path ✅ DONE
 │   ├── PR3: reCAPTCHA fail-closed ✅ DONE
 │   └── PR4: IP rate limiting ✅ DONE
 ├── Process & CI (2 PRs)
@@ -1025,9 +1030,9 @@ Execute PRs in order. Each PR:
 #### Security & Auth PRs (4 items)
 - [x] **PR1**: Fix useJournal memory leak (E1, medium risk) ✅ Session #50
   - CANON-0044, CANON-0026
-- [ ] **PR2**: Close legacy journalEntries direct write path (E2, high risk)
+- [x] **PR2**: Close legacy journalEntries direct write path (E2, high risk) ✅ Session #51
   - CANON-0002, CANON-0034
-  - *High risk: Requires data migration before rule change*
+  - *Risk mitigated: No active users, test data only*
 - [x] **PR3**: Make reCAPTCHA enforcement fail-closed (E1, medium risk) ✅ Session #50
   - CANON-0008, CANON-0035
 - [x] **PR4**: Complete rate limiting with IP throttling (E2, medium risk) ✅ Session #50
