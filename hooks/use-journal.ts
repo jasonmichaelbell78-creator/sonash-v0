@@ -35,11 +35,12 @@ import {
     limit
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { db, auth } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
 import { QUERY_LIMITS } from '@/lib/constants';
 import { retryCloudFunction } from '@/lib/utils/retry';
 import { getRecaptchaToken } from '@/lib/recaptcha';
+import { useAuthCore } from '@/components/providers/auth-context';
 
 // Helper to check for "Today" and "Yesterday"
 export const getRelativeDateLabel = (dateString: string) => {
@@ -167,84 +168,86 @@ export function generateTags(type: JournalEntryType, data: Record<string, unknow
  */
 export function useJournal() {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [journalLoading, setJournalLoading] = useState(true);
     const [groupedEntries, setGroupedEntries] = useState<Record<string, JournalEntry[]>>({});
 
+    // CANON-0044/CANON-0026: Consume user from AuthContext instead of creating
+    // redundant onAuthStateChanged listener. This eliminates memory leak potential
+    // and reduces unnecessary re-renders.
+    const { user, loading: authLoading } = useAuthCore();
+
     useEffect(() => {
-        // Note: auth.currentUser might be null on initial render depending on auth state speed.
-        // In a real app we might want to listen to onAuthStateChanged, but for now we follow the pattern.
-        // If this runs before auth is ready, it might return early.
-        // Ideally we rely on an AuthContext, but direct access is what was requested.
-        const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-            if (!user) {
-                setLoading(false);
-                setEntries([]);
-                setGroupedEntries({});
-                return;
-            }
+        // Wait for auth to resolve before setting up Firestore listener
+        if (authLoading) {
+            return;
+        }
 
-            // QUERY: Get entries for this user, ordered by newest first
-            // Note: Using simple query without where clause to avoid composite index requirement
-            // Client-side will filter out soft-deleted entries
-            // PERFORMANCE: Limit to 100 entries initially to prevent unbounded fetches
-            const q = query(
-                collection(db, `users/${user.uid}/journal`),
-                orderBy('createdAt', 'desc'),
-                limit(QUERY_LIMITS.JOURNAL_MAX)
-            );
+        if (!user) {
+            setJournalLoading(false);
+            setEntries([]);
+            setGroupedEntries({});
+            return;
+        }
 
-            // REAL-TIME LISTENER
-            const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-                const fetchedEntries: JournalEntry[] = [];
+        // QUERY: Get entries for this user, ordered by newest first
+        // Note: Using simple query without where clause to avoid composite index requirement
+        // Client-side will filter out soft-deleted entries
+        // PERFORMANCE: Limit to 100 entries initially to prevent unbounded fetches
+        const q = query(
+            collection(db, `users/${user.uid}/journal`),
+            orderBy('createdAt', 'desc'),
+            limit(QUERY_LIMITS.JOURNAL_MAX)
+        );
 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    // Filter out soft-deleted entries client-side
-                    if (data.isSoftDeleted) return;
+        // REAL-TIME LISTENER
+        const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+            const fetchedEntries: JournalEntry[] = [];
 
-                    // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
-                    // All entries should have valid Firestore Timestamps from Cloud Functions
-                    if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
-                        console.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
-                            hasCreatedAt: !!data.createdAt,
-                            hasUpdatedAt: !!data.updatedAt,
-                            createdAtHasToMillis: !!data.createdAt?.toMillis,
-                            updatedAtHasToMillis: !!data.updatedAt?.toMillis
-                        });
-                        return;
-                    }
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                // Filter out soft-deleted entries client-side
+                if (data.isSoftDeleted) return;
 
-                    fetchedEntries.push({
-                        id: doc.id,
-                        ...data,
-                        // Convert Firestore Timestamp to millis for consistent client-side typing
-                        createdAt: data.createdAt.toMillis(),
-                        updatedAt: data.updatedAt.toMillis()
-                    } as JournalEntry);
-                });
+                // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
+                // All entries should have valid Firestore Timestamps from Cloud Functions
+                if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
+                    console.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
+                        hasCreatedAt: !!data.createdAt,
+                        hasUpdatedAt: !!data.updatedAt,
+                        createdAtHasToMillis: !!data.createdAt?.toMillis,
+                        updatedAtHasToMillis: !!data.updatedAt?.toMillis
+                    });
+                    return;
+                }
 
-                setEntries(fetchedEntries);
-
-                // GROUPING LOGIC (The "Index" for your notebook)
-                const groups: Record<string, JournalEntry[]> = {};
-                fetchedEntries.forEach((entry) => {
-                    const label = getRelativeDateLabel(entry.dateLabel);
-                    if (!groups[label]) groups[label] = [];
-                    groups[label].push(entry);
-                });
-
-                setGroupedEntries(groups);
-                setLoading(false);
-            }, (error) => {
-                console.error("Error fetching journal entries:", error);
-                setLoading(false);
+                fetchedEntries.push({
+                    id: doc.id,
+                    ...data,
+                    // Convert Firestore Timestamp to millis for consistent client-side typing
+                    createdAt: data.createdAt.toMillis(),
+                    updatedAt: data.updatedAt.toMillis()
+                } as JournalEntry);
             });
 
-            return () => unsubscribeSnapshot();
+            setEntries(fetchedEntries);
+
+            // GROUPING LOGIC (The "Index" for your notebook)
+            const groups: Record<string, JournalEntry[]> = {};
+            fetchedEntries.forEach((entry) => {
+                const label = getRelativeDateLabel(entry.dateLabel);
+                if (!groups[label]) groups[label] = [];
+                groups[label].push(entry);
+            });
+
+            setGroupedEntries(groups);
+            setJournalLoading(false);
+        }, (error) => {
+            console.error("Error fetching journal entries:", error);
+            setJournalLoading(false);
         });
 
-        return () => unsubscribeAuth();
-    }, []);
+        return () => unsubscribeSnapshot();
+    }, [user, authLoading]);
 
     // ACTION: Tuck Away (Save) a new entry with metadata
     // Memoized to prevent infinite re-renders when used in component useCallback deps
@@ -254,7 +257,7 @@ export function useJournal() {
         isPrivate: boolean = true
     ): Promise<{ success: boolean; error?: string }> => {
         try {
-            const user = auth.currentUser;
+            // Use user from AuthContext (already validated above)
             if (!user) {
                 return {
                     success: false,
@@ -322,13 +325,13 @@ export function useJournal() {
                 error: errorMessage
             };
         }
-    }, []);
+    }, [user]);
 
     // ACTION: Crumple Page (Soft Delete)
     // Memoized to prevent infinite re-renders
     const crumplePage = useCallback(async (entryId: string): Promise<{ success: boolean; error?: string }> => {
         try {
-            const user = auth.currentUser;
+            // Use user from AuthContext (already validated above)
             if (!user) {
                 return {
                     success: false,
@@ -377,7 +380,10 @@ export function useJournal() {
                 error: errorMessage
             };
         }
-    }, []);
+    }, [user]);
+
+    // Combine auth loading state with journal loading state for consumers
+    const loading = authLoading || journalLoading;
 
     return {
         entries,        // Raw list
