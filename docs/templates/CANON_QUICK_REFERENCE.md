@@ -119,7 +119,7 @@
 npm run validate:canon
 ```
 
-**Expected output:** `All 6 CANON files pass schema validation`
+**Expected output:** `All CANON files pass schema validation`
 
 ---
 

@@ -21,7 +21,7 @@ Items are grouped by category and prioritized by:
 ### S0 Critical
 | ID | Title | Effort | Deps | PR |
 |----|-------|--------|------|-----|
-| DEDUP-0001 | Re-enable App Check on Cloud Functions | E2 | DEDUP-0003, DEDUP-0004 | PR1 |
+| DEDUP-0001 | Re-enable App Check on Cloud Functions | E2 | DEDUP-0003, DEDUP-0004 | - |
 | DEDUP-0002 | Close legacy journalEntries write path | E2 | None | PR2 |
 
 ### S1 High
@@ -30,7 +30,7 @@ Items are grouped by category and prioritized by:
 | DEDUP-0003 | Make reCAPTCHA fail-closed | E1 | None | PR3 |
 | DEDUP-0004 | Complete rate limiting (IP + admin) | E2 | DEDUP-0003 | PR4 |
 | DEDUP-0005 | Replace console.* with logger | E1 | None | PR8 |
-| CANON-0005 | Restore client App Check init | E1 | DEDUP-0001 | PR1 |
+| CANON-0005 | Restore client App Check init | E1 | DEDUP-0001 | - |
 | CANON-0010 | Admin-claim rules defense-in-depth | E2 | None | - |
 | CANON-0014 | Verify reCAPTCHA coverage | E1 | DEDUP-0003 | PR3 |
 | CANON-0015 | Rate limit bypass mitigation | E2 | DEDUP-0004 | PR4 |
@@ -39,7 +39,7 @@ Items are grouped by category and prioritized by:
 ### S2 Medium
 | ID | Title | Effort | Deps | PR |
 |----|-------|--------|------|-----|
-| CANON-0019 | Address ESLint security warnings | E2 | None | PR-LINT |
+| CANON-0019 | Address ESLint security warnings | E2 | None | PR-LINT-WARNINGS |
 | CANON-0038 | Remove hardcoded reCAPTCHA fallback | E1 | None | - |
 | CANON-0041 | Route admin writes through Functions | E1 | None | - |
 

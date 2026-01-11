@@ -271,9 +271,8 @@ CANON-0077 (Collection helpers) ──> CANON-0080 (CRUD factory)
 
 1. Review and approve this summary
 2. Create GitHub issues for S0 items
-3. Execute PR plan in recommended order
-4. Update INTEGRATED_IMPROVEMENT_PLAN.md to mark Task 4.3.1 complete
-5. Proceed to Task 4.3.2 (Categorize findings) and Task 4.3.3 (Refreshed refactor backlog)
+3. Proceed to Step 4B (Remediation Sprint) and execute PRs from `PR_PLAN.json`
+4. Update CANON backlog status as items are addressed
 
 ---
 

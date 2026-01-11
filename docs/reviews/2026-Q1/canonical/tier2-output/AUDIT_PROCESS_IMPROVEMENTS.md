@@ -39,6 +39,8 @@
 
 **Command:** `npm run validate:canon`
 
+> **Note:** The `validate:canon` npm script will be added in Step 5 (Task 5.10). Until then, use the direct script path: `node scripts/validate-canon-schema.js`
+
 **Script:** `scripts/validate-canon-schema.js`
 
 **Integration Points:**
