@@ -255,6 +255,23 @@ else
 fi
 
 echo ""
+
+# Check consolidation status (alerts if reviews need consolidation or log needs archiving)
+echo "🔍 Checking consolidation status..."
+if node scripts/check-consolidation-status.js 2>/dev/null; then
+  : # Success message already printed by script
+else
+  EXIT_CODE=$?
+  if [ "$EXIT_CODE" -eq 1 ]; then
+    echo "   ⚠️ Consolidation or archiving action needed - see output above"
+    WARNINGS=$((WARNINGS + 1))
+  elif [ "$EXIT_CODE" -ge 2 ]; then
+    echo "   ❌ Consolidation checker failed (exit $EXIT_CODE)"
+    WARNINGS=$((WARNINGS + 1))
+  fi
+fi
+
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ "$WARNINGS" -eq 0 ]; then
   echo "✅ SessionStart hook completed successfully!"
