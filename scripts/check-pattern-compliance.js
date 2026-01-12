@@ -35,6 +35,38 @@ const JSON_OUTPUT = args.includes("--json");
 const FILES = args.filter((a) => !a.startsWith("--"));
 
 /**
+ * Global excludes - development utility scripts with pre-existing technical debt
+ * These scripts are rarely run and flagged for incremental cleanup (see ROADMAP.md)
+ * Pattern: relative path regexes matched against file path
+ */
+const GLOBAL_EXCLUDE = [
+  // Development/build utility scripts (pre-existing debt - Review #136)
+  /^scripts\/ai-review\.js$/,
+  /^scripts\/assign-review-tier\.js$/,
+  /^scripts\/check-consolidation-status\.js$/,
+  /^scripts\/check-docs-light\.js$/,
+  /^scripts\/check-document-sync\.js$/,
+  /^scripts\/check-review-needed\.js$/,
+  /^scripts\/generate-documentation-index\.js$/,
+  /^scripts\/normalize-canon-ids\.js$/,
+  /^scripts\/add-false-positive\.js$/,
+  /^scripts\/validate-audit\.js$/,
+  /^scripts\/validate-canon-schema\.js$/,
+  /^scripts\/mcp\/sonarcloud-server\.js$/,
+  /^scripts\/update-readme-status\.js$/,
+  /^scripts\/archive-doc\.js$/,
+  // One-time migration scripts (rarely run)
+  /^scripts\/migrate-.*\.ts$/,
+  /^scripts\/seed-.*\.ts$/,
+  /^scripts\/enrich-.*\.ts$/,
+  /^scripts\/import-.*\.ts$/,
+  /^scripts\/retry-failures\.ts$/,
+  /^scripts\/sync-geocache\.ts$/,
+  /^scripts\/set-admin-claim\.ts$/,
+  /^scripts\/dedupe-quotes\.ts$/,
+];
+
+/**
  * Known anti-patterns to check for
  * Each pattern has:
  * - pattern: RegExp to match the anti-pattern
@@ -370,6 +402,15 @@ const ANTI_PATTERNS = [
 /**
  * Get files to check based on options
  */
+/**
+ * Check if a file path matches any global exclude pattern
+ */
+function isGloballyExcluded(filePath) {
+  // Normalize to forward slashes for consistent matching
+  const normalized = filePath.replace(/\\/g, "/");
+  return GLOBAL_EXCLUDE.some((pattern) => pattern.test(normalized));
+}
+
 function getFilesToCheck() {
   if (FILES.length > 0) {
     // Block absolute paths, drive letters, UNC paths, and Windows rooted paths before processing
@@ -384,7 +425,8 @@ function getFilesToCheck() {
         return rel && !/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/.test(rel) && !/^\.\.(?:[\\/]|$)/.test(rel);
       })
       .map((abs) => relative(ROOT, abs))
-      .filter((rel) => existsSync(join(ROOT, rel)));
+      .filter((rel) => existsSync(join(ROOT, rel)))
+      .filter((rel) => !isGloballyExcluded(rel)); // Apply global excludes
   }
 
   if (STAGED) {
@@ -396,7 +438,8 @@ function getFilesToCheck() {
       return output
         .trim()
         .split("\n")
-        .filter((f) => f.trim());
+        .filter((f) => f.trim())
+        .filter((f) => !isGloballyExcluded(f)); // Apply global excludes
     } catch (error) {
       // Log git errors for debugging but don't abort (may not be a git repo)
       if (VERBOSE && !JSON_OUTPUT) {
@@ -456,7 +499,7 @@ function getFilesToCheck() {
     }
 
     walk(ROOT);
-    return files;
+    return files.filter((f) => !isGloballyExcluded(f)); // Apply global excludes
   }
 
   // Default: check common problem areas

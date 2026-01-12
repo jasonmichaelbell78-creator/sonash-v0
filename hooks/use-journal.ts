@@ -68,11 +68,11 @@ export const getRelativeDateLabel = (dateString: string) => {
 function sanitizeForSearch(text: string): string {
   return (
     text
-      // Remove HTML tags
-      .replace(/<[^>]*>/g, "")
-      // Remove script/style content
+      // Remove script/style blocks first (so their contents are removed too)
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+      // Remove remaining HTML tags
+      .replace(/<[^>]*>/g, "")
       // Remove potentially dangerous patterns (event handlers, javascript:, data:)
       .replace(/on\w+\s*=\s*["'][^"']*["']/gi, "")
       .replace(/javascript:/gi, "")
@@ -91,22 +91,27 @@ export function generateSearchableText(
 ): string {
   const parts: string[] = [];
 
+  // SAFETY: Use Array.isArray guards to prevent runtime errors from malformed data
+  const items = Array.isArray(data.items) ? data.items : [];
+  const feelings = Array.isArray(data.feelings) ? data.feelings : [];
+  const absolutes = Array.isArray(data.absolutes) ? data.absolutes : [];
+
   switch (type) {
     case "daily-log":
       parts.push(sanitizeForSearch(String(data.content || "")));
       break;
     case "gratitude":
-      ((data.items as string[]) || []).forEach((item) => parts.push(sanitizeForSearch(item)));
+      items.forEach((item) => parts.push(sanitizeForSearch(String(item))));
       break;
     case "spot-check":
       parts.push(sanitizeForSearch(String(data.action || "")));
-      ((data.feelings as string[]) || []).forEach((f) => parts.push(sanitizeForSearch(f)));
-      ((data.absolutes as string[]) || []).forEach((a) => parts.push(sanitizeForSearch(a)));
+      feelings.forEach((f) => parts.push(sanitizeForSearch(String(f))));
+      absolutes.forEach((a) => parts.push(sanitizeForSearch(String(a))));
       break;
     case "night-review":
       parts.push(sanitizeForSearch(String(data.step4_gratitude || "")));
       parts.push(sanitizeForSearch(String(data.step4_surrender || "")));
-      if (data.step3_reflections) {
+      if (data.step3_reflections && typeof data.step3_reflections === "object") {
         Object.values(data.step3_reflections as Record<string, unknown>).forEach((v: unknown) =>
           parts.push(sanitizeForSearch(String(v || "")))
         );

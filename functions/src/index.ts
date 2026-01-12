@@ -690,6 +690,11 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
       },
     };
   } catch (error) {
+    // Preserve intentional HttpsError codes/messages
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+
     logSecurityEvent("DATA_MIGRATION_FAILURE", "migrateAnonymousUserData", "Migration failed", {
       metadata: {
         anonymousUid: validatedData.anonymousUid,

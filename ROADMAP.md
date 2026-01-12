@@ -1083,11 +1083,11 @@ _Building on the basic HALT check feature from M1.5_
 - **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and
   status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
-- **[SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** -
+- **[SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md)** -
   Consolidated 6-AI code review report
-- **[SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** -
+- **[SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](./docs/archive/SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md)** -
   Admin panel enhancement specification (M1.6)
-- **[SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](./docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)** -
+- **[SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](./docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md)** -
   Phase 1 implementation prompt
 
 ### Detailed Documentation (in /docs)

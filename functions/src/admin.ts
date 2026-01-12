@@ -131,8 +131,8 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(async (request) => {
     throw error;
   }
 
-  // Generate ID if not provided
-  const id = validated.id || `meeting_${Date.now()}`;
+  // Generate ID if not provided - use Firestore auto-ID for collision resistance
+  const id = validated.id || admin.firestore().collection("meetings").doc().id;
 
   // Save to Firestore
   try {
@@ -141,8 +141,8 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(async (request) => {
       .collection("meetings")
       .doc(id)
       .set({
-        id,
         ...validated,
+        id, // Place after spread to ensure id is not overwritten by validated.id
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
@@ -559,9 +559,14 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
     throw new HttpsError("invalid-argument", "Search query is required");
   }
 
-  logSecurityEvent("ADMIN_ACTION", "adminSearchUsers", `Admin searched for users: ${query}`, {
+  // SECURITY: Don't log raw search queries that may contain PII (emails, UIDs)
+  // Log only sanitized metadata for audit purposes
+  logSecurityEvent("ADMIN_ACTION", "adminSearchUsers", "Admin performed user search", {
     userId: request.auth?.uid,
-    metadata: { query },
+    metadata: {
+      queryLength: query.trim().length,
+      queryType: query.includes("@") ? "email" : "text",
+    },
   });
 
   try {
@@ -811,9 +816,11 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
     throw new HttpsError("invalid-argument", "No updates provided");
   }
 
-  logSecurityEvent("ADMIN_ACTION", "adminUpdateUser", `Admin updated user: ${uid}`, {
+  // SECURITY: Don't log full updates payload (may contain sensitive adminNotes)
+  // Log only field names being updated for audit trail
+  logSecurityEvent("ADMIN_ACTION", "adminUpdateUser", "Admin updated user", {
     userId: request.auth?.uid,
-    metadata: { targetUid: uid, updates },
+    metadata: { targetUid: uid, updatedFields: Object.keys(updates) },
   });
 
   try {
@@ -970,10 +977,8 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
       captureToSentry: true,
     });
 
-    throw new HttpsError(
-      "internal",
-      `Failed to run job: ${error instanceof Error ? error.message : "Unknown error"}`
-    );
+    // SECURITY: Don't expose internal error details to client
+    throw new HttpsError("internal", "Failed to run job. Please try again or contact support.");
   }
 });
 

@@ -15,12 +15,19 @@
     "tailwindcss-animate",
     "tw-animate-css",
     "autoprefixer",
-    "tsx",
     "firebase-admin",
     "remark-parse",
     "remark-stringify",
     "unified",
-    "tailwindcss"
+    "tailwindcss",
+    "@dataconnect/generated",
+    "@hookform/resolvers",
+    "cmdk",
+    "react-day-picker",
+    "react-hook-form",
+    "react-resizable-panels",
+    "recharts",
+    "vaul"
   ],
   "ignoreBinaries": ["printf", "report"],
   "next": {

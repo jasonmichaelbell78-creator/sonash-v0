@@ -277,10 +277,10 @@ VERIFICATION COMMANDS:
   --exclude-dir=.next --exclude-dir=dist --exclude-dir=build
   --exclude-dir=coverage "sk_live|sk_test|api[*-]?key._=._['\"][A-Za-z0-9]"
   --include="_.ts" --include="_.tsx" --include="\*.js"
-- grep -ERIn -I --exclude-dir=node_modules --exclude-dir=.git
+- grep -ERIn -I --exclude-dir=node*modules --exclude-dir=.git
   --exclude-dir=.next --exclude-dir=dist --exclude-dir=build
-  --exclude-dir=coverage "password._=._['\"]" --include="_.ts" --include="_.tsx"
-  --include="\*.js"
+  --exclude-dir=coverage "password.*=._['\"]" --include="_.ts"
+  --include="\_.tsx" --include="\*.js"
 - grep -ERIn -I --exclude-dir=node*modules --exclude-dir=.git
   --exclude-dir=.next --exclude-dir=dist --exclude-dir=build
   --exclude-dir=coverage "NEXT_PUBLIC*.*SECRET|NEXT*PUBLIC*.*KEY"
@@ -478,11 +478,11 @@ SECURITY VERIFICATION (run if run_commands=yes)
   --exclude-dir=.next --exclude-dir=dist --exclude-dir=build
   --exclude-dir=coverage "sk_live|sk_test|api[*-]?key._=._['\"][A-Za-z0-9]"
   --include="_.ts" --include="_.tsx" --include="\*.js"
-- grep -ERIn -I --exclude-dir=node_modules --exclude-dir=.git
+- grep -ERIn -I --exclude-dir=node*modules --exclude-dir=.git
   --exclude-dir=.next --exclude-dir=dist --exclude-dir=build
-  --exclude-dir=coverage "password._=._['\"]" --include="_.ts" --include="_.tsx"
-  --include="\*.js" (Note: Supplement with gitleaks, truffleHog, or
-  detect-secrets for comprehensive coverage)
+  --exclude-dir=coverage "password.*=._['\"]" --include="_.ts"
+  --include="\_.tsx" --include="\*.js" (Note: Supplement with gitleaks,
+  truffleHog, or detect-secrets for comprehensive coverage)
 
 2. Rate Limiting Coverage:
 

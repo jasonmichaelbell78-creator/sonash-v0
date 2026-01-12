@@ -200,12 +200,29 @@ export const MeetingsService = {
    */
   async clearAllMeetings() {
     try {
-      const batch = writeBatch(db);
       const snapshot = await getDocs(collection(db, "meetings"));
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-      await batch.commit();
+
+      // Chunk deletes to respect Firestore's 500 operation batch limit
+      const BATCH_LIMIT = 450; // Keep margin under 500
+      let batch = writeBatch(db);
+      let opCount = 0;
+
+      for (const d of snapshot.docs) {
+        batch.delete(d.ref);
+        opCount += 1;
+
+        if (opCount >= BATCH_LIMIT) {
+          await batch.commit();
+          batch = writeBatch(db);
+          opCount = 0;
+        }
+      }
+
+      // Commit any remaining operations
+      if (opCount > 0) {
+        await batch.commit();
+      }
+
       return true;
     } catch (error) {
       logger.error("Error clearing meetings", { error });

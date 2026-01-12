@@ -1121,6 +1121,7 @@ If survey scores drop below 4/5 for 2 consecutive months:
    ```
 
 4. **Create batch review guide**
+
    ```markdown
    # docs/BATCH_REVIEW_GUIDE.md
 
@@ -1227,6 +1228,7 @@ If survey scores drop below 4/5 for 2 consecutive months:
    ```
 
 4. **Document lessons learned**
+
    ```markdown
    # Update AI_REVIEW_LEARNINGS_LOG.md
 

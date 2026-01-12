@@ -1676,6 +1676,7 @@ standardized structure, ensuring highest-priority docs are consistent.
   entries having limited metadata
 - **Placeholder for Missing Context**: When reasoning/decisions cannot be
   reconstructed, use:
+
   ```markdown
   **Reasoning & Decisions** (reconstructed 2026-01-XX):
 
