@@ -145,7 +145,7 @@ _Audit plans and findings_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Multi-AI Reviews Directory](docs/reviews/README.md)                                   | -                                                               | ↓0 ↑1      | 2026-01-08    |
-| [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑4      | 2026-01-08    |
+| [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑4      | 2026-01-08    |
 
 ### Skills (Tier 3)
 
@@ -539,7 +539,7 @@ Documents with no inbound links (not referenced by any other document):
 - [SoNash Code Review - 2026 Q1](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md)
 - [Audit Aggregation: Gemini + ChatGPT](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md)
 - [Phase 4.2 Security Audit Results](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md)
-- [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md)
+- [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md)
 - [Multi-AI Reviews Directory](docs/reviews/README.md)
 - [[Document Title]](docs/templates/CANONICAL_DOC_TEMPLATE.md)
 - [[Document Title]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)
@@ -720,7 +720,7 @@ Documents with no inbound links (not referenced by any other document):
 | 160 | [docs/reviews/2026-Q1/README.md](docs/reviews/2026-Q1/README.md)                                                                                             | 2026 Q1 Multi-AI Audit - Execution Guide                       | 3    | -                                                    |
 | 161 | [docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md)                                             | SoNash Multi-AI Refactoring Plan                               | 3    | PENDING                                              |
 | 162 | [docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md)                                                   | SoNash Multi-AI Security Audit Plan                            | 3    | PENDING                                              |
-| 163 | [docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md)                                                                         | SoNash Multi-AI Code Review Plan - 2026 Q1                     | 3    | COMPLETE                                             |
+| 163 | [docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md)                                                         | SoNash Multi-AI Code Review Plan - 2026 Q1                     | 3    | COMPLETE                                             |
 | 164 | [docs/reviews/README.md](docs/reviews/README.md)                                                                                                             | Multi-AI Reviews Directory                                     | 3    | -                                                    |
 | 165 | [docs/SECURITY.md](docs/SECURITY.md)                                                                                                                         | Security & Privacy Guide                                       | 2    | ACTIVE                                               |
 | 166 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md)                                                                                         | Sentry Integration Guide for SoNash Admin Panel                | 2    | Active                                               |

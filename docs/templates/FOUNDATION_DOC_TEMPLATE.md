@@ -291,7 +291,7 @@ Example:
 
 **Planning Documents**:
 
-- [ROADMAP.md](../ROADMAP.md) - Product roadmap
+- [ROADMAP.md](../../ROADMAP.md) - Product roadmap
 - [Feature plans] - Specific feature documentation
 
 **Reference Documents**:

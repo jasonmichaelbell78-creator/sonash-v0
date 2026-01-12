@@ -109,14 +109,14 @@ Bundle Size:
 - CSS size: [To be measured]
 
 Core Web Vitals (measure with Lighthouse if available):
-- LCP: [X] s
-- FID: [X] ms
-- CLS: [X]
-- Performance score: [X]/100
+- LCP: [Not measured - run Lighthouse for baseline]
+- FID: [Not measured - run Lighthouse for baseline]
+- CLS: [Not measured - run Lighthouse for baseline]
+- Performance score: [Not measured - run Lighthouse for baseline]
 
 Build Times:
-- Dev build: [X] s (measure: time npm run dev)
-- Production build: [X] s (measure: time npm run build)
+- Dev build: [Not measured - run: time npm run dev]
+- Production build: [Not measured - run: time npm run build]
 
 Known Heavy Dependencies (for context):
 - Framer Motion, Firebase, Leaflet, Sentry
