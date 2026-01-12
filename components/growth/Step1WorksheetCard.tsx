@@ -15,6 +15,7 @@ import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
+import { logger } from "@/lib/logger"
 
 type Step1WorksheetCardProps = HTMLMotionProps<"button">
 
@@ -499,14 +500,14 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
             const { entries, error } = await FirestoreService.getInventoryEntries(user.uid, 50)
 
             if (error) {
-                console.error('Failed to load saved worksheet:', error)
+                logger.error('Failed to load saved worksheet', { error })
                 toast.error('Failed to load saved worksheet. Starting fresh.')
                 return
             }
 
             // Ensure entries is an array before processing
             if (!Array.isArray(entries)) {
-                console.error('Invalid entries response:', entries)
+                logger.error('Invalid entries response', { entries })
                 return
             }
 
@@ -539,7 +540,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
                 setLastSavedData(savedData)
             }
         } catch (error) {
-            console.error('Failed to load saved worksheet:', error)
+            logger.error('Failed to load saved worksheet', { error })
             toast.error('Failed to load saved worksheet. Starting fresh.')
         } finally {
             // Always reset loading state
@@ -570,7 +571,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
             toast.success("Auto-saved", { duration: 2000 })
         } catch (error) {
             toast.error("Auto-save failed. Your work is still preserved locally.")
-            console.error("Auto-save error:", error)
+            logger.error("Auto-save error", { error })
         } finally {
             setIsSaving(false)
         }
@@ -653,7 +654,7 @@ export default function Step1WorksheetCard({ className: _className, ...props }: 
             } else if (!journalSaved) {
                 toast.error("Failed to save worksheet. Please try again.")
             }
-            console.error("Save error:", { error, journalSaved, inventorySaved })
+            logger.error("Save error", { error, journalSaved, inventorySaved })
         } finally {
             setIsSaving(false)
         }

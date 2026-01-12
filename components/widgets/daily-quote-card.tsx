@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Quote as QuoteIcon, Sparkles } from "lucide-react"
 import { QuotesService, Quote } from "@/lib/db/quotes"
+import { logger } from "@/lib/logger"
 
 /**
  * Daily Quote Card - displays a rotating recovery quote
@@ -27,7 +28,7 @@ export default function DailyQuoteCard() {
                 const todayQuote = QuotesService.getQuoteForToday(allQuotes)
                 setQuote(todayQuote)
             } catch (error) {
-                console.error("Error fetching daily quote:", error)
+                logger.error("Error fetching daily quote", { error })
             } finally {
                 setLoading(false)
             }

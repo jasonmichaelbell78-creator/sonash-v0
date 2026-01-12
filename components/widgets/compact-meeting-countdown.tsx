@@ -6,6 +6,7 @@ import { MeetingsService, Meeting } from "@/lib/db/meetings"
 import { useGeolocation } from "@/hooks/use-geolocation"
 import { calculateDistance } from "@/lib/utils/distance"
 import { MeetingDetailsDialog } from "@/components/meetings/meeting-details-dialog"
+import { logger } from "@/lib/logger"
 
 const MAX_DISTANCE_MILES = 10
 
@@ -196,7 +197,7 @@ export default function CompactMeetingCountdown() {
 
                 setLoading(false)
             } catch (error) {
-                console.error("Error finding next meeting:", error)
+                logger.error("Error finding next meeting", { error })
                 setLoading(false)
             }
         }

@@ -42,6 +42,7 @@ import { retryCloudFunction } from '@/lib/utils/retry';
 import { getRecaptchaToken } from '@/lib/recaptcha';
 import { handleCloudFunctionError } from '@/lib/utils/callable-errors';
 import { useAuthCore } from '@/components/providers/auth-context';
+import { logger } from '@/lib/logger';
 
 // Helper to check for "Today" and "Yesterday"
 export const getRelativeDateLabel = (dateString: string) => {
@@ -216,7 +217,7 @@ export function useJournal() {
                 // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
                 // All entries should have valid Firestore Timestamps from Cloud Functions
                 if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
-                    console.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
+                    logger.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
                         hasCreatedAt: !!data.createdAt,
                         hasUpdatedAt: !!data.updatedAt,
                         createdAtHasToMillis: !!data.createdAt?.toMillis,
@@ -247,7 +248,7 @@ export function useJournal() {
             setGroupedEntries(groups);
             setJournalLoading(false);
         }, (error) => {
-            console.error("Error fetching journal entries:", error);
+            logger.error("Error fetching journal entries", { error });
             setJournalLoading(false);
         });
 

@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { logger, maskIdentifier } from "@/lib/logger"
 import { toast } from "sonner"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { Mic, MicOff } from "lucide-react"
@@ -81,7 +82,7 @@ export default function SpotCheckCard({ className, ...props }: SpotCheckCardProp
             toast.success("Spot check saved!")
             setIsOpen(false)
         } catch (error) {
-            console.error("Failed to save spot check", error)
+            logger.error("Failed to save spot check", { error, userId: maskIdentifier(user?.uid) })
             toast.error("Failed to save. Please try again.")
         } finally {
             setIsSaving(false)

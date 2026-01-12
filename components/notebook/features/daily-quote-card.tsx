@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { QuotesService, type Quote } from "@/lib/db/quotes"
+import { logger } from "@/lib/logger"
 import { Loader2 } from "lucide-react"
 
 export function DailyQuoteCard() {
@@ -18,7 +19,7 @@ export function DailyQuoteCard() {
                 const todayQuote = QuotesService.getQuoteForToday(allQuotes)
                 setQuote(todayQuote)
             } catch (error) {
-                console.error("Failed to fetch quote", error)
+                logger.error("Failed to fetch quote", { error })
             } finally {
                 setLoading(false)
             }

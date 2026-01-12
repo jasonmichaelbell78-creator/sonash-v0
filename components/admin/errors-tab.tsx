@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { getFunctions, httpsCallable } from "firebase/functions"
+import { logger } from "@/lib/logger"
 import { AlertTriangle, RefreshCw, TrendingDown, TrendingUp } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -67,7 +68,7 @@ export function ErrorsTab() {
             setSummary(result.data.summary)
             setIssues(result.data.issues)
         } catch (err) {
-            console.error("Failed to fetch Sentry summary:", err)
+            logger.error("Failed to fetch Sentry summary", { error: err })
             setError(err instanceof Error ? err.message : "Failed to fetch Sentry summary")
         } finally {
             setLoading(false)

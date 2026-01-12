@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { logger } from "@/lib/logger"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -58,7 +59,7 @@ export default function PrayersTab() {
             const data = await getAllPrayers(true) // Include inactive
             setPrayers(data)
         } catch (error) {
-            console.error('Failed to load prayers:', error)
+            logger.error('Failed to load prayers', { error })
             toast.error('Failed to load prayers. Please refresh the page.')
             setPrayers([]) // Set empty array to show UI
         } finally {
@@ -111,7 +112,7 @@ export default function PrayersTab() {
                 toast.success("Prayer added!")
             }
         } catch (error) {
-            console.error(error)
+            logger.error("Failed to save prayer", { error })
             toast.error("Failed to save prayer")
         } finally {
             setDialogOpen(false)
@@ -126,7 +127,7 @@ export default function PrayersTab() {
             await deletePrayer(id)
             toast.success("Prayer deleted!")
         } catch (error) {
-            console.error(error)
+            logger.error("Failed to delete prayer", { error, prayerId: id })
             toast.error("Failed to delete prayer")
         } finally {
             void loadPrayers()
@@ -138,7 +139,7 @@ export default function PrayersTab() {
             await togglePrayerActive(id, !isActive)
             toast.success(isActive ? "Prayer hidden" : "Prayer activated")
         } catch (error) {
-            console.error(error)
+            logger.error("Failed to update prayer", { error, prayerId: id })
             toast.error("Failed to update prayer")
         } finally {
             void loadPrayers()

@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { X, Save } from "lucide-react"
 import { useJournal } from "@/hooks/use-journal"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 interface DailyLogFormProps {
     onClose: () => void
@@ -42,7 +43,7 @@ export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
             onSuccess()
             onClose()
         } catch (error) {
-            console.error("Failed to save daily log:", error)
+            logger.error("Failed to save daily log", { error })
             toast.error("Couldn't save your check-in. Please try again.")
         } finally {
             setIsSubmitting(false)

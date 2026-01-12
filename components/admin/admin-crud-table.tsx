@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { collection, getDocs } from "firebase/firestore"
 import { getFunctions, httpsCallable } from "firebase/functions"
 import { db } from "@/lib/firebase"
+import { logger } from "@/lib/logger"
 import { Button } from "@/components/ui/button"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -58,7 +59,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
 
             setItems(data)
         } catch (error) {
-            console.error(`Error fetching ${config.entityNamePlural}:`, error)
+            logger.error(`Error fetching ${config.entityNamePlural}`, { error })
         }
         setLoading(false)
     }, [config.service, config.collectionName, config.entityNamePlural])
@@ -151,7 +152,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
             setFormData(config.emptyFormData as Partial<T>)
             setEditingItem(null)
         } catch (error) {
-            console.error(`Error saving ${config.entityName}:`, error)
+            logger.error(`Error saving ${config.entityName}`, { error })
             alert(`Failed to save ${config.entityName}. ${error instanceof Error ? error.message : ""}`)
         }
         setSaving(false)
@@ -179,7 +180,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
             await fetchItems()
             setDeleteId(null)
         } catch (error) {
-            console.error(`Error deleting ${config.entityName}:`, error)
+            logger.error(`Error deleting ${config.entityName}`, { error })
             alert(`Failed to delete ${config.entityName}. ${error instanceof Error ? error.message : ""}`)
         }
         setDeleting(false)

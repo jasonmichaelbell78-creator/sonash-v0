@@ -2,7 +2,7 @@
 
 /**
  * Admin Panel - Main Page
- * 
+ *
  * Features:
  * - Desktop-only (blocks mobile)
  * - Separate login flow (Google OAuth)
@@ -14,6 +14,7 @@ import { useState, useEffect } from "react"
 import { User, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import { AdminTabs } from "@/components/admin/admin-tabs"
+import { logger } from "@/lib/logger"
 
 type AdminState = "loading" | "mobile" | "login" | "not-admin" | "authenticated"
 
@@ -66,7 +67,7 @@ export default function AdminPage() {
                     setState("not-admin")
                 }
             } catch (err) {
-                console.error("Error verifying admin claim:", err)
+                logger.error("Error verifying admin claim", { error: err })
                 setError("Failed to verify admin privileges")
                 setState("login")
             }

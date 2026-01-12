@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Sparkles } from "lucide-react"
 import { QuotesService, Quote } from "@/lib/db/quotes"
+import { logger } from "@/lib/logger"
 
 /**
  * Compact Daily Quote - Minimal version for top-right header
@@ -20,7 +21,7 @@ export default function CompactDailyQuote() {
                 const todayQuote = QuotesService.getQuoteForToday(allQuotes)
                 setQuote(todayQuote)
             } catch (error) {
-                console.error("Error fetching daily quote:", error)
+                logger.error("Error fetching daily quote", { error })
             }
         }
 

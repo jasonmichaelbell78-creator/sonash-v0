@@ -9,6 +9,7 @@
 import { useEffect, useState } from "react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import { logger } from "@/lib/logger"
 import { SlogansService, Slogan } from "@/lib/db/slogans"
 import { Lightbulb, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
@@ -34,7 +35,7 @@ export default function DailySloganWidget() {
                 const currentSlogan = SlogansService.getSloganForNow(slogans)
                 setSlogan(currentSlogan)
             } catch (error) {
-                console.error("Error fetching daily slogan:", error)
+                logger.error("Error fetching daily slogan", { error })
             }
             setLoading(false)
         }

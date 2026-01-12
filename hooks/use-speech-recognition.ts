@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 interface UseSpeechRecognitionReturn {
     isListening: boolean
@@ -56,7 +57,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
                 }
 
                 recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-                    console.error("Speech recognition error", event.error)
+                    logger.error("Speech recognition error", { error: event.error })
                     if (event.error === 'no-speech') {
                         // silently handle no-speech by just stopping, user can toggle again. 
                         // Or warn them? "No speech detected. Try again."
@@ -78,7 +79,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
                 recognitionRef.current.start()
                 setIsListening(true)
             } catch (error) {
-                console.error("Failed to start speech recognition", error)
+                logger.error("Failed to start speech recognition", { error })
             }
         }
     }, [isListening])

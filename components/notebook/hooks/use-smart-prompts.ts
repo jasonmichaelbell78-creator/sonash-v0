@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react"
+import { logger } from "@/lib/logger"
 import { getTodayDateId } from "@/lib/utils/date-utils"
 
 interface UseSmartPromptsProps {
@@ -51,7 +52,7 @@ export function useSmartPrompts({
         const parsed = JSON.parse(stored) as string[]
         return new Set(parsed)
       } catch (error) {
-        console.warn("Failed to parse dismissed prompts from localStorage", error)
+        logger.warn("Failed to parse dismissed prompts from localStorage", { error })
       }
     }
     return new Set()

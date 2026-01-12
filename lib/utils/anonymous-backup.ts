@@ -1,9 +1,11 @@
 /**
  * Anonymous Backup Utility
- * 
+ *
  * Provides local backup mechanism for anonymous users to prevent data loss
  * when browser storage is cleared or user switches devices.
  */
+
+import { logger } from '@/lib/logger'
 
 const BACKUP_KEY = 'sonash_anonymous_backup'
 const MAX_ENTRIES = 20 // Keep last 20 entries in backup
@@ -61,7 +63,7 @@ export function backupJournalEntry(userId: string, entry: BackupEntry): void {
         saveBackup(backup)
     } catch (error) {
         // Silently fail - backup is best-effort
-        console.warn('Failed to backup journal entry:', error)
+        logger.warn('Failed to backup journal entry', { error })
     }
 }
 
@@ -88,7 +90,7 @@ export function backupProfile(userId: string, profile: AnonymousBackup['profile'
 
         saveBackup(backup)
     } catch (error) {
-        console.warn('Failed to backup profile:', error)
+        logger.warn('Failed to backup profile', { error })
     }
 }
 

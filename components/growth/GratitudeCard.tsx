@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { logger, maskIdentifier } from "@/lib/logger"
 import { toast } from "sonner"
 
 type GratitudeCardProps = HTMLMotionProps<"button">
@@ -92,7 +93,7 @@ export default function GratitudeCard({ className, ...props }: GratitudeCardProp
             toast.success("Gratitude list saved!")
             setIsOpen(false)
         } catch (error) {
-            console.error("Failed to save gratitude list", error)
+            logger.error("Failed to save gratitude list", { error, userId: maskIdentifier(user?.uid) })
             toast.error("Failed to save. Please try again.")
         } finally {
             setIsSaving(false)
