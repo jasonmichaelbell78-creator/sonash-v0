@@ -1,7 +1,10 @@
-"use client";
-
 import Image from "next/image";
 
+/**
+ * Pencil decorative element - pure presentational component.
+ *
+ * @see CANON-0046: Removed unnecessary "use client" directive
+ */
 export default function Pencil() {
   const pencilUrl = "/images/gemini-generated-image-gj5efogj5efogj5e.jpeg";
 

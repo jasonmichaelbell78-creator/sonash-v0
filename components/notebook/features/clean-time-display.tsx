@@ -1,10 +1,10 @@
-"use client";
-
 import { intervalToDuration } from "date-fns";
 import { toDate } from "@/lib/types/firebase-types";
 
 /**
  * Props for CleanTimeDisplay component
+ *
+ * @see CANON-0046: Removed unnecessary "use client" directive
  */
 interface CleanTimeDisplayProps {
   /** The clean start date (Firestore Timestamp or Date) */
