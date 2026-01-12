@@ -1,8 +1,8 @@
 # Integrated Improvement Plan
 
-**Document Version:** 3.4 **Created:** 2026-01-03 **Last Updated:** 2026-01-11
+**Document Version:** 3.5 **Created:** 2026-01-03 **Last Updated:** 2026-01-12
 **Status:** ACTIVE **Overall Completion:** ~60% (Step 4 COMPLETE - Sub-Phase 4.3
-finished; Ready for Step 4B)
+finished; Step 4B in progress)
 
 ---
 
@@ -31,21 +31,22 @@ supersedes fragmented planning documents into a single linear execution path.
 
 ## Status Dashboard
 
-| Step    | Title                                       | Status       | Completion | Blocking   |
-| ------- | ------------------------------------------- | ------------ | ---------- | ---------- |
-| Step 1  | Quick Wins & Cleanup                        | **COMPLETE** | 100%       | None       |
-| Step 2  | Documentation Standardization Completion    | **COMPLETE** | 100%       | ~~Step 1~~ |
-| Step 3  | Developer Tooling Setup                     | **COMPLETE** | 100%       | ~~Step 2~~ |
-| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE** | 100%       | ~~Step 3~~ |
-| Step 4B | Remediation Sprint                          | **PENDING**  | 0%         | Step 4     |
-| Step 5  | Review Policy Expansion                     | **PENDING**  | 0%         | Step 4B    |
-| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**  | 0%         | Step 5     |
-| Step 7  | Verification & Feature Resumption           | **PENDING**  | 0%         | Step 6     |
+| Step    | Title                                       | Status          | Completion | Blocking   |
+| ------- | ------------------------------------------- | --------------- | ---------- | ---------- |
+| Step 1  | Quick Wins & Cleanup                        | **COMPLETE**    | 100%       | None       |
+| Step 2  | Documentation Standardization Completion    | **COMPLETE**    | 100%       | ~~Step 1~~ |
+| Step 3  | Developer Tooling Setup                     | **COMPLETE**    | 100%       | ~~Step 2~~ |
+| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~ |
+| Step 4B | Remediation Sprint                          | **IN_PROGRESS** | ~57%       | ~~Step 4~~ |
+| Step 4C | SonarCloud Issue Triage                     | **PENDING**     | 0%         | Step 4B    |
+| Step 5  | Review Policy Expansion                     | **PENDING**     | 0%         | Step 4C    |
+| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5     |
+| Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6     |
 
-**Overall Progress:** 4/8 steps complete (~60%) **Effort Tracking:** ~9 hours
-actual (Steps 1-3) + ~47-62 hours remaining (Step 4: 28h ✅, 4B: 8-16h, 5:
-8-11h, 6: 2-3h, 7: 1-2h) **Target Completion:** TBD (no costly deadlines - solo
-project)
+**Overall Progress:** 4/9 steps complete (~60%) **Effort Tracking:** ~9 hours
+actual (Steps 1-3) + ~49-66 hours remaining (Step 4: 28h ✅, 4B: 8-16h, 4C:
+2-4h, 5: 8-11h, 6: 2-3h, 7: 1-2h) **Target Completion:** TBD (no costly
+deadlines - solo project)
 
 ---
 
@@ -66,6 +67,7 @@ flowchart LR
             S4c[4.3 Aggregate\nUnified CANON]
         end
         S4B[Step 4B\nRemediation Sprint]
+        S4C[Step 4C\nSonarCloud Triage]
         S5[Step 5\nReview Policy\nExpansion]
     end
 
@@ -83,7 +85,8 @@ flowchart LR
     S4a --> S4b
     S4b --> S4c
     S4c --> S4B
-    S4B --> S5
+    S4B --> S4C
+    S4C --> S5
     S5 --> S6
     S6 --> S7
 
@@ -92,10 +95,11 @@ flowchart LR
     style S1 fill:#90EE90
     style S2 fill:#90EE90
     style S3 fill:#90EE90
-    style S4a fill:#FFE4B5
-    style S4b fill:#FFE4B5
-    style S4c fill:#FFE4B5
+    style S4a fill:#90EE90
+    style S4b fill:#90EE90
+    style S4c fill:#90EE90
     style S4B fill:#FFE4B5
+    style S4C fill:#FFE4B5
     style S5 fill:#FFE4B5
     style S6 fill:#FFE4B5
     style S7 fill:#FFE4B5
@@ -105,7 +109,7 @@ flowchart LR
 **Legend:** 🟢 Complete | 🟡 Pending | 🔵 Future
 
 **Critical Path:** Step 1 → Step 2 → Step 3 → Step 4 (4.1→4.2→4.3) → Step 4B →
-Step 5 → Step 6 → Step 7
+Step 4C → Step 5 → Step 6 → Step 7
 
 ---
 
@@ -1322,10 +1326,107 @@ Deferred items MUST be:
 
 ---
 
+## Step 4C: SonarCloud Issue Triage
+
+**Status:** PENDING **Completion:** 0% **Estimated Effort:** 2-4 hours
+**Dependencies:** Step 4B **Risk Level:** Low **Started:** TBD
+
+### Objectives
+
+Analyze remaining SonarCloud issues after Step 4B remediation, categorize them
+by resolution strategy, and create an actionable plan for addressing each
+category.
+
+### Background
+
+SonarCloud continuously scans the codebase and reports issues that may not be
+captured in the CANON backlog from Step 4. After completing the CANON-based
+remediation in Step 4B, we need to:
+
+1. Get a fresh snapshot of SonarCloud issues
+2. Categorize issues by type, severity, and resolution approach
+3. Determine which issues to fix now vs. defer vs. mark as won't-fix
+4. Update tracking to ensure no regression
+
+### Issue Categories
+
+Issues will be triaged into these categories:
+
+| Category        | Description                                      | Action             |
+| --------------- | ------------------------------------------------ | ------------------ |
+| **FIX-NOW**     | Security, bugs, critical code smells             | Fix in this step   |
+| **FIX-LATER**   | Low-priority code smells, documentation issues   | Add to ROADMAP M2  |
+| **FALSE-POS**   | Incorrect detection, context-specific exceptions | Mark as won't-fix  |
+| **THIRD-PARTY** | Issues in generated code or dependencies         | Exclude from scan  |
+| **ACCEPT-RISK** | Technical debt accepted with justification       | Document rationale |
+
+### Tasks
+
+#### Task 4C.1: Fetch Current SonarCloud Report (0.5 hours)
+
+- [ ] Get updated issue list from SonarCloud
+- [ ] Export issues to working document
+- [ ] Note total count and severity breakdown
+
+#### Task 4C.2: Categorize Issues (1-2 hours)
+
+For each issue, determine:
+
+1. **Category** (FIX-NOW, FIX-LATER, FALSE-POS, THIRD-PARTY, ACCEPT-RISK)
+2. **Justification** (why this category)
+3. **Effort estimate** (E0-E3 scale)
+4. **Target location** (file/line or "N/A" for exclusions)
+
+Document decisions in a triage table:
+
+```markdown
+| Issue ID | Type  | Severity | File       | Category  | Justification | Effort |
+| -------- | ----- | -------- | ---------- | --------- | ------------- | ------ |
+| XXX      | Bug   | Major    | foo.ts:42  | FIX-NOW   | Security risk | E1     |
+| YYY      | Smell | Minor    | bar.ts:100 | FIX-LATER | Low priority  | E2     |
+```
+
+#### Task 4C.3: Execute FIX-NOW Items (0.5-1 hour)
+
+- [ ] Group FIX-NOW items by file/area
+- [ ] Implement fixes (similar to Step 4B workflow)
+- [ ] Commit with issue IDs in message
+- [ ] Verify SonarCloud rescans and issues close
+
+#### Task 4C.4: Configure Exclusions (0.25 hours)
+
+- [ ] Add FALSE-POS items to `sonar-project.properties` exclusions
+- [ ] Document reasoning in exclusion comments
+- [ ] Add THIRD-PARTY paths to scan exclusions
+
+#### Task 4C.5: Update Tracking (0.25 hours)
+
+- [ ] Add FIX-LATER items to ROADMAP.md M2 backlog
+- [ ] Update AUDIT_FINDINGS_BACKLOG.md if applicable
+- [ ] Log triage decisions in AI_REVIEW_LEARNINGS_LOG.md
+
+### Acceptance Criteria
+
+- [ ] All SonarCloud issues reviewed and categorized
+- [ ] FIX-NOW items resolved (0 remaining in that category)
+- [ ] FALSE-POS items excluded from future scans
+- [ ] FIX-LATER items tracked in ROADMAP.md
+- [ ] ACCEPT-RISK items documented with justification
+- [ ] SonarCloud quality gate passing (if configured)
+
+### Output Artifacts
+
+1. **SONARCLOUD_TRIAGE.md** - Triage decisions table
+2. **Updated sonar-project.properties** - New exclusions
+3. **ROADMAP.md updates** - FIX-LATER items added
+4. **AI_REVIEW_LEARNINGS_LOG.md entry** - Summary of triage
+
+---
+
 ## Step 5: Review Policy Expansion
 
 **Status:** PENDING **Completion:** 0% **Estimated Effort:** 8-11 hours (6-9h
-original + 2h for Tasks 5.10-5.12) **Dependencies:** Step 4B **Risk Level:** Low
+original + 2h for Tasks 5.10-5.12) **Dependencies:** Step 4C **Risk Level:** Low
 
 ### Objectives
 
@@ -1713,6 +1814,7 @@ boundaries for inclusion/deferral.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.5     | 2026-01-12 | Added Step 4C (SonarCloud Issue Triage) between 4B and 5; Updated step count (8→9); Step 4C provides structured approach to analyze remaining SonarCloud issues with 5-category triage (FIX-NOW, FIX-LATER, FALSE-POS, THIRD-PARTY, ACCEPT-RISK); Updated dependencies (Step 5 now depends on Step 4C); Updated mermaid diagram and critical path; Updated Step 4B status to IN_PROGRESS ~57%                                                                 |
 | 3.4     | 2026-01-11 | Added Tasks 5.10-5.12 from Task 4.3.7 (CANON validation improvements); Updated Step 5 effort (6-9h→8-11h); Added Sprint Backlog items A5-A9 tracking deferred work from Step 2 and "What We Decided NOT To Do"; All deferred items now tracked                                                                                                                                                                                                                |
 | 3.3     | 2026-01-11 | **STEP 4 COMPLETE** - Sub-Phase 4.3 Tier-2 Aggregation finished; 118 → 97 unique findings (21 merged as 12 duplicate clusters); 21 PRs planned; Comprehensive scope: CANON + SonarQube (548) + ESLint (246) = ~891 total issues tracked; Output: HUMAN_SUMMARY.md, PR_PLAN.json, REFACTOR_BACKLOG.md, CANON_CATEGORIZATION.md, APP_CHECK_REENABLE_PLAN.md; Created CANON_QUICK_REFERENCE.md; Review #123 logged; Step 4 100%; Overall ~60%; Ready for Step 4B |
 | 3.2     | 2026-01-11 | Task 4.3.0 COMPLETE - Schema normalization: 118 findings renumbered to CANON-XXXX format; Created validate-canon-schema.js and normalize-canon-ids.js; Added Task 4.3.7 for retrospective analysis; Multi-AI Audit Retrospective created (35%→80% compliance); 6/6 CANON files pass validation                                                                                                                                                                |
