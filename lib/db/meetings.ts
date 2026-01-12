@@ -107,8 +107,8 @@ export const MeetingsService = {
       );
 
       const snapshot = await getDocs(q);
-      // Include document ID in results for proper identification
-      const meetings = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Meeting);
+      // SECURITY: Spread data first, then id to ensure Firestore doc ID takes precedence
+      const meetings = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }) as Meeting);
 
       // Sort by time using proper time parsing (handles both 24h and 12h formats)
       return meetings.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
@@ -130,8 +130,8 @@ export const MeetingsService = {
     try {
       const meetingsRef = collection(db, "meetings");
       const snapshot = await getDocs(meetingsRef);
-      // Include document ID in results for proper identification
-      const meetings = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Meeting);
+      // SECURITY: Spread data first, then id to ensure Firestore doc ID takes precedence
+      const meetings = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }) as Meeting);
       // Sort by day then time (using proper time parsing)
       return meetings.sort((a, b) => {
         const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0);

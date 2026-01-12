@@ -240,8 +240,9 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(async (reques
       .collection("sober_living")
       .doc(id)
       .set({
-        id,
         ...validated,
+        // SECURITY: Place id AFTER spread to prevent client-provided id from overwriting
+        id,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
@@ -707,13 +708,22 @@ interface GetUserDetailRequest {
 export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) => {
   await requireAdmin(request, "adminGetUserDetail");
 
-  const { uid, activityLimit = 30 } = request.data;
+  const { uid, activityLimit: rawActivityLimit = 30 } = request.data;
+
+  // SECURITY: Clamp activityLimit to prevent expensive reads / DoS
+  const MAX_ACTIVITY_LIMIT = 100;
+  const MIN_ACTIVITY_LIMIT = 1;
+  const activityLimit =
+    typeof rawActivityLimit === "number" && Number.isFinite(rawActivityLimit)
+      ? Math.min(Math.max(Math.floor(rawActivityLimit), MIN_ACTIVITY_LIMIT), MAX_ACTIVITY_LIMIT)
+      : 30;
 
   if (!uid) {
     throw new HttpsError("invalid-argument", "User ID is required");
   }
 
-  logSecurityEvent("ADMIN_ACTION", "adminGetUserDetail", `Admin viewed user detail: ${uid}`, {
+  // SECURITY: Don't log target UID in message - use metadata only
+  logSecurityEvent("ADMIN_ACTION", "adminGetUserDetail", "Admin viewed user detail", {
     userId: request.auth?.uid,
     metadata: { targetUid: uid },
   });

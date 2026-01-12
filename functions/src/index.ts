@@ -373,6 +373,11 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(async (req
           return data.filter((item) => item !== undefined).map(sanitizeData);
         }
         if (data !== null && typeof data === "object") {
+          // SECURITY: Only recurse into plain objects; preserve special objects (Date, Timestamp, etc.)
+          const proto = Object.getPrototypeOf(data);
+          const isPlainObject = proto === Object.prototype || proto === null;
+          if (!isPlainObject) return data;
+
           return Object.entries(data as Record<string, unknown>).reduce(
             (acc: Record<string, unknown>, [key, value]) => {
               if (value !== undefined) {
@@ -525,18 +530,19 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
     throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
   }
 
-  // Authorization: caller must be source OR target user
-  if (userId !== validatedData.anonymousUid && userId !== validatedData.targetUid) {
+  // SECURITY: Only the signed-in TARGET user can receive migrated data
+  // This prevents anonymous users from pushing data to arbitrary accounts
+  if (userId !== validatedData.targetUid) {
     logSecurityEvent(
       "AUTHORIZATION_FAILURE",
       "migrateAnonymousUserData",
-      "Unauthorized migration attempt",
+      "Unauthorized migration attempt (caller is not target)",
       {
         userId,
         metadata: { anonymousUid: validatedData.anonymousUid, targetUid: validatedData.targetUid },
       }
     );
-    throw new HttpsError("permission-denied", "Cannot migrate data between other users' accounts");
+    throw new HttpsError("permission-denied", "Cannot migrate data into another user's account");
   }
 
   // Verify anonymous user exists
@@ -598,7 +604,14 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
           const targetRef = db.doc(
             `users/${validatedData.targetUid}/${targetCollection}/${doc.id}`
           );
-          await addToBatch(targetRef, doc.data(), { merge: true });
+          // SECURITY: Update userId to target user to ensure correct ownership
+          const sourceData = doc.data();
+          const migratedData = {
+            ...sourceData,
+            userId: validatedData.targetUid,
+            migratedFrom: validatedData.anonymousUid,
+          };
+          await addToBatch(targetRef, migratedData, { merge: true });
           docCount++;
         }
 
