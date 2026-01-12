@@ -442,6 +442,23 @@ flowchart TD
   - **Effort:** 15 minutes (revert to original implementation)
   - **Priority:** P3 - Nice-to-have optimization, current solution works well
 
+### Code Quality Issues (CI Flagged - 2026-01-12)
+
+These pre-existing issues were identified during PR review CI:
+
+- ⏳ **Prettier Formatting (518 files)** - Run `npm run format:write` to fix
+  - **Priority:** P2 - Code style consistency
+  - **Effort:** 5 minutes (automated fix)
+- ⏳ **Unused devDependencies** - Remove `@modelcontextprotocol/sdk`, `undici`
+  - **Priority:** P3 - Dependency cleanup
+  - **Effort:** 5 minutes
+- ⏳ **Unlisted dependencies** - Add `globals` (eslint.config.mjs), `postcss-load-config` (postcss.config.mjs)
+  - **Priority:** P2 - Prevents CI failures
+  - **Effort:** 5 minutes
+- ⏳ **Duplicate exports** - Fix `ErrorBoundary|default` in `components/providers/error-boundary.tsx`
+  - **Priority:** P3 - Code style
+  - **Effort:** 10 minutes
+
 ### Potential Architecture Work
 
 - ⏳ Component library consolidation

@@ -57,8 +57,9 @@ const SENSITIVE_PATTERNS = [
   /firebase.*config/i
 ];
 
-function isSensitiveFile(filename) {
-  return SENSITIVE_PATTERNS.some(pattern => pattern.test(filename));
+function isSensitiveFile(filePathOrName) {
+  // Check both filename and full path to catch sensitive directories
+  return SENSITIVE_PATTERNS.some(pattern => pattern.test(filePathOrName));
 }
 
 // Get and validate base directory for path containment
@@ -109,9 +110,14 @@ for (const filePath of filePaths) {
   // Resolve path against repo root
   const candidatePath = path.isAbsolute(filePath) ? filePath : path.resolve(baseDir, filePath);
 
-  // Skip non-existent files (guard against TOCTOU race)
+  // Skip non-existent files and extremely large files (guard against TOCTOU/DoS)
   try {
-    if (!fs.existsSync(candidatePath) || !fs.statSync(candidatePath).isFile()) {
+    if (!fs.existsSync(candidatePath)) {
+      continue;
+    }
+    const stat = fs.statSync(candidatePath);
+    // Skip directories and files larger than 512KB (DoS protection)
+    if (!stat.isFile() || stat.size > 512 * 1024) {
       continue;
     }
   } catch {
@@ -119,6 +125,7 @@ for (const filePath of filePaths) {
   }
 
   // Security: Path containment check (handles symlinks)
+  // rel === '' means file path equals baseDir (invalid for file operations)
   let realCandidate = '';
   try {
     realCandidate = fs.realpathSync(candidatePath);
@@ -126,15 +133,16 @@ for (const filePath of filePaths) {
     continue;
   }
   const rel = path.relative(realBaseDir, realCandidate);
-  if (rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
+  if (rel === '' || rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
     continue;
   }
 
   const filename = path.basename(candidatePath);
   const filenameLower = toLower(filename);
 
-  // Security: Skip sensitive files to prevent data exfiltration
-  if (isSensitiveFile(filename)) {
+  // Security: Skip sensitive files/paths to prevent data exfiltration
+  // Check both filename and relative path to catch sensitive directories
+  if (isSensitiveFile(filename) || isSensitiveFile(rel)) {
     continue;
   }
 
@@ -209,6 +217,8 @@ if (foundIssues || allFindings) {
   console.error(allFindings);
   console.error('');
   console.error('Consider addressing these issues before committing.');
+  // Exit with non-zero status to signal findings to CI/CD
+  process.exitCode = 1;
 }
 
 // Protocol: stdout only contains "ok"

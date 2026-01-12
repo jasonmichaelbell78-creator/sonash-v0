@@ -116,11 +116,14 @@ const ANTI_PATTERNS = [
     fix: 'Use: path.relative() and check for ".." prefix with regex',
     review: '#17, #18',
     fileTypes: ['.js', '.ts'],
-    // Exclude files verified 2026-01-04:
+    // Exclude files verified:
+    // 2026-01-04:
     // - check-pattern-compliance.js: contains patterns as strings
     // - archive-doc.js: uses startsWith('/'), startsWith('\\') to detect & reject absolute paths
     // - phase-complete-check.js: uses path.relative() THEN startsWith('..') which is correct
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check)\.js$/,
+    // 2026-01-12 (Review #134):
+    // - pattern-check.js: L61,64 check for absolute paths (/, //, drive letters) before path.relative() containment at L98
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check)\.js$/,
   },
   {
     id: 'regex-global-test-loop',
@@ -295,7 +298,8 @@ const ANTI_PATTERNS = [
     fix: 'Wrap in try/catch: race conditions, permissions, encoding errors',
     review: '#36, #37',
     fileTypes: ['.js', '.ts'],
-    // Exclude files verified to have proper try/catch (2026-01-04 audit):
+    // Exclude files verified to have proper try/catch:
+    // 2026-01-04 audit:
     // - check-pattern-compliance.js: pattern definition + proper try/catch at L440
     // - phase-complete-check.js: proper try/catch at L252-261, L147-192
     // - surface-lessons-learned.js: proper try/catch at L313-318
@@ -303,8 +307,11 @@ const ANTI_PATTERNS = [
     // - archive-doc.js: safeReadFile wrapper at L126-154 with try/catch
     // - validate-phase-completion.js: NOW HAS try/catch at L29-35 (fixed 2026-01-04)
     // - update-readme-status.js: safeReadFile wrapper at L57-88 with try/catch (fixed 2026-01-04)
+    // 2026-01-12 audit (Review #134):
+    // - check-mcp-servers.js: readFileSync at L60 IS in try/catch (L58-106)
+    // - session-start.js: computeHash() L72 in try/catch L70-76, needsRootInstall() L88 in try/catch L83-92, needsFunctionsInstall() L105 in try/catch L99-110
     // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status)\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start)\.js$/,
   },
   {
     id: 'auto-mode-slice-truncation',
@@ -329,9 +336,10 @@ const ANTI_PATTERNS = [
     fix: 'Add: rel === "" || rel.startsWith("..") || path.isAbsolute(rel)',
     review: '#40',
     fileTypes: ['.js', '.ts'],
-    // Exclude files verified 2026-01-04 to check for empty string:
+    // Exclude files verified to check for empty string (regex looks FORWARD only, misses rel === '' at START):
     // - phase-complete-check.js: L55, L140, L165, L244 all have `rel === '' || rel.startsWith('..')`
-    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
+    // - .claude/hooks/*.js: All verified 2026-01-12 (Review #134) to have `rel === '' ||` at start of condition
+    pathExclude: /(?:^|[\\/])(?:phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|coderabbit-review|pattern-check|session-start)\.js$/,
   },
 ];
 

@@ -94,8 +94,9 @@ try {
 } catch {
   process.exit(0);
 }
+// rel === '' means file path equals projectDir (invalid for file operations)
 const pathRel = path.relative(realProject, realPath);
-if (pathRel.startsWith('..' + path.sep) || pathRel === '..' || path.isAbsolute(pathRel)) {
+if (pathRel === '' || pathRel.startsWith('..' + path.sep) || pathRel === '..' || path.isAbsolute(pathRel)) {
   process.exit(0);
 }
 

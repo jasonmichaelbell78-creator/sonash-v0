@@ -15,8 +15,8 @@
  * 7. Testing
  */
 
-// Get user request from arguments
-let userRequest = process.argv[2] || '';
+// Get user request from arguments (trim to handle whitespace)
+let userRequest = (process.argv[2] || '').trim();
 
 // Try to parse as JSON if it looks like JSON
 if (userRequest.startsWith('{')) {
@@ -41,9 +41,10 @@ if (userRequest.length > MAX_LENGTH) {
 
 const requestLower = userRequest.toLowerCase();
 
-// Helper for word boundary matching
+// Helper for word boundary matching (escapes regex special chars to prevent ReDoS)
 function matchesWord(pattern) {
-  const regex = new RegExp(`(^|[^a-z0-9])(${pattern})([^a-z0-9]|$)`, 'i');
+  const escaped = pattern.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const regex = new RegExp(`(^|[^a-z0-9])(${escaped})([^a-z0-9]|$)`, 'i');
   return regex.test(requestLower);
 }
 

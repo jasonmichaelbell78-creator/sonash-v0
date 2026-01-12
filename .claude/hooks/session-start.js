@@ -30,8 +30,10 @@ const baseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || baseDir;
 const projectDir = path.resolve(baseDir, projectDirInput);
 
-// Security: Ensure projectDir is within or equal to baseDir
-if (!projectDir.startsWith(baseDir + path.sep) && projectDir !== baseDir) {
+// Security: Ensure projectDir is within baseDir using path.relative() (prevent path traversal)
+// Note: rel === '' means projectDir equals baseDir, which is valid for session startup
+const rel = path.relative(baseDir, projectDir);
+if (rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
   process.exit(0);
 }
 
@@ -42,7 +44,7 @@ let warnings = 0;
 console.log('🚀 SessionStart Hook for sonash-v0');
 console.log('━'.repeat(66));
 
-// Log environment
+// Log environment (secure: excludes PWD to avoid exposing sensitive paths)
 console.log('📋 Environment:');
 try {
   const nodeVersion = execSync('node -v', { encoding: 'utf8' }).trim();
@@ -56,7 +58,6 @@ try {
 } catch {
   console.log('   npm:  not found');
 }
-console.log(`   PWD:  ${process.cwd()}`);
 console.log('');
 
 // =============================================================================

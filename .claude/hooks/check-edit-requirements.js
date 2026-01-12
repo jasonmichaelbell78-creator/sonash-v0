@@ -46,9 +46,10 @@ if (filePath.startsWith('-') || filePath.includes('\n') || filePath.includes('\r
 filePath = filePath.replace(/\\/g, '/');
 
 // Security: Resolve path and verify containment within baseDir using path.relative()
+// rel === '' means file path equals baseDir (invalid for file operations)
 const resolvedPath = path.resolve(baseDir, filePath);
 const rel = path.relative(baseDir, resolvedPath);
-if (rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
+if (rel === '' || rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
   console.log('ok');
   process.exit(0);
 }
