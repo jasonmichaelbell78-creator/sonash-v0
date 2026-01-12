@@ -1,6 +1,6 @@
 # Integrated Improvement Plan
 
-**Document Version:** 3.5 **Created:** 2026-01-03 **Last Updated:** 2026-01-12
+**Document Version:** 3.6 **Created:** 2026-01-03 **Last Updated:** 2026-01-12
 **Status:** ACTIVE **Overall Completion:** ~60% (Step 4 COMPLETE - Sub-Phase 4.3
 finished; Step 4B in progress)
 
@@ -1071,7 +1071,7 @@ backlog with prioritized PR plan.
 
 ## Step 4B: Remediation Sprint
 
-**Status:** IN_PROGRESS **Completion:** ~57% (12/21 PRs from PR_PLAN.json)
+**Status:** IN_PROGRESS **Completion:** ~63% (12/19 PRs from PR_PLAN.json)
 **Estimated Effort:** 8-16 hours (depends on CANON finding count)
 **Dependencies:** Step 4 **Risk Level:** Medium **Started:** 2026-01-11 (Session
 #50)
@@ -1119,7 +1119,7 @@ prioritization:
 - [x] **PR12**: Create typed Firestore collection helpers - Commit 44592fe
   - CANON-0077, CANON-0080
 
-**Remaining:** 9 PRs (PR13-PR21 per PR_PLAN.json)
+**Remaining:** 7 PRs (PR13-PR18, PR-LINT-WARNINGS per PR_PLAN.json; SonarQube PRs moved to 4C)
 
 ### Objectives
 
@@ -1170,10 +1170,8 @@ PR_PLAN.json Structure (21 PRs from Tier-2 Output):
 ├── Documentation & Testing (2 PRs)
 │   ├── PR16: Fix broken links
 │   └── PR17: Script test coverage
-└── Batch/Cleanup (4 PRs)
+└── Batch/Cleanup (2 PRs)
     ├── PR18: Reduce cognitive complexity
-    ├── PR-BATCH-AUTO: SonarQube auto-fixes
-    ├── PR-BATCH-MANUAL: SonarQube manual
     └── PR-LINT-WARNINGS: ESLint warnings
 ```
 
@@ -1276,16 +1274,14 @@ output). Original generic 6-task structure superseded 2026-01-11.
 - [ ] **PR17**: Add coverage for high-complexity scripts (E2, low risk)
   - CANON-0106, CANON-0068
 
-#### Batch/Cleanup PRs (4 items)
+#### Batch/Cleanup PRs (2 items)
 
 - [ ] **PR18**: Reduce cognitive complexity in scripts (E3, medium risk)
   - CANON-0064
-- [ ] **PR-BATCH-AUTO**: Apply SonarQube auto-fixes (E1, low risk)
-  - CANON-0088, CANON-0089
-- [ ] **PR-BATCH-MANUAL**: Address remaining SonarQube issues (E2, medium risk)
-  - CANON-0083
 - [ ] **PR-LINT-WARNINGS**: Address ESLint security warnings (E2, low risk)
   - CANON-0019
+
+**Note:** SonarQube PRs (PR-BATCH-AUTO, PR-BATCH-MANUAL) moved to Step 4C.
 
 #### Meta Tasks
 
@@ -1386,20 +1382,29 @@ Document decisions in a triage table:
 | YYY      | Smell | Minor    | bar.ts:100 | FIX-LATER | Low priority  | E2     |
 ```
 
-#### Task 4C.3: Execute FIX-NOW Items (0.5-1 hour)
+#### Task 4C.3: Execute CANON SonarQube Items (Moved from Step 4B)
+
+**Note:** These items were moved from Step 4B to consolidate all SonarQube work.
+
+- [ ] **PR-BATCH-AUTO**: Apply SonarQube auto-fixes (E1, low risk)
+  - CANON-0088, CANON-0089
+- [ ] **PR-BATCH-MANUAL**: Address remaining SonarQube issues (E2, medium risk)
+  - CANON-0083
+
+#### Task 4C.4: Execute FIX-NOW Items (0.5-1 hour)
 
 - [ ] Group FIX-NOW items by file/area
 - [ ] Implement fixes (similar to Step 4B workflow)
 - [ ] Commit with issue IDs in message
 - [ ] Verify SonarCloud rescans and issues close
 
-#### Task 4C.4: Configure Exclusions (0.25 hours)
+#### Task 4C.5: Configure Exclusions (0.25 hours)
 
 - [ ] Add FALSE-POS items to `sonar-project.properties` exclusions
 - [ ] Document reasoning in exclusion comments
 - [ ] Add THIRD-PARTY paths to scan exclusions
 
-#### Task 4C.5: Update Tracking (0.25 hours)
+#### Task 4C.6: Update Tracking (0.25 hours)
 
 - [ ] Add FIX-LATER items to ROADMAP.md M2 backlog
 - [ ] Update AUDIT_FINDINGS_BACKLOG.md if applicable
@@ -1814,6 +1819,7 @@ boundaries for inclusion/deferral.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.6     | 2026-01-12 | Moved SonarQube PRs (PR-BATCH-AUTO, PR-BATCH-MANUAL) from Step 4B to Step 4C to consolidate all SonarCloud work; Updated Step 4B PR count (21→19, ~63%); Added Task 4C.3 for CANON SonarQube items; Renumbered subsequent 4C tasks (4C.4→4C.6); Session #58                                                                                                                                                                                                    |
 | 3.5     | 2026-01-12 | Added Step 4C (SonarCloud Issue Triage) between 4B and 5; Updated step count (8→9); Step 4C provides structured approach to analyze remaining SonarCloud issues with 5-category triage (FIX-NOW, FIX-LATER, FALSE-POS, THIRD-PARTY, ACCEPT-RISK); Updated dependencies (Step 5 now depends on Step 4C); Updated mermaid diagram and critical path; Updated Step 4B status to IN_PROGRESS ~57%                                                                 |
 | 3.4     | 2026-01-11 | Added Tasks 5.10-5.12 from Task 4.3.7 (CANON validation improvements); Updated Step 5 effort (6-9h→8-11h); Added Sprint Backlog items A5-A9 tracking deferred work from Step 2 and "What We Decided NOT To Do"; All deferred items now tracked                                                                                                                                                                                                                |
 | 3.3     | 2026-01-11 | **STEP 4 COMPLETE** - Sub-Phase 4.3 Tier-2 Aggregation finished; 118 → 97 unique findings (21 merged as 12 duplicate clusters); 21 PRs planned; Comprehensive scope: CANON + SonarQube (548) + ESLint (246) = ~891 total issues tracked; Output: HUMAN_SUMMARY.md, PR_PLAN.json, REFACTOR_BACKLOG.md, CANON_CATEGORIZATION.md, APP_CHECK_REENABLE_PLAN.md; Created CANON_QUICK_REFERENCE.md; Review #123 logged; Step 4 100%; Overall ~60%; Ready for Step 4B |
