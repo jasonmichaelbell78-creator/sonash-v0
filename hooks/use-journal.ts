@@ -246,7 +246,21 @@ export function useJournal() {
         // GROUPING LOGIC (The "Index" for your notebook)
         const groups: Record<string, JournalEntry[]> = {};
         fetchedEntries.forEach((entry) => {
-          const label = getRelativeDateLabel(entry.dateLabel);
+          // SECURITY: Validate dateLabel format before grouping
+          // Expected format: YYYY-MM-DD (e.g., "2025-01-15")
+          const dateLabel = entry.dateLabel;
+          if (
+            !dateLabel ||
+            typeof dateLabel !== "string" ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(dateLabel)
+          ) {
+            // Skip entries with invalid dateLabel to prevent grouping errors
+            logger.warn(`Skipping journal entry ${entry.id}: invalid dateLabel format`, {
+              dateLabel: typeof dateLabel === "string" ? dateLabel.slice(0, 20) : typeof dateLabel,
+            });
+            return;
+          }
+          const label = getRelativeDateLabel(dateLabel);
           if (!groups[label]) groups[label] = [];
           groups[label].push(entry);
         });

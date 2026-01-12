@@ -40,6 +40,10 @@ const FILES = args.filter((a) => !a.startsWith("--"));
  * Pattern: relative path regexes matched against file path
  */
 const GLOBAL_EXCLUDE = [
+  // Documentation files that contain pattern examples (not violations)
+  /^docs\/AI_REVIEW_LEARNINGS_LOG\.md$/,
+  // This file contains pattern definitions as strings (meta-detection false positives)
+  /^scripts\/check-pattern-compliance\.js$/,
   // Development/build utility scripts (pre-existing debt - Review #136)
   /^scripts\/ai-review\.js$/,
   /^scripts\/assign-review-tier\.js$/,
@@ -115,12 +119,17 @@ const ANTI_PATTERNS = [
   },
   {
     id: "npm-install-automation",
-    pattern: /npm\s+install(?!\s+--)/g,
+    // Capture npm install plus rest of line for exclusion pattern matching
+    pattern: /npm\s+install\b[^\n]*/g,
     message: "npm install in automation can modify lockfile",
     fix: "Use: npm ci (reads lockfile exactly)",
     review: "#10, #12",
     fileTypes: [".sh", ".yml", ".yaml"],
-    exclude: /--legacy-peer-deps|--save|--save-dev|-D|-S/,
+    // Exclude installs with flags that are intentional:
+    // -g/--global: global installs don't modify project lockfile
+    // --save/--save-dev/-D/-S: intentional dependency additions
+    // --legacy-peer-deps: explicit peer dep handling
+    exclude: /--legacy-peer-deps|--save|--save-dev|-[gDS]\b|--global/,
   },
 
   // JavaScript/TypeScript patterns

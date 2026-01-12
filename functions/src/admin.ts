@@ -123,9 +123,15 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(async (request) => {
     validated = meetingSchema.parse(request.data.meeting);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // SECURITY: Don't expose detailed schema validation errors to clients
+      // Log details server-side for debugging, return generic message to client
+      logSecurityEvent("VALIDATION_FAILURE", "adminSaveMeeting", "Meeting validation failed", {
+        userId: request.auth?.uid,
+        metadata: { fieldCount: error.issues.length },
+      });
       throw new HttpsError(
         "invalid-argument",
-        "Validation failed: " + error.issues.map((e) => e.message).join(", ")
+        "Invalid meeting data. Please check all required fields."
       );
     }
     throw error;
@@ -207,16 +213,26 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(async (reques
     validated = soberLivingSchema.parse(request.data.home);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // SECURITY: Don't expose detailed schema validation errors to clients
+      logSecurityEvent(
+        "VALIDATION_FAILURE",
+        "adminSaveSoberLiving",
+        "Sober living validation failed",
+        {
+          userId: request.auth?.uid,
+          metadata: { fieldCount: error.issues.length },
+        }
+      );
       throw new HttpsError(
         "invalid-argument",
-        "Validation failed: " + error.issues.map((e) => e.message).join(", ")
+        "Invalid sober living data. Please check all required fields."
       );
     }
     throw error;
   }
 
-  // Generate ID if not provided
-  const id = validated.id || `home_${Date.now()}`;
+  // Generate ID if not provided - use Firestore auto-ID for collision resistance
+  const id = validated.id || admin.firestore().collection("sober_living").doc().id;
 
   try {
     await admin
@@ -296,16 +312,21 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(async (request) => {
     validated = quoteSchema.parse(request.data.quote);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      // SECURITY: Don't expose detailed schema validation errors to clients
+      logSecurityEvent("VALIDATION_FAILURE", "adminSaveQuote", "Quote validation failed", {
+        userId: request.auth?.uid,
+        metadata: { fieldCount: error.issues.length },
+      });
       throw new HttpsError(
         "invalid-argument",
-        "Validation failed: " + error.issues.map((e) => e.message).join(", ")
+        "Invalid quote data. Please check all required fields."
       );
     }
     throw error;
   }
 
-  // Generate ID if not provided
-  const id = validated.id || `quote_${Date.now()}`;
+  // Generate ID if not provided - use Firestore auto-ID for collision resistance
+  const id = validated.id || admin.firestore().collection("daily_quotes").doc().id;
 
   try {
     await admin
@@ -553,7 +574,15 @@ interface SearchUsersRequest {
 export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
   await requireAdmin(request, "adminSearchUsers");
 
-  const { query, limit = 20 } = request.data;
+  const { query, limit: rawLimit = 20 } = request.data;
+
+  // SECURITY: Validate and clamp limit to prevent DoS via unbounded queries
+  const MAX_LIMIT = 100;
+  const MIN_LIMIT = 1;
+  const limit =
+    typeof rawLimit === "number" && Number.isFinite(rawLimit)
+      ? Math.min(Math.max(Math.floor(rawLimit), MIN_LIMIT), MAX_LIMIT)
+      : 20;
 
   if (!query || query.trim().length === 0) {
     throw new HttpsError("invalid-argument", "Search query is required");
@@ -871,13 +900,15 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
     throw new HttpsError("invalid-argument", "User ID is required");
   }
 
+  // SECURITY: Don't log reason field - it may contain PII or sensitive details
+  // Log only sanitized metadata for audit trail
   logSecurityEvent(
     "ADMIN_ACTION",
     "adminDisableUser",
-    `Admin ${disabled ? "disabled" : "enabled"} user: ${uid}`,
+    `Admin ${disabled ? "disabled" : "enabled"} user`,
     {
       userId: request.auth?.uid,
-      metadata: { targetUid: uid, disabled, reason },
+      metadata: { targetUid: uid, disabled, hasReason: !!reason },
       severity: "WARNING",
     }
   );

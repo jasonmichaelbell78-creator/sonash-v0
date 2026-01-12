@@ -20,6 +20,9 @@ import { DAY_ORDER } from "../constants";
  */
 function timeToMinutes(timeStr: string): number {
   try {
+    // Validate input type
+    if (!timeStr || typeof timeStr !== "string") return 0;
+
     // Remove whitespace
     const cleaned = timeStr.trim();
 
@@ -35,6 +38,9 @@ function timeToMinutes(timeStr: string): number {
       const minutes = parseInt(match[2], 10);
       const period = match[3].toUpperCase();
 
+      // SECURITY: Validate hours (1-12 for 12-hour format) and minutes (0-59)
+      if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) return 0;
+
       // Convert to 24-hour
       if (period === "PM" && hours !== 12) hours += 12;
       if (period === "AM" && hours === 12) hours = 0;
@@ -48,7 +54,10 @@ function timeToMinutes(timeStr: string): number {
       const hours = parseInt(parts[0], 10);
       const minutes = parseInt(parts[1], 10);
 
+      // SECURITY: Validate hours (0-23) and minutes (0-59)
       if (isNaN(hours) || isNaN(minutes)) return 0;
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return 0;
+
       return hours * 60 + minutes;
     }
   } catch {
@@ -98,7 +107,8 @@ export const MeetingsService = {
       );
 
       const snapshot = await getDocs(q);
-      const meetings = snapshot.docs.map((d) => d.data() as Meeting);
+      // Include document ID in results for proper identification
+      const meetings = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Meeting);
 
       // Sort by time using proper time parsing (handles both 24h and 12h formats)
       return meetings.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
@@ -120,7 +130,8 @@ export const MeetingsService = {
     try {
       const meetingsRef = collection(db, "meetings");
       const snapshot = await getDocs(meetingsRef);
-      const meetings = snapshot.docs.map((d) => d.data() as Meeting);
+      // Include document ID in results for proper identification
+      const meetings = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Meeting);
       // Sort by day then time (using proper time parsing)
       return meetings.sort((a, b) => {
         const dayDiff = (DAY_ORDER[a.day] || 0) - (DAY_ORDER[b.day] || 0);

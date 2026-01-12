@@ -369,7 +369,8 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(async (req
       // Helper to remove undefined values (Firestore doesn't support them)
       const sanitizeData = (data: unknown): unknown => {
         if (Array.isArray(data)) {
-          return data.map(sanitizeData);
+          // Filter out undefined from arrays, then recursively sanitize remaining items
+          return data.filter((item) => item !== undefined).map(sanitizeData);
         }
         if (data !== null && typeof data === "object") {
           return Object.entries(data as Record<string, unknown>).reduce(
@@ -571,32 +572,60 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
       totalDocs++;
     };
 
-    // Migrate journal entries
-    const journalSnapshot = await db
-      .collection(`users/${validatedData.anonymousUid}/journal`)
-      .get();
-    for (const doc of journalSnapshot.docs) {
-      const targetRef = db.doc(`users/${validatedData.targetUid}/journal/${doc.id}`);
-      await addToBatch(targetRef, doc.data(), { merge: true });
-    }
+    // SECURITY: Paginate collection reads to prevent memory exhaustion with large datasets
+    // Use smaller page size (100) to balance between efficiency and memory safety
+    const PAGE_SIZE = 100;
 
-    // Migrate daily logs
-    const dailyLogsSnapshot = await db
-      .collection(`users/${validatedData.anonymousUid}/daily_logs`)
-      .get();
-    for (const doc of dailyLogsSnapshot.docs) {
-      const targetRef = db.doc(`users/${validatedData.targetUid}/daily_logs/${doc.id}`);
-      await addToBatch(targetRef, doc.data(), { merge: true });
-    }
+    // Helper to paginate collection reads
+    const paginateCollection = async (
+      collectionPath: string,
+      targetCollection: string
+    ): Promise<number> => {
+      let lastDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+      let docCount = 0;
 
-    // Migrate inventory entries
-    const inventorySnapshot = await db
-      .collection(`users/${validatedData.anonymousUid}/inventoryEntries`)
-      .get();
-    for (const doc of inventorySnapshot.docs) {
-      const targetRef = db.doc(`users/${validatedData.targetUid}/inventoryEntries/${doc.id}`);
-      await addToBatch(targetRef, doc.data(), { merge: true });
-    }
+      while (true) {
+        let pageQuery = db.collection(collectionPath).orderBy("__name__").limit(PAGE_SIZE);
+
+        if (lastDoc) {
+          pageQuery = pageQuery.startAfter(lastDoc);
+        }
+
+        const snapshot = await pageQuery.get();
+        if (snapshot.empty) break;
+
+        for (const doc of snapshot.docs) {
+          const targetRef = db.doc(
+            `users/${validatedData.targetUid}/${targetCollection}/${doc.id}`
+          );
+          await addToBatch(targetRef, doc.data(), { merge: true });
+          docCount++;
+        }
+
+        lastDoc = snapshot.docs[snapshot.docs.length - 1];
+        if (snapshot.docs.length < PAGE_SIZE) break;
+      }
+
+      return docCount;
+    };
+
+    // Migrate journal entries with pagination
+    const journalCount = await paginateCollection(
+      `users/${validatedData.anonymousUid}/journal`,
+      "journal"
+    );
+
+    // Migrate daily logs with pagination
+    const dailyLogsCount = await paginateCollection(
+      `users/${validatedData.anonymousUid}/daily_logs`,
+      "daily_logs"
+    );
+
+    // Migrate inventory entries with pagination
+    const inventoryCount = await paginateCollection(
+      `users/${validatedData.anonymousUid}/inventoryEntries`,
+      "inventoryEntries"
+    );
 
     // Merge user profile metadata with smart conflict resolution
     // STRATEGY: Prefer target account data (usually more accurate)
@@ -673,9 +702,9 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
         metadata: {
           anonymousUid: validatedData.anonymousUid,
           targetUid: validatedData.targetUid,
-          journalEntries: journalSnapshot.size,
-          dailyLogs: dailyLogsSnapshot.size,
-          inventoryEntries: inventorySnapshot.size,
+          journalEntries: journalCount,
+          dailyLogs: dailyLogsCount,
+          inventoryEntries: inventoryCount,
         },
       }
     );
@@ -683,9 +712,9 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>
     return {
       success: true,
       migratedItems: {
-        journal: journalSnapshot.size,
-        dailyLogs: dailyLogsSnapshot.size,
-        inventory: inventorySnapshot.size,
+        journal: journalCount,
+        dailyLogs: dailyLogsCount,
+        inventory: inventoryCount,
         total: totalDocs,
       },
     };
