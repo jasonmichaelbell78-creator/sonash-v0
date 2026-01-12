@@ -539,6 +539,18 @@ These pre-existing issues were identified during PR review CI:
   `components/providers/error-boundary.tsx`
   - **Priority:** P3 - Code style
   - **Effort:** 10 minutes
+- ⏳ **Pattern Compliance - Dev Utility Scripts** (Review #136)
+  - **Issue:** 79 pattern violations in development/migration scripts
+  - **Files:** `scripts/ai-review.js`, `scripts/assign-review-tier.js`,
+    `scripts/check-docs-light.js`, `scripts/check-document-sync.js`,
+    `scripts/normalize-canon-ids.js`, `scripts/validate-audit.js`, and others
+  - **Patterns:** Unsafe `error.message` access, `readFileSync` without
+    try/catch, `startsWith()` path validation, Windows path issues
+  - **Current State:** Excluded via `GLOBAL_EXCLUDE` in
+    `check-pattern-compliance.js`
+  - **Priority:** P4 - Low priority (dev tools, rarely run)
+  - **Effort:** 4-6 hours (fix all 79 violations incrementally)
+  - **Approach:** Fix during related maintenance work, not dedicated sprint
 
 ### Potential Architecture Work
 
