@@ -44,21 +44,23 @@ export function useSmartPrompts({
   // Load dismissed prompts from localStorage on mount using lazy initializer
   // SSR guard: localStorage is not available during server-side rendering
   const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(() => {
-    if (typeof window === 'undefined') {
+    if (typeof globalThis.window === 'undefined') {
       return new Set()
     }
 
-    const today = getTodayDateId(new Date())
-    const storageKey = `dismissed-prompts-${today}`
-    const stored = localStorage.getItem(storageKey)
+    try {
+      const today = getTodayDateId(new Date())
+      const storageKey = `dismissed-prompts-${today}`
+      const stored = localStorage.getItem(storageKey)
 
-    if (stored) {
-      try {
+      if (stored) {
         const parsed = JSON.parse(stored) as string[]
         return new Set(parsed)
-      } catch (error) {
-        logger.warn("Failed to parse dismissed prompts from localStorage", { error })
       }
+    } catch (error) {
+      logger.warn("Failed to read dismissed prompts from localStorage", {
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+      })
     }
     return new Set()
   })
@@ -69,10 +71,16 @@ export function useSmartPrompts({
       const updated = new Set(prev).add(promptId)
 
       // SSR guard: persist to localStorage only in browser
-      if (typeof window !== 'undefined') {
-        const today = getTodayDateId(new Date())
-        const storageKey = `dismissed-prompts-${today}`
-        localStorage.setItem(storageKey, JSON.stringify(Array.from(updated)))
+      if (typeof globalThis.window !== 'undefined') {
+        try {
+          const today = getTodayDateId(new Date())
+          const storageKey = `dismissed-prompts-${today}`
+          localStorage.setItem(storageKey, JSON.stringify(Array.from(updated)))
+        } catch (error) {
+          logger.warn("Failed to persist dismissed prompts to localStorage", {
+            errorType: error instanceof Error ? error.constructor.name : typeof error,
+          })
+        }
       }
 
       return updated

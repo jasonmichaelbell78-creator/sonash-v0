@@ -65,6 +65,21 @@ const ERROR_MESSAGES: Record<string, string> = {
 const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred. Please try again.';
 
 /**
+ * Checks if a message is safe to show to users (no internal details).
+ * Extracted to reduce cognitive complexity (SonarQube S3776).
+ */
+function isSafeUserMessage(msg: string, maxLength: number = 150): boolean {
+  return (
+    msg.length < maxLength &&
+    !msg.includes('at ') &&
+    !msg.includes('Error:') &&
+    !msg.includes('/') &&
+    !msg.includes('\\') &&
+    !msg.includes('node_modules')
+  );
+}
+
+/**
  * Options for error handling customization.
  */
 export interface HandleErrorOptions {
@@ -121,24 +136,9 @@ export function getCloudFunctionErrorMessage(
       return customMessage;
     }
 
-    // For validation errors (invalid-argument), only use server message if it
-    // looks like a safe, user-friendly validation message (not stack trace or internal info)
-    if (error.code === 'functions/invalid-argument' && error.message) {
-      const msg = error.message;
-      // Only allow messages that look like validation feedback:
-      // - Short (<150 chars), no stack indicators, no internal paths
-      const isSafeMessage = (
-        msg.length < 150 &&
-        !msg.includes('at ') &&
-        !msg.includes('Error:') &&
-        !msg.includes('/') &&
-        !msg.includes('\\') &&
-        !msg.includes('node_modules')
-      );
-      if (isSafeMessage) {
-        return msg;
-      }
-      // Fall through to default message for unsafe messages
+    // For validation errors (invalid-argument), only use server message if safe
+    if (error.code === 'functions/invalid-argument' && error.message && isSafeUserMessage(error.message)) {
+      return error.message;
     }
 
     // Fall back to default messages for known error codes
@@ -148,14 +148,9 @@ export function getCloudFunctionErrorMessage(
     }
   }
 
-  // Fall back to Error.message if available
-  if (error instanceof Error && error.message) {
-    // Don't expose internal error messages - use default
-    // Unless it looks like a user-friendly message (no stack trace indicators)
-    const msg = error.message;
-    if (!msg.includes('at ') && !msg.includes('Error:') && msg.length < 200) {
-      return msg;
-    }
+  // Fall back to Error.message if available and safe
+  if (error instanceof Error && error.message && isSafeUserMessage(error.message, 200)) {
+    return error.message;
   }
 
   return defaultMessage;

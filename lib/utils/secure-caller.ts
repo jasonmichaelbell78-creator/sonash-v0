@@ -107,14 +107,20 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
         recaptchaToken = await getRecaptchaToken(action);
       } catch (recaptchaError) {
         // Log warning with error type only (not full error to avoid leaking details)
-        logger.warn('Failed to get reCAPTCHA token, proceeding without', {
+        logger.warn('Failed to get reCAPTCHA token', {
           action,
           errorType: recaptchaError instanceof Error ? recaptchaError.constructor.name : typeof recaptchaError,
         });
-        // SECURITY NOTE: Continue without token - defense in depth:
-        // - Server MUST validate reCAPTCHA in production (enforced by Cloud Functions)
-        // - Emulator may bypass for local development only
-        // - This graceful degradation prevents client-side reCAPTCHA issues from blocking users
+
+        // SECURITY: In production, fail-closed - don't allow requests without reCAPTCHA
+        // In development/emulator, allow graceful degradation for local testing
+        if (process.env.NODE_ENV === 'production') {
+          return {
+            success: false,
+            error: 'Security verification failed. Please refresh the page and try again.',
+          };
+        }
+        // Non-production: Server MUST still validate and may reject - this is defense in depth
       }
     }
 

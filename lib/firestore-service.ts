@@ -88,7 +88,8 @@ function handleCloudFunctionCallError(
 
   // Extract user-friendly message using consolidated utility
   const errorMessage = getCloudFunctionErrorMessage(error, options)
-  throw new Error(errorMessage)
+  // Preserve original error for debugging (Error.cause is ES2022)
+  throw new Error(errorMessage, { cause: error })
 }
 
 // Re-export types for backwards compatibility

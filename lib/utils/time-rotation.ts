@@ -36,9 +36,10 @@ export function getTimeOfDay(): TimeOfDay {
 
 /**
  * Get today's date string in YYYY-MM-DD format (local time)
+ * Uses Intl.DateTimeFormat for guaranteed consistent formatting across environments
  */
 export function getTodayDateString(): string {
-  return new Date().toLocaleDateString('en-CA');
+  return new Intl.DateTimeFormat('en-CA').format(new Date());
 }
 
 /**

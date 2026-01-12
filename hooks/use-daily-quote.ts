@@ -62,7 +62,12 @@ async function fetchDailyQuote(): Promise<Quote | null> {
       cacheDate = today;
       return todayQuote;
     } catch (error) {
-      logger.error('Failed to fetch daily quote', { error });
+      logger.error('Failed to fetch daily quote', {
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+      });
+      // Cache the failure to prevent repeated fetch attempts during outages
+      cachedQuote = null;
+      cacheDate = today;
       return null;
     } finally {
       fetchPromise = null;
@@ -99,9 +104,13 @@ export interface UseDailyQuoteResult {
  * ```
  */
 export function useDailyQuote(): UseDailyQuoteResult {
-  const [quote, setQuote] = useState<Quote | null>(cachedQuote);
+  // Only use cache if it's from today (prevents stale data on initial render)
+  const today = getTodayString();
+  const hasValidCacheForToday = cacheDate === today;
+
+  const [quote, setQuote] = useState<Quote | null>(hasValidCacheForToday ? cachedQuote : null);
   // Only show loading if we haven't fetched for today yet
-  const [loading, setLoading] = useState(cacheDate !== getTodayString());
+  const [loading, setLoading] = useState(!hasValidCacheForToday);
 
   useEffect(() => {
     let mounted = true;
