@@ -120,7 +120,9 @@ export function useDailyQuote(): UseDailyQuoteResult {
     if (cacheDate === today) {
       setQuote(cachedQuote);
       setLoading(false);
-      return;
+      return () => {
+        mounted = false;
+      };
     }
 
     // Otherwise, fetch
@@ -135,6 +137,38 @@ export function useDailyQuote(): UseDailyQuoteResult {
     return () => {
       mounted = false;
     };
+  }, []);
+
+  // Schedule automatic refresh shortly after midnight for long-lived sessions
+  // This ensures the quote updates even if the user doesn't refresh the page
+  useEffect(() => {
+    const scheduleMidnightRefresh = (): (() => void) => {
+      const now = new Date();
+      const nextMidnight = new Date(now);
+      nextMidnight.setHours(24, 0, 5, 0); // 5 seconds after midnight to avoid edge timing
+      const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+
+      const timer = globalThis.window?.setTimeout(() => {
+        // Clear cache and trigger refresh
+        cachedQuote = null;
+        cacheDate = null;
+        fetchPromise = null;
+        setLoading(true);
+        fetchDailyQuote().then(setQuote).finally(() => setLoading(false));
+        // Reschedule for next day
+        scheduleMidnightRefresh();
+      }, msUntilMidnight);
+
+      return () => {
+        if (timer) globalThis.window?.clearTimeout(timer);
+      };
+    };
+
+    // Only schedule if window is available (client-side)
+    if (typeof globalThis.window !== 'undefined') {
+      return scheduleMidnightRefresh();
+    }
+    return undefined;
   }, []);
 
   const refresh = () => {

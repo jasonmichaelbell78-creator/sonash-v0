@@ -248,7 +248,11 @@ export function useJournal() {
             setGroupedEntries(groups);
             setJournalLoading(false);
         }, (error) => {
-            logger.error("Error fetching journal entries", { error });
+            // CANON-0076: Log error type only - don't expose raw error objects (PII/security risk)
+            logger.error("Error fetching journal entries", {
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                errorCode: (error as { code?: string })?.code,
+            });
             setJournalLoading(false);
         });
 

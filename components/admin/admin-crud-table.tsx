@@ -59,7 +59,11 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
 
             setItems(data)
         } catch (error) {
-            logger.error(`Error fetching ${config.entityNamePlural}`, { error })
+            // CANON-0076: Log error type only - don't expose raw error objects
+            logger.error(`Error fetching ${config.entityNamePlural}`, {
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                errorCode: (error as { code?: string })?.code,
+            })
         }
         setLoading(false)
     }, [config.service, config.collectionName, config.entityNamePlural])
@@ -152,8 +156,13 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
             setFormData(config.emptyFormData as Partial<T>)
             setEditingItem(null)
         } catch (error) {
-            logger.error(`Error saving ${config.entityName}`, { error })
-            alert(`Failed to save ${config.entityName}. ${error instanceof Error ? error.message : ""}`)
+            // CANON-0076: Log error type only - don't expose raw error objects
+            logger.error(`Error saving ${config.entityName}`, {
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                errorCode: (error as { code?: string })?.code,
+            })
+            // Generic user-facing message - don't expose internal error details
+            alert(`Failed to save ${config.entityName}. Please try again.`)
         }
         setSaving(false)
     }
@@ -180,8 +189,13 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
             await fetchItems()
             setDeleteId(null)
         } catch (error) {
-            logger.error(`Error deleting ${config.entityName}`, { error })
-            alert(`Failed to delete ${config.entityName}. ${error instanceof Error ? error.message : ""}`)
+            // CANON-0076: Log error type only - don't expose raw error objects
+            logger.error(`Error deleting ${config.entityName}`, {
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                errorCode: (error as { code?: string })?.code,
+            })
+            // Generic user-facing message - don't expose internal error details
+            alert(`Failed to delete ${config.entityName}. Please try again.`)
         }
         setDeleting(false)
     }
