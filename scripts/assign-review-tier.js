@@ -18,7 +18,7 @@
  */
 
 import { readFileSync, existsSync, realpathSync } from "fs";
-import { join, resolve, relative, isAbsolute } from "path";
+import { resolve, relative, isAbsolute } from "path";
 import { pathToFileURL } from "url";
 
 /**
@@ -161,8 +161,9 @@ const FORBIDDEN_PATTERNS = [
     checkContent: true,
   },
   {
-    // Matches .env, .env.local, .env.production, .env.development.local (multi-segment)
-    pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_.-]+)?$/,
+    // Matches .env, .env.local, .env.production, etc. (limited extension length for safety)
+    // eslint-disable-next-line security/detect-unsafe-regex -- validated: bounded quantifier, no catastrophic backtracking
+    pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_-]{1,30})*$/,
     reason:
       ".env file (or variant like .env.local, .env.development.local) should not be committed",
     checkPath: true, // Path-only check

@@ -49,7 +49,7 @@ const ROOT = join(__dirname, "..");
 
 // File paths
 const TRACKER_PATH = join(ROOT, "docs", "AUDIT_TRACKER.md");
-const COORDINATOR_PATH = join(ROOT, "docs", "MULTI_AI_REVIEW_COORDINATOR.md");
+const _COORDINATOR_PATH = join(ROOT, "docs", "MULTI_AI_REVIEW_COORDINATOR.md"); // Reserved for future use
 
 // Category-specific thresholds
 const CATEGORY_THRESHOLDS = {
