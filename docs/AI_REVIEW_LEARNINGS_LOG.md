@@ -1,8 +1,8 @@
 # AI Review Learnings Log
 
-**Document Version:** 5.0
+**Document Version:** 5.2
 **Created:** 2026-01-02
-**Last Updated:** 2026-01-11
+**Last Updated:** 2026-01-12
 
 ## Purpose
 
@@ -18,6 +18,7 @@ This document is the **audit trail** of all AI code review learnings. Each revie
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 5.2 | 2026-01-12 | Review #130: PR #236 Round 4 (SonarQube + Qodo) - 21 items parsed, 16 ALREADY FIXED (from #127-129), 1 MAJOR (sensitive logging in admin search), 1 MINOR (doc lint false positives), 3 acknowledged compliance items. Verified: SHA pinning, reCAPTCHA hardening, IPv6 fix, journalLoading reset all complete. Session #54. |
 | 5.1 | 2026-01-12 | Review #129: PR #236 Post-Commit Feedback (SonarQube + Qodo) - 9 items on new code (2 CRITICAL: cognitive complexity refactor, production reCAPTCHA fail-closed; 4 MAJOR: cache failures, initial state alignment, localStorage try/catch, error cause chain; 3 MINOR: globalThis.window, Intl.DateTimeFormat, secure logging). New patterns: Extract helpers to reduce complexity, fail-closed security in production, cache error states to prevent retry storms, use globalThis over window for SSR. Session #53. |
 | 5.0 | 2026-01-11 | Review #128: PR #236 Follow-up (Qodo) - 5 items (1 HIGH: Sentry IP privacy fix; 1 MEDIUM: CI arg separator; 1 DEFERRED: doc ID hashing; 2 ALREADY DONE from #127). New patterns: Third-party PII hygiene, CLI arg injection prevention. Session #52. |
 | 4.9 | 2026-01-11 | Review #127: PR #236 Comprehensive Review (SonarQube + Qodo) - 14 items (3 CRITICAL: pin GitHub Action SHA, harden reCAPTCHA bypass, fix IPv6 normalization; 4 MAJOR: regex precedence, sanitize error messages, reset journalLoading; 6 MINOR: operationName granularity, CI main-only push, simplify IP retrieval, audit trails, log sensitivity). Session #50. |
@@ -2130,7 +2131,7 @@ Reviews #61-127 are actively maintained below. Older reviews are in the archive.
 4. **Regex Robustness for Markdown Links** (1 occurrence - Automation)
    - Root cause: Greedy regex `.*` captured too much, no anchor handling (#section) in broken link detection
    - Prevention: Use non-greedy `.*?` for markdown link patterns, strip anchors before file existence checks
-   - Pattern: Link extraction should handle: `[text](<path>)`, `[text](<path>#anchor)`, `[text](<http://external>)`
+   - Pattern: Link extraction should handle: relative links, anchor links (path#section), and external URLs
    - Note: Test regexes against edge cases: nested brackets, special chars, anchors
 
 5. **JSONL Validation Robustness** (1 occurrence - Automation)
@@ -2458,7 +2459,7 @@ All 6 compliance guide items verified as COMPLIANT:
 2. **Documentation Link Hygiene**
    - All internal links must use relative paths
    - Verify link targets exist before committing
-   - Use markdown link syntax `[text](<path>)` consistently
+   - Use standard markdown link syntax consistently (bracket text, parenthetical path)
 
 3. **Template Completion Checklist**
    - Replace ALL placeholder tokens before using template
