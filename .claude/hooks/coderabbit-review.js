@@ -25,8 +25,12 @@ if (process.argv.length <= 2) {
 
 // Check if CodeRabbit CLI is available
 function hasCodeRabbit() {
-  const result = spawnSync('coderabbit', ['--version'], { stdio: 'pipe' });
-  return result.status === 0;
+  const result = spawnSync('coderabbit', ['--version'], {
+    stdio: 'pipe',
+    encoding: 'utf8',
+    timeout: 5000
+  });
+  return !result.error && result.status === 0;
 }
 
 if (!hasCodeRabbit()) {
@@ -49,8 +53,12 @@ let reviewed = 0;
 const filePaths = process.argv.slice(2);
 
 for (const filePath of filePaths) {
-  // Skip non-existent files
-  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+  // Skip non-existent files (guard against TOCTOU race)
+  try {
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      continue;
+    }
+  } catch {
     continue;
   }
 
@@ -70,11 +78,16 @@ for (const filePath of filePaths) {
 
   // Run CodeRabbit review with timeout
   try {
-    const result = spawnSync('coderabbit', ['review', '--', filePath, '--plain', '--severity', 'medium'], {
-      encoding: 'utf8',
-      timeout: 20000,
-      stdio: ['pipe', 'pipe', 'pipe']
-    });
+    // Note: Options must come before -- separator
+    const result = spawnSync(
+      'coderabbit',
+      ['review', '--plain', '--severity', 'medium', '--', filePath],
+      {
+        encoding: 'utf8',
+        timeout: 20000,
+        stdio: ['pipe', 'pipe', 'pipe']
+      }
+    );
 
     // Skip timeouts
     if (result.signal === 'SIGTERM') {

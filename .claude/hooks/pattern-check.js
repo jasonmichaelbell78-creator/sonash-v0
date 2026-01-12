@@ -13,8 +13,15 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Get project directory
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+// Get and validate project directory
+const safeBaseDir = path.resolve(process.cwd());
+const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
+const projectDir = path.resolve(safeBaseDir, projectDirInput);
+
+// Security: Ensure projectDir is within baseDir (prevent path traversal)
+if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
+  process.exit(0);
+}
 
 // Parse file path from arguments (JSON format: {"file_path": "..."})
 const arg = process.argv[2] || '';
@@ -92,7 +99,8 @@ const result = spawnSync('node', ['scripts/check-pattern-compliance.js', relPath
   cwd: projectDir
 });
 
-const output = result.stdout || '';
+// Combine stdout and stderr - violations may be written to either
+const output = `${result.stdout || ''}${result.stderr || ''}`;
 
 // Check for violations
 if (output.includes('potential pattern violation')) {
@@ -111,11 +119,10 @@ if (output.includes('potential pattern violation')) {
   console.log('');
   console.log('Review docs/agent_docs/CODE_PATTERNS.md for documented patterns.');
   console.log('\u2501'.repeat(28));
-} else if (result.status !== 0 && result.stdout && result.stdout.includes('potential pattern violation')) {
-  // Non-blocking - just show reminder
+} else if (result.status !== 0) {
+  // Non-zero exit without explicit violation - non-blocking reminder
   console.log('');
-  console.log('\u26a0\ufe0f  PATTERN CHECK REMINDER');
-  console.log('Review docs/agent_docs/CODE_PATTERNS.md for documented patterns.');
+  console.log('\u26a0\ufe0f  PATTERN CHECK: Review docs/agent_docs/CODE_PATTERNS.md');
 }
 
 process.exit(0);

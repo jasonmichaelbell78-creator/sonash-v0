@@ -36,6 +36,15 @@ if (!filePath) {
   process.exit(0);
 }
 
+// Security: Reject option-like or multiline paths
+if (filePath.startsWith('-') || filePath.includes('\n') || filePath.includes('\r')) {
+  console.log('ok');
+  process.exit(0);
+}
+
+// Normalize Windows backslashes to forward slashes for cross-platform consistency
+filePath = filePath.replace(/\\/g, '/');
+
 // Security: Resolve path and verify containment within baseDir
 const resolvedPath = path.resolve(baseDir, filePath);
 if (!resolvedPath.startsWith(baseDir + path.sep) && resolvedPath !== baseDir) {
