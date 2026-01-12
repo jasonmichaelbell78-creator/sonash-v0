@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* global require, process, console */
+/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
 /**
  * check-mcp-servers.js - SessionStart hook for MCP server availability
  *
@@ -15,11 +17,13 @@
 const fs = require('fs');
 const path = require('path');
 
-// Get project directory from environment or use current directory
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+// Get and validate project directory
+const safeBaseDir = path.resolve(process.cwd());
+const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
+const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
-// Reject path traversal in PROJECT_DIR
-if (projectDir.includes('..')) {
+// Security: Ensure projectDir is within baseDir (prevent path traversal)
+if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
   console.log('No MCP servers configured');
   process.exit(0);
 }
