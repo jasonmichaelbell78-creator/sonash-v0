@@ -30,8 +30,20 @@ if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir
 
 const mcpConfigPath = path.join(projectDir, '.mcp.json');
 
-// Check if config file exists
+// Check if config file exists and is safe to read
 if (!fs.existsSync(mcpConfigPath)) {
+  console.log('No MCP servers configured');
+  process.exit(0);
+}
+
+// Security: Avoid DoS - refuse to read extremely large config files
+try {
+  const stat = fs.statSync(mcpConfigPath);
+  if (!stat.isFile() || stat.size > 1024 * 1024) {
+    console.log('No MCP servers configured');
+    process.exit(0);
+  }
+} catch {
   console.log('No MCP servers configured');
   process.exit(0);
 }
