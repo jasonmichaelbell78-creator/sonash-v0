@@ -288,15 +288,75 @@ function isPathContained(filePath, projectRoot) {
 }
 
 /**
+ * Validate symlink stays within project root (prevents symlink escape attacks)
+ * @returns {{ valid: boolean, realPath?: string, warning?: string }}
+ */
+function validateSymlink(resolvedFile, projectRoot) {
+  try {
+    const realProjectRoot = realpathSync(projectRoot);
+    const realResolvedFile = realpathSync(resolvedFile);
+    const realRel = relative(realProjectRoot, realResolvedFile);
+
+    if (realRel === "" || realRel.startsWith("..") || isAbsolute(realRel)) {
+      return { valid: false, warning: "Skipping symlinked file outside project root" };
+    }
+
+    return { valid: true, realPath: realResolvedFile };
+  } catch (error) {
+    const errorMsg =
+      error && typeof error === "object" && "message" in error ? error.message : String(error);
+    return { valid: false, warning: `Could not resolve real path: ${sanitizePath(errorMsg)}` };
+  }
+}
+
+/**
+ * Process file content for escalations and violations
+ * @returns {{ escalations: Array, violations: Array, warning?: string }}
+ */
+function processFileContent(file, realResolvedFile) {
+  const result = { escalations: [], violations: [], warning: null };
+
+  try {
+    const content = readFileSync(realResolvedFile, "utf-8");
+
+    // Check for escalation triggers
+    result.escalations = checkEscalationTriggers(file, content);
+
+    // Check for forbidden patterns
+    result.violations = checkForbiddenPatterns(file, content);
+  } catch (error) {
+    const errorMsg =
+      error && typeof error === "object" && "message" in error ? error.message : String(error);
+    result.warning = `Could not read file: ${sanitizePath(errorMsg)}`;
+  }
+
+  return result;
+}
+
+/**
+ * Update tier tracking based on a new file's tier
+ * @returns {{ tier: number, reasons: string[] }}
+ */
+function updateTierTracking(currentTier, currentReasons, newTier, newReason) {
+  if (newTier > currentTier) {
+    return { tier: newTier, reasons: [newReason] };
+  }
+  if (newTier === currentTier) {
+    return { tier: currentTier, reasons: [...currentReasons, newReason] };
+  }
+  return { tier: currentTier, reasons: currentReasons };
+}
+
+/**
  * Main tier assignment logic
  */
 function assignReviewTier(files, options = {}) {
   const projectRoot = options.projectRoot || process.cwd();
   let highestTier = 0;
   let reasons = [];
-  let escalations = [];
-  let violations = [];
-  let warnings = [];
+  const escalations = [];
+  const violations = [];
+  const warnings = [];
 
   for (const file of files) {
     // SECURITY: Skip files outside project root (path traversal protection)
@@ -308,70 +368,44 @@ function assignReviewTier(files, options = {}) {
     // Resolve the path once for all file operations (prevents TOCTOU vulnerabilities)
     const resolvedFile = resolve(projectRoot, file);
 
-    // SECURITY: Prevent symlink escapes by verifying realpath stays within project root
+    // SECURITY: Validate symlinks stay within project root
     let realResolvedFile = resolvedFile;
     if (existsSync(resolvedFile)) {
-      try {
-        const realProjectRoot = realpathSync(projectRoot);
-        realResolvedFile = realpathSync(resolvedFile);
-        const realRel = relative(realProjectRoot, realResolvedFile);
-        if (realRel === "" || realRel.startsWith("..") || isAbsolute(realRel)) {
-          warnings.push(`Skipping symlinked file outside project root: ${sanitizePath(file)}`);
-          continue;
-        }
-      } catch (error) {
-        // realpathSync can fail on permission issues; skip file safely
-        const errorMsg =
-          error && typeof error === "object" && "message" in error ? error.message : String(error);
-        warnings.push(`Could not resolve real path: ${sanitizePath(errorMsg)}`);
+      const symlinkResult = validateSymlink(resolvedFile, projectRoot);
+      if (!symlinkResult.valid) {
+        warnings.push(`${symlinkResult.warning}: ${sanitizePath(file)}`);
         continue;
       }
+      realResolvedFile = symlinkResult.realPath;
     }
 
-    // Assign tier by path (pass all files for conditional checks)
+    // Assign tier by path and update tracking
     const pathTier = assignTierByPath(file, files);
-    if (pathTier.tier > highestTier) {
-      // Found a higher tier - reset reasons and update tier
-      highestTier = pathTier.tier;
-      reasons = [pathTier.reason];
-    } else if (pathTier.tier === highestTier) {
-      // Same tier as current highest - add to reasons
-      reasons.push(pathTier.reason);
-    }
+    const tierUpdate = updateTierTracking(highestTier, reasons, pathTier.tier, pathTier.reason);
+    highestTier = tierUpdate.tier;
+    reasons = tierUpdate.reasons;
 
-    // Check file content if it exists (use realpath for security against symlink attacks)
+    // Check file content if it exists
     if (existsSync(realResolvedFile)) {
-      try {
-        const content = readFileSync(realResolvedFile, "utf-8");
+      const contentResult = processFileContent(file, realResolvedFile);
 
-        // Check for escalation triggers
-        const fileEscalations = checkEscalationTriggers(file, content);
-        escalations.push(...fileEscalations);
-
-        // Apply escalations
-        for (const esc of fileEscalations) {
-          if (esc.escalate_to === "BLOCK") {
-            violations.push({
-              pattern: esc.trigger,
-              reason: esc.reason,
-              file: esc.file,
-            });
-          } else if (typeof esc.escalate_to === "number" && esc.escalate_to > highestTier) {
-            highestTier = esc.escalate_to;
-            reasons.push(`Escalated to Tier ${esc.escalate_to}: ${esc.reason}`);
-          }
-        }
-
-        // Check for forbidden patterns
-        const fileViolations = checkForbiddenPatterns(file, content);
-        violations.push(...fileViolations);
-      } catch (error) {
-        // File might be binary or unreadable, skip content checks
-        // Handle non-Error throws safely
-        const errorMsg =
-          error && typeof error === "object" && "message" in error ? error.message : String(error);
-        warnings.push(`Could not read file: ${sanitizePath(errorMsg)}`);
+      if (contentResult.warning) {
+        warnings.push(contentResult.warning);
       }
+
+      // Collect escalations and apply tier escalations
+      escalations.push(...contentResult.escalations);
+      for (const esc of contentResult.escalations) {
+        if (esc.escalate_to === "BLOCK") {
+          violations.push({ pattern: esc.trigger, reason: esc.reason, file: esc.file });
+        } else if (typeof esc.escalate_to === "number" && esc.escalate_to > highestTier) {
+          highestTier = esc.escalate_to;
+          reasons.push(`Escalated to Tier ${esc.escalate_to}: ${esc.reason}`);
+        }
+      }
+
+      // Collect violations
+      violations.push(...contentResult.violations);
     }
   }
 
