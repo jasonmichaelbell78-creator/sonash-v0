@@ -37,6 +37,10 @@ import { buildPath, QUERY_LIMITS } from "./constants"
 import { getTodayDateId } from "./utils/date-utils"
 import { retryCloudFunction } from "./utils/retry"
 import { getRecaptchaToken } from "./recaptcha"
+import {
+  getCloudFunctionErrorMessage,
+  isCloudFunctionError,
+} from "./utils/callable-errors"
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
 
 // Re-export types for backwards compatibility
@@ -185,52 +189,46 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         // Debug: Log structured error details (development only)
         if (process.env.NODE_ENV === 'development') {
           console.error('❌ Cloud Function error:', error)
-          // Properly serialize error object by extracting non-enumerable properties
-          const err = error as Error
-          console.error('Error details:', JSON.stringify({
-            message: err.message,
-            name: err.name,
-            stack: err.stack,
-            cause: err.cause,
-            code: (error as { code?: string }).code,
-          }, null, 2))
+          if (isCloudFunctionError(error)) {
+            console.error('Error details:', JSON.stringify({
+              code: error.code,
+              message: error.message,
+            }, null, 2))
+          }
         }
 
-        // Handle specific Cloud Function errors with user-friendly messages
-        interface CloudFunctionError {
-          code?: string
-          message?: string
-        }
-        const err = error as CloudFunctionError
-        if (err.code === "functions/resource-exhausted") {
-          deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
-          throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
-        }
-
-        if (err.code === "functions/invalid-argument") {
-          deps.logger.error("Invalid data sent to Cloud Function", {
+        // Log error with appropriate severity
+        if (isCloudFunctionError(error)) {
+          if (error.code === "functions/resource-exhausted") {
+            deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
+          } else if (error.code === "functions/invalid-argument") {
+            deps.logger.error("Invalid data sent to Cloud Function", {
+              userId: maskIdentifier(userId),
+              error: error.message,
+            })
+          } else {
+            deps.logger.error("Cloud Function call failed", {
+              userId: maskIdentifier(userId),
+              code: error.code,
+            })
+          }
+        } else {
+          deps.logger.error("Cloud Function call failed", {
             userId: maskIdentifier(userId),
-            error: err.message,
+            error,
           })
-          // Use the detailed error message from the Cloud Function
-          throw new Error(err.message || "Invalid journal data. Please refresh and try again.")
         }
 
-        if (err.code === "functions/unauthenticated") {
-          throw new Error("Please sign in to save your journal.")
-        }
-
-        if (err.code === "functions/failed-precondition") {
-          throw new Error(`Security check failed (App Check): ${err.message}`)
-        }
-
-        // Generic error for unexpected failures
-        deps.logger.error("Cloud Function call failed", {
-          userId: maskIdentifier(userId),
-          error: err,
-          code: err.code,
+        // Extract user-friendly message using consolidated utility
+        const errorMessage = getCloudFunctionErrorMessage(error, {
+          customMessages: {
+            'functions/resource-exhausted': "You're saving too quickly. Please wait 60 seconds and try again.",
+            'functions/unauthenticated': "Please sign in to save your journal.",
+            'functions/failed-precondition': "Security check failed. Please refresh the page.",
+          },
+          defaultMessage: "Couldn't save your journal right now. Please try again in a moment.",
         })
-        throw new Error("Couldn't save your journal right now. Please try again in a moment.")
+        throw new Error(errorMessage)
       }
     },
 
@@ -409,50 +407,46 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         // Debug: Log structured error details (development only)
         if (process.env.NODE_ENV === 'development') {
           console.error('❌ Cloud Function error:', error)
-          const err = error as Error
-          console.error('Error details:', JSON.stringify({
-            message: err.message,
-            name: err.name,
-            stack: err.stack,
-            cause: err.cause,
-            code: (error as { code?: string }).code,
-          }, null, 2))
+          if (isCloudFunctionError(error)) {
+            console.error('Error details:', JSON.stringify({
+              code: error.code,
+              message: error.message,
+            }, null, 2))
+          }
         }
 
-        // Handle specific Cloud Function errors with user-friendly messages
-        interface CloudFunctionError {
-          code?: string
-          message?: string
-        }
-        const err = error as CloudFunctionError
-        if (err.code === "functions/resource-exhausted") {
-          deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
-          throw new Error("You're saving too quickly. Please wait 60 seconds and try again.")
-        }
-
-        if (err.code === "functions/invalid-argument") {
-          deps.logger.error("Invalid data sent to Cloud Function", {
+        // Log error with appropriate severity
+        if (isCloudFunctionError(error)) {
+          if (error.code === "functions/resource-exhausted") {
+            deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
+          } else if (error.code === "functions/invalid-argument") {
+            deps.logger.error("Invalid data sent to Cloud Function", {
+              userId: maskIdentifier(userId),
+              error: error.message,
+            })
+          } else {
+            deps.logger.error("Cloud Function call failed", {
+              userId: maskIdentifier(userId),
+              code: error.code,
+            })
+          }
+        } else {
+          deps.logger.error("Cloud Function call failed", {
             userId: maskIdentifier(userId),
-            error: err.message,
+            error,
           })
-          throw new Error(err.message || "Invalid journal data. Please refresh and try again.")
         }
 
-        if (err.code === "functions/unauthenticated") {
-          throw new Error("Please sign in to save your journal.")
-        }
-
-        if (err.code === "functions/failed-precondition") {
-          throw new Error(`Security check failed (App Check): ${err.message}`)
-        }
-
-        // Generic error for unexpected failures
-        deps.logger.error("Cloud Function call failed", {
-          userId: maskIdentifier(userId),
-          error: err,
-          code: err.code,
+        // Extract user-friendly message using consolidated utility
+        const errorMessage = getCloudFunctionErrorMessage(error, {
+          customMessages: {
+            'functions/resource-exhausted': "You're saving too quickly. Please wait 60 seconds and try again.",
+            'functions/unauthenticated': "Please sign in to save your journal.",
+            'functions/failed-precondition': "Security check failed. Please refresh the page.",
+          },
+          defaultMessage: "Couldn't save your journal right now. Please try again in a moment.",
         })
-        throw new Error("Couldn't save your journal right now. Please try again in a moment.")
+        throw new Error(errorMessage)
       }
     }
   }

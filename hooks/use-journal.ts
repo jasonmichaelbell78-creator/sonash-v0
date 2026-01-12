@@ -40,6 +40,7 @@ import { JournalEntry, JournalEntryType } from '@/types/journal';
 import { QUERY_LIMITS } from '@/lib/constants';
 import { retryCloudFunction } from '@/lib/utils/retry';
 import { getRecaptchaToken } from '@/lib/recaptcha';
+import { handleCloudFunctionError } from '@/lib/utils/callable-errors';
 import { useAuthCore } from '@/components/providers/auth-context';
 
 // Helper to check for "Today" and "Yesterday"
@@ -310,24 +311,11 @@ export function useJournal() {
 
             return { success: true };
         } catch (error: unknown) {
-            // Handle rate limiting and App Check errors with user-friendly messages
-            let errorMessage = 'Failed to save entry. Please try again.';
-
-            if (error && typeof error === 'object' && 'code' in error) {
-                const code = (error as { code: string }).code;
-                if (code === 'functions/resource-exhausted') {
-                    errorMessage = 'Too many requests. Please wait a moment and try again.';
-                } else if (code === 'functions/failed-precondition') {
-                    errorMessage = 'Security verification failed. Please refresh the page.';
-                }
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-
-            return {
-                success: false,
-                error: errorMessage
-            };
+            // Use consolidated error handling utility (CANON-0006)
+            return handleCloudFunctionError(error, {
+                operation: 'save journal entry',
+                defaultMessage: 'Failed to save entry. Please try again.',
+            });
         }
     }, [user]);
 
@@ -363,26 +351,14 @@ export function useJournal() {
 
             return { success: true };
         } catch (error: unknown) {
-            // Handle rate limiting and App Check errors with user-friendly messages
-            let errorMessage = 'Failed to delete entry. Please try again.';
-
-            if (error && typeof error === 'object' && 'code' in error) {
-                const code = (error as { code: string }).code;
-                if (code === 'functions/resource-exhausted') {
-                    errorMessage = 'Too many requests. Please wait a moment and try again.';
-                } else if (code === 'functions/failed-precondition') {
-                    errorMessage = 'Security verification failed. Please refresh the page.';
-                } else if (code === 'functions/not-found') {
-                    errorMessage = 'Entry not found or already deleted.';
-                }
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-
-            return {
-                success: false,
-                error: errorMessage
-            };
+            // Use consolidated error handling utility (CANON-0006)
+            return handleCloudFunctionError(error, {
+                operation: 'delete journal entry',
+                customMessages: {
+                    'functions/not-found': 'Entry not found or already deleted.',
+                },
+                defaultMessage: 'Failed to delete entry. Please try again.',
+            });
         }
     }, [user]);
 
