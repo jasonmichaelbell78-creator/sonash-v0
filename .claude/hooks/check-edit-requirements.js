@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* global require, process, console */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * check-edit-requirements.js - PostToolUse hook for Edit and MultiEdit tools
  * Cross-platform replacement for check-edit-requirements.sh
@@ -11,6 +13,9 @@
  */
 
 const path = require('path');
+
+// Get base directory for path containment check
+const baseDir = path.resolve(process.env.CLAUDE_PROJECT_DIR || process.cwd());
 
 // Get file path from arguments (could be JSON or direct path)
 let filePath = process.argv[2] || '';
@@ -31,14 +36,15 @@ if (!filePath) {
   process.exit(0);
 }
 
-// Reject path traversal
-if (filePath.includes('../') || filePath.startsWith('..') || filePath.includes('/..')) {
+// Security: Resolve path and verify containment within baseDir
+const resolvedPath = path.resolve(baseDir, filePath);
+if (!resolvedPath.startsWith(baseDir + path.sep) && resolvedPath !== baseDir) {
   console.log('ok');
   process.exit(0);
 }
 
 // Sanitize - only allow safe characters
-const sanitized = filePath.replace(/[^a-zA-Z0-9._\/-]/g, '');
+const sanitized = filePath.replace(/[^a-zA-Z0-9._/-]/g, '');
 if (sanitized !== filePath || sanitized.length === 0) {
   console.log('ok');
   process.exit(0);

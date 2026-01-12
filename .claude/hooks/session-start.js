@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* global require, process, console */
+/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename */
 /**
  * SessionStart Hook for SoNash (Node.js version)
  *
@@ -13,7 +15,7 @@
  *   5. Checks consolidation status
  */
 
-const { execSync, spawnSync } = require('child_process');
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -23,7 +25,16 @@ if (process.env.CLAUDE_CODE_REMOTE !== 'true') {
   process.exit(0);
 }
 
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+// Validate project directory before chdir
+const baseDir = path.resolve(process.cwd());
+const projectDirInput = process.env.CLAUDE_PROJECT_DIR || baseDir;
+const projectDir = path.resolve(baseDir, projectDirInput);
+
+// Security: Ensure projectDir is within or equal to baseDir
+if (!projectDir.startsWith(baseDir + path.sep) && projectDir !== baseDir) {
+  process.exit(0);
+}
+
 process.chdir(projectDir);
 
 let warnings = 0;

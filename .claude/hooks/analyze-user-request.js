@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* global process, console */
+/* eslint-disable security/detect-non-literal-regexp */
 /**
  * analyze-user-request.js - UserPromptSubmit hook for routing user requests
  * Cross-platform replacement for analyze-user-request.sh
@@ -95,8 +97,9 @@ for (const pattern of uiPatterns) {
 }
 
 // Priority 5: Planning/Architecture
+// Note: 'design' removed - already in uiPatterns (Priority 4) to avoid ambiguity
 const planPatterns = [
-  'plan', 'design', 'architect', 'implement.?feature',
+  'plan', 'architect', 'implement.?feature',
   'add.?feature', 'new.?feature', 'refactor'
 ];
 for (const pattern of planPatterns) {

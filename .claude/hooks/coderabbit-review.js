@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* global require, process, console */
+/* eslint-disable @typescript-eslint/no-require-imports, security/detect-non-literal-fs-filename, no-control-regex */
 /**
  * coderabbit-review.js - PostToolUse hook for CodeRabbit AI review integration
  * Cross-platform replacement for coderabbit-review.sh
@@ -11,7 +13,7 @@
  *   coderabbit auth login
  */
 
-const { execSync, spawnSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -23,12 +25,8 @@ if (process.argv.length <= 2) {
 
 // Check if CodeRabbit CLI is available
 function hasCodeRabbit() {
-  try {
-    execSync('coderabbit --version', { stdio: 'pipe' });
-    return true;
-  } catch {
-    return false;
-  }
+  const result = spawnSync('coderabbit', ['--version'], { stdio: 'pipe' });
+  return result.status === 0;
 }
 
 if (!hasCodeRabbit()) {
@@ -108,7 +106,7 @@ for (const filePath of filePaths) {
 
       allFindings += `\n--- ${filePath} ---\n${output}\n`;
     }
-  } catch (error) {
+  } catch {
     // Skip on error, don't block
     continue;
   }
