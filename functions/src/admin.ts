@@ -335,8 +335,9 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(async (request) => {
       .collection("daily_quotes")
       .doc(id)
       .set({
-        id,
         ...validated,
+        // SECURITY: Place id AFTER spread to prevent client-provided id from overwriting
+        id,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
@@ -708,7 +709,10 @@ interface GetUserDetailRequest {
 export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) => {
   await requireAdmin(request, "adminGetUserDetail");
 
-  const { uid, activityLimit: rawActivityLimit = 30 } = request.data;
+  // SECURITY: Validate request.data exists before destructuring
+  const requestData =
+    request.data && typeof request.data === "object" ? request.data : ({} as GetUserDetailRequest);
+  const { uid, activityLimit: rawActivityLimit = 30 } = requestData;
 
   // SECURITY: Clamp activityLimit to prevent expensive reads / DoS
   const MAX_ACTIVITY_LIMIT = 100;

@@ -367,12 +367,27 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(async (req
       const { type, data: entryData, tags } = data;
 
       // Helper to remove undefined values (Firestore doesn't support them)
-      const sanitizeData = (data: unknown): unknown => {
+      // SECURITY: Includes depth limit and cycle detection to prevent DoS attacks
+      const MAX_DEPTH = 50;
+      const sanitizeData = (
+        data: unknown,
+        seen: WeakSet<object> = new WeakSet(),
+        depth: number = 0
+      ): unknown => {
+        // Depth limit to prevent stack overflow from malicious payloads
+        if (depth > MAX_DEPTH) return null;
+
         if (Array.isArray(data)) {
           // Filter out undefined from arrays, then recursively sanitize remaining items
-          return data.filter((item) => item !== undefined).map(sanitizeData);
+          return data
+            .filter((item) => item !== undefined)
+            .map((item) => sanitizeData(item, seen, depth + 1));
         }
         if (data !== null && typeof data === "object") {
+          // Cycle detection to prevent infinite loops
+          if (seen.has(data)) return null;
+          seen.add(data);
+
           // SECURITY: Only recurse into plain objects; preserve special objects (Date, Timestamp, etc.)
           const proto = Object.getPrototypeOf(data);
           const isPlainObject = proto === Object.prototype || proto === null;
@@ -381,7 +396,7 @@ export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(async (req
           return Object.entries(data as Record<string, unknown>).reduce(
             (acc: Record<string, unknown>, [key, value]) => {
               if (value !== undefined) {
-                acc[key] = sanitizeData(value);
+                acc[key] = sanitizeData(value, seen, depth + 1);
               }
               return acc;
             },
