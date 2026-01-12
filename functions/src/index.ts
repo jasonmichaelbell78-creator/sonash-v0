@@ -15,7 +15,13 @@
 import { setGlobalOptions } from "firebase-functions";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { dailyLogSchema, journalEntrySchema, inventoryEntrySchema, softDeleteJournalEntrySchema, migrationDataSchema } from "./schemas";
+import {
+  dailyLogSchema,
+  journalEntrySchema,
+  inventoryEntrySchema,
+  softDeleteJournalEntrySchema,
+  migrationDataSchema,
+} from "./schemas";
 import { initSentry, logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 import { withSecurityChecks } from "./security-wrapper";
@@ -23,16 +29,16 @@ import { verifyRecaptchaToken } from "./recaptcha-verify";
 
 // Type-safe interface for migration merge data
 interface MigrationMergeData {
-    migratedFrom: string;
-    migratedAt: admin.firestore.FieldValue;
-    soberDate?: admin.firestore.Timestamp;
-    // Future fields can be added here as needed
+  migratedFrom: string;
+  migratedAt: admin.firestore.FieldValue;
+  soberDate?: admin.firestore.Timestamp;
+  // Future fields can be added here as needed
 }
 
 // Initialize Sentry for error monitoring (runs once at cold start)
 const SENTRY_DSN = process.env.SENTRY_DSN;
 if (SENTRY_DSN) {
-    initSentry(SENTRY_DSN);
+  initSentry(SENTRY_DSN);
 }
 
 // Initialize Firebase Admin SDK
@@ -44,17 +50,17 @@ setGlobalOptions({ maxInstances: 10 });
 // Firestore-based rate limiter: Persists across function instances and cold starts
 // Prevents bypass through horizontal scaling or cold start resets
 const saveDailyLogLimiter = new FirestoreRateLimiter({
-    points: 10,    // Max 10 requests
-    duration: 60,  // Per 60 seconds
+  points: 10, // Max 10 requests
+  duration: 60, // Per 60 seconds
 });
 
 interface DailyLogData {
-    userId: string;
-    date: string;
-    content: string;
-    mood?: string | null;
-    cravings?: boolean;
-    used?: boolean;
+  userId: string;
+  date: string;
+  content: string;
+  mood?: string | null;
+  cravings?: boolean;
+  used?: boolean;
 }
 
 /**
@@ -68,85 +74,79 @@ interface DailyLogData {
  * 5. Authorization (user can only write own data)
  * 6. Server-side timestamp (prevents clock manipulation)
  */
-export const saveDailyLog = onCall<DailyLogData>(
-    async (request) => withSecurityChecks(
-        request,
-        {
-            functionName: 'saveDailyLog',
-            rateLimiter: saveDailyLogLimiter,
-            validationSchema: dailyLogSchema,
-            requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
-            recaptchaAction: 'save_daily_log', // Manual reCAPTCHA verification
-        },
-        async ({ data, userId }) => {
-            const { date, content, mood, cravings, used } = data;
+export const saveDailyLog = onCall<DailyLogData>(async (request) =>
+  withSecurityChecks(
+    request,
+    {
+      functionName: "saveDailyLog",
+      rateLimiter: saveDailyLogLimiter,
+      validationSchema: dailyLogSchema,
+      requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+      recaptchaAction: "save_daily_log", // Manual reCAPTCHA verification
+    },
+    async ({ data, userId }) => {
+      const { date, content, mood, cravings, used } = data;
 
-            // Save to Firestore using Admin SDK (bypasses security rules)
-            try {
-                const docRef = admin
-                    .firestore()
-                    .collection("users")
-                    .doc(userId)
-                    .collection("daily_logs")
-                    .doc(date);
+      // Save to Firestore using Admin SDK (bypasses security rules)
+      try {
+        const docRef = admin
+          .firestore()
+          .collection("users")
+          .doc(userId)
+          .collection("daily_logs")
+          .doc(date);
 
-                await docRef.set(
-                    {
-                        date,
-                        content,
-                        mood: mood || null,
-                        cravings: cravings || false,
-                        used: used || false,
-                        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                    },
-                    { merge: true }
-                );
+        await docRef.set(
+          {
+            date,
+            content,
+            mood: mood || null,
+            cravings: cravings || false,
+            used: used || false,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
 
-                logSecurityEvent(
-                    "SAVE_SUCCESS",
-                    "saveDailyLog",
-                    "Journal saved successfully",
-                    { userId, severity: "INFO" }
-                );
+        logSecurityEvent("SAVE_SUCCESS", "saveDailyLog", "Journal saved successfully", {
+          userId,
+          severity: "INFO",
+        });
 
-                return {
-                    success: true,
-                    message: "Journal saved successfully",
-                };
-            } catch (error) {
-                logSecurityEvent(
-                    "SAVE_FAILURE",
-                    "saveDailyLog",
-                    "Failed to save to Firestore",
-                    { userId, metadata: { error: String(error) }, captureToSentry: true }
-                );
+        return {
+          success: true,
+          message: "Journal saved successfully",
+        };
+      } catch (error) {
+        logSecurityEvent("SAVE_FAILURE", "saveDailyLog", "Failed to save to Firestore", {
+          userId,
+          metadata: { error: String(error) },
+          captureToSentry: true,
+        });
 
-                throw new HttpsError(
-                    "internal",
-                    "Failed to save journal. Please try again."
-                );
-            }
-        }
-    )
+        throw new HttpsError("internal", "Failed to save journal. Please try again.");
+      }
+    }
+  )
 );
 
 // Initialize rate limiter for journal entries
 const saveJournalEntryLimiter = new FirestoreRateLimiter({
-    points: 10,    // Max 10 requests
-    duration: 60,  // Per 60 seconds
+  points: 10, // Max 10 requests
+  duration: 60, // Per 60 seconds
 });
 
 interface JournalEntryData {
-    userId?: string;
-    type: string;
-    data: Record<string, unknown>;
-    dateLabel: string;
-    isPrivate?: boolean;
-    searchableText?: string;
-    tags?: string[];
-    hasCravings?: boolean;
-    hasUsed?: boolean;
-    mood?: string | null;
+  userId?: string;
+  type: string;
+  data: Record<string, unknown>;
+  dateLabel: string;
+  isPrivate?: boolean;
+  searchableText?: string;
+  tags?: string[];
+  hasCravings?: boolean;
+  hasUsed?: boolean;
+  mood?: string | null;
 }
 
 /**
@@ -160,86 +160,90 @@ interface JournalEntryData {
  * 5. Authorization (user can only write own data)
  * 6. Server-side timestamp (prevents clock manipulation)
  */
-export const saveJournalEntry = onCall<JournalEntryData>(
-    async (request) => withSecurityChecks(
-        request,
-        {
-            functionName: 'saveJournalEntry',
-            rateLimiter: saveJournalEntryLimiter,
-            validationSchema: journalEntrySchema,
-            requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
-            recaptchaAction: 'save_journal_entry', // Manual reCAPTCHA verification
-        },
-        async ({ data, userId }) => {
-            const { type, data: entryData, dateLabel, isPrivate, searchableText, tags, hasCravings, hasUsed, mood } = data;
+export const saveJournalEntry = onCall<JournalEntryData>(async (request) =>
+  withSecurityChecks(
+    request,
+    {
+      functionName: "saveJournalEntry",
+      rateLimiter: saveJournalEntryLimiter,
+      validationSchema: journalEntrySchema,
+      requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+      recaptchaAction: "save_journal_entry", // Manual reCAPTCHA verification
+    },
+    async ({ data, userId }) => {
+      const {
+        type,
+        data: entryData,
+        dateLabel,
+        isPrivate,
+        searchableText,
+        tags,
+        hasCravings,
+        hasUsed,
+        mood,
+      } = data;
 
-            // Save to Firestore using Admin SDK (bypasses security rules)
-            try {
-                const docRef = admin
-                    .firestore()
-                    .collection("users")
-                    .doc(userId)
-                    .collection("journal")
-                    .doc(); // Auto-generate ID
+      // Save to Firestore using Admin SDK (bypasses security rules)
+      try {
+        const docRef = admin
+          .firestore()
+          .collection("users")
+          .doc(userId)
+          .collection("journal")
+          .doc(); // Auto-generate ID
 
-                const journalEntry: Record<string, unknown> = {
-                    userId,
-                    type,
-                    data: entryData,
-                    dateLabel,
-                    isPrivate: isPrivate !== undefined ? isPrivate : true,
-                    isSoftDeleted: false,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                };
+        const journalEntry: Record<string, unknown> = {
+          userId,
+          type,
+          data: entryData,
+          dateLabel,
+          isPrivate: isPrivate !== undefined ? isPrivate : true,
+          isSoftDeleted: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
 
-                // Add optional fields if present
-                if (searchableText) journalEntry.searchableText = searchableText;
-                if (tags) journalEntry.tags = tags;
-                if (hasCravings !== undefined) journalEntry.hasCravings = hasCravings;
-                if (hasUsed !== undefined) journalEntry.hasUsed = hasUsed;
-                if (mood !== undefined) journalEntry.mood = mood;
+        // Add optional fields if present
+        if (searchableText) journalEntry.searchableText = searchableText;
+        if (tags) journalEntry.tags = tags;
+        if (hasCravings !== undefined) journalEntry.hasCravings = hasCravings;
+        if (hasUsed !== undefined) journalEntry.hasUsed = hasUsed;
+        if (mood !== undefined) journalEntry.mood = mood;
 
-                await docRef.set(journalEntry);
+        await docRef.set(journalEntry);
 
-                logSecurityEvent(
-                    "SAVE_SUCCESS",
-                    "saveJournalEntry",
-                    "Journal entry saved successfully",
-                    { userId, severity: "INFO" }
-                );
+        logSecurityEvent("SAVE_SUCCESS", "saveJournalEntry", "Journal entry saved successfully", {
+          userId,
+          severity: "INFO",
+        });
 
-                return {
-                    success: true,
-                    message: "Journal entry saved successfully",
-                    entryId: docRef.id,
-                };
-            } catch (error) {
-                logSecurityEvent(
-                    "SAVE_FAILURE",
-                    "saveJournalEntry",
-                    "Failed to save to Firestore",
-                    { userId, metadata: { error: String(error) }, captureToSentry: true }
-                );
+        return {
+          success: true,
+          message: "Journal entry saved successfully",
+          entryId: docRef.id,
+        };
+      } catch (error) {
+        logSecurityEvent("SAVE_FAILURE", "saveJournalEntry", "Failed to save to Firestore", {
+          userId,
+          metadata: { error: String(error) },
+          captureToSentry: true,
+        });
 
-                throw new HttpsError(
-                    "internal",
-                    "Failed to save journal entry. Please try again."
-                );
-            }
-        }
-    )
+        throw new HttpsError("internal", "Failed to save journal entry. Please try again.");
+      }
+    }
+  )
 );
 
 // Initialize rate limiter for soft delete operations
 const softDeleteJournalEntryLimiter = new FirestoreRateLimiter({
-    points: 20,    // Max 20 deletes
-    duration: 60,  // Per minute (more generous than writes)
+  points: 20, // Max 20 deletes
+  duration: 60, // Per minute (more generous than writes)
 });
 
 interface SoftDeleteJournalEntryData {
-    entryId: string;
-    userId?: string;
+  entryId: string;
+  userId?: string;
 }
 
 /**
@@ -255,88 +259,84 @@ interface SoftDeleteJournalEntryData {
  * 4. Zod input validation
  * 5. Authorization (user can only delete own entries)
  */
-export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(
-    async (request) => withSecurityChecks(
-        request,
-        {
-            functionName: 'softDeleteJournalEntry',
-            rateLimiter: softDeleteJournalEntryLimiter,
-            validationSchema: softDeleteJournalEntrySchema,
-            requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
-            recaptchaAction: 'delete_journal_entry', // Manual reCAPTCHA verification
-        },
-        async ({ data, userId }) => {
-            const { entryId } = data;
+export const softDeleteJournalEntry = onCall<SoftDeleteJournalEntryData>(async (request) =>
+  withSecurityChecks(
+    request,
+    {
+      functionName: "softDeleteJournalEntry",
+      rateLimiter: softDeleteJournalEntryLimiter,
+      validationSchema: softDeleteJournalEntrySchema,
+      requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+      recaptchaAction: "delete_journal_entry", // Manual reCAPTCHA verification
+    },
+    async ({ data, userId }) => {
+      const { entryId } = data;
 
-            try {
-                const docRef = admin
-                    .firestore()
-                    .collection("users")
-                    .doc(userId)
-                    .collection("journal")
-                    .doc(entryId);
+      try {
+        const docRef = admin
+          .firestore()
+          .collection("users")
+          .doc(userId)
+          .collection("journal")
+          .doc(entryId);
 
-                // Verify document exists and belongs to user
-                const doc = await docRef.get();
-                if (!doc.exists) {
-                    throw new HttpsError("not-found", "Journal entry not found");
-                }
-
-                const docData = doc.data();
-                // Require userId field to exist and match the caller
-                if (!docData?.userId || docData.userId !== userId) {
-                    logSecurityEvent(
-                        "AUTHORIZATION_FAILURE",
-                        "softDeleteJournalEntry",
-                        "Attempted to delete entry without valid ownership",
-                        { userId, metadata: { entryId, ownerId: docData?.userId || null } }
-                    );
-                    throw new HttpsError("permission-denied", "Cannot delete another user's entry");
-                }
-
-                // Soft delete by setting flag
-                await docRef.update({
-                    isSoftDeleted: true,
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                });
-
-                logSecurityEvent(
-                    "DELETE_SUCCESS",
-                    "softDeleteJournalEntry",
-                    "Journal entry soft deleted",
-                    { userId, severity: "INFO", metadata: { entryId } }
-                );
-
-                return {
-                    success: true,
-                    message: "Journal entry deleted successfully",
-                };
-            } catch (error) {
-                // Re-throw HttpsErrors directly
-                if (error instanceof HttpsError) {
-                    throw error;
-                }
-
-                logSecurityEvent(
-                    "DELETE_FAILURE",
-                    "softDeleteJournalEntry",
-                    "Failed to delete journal entry",
-                    { userId, metadata: { error: String(error), entryId }, captureToSentry: true }
-                );
-
-                throw new HttpsError(
-                    "internal",
-                    "Failed to delete journal entry. Please try again."
-                );
-            }
+        // Verify document exists and belongs to user
+        const doc = await docRef.get();
+        if (!doc.exists) {
+          throw new HttpsError("not-found", "Journal entry not found");
         }
-    )
+
+        const docData = doc.data();
+        // Require userId field to exist and match the caller
+        if (!docData?.userId || docData.userId !== userId) {
+          logSecurityEvent(
+            "AUTHORIZATION_FAILURE",
+            "softDeleteJournalEntry",
+            "Attempted to delete entry without valid ownership",
+            { userId, metadata: { entryId, ownerId: docData?.userId || null } }
+          );
+          throw new HttpsError("permission-denied", "Cannot delete another user's entry");
+        }
+
+        // Soft delete by setting flag
+        await docRef.update({
+          isSoftDeleted: true,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        logSecurityEvent("DELETE_SUCCESS", "softDeleteJournalEntry", "Journal entry soft deleted", {
+          userId,
+          severity: "INFO",
+          metadata: { entryId },
+        });
+
+        return {
+          success: true,
+          message: "Journal entry deleted successfully",
+        };
+      } catch (error) {
+        // Re-throw HttpsErrors directly
+        if (error instanceof HttpsError) {
+          throw error;
+        }
+
+        logSecurityEvent(
+          "DELETE_FAILURE",
+          "softDeleteJournalEntry",
+          "Failed to delete journal entry",
+          { userId, metadata: { error: String(error), entryId }, captureToSentry: true }
+        );
+
+        throw new HttpsError("internal", "Failed to delete journal entry. Please try again.");
+      }
+    }
+  )
 );
 
 // Initialize rate limiter for inventory entries
 const saveInventoryEntryLimiter = new FirestoreRateLimiter({
-    points: 10,    // Max 10 inventory entries
-    duration: 60,  // Per minute (same as journal/daily log)
+  points: 10, // Max 10 inventory entries
+  duration: 60, // Per minute (same as journal/daily log)
 });
 
 /**
@@ -353,104 +353,120 @@ const saveInventoryEntryLimiter = new FirestoreRateLimiter({
  * 5. Authorization (write own data only)
  * 6. Audit logging
  */
-export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(
-    async (request) => withSecurityChecks(
-        request,
-        {
-            functionName: 'saveInventoryEntry',
-            rateLimiter: saveInventoryEntryLimiter,
-            validationSchema: inventoryEntrySchema,
-            requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
-            recaptchaAction: 'save_inventory', // Manual reCAPTCHA verification
-        },
-        async ({ data, userId }) => {
-            const { type, data: entryData, tags } = data;
+export const saveInventoryEntry = onCall<typeof inventoryEntrySchema>(async (request) =>
+  withSecurityChecks(
+    request,
+    {
+      functionName: "saveInventoryEntry",
+      rateLimiter: saveInventoryEntryLimiter,
+      validationSchema: inventoryEntrySchema,
+      requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+      recaptchaAction: "save_inventory", // Manual reCAPTCHA verification
+    },
+    async ({ data, userId }) => {
+      const { type, data: entryData, tags } = data;
 
-            // Helper to remove undefined values (Firestore doesn't support them)
-            const sanitizeData = (data: unknown): unknown => {
-                if (Array.isArray(data)) {
-                    return data.map(sanitizeData);
-                }
-                if (data !== null && typeof data === 'object') {
-                    return Object.entries(data as Record<string, unknown>).reduce(
-                        (acc: Record<string, unknown>, [key, value]) => {
-                            if (value !== undefined) {
-                                acc[key] = sanitizeData(value);
-                            }
-                            return acc;
-                        },
-                        {} as Record<string, unknown>
-                    );
-                }
-                return data;
-            };
+      // Helper to remove undefined values (Firestore doesn't support them)
+      // SECURITY: Includes depth limit and cycle detection to prevent DoS attacks
+      const MAX_DEPTH = 50;
+      const sanitizeData = (
+        data: unknown,
+        seen: WeakSet<object> = new WeakSet(),
+        depth: number = 0
+      ): unknown => {
+        // Depth limit to prevent stack overflow from malicious payloads
+        if (depth > MAX_DEPTH) return null;
 
-            // Save to Firestore using Admin SDK (bypasses security rules)
-            try {
-                const docRef = admin
-                    .firestore()
-                    .collection("users")
-                    .doc(userId)
-                    .collection("inventoryEntries")
-                    .doc(); // Auto-generate ID
-
-                // Get today's date in YYYY-MM-DD format (UTC)
-                const now = new Date();
-                const dateId = now.toISOString().split('T')[0];
-
-                const inventoryEntry: Record<string, unknown> = {
-                    id: docRef.id,
-                    userId,
-                    type,
-                    data: sanitizeData(entryData),
-                    tags: tags || [],
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                    dateId, // For easy querying by day
-                };
-
-                await docRef.set(inventoryEntry);
-
-                logSecurityEvent(
-                    "SAVE_SUCCESS",
-                    "saveInventoryEntry",
-                    "Inventory entry saved successfully",
-                    { userId, severity: "INFO", metadata: { type } }
-                );
-
-                return {
-                    success: true,
-                    message: "Inventory entry saved successfully",
-                    entryId: docRef.id,
-                };
-            } catch (error) {
-                logSecurityEvent(
-                    "SAVE_FAILURE",
-                    "saveInventoryEntry",
-                    "Failed to save to Firestore",
-                    { userId, metadata: { error: String(error) }, captureToSentry: true }
-                );
-
-                throw new HttpsError(
-                    "internal",
-                    "Failed to save inventory entry. Please try again."
-                );
-            }
+        if (Array.isArray(data)) {
+          // Filter out undefined from arrays, then recursively sanitize remaining items
+          return data
+            .filter((item) => item !== undefined)
+            .map((item) => sanitizeData(item, seen, depth + 1));
         }
-    )
-);
+        if (data !== null && typeof data === "object") {
+          // Cycle detection to prevent infinite loops
+          if (seen.has(data)) return null;
+          seen.add(data);
 
+          // SECURITY: Only recurse into plain objects; preserve special objects (Date, Timestamp, etc.)
+          const proto = Object.getPrototypeOf(data);
+          const isPlainObject = proto === Object.prototype || proto === null;
+          if (!isPlainObject) return data;
+
+          return Object.entries(data as Record<string, unknown>).reduce(
+            (acc: Record<string, unknown>, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = sanitizeData(value, seen, depth + 1);
+              }
+              return acc;
+            },
+            {} as Record<string, unknown>
+          );
+        }
+        return data;
+      };
+
+      // Save to Firestore using Admin SDK (bypasses security rules)
+      try {
+        const docRef = admin
+          .firestore()
+          .collection("users")
+          .doc(userId)
+          .collection("inventoryEntries")
+          .doc(); // Auto-generate ID
+
+        // Get today's date in YYYY-MM-DD format (UTC)
+        const now = new Date();
+        const dateId = now.toISOString().split("T")[0];
+
+        const inventoryEntry: Record<string, unknown> = {
+          id: docRef.id,
+          userId,
+          type,
+          data: sanitizeData(entryData),
+          tags: tags || [],
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          dateId, // For easy querying by day
+        };
+
+        await docRef.set(inventoryEntry);
+
+        logSecurityEvent(
+          "SAVE_SUCCESS",
+          "saveInventoryEntry",
+          "Inventory entry saved successfully",
+          { userId, severity: "INFO", metadata: { type } }
+        );
+
+        return {
+          success: true,
+          message: "Inventory entry saved successfully",
+          entryId: docRef.id,
+        };
+      } catch (error) {
+        logSecurityEvent("SAVE_FAILURE", "saveInventoryEntry", "Failed to save to Firestore", {
+          userId,
+          metadata: { error: String(error) },
+          captureToSentry: true,
+        });
+
+        throw new HttpsError("internal", "Failed to save inventory entry. Please try again.");
+      }
+    }
+  )
+);
 
 // Initialize rate limiter for migration operations
 const migrateDataLimiter = new FirestoreRateLimiter({
-    points: 5,     // Max 5 migrations
-    duration: 300, // Per 5 minutes (migrations are expensive)
+  points: 5, // Max 5 migrations
+  duration: 300, // Per 5 minutes (migrations are expensive)
 });
 
 interface MigrationData {
-    anonymousUid: string;
-    targetUid: string;
-    recaptchaToken?: string;
+  anonymousUid: string;
+  targetUid: string;
+  recaptchaToken?: string;
 }
 
 /**
@@ -467,246 +483,304 @@ interface MigrationData {
  * 5. Batch writes for atomicity
  * 6. Audit logging
  */
-export const migrateAnonymousUserData = onCall<MigrationData>(
-    async (request) => {
-        const { data, app: _app, auth } = request;
+export const migrateAnonymousUserData = onCall<MigrationData>(async (request) => {
+  const { data, app: _app, auth } = request;
 
-        if (!auth) {
-            logSecurityEvent("AUTH_FAILURE", "migrateAnonymousUserData", "Unauthenticated request");
-            throw new HttpsError("unauthenticated", "You must be signed in to call this function.");
-        }
+  if (!auth) {
+    logSecurityEvent("AUTH_FAILURE", "migrateAnonymousUserData", "Unauthenticated request");
+    throw new HttpsError("unauthenticated", "You must be signed in to call this function.");
+  }
 
-        const userId = auth.uid;
+  const userId = auth.uid;
 
-        // Rate limit check
-        try {
-            await migrateDataLimiter.consume(userId, "migrateAnonymousUserData");
-        } catch (rateLimitError) {
-            const errorMessage = rateLimitError instanceof Error
-                ? rateLimitError.message
-                : "Rate limit exceeded (5 req/5min)";
-            logSecurityEvent("RATE_LIMIT_EXCEEDED", "migrateAnonymousUserData", errorMessage, { userId });
-            throw new HttpsError("resource-exhausted", errorMessage);
-        }
+  // Rate limit check
+  try {
+    await migrateDataLimiter.consume(userId, "migrateAnonymousUserData");
+  } catch (rateLimitError) {
+    const errorMessage =
+      rateLimitError instanceof Error ? rateLimitError.message : "Rate limit exceeded (5 req/5min)";
+    logSecurityEvent("RATE_LIMIT_EXCEEDED", "migrateAnonymousUserData", errorMessage, { userId });
+    throw new HttpsError("resource-exhausted", errorMessage);
+  }
 
-        // TEMPORARILY DISABLED: App Check verification - waiting for throttle to clear
-        // App Check verification
-        /* if (!app) {
+  // TEMPORARILY DISABLED: App Check verification - waiting for throttle to clear
+  // App Check verification
+  /* if (!app) {
             logSecurityEvent("APP_CHECK_FAILURE", "migrateAnonymousUserData", "App Check token invalid", { userId });
             throw new HttpsError("failed-precondition", "App Check verification failed. Please refresh the page.");
         } */
 
-        // Verify reCAPTCHA token (manual verification)
-        // Make reCAPTCHA optional - log but don't block when missing
-        const token = data.recaptchaToken;
-        if (!token || token.trim() === '') {
-            logSecurityEvent(
-                "RECAPTCHA_MISSING_TOKEN",
-                "migrateAnonymousUserData",
-                "Migration processed without reCAPTCHA token (may indicate network blocking)",
-                {
-                    userId,
-                    severity: "WARNING",
-                    metadata: { action: 'migrate_user_data' }
-                }
-            );
-            // Continue without reCAPTCHA protection - rely on other security layers
-        } else {
-            await verifyRecaptchaToken(token, 'migrate_user_data', userId);
+  // Verify reCAPTCHA token (manual verification)
+  // Make reCAPTCHA optional - log but don't block when missing
+  const token = data.recaptchaToken;
+  if (!token || token.trim() === "") {
+    logSecurityEvent(
+      "RECAPTCHA_MISSING_TOKEN",
+      "migrateAnonymousUserData",
+      "Migration processed without reCAPTCHA token (may indicate network blocking)",
+      {
+        userId,
+        severity: "WARNING",
+        metadata: { action: "migrate_user_data" },
+      }
+    );
+    // Continue without reCAPTCHA protection - rely on other security layers
+  } else {
+    await verifyRecaptchaToken(token, "migrate_user_data", userId);
+  }
+
+  // Validate input using Zod schema
+  let validatedData: MigrationData;
+  try {
+    validatedData = migrationDataSchema.parse(data);
+  } catch (error) {
+    const zodError = error as { issues?: Array<{ message: string }> };
+    const errorMessages = zodError.issues?.map((e) => e.message).join(", ") || "Validation failed";
+    logSecurityEvent(
+      "VALIDATION_FAILURE",
+      "migrateAnonymousUserData",
+      `Validation failed: ${errorMessages}`,
+      { userId }
+    );
+    throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
+  }
+
+  // SECURITY: Only the signed-in TARGET user can receive migrated data
+  // This prevents anonymous users from pushing data to arbitrary accounts
+  if (userId !== validatedData.targetUid) {
+    logSecurityEvent(
+      "AUTHORIZATION_FAILURE",
+      "migrateAnonymousUserData",
+      "Unauthorized migration attempt (caller is not target)",
+      {
+        userId,
+        metadata: { anonymousUid: validatedData.anonymousUid, targetUid: validatedData.targetUid },
+      }
+    );
+    throw new HttpsError("permission-denied", "Cannot migrate data into another user's account");
+  }
+
+  // Verify anonymous user exists
+  const db = admin.firestore();
+  const anonymousUserDoc = await db.collection("users").doc(validatedData.anonymousUid).get();
+
+  if (!anonymousUserDoc.exists) {
+    throw new HttpsError("not-found", "Anonymous user not found");
+  }
+
+  try {
+    // Batch chunking to handle >500 operations (Firestore limit)
+    const BATCH_LIMIT = 499; // Stay under 500 to be safe
+    let batch = db.batch();
+    let operationCount = 0;
+    let totalDocs = 0;
+    const batches: FirebaseFirestore.WriteBatch[] = [batch];
+
+    // Helper function to add operation to batch with chunking
+    const addToBatch = async (
+      ref: FirebaseFirestore.DocumentReference,
+      data: FirebaseFirestore.DocumentData,
+      options?: FirebaseFirestore.SetOptions
+    ) => {
+      if (operationCount >= BATCH_LIMIT) {
+        // Current batch is full, create a new one
+        batch = db.batch();
+        batches.push(batch);
+        operationCount = 0;
+      }
+      batch.set(ref, data, options || {});
+      operationCount++;
+      totalDocs++;
+    };
+
+    // SECURITY: Paginate collection reads to prevent memory exhaustion with large datasets
+    // Use smaller page size (100) to balance between efficiency and memory safety
+    const PAGE_SIZE = 100;
+
+    // Helper to paginate collection reads
+    const paginateCollection = async (
+      collectionPath: string,
+      targetCollection: string
+    ): Promise<number> => {
+      let lastDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+      let docCount = 0;
+
+      while (true) {
+        let pageQuery = db.collection(collectionPath).orderBy("__name__").limit(PAGE_SIZE);
+
+        if (lastDoc) {
+          pageQuery = pageQuery.startAfter(lastDoc);
         }
 
-        // Validate input using Zod schema
-        let validatedData: MigrationData;
-        try {
-            validatedData = migrationDataSchema.parse(data);
-        } catch (error) {
-            const zodError = error as { issues?: Array<{ message: string }> };
-            const errorMessages = zodError.issues?.map((e) => e.message).join(", ") || "Validation failed";
-            logSecurityEvent("VALIDATION_FAILURE", "migrateAnonymousUserData", `Validation failed: ${errorMessages}`, { userId });
-            throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
+        const snapshot = await pageQuery.get();
+        if (snapshot.empty) break;
+
+        for (const doc of snapshot.docs) {
+          const targetRef = db.doc(
+            `users/${validatedData.targetUid}/${targetCollection}/${doc.id}`
+          );
+          // SECURITY: Update userId to target user to ensure correct ownership
+          const sourceData = doc.data();
+          const migratedData = {
+            ...sourceData,
+            userId: validatedData.targetUid,
+            migratedFrom: validatedData.anonymousUid,
+          };
+          await addToBatch(targetRef, migratedData, { merge: true });
+          docCount++;
         }
 
-        // Authorization: caller must be source OR target user
-        if (userId !== validatedData.anonymousUid && userId !== validatedData.targetUid) {
-            logSecurityEvent("AUTHORIZATION_FAILURE", "migrateAnonymousUserData", "Unauthorized migration attempt",
-                { userId, metadata: { anonymousUid: validatedData.anonymousUid, targetUid: validatedData.targetUid } });
-            throw new HttpsError("permission-denied", "Cannot migrate data between other users' accounts");
-        }
+        lastDoc = snapshot.docs[snapshot.docs.length - 1];
+        if (snapshot.docs.length < PAGE_SIZE) break;
+      }
 
-        // Verify anonymous user exists
-        const db = admin.firestore();
-        const anonymousUserDoc = await db.collection("users").doc(validatedData.anonymousUid).get();
+      return docCount;
+    };
 
-        if (!anonymousUserDoc.exists) {
-            throw new HttpsError("not-found", "Anonymous user not found");
-        }
+    // Migrate journal entries with pagination
+    const journalCount = await paginateCollection(
+      `users/${validatedData.anonymousUid}/journal`,
+      "journal"
+    );
 
-        try {
-            // Batch chunking to handle >500 operations (Firestore limit)
-            const BATCH_LIMIT = 499; // Stay under 500 to be safe
-            let batch = db.batch();
-            let operationCount = 0;
-            let totalDocs = 0;
-            const batches: FirebaseFirestore.WriteBatch[] = [batch];
+    // Migrate daily logs with pagination
+    const dailyLogsCount = await paginateCollection(
+      `users/${validatedData.anonymousUid}/daily_logs`,
+      "daily_logs"
+    );
 
-            // Helper function to add operation to batch with chunking
-            const addToBatch = async (
-                ref: FirebaseFirestore.DocumentReference,
-                data: FirebaseFirestore.DocumentData,
-                options?: FirebaseFirestore.SetOptions
-            ) => {
-                if (operationCount >= BATCH_LIMIT) {
-                    // Current batch is full, create a new one
-                    batch = db.batch();
-                    batches.push(batch);
-                    operationCount = 0;
-                }
-                batch.set(ref, data, options || {});
-                operationCount++;
-                totalDocs++;
-            };
+    // Migrate inventory entries with pagination
+    const inventoryCount = await paginateCollection(
+      `users/${validatedData.anonymousUid}/inventoryEntries`,
+      "inventoryEntries"
+    );
 
-            // Migrate journal entries
-            const journalSnapshot = await db.collection(`users/${validatedData.anonymousUid}/journal`).get();
-            for (const doc of journalSnapshot.docs) {
-                const targetRef = db.doc(`users/${validatedData.targetUid}/journal/${doc.id}`);
-                await addToBatch(targetRef, doc.data(), { merge: true });
-            }
+    // Merge user profile metadata with smart conflict resolution
+    // STRATEGY: Prefer target account data (usually more accurate)
+    // Only use anonymous data if target account lacks that field
+    const anonymousProfile = anonymousUserDoc.data();
+    if (anonymousProfile) {
+      const targetProfileRef = db.doc(`users/${validatedData.targetUid}`);
 
-            // Migrate daily logs
-            const dailyLogsSnapshot = await db.collection(`users/${validatedData.anonymousUid}/daily_logs`).get();
-            for (const doc of dailyLogsSnapshot.docs) {
-                const targetRef = db.doc(`users/${validatedData.targetUid}/daily_logs/${doc.id}`);
-                await addToBatch(targetRef, doc.data(), { merge: true });
-            }
+      // Fetch target profile to check for existing data
+      const targetProfileDoc = await targetProfileRef.get();
+      const targetProfile = targetProfileDoc.data();
 
-            // Migrate inventory entries
-            const inventorySnapshot = await db.collection(`users/${validatedData.anonymousUid}/inventoryEntries`).get();
-            for (const doc of inventorySnapshot.docs) {
-                const targetRef = db.doc(`users/${validatedData.targetUid}/inventoryEntries/${doc.id}`);
-                await addToBatch(targetRef, doc.data(), { merge: true });
-            }
+      const mergeData: MigrationMergeData = {
+        // Always add migration metadata
+        migratedFrom: validatedData.anonymousUid,
+        migratedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
 
-            // Merge user profile metadata with smart conflict resolution
-            // STRATEGY: Prefer target account data (usually more accurate)
-            // Only use anonymous data if target account lacks that field
-            const anonymousProfile = anonymousUserDoc.data();
-            if (anonymousProfile) {
-                const targetProfileRef = db.doc(`users/${validatedData.targetUid}`);
+      // SMART MERGE: Only use anonymous data if target doesn't have it
+      // This prevents overwriting important data like sobriety dates
+      if (anonymousProfile.soberDate && !targetProfile?.soberDate) {
+        mergeData.soberDate = anonymousProfile.soberDate;
+      }
+      // Add other fields as needed in the future
+      // if (anonymousProfile.someField && !targetProfile?.someField) {
+      //     mergeData.someField = anonymousProfile.someField;
+      // }
 
-                // Fetch target profile to check for existing data
-                const targetProfileDoc = await targetProfileRef.get();
-                const targetProfile = targetProfileDoc.data();
-
-                const mergeData: MigrationMergeData = {
-                    // Always add migration metadata
-                    migratedFrom: validatedData.anonymousUid,
-                    migratedAt: admin.firestore.FieldValue.serverTimestamp(),
-                };
-
-                // SMART MERGE: Only use anonymous data if target doesn't have it
-                // This prevents overwriting important data like sobriety dates
-                if (anonymousProfile.soberDate && !targetProfile?.soberDate) {
-                    mergeData.soberDate = anonymousProfile.soberDate;
-                }
-                // Add other fields as needed in the future
-                // if (anonymousProfile.someField && !targetProfile?.someField) {
-                //     mergeData.someField = anonymousProfile.someField;
-                // }
-
-                await addToBatch(targetProfileRef, mergeData, { merge: true });
-            }
-
-            // Execute all batches sequentially with error tracking
-            // Note: Not fully atomic across batches - if a later batch fails,
-            // earlier batches cannot be rolled back (Firestore limitation).
-            // We track partial success to provide detailed error information.
-            let committedBatches = 0;
-            try {
-                for (let i = 0; i < batches.length; i++) {
-                    await batches[i].commit();
-                    committedBatches++;
-                }
-            } catch (batchError) {
-                // Partial migration occurred - some batches succeeded, others failed
-                logSecurityEvent("PARTIAL_MIGRATION_FAILURE", "migrateAnonymousUserData",
-                    `Migration partially failed: ${committedBatches}/${batches.length} batches committed`,
-                    {
-                        metadata: {
-                            anonymousUid: validatedData.anonymousUid,
-                            targetUid: validatedData.targetUid,
-                            totalBatches: batches.length,
-                            successfulBatches: committedBatches,
-                            failedAtBatch: committedBatches + 1,
-                            error: String(batchError),
-                        },
-                        captureToSentry: true
-                    }
-                );
-
-                // Throw with detailed information about partial success
-                throw new HttpsError(
-                    "internal",
-                    `Migration partially completed: ${committedBatches}/${batches.length} batches succeeded. Some data may not have been transferred.`
-                );
-            }
-
-            logSecurityEvent("DATA_MIGRATION_SUCCESS", "migrateAnonymousUserData",
-                `Migrated ${totalDocs} documents successfully`,
-                {
-                    severity: "INFO",
-                    metadata: {
-                        anonymousUid: validatedData.anonymousUid,
-                        targetUid: validatedData.targetUid,
-                        journalEntries: journalSnapshot.size,
-                        dailyLogs: dailyLogsSnapshot.size,
-                        inventoryEntries: inventorySnapshot.size,
-                    }
-                }
-            );
-
-            return {
-                success: true,
-                migratedItems: {
-                    journal: journalSnapshot.size,
-                    dailyLogs: dailyLogsSnapshot.size,
-                    inventory: inventorySnapshot.size,
-                    total: totalDocs,
-                },
-            };
-        } catch (error) {
-            logSecurityEvent("DATA_MIGRATION_FAILURE", "migrateAnonymousUserData", "Migration failed",
-                {
-                    metadata: {
-                        anonymousUid: validatedData.anonymousUid,
-                        targetUid: validatedData.targetUid,
-                        error: String(error)
-                    },
-                    captureToSentry: true
-                });
-            throw new HttpsError("internal", "Failed to migrate data. Please try again.");
-        }
+      await addToBatch(targetProfileRef, mergeData, { merge: true });
     }
-);
 
+    // Execute all batches sequentially with error tracking
+    // Note: Not fully atomic across batches - if a later batch fails,
+    // earlier batches cannot be rolled back (Firestore limitation).
+    // We track partial success to provide detailed error information.
+    let committedBatches = 0;
+    try {
+      for (let i = 0; i < batches.length; i++) {
+        await batches[i].commit();
+        committedBatches++;
+      }
+    } catch (batchError) {
+      // Partial migration occurred - some batches succeeded, others failed
+      logSecurityEvent(
+        "PARTIAL_MIGRATION_FAILURE",
+        "migrateAnonymousUserData",
+        `Migration partially failed: ${committedBatches}/${batches.length} batches committed`,
+        {
+          metadata: {
+            anonymousUid: validatedData.anonymousUid,
+            targetUid: validatedData.targetUid,
+            totalBatches: batches.length,
+            successfulBatches: committedBatches,
+            failedAtBatch: committedBatches + 1,
+            error: String(batchError),
+          },
+          captureToSentry: true,
+        }
+      );
+
+      // Throw with detailed information about partial success
+      throw new HttpsError(
+        "internal",
+        `Migration partially completed: ${committedBatches}/${batches.length} batches succeeded. Some data may not have been transferred.`
+      );
+    }
+
+    logSecurityEvent(
+      "DATA_MIGRATION_SUCCESS",
+      "migrateAnonymousUserData",
+      `Migrated ${totalDocs} documents successfully`,
+      {
+        severity: "INFO",
+        metadata: {
+          anonymousUid: validatedData.anonymousUid,
+          targetUid: validatedData.targetUid,
+          journalEntries: journalCount,
+          dailyLogs: dailyLogsCount,
+          inventoryEntries: inventoryCount,
+        },
+      }
+    );
+
+    return {
+      success: true,
+      migratedItems: {
+        journal: journalCount,
+        dailyLogs: dailyLogsCount,
+        inventory: inventoryCount,
+        total: totalDocs,
+      },
+    };
+  } catch (error) {
+    // Preserve intentional HttpsError codes/messages
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+
+    logSecurityEvent("DATA_MIGRATION_FAILURE", "migrateAnonymousUserData", "Migration failed", {
+      metadata: {
+        anonymousUid: validatedData.anonymousUid,
+        targetUid: validatedData.targetUid,
+        error: String(error),
+      },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to migrate data. Please try again.");
+  }
+});
 
 // Export admin functions (server-side validation & authorization)
 export {
-    adminSaveMeeting,
-    adminDeleteMeeting,
-    adminSaveSoberLiving,
-    adminDeleteSoberLiving,
-    adminSaveQuote,
-    adminDeleteQuote,
-    adminHealthCheck,
-    adminGetDashboardStats,
-    adminSearchUsers,
-    adminGetUserDetail,
-    adminUpdateUser,
-    adminDisableUser,
-    adminTriggerJob,
-    adminGetJobsStatus,
-    adminGetSentryErrorSummary,
+  adminSaveMeeting,
+  adminDeleteMeeting,
+  adminSaveSoberLiving,
+  adminDeleteSoberLiving,
+  adminSaveQuote,
+  adminDeleteQuote,
+  adminHealthCheck,
+  adminGetDashboardStats,
+  adminSearchUsers,
+  adminGetUserDetail,
+  adminUpdateUser,
+  adminDisableUser,
+  adminTriggerJob,
+  adminGetJobsStatus,
+  adminGetSentryErrorSummary,
 } from "./admin";
 
 // Export scheduled jobs

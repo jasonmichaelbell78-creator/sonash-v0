@@ -1,17 +1,16 @@
 # Global Security Standards
 
-**Document Type:** FOUNDATION (Tier 2)
-**Version:** 1.0
-**Created:** 2026-01-01
-**Last Updated:** 2026-01-01
-**Status:** ACTIVE
-**Authority:** MANDATORY for all code changes
+**Document Type:** FOUNDATION (Tier 2) **Version:** 1.0 **Created:** 2026-01-01
+**Last Updated:** 2026-01-01 **Status:** ACTIVE **Authority:** MANDATORY for all
+code changes
 
 ---
 
 ## Purpose
 
-This document defines **mandatory security standards** that apply to ALL code in this repository, regardless of who writes it (human or AI). These standards must be followed during:
+This document defines **mandatory security standards** that apply to ALL code in
+this repository, regardless of who writes it (human or AI). These standards must
+be followed during:
 
 - New feature development
 - Bug fixes
@@ -19,7 +18,8 @@ This document defines **mandatory security standards** that apply to ALL code in
 - Code reviews
 - Security audits
 
-**No code should be merged that violates these standards without an approved exception.**
+**No code should be merged that violates these standards without an approved
+exception.**
 
 ---
 
@@ -27,12 +27,12 @@ This document defines **mandatory security standards** that apply to ALL code in
 
 Before writing or reviewing ANY code, verify:
 
-| # | Standard | One-Line Check |
-|---|----------|----------------|
-| 1 | **Rate Limiting** | All public endpoints have IP + user-based limits with graceful 429s |
-| 2 | **Input Validation** | All user inputs validated with schemas, type checks, length limits |
-| 3 | **Secrets Management** | No hardcoded keys; all secrets in env vars; nothing exposed client-side |
-| 4 | **OWASP Compliance** | Code follows OWASP Top 10; clear comments; no breaking changes |
+| #   | Standard               | One-Line Check                                                          |
+| --- | ---------------------- | ----------------------------------------------------------------------- |
+| 1   | **Rate Limiting**      | All public endpoints have IP + user-based limits with graceful 429s     |
+| 2   | **Input Validation**   | All user inputs validated with schemas, type checks, length limits      |
+| 3   | **Secrets Management** | No hardcoded keys; all secrets in env vars; nothing exposed client-side |
+| 4   | **OWASP Compliance**   | Code follows OWASP Top 10; clear comments; no breaking changes          |
 
 ---
 
@@ -42,13 +42,13 @@ Before writing or reviewing ANY code, verify:
 
 All public-facing endpoints and user-triggered actions MUST have rate limiting:
 
-| Requirement | Details | Status Check |
-|-------------|---------|--------------|
-| IP-based limiting | Prevent abuse from single IP | `grep -r "RateLimiter" --include="*.ts"` |
-| User-based limiting | Prevent abuse from authenticated users | Check limiter uses `userId` |
-| Sensible defaults | Auth: 5/min, Writes: 10/min, Reads: 30/min | Review `lib/constants.ts` |
-| Graceful 429 responses | Include `Retry-After` header, user-friendly message | Test endpoint manually |
-| Client-side UX limiting | Disable buttons during cooldown | Check UI components |
+| Requirement             | Details                                             | Status Check                             |
+| ----------------------- | --------------------------------------------------- | ---------------------------------------- |
+| IP-based limiting       | Prevent abuse from single IP                        | `grep -r "RateLimiter" --include="*.ts"` |
+| User-based limiting     | Prevent abuse from authenticated users              | Check limiter uses `userId`              |
+| Sensible defaults       | Auth: 5/min, Writes: 10/min, Reads: 30/min          | Review `lib/constants.ts`                |
+| Graceful 429 responses  | Include `Retry-After` header, user-friendly message | Test endpoint manually                   |
+| Client-side UX limiting | Disable buttons during cooldown                     | Check UI components                      |
 
 ### Implementation Checklist
 
@@ -80,18 +80,18 @@ grep -rn "RateLimiter\|rateLimiter\|rateLimit" --include="*.ts" --include="*.tsx
 // Cloud Function with rate limiting
 export const myCallable = onCall(async (request) => {
   // Rate limit check FIRST
-  await enforceRateLimit(request.auth?.uid, 'myCallable', {
+  await enforceRateLimit(request.auth?.uid, "myCallable", {
     maxRequests: 10,
-    windowMs: 60000
+    windowMs: 60000,
   });
 
   // Then proceed with logic
 });
 
 // Client-side rate limiting for UX
-const { isLimited, tryAction } = useRateLimiter('saveEntry', {
+const { isLimited, tryAction } = useRateLimiter("saveEntry", {
   maxRequests: 5,
-  windowMs: 60000
+  windowMs: 60000,
 });
 ```
 
@@ -103,13 +103,13 @@ const { isLimited, tryAction } = useRateLimiter('saveEntry', {
 
 ALL user inputs MUST be validated before processing:
 
-| Requirement | Details | Status Check |
-|-------------|---------|--------------|
+| Requirement             | Details                                      | Status Check                     |
+| ----------------------- | -------------------------------------------- | -------------------------------- |
 | Schema-based validation | Use Zod or similar for structured validation | `grep -r "z\." --include="*.ts"` |
-| Type enforcement | TypeScript types + runtime validation | Check service layer |
-| Length limits | Max lengths for all string inputs | Review schemas |
-| Reject unknown fields | `.strict()` mode on schemas | Check schema definitions |
-| Sanitization | XSS prevention on displayed content | Check output encoding |
+| Type enforcement        | TypeScript types + runtime validation        | Check service layer              |
+| Length limits           | Max lengths for all string inputs            | Review schemas                   |
+| Reject unknown fields   | `.strict()` mode on schemas                  | Check schema definitions         |
+| Sanitization            | XSS prevention on displayed content          | Check output encoding            |
 
 ### Implementation Checklist
 
@@ -141,18 +141,20 @@ grep -rn "request\.data\[" functions/src/
 
 ```typescript
 // Schema definition with all requirements
-const JournalEntrySchema = z.object({
-  title: z.string().min(1).max(200),
-  content: z.string().min(1).max(10000),
-  tags: z.array(z.string().max(50)).max(10).optional(),
-  mood: z.enum(['great', 'good', 'okay', 'bad', 'terrible']).optional(),
-}).strict(); // Reject unknown fields
+const JournalEntrySchema = z
+  .object({
+    title: z.string().min(1).max(200),
+    content: z.string().min(1).max(10000),
+    tags: z.array(z.string().max(50)).max(10).optional(),
+    mood: z.enum(["great", "good", "okay", "bad", "terrible"]).optional(),
+  })
+  .strict(); // Reject unknown fields
 
 // Validation in Cloud Function
 export const saveEntry = onCall(async (request) => {
   const result = JournalEntrySchema.safeParse(request.data);
   if (!result.success) {
-    throw new HttpsError('invalid-argument', 'Invalid entry data');
+    throw new HttpsError("invalid-argument", "Invalid entry data");
   }
   const validatedData = result.data;
   // Proceed with validated data only
@@ -167,13 +169,13 @@ export const saveEntry = onCall(async (request) => {
 
 NO secrets should ever be hardcoded or exposed client-side:
 
-| Requirement | Details | Status Check |
-|-------------|---------|--------------|
-| No hardcoded keys | Zero API keys, passwords, or secrets in code | Grep verification |
-| Environment variables | All secrets loaded from env vars | Check `.env.example` |
-| Server-side only | Secrets never sent to client bundle | Check `NEXT_PUBLIC_` usage |
-| Key rotation | Rotation policy documented | Check docs |
-| .env in .gitignore | Env files never committed | Check `.gitignore` |
+| Requirement           | Details                                      | Status Check               |
+| --------------------- | -------------------------------------------- | -------------------------- |
+| No hardcoded keys     | Zero API keys, passwords, or secrets in code | Grep verification          |
+| Environment variables | All secrets loaded from env vars             | Check `.env.example`       |
+| Server-side only      | Secrets never sent to client bundle          | Check `NEXT_PUBLIC_` usage |
+| Key rotation          | Rotation policy documented                   | Check docs                 |
+| .env in .gitignore    | Env files never committed                    | Check `.gitignore`         |
 
 ### Implementation Checklist
 
@@ -211,7 +213,7 @@ cat .env.example 2>/dev/null || echo "No .env.example found"
 // Server-side only (Cloud Functions)
 const apiKey = process.env.EXTERNAL_API_KEY;
 if (!apiKey) {
-  throw new Error('EXTERNAL_API_KEY not configured');
+  throw new Error("EXTERNAL_API_KEY not configured");
 }
 
 // Next.js server-side
@@ -249,18 +251,18 @@ const SECRET = process.env.NEXT_PUBLIC_SECRET_KEY; // Secret exposed to client
 
 Code must follow OWASP best practices and not introduce vulnerabilities:
 
-| OWASP Category | Our Requirement | Verification |
-|----------------|-----------------|--------------|
-| A01: Broken Access Control | Auth checks on all protected routes/functions | Review auth guards |
-| A02: Cryptographic Failures | Use Firebase Auth, no custom crypto | Check auth implementation |
-| A03: Injection | Parameterized queries, no string concat for paths | Code review |
-| A04: Insecure Design | Follow established patterns | Architecture review |
-| A05: Security Misconfiguration | Firestore rules match code assumptions | Rules audit |
-| A06: Vulnerable Components | Regular dependency updates | `npm audit` |
-| A07: Auth Failures | Firebase Auth with proper session handling | Auth flow review |
-| A08: Data Integrity Failures | Validate all external data | Schema validation |
-| A09: Logging Failures | Log security events, no sensitive data | Log review |
-| A10: SSRF | Validate URLs, use allowlists | URL handling review |
+| OWASP Category                 | Our Requirement                                   | Verification              |
+| ------------------------------ | ------------------------------------------------- | ------------------------- |
+| A01: Broken Access Control     | Auth checks on all protected routes/functions     | Review auth guards        |
+| A02: Cryptographic Failures    | Use Firebase Auth, no custom crypto               | Check auth implementation |
+| A03: Injection                 | Parameterized queries, no string concat for paths | Code review               |
+| A04: Insecure Design           | Follow established patterns                       | Architecture review       |
+| A05: Security Misconfiguration | Firestore rules match code assumptions            | Rules audit               |
+| A06: Vulnerable Components     | Regular dependency updates                        | `npm audit`               |
+| A07: Auth Failures             | Firebase Auth with proper session handling        | Auth flow review          |
+| A08: Data Integrity Failures   | Validate all external data                        | Schema validation         |
+| A09: Logging Failures          | Log security events, no sensitive data            | Log review                |
+| A10: SSRF                      | Validate URLs, use allowlists                     | URL handling review       |
 
 ### Implementation Checklist
 
@@ -296,7 +298,7 @@ Security-relevant code MUST have clear comments:
 
 ```typescript
 // SECURITY: Rate limiting enforced before any data access
-await enforceRateLimit(userId, 'readEntries');
+await enforceRateLimit(userId, "readEntries");
 
 // SECURITY: User can only read their own journal entries
 // This mirrors firestore.rules: match /users/{userId}/journal/{entryId}
@@ -323,12 +325,10 @@ If a standard cannot be met, you MUST:
 ```markdown
 ## Security Exception Request
 
-**Standard:** [Which standard]
-**Reason:** [Why it cannot be met]
-**Risk assessment:** [What's the risk]
-**Mitigation:** [What we're doing instead]
-**Remediation timeline:** [When will this be fixed]
-**Approver:** [Who approved this exception]
+**Standard:** [Which standard] **Reason:** [Why it cannot be met] **Risk
+assessment:** [What's the risk] **Mitigation:** [What we're doing instead]
+**Remediation timeline:** [When will this be fixed] **Approver:** [Who approved
+this exception]
 ```
 
 ---
@@ -337,12 +337,12 @@ If a standard cannot be met, you MUST:
 
 These standards are enforced at multiple levels:
 
-| Level | Tool | What It Checks |
-|-------|------|----------------|
-| Pre-commit | Husky + lint-staged | Secrets detection, lint errors |
-| CI/CD | GitHub Actions | npm audit, lint, test, build |
-| Code Review | AI Review (CodeRabbit/Qodo) | Pattern detection |
-| Security Audit | Multi-AI Security Audit | Comprehensive review |
+| Level          | Tool                        | What It Checks                 |
+| -------------- | --------------------------- | ------------------------------ |
+| Pre-commit     | Husky + lint-staged         | Secrets detection, lint errors |
+| CI/CD          | GitHub Actions              | npm audit, lint, test, build   |
+| Code Review    | AI Review (CodeRabbit/Qodo) | Pattern detection              |
+| Security Audit | Multi-AI Security Audit     | Comprehensive review           |
 
 ### Pre-commit Hook (to be added)
 
@@ -374,9 +374,9 @@ npm run lint-staged
 
 ## Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.0 | 2026-01-01 | Initial creation with 4 mandatory standards | Claude |
+| Version | Date       | Changes                                     | Author |
+| ------- | ---------- | ------------------------------------------- | ------ |
+| 1.0     | 2026-01-01 | Initial creation with 4 mandatory standards | Claude |
 
 ---
 

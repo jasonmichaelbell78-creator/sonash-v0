@@ -16,17 +16,17 @@
  * Exit codes: 0 = success (including when all patterns covered), 2 = error
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname, basename } from 'path';
-import { fileURLToPath } from 'url';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join, dirname, basename } from "path";
+import { fileURLToPath } from "url";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, "..");
 
-const LEARNINGS_FILE = join(ROOT, 'AI_REVIEW_LEARNINGS_LOG.md');
-const CHECKER_FILE = join(ROOT, 'scripts/check-pattern-compliance.js');
+const LEARNINGS_FILE = join(ROOT, "AI_REVIEW_LEARNINGS_LOG.md");
+const CHECKER_FILE = join(ROOT, "scripts/check-pattern-compliance.js");
 
 // File names for error messages (avoid exposing full paths)
 const LEARNINGS_FILENAME = basename(LEARNINGS_FILE);
@@ -37,38 +37,45 @@ const EXTRACTABLE_PATTERNS = [
   {
     // "Wrong: `code`" or "- Wrong: `code`"
     regex: /(?:Wrong|Bad|INCORRECT|Anti-pattern):\s*`([^`]+)`/gi,
-    type: 'wrong_code'
+    type: "wrong_code",
   },
   {
     // "Example: `code`" in negative context (use [\s\S]*? to match across lines)
     regex: /Example:\s*`([^`]+)`(?=[\s\S]*?(?:fails|breaks|crashes|bug|issue|problem))/gi,
-    type: 'example_negative'
+    type: "example_negative",
   },
   {
     // Code blocks after "Wrong:" headers
     regex: /#+\s*(?:Wrong|Bad|INCORRECT)[^\n]*\n```[\w]*\n([\s\S]*?)```/gi,
-    type: 'wrong_block'
-  }
+    type: "wrong_block",
+  },
 ];
 
 // Known pattern categories that are automatable
 const AUTOMATABLE_CATEGORIES = {
-  'shell': {
-    indicators: ['bash', 'shell', 'sh', '\\$\\?', 'exit code', 'for\\s+\\w+\\s+in', 'while.*read'],
-    fileTypes: ['.sh', '.yml', '.yaml']
+  shell: {
+    indicators: ["bash", "shell", "sh", "\\$\\?", "exit code", "for\\s+\\w+\\s+in", "while.*read"],
+    fileTypes: [".sh", ".yml", ".yaml"],
   },
-  'javascript': {
-    indicators: ['catch', 'error\\.message', 'instanceof', 'console\\.error', '\\.then', '\\.catch'],
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx']
+  javascript: {
+    indicators: [
+      "catch",
+      "error\\.message",
+      "instanceof",
+      "console\\.error",
+      "\\.then",
+      "\\.catch",
+    ],
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
-  'github_actions': {
-    indicators: ['steps\\.', 'github\\.', '\\$\\{\\{', 'if:', 'workflow', 'actions'],
-    fileTypes: ['.yml', '.yaml']
+  github_actions: {
+    indicators: ["steps\\.", "github\\.", "\\$\\{\\{", "if:", "workflow", "actions"],
+    fileTypes: [".yml", ".yaml"],
   },
-  'security': {
-    indicators: ['path', 'traversal', 'injection', 'sanitize', 'validate', 'unlink', 'exec'],
-    fileTypes: ['.js', '.ts', '.sh']
-  }
+  security: {
+    indicators: ["path", "traversal", "injection", "sanitize", "validate", "unlink", "exec"],
+    fileTypes: [".js", ".ts", ".sh"],
+  },
 };
 
 /**
@@ -79,16 +86,16 @@ function sanitizeCodeForLogging(code, maxLen = 60) {
   // Redact potential secrets/credentials
   let sanitized = code
     .replace(/['"`][A-Za-z0-9_/+=-]{20,}['"`]/g, '"[REDACTED]"')
-    .replace(/(?:key|token|secret|password|api[_-]?key)\s*[:=]\s*\S+/gi, '[CREDENTIAL_REDACTED]')
+    .replace(/(?:key|token|secret|password|api[_-]?key)\s*[:=]\s*\S+/gi, "[CREDENTIAL_REDACTED]")
     // Unix-like absolute paths (require at least two segments: /usr/local/...)
     // Use capture groups for deterministic replacement
-    .replace(/(^|[\s"'`(])(\/(?:[^/\s]+\/){2,}[^/\s]+)/g, '$1/[PATH_REDACTED]')
+    .replace(/(^|[\s"'`(])(\/(?:[^/\s]+\/){2,}[^/\s]+)/g, "$1/[PATH_REDACTED]")
     // Windows absolute paths like C:\Users\Name\...
-    .replace(/(^|[\s"'`(])([A-Za-z]:\\(?:[^\\\s]+\\){2,}[^\\\s]+)/g, '$1[PATH_REDACTED]');
+    .replace(/(^|[\s"'`(])([A-Za-z]:\\(?:[^\\\s]+\\){2,}[^\\\s]+)/g, "$1[PATH_REDACTED]");
 
   // Truncate
   if (sanitized.length > maxLen) {
-    sanitized = sanitized.slice(0, maxLen) + '...';
+    sanitized = sanitized.slice(0, maxLen) + "...";
   }
 
   return sanitized;
@@ -106,7 +113,7 @@ function extractPatternsFromLearnings() {
 
   let content;
   try {
-    content = readFileSync(LEARNINGS_FILE, 'utf-8');
+    content = readFileSync(LEARNINGS_FILE, "utf-8");
   } catch (error) {
     console.error(`❌ Failed to read learnings file: ${sanitizeError(error)}`);
     process.exit(2);
@@ -131,8 +138,8 @@ function extractPatternsFromLearnings() {
         let code = match[1].trim();
 
         // For code blocks, keep a representative snippet (blocks are often >200 chars)
-        if (type === 'wrong_block') {
-          code = code.split('\n').slice(0, 12).join('\n').trim();
+        if (type === "wrong_block") {
+          code = code.split("\n").slice(0, 12).join("\n").trim();
         }
 
         // Deduplicate by type and code
@@ -141,13 +148,15 @@ function extractPatternsFromLearnings() {
         seen.add(key);
 
         // Allow longer code blocks (up to 800 chars) vs inline snippets (200 chars)
-        const maxLen = type === 'wrong_block' ? 800 : 200;
+        const maxLen = type === "wrong_block" ? 800 : 200;
         if (code.length > 10 && code.length < maxLen) {
           extracted.push({
             code,
             type,
             reviewNumber,
-            context: `Review #${reviewNumber}\n` + section.slice(Math.max(0, match.index - 100), match.index + match[0].length + 100)
+            context:
+              `Review #${reviewNumber}\n` +
+              section.slice(Math.max(0, match.index - 100), match.index + match[0].length + 100),
           });
         }
       }
@@ -169,7 +178,7 @@ function getExistingPatterns() {
 
   let content;
   try {
-    content = readFileSync(CHECKER_FILE, 'utf-8');
+    content = readFileSync(CHECKER_FILE, "utf-8");
   } catch (error) {
     console.error(`❌ Failed to read pattern checker: ${sanitizeError(error)}`);
     process.exit(2);
@@ -178,13 +187,14 @@ function getExistingPatterns() {
   const patterns = [];
 
   // Extract pattern IDs, regexes, and flags (handles escaped slashes)
-  const patternRegex = /id:\s*['"`]([^'"`]+)['"`][\s\S]*?pattern:\s*\/((?:\\\/|[^/])+?)\/([gimuy]*)/g;
+  const patternRegex =
+    /id:\s*['"`]([^'"`]+)['"`][\s\S]*?pattern:\s*\/((?:\\\/|[^/])+?)\/([gimuy]*)/g;
   let match;
   while ((match = patternRegex.exec(content)) !== null) {
     patterns.push({
       id: match[1],
       pattern: match[2],
-      flags: match[3] || ''
+      flags: match[3] || "",
     });
   }
 
@@ -198,7 +208,7 @@ function isAlreadyCovered(code, existingPatterns) {
   for (const { pattern, flags, id } of existingPatterns) {
     try {
       // Sanitize flags to only include valid RegExp flag characters
-      const safeFlags = (flags ?? '').replace(/[^dgimsuvy]/g, '');
+      const safeFlags = (flags ?? "").replace(/[^dgimsuvy]/g, "");
       // Use original flags exactly - don't override as it can change pattern semantics
       // Note: We create a new RegExp each iteration so 'g' flag's lastIndex doesn't matter
       const regex = new RegExp(pattern, safeFlags);
@@ -220,17 +230,19 @@ function categorizePattern(code, context) {
   for (const [category, { indicators }] of Object.entries(AUTOMATABLE_CATEGORIES)) {
     for (const indicator of indicators) {
       try {
-        const indicatorRegex = new RegExp(indicator, 'i');
+        const indicatorRegex = new RegExp(indicator, "i");
         if (indicatorRegex.test(code) || indicatorRegex.test(context)) {
           return category;
         }
       } catch (e) {
         // Log invalid indicator regex for debuggability
-        console.warn(`[WARN] Invalid indicator regex '${indicator}' in category '${category}': ${sanitizeError(e)}`);
+        console.warn(
+          `[WARN] Invalid indicator regex '${indicator}' in category '${category}': ${sanitizeError(e)}`
+        );
       }
     }
   }
-  return 'unknown';
+  return "unknown";
 }
 
 /**
@@ -244,19 +256,19 @@ function suggestRegex(code, _category) {
   // For common anti-patterns, suggest known good patterns
   // Keys are regex patterns (not literals) for matching
   const knownPatterns = {
-    'pipe.*while': 'cmd \\| while.*done(?!.*< <)',
-    '\\$\\?': '\\$\\(.*\\)\\s*;\\s*if\\s+\\[\\s*\\$\\?',
-    'for.*in.*do': 'for\\s+\\w+\\s+in\\s+\\$',
-    'startsWith': '\\.startsWith\\s*\\(',
-    '\\.message': '\\.message(?![^}]*instanceof)',
-    'console\\.error': '\\.catch\\s*\\(\\s*console\\.error',
-    'user\\.type': '\\.user\\.type\\s*===',
+    "pipe.*while": "cmd \\| while.*done(?!.*< <)",
+    "\\$\\?": "\\$\\(.*\\)\\s*;\\s*if\\s+\\[\\s*\\$\\?",
+    "for.*in.*do": "for\\s+\\w+\\s+in\\s+\\$",
+    startsWith: "\\.startsWith\\s*\\(",
+    "\\.message": "\\.message(?![^}]*instanceof)",
+    "console\\.error": "\\.catch\\s*\\(\\s*console\\.error",
+    "user\\.type": "\\.user\\.type\\s*===",
   };
 
   for (const [key, pattern] of Object.entries(knownPatterns)) {
     // Treat keys as regex patterns (not literals)
     try {
-      const keyRegex = new RegExp(key, 'i');
+      const keyRegex = new RegExp(key, "i");
       if (keyRegex.test(code)) {
         return pattern;
       }
@@ -270,7 +282,7 @@ function suggestRegex(code, _category) {
 
   // Fallback: escaped literal prefix (human should refine)
   // Use \\.{3} instead of ... to prevent regex wildcard interpretation
-  return code.slice(0, 40).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.{3}';
+  return code.slice(0, 40).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\.{3}";
 }
 
 /**
@@ -286,10 +298,10 @@ function generatePatternEntry(code, category, context, reviewNumber) {
   const id = `auto-suggested-${hash.toString(16)}`;
 
   const regex = suggestRegex(code, category);
-  const fileTypes = AUTOMATABLE_CATEGORIES[category]?.fileTypes || ['.js', '.ts'];
+  const fileTypes = AUTOMATABLE_CATEGORIES[category]?.fileTypes || [".js", ".ts"];
 
   // Use preserved review number, fallback to extracting from context
-  let review = reviewNumber ? `#${reviewNumber}` : 'auto-detected';
+  let review = reviewNumber ? `#${reviewNumber}` : "auto-detected";
   if (!reviewNumber) {
     const reviewMatch = context.match(/Review\s+#(\d+)/i);
     if (reviewMatch) review = `#${reviewMatch[1]}`;
@@ -299,11 +311,11 @@ function generatePatternEntry(code, category, context, reviewNumber) {
     id,
     pattern: regex,
     message: `Potential anti-pattern detected (auto-suggested from learnings)`,
-    fix: 'See AI_REVIEW_LEARNINGS_LOG.md for the correct pattern',
+    fix: "See AI_REVIEW_LEARNINGS_LOG.md for the correct pattern",
     review,
     fileTypes,
     // Sanitize originalCode before persisting to prevent leaking secrets in generated artifacts
-    originalCode: sanitizeCodeForLogging(code, 120)
+    originalCode: sanitizeCodeForLogging(code, 120),
   };
 }
 
@@ -312,9 +324,9 @@ function generatePatternEntry(code, category, context, reviewNumber) {
  */
 function main() {
   const args = process.argv.slice(2);
-  const addToChecker = args.includes('--add-to-checker');
+  const addToChecker = args.includes("--add-to-checker");
 
-  console.log('🔍 Analyzing AI_REVIEW_LEARNINGS_LOG.md for automatable patterns...\n');
+  console.log("🔍 Analyzing AI_REVIEW_LEARNINGS_LOG.md for automatable patterns...\n");
 
   // Extract patterns from learnings
   const extracted = extractPatternsFromLearnings();
@@ -326,7 +338,7 @@ function main() {
 
   // Abort if we couldn't parse existing patterns (prevents false positive suggestions)
   if (existing.length === 0) {
-    console.error('❌ Unable to detect existing patterns; aborting to avoid false suggestions.');
+    console.error("❌ Unable to detect existing patterns; aborting to avoid false suggestions.");
     process.exit(2);
   }
 
@@ -335,19 +347,19 @@ function main() {
   for (const item of extracted) {
     if (!isAlreadyCovered(item.code, existing)) {
       const category = categorizePattern(item.code, item.context);
-      if (category !== 'unknown') {
+      if (category !== "unknown") {
         uncovered.push({
           ...item,
           category,
-          suggested: generatePatternEntry(item.code, category, item.context, item.reviewNumber)
+          suggested: generatePatternEntry(item.code, category, item.context, item.reviewNumber),
         });
       }
     }
   }
 
   if (uncovered.length === 0) {
-    console.log('✅ All extractable patterns are already covered by the checker!');
-    console.log('\nNote: Some patterns require human judgment and cannot be automated.');
+    console.log("✅ All extractable patterns are already covered by the checker!");
+    console.log("\nNote: Some patterns require human judgment and cannot be automated.");
     return;
   }
 
@@ -360,29 +372,35 @@ function main() {
     const sanitizedCode = sanitizeCodeForLogging(code);
     const sanitizedPattern = sanitizeCodeForLogging(suggested.pattern, 50);
 
-    console.log(`${i + 1}. Category: ${category}${reviewNumber ? ` (Review #${reviewNumber})` : ''}`);
+    console.log(
+      `${i + 1}. Category: ${category}${reviewNumber ? ` (Review #${reviewNumber})` : ""}`
+    );
     console.log(`   Code: ${sanitizedCode}`);
     console.log(`   Suggested regex: /${sanitizedPattern}/`);
-    console.log(`   File types: ${suggested.fileTypes.join(', ')}`);
-    console.log('');
+    console.log(`   File types: ${suggested.fileTypes.join(", ")}`);
+    console.log("");
   }
 
-  console.log('---');
-  console.log('To add these to the pattern checker:');
-  console.log('1. Review each suggestion for accuracy');
-  console.log('2. Adjust the regex as needed');
-  console.log('3. Add to scripts/check-pattern-compliance.js');
-  console.log('\nOr run with --add-to-checker to append suggestions (requires manual review)');
+  console.log("---");
+  console.log("To add these to the pattern checker:");
+  console.log("1. Review each suggestion for accuracy");
+  console.log("2. Adjust the regex as needed");
+  console.log("3. Add to scripts/check-pattern-compliance.js");
+  console.log("\nOr run with --add-to-checker to append suggestions (requires manual review)");
 
   if (addToChecker) {
-    console.log('\n⚠️  --add-to-checker not fully implemented yet.');
-    console.log('Suggestions saved to: scripts/suggested-patterns.json');
+    console.log("\n⚠️  --add-to-checker not fully implemented yet.");
+    console.log("Suggestions saved to: scripts/suggested-patterns.json");
 
     try {
-      const outPath = join(__dirname, 'suggested-patterns.json');
+      const outPath = join(__dirname, "suggested-patterns.json");
       writeFileSync(
         outPath,
-        JSON.stringify(uncovered.map(u => u.suggested), null, 2),
+        JSON.stringify(
+          uncovered.map((u) => u.suggested),
+          null,
+          2
+        ),
         { mode: 0o600 } // Restrictive permissions (owner read/write only)
       );
     } catch (error) {

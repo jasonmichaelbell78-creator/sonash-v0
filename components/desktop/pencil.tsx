@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Image from "next/image"
+import Image from "next/image";
 
 export default function Pencil() {
-  const pencilUrl = "/images/gemini-generated-image-gj5efogj5efogj5e.jpeg"
+  const pencilUrl = "/images/gemini-generated-image-gj5efogj5efogj5e.jpeg";
 
   return (
     <div
@@ -28,5 +28,5 @@ export default function Pencil() {
         }}
       />
     </div>
-  )
+  );
 }

@@ -1,16 +1,14 @@
 # [Project Name] Multi-AI Documentation Audit Plan
 
-**Document Version:** 1.2
-**Created:** 2026-01-05
-**Last Updated:** 2026-01-09
-**Status:** PENDING | IN_PROGRESS | COMPLETE
-**Overall Completion:** 0%
+**Document Version:** 1.2 **Created:** 2026-01-05 **Last Updated:** 2026-01-09
+**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
 
 ## Purpose
 
-This document serves as the **execution plan** for running a multi-AI documentation quality audit on [Project Name]. Use this template when:
+This document serves as the **execution plan** for running a multi-AI
+documentation quality audit on [Project Name]. Use this template when:
 
 - Documentation inconsistencies have accumulated
 - Cross-references may be broken or stale
@@ -20,6 +18,7 @@ This document serves as the **execution plan** for running a multi-AI documentat
 - Before major release or documentation publication
 
 **Review Focus Areas (6 Categories):**
+
 1. Cross-Reference Consistency (broken links, outdated references)
 2. Documentation Staleness (outdated content, deprecated info)
 3. Coverage Gaps (missing docs, undocumented features)
@@ -27,20 +26,21 @@ This document serves as the **execution plan** for running a multi-AI documentat
 5. Frontmatter & Metadata Consistency
 6. Content Quality (coherence, bloat, contradictions, flow)
 
-**Expected Output:** Documentation findings with remediation plan, coverage analysis, and quality metrics.
+**Expected Output:** Documentation findings with remediation plan, coverage
+analysis, and quality metrics.
 
 ---
 
 ## Status Dashboard
 
-| Step | Description | Status | Completion |
-|------|-------------|--------|------------|
-| Step 1 | Prepare audit context | PENDING | 0% |
-| Step 2 | Run multi-AI documentation audit (3-4 models) | PENDING | 0% |
-| Step 3 | Collect and validate outputs | PENDING | 0% |
-| Step 4 | Run aggregation | PENDING | 0% |
-| Step 5 | Create canonical findings doc | PENDING | 0% |
-| Step 6 | Generate remediation plan | PENDING | 0% |
+| Step   | Description                                   | Status  | Completion |
+| ------ | --------------------------------------------- | ------- | ---------- |
+| Step 1 | Prepare audit context                         | PENDING | 0%         |
+| Step 2 | Run multi-AI documentation audit (3-4 models) | PENDING | 0%         |
+| Step 3 | Collect and validate outputs                  | PENDING | 0%         |
+| Step 4 | Run aggregation                               | PENDING | 0%         |
+| Step 5 | Create canonical findings doc                 | PENDING | 0%         |
+| Step 6 | Generate remediation plan                     | PENDING | 0%         |
 
 **Overall Progress:** 0/6 steps complete
 
@@ -86,6 +86,7 @@ Exclude: [directories, e.g., node_modules/, build artifacts]
 ### Known Documentation Issues
 
 [Document any known issues that prompted this audit:]
+
 - [Issue 1]
 - [Issue 2]
 - [Issue 3]
@@ -96,14 +97,15 @@ Exclude: [directories, e.g., node_modules/, build artifacts]
 
 **Recommended configuration (3-4 models for consensus):**
 
-| Model | Capabilities | Documentation Strength |
-|-------|--------------|----------------------|
-| Claude Opus 4.5 | browse_files=yes, run_commands=yes | Comprehensive doc analysis, link validation, consistency checking |
-| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective doc review, pattern detection |
-| GPT-5.2-Codex | browse_files=yes, run_commands=yes | Coverage analysis, structure validation |
-| Gemini 3 Pro | browse_files=yes, run_commands=yes | Alternative perspective, freshness assessment |
+| Model             | Capabilities                       | Documentation Strength                                            |
+| ----------------- | ---------------------------------- | ----------------------------------------------------------------- |
+| Claude Opus 4.5   | browse_files=yes, run_commands=yes | Comprehensive doc analysis, link validation, consistency checking |
+| Claude Sonnet 4.5 | browse_files=yes, run_commands=yes | Cost-effective doc review, pattern detection                      |
+| GPT-5.2-Codex     | browse_files=yes, run_commands=yes | Coverage analysis, structure validation                           |
+| Gemini 3 Pro      | browse_files=yes, run_commands=yes | Alternative perspective, freshness assessment                     |
 
 **Selection criteria:**
+
 - At least 2 models with `run_commands=yes` for link validation
 - At least 1 model with strong technical writing assessment
 - Total 3-4 models recommended for good consensus
@@ -117,7 +119,9 @@ Exclude: [directories, e.g., node_modules/, build artifacts]
 ```markdown
 ROLE
 
-You are a technical documentation specialist performing a comprehensive documentation quality audit. Your goal is to assess documentation completeness, accuracy, consistency, and usability.
+You are a technical documentation specialist performing a comprehensive
+documentation quality audit. Your goal is to assess documentation completeness,
+accuracy, consistency, and usability.
 
 REPO
 
@@ -125,7 +129,8 @@ REPO
 
 DOCUMENTATION STRUCTURE
 
-- Tier system: [e.g., 5-tier hierarchy (Tier 1-2: Root-level, Tier 3-5: docs/ subdirectories)]
+- Tier system: [e.g., 5-tier hierarchy (Tier 1-2: Root-level, Tier 3-5: docs/
+  subdirectories)]
 - Main directories:
   - [e.g., docs/]
   - [e.g., docs/templates/]
@@ -136,29 +141,35 @@ DOCUMENTATION STRUCTURE
 
 PRE-REVIEW CONTEXT (REQUIRED READING)
 
-Before beginning documentation analysis, review these project-specific resources:
+Before beginning documentation analysis, review these project-specific
+resources:
 
-1. **AI Learnings** (claude.md Section 4): Documentation patterns and lessons from past reviews
-2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented documentation issues from Reviews #1-60+
-3. **Documentation Standards** (if available): DOCUMENTATION_STANDARDS.md or similar
+1. **AI Learnings** (claude.md Section 4): Documentation patterns and lessons
+   from past reviews
+2. **Pattern History** (docs/AI_REVIEW_LEARNINGS_LOG.md): Documented
+   documentation issues from Reviews #1-60+
+3. **Documentation Standards** (if available): DOCUMENTATION_STANDARDS.md or
+   similar
 4. **Tier System** (if applicable): Understand the documentation hierarchy
 5. **Recent Changes**: Git log for documentation file changes
 
-These resources provide essential context about documentation expectations and known issues.
+These resources provide essential context about documentation expectations and
+known issues.
 
 SCOPE
 
-Include: [directories]
-Secondary: [optional directories]
-Exclude: [excluded directories]
+Include: [directories] Secondary: [optional directories] Exclude: [excluded
+directories]
 
 CAPABILITIES (REQUIRED FIRST OUTPUT)
 
 Before any findings, print exactly:
 
-CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
+CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>,
+repo_checkout=<yes/no>, limitations="<one sentence>"
 
 If browse_files=no OR repo_checkout=no:
+
 - Run in "LIMITED MODE": Provide general recommendations only
 - Note: Link validation requires repo access
 ```
@@ -169,6 +180,7 @@ If browse_files=no OR repo_checkout=no:
 NON-NEGOTIABLE EVIDENCE RULE (ANTI-HALLUCINATION)
 
 A documentation finding is CONFIRMED only if it includes:
+
 - at least one concrete file path AND
 - at least one specific issue (broken link, missing section, outdated info)
 
@@ -176,12 +188,12 @@ If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 
 FOCUS AREAS (use ONLY these 6 categories)
 
-1) Cross-Reference Consistency
-2) Documentation Staleness
-3) Coverage Gaps
-4) Tier Compliance
-5) Frontmatter & Metadata
-6) Content Quality
+1. Cross-Reference Consistency
+2. Documentation Staleness
+3. Coverage Gaps
+4. Tier Compliance
+5. Frontmatter & Metadata
+6. Content Quality
 ```
 
 ### Part 3: Documentation Audit Phases
@@ -190,6 +202,7 @@ FOCUS AREAS (use ONLY these 6 categories)
 PHASE 1: REPOSITORY ACCESS VALIDATION
 
 Before beginning, verify you can access the repository:
+
 1. State whether you can access files
 2. If YES, list 5-10 documentation files you can see
 3. If NO, proceed with limited analysis
@@ -197,27 +210,25 @@ Before beginning, verify you can access the repository:
 PHASE 2: DOCUMENTATION INVENTORY
 
 Create a complete inventory:
+
 - List all markdown files in scope
 - Note file sizes and last modified dates
 - Identify documentation clusters (related docs)
 - Map cross-reference patterns
-- Identify orphaned documents (no incoming links)
-At the end: "Phase 2 complete - Documentation inventory: [count] files"
+- Identify orphaned documents (no incoming links) At the end: "Phase 2
+  complete - Documentation inventory: [count] files"
 
 PHASE 3: CATEGORY-BY-CATEGORY ANALYSIS
 
 For each of the 5 categories, perform systematic analysis:
 
-Category 1: Cross-Reference Consistency
-CHECKS:
-[ ] All internal links work (no 404s)
-[ ] All cross-references use correct paths
-[ ] No references to moved/deleted files
-[ ] Anchor links are valid
-[ ] No circular reference chains
+Category 1: Cross-Reference Consistency CHECKS: [ ] All internal links work (no
+404s) [ ] All cross-references use correct paths [ ] No references to
+moved/deleted files [ ] Anchor links are valid [ ] No circular reference chains
 [ ] References to archived docs use proper notation
 
 ANALYSIS:
+
 - Extract all markdown links: [text](path)
 - Verify each target file exists
 - Check relative vs absolute path correctness
@@ -225,24 +236,22 @@ ANALYSIS:
 - Identify stale references to renamed files
 
 VERIFICATION COMMANDS (if available):
-- grep -Er "\[.*\]\(.*\)" --include="*.md" (extract all links)
+
+- grep -Er "\[._\]\(._\)" --include="\*.md" (extract all links)
 - For each link, check if target file exists
 - npm run docs:check (if validation script exists)
 
-Mark each check: ISSUE | OK | N/A
-List specific broken links with source and target.
+Mark each check: ISSUE | OK | N/A List specific broken links with source and
+target.
 
-Category 2: Documentation Staleness
-CHECKS:
-[ ] No references to deprecated features
-[ ] Version numbers are current
-[ ] Screenshots/examples are up-to-date
-[ ] API references match current implementation
-[ ] Dependencies mentioned are current versions
-[ ] "TODO" or "WIP" sections addressed or noted
-[ ] Last-updated dates are recent (if used)
+Category 2: Documentation Staleness CHECKS: [ ] No references to deprecated
+features [ ] Version numbers are current [ ] Screenshots/examples are up-to-date
+[ ] API references match current implementation [ ] Dependencies mentioned are
+current versions [ ] "TODO" or "WIP" sections addressed or noted [ ]
+Last-updated dates are recent (if used)
 
 ANALYSIS:
+
 - Check for version mismatches
 - Look for "deprecated", "old", "legacy" mentions
 - Verify code examples still work
@@ -250,26 +259,22 @@ ANALYSIS:
 - Identify docs not updated in 6+ months for active features
 
 PATTERNS TO FIND:
+
 - "TODO:", "FIXME:", "WIP:"
 - Version references (e.g., "v1.0", "Node 14")
 - Date references that are old
 - References to removed packages/features
 
-Mark each check: ISSUE | OK | N/A
-List specific stale content with file paths.
+Mark each check: ISSUE | OK | N/A List specific stale content with file paths.
 
-Category 3: Coverage Gaps
-CHECKS:
-[ ] All major features documented
-[ ] Setup/installation instructions present
-[ ] Configuration options documented
-[ ] API endpoints documented
-[ ] Error handling documented
-[ ] Security considerations documented
-[ ] Testing procedures documented
-[ ] Deployment process documented
+Category 3: Coverage Gaps CHECKS: [ ] All major features documented [ ]
+Setup/installation instructions present [ ] Configuration options documented [ ]
+API endpoints documented [ ] Error handling documented [ ] Security
+considerations documented [ ] Testing procedures documented [ ] Deployment
+process documented
 
 ANALYSIS:
+
 - Compare code features to documentation
 - Identify undocumented public APIs
 - Check for missing "How To" guides
@@ -277,75 +282,69 @@ ANALYSIS:
 - Check for missing architecture diagrams
 
 VERIFICATION COMMANDS (if available):
+
 - Compare feature list in code vs docs
 - grep for public functions/APIs without docs
 - Check for common sections (Setup, Usage, Troubleshooting)
 
-Mark each check: GAP | COVERED | N/A
-List specific missing documentation areas.
+Mark each check: GAP | COVERED | N/A List specific missing documentation areas.
 
 Category 4: Tier Compliance (if tier system exists)
 
-**Note:** This category is OPTIONAL. Skip and mark all checks as N/A if the project doesn't use a documentation tier system.
+**Note:** This category is OPTIONAL. Skip and mark all checks as N/A if the
+project doesn't use a documentation tier system.
 
-CHECKS:
-[ ] Docs are in correct tier folders
-[ ] Tier 1 docs are root-level essentials only
-[ ] Tier 2 docs are core guides
-[ ] Tier 3 docs are specialized content
-[ ] Tier 4 docs are reference materials
-[ ] Tier 5 (archive) contains only historical docs
-[ ] No active docs in archive folder
+CHECKS: [ ] Docs are in correct tier folders [ ] Tier 1 docs are root-level
+essentials only [ ] Tier 2 docs are core guides [ ] Tier 3 docs are specialized
+content [ ] Tier 4 docs are reference materials [ ] Tier 5 (archive) contains
+only historical docs [ ] No active docs in archive folder
 
 ANALYSIS:
+
 - Review file locations vs tier definitions
 - Identify misplaced documents
 - Check if archived docs are properly marked
 - Verify tier structure makes sense
 
 VERIFICATION:
+
 - List files in each tier
 - Verify against tier definitions
 - Check for violations
 
-Mark each check: ISSUE | OK | N/A
-List specific tier violations with recommendations.
+Mark each check: ISSUE | OK | N/A List specific tier violations with
+recommendations.
 
-Category 5: Frontmatter & Metadata
-CHECKS:
-[ ] All docs have required frontmatter (if standard exists)
-[ ] Document versions are tracked
-[ ] Authors are listed (if required)
-[ ] Creation/update dates present (if required)
-[ ] Status indicators used correctly
-[ ] Tags/categories consistent
-[ ] Required fields populated
+Category 5: Frontmatter & Metadata CHECKS: [ ] All docs have required
+frontmatter (if standard exists) [ ] Document versions are tracked [ ] Authors
+are listed (if required) [ ] Creation/update dates present (if required) [ ]
+Status indicators used correctly [ ] Tags/categories consistent [ ] Required
+fields populated
 
 ANALYSIS:
+
 - Check first 10 lines of each doc for frontmatter
 - Verify consistency across documents
 - Identify missing required fields
 - Check for metadata format consistency
 
 VERIFICATION COMMANDS (if available):
-- grep -A 10 "^---$" --include="*.md" (extract frontmatter)
+
+- grep -A 10 "^---$" --include="\*.md" (extract frontmatter)
 - Check frontmatter schema compliance
 
-Mark each check: ISSUE | OK | N/A
-List specific frontmatter issues.
+Mark each check: ISSUE | OK | N/A List specific frontmatter issues.
 
-Category 6: Content Quality
-CHECKS:
-[ ] No circular documentation (docs referencing each other in confusing loops)
-[ ] No redundant/duplicate content across documents
-[ ] No contradictory information across documents
-[ ] Documentation narrative is cohesive and logical
-[ ] Document relationships are navigable (clear paths to related content)
-[ ] No bloated content (overly verbose, could be condensed)
-[ ] Consistent terminology across documents
-[ ] Information flows logically (no orphaned concepts)
+Category 6: Content Quality CHECKS: [ ] No circular documentation (docs
+referencing each other in confusing loops) [ ] No redundant/duplicate content
+across documents [ ] No contradictory information across documents [ ]
+Documentation narrative is cohesive and logical [ ] Document relationships are
+navigable (clear paths to related content) [ ] No bloated content (overly
+verbose, could be condensed) [ ] Consistent terminology across documents [ ]
+Information flows logically (no orphaned concepts)
 
 ANALYSIS:
+
 - Map document reference chains to find circular patterns
 - Compare similar sections across docs for duplication
 - Check for conflicting guidance (e.g., different instructions for same task)
@@ -354,6 +353,7 @@ ANALYSIS:
 - Check if terminology is used consistently
 
 PATTERNS TO FIND:
+
 - A.md→B.md→C.md→A.md circular chains
 - Same paragraph/section appearing in multiple docs
 - "Do X" in one doc but "Don't do X" in another
@@ -362,18 +362,20 @@ PATTERNS TO FIND:
 - Verbose explanations that repeat information
 
 VERIFICATION COMMANDS (if available):
-- Build link graph: grep -rn "\[.*\](.*)" --include="*.md" | extract targets
+
+- Build link graph: grep -rn "\[._\](._)" --include="\*.md" | extract targets
 - Find duplicates: Compare doc sections for similarity
 - Check terminology: grep for key terms and verify consistent usage
 
-Mark each check: ISSUE | OK | N/A
-List specific content quality issues with file references and recommendations.
+Mark each check: ISSUE | OK | N/A List specific content quality issues with file
+references and recommendations.
 
 After each category: "Category X complete - Issues found: [number]"
 
 PHASE 4: DRAFT DOCUMENTATION FINDINGS
 
 For each issue, create detailed entry:
+
 - Exact file path
 - Issue description
 - Impact on documentation usability
@@ -383,17 +385,19 @@ For each issue, create detailed entry:
 - Verification steps
 
 Documentation Severity Guide:
+
 - S0 (Critical): Broken core documentation, major feature undocumented
 - S1 (High): Multiple broken links, significant coverage gaps
 - S2 (Medium): Minor broken links, inconsistency, staleness
 - S3 (Low): Formatting issues, minor improvements
 
-Number findings sequentially.
-At the end: "Phase 4 complete - Total documentation findings: [count]"
+Number findings sequentially. At the end: "Phase 4 complete - Total
+documentation findings: [count]"
 
 PHASE 5: QUALITY METRICS
 
 Calculate documentation quality metrics:
+
 - Total documentation files: [count]
 - Broken links count: [count]
 - Orphaned documents: [count]
@@ -404,11 +408,13 @@ Calculate documentation quality metrics:
 PHASE 6: RECOMMENDATIONS SUMMARY
 
 Prioritize by:
+
 1. Impact on usability (higher first)
 2. Effort to fix (lower first)
 3. Number of affected files
 
 Identify:
+
 - Critical fixes (must do immediately)
 - Important improvements (should do soon)
 - Nice-to-have enhancements
@@ -423,46 +429,26 @@ OUTPUT FORMAT (STRICT)
 
 Return 4 sections in this exact order:
 
-1) QUALITY_METRICS_JSON
-{
-  "audit_date": "YYYY-MM-DD",
-  "total_docs": X,
-  "broken_links_count": X,
-  "orphaned_docs_count": X,
-  "stale_docs_count": X,
-  "coverage_score": "X%",
-  "tier_compliance_score": "X%"
-}
+1. QUALITY_METRICS_JSON { "audit_date": "YYYY-MM-DD", "total_docs": X,
+   "broken_links_count": X, "orphaned_docs_count": X, "stale_docs_count": X,
+   "coverage_score": "X%", "tier_compliance_score": "X%" }
 
-2) FINDINGS_JSONL
-(one JSON object per line, each must be valid JSON)
+2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema:
-{
-  "category": "Cross-Reference|Staleness|Coverage Gaps|Tier Compliance|Frontmatter|Content Quality",
-  "title": "short, specific issue",
-  "fingerprint": "<category>::<primary_file>::<issue_type>",
-  "severity": "S0|S1|S2|S3",
-  "effort": "E0|E1|E2|E3",
-  "confidence": 0-100,
-  "files": ["path1", "path2"],
-  "issue_details": {
-    "description": "what's wrong",
-    "impact": "how it affects users",
-    "examples": ["specific instances"]
-  },
-  "remediation": {
-    "steps": ["step 1", "step 2"],
-    "verification": ["how to verify fix"]
-  },
-  "evidence": ["grep output or link checks"],
-  "notes": "optional"
-}
+Schema: { "category": "Cross-Reference|Staleness|Coverage Gaps|Tier
+Compliance|Frontmatter|Content Quality", "title": "short, specific issue",
+"fingerprint": "<category>::<primary_file>::<issue_type>", "severity":
+"S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
+"path2"], "issue_details": { "description": "what's wrong", "impact": "how it
+affects users", "examples": ["specific instances"] }, "remediation": { "steps":
+["step 1", "step 2"], "verification": ["how to verify fix"] }, "evidence":
+["grep output or link checks"], "notes": "optional" }
 
-3) SUSPECTED_FINDINGS_JSONL
-(same schema, but confidence <= 40; needs manual verification)
+3. SUSPECTED_FINDINGS_JSONL (same schema, but confidence <= 40; needs manual
+   verification)
 
-4) HUMAN_SUMMARY (markdown)
+4. HUMAN_SUMMARY (markdown)
+
 - Documentation quality overview
 - Critical issues requiring immediate attention
 - Top 5 documentation improvements
@@ -475,22 +461,27 @@ Schema:
 ```markdown
 DOCUMENTATION VERIFICATION (run if run_commands=yes)
 
-1) Link Extraction:
-- grep -rn "\[.*\](.*)" --include="*.md" | head -50
+1. Link Extraction:
 
-2) Broken Link Detection:
+- grep -rn "\[._\](._)" --include="\*.md" | head -50
+
+2. Broken Link Detection:
+
 - For each extracted link, check: test -f [target_path]
 
-3) Stale Content Detection:
-- grep -rn "TODO:\|FIXME:\|WIP:" --include="*.md"
-- git log --since="6 months ago" --name-only -- "*.md" | sort -u
+3. Stale Content Detection:
 
-4) Frontmatter Check:
-- grep -A 10 "^---$" --include="*.md" docs/ | head -100
+- grep -rn "TODO:\|FIXME:\|WIP:" --include="\*.md"
+- git log --since="6 months ago" --name-only -- "\*.md" | sort -u
 
-5) Documentation Stats:
-- find docs/ -name "*.md" | wc -l
-- find docs/ -name "*.md" -exec wc -l {} + | sort -n | tail -20
+4. Frontmatter Check:
+
+- grep -A 10 "^---$" --include="\*.md" docs/ | head -100
+
+5. Documentation Stats:
+
+- find docs/ -name "\*.md" | wc -l
+- find docs/ -name "\*.md" -exec wc -l {} + | sort -n | tail -20
 
 Paste only minimal excerpts as evidence.
 ```
@@ -502,6 +493,7 @@ Paste only minimal excerpts as evidence.
 ### Step 1: Collect Outputs
 
 For each AI model, save:
+
 - `[model-name]_metrics.json`
 - `[model-name]_findings.jsonl`
 - `[model-name]_suspected.jsonl`
@@ -512,7 +504,8 @@ For each AI model, save:
 ```markdown
 ROLE
 
-You are the Documentation Audit Aggregator. Merge multiple AI documentation audit outputs into one prioritized remediation plan.
+You are the Documentation Audit Aggregator. Merge multiple AI documentation
+audit outputs into one prioritized remediation plan.
 
 NON-NEGOTIABLE PRINCIPLES
 
@@ -522,28 +515,30 @@ NON-NEGOTIABLE PRINCIPLES
 
 DEDUPLICATION RULES
 
-1) Primary merge: same file + same issue type
-2) Secondary merge: same broken link reported by multiple models
-3) Take union of all broken links found
-4) Take most complete coverage gap analysis
+1. Primary merge: same file + same issue type
+2. Secondary merge: same broken link reported by multiple models
+3. Take union of all broken links found
+4. Take most complete coverage gap analysis
 
 SEVERITY HANDLING
 
 If models disagree on severity:
+
 - Take HIGHER severity if 2+ models agree
 - For broken links: Always S1 minimum if confirmed
 
 OUTPUT
 
-1) CONSOLIDATED_METRICS_JSON
-2) DEDUPED_FINDINGS_JSONL (with canonical_id)
-3) REMEDIATION_PLAN_JSON (ordered by priority)
-4) HUMAN_SUMMARY
+1. CONSOLIDATED_METRICS_JSON
+2. DEDUPED_FINDINGS_JSONL (with canonical_id)
+3. REMEDIATION_PLAN_JSON (ordered by priority)
+4. HUMAN_SUMMARY
 ```
 
 ### Step 3: Create Documentation Findings Document
 
 Create `docs/reviews/DOCUMENTATION_AUDIT_[YYYY]_Q[X].md` with:
+
 - Quality metrics dashboard
 - All findings with remediation steps
 - Prioritized fix order
@@ -563,16 +558,18 @@ ROLE
 You are a Technical Writer implementing fixes from a documentation audit.
 
 HARD RULES
+
 - Fix documentation issues ONLY - no code changes unless updating examples
 - Verify all link fixes work
 - Maintain consistent voice and style
 - Follow project documentation standards
 
 PROCESS
-1) Implement fix
-2) Verify links with docs:check or manual testing
-3) Check for related documentation that needs updates
-4) Update last-modified dates if required
+
+1. Implement fix
+2. Verify links with docs:check or manual testing
+3. Check for related documentation that needs updates
+4. Update last-modified dates if required
 ```
 
 ### Step 2-4: Same as Code Review Template
@@ -583,9 +580,9 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 
 ## Audit History
 
-| Date | Type | Trigger | Models Used | Findings | Quality Score |
-|------|------|---------|-------------|----------|---------------|
-| [Date] | Documentation Audit | [Reason] | [Models] | [X findings] | [Before → After] |
+| Date   | Type                | Trigger  | Models Used | Findings     | Quality Score    |
+| ------ | ------------------- | -------- | ----------- | ------------ | ---------------- |
+| [Date] | Documentation Audit | [Reason] | [Models]    | [X findings] | [Before → After] |
 
 ---
 
@@ -593,7 +590,8 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 
 When using this template:
 
-1. **Copy this template** to `docs/reviews/DOCUMENTATION_AUDIT_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to
+   `docs/reviews/DOCUMENTATION_AUDIT_PLAN_[YYYY]_Q[X].md`
 2. **Fill in Audit Context** with project-specific details
 3. **Run the documentation audit prompt** on each model
 4. **Collect outputs** in specified formats
@@ -603,6 +601,7 @@ When using this template:
 8. **Update MULTI_AI_REVIEW_COORDINATOR.md** with audit results
 
 **Quality checks before finalizing:**
+
 - [ ] All 6 categories covered
 - [ ] Broken links verified manually
 - [ ] Coverage gaps validated against code
@@ -614,10 +613,14 @@ When using this template:
 
 ## Related Documents
 
-- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
-- **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** - General code review template
-- **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** - Documentation standards (if exists)
+- **[JSONL_SCHEMA_STANDARD.md](./JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL
+  schema for all review templates
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md)** -
+  Master index and trigger tracking
+- **[MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)** -
+  General code review template
+- **[DOCUMENTATION_STANDARDS.md](../DOCUMENTATION_STANDARDS.md)** -
+  Documentation standards (if exists)
 - **[docs/README.md](../README.md)** - Documentation inventory
 
 ---
@@ -626,23 +629,24 @@ When using this template:
 
 When updating this document, also update:
 
-| Document | What to Update | Why |
-|----------|----------------|-----|
-| `.claude/commands/audit-documentation.md` | Category list, checklist items | Single-session audit version of this template |
-| `docs/SLASH_COMMANDS.md` | `/audit-documentation` section, category count | Documentation of the audit command |
-| `docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md` | Categories, checklist structure | Instance derived from this template |
+| Document                                                   | What to Update                                 | Why                                           |
+| ---------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------- |
+| `.claude/commands/audit-documentation.md`                  | Category list, checklist items                 | Single-session audit version of this template |
+| `docs/SLASH_COMMANDS.md`                                   | `/audit-documentation` section, category count | Documentation of the audit command            |
+| `docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md` | Categories, checklist structure                | Instance derived from this template           |
 
-**Why this matters:** Category additions (like Category 6: Content Quality) must propagate to all related documents to maintain consistency.
+**Why this matters:** Category additions (like Category 6: Content Quality) must
+propagate to all related documents to maintain consistency.
 
 ---
 
 ## Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.2 | 2026-01-09 | Added Category 6: Content Quality covering circular docs, bloat detection, contradiction checking, coherence/flow assessment, and terminology consistency | Claude |
-| 1.1 | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex; Escaped brackets in pattern | Claude |
-| 1.0 | 2026-01-05 | Initial template creation - Documentation audit category added to multi-AI review framework | Claude |
+| Version | Date       | Changes                                                                                                                                                   | Author |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.2     | 2026-01-09 | Added Category 6: Content Quality covering circular docs, bloat detection, contradiction checking, coherence/flow assessment, and terminology consistency | Claude |
+| 1.1     | 2026-01-06 | Review #68: Fixed link extraction regex to use grep -E for extended regex; Escaped brackets in pattern                                                    | Claude |
+| 1.0     | 2026-01-05 | Initial template creation - Documentation audit category added to multi-AI review framework                                                               | Claude |
 
 ---
 

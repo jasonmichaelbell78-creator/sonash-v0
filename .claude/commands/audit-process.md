@@ -9,7 +9,9 @@ description: Run a single-session process and automation audit on the codebase
 **Step 1: Check Thresholds**
 
 Run `npm run review:check` and report results.
-- If no thresholds triggered: "⚠️ No review thresholds triggered. Proceed anyway?"
+
+- If no thresholds triggered: "⚠️ No review thresholds triggered. Proceed
+  anyway?"
 - Continue with audit regardless (user invoked intentionally)
 
 **Step 2: Gather Current Baselines**
@@ -37,6 +39,7 @@ grep -A 50 '"scripts"' package.json | head -60
 **Step 3: Load False Positives Database**
 
 Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+
 - Category: `process`
 - Expired entries (skip if `expires` date passed)
 
@@ -45,6 +48,7 @@ Note patterns to exclude from final findings.
 **Step 4: Check Template Currency**
 
 Read `docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md` and verify:
+
 - [ ] CI/CD workflow list is current
 - [ ] Hook inventory is complete
 - [ ] Script coverage is documented
@@ -56,22 +60,27 @@ If outdated, note discrepancies but proceed with current values.
 ## Audit Execution
 
 **Focus Areas (7 Categories):**
+
 1. CI/CD Pipeline (workflow coverage, reliability, speed)
 2. Git Hooks (pre-commit, pre-push effectiveness)
 3. Claude Hooks (session hooks, tool hooks)
 4. Script Health (test coverage, error handling, documentation)
-5. **Script Trigger Coverage** (automatic triggers, npm commands, orphan scripts)
+5. **Script Trigger Coverage** (automatic triggers, npm commands, orphan
+   scripts)
 6. Trigger Thresholds (appropriateness, coverage)
 7. Process Documentation (accuracy, completeness)
 
 **For each category:**
+
 1. Search relevant files using Grep/Glob
 2. Identify specific issues with file:line references
-3. Classify severity: S0 (breaks CI) | S1 (reduces effectiveness) | S2 (inconvenient) | S3 (polish)
+3. Classify severity: S0 (breaks CI) | S1 (reduces effectiveness) | S2
+   (inconvenient) | S3 (polish)
 4. Estimate effort: E0 (trivial) | E1 (hours) | E2 (day) | E3 (major)
 5. **Assign confidence level** (see Evidence Requirements below)
 
 **Process Checks:**
+
 - All CI workflows pass on current branch
 - Hooks exit with correct codes
 - Scripts have error handling
@@ -80,6 +89,7 @@ If outdated, note discrepancies but proceed with current values.
 - npm scripts are documented in DEVELOPMENT.md
 
 **Scope:**
+
 - Include: `.github/`, `.claude/`, `.husky/`, `scripts/`, `package.json`
 - Exclude: `node_modules/`
 
@@ -88,17 +98,25 @@ If outdated, note discrepancies but proceed with current values.
 ## Evidence Requirements (MANDATORY)
 
 **All findings MUST include:**
-1. **File:Line Reference** - Exact location (e.g., `.github/workflows/ci.yml:45`)
-2. **Code/Config Snippet** - The actual problematic configuration (3-5 lines of context)
-3. **Verification Method** - How you confirmed this is an issue (workflow run, script test, grep)
+
+1. **File:Line Reference** - Exact location (e.g.,
+   `.github/workflows/ci.yml:45`)
+2. **Code/Config Snippet** - The actual problematic configuration (3-5 lines of
+   context)
+3. **Verification Method** - How you confirmed this is an issue (workflow run,
+   script test, grep)
 4. **Impact Description** - What breaks or degrades if not fixed
 
 **Confidence Levels:**
-- **HIGH (90%+)**: Confirmed by CI run, script execution, or hook test; verified file exists, issue reproducible
-- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no execution test
+
+- **HIGH (90%+)**: Confirmed by CI run, script execution, or hook test; verified
+  file exists, issue reproducible
+- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no execution
+  test
 - **LOW (<70%)**: Pattern match only, needs manual testing to confirm
 
 **S0/S1 findings require:**
+
 - HIGH or MEDIUM confidence (LOW confidence S0/S1 must be escalated)
 - Dual-pass verification (re-read the config/script after initial finding)
 - Cross-reference with CI logs or script output
@@ -109,10 +127,14 @@ If outdated, note discrepancies but proceed with current values.
 
 Before finalizing findings, cross-reference with:
 
-1. **CI workflow logs** - Mark findings as "TOOL_VALIDATED" if CI logs show failure
-2. **Script execution** - Mark findings as "TOOL_VALIDATED" if script test confirms issue
-3. **Hook test runs** - Mark findings as "TOOL_VALIDATED" if hook execution reveals problem
-4. **Prior audits** - Check `docs/audits/single-session/process/` for duplicate findings
+1. **CI workflow logs** - Mark findings as "TOOL_VALIDATED" if CI logs show
+   failure
+2. **Script execution** - Mark findings as "TOOL_VALIDATED" if script test
+   confirms issue
+3. **Hook test runs** - Mark findings as "TOOL_VALIDATED" if hook execution
+   reveals problem
+4. **Prior audits** - Check `docs/audits/single-session/process/` for duplicate
+   findings
 
 Findings without tool validation should note: `"cross_ref": "MANUAL_ONLY"`
 
@@ -129,17 +151,20 @@ For all S0 (breaks CI) and S1 (reduces effectiveness) findings:
    - Confirm file and line still exist
 3. **Decision**: Mark as CONFIRMED or DOWNGRADE (with reason)
 
-Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"verified": "DOWNGRADED_TO_S2"`
+Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
+`"verified": "DOWNGRADED_TO_S2"`
 
 ---
 
 ## Output Requirements
 
 **1. Markdown Summary (display to user):**
+
 ```markdown
 ## Process/Automation Audit - [DATE]
 
 ### Baselines
+
 - CI workflows: X files
 - Git hooks: X hooks
 - Claude hooks: X hooks
@@ -148,29 +173,35 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"v
 - npm scripts: X scripts
 
 ### Findings Summary
-| Severity | Count | Category | Confidence |
-|----------|-------|----------|------------|
-| S0 | X | ... | HIGH/MEDIUM |
-| S1 | X | ... | HIGH/MEDIUM |
-| S2 | X | ... | ... |
-| S3 | X | ... | ... |
+
+| Severity | Count | Category | Confidence  |
+| -------- | ----- | -------- | ----------- |
+| S0       | X     | ...      | HIGH/MEDIUM |
+| S1       | X     | ...      | HIGH/MEDIUM |
+| S2       | X     | ...      | ...         |
+| S3       | X     | ...      | ...         |
 
 ### CI/CD Issues
+
 1. [workflow.yml:line] - Description - DUAL_PASS_CONFIRMED
 2. ...
 
 ### False Positives Filtered
+
 - X findings excluded (matched FALSE_POSITIVES.jsonl patterns)
 
 ### Hook Issues
+
 1. [hook.sh:line] - Description
 2. ...
 
 ### Script Issues
+
 1. [script.js:line] - Description
 2. ...
 
 ### Recommendations
+
 - ...
 ```
 
@@ -179,8 +210,23 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"v
 Create file: `docs/audits/single-session/process/audit-[YYYY-MM-DD].jsonl`
 
 Each line (UPDATED SCHEMA with confidence and verification):
+
 ```json
-{"id":"PROC-001","category":"CI|GitHooks|ClaudeHooks|Scripts|Triggers|ProcessDocs","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"path/to/file","line":123,"title":"Short description","description":"Detailed issue","recommendation":"How to fix","evidence":["config snippet","CI log output","script output"],"cross_ref":"ci_logs|script_test|hook_test|MANUAL_ONLY"}
+{
+  "id": "PROC-001",
+  "category": "CI|GitHooks|ClaudeHooks|Scripts|Triggers|ProcessDocs",
+  "severity": "S0|S1|S2|S3",
+  "effort": "E0|E1|E2|E3",
+  "confidence": "HIGH|MEDIUM|LOW",
+  "verified": "DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY",
+  "file": "path/to/file",
+  "line": 123,
+  "title": "Short description",
+  "description": "Detailed issue",
+  "recommendation": "How to fix",
+  "evidence": ["config snippet", "CI log output", "script output"],
+  "cross_ref": "ci_logs|script_test|hook_test|MANUAL_ONLY"
+}
 ```
 
 **3. Markdown Report (save to file):**
@@ -196,6 +242,7 @@ Full markdown report with all findings, baselines, and improvement plan.
 **Before finalizing the audit:**
 
 1. **Run Validation Script:**
+
    ```bash
    node scripts/validate-audit.js docs/audits/single-session/process/audit-[YYYY-MM-DD].jsonl
    ```
@@ -227,7 +274,8 @@ Full markdown report with all findings, baselines, and improvement plan.
    - Findings: Total count (e.g., "1 S1, 2 S2, 4 S3")
    - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: YES (single-session audits reset that category's threshold)
+   - Reset Threshold: YES (single-session audits reset that category's
+     threshold)
 5. Ask: "Would you like me to fix any of these process issues now?"
 
 ---
@@ -236,16 +284,20 @@ Full markdown report with all findings, baselines, and improvement plan.
 
 ### Category-Specific Thresholds
 
-This audit **resets the process category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
+This audit **resets the process category threshold** in `docs/AUDIT_TRACKER.md`
+(single-session audits reset their own category; multi-AI audits reset all
+thresholds). Reset means the commit counter for this category starts counting
+from zero after this audit.
 
 **Process audit triggers (check AUDIT_TRACKER.md):**
+
 - ANY CI/hook file changed since last process audit, OR
 - 30+ commits since last process audit
 
 ### Multi-AI Escalation
 
-After 3 single-session process audits, a full multi-AI Process Audit is recommended.
-Track this in AUDIT_TRACKER.md "Single audits completed" counter.
+After 3 single-session process audits, a full multi-AI Process Audit is
+recommended. Track this in AUDIT_TRACKER.md "Single audits completed" counter.
 
 ---
 

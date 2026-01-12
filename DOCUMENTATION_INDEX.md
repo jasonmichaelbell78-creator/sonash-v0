@@ -1,10 +1,9 @@
 # Documentation Index
 
-> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate.
+> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
+> regenerate.
 
-**Generated:** 2026-01-09
-**Active Documents:** 189
-**Archived Documents:** 62
+**Generated:** 2026-01-09 **Active Documents:** 189 **Archived Documents:** 62
 
 ---
 
@@ -23,33 +22,33 @@
 
 ### By Tier
 
-| Tier | Count | Description |
-|------|-------|-------------|
-| Tier 1 | 8 | Essential |
-| Tier 2 | 36 | Core |
-| Tier 3 | 109 | Specialized |
-| Tier 4 | 36 | Reference |
-| Tier 5 | 0 | Archive |
+| Tier   | Count | Description |
+| ------ | ----- | ----------- |
+| Tier 1 | 8     | Essential   |
+| Tier 2 | 36    | Core        |
+| Tier 3 | 109   | Specialized |
+| Tier 4 | 36    | Reference   |
+| Tier 5 | 0     | Archive     |
 
 ### By Category
 
-| Category | Count |
-|----------|-------|
-| Skills | 70 |
-| Core Documentation | 36 |
-| .claude > agents | 24 |
-| Templates | 14 |
-| Slash Commands | 11 |
-| 2026 Q1 Reviews | 11 |
-| Root Documents | 8 |
-| .claude | 4 |
-| .github | 3 |
-| Brainstorm | 2 |
-| Reviews & Audits | 2 |
-| .agent > workflows | 1 |
-| Agent Documentation | 1 |
-| Analysis | 1 |
-| scripts | 1 |
+| Category            | Count |
+| ------------------- | ----- |
+| Skills              | 70    |
+| Core Documentation  | 36    |
+| .claude > agents    | 24    |
+| Templates           | 14    |
+| Slash Commands      | 11    |
+| 2026 Q1 Reviews     | 11    |
+| Root Documents      | 8     |
+| .claude             | 4     |
+| .github             | 3     |
+| Brainstorm          | 2     |
+| Reviews & Audits    | 2     |
+| .agent > workflows  | 1     |
+| Agent Documentation | 1     |
+| Analysis            | 1     |
+| scripts             | 1     |
 
 ---
 
@@ -57,297 +56,297 @@
 
 ### Root Documents (Tier 1)
 
-*Essential project-level documentation*
+_Essential project-level documentation_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [AI Context & Rules for SoNash](claude.md) | This document provides essential context and rules for AI as... | ↓4 ↑6 | 2026-01-08 |
-| [AI Workflow Guide](AI_WORKFLOW.md) | **Every phase, section, or milestone completion MUST include... | ↓10 ↑16 | 2026-01-08 |
-| [Architecture Documentation](ARCHITECTURE.md) | - | ↓14 ↑6 | 2026-01-08 |
-| [Development Guide](DEVELOPMENT.md) | - | ↓13 ↑5 | 2026-01-08 |
-| [Session Context](SESSION_CONTEXT.md) | - | ↓7 ↑8 | 2026-01-09 |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | *A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15 | 2026-01-08 |
-| [SoNash Product Roadmap](ROADMAP.md) | - | ↓15 ↑13 | 2026-01-08 |
-| [SoNash Roadmap Log](ROADMAP_LOG.md) | - | ↓4 ↑5 | 2026-01-08 |
+| Document                                                | Description                                                       | References | Last Modified |
+| ------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
+| [AI Context & Rules for SoNash](claude.md)              | This document provides essential context and rules for AI as...   | ↓4 ↑6      | 2026-01-08    |
+| [AI Workflow Guide](AI_WORKFLOW.md)                     | \*\*Every phase, section, or milestone completion MUST include... | ↓10 ↑16    | 2026-01-08    |
+| [Architecture Documentation](ARCHITECTURE.md)           | -                                                                 | ↓14 ↑6     | 2026-01-08    |
+| [Development Guide](DEVELOPMENT.md)                     | -                                                                 | ↓13 ↑5     | 2026-01-08    |
+| [Session Context](SESSION_CONTEXT.md)                   | -                                                                 | ↓7 ↑8      | 2026-01-09    |
+| [SoNash - Sober Nashville Recovery Notebook](README.md) | \*A privacy-first digital recovery journal for the recovery c...  | ↓0 ↑15     | 2026-01-08    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | -                                                                 | ↓15 ↑13    | 2026-01-08    |
+| [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                 | ↓4 ↑5      | 2026-01-08    |
 
 ### Core Documentation (Tier 2)
 
-*Main documentation directory*
+_Main documentation directory_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md) | Each AI review is an opportunity to improve future work. Sys... | ↓11 ↑2 | 2026-01-08 |
-| [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | - | ↓2 ↑4 | 2026-01-08 |
-| [ADR-001: Integrated Improvement Plan Approach](docs/decisions/ADR-001-integrated-improvement-plan-approach.md) | - | ↓1 ↑2 | 2026-01-08 |
-| [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md) | - | ↓1 ↑0 | 2026-01-08 |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md) | This document is the **audit trail** of all AI code review l... | ↓8 ↑3 | 2026-01-09 |
-| [App Check Setup Guide](docs/APPCHECK_SETUP.md) | This guide covers Firebase App Check configuration for the S... | ↓2 ↑0 | 2026-01-08 |
-| [Architecture Decision Records (ADRs)](docs/decisions/README.md) | Document significant technical decisions for the SoNash proj... | ↓0 ↑2 | 2026-01-08 |
-| [Audit Findings Backlog](docs/AUDIT_FINDINGS_BACKLOG.md) | - | ↓1 ↑4 | 2026-01-08 |
-| [Audit Tracker](docs/AUDIT_TRACKER.md) | Track single-session and multi-AI audit completions for thre... | ↓1 ↑0 | 2026-01-08 |
-| [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md) | Track template-instance relationships and synchronization re... | ↓0 ↑1 | 2026-01-08 |
-| [Documentation Inventory](docs/README.md) | This document provides a complete inventory of project docum... | ↓1 ↑11 | 2026-01-08 |
-| [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md) | This document defines the mandatory security review process ... | ↓2 ↑6 | 2026-01-08 |
-| [Getting the Most Out of Antigravity](docs/ANTIGRAVITY_GUIDE.md) | Guide for using **Antigravity** (Google's AI coding environm... | ↓1 ↑0 | 2026-01-08 |
-| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md) | This document defines **mandatory security standards** that ... | ↓13 ↑0 | 2026-01-08 |
-| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md) | Documented procedures for responding to security incidents, ... | ↓7 ↑0 | 2026-01-08 |
-| [Integrated Improvement Plan](docs/INTEGRATED_IMPROVEMENT_PLAN.md) | - | ↓11 ↑8 | 2026-01-09 |
-| [Local Recovery Resources Implementation Plan](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md) | - | ↓0 ↑1 | 2026-01-08 |
-| [M1.6 Support Tab Foundation Plan](docs/M1.6_SUPPORT_TAB_PLAN.md) | - | ↓1 ↑3 | 2026-01-08 |
-| [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md) | - | ↓1 ↑1 | 2026-01-08 |
-| [Multi-AI Performance Audit Report](docs/audits/multi-ai/performance/audit-2026-01-08.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md) | Master index and coordination for multi-AI code review syste... | ↓10 ↑12 | 2026-01-08 |
-| [PR Review Prompt Template](docs/PR_REVIEW_PROMPT_TEMPLATE.md) | Reproducible prompt for processing AI code review feedback | ↓0 ↑0 | 2026-01-08 |
-| [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md) | - | ↓4 ↑3 | 2026-01-08 |
-| [reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md) | Complete removal and fresh implementation guide for Firebase... | ↓1 ↑2 | 2026-01-08 |
-| [Review Policy Architecture](docs/REVIEW_POLICY_ARCHITECTURE.md) | This document defines a **lightweight, AI-first review polic... | ↓3 ↑0 | 2026-01-08 |
-| [Review Policy Index](docs/REVIEW_POLICY_INDEX.md) | Central directory for all review policy documentation | ↓0 ↑9 | 2026-01-08 |
-| [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md) | This is a **one-page quick reference** for the SoNash review... | ↓2 ↑4 | 2026-01-08 |
-| [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md) | This document provides **visual diagrams and flowcharts** fo... | ↓1 ↑3 | 2026-01-08 |
-| [Security & Privacy Guide](docs/SECURITY.md) | - | ↓14 ↑4 | 2026-01-08 |
-| [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md) | Step-by-step guide to integrate Sentry error tracking into t... | ↓1 ↑0 | 2026-01-08 |
-| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md) | Verify requests come from your legitimate app, not bots or s... | ↓5 ↑2 | 2026-01-08 |
-| [Single-Session Audit Results](docs/audits/single-session/README.md) | Store results from single-session (single-AI) audits | ↓0 ↑0 | 2026-01-08 |
-| [Slash Commands Reference](docs/SLASH_COMMANDS.md) | - | ↓2 ↑3 | 2026-01-09 |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md) | - | ↓6 ↑1 | 2026-01-09 |
-| [Testing Plan](docs/TESTING_PLAN.md) | Comprehensive testing guidance for the SoNash application, i... | ↓4 ↑0 | 2026-01-08 |
-| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md) | - | ↓2 ↑0 | 2026-01-08 |
+| Document                                                                                                        | Description                                                       | References | Last Modified |
+| --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
+| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                          | Each AI review is an opportunity to improve future work. Sys...   | ↓11 ↑2     | 2026-01-08    |
+| [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)          | -                                                                 | ↓2 ↑4      | 2026-01-08    |
+| [ADR-001: Integrated Improvement Plan Approach](docs/decisions/ADR-001-integrated-improvement-plan-approach.md) | -                                                                 | ↓1 ↑2      | 2026-01-08    |
+| [ADR-NNN: [Short Title]](docs/decisions/TEMPLATE.md)                                                            | -                                                                 | ↓1 ↑0      | 2026-01-08    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                      | This document is the **audit trail** of all AI code review l...   | ↓8 ↑3      | 2026-01-09    |
+| [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                                 | This guide covers Firebase App Check configuration for the S...   | ↓2 ↑0      | 2026-01-08    |
+| [Architecture Decision Records (ADRs)](docs/decisions/README.md)                                                | Document significant technical decisions for the SoNash proj...   | ↓0 ↑2      | 2026-01-08    |
+| [Audit Findings Backlog](docs/AUDIT_FINDINGS_BACKLOG.md)                                                        | -                                                                 | ↓1 ↑4      | 2026-01-08    |
+| [Audit Tracker](docs/AUDIT_TRACKER.md)                                                                          | Track single-session and multi-AI audit completions for thre...   | ↓1 ↑0      | 2026-01-08    |
+| [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                                                          | Track template-instance relationships and synchronization re...   | ↓0 ↑1      | 2026-01-08    |
+| [Documentation Inventory](docs/README.md)                                                                       | This document provides a complete inventory of project docum...   | ↓1 ↑11     | 2026-01-08    |
+| [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                        | This document defines the mandatory security review process ...   | ↓2 ↑6      | 2026-01-08    |
+| [Getting the Most Out of Antigravity](docs/ANTIGRAVITY_GUIDE.md)                                                | Guide for using **Antigravity** (Google's AI coding environm...   | ↓1 ↑0      | 2026-01-08    |
+| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                                  | This document defines **mandatory security standards** that ...   | ↓13 ↑0     | 2026-01-08    |
+| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                          | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-01-08    |
+| [Integrated Improvement Plan](docs/INTEGRATED_IMPROVEMENT_PLAN.md)                                              | -                                                                 | ↓11 ↑8     | 2026-01-09    |
+| [Local Recovery Resources Implementation Plan](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)                     | -                                                                 | ↓0 ↑1      | 2026-01-08    |
+| [M1.6 Support Tab Foundation Plan](docs/M1.6_SUPPORT_TAB_PLAN.md)                                               | -                                                                 | ↓1 ↑3      | 2026-01-08    |
+| [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                                      | -                                                                 | ↓1 ↑1      | 2026-01-08    |
+| [Multi-AI Performance Audit Report](docs/audits/multi-ai/performance/audit-2026-01-08.md)                       | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                              | Master index and coordination for multi-AI code review syste...   | ↓10 ↑12    | 2026-01-08    |
+| [PR Review Prompt Template](docs/PR_REVIEW_PROMPT_TEMPLATE.md)                                                  | Reproducible prompt for processing AI code review feedback        | ↓0 ↑0      | 2026-01-08    |
+| [PR Workflow Checklist - MANDATORY FOR ALL PHASES](docs/PR_WORKFLOW_CHECKLIST.md)                               | -                                                                 | ↓4 ↑3      | 2026-01-08    |
+| [reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide](docs/RECAPTCHA_REMOVAL_GUIDE.md)               | Complete removal and fresh implementation guide for Firebase...   | ↓1 ↑2      | 2026-01-08    |
+| [Review Policy Architecture](docs/REVIEW_POLICY_ARCHITECTURE.md)                                                | This document defines a \*\*lightweight, AI-first review polic... | ↓3 ↑0      | 2026-01-08    |
+| [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                              | Central directory for all review policy documentation             | ↓0 ↑9      | 2026-01-08    |
+| [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                                                | This is a **one-page quick reference** for the SoNash review...   | ↓2 ↑4      | 2026-01-08    |
+| [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                                                | This document provides **visual diagrams and flowcharts** fo...   | ↓1 ↑3      | 2026-01-08    |
+| [Security & Privacy Guide](docs/SECURITY.md)                                                                    | -                                                                 | ↓14 ↑4     | 2026-01-08    |
+| [Sentry Integration Guide for SoNash Admin Panel](docs/SENTRY_INTEGRATION_GUIDE.md)                             | Step-by-step guide to integrate Sentry error tracking into t...   | ↓1 ↑0      | 2026-01-08    |
+| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                                       | Verify requests come from your legitimate app, not bots or s...   | ↓5 ↑2      | 2026-01-08    |
+| [Single-Session Audit Results](docs/audits/single-session/README.md)                                            | Store results from single-session (single-AI) audits              | ↓0 ↑0      | 2026-01-08    |
+| [Slash Commands Reference](docs/SLASH_COMMANDS.md)                                                              | -                                                                 | ↓2 ↑3      | 2026-01-09    |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                               | -                                                                 | ↓6 ↑1      | 2026-01-09    |
+| [Testing Plan](docs/TESTING_PLAN.md)                                                                            | Comprehensive testing guidance for the SoNash application, i...   | ↓4 ↑0      | 2026-01-08    |
+| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)                                            | -                                                                 | ↓2 ↑0      | 2026-01-08    |
 
 ### 2026 Q1 Reviews (Tier 3)
 
-*Q1 2026 audit documentation*
+_Q1 2026 audit documentation_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [2026 Q1 Multi-AI Audit - Execution Guide](docs/reviews/2026-Q1/README.md) | - | ↓0 ↑3 | 2026-01-08 |
-| [Audit Aggregation: Gemini + ChatGPT](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md) | This document contains aggregated findings from a multi-AI c... | ↓0 ↑0 | 2026-01-08 |
-| [Phase 4.2 Security Audit Results](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md) | This document captures the aggregated results of the Phase 4... | ↓0 ↑0 | 2026-01-08 |
-| [SoNash Code Review - 2026 Q1](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [SoNash Multi-AI Code Review Plan](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | - | ↓0 ↑6 | 2026-01-08 |
-| [SoNash Multi-AI Documentation Audit Plan](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑0 | 2026-01-08 |
-| [SoNash Multi-AI Performance Audit - Aggregated Findings](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md) | - | ↓1 ↑2 | 2026-01-09 |
-| [SoNash Multi-AI Performance Audit Plan](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓1 ↑6 | 2026-01-09 |
-| [SoNash Multi-AI Process & Automation Audit Plan](docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑0 | 2026-01-08 |
-| [SoNash Multi-AI Refactoring Plan](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑0 | 2026-01-08 |
-| [SoNash Multi-AI Security Audit Plan](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑3 | 2026-01-08 |
+| Document                                                                                                              | Description                                                     | References | Last Modified |
+| --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [2026 Q1 Multi-AI Audit - Execution Guide](docs/reviews/2026-Q1/README.md)                                            | -                                                               | ↓0 ↑3      | 2026-01-08    |
+| [Audit Aggregation: Gemini + ChatGPT](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md)         | This document contains aggregated findings from a multi-AI c... | ↓0 ↑0      | 2026-01-08    |
+| [Phase 4.2 Security Audit Results](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md)                | This document captures the aggregated results of the Phase 4... | ↓0 ↑0      | 2026-01-08    |
+| [SoNash Code Review - 2026 Q1](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md)                       | -                                                               | ↓0 ↑0      | 2026-01-08    |
+| [SoNash Multi-AI Code Review Plan](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md)                                  | -                                                               | ↓0 ↑6      | 2026-01-08    |
+| [SoNash Multi-AI Documentation Audit Plan](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md)                  | This document serves as the **execution plan** for running a... | ↓0 ↑0      | 2026-01-08    |
+| [SoNash Multi-AI Performance Audit - Aggregated Findings](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md) | -                                                               | ↓1 ↑2      | 2026-01-09    |
+| [SoNash Multi-AI Performance Audit Plan](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md)                      | This document serves as the **execution plan** for running a... | ↓1 ↑6      | 2026-01-09    |
+| [SoNash Multi-AI Process & Automation Audit Plan](docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md)                 | This document serves as the **execution plan** for running a... | ↓0 ↑0      | 2026-01-08    |
+| [SoNash Multi-AI Refactoring Plan](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md)                            | This document serves as the **execution plan** for running a... | ↓0 ↑0      | 2026-01-08    |
+| [SoNash Multi-AI Security Audit Plan](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md)                            | This document serves as the **execution plan** for running a... | ↓0 ↑3      | 2026-01-08    |
 
 ### Agent Documentation (Tier 3)
 
-*AI agent reference docs*
+_AI agent reference docs_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md) | This document contains detailed code patterns and anti-patte... | ↓7 ↑1 | 2026-01-09 |
+| Document                                                           | Description                                                     | References | Last Modified |
+| ------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md) | This document contains detailed code patterns and anti-patte... | ↓7 ↑1      | 2026-01-09    |
 
 ### Reviews & Audits (Tier 3)
 
-*Audit plans and findings*
+_Audit plans and findings_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Multi-AI Reviews Directory](docs/reviews/README.md) | - | ↓0 ↑1 | 2026-01-08 |
-| [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑4 | 2026-01-08 |
+| Document                                                                               | Description                                                     | References | Last Modified |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Multi-AI Reviews Directory](docs/reviews/README.md)                                   | -                                                               | ↓0 ↑1      | 2026-01-08    |
+| [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑4      | 2026-01-08    |
 
 ### Skills (Tier 3)
 
-*Claude Code skills*
+_Claude Code skills_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md) | You have access to the systematic debugging skill at skills/... | ↓0 ↑0 | 2026-01-08 |
-| [Api Design Patterns](.claude/skills/senior-backend/references/api_design_patterns.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Architecture Patterns](.claude/skills/senior-architect/references/architecture_patterns.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Architecture Patterns](.claude/skills/senior-fullstack/references/architecture_patterns.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Artifacts Builder](.claude/skills/artifacts-builder/SKILL.md) | To build powerful frontend claude.ai artifacts, follow these... | ↓0 ↑0 | 2026-01-08 |
-| [Backend Security Practices](.claude/skills/senior-backend/references/backend_security_practices.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Cicd Pipeline Guide](.claude/skills/senior-devops/references/cicd_pipeline_guide.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Code Review Agent](.claude/skills/requesting-code-review/code-reviewer.md) | You are reviewing code changes for production readiness. | ↓0 ↑0 | 2026-01-08 |
-| [Code Review Checklist](.claude/skills/code-reviewer/references/code_review_checklist.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Code Reviewer](.claude/skills/code-reviewer/SKILL.md) | Complete toolkit for code reviewer with modern tools and bes... | ↓0 ↑0 | 2026-01-08 |
-| [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md) | Flaky tests often guess at timing with arbitrary delays. Thi... | ↓0 ↑0 | 2026-01-08 |
-| [Content Research Writer](.claude/skills/content-research-writer/SKILL.md) | This skill acts as your writing partner, helping you researc... | ↓0 ↑0 | 2026-01-08 |
-| [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md) | Reference example of extracting, structuring, and bulletproo... | ↓0 ↑0 | 2026-01-08 |
-| [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md) | Templates and frameworks for conducting rigorous market anal... | ↓0 ↑0 | 2026-01-08 |
-| [Database Optimization Guide](.claude/skills/senior-backend/references/database_optimization_guide.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md) | Reject obviously invalid input at API boundary | ↓0 ↑0 | 2026-01-08 |
-| [Deployment Strategies](.claude/skills/senior-devops/references/deployment_strategies.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Developer Growth Analysis](.claude/skills/developer-growth-analysis/SKILL.md) | This skill provides personalized feedback on your recent cod... | ↓0 ↑0 | 2026-01-08 |
-| [Development Workflows](.claude/skills/senior-fullstack/references/development_workflows.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Excel Analysis](.claude/skills/excel-analysis/SKILL.md) | Read Excel files with pandas: | ↓0 ↑0 | 2026-01-08 |
-| [File Format Support](.claude/skills/markitdown/references/file_formats.md) | This document provides detailed information about each file ... | ↓0 ↑0 | 2026-01-08 |
-| [Frontend Best Practices](.claude/skills/senior-frontend/references/frontend_best_practices.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Gh Pr Checks Plan Fix](.claude/skills/gh-fix-ci/SKILL.md) | Use gh to locate failing PR checks, fetch GitHub Actions log... | ↓0 ↑0 | 2026-01-08 |
-| [Infrastructure As Code](.claude/skills/senior-devops/references/infrastructure_as_code.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Market Research Report Formatting Guide](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md) | Quick reference for using the `market_research.sty` style pa... | ↓0 ↑0 | 2026-01-08 |
-| [Market Research Report Structure Guide](.claude/skills/market-research-reports/references/report_structure_guide.md) | Create a strong first impression and communicate report scop... | ↓0 ↑0 | 2026-01-08 |
-| [Market Research Reports](.claude/skills/market-research-reports/SKILL.md) | Market research reports are comprehensive strategic document... | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown - File to Markdown Conversion](.claude/skills/markitdown/SKILL.md) | MarkItDown is a Python tool developed by Microsoft for conve... | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown API Reference](.claude/skills/markitdown/references/api_reference.md) | The main class for converting files to Markdown. | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown Example Usage](.claude/skills/markitdown/assets/example_usage.md) | This document provides practical examples of using MarkItDow... | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown Installation Guide](.claude/skills/markitdown/INSTALLATION_GUIDE.md) | - Python 3.10 or higher | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown Quick Reference](.claude/skills/markitdown/QUICK_REFERENCE.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown Skill](.claude/skills/markitdown/README.md) | This skill provides comprehensive support for converting var... | ↓0 ↑0 | 2026-01-08 |
-| [MarkItDown Skill - Creation Summary](.claude/skills/markitdown/SKILL_SUMMARY.md) | A comprehensive skill for using Microsoft's MarkItDown tool ... | ↓0 ↑0 | 2026-01-08 |
-| [MCP Server Development Best Practices and Guidelines](.claude/skills/mcp-builder/reference/mcp_best_practices.md) | This document compiles essential best practices and guidelin... | ↓1 ↑0 | 2026-01-08 |
-| [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md) | To create high-quality MCP (Model Context Protocol) servers ... | ↓0 ↑4 | 2026-01-08 |
-| [MCP Server Evaluation Guide](.claude/skills/mcp-builder/reference/evaluation.md) | This document provides guidance on creating comprehensive ev... | ↓1 ↑0 | 2026-01-08 |
-| [Nextjs Optimization Guide](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md) | This document provides Node/TypeScript-specific best practic... | ↓1 ↑0 | 2026-01-08 |
-| [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md) | This MarkItDown skill has been configured to use **OpenRoute... | ↓0 ↑0 | 2026-01-08 |
-| [PR Review Processor](.claude/skills/pr-review-processor/SKILL.md) | Standardized protocol for processing AI code review feedback... | ↓0 ↑0 | 2026-01-08 |
-| [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Pressure Test 2: Sunk Cost + Exhaustion](.claude/skills/systematic-debugging/test-pressure-2.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Pressure Test 3: Authority + Social Pressure](.claude/skills/systematic-debugging/test-pressure-3.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Python MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/python_mcp_server.md) | This document provides Python-specific best practices and ex... | ↓1 ↑0 | 2026-01-08 |
-| [Qa Best Practices](.claude/skills/senior-qa/references/qa_best_practices.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [React Patterns](.claude/skills/senior-frontend/references/react_patterns.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Requesting Code Review](.claude/skills/requesting-code-review/SKILL.md) | Dispatch superpowers:code-reviewer subagent to catch issues ... | ↓0 ↑0 | 2026-01-08 |
-| [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md) | Bugs often manifest deep in the call stack (git init in wron... | ↓0 ↑0 | 2026-01-08 |
-| [Senior Architect](.claude/skills/senior-architect/SKILL.md) | Complete toolkit for senior architect with modern tools and ... | ↓0 ↑0 | 2026-01-08 |
-| [Senior Backend](.claude/skills/senior-backend/SKILL.md) | Complete toolkit for senior backend with modern tools and be... | ↓0 ↑0 | 2026-01-08 |
-| [Senior Devops](.claude/skills/senior-devops/SKILL.md) | Complete toolkit for senior devops with modern tools and bes... | ↓0 ↑0 | 2026-01-08 |
-| [Senior Frontend](.claude/skills/senior-frontend/SKILL.md) | Complete toolkit for senior frontend with modern tools and b... | ↓0 ↑0 | 2026-01-08 |
-| [Senior Fullstack](.claude/skills/senior-fullstack/SKILL.md) | Complete toolkit for senior fullstack with modern tools and ... | ↓0 ↑0 | 2026-01-08 |
-| [Senior Qa](.claude/skills/senior-qa/SKILL.md) | Complete toolkit for senior qa with modern tools and best pr... | ↓0 ↑0 | 2026-01-08 |
-| [SKILL](.claude/skills/frontend-design/SKILL.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Skill Creator](.claude/skills/skill-creator/SKILL.md) | This skill provides guidance for creating effective skills. | ↓0 ↑0 | 2026-01-08 |
-| [System Design Workflows](.claude/skills/senior-architect/references/system_design_workflows.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Systematic Debugging](.claude/skills/systematic-debugging/SKILL.md) | Random fixes waste time and create new bugs. Quick patches m... | ↓0 ↑0 | 2026-01-08 |
-| [Tech Decision Guide](.claude/skills/senior-architect/references/tech_decision_guide.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Tech Stack Guide](.claude/skills/senior-fullstack/references/tech_stack_guide.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Test Automation Patterns](.claude/skills/senior-qa/references/test_automation_patterns.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [Testing Strategies](.claude/skills/senior-qa/references/testing_strategies.md) | This reference guide provides comprehensive information for ... | ↓0 ↑0 | 2026-01-08 |
-| [UI Design System](.claude/skills/ui-design-system/SKILL.md) | Professional toolkit for creating and maintaining scalable d... | ↓0 ↑0 | 2026-01-08 |
-| [Using Skills](.claude/skills/using-superpowers/SKILL.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [UX Researcher & Designer](.claude/skills/ux-researcher-designer/SKILL.md) | Comprehensive toolkit for user-centered research and experie... | ↓0 ↑0 | 2026-01-08 |
-| [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si... | ↓0 ↑0 | 2026-01-08 |
-| [Web Application Testing](.claude/skills/webapp-testing/SKILL.md) | To test local web applications, write native Python Playwrig... | ↓0 ↑0 | 2026-01-08 |
+| Document                                                                                                                            | Description                                                       | References | Last Modified |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
+| [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at skills/...   | ↓0 ↑0      | 2026-01-08    |
+| [Api Design Patterns](.claude/skills/senior-backend/references/api_design_patterns.md)                                              | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Architecture Patterns](.claude/skills/senior-architect/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Architecture Patterns](.claude/skills/senior-fullstack/references/architecture_patterns.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Artifacts Builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-01-08    |
+| [Backend Security Practices](.claude/skills/senior-backend/references/backend_security_practices.md)                                | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Cicd Pipeline Guide](.claude/skills/senior-devops/references/cicd_pipeline_guide.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Code Review Agent](.claude/skills/requesting-code-review/code-reviewer.md)                                                         | You are reviewing code changes for production readiness.          | ↓0 ↑0      | 2026-01-08    |
+| [Code Review Checklist](.claude/skills/code-reviewer/references/code_review_checklist.md)                                           | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Code Reviewer](.claude/skills/code-reviewer/SKILL.md)                                                                              | Complete toolkit for code reviewer with modern tools and bes...   | ↓0 ↑0      | 2026-01-08    |
+| [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)                                               | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)                                           | Flaky tests often guess at timing with arbitrary delays. Thi...   | ↓0 ↑0      | 2026-01-08    |
+| [Content Research Writer](.claude/skills/content-research-writer/SKILL.md)                                                          | This skill acts as your writing partner, helping you researc...   | ↓0 ↑0      | 2026-01-08    |
+| [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)                                     | Reference example of extracting, structuring, and bulletproo...   | ↓0 ↑0      | 2026-01-08    |
+| [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md)           | Templates and frameworks for conducting rigorous market anal...   | ↓0 ↑0      | 2026-01-08    |
+| [Database Optimization Guide](.claude/skills/senior-backend/references/database_optimization_guide.md)                              | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                    | ↓0 ↑0      | 2026-01-08    |
+| [Deployment Strategies](.claude/skills/senior-devops/references/deployment_strategies.md)                                           | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Developer Growth Analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod...   | ↓0 ↑0      | 2026-01-08    |
+| [Development Workflows](.claude/skills/senior-fullstack/references/development_workflows.md)                                        | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Excel Analysis](.claude/skills/excel-analysis/SKILL.md)                                                                            | Read Excel files with pandas:                                     | ↓0 ↑0      | 2026-01-08    |
+| [File Format Support](.claude/skills/markitdown/references/file_formats.md)                                                         | This document provides detailed information about each file ...   | ↓0 ↑0      | 2026-01-08    |
+| [Frontend Best Practices](.claude/skills/senior-frontend/references/frontend_best_practices.md)                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Gh Pr Checks Plan Fix](.claude/skills/gh-fix-ci/SKILL.md)                                                                          | Use gh to locate failing PR checks, fetch GitHub Actions log...   | ↓0 ↑0      | 2026-01-08    |
+| [Infrastructure As Code](.claude/skills/senior-devops/references/infrastructure_as_code.md)                                         | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Market Research Report Formatting Guide](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md)                        | Quick reference for using the `market_research.sty` style pa...   | ↓0 ↑0      | 2026-01-08    |
+| [Market Research Report Structure Guide](.claude/skills/market-research-reports/references/report_structure_guide.md)               | Create a strong first impression and communicate report scop...   | ↓0 ↑0      | 2026-01-08    |
+| [Market Research Reports](.claude/skills/market-research-reports/SKILL.md)                                                          | Market research reports are comprehensive strategic document...   | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown - File to Markdown Conversion](.claude/skills/markitdown/SKILL.md)                                                      | MarkItDown is a Python tool developed by Microsoft for conve...   | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown API Reference](.claude/skills/markitdown/references/api_reference.md)                                                   | The main class for converting files to Markdown.                  | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown Example Usage](.claude/skills/markitdown/assets/example_usage.md)                                                       | This document provides practical examples of using MarkItDow...   | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown Installation Guide](.claude/skills/markitdown/INSTALLATION_GUIDE.md)                                                    | - Python 3.10 or higher                                           | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown Quick Reference](.claude/skills/markitdown/QUICK_REFERENCE.md)                                                          | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown Skill](.claude/skills/markitdown/README.md)                                                                             | This skill provides comprehensive support for converting var...   | ↓0 ↑0      | 2026-01-08    |
+| [MarkItDown Skill - Creation Summary](.claude/skills/markitdown/SKILL_SUMMARY.md)                                                   | A comprehensive skill for using Microsoft's MarkItDown tool ...   | ↓0 ↑0      | 2026-01-08    |
+| [MCP Server Development Best Practices and Guidelines](.claude/skills/mcp-builder/reference/mcp_best_practices.md)                  | This document compiles essential best practices and guidelin...   | ↓1 ↑0      | 2026-01-08    |
+| [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                                                 | To create high-quality MCP (Model Context Protocol) servers ...   | ↓0 ↑4      | 2026-01-08    |
+| [MCP Server Evaluation Guide](.claude/skills/mcp-builder/reference/evaluation.md)                                                   | This document provides guidance on creating comprehensive ev...   | ↓1 ↑0      | 2026-01-08    |
+| [Nextjs Optimization Guide](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md)                                 | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md)                          | This document provides Node/TypeScript-specific best practic...   | ↓1 ↑0      | 2026-01-08    |
+| [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                        | This MarkItDown skill has been configured to use \*\*OpenRoute... | ↓0 ↑0      | 2026-01-08    |
+| [PR Review Processor](.claude/skills/pr-review-processor/SKILL.md)                                                                  | Standardized protocol for processing AI code review feedback...   | ↓0 ↑0      | 2026-01-08    |
+| [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)                                 | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [Pressure Test 2: Sunk Cost + Exhaustion](.claude/skills/systematic-debugging/test-pressure-2.md)                                   | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [Pressure Test 3: Authority + Social Pressure](.claude/skills/systematic-debugging/test-pressure-3.md)                              | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [Python MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                 | This document provides Python-specific best practices and ex...   | ↓1 ↑0      | 2026-01-08    |
+| [Qa Best Practices](.claude/skills/senior-qa/references/qa_best_practices.md)                                                       | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [React Patterns](.claude/skills/senior-frontend/references/react_patterns.md)                                                       | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Requesting Code Review](.claude/skills/requesting-code-review/SKILL.md)                                                            | Dispatch superpowers:code-reviewer subagent to catch issues ...   | ↓0 ↑0      | 2026-01-08    |
+| [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-08    |
+| [Senior Architect](.claude/skills/senior-architect/SKILL.md)                                                                        | Complete toolkit for senior architect with modern tools and ...   | ↓0 ↑0      | 2026-01-08    |
+| [Senior Backend](.claude/skills/senior-backend/SKILL.md)                                                                            | Complete toolkit for senior backend with modern tools and be...   | ↓0 ↑0      | 2026-01-08    |
+| [Senior Devops](.claude/skills/senior-devops/SKILL.md)                                                                              | Complete toolkit for senior devops with modern tools and bes...   | ↓0 ↑0      | 2026-01-08    |
+| [Senior Frontend](.claude/skills/senior-frontend/SKILL.md)                                                                          | Complete toolkit for senior frontend with modern tools and b...   | ↓0 ↑0      | 2026-01-08    |
+| [Senior Fullstack](.claude/skills/senior-fullstack/SKILL.md)                                                                        | Complete toolkit for senior fullstack with modern tools and ...   | ↓0 ↑0      | 2026-01-08    |
+| [Senior Qa](.claude/skills/senior-qa/SKILL.md)                                                                                      | Complete toolkit for senior qa with modern tools and best pr...   | ↓0 ↑0      | 2026-01-08    |
+| [SKILL](.claude/skills/frontend-design/SKILL.md)                                                                                    | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [Skill Creator](.claude/skills/skill-creator/SKILL.md)                                                                              | This skill provides guidance for creating effective skills.       | ↓0 ↑0      | 2026-01-08    |
+| [System Design Workflows](.claude/skills/senior-architect/references/system_design_workflows.md)                                    | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Systematic Debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | Random fixes waste time and create new bugs. Quick patches m...   | ↓0 ↑0      | 2026-01-08    |
+| [Tech Decision Guide](.claude/skills/senior-architect/references/tech_decision_guide.md)                                            | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Tech Stack Guide](.claude/skills/senior-fullstack/references/tech_stack_guide.md)                                                  | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Test Automation Patterns](.claude/skills/senior-qa/references/test_automation_patterns.md)                                         | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [Testing Strategies](.claude/skills/senior-qa/references/testing_strategies.md)                                                     | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
+| [UI Design System](.claude/skills/ui-design-system/SKILL.md)                                                                        | Professional toolkit for creating and maintaining scalable d...   | ↓0 ↑0      | 2026-01-08    |
+| [Using Skills](.claude/skills/using-superpowers/SKILL.md)                                                                           | -                                                                 | ↓0 ↑0      | 2026-01-08    |
+| [UX Researcher & Designer](.claude/skills/ux-researcher-designer/SKILL.md)                                                          | Comprehensive toolkit for user-centered research and experie...   | ↓0 ↑0      | 2026-01-08    |
+| [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si...   | ↓0 ↑0      | 2026-01-08    |
+| [Web Application Testing](.claude/skills/webapp-testing/SKILL.md)                                                                   | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-01-08    |
 
 ### Slash Commands (Tier 3)
 
-*Claude Code custom commands*
+_Claude Code custom commands_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Document Sync Check](.claude/commands/docs-sync.md) | Run the automated document template-instance synchronization... | ↓0 ↑0 | 2026-01-08 |
-| [Fetch PR Feedback](.claude/commands/fetch-pr-feedback.md) | description: Fetch AI code review feedback from GitHub PR | ↓0 ↑0 | 2026-01-09 |
-| [PR Code Review Processor](.claude/commands/pr-review.md) | You are about to process AI code review feedback. This is a ... | ↓0 ↑0 | 2026-01-09 |
-| [Session Begin Checklist](.claude/commands/session-begin.md) | - | ↓0 ↑5 | 2026-01-08 |
-| [Session End Checklist](.claude/commands/session-end.md) | Before ending the session, complete these verification steps... | ↓0 ↑0 | 2026-01-08 |
-| [Single-Session Code Review Audit](.claude/commands/audit-code.md) | - | ↓0 ↑0 | 2026-01-09 |
-| [Single-Session Documentation Audit](.claude/commands/audit-documentation.md) | - | ↓0 ↑0 | 2026-01-09 |
-| [Single-Session Performance Audit](.claude/commands/audit-performance.md) | - | ↓0 ↑0 | 2026-01-09 |
-| [Single-Session Process/Automation Audit](.claude/commands/audit-process.md) | - | ↓0 ↑0 | 2026-01-09 |
-| [Single-Session Refactoring Audit](.claude/commands/audit-refactoring.md) | - | ↓0 ↑0 | 2026-01-09 |
-| [Single-Session Security Audit](.claude/commands/audit-security.md) | - | ↓0 ↑0 | 2026-01-09 |
+| Document                                                                      | Description                                                     | References | Last Modified |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Document Sync Check](.claude/commands/docs-sync.md)                          | Run the automated document template-instance synchronization... | ↓0 ↑0      | 2026-01-08    |
+| [Fetch PR Feedback](.claude/commands/fetch-pr-feedback.md)                    | description: Fetch AI code review feedback from GitHub PR       | ↓0 ↑0      | 2026-01-09    |
+| [PR Code Review Processor](.claude/commands/pr-review.md)                     | You are about to process AI code review feedback. This is a ... | ↓0 ↑0      | 2026-01-09    |
+| [Session Begin Checklist](.claude/commands/session-begin.md)                  | -                                                               | ↓0 ↑5      | 2026-01-08    |
+| [Session End Checklist](.claude/commands/session-end.md)                      | Before ending the session, complete these verification steps... | ↓0 ↑0      | 2026-01-08    |
+| [Single-Session Code Review Audit](.claude/commands/audit-code.md)            | -                                                               | ↓0 ↑0      | 2026-01-09    |
+| [Single-Session Documentation Audit](.claude/commands/audit-documentation.md) | -                                                               | ↓0 ↑0      | 2026-01-09    |
+| [Single-Session Performance Audit](.claude/commands/audit-performance.md)     | -                                                               | ↓0 ↑0      | 2026-01-09    |
+| [Single-Session Process/Automation Audit](.claude/commands/audit-process.md)  | -                                                               | ↓0 ↑0      | 2026-01-09    |
+| [Single-Session Refactoring Audit](.claude/commands/audit-refactoring.md)     | -                                                               | ↓0 ↑0      | 2026-01-09    |
+| [Single-Session Security Audit](.claude/commands/audit-security.md)           | -                                                               | ↓0 ↑0      | 2026-01-09    |
 
 ### Templates (Tier 3)
 
-*Document and audit templates*
+_Document and audit templates_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [[Document Title]](docs/templates/CANONICAL_DOC_TEMPLATE.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [[Document Title]](docs/templates/FOUNDATION_DOC_TEMPLATE.md) | - | ↓0 ↑3 | 2026-01-08 |
-| [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md) | - | ↓0 ↑3 | 2026-01-08 |
-| [[Project Name] Multi-AI Code Review Plan](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | - | ↓6 ↑1 | 2026-01-08 |
-| [[Project Name] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓1 ↑5 | 2026-01-09 |
-| [[Project Name] Multi-AI Performance Audit Plan](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓4 ↑2 | 2026-01-08 |
-| [[Project Name] Multi-AI Process & Automation Audit Plan](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓1 ↑1 | 2026-01-08 |
-| [[Project Name] Multi-AI Refactoring Plan](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓3 ↑2 | 2026-01-08 |
-| [[Project Name] Multi-AI Security Audit Plan](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓6 ↑3 | 2026-01-08 |
-| [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md) | - | ↓0 ↑2 | 2026-01-08 |
-| [Multi-AI Audit Aggregator Template](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) | Aggregation prompt for merging multiple AI audit outputs int... | ↓3 ↑0 | 2026-01-08 |
-| [Multi-AI Refactor Audit Prompt Template](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md) | This template provides a standardized prompt for running ref... | ↓0 ↑3 | 2026-01-08 |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | Standardized JSONL output schema for all multi-AI review tem... | ↓9 ↑5 | 2026-01-08 |
+| Document                                                                                                     | Description                                                     | References | Last Modified |
+| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
+| [[Document Title]](docs/templates/CANONICAL_DOC_TEMPLATE.md)                                                 | -                                                               | ↓0 ↑0      | 2026-01-08    |
+| [[Document Title]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                                                | -                                                               | ↓0 ↑3      | 2026-01-08    |
+| [[Feature/Initiative Name] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)                                    | -                                                               | ↓0 ↑3      | 2026-01-08    |
+| [[Project Name] Multi-AI Code Review Plan](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)             | -                                                               | ↓6 ↑1      | 2026-01-08    |
+| [[Project Name] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)  | This document serves as the **execution plan** for running a... | ↓1 ↑5      | 2026-01-09    |
+| [[Project Name] Multi-AI Performance Audit Plan](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓4 ↑2      | 2026-01-08    |
+| [[Project Name] Multi-AI Process & Automation Audit Plan](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | This document serves as the **execution plan** for running a... | ↓1 ↑1      | 2026-01-08    |
+| [[Project Name] Multi-AI Refactoring Plan](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)                | This document serves as the **execution plan** for running a... | ↓3 ↑2      | 2026-01-08    |
+| [[Project Name] Multi-AI Security Audit Plan](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)       | This document serves as the **execution plan** for running a... | ↓6 ↑3      | 2026-01-08    |
+| [[Workflow/Reference Name]](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                        | -                                                               | ↓0 ↑0      | 2026-01-08    |
+| [How to [Accomplish Task]](docs/templates/GUIDE_DOC_TEMPLATE.md)                                             | -                                                               | ↓0 ↑2      | 2026-01-08    |
+| [Multi-AI Audit Aggregator Template](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)                         | Aggregation prompt for merging multiple AI audit outputs int... | ↓3 ↑0      | 2026-01-08    |
+| [Multi-AI Refactor Audit Prompt Template](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md)                  | This template provides a standardized prompt for running ref... | ↓0 ↑3      | 2026-01-08    |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                             | Standardized JSONL output schema for all multi-AI review tem... | ↓9 ↑5      | 2026-01-08    |
 
 ### .agent > workflows (Tier 4)
 
-*Uncategorized*
+_Uncategorized_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Deploy to Production](.agent/workflows/deploy-prod.md) | This workflow automates the deployment process for the Sonas... | ↓0 ↑0 | 2026-01-08 |
+| Document                                                | Description                                                     | References | Last Modified |
+| ------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Deploy to Production](.agent/workflows/deploy-prod.md) | This workflow automates the deployment process for the Sonas... | ↓0 ↑0      | 2026-01-08    |
 
 ### .claude (Tier 4)
 
-*Uncategorized*
+_Uncategorized_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [AI Review Output Examples](.claude/review-examples.md) | Real-world examples of what each review type produces. Use t... | ↓0 ↑0 | 2026-01-08 |
-| [AI Review Prompts - Quick Reference](.claude/review-quick-reference.md) | Quick lookup for specialized review prompts. See full detail... | ↓0 ↑0 | 2026-01-08 |
-| [AI Review Prompts for Non-Code Artifacts](.claude/review-prompts.md) | Specialized review prompts optimized for Claude Code integra... | ↓0 ↑0 | 2026-01-08 |
-| [Claude Hooks Documentation](.claude/HOOKS.md) | Prepare development environment for new session | ↓1 ↑3 | 2026-01-08 |
+| Document                                                                 | Description                                                     | References | Last Modified |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
+| [AI Review Output Examples](.claude/review-examples.md)                  | Real-world examples of what each review type produces. Use t... | ↓0 ↑0      | 2026-01-08    |
+| [AI Review Prompts - Quick Reference](.claude/review-quick-reference.md) | Quick lookup for specialized review prompts. See full detail... | ↓0 ↑0      | 2026-01-08    |
+| [AI Review Prompts for Non-Code Artifacts](.claude/review-prompts.md)    | Specialized review prompts optimized for Claude Code integra... | ↓0 ↑0      | 2026-01-08    |
+| [Claude Hooks Documentation](.claude/HOOKS.md)                           | Prepare development environment for new session                 | ↓1 ↑3      | 2026-01-08    |
 
 ### .claude > agents (Tier 4)
 
-*Uncategorized*
+_Uncategorized_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [.github/workflows/test-automation.yml](.claude/agents/test-engineer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [backend architect](.claude/agents/backend-architect.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [code reviewer](.claude/agents/code-reviewer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Create the MCP file](.claude/agents/mcp-expert.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [debugger](.claude/agents/debugger.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [dependency manager](.claude/agents/dependency-manager.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [deployment engineer](.claude/agents/deployment-engineer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [devops troubleshooter](.claude/agents/devops-troubleshooter.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [documentation expert](.claude/agents/documentation-expert.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [error detective](.claude/agents/error-detective.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [Example: Event-driven microservices architecture](.claude/agents/database-architect.md) | class PolyglotPersistenceLayer: | ↓0 ↑0 | 2026-01-08 |
-| [frontend developer](.claude/agents/frontend-developer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [fullstack developer](.claude/agents/fullstack-developer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [markdown syntax formatter](.claude/agents/markdown-syntax-formatter.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [nextjs architecture expert](.claude/agents/nextjs-architecture-expert.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [penetration tester](.claude/agents/penetration-tester.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [performance engineer](.claude/agents/performance-engineer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [prompt engineer](.claude/agents/prompt-engineer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [react performance optimization](.claude/agents/react-performance-optimization.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [security auditor](.claude/agents/security-auditor.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [security/infrastructure/security-baseline.tf](.claude/agents/security-engineer.md) | terraform { | ↓0 ↑0 | 2026-01-08 |
-| [Start feature](.claude/agents/git-flow-manager.md) | When merge conflicts occur: | ↓0 ↑0 | 2026-01-08 |
-| [technical writer](.claude/agents/technical-writer.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [ui ux designer](.claude/agents/ui-ux-designer.md) | - | ↓0 ↑0 | 2026-01-08 |
+| Document                                                                                 | Description                     | References | Last Modified |
+| ---------------------------------------------------------------------------------------- | ------------------------------- | ---------- | ------------- |
+| [.github/workflows/test-automation.yml](.claude/agents/test-engineer.md)                 | -                               | ↓0 ↑0      | 2026-01-08    |
+| [backend architect](.claude/agents/backend-architect.md)                                 | -                               | ↓0 ↑0      | 2026-01-08    |
+| [code reviewer](.claude/agents/code-reviewer.md)                                         | -                               | ↓0 ↑0      | 2026-01-08    |
+| [Create the MCP file](.claude/agents/mcp-expert.md)                                      | -                               | ↓0 ↑0      | 2026-01-08    |
+| [debugger](.claude/agents/debugger.md)                                                   | -                               | ↓0 ↑0      | 2026-01-08    |
+| [dependency manager](.claude/agents/dependency-manager.md)                               | -                               | ↓0 ↑0      | 2026-01-08    |
+| [deployment engineer](.claude/agents/deployment-engineer.md)                             | -                               | ↓0 ↑0      | 2026-01-08    |
+| [devops troubleshooter](.claude/agents/devops-troubleshooter.md)                         | -                               | ↓0 ↑0      | 2026-01-08    |
+| [documentation expert](.claude/agents/documentation-expert.md)                           | -                               | ↓0 ↑0      | 2026-01-08    |
+| [error detective](.claude/agents/error-detective.md)                                     | -                               | ↓0 ↑0      | 2026-01-08    |
+| [Example: Event-driven microservices architecture](.claude/agents/database-architect.md) | class PolyglotPersistenceLayer: | ↓0 ↑0      | 2026-01-08    |
+| [frontend developer](.claude/agents/frontend-developer.md)                               | -                               | ↓0 ↑0      | 2026-01-08    |
+| [fullstack developer](.claude/agents/fullstack-developer.md)                             | -                               | ↓0 ↑0      | 2026-01-08    |
+| [markdown syntax formatter](.claude/agents/markdown-syntax-formatter.md)                 | -                               | ↓0 ↑0      | 2026-01-08    |
+| [nextjs architecture expert](.claude/agents/nextjs-architecture-expert.md)               | -                               | ↓0 ↑0      | 2026-01-08    |
+| [penetration tester](.claude/agents/penetration-tester.md)                               | -                               | ↓0 ↑0      | 2026-01-08    |
+| [performance engineer](.claude/agents/performance-engineer.md)                           | -                               | ↓0 ↑0      | 2026-01-08    |
+| [prompt engineer](.claude/agents/prompt-engineer.md)                                     | -                               | ↓0 ↑0      | 2026-01-08    |
+| [react performance optimization](.claude/agents/react-performance-optimization.md)       | -                               | ↓0 ↑0      | 2026-01-08    |
+| [security auditor](.claude/agents/security-auditor.md)                                   | -                               | ↓0 ↑0      | 2026-01-08    |
+| [security/infrastructure/security-baseline.tf](.claude/agents/security-engineer.md)      | terraform {                     | ↓0 ↑0      | 2026-01-08    |
+| [Start feature](.claude/agents/git-flow-manager.md)                                      | When merge conflicts occur:     | ↓0 ↑0      | 2026-01-08    |
+| [technical writer](.claude/agents/technical-writer.md)                                   | -                               | ↓0 ↑0      | 2026-01-08    |
+| [ui ux designer](.claude/agents/ui-ux-designer.md)                                       | -                               | ↓0 ↑0      | 2026-01-08    |
 
 ### .github (Tier 4)
 
-*Uncategorized*
+_Uncategorized_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md) | - | ↓0 ↑0 | 2026-01-08 |
-| [pull request template](.github/pull_request_template.md) | - | ↓0 ↑0 | 2026-01-08 |
+| Document                                                                           | Description | References | Last Modified |
+| ---------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
+| [Copilot Instructions - SoNash Recovery Notebook](.github/copilot-instructions.md) | -           | ↓0 ↑0      | 2026-01-08    |
+| [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)  | -           | ↓0 ↑0      | 2026-01-08    |
+| [pull request template](.github/pull_request_template.md)                          | -           | ↓0 ↑0      | 2026-01-08    |
 
 ### Analysis (Tier 4)
 
-*Code analysis and metrics*
+_Code analysis and metrics_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [SonarQube Issues Manifest for Phase 4 Multi-AI Review](docs/analysis/sonarqube-manifest.md) | This manifest provides a condensed view of SonarQube finding... | ↓1 ↑0 | 2026-01-08 |
+| Document                                                                                     | Description                                                     | References | Last Modified |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [SonarQube Issues Manifest for Phase 4 Multi-AI Review](docs/analysis/sonarqube-manifest.md) | This manifest provides a condensed view of SonarQube finding... | ↓1 ↑0      | 2026-01-08    |
 
 ### Brainstorm (Tier 4)
 
-*Draft and planning documents*
+_Draft and planning documents_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [PR Review Improvement Options](docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md) | - | ↓1 ↑4 | 2026-01-09 |
-| [Review Policy Expansion - Draft Design](docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md) | Design document for expanding review policies beyond code | ↓2 ↑0 | 2026-01-08 |
+| Document                                                                                   | Description                                               | References | Last Modified |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------- | ---------- | ------------- |
+| [PR Review Improvement Options](docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md)          | -                                                         | ↓1 ↑4      | 2026-01-09    |
+| [Review Policy Expansion - Draft Design](docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md) | Design document for expanding review policies beyond code | ↓2 ↑0      | 2026-01-08    |
 
 ### scripts (Tier 4)
 
-*Uncategorized*
+_Uncategorized_
 
-| Document | Description | References | Last Modified |
-|----------|-------------|------------|---------------|
-| [Scripts Reference](scripts/README.md) | Syncs the README.md "Project Status" section with data from ... | ↓0 ↑0 | 2026-01-08 |
+| Document                               | Description                                                     | References | Last Modified |
+| -------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Scripts Reference](scripts/README.md) | Syncs the README.md "Project Status" section with data from ... | ↓0 ↑0      | 2026-01-08    |
 
 ---
 
@@ -357,55 +356,55 @@
 
 Documents that are linked to most frequently:
 
-| Document | Inbound Links | Referenced By |
-|----------|---------------|---------------|
-| [SoNash Product Roadmap](ROADMAP.md) | 15 | session-begin, AI_WORKFLOW, ARCHITECTURE +12 more |
-| [Architecture Documentation](ARCHITECTURE.md) | 14 | AI_WORKFLOW, DEVELOPMENT, README +11 more |
-| [Security & Privacy Guide](docs/SECURITY.md) | 14 | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +11 more |
-| [Development Guide](DEVELOPMENT.md) | 13 | HOOKS, AI_WORKFLOW, ARCHITECTURE +10 more |
-| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md) | 13 | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +10 more |
-| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md) | 11 | AI_WORKFLOW, README, SESSION_CONTEXT +8 more |
-| [Integrated Improvement Plan](docs/INTEGRATED_IMPROVEMENT_PLAN.md) | 11 | session-begin, AI_WORKFLOW, ARCHITECTURE +8 more |
-| [AI Workflow Guide](AI_WORKFLOW.md) | 10 | HOOKS, README, SESSION_CONTEXT +7 more |
-| [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md) | 10 | AI_WORKFLOW, AUDIT_FINDINGS_BACKLOG, README +7 more |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | 9 | CODE_REVIEW_PLAN_2026_Q1, PERFORMANCE_AUDIT_PLAN_2026_Q1, SECURITY_AUDIT_PLAN_2026_Q1 +6 more |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md) | 8 | session-begin, AI_REVIEW_PROCESS, AUDIT_FINDINGS_BACKLOG +5 more |
-| [Session Context](SESSION_CONTEXT.md) | 7 | session-begin, AI_WORKFLOW, ROADMAP +4 more |
-| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md) | 7 | ARCHITECTURE, DEVELOPMENT, README +4 more |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md) | 7 | session-begin, README, claude +4 more |
-| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md) | 6 | AI_WORKFLOW, DOCUMENT_DEPENDENCIES, MULTI_AI_REVIEW_COORDINATOR +3 more |
-| [[Project Name] Multi-AI Code Review Plan](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | 6 | MULTI_AI_REVIEW_COORDINATOR, PERFORMANCE_AUDIT_PLAN_2026_Q1, CODE_REVIEW_PLAN_2026_Q1 +3 more |
-| [[Project Name] Multi-AI Security Audit Plan](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | 6 | FIREBASE_CHANGE_POLICY, MULTI_AI_REVIEW_COORDINATOR, CODE_REVIEW_PLAN_2026_Q1 +3 more |
-| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md) | 5 | README, ROADMAP, ROADMAP_LOG +2 more |
-| [SoNash Roadmap Log](ROADMAP_LOG.md) | 4 | AI_WORKFLOW, README, ROADMAP +1 more |
-| [AI Context & Rules for SoNash](claude.md) | 4 | README, AI_REVIEW_LEARNINGS_LOG, SLASH_COMMANDS +1 more |
+| Document                                                                                               | Inbound Links | Referenced By                                                                                 |
+| ------------------------------------------------------------------------------------------------------ | ------------- | --------------------------------------------------------------------------------------------- |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                   | 15            | session-begin, AI_WORKFLOW, ARCHITECTURE +12 more                                             |
+| [Architecture Documentation](ARCHITECTURE.md)                                                          | 14            | AI_WORKFLOW, DEVELOPMENT, README +11 more                                                     |
+| [Security & Privacy Guide](docs/SECURITY.md)                                                           | 14            | AI_WORKFLOW, ARCHITECTURE, DEVELOPMENT +11 more                                               |
+| [Development Guide](DEVELOPMENT.md)                                                                    | 13            | HOOKS, AI_WORKFLOW, ARCHITECTURE +10 more                                                     |
+| [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                         | 13            | AI_WORKFLOW, README, FIREBASE_CHANGE_POLICY +10 more                                          |
+| [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                                                 | 11            | AI_WORKFLOW, README, SESSION_CONTEXT +8 more                                                  |
+| [Integrated Improvement Plan](docs/INTEGRATED_IMPROVEMENT_PLAN.md)                                     | 11            | session-begin, AI_WORKFLOW, ARCHITECTURE +8 more                                              |
+| [AI Workflow Guide](AI_WORKFLOW.md)                                                                    | 10            | HOOKS, README, SESSION_CONTEXT +7 more                                                        |
+| [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                     | 10            | AI_WORKFLOW, AUDIT_FINDINGS_BACKLOG, README +7 more                                           |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                       | 9             | CODE_REVIEW_PLAN_2026_Q1, PERFORMANCE_AUDIT_PLAN_2026_Q1, SECURITY_AUDIT_PLAN_2026_Q1 +6 more |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                                             | 8             | session-begin, AI_REVIEW_PROCESS, AUDIT_FINDINGS_BACKLOG +5 more                              |
+| [Session Context](SESSION_CONTEXT.md)                                                                  | 7             | session-begin, AI_WORKFLOW, ROADMAP +4 more                                                   |
+| [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                                                 | 7             | ARCHITECTURE, DEVELOPMENT, README +4 more                                                     |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                                     | 7             | session-begin, README, claude +4 more                                                         |
+| [SoNash Documentation Standards](docs/DOCUMENTATION_STANDARDS.md)                                      | 6             | AI_WORKFLOW, DOCUMENT_DEPENDENCIES, MULTI_AI_REVIEW_COORDINATOR +3 more                       |
+| [[Project Name] Multi-AI Code Review Plan](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)       | 6             | MULTI_AI_REVIEW_COORDINATOR, PERFORMANCE_AUDIT_PLAN_2026_Q1, CODE_REVIEW_PLAN_2026_Q1 +3 more |
+| [[Project Name] Multi-AI Security Audit Plan](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | 6             | FIREBASE_CHANGE_POLICY, MULTI_AI_REVIEW_COORDINATOR, CODE_REVIEW_PLAN_2026_Q1 +3 more         |
+| [Server-Side Security Implementation Guide](docs/SERVER_SIDE_SECURITY.md)                              | 5             | README, ROADMAP, ROADMAP_LOG +2 more                                                          |
+| [SoNash Roadmap Log](ROADMAP_LOG.md)                                                                   | 4             | AI_WORKFLOW, README, ROADMAP +1 more                                                          |
+| [AI Context & Rules for SoNash](claude.md)                                                             | 4             | README, AI_REVIEW_LEARNINGS_LOG, SLASH_COMMANDS +1 more                                       |
 
 ### Most Linking Documents (Outbound Links)
 
 Documents that link to other documents most frequently:
 
-| Document | Outbound Links |
-|----------|----------------|
-| [AI Workflow Guide](AI_WORKFLOW.md) | 16 |
-| [SoNash - Sober Nashville Recovery Notebook](README.md) | 15 |
-| [SoNash Product Roadmap](ROADMAP.md) | 13 |
-| [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md) | 12 |
-| [Documentation Inventory](docs/README.md) | 11 |
-| [Review Policy Index](docs/REVIEW_POLICY_INDEX.md) | 9 |
-| [Session Context](SESSION_CONTEXT.md) | 8 |
-| [Integrated Improvement Plan](docs/INTEGRATED_IMPROVEMENT_PLAN.md) | 8 |
-| [Architecture Documentation](ARCHITECTURE.md) | 6 |
-| [AI Context & Rules for SoNash](claude.md) | 6 |
-| [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md) | 6 |
-| [SoNash Multi-AI Code Review Plan](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | 6 |
-| [SoNash Multi-AI Performance Audit Plan](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md) | 6 |
-| [Session Begin Checklist](.claude/commands/session-begin.md) | 5 |
-| [Development Guide](DEVELOPMENT.md) | 5 |
-| [SoNash Roadmap Log](ROADMAP_LOG.md) | 5 |
-| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md) | 5 |
-| [[Project Name] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | 5 |
-| [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md) | 4 |
-| [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | 4 |
+| Document                                                                                                    | Outbound Links |
+| ----------------------------------------------------------------------------------------------------------- | -------------- |
+| [AI Workflow Guide](AI_WORKFLOW.md)                                                                         | 16             |
+| [SoNash - Sober Nashville Recovery Notebook](README.md)                                                     | 15             |
+| [SoNash Product Roadmap](ROADMAP.md)                                                                        | 13             |
+| [Multi-AI Review Coordinator](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                          | 12             |
+| [Documentation Inventory](docs/README.md)                                                                   | 11             |
+| [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                          | 9              |
+| [Session Context](SESSION_CONTEXT.md)                                                                       | 8              |
+| [Integrated Improvement Plan](docs/INTEGRATED_IMPROVEMENT_PLAN.md)                                          | 8              |
+| [Architecture Documentation](ARCHITECTURE.md)                                                               | 6              |
+| [AI Context & Rules for SoNash](claude.md)                                                                  | 6              |
+| [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                    | 6              |
+| [SoNash Multi-AI Code Review Plan](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md)                        | 6              |
+| [SoNash Multi-AI Performance Audit Plan](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md)            | 6              |
+| [Session Begin Checklist](.claude/commands/session-begin.md)                                                | 5              |
+| [Development Guide](DEVELOPMENT.md)                                                                         | 5              |
+| [SoNash Roadmap Log](ROADMAP_LOG.md)                                                                        | 5              |
+| [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                            | 5              |
+| [[Project Name] Multi-AI Documentation Audit Plan](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | 5              |
+| [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)                                         | 4              |
+| [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)      | 4              |
 
 ---
 
@@ -557,197 +556,197 @@ Documents with no inbound links (not referenced by any other document):
 <details>
 <summary>Click to expand full list of all documents</summary>
 
-| # | Path | Title | Tier | Status |
-|---|------|-------|------|--------|
-| 1 | [.agent/workflows/deploy-prod.md](.agent/workflows/deploy-prod.md) | Deploy to Production | 4 | - |
-| 2 | [.claude/agents/backend-architect.md](.claude/agents/backend-architect.md) | backend architect | 4 | - |
-| 3 | [.claude/agents/code-reviewer.md](.claude/agents/code-reviewer.md) | code reviewer | 4 | - |
-| 4 | [.claude/agents/database-architect.md](.claude/agents/database-architect.md) | Example: Event-driven microservices architecture | 4 | - |
-| 5 | [.claude/agents/debugger.md](.claude/agents/debugger.md) | debugger | 4 | - |
-| 6 | [.claude/agents/dependency-manager.md](.claude/agents/dependency-manager.md) | dependency manager | 4 | - |
-| 7 | [.claude/agents/deployment-engineer.md](.claude/agents/deployment-engineer.md) | deployment engineer | 4 | - |
-| 8 | [.claude/agents/devops-troubleshooter.md](.claude/agents/devops-troubleshooter.md) | devops troubleshooter | 4 | - |
-| 9 | [.claude/agents/documentation-expert.md](.claude/agents/documentation-expert.md) | documentation expert | 4 | - |
-| 10 | [.claude/agents/error-detective.md](.claude/agents/error-detective.md) | error detective | 4 | - |
-| 11 | [.claude/agents/frontend-developer.md](.claude/agents/frontend-developer.md) | frontend developer | 4 | - |
-| 12 | [.claude/agents/fullstack-developer.md](.claude/agents/fullstack-developer.md) | fullstack developer | 4 | - |
-| 13 | [.claude/agents/git-flow-manager.md](.claude/agents/git-flow-manager.md) | Start feature | 4 | - |
-| 14 | [.claude/agents/markdown-syntax-formatter.md](.claude/agents/markdown-syntax-formatter.md) | markdown syntax formatter | 4 | - |
-| 15 | [.claude/agents/mcp-expert.md](.claude/agents/mcp-expert.md) | Create the MCP file | 4 | - |
-| 16 | [.claude/agents/nextjs-architecture-expert.md](.claude/agents/nextjs-architecture-expert.md) | nextjs architecture expert | 4 | - |
-| 17 | [.claude/agents/penetration-tester.md](.claude/agents/penetration-tester.md) | penetration tester | 4 | - |
-| 18 | [.claude/agents/performance-engineer.md](.claude/agents/performance-engineer.md) | performance engineer | 4 | - |
-| 19 | [.claude/agents/prompt-engineer.md](.claude/agents/prompt-engineer.md) | prompt engineer | 4 | - |
-| 20 | [.claude/agents/react-performance-optimization.md](.claude/agents/react-performance-optimization.md) | react performance optimization | 4 | - |
-| 21 | [.claude/agents/security-auditor.md](.claude/agents/security-auditor.md) | security auditor | 4 | - |
-| 22 | [.claude/agents/security-engineer.md](.claude/agents/security-engineer.md) | security/infrastructure/security-baseline.tf | 4 | - |
-| 23 | [.claude/agents/technical-writer.md](.claude/agents/technical-writer.md) | technical writer | 4 | - |
-| 24 | [.claude/agents/test-engineer.md](.claude/agents/test-engineer.md) | .github/workflows/test-automation.yml | 4 | - |
-| 25 | [.claude/agents/ui-ux-designer.md](.claude/agents/ui-ux-designer.md) | ui ux designer | 4 | - |
-| 26 | [.claude/commands/audit-code.md](.claude/commands/audit-code.md) | Single-Session Code Review Audit | 3 | - |
-| 27 | [.claude/commands/audit-documentation.md](.claude/commands/audit-documentation.md) | Single-Session Documentation Audit | 3 | - |
-| 28 | [.claude/commands/audit-performance.md](.claude/commands/audit-performance.md) | Single-Session Performance Audit | 3 | - |
-| 29 | [.claude/commands/audit-process.md](.claude/commands/audit-process.md) | Single-Session Process/Automation Audit | 3 | - |
-| 30 | [.claude/commands/audit-refactoring.md](.claude/commands/audit-refactoring.md) | Single-Session Refactoring Audit | 3 | - |
-| 31 | [.claude/commands/audit-security.md](.claude/commands/audit-security.md) | Single-Session Security Audit | 3 | - |
-| 32 | [.claude/commands/docs-sync.md](.claude/commands/docs-sync.md) | Document Sync Check | 3 | - |
-| 33 | [.claude/commands/fetch-pr-feedback.md](.claude/commands/fetch-pr-feedback.md) | Fetch PR Feedback | 3 | - |
-| 34 | [.claude/commands/pr-review.md](.claude/commands/pr-review.md) | PR Code Review Processor | 3 | - |
-| 35 | [.claude/commands/session-begin.md](.claude/commands/session-begin.md) | Session Begin Checklist | 3 | - |
-| 36 | [.claude/commands/session-end.md](.claude/commands/session-end.md) | Session End Checklist | 3 | - |
-| 37 | [.claude/HOOKS.md](.claude/HOOKS.md) | Claude Hooks Documentation | 4 | - |
-| 38 | [.claude/review-examples.md](.claude/review-examples.md) | AI Review Output Examples | 4 | ${review.status}\n\n`; |
-| 39 | [.claude/review-prompts.md](.claude/review-prompts.md) | AI Review Prompts for Non-Code Artifacts | 4 | - |
-| 40 | [.claude/review-quick-reference.md](.claude/review-quick-reference.md) | AI Review Prompts - Quick Reference | 4 | - |
-| 41 | [.claude/skills/artifacts-builder/SKILL.md](.claude/skills/artifacts-builder/SKILL.md) | Artifacts Builder | 3 | - |
-| 42 | [.claude/skills/code-reviewer/references/code_review_checklist.md](.claude/skills/code-reviewer/references/code_review_checklist.md) | Code Review Checklist | 3 | - |
-| 43 | [.claude/skills/code-reviewer/references/coding_standards.md](.claude/skills/code-reviewer/references/coding_standards.md) | Coding Standards | 3 | - |
-| 44 | [.claude/skills/code-reviewer/references/common_antipatterns.md](.claude/skills/code-reviewer/references/common_antipatterns.md) | Common Antipatterns | 3 | - |
-| 45 | [.claude/skills/code-reviewer/SKILL.md](.claude/skills/code-reviewer/SKILL.md) | Code Reviewer | 3 | - |
-| 46 | [.claude/skills/content-research-writer/SKILL.md](.claude/skills/content-research-writer/SKILL.md) | Content Research Writer | 3 | - |
-| 47 | [.claude/skills/developer-growth-analysis/SKILL.md](.claude/skills/developer-growth-analysis/SKILL.md) | Developer Growth Analysis | 3 | - |
-| 48 | [.claude/skills/excel-analysis/SKILL.md](.claude/skills/excel-analysis/SKILL.md) | Excel Analysis | 3 | - |
-| 49 | [.claude/skills/frontend-design/SKILL.md](.claude/skills/frontend-design/SKILL.md) | SKILL | 3 | - |
-| 50 | [.claude/skills/gh-fix-ci/SKILL.md](.claude/skills/gh-fix-ci/SKILL.md) | Gh Pr Checks Plan Fix | 3 | - |
-| 51 | [.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md) | Market Research Report Formatting Guide | 3 | - |
-| 52 | [.claude/skills/market-research-reports/references/data_analysis_patterns.md](.claude/skills/market-research-reports/references/data_analysis_patterns.md) | Data Analysis Patterns for Market Research | 3 | - |
-| 53 | [.claude/skills/market-research-reports/references/report_structure_guide.md](.claude/skills/market-research-reports/references/report_structure_guide.md) | Market Research Report Structure Guide | 3 | - |
-| 54 | [.claude/skills/market-research-reports/references/visual_generation_guide.md](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Visual Generation Guide for Market Research Reports | 3 | - |
-| 55 | [.claude/skills/market-research-reports/SKILL.md](.claude/skills/market-research-reports/SKILL.md) | Market Research Reports | 3 | - |
-| 56 | [.claude/skills/markitdown/assets/example_usage.md](.claude/skills/markitdown/assets/example_usage.md) | MarkItDown Example Usage | 3 | - |
-| 57 | [.claude/skills/markitdown/INSTALLATION_GUIDE.md](.claude/skills/markitdown/INSTALLATION_GUIDE.md) | MarkItDown Installation Guide | 3 | - |
-| 58 | [.claude/skills/markitdown/OPENROUTER_INTEGRATION.md](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md) | OpenRouter Integration for MarkItDown | 3 | - |
-| 59 | [.claude/skills/markitdown/QUICK_REFERENCE.md](.claude/skills/markitdown/QUICK_REFERENCE.md) | MarkItDown Quick Reference | 3 | - |
-| 60 | [.claude/skills/markitdown/README.md](.claude/skills/markitdown/README.md) | MarkItDown Skill | 3 | - |
-| 61 | [.claude/skills/markitdown/references/api_reference.md](.claude/skills/markitdown/references/api_reference.md) | MarkItDown API Reference | 3 | - |
-| 62 | [.claude/skills/markitdown/references/file_formats.md](.claude/skills/markitdown/references/file_formats.md) | File Format Support | 3 | - |
-| 63 | [.claude/skills/markitdown/SKILL_SUMMARY.md](.claude/skills/markitdown/SKILL_SUMMARY.md) | MarkItDown Skill - Creation Summary | 3 | - |
-| 64 | [.claude/skills/markitdown/SKILL.md](.claude/skills/markitdown/SKILL.md) | MarkItDown - File to Markdown Conversion | 3 | - |
-| 65 | [.claude/skills/mcp-builder/reference/evaluation.md](.claude/skills/mcp-builder/reference/evaluation.md) | MCP Server Evaluation Guide | 3 | - |
-| 66 | [.claude/skills/mcp-builder/reference/mcp_best_practices.md](.claude/skills/mcp-builder/reference/mcp_best_practices.md) | MCP Server Development Best Practices and Guidelines | 3 | - |
-| 67 | [.claude/skills/mcp-builder/reference/node_mcp_server.md](.claude/skills/mcp-builder/reference/node_mcp_server.md) | Node/TypeScript MCP Server Implementation Guide | 3 | - |
-| 68 | [.claude/skills/mcp-builder/reference/python_mcp_server.md](.claude/skills/mcp-builder/reference/python_mcp_server.md) | Python MCP Server Implementation Guide | 3 | - |
-| 69 | [.claude/skills/mcp-builder/SKILL.md](.claude/skills/mcp-builder/SKILL.md) | MCP Server Development Guide | 3 | - |
-| 70 | [.claude/skills/pr-review-processor/SKILL.md](.claude/skills/pr-review-processor/SKILL.md) | PR Review Processor | 3 | - |
-| 71 | [.claude/skills/requesting-code-review/code-reviewer.md](.claude/skills/requesting-code-review/code-reviewer.md) | Code Review Agent | 3 | - |
-| 72 | [.claude/skills/requesting-code-review/SKILL.md](.claude/skills/requesting-code-review/SKILL.md) | Requesting Code Review | 3 | - |
-| 73 | [.claude/skills/senior-architect/references/architecture_patterns.md](.claude/skills/senior-architect/references/architecture_patterns.md) | Architecture Patterns | 3 | - |
-| 74 | [.claude/skills/senior-architect/references/system_design_workflows.md](.claude/skills/senior-architect/references/system_design_workflows.md) | System Design Workflows | 3 | - |
-| 75 | [.claude/skills/senior-architect/references/tech_decision_guide.md](.claude/skills/senior-architect/references/tech_decision_guide.md) | Tech Decision Guide | 3 | - |
-| 76 | [.claude/skills/senior-architect/SKILL.md](.claude/skills/senior-architect/SKILL.md) | Senior Architect | 3 | - |
-| 77 | [.claude/skills/senior-backend/references/api_design_patterns.md](.claude/skills/senior-backend/references/api_design_patterns.md) | Api Design Patterns | 3 | - |
-| 78 | [.claude/skills/senior-backend/references/backend_security_practices.md](.claude/skills/senior-backend/references/backend_security_practices.md) | Backend Security Practices | 3 | - |
-| 79 | [.claude/skills/senior-backend/references/database_optimization_guide.md](.claude/skills/senior-backend/references/database_optimization_guide.md) | Database Optimization Guide | 3 | - |
-| 80 | [.claude/skills/senior-backend/SKILL.md](.claude/skills/senior-backend/SKILL.md) | Senior Backend | 3 | - |
-| 81 | [.claude/skills/senior-devops/references/cicd_pipeline_guide.md](.claude/skills/senior-devops/references/cicd_pipeline_guide.md) | Cicd Pipeline Guide | 3 | - |
-| 82 | [.claude/skills/senior-devops/references/deployment_strategies.md](.claude/skills/senior-devops/references/deployment_strategies.md) | Deployment Strategies | 3 | - |
-| 83 | [.claude/skills/senior-devops/references/infrastructure_as_code.md](.claude/skills/senior-devops/references/infrastructure_as_code.md) | Infrastructure As Code | 3 | - |
-| 84 | [.claude/skills/senior-devops/SKILL.md](.claude/skills/senior-devops/SKILL.md) | Senior Devops | 3 | - |
-| 85 | [.claude/skills/senior-frontend/references/frontend_best_practices.md](.claude/skills/senior-frontend/references/frontend_best_practices.md) | Frontend Best Practices | 3 | - |
-| 86 | [.claude/skills/senior-frontend/references/nextjs_optimization_guide.md](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md) | Nextjs Optimization Guide | 3 | - |
-| 87 | [.claude/skills/senior-frontend/references/react_patterns.md](.claude/skills/senior-frontend/references/react_patterns.md) | React Patterns | 3 | - |
-| 88 | [.claude/skills/senior-frontend/SKILL.md](.claude/skills/senior-frontend/SKILL.md) | Senior Frontend | 3 | - |
-| 89 | [.claude/skills/senior-fullstack/references/architecture_patterns.md](.claude/skills/senior-fullstack/references/architecture_patterns.md) | Architecture Patterns | 3 | - |
-| 90 | [.claude/skills/senior-fullstack/references/development_workflows.md](.claude/skills/senior-fullstack/references/development_workflows.md) | Development Workflows | 3 | - |
-| 91 | [.claude/skills/senior-fullstack/references/tech_stack_guide.md](.claude/skills/senior-fullstack/references/tech_stack_guide.md) | Tech Stack Guide | 3 | - |
-| 92 | [.claude/skills/senior-fullstack/SKILL.md](.claude/skills/senior-fullstack/SKILL.md) | Senior Fullstack | 3 | - |
-| 93 | [.claude/skills/senior-qa/references/qa_best_practices.md](.claude/skills/senior-qa/references/qa_best_practices.md) | Qa Best Practices | 3 | - |
-| 94 | [.claude/skills/senior-qa/references/test_automation_patterns.md](.claude/skills/senior-qa/references/test_automation_patterns.md) | Test Automation Patterns | 3 | - |
-| 95 | [.claude/skills/senior-qa/references/testing_strategies.md](.claude/skills/senior-qa/references/testing_strategies.md) | Testing Strategies | 3 | - |
-| 96 | [.claude/skills/senior-qa/SKILL.md](.claude/skills/senior-qa/SKILL.md) | Senior Qa | 3 | - |
-| 97 | [.claude/skills/skill-creator/SKILL.md](.claude/skills/skill-creator/SKILL.md) | Skill Creator | 3 | - |
-| 98 | [.claude/skills/systematic-debugging/condition-based-waiting.md](.claude/skills/systematic-debugging/condition-based-waiting.md) | Condition-Based Waiting | 3 | - |
-| 99 | [.claude/skills/systematic-debugging/CREATION-LOG.md](.claude/skills/systematic-debugging/CREATION-LOG.md) | Creation Log: Systematic Debugging Skill | 3 | - |
-| 100 | [.claude/skills/systematic-debugging/defense-in-depth.md](.claude/skills/systematic-debugging/defense-in-depth.md) | Defense-in-Depth Validation | 3 | - |
-| 101 | [.claude/skills/systematic-debugging/root-cause-tracing.md](.claude/skills/systematic-debugging/root-cause-tracing.md) | Root Cause Tracing | 3 | - |
-| 102 | [.claude/skills/systematic-debugging/SKILL.md](.claude/skills/systematic-debugging/SKILL.md) | Systematic Debugging | 3 | - |
-| 103 | [.claude/skills/systematic-debugging/test-academic.md](.claude/skills/systematic-debugging/test-academic.md) | Academic Test: Systematic Debugging Skill | 3 | - |
-| 104 | [.claude/skills/systematic-debugging/test-pressure-1.md](.claude/skills/systematic-debugging/test-pressure-1.md) | Pressure Test 1: Emergency Production Fix | 3 | - |
-| 105 | [.claude/skills/systematic-debugging/test-pressure-2.md](.claude/skills/systematic-debugging/test-pressure-2.md) | Pressure Test 2: Sunk Cost + Exhaustion | 3 | - |
-| 106 | [.claude/skills/systematic-debugging/test-pressure-3.md](.claude/skills/systematic-debugging/test-pressure-3.md) | Pressure Test 3: Authority + Social Pressure | 3 | - |
-| 107 | [.claude/skills/ui-design-system/SKILL.md](.claude/skills/ui-design-system/SKILL.md) | UI Design System | 3 | - |
-| 108 | [.claude/skills/using-superpowers/SKILL.md](.claude/skills/using-superpowers/SKILL.md) | Using Skills | 3 | - |
-| 109 | [.claude/skills/ux-researcher-designer/SKILL.md](.claude/skills/ux-researcher-designer/SKILL.md) | UX Researcher & Designer | 3 | - |
-| 110 | [.claude/skills/webapp-testing/SKILL.md](.claude/skills/webapp-testing/SKILL.md) | Web Application Testing | 3 | - |
-| 111 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Copilot Instructions - SoNash Recovery Notebook | 4 | - |
-| 112 | [.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md) | ISSUE TEMPLATE APP CHECK REENABLE | 4 | - |
-| 113 | [.github/pull_request_template.md](.github/pull_request_template.md) | pull request template | 4 | - |
-| 114 | [AI_WORKFLOW.md](AI_WORKFLOW.md) | AI Workflow Guide | 1 | - |
-| 115 | [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture Documentation | 1 | ACTIVE |
-| 116 | [claude.md](claude.md) | AI Context & Rules for SoNash | 1 | - |
-| 117 | [DEVELOPMENT.md](DEVELOPMENT.md) | Development Guide | 1 | ACTIVE |
-| 118 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | Admin Panel Security & Monitoring Requirements | 2 | - |
-| 119 | [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) | Code Review Patterns Reference | 3 | - |
-| 120 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md) | AI Review Learnings Log | 2 | ✅ Current |
-| 121 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) | 🤖 AI Code Review Process | 2 | - |
-| 122 | [docs/analysis/sonarqube-manifest.md](docs/analysis/sonarqube-manifest.md) | SonarQube Issues Manifest for Phase 4 Multi-AI Review | 4 | - |
-| 123 | [docs/ANTIGRAVITY_GUIDE.md](docs/ANTIGRAVITY_GUIDE.md) | Getting the Most Out of Antigravity | 2 | Active |
-| 124 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md) | App Check Setup Guide | 2 | Active |
-| 125 | [docs/AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md) | Audit Findings Backlog | 2 | - |
-| 126 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md) | Audit Tracker | 2 | - |
-| 127 | [docs/audits/multi-ai/performance/audit-2026-01-08.md](docs/audits/multi-ai/performance/audit-2026-01-08.md) | Multi-AI Performance Audit Report | 2 | COMPLETED |
-| 128 | [docs/audits/single-session/README.md](docs/audits/single-session/README.md) | Single-Session Audit Results | 2 | - |
-| 129 | [docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md](docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md) | PR Review Improvement Options | 4 | DRAFT - Options for evaluation |
-| 130 | [docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md](docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md) | Review Policy Expansion - Draft Design | 4 | DRAFT - For refinement before integration |
-| 131 | [docs/decisions/ADR-001-integrated-improvement-plan-approach.md](docs/decisions/ADR-001-integrated-improvement-plan-approach.md) | ADR-001: Integrated Improvement Plan Approach | 2 | Accepted |
-| 132 | [docs/decisions/README.md](docs/decisions/README.md) | Architecture Decision Records (ADRs) | 2 | - |
-| 133 | [docs/decisions/TEMPLATE.md](docs/decisions/TEMPLATE.md) | ADR-NNN: [Short Title] | 2 | Proposed | Accepted | Deprecated | Superseded by [ADR-XXX] |
-| 134 | [docs/DOCUMENT_DEPENDENCIES.md](docs/DOCUMENT_DEPENDENCIES.md) | Document Dependencies | 2 | ACTIVE |
-| 135 | [docs/DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md) | SoNash Documentation Standards | 2 | - |
-| 136 | [docs/FIREBASE_CHANGE_POLICY.md](docs/FIREBASE_CHANGE_POLICY.md) | Firebase Change Policy | 2 | ACTIVE |
-| 137 | [docs/GLOBAL_SECURITY_STANDARDS.md](docs/GLOBAL_SECURITY_STANDARDS.md) | Global Security Standards | 2 | ACTIVE |
-| 138 | [docs/INCIDENT_RESPONSE.md](docs/INCIDENT_RESPONSE.md) | Incident Response Runbook | 2 | Active |
-| 139 | [docs/INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) | Integrated Improvement Plan | 2 | ACTIVE |
-| 140 | [docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md) | Local Recovery Resources Implementation Plan | 2 | - |
-| 141 | [docs/M1.6_SUPPORT_TAB_PLAN.md](docs/M1.6_SUPPORT_TAB_PLAN.md) | M1.6 Support Tab Foundation Plan | 2 | - |
-| 142 | [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md) | Monetization Strategy Research Initiative | 2 | - |
-| 143 | [docs/MULTI_AI_REVIEW_COORDINATOR.md](docs/MULTI_AI_REVIEW_COORDINATOR.md) | Multi-AI Review Coordinator | 2 | - |
-| 144 | [docs/PR_REVIEW_PROMPT_TEMPLATE.md](docs/PR_REVIEW_PROMPT_TEMPLATE.md) | PR Review Prompt Template | 2 | - |
-| 145 | [docs/PR_WORKFLOW_CHECKLIST.md](docs/PR_WORKFLOW_CHECKLIST.md) | PR Workflow Checklist - MANDATORY FOR ALL PHASES | 2 | - |
-| 146 | [docs/README.md](docs/README.md) | Documentation Inventory | 2 | ACTIVE |
-| 147 | [docs/RECAPTCHA_REMOVAL_GUIDE.md](docs/RECAPTCHA_REMOVAL_GUIDE.md) | reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide | 2 | Deferred - App Check blocking critical functionality |
-| 148 | [docs/REVIEW_POLICY_ARCHITECTURE.md](docs/REVIEW_POLICY_ARCHITECTURE.md) | Review Policy Architecture | 2 | UNDER IMPLEMENTATION (Phase 1 in progress) |
-| 149 | [docs/REVIEW_POLICY_INDEX.md](docs/REVIEW_POLICY_INDEX.md) | Review Policy Index | 2 | Active |
-| 150 | [docs/REVIEW_POLICY_QUICK_REF.md](docs/REVIEW_POLICY_QUICK_REF.md) | Review Policy Quick Reference | 2 | - |
-| 151 | [docs/REVIEW_POLICY_VISUAL_GUIDE.md](docs/REVIEW_POLICY_VISUAL_GUIDE.md) | Review Policy Visual Guide | 2 | - |
-| 152 | [docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | SoNash Multi-AI Code Review Plan | 3 | PENDING |
-| 153 | [docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Documentation Audit Plan | 3 | PENDING |
-| 154 | [docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md) | SoNash Code Review - 2026 Q1 | 3 | COMPLETE |
-| 155 | [docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md) | Audit Aggregation: Gemini + ChatGPT | 3 | - |
-| 156 | [docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md) | Phase 4.2 Security Audit Results | 3 | - |
-| 157 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md) | SoNash Multi-AI Performance Audit - Aggregated Findings | 3 | COMPLETE |
-| 158 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Performance Audit Plan | 3 | COMPLETE |
-| 159 | [docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Process & Automation Audit Plan | 3 | PENDING |
-| 160 | [docs/reviews/2026-Q1/README.md](docs/reviews/2026-Q1/README.md) | 2026 Q1 Multi-AI Audit - Execution Guide | 3 | - |
-| 161 | [docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Refactoring Plan | 3 | PENDING |
-| 162 | [docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md) | SoNash Multi-AI Security Audit Plan | 3 | PENDING |
-| 163 | [docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md) | SoNash Multi-AI Code Review Plan - 2026 Q1 | 3 | COMPLETE |
-| 164 | [docs/reviews/README.md](docs/reviews/README.md) | Multi-AI Reviews Directory | 3 | - |
-| 165 | [docs/SECURITY.md](docs/SECURITY.md) | Security & Privacy Guide | 2 | ACTIVE |
-| 166 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md) | Sentry Integration Guide for SoNash Admin Panel | 2 | Active |
-| 167 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md) | Server-Side Security Implementation Guide | 2 | 🟡 RECOMMENDED BEFORE PUBLIC LAUNCH |
-| 168 | [docs/SLASH_COMMANDS.md](docs/SLASH_COMMANDS.md) | Slash Commands Reference | 2 | ACTIVE |
-| 169 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md) | [Document Title] | 3 | - |
-| 170 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md) | [Document Title] | 3 | - |
-| 171 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md) | How to [Accomplish Task] | 3 | - |
-| 172 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md) | Multi-AI Review JSONL Schema Standard | 3 | - |
-| 173 | [docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) | Multi-AI Audit Aggregator Template | 3 | - |
-| 174 | [docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Code Review Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 175 | [docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | [Project Name] Multi-AI Documentation Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 176 | [docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Performance Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 177 | [docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | [Project Name] Multi-AI Process & Automation Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 178 | [docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md) | Multi-AI Refactor Audit Prompt Template | 3 | Active |
-| 179 | [docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Refactoring Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 180 | [docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | [Project Name] Multi-AI Security Audit Plan | 3 | PENDING | IN_PROGRESS | COMPLETE |
-| 181 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md) | [Feature/Initiative Name] Plan | 3 | - |
-| 182 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md) | [Workflow/Reference Name] | 3 | - |
-| 183 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md) | Testing Plan | 2 | Active |
-| 184 | [docs/TRIGGERS.md](docs/TRIGGERS.md) | TRIGGERS.md - Automation & Enforcement Reference | 2 | - |
-| 185 | [README.md](README.md) | SoNash - Sober Nashville Recovery Notebook | 1 | ACTIVE |
-| 186 | [ROADMAP_LOG.md](ROADMAP_LOG.md) | SoNash Roadmap Log | 1 | ACTIVE (append-only archive) |
-| 187 | [ROADMAP.md](ROADMAP.md) | SoNash Product Roadmap | 1 | ACTIVE |
-| 188 | [scripts/README.md](scripts/README.md) | Scripts Reference | 4 | - |
-| 189 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md) | Session Context | 1 | - |
+| #   | Path                                                                                                                                                         | Title                                                          | Tier | Status                                               |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- | ---- | ---------------------------------------------------- | ----------- | ---------- | ----------------------- |
+| 1   | [.agent/workflows/deploy-prod.md](.agent/workflows/deploy-prod.md)                                                                                           | Deploy to Production                                           | 4    | -                                                    |
+| 2   | [.claude/agents/backend-architect.md](.claude/agents/backend-architect.md)                                                                                   | backend architect                                              | 4    | -                                                    |
+| 3   | [.claude/agents/code-reviewer.md](.claude/agents/code-reviewer.md)                                                                                           | code reviewer                                                  | 4    | -                                                    |
+| 4   | [.claude/agents/database-architect.md](.claude/agents/database-architect.md)                                                                                 | Example: Event-driven microservices architecture               | 4    | -                                                    |
+| 5   | [.claude/agents/debugger.md](.claude/agents/debugger.md)                                                                                                     | debugger                                                       | 4    | -                                                    |
+| 6   | [.claude/agents/dependency-manager.md](.claude/agents/dependency-manager.md)                                                                                 | dependency manager                                             | 4    | -                                                    |
+| 7   | [.claude/agents/deployment-engineer.md](.claude/agents/deployment-engineer.md)                                                                               | deployment engineer                                            | 4    | -                                                    |
+| 8   | [.claude/agents/devops-troubleshooter.md](.claude/agents/devops-troubleshooter.md)                                                                           | devops troubleshooter                                          | 4    | -                                                    |
+| 9   | [.claude/agents/documentation-expert.md](.claude/agents/documentation-expert.md)                                                                             | documentation expert                                           | 4    | -                                                    |
+| 10  | [.claude/agents/error-detective.md](.claude/agents/error-detective.md)                                                                                       | error detective                                                | 4    | -                                                    |
+| 11  | [.claude/agents/frontend-developer.md](.claude/agents/frontend-developer.md)                                                                                 | frontend developer                                             | 4    | -                                                    |
+| 12  | [.claude/agents/fullstack-developer.md](.claude/agents/fullstack-developer.md)                                                                               | fullstack developer                                            | 4    | -                                                    |
+| 13  | [.claude/agents/git-flow-manager.md](.claude/agents/git-flow-manager.md)                                                                                     | Start feature                                                  | 4    | -                                                    |
+| 14  | [.claude/agents/markdown-syntax-formatter.md](.claude/agents/markdown-syntax-formatter.md)                                                                   | markdown syntax formatter                                      | 4    | -                                                    |
+| 15  | [.claude/agents/mcp-expert.md](.claude/agents/mcp-expert.md)                                                                                                 | Create the MCP file                                            | 4    | -                                                    |
+| 16  | [.claude/agents/nextjs-architecture-expert.md](.claude/agents/nextjs-architecture-expert.md)                                                                 | nextjs architecture expert                                     | 4    | -                                                    |
+| 17  | [.claude/agents/penetration-tester.md](.claude/agents/penetration-tester.md)                                                                                 | penetration tester                                             | 4    | -                                                    |
+| 18  | [.claude/agents/performance-engineer.md](.claude/agents/performance-engineer.md)                                                                             | performance engineer                                           | 4    | -                                                    |
+| 19  | [.claude/agents/prompt-engineer.md](.claude/agents/prompt-engineer.md)                                                                                       | prompt engineer                                                | 4    | -                                                    |
+| 20  | [.claude/agents/react-performance-optimization.md](.claude/agents/react-performance-optimization.md)                                                         | react performance optimization                                 | 4    | -                                                    |
+| 21  | [.claude/agents/security-auditor.md](.claude/agents/security-auditor.md)                                                                                     | security auditor                                               | 4    | -                                                    |
+| 22  | [.claude/agents/security-engineer.md](.claude/agents/security-engineer.md)                                                                                   | security/infrastructure/security-baseline.tf                   | 4    | -                                                    |
+| 23  | [.claude/agents/technical-writer.md](.claude/agents/technical-writer.md)                                                                                     | technical writer                                               | 4    | -                                                    |
+| 24  | [.claude/agents/test-engineer.md](.claude/agents/test-engineer.md)                                                                                           | .github/workflows/test-automation.yml                          | 4    | -                                                    |
+| 25  | [.claude/agents/ui-ux-designer.md](.claude/agents/ui-ux-designer.md)                                                                                         | ui ux designer                                                 | 4    | -                                                    |
+| 26  | [.claude/commands/audit-code.md](.claude/commands/audit-code.md)                                                                                             | Single-Session Code Review Audit                               | 3    | -                                                    |
+| 27  | [.claude/commands/audit-documentation.md](.claude/commands/audit-documentation.md)                                                                           | Single-Session Documentation Audit                             | 3    | -                                                    |
+| 28  | [.claude/commands/audit-performance.md](.claude/commands/audit-performance.md)                                                                               | Single-Session Performance Audit                               | 3    | -                                                    |
+| 29  | [.claude/commands/audit-process.md](.claude/commands/audit-process.md)                                                                                       | Single-Session Process/Automation Audit                        | 3    | -                                                    |
+| 30  | [.claude/commands/audit-refactoring.md](.claude/commands/audit-refactoring.md)                                                                               | Single-Session Refactoring Audit                               | 3    | -                                                    |
+| 31  | [.claude/commands/audit-security.md](.claude/commands/audit-security.md)                                                                                     | Single-Session Security Audit                                  | 3    | -                                                    |
+| 32  | [.claude/commands/docs-sync.md](.claude/commands/docs-sync.md)                                                                                               | Document Sync Check                                            | 3    | -                                                    |
+| 33  | [.claude/commands/fetch-pr-feedback.md](.claude/commands/fetch-pr-feedback.md)                                                                               | Fetch PR Feedback                                              | 3    | -                                                    |
+| 34  | [.claude/commands/pr-review.md](.claude/commands/pr-review.md)                                                                                               | PR Code Review Processor                                       | 3    | -                                                    |
+| 35  | [.claude/commands/session-begin.md](.claude/commands/session-begin.md)                                                                                       | Session Begin Checklist                                        | 3    | -                                                    |
+| 36  | [.claude/commands/session-end.md](.claude/commands/session-end.md)                                                                                           | Session End Checklist                                          | 3    | -                                                    |
+| 37  | [.claude/HOOKS.md](.claude/HOOKS.md)                                                                                                                         | Claude Hooks Documentation                                     | 4    | -                                                    |
+| 38  | [.claude/review-examples.md](.claude/review-examples.md)                                                                                                     | AI Review Output Examples                                      | 4    | ${review.status}\n\n`;                               |
+| 39  | [.claude/review-prompts.md](.claude/review-prompts.md)                                                                                                       | AI Review Prompts for Non-Code Artifacts                       | 4    | -                                                    |
+| 40  | [.claude/review-quick-reference.md](.claude/review-quick-reference.md)                                                                                       | AI Review Prompts - Quick Reference                            | 4    | -                                                    |
+| 41  | [.claude/skills/artifacts-builder/SKILL.md](.claude/skills/artifacts-builder/SKILL.md)                                                                       | Artifacts Builder                                              | 3    | -                                                    |
+| 42  | [.claude/skills/code-reviewer/references/code_review_checklist.md](.claude/skills/code-reviewer/references/code_review_checklist.md)                         | Code Review Checklist                                          | 3    | -                                                    |
+| 43  | [.claude/skills/code-reviewer/references/coding_standards.md](.claude/skills/code-reviewer/references/coding_standards.md)                                   | Coding Standards                                               | 3    | -                                                    |
+| 44  | [.claude/skills/code-reviewer/references/common_antipatterns.md](.claude/skills/code-reviewer/references/common_antipatterns.md)                             | Common Antipatterns                                            | 3    | -                                                    |
+| 45  | [.claude/skills/code-reviewer/SKILL.md](.claude/skills/code-reviewer/SKILL.md)                                                                               | Code Reviewer                                                  | 3    | -                                                    |
+| 46  | [.claude/skills/content-research-writer/SKILL.md](.claude/skills/content-research-writer/SKILL.md)                                                           | Content Research Writer                                        | 3    | -                                                    |
+| 47  | [.claude/skills/developer-growth-analysis/SKILL.md](.claude/skills/developer-growth-analysis/SKILL.md)                                                       | Developer Growth Analysis                                      | 3    | -                                                    |
+| 48  | [.claude/skills/excel-analysis/SKILL.md](.claude/skills/excel-analysis/SKILL.md)                                                                             | Excel Analysis                                                 | 3    | -                                                    |
+| 49  | [.claude/skills/frontend-design/SKILL.md](.claude/skills/frontend-design/SKILL.md)                                                                           | SKILL                                                          | 3    | -                                                    |
+| 50  | [.claude/skills/gh-fix-ci/SKILL.md](.claude/skills/gh-fix-ci/SKILL.md)                                                                                       | Gh Pr Checks Plan Fix                                          | 3    | -                                                    |
+| 51  | [.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md)                       | Market Research Report Formatting Guide                        | 3    | -                                                    |
+| 52  | [.claude/skills/market-research-reports/references/data_analysis_patterns.md](.claude/skills/market-research-reports/references/data_analysis_patterns.md)   | Data Analysis Patterns for Market Research                     | 3    | -                                                    |
+| 53  | [.claude/skills/market-research-reports/references/report_structure_guide.md](.claude/skills/market-research-reports/references/report_structure_guide.md)   | Market Research Report Structure Guide                         | 3    | -                                                    |
+| 54  | [.claude/skills/market-research-reports/references/visual_generation_guide.md](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Visual Generation Guide for Market Research Reports            | 3    | -                                                    |
+| 55  | [.claude/skills/market-research-reports/SKILL.md](.claude/skills/market-research-reports/SKILL.md)                                                           | Market Research Reports                                        | 3    | -                                                    |
+| 56  | [.claude/skills/markitdown/assets/example_usage.md](.claude/skills/markitdown/assets/example_usage.md)                                                       | MarkItDown Example Usage                                       | 3    | -                                                    |
+| 57  | [.claude/skills/markitdown/INSTALLATION_GUIDE.md](.claude/skills/markitdown/INSTALLATION_GUIDE.md)                                                           | MarkItDown Installation Guide                                  | 3    | -                                                    |
+| 58  | [.claude/skills/markitdown/OPENROUTER_INTEGRATION.md](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                                   | OpenRouter Integration for MarkItDown                          | 3    | -                                                    |
+| 59  | [.claude/skills/markitdown/QUICK_REFERENCE.md](.claude/skills/markitdown/QUICK_REFERENCE.md)                                                                 | MarkItDown Quick Reference                                     | 3    | -                                                    |
+| 60  | [.claude/skills/markitdown/README.md](.claude/skills/markitdown/README.md)                                                                                   | MarkItDown Skill                                               | 3    | -                                                    |
+| 61  | [.claude/skills/markitdown/references/api_reference.md](.claude/skills/markitdown/references/api_reference.md)                                               | MarkItDown API Reference                                       | 3    | -                                                    |
+| 62  | [.claude/skills/markitdown/references/file_formats.md](.claude/skills/markitdown/references/file_formats.md)                                                 | File Format Support                                            | 3    | -                                                    |
+| 63  | [.claude/skills/markitdown/SKILL_SUMMARY.md](.claude/skills/markitdown/SKILL_SUMMARY.md)                                                                     | MarkItDown Skill - Creation Summary                            | 3    | -                                                    |
+| 64  | [.claude/skills/markitdown/SKILL.md](.claude/skills/markitdown/SKILL.md)                                                                                     | MarkItDown - File to Markdown Conversion                       | 3    | -                                                    |
+| 65  | [.claude/skills/mcp-builder/reference/evaluation.md](.claude/skills/mcp-builder/reference/evaluation.md)                                                     | MCP Server Evaluation Guide                                    | 3    | -                                                    |
+| 66  | [.claude/skills/mcp-builder/reference/mcp_best_practices.md](.claude/skills/mcp-builder/reference/mcp_best_practices.md)                                     | MCP Server Development Best Practices and Guidelines           | 3    | -                                                    |
+| 67  | [.claude/skills/mcp-builder/reference/node_mcp_server.md](.claude/skills/mcp-builder/reference/node_mcp_server.md)                                           | Node/TypeScript MCP Server Implementation Guide                | 3    | -                                                    |
+| 68  | [.claude/skills/mcp-builder/reference/python_mcp_server.md](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                       | Python MCP Server Implementation Guide                         | 3    | -                                                    |
+| 69  | [.claude/skills/mcp-builder/SKILL.md](.claude/skills/mcp-builder/SKILL.md)                                                                                   | MCP Server Development Guide                                   | 3    | -                                                    |
+| 70  | [.claude/skills/pr-review-processor/SKILL.md](.claude/skills/pr-review-processor/SKILL.md)                                                                   | PR Review Processor                                            | 3    | -                                                    |
+| 71  | [.claude/skills/requesting-code-review/code-reviewer.md](.claude/skills/requesting-code-review/code-reviewer.md)                                             | Code Review Agent                                              | 3    | -                                                    |
+| 72  | [.claude/skills/requesting-code-review/SKILL.md](.claude/skills/requesting-code-review/SKILL.md)                                                             | Requesting Code Review                                         | 3    | -                                                    |
+| 73  | [.claude/skills/senior-architect/references/architecture_patterns.md](.claude/skills/senior-architect/references/architecture_patterns.md)                   | Architecture Patterns                                          | 3    | -                                                    |
+| 74  | [.claude/skills/senior-architect/references/system_design_workflows.md](.claude/skills/senior-architect/references/system_design_workflows.md)               | System Design Workflows                                        | 3    | -                                                    |
+| 75  | [.claude/skills/senior-architect/references/tech_decision_guide.md](.claude/skills/senior-architect/references/tech_decision_guide.md)                       | Tech Decision Guide                                            | 3    | -                                                    |
+| 76  | [.claude/skills/senior-architect/SKILL.md](.claude/skills/senior-architect/SKILL.md)                                                                         | Senior Architect                                               | 3    | -                                                    |
+| 77  | [.claude/skills/senior-backend/references/api_design_patterns.md](.claude/skills/senior-backend/references/api_design_patterns.md)                           | Api Design Patterns                                            | 3    | -                                                    |
+| 78  | [.claude/skills/senior-backend/references/backend_security_practices.md](.claude/skills/senior-backend/references/backend_security_practices.md)             | Backend Security Practices                                     | 3    | -                                                    |
+| 79  | [.claude/skills/senior-backend/references/database_optimization_guide.md](.claude/skills/senior-backend/references/database_optimization_guide.md)           | Database Optimization Guide                                    | 3    | -                                                    |
+| 80  | [.claude/skills/senior-backend/SKILL.md](.claude/skills/senior-backend/SKILL.md)                                                                             | Senior Backend                                                 | 3    | -                                                    |
+| 81  | [.claude/skills/senior-devops/references/cicd_pipeline_guide.md](.claude/skills/senior-devops/references/cicd_pipeline_guide.md)                             | Cicd Pipeline Guide                                            | 3    | -                                                    |
+| 82  | [.claude/skills/senior-devops/references/deployment_strategies.md](.claude/skills/senior-devops/references/deployment_strategies.md)                         | Deployment Strategies                                          | 3    | -                                                    |
+| 83  | [.claude/skills/senior-devops/references/infrastructure_as_code.md](.claude/skills/senior-devops/references/infrastructure_as_code.md)                       | Infrastructure As Code                                         | 3    | -                                                    |
+| 84  | [.claude/skills/senior-devops/SKILL.md](.claude/skills/senior-devops/SKILL.md)                                                                               | Senior Devops                                                  | 3    | -                                                    |
+| 85  | [.claude/skills/senior-frontend/references/frontend_best_practices.md](.claude/skills/senior-frontend/references/frontend_best_practices.md)                 | Frontend Best Practices                                        | 3    | -                                                    |
+| 86  | [.claude/skills/senior-frontend/references/nextjs_optimization_guide.md](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md)             | Nextjs Optimization Guide                                      | 3    | -                                                    |
+| 87  | [.claude/skills/senior-frontend/references/react_patterns.md](.claude/skills/senior-frontend/references/react_patterns.md)                                   | React Patterns                                                 | 3    | -                                                    |
+| 88  | [.claude/skills/senior-frontend/SKILL.md](.claude/skills/senior-frontend/SKILL.md)                                                                           | Senior Frontend                                                | 3    | -                                                    |
+| 89  | [.claude/skills/senior-fullstack/references/architecture_patterns.md](.claude/skills/senior-fullstack/references/architecture_patterns.md)                   | Architecture Patterns                                          | 3    | -                                                    |
+| 90  | [.claude/skills/senior-fullstack/references/development_workflows.md](.claude/skills/senior-fullstack/references/development_workflows.md)                   | Development Workflows                                          | 3    | -                                                    |
+| 91  | [.claude/skills/senior-fullstack/references/tech_stack_guide.md](.claude/skills/senior-fullstack/references/tech_stack_guide.md)                             | Tech Stack Guide                                               | 3    | -                                                    |
+| 92  | [.claude/skills/senior-fullstack/SKILL.md](.claude/skills/senior-fullstack/SKILL.md)                                                                         | Senior Fullstack                                               | 3    | -                                                    |
+| 93  | [.claude/skills/senior-qa/references/qa_best_practices.md](.claude/skills/senior-qa/references/qa_best_practices.md)                                         | Qa Best Practices                                              | 3    | -                                                    |
+| 94  | [.claude/skills/senior-qa/references/test_automation_patterns.md](.claude/skills/senior-qa/references/test_automation_patterns.md)                           | Test Automation Patterns                                       | 3    | -                                                    |
+| 95  | [.claude/skills/senior-qa/references/testing_strategies.md](.claude/skills/senior-qa/references/testing_strategies.md)                                       | Testing Strategies                                             | 3    | -                                                    |
+| 96  | [.claude/skills/senior-qa/SKILL.md](.claude/skills/senior-qa/SKILL.md)                                                                                       | Senior Qa                                                      | 3    | -                                                    |
+| 97  | [.claude/skills/skill-creator/SKILL.md](.claude/skills/skill-creator/SKILL.md)                                                                               | Skill Creator                                                  | 3    | -                                                    |
+| 98  | [.claude/skills/systematic-debugging/condition-based-waiting.md](.claude/skills/systematic-debugging/condition-based-waiting.md)                             | Condition-Based Waiting                                        | 3    | -                                                    |
+| 99  | [.claude/skills/systematic-debugging/CREATION-LOG.md](.claude/skills/systematic-debugging/CREATION-LOG.md)                                                   | Creation Log: Systematic Debugging Skill                       | 3    | -                                                    |
+| 100 | [.claude/skills/systematic-debugging/defense-in-depth.md](.claude/skills/systematic-debugging/defense-in-depth.md)                                           | Defense-in-Depth Validation                                    | 3    | -                                                    |
+| 101 | [.claude/skills/systematic-debugging/root-cause-tracing.md](.claude/skills/systematic-debugging/root-cause-tracing.md)                                       | Root Cause Tracing                                             | 3    | -                                                    |
+| 102 | [.claude/skills/systematic-debugging/SKILL.md](.claude/skills/systematic-debugging/SKILL.md)                                                                 | Systematic Debugging                                           | 3    | -                                                    |
+| 103 | [.claude/skills/systematic-debugging/test-academic.md](.claude/skills/systematic-debugging/test-academic.md)                                                 | Academic Test: Systematic Debugging Skill                      | 3    | -                                                    |
+| 104 | [.claude/skills/systematic-debugging/test-pressure-1.md](.claude/skills/systematic-debugging/test-pressure-1.md)                                             | Pressure Test 1: Emergency Production Fix                      | 3    | -                                                    |
+| 105 | [.claude/skills/systematic-debugging/test-pressure-2.md](.claude/skills/systematic-debugging/test-pressure-2.md)                                             | Pressure Test 2: Sunk Cost + Exhaustion                        | 3    | -                                                    |
+| 106 | [.claude/skills/systematic-debugging/test-pressure-3.md](.claude/skills/systematic-debugging/test-pressure-3.md)                                             | Pressure Test 3: Authority + Social Pressure                   | 3    | -                                                    |
+| 107 | [.claude/skills/ui-design-system/SKILL.md](.claude/skills/ui-design-system/SKILL.md)                                                                         | UI Design System                                               | 3    | -                                                    |
+| 108 | [.claude/skills/using-superpowers/SKILL.md](.claude/skills/using-superpowers/SKILL.md)                                                                       | Using Skills                                                   | 3    | -                                                    |
+| 109 | [.claude/skills/ux-researcher-designer/SKILL.md](.claude/skills/ux-researcher-designer/SKILL.md)                                                             | UX Researcher & Designer                                       | 3    | -                                                    |
+| 110 | [.claude/skills/webapp-testing/SKILL.md](.claude/skills/webapp-testing/SKILL.md)                                                                             | Web Application Testing                                        | 3    | -                                                    |
+| 111 | [.github/copilot-instructions.md](.github/copilot-instructions.md)                                                                                           | Copilot Instructions - SoNash Recovery Notebook                | 4    | -                                                    |
+| 112 | [.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)                                                                 | ISSUE TEMPLATE APP CHECK REENABLE                              | 4    | -                                                    |
+| 113 | [.github/pull_request_template.md](.github/pull_request_template.md)                                                                                         | pull request template                                          | 4    | -                                                    |
+| 114 | [AI_WORKFLOW.md](AI_WORKFLOW.md)                                                                                                                             | AI Workflow Guide                                              | 1    | -                                                    |
+| 115 | [ARCHITECTURE.md](ARCHITECTURE.md)                                                                                                                           | Architecture Documentation                                     | 1    | ACTIVE                                               |
+| 116 | [claude.md](claude.md)                                                                                                                                       | AI Context & Rules for SoNash                                  | 1    | -                                                    |
+| 117 | [DEVELOPMENT.md](DEVELOPMENT.md)                                                                                                                             | Development Guide                                              | 1    | ACTIVE                                               |
+| 118 | [docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)                                                 | Admin Panel Security & Monitoring Requirements                 | 2    | -                                                    |
+| 119 | [docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md)                                                                                         | Code Review Patterns Reference                                 | 3    | -                                                    |
+| 120 | [docs/AI_REVIEW_LEARNINGS_LOG.md](docs/AI_REVIEW_LEARNINGS_LOG.md)                                                                                           | AI Review Learnings Log                                        | 2    | ✅ Current                                           |
+| 121 | [docs/AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)                                                                                                       | 🤖 AI Code Review Process                                      | 2    | -                                                    |
+| 122 | [docs/analysis/sonarqube-manifest.md](docs/analysis/sonarqube-manifest.md)                                                                                   | SonarQube Issues Manifest for Phase 4 Multi-AI Review          | 4    | -                                                    |
+| 123 | [docs/ANTIGRAVITY_GUIDE.md](docs/ANTIGRAVITY_GUIDE.md)                                                                                                       | Getting the Most Out of Antigravity                            | 2    | Active                                               |
+| 124 | [docs/APPCHECK_SETUP.md](docs/APPCHECK_SETUP.md)                                                                                                             | App Check Setup Guide                                          | 2    | Active                                               |
+| 125 | [docs/AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md)                                                                                             | Audit Findings Backlog                                         | 2    | -                                                    |
+| 126 | [docs/AUDIT_TRACKER.md](docs/AUDIT_TRACKER.md)                                                                                                               | Audit Tracker                                                  | 2    | -                                                    |
+| 127 | [docs/audits/multi-ai/performance/audit-2026-01-08.md](docs/audits/multi-ai/performance/audit-2026-01-08.md)                                                 | Multi-AI Performance Audit Report                              | 2    | COMPLETED                                            |
+| 128 | [docs/audits/single-session/README.md](docs/audits/single-session/README.md)                                                                                 | Single-Session Audit Results                                   | 2    | -                                                    |
+| 129 | [docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md](docs/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md)                                                         | PR Review Improvement Options                                  | 4    | DRAFT - Options for evaluation                       |
+| 130 | [docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md](docs/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md)                                                         | Review Policy Expansion - Draft Design                         | 4    | DRAFT - For refinement before integration            |
+| 131 | [docs/decisions/ADR-001-integrated-improvement-plan-approach.md](docs/decisions/ADR-001-integrated-improvement-plan-approach.md)                             | ADR-001: Integrated Improvement Plan Approach                  | 2    | Accepted                                             |
+| 132 | [docs/decisions/README.md](docs/decisions/README.md)                                                                                                         | Architecture Decision Records (ADRs)                           | 2    | -                                                    |
+| 133 | [docs/decisions/TEMPLATE.md](docs/decisions/TEMPLATE.md)                                                                                                     | ADR-NNN: [Short Title]                                         | 2    | Proposed                                             | Accepted    | Deprecated | Superseded by [ADR-XXX] |
+| 134 | [docs/DOCUMENT_DEPENDENCIES.md](docs/DOCUMENT_DEPENDENCIES.md)                                                                                               | Document Dependencies                                          | 2    | ACTIVE                                               |
+| 135 | [docs/DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)                                                                                           | SoNash Documentation Standards                                 | 2    | -                                                    |
+| 136 | [docs/FIREBASE_CHANGE_POLICY.md](docs/FIREBASE_CHANGE_POLICY.md)                                                                                             | Firebase Change Policy                                         | 2    | ACTIVE                                               |
+| 137 | [docs/GLOBAL_SECURITY_STANDARDS.md](docs/GLOBAL_SECURITY_STANDARDS.md)                                                                                       | Global Security Standards                                      | 2    | ACTIVE                                               |
+| 138 | [docs/INCIDENT_RESPONSE.md](docs/INCIDENT_RESPONSE.md)                                                                                                       | Incident Response Runbook                                      | 2    | Active                                               |
+| 139 | [docs/INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)                                                                                   | Integrated Improvement Plan                                    | 2    | ACTIVE                                               |
+| 140 | [docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md](docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)                                                                   | Local Recovery Resources Implementation Plan                   | 2    | -                                                    |
+| 141 | [docs/M1.6_SUPPORT_TAB_PLAN.md](docs/M1.6_SUPPORT_TAB_PLAN.md)                                                                                               | M1.6 Support Tab Foundation Plan                               | 2    | -                                                    |
+| 142 | [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md)                                                                                               | Monetization Strategy Research Initiative                      | 2    | -                                                    |
+| 143 | [docs/MULTI_AI_REVIEW_COORDINATOR.md](docs/MULTI_AI_REVIEW_COORDINATOR.md)                                                                                   | Multi-AI Review Coordinator                                    | 2    | -                                                    |
+| 144 | [docs/PR_REVIEW_PROMPT_TEMPLATE.md](docs/PR_REVIEW_PROMPT_TEMPLATE.md)                                                                                       | PR Review Prompt Template                                      | 2    | -                                                    |
+| 145 | [docs/PR_WORKFLOW_CHECKLIST.md](docs/PR_WORKFLOW_CHECKLIST.md)                                                                                               | PR Workflow Checklist - MANDATORY FOR ALL PHASES               | 2    | -                                                    |
+| 146 | [docs/README.md](docs/README.md)                                                                                                                             | Documentation Inventory                                        | 2    | ACTIVE                                               |
+| 147 | [docs/RECAPTCHA_REMOVAL_GUIDE.md](docs/RECAPTCHA_REMOVAL_GUIDE.md)                                                                                           | reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide | 2    | Deferred - App Check blocking critical functionality |
+| 148 | [docs/REVIEW_POLICY_ARCHITECTURE.md](docs/REVIEW_POLICY_ARCHITECTURE.md)                                                                                     | Review Policy Architecture                                     | 2    | UNDER IMPLEMENTATION (Phase 1 in progress)           |
+| 149 | [docs/REVIEW_POLICY_INDEX.md](docs/REVIEW_POLICY_INDEX.md)                                                                                                   | Review Policy Index                                            | 2    | Active                                               |
+| 150 | [docs/REVIEW_POLICY_QUICK_REF.md](docs/REVIEW_POLICY_QUICK_REF.md)                                                                                           | Review Policy Quick Reference                                  | 2    | -                                                    |
+| 151 | [docs/REVIEW_POLICY_VISUAL_GUIDE.md](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                                                                                     | Review Policy Visual Guide                                     | 2    | -                                                    |
+| 152 | [docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md)                                                         | SoNash Multi-AI Code Review Plan                               | 3    | PENDING                                              |
+| 153 | [docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md)                                         | SoNash Multi-AI Documentation Audit Plan                       | 3    | PENDING                                              |
+| 154 | [docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md](docs/reviews/2026-Q1/outputs/code-review/CODE_REVIEW_2026_Q1.md)                           | SoNash Code Review - 2026 Q1                                   | 3    | COMPLETE                                             |
+| 155 | [docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md](docs/reviews/2026-Q1/outputs/code-review/gemini-chatgpt-aggregation.md)             | Audit Aggregation: Gemini + ChatGPT                            | 3    | -                                                    |
+| 156 | [docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md](docs/reviews/2026-Q1/outputs/security/security-audit-2026-01-07.md)                     | Phase 4.2 Security Audit Results                               | 3    | -                                                    |
+| 157 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_FINDINGS_2026_Q1.md)                                     | SoNash Multi-AI Performance Audit - Aggregated Findings        | 3    | COMPLETE                                             |
+| 158 | [docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PERFORMANCE_AUDIT_PLAN_2026_Q1.md)                                             | SoNash Multi-AI Performance Audit Plan                         | 3    | COMPLETE                                             |
+| 159 | [docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/PROCESS_AUDIT_PLAN_2026_Q1.md)                                                     | SoNash Multi-AI Process & Automation Audit Plan                | 3    | PENDING                                              |
+| 160 | [docs/reviews/2026-Q1/README.md](docs/reviews/2026-Q1/README.md)                                                                                             | 2026 Q1 Multi-AI Audit - Execution Guide                       | 3    | -                                                    |
+| 161 | [docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/REFACTORING_AUDIT_PLAN_2026_Q1.md)                                             | SoNash Multi-AI Refactoring Plan                               | 3    | PENDING                                              |
+| 162 | [docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md](docs/reviews/2026-Q1/SECURITY_AUDIT_PLAN_2026_Q1.md)                                                   | SoNash Multi-AI Security Audit Plan                            | 3    | PENDING                                              |
+| 163 | [docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md](docs/reviews/CODE_REVIEW_PLAN_2026_Q1.md)                                                                         | SoNash Multi-AI Code Review Plan - 2026 Q1                     | 3    | COMPLETE                                             |
+| 164 | [docs/reviews/README.md](docs/reviews/README.md)                                                                                                             | Multi-AI Reviews Directory                                     | 3    | -                                                    |
+| 165 | [docs/SECURITY.md](docs/SECURITY.md)                                                                                                                         | Security & Privacy Guide                                       | 2    | ACTIVE                                               |
+| 166 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md)                                                                                         | Sentry Integration Guide for SoNash Admin Panel                | 2    | Active                                               |
+| 167 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md)                                                                                                 | Server-Side Security Implementation Guide                      | 2    | 🟡 RECOMMENDED BEFORE PUBLIC LAUNCH                  |
+| 168 | [docs/SLASH_COMMANDS.md](docs/SLASH_COMMANDS.md)                                                                                                             | Slash Commands Reference                                       | 2    | ACTIVE                                               |
+| 169 | [docs/templates/CANONICAL_DOC_TEMPLATE.md](docs/templates/CANONICAL_DOC_TEMPLATE.md)                                                                         | [Document Title]                                               | 3    | -                                                    |
+| 170 | [docs/templates/FOUNDATION_DOC_TEMPLATE.md](docs/templates/FOUNDATION_DOC_TEMPLATE.md)                                                                       | [Document Title]                                               | 3    | -                                                    |
+| 171 | [docs/templates/GUIDE_DOC_TEMPLATE.md](docs/templates/GUIDE_DOC_TEMPLATE.md)                                                                                 | How to [Accomplish Task]                                       | 3    | -                                                    |
+| 172 | [docs/templates/JSONL_SCHEMA_STANDARD.md](docs/templates/JSONL_SCHEMA_STANDARD.md)                                                                           | Multi-AI Review JSONL Schema Standard                          | 3    | -                                                    |
+| 173 | [docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md](docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)                                                             | Multi-AI Audit Aggregator Template                             | 3    | -                                                    |
+| 174 | [docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)                                                 | [Project Name] Multi-AI Code Review Plan                       | 3    | PENDING                                              | IN_PROGRESS | COMPLETE   |
+| 175 | [docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)                                           | [Project Name] Multi-AI Documentation Audit Plan               | 3    | PENDING                                              | IN_PROGRESS | COMPLETE   |
+| 176 | [docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)                                     | [Project Name] Multi-AI Performance Audit Plan                 | 3    | PENDING                                              | IN_PROGRESS | COMPLETE   |
+| 177 | [docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](docs/templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)                                                       | [Project Name] Multi-AI Process & Automation Audit Plan        | 3    | PENDING                                              | IN_PROGRESS | COMPLETE   |
+| 178 | [docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md](docs/templates/MULTI_AI_REFACTOR_AUDIT_PROMPT.md)                                                         | Multi-AI Refactor Audit Prompt Template                        | 3    | Active                                               |
+| 179 | [docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)                                                       | [Project Name] Multi-AI Refactoring Plan                       | 3    | PENDING                                              | IN_PROGRESS | COMPLETE   |
+| 180 | [docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)                                           | [Project Name] Multi-AI Security Audit Plan                    | 3    | PENDING                                              | IN_PROGRESS | COMPLETE   |
+| 181 | [docs/templates/PLANNING_DOC_TEMPLATE.md](docs/templates/PLANNING_DOC_TEMPLATE.md)                                                                           | [Feature/Initiative Name] Plan                                 | 3    | -                                                    |
+| 182 | [docs/templates/REFERENCE_DOC_TEMPLATE.md](docs/templates/REFERENCE_DOC_TEMPLATE.md)                                                                         | [Workflow/Reference Name]                                      | 3    | -                                                    |
+| 183 | [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md)                                                                                                                 | Testing Plan                                                   | 2    | Active                                               |
+| 184 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                         | TRIGGERS.md - Automation & Enforcement Reference               | 2    | -                                                    |
+| 185 | [README.md](README.md)                                                                                                                                       | SoNash - Sober Nashville Recovery Notebook                     | 1    | ACTIVE                                               |
+| 186 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                             | SoNash Roadmap Log                                             | 1    | ACTIVE (append-only archive)                         |
+| 187 | [ROADMAP.md](ROADMAP.md)                                                                                                                                     | SoNash Product Roadmap                                         | 1    | ACTIVE                                               |
+| 188 | [scripts/README.md](scripts/README.md)                                                                                                                       | Scripts Reference                                              | 4    | -                                                    |
+| 189 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                     | Session Context                                                | 1    | -                                                    |
 
 </details>
 
@@ -755,78 +754,79 @@ Documents with no inbound links (not referenced by any other document):
 
 ## Archived Documents
 
-*Historical and completed documentation. These documents are preserved for reference but not actively tracked in the reference graph.*
+_Historical and completed documentation. These documents are preserved for
+reference but not actively tracked in the reference graph._
 
 <details>
 <summary>Click to expand archived documents list</summary>
 
-| # | Path |
-|---|------|
-| 1 | [docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md](docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md) |
-| 2 | [docs/archive/2025-dec-reports/APP_CHECK_DIAGNOSIS.md](docs/archive/2025-dec-reports/APP_CHECK_DIAGNOSIS.md) |
-| 3 | [docs/archive/2025-dec-reports/ARCHITECTURAL_REFACTOR.md](docs/archive/2025-dec-reports/ARCHITECTURAL_REFACTOR.md) |
-| 4 | [docs/archive/2025-dec-reports/ARCHITECTURE_IMPROVEMENT_PLAN.md](docs/archive/2025-dec-reports/ARCHITECTURE_IMPROVEMENT_PLAN.md) |
-| 5 | [docs/archive/2025-dec-reports/BILLING_ALERTS_SETUP.md](docs/archive/2025-dec-reports/BILLING_ALERTS_SETUP.md) |
-| 6 | [docs/archive/2025-dec-reports/CODE_ANALYSIS_REPORT.md](docs/archive/2025-dec-reports/CODE_ANALYSIS_REPORT.md) |
-| 7 | [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md) |
-| 8 | [docs/archive/2025-dec-reports/DEPENDENCY_ANALYSIS.md](docs/archive/2025-dec-reports/DEPENDENCY_ANALYSIS.md) |
-| 9 | [docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md](docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md) |
-| 10 | [docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md](docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md) |
-| 11 | [docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md](docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md) |
-| 12 | [docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md](docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md) |
-| 13 | [docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md](docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md) |
-| 14 | [docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md](docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md) |
-| 15 | [docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md](docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md) |
-| 16 | [docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md](docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md) |
-| 17 | [docs/archive/2025-dec-reports/XSS_PROTECTION_VERIFICATION.md](docs/archive/2025-dec-reports/XSS_PROTECTION_VERIFICATION.md) |
-| 18 | [docs/archive/AI_HANDOFF-2026-01-02.md](docs/archive/AI_HANDOFF-2026-01-02.md) |
-| 19 | [docs/archive/AI_STANDARDIZED_REPORT.md](docs/archive/AI_STANDARDIZED_REPORT.md) |
-| 20 | [docs/archive/APPCHECK_FRESH_SETUP.md](docs/archive/APPCHECK_FRESH_SETUP.md) |
-| 21 | [docs/archive/ARCHIVE_INDEX.md](docs/archive/ARCHIVE_INDEX.md) |
-| 22 | [docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) |
-| 23 | [docs/archive/FEATURE_DECISIONS_ANSWERS.MD](docs/archive/FEATURE_DECISIONS_ANSWERS.MD) |
-| 24 | [docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md](docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md) |
-| 25 | [docs/archive/IMPLEMENTATION_PROMPTS.md](docs/archive/IMPLEMENTATION_PROMPTS.md) |
-| 26 | [docs/archive/Monetization_Research_Phase1_Results.md](docs/archive/Monetization_Research_Phase1_Results.md) |
-| 27 | [docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md](docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md) |
-| 28 | [docs/archive/REVIEWS_1-40.md](docs/archive/REVIEWS_1-40.md) |
-| 29 | [docs/archive/REVIEWS_42-60.md](docs/archive/REVIEWS_42-60.md) |
-| 30 | [docs/archive/Refactoring_PR_Plan.md](docs/archive/Refactoring_PR_Plan.md) |
-| 31 | [docs/archive/SUPABASE_MIGRATION_ANALYSIS.md](docs/archive/SUPABASE_MIGRATION_ANALYSIS.md) |
-| 32 | [docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md) |
-| 33 | [docs/archive/SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md) |
-| 34 | [docs/archive/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md) |
-| 35 | [docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md) |
-| 36 | [docs/archive/SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md) |
-| 37 | [docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md) |
-| 38 | [docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md) |
-| 39 | [docs/archive/TESTING_CHECKLIST.md](docs/archive/TESTING_CHECKLIST.md) |
-| 40 | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md) |
-| 41 | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md) |
-| 42 | [docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md](docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) |
-| 43 | [docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md](docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) |
-| 44 | [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF.md) |
-| 45 | [docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md) |
-| 46 | [docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md](docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md) |
-| 47 | [docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md](docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md) |
-| 48 | [docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md](docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md) |
-| 49 | [docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md](docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md) |
-| 50 | [docs/archive/consolidated-2025-12-19/ROADMAP_V3.md](docs/archive/consolidated-2025-12-19/ROADMAP_V3.md) |
-| 51 | [docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md](docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md) |
-| 52 | [docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md](docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md) |
-| 53 | [docs/archive/firestore-rules.md](docs/archive/firestore-rules.md) |
-| 54 | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md) |
-| 55 | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md) |
-| 56 | [docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md](docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md) |
-| 57 | [docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md) |
-| 58 | [docs/archive/legacy_task_list_2025_12_12.md](docs/archive/legacy_task_list_2025_12_12.md) |
-| 59 | [docs/archive/local-resources-review.md](docs/archive/local-resources-review.md) |
-| 60 | [docs/archive/source-data/Recovery_Prayers.md](docs/archive/source-data/Recovery_Prayers.md) |
-| 61 | [docs/archive/source-data/nashville_recovery_resources_links.md](docs/archive/source-data/nashville_recovery_resources_links.md) |
-| 62 | [docs/archive/source-data/recovery_quotes_50.md](docs/archive/source-data/recovery_quotes_50.md) |
+| #   | Path                                                                                                                                                 |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | [docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md](docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md)                               |
+| 2   | [docs/archive/2025-dec-reports/APP_CHECK_DIAGNOSIS.md](docs/archive/2025-dec-reports/APP_CHECK_DIAGNOSIS.md)                                         |
+| 3   | [docs/archive/2025-dec-reports/ARCHITECTURAL_REFACTOR.md](docs/archive/2025-dec-reports/ARCHITECTURAL_REFACTOR.md)                                   |
+| 4   | [docs/archive/2025-dec-reports/ARCHITECTURE_IMPROVEMENT_PLAN.md](docs/archive/2025-dec-reports/ARCHITECTURE_IMPROVEMENT_PLAN.md)                     |
+| 5   | [docs/archive/2025-dec-reports/BILLING_ALERTS_SETUP.md](docs/archive/2025-dec-reports/BILLING_ALERTS_SETUP.md)                                       |
+| 6   | [docs/archive/2025-dec-reports/CODE_ANALYSIS_REPORT.md](docs/archive/2025-dec-reports/CODE_ANALYSIS_REPORT.md)                                       |
+| 7   | [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)                           |
+| 8   | [docs/archive/2025-dec-reports/DEPENDENCY_ANALYSIS.md](docs/archive/2025-dec-reports/DEPENDENCY_ANALYSIS.md)                                         |
+| 9   | [docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md](docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md)                                       |
+| 10  | [docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md](docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)                                     |
+| 11  | [docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md](docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)                                               |
+| 12  | [docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md](docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md)                                 |
+| 13  | [docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md](docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md)                                               |
+| 14  | [docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md](docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md)                         |
+| 15  | [docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md](docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md)                         |
+| 16  | [docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md](docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md)                                     |
+| 17  | [docs/archive/2025-dec-reports/XSS_PROTECTION_VERIFICATION.md](docs/archive/2025-dec-reports/XSS_PROTECTION_VERIFICATION.md)                         |
+| 18  | [docs/archive/AI_HANDOFF-2026-01-02.md](docs/archive/AI_HANDOFF-2026-01-02.md)                                                                       |
+| 19  | [docs/archive/AI_STANDARDIZED_REPORT.md](docs/archive/AI_STANDARDIZED_REPORT.md)                                                                     |
+| 20  | [docs/archive/APPCHECK_FRESH_SETUP.md](docs/archive/APPCHECK_FRESH_SETUP.md)                                                                         |
+| 21  | [docs/archive/ARCHIVE_INDEX.md](docs/archive/ARCHIVE_INDEX.md)                                                                                       |
+| 22  | [docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md)                                     |
+| 23  | [docs/archive/FEATURE_DECISIONS_ANSWERS.MD](docs/archive/FEATURE_DECISIONS_ANSWERS.MD)                                                               |
+| 24  | [docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md](docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md)                                     |
+| 25  | [docs/archive/IMPLEMENTATION_PROMPTS.md](docs/archive/IMPLEMENTATION_PROMPTS.md)                                                                     |
+| 26  | [docs/archive/Monetization_Research_Phase1_Results.md](docs/archive/Monetization_Research_Phase1_Results.md)                                         |
+| 27  | [docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md](docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md)                                                               |
+| 28  | [docs/archive/REVIEWS_1-40.md](docs/archive/REVIEWS_1-40.md)                                                                                         |
+| 29  | [docs/archive/REVIEWS_42-60.md](docs/archive/REVIEWS_42-60.md)                                                                                       |
+| 30  | [docs/archive/Refactoring_PR_Plan.md](docs/archive/Refactoring_PR_Plan.md)                                                                           |
+| 31  | [docs/archive/SUPABASE_MIGRATION_ANALYSIS.md](docs/archive/SUPABASE_MIGRATION_ANALYSIS.md)                                                           |
+| 32  | [docs/archive/SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)               |
+| 33  | [docs/archive/SoNash**AdminPanelEnhancement**v1_0\_\_2024-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)                 |
+| 34  | [docs/archive/SoNash**AdminPanelEnhancement**v1_1\_\_2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)                 |
+| 35  | [docs/archive/SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)                 |
+| 36  | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md)                         |
+| 37  | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_2\_\_2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)           |
+| 38  | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)           |
+| 39  | [docs/archive/TESTING_CHECKLIST.md](docs/archive/TESTING_CHECKLIST.md)                                                                               |
+| 40  | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md)   |
+| 41  | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md) |
+| 42  | [docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md](docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md)             |
+| 43  | [docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md](docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)                               |
+| 44  | [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)                                             |
+| 45  | [docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md)                       |
+| 46  | [docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md](docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md)                                       |
+| 47  | [docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md](docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md)                               |
+| 48  | [docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md](docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md)                   |
+| 49  | [docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md](docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md)                                     |
+| 50  | [docs/archive/consolidated-2025-12-19/ROADMAP_V3.md](docs/archive/consolidated-2025-12-19/ROADMAP_V3.md)                                             |
+| 51  | [docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md](docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md)         |
+| 52  | [docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md](docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md)                 |
+| 53  | [docs/archive/firestore-rules.md](docs/archive/firestore-rules.md)                                                                                   |
+| 54  | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md)                                     |
+| 55  | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md)                                     |
+| 56  | [docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md](docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md)                                     |
+| 57  | [docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md)                                           |
+| 58  | [docs/archive/legacy_task_list_2025_12_12.md](docs/archive/legacy_task_list_2025_12_12.md)                                                           |
+| 59  | [docs/archive/local-resources-review.md](docs/archive/local-resources-review.md)                                                                     |
+| 60  | [docs/archive/source-data/Recovery_Prayers.md](docs/archive/source-data/Recovery_Prayers.md)                                                         |
+| 61  | [docs/archive/source-data/nashville_recovery_resources_links.md](docs/archive/source-data/nashville_recovery_resources_links.md)                     |
+| 62  | [docs/archive/source-data/recovery_quotes_50.md](docs/archive/source-data/recovery_quotes_50.md)                                                     |
 
 </details>
 
 ---
 
-*Generated by `scripts/generate-documentation-index.js`*
+_Generated by `scripts/generate-documentation-index.js`_

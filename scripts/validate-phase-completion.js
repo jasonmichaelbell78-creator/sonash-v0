@@ -13,23 +13,23 @@
  *   1 = Validation failed (block merge)
  */
 
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
-const PLAN_PATH = join(ROOT, 'docs', 'INTEGRATED_IMPROVEMENT_PLAN.md');
+const ROOT = join(__dirname, "..");
+const PLAN_PATH = join(ROOT, "docs", "INTEGRATED_IMPROVEMENT_PLAN.md");
 
 function main() {
-  console.log('🔍 Validating Phase Completion...\n');
+  console.log("🔍 Validating Phase Completion...\n");
 
   // Read current plan with error handling
   let content;
   try {
-    content = readFileSync(PLAN_PATH, 'utf-8');
+    content = readFileSync(PLAN_PATH, "utf-8");
   } catch (err) {
     console.error(`❌ Failed to read plan: ${sanitizeError(err)}`);
     process.exit(1);
@@ -47,7 +47,7 @@ function main() {
   }
 
   if (completedPhases.length === 0) {
-    console.log('No phases marked COMPLETE. Validation passed.\n');
+    console.log("No phases marked COMPLETE. Validation passed.\n");
     process.exit(0);
   }
 
@@ -68,9 +68,7 @@ function main() {
 
     // Find next phase section (or end of file)
     const nextPhaseMatch = content.slice(phaseStart + 10).match(/\n## 📋 PHASE/);
-    const phaseEnd = nextPhaseMatch
-      ? phaseStart + 10 + nextPhaseMatch.index
-      : content.length;
+    const phaseEnd = nextPhaseMatch ? phaseStart + 10 + nextPhaseMatch.index : content.length;
 
     const phaseContent = content.slice(phaseStart, phaseEnd);
 
@@ -89,7 +87,7 @@ function main() {
     const criteriaTotal = (phaseContent.match(/- \[[ x]\]/g) || []).length;
 
     if (criteriaTotal > 0 && criteriaChecked === 0) {
-      console.log('  ❌ No acceptance criteria marked complete');
+      console.log("  ❌ No acceptance criteria marked complete");
       issues.push(`${phase}: No acceptance criteria checked`);
       allValid = false;
     } else if (criteriaTotal > 0) {
@@ -103,20 +101,20 @@ function main() {
       issues.push(`${phase}: Missing completion date`);
       allValid = false;
     } else {
-      console.log('  ✅ Has completion date');
+      console.log("  ✅ Has completion date");
     }
 
-    console.log('');
+    console.log("");
   }
 
   if (allValid) {
-    console.log('✅ All phase completions properly documented!\n');
+    console.log("✅ All phase completions properly documented!\n");
     process.exit(0);
   } else {
-    console.log('❌ VALIDATION FAILED\n');
-    console.log('The following issues must be fixed before merging:\n');
+    console.log("❌ VALIDATION FAILED\n");
+    console.log("The following issues must be fixed before merging:\n");
     issues.forEach((issue, i) => console.log(`  ${i + 1}. ${issue}`));
-    console.log('\nRun `npm run phase:complete` to properly complete a phase.\n');
+    console.log("\nRun `npm run phase:complete` to properly complete a phase.\n");
     process.exit(1);
   }
 }

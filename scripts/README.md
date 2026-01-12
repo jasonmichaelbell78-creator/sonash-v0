@@ -4,7 +4,9 @@
 
 ## Purpose & Overview
 
-This directory contains automation scripts for documentation, development, and migration tasks. These scripts enforce quality gates, automate repetitive tasks, and ensure consistent workflows across the project.
+This directory contains automation scripts for documentation, development, and
+migration tasks. These scripts enforce quality gates, automate repetitive tasks,
+and ensure consistent workflows across the project.
 
 ---
 
@@ -12,9 +14,11 @@ This directory contains automation scripts for documentation, development, and m
 
 ### update-readme-status.js
 
-**Purpose:** Syncs the README.md "Project Status" section with data from ROADMAP.md
+**Purpose:** Syncs the README.md "Project Status" section with data from
+ROADMAP.md
 
 **Activation:**
+
 ```bash
 node scripts/update-readme-status.js [--dry-run] [--verbose]
 # Or via npm:
@@ -22,10 +26,12 @@ npm run docs:update-readme
 ```
 
 **Options:**
+
 - `--dry-run` - Show what would change without writing files
 - `--verbose` - Show detailed logging
 
 **What it does:**
+
 1. Parses ROADMAP.md milestones table
 2. Calculates overall progress percentage
 3. Identifies current focus and completed milestones
@@ -41,6 +47,7 @@ npm run docs:update-readme
 **Purpose:** Light documentation linter that validates markdown files by tier
 
 **Activation:**
+
 ```bash
 node scripts/check-docs-light.js [file1.md] [file2.md] [--dry-run] [--verbose]
 # Or via npm:
@@ -48,10 +55,12 @@ npm run docs:check
 ```
 
 **Options:**
+
 - `--dry-run` - Parse-only mode (same output, explicit about not modifying)
 - `--verbose` - Show detailed logging
 
 **What it does:**
+
 1. Auto-detects document tier (1-5) based on filename or directory
 2. Validates required sections for each tier:
    - Tier 1 (Canonical): Purpose + Version History required
@@ -70,9 +79,11 @@ npm run docs:check
 
 ### archive-doc.js
 
-**Purpose:** Archives a document with full metadata preservation and cross-reference updating
+**Purpose:** Archives a document with full metadata preservation and
+cross-reference updating
 
 **Activation:**
+
 ```bash
 node scripts/archive-doc.js FILENAME.md [--reason "text"] [--update-log] [--dry-run] [--verbose]
 # Or via npm:
@@ -80,14 +91,17 @@ npm run docs:archive -- FILENAME.md
 ```
 
 **Options:**
+
 - `--reason "text"` - Reason for archiving (default: "Superseded or outdated")
 - `--update-log` - Also add entry to ROADMAP_LOG.md
 - `--dry-run` - Show what would change without writing
 - `--verbose` - Show detailed logging
 
 **What it does:**
+
 1. Reads source document
-2. Adds YAML frontmatter (archived_date, original_path, archive_reason, last_updated)
+2. Adds YAML frontmatter (archived_date, original_path, archive_reason,
+   last_updated)
 3. Moves to docs/archive/
 4. Scans all markdown files and updates cross-references
 5. Optionally adds entry to ROADMAP_LOG.md
@@ -101,6 +115,7 @@ npm run docs:archive -- FILENAME.md
 **Purpose:** Checks if code review trigger thresholds have been reached
 
 **Activation:**
+
 ```bash
 node scripts/check-review-needed.js [--update] [--json] [--dry-run] [--verbose]
 # Or via npm:
@@ -108,20 +123,24 @@ npm run review:check
 ```
 
 **Options:**
+
 - `--update` - Update MULTI_AI_REVIEW_COORDINATOR.md with current metrics
 - `--json` - Output as JSON instead of human-readable table
 - `--dry-run` - Show what would change without writing
 - `--verbose` - Show detailed logging
 
 **What it does:**
+
 1. Reads MULTI_AI_REVIEW_COORDINATOR.md for baseline metrics
-2. Checks git history for commits, lines changed, files modified since last review
+2. Checks git history for commits, lines changed, files modified since last
+   review
 3. Counts new files and new components
 4. Runs ESLint and compares warnings to baseline
 5. Checks test coverage (if available)
 6. Outputs trigger status with recommendation
 
 **Thresholds:**
+
 - Commits: 50
 - Lines changed: 1000
 - Files modified: 25
@@ -154,11 +173,13 @@ These are NOT optional - they block progress if checks fail.
 **Location:** `.husky/pre-commit`
 
 **What it does:**
+
 - Runs ESLint before every commit
 - Runs tests before every commit
 - **BLOCKS commit if either fails**
 
 **Bypass (emergency only):**
+
 ```bash
 git commit --no-verify -m "message"  # ONLY for emergencies!
 ```
@@ -170,11 +191,13 @@ git commit --no-verify -m "message"  # ONLY for emergencies!
 **Purpose:** Mandatory checklist before marking any phase/milestone complete
 
 **Activation:**
+
 ```bash
 npm run phase:complete
 ```
 
 **What it does:**
+
 1. Runs ESLint automatically
 2. Runs tests automatically
 3. Asks manual verification questions:
@@ -207,12 +230,14 @@ npm run phase:complete
 **Purpose:** Automatically lint documentation on PRs that modify markdown files
 
 **Triggers:**
+
 - Pull requests to main branch that modify:
   - Any `.md` file
   - Anything in `docs/` directory
   - The `check-docs-light.js` script itself
 
 **What it does:**
+
 1. Gets list of changed markdown files
 2. Runs check-docs-light.js on each file
 3. Posts results as a PR comment (updates existing comment if present)
@@ -227,6 +252,7 @@ npm run phase:complete
 **Triggers:** PRs modifying `DOCUMENTATION_STANDARDIZATION_PLAN.md`
 
 **Blocks merge if:**
+
 - Phase marked COMPLETE without "What Was Accomplished" section
 - No acceptance criteria checked
 - Missing completion date
@@ -240,6 +266,7 @@ npm run phase:complete
 **Triggers:** All PRs to main (opened or updated)
 
 **What it does:**
+
 1. Runs `check-review-needed.js` against the PR
 2. If thresholds exceeded, posts comment with details
 3. Adds `needs-review` label to PR
@@ -254,6 +281,7 @@ npm run phase:complete
 **Triggers:** Push to main that modifies `ROADMAP.md`
 
 **What it does:**
+
 1. Runs `update-readme-status.js` automatically
 2. Commits and pushes README.md if changed
 3. Keeps README Project Status in sync with ROADMAP milestones
@@ -262,7 +290,8 @@ npm run phase:complete
 
 ## Migration Scripts
 
-This directory also contains one-time migration scripts for database schema changes.
+This directory also contains one-time migration scripts for database schema
+changes.
 
 ## Available Migrations
 
@@ -270,9 +299,12 @@ This directory also contains one-time migration scripts for database schema chan
 
 Adds the `dayIndex` field to all existing meetings in Firestore.
 
-**Why?** The `dayIndex` field (0=Sunday through 6=Saturday) enables proper week-order sorting in pagination queries without client-side re-sorting that breaks cursor-based pagination.
+**Why?** The `dayIndex` field (0=Sunday through 6=Saturday) enables proper
+week-order sorting in pagination queries without client-side re-sorting that
+breaks cursor-based pagination.
 
 **Prerequisites:**
+
 1. Download Firebase service account key:
    - Go to Firebase Console > Project Settings > Service Accounts
    - Click "Generate new private key"
@@ -285,11 +317,13 @@ Adds the `dayIndex` field to all existing meetings in Firestore.
    ```
 
 **Usage:**
+
 ```bash
 npx tsx scripts/migrate-meetings-dayindex.ts
 ```
 
 **What it does:**
+
 - Reads all documents from the `meetings` collection
 - For each meeting, adds `dayIndex` based on the `day` field
 - Uses batched writes (500 per batch) for efficiency
@@ -297,12 +331,14 @@ npx tsx scripts/migrate-meetings-dayindex.ts
 - Reports detailed progress and errors
 
 **Safety:**
+
 - ✅ Non-destructive (only adds field, doesn't modify existing data)
 - ✅ Idempotent (safe to run multiple times)
 - ✅ Validates all data before writing
 - ✅ Uses batched writes for performance
 
 **After migration:**
+
 1. Deploy the new Firestore index:
    ```bash
    firebase deploy --only firestore:indexes
@@ -321,6 +357,6 @@ npx tsx scripts/migrate-meetings-dayindex.ts
 
 ## Version History
 
-| Version | Date | Description |
-|---------|------|-------------|
-| 1.0 | 2026-01-02 | Initial documentation of all scripts |
+| Version | Date       | Description                          |
+| ------- | ---------- | ------------------------------------ |
+| 1.0     | 2026-01-02 | Initial documentation of all scripts |

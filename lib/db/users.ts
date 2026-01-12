@@ -1,166 +1,168 @@
-import { db } from "../firebase"
-import {
-    doc,
-    getDoc,
-    setDoc,
-    serverTimestamp,
-    Timestamp,
-    FieldValue,
-} from "firebase/firestore"
-import { z } from "zod"
-import { logger, maskIdentifier } from "../logger"
-import { assertUserScope, validateUserDocumentPath } from "../security/firestore-validation"
-import { isFirestoreTimestamp } from "../types/firebase-types"
-import { buildPath } from "../constants"
+import { db } from "../firebase";
+import { doc, getDoc, setDoc, serverTimestamp, Timestamp, FieldValue } from "firebase/firestore";
+import { z } from "zod";
+import { logger, maskIdentifier } from "../logger";
+import { assertUserScope, validateUserDocumentPath } from "../security/firestore-validation";
+import { isFirestoreTimestamp } from "../types/firebase-types";
+import { buildPath } from "../constants";
 
 /**
  * UserProfile as read from Firestore (timestamps are resolved)
  */
 export interface UserProfile {
-    uid: string
-    email: string | null
-    nickname: string
-    cleanStart: Timestamp | null
-    createdAt: Timestamp
-    updatedAt: Timestamp
-    preferences: {
-        theme: "blue"
-        largeText: boolean
-        simpleLanguage: boolean
-    }
-    // Onboarding expansion fields (optional)
-    hasSponsor?: 'yes' | 'no' | 'looking' | null
-    tourCompleted?: boolean
-    accountLinkPromptCount?: number
-    lastLinkPromptDate?: Timestamp | null
+  uid: string;
+  email: string | null;
+  nickname: string;
+  cleanStart: Timestamp | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  preferences: {
+    theme: "blue";
+    largeText: boolean;
+    simpleLanguage: boolean;
+  };
+  // Onboarding expansion fields (optional)
+  hasSponsor?: "yes" | "no" | "looking" | null;
+  tourCompleted?: boolean;
+  accountLinkPromptCount?: number;
+  lastLinkPromptDate?: Timestamp | null;
 }
 
 /**
  * UserProfile for writing to Firestore (timestamps use FieldValue sentinels)
  */
 interface UserProfileWrite {
-    uid: string
-    email: string | null
-    nickname: string
-    cleanStart: Timestamp | null
-    createdAt: FieldValue
-    updatedAt: FieldValue
-    preferences: {
-        theme: "blue"
-        largeText: boolean
-        simpleLanguage: boolean
-    }
+  uid: string;
+  email: string | null;
+  nickname: string;
+  cleanStart: Timestamp | null;
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
+  preferences: {
+    theme: "blue";
+    largeText: boolean;
+    simpleLanguage: boolean;
+  };
 }
 
 // Discriminated union for getUserProfile result
 export type ProfileResult =
-    | { success: true; profile: UserProfile }
-    | { success: false; reason: "not-found" }
-    | { success: false; reason: "error"; error: unknown }
+  | { success: true; profile: UserProfile }
+  | { success: false; reason: "not-found" }
+  | { success: false; reason: "error"; error: unknown };
 
 // Zod schema for validation
 const TimestampSchema = z.custom<Timestamp>((val) => {
-    return val === null || isFirestoreTimestamp(val)
-}, "Must be a valid Firestore Timestamp")
+  return val === null || isFirestoreTimestamp(val);
+}, "Must be a valid Firestore Timestamp");
 
 const PartialUserProfileUpdateSchema = z.object({
-    email: z.string().email().nullable().optional(),
-    nickname: z.string().min(1).max(50).optional(),
-    cleanStart: TimestampSchema.nullable().optional(),
-    preferences: z.object({
-        theme: z.literal("blue"),
-        largeText: z.boolean(),
-        simpleLanguage: z.boolean(),
-    }).partial().optional(),
-    // Onboarding expansion fields
-    hasSponsor: z.enum(['yes', 'no', 'looking']).nullable().optional(),
-    tourCompleted: z.boolean().optional(),
-    accountLinkPromptCount: z.number().int().min(0).optional(),
-    lastLinkPromptDate: TimestampSchema.nullable().optional(),
-})
+  email: z.string().email().nullable().optional(),
+  nickname: z.string().min(1).max(50).optional(),
+  cleanStart: TimestampSchema.nullable().optional(),
+  preferences: z
+    .object({
+      theme: z.literal("blue"),
+      largeText: z.boolean(),
+      simpleLanguage: z.boolean(),
+    })
+    .partial()
+    .optional(),
+  // Onboarding expansion fields
+  hasSponsor: z.enum(["yes", "no", "looking"]).nullable().optional(),
+  tourCompleted: z.boolean().optional(),
+  accountLinkPromptCount: z.number().int().min(0).optional(),
+  lastLinkPromptDate: TimestampSchema.nullable().optional(),
+});
 
 // Default preferences
 const defaultPreferences = {
-    theme: "blue" as const,
-    largeText: false,
-    simpleLanguage: false,
-}
+  theme: "blue" as const,
+  largeText: false,
+  simpleLanguage: false,
+};
 
 export async function getUserProfile(uid: string): Promise<ProfileResult> {
-    try {
-        assertUserScope({ userId: uid })
-        const userPath = buildPath.userDoc(uid)
-        const docRef = doc(db, userPath)
-        validateUserDocumentPath(uid, userPath)
-        const docSnap = await getDoc(docRef)
+  try {
+    assertUserScope({ userId: uid });
+    const userPath = buildPath.userDoc(uid);
+    const docRef = doc(db, userPath);
+    validateUserDocumentPath(uid, userPath);
+    const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-            return { success: true, profile: docSnap.data() as UserProfile }
-        }
-        return { success: false, reason: "not-found" }
-    } catch (error) {
-        logger.error("Error getting user profile", { userId: maskIdentifier(uid), error })
-        return { success: false, reason: "error", error }
+    if (docSnap.exists()) {
+      return { success: true, profile: docSnap.data() as UserProfile };
     }
+    return { success: false, reason: "not-found" };
+  } catch (error) {
+    logger.error("Error getting user profile", { userId: maskIdentifier(uid), error });
+    return { success: false, reason: "error", error };
+  }
 }
 
-export async function createUserProfile(uid: string, email: string | null, nickname?: string): Promise<UserProfile> {
-    const newUserData: UserProfileWrite = {
-        uid,
-        email,
-        nickname: nickname || email?.split("@")[0] || "Friend",
-        cleanStart: null,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        preferences: defaultPreferences,
-    }
+export async function createUserProfile(
+  uid: string,
+  email: string | null,
+  nickname?: string
+): Promise<UserProfile> {
+  const newUserData: UserProfileWrite = {
+    uid,
+    email,
+    nickname: nickname || email?.split("@")[0] || "Friend",
+    cleanStart: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    preferences: defaultPreferences,
+  };
 
-    try {
-        assertUserScope({ userId: uid })
-        const userPath = buildPath.userDoc(uid)
-        const docRef = doc(db, userPath)
-        validateUserDocumentPath(uid, userPath)
-        await setDoc(docRef, newUserData)
+  try {
+    assertUserScope({ userId: uid });
+    const userPath = buildPath.userDoc(uid);
+    const docRef = doc(db, userPath);
+    validateUserDocumentPath(uid, userPath);
+    await setDoc(docRef, newUserData);
 
-        // Fetch the created document to return resolved timestamps
-        const docSnap = await getDoc(docRef)
-        if (!docSnap.exists()) {
-            throw new Error("Failed to retrieve created user profile")
-        }
-        return docSnap.data() as UserProfile
-    } catch (error) {
-        logger.error("Error creating user profile", { userId: maskIdentifier(uid), error })
-        throw error
+    // Fetch the created document to return resolved timestamps
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      throw new Error("Failed to retrieve created user profile");
     }
+    return docSnap.data() as UserProfile;
+  } catch (error) {
+    logger.error("Error creating user profile", { userId: maskIdentifier(uid), error });
+    throw error;
+  }
 }
 
 export async function updateUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
-    try {
-        assertUserScope({ userId: uid })
+  try {
+    assertUserScope({ userId: uid });
 
-        // Validate input data
-        const validatedData = PartialUserProfileUpdateSchema.parse(data)
+    // Validate input data
+    const validatedData = PartialUserProfileUpdateSchema.parse(data);
 
-        const userPath = buildPath.userDoc(uid)
-        const docRef = doc(db, userPath)
-        validateUserDocumentPath(uid, userPath)
-        await setDoc(
-            docRef,
-            {
-                ...validatedData,
-                updatedAt: serverTimestamp()
-            },
-            { merge: true }
-        )
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            logger.error("Invalid user profile data", {
-                userId: maskIdentifier(uid),
-                errors: error.issues
-            })
-            throw new Error("Invalid user profile data: " + error.issues.map(e => e.message).join(", "))
-        }
-        logger.error("Error updating user profile", { userId: maskIdentifier(uid), error })
-        throw error
+    const userPath = buildPath.userDoc(uid);
+    const docRef = doc(db, userPath);
+    validateUserDocumentPath(uid, userPath);
+    await setDoc(
+      docRef,
+      {
+        ...validatedData,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      logger.error("Invalid user profile data", {
+        userId: maskIdentifier(uid),
+        errors: error.issues,
+      });
+      throw new Error(
+        "Invalid user profile data: " + error.issues.map((e) => e.message).join(", ")
+      );
     }
+    logger.error("Error updating user profile", { userId: maskIdentifier(uid), error });
+    throw error;
+  }
 }

@@ -1,14 +1,15 @@
 # Single-Session Audit Results
 
-**Created:** 2026-01-08
-**Updated:** 2026-01-08
-**Purpose:** Store results from single-session (single-AI) audits
+**Created:** 2026-01-08 **Updated:** 2026-01-08 **Purpose:** Store results from
+single-session (single-AI) audits
 
 ---
 
 ## Overview
 
-This folder contains audit results from `/audit-*` slash commands. These are lightweight, single-session audits performed by Claude Code, designed to provide interim visibility between larger multi-AI audits.
+This folder contains audit results from `/audit-*` slash commands. These are
+lightweight, single-session audits performed by Claude Code, designed to provide
+interim visibility between larger multi-AI audits.
 
 ## Folder Structure
 
@@ -25,18 +26,19 @@ single-session/
 
 ## Available Commands
 
-| Command | Description | Focus Areas |
-|---------|-------------|-------------|
-| `/audit-code` | Code review audit | Hygiene, Types, Framework, Testing, Security |
-| `/audit-security` | Security audit | Auth, Input Validation, Data, Firebase, Deps, OWASP |
-| `/audit-performance` | Performance audit | Bundle, Rendering, Data Fetch, Memory, Web Vitals |
-| `/audit-refactoring` | Refactoring audit | God Objects, Duplication, Complexity, Architecture, Tech Debt |
-| `/audit-documentation` | Documentation audit | Links, Stale Content, Coverage, Tier, Frontmatter, Sync |
-| `/audit-process` | Process/Automation audit | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers |
+| Command                | Description              | Focus Areas                                                   |
+| ---------------------- | ------------------------ | ------------------------------------------------------------- |
+| `/audit-code`          | Code review audit        | Hygiene, Types, Framework, Testing, Security                  |
+| `/audit-security`      | Security audit           | Auth, Input Validation, Data, Firebase, Deps, OWASP           |
+| `/audit-performance`   | Performance audit        | Bundle, Rendering, Data Fetch, Memory, Web Vitals             |
+| `/audit-refactoring`   | Refactoring audit        | God Objects, Duplication, Complexity, Architecture, Tech Debt |
+| `/audit-documentation` | Documentation audit      | Links, Stale Content, Coverage, Tier, Frontmatter, Sync       |
+| `/audit-process`       | Process/Automation audit | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers             |
 
 ## Output Format
 
 Each audit produces two files:
+
 1. **Markdown Report**: `audit-YYYY-MM-DD.md` - Human-readable summary
 2. **JSONL Findings**: `audit-YYYY-MM-DD.jsonl` - Machine-parseable findings
 
@@ -61,19 +63,23 @@ Each audit produces two files:
 ```
 
 **New fields (2026-01-08):**
+
 - `confidence`: Finding confidence level (HIGH 90%+, MEDIUM 70-89%, LOW <70%)
-- `verified`: Verification method used (DUAL_PASS for S0/S1, TOOL_VALIDATED, or MANUAL_ONLY)
+- `verified`: Verification method used (DUAL_PASS for S0/S1, TOOL_VALIDATED, or
+  MANUAL_ONLY)
 - `cross_ref`: Cross-reference source (external tool or manual-only)
 
 ---
 
 ## Quality Checks and Balances
 
-Single-session audits include several mechanisms to reduce false positives and improve accuracy:
+Single-session audits include several mechanisms to reduce false positives and
+improve accuracy:
 
 ### 1. Evidence Requirements
 
 **All findings MUST include:**
+
 - File:line reference (exact location)
 - Code snippet (3-5 lines of context)
 - Verification method (how it was confirmed)
@@ -81,24 +87,27 @@ Single-session audits include several mechanisms to reduce false positives and i
 
 ### 2. Confidence Scoring
 
-| Level | Threshold | Meaning |
-|-------|-----------|---------|
-| HIGH | 90%+ | Confirmed by external tool, file verified, code matches |
-| MEDIUM | 70-89% | Pattern search, file verified, no tool confirmation |
-| LOW | <70% | Pattern match only, needs manual verification |
+| Level  | Threshold | Meaning                                                 |
+| ------ | --------- | ------------------------------------------------------- |
+| HIGH   | 90%+      | Confirmed by external tool, file verified, code matches |
+| MEDIUM | 70-89%    | Pattern search, file verified, no tool confirmation     |
+| LOW    | <70%      | Pattern match only, needs manual verification           |
 
 **S0/S1 findings require HIGH or MEDIUM confidence.**
 
 ### 3. False Positives Database
 
-Known false positives are stored in `docs/audits/FALSE_POSITIVES.jsonl` and automatically filtered during audits.
+Known false positives are stored in `docs/audits/FALSE_POSITIVES.jsonl` and
+automatically filtered during audits.
 
 **View the database:**
+
 ```bash
 node scripts/add-false-positive.js --list
 ```
 
 **Add a new false positive:**
+
 ```bash
 node scripts/add-false-positive.js \
   --pattern "regex-pattern" \
@@ -110,6 +119,7 @@ node scripts/add-false-positive.js \
 ### 4. Cross-Reference Validation
 
 Findings are cross-referenced against external tools:
+
 - **Security**: npm audit, ESLint security rules, patterns:check
 - **Code**: ESLint, TypeScript errors, test failures
 - **Performance**: Build output, Lighthouse, profiler
@@ -120,6 +130,7 @@ Findings are cross-referenced against external tools:
 ### 5. Dual-Pass Verification (S0/S1 Only)
 
 For Critical (S0) and High (S1) severity findings:
+
 1. **First Pass**: Identify issue, note file:line and evidence
 2. **Second Pass**: Re-read code in context, verify exploitability/impact
 3. **Decision**: CONFIRMED or DOWNGRADE (with reason)
@@ -127,11 +138,13 @@ For Critical (S0) and High (S1) severity findings:
 ### 6. Post-Audit Validation
 
 All audits run through validation before finalizing:
+
 ```bash
 node scripts/validate-audit.js docs/audits/single-session/<category>/audit-YYYY-MM-DD.jsonl
 ```
 
 **Validation checks:**
+
 - Required fields present
 - No matches in false positives database
 - No duplicate findings
@@ -142,34 +155,34 @@ node scripts/validate-audit.js docs/audits/single-session/<category>/audit-YYYY-
 
 ## Severity Scale
 
-| Level | Meaning | Action |
-|-------|---------|--------|
-| S0 | Critical | Immediate fix required |
-| S1 | High | Fix before next release |
-| S2 | Medium | Fix when convenient |
-| S3 | Low | Nice to have |
+| Level | Meaning  | Action                  |
+| ----- | -------- | ----------------------- |
+| S0    | Critical | Immediate fix required  |
+| S1    | High     | Fix before next release |
+| S2    | Medium   | Fix when convenient     |
+| S3    | Low      | Nice to have            |
 
 ## Effort Scale
 
 | Level | Meaning | Time Estimate |
-|-------|---------|---------------|
-| E0 | Trivial | Minutes |
-| E1 | Small | Hours |
-| E2 | Medium | Day(s) |
-| E3 | Large | Week+ |
+| ----- | ------- | ------------- |
+| E0    | Trivial | Minutes       |
+| E1    | Small   | Hours         |
+| E2    | Medium  | Day(s)        |
+| E3    | Large   | Week+         |
 
 ## Relationship to Multi-AI Audits
 
 Single-session audits are **complementary** to multi-AI audits:
 
-| Aspect | Single-Session | Multi-AI |
-|--------|----------------|----------|
-| Models | 1 (Claude Code) | 3-6 (various) |
-| Consensus | No | Yes |
-| Threshold Reset | No | Yes |
-| Frequency | On-demand | Threshold-triggered |
-| Output Location | `docs/audits/single-session/` | `docs/reviews/YYYY-QX/` |
-| Logged in | `docs/AUDIT_TRACKER.md` | `AI_REVIEW_LEARNINGS_LOG.md` |
+| Aspect          | Single-Session                | Multi-AI                     |
+| --------------- | ----------------------------- | ---------------------------- |
+| Models          | 1 (Claude Code)               | 3-6 (various)                |
+| Consensus       | No                            | Yes                          |
+| Threshold Reset | No                            | Yes                          |
+| Frequency       | On-demand                     | Threshold-triggered          |
+| Output Location | `docs/audits/single-session/` | `docs/reviews/YYYY-QX/`      |
+| Logged in       | `docs/AUDIT_TRACKER.md`       | `AI_REVIEW_LEARNINGS_LOG.md` |
 
 ## When to Use
 
@@ -181,6 +194,7 @@ Single-session audits are **complementary** to multi-AI audits:
 ## Threshold Integration
 
 These audits check thresholds via `npm run review:check` but:
+
 - **Warn** if thresholds not met
 - **Proceed anyway** (user invoked intentionally)
 - **Do NOT reset** thresholds (that's for multi-AI audits only)
@@ -189,9 +203,9 @@ These audits check thresholds via `npm run review:check` but:
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/validate-audit.js` | Validate JSONL audit findings |
+| Script                          | Purpose                         |
+| ------------------------------- | ------------------------------- |
+| `scripts/validate-audit.js`     | Validate JSONL audit findings   |
 | `scripts/add-false-positive.js` | Manage false positives database |
 
 ### validate-audit.js Usage

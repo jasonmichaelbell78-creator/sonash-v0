@@ -6,20 +6,20 @@
  * if window and localStorage are available before accessing them.
  */
 
-import { getErrorMessage } from './errors';
-import { logger } from '../logger';
+import { getErrorMessage } from "./errors";
+import { logger } from "../logger";
 
 /**
  * Check if localStorage is available (client-side only)
  * @returns True if localStorage is available
  */
 export function isLocalStorageAvailable(): boolean {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return false;
   }
 
   try {
-    const test = '__storage_test__';
+    const test = "__storage_test__";
     window.localStorage.setItem(test, test);
     window.localStorage.removeItem(test);
     return true;
@@ -115,7 +115,10 @@ export function setLocalStorageJSON<T>(key: string, value: T): boolean {
     const jsonString = JSON.stringify(value);
     return setLocalStorage(key, jsonString);
   } catch (error) {
-    logger.warn(`Failed to stringify value for localStorage`, { key, error: getErrorMessage(error) });
+    logger.warn(`Failed to stringify value for localStorage`, {
+      key,
+      error: getErrorMessage(error),
+    });
     return false;
   }
 }

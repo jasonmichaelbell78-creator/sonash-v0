@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Settings } from "lucide-react"
+import { motion } from "framer-motion";
+import { Settings } from "lucide-react";
 
 interface BookmarkRibbonProps {
-  onClick: () => void
+  onClick: () => void;
 }
 
 export default function BookmarkRibbon({ onClick }: BookmarkRibbonProps) {
@@ -33,5 +33,5 @@ export default function BookmarkRibbon({ onClick }: BookmarkRibbonProps) {
         </div>
       </div>
     </motion.button>
-  )
+  );
 }

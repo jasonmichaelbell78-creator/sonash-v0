@@ -1,15 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": [
-    "app/**/*.{ts,tsx}",
-    "components/**/*.{ts,tsx}",
-    "lib/**/*.ts"
-  ],
-  "project": [
-    "app/**/*.{ts,tsx}",
-    "components/**/*.{ts,tsx}",
-    "lib/**/*.ts"
-  ],
+  "entry": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts"],
+  "project": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts"],
   "ignore": [
     "**/*.test.ts",
     "**/*.test.tsx",
@@ -23,17 +15,21 @@
     "tailwindcss-animate",
     "tw-animate-css",
     "autoprefixer",
-    "tsx",
     "firebase-admin",
     "remark-parse",
     "remark-stringify",
     "unified",
-    "tailwindcss"
+    "tailwindcss",
+    "@dataconnect/generated",
+    "@hookform/resolvers",
+    "cmdk",
+    "react-day-picker",
+    "react-hook-form",
+    "react-resizable-panels",
+    "recharts",
+    "vaul"
   ],
-  "ignoreBinaries": [
-    "printf",
-    "report"
-  ],
+  "ignoreBinaries": ["printf", "report"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",

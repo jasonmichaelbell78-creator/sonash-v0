@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Get changed files
         id: changed-files
@@ -193,7 +193,7 @@ jobs:
             }
 
       - name: Tier 4 informational warnings
-        if: steps.assign-tier.outputs.tier == '4'
+        if: ${{ steps.assign-tier.outputs.tier == '4' }}
         run: |
           echo "::warning::This PR modifies critical infrastructure files (Tier 4)"
           echo "::warning::RFC document required before implementation review"

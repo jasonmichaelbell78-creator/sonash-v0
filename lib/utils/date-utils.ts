@@ -20,7 +20,7 @@
  * // Returns: "2025-12-11"
  */
 export function getTodayDateId(referenceDate: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA").format(referenceDate)
+  return new Intl.DateTimeFormat("en-CA").format(referenceDate);
 }
 
 /**
@@ -38,7 +38,7 @@ export function formatDateForDisplay(date: Date = new Date()): string {
     weekday: "long",
     month: "short",
     day: "numeric",
-  })
+  });
 }
 
 /**
@@ -51,8 +51,8 @@ export function formatDateForDisplay(date: Date = new Date()): string {
  * const date = parseDateId("2025-12-11")
  */
 export function parseDateId(dateId: string): Date {
-  const [year, month, day] = dateId.split("-").map(Number)
-  return new Date(year, month - 1, day)
+  const [year, month, day] = dateId.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
 /**
@@ -66,5 +66,5 @@ export function parseDateId(dateId: string): Date {
  * isValidDateId("12/11/2025") // false
  */
 export function isValidDateId(dateId: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(dateId)
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateId);
 }

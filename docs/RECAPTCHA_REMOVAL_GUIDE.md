@@ -1,15 +1,16 @@
 # reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide
 
-**Last Updated:** 2026-01-03
-**Document Tier:** 2 (Active Reference)
-**Status:** Deferred - App Check blocking critical functionality
-**Target:** Future implementation after M1-M3 stabilization
+**Last Updated:** 2026-01-03 **Document Tier:** 2 (Active Reference) **Status:**
+Deferred - App Check blocking critical functionality **Target:** Future
+implementation after M1-M3 stabilization
 
 ---
 
 ## Purpose
 
-Complete removal and fresh implementation guide for Firebase App Check with reCAPTCHA Enterprise. Use this when App Check is blocking legitimate users or when setting up from scratch.
+Complete removal and fresh implementation guide for Firebase App Check with
+reCAPTCHA Enterprise. Use this when App Check is blocking legitimate users or
+when setting up from scratch.
 
 **Related:** [APPCHECK_SETUP.md](./APPCHECK_SETUP.md) - Standard setup guide
 
@@ -18,12 +19,14 @@ Complete removal and fresh implementation guide for Firebase App Check with reCA
 ## Quick Start
 
 **To remove App Check:**
+
 1. Remove App Check imports from `lib/firebase.ts`
 2. Remove `enforceAppCheck` from Cloud Functions
 3. Disable App Check in Firebase Console
 4. Delete reCAPTCHA keys in Google Cloud Console
 
 **To re-implement App Check:**
+
 1. Create new reCAPTCHA Enterprise key
 2. Register in Firebase App Check (Monitor mode first)
 3. Update environment variables and code
@@ -33,14 +36,17 @@ Complete removal and fresh implementation guide for Firebase App Check with reCA
 
 ## Current Situation
 
-App Check with reCAPTCHA Enterprise is causing persistent authentication failures that block users from accessing the application. This guide provides complete removal instructions and a detailed plan for fresh implementation when ready.
+App Check with reCAPTCHA Enterprise is causing persistent authentication
+failures that block users from accessing the application. This guide provides
+complete removal instructions and a detailed plan for fresh implementation when
+ready.
 
 ---
 
 ## Part 1: Complete Removal
 
-> [!CAUTION]
-> This will completely disable App Check bot protection. Only do this if App Check is blocking legitimate users.
+> [!CAUTION] This will completely disable App Check bot protection. Only do this
+> if App Check is blocking legitimate users.
 
 ### Step 1: Remove from Local Codebase
 
@@ -62,10 +68,10 @@ App Check with reCAPTCHA Enterprise is causing persistent authentication failure
    const initializeFirebase = () => {
      // ... existing code ...
      _app = getApps().length === 0 ? initializeApp(config) : getApps()[0]
-     
+
    -  // Initialize App Check
    -  initializeAppCheckIfConfigured(_app)
-     
+
      _auth = getAuth(_app)
      _db = getFirestore(_app)
    }
@@ -128,7 +134,8 @@ Find all Cloud Functions and remove App Check enforcement:
 npm uninstall firebase/app-check
 ```
 
-**Note:** This package is part of the main `firebase` package, so this may not be necessary.
+**Note:** This package is part of the main `firebase` package, so this may not
+be necessary.
 
 ---
 
@@ -136,14 +143,15 @@ npm uninstall firebase/app-check
 
 #### 2.1 Disable App Check in Firebase Console
 
-1. Go to [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+1. Go to
+   [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
 2. Click on "SoNash Web" (your web app)
 3. Click the three-dot menu (⋮) next to "reCAPTCHA Enterprise"
 4. Select **"Unregister"** or **"Remove"**
 5. Confirm the removal
 
-> [!WARNING]
-> This will immediately stop requiring App Check tokens for all Firebase services.
+> [!WARNING] This will immediately stop requiring App Check tokens for all
+> Firebase services.
 
 ---
 
@@ -151,8 +159,10 @@ npm uninstall firebase/app-check
 
 #### 3.1 Delete reCAPTCHA Enterprise Keys
 
-1. Go to [Google Cloud Console - reCAPTCHA Enterprise](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
-2. Find the key `SoNash Production v2` (ID: `6Lcb_DMsAAAAANmWHkDXquqVRh2ZE1IhXZRrvkRA`)
+1. Go to
+   [Google Cloud Console - reCAPTCHA Enterprise](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
+2. Find the key `SoNash Production v2` (ID:
+   `6Lcb_DMsAAAAANmWHkDXquqVRh2ZE1IhXZRrvkRA`)
 3. Click the three-dot menu (⋮) → **Delete**
 4. Confirm deletion
 5. Repeat for any other reCAPTCHA keys you want to remove
@@ -167,10 +177,10 @@ When prompted, confirm the deletion.
 
 #### 3.3 Disable reCAPTCHA Enterprise API (Optional)
 
-> [!NOTE]
-> Only do this if you're absolutely sure you won't use it again.
+> [!NOTE] Only do this if you're absolutely sure you won't use it again.
 
-1. Go to [Google Cloud APIs](https://console.cloud.google.com/apis/dashboard?project=sonash-app)
+1. Go to
+   [Google Cloud APIs](https://console.cloud.google.com/apis/dashboard?project=sonash-app)
 2. Search for "reCAPTCHA Enterprise API"
 3. Click the API name
 4. Click **"Disable API"**
@@ -229,7 +239,8 @@ This will deploy:
 1. Visit [https://sonash-app.web.app](https://sonash-app.web.app)
 2. Test authentication in multiple browsers
 3. Test Cloud Functions
-4. Monitor [Firebase Console - Functions Logs](https://console.firebase.google.com/project/sonash-app/functions/logs)
+4. Monitor
+   [Firebase Console - Functions Logs](https://console.firebase.google.com/project/sonash-app/functions/logs)
 5. Check for any errors
 
 ---
@@ -260,8 +271,7 @@ Add a note that App Check is temporarily disabled and link to this guide.
 
 ## Part 2: Fresh Implementation Guide (Future)
 
-> [!IMPORTANT]
-> Only proceed with this when:
+> [!IMPORTANT] Only proceed with this when:
 >
 > - M1-M3 milestones are complete and stable
 > - You have time to properly debug issues
@@ -271,7 +281,8 @@ Add a note that App Check is temporarily disabled and link to this guide.
 
 ### Overview
 
-This is a **complete from-scratch** implementation that avoids all previous configuration issues.
+This is a **complete from-scratch** implementation that avoids all previous
+configuration issues.
 
 **Estimated Time:** 4-6 hours  
 **Complexity:** High  
@@ -283,7 +294,8 @@ This is a **complete from-scratch** implementation that avoids all previous conf
 
 #### Step 1.1: Go to reCAPTCHA Enterprise Console
 
-1. Visit [Google Cloud Console - reCAPTCHA Enterprise](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
+1. Visit
+   [Google Cloud Console - reCAPTCHA Enterprise](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
 2. Click **"Create Key"**
 
 #### Step 1.2: Configure the Key
@@ -319,8 +331,8 @@ After clicking **"Create"**:
 2. **Copy the API Key / Secret Key**
    - Save to a secure note: "reCAPTCHA Secret Key v3"
 
-> [!CAUTION]
-> Never commit the secret key to Git. It must only be stored in Firebase Functions secrets.
+> [!CAUTION] Never commit the secret key to Git. It must only be stored in
+> Firebase Functions secrets.
 
 ---
 
@@ -328,13 +340,15 @@ After clicking **"Create"**:
 
 #### Step 2.1: Enable the API
 
-1. Go to [Google Cloud APIs Library](https://console.cloud.google.com/apis/library/recaptchaenterprise.googleapis.com?project=sonash-app)
+1. Go to
+   [Google Cloud APIs Library](https://console.cloud.google.com/apis/library/recaptchaenterprise.googleapis.com?project=sonash-app)
 2. Click **"Enable"**
 3. Wait for activation (usually instant)
 
 #### Step 2.2: Verify API is Active
 
-1. Go to [APIs & Services Dashboard](https://console.cloud.google.com/apis/dashboard?project=sonash-app)
+1. Go to
+   [APIs & Services Dashboard](https://console.cloud.google.com/apis/dashboard?project=sonash-app)
 2. Search for "reCAPTCHA Enterprise API"
 3. Status should show **"Enabled"**
 
@@ -344,7 +358,8 @@ After clicking **"Create"**:
 
 #### Step 3.1: Register App Check in Firebase Console
 
-1. Go to [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+1. Go to
+   [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
 2. Click on your web app: **"SoNash Web"**
 3. Select **"reCAPTCHA Enterprise"** as the provider
 4. Paste your **Site Key** (from Phase 1, Step 1.3)
@@ -352,8 +367,7 @@ After clicking **"Create"**:
 
 #### Step 3.2: Set Enforcement Mode
 
-> [!WARNING]
-> Start with "Monitor Mode" to avoid breaking production.
+> [!WARNING] Start with "Monitor Mode" to avoid breaking production.
 
 **For each Firebase service:**
 
@@ -398,7 +412,8 @@ NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6L[your-new-site-key-here]
 4. Copy this token
 
 5. Add to Firebase Console:
-   - Go to [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+   - Go to
+     [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
    - Click **"Manage debug tokens"**
    - Click **"Add debug token"**
    - Paste the token
@@ -420,47 +435,48 @@ NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6L[your-new-site-key-here]
 **File:** [`lib/firebase.ts`](../lib/firebase.ts)
 
 ```typescript
-import { initializeApp, getApps, FirebaseApp } from "firebase/app"
-import { getAuth, Auth } from "firebase/auth"
-import { getFirestore, Firestore } from "firebase/firestore"
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // ... existing validateEnv and getFirebaseConfig ...
 
 const initializeAppCheckIfConfigured = (app: FirebaseApp) => {
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
   if (!siteKey) {
     console.warn(
       "⚠️ App Check not configured: Missing NEXT_PUBLIC_RECAPTCHA_SITE_KEY. " +
-      "Requests to protected Firebase resources may fail in production."
-    )
-    return
+        "Requests to protected Firebase resources may fail in production."
+    );
+    return;
   }
 
   try {
     // Development: Enable debug token
     if (
-      process.env.NODE_ENV === 'development' &&
+      process.env.NODE_ENV === "development" &&
       process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN
     ) {
       // @ts-expect-error - Firebase global for debug mode
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN
-      console.log('✅ App Check debug token enabled (development only)')
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN =
+        process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN;
+      console.log("✅ App Check debug token enabled (development only)");
     }
 
     // Initialize App Check with reCAPTCHA v3
     initializeAppCheck(app, {
       provider: new ReCaptchaV3Provider(siteKey),
       isTokenAutoRefreshEnabled: true,
-    })
+    });
 
-    console.log('✅ App Check initialized successfully')
+    console.log("✅ App Check initialized successfully");
   } catch (error) {
-    console.error("❌ App Check initialization failed:", error)
+    console.error("❌ App Check initialization failed:", error);
     // Non-fatal: App will work but without bot protection
   }
-}
+};
 
 // ... rest of file unchanged ...
 ```
@@ -488,18 +504,18 @@ When prompted, paste your **Secret Key** from Phase 1, Step 1.3.
 **File:** `functions/src/journal.ts` (example)
 
 ```typescript
-import { onCall, HttpsError } from "firebase-functions/v2/https"
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 
 export const saveJournalEntry = onCall(
   {
     // Start with optional enforcement (Monitor Mode)
-    enforceAppCheck: false,  // Set to true later
-    consumeAppCheckToken: false,  // Set to true later
+    enforceAppCheck: false, // Set to true later
+    consumeAppCheckToken: false, // Set to true later
   },
   async (request) => {
     // Your function code...
   }
-)
+);
 ```
 
 **After 1 week of monitoring:**
@@ -551,8 +567,12 @@ firebase deploy
 
 **Monitor for 24 Hours:**
 
-- [ ] Check [Firebase Console - Functions Logs](https://console.firebase.google.com/project/sonash-app/functions/logs) for errors
-- [ ] Check [App Check Metrics](https://console.firebase.google.com/project/sonash-app/appcheck) for token success rate
+- [ ] Check
+      [Firebase Console - Functions Logs](https://console.firebase.google.com/project/sonash-app/functions/logs)
+      for errors
+- [ ] Check
+      [App Check Metrics](https://console.firebase.google.com/project/sonash-app/appcheck)
+      for token success rate
 - [ ] Monitor user reports
 
 **After 1 Week:**
@@ -593,7 +613,8 @@ firebase deploy --only functions
 
 #### Step 8.3: Switch Firebase Console to Enforce Mode
 
-1. Go to [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+1. Go to
+   [Firebase Console - App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
 2. For each service:
    - Change from **"Monitor"** → **"Enforce"**
 3. Click **"Save"**
@@ -635,7 +656,8 @@ firebase deploy --only functions
 1. Verify `.env.production` exists and has correct Site Key
 2. Rebuild: `npm run build`
 3. Redeploy: `firebase deploy`
-4. Check Vercel/hosting provider environment variables (if not using Firebase Hosting)
+4. Check Vercel/hosting provider environment variables (if not using Firebase
+   Hosting)
 
 ### Issue 4: Users Cannot Sign Up/Sign In
 
@@ -676,12 +698,12 @@ firebase deploy
 
 After full deployment, monitor these metrics:
 
-| Metric | Target | Red Flag |
-|--------|--------|----------|
-| App Check token success rate | > 95% | < 90% |
-| Sign-up completion rate | No change | > 10% drop |
-| Cloud Function error rate | < 1% | > 5% |
-| User support tickets | No increase | > 20% increase |
+| Metric                       | Target      | Red Flag       |
+| ---------------------------- | ----------- | -------------- |
+| App Check token success rate | > 95%       | < 90%          |
+| Sign-up completion rate      | No change   | > 10% drop     |
+| Cloud Function error rate    | < 1%        | > 5%           |
+| User support tickets         | No increase | > 20% increase |
 
 ---
 
@@ -706,6 +728,7 @@ After full deployment, monitor these metrics:
 ## AI Instructions
 
 When helping with App Check/reCAPTCHA issues:
+
 1. First determine if user wants removal or fresh setup
 2. For removal: Follow Part 1 exactly in order
 3. For fresh setup: Use Monitor mode first, never enforce immediately
@@ -716,7 +739,7 @@ When helping with App Check/reCAPTCHA issues:
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
-| 1.0 | 2025-12-23 | Initial creation |
+| Version | Date       | Changes                                                                        |
+| ------- | ---------- | ------------------------------------------------------------------------------ |
+| 1.1     | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0     | 2025-12-23 | Initial creation                                                               |

@@ -16,18 +16,19 @@ For full conventions, see: docs/PR_WORKFLOW_CHECKLIST.md
 -->
 
 ## What Changed
+
 <!-- Brief summary of the changes in this PR -->
 
-
 ## Why This Change
+
 <!-- Motivation and context - what problem does this solve? -->
 
-
 ## How It Works
+
 <!-- Implementation approach (required for refactors, feature changes, architectural modifications, behavior changes; optional for docs/test-only updates) -->
 
-
 ## Testing Done
+
 <!-- How did you verify these changes work? -->
 
 - [ ] Tests passing (`npm run test`)
@@ -35,27 +36,23 @@ For full conventions, see: docs/PR_WORKFLOW_CHECKLIST.md
 - [ ] Build successful (`npm run build`)
 - [ ] Manual testing completed
 
-
 ## Screenshots/Videos
+
 <!-- If UI changes, add screenshots or screen recordings -->
 
-
 ## Related Issues/PRs
+
 <!-- Link to related issues or PRs -->
 
-Closes #
-Related to #
-
+Closes # Related to #
 
 ## CodeRabbit Review
+
 <!-- To be filled manually after processing CodeRabbit suggestions -->
 <!-- This section is for CodeRabbit reviews. See AI_REVIEW_PROCESS.md (tool-agnostic) for categorization and triage guidelines. -->
 <!-- Categorize each suggestion as Addressed/Deferred/Rejected with reasoning -->
 
-**Total Suggestions:**
-**Addressed:**
-**Deferred:**
-**Rejected:**
+**Total Suggestions:** **Addressed:** **Deferred:** **Rejected:**
 
 <details>
 <summary>CodeRabbit Review Summary</summary>
@@ -67,7 +64,6 @@ Related to #
 ### ❌ Rejected
 
 </details>
-
 
 ## Pre-Merge Checklist
 

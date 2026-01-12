@@ -2,9 +2,12 @@
 
 ## OVERVIEW
 
-I need you to implement the Dashboard tab for the admin panel, plus set up foundational pieces for future phases. This is Phase 1 of a larger admin panel enhancement.
+I need you to implement the Dashboard tab for the admin panel, plus set up
+foundational pieces for future phases. This is Phase 1 of a larger admin panel
+enhancement.
 
 **Key Security Requirements:**
+
 - Server-side middleware MUST verify session cookie AND check admin claims
 - Middleware MUST fail-closed (redirect to login on any error)
 - All admin Cloud Functions MUST call `requireAdmin(request)` as first operation
@@ -17,12 +20,13 @@ I need you to implement the Dashboard tab for the admin panel, plus set up found
 
 ## TASK 1: Firebase Admin SDK Setup (lib/firebase-admin.ts)
 
-Check if `lib/firebase-admin.ts` exists. If not, create it. This is needed for the middleware to verify session cookies.
+Check if `lib/firebase-admin.ts` exists. If not, create it. This is needed for
+the middleware to verify session cookies.
 
 ```typescript
 // lib/firebase-admin.ts
-import { initializeApp, getApps, cert, type App } from 'firebase-admin/app';
-import { getAuth, type Auth } from 'firebase-admin/auth';
+import { initializeApp, getApps, cert, type App } from "firebase-admin/app";
+import { getAuth, type Auth } from "firebase-admin/auth";
 
 let app: App;
 let adminAuth: Auth;
@@ -36,23 +40,29 @@ function initializeFirebaseAdmin() {
       try {
         serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
       } catch (e) {
-        throw new Error("Invalid FIREBASE_SERVICE_ACCOUNT_KEY JSON - check your environment variable");
+        throw new Error(
+          "Invalid FIREBASE_SERVICE_ACCOUNT_KEY JSON - check your environment variable"
+        );
       }
 
       app = initializeApp({
         credential: cert(serviceAccount),
-        projectId: process.env.FIREBASE_PROJECT_ID ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        projectId:
+          process.env.FIREBASE_PROJECT_ID ??
+          process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
     } else {
       // Use application default credentials (works in Cloud Functions, Cloud Run, etc.)
       app = initializeApp({
-        projectId: process.env.FIREBASE_PROJECT_ID ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        projectId:
+          process.env.FIREBASE_PROJECT_ID ??
+          process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       });
     }
   } else {
     app = getApps()[0];
   }
-  
+
   adminAuth = getAuth(app);
   return { app, adminAuth };
 }
@@ -67,68 +77,71 @@ export default initialized.app;
 
 ## TASK 2: Server-Side Middleware (middleware.ts)
 
-Create `middleware.ts` in the project root. This protects the `/admin` route server-side.
+Create `middleware.ts` in the project root. This protects the `/admin` route
+server-side.
 
 **Critical:** Middleware must FAIL-CLOSED. Any error = redirect to login.
 
 ```typescript
 // middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   // Only protect /admin routes
-  if (!request.nextUrl.pathname.startsWith('/admin')) {
+  if (!request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.next();
   }
 
-  const sessionCookie = request.cookies.get('__session')?.value;
+  const sessionCookie = request.cookies.get("__session")?.value;
 
   // No session cookie - redirect to login
   if (!sessionCookie) {
-    console.log('[Middleware] No session cookie, redirecting to login');
-    return NextResponse.redirect(new URL('/login', request.url));
+    console.log("[Middleware] No session cookie, redirecting to login");
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Verify session via API route (Firebase Admin SDK doesn't work in Edge Runtime)
   try {
-    const verifyUrl = new URL('/api/auth/verify-admin', request.url);
+    const verifyUrl = new URL("/api/auth/verify-admin", request.url);
     const verifyResponse = await fetch(verifyUrl, {
-      method: 'POST',
-      cache: 'no-store', // Never cache auth checks
+      method: "POST",
+      cache: "no-store", // Never cache auth checks
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         // Forward all cookies from the original request
-        'Cookie': request.headers.get('cookie') ?? '',
+        Cookie: request.headers.get("cookie") ?? "",
       },
-      body: '{}', // Explicit empty body for POST
+      body: "{}", // Explicit empty body for POST
     });
 
     if (!verifyResponse.ok) {
       const data = await verifyResponse.json().catch(() => ({}));
-      
-      if (data.error === 'not-admin') {
+
+      if (data.error === "not-admin") {
         // Valid session but not an admin
-        console.log('[Middleware] User is not admin, redirecting to unauthorized');
-        return NextResponse.redirect(new URL('/unauthorized', request.url));
+        console.log(
+          "[Middleware] User is not admin, redirecting to unauthorized"
+        );
+        return NextResponse.redirect(new URL("/unauthorized", request.url));
       }
-      
+
       // Invalid or expired session
-      console.log('[Middleware] Invalid session, redirecting to login');
-      return NextResponse.redirect(new URL('/login', request.url));
+      console.log("[Middleware] Invalid session, redirecting to login");
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     // Session is valid and user is admin
     return NextResponse.next();
   } catch (error) {
     // FAIL-CLOSED: On any error, redirect to login
-    console.error('[Middleware] Verification error, failing closed:', error);
-    return NextResponse.redirect(new URL('/login', request.url));
+    console.error("[Middleware] Verification error, failing closed:", error);
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 }
 
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: "/admin/:path*",
 };
 ```
 
@@ -138,34 +151,38 @@ export const config = {
 
 Create this API route that the middleware calls to verify admin status.
 
-**Critical:** Must specify `runtime = 'nodejs'` because Firebase Admin SDK doesn't work in Edge Runtime.
+**Critical:** Must specify `runtime = 'nodejs'` because Firebase Admin SDK
+doesn't work in Edge Runtime.
 
 ```typescript
 // app/api/auth/verify-admin/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase-admin';
+import { NextRequest, NextResponse } from "next/server";
+import { adminAuth } from "@/lib/firebase-admin";
 
 // CRITICAL: Firebase Admin SDK requires Node.js runtime, not Edge
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    const sessionCookie = request.cookies.get('__session')?.value;
+    const sessionCookie = request.cookies.get("__session")?.value;
 
     if (!sessionCookie) {
       return NextResponse.json(
-        { error: 'no-session', message: 'No session cookie' },
+        { error: "no-session", message: "No session cookie" },
         { status: 401 }
       );
     }
 
     // Verify the session cookie
-    const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
+    const decodedToken = await adminAuth.verifySessionCookie(
+      sessionCookie,
+      true
+    );
 
     // Check for admin claim
     if (decodedToken.admin !== true) {
       return NextResponse.json(
-        { error: 'not-admin', message: 'User is not an admin' },
+        { error: "not-admin", message: "User is not an admin" },
         { status: 403 }
       );
     }
@@ -173,9 +190,9 @@ export async function POST(request: NextRequest) {
     // Valid admin session - return minimal data (no uid needed)
     return NextResponse.json({ valid: true });
   } catch (error: any) {
-    console.error('Session verification error:', error);
+    console.error("Session verification error:", error);
     return NextResponse.json(
-      { error: 'invalid-session', message: error.message || 'Invalid session' },
+      { error: "invalid-session", message: error.message || "Invalid session" },
       { status: 401 }
     );
   }
@@ -254,23 +271,23 @@ export const adminHealthCheck = onCall(
   async (request) => {
     // SECURITY: Admin check must be first operation
     requireAdmin(request);
-    
+
     const checks = {
       firestore: false,
       auth: false,
       timestamp: new Date().toISOString(),
     };
-    
+
     try {
       // Test Firestore connectivity
-      await db.collection("_health").doc("ping").set({ 
-        lastCheck: FieldValue.serverTimestamp() 
+      await db.collection("_health").doc("ping").set({
+        lastCheck: FieldValue.serverTimestamp(),
       });
       checks.firestore = true;
     } catch (e) {
       console.error("Firestore health check failed:", e);
     }
-    
+
     try {
       // Test Auth connectivity (just verify we can access it)
       await admin.auth().getUser(request.auth!.uid);
@@ -278,7 +295,7 @@ export const adminHealthCheck = onCall(
     } catch (e) {
       console.error("Auth health check failed:", e);
     }
-    
+
     return checks;
   }
 );
@@ -296,12 +313,12 @@ export const adminGetDashboardStats = onCall(
   async (request) => {
     // SECURITY: Admin check must be first operation
     requireAdmin(request);
-    
+
     const now = new Date();
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const last30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    
+
     try {
       // Run queries in parallel for performance
       const [
@@ -317,16 +334,21 @@ export const adminGetDashboardStats = onCall(
         db.collection("users").count().get(),
         db.collection("users").orderBy("createdAt", "desc").limit(10).get(),
       ]);
-      
+
       // Get job statuses if they exist (bounded query)
-      let jobStatuses: Array<{id: string; name: string; lastRunStatus: string; lastRun: any}> = [];
+      let jobStatuses: Array<{
+        id: string;
+        name: string;
+        lastRunStatus: string;
+        lastRun: any;
+      }> = [];
       try {
         const jobsSnapshot = await db
           .collection("admin_jobs")
           .orderBy("name", "asc")
           .limit(100) // Bound the query to prevent runaway reads
           .get();
-        jobStatuses = jobsSnapshot.docs.map(doc => ({
+        jobStatuses = jobsSnapshot.docs.map((doc) => ({
           id: doc.id,
           name: doc.data().name,
           lastRunStatus: doc.data().lastRunStatus || "unknown",
@@ -335,15 +357,15 @@ export const adminGetDashboardStats = onCall(
       } catch (e) {
         // Jobs collection may not exist yet - that's fine
       }
-      
+
       // PRIVACY: Only return nickname and auth provider, NOT email or other PII
-      const recentSignups = recentSignupsSnapshot.docs.map(doc => ({
+      const recentSignups = recentSignupsSnapshot.docs.map((doc) => ({
         id: doc.id,
         nickname: doc.data().nickname || "Anonymous",
         createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
         authProvider: doc.data().authProvider || "unknown",
       }));
-      
+
       return {
         activeUsers: {
           last24h: activeUsers24h.data().count,
@@ -363,7 +385,8 @@ export const adminGetDashboardStats = onCall(
 );
 ```
 
-**Important:** Make sure these are exported in `functions/src/index.ts` if admin.ts exports aren't already re-exported there.
+**Important:** Make sure these are exported in `functions/src/index.ts` if
+admin.ts exports aren't already re-exported there.
 
 ---
 
@@ -378,19 +401,19 @@ import { useState, useEffect, useCallback } from "react";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { 
-  RefreshCw, 
-  Users, 
-  Activity, 
-  AlertCircle, 
-  CheckCircle2, 
+import {
+  RefreshCw,
+  Users,
+  Activity,
+  AlertCircle,
+  CheckCircle2,
   XCircle,
   Clock,
   UserPlus,
   Loader2,
   Server,
   Database,
-  Shield
+  Shield,
 } from "lucide-react";
 
 interface HealthStatus {
@@ -431,13 +454,16 @@ export function DashboardTab() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const [healthResult, statsResult] = await Promise.all([
         httpsCallable<void, HealthStatus>(functions, "adminHealthCheck")(),
-        httpsCallable<void, DashboardStats>(functions, "adminGetDashboardStats")(),
+        httpsCallable<void, DashboardStats>(
+          functions,
+          "adminGetDashboardStats"
+        )(),
       ]);
-      
+
       setHealth(healthResult.data);
       setStats(statsResult.data);
       setLastRefresh(new Date());
@@ -458,13 +484,13 @@ export function DashboardTab() {
     const date = new Date(dateString);
     // Guard against invalid dates
     if (Number.isNaN(date.getTime())) return "Unknown";
-    
+
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
-    
+
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
@@ -472,10 +498,16 @@ export function DashboardTab() {
   };
 
   const StatusBadge = ({ ok }: { ok: boolean }) => (
-    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-      ok ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-    }`}>
-      {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+        ok ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+      }`}
+    >
+      {ok ? (
+        <CheckCircle2 className="w-3 h-3" />
+      ) : (
+        <XCircle className="w-3 h-3" />
+      )}
       {ok ? "Healthy" : "Error"}
     </span>
   );
@@ -488,7 +520,9 @@ export function DashboardTab() {
       unknown: "bg-gray-100 text-gray-800",
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || styles.unknown}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || styles.unknown}`}
+      >
         {status}
       </span>
     );
@@ -507,20 +541,24 @@ export function DashboardTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">System Overview</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            System Overview
+          </h2>
           {lastRefresh && (
             <p className="text-sm text-gray-500">
               Last updated: {lastRefresh.toLocaleTimeString()}
             </p>
           )}
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={fetchData}
           disabled={loading}
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -546,7 +584,7 @@ export function DashboardTab() {
             {health && <StatusBadge ok={health.firestore} />}
           </div>
         </div>
-        
+
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -556,7 +594,7 @@ export function DashboardTab() {
             {health && <StatusBadge ok={health.auth} />}
           </div>
         </div>
-        
+
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -576,31 +614,39 @@ export function DashboardTab() {
               <Users className="w-4 h-4" />
               <span className="text-sm">Total Users</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.totalUsers}
+            </p>
           </div>
-          
+
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <Activity className="w-4 h-4" />
               <span className="text-sm">Active (24h)</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.activeUsers.last24h}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeUsers.last24h}
+            </p>
           </div>
-          
+
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <Activity className="w-4 h-4" />
               <span className="text-sm">Active (7d)</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.activeUsers.last7d}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeUsers.last7d}
+            </p>
           </div>
-          
+
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <Activity className="w-4 h-4" />
               <span className="text-sm">Active (30d)</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.activeUsers.last30d}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeUsers.last30d}
+            </p>
           </div>
         </div>
       )}
@@ -617,10 +663,15 @@ export function DashboardTab() {
           </div>
           <div className="divide-y divide-gray-100">
             {stats?.recentSignups.length === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-500">No recent signups</p>
+              <p className="px-4 py-3 text-sm text-gray-500">
+                No recent signups
+              </p>
             )}
             {stats?.recentSignups.map((user) => (
-              <div key={user.id} className="px-4 py-3 flex items-center justify-between">
+              <div
+                key={user.id}
+                className="px-4 py-3 flex items-center justify-between"
+              >
                 <div>
                   <p className="font-medium text-gray-900">{user.nickname}</p>
                   <p className="text-xs text-gray-500">{user.authProvider}</p>
@@ -643,10 +694,15 @@ export function DashboardTab() {
           </div>
           <div className="divide-y divide-gray-100">
             {stats?.jobStatuses.length === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-500">No jobs configured yet</p>
+              <p className="px-4 py-3 text-sm text-gray-500">
+                No jobs configured yet
+              </p>
             )}
             {stats?.jobStatuses.map((job) => (
-              <div key={job.id} className="px-4 py-3 flex items-center justify-between">
+              <div
+                key={job.id}
+                className="px-4 py-3 flex items-center justify-between"
+              >
                 <div>
                   <p className="font-medium text-gray-900">{job.name}</p>
                   <p className="text-xs text-gray-500">
@@ -671,23 +727,29 @@ export function DashboardTab() {
 Modify `components/admin/admin-tabs.tsx` to add Dashboard as the FIRST tab:
 
 1. Import the new component at the top:
+
 ```tsx
 import { DashboardTab } from "./dashboard-tab";
 ```
 
-2. Add "Dashboard" as the first item in the tabs array/config (before Meetings, Sober Living, etc.)
+2. Add "Dashboard" as the first item in the tabs array/config (before Meetings,
+   Sober Living, etc.)
 
 3. Add the DashboardTab component to render when Dashboard tab is selected
 
-The Dashboard tab should appear first in the tab order, before all existing tabs.
+The Dashboard tab should appear first in the tab order, before all existing
+tabs.
 
 ---
 
 ## TASK 9: Add Throttled lastActive Tracking
 
-We need users to have a `lastActive` timestamp that updates when they use the app, but **throttled to reduce Firestore writes**.
+We need users to have a `lastActive` timestamp that updates when they use the
+app, but **throttled to reduce Firestore writes**.
 
-Find where the app initializes auth or where the AuthProvider tracks auth state (likely in `lib/firebase.ts` or a context provider). Add this throttled update logic:
+Find where the app initializes auth or where the AuthProvider tracks auth state
+(likely in `lib/firebase.ts` or a context provider). Add this throttled update
+logic:
 
 ```typescript
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -709,7 +771,7 @@ if (user && !user.isAnonymous) {
       doc(db, "users", user.uid),
       { lastActive: serverTimestamp() },
       { merge: true }
-    ).catch(err => {
+    ).catch((err) => {
       // Don't block app initialization if this fails
       console.warn("Failed to update lastActive:", err);
       // On failure, remove the key to allow a retry on the next interaction
@@ -720,6 +782,7 @@ if (user && !user.isAnonymous) {
 ```
 
 **Important Notes:**
+
 - This should be non-blocking (don't await it)
 - Uses `setDoc` with `merge: true` instead of `updateDoc` for robustness
 - Throttles to once per 15 minutes to reduce Firestore writes
@@ -738,16 +801,12 @@ Create or update `firestore.indexes.json` to include:
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "lastActive", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "lastActive", "order": "DESCENDING" }]
     },
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
     }
   ]
 }
@@ -759,7 +818,8 @@ If the file already exists, merge these indexes with existing ones.
 
 ## TASK 11: Export Functions (if needed)
 
-Check `functions/src/index.ts` - if it doesn't already re-export everything from admin.ts, make sure the new functions are exported:
+Check `functions/src/index.ts` - if it doesn't already re-export everything from
+admin.ts, make sure the new functions are exported:
 
 ```typescript
 // If admin.ts exports aren't already re-exported, add:
@@ -773,6 +833,7 @@ export { adminHealthCheck, adminGetDashboardStats } from "./admin";
 After implementation, verify:
 
 **Security:**
+
 - [ ] Middleware file exists at project root (`middleware.ts`)
 - [ ] API route exists at `app/api/auth/verify-admin/route.ts`
 - [ ] API route has `export const runtime = 'nodejs'`
@@ -782,10 +843,13 @@ After implementation, verify:
 - [ ] Unauthorized page exists and displays correctly
 
 **Firestore:**
-- [ ] Firestore rules include `/admin_jobs` and `/_health` with admin-only access
+
+- [ ] Firestore rules include `/admin_jobs` and `/_health` with admin-only
+      access
 - [ ] Rules deployed: `firebase deploy --only firestore:rules`
 
 **Cloud Functions:**
+
 - [ ] Functions compile: `cd functions && npm run build`
 - [ ] Both new functions have `requireAdmin(request)` as FIRST line
 - [ ] Both new functions have `enforceAppCheck: true`
@@ -793,6 +857,7 @@ After implementation, verify:
 - [ ] Functions exported in index.ts
 
 **Dashboard:**
+
 - [ ] No TypeScript errors in components
 - [ ] Dashboard tab appears FIRST in admin panel tab order
 - [ ] Health check shows green status for all services
@@ -802,6 +867,7 @@ After implementation, verify:
 - [ ] `formatTimeAgo` handles invalid dates gracefully
 
 **Activity Tracking:**
+
 - [ ] `lastActive` updates use `setDoc` with `merge: true`
 - [ ] Updates are throttled (check localStorage for key)
 - [ ] On failure, localStorage key is removed for retry
@@ -811,7 +877,8 @@ After implementation, verify:
 
 ## ENVIRONMENT VARIABLES
 
-For the middleware/API route to work, you may need to add a service account key for Firebase Admin SDK:
+For the middleware/API route to work, you may need to add a service account key
+for Firebase Admin SDK:
 
 ```env
 # For local development - add to .env.local
@@ -822,23 +889,27 @@ FIREBASE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 FIREBASE_PROJECT_ID=your-project-id
 ```
 
-**Production:** If deploying to Vercel, add `FIREBASE_SERVICE_ACCOUNT_KEY` as an environment variable. Alternatively, use Vercel's Firebase integration.
+**Production:** If deploying to Vercel, add `FIREBASE_SERVICE_ACCOUNT_KEY` as an
+environment variable. Alternatively, use Vercel's Firebase integration.
 
 ---
 
 ## TROUBLESHOOTING
 
 **If middleware causes infinite redirect loop:**
+
 1. Check that the API route has `export const runtime = 'nodejs'`
 2. Check browser console and server logs for specific error
 3. Verify `__session` cookie is being set correctly on login
 
 **If dashboard shows "Failed to load":**
+
 1. Check that Cloud Functions are deployed: `firebase deploy --only functions`
 2. Check browser console for specific error
 3. Verify App Check is configured correctly
 
 **If admin_jobs query fails:**
+
 1. The collection might not exist yet — this is expected and handled
 2. Check Firestore rules are deployed
 
@@ -847,6 +918,7 @@ FIREBASE_PROJECT_ID=your-project-id
 ## OUTPUT
 
 When complete, please provide:
+
 1. List of files created/modified
 2. Any errors encountered and how they were resolved
 3. Confirmation that functions compile successfully

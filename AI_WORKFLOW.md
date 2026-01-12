@@ -1,9 +1,8 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-08
-**Document Version**: 1.8
-**Purpose**: Master navigation and workflow guide for AI assistants
-**When to Use**: Start of EVERY session
+**Last Updated**: 2026-01-08 **Document Version**: 1.8 **Purpose**: Master
+navigation and workflow guide for AI assistants **When to Use**: Start of EVERY
+session
 
 ---
 
@@ -11,7 +10,8 @@
 
 ### What This Document Provides
 
-This is the **master navigation guide** for AI assistants working on the SoNash Recovery Notebook project. It provides:
+This is the **master navigation guide** for AI assistants working on the SoNash
+Recovery Notebook project. It provides:
 
 1. **Session startup procedure** - What to do when beginning work
 2. **Documentation hierarchy** - Which docs to read and when
@@ -22,6 +22,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **Primary Audience**: AI Assistants (Claude, ChatGPT, etc.)
 
 **Use this when:**
+
 - Starting any new work session
 - Unsure which documentation to reference
 - Need to understand project workflow
@@ -56,13 +57,21 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 **Time**: 5-10 minutes
 
-> **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4 mandatory security standards (rate limiting, input validation, secrets management, OWASP compliance). See [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
+> **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4
+> mandatory security standards (rate limiting, input validation, secrets
+> management, OWASP compliance). See
+> [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md).
 >
-> **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
+> **IMPORTANT**: Step 3 tracks session count for health triggers. Increment the
+> counter in MULTI_AI_REVIEW_COORDINATOR.md → "Session Counter" section.
 >
-> **AUDIT TRACKING**: Step 4 tracks audit thresholds by category. Single-session audits can be run via `/audit-code`, `/audit-security`, etc. See [AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md).
+> **AUDIT TRACKING**: Step 4 tracks audit thresholds by category. Single-session
+> audits can be run via `/audit-code`, `/audit-security`, etc. See
+> [AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md).
 >
-> **MANDATORY**: Step 5 ensures you leverage ALL available tools. If a skill or agent clearly applies to your task, you MUST use it. See "Available AI Capabilities" section below.
+> **MANDATORY**: Step 5 ensures you leverage ALL available tools. If a skill or
+> agent clearly applies to your task, you MUST use it. See "Available AI
+> Capabilities" section below.
 
 ---
 
@@ -71,25 +80,30 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ### Read Documents in This Order
 
 **Every Session** (Critical - Always Read):
+
 1. **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Start here!
    - Current sprint focus
    - Next session goals
    - Active blockers
    - Recent completions
 
-2. **[GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md)** - MANDATORY before coding!
+2. **[GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md)** -
+   MANDATORY before coding!
    - Rate limiting requirements
    - Input validation requirements
    - Secrets management rules
    - OWASP compliance checklist
 
-3. **[MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)** - Project health & reviews
+3. **[MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)** -
+   Project health & reviews
    - Session counter (increment each session)
    - Project Health Dashboard
    - Compliance log
 
-4. **[AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md)** - Audit thresholds & scheduling
-   - Per-category threshold tracking (code, security, performance, refactoring, documentation, process)
+4. **[AUDIT_TRACKER.md](./docs/AUDIT_TRACKER.md)** - Audit thresholds &
+   scheduling
+   - Per-category threshold tracking (code, security, performance, refactoring,
+     documentation, process)
    - Single-session audit history
    - Multi-AI audit scheduling triggers
 
@@ -101,7 +115,8 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **As Needed** (Reference When Relevant):
 
 6. **Planning Documents** (when working on specific features):
-   - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) - **CURRENT BLOCKER** - Unified improvement roadmap
+   - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) -
+     **CURRENT BLOCKER** - Unified improvement roadmap
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
    - Archived plans: `docs/archive/completed-plans/`
@@ -109,14 +124,17 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 7. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
    - [SECURITY.md](./docs/SECURITY.md) - Security guidelines
-   - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures, Git hooks, CI/CD workflows
+   - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development procedures, Git hooks,
+     CI/CD workflows
    - [.claude/HOOKS.md](./.claude/HOOKS.md) - Claude hooks documentation
 
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-   - [docs/SLASH_COMMANDS.md](./docs/SLASH_COMMANDS.md) - Slash commands reference (including audit commands)
-   - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived - historical reference only)
+   - [docs/SLASH_COMMANDS.md](./docs/SLASH_COMMANDS.md) - Slash commands
+     reference (including audit commands)
+   - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md)
+     (archived - historical reference only)
 
 9. **Standards** (when creating/updating docs):
    - [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
@@ -128,6 +146,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ### Starting a New Session
 
 **1. Context Gathering (5 minutes)**:
+
 ```markdown
 1. Read SESSION_CONTEXT.md → "Next Session Goals"
 2. Check ROADMAP.md → Verify no priority changes
@@ -136,22 +155,26 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ```
 
 **2. Clarify Intent (if needed)**:
+
 - If user request conflicts with documented priorities, ask for clarification
 - If critical blocker is active, confirm user wants to proceed anyway
 - If unclear scope, ask specific questions before starting
 
 **3. Plan Approach**:
+
 - Use TodoWrite to create task list for session
 - Break complex work into phases
 - Identify which docs will need updates
 
 ### CodeRabbit Review Processing
 
-**⚠️ IMPORTANT**: CodeRabbit reviews occur multiple times daily and must be processed systematically.
+**⚠️ IMPORTANT**: CodeRabbit reviews occur multiple times daily and must be
+processed systematically.
 
 **See**: [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) for complete workflow
 
 **Quick Reference**:
+
 1. **Categorize** suggestions: Critical → Major → Minor → Trivial
 2. **Triage** using decision matrix
 3. **Document** decisions using template
@@ -159,15 +182,14 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 5. **Commit** with CodeRabbit review summary
 
 **Template** (from AI_REVIEW_PROCESS.md):
+
 ```markdown
 ## CodeRabbit Review Summary
 
-**Total Suggestions:** X
-**Addressed:** Y
-**Deferred:** Z
-**Rejected:** W
+**Total Suggestions:** X **Addressed:** Y **Deferred:** Z **Rejected:** W
 
 ### ✅ Addressed
+
 1. **[Severity] Description**
    - **Issue**: What CodeRabbit flagged
    - **Fix**: What was done
@@ -202,6 +224,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 **If you encounter a blocker**:
 
 1. **Document it immediately**:
+
    ```markdown
    - **Blocker**: [Description]
    - **Impact**: [What's blocked]
@@ -225,20 +248,25 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 ### When to Update Each Document
 
 **After Every Session**:
-- ✅ **SESSION_CONTEXT.md** - Update "Recently Completed" and "Next Session Goals"
+
+- ✅ **SESSION_CONTEXT.md** - Update "Recently Completed" and "Next Session
+  Goals"
 - ✅ **Relevant planning docs** - Update status, progress tracking
 
 **After Milestone Completion**:
+
 - ✅ **ROADMAP_LOG.md** - Add completion entry
 - ✅ **ROADMAP.md** - Update status dashboard
 - ✅ **SESSION_CONTEXT.md** - Update "Recently Completed"
 
 **When Architecture/Process Changes**:
+
 - ✅ **ARCHITECTURE.md** - New patterns
 - ✅ **SECURITY.md** - Security changes
 - ✅ **DEVELOPMENT.md** - Process updates
 
 **When Workflows Change**:
+
 - ✅ **PR_WORKFLOW_CHECKLIST.md** - Process refinements
 - ✅ **This document (AI_WORKFLOW.md)** - Navigation updates
 
@@ -260,6 +288,7 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
    ```
 
 **Quality Checklist**:
+
 - [ ] Metadata updated
 - [ ] Required sections present (per tier)
 - [ ] Links work
@@ -272,41 +301,36 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ### "I need to know about..."
 
-**Current Project Status**:
-→ [SESSION_CONTEXT.md](./SESSION_CONTEXT.md)
+**Current Project Status**: → [SESSION_CONTEXT.md](./SESSION_CONTEXT.md)
 
-**What to Work On Next**:
-→ [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) → "Next Session Goals"
+**What to Work On Next**: → [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) → "Next
+Session Goals"
 
-**Project Roadmap**:
-→ [ROADMAP.md](./ROADMAP.md)
+**Project Roadmap**: → [ROADMAP.md](./ROADMAP.md)
 
-**Recent Work History**:
-→ [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) → "Recently Completed"
-→ [ROADMAP_LOG.md](./ROADMAP_LOG.md)
+**Recent Work History**: → [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) →
+"Recently Completed" → [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
-**System Architecture**:
-→ [ARCHITECTURE.md](./ARCHITECTURE.md)
+**System Architecture**: → [ARCHITECTURE.md](./ARCHITECTURE.md)
 
-**Security Guidelines**:
-→ [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md) - MANDATORY standards
-→ [SECURITY.md](./docs/SECURITY.md) - Additional security docs
+**Security Guidelines**: →
+[GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md) - MANDATORY
+standards → [SECURITY.md](./docs/SECURITY.md) - Additional security docs
 
-**Development Procedures**:
-→ [DEVELOPMENT.md](./DEVELOPMENT.md)
+**Development Procedures**: → [DEVELOPMENT.md](./DEVELOPMENT.md)
 
-**How to Implement Features**:
-→ [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
-→ [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) (archived - historical reference only)
+**How to Implement Features**: →
+[PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md) →
+[IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md)
+(archived - historical reference only)
 
-**How to Process CodeRabbit Reviews**:
-→ [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
+**How to Process CodeRabbit Reviews**: →
+[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
 
-**Documentation Standards**:
-→ [DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
+**Documentation Standards**: →
+[DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md)
 
-**Specific Feature Plans**:
-→ Check `docs/` for feature-specific plans
+**Specific Feature Plans**: → Check `docs/` for feature-specific plans
 
 ---
 
@@ -314,9 +338,12 @@ This is the **master navigation guide** for AI assistants working on the SoNash 
 
 ### MANDATORY: Use Available Tools
 
-**This is NOT optional.** Before ANY task, check if a skill, agent, or MCP applies. If a capability **clearly applies** to your task, you MUST use it.
+**This is NOT optional.** Before ANY task, check if a skill, agent, or MCP
+applies. If a capability **clearly applies** to your task, you MUST use it.
 
-> **Rule**: Capabilities are discovered dynamically. When new skills/agents/MCPs are added to the project, they are automatically available. Always scan the directories - don't rely on memorized lists.
+> **Rule**: Capabilities are discovered dynamically. When new skills/agents/MCPs
+> are added to the project, they are automatically available. Always scan the
+> directories - don't rely on memorized lists.
 
 ### 🚨 PRE-TASK Checklist (BEFORE Starting Work)
 
@@ -389,23 +416,30 @@ ls .claude/agents/
 
 ### Skills (`.claude/skills/`)
 
-Skills are specialized workflows with domain-specific knowledge. They are invoked using the **Skill tool**.
+Skills are specialized workflows with domain-specific knowledge. They are
+invoked using the **Skill tool**.
 
 **When to Use Skills:**
+
 - `systematic-debugging` → Use FIRST for ANY bug, error, or unexpected behavior
 - `code-reviewer` → Use AFTER writing or modifying code
 - `requesting-code-review` → Use when completing features before merge
 - `frontend-design` → Use for UI/UX implementation work
-- `senior-frontend` / `senior-backend` / `senior-fullstack` → Use for implementation guidance
+- `senior-frontend` / `senior-backend` / `senior-fullstack` → Use for
+  implementation guidance
 - `mcp-builder` → Use when creating MCP server integrations
 - `gh-fix-ci` → Use when GitHub Actions CI/CD fails
 - `markitdown` → Use when converting documents to Markdown
 
 **Priority Order:**
-1. **Process skills first** (debugging, brainstorming) - determine HOW to approach
-2. **Implementation skills second** (frontend-design, senior-backend) - guide execution
+
+1. **Process skills first** (debugging, brainstorming) - determine HOW to
+   approach
+2. **Implementation skills second** (frontend-design, senior-backend) - guide
+   execution
 
 **Example:**
+
 ```
 Task: "Fix this authentication bug"
 → Use `systematic-debugging` skill FIRST
@@ -414,9 +448,11 @@ Task: "Fix this authentication bug"
 
 ### Agents (`.claude/agents/`)
 
-Agents are specialist sub-agents invoked via the **Task tool** with `subagent_type` parameter. They run autonomously and return results.
+Agents are specialist sub-agents invoked via the **Task tool** with
+`subagent_type` parameter. They run autonomously and return results.
 
 **When to Use Agents:**
+
 - `code-reviewer` → Post-code review for quality/security
 - `security-auditor` → Security vulnerability assessment
 - `debugger` → Complex debugging requiring deep analysis
@@ -427,6 +463,7 @@ Agents are specialist sub-agents invoked via the **Task tool** with `subagent_ty
 - `deployment-engineer` → CI/CD and deployment tasks
 
 **Example:**
+
 ```
 After writing a new Cloud Function:
 → Invoke code-reviewer agent to review the code
@@ -435,9 +472,11 @@ After writing a new Cloud Function:
 
 ### MCP Servers
 
-MCP (Model Context Protocol) servers provide external tool integrations. Check project configuration for available servers.
+MCP (Model Context Protocol) servers provide external tool integrations. Check
+project configuration for available servers.
 
 **Common MCP Integrations:**
+
 - Database access tools
 - External API integrations
 - File conversion tools
@@ -445,37 +484,39 @@ MCP (Model Context Protocol) servers provide external tool integrations. Check p
 
 ### Decision Matrix: Skill vs Agent vs Direct Action
 
-| Scenario | Use |
-|----------|-----|
-| Need specific workflow guidance | **Skill** |
-| Need autonomous complex task completion | **Agent** |
-| Simple, well-understood task | **Direct action** |
-| Bug or error encountered | **Skill** (`systematic-debugging`) |
-| Code review needed | **Agent** (`code-reviewer`) |
-| UI implementation | **Skill** (`frontend-design`) |
-| Security assessment | **Agent** (`security-auditor`) |
+| Scenario                                | Use                                |
+| --------------------------------------- | ---------------------------------- |
+| Need specific workflow guidance         | **Skill**                          |
+| Need autonomous complex task completion | **Agent**                          |
+| Simple, well-understood task            | **Direct action**                  |
+| Bug or error encountered                | **Skill** (`systematic-debugging`) |
+| Code review needed                      | **Agent** (`code-reviewer`)        |
+| UI implementation                       | **Skill** (`frontend-design`)      |
+| Security assessment                     | **Agent** (`security-auditor`)     |
 
 ### Red Flags: When You're Avoiding Capabilities
 
 If you find yourself thinking these thoughts, STOP - you're rationalizing:
 
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple task" | Simple tasks become complex. Check for skills. |
-| "I can do this faster myself" | Skills/agents have specialized knowledge. Use them. |
-| "Let me try first, then use skill if needed" | Check BEFORE starting. |
-| "I remember what this skill does" | Skills evolve. Read current version. |
-| "The skill is overkill for this" | If it applies, use it. |
-| "I'll just check git/files quickly" | Skills tell you HOW to check correctly. |
+| Thought                                      | Reality                                             |
+| -------------------------------------------- | --------------------------------------------------- |
+| "This is just a simple task"                 | Simple tasks become complex. Check for skills.      |
+| "I can do this faster myself"                | Skills/agents have specialized knowledge. Use them. |
+| "Let me try first, then use skill if needed" | Check BEFORE starting.                              |
+| "I remember what this skill does"            | Skills evolve. Read current version.                |
+| "The skill is overkill for this"             | If it applies, use it.                              |
+| "I'll just check git/files quickly"          | Skills tell you HOW to check correctly.             |
 
 ### Capability Maintenance
 
 **When new capabilities are added:**
+
 1. They appear automatically in `.claude/skills/` or `.claude/agents/`
 2. No documentation update needed - discovery is dynamic
 3. AIs scan directories at session start (Step 4 of Startup Checklist)
 
 **To add new capabilities:**
+
 - Skills: Add `SKILL.md` in `.claude/skills/<skill-name>/`
 - Agents: Add `<agent-name>.md` in `.claude/agents/`
 - MCPs: Configure in `.claude/settings.json` or project MCP config
@@ -490,12 +531,14 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 2. Check [ROADMAP.md](./ROADMAP.md) - Understand milestone context
 3. Look for feature plan in `docs/` - Follow if exists
 4. Reference [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand patterns
-5. Follow [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md) - Implementation workflow
+5. Follow [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md) -
+   Implementation workflow
 6. Update docs as you work
 
 ### Scenario 2: Fixing a Bug
 
-1. Check [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Check known blockers/issues
+1. Check [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) - Check known
+   blockers/issues
 2. Reference [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand component
 3. Fix the bug
 4. Add tests
@@ -512,7 +555,8 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 
 ### Scenario 4: Documentation-Only Work
 
-1. Check which tier doc belongs to ([DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md))
+1. Check which tier doc belongs to
+   ([DOCUMENTATION_STANDARDS.md](docs/DOCUMENTATION_STANDARDS.md))
 2. Use appropriate template from `docs/templates/`
 3. Follow metadata requirements
 4. Validate links and formatting
@@ -533,11 +577,14 @@ If you find yourself thinking these thoughts, STOP - you're rationalizing:
 
 ### Purpose
 
-**Every phase, section, or milestone completion MUST include a deliverable audit** - a systematic verification that all goals were met and all deliverables are complete. This is NOT optional.
+**Every phase, section, or milestone completion MUST include a deliverable
+audit** - a systematic verification that all goals were met and all deliverables
+are complete. This is NOT optional.
 
 ### When to Run
 
 Run a deliverable audit when ANY of these occur:
+
 - ✅ Phase completion (e.g., Phase 1.5 complete)
 - ✅ Milestone completion (e.g., M1.6 complete)
 - ✅ Section completion within a plan
@@ -588,38 +635,42 @@ Use this template when completing any phase/milestone:
 ```markdown
 ## Deliverable Audit: [Phase/Milestone Name]
 
-**Audit Date:** YYYY-MM-DD
-**Auditor:** [AI Name]
+**Audit Date:** YYYY-MM-DD **Auditor:** [AI Name]
 
 ### Original Goals
+
 [List from original plan]
 
 ### Original Deliverables
+
 [List from original plan]
 
 ### Verification Results
 
 | Deliverable | Exists? | Complete? | Meets Criteria? | Notes |
-|-------------|---------|-----------|-----------------|-------|
-| [Item 1] | ✅/❌ | ✅/❌ | ✅/❌ | |
-| [Item 2] | ✅/❌ | ✅/❌ | ✅/❌ | |
+| ----------- | ------- | --------- | --------------- | ----- |
+| [Item 1]    | ✅/❌   | ✅/❌     | ✅/❌           |       |
+| [Item 2]    | ✅/❌   | ✅/❌     | ✅/❌           |       |
 
 ### Acceptance Criteria Check
 
-| Criterion | Met? | Evidence |
-|-----------|------|----------|
-| [Criterion 1] | ✅/❌ | |
-| [Criterion 2] | ✅/❌ | |
+| Criterion     | Met?  | Evidence |
+| ------------- | ----- | -------- |
+| [Criterion 1] | ✅/❌ |          |
+| [Criterion 2] | ✅/❌ |          |
 
 ### Gaps Found
+
 - [Gap 1]: [Resolution]
 - [Gap 2]: [Resolution]
 
 ### Additional Deliverables (Beyond Scope)
+
 - [Bonus item 1]
 - [Bonus item 2]
 
 ### Audit Result
+
 - [ ] ALL deliverables complete
 - [ ] ALL acceptance criteria met
 - [ ] ALL gaps addressed
@@ -629,6 +680,7 @@ Use this template when completing any phase/milestone:
 ### Integration with Phase Completion
 
 **Before marking ANY phase/milestone complete:**
+
 1. Run deliverable audit
 2. Fix any gaps found
 3. Document in "What Was Accomplished" section
@@ -641,40 +693,49 @@ Use this template when completing any phase/milestone:
 ### Do This
 
 ✅ **Always start with SESSION_CONTEXT.md**
+
 - **Why**: Most up-to-date priorities and goals
 - **Example**: Every single session, first thing
 
 ✅ **Use TodoWrite for complex sessions**
+
 - **Why**: Tracks progress, helps user see status
 - **Example**: Any session with >3 distinct tasks
 
 ✅ **Update docs as you work, not after**
+
 - **Why**: Don't forget details, maintain accuracy
 - **Example**: Update planning doc status when completing each task
 
 ✅ **Follow documented workflows**
+
 - **Why**: Consistency, quality, completeness
 - **Example**: PR_WORKFLOW_CHECKLIST.md for all implementation
 
 ✅ **Ask clarifying questions early**
+
 - **Why**: Avoid wasted work, ensure alignment
 - **Example**: If user request conflicts with documented blocker
 
 ### Avoid This
 
 ❌ **Don't skip reading SESSION_CONTEXT.md**
+
 - **Why**: Risk working on wrong priorities
 - **Instead**: Make it first step every time
 
 ❌ **Don't invent new patterns without updating docs**
+
 - **Why**: Creates inconsistency, confuses future work
 - **Instead**: Update ARCHITECTURE.md when adding patterns
 
 ❌ **Don't batch documentation updates**
+
 - **Why**: Easy to forget details, introduces errors
 - **Instead**: Update as you complete each phase/task
 
 ❌ **Don't ignore documented blockers**
+
 - **Why**: Work may be wasted or duplicated
 - **Instead**: Clarify with user if blocker should be bypassed
 
@@ -685,12 +746,14 @@ Use this template when completing any phase/milestone:
 ### When to Update This Document
 
 **Update immediately when:**
+
 - ✅ New critical documentation added
 - ✅ Workflows change
 - ✅ Navigation structure changes
 - ✅ Standard procedures evolve
 
 **Review periodically:**
+
 - 🔁 Monthly - Verify links work, content current
 - 🔁 After major project changes
 
@@ -710,17 +773,17 @@ Use this template when completing any phase/milestone:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.8 | 2026-01-08 | Added AUDIT_TRACKER.md to hierarchy (step 4); added .claude/HOOKS.md and SLASH_COMMANDS.md references; updated startup checklist for per-category audit tracking | Claude |
-| 1.7 | 2026-01-03 | Added database-architect, debugger to PRE-TASK; split documentation triggers in POST-TASK; aligned with claude.md | Claude |
-| 1.6 | 2026-01-03 | Added PRE-TASK and POST-TASK mandatory checklists for agent/skill usage; strengthened enforcement language | Claude |
-| 1.5 | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation to use SESSION_CONTEXT.md for recent work | Claude |
-| 1.4 | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools | Claude |
-| 1.3 | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude |
-| 1.2 | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion | Claude |
-| 1.1 | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup | Claude |
-| 1.0 | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference | Claude Code |
+| Version | Date       | Changes                                                                                                                                                                                              | Author      |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.8     | 2026-01-08 | Added AUDIT_TRACKER.md to hierarchy (step 4); added .claude/HOOKS.md and SLASH_COMMANDS.md references; updated startup checklist for per-category audit tracking                                     | Claude      |
+| 1.7     | 2026-01-03 | Added database-architect, debugger to PRE-TASK; split documentation triggers in POST-TASK; aligned with claude.md                                                                                    | Claude      |
+| 1.6     | 2026-01-03 | Added PRE-TASK and POST-TASK mandatory checklists for agent/skill usage; strengthened enforcement language                                                                                           | Claude      |
+| 1.5     | 2026-01-02 | Removed AI_HANDOFF.md references (deprecated/archived); updated navigation to use SESSION_CONTEXT.md for recent work                                                                                 | Claude      |
+| 1.4     | 2026-01-01 | Added "Available AI Capabilities" section covering skills, agents, MCPs; added Step 4 to startup checklist for mandatory capability scanning; future-proofed for dynamic discovery of new tools      | Claude      |
+| 1.3     | 2026-01-01 | Added MULTI_AI_REVIEW_COORDINATOR.md as step 3 in startup (session counter, health triggers); added compliance log update to session end; synced with DOCUMENTATION_STANDARDIZATION_PLAN.md workflow | Claude      |
+| 1.2     | 2026-01-01 | Added MANDATORY Deliverable Audit Procedure as global standard for phase/milestone completion                                                                                                        | Claude      |
+| 1.1     | 2026-01-01 | Added GLOBAL_SECURITY_STANDARDS.md as mandatory step 2 in session startup                                                                                                                            | Claude      |
+| 1.0     | 2025-12-31 | Initial AI workflow guide created; includes CodeRabbit process reference                                                                                                                             | Claude Code |
 
 ---
 
@@ -729,25 +792,30 @@ Use this template when completing any phase/milestone:
 **For AI Assistants reading this:**
 
 **At session start:**
+
 1. **ALWAYS** read this document first
 2. Follow Session Startup Checklist (Quick Reference section)
 3. Use Documentation Hierarchy to navigate efficiently
 4. Check for active blockers before starting work
 
 **During session:**
+
 1. Follow Standard Procedures for all workflows
 2. Reference Navigation Map when looking for information
 3. Use Common Scenarios as templates
 4. Update documentation as you work
 
 **At session end:**
+
 1. Update SESSION_CONTEXT.md
 2. Update relevant planning docs
-3. Add entry to compliance log in [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)
+3. Add entry to compliance log in
+   [MULTI_AI_REVIEW_COORDINATOR.md](./docs/MULTI_AI_REVIEW_COORDINATOR.md)
 4. Commit documentation changes
 5. Verify all work documented
 
 **When updating this document:**
+
 1. Preserve structure and organization
 2. Keep Quick Reference current
 3. Update Navigation Map when docs change

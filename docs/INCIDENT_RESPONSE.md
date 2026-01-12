@@ -1,20 +1,21 @@
 # Incident Response Runbook
 
-**Last Updated:** 2026-01-03
-**Document Tier:** 2 (Active Reference)
-**Status:** Active
+**Last Updated:** 2026-01-03 **Document Tier:** 2 (Active Reference) **Status:**
+Active
 
 ---
 
 ## Purpose
 
-Documented procedures for responding to security incidents, cost spikes, and service outages in the SoNash application.
+Documented procedures for responding to security incidents, cost spikes, and
+service outages in the SoNash application.
 
 ---
 
 ## Quick Start
 
 **On detecting an incident:**
+
 1. Classify severity (P0-P3) using table below
 2. For P0-P1: Start timer, notify stakeholders immediately
 3. Follow response procedure for incident type
@@ -35,12 +36,12 @@ Documented procedures for responding to security incidents, cost spikes, and ser
 
 ## Incident Classification
 
-| Severity | Description | Response Time |
-|----------|-------------|---------------|
+| Severity          | Description                                | Response Time        |
+| ----------------- | ------------------------------------------ | -------------------- |
 | **P0 - Critical** | Data breach, $500+ cost spike, full outage | Immediate (< 15 min) |
-| **P1 - High** | Security event pattern, $100+ cost spike | < 1 hour |
-| **P2 - Medium** | Unusual error rates, $50+ cost spike | < 4 hours |
-| **P3 - Low** | Minor anomalies, single failed requests | Next business day |
+| **P1 - High**     | Security event pattern, $100+ cost spike   | < 1 hour             |
+| **P2 - Medium**   | Unusual error rates, $50+ cost spike       | < 4 hours            |
+| **P3 - Low**      | Minor anomalies, single failed requests    | Next business day    |
 
 ---
 
@@ -56,9 +57,11 @@ Documented procedures for responding to security incidents, cost spikes, and ser
 
 1. **Check Firebase Console**
    - Go to [Firebase Console](https://console.firebase.google.com) → Usage
-   - Identify which service is spiking (Firestore reads/writes, Functions invocations)
+   - Identify which service is spiking (Firestore reads/writes, Functions
+     invocations)
 
 2. **Check Cloud Functions Logs**
+
    ```bash
    # View recent function invocations
    firebase functions:log --only saveDailyLog
@@ -106,10 +109,10 @@ If you identify specific malicious user IDs:
 
 ```typescript
 // Add to Cloud Function temporarily
-const BLOCKED_USERS = ['uid1', 'uid2', 'uid3'];
+const BLOCKED_USERS = ["uid1", "uid2", "uid3"];
 
 if (BLOCKED_USERS.includes(userId)) {
-    throw new HttpsError('permission-denied', 'Account suspended');
+  throw new HttpsError("permission-denied", "Account suspended");
 }
 ```
 
@@ -187,6 +190,7 @@ jsonPayload.securityEvent.type="AUTHORIZATION_FAILURE"
    - [Firebase Status Dashboard](https://status.firebase.google.com/)
 
 2. **Check Cloud Function Health**
+
    ```bash
    firebase functions:log --only saveDailyLog
    ```
@@ -197,12 +201,12 @@ jsonPayload.securityEvent.type="AUTHORIZATION_FAILURE"
 
 ### Common Issues & Fixes
 
-| Symptom | Likely Cause | Fix |
-|---------|--------------|-----|
-| 429 errors | Rate limiter cold start | Wait for warm-up; increase memory |
-| 500 errors | Firestore connection | Check Firestore health |
-| Timeout | Function taking >60s | Increase timeout or optimize |
-| Memory errors | Memory limit exceeded | Increase memory allocation |
+| Symptom       | Likely Cause            | Fix                               |
+| ------------- | ----------------------- | --------------------------------- |
+| 429 errors    | Rate limiter cold start | Wait for warm-up; increase memory |
+| 500 errors    | Firestore connection    | Check Firestore health            |
+| Timeout       | Function taking >60s    | Increase timeout or optimize      |
+| Memory errors | Memory limit exceeded   | Increase memory allocation        |
 
 ---
 
@@ -215,31 +219,35 @@ After every P0-P1 incident, complete within 48 hours:
 ```markdown
 ## Incident Report: [Title]
 
-**Date:** YYYY-MM-DD
-**Severity:** P0/P1/P2
-**Duration:** X hours
-**Impact:** [Users affected, data lost, cost incurred]
+**Date:** YYYY-MM-DD **Severity:** P0/P1/P2 **Duration:** X hours **Impact:**
+[Users affected, data lost, cost incurred]
 
 ### Timeline
+
 - HH:MM - Incident detected
 - HH:MM - Response initiated
 - HH:MM - Containment achieved
 - HH:MM - Resolution deployed
 
 ### Root Cause
+
 [What actually caused the incident]
 
 ### What Went Well
+
 - [Things that worked]
 
 ### What Went Poorly
+
 - [Things that didn't work]
 
 ### Action Items
+
 - [ ] [Preventive measure 1]
 - [ ] [Preventive measure 2]
 
 ### Lessons Learned
+
 [Key takeaways]
 ```
 
@@ -247,10 +255,10 @@ After every P0-P1 incident, complete within 48 hours:
 
 ## Emergency Contacts
 
-| Role | Contact | When to Escalate |
-|------|---------|------------------|
+| Role             | Contact                                                        | When to Escalate               |
+| ---------------- | -------------------------------------------------------------- | ------------------------------ |
 | Firebase Support | [Console Support](https://console.firebase.google.com/support) | P0 incidents, billing disputes |
-| GCP Billing | [Billing Support](https://cloud.google.com/support) | Cost spike >$500 |
+| GCP Billing      | [Billing Support](https://cloud.google.com/support)            | Cost spike >$500               |
 
 ---
 
@@ -275,6 +283,7 @@ bq query --use_legacy_sql=false 'SELECT * FROM billing_export LIMIT 100'
 ## AI Instructions
 
 When helping with incident response:
+
 1. First identify incident severity (P0-P3) based on impact
 2. For cost spikes, immediately check Firebase Console usage
 3. Never share or log user credentials or PII in incident reports
@@ -285,7 +294,7 @@ When helping with incident response:
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
-| 1.0 | 2025-12-13 | Initial creation |
+| Version | Date       | Changes                                                                        |
+| ------- | ---------- | ------------------------------------------------------------------------------ |
+| 1.1     | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0     | 2025-12-13 | Initial creation                                                               |

@@ -6,7 +6,11 @@
       "goal": "Re-enable App Check in client initialization and require it in all callable Cloud Functions.",
       "bucket": "security-hardening",
       "included_canonical_ids": ["CANON-0003", "CANON-0001"],
-      "staging": ["PR1a (client init)", "PR1b (functions requireAppCheck)", "PR1c (monitoring/docs)"],
+      "staging": [
+        "PR1a (client init)",
+        "PR1b (functions requireAppCheck)",
+        "PR1c (monitoring/docs)"
+      ],
       "risk_level": "high",
       "estimated_effort": "E2",
       "acceptance_tests": [
@@ -57,7 +61,10 @@
       "goal": "Ensure reCAPTCHA is actually enforced when configured and aligned with App Check posture.",
       "bucket": "security-hardening",
       "included_canonical_ids": ["CANON-0004", "CANON-0038"],
-      "staging": ["PR3a (enforce missing-token failure path)", "PR3b (verify end-to-end validation)"],
+      "staging": [
+        "PR3a (enforce missing-token failure path)",
+        "PR3b (verify end-to-end validation)"
+      ],
       "risk_level": "medium",
       "estimated_effort": "E1",
       "acceptance_tests": [
@@ -131,7 +138,11 @@
       "goal": "Raise confidence in security and auth/data flows via tests and coverage improvements.",
       "bucket": "tests-hardening",
       "included_canonical_ids": ["CANON-0010", "CANON-0011", "CANON-0024", "CANON-0043"],
-      "staging": ["PR6a (rules emulator tests)", "PR6b (functions security tests)", "PR6c (coverage targets for critical libs)"],
+      "staging": [
+        "PR6a (rules emulator tests)",
+        "PR6b (functions security tests)",
+        "PR6c (coverage targets for critical libs)"
+      ],
       "risk_level": "high",
       "estimated_effort": "E3",
       "acceptance_tests": [
@@ -186,8 +197,20 @@
       "title": "Types cleanup: unsafe casts, schema validation, and suppression removal",
       "goal": "Reduce runtime failures by tightening types and removing suppressions.",
       "bucket": "types-domain",
-      "included_canonical_ids": ["CANON-0018", "CANON-0022", "CANON-0044", "CANON-0045", "CANON-0019", "CANON-0026", "CANON-0016"],
-      "staging": ["PR8a (remove ts-expect-error + quick safety fixes)", "PR8b (add runtime validation where casting occurs)", "PR8c (schema tightening)"],
+      "included_canonical_ids": [
+        "CANON-0018",
+        "CANON-0022",
+        "CANON-0044",
+        "CANON-0045",
+        "CANON-0019",
+        "CANON-0026",
+        "CANON-0016"
+      ],
+      "staging": [
+        "PR8a (remove ts-expect-error + quick safety fixes)",
+        "PR8b (add runtime validation where casting occurs)",
+        "PR8c (schema tightening)"
+      ],
       "risk_level": "medium",
       "estimated_effort": "E3",
       "acceptance_tests": [

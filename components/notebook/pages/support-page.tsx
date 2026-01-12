@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Star, Heart, Briefcase } from "lucide-react"
+import { useState } from "react";
+import { Star, Heart, Briefcase } from "lucide-react";
 
 interface Contact {
-  id: string
-  name: string
-  role: string
-  icon: typeof Star
-  tags: string[]
+  id: string;
+  name: string;
+  role: string;
+  icon: typeof Star;
+  tags: string[];
 }
 
 export default function SupportPage() {
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   const contacts: Contact[] = [
     {
@@ -36,12 +36,14 @@ export default function SupportPage() {
       icon: Briefcase,
       tags: ["appointment scheduling", "just to talk"],
     },
-  ]
+  ];
 
   return (
     <div className="h-full overflow-y-auto pr-2">
       <h1 className="font-heading text-2xl text-amber-900 underline mb-2">My Support Circle</h1>
-      <p className="font-body text-amber-900/70 mb-6">The people I reach out to when things get rough.</p>
+      <p className="font-body text-amber-900/70 mb-6">
+        The people I reach out to when things get rough.
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left column - Contact list */}
@@ -103,7 +105,9 @@ export default function SupportPage() {
               <p className="font-body text-sm text-amber-900/50 mb-6">One tap to reach out.</p>
 
               {/* Things to talk about */}
-              <h3 className="font-heading text-lg text-amber-900 mb-2">Things I want to talk about</h3>
+              <h3 className="font-heading text-lg text-amber-900 mb-2">
+                Things I want to talk about
+              </h3>
               <div className="space-y-1">
                 <p className="font-body text-amber-900/70 italic">Ask about step work.</p>
                 <p className="font-body text-amber-900/70 italic">Share how this week went.</p>
@@ -114,14 +118,18 @@ export default function SupportPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="font-body text-amber-900/50 italic text-center">Tap a contact to see details</p>
+              <p className="font-body text-amber-900/50 italic text-center">
+                Tap a contact to see details
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* Footer message */}
-      <p className="font-body text-sm text-amber-900/50 text-right mt-6 italic">You don't have to do this alone.</p>
+      <p className="font-body text-sm text-amber-900/50 text-right mt-6 italic">
+        You don't have to do this alone.
+      </p>
     </div>
-  )
+  );
 }

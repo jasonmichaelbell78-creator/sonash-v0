@@ -10,10 +10,10 @@ jobs:
   deploy:
     name: Deploy Cloud Functions and Firestore Rules
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,8 +21,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
           cache-dependency-path: |
             package-lock.json
             functions/package-lock.json
@@ -71,7 +71,7 @@ jobs:
             --project sonash-app \
             --force \
             --non-interactive
-        continue-on-error: true  # Don't fail if functions don't exist
+        continue-on-error: true # Don't fail if functions don't exist
 
       - name: Deploy Cloud Functions
         run: firebase deploy --only functions --non-interactive --project sonash-app

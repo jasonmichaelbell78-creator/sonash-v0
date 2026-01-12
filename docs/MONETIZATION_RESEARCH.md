@@ -1,10 +1,7 @@
 # Monetization Strategy Research Initiative
 
-**Document Version**: 2.0
-**Created**: 2025-12-15
-**Last Updated**: 2026-01-02
-**Status**: IN_PROGRESS
-**Overall Completion**: 75% (3/4 phases complete)
+**Document Version**: 2.0 **Created**: 2025-12-15 **Last Updated**: 2026-01-02
+**Status**: IN_PROGRESS **Overall Completion**: 75% (3/4 phases complete)
 **Target Completion**: Post-Growth Tab implementation
 
 ---
@@ -13,11 +10,14 @@
 
 ### What This Document Covers
 
-This document provides a comprehensive research initiative for monetization strategies for the SoNash recovery app.
+This document provides a comprehensive research initiative for monetization
+strategies for the SoNash recovery app.
 
-**Primary Goal**: Determine the best monetization approach that balances sustainability with accessibility for recovery users.
+**Primary Goal**: Determine the best monetization approach that balances
+sustainability with accessibility for recovery users.
 
 **Scope**:
+
 - ✅ **In Scope**:
   - Monetization model research and comparison
   - Ethical considerations for recovery apps
@@ -31,6 +31,7 @@ This document provides a comprehensive research initiative for monetization stra
   - Marketing strategy
 
 **Related To**:
+
 - [M3 - Meetings](../ROADMAP.md#m3---meetings) - Feature value creation
 - [Growth Tab Features](../ROADMAP.md) - Premium feature development
 - Post-Growth Tab implementation
@@ -39,14 +40,15 @@ This document provides a comprehensive research initiative for monetization stra
 
 ## 🗺️ STATUS DASHBOARD
 
-| Phase | Description | Status | Completion |
-|-------|-------------|--------|------------|
-| Phase 1 | AI Research Prompts | **✅ COMPLETE** | 100% |
-| Phase 2 | Analysis Framework | **✅ COMPLETE** | 100% |
-| Phase 3 | Decision Framework | **✅ COMPLETE** | 100% |
-| Phase 4 | Implementation | **📋 PENDING** | 0% |
+| Phase   | Description         | Status          | Completion |
+| ------- | ------------------- | --------------- | ---------- |
+| Phase 1 | AI Research Prompts | **✅ COMPLETE** | 100%       |
+| Phase 2 | Analysis Framework  | **✅ COMPLETE** | 100%       |
+| Phase 3 | Decision Framework  | **✅ COMPLETE** | 100%       |
+| Phase 4 | Implementation      | **📋 PENDING**  | 0%         |
 
 **Progress Summary**:
+
 - **Completed**: 3 phases (75%)
 - **Pending**: 1 phase (Phase 4 - Implementation)
 
@@ -58,8 +60,10 @@ This document provides a comprehensive research initiative for monetization stra
 
 1. **Models** - What monetization approaches work for recovery/wellness apps?
 2. **Ethics** - What should never be paywalled? What's the community perception?
-3. **Legalities** - HIPAA, payment processing, subscription laws, refund requirements
-4. **Market Research** - What do competitors charge? What's the willingness to pay?
+3. **Legalities** - HIPAA, payment processing, subscription laws, refund
+   requirements
+4. **Market Research** - What do competitors charge? What's the willingness to
+   pay?
 5. **Cost Analysis** - What are our costs? What margins do we need?
 6. **Implementation** - Technical requirements for each model
 
@@ -67,9 +71,11 @@ This document provides a comprehensive research initiative for monetization stra
 
 ## 📋 Phase 1: AI Research Prompts (✅ Complete)
 
-Use these prompts with multiple AIs (Gemini, ChatGPT, Claude, etc.) to gather perspectives:
+Use these prompts with multiple AIs (Gemini, ChatGPT, Claude, etc.) to gather
+perspectives:
 
 ### Prompt 1: Monetization Models
+
 ```
 I'm building a 12-step recovery companion app (AA/NA focused) with features like:
 - Daily journaling and mood tracking
@@ -85,6 +91,7 @@ For each model, explain pros, cons, and examples of apps using it successfully.
 ```
 
 ### Prompt 2: Ethics and Recovery Culture
+
 ```
 For a 12-step recovery app, what are the ethical considerations for monetization?
 - What features should always remain free?
@@ -95,6 +102,7 @@ For a 12-step recovery app, what are the ethical considerations for monetization
 ```
 
 ### Prompt 3: Legal and Compliance
+
 ```
 What legal considerations apply to monetizing a recovery/wellness app?
 Cover:
@@ -108,6 +116,7 @@ Cover:
 ```
 
 ### Prompt 4: Market Research
+
 ```
 Research the recovery app market:
 - What do competing recovery apps charge? (I Am Sober, Nomo, Loosid, Sober Grid, etc.)
@@ -119,6 +128,7 @@ Research the recovery app market:
 ```
 
 ### Prompt 5: Cost Analysis Framework
+
 ```
 Help me build a cost analysis for a recovery app:
 - Firebase costs at different user scales (100, 1K, 10K, 100K users)
@@ -130,6 +140,7 @@ Help me build a cost analysis for a recovery app:
 ```
 
 ### Prompt 6: Technical Implementation
+
 ```
 What's the technical implementation for each monetization model in a Next.js + Firebase app?
 - RevenueCat vs native StoreKit/Google Play Billing
@@ -144,49 +155,57 @@ What's the technical implementation for each monetization model in a Next.js + F
 
 ## 📋 Phase 2: Analysis Framework (✅ Complete)
 
-> **Analysis Source**: `docs/Monetization_Research_Phase1_Results.md` (Multi-AI aggregation)
+> **Analysis Source**: `docs/Monetization_Research_Phase1_Results.md` (Multi-AI
+> aggregation)
 
 ### A. Monetization Models Comparison
 
-| Model | Revenue Potential | Ethical Fit (Recovery) | Technical Complexity | User Friction | Verdict |
-|-------|------------------|------------------------|---------------------|---------------|---------|
-| **Freemium** | High Vol / Low Margin | **High** - if core is free | Med (IAP + entitlements) | Low entry / High upgrade | **Strong Contender** |
-| **Subscription** | High LTV / Predictable | Med - Churn/Cancel risks | High (StoreKit/Auth) | Med - "Subscription fatigue" | **Industry Standard** |
-| **One-time** | Low LTV / Front-loaded | **High** - Sensitive/Transparent | Low | High entry ("Stocker shock") | Good supplementary |
-| **Donation** | Very Low / Unpredictable | **Highest** - "7th Tradition" | Low (Stripe/IAP) | Zero | **Not scalable alone** |
-| **B2B Licensing** | High Contract Value | High - Subsidizes users | High (Teams/Reporting) | Zero for end-user | **Strong Parallel Track** |
+| Model             | Revenue Potential        | Ethical Fit (Recovery)           | Technical Complexity     | User Friction                | Verdict                   |
+| ----------------- | ------------------------ | -------------------------------- | ------------------------ | ---------------------------- | ------------------------- |
+| **Freemium**      | High Vol / Low Margin    | **High** - if core is free       | Med (IAP + entitlements) | Low entry / High upgrade     | **Strong Contender**      |
+| **Subscription**  | High LTV / Predictable   | Med - Churn/Cancel risks         | High (StoreKit/Auth)     | Med - "Subscription fatigue" | **Industry Standard**     |
+| **One-time**      | Low LTV / Front-loaded   | **High** - Sensitive/Transparent | Low                      | High entry ("Stocker shock") | Good supplementary        |
+| **Donation**      | Very Low / Unpredictable | **Highest** - "7th Tradition"    | Low (Stripe/IAP)         | Zero                         | **Not scalable alone**    |
+| **B2B Licensing** | High Contract Value      | High - Subsidizes users          | High (Teams/Reporting)   | Zero for end-user            | **Strong Parallel Track** |
 
 ### B. Feature Gating Matrix
 
-| Feature | Must Be Free | Could Be Premium | Notes |
-|---------|--------------|------------------|-------|
-| **Crisis/SOS tools** | ✅ YES | ❌ NO | **Ethical Hard Line**: Never paywall safety. |
-| **Meeting finder** | ✅ YES | ❌ NO | Core utility; paywalling reduces accuracy/value. |
-| **Basic journaling** | ✅ YES | ❌ NO | "Meeting in your pocket" must remain accessible. |
-| **Step 4 inventories** | ✅ Basic templates | ✅ "Power Tools" | Deep structured wizards, pattern analysis, export. |
-| **Speaker tapes** | ✅ Streaming | ✅ Offline/Notes | Hosting cost is low (external), value is organization. |
-| **Data Features** | ✅ Export | ✅ Cloud Sync | "Data hostage" dynamics kill trust; sync cost justifies fee. |
-| **Analytics** | ✅ Basic streaks | ✅ Deep Trends | Advanced correlations (Mood vs Sleep vs Meetings). |
+| Feature                | Must Be Free       | Could Be Premium | Notes                                                        |
+| ---------------------- | ------------------ | ---------------- | ------------------------------------------------------------ |
+| **Crisis/SOS tools**   | ✅ YES             | ❌ NO            | **Ethical Hard Line**: Never paywall safety.                 |
+| **Meeting finder**     | ✅ YES             | ❌ NO            | Core utility; paywalling reduces accuracy/value.             |
+| **Basic journaling**   | ✅ YES             | ❌ NO            | "Meeting in your pocket" must remain accessible.             |
+| **Step 4 inventories** | ✅ Basic templates | ✅ "Power Tools" | Deep structured wizards, pattern analysis, export.           |
+| **Speaker tapes**      | ✅ Streaming       | ✅ Offline/Notes | Hosting cost is low (external), value is organization.       |
+| **Data Features**      | ✅ Export          | ✅ Cloud Sync    | "Data hostage" dynamics kill trust; sync cost justifies fee. |
+| **Analytics**          | ✅ Basic streaks   | ✅ Deep Trends   | Advanced correlations (Mood vs Sleep vs Meetings).           |
 
 ### C. Legal Checklist & Compliance (US)
 
-- [ ] **HIPAA Applicability**: Likely **NO** for B2C (unless acting as "Business Associate" for treatment center).
-- [ ] **Data Sensitivity**: Treat as **SUD Restricted** (42 CFR Part 2 conceptual equivalent) even if not legally bound.
-- [ ] **Store Compliance**: Must use IAP (Apple/Google) for digital features; strictly no "web-pay-only" tricks.
-- [ ] **Privacy Policy**: Must explicitly state "No data sharing with ad networks" (FTC Health Breach Risk).
-- [ ] **Cancellation**: "Click-to-cancel" must be as easy as signup (ROSCA/State laws).
-- [ ] **Terms**: Include "Not medical advice" and "No outcome guarantees" disclaimers.
+- [ ] **HIPAA Applicability**: Likely **NO** for B2C (unless acting as "Business
+      Associate" for treatment center).
+- [ ] **Data Sensitivity**: Treat as **SUD Restricted** (42 CFR Part 2
+      conceptual equivalent) even if not legally bound.
+- [ ] **Store Compliance**: Must use IAP (Apple/Google) for digital features;
+      strictly no "web-pay-only" tricks.
+- [ ] **Privacy Policy**: Must explicitly state "No data sharing with ad
+      networks" (FTC Health Breach Risk).
+- [ ] **Cancellation**: "Click-to-cancel" must be as easy as signup (ROSCA/State
+      laws).
+- [ ] **Terms**: Include "Not medical advice" and "No outcome guarantees"
+      disclaimers.
 
 ### D. Cost/Revenue Projections (Estimates)
 
-| User Scale | Monthly Costs (Est) | Required Revenue | Break-even Analysis |
-|------------|---------------------|------------------|---------------------|
-| **100 users** | ~$0 (Free tiers) | $0 | **Funded by Dev** |
-| **1,000 users** | <$50 (Firestore) | $50 | ~5 subs @ $9.99/mo |
-| **10,000 users** | ~$200 (DB+Functions) | $200 | ~20 subs @ $9.99/mo |
-| **100k users** | ~$800 (mostly DB/Net) | $800 | **Highly Profitable** (if audio is external URL) |
+| User Scale       | Monthly Costs (Est)   | Required Revenue | Break-even Analysis                              |
+| ---------------- | --------------------- | ---------------- | ------------------------------------------------ |
+| **100 users**    | ~$0 (Free tiers)      | $0               | **Funded by Dev**                                |
+| **1,000 users**  | <$50 (Firestore)      | $50              | ~5 subs @ $9.99/mo                               |
+| **10,000 users** | ~$200 (DB+Functions)  | $200             | ~20 subs @ $9.99/mo                              |
+| **100k users**   | ~$800 (mostly DB/Net) | $800             | **Highly Profitable** (if audio is external URL) |
 
-> **Note on Audio**: If we host files, 100k users = ~$350/mo bandwidth. If we use external URLs (YouTube/Archive.org links), bandwidth is $0 for us.
+> **Note on Audio**: If we host files, 100k users = ~$350/mo bandwidth. If we
+> use external URLs (YouTube/Archive.org links), bandwidth is $0 for us.
 
 ---
 
@@ -195,11 +214,13 @@ What's the technical implementation for each monetization model in a Next.js + F
 ### Key Strategy Decisions (Dec 15, 2025)
 
 1. **Gating Strategy**: **Growth Tab features are PREMIUM.**
-   - *Free Core*: Meetings, Today (Sobriety), Support Network.
-   - *Premium*: Analytics, Advanced Inventories, Growth Dashboard charts.
+   - _Free Core_: Meetings, Today (Sobriety), Support Network.
+   - _Premium_: Analytics, Advanced Inventories, Growth Dashboard charts.
 
-2. **Timing**: Monetization logic implementation happens **AFTER** Growth Tab features are built.
-   - *Reasoning*: Build value first, then gate it. Avoids slowing down feature dev with entitlement logic early on.
+2. **Timing**: Monetization logic implementation happens **AFTER** Growth Tab
+   features are built.
+   - _Reasoning_: Build value first, then gate it. Avoids slowing down feature
+     dev with entitlement logic early on.
 
 3. **Model**: Implies **Freemium** (Free Core + Paid Growth Tab upgrades).
 
@@ -231,10 +252,10 @@ Once Growth Tab features are ready:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration | Claude |
-| 1.0 | 2025-12-15 | Initial research document | Development Team |
+| Version | Date       | Changes                                      | Author           |
+| ------- | ---------- | -------------------------------------------- | ---------------- |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 4 migration | Claude           |
+| 1.0     | 2025-12-15 | Initial research document                    | Development Team |
 
 ---
 
@@ -250,6 +271,7 @@ Once Growth Tab features are ready:
 6. **Update this document** when research findings change
 
 **When implementing Phase 4:**
+
 ```bash
 # Update this document when payment provider selected
 # Add implementation notes as you build
@@ -262,6 +284,7 @@ git commit -m "docs: Update Monetization Research - Phase 4 progress"
 ## 📝 Update Triggers
 
 **Update this document when:**
+
 - ✅ New market research completed
 - ✅ Competitor pricing changes
 - ✅ Feature gating decisions change

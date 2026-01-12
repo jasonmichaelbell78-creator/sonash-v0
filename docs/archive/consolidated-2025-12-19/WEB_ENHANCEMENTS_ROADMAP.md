@@ -9,15 +9,19 @@
 ## 🖥️ Desktop-Exclusive Features
 
 ### 1. **Multi-Panel Layout**
+
 **What:** Split-screen and dashboard modes
 
 **Implementations:**
+
 - **Split View:** Timeline on left, entry detail on right (like email client)
 - **Dual Timeline:** Compare two date ranges side-by-side
-- **Dashboard Mode:** 4-panel grid (Timeline, Stats, Quick Entry, Recent Activity)
+- **Dashboard Mode:** 4-panel grid (Timeline, Stats, Quick Entry, Recent
+  Activity)
 - **Resizable Panels:** Drag dividers to adjust space allocation
 
 **Benefits:**
+
 - See multiple data views simultaneously
 - No context switching
 - Power users can monitor trends while browsing entries
@@ -25,9 +29,11 @@
 ---
 
 ### 2. **Advanced Data Visualization**
+
 **What:** Interactive charts and graphs unavailable on mobile
 
 **Features:**
+
 - **Mood Heat Map:** Calendar view with color-coded mood by day
   ```
   December 2025
@@ -43,6 +49,7 @@
 - **Trait Progress Charts:** Character defects over 90 days
 
 **Interactive Elements:**
+
 - Hover tooltips with exact values
 - Click to drill down into specific days
 - Zoom date ranges with mouse wheel
@@ -51,9 +58,11 @@
 ---
 
 ### 3. **Keyboard Shortcuts**
+
 **What:** Power-user navigation without mouse
 
 **Shortcuts:**
+
 ```
 Global:
   Ctrl+N     → New entry
@@ -78,6 +87,7 @@ Editing:
 ```
 
 **Discoverability:**
+
 - Shortcuts shown in tooltips
 - Help modal (press `?`)
 - Cheat sheet printout
@@ -85,9 +95,11 @@ Editing:
 ---
 
 ### 4. **Batch Operations**
+
 **What:** Perform actions on multiple entries at once
 
 **Features:**
+
 - **Multi-Select:** Shift+Click or Ctrl+Click to select
 - **Bulk Tagging:** Add "retreat-weekend" to 10 entries
 - **Bulk Export:** Export selected 20 entries as PDF
@@ -95,6 +107,7 @@ Editing:
 - **Bulk Privacy:** Toggle private status on range
 
 **UI Pattern:**
+
 ```
 [✓] Dec 18 • Daily Log + Check-in
 [✓] Dec 17 • Night Review
@@ -106,10 +119,12 @@ Editing:
 ---
 
 ### 5. **Rich Text Editor** (Desktop Only)
+
 **What:** Formatting options beyond plain text
 
 **Formatting:**
-- **Bold**, *Italic*, ~~Strikethrough~~
+
+- **Bold**, _Italic_, ~~Strikethrough~~
 - Headers (H1, H2, H3)
 - Bulleted and numbered lists
 - Block quotes
@@ -117,6 +132,7 @@ Editing:
 - Horizontal rules
 
 **Rich Media:**
+
 - **Image Upload:** Drag & drop photos
   - Inspiration quotes
   - Meeting flyers
@@ -126,6 +142,7 @@ Editing:
 - **File Attachments:** PDFs, worksheets
 
 **Implementation:**
+
 - TipTap or Lexical editor
 - Markdown support for power users
 - Auto-save drafts every 30 seconds
@@ -133,9 +150,11 @@ Editing:
 ---
 
 ### 6. **Desktop Notifications**
+
 **What:** System notifications via browser API
 
 **Notification Types:**
+
 - **Inventory Reminders:** "Time for nightly review 🌙" at 9:00 PM
 - **Streak Alerts:** "30-day streak! Keep going! 🔥"
 - **Meeting Reminders:** "AA Meeting in 30 minutes" (if calendar integrated)
@@ -143,6 +162,7 @@ Editing:
 - **Milestone Celebrations:** "6 months clean today! 🎉"
 
 **Settings:**
+
 - Customize notification times
 - Enable/disable by type
 - Quiet hours (10 PM - 8 AM)
@@ -151,19 +171,21 @@ Editing:
 ---
 
 ### 7. **Advanced Search & Filters**
+
 **What:** Power search capabilities
 
 **Features:**
+
 - **Regex Search:** `/sponsor.*(help|call)/i`
-- **Boolean Operators:** 
+- **Boolean Operators:**
   - `gratitude AND sponsor`
   - `craving NOT meeting`
   - `mood:(sad OR angry)`
-- **Field-Specific:** 
+- **Field-Specific:**
   - `content:"talked to sponsor"`
   - `type:night-review`
   - `date:>2025-12-01`
-- **Saved Searches:** 
+- **Saved Searches:**
   - "Craving days without meetings"
   - "All gratitude mentions of sponsor"
   - "Low mood entries"
@@ -171,6 +193,7 @@ Editing:
 - **Auto-Suggestions:** "Did you mean 'resentment'?"
 
 **UI:**
+
 ```
 ┌─────────────────────────────────────────┐
 │ 🔎 Search: gratitude AND sponsor        │
@@ -191,9 +214,11 @@ Editing:
 ---
 
 ### 8. **Analytics Dashboard**
+
 **What:** Recovery data science visualization
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  📊 Recovery Analytics Dashboard                            │
@@ -223,6 +248,7 @@ Editing:
 ```
 
 **Metrics:**
+
 - Days logged this month/year
 - Current streak vs. best streak
 - Average mood score
@@ -232,6 +258,7 @@ Editing:
 - Meeting attendance rate
 
 **Charts:**
+
 - Line: Mood over time
 - Bar: Entries by type
 - Pie: Time distribution (morning/afternoon/evening entries)
@@ -240,9 +267,11 @@ Editing:
 ---
 
 ### 9. **Calendar Integration**
+
 **What:** Full calendar view of journal
 
 **Features:**
+
 - **Monthly Calendar:** See all entries at a glance
 - **Color Coding:** Entry types have distinct colors
   - 🟢 Gratitude
@@ -254,8 +283,9 @@ Editing:
 - **Drag & Drop:** (Advanced) Move entries to different dates
 
 **UI Example:**
+
 ```
-    December 2025                      
+    December 2025
 Mo Tu We Th Fr Sa Su   [<] [Today] [>]
  1  2🟢 3  4🟣 5  6  7
  8🟢 9🟢10🟢11 12🟡13🟢14
@@ -268,11 +298,13 @@ Clicking Dec 18 → Jump to that day's entries
 ---
 
 ### 10. **Export Templates**
+
 **What:** Specialized export formats for different audiences
 
 **Templates:**
 
 **1. Sponsor Report**
+
 - Cover page with stats
 - Selected entries (user chooses)
 - Mood chart
@@ -281,6 +313,7 @@ Clicking Dec 18 → Jump to that day's entries
 - Footer: "Shared with permission"
 
 **2. Court Documentation**
+
 - Official letterhead style
 - Days clean certificate
 - Meeting sign-in sheets (if tracked)
@@ -288,12 +321,14 @@ Clicking Dec 18 → Jump to that day's entries
 - Counselor notes section
 
 **3. Therapy Worksheet**
+
 - Structured by CBT framework
 - Reflections grouped by theme
 - Emotion tracking graphs
 - Homework assignments noted
 
 **4. Personal Archive**
+
 - Beautiful scrapbook design
 - Full entries with dates
 - Photos included
@@ -301,11 +336,13 @@ Clicking Dec 18 → Jump to that day's entries
 - Handwritten font styling
 
 **5. Data Export (CSV)**
+
 - Tabular format for Excel
 - All fields included
 - Ready for personal analysis
 
 **Customization:**
+
 - Date range selection
 - Include/exclude entry types
 - Privacy filtering (exclude private)
@@ -314,9 +351,11 @@ Clicking Dec 18 → Jump to that day's entries
 ---
 
 ### 11. **Tagging System**
+
 **What:** Organize and categorize entries
 
 **Features:**
+
 - **Manual Tags:** User adds custom tags
 - **Auto-Tags:** AI suggests based on content
   - Mentions "sponsor" → tag: #sponsor
@@ -337,6 +376,7 @@ Clicking Dec 18 → Jump to that day's entries
 - **Quick Filters:** Click tag to filter entries
 
 **UI:**
+
 ```
 Tags (42):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -349,15 +389,18 @@ prayer (67)    inventory (34)  craving (12)
 ---
 
 ### 12. **Version History**
+
 **What:** Track changes to entries over time
 
 **Features:**
+
 - **Edit History:** See all revisions
 - **Diff View:** Compare versions side-by-side
 - **Restore Previous:** Undo accidental changes
 - **Audit Trail:** Timestamps of every edit
 
 **UI Pattern:**
+
 ```
 Entry: "Daily Log - Dec 18, 2025"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -373,15 +416,18 @@ Diff view:
 ---
 
 ### 13. **Browser Extensions**
+
 **What:** Quick capture from anywhere on web
 
 **Chrome/Firefox Extension:**
+
 - **Right-Click Save:** Highlight quote → "Save to SoNash"
 - **Tab Sidebar:** Journal panel always accessible
 - **Quick Entry:** Icon in toolbar for instant journaling
 - **Bookmark Sync:** Save recovery resources with notes
 
 **Features:**
+
 - Capture text from any webpage
 - Screenshot capture
 - URL saving with annotations
@@ -390,9 +436,11 @@ Diff view:
 ---
 
 ### 14. **Collaboration Features** (Sponsor Portal)
+
 **What:** Real-time sharing with sponsor/therapist
 
 **Sponsor View:**
+
 - **Shared Entries:** See only what user shares
 - **Comments:** Add encouraging notes to entries
 - **Check-ins:** Request "How are you?" prompts
@@ -401,12 +449,14 @@ Diff view:
 - **Emergency Alerts:** Notify sponsor if user marks "used"
 
 **Privacy Controls:**
+
 - Granular sharing per entry
 - Time-limited access
 - Revoke access anytime
 - Audit log of sponsor views
 
 **UI (Sponsor Side):**
+
 ```
 Jason's Recovery Journal (Shared)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -428,17 +478,20 @@ Your comment:
 ---
 
 ### 15. **Offline Mode (PWA)**
+
 **What:** Work without internet, sync later
 
 **Capabilities:**
+
 - **Service Worker:** Cache all recent entries
 - **IndexedDB:** Store drafts locally
 - **Background Sync:** Auto-upload when connection restored
 - **Conflict Resolution:** Smart merge if edited on multiple devices
 
 **User Experience:**
+
 ```
-[⚠️ Offline] 
+[⚠️ Offline]
 
 Your entries are being saved locally.
 They will sync when you're back online.
@@ -453,12 +506,14 @@ They will sync when you're back online.
 ### **Today Page (Desktop Mode)**
 
 **Enhanced Layout:**
+
 - **More Widgets Visible:** 3-column layout
   - Left: Sobriety timer, Weekly stats
   - Center: Recovery Notepad (expanded)
   - Right: Quick stats, Meeting countdown
 
 **New Features:**
+
 - **Inline Charts:** Mini mood sparkline embedded in page
 - **Quick Links:** "See all Dec entries" button
 - **Pomodoro Timer:** 25-min focus mode for meditation
@@ -477,6 +532,7 @@ They will sync when you're back online.
 ### **Journal Page (Timeline - Desktop)**
 
 **Enhanced Features:**
+
 - **Sidebar Filters:** Always visible, not collapsed
 - **Entry Preview:** Hover to see content without clicking
 - **Quick Edit:** Double-click to edit inline
@@ -485,6 +541,7 @@ They will sync when you're back online.
 - **Entry Linking:** Click to cross-reference other entries
 
 **Layout:**
+
 ```
 ┌──────────────┬─────────────────────────────────┐
 │  FILTERS     │         TIMELINE                │
@@ -507,6 +564,7 @@ They will sync when you're back online.
 ### **Deep Search / Analytics Page (Desktop)**
 
 **Power Features:**
+
 - **Data Tables:** Sortable, filterable spreadsheet view
 - **Custom Reports:** Build your own analytics
 - **Graph Builder:** Choose X/Y axes for custom charts
@@ -515,6 +573,7 @@ They will sync when you're back online.
 - **Export to Excel:** Raw data download
 
 **Multi-View Layout:**
+
 ```
 ┌────────────────────────────────────────────┐
 │ [Table View] [Charts] [Calendar] [Map]     │
@@ -536,6 +595,7 @@ They will sync when you're back online.
 ### **Growth Page (Desktop)**
 
 **New Visualizations:**
+
 - **Trait Evolution:** Line chart showing character defects over time
 - **Reflection Archive:** Search all past reflection answers
 - **Pattern Detection:** AI finds recurring themes
@@ -544,6 +604,7 @@ They will sync when you're back online.
 - **Before/After:** Compare traits from 6 months ago vs. now
 
 **Progress Report:**
+
 ```
 Character Growth: 6-Month Analysis
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -551,7 +612,7 @@ Resentful → Forgiving
   June:  ━━━━━━━━━░░ -4 (angry)
   Dec:   ━━━━━━━━━━━ +5 (forgiving) ✨
 
-Fear → Courage  
+Fear → Courage
   June:  ━━━━━░░░░░░ -3 (fearful)
   Dec:   ━━━━━━━━━░░ +4 (courageous) ✨
 
@@ -563,6 +624,7 @@ Improvement: 9 points average! 🎉
 ### **Meetings Page (Desktop)**
 
 **Enhanced Map:**
+
 - **Cluster View:** Group nearby meetings
 - **Route Planning:** "Chain" 3 meetings on Saturday
 - **Meeting Notes:** Private annotations per location
@@ -572,6 +634,7 @@ Improvement: 9 points average! 🎉
 - **History Map:** See all meetings you've attended (heat map)
 
 **Advanced Filters:**
+
 - Distance slider (1-50 miles)
 - Time of day (Morning/Afternoon/Evening)
 - Meeting size preference
@@ -582,6 +645,7 @@ Improvement: 9 points average! 🎉
 ### **Resources Page (Desktop)**
 
 **New Sections:**
+
 - **Resource Library:** Bookmarked articles, videos
 - **Reading List:** Track recovery books
   - Currently reading
@@ -595,6 +659,7 @@ Improvement: 9 points average! 🎉
   - Emergency services
 
 **UI:**
+
 ```
 ┌─────────────────────────────────────────┐
 │  📚 Resource Library                    │
@@ -618,26 +683,31 @@ Improvement: 9 points average! 🎉
 ## 🚀 Performance Optimizations
 
 ### 1. **Virtual Scrolling**
+
 - Only render visible entries
 - Load 20 entries at a time
 - Maintain smooth 60fps scroll
 
 ### 2. **Indexed DB Caching**
+
 - Cache last 90 days locally
 - Instant load on return visit
 - Sync in background
 
 ### 3. **Web Workers**
+
 - Analytics calculations in background thread
 - Search indexing off main thread
 - Export generation doesn't block UI
 
 ### 4. **Image Optimization**
+
 - Automatic compression on upload
 - WebP format with fallback
 - Lazy load below fold
 
 ### 5. **Code Splitting**
+
 - Route-based chunks
 - Dynamic imports for heavy features
 - Preload next likely route
@@ -647,24 +717,28 @@ Improvement: 9 points average! 🎉
 ## ♿ Accessibility Enhancements
 
 ### 1. **Screen Reader Support**
+
 - Full ARIA labels
 - Semantic HTML
 - Meaningful alt text
 - Announcements for dynamic content
 
 ### 2. **Keyboard Navigation**
+
 - Tab order logical
 - Skip links ("Skip to content")
 - Focus visible indicators
 - No keyboard traps
 
 ### 3. **Visual Accessibility**
+
 - High contrast mode toggle
 - Respect prefers-reduced-motion
 - Text scaling support (200%+)
 - Color-blind friendly palettes
 
 ### 4. **Cognitive Accessibility**
+
 - Clear, simple language
 - Consistent navigation
 - Undo/redo for destructive actions
@@ -675,28 +749,33 @@ Improvement: 9 points average! 🎉
 ## 🔒 Security Features
 
 ### 1. **Two-Factor Authentication**
+
 - SMS codes
 - Authenticator apps (Google, Authy)
 - Backup codes
 
 ### 2. **Biometric Login**
+
 - WebAuthn API
 - Fingerprint
 - Face recognition
 - Hardware keys (YubiKey)
 
 ### 3. **Session Management**
+
 - View active sessions
 - Remote logout
 - Auto-logout after inactivity
 - "Log out all devices"
 
 ### 4. **Client-Side Encryption** (Optional)
+
 - Zero-knowledge encryption
 - User-controlled keys
 - Ultra-private entries
 
 ### 5. **Audit Log**
+
 - Login attempts
 - Data exports
 - Permission changes
@@ -707,26 +786,31 @@ Improvement: 9 points average! 🎉
 ## 🔗 Integration Opportunities
 
 ### 1. **Calendar Sync**
+
 - Export meetings to Google Calendar
 - Import therapy appointments
 - Sync sponsor check-ins
 
 ### 2. **Health Apps**
+
 - Apple Health: Sleep, steps, heart rate
 - Fitbit: Activity, sleep quality
 - Correlate with mood/cravings
 
 ### 3. **Meditation Apps**
+
 - Headspace: Import meditation minutes
 - Calm: Sync daily streaks
 - Insight Timer: Track sessions
 
 ### 4. **RSS/Subscriptions**
+
 - Daily recovery reflections
 - Just for Today (AA)
 - Recovery blog feeds
 
 ### 5. **Automation (Zapier/IFTTT)**
+
 - "If I mark 'used', email sponsor"
 - "If streak hits 30 days, post to private Facebook group"
 - "Every Sunday, email week summary"
@@ -736,28 +820,33 @@ Improvement: 9 points average! 🎉
 ## 🌙 Future Moonshot Ideas
 
 ### 1. **AI Recovery Coach**
+
 - GPT-4 analyzes journal patterns
 - Personalized insights
 - Suggests coping strategies
 - Detects early warning signs
 
 ### 2. **Peer Support Network**
+
 - Anonymous community
 - Share milestones
 - Support each other
 - Moderated for safety
 
 ### 3. **Voice Journaling**
+
 - Speak entries, auto-transcribed
 - Emotion detection in voice
 - Searchable audio archive
 
 ### 4. **AR Features**
+
 - Point camera at sobriety chip
 - See AR timeline of your journey
 - Virtual milestone celebrations
 
 ### 5. **VR Meetings**
+
 - Attend recovery meetings in VR
 - Avatars for anonymity
 - Immersive support groups
@@ -767,6 +856,7 @@ Improvement: 9 points average! 🎉
 ## 📅 Implementation Priority
 
 ### High Priority (Next 3 months)
+
 1. ✅ Keyboard shortcuts
 2. ✅ Advanced search with saved queries
 3. ✅ Analytics dashboard
@@ -774,6 +864,7 @@ Improvement: 9 points average! 🎉
 5. ✅ Calendar view
 
 ### Medium Priority (3-6 months)
+
 1. Multi-panel layout
 2. Rich text editor
 3. Tagging system
@@ -781,6 +872,7 @@ Improvement: 9 points average! 🎉
 5. Desktop notifications
 
 ### Low Priority (6+ months)
+
 1. Sponsor portal collaboration
 2. Version history
 3. Health app integrations
@@ -788,6 +880,7 @@ Improvement: 9 points average! 🎉
 5. AI insights
 
 ### Moonshots (Future)
+
 1. VR meetings
 2. AR features
 3. Peer network

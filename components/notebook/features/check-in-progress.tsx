@@ -1,18 +1,16 @@
-"use client"
+"use client";
 
 interface CheckInProgressProps {
-  currentStep: number
-  totalSteps: number
-  steps: Array<{ id: string; label: string; completed: boolean }>
+  currentStep: number;
+  totalSteps: number;
+  steps: Array<{ id: string; label: string; completed: boolean }>;
 }
 
 export function CheckInProgress({ currentStep, totalSteps, steps }: CheckInProgressProps) {
   return (
     <div className="mb-6 bg-amber-50/50 border border-amber-100 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-body text-amber-900/70">
-          Check-in Progress
-        </span>
+        <span className="text-sm font-body text-amber-900/70">Check-in Progress</span>
         <span className="text-sm font-body font-bold text-amber-900">
           {currentStep} / {totalSteps}
         </span>
@@ -35,18 +33,16 @@ export function CheckInProgress({ currentStep, totalSteps, steps }: CheckInProgr
                 step.completed
                   ? "bg-green-500 text-white scale-110"
                   : index < currentStep
-                  ? "bg-amber-400 text-white"
-                  : "bg-amber-100 text-amber-400"
+                    ? "bg-amber-400 text-white"
+                    : "bg-amber-100 text-amber-400"
               }`}
             >
               {step.completed ? "✓" : index + 1}
             </div>
-            <span className="text-xs text-amber-900/60 mt-1 text-center">
-              {step.label}
-            </span>
+            <span className="text-xs text-amber-900/60 mt-1 text-center">{step.label}</span>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }

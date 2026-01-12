@@ -1,6 +1,11 @@
 ---
 name: senior-fullstack
-description: Comprehensive fullstack development skill for building complete web applications with React, Next.js, Node.js, GraphQL, and PostgreSQL. Includes project scaffolding, code quality analysis, architecture patterns, and complete tech stack guidance. Use when building new projects, analyzing code quality, implementing design patterns, or setting up development workflows.
+description:
+  Comprehensive fullstack development skill for building complete web
+  applications with React, Next.js, Node.js, GraphQL, and PostgreSQL. Includes
+  project scaffolding, code quality analysis, architecture patterns, and
+  complete tech stack guidance. Use when building new projects, analyzing code
+  quality, implementing design patterns, or setting up development workflows.
 ---
 
 # Senior Fullstack
@@ -31,12 +36,14 @@ python scripts/code_quality_analyzer.py [options]
 Automated tool for fullstack scaffolder tasks.
 
 **Features:**
+
 - Automated scaffolding
 - Best practices built-in
 - Configurable templates
 - Quality checks
 
 **Usage:**
+
 ```bash
 python scripts/fullstack_scaffolder.py <project-path> [options]
 ```
@@ -46,12 +53,14 @@ python scripts/fullstack_scaffolder.py <project-path> [options]
 Comprehensive analysis and optimization tool.
 
 **Features:**
+
 - Deep analysis
 - Performance metrics
 - Recommendations
 - Automated fixes
 
 **Usage:**
+
 ```bash
 python scripts/project_scaffolder.py <target-path> [--verbose]
 ```
@@ -61,12 +70,14 @@ python scripts/project_scaffolder.py <target-path> [--verbose]
 Advanced tooling for specialized tasks.
 
 **Features:**
+
 - Expert-level automation
 - Custom configurations
 - Integration ready
 - Production-grade output
 
 **Usage:**
+
 ```bash
 python scripts/code_quality_analyzer.py [arguments] [options]
 ```
@@ -105,12 +116,10 @@ Technical reference guide in `references/development_workflows.md`:
 
 ## Tech Stack
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
-**Frontend:** React, Next.js, React Native, Flutter
-**Backend:** Node.js, Express, GraphQL, REST APIs
-**Database:** PostgreSQL, Prisma, NeonDB, Supabase
-**DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
-**Cloud:** AWS, GCP, Azure
+**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**
+React, Next.js, React Native, Flutter **Backend:** Node.js, Express, GraphQL,
+REST APIs **Database:** PostgreSQL, Prisma, NeonDB, Supabase **DevOps:** Docker,
+Kubernetes, Terraform, GitHub Actions, CircleCI **Cloud:** AWS, GCP, Azure
 
 ## Development Workflow
 
@@ -139,6 +148,7 @@ python scripts/project_scaffolder.py .
 ### 3. Implement Best Practices
 
 Follow the patterns and practices documented in:
+
 - `references/tech_stack_guide.md`
 - `references/architecture_patterns.md`
 - `references/development_workflows.md`
@@ -146,24 +156,28 @@ Follow the patterns and practices documented in:
 ## Best Practices Summary
 
 ### Code Quality
+
 - Follow established patterns
 - Write comprehensive tests
 - Document decisions
 - Review regularly
 
 ### Performance
+
 - Measure before optimizing
 - Use appropriate caching
 - Optimize critical paths
 - Monitor in production
 
 ### Security
+
 - Validate all inputs
 - Use parameterized queries
 - Implement proper authentication
 - Keep dependencies updated
 
 ### Maintainability
+
 - Write clear code
 - Use consistent naming
 - Add helpful comments
@@ -192,7 +206,8 @@ kubectl apply -f k8s/
 
 ### Common Issues
 
-Check the comprehensive troubleshooting section in `references/development_workflows.md`.
+Check the comprehensive troubleshooting section in
+`references/development_workflows.md`.
 
 ### Getting Help
 

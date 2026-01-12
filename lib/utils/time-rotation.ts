@@ -9,7 +9,7 @@
  * - getRotatedItemForNow(): Generic rotation with scheduled date support
  */
 
-export type TimeOfDay = 'morning' | 'afternoon' | 'evening';
+export type TimeOfDay = "morning" | "afternoon" | "evening";
 
 /**
  * Interface for items that support scheduled rotation
@@ -29,9 +29,9 @@ export interface SchedulableItem {
  */
 export function getTimeOfDay(): TimeOfDay {
   const hour = new Date().getHours();
-  if (hour < 12) return 'morning';
-  if (hour < 18) return 'afternoon';
-  return 'evening';
+  if (hour < 12) return "morning";
+  if (hour < 18) return "afternoon";
+  return "evening";
 }
 
 /**
@@ -39,7 +39,7 @@ export function getTimeOfDay(): TimeOfDay {
  * Uses Intl.DateTimeFormat for guaranteed consistent formatting across environments
  */
 export function getTodayDateString(): string {
-  return new Intl.DateTimeFormat('en-CA').format(new Date());
+  return new Intl.DateTimeFormat("en-CA").format(new Date());
 }
 
 /**
@@ -48,11 +48,11 @@ export function getTodayDateString(): string {
  */
 export function getTimeOfDayIndex(timeOfDay: TimeOfDay): number {
   switch (timeOfDay) {
-    case 'morning':
+    case "morning":
       return 0;
-    case 'afternoon':
+    case "afternoon":
       return 1;
-    case 'evening':
+    case "evening":
       return 2;
   }
 }

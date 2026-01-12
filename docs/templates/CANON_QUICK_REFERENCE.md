@@ -1,6 +1,7 @@
 # CANON Quick Reference Card
 
-**Version:** 1.0 | **Created:** 2026-01-11 | **Purpose:** 1-page reference for Multi-AI audits
+**Version:** 1.0 | **Created:** 2026-01-11 | **Purpose:** 1-page reference for
+Multi-AI audits
 
 ---
 
@@ -36,12 +37,12 @@
 
 ## ID Format Rules
 
-| Rule | Correct | Wrong |
-|------|---------|-------|
-| Prefix | `CANON-` | `F-`, `PERF-`, `REF-` |
-| Numbering | `0001` (4 digits) | `001`, `1` |
-| Category | In filename only | `CANON-R-001` |
-| Example | `CANON-0042` | `PERF-042`, `F-010` |
+| Rule      | Correct           | Wrong                 |
+| --------- | ----------------- | --------------------- |
+| Prefix    | `CANON-`          | `F-`, `PERF-`, `REF-` |
+| Numbering | `0001` (4 digits) | `001`, `1`            |
+| Category  | In filename only  | `CANON-R-001`         |
+| Example   | `CANON-0042`      | `PERF-042`, `F-010`   |
 
 **File naming:** `CANON-<CATEGORY>.jsonl` (e.g., `CANON-SECURITY.jsonl`)
 
@@ -49,68 +50,70 @@
 
 ## Severity Scale
 
-| Level | Label | Definition | Action |
-|-------|-------|------------|--------|
-| S0 | Critical | Security vuln, data loss, system failure | Fix immediately |
-| S1 | High | Significant security/correctness issue | Fix within sprint |
-| S2 | Medium | Code quality, moderate risk | Schedule fix |
-| S3 | Low | Minor improvement, suspected | Batch with related work |
+| Level | Label    | Definition                               | Action                  |
+| ----- | -------- | ---------------------------------------- | ----------------------- |
+| S0    | Critical | Security vuln, data loss, system failure | Fix immediately         |
+| S1    | High     | Significant security/correctness issue   | Fix within sprint       |
+| S2    | Medium   | Code quality, moderate risk              | Schedule fix            |
+| S3    | Low      | Minor improvement, suspected             | Batch with related work |
 
 ---
 
 ## Effort Scale
 
-| Level | Time | Description |
-|-------|------|-------------|
-| E0 | < 1 hour | Quick fix, simple change |
-| E1 | 1-4 hours | Medium change, some refactoring |
-| E2 | 4-8 hours | Larger refactor, multiple files, needs tests |
-| E3 | 8+ hours | Major refactor, architecture change |
+| Level | Time      | Description                                  |
+| ----- | --------- | -------------------------------------------- |
+| E0    | < 1 hour  | Quick fix, simple change                     |
+| E1    | 1-4 hours | Medium change, some refactoring              |
+| E2    | 4-8 hours | Larger refactor, multiple files, needs tests |
+| E3    | 8+ hours  | Major refactor, architecture change          |
 
 ---
 
 ## Category Values by Audit Type
 
-> **Important:** The `category` field must match allowed values in `docs/standards/JSONL_SCHEMA_STANDARD.md` exactly (treat as enum, not free text). When unsure, open the schema standard and copy/paste the exact value.
+> **Important:** The `category` field must match allowed values in
+> `docs/standards/JSONL_SCHEMA_STANDARD.md` exactly (treat as enum, not free
+> text). When unsure, open the schema standard and copy/paste the exact value.
 
-| Audit Type | Valid Categories (must match schema exactly) |
-|------------|----------------------------------------------|
-| Code Review | Hygiene/Duplication, Types/Correctness, Next/React Boundaries, Security, Testing |
-| Security | Rate Limiting, Input Validation, Secrets Management, Authentication, Firebase Security, Dependency Security, OWASP |
-| Performance | Bundle Size, Rendering, Data Fetching, Memory Management, Core Web Vitals, Observability |
-| Refactoring | Hygiene/Duplication, Types/Correctness, Architecture/Boundaries, Security Hardening, Testing Infrastructure |
-| Documentation | Cross-Reference, Staleness, Coverage Gaps, Tier Compliance, Frontmatter |
-| Process | CI/CD, Hooks, Scripts, Pattern Checker, Triggers, Workflow Docs |
+| Audit Type    | Valid Categories (must match schema exactly)                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Code Review   | Hygiene/Duplication, Types/Correctness, Next/React Boundaries, Security, Testing                                   |
+| Security      | Rate Limiting, Input Validation, Secrets Management, Authentication, Firebase Security, Dependency Security, OWASP |
+| Performance   | Bundle Size, Rendering, Data Fetching, Memory Management, Core Web Vitals, Observability                           |
+| Refactoring   | Hygiene/Duplication, Types/Correctness, Architecture/Boundaries, Security Hardening, Testing Infrastructure        |
+| Documentation | Cross-Reference, Staleness, Coverage Gaps, Tier Compliance, Frontmatter                                            |
+| Process       | CI/CD, Hooks, Scripts, Pattern Checker, Triggers, Workflow Docs                                                    |
 
 ---
 
 ## Consensus Scoring
 
-| Points | Condition |
-|--------|-----------|
-| +2 | >= 2 confirmed sources |
-| +1 | >= 3 total sources (confirmed or suspected) |
-| +1 | Any tool_confirmed_sources >= 1 |
-| +1 | Shared evidence overlap (file/symbol) |
-| **Max** | 5 |
+| Points  | Condition                                   |
+| ------- | ------------------------------------------- |
+| +2      | >= 2 confirmed sources                      |
+| +1      | >= 3 total sources (confirmed or suspected) |
+| +1      | Any tool_confirmed_sources >= 1             |
+| +1      | Shared evidence overlap (file/symbol)       |
+| **Max** | 5                                           |
 
 ---
 
 ## PR Bucket Suggestions
 
-| Bucket | Use For |
-|--------|---------|
-| security-hardening | Auth, validation, rate limiting, App Check |
-| types-domain | Type definitions, Zod schemas, type guards |
+| Bucket                | Use For                                        |
+| --------------------- | ---------------------------------------------- |
+| security-hardening    | Auth, validation, rate limiting, App Check     |
+| types-domain          | Type definitions, Zod schemas, type guards     |
 | hooks-standardization | useJournal, error handling, service extraction |
-| boundaries | Client/server split, service layer, components |
-| firebase-access | Collection helpers, CRUD patterns, queries |
-| tests-hardening | Coverage gaps, emulator tests, security tests |
-| ui-primitives | Component consolidation, variants |
-| performance | SSR, virtualization, lazy loading |
-| process | CI/CD, hooks, workflows |
-| docs | Links, metadata, content |
-| misc | Batch fixes, low-priority items |
+| boundaries            | Client/server split, service layer, components |
+| firebase-access       | Collection helpers, CRUD patterns, queries     |
+| tests-hardening       | Coverage gaps, emulator tests, security tests  |
+| ui-primitives         | Component consolidation, variants              |
+| performance           | SSR, virtualization, lazy loading              |
+| process               | CI/CD, hooks, workflows                        |
+| docs                  | Links, metadata, content                       |
+| misc                  | Batch fixes, low-priority items                |
 
 ---
 
@@ -149,5 +152,5 @@ Before starting a new category audit:
 ---
 
 **Full Template:** `docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md` (400+ lines)
-**Schema Definition:** `docs/standards/JSONL_SCHEMA_STANDARD.md`
-**Validation Script:** `scripts/validate-canon-schema.js`
+**Schema Definition:** `docs/standards/JSONL_SCHEMA_STANDARD.md` **Validation
+Script:** `scripts/validate-canon-schema.js`

@@ -1,16 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import dynamic from "next/dynamic"
-import TabNavigation from "./tab-navigation"
-import BookmarkRibbon from "./bookmark-ribbon"
-import StickyNote from "./sticky-note"
-import PlaceholderPage from "./pages/placeholder-page"
-import { useAuth } from "@/components/providers/auth-provider"
-import { logger } from "@/lib/logger"
-import { Shield, AlertTriangle } from "lucide-react"
-
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+import TabNavigation from "./tab-navigation";
+import BookmarkRibbon from "./bookmark-ribbon";
+import StickyNote from "./sticky-note";
+import PlaceholderPage from "./pages/placeholder-page";
+import { useAuth } from "@/components/providers/auth-provider";
+import { logger } from "@/lib/logger";
+import { Shield, AlertTriangle } from "lucide-react";
 
 import {
   getModuleById,
@@ -18,62 +17,62 @@ import {
   moduleIsStubbed,
   notebookModules,
   type NotebookModuleId,
-} from "./roadmap-modules"
+} from "./roadmap-modules";
 
 // Lazy load the modal
 const AccountLinkModal = dynamic(() => import("@/components/auth/account-link-modal"), {
   loading: () => null,
-  ssr: false
-})
+  ssr: false,
+});
 
 interface NotebookShellProps {
-  onClose: () => void
-  nickname: string
+  onClose: () => void;
+  nickname: string;
 }
 
 export default function NotebookShell({ onClose, nickname }: NotebookShellProps) {
-  const { isAnonymous, showLinkPrompt, profile } = useAuth()
+  const { isAnonymous, showLinkPrompt, profile } = useAuth();
   const tabs = notebookModules.map((module) => ({
     id: module.id,
     label: module.label,
     color: module.color,
     planned: moduleIsStubbed(module),
-  }))
+  }));
 
-  const [activeTab, setActiveTab] = useState<NotebookModuleId>("today")
-  const [showSettings, setShowSettings] = useState(false)
-  const [showAccountLink, setShowAccountLink] = useState(false)
-  const [direction, setDirection] = useState(0)
-  const [touchStart, setTouchStart] = useState<number | null>(null)
-  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<NotebookModuleId>("today");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showAccountLink, setShowAccountLink] = useState(false);
+  const [direction, setDirection] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const handleTabChange = (tabId: string) => {
-    const currentIndex = tabs.findIndex((t) => t.id === activeTab)
-    const newIndex = tabs.findIndex((t) => t.id === tabId)
-    setDirection(newIndex > currentIndex ? 1 : -1)
+    const currentIndex = tabs.findIndex((t) => t.id === activeTab);
+    const newIndex = tabs.findIndex((t) => t.id === tabId);
+    setDirection(newIndex > currentIndex ? 1 : -1);
     // Safe cast: tabs are derived from notebookModules, so tabId is always a valid NotebookModuleId
-    setActiveTab(tabId as NotebookModuleId)
-  }
+    setActiveTab(tabId as NotebookModuleId);
+  };
 
   const renderPage = () => {
-    const module = getModuleById(activeTab) ?? notebookModules[0]
+    const module = getModuleById(activeTab) ?? notebookModules[0];
 
     if (moduleIsEnabled(module)) {
       // Pass handleTabChange as onNavigate
-      return module.render({ nickname, onNavigate: handleTabChange })
+      return module.render({ nickname, onNavigate: handleTabChange });
     }
 
     const flagText = module.featureFlag
       ? `Enable ${module.label} by setting ${module.featureFlag}=true.`
-      : "This section is planned on the roadmap."
+      : "This section is planned on the roadmap.";
 
     return (
       <PlaceholderPage
         title={`${module.label} (stub)`}
         description={`${module.description} ${flagText}`}
       />
-    )
-  }
+    );
+  };
 
   return (
     <motion.div
@@ -149,23 +148,23 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
               key={activeTab}
               className="absolute inset-0 p-4 pl-8 pr-4 md:p-6 md:pl-16 md:pr-12 touch-pan-y"
               onTouchStart={(e) => {
-                setTouchEnd(null)
-                setTouchStart(e.targetTouches[0].clientX)
+                setTouchEnd(null);
+                setTouchStart(e.targetTouches[0].clientX);
               }}
               onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
               onTouchEnd={() => {
-                if (!touchStart || !touchEnd) return
-                const distance = touchStart - touchEnd
-                const isLeftSwipe = distance > 50
-                const isRightSwipe = distance < -50
+                if (!touchStart || !touchEnd) return;
+                const distance = touchStart - touchEnd;
+                const isLeftSwipe = distance > 50;
+                const isRightSwipe = distance < -50;
 
-                const currentIndex = tabs.findIndex((t) => t.id === activeTab)
+                const currentIndex = tabs.findIndex((t) => t.id === activeTab);
 
                 if (isLeftSwipe && currentIndex < tabs.length - 1) {
-                  handleTabChange(tabs[currentIndex + 1].id)
+                  handleTabChange(tabs[currentIndex + 1].id);
                 }
                 if (isRightSwipe && currentIndex > 0) {
-                  handleTabChange(tabs[currentIndex - 1].id)
+                  handleTabChange(tabs[currentIndex - 1].id);
                 }
               }}
               initial={{
@@ -189,7 +188,6 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
               style={{ transformStyle: "preserve-3d" }}
             >
               {renderPage()}
-
             </motion.div>
           </AnimatePresence>
         </div>
@@ -199,103 +197,100 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
 
         {/* Bookmark ribbon for settings */}
         <BookmarkRibbon onClick={() => setShowSettings(true)} />
-
-      </div >
-
+      </div>
 
       {/* Settings sticky note overlay */}
       <AnimatePresence>
-        {
-          showSettings && (
-            <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
-              <div className="space-y-3">
-                {/* Account Security Section */}
-                {isAnonymous && (
-                  <div className={`p-3 rounded-lg border ${showLinkPrompt ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'}`}>
-                    <div className="flex items-start gap-2">
-                      {showLinkPrompt ? (
-                        <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                      ) : (
-                        <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                      )}
-                      <div>
-                        <p className={`font-handlee text-sm ${showLinkPrompt ? 'text-amber-800' : 'text-blue-800'}`}>
-                          {showLinkPrompt
-                            ? "Your journal is at risk! Link your account to keep your entries safe."
-                            : "Your account is anonymous. Link it to keep your data safe."}
-                        </p>
-                        <button
-                          onClick={() => {
-                            setShowSettings(false)
-                            setShowAccountLink(true)
-                          }}
-                          className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? 'text-amber-700 hover:text-amber-900' : 'text-blue-700 hover:text-blue-900'}`}
-                        >
-                          Secure My Account →
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Show linked account info */}
-                {!isAnonymous && profile?.email && (
-                  <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-green-600" />
-                      <p className="font-handlee text-sm text-green-800">
-                        Signed in as {profile.email}
+        {showSettings && (
+          <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
+            <div className="space-y-3">
+              {/* Account Security Section */}
+              {isAnonymous && (
+                <div
+                  className={`p-3 rounded-lg border ${showLinkPrompt ? "bg-amber-50 border-amber-200" : "bg-blue-50 border-blue-200"}`}
+                >
+                  <div className="flex items-start gap-2">
+                    {showLinkPrompt ? (
+                      <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <p
+                        className={`font-handlee text-sm ${showLinkPrompt ? "text-amber-800" : "text-blue-800"}`}
+                      >
+                        {showLinkPrompt
+                          ? "Your journal is at risk! Link your account to keep your entries safe."
+                          : "Your account is anonymous. Link it to keep your data safe."}
                       </p>
+                      <button
+                        onClick={() => {
+                          setShowSettings(false);
+                          setShowAccountLink(true);
+                        }}
+                        className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? "text-amber-700 hover:text-amber-900" : "text-blue-700 hover:text-blue-900"}`}
+                      >
+                        Secure My Account →
+                      </button>
                     </div>
                   </div>
-                )}
-
-                <p className="font-body text-amber-900/40">Nickname & privacy (coming soon)</p>
-                <p className="font-body text-amber-900/40">Home screen & favorites (coming soon)</p>
-                <p className="font-body text-amber-900/40">Language & text size (coming soon)</p>
-
-                <div className="pt-4 border-t border-amber-900/10">
-                  <button
-                    onClick={async () => {
-                      try {
-                        const { signOut } = await import("firebase/auth")
-                        const { auth } = await import("@/lib/firebase")
-
-                        // Clear local temp data for security
-                        localStorage.removeItem("sonash_journal_temp")
-
-                        await signOut(auth)
-                        onClose() // Close the book
-                      } catch (error) {
-                        logger.error("Sign out failed", { error })
-                        // Import toast dynamically to avoid issues
-                        const { toast } = await import("sonner")
-                        toast.error("Failed to sign out. Please try again.")
-                      }
-                    }}
-                    className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
-                  >
-                    Sign Out
-                  </button>
                 </div>
+              )}
+
+              {/* Show linked account info */}
+              {!isAnonymous && profile?.email && (
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    <p className="font-handlee text-sm text-green-800">
+                      Signed in as {profile.email}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <p className="font-body text-amber-900/40">Nickname & privacy (coming soon)</p>
+              <p className="font-body text-amber-900/40">Home screen & favorites (coming soon)</p>
+              <p className="font-body text-amber-900/40">Language & text size (coming soon)</p>
+
+              <div className="pt-4 border-t border-amber-900/10">
+                <button
+                  onClick={async () => {
+                    try {
+                      const { signOut } = await import("firebase/auth");
+                      const { auth } = await import("@/lib/firebase");
+
+                      // Clear local temp data for security
+                      localStorage.removeItem("sonash_journal_temp");
+
+                      await signOut(auth);
+                      onClose(); // Close the book
+                    } catch (error) {
+                      logger.error("Sign out failed", { error });
+                      // Import toast dynamically to avoid issues
+                      const { toast } = await import("sonner");
+                      toast.error("Failed to sign out. Please try again.");
+                    }
+                  }}
+                  className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
+                >
+                  Sign Out
+                </button>
               </div>
-            </StickyNote>
-          )
-        }
-      </AnimatePresence >
+            </div>
+          </StickyNote>
+        )}
+      </AnimatePresence>
 
       {/* Account Link Modal */}
       <AnimatePresence>
-        {
-          showAccountLink && (
-            <AccountLinkModal
-              onClose={() => setShowAccountLink(false)}
-              onSuccess={() => setShowAccountLink(false)}
-            />
-          )
-        }
-      </AnimatePresence >
-
-    </motion.div >
-  )
+        {showAccountLink && (
+          <AccountLinkModal
+            onClose={() => setShowAccountLink(false)}
+            onSuccess={() => setShowAccountLink(false)}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
 }

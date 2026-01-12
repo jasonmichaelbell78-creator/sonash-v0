@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import Image from "next/image"
+import Image from "next/image";
 
 export default function CellPhone() {
   return (
@@ -26,5 +26,5 @@ export default function CellPhone() {
         }}
       />
     </div>
-  )
+  );
 }

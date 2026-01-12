@@ -37,19 +37,19 @@
  * Exit codes: 0 = no review needed, 1 = review recommended, 2 = error
  */
 
-import { readFileSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { readFileSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { execSync } from "node:child_process";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, "..");
 
 // File paths
-const TRACKER_PATH = join(ROOT, 'docs', 'AUDIT_TRACKER.md');
-const COORDINATOR_PATH = join(ROOT, 'docs', 'MULTI_AI_REVIEW_COORDINATOR.md');
+const TRACKER_PATH = join(ROOT, "docs", "AUDIT_TRACKER.md");
+const COORDINATOR_PATH = join(ROOT, "docs", "MULTI_AI_REVIEW_COORDINATOR.md");
 
 // Category-specific thresholds
 const CATEGORY_THRESHOLDS = {
@@ -57,44 +57,45 @@ const CATEGORY_THRESHOLDS = {
     commits: 25,
     files: 15,
     filePattern: /\.(tsx?|jsx?|js)$/,
-    excludePattern: /^(docs|tests|\.)/
+    excludePattern: /^(docs|tests|\.)/,
   },
   security: {
     commits: 20,
     files: 1, // ANY security file triggers
     // Targeted patterns: explicitly match critical security files by name or path
     // Includes: firestore.rules, middleware.ts, .env files, functions/, auth/firebase libs
-    filePattern: /(^|\/)(firestore\.rules|middleware\.ts)$|(^|\/)\.env(\.|$)|(^|\/)functions\/|(^|\/)lib\/(auth|firebase)[^/]*\.(ts|tsx|js|jsx)$|\b(auth|security|secrets|credential|token)\b/i
+    filePattern:
+      /(^|\/)(firestore\.rules|middleware\.ts)$|(^|\/)\.env(\.|$)|(^|\/)functions\/|(^|\/)lib\/(auth|firebase)[^/]*\.(ts|tsx|js|jsx)$|\b(auth|security|secrets|credential|token)\b/i,
   },
   performance: {
     commits: 30,
     files: 10,
     filePattern: /\.(tsx?|jsx?)$/,
-    checkBundle: true
+    checkBundle: true,
   },
   refactoring: {
     commits: 40,
     files: 20,
     filePattern: /\.(tsx?|jsx?)$/,
-    checkComplexity: true
+    checkComplexity: true,
   },
   documentation: {
     commits: 30,
     files: 20,
-    filePattern: /\.md$/
+    filePattern: /\.md$/,
   },
   process: {
     commits: 30,
     files: 1, // ANY CI/hook file triggers
-    filePattern: /(\.github|\.claude|\.husky|scripts\/)/
-  }
+    filePattern: /(\.github|\.claude|\.husky|scripts\/)/,
+  },
 };
 
 // Multi-AI escalation thresholds
 const MULTI_AI_THRESHOLDS = {
-  singleAuditCount: 3,    // Single audits before multi-AI
-  totalCommits: 100,      // Total commits across all categories
-  daysSinceAudit: 14      // Days since any audit
+  singleAuditCount: 3, // Single audits before multi-AI
+  totalCommits: 100, // Total commits across all categories
+  daysSinceAudit: 14, // Days since any audit
 };
 
 // Shared category section header patterns (bounded, no backtracking risk)
@@ -105,23 +106,23 @@ const CATEGORY_HEADERS = {
   performance: /^### Performance Audits/,
   refactoring: /^### Refactoring Audits/,
   documentation: /^### Documentation Audits/,
-  process: /^### Process Audits/
+  process: /^### Process Audits/,
 };
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const JSON_OUTPUT = args.includes('--json');
-const VERBOSE = args.includes('--verbose');
-const SONARCLOUD_ENABLED = args.includes('--sonarcloud');
-const CATEGORY_ARG = args.find(a => a.startsWith('--category='));
-const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split('=')[1] || null : null;
+const JSON_OUTPUT = args.includes("--json");
+const VERBOSE = args.includes("--verbose");
+const SONARCLOUD_ENABLED = args.includes("--sonarcloud");
+const CATEGORY_ARG = args.find((a) => a.startsWith("--category="));
+const SPECIFIC_CATEGORY = CATEGORY_ARG ? CATEGORY_ARG.split("=")[1] || null : null;
 
 // SonarCloud configuration
 // SECURITY: Allowlist of valid SonarCloud/SonarQube hosts to prevent SSRF
 const ALLOWED_SONAR_HOSTS = [
-  'sonarcloud.io',
-  'sonarqube.com',
-  'localhost'  // For local SonarQube instances
+  "sonarcloud.io",
+  "sonarqube.com",
+  "localhost", // For local SonarQube instances
 ];
 
 /**
@@ -134,33 +135,33 @@ function validateSonarUrl(urlString) {
     const url = new URL(urlString);
 
     // Must be HTTPS (except localhost for local dev)
-    if (url.protocol !== 'https:' && url.hostname !== 'localhost') {
-      return { valid: false, error: 'SONAR_URL must use HTTPS protocol' };
+    if (url.protocol !== "https:" && url.hostname !== "localhost") {
+      return { valid: false, error: "SONAR_URL must use HTTPS protocol" };
     }
 
     // Check against allowlist
-    const isAllowed = ALLOWED_SONAR_HOSTS.some(allowed =>
-      url.hostname === allowed || url.hostname.endsWith(`.${allowed}`)
+    const isAllowed = ALLOWED_SONAR_HOSTS.some(
+      (allowed) => url.hostname === allowed || url.hostname.endsWith(`.${allowed}`)
     );
 
     if (!isAllowed) {
       return {
         valid: false,
-        error: `SONAR_URL host '${url.hostname}' not in allowlist. Allowed: ${ALLOWED_SONAR_HOSTS.join(', ')}`
+        error: `SONAR_URL host '${url.hostname}' not in allowlist. Allowed: ${ALLOWED_SONAR_HOSTS.join(", ")}`,
       };
     }
 
     return { valid: true };
   } catch {
-    return { valid: false, error: 'SONAR_URL is not a valid URL' };
+    return { valid: false, error: "SONAR_URL is not a valid URL" };
   }
 }
 
 const SONAR_CONFIG = {
   token: process.env.SONAR_TOKEN,
-  projectKey: process.env.SONAR_PROJECT_KEY || 'jasonmichaelbell78-creator_sonash-v0',
-  baseUrl: process.env.SONAR_URL || 'https://sonarcloud.io',
-  timeout: 30000
+  projectKey: process.env.SONAR_PROJECT_KEY || "jasonmichaelbell78-creator_sonash-v0",
+  baseUrl: process.env.SONAR_URL || "https://sonarcloud.io",
+  timeout: 30000,
 };
 
 /**
@@ -170,7 +171,7 @@ const SONAR_CONFIG = {
  */
 function verbose(...messages) {
   if (VERBOSE && !JSON_OUTPUT) {
-    console.log('[VERBOSE]', ...messages);
+    console.log("[VERBOSE]", ...messages);
   }
 }
 
@@ -182,18 +183,18 @@ function verbose(...messages) {
 function sanitizeDateString(dateString) {
   const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
 
-  if (!dateString || typeof dateString !== 'string') {
-    return '2025-01-01';
+  if (!dateString || typeof dateString !== "string") {
+    return "2025-01-01";
   }
 
   const trimmed = dateString.trim();
   if (!isoDatePattern.test(trimmed)) {
-    return '2025-01-01';
+    return "2025-01-01";
   }
 
   const parsed = new Date(trimmed);
   if (isNaN(parsed.getTime())) {
-    return '2025-01-01';
+    return "2025-01-01";
   }
 
   return trimmed;
@@ -213,7 +214,7 @@ function safeReadFile(filePath, description) {
   }
 
   try {
-    const content = readFileSync(filePath, 'utf-8');
+    const content = readFileSync(filePath, "utf-8");
     return { success: true, content };
   } catch (error) {
     return { success: false, error: sanitizeError(error) };
@@ -232,8 +233,8 @@ function safeExec(command, description) {
   try {
     const output = execSync(command, {
       cwd: ROOT,
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'pipe']
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
     });
     return { success: true, output: output.trim() };
   } catch (error) {
@@ -252,11 +253,11 @@ function safeExec(command, description) {
  */
 async function fetchSonarCloudData() {
   if (!SONARCLOUD_ENABLED) {
-    return { success: false, error: 'SonarCloud not enabled (use --sonarcloud flag)' };
+    return { success: false, error: "SonarCloud not enabled (use --sonarcloud flag)" };
   }
 
   if (!SONAR_CONFIG.token) {
-    return { success: false, error: 'SONAR_TOKEN environment variable not set' };
+    return { success: false, error: "SONAR_TOKEN environment variable not set" };
   }
 
   // SECURITY: Validate SONAR_URL before sending token
@@ -268,8 +269,8 @@ async function fetchSonarCloudData() {
   verbose(`Fetching SonarCloud data for project: ${SONAR_CONFIG.projectKey}`);
 
   const headers = {
-    'Accept': 'application/json',
-    'Authorization': `Basic ${Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64')}`
+    Accept: "application/json",
+    Authorization: `Basic ${Buffer.from(`${SONAR_CONFIG.token}:`).toString("base64")}`,
   };
 
   const controller = new AbortController();
@@ -278,25 +279,25 @@ async function fetchSonarCloudData() {
   try {
     // Build URLs for all three API calls
     const issuesUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/issues/search`);
-    issuesUrl.searchParams.append('componentKeys', SONAR_CONFIG.projectKey);
-    issuesUrl.searchParams.append('resolved', 'false');
-    issuesUrl.searchParams.append('ps', '1'); // Only need counts, not items
-    issuesUrl.searchParams.append('facets', 'types,severities');
+    issuesUrl.searchParams.append("componentKeys", SONAR_CONFIG.projectKey);
+    issuesUrl.searchParams.append("resolved", "false");
+    issuesUrl.searchParams.append("ps", "1"); // Only need counts, not items
+    issuesUrl.searchParams.append("facets", "types,severities");
 
     const hotspotsUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/hotspots/search`);
-    hotspotsUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
-    hotspotsUrl.searchParams.append('status', 'TO_REVIEW');
-    hotspotsUrl.searchParams.append('ps', '1');
+    hotspotsUrl.searchParams.append("projectKey", SONAR_CONFIG.projectKey);
+    hotspotsUrl.searchParams.append("status", "TO_REVIEW");
+    hotspotsUrl.searchParams.append("ps", "1");
 
     const gateUrl = new URL(`${SONAR_CONFIG.baseUrl}/api/qualitygates/project_status`);
-    gateUrl.searchParams.append('projectKey', SONAR_CONFIG.projectKey);
+    gateUrl.searchParams.append("projectKey", SONAR_CONFIG.projectKey);
 
     // PERFORMANCE: Run all API calls in parallel with AbortSignal.timeout()
     const fetchOptions = { headers, signal: controller.signal };
     const [issuesResponse, hotspotsResponse, gateResponse] = await Promise.all([
       fetch(issuesUrl.toString(), fetchOptions),
       fetch(hotspotsUrl.toString(), fetchOptions),
-      fetch(gateUrl.toString(), fetchOptions)
+      fetch(gateUrl.toString(), fetchOptions),
     ]);
 
     // Collect warnings for partial failures (don't silently ignore)
@@ -305,10 +306,10 @@ async function fetchSonarCloudData() {
     // Process issues response (primary - fail if this fails)
     if (!issuesResponse.ok) {
       const status = issuesResponse.status;
-      let message = 'Request failed';
-      if (status === 401) message = 'Authentication failed - check SONAR_TOKEN';
-      else if (status === 403) message = 'Access denied - insufficient permissions';
-      else if (status === 404) message = 'Project not found';
+      let message = "Request failed";
+      if (status === 401) message = "Authentication failed - check SONAR_TOKEN";
+      else if (status === 403) message = "Access denied - insufficient permissions";
+      else if (status === 404) message = "Project not found";
       return { success: false, error: `SonarCloud API: ${status} - ${message}` };
     }
 
@@ -318,12 +319,12 @@ async function fetchSonarCloudData() {
     const totalIssues = issuesData.paging?.total ?? 0;
 
     // Extract counts from facets for breakdown
-    const typeFacet = issuesData.facets?.find(f => f.property === 'types');
+    const typeFacet = issuesData.facets?.find((f) => f.property === "types");
     const typeValues = typeFacet?.values || [];
 
-    const bugs = typeValues.find(v => v.val === 'BUG')?.count ?? 0;
-    const vulnerabilities = typeValues.find(v => v.val === 'VULNERABILITY')?.count ?? 0;
-    const codeSmells = typeValues.find(v => v.val === 'CODE_SMELL')?.count ?? 0;
+    const bugs = typeValues.find((v) => v.val === "BUG")?.count ?? 0;
+    const vulnerabilities = typeValues.find((v) => v.val === "VULNERABILITY")?.count ?? 0;
+    const codeSmells = typeValues.find((v) => v.val === "CODE_SMELL")?.count ?? 0;
 
     // Process hotspots response (warn on failure, don't silently default)
     let hotspots = 0;
@@ -335,10 +336,10 @@ async function fetchSonarCloudData() {
     }
 
     // Process quality gate response (warn on failure, don't silently default)
-    let qualityGate = 'UNKNOWN';
+    let qualityGate = "UNKNOWN";
     if (gateResponse.ok) {
       const gateData = await gateResponse.json();
-      qualityGate = gateData.projectStatus?.status || 'UNKNOWN';
+      qualityGate = gateData.projectStatus?.status || "UNKNOWN";
     } else {
       warnings.push(`Quality gate API returned ${gateResponse.status} - status unavailable`);
     }
@@ -351,15 +352,15 @@ async function fetchSonarCloudData() {
         codeSmells,
         hotspots,
         qualityGate,
-        total: totalIssues,  // Use paging.total for accuracy
-        warnings: warnings.length > 0 ? warnings : undefined
-      }
+        total: totalIssues, // Use paging.total for accuracy
+        warnings: warnings.length > 0 ? warnings : undefined,
+      },
     };
   } catch (error) {
-    if (error.name === 'AbortError') {
-      return { success: false, error: 'SonarCloud API: Request timed out' };
+    if (error.name === "AbortError") {
+      return { success: false, error: "SonarCloud API: Request timed out" };
     }
-    return { success: false, error: `SonarCloud API: ${error.message || 'Network error'}` };
+    return { success: false, error: `SonarCloud API: ${error.message || "Network error"}` };
   } finally {
     clearTimeout(timeoutId);
   }
@@ -373,7 +374,7 @@ async function fetchSonarCloudData() {
  * @returns {string} Section content (empty string if section not found)
  */
 function extractSection(content, headerPattern) {
-  const lines = content.split('\n');
+  const lines = content.split("\n");
   let inSection = false;
   const sectionLines = [];
 
@@ -391,7 +392,7 @@ function extractSection(content, headerPattern) {
     }
   }
 
-  return sectionLines.join('\n');
+  return sectionLines.join("\n");
 }
 
 /**
@@ -406,7 +407,7 @@ function getCategoryAuditDates(content) {
     performance: null,
     refactoring: null,
     documentation: null,
-    process: null
+    process: null,
   };
 
   for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
@@ -416,10 +417,10 @@ function getCategoryAuditDates(content) {
       const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
       if (dateMatches && dateMatches.length > 0) {
         // Get the most recent date, filtering out invalid dates
-        const dates = dateMatches.map(d => new Date(d).getTime()).filter(t => !Number.isNaN(t));
+        const dates = dateMatches.map((d) => new Date(d).getTime()).filter((t) => !Number.isNaN(t));
         if (dates.length === 0) continue;
         const mostRecent = new Date(Math.max(...dates));
-        categories[category] = mostRecent.toISOString().split('T')[0];
+        categories[category] = mostRecent.toISOString().split("T")[0];
         verbose(`Found ${category} last audit: ${categories[category]}`);
       }
     }
@@ -441,7 +442,7 @@ function getSingleAuditCounts(content) {
     performance: 0,
     refactoring: 0,
     documentation: 0,
-    process: 0
+    process: 0,
   };
 
   for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
@@ -462,10 +463,7 @@ function getSingleAuditCounts(content) {
  * @returns {number} Number of commits since the date (0 if error or none)
  */
 function getCommitsSince(sinceDate) {
-  const result = safeExec(
-    `git rev-list --count --since="${sinceDate}" HEAD`,
-    'count commits'
-  );
+  const result = safeExec(`git rev-list --count --since="${sinceDate}" HEAD`, "count commits");
   return result.success ? Number.parseInt(result.output, 10) || 0 : 0;
 }
 
@@ -479,7 +477,7 @@ function getFilesModifiedSince(sinceDate, pattern) {
   // Use git native output and JavaScript for filtering (more portable than shell pipes)
   const result = safeExec(
     `git log --since="${sinceDate}" --name-only --pretty=format:`,
-    'files modified'
+    "files modified"
   );
 
   if (!result.success || !result.output) {
@@ -490,13 +488,13 @@ function getFilesModifiedSince(sinceDate, pattern) {
   // Filter empty lines (replaces | grep -v "^$")
   const uniqueFiles = new Set(
     result.output
-      .split('\n')
-      .map(f => f.trim())
+      .split("\n")
+      .map((f) => f.trim())
       .filter(Boolean)
   );
 
   // Reset pattern.lastIndex before each test to prevent stateful regex issues
-  return [...uniqueFiles].filter(f => {
+  return [...uniqueFiles].filter((f) => {
     pattern.lastIndex = 0;
     return pattern.test(f);
   });
@@ -512,7 +510,7 @@ function getSecuritySensitiveChanges(sinceDate) {
   // Broad pattern to cast a wide net for security-sensitive changes
   const files = getFilesModifiedSince(sinceDate, /.*/);
   const securityPattern = /(auth|security|firebase|api|secrets|env|token|credential|\.env)/i;
-  return files.filter(f => securityPattern.test(f));
+  return files.filter((f) => securityPattern.test(f));
 }
 
 /**
@@ -524,7 +522,7 @@ function getProcessChanges(sinceDate) {
   // Use JavaScript filtering for cross-platform portability (no shell pipes)
   const files = getFilesModifiedSince(sinceDate, /.*/);
   const processPattern = /(\.github|\.claude|\.husky|scripts\/)/;
-  return files.filter(f => processPattern.test(f));
+  return files.filter((f) => processPattern.test(f));
 }
 
 /**
@@ -550,7 +548,7 @@ function checkCategoryTriggers(category, sinceDate, thresholds) {
   // Get files matching the category's file pattern (generic for all categories)
   files = getFilesModifiedSince(sinceDate, thresholds.filePattern);
   if (thresholds.excludePattern) {
-    files = files.filter(f => !thresholds.excludePattern.test(f));
+    files = files.filter((f) => !thresholds.excludePattern.test(f));
   }
 
   // Check file threshold
@@ -568,13 +566,13 @@ function checkCategoryTriggers(category, sinceDate, thresholds) {
   // Check bundle changes for performance category
   if (thresholds.checkBundle && isBundleChanged(sinceDate)) {
     triggered = true;
-    reasons.push('Bundle configuration changed');
+    reasons.push("Bundle configuration changed");
   }
 
   // Check complexity warnings for refactoring category
   if (thresholds.checkComplexity && hasComplexityWarnings()) {
     triggered = true;
-    reasons.push('Complexity warnings detected');
+    reasons.push("Complexity warnings detected");
   }
 
   return {
@@ -583,7 +581,7 @@ function checkCategoryTriggers(category, sinceDate, thresholds) {
     commits,
     filesChanged: files.length,
     reasons,
-    sinceDate
+    sinceDate,
   };
 }
 
@@ -593,7 +591,10 @@ function checkCategoryTriggers(category, sinceDate, thresholds) {
  * @returns {boolean} True if package.json, next.config.*, or webpack.config.js changed
  */
 function isBundleChanged(sinceDate) {
-  const bundleFiles = getFilesModifiedSince(sinceDate, /^(package\.json|next\.config\.(js|mjs|ts)|webpack\.config\.js)$/);
+  const bundleFiles = getFilesModifiedSince(
+    sinceDate,
+    /^(package\.json|next\.config\.(js|mjs|ts)|webpack\.config\.js)$/
+  );
   return bundleFiles.length > 0;
 }
 
@@ -606,7 +607,7 @@ function hasComplexityWarnings() {
   // Use String.raw to avoid escaping backslashes (SonarQube S6610)
   const result = safeExec(
     String.raw`npm run lint 2>&1 | grep -iE "(\bcomplexity\b|cyclomatic)" | head -1`,
-    'complexity warnings'
+    "complexity warnings"
   );
 
   if (!result.success) return false;
@@ -626,21 +627,23 @@ function checkMultiAITriggers(auditCounts, categoryDates) {
   for (const [category, count] of Object.entries(auditCounts)) {
     if (count >= MULTI_AI_THRESHOLDS.singleAuditCount) {
       triggers.push({
-        type: 'single_audit_count',
+        type: "single_audit_count",
         category,
         count,
         threshold: MULTI_AI_THRESHOLDS.singleAuditCount,
-        message: `${category}: ${count} single audits (threshold: ${MULTI_AI_THRESHOLDS.singleAuditCount})`
+        message: `${category}: ${count} single audits (threshold: ${MULTI_AI_THRESHOLDS.singleAuditCount})`,
       });
     }
   }
 
   // Check days since ANY audit and total commits
   // Only check if there's at least one previous audit to avoid false positives on fresh projects
-  const allDates = Object.values(categoryDates).filter(d => d !== null);
+  const allDates = Object.values(categoryDates).filter((d) => d !== null);
   if (allDates.length > 0) {
     // Filter out invalid dates to prevent runtime crashes
-    const validTimestamps = allDates.map(d => new Date(d).getTime()).filter(t => !Number.isNaN(t));
+    const validTimestamps = allDates
+      .map((d) => new Date(d).getTime())
+      .filter((t) => !Number.isNaN(t));
     if (validTimestamps.length === 0) return triggers;
 
     const mostRecentAudit = new Date(Math.max(...validTimestamps));
@@ -648,23 +651,22 @@ function checkMultiAITriggers(auditCounts, categoryDates) {
 
     if (daysSince >= MULTI_AI_THRESHOLDS.daysSinceAudit) {
       triggers.push({
-        type: 'time_elapsed',
+        type: "time_elapsed",
         daysSince,
         threshold: MULTI_AI_THRESHOLDS.daysSinceAudit,
-        message: `${daysSince} days since last audit (threshold: ${MULTI_AI_THRESHOLDS.daysSinceAudit})`
+        message: `${daysSince} days since last audit (threshold: ${MULTI_AI_THRESHOLDS.daysSinceAudit})`,
       });
     }
 
     // Check total commits since oldest category audit (only when audit history exists)
-    const oldestDate = new Date(Math.min(...validTimestamps))
-      .toISOString().split('T')[0];
+    const oldestDate = new Date(Math.min(...validTimestamps)).toISOString().split("T")[0];
     const totalCommits = getCommitsSince(oldestDate);
     if (totalCommits >= MULTI_AI_THRESHOLDS.totalCommits) {
       triggers.push({
-        type: 'total_commits',
+        type: "total_commits",
         commits: totalCommits,
         threshold: MULTI_AI_THRESHOLDS.totalCommits,
-        message: `${totalCommits} total commits (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`
+        message: `${totalCommits} total commits (threshold: ${MULTI_AI_THRESHOLDS.totalCommits})`,
       });
     }
   }
@@ -679,19 +681,25 @@ function checkMultiAITriggers(auditCounts, categoryDates) {
  * @returns {void}
  */
 function printCategoryTable(categoryResults) {
-  const rows = [['Category', 'Last Audit', 'Commits', 'Files', 'Status']];
+  const rows = [["Category", "Last Audit", "Commits", "Files", "Status"]];
 
   for (const result of categoryResults) {
     const categoryName = result.category.charAt(0).toUpperCase() + result.category.slice(1);
     // Use hadPriorAudit flag instead of comparing to hardcoded date
-    const lastAudit = result.hadPriorAudit ? result.sinceDate : 'Never';
-    const status = result.triggered ? '⚠️  TRIGGERED' : '✅ OK';
-    rows.push([categoryName, lastAudit, result.commits.toString(), result.filesChanged.toString(), status]);
+    const lastAudit = result.hadPriorAudit ? result.sinceDate : "Never";
+    const status = result.triggered ? "⚠️  TRIGGERED" : "✅ OK";
+    rows.push([
+      categoryName,
+      lastAudit,
+      result.commits.toString(),
+      result.filesChanged.toString(),
+      status,
+    ]);
   }
 
-  const colWidths = rows[0].map((_, i) => Math.max(...rows.map(r => r[i].length)) + 2);
+  const colWidths = rows[0].map((_, i) => Math.max(...rows.map((r) => r[i].length)) + 2);
   for (const row of rows) {
-    console.log(row.map((cell, i) => cell.padEnd(colWidths[i])).join(''));
+    console.log(row.map((cell, i) => cell.padEnd(colWidths[i])).join(""));
   }
 }
 
@@ -704,7 +712,7 @@ function printCategoryTable(categoryResults) {
 function printTriggeredDetails(triggeredCategories) {
   if (triggeredCategories.length === 0) return;
 
-  console.log('\n--- Triggered Categories ---');
+  console.log("\n--- Triggered Categories ---");
   for (const result of triggeredCategories) {
     console.log(`\n📋 ${result.category.toUpperCase()}:`);
     for (const reason of result.reasons) {
@@ -722,21 +730,21 @@ function printTriggeredDetails(triggeredCategories) {
  * @returns {void}
  */
 function printMultiAISection(multiAITriggers, auditCounts) {
-  console.log('\n=== Multi-AI Audit Escalation ===\n');
-  console.log('Single-Session Audit Counts:');
+  console.log("\n=== Multi-AI Audit Escalation ===\n");
+  console.log("Single-Session Audit Counts:");
 
   for (const [category, count] of Object.entries(auditCounts)) {
-    const status = count >= MULTI_AI_THRESHOLDS.singleAuditCount ? '⚠️ ' : '✅';
+    const status = count >= MULTI_AI_THRESHOLDS.singleAuditCount ? "⚠️ " : "✅";
     console.log(`  ${status} ${category}: ${count}/${MULTI_AI_THRESHOLDS.singleAuditCount}`);
   }
 
   if (multiAITriggers.length > 0) {
-    console.log('\n⚠️  Multi-AI Audit Recommended:');
+    console.log("\n⚠️  Multi-AI Audit Recommended:");
     for (const trigger of multiAITriggers) {
       console.log(`   - ${trigger.message}`);
     }
   } else {
-    console.log('\n✅ No multi-AI escalation triggers active.');
+    console.log("\n✅ No multi-AI escalation triggers active.");
   }
 }
 
@@ -748,21 +756,21 @@ function printMultiAISection(multiAITriggers, auditCounts) {
  * @returns {void}
  */
 function printRecommendation(triggeredCategories, multiAITriggers) {
-  console.log('\n--- Recommendation ---');
+  console.log("\n--- Recommendation ---");
 
   if (triggeredCategories.length === 0 && multiAITriggers.length === 0) {
-    console.log('✅ No review triggers active. Continue development.');
+    console.log("✅ No review triggers active. Continue development.");
     return;
   }
 
   if (multiAITriggers.length > 0) {
     console.log(`🔴 ${multiAITriggers.length} multi-AI trigger(s) active!`);
-    console.log('   Consider running full multi-AI audit.');
+    console.log("   Consider running full multi-AI audit.");
     return;
   }
 
   console.log(`🟡 ${triggeredCategories.length} single-session trigger(s) active.`);
-  const commands = triggeredCategories.map(c => `/audit-${c.category}`).join(', ');
+  const commands = triggeredCategories.map((c) => `/audit-${c.category}`).join(", ");
   console.log(`   Run: ${commands}`);
 }
 
@@ -773,7 +781,7 @@ function printRecommendation(triggeredCategories, multiAITriggers) {
  * @returns {void}
  */
 function printSonarCloudSection(sonarData, sonarError) {
-  console.log('\n=== SonarCloud Metrics ===\n');
+  console.log("\n=== SonarCloud Metrics ===\n");
 
   if (sonarError) {
     console.log(`⚠️  ${sonarError}`);
@@ -781,11 +789,12 @@ function printSonarCloudSection(sonarData, sonarError) {
   }
 
   if (!sonarData) {
-    console.log('ℹ️  SonarCloud not queried (use --sonarcloud flag)');
+    console.log("ℹ️  SonarCloud not queried (use --sonarcloud flag)");
     return;
   }
 
-  const gateIcon = sonarData.qualityGate === 'OK' ? '✅' : sonarData.qualityGate === 'ERROR' ? '❌' : '⚠️';
+  const gateIcon =
+    sonarData.qualityGate === "OK" ? "✅" : sonarData.qualityGate === "ERROR" ? "❌" : "⚠️";
   console.log(`Quality Gate: ${gateIcon} ${sonarData.qualityGate}`);
   console.log(`\nIssue Counts:`);
   console.log(`  Bugs:            ${sonarData.bugs}`);
@@ -796,7 +805,7 @@ function printSonarCloudSection(sonarData, sonarError) {
 
   // Show warnings for partial API failures
   if (sonarData.warnings && sonarData.warnings.length > 0) {
-    console.log('\n⚠️  Warnings:');
+    console.log("\n⚠️  Warnings:");
     for (const warning of sonarData.warnings) {
       console.log(`   - ${warning}`);
     }
@@ -813,12 +822,12 @@ function printSonarCloudSection(sonarData, sonarError) {
  * @returns {void}
  */
 function formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarResult = null) {
-  console.log('🔍 Checking Review Triggers...\n');
-  console.log('=== Per-Category Single-Session Audit Triggers ===\n');
+  console.log("🔍 Checking Review Triggers...\n");
+  console.log("=== Per-Category Single-Session Audit Triggers ===\n");
 
   printCategoryTable(categoryResults);
 
-  const triggeredCategories = categoryResults.filter(r => r.triggered);
+  const triggeredCategories = categoryResults.filter((r) => r.triggered);
   printTriggeredDetails(triggeredCategories);
   printMultiAISection(multiAITriggers, auditCounts);
 
@@ -837,13 +846,8 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarRe
  */
 function getRepoStartDate() {
   // Use git native -1 flag instead of shell pipe (more portable)
-  const result = safeExec(
-    'git log --reverse -1 --format=%cs',
-    'repository start date'
-  );
-  return result.success && result.output
-    ? sanitizeDateString(result.output)
-    : '2025-01-01';
+  const result = safeExec("git log --reverse -1 --format=%cs", "repository start date");
+  return result.success && result.output ? sanitizeDateString(result.output) : "2025-01-01";
 }
 
 /**
@@ -853,12 +857,12 @@ function getRepoStartDate() {
  */
 async function main() {
   // Read AUDIT_TRACKER.md
-  const trackerResult = safeReadFile(TRACKER_PATH, 'AUDIT_TRACKER.md');
-  const trackerContent = trackerResult.success ? trackerResult.content : '';
+  const trackerResult = safeReadFile(TRACKER_PATH, "AUDIT_TRACKER.md");
+  const trackerContent = trackerResult.success ? trackerResult.content : "";
 
   if (!trackerResult.success && !JSON_OUTPUT) {
     console.warn(`⚠️  Warning: ${trackerResult.error}`);
-    console.warn('   Using default baseline values (no prior audits)\n');
+    console.warn("   Using default baseline values (no prior audits)\n");
   }
 
   // Get repository start date as fallback for missing audit dates
@@ -905,17 +909,17 @@ async function main() {
   }
 
   // Calculate review needed
-  const reviewNeeded = categoryResults.some(r => r.triggered) || multiAITriggers.length > 0;
+  const reviewNeeded = categoryResults.some((r) => r.triggered) || multiAITriggers.length > 0;
 
   // Build recommendation string
-  const triggeredCategories = categoryResults.filter(r => r.triggered);
-  let recommendation = '';
+  const triggeredCategories = categoryResults.filter((r) => r.triggered);
+  let recommendation = "";
   if (!reviewNeeded) {
-    recommendation = 'No review triggers active. Continue development.';
+    recommendation = "No review triggers active. Continue development.";
   } else if (multiAITriggers.length > 0) {
     recommendation = `${multiAITriggers.length} multi-AI trigger(s) active. Consider running full multi-AI audit.`;
   } else {
-    const commands = triggeredCategories.map(c => `/audit-${c.category}`).join(', ');
+    const commands = triggeredCategories.map((c) => `/audit-${c.category}`).join(", ");
     recommendation = `${triggeredCategories.length} single-session trigger(s) active. Run: ${commands}`;
   }
 
@@ -931,14 +935,14 @@ async function main() {
         // Explicit commit metrics
         commits: {
           value: result.commits,
-          threshold: thresholds.commits
+          threshold: thresholds.commits,
         },
         // Explicit file metrics
         files: {
           value: result.filesChanged,
-          threshold: thresholds.files
+          threshold: thresholds.files,
         },
-        reasons: result.reasons
+        reasons: result.reasons,
       };
     }
 
@@ -950,7 +954,7 @@ async function main() {
       categoryResults,
       multiAITriggers,
       auditCounts,
-      reviewNeeded
+      reviewNeeded,
     };
 
     // Include SonarCloud data if available
@@ -970,12 +974,12 @@ async function main() {
 }
 
 // Run
-main().catch(error => {
+main().catch((error) => {
   const msg = sanitizeError(error);
   if (JSON_OUTPUT) {
     console.log(JSON.stringify({ error: msg }));
   } else {
-    console.error('❌ Unexpected error:', msg);
+    console.error("❌ Unexpected error:", msg);
   }
   process.exit(2);
 });

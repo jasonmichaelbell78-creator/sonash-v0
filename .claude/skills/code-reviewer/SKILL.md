@@ -1,6 +1,11 @@
 ---
 name: code-reviewer
-description: Comprehensive code review skill for TypeScript, JavaScript, Python, Swift, Kotlin, Go. Includes automated code analysis, best practice checking, security scanning, and review checklist generation. Use when reviewing pull requests, providing code feedback, identifying issues, or ensuring code quality standards.
+description:
+  Comprehensive code review skill for TypeScript, JavaScript, Python, Swift,
+  Kotlin, Go. Includes automated code analysis, best practice checking, security
+  scanning, and review checklist generation. Use when reviewing pull requests,
+  providing code feedback, identifying issues, or ensuring code quality
+  standards.
 ---
 
 # Code Reviewer
@@ -31,12 +36,14 @@ python scripts/review_report_generator.py [options]
 Automated tool for pr analyzer tasks.
 
 **Features:**
+
 - Automated scaffolding
 - Best practices built-in
 - Configurable templates
 - Quality checks
 
 **Usage:**
+
 ```bash
 python scripts/pr_analyzer.py <project-path> [options]
 ```
@@ -46,12 +53,14 @@ python scripts/pr_analyzer.py <project-path> [options]
 Comprehensive analysis and optimization tool.
 
 **Features:**
+
 - Deep analysis
 - Performance metrics
 - Recommendations
 - Automated fixes
 
 **Usage:**
+
 ```bash
 python scripts/code_quality_checker.py <target-path> [--verbose]
 ```
@@ -61,12 +70,14 @@ python scripts/code_quality_checker.py <target-path> [--verbose]
 Advanced tooling for specialized tasks.
 
 **Features:**
+
 - Expert-level automation
 - Custom configurations
 - Integration ready
 - Production-grade output
 
 **Usage:**
+
 ```bash
 python scripts/review_report_generator.py [arguments] [options]
 ```
@@ -105,12 +116,10 @@ Technical reference guide in `references/common_antipatterns.md`:
 
 ## Tech Stack
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
-**Frontend:** React, Next.js, React Native, Flutter
-**Backend:** Node.js, Express, GraphQL, REST APIs
-**Database:** PostgreSQL, Prisma, NeonDB, Supabase
-**DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
-**Cloud:** AWS, GCP, Azure
+**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**
+React, Next.js, React Native, Flutter **Backend:** Node.js, Express, GraphQL,
+REST APIs **Database:** PostgreSQL, Prisma, NeonDB, Supabase **DevOps:** Docker,
+Kubernetes, Terraform, GitHub Actions, CircleCI **Cloud:** AWS, GCP, Azure
 
 ## Development Workflow
 
@@ -139,6 +148,7 @@ python scripts/code_quality_checker.py .
 ### 3. Implement Best Practices
 
 Follow the patterns and practices documented in:
+
 - `references/code_review_checklist.md`
 - `references/coding_standards.md`
 - `references/common_antipatterns.md`
@@ -146,24 +156,28 @@ Follow the patterns and practices documented in:
 ## Best Practices Summary
 
 ### Code Quality
+
 - Follow established patterns
 - Write comprehensive tests
 - Document decisions
 - Review regularly
 
 ### Performance
+
 - Measure before optimizing
 - Use appropriate caching
 - Optimize critical paths
 - Monitor in production
 
 ### Security
+
 - Validate all inputs
 - Use parameterized queries
 - Implement proper authentication
 - Keep dependencies updated
 
 ### Maintainability
+
 - Write clear code
 - Use consistent naming
 - Add helpful comments
@@ -192,7 +206,8 @@ kubectl apply -f k8s/
 
 ### Common Issues
 
-Check the comprehensive troubleshooting section in `references/common_antipatterns.md`.
+Check the comprehensive troubleshooting section in
+`references/common_antipatterns.md`.
 
 ### Getting Help
 

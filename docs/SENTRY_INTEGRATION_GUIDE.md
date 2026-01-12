@@ -1,17 +1,17 @@
 # Sentry Integration Guide for SoNash Admin Panel
 
-**Last Updated:** 2026-01-03
-**Document Tier:** 2 (Active Reference)
-**Status:** Active
+**Last Updated:** 2026-01-03 **Document Tier:** 2 (Active Reference) **Status:**
+Active
 
 ---
 
 ## Purpose
 
-Step-by-step guide to integrate Sentry error tracking into the SoNash admin panel (Phase 4 of Admin Panel Enhancement).
+Step-by-step guide to integrate Sentry error tracking into the SoNash admin
+panel (Phase 4 of Admin Panel Enhancement).
 
-**Time Required:** ~30 minutes
-**Skill Level:** Beginner-friendly (no CLI required)
+**Time Required:** ~30 minutes **Skill Level:** Beginner-friendly (no CLI
+required)
 
 ---
 
@@ -20,7 +20,8 @@ Step-by-step guide to integrate Sentry error tracking into the SoNash admin pane
 1. Sign up at [sentry.io](https://sentry.io) (free plan)
 2. Create a Node.js project named `sonash-app`
 3. Create an API token with read-only scopes
-4. Add 4 secrets to GitHub: `SENTRY_DSN`, `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
+4. Add 4 secrets to GitHub: `SENTRY_DSN`, `SENTRY_API_TOKEN`, `SENTRY_ORG`,
+   `SENTRY_PROJECT`
 5. Deploy and test the Errors tab in admin panel
 
 ---
@@ -28,12 +29,14 @@ Step-by-step guide to integrate Sentry error tracking into the SoNash admin pane
 ## Overview
 
 This guide will help you:
+
 - Set up a Sentry account and project
 - Create an API token for server-side access
 - Add secrets to GitHub for automatic deployment
 - Integrate Sentry error tracking into the admin panel
 
-**Security Note:** We use a Cloud Function to call Sentry's API (server-side) so the API token is never exposed to the browser.
+**Security Note:** We use a Cloud Function to call Sentry's API (server-side) so
+the API token is never exposed to the browser.
 
 ---
 
@@ -63,10 +66,12 @@ This guide will help you:
 
 1. Look at the browser URL after creating the project
 2. URL format: `https://sentry.io/organizations/YOUR-ORG-SLUG/...`
-3. **COPY** the `YOUR-ORG-SLUG` part (usually your username in lowercase with dashes)
+3. **COPY** the `YOUR-ORG-SLUG` part (usually your username in lowercase with
+   dashes)
 4. **Save this** - you'll need it as `SENTRY_ORG`
 
 **Example:**
+
 - URL: `https://sentry.io/organizations/jasonmichaelbell78/...`
 - Org slug: `jasonmichaelbell78`
 
@@ -86,6 +91,7 @@ This guide will help you:
 4. **Save this value**
 
 **Alternative method if you don't see it:**
+
 1. Click **"Settings"** in the left sidebar (gear icon)
 2. Click **"Projects"** in the left menu
 3. Click on **"sonash-app"**
@@ -108,7 +114,8 @@ This guide will help you:
 
 **What it is:** Authentication token for server-side API access
 
-**⚠️ SECURITY:** This token gives read access to your error data. Never share it or commit it to git!
+**⚠️ SECURITY:** This token gives read access to your error data. Never share it
+or commit it to git!
 
 **How to create it:**
 
@@ -118,6 +125,7 @@ This guide will help you:
 4. Click **"Create New Token"** button (top right)
 
 **Configure the token:**
+
 - **Name:** `SoNash Admin Panel API`
 - **Scopes:** Check ONLY these three boxes:
   - ✅ `event:read` - Read access to issue and event data
@@ -128,11 +136,13 @@ This guide will help you:
 5. Click **"Create Token"**
 6. **CRITICAL:** A popup will say "This is your only chance to copy the token!"
 7. Click **"Copy"** button
-8. **IMMEDIATELY** paste this into a safe place (Notepad, password manager, etc.)
+8. **IMMEDIATELY** paste this into a safe place (Notepad, password manager,
+   etc.)
 9. **Save this** as `SENTRY_API_TOKEN`
 10. Click **"I understand, continue"**
 
-**⚠️ If you lose this token, you cannot recover it - you'll need to create a new one.**
+**⚠️ If you lose this token, you cannot recover it - you'll need to create a new
+one.**
 
 ---
 
@@ -141,13 +151,15 @@ This guide will help you:
 ### Why GitHub Secrets?
 
 We store these in GitHub so they're:
+
 - Encrypted and secure
 - Available to GitHub Actions during deployment
 - Never exposed in your code or git history
 
 ### Steps to Add Secrets
 
-1. Go to your repository: https://github.com/jasonmichaelbell78-creator/sonash-v0
+1. Go to your repository:
+   https://github.com/jasonmichaelbell78-creator/sonash-v0
 2. Click the **"Settings"** tab (top menu)
 3. In the left sidebar, expand **"Secrets and variables"**
 4. Click **"Actions"**
@@ -156,26 +168,33 @@ We store these in GitHub so they're:
 **Add each secret by clicking "New repository secret" and filling in:**
 
 #### Secret 1: SENTRY_DSN
+
 - **Name:** `SENTRY_DSN` (all caps, exactly)
-- **Secret:** Paste your DSN (e.g., `https://abc123...@o123.ingest.sentry.io/456`)
+- **Secret:** Paste your DSN (e.g.,
+  `https://abc123...@o123.ingest.sentry.io/456`)
 - Click **"Add secret"**
 
 #### Secret 2: SENTRY_API_TOKEN
+
 - **Name:** `SENTRY_API_TOKEN` (all caps, exactly)
-- **Secret:** Paste your API token (starts with `sntrys_` or similar long string)
+- **Secret:** Paste your API token (starts with `sntrys_` or similar long
+  string)
 - Click **"Add secret"**
 
 #### Secret 3: SENTRY_ORG
+
 - **Name:** `SENTRY_ORG` (all caps, exactly)
 - **Secret:** Your organization slug (e.g., `jasonmichaelbell78`)
 - Click **"Add secret"**
 
 #### Secret 4: SENTRY_PROJECT
+
 - **Name:** `SENTRY_PROJECT` (all caps, exactly)
 - **Secret:** `sonash-app`
 - Click **"Add secret"**
 
-**Verify:** You should now see 4 new secrets in the list (values are hidden, that's normal)
+**Verify:** You should now see 4 new secrets in the list (values are hidden,
+that's normal)
 
 ---
 
@@ -186,6 +205,7 @@ Once the Sentry integration code is deployed:
 ### Cloud Function: `adminGetSentryErrorSummary`
 
 A new Cloud Function will be created that:
+
 - Calls Sentry's API (server-side only - keeps token secure)
 - Fetches recent errors from the last 24 hours (configurable)
 - Returns error count and top 10 recent errors
@@ -194,6 +214,7 @@ A new Cloud Function will be created that:
 ### Admin Panel Errors Tab
 
 A new tab in the admin panel that shows:
+
 - **Error count badge** - Total unresolved errors
 - **Recent errors list** - Last 10 errors in plain English
 - **Error details** - Count, last seen time, severity
@@ -256,11 +277,13 @@ A new tab in the admin panel that shows:
 ### "Failed to fetch error summary"
 
 **Possible causes:**
+
 1. API token expired or invalid
 2. Incorrect SENTRY_ORG or SENTRY_PROJECT values
 3. API token doesn't have correct scopes
 
 **Fix:**
+
 1. Verify GitHub secrets are set correctly
 2. Check that API token has `event:read`, `org:read`, `project:read` scopes
 3. Create a new API token if needed
@@ -268,11 +291,13 @@ A new tab in the admin panel that shows:
 ### "No errors showing but I know there are errors"
 
 **Possible causes:**
+
 1. Errors are marked as "resolved" in Sentry
 2. Errors are older than 24 hours (default timeframe)
 3. Errors are in a different project
 
 **Fix:**
+
 1. In Sentry, go to Issues and check filters
 2. Look for "Status: Unresolved" filter
 3. Adjust time range in Sentry query if needed
@@ -282,8 +307,10 @@ A new tab in the admin panel that shows:
 **Cause:** Cloud Function not deployed or not exported
 
 **Fix:**
+
 1. Check GitHub Actions deployment logs
-2. Verify `adminGetSentryErrorSummary` is in the exports in `functions/src/index.ts`
+2. Verify `adminGetSentryErrorSummary` is in the exports in
+   `functions/src/index.ts`
 3. Redeploy if needed
 
 ---
@@ -291,6 +318,7 @@ A new tab in the admin panel that shows:
 ## Security Best Practices
 
 ### ✅ DO:
+
 - Keep API token secret (never commit to git)
 - Use minimal scopes (read-only access)
 - Rotate API tokens periodically (every 90 days)
@@ -298,6 +326,7 @@ A new tab in the admin panel that shows:
 - Review Sentry audit logs occasionally
 
 ### ❌ DON'T:
+
 - Share API token with anyone
 - Commit secrets to git
 - Give write/admin scopes unless absolutely necessary
@@ -310,12 +339,12 @@ A new tab in the admin panel that shows:
 
 Before implementation, make sure you have:
 
-| Secret Name | Example Format | Where to Find |
-|-------------|----------------|---------------|
-| `SENTRY_DSN` | `https://abc123@o123.ingest.sentry.io/456` | Sentry → Settings → Client Keys |
-| `SENTRY_API_TOKEN` | `sntrys_eyJpYXQ...` (long string) | Sentry → User Settings → Auth Tokens |
-| `SENTRY_ORG` | `jasonmichaelbell78` | Browser URL bar |
-| `SENTRY_PROJECT` | `sonash-app` | Project name you created |
+| Secret Name        | Example Format                             | Where to Find                        |
+| ------------------ | ------------------------------------------ | ------------------------------------ |
+| `SENTRY_DSN`       | `https://abc123@o123.ingest.sentry.io/456` | Sentry → Settings → Client Keys      |
+| `SENTRY_API_TOKEN` | `sntrys_eyJpYXQ...` (long string)          | Sentry → User Settings → Auth Tokens |
+| `SENTRY_ORG`       | `jasonmichaelbell78`                       | Browser URL bar                      |
+| `SENTRY_PROJECT`   | `sonash-app`                               | Project name you created             |
 
 ---
 
@@ -335,16 +364,20 @@ Once you've added all 4 secrets to GitHub:
 
 - **Sentry Documentation:** https://docs.sentry.io/
 - **Sentry API Reference:** https://docs.sentry.io/api/
-- **GitHub Secrets Docs:** https://docs.github.com/en/actions/security-guides/encrypted-secrets
-- **SoNash Admin Panel Enhancement Spec:** See `SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md`
+- **GitHub Secrets Docs:**
+  https://docs.github.com/en/actions/security-guides/encrypted-secrets
+- **SoNash Admin Panel Enhancement Spec:** See
+  `SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md`
 
 ---
 
 ## AI Instructions
 
 When helping with Sentry integration:
+
 1. Verify all 4 GitHub secrets are configured correctly
-2. Check API token has read-only scopes: `event:read`, `org:read`, `project:read`
+2. Check API token has read-only scopes: `event:read`, `org:read`,
+   `project:read`
 3. For "Failed to fetch" errors, verify Cloud Function is deployed
 4. Never expose or log API tokens in client-side code
 
@@ -352,7 +385,7 @@ When helping with Sentry integration:
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.1 | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
-| 1.0 | 2025-12-23 | Initial creation |
+| Version | Date       | Changes                                                                        |
+| ------- | ---------- | ------------------------------------------------------------------------------ |
+| 1.1     | 2026-01-03 | Added Tier 2 sections (Purpose, Quick Start, AI Instructions, Version History) |
+| 1.0     | 2025-12-23 | Initial creation                                                               |

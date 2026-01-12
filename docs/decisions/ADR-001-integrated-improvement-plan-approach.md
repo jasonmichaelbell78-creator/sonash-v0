@@ -1,21 +1,26 @@
 # ADR-001: Integrated Improvement Plan Approach
 
-**Date:** 2026-01-03
-**Status:** Accepted
-**Decision Makers:** Project Owner, Claude AI (Session #5)
+**Date:** 2026-01-03 **Status:** Accepted **Decision Makers:** Project Owner,
+Claude AI (Session #5)
 
 ---
 
 ## Context
 
-After a comprehensive staff-engineer audit comparing current progress against best practices, we faced a decision point about how to proceed with multiple improvement initiatives:
+After a comprehensive staff-engineer audit comparing current progress against
+best practices, we faced a decision point about how to proceed with multiple
+improvement initiatives:
 
-1. **Documentation Standardization Plan** - 57% complete (Phases 1-4 done, 5-6 remaining)
-2. **Eight-Phase Refactor Plan** - 0% complete (45 CANON findings from 6-AI code review)
+1. **Documentation Standardization Plan** - 57% complete (Phases 1-4 done, 5-6
+   remaining)
+2. **Eight-Phase Refactor Plan** - 0% complete (45 CANON findings from 6-AI code
+   review)
 3. **Developer Tooling Gaps** - Identified missing tools (Prettier, madge, knip)
 4. **Security Items** - App Check disabled, needs re-enablement plan
 
-These initiatives were tracked in separate documents with unclear dependencies and no unified timeline. The question was: restart with a fresh comprehensive plan, or integrate existing work into a unified path?
+These initiatives were tracked in separate documents with unclear dependencies
+and no unified timeline. The question was: restart with a fresh comprehensive
+plan, or integrate existing work into a unified path?
 
 ### Key Constraints
 
@@ -28,11 +33,15 @@ These initiatives were tracked in separate documents with unclear dependencies a
 
 **Create a single Integrated Improvement Plan** that:
 
-1. **Preserves existing progress** - Doc standardization Phases 1-4 remain complete
-2. **Provides linear execution path** - 6 sequential steps with clear dependencies
+1. **Preserves existing progress** - Doc standardization Phases 1-4 remain
+   complete
+2. **Provides linear execution path** - 6 sequential steps with clear
+   dependencies
 3. **Consolidates all improvement work** - One document, one source of truth
-4. **Validates before acting** - Delta Review (Step 4) refreshes stale refactor findings
-5. **Integrates into ROADMAP.md** - Valid items migrate to M2, avoiding document proliferation
+4. **Validates before acting** - Delta Review (Step 4) refreshes stale refactor
+   findings
+5. **Integrates into ROADMAP.md** - Valid items migrate to M2, avoiding document
+   proliferation
 
 ### The 6-Step Path
 
@@ -68,9 +77,11 @@ These initiatives were tracked in separate documents with unclear dependencies a
 
 ### Alternative 1: Full Planning Restart
 
-- **Description:** Discard existing progress, create new comprehensive plan from scratch
+- **Description:** Discard existing progress, create new comprehensive plan from
+  scratch
 - **Pros:** Clean slate, fresh perspective, potentially better architecture
-- **Cons:** Wastes 57% completed doc work, demoralizing, delays everything further
+- **Cons:** Wastes 57% completed doc work, demoralizing, delays everything
+  further
 - **Why rejected:** Sunk cost is real; existing work is valuable and functional
 
 ### Alternative 2: Aggressive Doc Consolidation (197→30 files)
@@ -78,7 +89,8 @@ These initiatives were tracked in separate documents with unclear dependencies a
 - **Description:** Merge most docs into a small number of canonical files
 - **Pros:** Simpler navigation, less maintenance overhead
 - **Cons:** Massive disruption, high risk of information loss, scope creep
-- **Why rejected:** Too disruptive for solo project; current 5-tier hierarchy works
+- **Why rejected:** Too disruptive for solo project; current 5-tier hierarchy
+  works
 
 ### Alternative 3: Numbered Folder Structure (1-core/, 2-docs/, etc.)
 
@@ -89,14 +101,19 @@ These initiatives were tracked in separate documents with unclear dependencies a
 
 ### Alternative 4: Immediate Feature Folder Refactoring
 
-- **Description:** Start architectural refactoring immediately based on CANON findings
+- **Description:** Start architectural refactoring immediately based on CANON
+  findings
 - **Pros:** Address code issues sooner, visible progress
 - **Cons:** Acting on potentially stale findings, foundation incomplete
-- **Why rejected:** Delta Review should validate findings first; foundation before features
+- **Why rejected:** Delta Review should validate findings first; foundation
+  before features
 
 ## Related Documents
 
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md) - The plan created by this decision
-- [DOCUMENTATION_STANDARDIZATION_PLAN.md](../archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) - Original doc plan (archived)
-- [EIGHT_PHASE_REFACTOR_PLAN.md](../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) - Original refactor plan (archived)
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md) - The plan
+  created by this decision
+- [DOCUMENTATION_STANDARDIZATION_PLAN.md](../archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) -
+  Original doc plan (archived)
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) -
+  Original refactor plan (archived)
 - [ROADMAP.md](../../ROADMAP.md) - Target for validated refactor items

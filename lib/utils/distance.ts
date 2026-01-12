@@ -6,15 +6,15 @@
  */
 
 export interface Coordinates {
-  lat: number
-  lng: number
+  lat: number;
+  lng: number;
 }
 
 /**
  * Earth's radius in miles
  * Using mean radius for accuracy at Nashville's latitude (~36°N)
  */
-const EARTH_RADIUS_MILES = 3958.8
+const EARTH_RADIUS_MILES = 3958.8;
 
 /**
  * Converts degrees to radians
@@ -22,7 +22,7 @@ const EARTH_RADIUS_MILES = 3958.8
  * @returns Angle in radians
  */
 function toRadians(degrees: number): number {
-  return degrees * (Math.PI / 180)
+  return degrees * (Math.PI / 180);
 }
 
 /**
@@ -44,19 +44,19 @@ function toRadians(degrees: number): number {
  * // Returns approximately 1.0 miles
  */
 export function calculateDistance(point1: Coordinates, point2: Coordinates): number {
-  const lat1 = toRadians(point1.lat)
-  const lat2 = toRadians(point2.lat)
-  const deltaLat = toRadians(point2.lat - point1.lat)
-  const deltaLng = toRadians(point2.lng - point1.lng)
+  const lat1 = toRadians(point1.lat);
+  const lat2 = toRadians(point2.lat);
+  const deltaLat = toRadians(point2.lat - point1.lat);
+  const deltaLng = toRadians(point2.lng - point1.lng);
 
   // Haversine formula
   const a =
     Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2)
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return EARTH_RADIUS_MILES * c
+  return EARTH_RADIUS_MILES * c;
 }
 
 /**
@@ -72,12 +72,12 @@ export function calculateDistance(point1: Coordinates, point2: Coordinates): num
  */
 export function formatDistance(miles: number): string {
   if (miles < 0.1) {
-    return "< 0.1 mi"
+    return "< 0.1 mi";
   }
   if (miles < 10) {
-    return `${miles.toFixed(1)} mi`
+    return `${miles.toFixed(1)} mi`;
   }
-  return `${Math.round(miles)} mi`
+  return `${Math.round(miles)} mi`;
 }
 
 /**
@@ -97,17 +97,17 @@ export function sortByDistance<T>(
   getCoords: (item: T) => Coordinates | undefined
 ): T[] {
   return [...items].sort((a, b) => {
-    const coordsA = getCoords(a)
-    const coordsB = getCoords(b)
+    const coordsA = getCoords(a);
+    const coordsB = getCoords(b);
 
     // Items without coordinates go to the end
-    if (!coordsA && !coordsB) return 0
-    if (!coordsA) return 1
-    if (!coordsB) return -1
+    if (!coordsA && !coordsB) return 0;
+    if (!coordsA) return 1;
+    if (!coordsB) return -1;
 
-    const distA = calculateDistance(userLocation, coordsA)
-    const distB = calculateDistance(userLocation, coordsB)
+    const distA = calculateDistance(userLocation, coordsA);
+    const distB = calculateDistance(userLocation, coordsB);
 
-    return distA - distB
-  })
+    return distA - distB;
+  });
 }

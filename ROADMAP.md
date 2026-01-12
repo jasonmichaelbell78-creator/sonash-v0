@@ -1,8 +1,6 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.1
-**Last Updated:** 2026-01-10
-**Status:** ACTIVE
+**Document Version:** 2.1 **Last Updated:** 2026-01-10 **Status:** ACTIVE
 **Overall Completion:** ~35%
 
 ---
@@ -19,9 +17,14 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
-> **⚠️ BLOCKER:** Integrated improvement initiative is active. See [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) for the unified roadmap covering documentation standardization, tooling setup, and architecture refactoring validation.
+> **⚠️ BLOCKER:** Integrated improvement initiative is active. See
+> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) for the
+> unified roadmap covering documentation standardization, tooling setup, and
+> architecture refactoring validation.
 >
-> **Architecture Refactoring:** Pending Delta Review validation (Step 4 of Integrated Improvement Plan). Original plan archived: [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)
+> **Architecture Refactoring:** Pending Delta Review validation (Step 4 of
+> Integrated Improvement Plan). Original plan archived:
+> [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)
 
 ---
 
@@ -46,31 +49,34 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 ## 🎯 Vision
 
-Build a comprehensive, secure digital recovery notebook that helps individuals track their sobriety journey with privacy-first design and evidence-based recovery practices.
+Build a comprehensive, secure digital recovery notebook that helps individuals
+track their sobriety journey with privacy-first design and evidence-based
+recovery practices.
 
 ---
 
 ## 📊 Milestones Overview
 
-| Milestone | Status | Progress | Target | Priority |
-|-----------|--------|----------|--------|----------|
-| **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
-| **M1 - Foundation** | ✅ Complete | 100% | Q1 2026 | P0 |
-| **Integrated Improvement Plan** | 🔄 In Progress | ~44% (3.5/8 steps) | Q1 2026 | P0 BLOCKER |
-| **M1.5 - Quick Wins** | ⏸️ BLOCKED | ~50% | Q1 2026 | P0 |
-| **M1.6 - Admin Panel + UX** | ⏸️ BLOCKED | ~75% | Q1 2026 | P1 |
-| **M2 - Architecture** | ⏸️ Optional | 0% | As needed | P2 |
-| **M3 - Meetings** | 📋 Planned | 0% | Q2 2026 | P1 |
-| **M4 - Expansion** | 📋 Planned | 0% | Q2 2026 | P1 |
-| **M5 - Inventories** | 📋 Planned | 0% | Q3 2026 | P1 |
-| **M6 - Prayers** | 📋 Planned | 0% | Q3 2026 | P2 |
-| **M7 - Fellowship** | 📋 Planned | 0% | Q4 2026 | P1 |
-| **M8 - Speakers** | 📋 Planned | 0% | Q4 2026 | P2 |
-| **M10 - Monetization** | 🔬 Research | 0% | 2027 | P2 |
+| Milestone                       | Status         | Progress           | Target    | Priority   |
+| ------------------------------- | -------------- | ------------------ | --------- | ---------- |
+| **M0 - Baseline**               | ✅ Complete    | 100%               | Q4 2025   | Foundation |
+| **M1 - Foundation**             | ✅ Complete    | 100%               | Q1 2026   | P0         |
+| **Integrated Improvement Plan** | 🔄 In Progress | ~44% (3.5/8 steps) | Q1 2026   | P0 BLOCKER |
+| **M1.5 - Quick Wins**           | ⏸️ BLOCKED     | ~50%               | Q1 2026   | P0         |
+| **M1.6 - Admin Panel + UX**     | ⏸️ BLOCKED     | ~75%               | Q1 2026   | P1         |
+| **M2 - Architecture**           | ⏸️ Optional    | 0%                 | As needed | P2         |
+| **M3 - Meetings**               | 📋 Planned     | 0%                 | Q2 2026   | P1         |
+| **M4 - Expansion**              | 📋 Planned     | 0%                 | Q2 2026   | P1         |
+| **M5 - Inventories**            | 📋 Planned     | 0%                 | Q3 2026   | P1         |
+| **M6 - Prayers**                | 📋 Planned     | 0%                 | Q3 2026   | P2         |
+| **M7 - Fellowship**             | 📋 Planned     | 0%                 | Q4 2026   | P1         |
+| **M8 - Speakers**               | 📋 Planned     | 0%                 | Q4 2026   | P2         |
+| **M10 - Monetization**          | 🔬 Research    | 0%                 | 2027      | P2         |
 
 **Overall Progress:** ~35%
 
-> **Archive:** For completed M0 and M1 milestones, see [ROADMAP_LOG.md](./ROADMAP_LOG.md)
+> **Archive:** For completed M0 and M1 milestones, see
+> [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 
 ### Milestone Dependency Graph
 
@@ -130,7 +136,8 @@ flowchart TD
     style M10 fill:#DDA0DD
 ```
 
-**Legend:** 🟢 Complete | 🟡 In Progress/Blocker | 🟠 Blocked | ⚪ Optional | 🔵 Planned | 🟣 Research
+**Legend:** 🟢 Complete | 🟡 In Progress/Blocker | 🟠 Blocked | ⚪ Optional | 🔵
+Planned | 🟣 Research
 
 ---
 
@@ -168,7 +175,8 @@ flowchart TD
    - **Personalized Prompts:**
      - "Have you called your sponsor today?" (if `hasSponsor === 'yes'`)
      - "Consider finding a sponsor" nudges (if `hasSponsor === 'no'`)
-     - Meeting etiquette tips for sponsor-seekers (if `hasSponsor === 'looking'`)
+     - Meeting etiquette tips for sponsor-seekers (if
+       `hasSponsor === 'looking'`)
    - **Step Work Integration:**
      - Encourage sponsor involvement for Step 4-9
      - "Share with sponsor" quick action for inventory entries
@@ -176,7 +184,8 @@ flowchart TD
      - Sponsor contact frequency
      - Retention comparison (sponsored vs non-sponsored users)
      - Feature usage by sponsor status
-   - **Why:** Fulfills onboarding promise of personalization, proven retention booster
+   - **Why:** Fulfills onboarding promise of personalization, proven retention
+     booster
 
 3. **Stage-of-Recovery Selector** (4 SP)
    - Adjusts app emphasis based on user stage
@@ -191,7 +200,8 @@ flowchart TD
    - FAQ section (account, privacy, data)
    - In-app tooltips for key features
    - Optional: Interactive tutorial/walkthrough on first launch
-   - **Why:** Reduces confusion, improves onboarding, helps users get value faster
+   - **Why:** Reduces confusion, improves onboarding, helps users get value
+     faster
 
 5. **Sober Fun Ideas Generator** (3 SP)
    - Random activities for boredom
@@ -215,17 +225,23 @@ flowchart TD
 
 ## 🖥️ M1.6 - Admin Panel + Today Page Enhancement (🔄 In Progress)
 
-**Goal:** Operational monitoring for admins + dramatically improved user experience for Today page
+**Goal:** Operational monitoring for admins + dramatically improved user
+experience for Today page
 
-**Detailed Specification:** See [SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md) (v1.4)
+**Detailed Specification:** See
+[SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)
+(v1.4)
 
-> **Completed Phases:** For details on completed Phases 1-3 and Today Page Enhancement, see [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
+> **Completed Phases:** For details on completed Phases 1-3 and Today Page
+> Enhancement, see
+> [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
 
 ### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
 
 **Priority:** High | **Effort:** Low-Medium | **Value:** High
 
-**Approach:** Hybrid summary + deep links via Cloud Function (token never exposed to client)
+**Approach:** Hybrid summary + deep links via Cloud Function (token never
+exposed to client)
 
 - [ ] `adminGetSentryErrorSummary` Cloud Function (server-side API call)
 - [ ] Error summary card on Dashboard (count + trend)
@@ -233,7 +249,8 @@ flowchart TD
 - [ ] Deep links to Sentry for each error
 - [ ] User ID correlation (link to user detail if available)
 
-**Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`
+**Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`,
+`SENTRY_ORG`, `SENTRY_PROJECT`
 
 ### Phase 5: System Logs - GCP Integration (📋 Planned)
 
@@ -246,15 +263,18 @@ flowchart TD
 - [ ] Verify log retention configured (90+ days)
 - [ ] Optional: Log sink for long-term archival
 
-**Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant) — no Firestore `admin_logs` collection.
+**Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant)
+— no Firestore `admin_logs` collection.
 
 ### Phase 6: Customizable Quick Actions (📋 Planned)
 
-**Priority:** Medium | **Effort:** Medium | **Value:** High — personalized user experience
+**Priority:** Medium | **Effort:** Medium | **Value:** High — personalized user
+experience
 
 **Approach:** User-configurable FAB with Firestore preferences
 
 **Objectives:**
+
 - [ ] Settings panel for Quick Actions customization (More tab → Settings)
 - [ ] Action selection (choose which actions to show)
 - [ ] Action ordering (drag-and-drop reordering)
@@ -263,27 +283,36 @@ flowchart TD
 - [ ] Fallback to sensible defaults for new users
 
 **Use Cases:**
-1. **Power User:** Removes "Quick Mood" (doesn't use it), adds custom sponsor phone
+
+1. **Power User:** Removes "Quick Mood" (doesn't use it), adds custom sponsor
+   phone
 2. **Minimalist:** Shows only 2 actions (Call Sponsor, Community)
 3. **Meeting-Focused:** Reorders to prioritize Community at top
-4. **Contact-Heavy:** Adds multiple phone numbers (sponsor, accountability partner, hotline)
+4. **Contact-Heavy:** Adds multiple phone numbers (sponsor, accountability
+   partner, hotline)
 
 **New Files:**
+
 - `components/settings/quick-actions-settings.tsx` - Settings panel UI
 - `lib/quick-actions-config.ts` - Default actions + validation
 
 **Modified Files:**
+
 - `components/notebook/features/quick-actions-fab.tsx` - Load user preferences
-- `firestore.rules` - Allow user to read/write `users/{uid}/preferences/quickActions`
+- `firestore.rules` - Allow user to read/write
+  `users/{uid}/preferences/quickActions`
 
 **Technical Details:**
+
 - **Data Model:** `QuickActionsPreferences` in `/users/{uid}/preferences`
-- **Action Types:** navigation (NotebookModuleId), phone (tel: link), custom (URL)
+- **Action Types:** navigation (NotebookModuleId), phone (tel: link), custom
+  (URL)
 - **Max Actions:** 6 (performance limit)
 - **Drag-and-Drop:** Using `@dnd-kit/core`
 - **Phone Validation:** Standard phone number format checking
 
 **Future Enhancements:**
+
 - Action templates (e.g., "Meeting-Focused", "Contact-Heavy")
 - Share action configurations with other users
 - Analytics on most-used actions
@@ -291,16 +320,23 @@ flowchart TD
 
 ### Phase 7: Local Recovery Resources Directory (📋 Planned)
 
-**Priority:** Medium-High | **Effort:** Medium (5-8 SP) | **Value:** High — critical local resource access
+**Priority:** Medium-High | **Effort:** Medium (5-8 SP) | **Value:** High —
+critical local resource access
 
-**Approach:** Display verified Nashville recovery resources with admin management
+**Approach:** Display verified Nashville recovery resources with admin
+management
 
 **Context:**
-- 60+ verified local resources already aggregated in `data/local-resources.ts` (Dec 28, 2025)
-- 8 categories: Clinical (Detox, Residential, Outpatient, Harm Reduction) + Community (Recovery Centers, Essentials, Jobs/Legal, Wellness)
-- All resources have addresses, phone numbers, websites, services, and GPS coordinates
+
+- 60+ verified local resources already aggregated in `data/local-resources.ts`
+  (Dec 28, 2025)
+- 8 categories: Clinical (Detox, Residential, Outpatient, Harm Reduction) +
+  Community (Recovery Centers, Essentials, Jobs/Legal, Wellness)
+- All resources have addresses, phone numbers, websites, services, and GPS
+  coordinates
 
 **User-Facing Features:**
+
 - [ ] Display local resources in Growth tab (below Sober Living Finder)
 - [ ] Category filtering (8 predefined categories)
 - [ ] Search/filter by resource name or services
@@ -310,6 +346,7 @@ flowchart TD
 - [ ] Sort by distance (if location permission granted)
 
 **Admin Panel Features:**
+
 - [ ] Resources tab in Admin Panel (similar to Meetings/Sober Living)
 - [ ] CRUD operations for local resources
 - [ ] Category management
@@ -319,19 +356,26 @@ flowchart TD
 - [ ] Phone/website format validation
 
 **Technical Implementation:**
+
 - **New Collection:** `/local_resources/{resourceId}` in Firestore
-- **New Service:** `lib/db/local-resources.ts` (similar to `meetings.ts`, `sober-living.ts`)
-- **New Component:** `components/notebook/pages/local-resources-section.tsx` (in Growth tab)
+- **New Service:** `lib/db/local-resources.ts` (similar to `meetings.ts`,
+  `sober-living.ts`)
+- **New Component:** `components/notebook/pages/local-resources-section.tsx` (in
+  Growth tab)
 - **New Admin Component:** `components/admin/local-resources-tab.tsx`
-- **Map Integration:** Reuse existing `MeetingMap` component with LocalResource type support
-- **Firestore Rules:** Admin-write, user-read for `/local_resources/{resourceId}`
+- **Map Integration:** Reuse existing `MeetingMap` component with LocalResource
+  type support
+- **Firestore Rules:** Admin-write, user-read for
+  `/local_resources/{resourceId}`
 
 **Data Migration:**
+
 - [ ] Cloud Function or script to seed Firestore from `data/local-resources.ts`
 - [ ] Preserve existing data structure (categories, locationType, coordinates)
 - [ ] Add `createdAt`, `updatedAt`, `active` fields
 
 **Files to Create:**
+
 1. `lib/db/local-resources.ts` - Service layer (CRUD operations)
 2. `components/growth/local-resources-card.tsx` - Resource display card
 3. `components/growth/local-resources-list.tsx` - Filterable list view
@@ -342,11 +386,14 @@ flowchart TD
 8. Update `firestore.indexes.json` - Add indexes for category, city filtering
 
 **Files to Modify:**
+
 1. `components/notebook/pages/growth-page.tsx` - Add local resources section
 2. `components/admin/admin-panel.tsx` - Add Resources tab
-3. `components/maps/meeting-map.tsx` - Extend to support LocalResource type (or create separate component)
+3. `components/maps/meeting-map.tsx` - Extend to support LocalResource type (or
+   create separate component)
 
 **Effort Estimate:**
+
 - Service layer + Firestore setup: 2 hours
 - User-facing UI (list + map + filters): 3-4 hours
 - Admin panel CRUD: 2-3 hours
@@ -355,24 +402,27 @@ flowchart TD
 - **Total: 9-12 hours (6-8 SP)**
 
 **Dependencies:**
+
 - ✅ Data already aggregated (`data/local-resources.ts`)
 - ✅ Map component already exists (reuse `MeetingMap`)
 - ✅ Admin panel framework already exists
 - ⚠️ Should wait until PR1 complete (Firestore rules changes)
 
 **Why This Matters:**
+
 - Provides critical access to treatment, housing, food, legal services
 - Fills gap between meetings (fellowship) and clinical care
-- High user value for newly sober individuals navigating Nashville recovery ecosystem
+- High user value for newly sober individuals navigating Nashville recovery
+  ecosystem
 
 ### Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Time to identify issue | < 2 minutes |
-| Dashboard load time | < 3 seconds |
-| Error visibility | 100% of Cloud Function errors |
-| Job failure detection | < 1 hour after failure |
+| Metric                 | Target                        |
+| ---------------------- | ----------------------------- |
+| Time to identify issue | < 2 minutes                   |
+| Dashboard load time    | < 3 seconds                   |
+| Error visibility       | 100% of Cloud Function errors |
+| Job failure detection  | < 1 hour after failure        |
 
 ---
 
@@ -383,64 +433,124 @@ flowchart TD
 ### Deferred Foundation Work
 
 **From M1 - Monitoring & Observability:**
+
 - ⏳ Performance monitoring (page load times, API latency)
 - ⏳ User analytics baseline (DAU, retention, feature usage)
 - ⏳ Alert thresholds defined (automated error/performance alerts)
 
 **Incident Response Automation** (Jan 2026):
+
 - ⏳ **Phase 1: Detection & Alerting** (2-3 hours, P1)
-  - GCP budget alerts with Slack/Discord webhook ($25, $50, $100, $500 thresholds)
-  - Log-based metrics for security events (RATE_LIMIT_EXCEEDED, APP_CHECK_FAILURE, AUTHORIZATION_FAILURE)
+  - GCP budget alerts with Slack/Discord webhook ($25, $50, $100, $500
+    thresholds)
+  - Log-based metrics for security events (RATE_LIMIT_EXCEEDED,
+    APP_CHECK_FAILURE, AUTHORIZATION_FAILURE)
   - Sentry alert rules for error rate spikes (>10/min → P2, >50/min → P1)
   - **Reference:** [INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)
 - ⏳ **Phase 2: Response Automation** (3-4 hours, P2)
-  - Hot-loadable blocklist in Firestore (`/system/blocklist`) - no redeploy to block attackers
-  - Emergency response scripts (`scripts/emergency/block-user.sh`, `disable-function.sh`, `deploy-lockdown-rules.sh`)
+  - Hot-loadable blocklist in Firestore (`/system/blocklist`) - no redeploy to
+    block attackers
+  - Emergency response scripts (`scripts/emergency/block-user.sh`,
+    `disable-function.sh`, `deploy-lockdown-rules.sh`)
   - Incident timeline extractor (auto-export GCP logs to incident report format)
   - Admin panel UI for blocklist management
 
 **From M1 - Code Quality & Automation:**
+
 - ⏳ CI/CD pipeline setup (GitHub Actions or similar)
 - ⏳ Automated testing in PR workflow
 - ⏳ Client-side rate limiting in firestore-service.ts
 
 **From M1 - Security Hardening:**
+
 - 🔄 **Manual reCAPTCHA Enterprise Implementation** (Dec 30, 2025)
-  - ✅ **Frontend Integration:** `lib/recaptcha.ts` - `getRecaptchaToken()` helper for bot protection
-  - ✅ **Backend Verification:** `functions/src/recaptcha-verify.ts` - Server-side token validation
-  - ✅ **Security Wrapper Integration:** Added to all 5 Cloud Functions with `recaptchaAction` parameters
-  - ✅ **Made Optional:** Corporate networks block Google reCAPTCHA - logs `RECAPTCHA_MISSING_TOKEN` (WARNING)
+  - ✅ **Frontend Integration:** `lib/recaptcha.ts` - `getRecaptchaToken()`
+    helper for bot protection
+  - ✅ **Backend Verification:** `functions/src/recaptcha-verify.ts` -
+    Server-side token validation
+  - ✅ **Security Wrapper Integration:** Added to all 5 Cloud Functions with
+    `recaptchaAction` parameters
+  - ✅ **Made Optional:** Corporate networks block Google reCAPTCHA - logs
+    `RECAPTCHA_MISSING_TOKEN` (WARNING)
   - ✅ **Event Logging:** Added 8 reCAPTCHA event types to `security-logger.ts`
-  - ⏳ **Admin Panel Monitoring:** See [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)
+  - ⏳ **Admin Panel Monitoring:** See
+    [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)
   - **Files:** See commits `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
 - ❌ **Firebase App Check** (Dec 30, 2025)
   - **Status:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
-  - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual reCAPTCHA as workaround
-  - **Impact:** Security posture weakened - App Check provides bot protection at Firebase SDK level
-  - **Next Steps:** Decide strategy (tracked in [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Step 4, Task 4.4)
+  - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual
+    reCAPTCHA as workaround
+  - **Impact:** Security posture weakened - App Check provides bot protection at
+    Firebase SDK level
+  - **Next Steps:** Decide strategy (tracked in
+    [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Step
+    4, Task 4.4)
     - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
     - Option B: Wait for throttle to clear, then re-enable App Check only
-    - Option C: Accept weaker security posture (reCAPTCHA optional, no App Check)
-  - **Reference:** [RECAPTCHA_REMOVAL_GUIDE.md](./docs/RECAPTCHA_REMOVAL_GUIDE.md) for removal/implementation guides
-- **Priority:** P0 - CRITICAL security decision needed (App Check should be re-enabled)
+    - Option C: Accept weaker security posture (reCAPTCHA optional, no App
+      Check)
+  - **Reference:**
+    [RECAPTCHA_REMOVAL_GUIDE.md](./docs/RECAPTCHA_REMOVAL_GUIDE.md) for
+    removal/implementation guides
+- **Priority:** P0 - CRITICAL security decision needed (App Check should be
+  re-enabled)
 
 **Data Quality & Operations:**
+
 - ⏳ **Retry Geocoding for 50 Meeting Addresses** (Dec 28, 2025)
   - **Issue:** OpenStreetMap Nominatim API blocked our IP for bulk requests
   - **Status:** 50 meeting addresses still need GPS coordinates
-  - **Solution:** Wait 24-48 hours for block to lift, then retry with scripts/retry-failures.ts
-  - **Alternative:** Switch to Google Maps API or Mapbox for production reliability
+  - **Solution:** Wait 24-48 hours for block to lift, then retry with
+    scripts/retry-failures.ts
+  - **Alternative:** Switch to Google Maps API or Mapbox for production
+    reliability
   - **Files:** `scripts/retry-failures.ts`, `scripts/enrichment_failures.json`
   - **Effort:** 10 minutes (retry) or 2-4 hours (API migration)
   - **Priority:** P2 - Data quality improvement, not blocking core functionality
-- ⏳ **Consider Reverting to next/font/google for Font Optimization** (Dec 28, 2025)
-  - **Current State:** Using @fontsource packages (self-hosted) to avoid build-time network dependency
-  - **Issue:** Previously experienced intermittent TLS/network failures when building with next/font/google
-  - **Benefits of Reverting:** Automatic font optimization, subsetting, and preloading by Next.js
-  - **When to Revisit:** Once build infrastructure has stable/reliable network access to fonts.googleapis.com
+- ⏳ **Consider Reverting to next/font/google for Font Optimization** (Dec
+  28, 2025)
+  - **Current State:** Using @fontsource packages (self-hosted) to avoid
+    build-time network dependency
+  - **Issue:** Previously experienced intermittent TLS/network failures when
+    building with next/font/google
+  - **Benefits of Reverting:** Automatic font optimization, subsetting, and
+    preloading by Next.js
+  - **When to Revisit:** Once build infrastructure has stable/reliable network
+    access to fonts.googleapis.com
   - **Files:** `app/layout.tsx`, `package.json` (remove @fontsource deps)
   - **Effort:** 15 minutes (revert to original implementation)
   - **Priority:** P3 - Nice-to-have optimization, current solution works well
+
+### Code Quality Issues (CI Flagged - 2026-01-12)
+
+These pre-existing issues were identified during PR review CI:
+
+- ⏳ **Prettier Formatting (518 files)** - Run `npm run format:write` to fix
+  - **Priority:** P2 - Code style consistency
+  - **Effort:** 5 minutes (automated fix)
+- ⏳ **Unused devDependencies** - Remove `@modelcontextprotocol/sdk`, `undici`
+  - **Priority:** P3 - Dependency cleanup
+  - **Effort:** 5 minutes
+- ⏳ **Unlisted dependencies** - Add `globals` (eslint.config.mjs),
+  `postcss-load-config` (postcss.config.mjs)
+  - **Priority:** P2 - Prevents CI failures
+  - **Effort:** 5 minutes
+- ⏳ **Duplicate exports** - Fix `ErrorBoundary|default` in
+  `components/providers/error-boundary.tsx`
+  - **Priority:** P3 - Code style
+  - **Effort:** 10 minutes
+- ⏳ **Pattern Compliance - Dev Utility Scripts** (Review #136)
+  - **Issue:** 79 pattern violations in development/migration scripts
+  - **Files:** `scripts/ai-review.js`, `scripts/assign-review-tier.js`,
+    `scripts/check-docs-light.js`, `scripts/check-document-sync.js`,
+    `scripts/normalize-canon-ids.js`, `scripts/validate-audit.js`, and others
+  - **Patterns:** Unsafe `error.message` access, `readFileSync` without
+    try/catch, `startsWith()` path validation, Windows path issues
+  - **Current State:** Excluded via `GLOBAL_EXCLUDE` in
+    `check-pattern-compliance.js`
+  - **Priority:** P4 - Low priority (dev tools, rarely run)
+  - **Effort:** 4-6 hours (fix all 79 violations incrementally)
+  - **Approach:** Fix during related maintenance work, not dedicated sprint
 
 ### Potential Architecture Work
 
@@ -457,23 +567,31 @@ flowchart TD
   - **Issue:** Various contexts lack proper error handling
   - **Fix:** Implement consistent error state pattern
   - **Effort:** 4 hours
-- ⏳ **M17: Onboarding Wizard is 515 Lines** (components/onboarding/onboarding-wizard.tsx)
+- ⏳ **M17: Onboarding Wizard is 515 Lines**
+  (components/onboarding/onboarding-wizard.tsx)
   - **Issue:** Single component with 5 different step views
   - **Fix:** Extract each step into own component
   - **Effort:** 3 hours
   - **Priority:** LOW - works fine, refactor when needed
-- ⏳ **M2: Duplicate reCAPTCHA Verification Logic** (security-wrapper.ts & index.ts)
+- ⏳ **M2: Duplicate reCAPTCHA Verification Logic** (security-wrapper.ts &
+  index.ts)
   - **Issue:** Optional reCAPTCHA verification logic duplicated in two locations
-  - **Fix:** Extract into `verifyRecaptchaTokenOptional()` helper in recaptcha-verify.ts
+  - **Fix:** Extract into `verifyRecaptchaTokenOptional()` helper in
+    recaptcha-verify.ts
   - **Effort:** 1 hour
   - **Priority:** LOW - DRY violation, but code works fine
-- ⏳ **M2: migrateAnonymousUserData Manual Security Checks** (functions/src/index.ts)
-  - **Issue:** Function manually implements security checks instead of using withSecurityChecks wrapper
-  - **Fix:** Add custom authorization callback option to withSecurityChecks, refactor to use wrapper
+- ⏳ **M2: migrateAnonymousUserData Manual Security Checks**
+  (functions/src/index.ts)
+  - **Issue:** Function manually implements security checks instead of using
+    withSecurityChecks wrapper
+  - **Fix:** Add custom authorization callback option to withSecurityChecks,
+    refactor to use wrapper
   - **Effort:** 2-3 hours
-  - **Priority:** LOW - consistency improvement, custom auth logic works correctly
+  - **Priority:** LOW - consistency improvement, custom auth logic works
+    correctly
 
-**Trigger:** Only pursue if M3+ blocked by technical limitations or if scaling reveals performance issues
+**Trigger:** Only pursue if M3+ blocked by technical limitations or if scaling
+reveals performance issues
 
 **Priority:** Low - Foundation is solid, focus on features first
 
@@ -522,9 +640,11 @@ flowchart TD
 
 #### F6: Celebrate Recovery Integration (13 SP)
 
-- Import ~20 Nashville area meetings (Source data ready in `docs/source-data/celebrate_recovery_meetings.json`)
+- Import ~20 Nashville area meetings (Source data ready in
+  `docs/source-data/celebrate_recovery_meetings.json`)
 - Add "Celebrate Recovery" to fellowship type selector
-- Update meeting finder to support CR-specific tags (Large Group, Open Share, Fellowship Meal)
+- Update meeting finder to support CR-specific tags (Large Group, Open Share,
+  Fellowship Meal)
 - Distinguish between "Step Study" and "Open Share" groups
 
 **Dependencies:**
@@ -547,15 +667,18 @@ flowchart TD
 - Auto-carry-forward task nudges
 
 ### HALT Check Enhancements
-*Building on the basic HALT check feature from M1.5*
+
+_Building on the basic HALT check feature from M1.5_
 
 **Phase 2: Analytics & Insights**
+
 - Pattern detection: "You often feel tired on Mondays"
 - Weekly/monthly HALT summaries with visualization
 - Correlation analysis with mood and usage patterns
 - Trend graphs showing HALT frequency over time
 
 **Phase 3: Smart Features**
+
 - Predictive alerts: "You usually feel lonely at this time"
 - Context-aware suggestions based on historical patterns
 - Reminder system for regular HALT checks (customizable schedule)
@@ -563,14 +686,15 @@ flowchart TD
 - Integration with sponsor contact when angry/lonely
 
 **Phase 4: Community & AI**
+
 - Anonymous aggregate insights: "Others often feel the same today"
 - AI-powered coping strategy recommendations
 - Guided meditation/breathing exercises for anger/stress
 - Connection to support community during vulnerability
 - Emergency escalation for critical patterns
 
-**Story Points:** 26-34 SP (distributed across phases)
-**Priority:** P2 (nice-to-have, builds on core feature)
+**Story Points:** 26-34 SP (distributed across phases) **Priority:** P2
+(nice-to-have, builds on core feature)
 
 ---
 
@@ -737,7 +861,8 @@ flowchart TD
 
 **Goal:** Sustainable revenue model without exploiting vulnerable users
 
-**Detailed Research:** See [docs/MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)
+**Detailed Research:** See
+[docs/MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)
 
 ### Research Findings (December 2025)
 
@@ -831,15 +956,15 @@ flowchart TD
 
 ## 🎨 Feature Decisions (Quick Reference)
 
-| Feature | Status | Priority | Notes |
-|---------|--------|----------|-------|
-| Recovery Library | ✅ Approved | P0 | Combine glossary + etiquette |
-| HALT Check | ✅ Approved | P1 | User-initiated button |
-| God Box | ❌ Deferred | P3 | Maybe never |
-| Complacency Detector | ⏳ Needs Review | P2 | Engagement drop alerts |
-| Tone Settings | ⏳ Needs Review | P1 | Firm vs gentle language |
-| Multiple Sobriety Dates | ⏳ Needs Review | P2 | Separate counters per substance |
-| Principle-Based Badges | ✅ Approved | P2 | Honesty/service vs streaks |
+| Feature                 | Status          | Priority | Notes                           |
+| ----------------------- | --------------- | -------- | ------------------------------- |
+| Recovery Library        | ✅ Approved     | P0       | Combine glossary + etiquette    |
+| HALT Check              | ✅ Approved     | P1       | User-initiated button           |
+| God Box                 | ❌ Deferred     | P3       | Maybe never                     |
+| Complacency Detector    | ⏳ Needs Review | P2       | Engagement drop alerts          |
+| Tone Settings           | ⏳ Needs Review | P1       | Firm vs gentle language         |
+| Multiple Sobriety Dates | ⏳ Needs Review | P2       | Separate counters per substance |
+| Principle-Based Badges  | ✅ Approved     | P2       | Honesty/service vs streaks      |
 
 ---
 
@@ -907,9 +1032,13 @@ flowchart TD
 ### Document Dependency Automation (Future Enhancement)
 
 **Current State (Session #35 - 2026-01-08):**
-- ✅ Manual validation via `/docs-sync` slash command (wrapper that executes `npm run docs:sync-check`)
-- ✅ Script: `npm run docs:sync-check` → `scripts/check-document-sync.js` (detects placeholder content, broken links, stale sync dates)
-- ✅ Documentation: `docs/DOCUMENT_DEPENDENCIES.md` tracks all template-instance relationships
+
+- ✅ Manual validation via `/docs-sync` slash command (wrapper that executes
+  `npm run docs:sync-check`)
+- ✅ Script: `npm run docs:sync-check` → `scripts/check-document-sync.js`
+  (detects placeholder content, broken links, stale sync dates)
+- ✅ Documentation: `docs/DOCUMENT_DEPENDENCIES.md` tracks all template-instance
+  relationships
 - ✅ Integration: DOCUMENTATION_AUDIT Category 6 validates sync status
 
 **Future Automation Options:**
@@ -940,11 +1069,13 @@ flowchart TD
    - **Cons**: Delayed detection (up to 7 days)
 
 **Recommendation**:
+
 - Keep manual (`/docs-sync`) for immediate use
 - Add to CI/CD when GitHub Actions is configured (post-M3)
 - Consider pre-push hook if sync issues become frequent (quarterly review)
 
 **Discussion**:
+
 - Document sync is quality-focused, not critical to functionality
 - Manual checks are sufficient for current team size (solo developer)
 - Automation becomes valuable when multiple contributors update templates
@@ -956,35 +1087,51 @@ flowchart TD
 
 ### Core Documentation
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design patterns
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and design
+  patterns
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Developer setup and testing guide
-- **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** - Testing strategy and QA procedures
-- **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and status
+- **[TESTING_PLAN.md](docs/TESTING_PLAN.md)** - Testing strategy and QA
+  procedures
+- **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and
+  status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
-- **[SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)** - Consolidated 6-AI code review report
-- **[SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md](./docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)** - Admin panel enhancement specification (M1.6)
-- **[SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md](./docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)** - Phase 1 implementation prompt
+- **[SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md)** -
+  Consolidated 6-AI code review report
+- **[SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](./docs/archive/SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md)** -
+  Admin panel enhancement specification (M1.6)
+- **[SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](./docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md)** -
+  Phase 1 implementation prompt
 
 ### Detailed Documentation (in /docs)
 
-- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification, privacy protections, Firestore rules
-- **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident procedures
-- **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue model research and recommendations (M10)
-- **[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)** - December 2025 journal refactor changelog
-- **[TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing strategy and multi-phase fixes
-- **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud Functions security patterns
-- **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent collaboration guide
-- **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** - Dependency documentation (192k+ code snippets)
+- **[SECURITY.md](./docs/SECURITY.md)** - Security layers, data classification,
+  privacy protections, Firestore rules
+- **[INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)** - Security incident
+  procedures
+- **[MONETIZATION_RESEARCH.md](./docs/MONETIZATION_RESEARCH.md)** - Revenue
+  model research and recommendations (M10)
+- **[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)** -
+  December 2025 journal refactor changelog
+- **[TESTING_PLAN.md](./docs/TESTING_PLAN.md)** - Comprehensive testing strategy
+  and multi-phase fixes
+- **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud
+  Functions security patterns
+- **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent
+  collaboration guide
+- **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** -
+  Dependency documentation (192k+ code snippets)
 
 ### Archived Documentation
 
-- **[docs/archive/](./docs/archive/)** - Historical documents, proposals, and status reports
+- **[docs/archive/](./docs/archive/)** - Historical documents, proposals, and
+  status reports
 
 ---
 
 ## 📝 Update Triggers
 
 **Update this document when:**
+
 - Milestone status changes (started, completed, blocked)
 - New features are added to roadmap
 - Priority or timeline changes
@@ -1008,17 +1155,19 @@ When working on roadmap items:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.1 | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram |
-| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
-| 1.5 | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1 |
-| 1.4 | 2025-12-23 | M1.6 Phases 1-3 complete |
-| 1.3 | 2025-12-22 | Admin panel spec v1.2 |
-| 1.2 | 2025-12-19 | Consolidated from multiple roadmap docs |
-| 1.1 | 2025-12-18 | M1 security hardening complete |
-| 1.0 | 2025-12-17 | Initial consolidated roadmap |
+| Version | Date       | Changes                                                                                                                          |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                     |
+| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                           |
+| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                         |
+| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                            |
+| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                          |
+| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                   |
+| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                     |
 
 **Historical Notes:**
+
 - December 28, 2025: Created ROADMAP_LOG.md archive, streamlined active roadmap
-- December 19, 2025: Consolidated from ROADMAP_V3.md, WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md
+- December 19, 2025: Consolidated from ROADMAP_V3.md,
+  WEB_ENHANCEMENTS_ROADMAP.md, FEATURE_DECISIONS.md

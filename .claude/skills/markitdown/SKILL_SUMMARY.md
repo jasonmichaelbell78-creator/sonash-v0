@@ -2,7 +2,9 @@
 
 ## Overview
 
-A comprehensive skill for using Microsoft's MarkItDown tool has been created for the Claude Scientific Writer. This skill enables conversion of 15+ file formats to Markdown, optimized for LLM processing and scientific workflows.
+A comprehensive skill for using Microsoft's MarkItDown tool has been created for
+the Claude Scientific Writer. This skill enables conversion of 15+ file formats
+to Markdown, optimized for LLM processing and scientific workflows.
 
 ## What Was Created
 
@@ -177,11 +179,13 @@ The skill has been added to the Scientific Writer's skill catalog:
 ## Scripts Usage
 
 ### Batch Convert
+
 ```bash
 python scripts/batch_convert.py input_dir/ output_dir/ --extensions .pdf .docx --workers 4
 ```
 
 ### AI-Enhanced Convert
+
 ```bash
 export OPENROUTER_API_KEY="sk-or-v1-..."
 python scripts/convert_with_ai.py paper.pdf output.md \
@@ -190,6 +194,7 @@ python scripts/convert_with_ai.py paper.pdf output.md \
 ```
 
 ### Literature Convert
+
 ```bash
 python scripts/convert_literature.py papers/ markdown/ --organize-by-year --create-index
 ```
@@ -242,17 +247,17 @@ result = md.convert("presentation.pptx")
 
 ## Documentation Files
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| SKILL.md | Main documentation | 400+ |
-| api_reference.md | API documentation | 500+ |
-| file_formats.md | Format guides | 600+ |
-| example_usage.md | Practical examples | 500+ |
-| batch_convert.py | Batch conversion | 200+ |
-| convert_with_ai.py | AI conversion | 200+ |
-| convert_literature.py | Literature conversion | 250+ |
-| QUICK_REFERENCE.md | Quick reference | 300+ |
-| INSTALLATION_GUIDE.md | Installation guide | 300+ |
+| File                  | Purpose               | Lines |
+| --------------------- | --------------------- | ----- |
+| SKILL.md              | Main documentation    | 400+  |
+| api_reference.md      | API documentation     | 500+  |
+| file_formats.md       | Format guides         | 600+  |
+| example_usage.md      | Practical examples    | 500+  |
+| batch_convert.py      | Batch conversion      | 200+  |
+| convert_with_ai.py    | AI conversion         | 200+  |
+| convert_literature.py | Literature conversion | 250+  |
+| QUICK_REFERENCE.md    | Quick reference       | 300+  |
+| INSTALLATION_GUIDE.md | Installation guide    | 300+  |
 
 **Total**: ~3,000+ lines of documentation and code
 
@@ -297,11 +302,11 @@ result = md.convert("presentation.pptx")
 ✅ Integration with Scientific Writer complete  
 ✅ SKILLS.md updated  
 ✅ Scripts made executable  
-✅ MIT License included  
+✅ MIT License included
 
 ## Skill Status
 
 **Status**: ✅ Complete and Ready to Use
 
-The MarkItDown skill is fully integrated into the Claude Scientific Writer and ready for use. All documentation, scripts, and examples are in place.
-
+The MarkItDown skill is fully integrated into the Claude Scientific Writer and
+ready for use. All documentation, scripts, and examples are in place.

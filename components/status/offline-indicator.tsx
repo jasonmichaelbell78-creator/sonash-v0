@@ -1,33 +1,32 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { WifiOff, Wifi } from "lucide-react"
+import { useEffect, useState } from "react";
+import { WifiOff, Wifi } from "lucide-react";
 
 export function OfflineIndicator() {
-  const [isOnline, setIsOnline] = useState(() => navigator.onLine)
-  const [showReconnected, setShowReconnected] = useState(false)
+  const [isOnline, setIsOnline] = useState(() => navigator.onLine);
+  const [showReconnected, setShowReconnected] = useState(false);
 
   useEffect(() => {
-
     const handleOnline = () => {
-      setIsOnline(true)
-      setShowReconnected(true)
-      setTimeout(() => setShowReconnected(false), 3000)
-    }
+      setIsOnline(true);
+      setShowReconnected(true);
+      setTimeout(() => setShowReconnected(false), 3000);
+    };
 
     const handleOffline = () => {
-      setIsOnline(false)
-      setShowReconnected(false)
-    }
+      setIsOnline(false);
+      setShowReconnected(false);
+    };
 
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   // Show reconnected message briefly
   if (showReconnected) {
@@ -36,7 +35,7 @@ export function OfflineIndicator() {
         <Wifi className="w-4 h-4" />
         <span className="text-sm font-medium">Back online</span>
       </div>
-    )
+    );
   }
 
   // Show offline indicator
@@ -46,8 +45,8 @@ export function OfflineIndicator() {
         <WifiOff className="w-4 h-4" />
         <span className="text-sm font-medium">Offline - changes will sync when reconnected</span>
       </div>
-    )
+    );
   }
 
-  return null
+  return null;
 }

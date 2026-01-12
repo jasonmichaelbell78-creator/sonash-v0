@@ -1,58 +1,61 @@
+import dynamic from "next/dynamic";
 
-import dynamic from "next/dynamic"
-
-import { MapPin, Home, Map, Calendar, Loader2, Locate } from "lucide-react"
-import { useState, useEffect, useMemo, useRef, useCallback } from "react"
-import { MeetingsService, type Meeting } from "@/lib/db/meetings"
-import type { QueryDocumentSnapshot } from "firebase/firestore"
-import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living"
-import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data"
-import { toast } from "sonner"
-import { logger } from "@/lib/logger"
-import { useAuth } from "@/components/providers/auth-provider"
+import { MapPin, Home, Map, Calendar, Loader2, Locate } from "lucide-react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { MeetingsService, type Meeting } from "@/lib/db/meetings";
+import type { QueryDocumentSnapshot } from "firebase/firestore";
+import { SoberLivingService, type SoberLivingHome } from "@/lib/db/sober-living";
+import { INITIAL_SOBER_LIVING_HOMES } from "@/scripts/seed-sober-living-data";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
+import { useAuth } from "@/components/providers/auth-provider";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { ExternalLink, Navigation } from "lucide-react"
-import { useGeolocation } from "@/hooks/use-geolocation"
-import { calculateDistance, formatDistance, sortByDistance } from "@/lib/utils/distance"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ExternalLink, Navigation } from "lucide-react";
+import { useGeolocation } from "@/hooks/use-geolocation";
+import { calculateDistance, formatDistance, sortByDistance } from "@/lib/utils/distance";
 
 // Fellowship filter options
-const FELLOWSHIP_OPTIONS = ["All", "AA", "NA", "CA"] as const
-type FellowshipFilter = typeof FELLOWSHIP_OPTIONS[number]
+const FELLOWSHIP_OPTIONS = ["All", "AA", "NA", "CA"] as const;
+type FellowshipFilter = (typeof FELLOWSHIP_OPTIONS)[number];
 
 // Sort options
-type SortOption = "time" | "nearest"
+type SortOption = "time" | "nearest";
 
 const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
   ssr: false,
-  loading: () => <div className="h-[400px] w-full bg-amber-50 animate-pulse rounded-lg flex items-center justify-center text-amber-900/40">Loading Map...</div>
-})
+  loading: () => (
+    <div className="h-[400px] w-full bg-amber-50 animate-pulse rounded-lg flex items-center justify-center text-amber-900/40">
+      Loading Map...
+    </div>
+  ),
+});
 
 export default function ResourcesPage() {
-  const [meetings, setMeetings] = useState<Meeting[]>([])
-  const [soberHomes, setSoberHomes] = useState<SoberLivingHome[]>([])
-  const [resourceType, setResourceType] = useState<"meetings" | "sober-living">("meetings")
-  const [viewMode, setViewMode] = useState<"date" | "all">("date") // Changed 'today' to 'date'
-  const [selectedDate] = useState<Date>(new Date()) // New state
-  const [displayMode, setDisplayMode] = useState<"list" | "map">("list")
-  const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All")
-  const [genderFilter, setGenderFilter] = useState<"All" | "Men" | "Women">("All")
-  const [neighborhoodFilter] = useState("All")
-  const [sortBy, setSortBy] = useState<SortOption>("time")
-  const [loading, setLoading] = useState(true)
-  const { user, loading: authLoading } = useAuth()
-  const isDevMode = process.env.NODE_ENV === "development"
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [soberHomes, setSoberHomes] = useState<SoberLivingHome[]>([]);
+  const [resourceType, setResourceType] = useState<"meetings" | "sober-living">("meetings");
+  const [viewMode, setViewMode] = useState<"date" | "all">("date"); // Changed 'today' to 'date'
+  const [selectedDate] = useState<Date>(new Date()); // New state
+  const [displayMode, setDisplayMode] = useState<"list" | "map">("list");
+  const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All");
+  const [genderFilter, setGenderFilter] = useState<"All" | "Men" | "Women">("All");
+  const [neighborhoodFilter] = useState("All");
+  const [sortBy, setSortBy] = useState<SortOption>("time");
+  const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
+  const isDevMode = process.env.NODE_ENV === "development";
 
   // Pagination state for "View All" mode
-  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null)
-  const [hasMore, setHasMore] = useState(false)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Geolocation hook for proximity features
   const {
@@ -60,119 +63,121 @@ export default function ResourcesPage() {
     status: locationStatus,
     loading: locationLoading,
     requestLocation,
-  } = useGeolocation()
+  } = useGeolocation();
 
   // Determine query day name from selectedDate
   const queryDayName = useMemo(() => {
-    return selectedDate.toLocaleDateString("en-US", { weekday: "long" })
-  }, [selectedDate])
+    return selectedDate.toLocaleDateString("en-US", { weekday: "long" });
+  }, [selectedDate]);
 
   // Load more meetings for infinite scroll (View All mode)
   const _loadMoreMeetings = useCallback(async () => {
-    if (!hasMore || isLoadingMore || viewMode !== "all") return
+    if (!hasMore || isLoadingMore || viewMode !== "all") return;
 
-    setIsLoadingMore(true)
+    setIsLoadingMore(true);
     try {
-      const result = await MeetingsService.getAllMeetingsPaginated(50, lastDoc || undefined)
-      setMeetings(prev => [...prev, ...result.meetings])
-      setLastDoc(result.lastDoc)
-      setHasMore(result.hasMore)
+      const result = await MeetingsService.getAllMeetingsPaginated(50, lastDoc || undefined);
+      setMeetings((prev) => [...prev, ...result.meetings]);
+      setLastDoc(result.lastDoc);
+      setHasMore(result.hasMore);
     } catch (error) {
-      logger.error("Failed to load more meetings", { error })
-      toast.error("Failed to load more meetings")
+      logger.error("Failed to load more meetings", { error });
+      toast.error("Failed to load more meetings");
     } finally {
-      setIsLoadingMore(false)
+      setIsLoadingMore(false);
     }
-  }, [hasMore, isLoadingMore, lastDoc, viewMode])
+  }, [hasMore, isLoadingMore, lastDoc, viewMode]);
 
   useEffect(() => {
     const fetchMeetings = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        let data: Meeting[] = []
+        let data: Meeting[] = [];
         if (viewMode === "date") {
           // Date-specific view: Efficient, fetch only that day
-          data = await MeetingsService.getMeetingsByDay(queryDayName)
-          setMeetings(data)
-          setHasMore(false)
-          setLastDoc(null)
+          data = await MeetingsService.getMeetingsByDay(queryDayName);
+          setMeetings(data);
+          setHasMore(false);
+          setLastDoc(null);
         } else {
           // View All mode: Use pagination
-          const result = await MeetingsService.getAllMeetingsPaginated(50)
-          setMeetings(result.meetings)
-          setLastDoc(result.lastDoc)
-          setHasMore(result.hasMore)
+          const result = await MeetingsService.getAllMeetingsPaginated(50);
+          setMeetings(result.meetings);
+          setLastDoc(result.lastDoc);
+          setHasMore(result.hasMore);
         }
       } catch (error) {
-        logger.error("Failed to load meetings", { error })
-        toast.error("Failed to load meetings.")
+        logger.error("Failed to load meetings", { error });
+        toast.error("Failed to load meetings.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     const fetchSoberHomes = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const data = await SoberLivingService.getAllHomes()
-        setSoberHomes(data)
+        const data = await SoberLivingService.getAllHomes();
+        setSoberHomes(data);
       } catch (error) {
-        logger.error("Failed to load sober homes", { error })
+        logger.error("Failed to load sober homes", { error });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    if (authLoading) return
+    if (authLoading) return;
 
     if (resourceType === "meetings") {
-      fetchMeetings()
+      fetchMeetings();
     } else {
-      fetchSoberHomes()
+      fetchSoberHomes();
     }
-  }, [queryDayName, viewMode, user, authLoading, resourceType])
+  }, [queryDayName, viewMode, user, authLoading, resourceType]);
 
-  const finderRef = useRef<HTMLDivElement>(null)
+  const finderRef = useRef<HTMLDivElement>(null);
 
   // Data reset handler (Public for prototype phase)
   const handleReset = async () => {
-    if (!confirm("Delete all data and reset to 'Nashville Demo Set'? (Fixes neighborhood list)")) return
+    if (!confirm("Delete all data and reset to 'Nashville Demo Set'? (Fixes neighborhood list)"))
+      return;
     try {
-      setLoading(true)
-      await MeetingsService.clearAllMeetings()
-      await MeetingsService.seedInitialMeetings()
-      await SoberLivingService.seedInitialHomes(INITIAL_SOBER_LIVING_HOMES)
-      toast.success("Data reset to Nashville Demo.")
-      triggerRefresh()
+      setLoading(true);
+      await MeetingsService.clearAllMeetings();
+      await MeetingsService.seedInitialMeetings();
+      await SoberLivingService.seedInitialHomes(INITIAL_SOBER_LIVING_HOMES);
+      toast.success("Data reset to Nashville Demo.");
+      triggerRefresh();
     } catch (err) {
-      logger.error("Error resetting data", { error: err })
-      toast.error("Failed to reset data.")
+      logger.error("Error resetting data", { error: err });
+      toast.error("Failed to reset data.");
     }
-  }
+  };
 
   const triggerRefresh = async () => {
-    setLoading(true)
-    const data = viewMode === "date"
-      ? await MeetingsService.getMeetingsByDay(queryDayName)
-      : await MeetingsService.getAllMeetings()
-    setMeetings(data)
-    setLoading(false)
-  }
+    setLoading(true);
+    const data =
+      viewMode === "date"
+        ? await MeetingsService.getMeetingsByDay(queryDayName)
+        : await MeetingsService.getAllMeetings();
+    setMeetings(data);
+    setLoading(false);
+  };
 
   const handleResourceClick = (title: string, id: string) => {
     if (id === "meetings") {
-      setResourceType("meetings")
-      finderRef.current?.scrollIntoView({ behavior: "smooth" })
+      setResourceType("meetings");
+      finderRef.current?.scrollIntoView({ behavior: "smooth" });
     } else if (id === "sober-living") {
-      setResourceType("sober-living")
-      setDisplayMode("list")
-      finderRef.current?.scrollIntoView({ behavior: "smooth" })
+      setResourceType("sober-living");
+      setDisplayMode("list");
+      finderRef.current?.scrollIntoView({ behavior: "smooth" });
     } else {
       toast("Feature coming soon!", {
-        description: `${title} is under construction.`
-      })
+        description: `${title} is under construction.`,
+      });
     }
-  }
+  };
 
   const resources = [
     {
@@ -199,147 +204,160 @@ export default function ResourcesPage() {
       title: "Nashville Sober Events",
       description: "Cookouts, game nights, sober concerts and more.",
     },
-  ]
+  ];
 
   // Helper to parse HH:MM to minutes
   const parseTime = (timeStr: string) => {
     // Handle 24h "19:30" or 12h "7:30 PM"
     if (/AM|PM/i.test(timeStr)) {
-      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
-      if (!match) return -1
-      let h = parseInt(match[1])
-      const m = parseInt(match[2])
-      const p = match[3].toUpperCase()
-      if (p === 'PM' && h !== 12) h += 12
-      if (p === 'AM' && h === 12) h = 0
-      return h * 60 + m
+      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      if (!match) return -1;
+      let h = parseInt(match[1]);
+      const m = parseInt(match[2]);
+      const p = match[3].toUpperCase();
+      if (p === "PM" && h !== 12) h += 12;
+      if (p === "AM" && h === 12) h = 0;
+      return h * 60 + m;
     }
-    const [h, m] = timeStr.split(':').map(Number)
-    return h * 60 + m
-  }
+    const [h, m] = timeStr.split(":").map(Number);
+    return h * 60 + m;
+  };
 
   // Combined filtering: time (for today view) + fellowship + sorting
   const filteredMeetings = useMemo(() => {
-    let result = meetings
+    let result = meetings;
 
     // Apply fellowship filter
     if (fellowshipFilter !== "All") {
-      result = result.filter(m => m.type === fellowshipFilter)
+      result = result.filter((m) => m.type === fellowshipFilter);
     }
 
     // Apply time filter for "date" view only
     if (viewMode === "date") {
       // If selected date is TODAY, filter by current time.
       // If it's a future date, show all meetings for that day.
-      const now = new Date()
-      const isToday = selectedDate.getDate() === now.getDate() &&
+      const now = new Date();
+      const isToday =
+        selectedDate.getDate() === now.getDate() &&
         selectedDate.getMonth() === now.getMonth() &&
-        selectedDate.getFullYear() === now.getFullYear()
+        selectedDate.getFullYear() === now.getFullYear();
 
       if (isToday) {
-        const currentMinutes = now.getHours() * 60 + now.getMinutes()
-        result = result.filter(m => {
-          const meetingMinutes = parseTime(m.time)
-          return meetingMinutes >= currentMinutes // Only future meetings today
-        })
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        result = result.filter((m) => {
+          const meetingMinutes = parseTime(m.time);
+          return meetingMinutes >= currentMinutes; // Only future meetings today
+        });
       }
       // If future/past date, we don't filter by time, just show the day's schedule (which is already fetched by queryDayName)
     }
 
     // Apply sorting
     if (sortBy === "nearest" && userLocation) {
-      result = sortByDistance(result, userLocation, (m) => m.coordinates)
+      result = sortByDistance(result, userLocation, (m) => m.coordinates);
     }
 
     // Apply neighborhood filter (last, effectively)
     if (neighborhoodFilter !== "All") {
-      result = result.filter(m => m.neighborhood === neighborhoodFilter)
+      result = result.filter((m) => m.neighborhood === neighborhoodFilter);
     }
 
-    return result
-  }, [meetings, viewMode, fellowshipFilter, sortBy, userLocation, neighborhoodFilter, selectedDate])
+    return result;
+  }, [
+    meetings,
+    viewMode,
+    fellowshipFilter,
+    sortBy,
+    userLocation,
+    neighborhoodFilter,
+    selectedDate,
+  ]);
 
   // Filtered Sober Living Homes
   const filteredSoberHomes = useMemo(() => {
-    let result = soberHomes
+    let result = soberHomes;
 
     // Apply gender filter
     if (genderFilter !== "All") {
-      result = result.filter(h => h.gender === genderFilter)
+      result = result.filter((h) => h.gender === genderFilter);
     }
 
     // Apply sorting
     if (sortBy === "nearest" && userLocation) {
-      result = sortByDistance(result, userLocation, (h) => h.coordinates)
+      result = sortByDistance(result, userLocation, (h) => h.coordinates);
     }
 
     // Apply neighborhood filter
     if (neighborhoodFilter !== "All") {
-      result = result.filter(h => h.neighborhood === neighborhoodFilter)
+      result = result.filter((h) => h.neighborhood === neighborhoodFilter);
     }
 
-    return result
-  }, [soberHomes, genderFilter, sortBy, userLocation, neighborhoodFilter])
+    return result;
+  }, [soberHomes, genderFilter, sortBy, userLocation, neighborhoodFilter]);
 
-  const currentData = resourceType === "meetings" ? filteredMeetings : filteredSoberHomes
+  const currentData = resourceType === "meetings" ? filteredMeetings : filteredSoberHomes;
 
-  // Get unique neighborhoods from the current data (or all data?) 
+  // Get unique neighborhoods from the current data (or all data?)
   const _availableNeighborhoods = useMemo(() => {
     // Use all items from ACTIVE type to populate the list
-    const sourceData = resourceType === "meetings" ? meetings : soberHomes
-    const unique = Array.from(new Set(sourceData.map(item => item.neighborhood))).filter(Boolean).sort()
-    return unique
-  }, [meetings, soberHomes, resourceType])
+    const sourceData = resourceType === "meetings" ? meetings : soberHomes;
+    const unique = Array.from(new Set(sourceData.map((item) => item.neighborhood)))
+      .filter(Boolean)
+      .sort();
+    return unique;
+  }, [meetings, soberHomes, resourceType]);
 
   // Helper to get distance for a meeting
   const getMeetingDistance = (meeting: Meeting): string | null => {
-    if (!userLocation || !meeting.coordinates) return null
-    const distance = calculateDistance(userLocation, meeting.coordinates)
-    return formatDistance(distance)
-  }
+    if (!userLocation || !meeting.coordinates) return null;
+    const distance = calculateDistance(userLocation, meeting.coordinates);
+    return formatDistance(distance);
+  };
 
   // Handle "Nearest to me" button click
   const handleNearestClick = () => {
     if (locationStatus === "granted" && userLocation) {
       // Already have location, just toggle sort
-      setSortBy(sortBy === "nearest" ? "time" : "nearest")
+      setSortBy(sortBy === "nearest" ? "time" : "nearest");
     } else if (locationStatus === "denied") {
-      toast.error("Location access denied. Please enable location in your browser settings.")
+      toast.error("Location access denied. Please enable location in your browser settings.");
     } else {
       // Request location and enable sort
-      requestLocation()
-      setSortBy("nearest")
+      requestLocation();
+      setSortBy("nearest");
     }
-  }
+  };
 
   // Handle Time Jump
   const _handleTimeJump = (timeStr: string) => {
-    if (!timeStr) return
-    const targetMinutes = parseTime(timeStr)
+    if (!timeStr) return;
+    const targetMinutes = parseTime(timeStr);
     // Search filtered meetings to only target visible items
-    const targetMeeting = filteredMeetings.find(m => parseTime(m.time) >= targetMinutes)
+    const targetMeeting = filteredMeetings.find((m) => parseTime(m.time) >= targetMinutes);
 
     if (targetMeeting) {
       // We need a way to scroll to it. We will use a simple ID approach.
       // We will assume meeting cards have ID `meeting-{id}`
-      const element = document.getElementById(`meeting-${targetMeeting.id}`)
+      const element = document.getElementById(`meeting-${targetMeeting.id}`);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        toast.success(`Jumped to ${timeStr}`)
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        toast.success(`Jumped to ${timeStr}`);
       } else {
-        toast("Meeting not visible in current list.")
+        toast("Meeting not visible in current list.");
       }
     } else {
-      toast("No meetings found after " + timeStr)
+      toast("No meetings found after " + timeStr);
     }
-  }
+  };
 
-  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null)
+  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
 
   return (
     <div className="h-full overflow-y-auto pr-2">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="font-heading text-2xl text-amber-900 underline">Resources – Getting around Nashville</h1>
+        <h1 className="font-heading text-2xl text-amber-900 underline">
+          Resources – Getting around Nashville
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -354,7 +372,9 @@ export default function ResourcesPage() {
               <div className="flex items-start gap-3">
                 <resource.icon className="w-6 h-6 text-amber-700/70 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h3 className="font-heading text-lg text-amber-900 group-hover:underline">{resource.title}</h3>
+                  <h3 className="font-heading text-lg text-amber-900 group-hover:underline">
+                    {resource.title}
+                  </h3>
                   <p className="font-body text-sm text-amber-900/60">{resource.description}</p>
                 </div>
               </div>
@@ -367,7 +387,6 @@ export default function ResourcesPage() {
           <h2 className="font-heading text-xl text-amber-900">
             {resourceType === "meetings" ? "Meeting Finder" : "Sober Living Finder"}
           </h2>
-
 
           {/* Simplified Filters */}
           <div className="space-y-3 mb-4">
@@ -388,10 +407,11 @@ export default function ResourcesPage() {
                       <button
                         key={option}
                         onClick={() => setFellowshipFilter(option)}
-                        className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${fellowshipFilter === option
-                          ? "bg-amber-600 text-white shadow-sm font-medium"
-                          : "text-amber-800 hover:bg-amber-100/50"
-                          }`}
+                        className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${
+                          fellowshipFilter === option
+                            ? "bg-amber-600 text-white shadow-sm font-medium"
+                            : "text-amber-800 hover:bg-amber-100/50"
+                        }`}
                       >
                         {option}
                       </button>
@@ -402,12 +422,17 @@ export default function ResourcesPage() {
                   <button
                     onClick={handleNearestClick}
                     disabled={locationLoading}
-                    className={`px-4 py-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${sortBy === "nearest" && userLocation
-                      ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
-                      : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                      } ${locationLoading ? "opacity-50" : ""}`}
+                    className={`px-4 py-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${
+                      sortBy === "nearest" && userLocation
+                        ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
+                        : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+                    } ${locationLoading ? "opacity-50" : ""}`}
                   >
-                    {locationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Locate className="w-4 h-4" />}
+                    {locationLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Locate className="w-4 h-4" />
+                    )}
                     Nearby
                   </button>
                 </>
@@ -418,10 +443,11 @@ export default function ResourcesPage() {
                       key={option}
                       // @ts-expect-error - option is "All" | "Men" | "Women" which are valid values for setGenderFilter
                       onClick={() => setGenderFilter(option)}
-                      className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${genderFilter === option
-                        ? "bg-amber-600 text-white shadow-sm font-medium"
-                        : "text-amber-800 hover:bg-amber-100/50"
-                        }`}
+                      className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${
+                        genderFilter === option
+                          ? "bg-amber-600 text-white shadow-sm font-medium"
+                          : "text-amber-800 hover:bg-amber-100/50"
+                      }`}
                     >
                       {option}
                     </button>
@@ -430,8 +456,6 @@ export default function ResourcesPage() {
               )}
             </div>
           </div>
-
-
 
           {/* Meeting content (List or Map) */}
           <div className="space-y-2">
@@ -461,9 +485,9 @@ export default function ResourcesPage() {
                       Show all fellowships
                     </button>
                   )}
-                  {viewMode === 'date' && (
+                  {viewMode === "date" && (
                     <button
-                      onClick={() => setViewMode('all')}
+                      onClick={() => setViewMode("all")}
                       className="text-xs text-amber-700 font-medium hover:underline"
                     >
                       View full schedule
@@ -488,7 +512,9 @@ export default function ResourcesPage() {
                     {resourceType === "meetings" ? (
                       <>
                         {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
-                        {viewMode === 'date' ? `${selectedDate.toLocaleDateString()} (${filteredMeetings.length})` : `All (${filteredMeetings.length})`}
+                        {viewMode === "date"
+                          ? `${selectedDate.toLocaleDateString()} (${filteredMeetings.length})`
+                          : `All (${filteredMeetings.length})`}
                       </>
                     ) : (
                       <>
@@ -499,43 +525,57 @@ export default function ResourcesPage() {
                   </span>
                   {/* SECURITY: Reset button only visible in development mode */}
                   {isDevMode && (
-                    <button onClick={handleReset} className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1">
+                    <button
+                      onClick={handleReset}
+                      className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1"
+                    >
                       <Loader2 className="w-3 h-3" /> Reset Data (Dev)
                     </button>
                   )}
                 </div>
 
-                {resourceType === "meetings" && filteredMeetings.slice(0, 10).map((meeting) => {
-                  const distance = getMeetingDistance(meeting)
-                  return (
-                    <button
-                      key={meeting.id}
-                      id={`meeting-${meeting.id}`}
-                      onClick={() => setSelectedMeeting(meeting)}
-                      className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
-                    >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
-                        {meeting.type}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading text-sm text-amber-900 truncate font-semibold">{meeting.name}</span>
-                          <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">{meeting.time}</span>
+                {resourceType === "meetings" &&
+                  filteredMeetings.slice(0, 10).map((meeting) => {
+                    const distance = getMeetingDistance(meeting);
+                    return (
+                      <button
+                        key={meeting.id}
+                        id={`meeting-${meeting.id}`}
+                        onClick={() => setSelectedMeeting(meeting)}
+                        className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === "NA" ? "border-amber-500 text-amber-700 bg-amber-50" : "border-blue-400 text-blue-700 bg-blue-50"}`}
+                        >
+                          {meeting.type}
                         </div>
-                        <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
-                          {viewMode === 'all' && <span className="font-medium text-amber-700">{meeting.day.substring(0, 3)} • </span>}
-                          <MapPin className="w-3 h-3" /> {meeting.neighborhood}
-                        </p>
-                      </div>
-                      {/* Distance badge when location is available */}
-                      {distance && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
-                          {distance}
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-heading text-sm text-amber-900 truncate font-semibold">
+                              {meeting.name}
+                            </span>
+                            <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                              {meeting.time}
+                            </span>
+                          </div>
+                          <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
+                            {viewMode === "all" && (
+                              <span className="font-medium text-amber-700">
+                                {meeting.day.substring(0, 3)} •{" "}
+                              </span>
+                            )}
+                            <MapPin className="w-3 h-3" /> {meeting.neighborhood}
+                          </p>
+                        </div>
+                        {/* Distance badge when location is available */}
+                        {distance && (
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
+                            {distance}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
 
                 {/* Show "View More" link if there are more than 10 meetings */}
                 {resourceType === "meetings" && filteredMeetings.length > 10 && (
@@ -547,46 +587,64 @@ export default function ResourcesPage() {
                   </a>
                 )}
 
-                {resourceType === "sober-living" && filteredSoberHomes.map((home) => (
-                  <div
-                    key={home.id}
-                    className="w-full text-left flex items-start gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all"
-                  >
-                    {home.heroImage ? (
-                      <div className="w-12 h-12 rounded-lg bg-gray-100 bg-cover bg-center shrink-0 border border-amber-100" style={{ backgroundImage: `url(${home.heroImage})` }} />
-                    ) : (
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0
-                          ${home.gender === 'Men' ? 'border-blue-200 bg-blue-50 text-blue-700' :
-                          home.gender === 'Women' ? 'border-pink-200 bg-pink-50 text-pink-700' :
-                            'border-purple-200 bg-purple-50 text-purple-700'}`}>
-                        {home.gender === 'Men' ? 'M' : home.gender === 'Women' ? 'W' : 'C'}
-                      </div>
-                    )}
+                {resourceType === "sober-living" &&
+                  filteredSoberHomes.map((home) => (
+                    <div
+                      key={home.id}
+                      className="w-full text-left flex items-start gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all"
+                    >
+                      {home.heroImage ? (
+                        <div
+                          className="w-12 h-12 rounded-lg bg-gray-100 bg-cover bg-center shrink-0 border border-amber-100"
+                          style={{ backgroundImage: `url(${home.heroImage})` }}
+                        />
+                      ) : (
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0
+                          ${
+                            home.gender === "Men"
+                              ? "border-blue-200 bg-blue-50 text-blue-700"
+                              : home.gender === "Women"
+                                ? "border-pink-200 bg-pink-50 text-pink-700"
+                                : "border-purple-200 bg-purple-50 text-purple-700"
+                          }`}
+                        >
+                          {home.gender === "Men" ? "M" : home.gender === "Women" ? "W" : "C"}
+                        </div>
+                      )}
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="font-heading text-sm text-amber-900 font-semibold truncate">{home.name}</h3>
-                      </div>
-                      <p className="text-xs text-amber-900/60 flex items-center gap-1 mb-1.5">
-                        <MapPin className="w-3 h-3" /> {home.neighborhood || home.address}
-                      </p>
-                      <div className="flex gap-2">
-                        {home.website && (
-                          <a href={home.website} target="_blank" rel="noopener noreferrer" className="text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-1 rounded-full hover:bg-amber-100">
-                            Website
-                          </a>
-                        )}
-                        {home.phone && (
-                          <a href={`tel:${home.phone}`} className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full hover:bg-green-100 flex items-center gap-1">
-                            Call
-                          </a>
-                        )}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-heading text-sm text-amber-900 font-semibold truncate">
+                            {home.name}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-amber-900/60 flex items-center gap-1 mb-1.5">
+                          <MapPin className="w-3 h-3" /> {home.neighborhood || home.address}
+                        </p>
+                        <div className="flex gap-2">
+                          {home.website && (
+                            <a
+                              href={home.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-1 rounded-full hover:bg-amber-100"
+                            >
+                              Website
+                            </a>
+                          )}
+                          {home.phone && (
+                            <a
+                              href={`tel:${home.phone}`}
+                              className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full hover:bg-green-100 flex items-center gap-1"
+                            >
+                              Call
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-
-
+                  ))}
               </>
             )}
           </div>
@@ -601,7 +659,9 @@ export default function ResourcesPage() {
         <DialogContent className="sm:max-w-md bg-[#fdfbf7] border-amber-200">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${selectedMeeting?.type === 'NA' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-blue-400 text-blue-700 bg-blue-50'}`}>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${selectedMeeting?.type === "NA" ? "border-amber-500 text-amber-700 bg-amber-50" : "border-blue-400 text-blue-700 bg-blue-50"}`}
+              >
                 {selectedMeeting?.type}
               </div>
               {selectedMeeting?.name}
@@ -617,7 +677,9 @@ export default function ResourcesPage() {
                 <h4 className="font-medium text-amber-900 text-sm">Location</h4>
                 <p className="text-sm text-amber-800/80">{selectedMeeting?.address}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">{selectedMeeting?.neighborhood}</span>
+                  <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">
+                    {selectedMeeting?.neighborhood}
+                  </span>
                   {selectedMeeting && getMeetingDistance(selectedMeeting) && (
                     <>
                       <span className="text-amber-300">•</span>
@@ -638,8 +700,8 @@ export default function ResourcesPage() {
                     // Use coordinates if available for precise navigation, fallback to address search
                     const mapsUrl = selectedMeeting.coordinates
                       ? `https://www.google.com/maps/dir/?api=1&destination=${selectedMeeting.coordinates.lat},${selectedMeeting.coordinates.lng}`
-                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMeeting.address)}`
-                    window.open(mapsUrl, '_blank')
+                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMeeting.address)}`;
+                    window.open(mapsUrl, "_blank");
                   }
                 }}
               >
@@ -651,7 +713,7 @@ export default function ResourcesPage() {
                 className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
                 onClick={() => {
                   // Share logic or calendar add could go here
-                  toast.success("Link copied to clipboard!")
+                  toast.success("Link copied to clipboard!");
                 }}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
@@ -661,7 +723,6 @@ export default function ResourcesPage() {
           </div>
         </DialogContent>
       </Dialog>
-
     </div>
-  )
+  );
 }

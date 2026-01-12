@@ -10,11 +10,11 @@
  * - Shared action constants
  */
 
-import { getFunctions, httpsCallable, HttpsCallableResult } from 'firebase/functions';
-import { getRecaptchaToken } from '@/lib/recaptcha';
-import { retryCloudFunction } from '@/lib/utils/retry';
-import { logger } from '@/lib/logger';
-import { getCloudFunctionErrorMessage, isCloudFunctionError } from '@/lib/utils/callable-errors';
+import { getFunctions, httpsCallable, HttpsCallableResult } from "firebase/functions";
+import { getRecaptchaToken } from "@/lib/recaptcha";
+import { retryCloudFunction } from "@/lib/utils/retry";
+import { logger } from "@/lib/logger";
+import { getCloudFunctionErrorMessage, isCloudFunctionError } from "@/lib/utils/callable-errors";
 
 /**
  * CANON-0078: Shared reCAPTCHA action constants
@@ -22,20 +22,20 @@ import { getCloudFunctionErrorMessage, isCloudFunctionError } from '@/lib/utils/
  */
 export const RECAPTCHA_ACTIONS = {
   // Journal operations
-  SAVE_JOURNAL_ENTRY: 'save_journal_entry',
-  DELETE_JOURNAL_ENTRY: 'delete_journal_entry',
+  SAVE_JOURNAL_ENTRY: "save_journal_entry",
+  DELETE_JOURNAL_ENTRY: "delete_journal_entry",
 
   // Daily log operations
-  SAVE_DAILY_LOG: 'save_daily_log',
+  SAVE_DAILY_LOG: "save_daily_log",
 
   // Inventory operations
-  SAVE_INVENTORY: 'save_inventory',
+  SAVE_INVENTORY: "save_inventory",
 
   // Auth operations
-  LINK_ACCOUNT: 'link_account',
+  LINK_ACCOUNT: "link_account",
 } as const;
 
-export type RecaptchaAction = typeof RECAPTCHA_ACTIONS[keyof typeof RECAPTCHA_ACTIONS];
+export type RecaptchaAction = (typeof RECAPTCHA_ACTIONS)[keyof typeof RECAPTCHA_ACTIONS];
 
 /**
  * Options for calling secure Cloud Functions
@@ -107,17 +107,20 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
         recaptchaToken = await getRecaptchaToken(action);
       } catch (recaptchaError) {
         // Log warning with error type only (not full error to avoid leaking details)
-        logger.warn('Failed to get reCAPTCHA token', {
+        logger.warn("Failed to get reCAPTCHA token", {
           action,
-          errorType: recaptchaError instanceof Error ? recaptchaError.constructor.name : typeof recaptchaError,
+          errorType:
+            recaptchaError instanceof Error
+              ? recaptchaError.constructor.name
+              : typeof recaptchaError,
         });
 
         // SECURITY: In production, fail-closed - don't allow requests without reCAPTCHA
         // In development/emulator, allow graceful degradation for local testing
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === "production") {
           return {
             success: false,
-            error: 'Security verification failed. Please refresh the page and try again.',
+            error: "Security verification failed. Please refresh the page and try again.",
           };
         }
         // Non-production: Server MUST still validate and may reject - this is defense in depth
@@ -135,11 +138,10 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
     const cloudFunction = httpsCallable<typeof fullPayload, TResponse>(functions, functionName);
 
     // Call with retry logic
-    const result = await retryCloudFunction(
-      cloudFunction,
-      fullPayload,
-      { maxRetries, functionName }
-    ) as HttpsCallableResult<TResponse>;
+    const result = (await retryCloudFunction(cloudFunction, fullPayload, {
+      maxRetries,
+      functionName,
+    })) as HttpsCallableResult<TResponse>;
 
     return {
       success: true,
@@ -148,13 +150,13 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
   } catch (error) {
     // Use centralized error handler for sanitized, user-friendly messages
     const errorMessage = getCloudFunctionErrorMessage(error, {
-      defaultMessage: 'The operation could not be completed. Please try again.',
+      defaultMessage: "The operation could not be completed. Please try again.",
     });
 
     // Log error metadata without exposing raw error objects (security best practice)
     logger.error(`Cloud Function call failed: ${functionName}`, {
       action,
-      errorCode: isCloudFunctionError(error) ? error.code : 'unknown',
+      errorCode: isCloudFunctionError(error) ? error.code : "unknown",
       errorType: error instanceof Error ? error.constructor.name : typeof error,
     });
 
@@ -183,7 +185,7 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
 export function createSecureFunctionCaller<TResponse, TPayload>(
   functionName: string,
   action: RecaptchaAction,
-  defaultOptions: Partial<Omit<CallSecureFunctionOptions, 'action'>> = {}
+  defaultOptions: Partial<Omit<CallSecureFunctionOptions, "action">> = {}
 ) {
   return async (payload: TPayload): Promise<SecureFunctionResult<TResponse>> => {
     return callSecureFunction<TResponse, TPayload>(functionName, payload, {

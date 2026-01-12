@@ -1,15 +1,15 @@
 # Firebase Change Policy
 
-**Document Version:** 1.2
-**Created:** 2026-01-05
-**Last Updated:** 2026-01-05
+**Document Version:** 1.2 **Created:** 2026-01-05 **Last Updated:** 2026-01-05
 **Status:** ACTIVE
 
 ---
 
 ## Purpose
 
-This document defines the mandatory security review process for all changes to Firebase infrastructure, including:
+This document defines the mandatory security review process for all changes to
+Firebase infrastructure, including:
+
 - Firestore Security Rules (`firestore.rules`)
 - Cloud Functions (`functions/`)
 - Firebase App Check configuration
@@ -17,24 +17,32 @@ This document defines the mandatory security review process for all changes to F
 - Firebase Storage rules
 - Firebase Realtime Database rules (if applicable)
 
-**Objective:** Prevent security regressions and ensure all Firebase changes undergo appropriate review before deployment.
+**Objective:** Prevent security regressions and ensure all Firebase changes
+undergo appropriate review before deployment.
 
 ---
 
 ## Scope
 
 ### In Scope
+
 - **Firestore Rules**: Any modification to `firestore.rules`
-- **Firestore Service Layer**: Changes to Firestore data access layer (e.g., `lib/firestore-*.ts`, repository pattern implementations)
-- **Cloud Functions**: New functions, modifications to existing functions, dependency changes
+- **Firestore Service Layer**: Changes to Firestore data access layer (e.g.,
+  `lib/firestore-*.ts`, repository pattern implementations)
+- **Cloud Functions**: New functions, modifications to existing functions,
+  dependency changes
 - **Firebase Configuration**: Changes to `firebase.json`, `.firebaserc`
 - **App Check**: Configuration changes, token management, throttle settings
-- **Authentication**: Auth provider changes, custom claims, security rule integration
+- **Authentication**: Auth provider changes, custom claims, security rule
+  integration
 - **Storage Rules**: Any modification to Firebase Storage security rules
-- **Environment Variables**: Changes to Cloud Functions environment variables (`.env`, Firebase config)
+- **Environment Variables**: Changes to Cloud Functions environment variables
+  (`.env`, Firebase config)
 
 ### Out of Scope
-- Client-side Firebase SDK usage (delegated to standard [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for code review)
+
+- Client-side Firebase SDK usage (delegated to standard
+  [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) for code review)
 - Firebase Hosting static content (unless security-related)
 - Firebase Performance Monitoring configuration
 - Firebase Analytics configuration
@@ -45,7 +53,8 @@ This document defines the mandatory security review process for all changes to F
 
 ### When security-auditor Agent is REQUIRED
 
-The `security-auditor` agent **MUST** be used for PR review when ANY of the following conditions apply:
+The `security-auditor` agent **MUST** be used for PR review when ANY of the
+following conditions apply:
 
 1. **Firestore Rules Changes**
    - Any modification to `firestore.rules`
@@ -80,7 +89,8 @@ The `security-auditor` agent **MUST** be used for PR review when ANY of the foll
 
 ### When Manual Security Review is REQUIRED
 
-In addition to `security-auditor` agent review, **human security review** is required for:
+In addition to `security-auditor` agent review, **human security review** is
+required for:
 
 1. **Production Firestore Rules Deployment**
    - Final approval before deploying rules to production
@@ -118,7 +128,8 @@ Before submitting a PR that modifies `firestore.rules`:
 
 - [ ] **Test Coverage**
   - Unit tests added/updated for affected rules
-  - Tests cover edge cases (missing fields, invalid data types, boundary conditions)
+  - Tests cover edge cases (missing fields, invalid data types, boundary
+    conditions)
   - Verify existing tests still pass
 
 ### PR Requirements
@@ -126,18 +137,20 @@ Before submitting a PR that modifies `firestore.rules`:
 All PRs modifying `firestore.rules` **MUST** include:
 
 1. **PR Description**
+
    ```markdown
    ## Firestore Rules Change
 
    **Type:** [New Collection | Access Pattern Change | Bug Fix | Refactoring]
 
    **Collections Affected:**
+
    - `collection_name`: [description of change]
 
-   **Security Impact:**
-   [Describe who can now access what, and why this is safe]
+   **Security Impact:** [Describe who can now access what, and why this is safe]
 
    **Testing:**
+
    - [ ] Emulator tests pass
    - [ ] Negative tests added
    - [ ] Manual verification completed
@@ -167,7 +180,8 @@ When reviewing Firestore Rules changes, verify:
   - [ ] Required fields are validated (`request.resource.data.field != null`)
   - [ ] Data types are checked (`is string`, `is number`, etc.)
   - [ ] String lengths validated for user input fields
-  - [ ] Rules prevent insecure or overly broad queries (e.g., unbounded `get()` or `exists()` calls)
+  - [ ] Rules prevent insecure or overly broad queries (e.g., unbounded `get()`
+        or `exists()` calls)
 
 - [ ] **Authentication**
   - [ ] `request.auth != null` checked for protected resources
@@ -191,19 +205,25 @@ When reviewing Firestore Rules changes, verify:
 ### Deployment Process
 
 1. **Staging Deployment**
+
    ```bash
    firebase deploy --only firestore:rules --project=staging
    ```
+
    - Monitor logs for 24 hours
    - Verify no unexpected permission errors
 
 2. **Production Deployment**
+
    ```bash
    firebase deploy --only firestore:rules --project=production
    ```
+
    - **Requires:** Approval from security reviewer + project maintainer
-   - **Timing:** Avoid deployments on Friday/weekends (unless urgent security fix)
-   - **Monitoring:** Watch Firebase Console for errors for 2 hours post-deployment
+   - **Timing:** Avoid deployments on Friday/weekends (unless urgent security
+     fix)
+   - **Monitoring:** Watch Firebase Console for errors for 2 hours
+     post-deployment
 
 3. **Rollback Procedure**
    ```bash
@@ -240,7 +260,8 @@ Before submitting a PR that modifies `functions/`:
 When reviewing Cloud Functions changes, verify:
 
 - [ ] **Authentication & Authorization**
-  - [ ] Function verifies user identity (`context.auth` or `admin.auth().verifyIdToken()`)
+  - [ ] Function verifies user identity (`context.auth` or
+        `admin.auth().verifyIdToken()`)
   - [ ] Function checks user permissions before data access
   - [ ] Service-to-service calls use proper authentication (service accounts)
   - [ ] No hardcoded credentials or API keys in code
@@ -285,6 +306,7 @@ When reviewing Cloud Functions changes, verify:
 ### When to Use security-auditor Agent for Cloud Functions
 
 **ALWAYS USE** for:
+
 - New authentication/authorization logic
 - Functions accessing user data
 - Functions with database write permissions
@@ -292,6 +314,7 @@ When reviewing Cloud Functions changes, verify:
 - Environment variable changes with secrets
 
 **OPTIONAL** for:
+
 - Pure utility functions (no user data, no auth)
 - Logging/monitoring functions
 - Non-security refactoring (code style, performance)
@@ -341,11 +364,13 @@ Use this template for all Firebase-related PRs:
 ```markdown
 ## Firebase Change Summary
 
-**Change Type:** [Firestore Rules | Cloud Functions | App Check | Auth | Storage Rules]
+**Change Type:** [Firestore Rules | Cloud Functions | App Check | Auth | Storage
+Rules]
 
 **Security Impact:** [High | Medium | Low]
 
 **Affected Components:**
+
 - [ ] Firestore Rules (`firestore.rules`)
 - [ ] Cloud Functions (`functions/`)
 - [ ] App Check configuration
@@ -357,28 +382,34 @@ Use this template for all Firebase-related PRs:
 
 ## Security Review
 
-- [ ] `security-auditor` agent review REQUIRED (check if any conditions met above)
+- [ ] `security-auditor` agent review REQUIRED (check if any conditions met
+      above)
 - [ ] Human security review REQUIRED (check if any conditions met above)
 
-**security-auditor Agent Summary:**
-[Paste agent findings or state "Not required for this change"]
+**security-auditor Agent Summary:** [Paste agent findings or state "Not required
+for this change"]
 
 ---
 
 ## Changes Description
 
 ### Firestore Rules (if applicable)
+
 **Collections Affected:**
+
 - `collection_name`: [description]
 
-**Access Pattern Changes:**
-[Describe who can access what, before and after this change]
+**Access Pattern Changes:** [Describe who can access what, before and after this
+change]
 
 ### Cloud Functions (if applicable)
+
 **Functions Modified:**
+
 - `functionName`: [description of change]
 
 **Security Considerations:**
+
 - Authentication: [how function verifies user identity]
 - Authorization: [how function checks permissions]
 - Input Validation: [how user input is validated]
@@ -389,13 +420,16 @@ Use this template for all Firebase-related PRs:
 ## Testing
 
 ### Firestore Rules Testing
+
 - [ ] Emulator tests pass (`npm run test:rules`)
 - [ ] Negative tests added (unauthorized access blocked)
 - [ ] Manual verification completed
 
 **Test Evidence:**
 ```
+
 [Paste test output or link to test run]
+
 ```
 
 ### Cloud Functions Testing
@@ -406,7 +440,9 @@ Use this template for all Firebase-related PRs:
 
 **Test Evidence:**
 ```
+
 [Paste test output]
+
 ```
 
 ---
@@ -449,41 +485,44 @@ Closes #[issue_number]
 ### Firestore Rules Testing
 
 **Minimum test coverage:**
+
 - Authenticated user accessing own data (should succeed)
 - Authenticated user accessing other user's data (should fail)
 - Unauthenticated user accessing protected data (should fail)
-- Admin user with custom claims accessing protected data (should succeed if applicable)
+- Admin user with custom claims accessing protected data (should succeed if
+  applicable)
 - Invalid data types rejected (should fail)
 - Missing required fields rejected (should fail)
 
 **Test structure:**
+
 ```javascript
 // Example test structure
-describe('users collection', () => {
-  describe('authenticated users', () => {
-    it('can read their own user document', async () => {
+describe("users collection", () => {
+  describe("authenticated users", () => {
+    it("can read their own user document", async () => {
       // Test implementation
     });
 
-    it('cannot read other users documents', async () => {
+    it("cannot read other users documents", async () => {
       // Test implementation
     });
 
-    it('can update their own profile', async () => {
+    it("can update their own profile", async () => {
       // Test implementation
     });
 
-    it('cannot update other users profiles', async () => {
+    it("cannot update other users profiles", async () => {
       // Test implementation
     });
   });
 
-  describe('unauthenticated users', () => {
-    it('cannot read any user documents', async () => {
+  describe("unauthenticated users", () => {
+    it("cannot read any user documents", async () => {
       // Test implementation
     });
 
-    it('cannot create user documents', async () => {
+    it("cannot create user documents", async () => {
       // Test implementation
     });
   });
@@ -493,6 +532,7 @@ describe('users collection', () => {
 ### Cloud Functions Testing
 
 **Minimum test coverage:**
+
 - Happy path (valid input, authorized user)
 - Authentication failure (missing token, invalid token)
 - Authorization failure (valid token, insufficient permissions)
@@ -521,6 +561,7 @@ After deploying Firebase changes, monitor:
    - Functionality not working (may indicate rule issue)
 
 **Set up alerts for:**
+
 - Firestore permission denied rate > baseline + 50%
 - Cloud Function error rate > 5%
 - App Check throttle events > baseline + 100%
@@ -538,7 +579,8 @@ For **critical security vulnerabilities** requiring immediate fix:
    - Determine blast radius (affected users/data)
 
 2. **Immediate Mitigation**
-   - If Firestore Rules: Deploy restrictive rules immediately (block access to vulnerable collection)
+   - If Firestore Rules: Deploy restrictive rules immediately (block access to
+     vulnerable collection)
    - If Cloud Function: Disable function via Firebase Console
    - If App Check: Enable enforcement to block unverified clients
 
@@ -581,39 +623,51 @@ All Firebase changes are tracked via:
 
 ## Related Documents
 
-- **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Global security policy (this policy is a specialization)
+- **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Global
+  security policy (this policy is a specialization)
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System architecture and data model
-- **[SECURITY.md](./SECURITY.md)** - Security vulnerability reporting and key rotation
-- **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** - Security audit template (references this policy)
-- **[DEVELOPMENT.md](../DEVELOPMENT.md)** - Development workflow and testing procedures
+- **[SECURITY.md](./SECURITY.md)** - Security vulnerability reporting and key
+  rotation
+- **[MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)** -
+  Security audit template (references this policy)
+- **[DEVELOPMENT.md](../DEVELOPMENT.md)** - Development workflow and testing
+  procedures
 
 ---
 
 ## Exemptions
 
 Exemptions to this policy require:
+
 - **Written justification** (documented in PR)
 - **Approval from project maintainer**
 - **Security risk assessment** (document accepted risks)
 - **Compensating controls** (alternative security measures)
 
 **Example valid exemption:**
-> "Disabling App Check enforcement in development environment to facilitate testing. Compensating control: Development environment uses separate Firebase project with test data only."
+
+> "Disabling App Check enforcement in development environment to facilitate
+> testing. Compensating control: Development environment uses separate Firebase
+> project with test data only."
 
 **Example invalid exemption:**
-> "Skipping security review because PR is urgent." (Urgency does not justify skipping security review)
+
+> "Skipping security review because PR is urgent." (Urgency does not justify
+> skipping security review)
 
 ---
 
 ## Policy Updates
 
 This policy should be reviewed and updated:
+
 - **Quarterly** (as part of security posture review)
 - **After security incidents** (incorporate lessons learned)
 - **When Firebase features change** (new services, deprecated features)
 - **When new vulnerabilities discovered** (e.g., new OWASP Top 10)
 
 **Update process:**
+
 1. Propose changes via PR
 2. Get review from security-auditor agent
 3. Get approval from project maintainer
@@ -624,11 +678,11 @@ This policy should be reviewed and updated:
 
 ## Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.2 | 2026-01-06 | Review #68: Updated document header to 1.1; Added explicit handoff reference for client-side scope; Referenced security layer architecture | Claude |
-| 1.1 | 2026-01-06 | Review #67: Generalized firestore-service.ts reference to pattern-based path | Claude |
-| 1.0 | 2026-01-05 | Initial policy creation - Firestore rules, Cloud Functions, App Check coverage | Claude (Session #25) |
+| Version | Date       | Changes                                                                                                                                    | Author               |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| 1.2     | 2026-01-06 | Review #68: Updated document header to 1.1; Added explicit handoff reference for client-side scope; Referenced security layer architecture | Claude               |
+| 1.1     | 2026-01-06 | Review #67: Generalized firestore-service.ts reference to pattern-based path                                                               | Claude               |
+| 1.0     | 2026-01-05 | Initial policy creation - Firestore rules, Cloud Functions, App Check coverage                                                             | Claude (Session #25) |
 
 ---
 

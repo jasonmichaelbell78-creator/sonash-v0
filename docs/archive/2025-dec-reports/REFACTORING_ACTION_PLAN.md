@@ -3,22 +3,25 @@
 > **Status:** Supporting engineering execution plan  
 > **Canonical product/feature roadmap:** `ROADMAP_V3.md`
 
-This document is an implementation-focused plan that supports the canonical roadmap.
-If there is any conflict between this plan and `ROADMAP_V3.md`, follow `ROADMAP_V3.md`.
+This document is an implementation-focused plan that supports the canonical
+roadmap. If there is any conflict between this plan and `ROADMAP_V3.md`, follow
+`ROADMAP_V3.md`.
 
 ---
+
 ---
 
 ## SoNash Refactoring Action Plan
 
-**Generated**: December 11, 2025
-**Based on**: CODE_ANALYSIS_REPORT.md
+**Generated**: December 11, 2025 **Based on**: CODE_ANALYSIS_REPORT.md
 
 ---
 
 ## Overview
 
-This document outlines the specific refactoring actions to be taken to address the 26 issues identified in the code analysis. The plan is organized into 4 phases based on priority and impact.
+This document outlines the specific refactoring actions to be taken to address
+the 26 issues identified in the code analysis. The plan is organized into 4
+phases based on priority and impact.
 
 ---
 
@@ -41,21 +44,21 @@ This document outlines the specific refactoring actions to be taken to address t
 ```typescript
 // Create utility hook
 function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay)
-    return () => clearTimeout(handler)
-  }, [value, delay])
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
 
-  return debouncedValue
+  return debouncedValue;
 }
 
 // Usage in today-page
-const debouncedJournal = useDebounce(journalEntry, 5000)
+const debouncedJournal = useDebounce(journalEntry, 5000);
 useEffect(() => {
   // Save logic using debouncedJournal
-}, [debouncedJournal])
+}, [debouncedJournal]);
 ```
 
 ---
@@ -74,37 +77,37 @@ useEffect(() => {
 
 ```typescript
 useEffect(() => {
-  let unsubscribe: (() => void) | undefined
-  let isMounted = true
+  let unsubscribe: (() => void) | undefined;
+  let isMounted = true;
 
   const setupListener = async () => {
     try {
-      const { onSnapshot, doc } = await import("firebase/firestore")
-      const { db } = await import("@/lib/firebase")
+      const { onSnapshot, doc } = await import("firebase/firestore");
+      const { db } = await import("@/lib/firebase");
 
-      const today = getTodayDateId() // Use centralized function
-      const docRef = doc(db, `users/${user.uid}/daily_logs/${today}`)
+      const today = getTodayDateId(); // Use centralized function
+      const docRef = doc(db, `users/${user.uid}/daily_logs/${today}`);
 
       if (isMounted) {
         unsubscribe = onSnapshot(docRef, (docSnap) => {
-          if (!isMounted) return // Guard against late callbacks
+          if (!isMounted) return; // Guard against late callbacks
           // Update state...
-        })
+        });
       }
     } catch (err) {
-      logger.error("Error setting up listener", { error: err })
+      logger.error("Error setting up listener", { error: err });
     }
-  }
+  };
 
   if (user) {
-    setupListener()
+    setupListener();
   }
 
   return () => {
-    isMounted = false
-    if (unsubscribe) unsubscribe()
-  }
-}, [user]) // Only user in deps
+    isMounted = false;
+    if (unsubscribe) unsubscribe();
+  };
+}, [user]); // Only user in deps
 ```
 
 ---
@@ -132,7 +135,7 @@ useEffect(() => {
 export function getTodayDateId(): string {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "UTC",
-  }).format(new Date())
+  }).format(new Date());
 }
 
 /**
@@ -143,7 +146,7 @@ export function formatDateForDisplay(date: Date): string {
     weekday: "long",
     month: "short",
     day: "numeric",
-  })
+  });
 }
 ```
 
@@ -169,30 +172,32 @@ export function formatDateForDisplay(date: Date): string {
 
 ```typescript
 // lib/types/firebase-types.ts (NEW)
-import { Timestamp } from "firebase/firestore"
+import { Timestamp } from "firebase/firestore";
 
 export function isFirestoreTimestamp(value: unknown): value is Timestamp {
-  return value !== null &&
-         typeof value === 'object' &&
-         'toDate' in value &&
-         typeof (value as any).toDate === 'function'
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "toDate" in value &&
+    typeof (value as any).toDate === "function"
+  );
 }
 
 // today-page.tsx
 const getCleanTime = () => {
-  if (!profile?.cleanStart) return null
+  if (!profile?.cleanStart) return null;
 
-  let startDate: Date
+  let startDate: Date;
   if (isFirestoreTimestamp(profile.cleanStart)) {
-    startDate = profile.cleanStart.toDate()
+    startDate = profile.cleanStart.toDate();
   } else if (profile.cleanStart instanceof Date) {
-    startDate = profile.cleanStart
+    startDate = profile.cleanStart;
   } else {
-    startDate = new Date(profile.cleanStart)
+    startDate = new Date(profile.cleanStart);
   }
 
   // Rest of logic...
-}
+};
 ```
 
 ---
@@ -210,17 +215,19 @@ const getCleanTime = () => {
 **Implementation**:
 
 ```typescript
-import { z } from "zod"
+import { z } from "zod";
 
 // Zod schema for UserProfile
 const UserProfileSchema = z.object({
   uid: z.string().min(1),
   email: z.string().email().nullable(),
   nickname: z.string().min(1).max(50),
-  cleanStart: z.custom<Timestamp>((val) => {
-    // Validate Timestamp
-    return val === null || isFirestoreTimestamp(val)
-  }).nullable(),
+  cleanStart: z
+    .custom<Timestamp>((val) => {
+      // Validate Timestamp
+      return val === null || isFirestoreTimestamp(val);
+    })
+    .nullable(),
   createdAt: z.custom<Timestamp>(),
   updatedAt: z.custom<Timestamp>(),
   preferences: z.object({
@@ -228,41 +235,46 @@ const UserProfileSchema = z.object({
     largeText: z.boolean(),
     simpleLanguage: z.boolean(),
   }),
-})
+});
 
-const PartialUserProfileSchema = UserProfileSchema.partial().omit({ uid: true })
+const PartialUserProfileSchema = UserProfileSchema.partial().omit({
+  uid: true,
+});
 
 export async function updateUserProfile(
   uid: string,
   data: Partial<UserProfile>
 ): Promise<void> {
   try {
-    assertUserScope({ userId: uid })
+    assertUserScope({ userId: uid });
 
     // Validate input
-    const validated = PartialUserProfileSchema.parse(data)
+    const validated = PartialUserProfileSchema.parse(data);
 
-    const docRef = doc(db, `users/${uid}`)
-    validateUserDocumentPath(uid, `users/${uid}`)
+    const docRef = doc(db, `users/${uid}`);
+    validateUserDocumentPath(uid, `users/${uid}`);
 
     await setDoc(
       docRef,
       {
         ...validated,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       },
       { merge: true }
-    )
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       logger.error("Invalid user profile data", {
         userId: maskIdentifier(uid),
-        errors: error.errors
-      })
-      throw new Error("Invalid user profile data")
+        errors: error.errors,
+      });
+      throw new Error("Invalid user profile data");
     }
-    logger.error("Error updating user profile", { userId: maskIdentifier(uid), error })
-    throw error
+    logger.error("Error updating user profile", {
+      userId: maskIdentifier(uid),
+      error,
+    });
+    throw error;
   }
 }
 ```
@@ -319,7 +331,8 @@ service cloud.firestore {
 }
 ```
 
-**Note**: More sophisticated date validation requires Cloud Functions due to Firestore Rules limitations.
+**Note**: More sophisticated date validation requires Cloud Functions due to
+Firestore Rules limitations.
 
 ---
 
@@ -422,8 +435,8 @@ className={`
 **Implementation**:
 
 ```typescript
-const isDevelopment = process.env.NODE_ENV === 'development'
-const isTest = process.env.NODE_ENV === 'test'
+const isDevelopment = process.env.NODE_ENV === "development";
+const isTest = process.env.NODE_ENV === "test";
 
 const log = (level: LogLevel, message: string, context?: LogContext) => {
   const payload = {
@@ -431,21 +444,21 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
     message,
     timestamp: new Date().toISOString(),
     ...(context ? { context: sanitizeContext(context) } : {}),
-  }
+  };
 
   // Only log to console in development/test
   if (isDevelopment || isTest) {
-    if (level === "info") console.log(payload)
-    else if (level === "warn") console.warn(payload)
-    else console.error(payload)
+    if (level === "info") console.log(payload);
+    else if (level === "warn") console.warn(payload);
+    else console.error(payload);
   }
 
   // In production, send to logging service (Sentry, LogRocket, etc.)
-  if (!isDevelopment && !isTest && level === 'error') {
+  if (!isDevelopment && !isTest && level === "error") {
     // TODO: Send to external logging service
     // Sentry.captureMessage(message, { level, extra: context })
   }
-}
+};
 ```
 
 ---
@@ -498,19 +511,19 @@ useEffect(() => {
 // Memoize snapshot handler
 const handleProfileSnapshot = useCallback((docSnap: DocumentSnapshot) => {
   if (docSnap.exists()) {
-    const data = docSnap.data() as UserProfile
+    const data = docSnap.data() as UserProfile;
     // Only update if data actually changed
     setProfile((prev) => {
-      if (JSON.stringify(prev) === JSON.stringify(data)) return prev
-      return data
-    })
-    setProfileNotFound(false)
+      if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
+      return data;
+    });
+    setProfileNotFound(false);
   } else {
-    setProfile(null)
-    setProfileNotFound(true)
+    setProfile(null);
+    setProfileNotFound(true);
   }
-  setLoading(false)
-}, [])
+  setLoading(false);
+}, []);
 ```
 
 ---
@@ -551,13 +564,15 @@ npm install firebase/app-check
 
 ```typescript
 // lib/firebase.ts
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!),
-    isTokenAutoRefreshEnabled: true
-  })
+    provider: new ReCaptchaV3Provider(
+      process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!
+    ),
+    isTokenAutoRefreshEnabled: true,
+  });
 }
 ```
 
@@ -603,12 +618,12 @@ async saveDailyLog(userId: string, data: Partial<DailyLog>) {
 **Implementation**:
 
 ```typescript
-const isEditingRef = useRef(false)
+const isEditingRef = useRef(false);
 
 // Remove isEditing from deps:
 useEffect(() => {
   // Use isEditingRef.current instead of isEditing
-}, [user]) // Only user
+}, [user]); // Only user
 ```
 
 ---
@@ -621,19 +636,19 @@ useEffect(() => {
 
 ```typescript
 export const STORAGE_KEYS = {
-  JOURNAL_TEMP: 'sonash_journal_temp',
-  READING_PREF: 'sonash_reading_pref',
-} as const
+  JOURNAL_TEMP: "sonash_journal_temp",
+  READING_PREF: "sonash_reading_pref",
+} as const;
 
 export const DAYS = {
-  MONDAY: 'Monday',
-  TUESDAY: 'Tuesday',
-  WEDNESDAY: 'Wednesday',
-  THURSDAY: 'Thursday',
-  FRIDAY: 'Friday',
-  SATURDAY: 'Saturday',
-  SUNDAY: 'Sunday',
-} as const
+  MONDAY: "Monday",
+  TUESDAY: "Tuesday",
+  WEDNESDAY: "Wednesday",
+  THURSDAY: "Thursday",
+  FRIDAY: "Friday",
+  SATURDAY: "Saturday",
+  SUNDAY: "Sunday",
+} as const;
 
 export const DAY_ORDER = {
   [DAYS.MONDAY]: 1,
@@ -643,7 +658,7 @@ export const DAY_ORDER = {
   [DAYS.FRIDAY]: 5,
   [DAYS.SATURDAY]: 6,
   [DAYS.SUNDAY]: 7,
-} as const
+} as const;
 ```
 
 ---
@@ -680,8 +695,8 @@ Create abstraction layer:
 ```typescript
 // lib/database/database-interface.ts
 export interface IDatabase {
-  saveLog(userId: string, data: any): Promise<void>
-  getLog(userId: string, dateId: string): Promise<any>
+  saveLog(userId: string, data: any): Promise<void>;
+  getLog(userId: string, dateId: string): Promise<any>;
 }
 
 // lib/database/firestore-adapter.ts

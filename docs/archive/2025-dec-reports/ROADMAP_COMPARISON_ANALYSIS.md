@@ -3,19 +3,21 @@
 > **Status:** Archived / point-in-time reference (Dec 11, 2025)  
 > **Superseded by:** `ROADMAP_V3.md` (canonical)
 
-This document captured a comparison at a moment in time. Any actionable items have been integrated into the canonical roadmap.
+This document captured a comparison at a moment in time. Any actionable items
+have been integrated into the canonical roadmap.
 
 For the current plan, see:
 
 - `ROADMAP_V3.md`
 
 ---
+
 ---
 
 ## Roadmap Comparison Analysis
 
-**Date**: December 11, 2025
-**Purpose**: Compare comprehensive recommendations from code review session against existing ROADMAP.md
+**Date**: December 11, 2025 **Purpose**: Compare comprehensive recommendations
+from code review session against existing ROADMAP.md
 
 ---
 
@@ -23,10 +25,11 @@ For the current plan, see:
 
 ### Key Findings
 
-✅ **Strong Alignment**: 75% of recommendations align with or enhance existing roadmap
-⚠️ **Critical Gaps Identified**: Crisis support, offline-first architecture, HIPAA compliance
-🔄 **No Major Contradictions**: Recommendations complement rather than conflict with roadmap
-📈 **Priority Shifts Recommended**: Move crisis features earlier in phased rollout
+✅ **Strong Alignment**: 75% of recommendations align with or enhance existing
+roadmap ⚠️ **Critical Gaps Identified**: Crisis support, offline-first
+architecture, HIPAA compliance 🔄 **No Major Contradictions**: Recommendations
+complement rather than conflict with roadmap 📈 **Priority Shifts Recommended**:
+Move crisis features earlier in phased rollout
 
 ---
 
@@ -34,62 +37,62 @@ For the current plan, see:
 
 ### ✅ Already in Roadmap (Duplication - Good!)
 
-| Feature | Roadmap Location | Status | Notes |
-|---------|------------------|--------|-------|
-| **Daily Check-In** | Phase 3 (Section 6.4) | Planned | Mood, cravings, used tracking |
-| **Clean Time Tracker** | Phase 3 (Section 6.2) | Planned | Real-time minutes display |
-| **Meeting Finder** | Phase 4 (Section 7.2) | MVP Live | AA/NA meetings with map |
-| **Support Circle** | Phase 5 (Section 8) | Planned | Contact management with tags |
-| **Journal Vault** | Phase 7 (Section 10) | Planned | All written work centralized |
-| **10th/11th Step Inventories** | Section 11 | Planned | Daily and nightly reviews |
-| **Spot-Check Inventory** | Section 11.3 | Planned | In-the-moment tool |
-| **My Story Builder** | Section 11.4 | Planned | "What it was like" structure |
-| **Prayer & Meditation** | Section 12 | Planned | Reference with external links |
-| **Speaker Tapes** | Section 13.2 | Planned | Audio player for recovery talks |
-| **Recovery Challenges** | Section 15 | Planned | Habit builders (meetings, check-ins) |
-| **Early Recovery Guide** | Section 14 | Planned | First 72hr/7d/30d phases |
-| **Export to Sponsor** | Section 16 | Planned | Selected entry sharing |
-| **Voice-to-Text Journal** | Section 10.2 | Planned | `voiceJournal` entry type |
-| **Admin Backend** | Section 17 | Planned | Content management CRUD |
-| **Sober Events** | Section 13.3 | Planned | Community bulletin board |
-| **Large Text / Simple Language** | Section 19 | Planned | Accessibility modes |
-| **PWA Architecture** | Section 3.1 | Current | Mobile-first web app |
-| **Firebase Auth & Firestore** | Section 3.2 | Current | Backend stack |
-| **Offline Persistence** | Section 10.5 | Planned | Firestore offline mode |
+| Feature                          | Roadmap Location      | Status   | Notes                                |
+| -------------------------------- | --------------------- | -------- | ------------------------------------ |
+| **Daily Check-In**               | Phase 3 (Section 6.4) | Planned  | Mood, cravings, used tracking        |
+| **Clean Time Tracker**           | Phase 3 (Section 6.2) | Planned  | Real-time minutes display            |
+| **Meeting Finder**               | Phase 4 (Section 7.2) | MVP Live | AA/NA meetings with map              |
+| **Support Circle**               | Phase 5 (Section 8)   | Planned  | Contact management with tags         |
+| **Journal Vault**                | Phase 7 (Section 10)  | Planned  | All written work centralized         |
+| **10th/11th Step Inventories**   | Section 11            | Planned  | Daily and nightly reviews            |
+| **Spot-Check Inventory**         | Section 11.3          | Planned  | In-the-moment tool                   |
+| **My Story Builder**             | Section 11.4          | Planned  | "What it was like" structure         |
+| **Prayer & Meditation**          | Section 12            | Planned  | Reference with external links        |
+| **Speaker Tapes**                | Section 13.2          | Planned  | Audio player for recovery talks      |
+| **Recovery Challenges**          | Section 15            | Planned  | Habit builders (meetings, check-ins) |
+| **Early Recovery Guide**         | Section 14            | Planned  | First 72hr/7d/30d phases             |
+| **Export to Sponsor**            | Section 16            | Planned  | Selected entry sharing               |
+| **Voice-to-Text Journal**        | Section 10.2          | Planned  | `voiceJournal` entry type            |
+| **Admin Backend**                | Section 17            | Planned  | Content management CRUD              |
+| **Sober Events**                 | Section 13.3          | Planned  | Community bulletin board             |
+| **Large Text / Simple Language** | Section 19            | Planned  | Accessibility modes                  |
+| **PWA Architecture**             | Section 3.1           | Current  | Mobile-first web app                 |
+| **Firebase Auth & Firestore**    | Section 3.2           | Current  | Backend stack                        |
+| **Offline Persistence**          | Section 10.5          | Planned  | Firestore offline mode               |
 
 ### 🆕 Recommendations NOT in Roadmap (Gaps)
 
-| Feature | Priority | Why Missing is Critical | Recommendation |
-|---------|----------|-------------------------|----------------|
-| **Crisis SOS Button** | 🔴 CRITICAL | Users in crisis need instant help | Add to Phase 3 (Today page) |
-| **Crisis Text Line Integration** | 🔴 CRITICAL | Not everyone can call; texting is safer | Add to Phase 4 (Resources) |
-| **Relapse Recovery Mode** | 🔴 CRITICAL | Current design assumes linear progress | Add "Reset Clean Date" flow |
-| **Anonymous Mode** | 🟡 HIGH | Users may share devices or fear discovery | Add to Phase 6 (Settings) |
-| **HIPAA Compliance Plan** | 🟡 HIGH | May partner with clinics/courts | Add to Quality Schedule |
-| **App Lock (PIN/Biometric)** | 🟡 HIGH | Roadmap says "later" but should be Phase 6 | Move up priority |
-| **Panic Mode (Quick Exit)** | 🟡 HIGH | Domestic situations require fast exit | Add to Phase 6 |
-| **Gratitude Journal** | 🟢 MEDIUM | Separate from general journal | Already covered (type: `gratitudeList`) ✅ |
-| **Craving Delay Timer** | 🟢 MEDIUM | "Surf the urge" guided tool | Add to Phase 3 or Growth tab |
-| **Local Resource Map** | 🟢 MEDIUM | Listed as "future" in 7.1 | Good; already planned |
-| **Sober Living Finder** | 🟢 MEDIUM | Listed as "future" in 7.1 | Good; already planned |
-| **Court/Legal Tracking** | 🔵 LOW | For compliance documentation | Consider for "Work" tab |
-| **Medication Reminders** | 🔵 LOW | MAT (medication-assisted treatment) users | Future consideration |
-| **Peer Matching** | 🔵 LOW | Privacy/moderation concerns | Defer (not in roadmap) |
+| Feature                          | Priority    | Why Missing is Critical                    | Recommendation                             |
+| -------------------------------- | ----------- | ------------------------------------------ | ------------------------------------------ |
+| **Crisis SOS Button**            | 🔴 CRITICAL | Users in crisis need instant help          | Add to Phase 3 (Today page)                |
+| **Crisis Text Line Integration** | 🔴 CRITICAL | Not everyone can call; texting is safer    | Add to Phase 4 (Resources)                 |
+| **Relapse Recovery Mode**        | 🔴 CRITICAL | Current design assumes linear progress     | Add "Reset Clean Date" flow                |
+| **Anonymous Mode**               | 🟡 HIGH     | Users may share devices or fear discovery  | Add to Phase 6 (Settings)                  |
+| **HIPAA Compliance Plan**        | 🟡 HIGH     | May partner with clinics/courts            | Add to Quality Schedule                    |
+| **App Lock (PIN/Biometric)**     | 🟡 HIGH     | Roadmap says "later" but should be Phase 6 | Move up priority                           |
+| **Panic Mode (Quick Exit)**      | 🟡 HIGH     | Domestic situations require fast exit      | Add to Phase 6                             |
+| **Gratitude Journal**            | 🟢 MEDIUM   | Separate from general journal              | Already covered (type: `gratitudeList`) ✅ |
+| **Craving Delay Timer**          | 🟢 MEDIUM   | "Surf the urge" guided tool                | Add to Phase 3 or Growth tab               |
+| **Local Resource Map**           | 🟢 MEDIUM   | Listed as "future" in 7.1                  | Good; already planned                      |
+| **Sober Living Finder**          | 🟢 MEDIUM   | Listed as "future" in 7.1                  | Good; already planned                      |
+| **Court/Legal Tracking**         | 🔵 LOW      | For compliance documentation               | Consider for "Work" tab                    |
+| **Medication Reminders**         | 🔵 LOW      | MAT (medication-assisted treatment) users  | Future consideration                       |
+| **Peer Matching**                | 🔵 LOW      | Privacy/moderation concerns                | Defer (not in roadmap)                     |
 
 ### 🔄 Technical Recommendations NOT in Roadmap
 
-| Recommendation | Current Roadmap | Gap Analysis |
-|----------------|-----------------|--------------|
-| **Offline-First Architecture** | "Optional later" (10.5) | Should be Phase 3 requirement |
-| **Service Worker Caching** | Mentioned as PWA | Not explicitly planned |
-| **CSP Headers** | Not mentioned | Add to Quality Schedule (Q2) |
-| **Rate Limiting (Server-Side)** | Not mentioned | Add Firebase App Check + Cloud Functions |
-| **Error Boundary Components** | Not mentioned | Add to Phase 3 |
-| **Sentry/LogRocket Integration** | Not mentioned | Add to Phase 5 launch prep |
-| **Performance Budget** | Lighthouse 90+ (Q2) | Good but needs bundle size limits |
-| **Automated E2E Testing** | "Basic E2E flows" (Q2) | Should include Playwright/Cypress setup |
-| **WCAG 2.1 AA Compliance** | "Screen reader-friendly" (19) | Not specific enough; add audit |
-| **Data Encryption at Rest** | Not mentioned | Add to Security Audit (Q2) |
+| Recommendation                   | Current Roadmap               | Gap Analysis                             |
+| -------------------------------- | ----------------------------- | ---------------------------------------- |
+| **Offline-First Architecture**   | "Optional later" (10.5)       | Should be Phase 3 requirement            |
+| **Service Worker Caching**       | Mentioned as PWA              | Not explicitly planned                   |
+| **CSP Headers**                  | Not mentioned                 | Add to Quality Schedule (Q2)             |
+| **Rate Limiting (Server-Side)**  | Not mentioned                 | Add Firebase App Check + Cloud Functions |
+| **Error Boundary Components**    | Not mentioned                 | Add to Phase 3                           |
+| **Sentry/LogRocket Integration** | Not mentioned                 | Add to Phase 5 launch prep               |
+| **Performance Budget**           | Lighthouse 90+ (Q2)           | Good but needs bundle size limits        |
+| **Automated E2E Testing**        | "Basic E2E flows" (Q2)        | Should include Playwright/Cypress setup  |
+| **WCAG 2.1 AA Compliance**       | "Screen reader-friendly" (19) | Not specific enough; add audit           |
+| **Data Encryption at Rest**      | Not mentioned                 | Add to Security Audit (Q2)               |
 
 ---
 
@@ -97,14 +100,15 @@ For the current plan, see:
 
 ### ❌ No Major Contradictions Found
 
-The recommendations **complement** rather than conflict with the roadmap. However, there are **priority disagreements**:
+The recommendations **complement** rather than conflict with the roadmap.
+However, there are **priority disagreements**:
 
-| Recommendation | Roadmap | Conflict Type | Resolution |
-|----------------|---------|---------------|------------|
-| **App Lock** | "Optional app lock (later)" | **PRIORITY** | Move to Phase 6 instead of "later" |
-| **Offline Support** | "Optional later" | **PRIORITY** | Make required in Phase 3 |
-| **Crisis Features** | Not in any phase | **OMISSION** | Add Crisis Support to Phase 3-4 |
-| **Anonymous Mode** | Not mentioned | **OMISSION** | Add to Phase 6 privacy settings |
+| Recommendation      | Roadmap                     | Conflict Type | Resolution                         |
+| ------------------- | --------------------------- | ------------- | ---------------------------------- |
+| **App Lock**        | "Optional app lock (later)" | **PRIORITY**  | Move to Phase 6 instead of "later" |
+| **Offline Support** | "Optional later"            | **PRIORITY**  | Make required in Phase 3           |
+| **Crisis Features** | Not in any phase            | **OMISSION**  | Add Crisis Support to Phase 3-4    |
+| **Anonymous Mode**  | Not mentioned               | **OMISSION**  | Add to Phase 6 privacy settings    |
 
 ---
 
@@ -125,38 +129,39 @@ The recommendations **complement** rather than conflict with the roadmap. Howeve
 
 #### 🔴 Phase 3 - Add Crisis Support
 
-**Current**: Today page with check-in, tracker, reading
-**Recommended Addition**:
+**Current**: Today page with check-in, tracker, reading **Recommended
+Addition**:
 
 - Crisis SOS button (always visible)
 - "Need help right now?" card
 - Quick access to crisis contacts
 
-**Rationale**: Users in early recovery (target audience) face frequent crises. This should be available from day 1 of app usage, not deferred.
+**Rationale**: Users in early recovery (target audience) face frequent crises.
+This should be available from day 1 of app usage, not deferred.
 
 #### 🔴 Phase 3 - Make Offline-First Required
 
-**Current**: "Optional later"
-**Recommended**: Core architectural requirement
-**Rationale**: Target users have unstable housing, inconsistent data plans. App must work offline or it won't work for them.
+**Current**: "Optional later" **Recommended**: Core architectural requirement
+**Rationale**: Target users have unstable housing, inconsistent data plans. App
+must work offline or it won't work for them.
 
 #### 🟡 Phase 4 - Add Crisis Text Line
 
-**Current**: Help & Outreach Links (voice calls only)
-**Recommended**: Text-based crisis support
-**Rationale**: Many users can't safely make calls (shared spaces, domestic situations).
+**Current**: Help & Outreach Links (voice calls only) **Recommended**:
+Text-based crisis support **Rationale**: Many users can't safely make calls
+(shared spaces, domestic situations).
 
 #### 🟡 Phase 6 - Prioritize App Lock
 
-**Current**: "Optional app lock (later)"
-**Recommended**: PIN/biometric lock in Phase 6
-**Rationale**: Journal contains deeply personal step work. App lock should launch with journal vault.
+**Current**: "Optional app lock (later)" **Recommended**: PIN/biometric lock in
+Phase 6 **Rationale**: Journal contains deeply personal step work. App lock
+should launch with journal vault.
 
 #### 🟢 Phase 7+ - Add Relapse Recovery Mode
 
-**Current**: Not mentioned
-**Recommended**: Add to slip/tough day logging (6.2)
-**Rationale**: Recovery is non-linear. App should gracefully handle relapse without shame.
+**Current**: Not mentioned **Recommended**: Add to slip/tough day logging (6.2)
+**Rationale**: Recovery is non-linear. App should gracefully handle relapse
+without shame.
 
 ---
 
@@ -164,14 +169,17 @@ The recommendations **complement** rather than conflict with the roadmap. Howeve
 
 ### Not in Technical Roadmap (Expected)
 
-The existing ROADMAP.md is **product/technical focused**. My recommendations included business strategies that are appropriately **not** in a technical roadmap:
+The existing ROADMAP.md is **product/technical focused**. My recommendations
+included business strategies that are appropriately **not** in a technical
+roadmap:
 
 - Partnership strategies (clinics, recovery houses, courts)
 - Revenue models (freemium, B2B, grants)
 - Marketing/growth tactics (SEO, community outreach, peer referrals)
 - Legal compliance beyond security (HIPAA, 42 CFR Part 2, ADA)
 
-**Recommendation**: Create separate `BUSINESS_ROADMAP.md` or `GO_TO_MARKET.md` for non-technical planning.
+**Recommendation**: Create separate `BUSINESS_ROADMAP.md` or `GO_TO_MARKET.md`
+for non-technical planning.
 
 ---
 
@@ -193,14 +201,14 @@ The existing ROADMAP.md is **product/technical focused**. My recommendations inc
 
 ### Recommended Enhancements
 
-| Gap | Add to Which Phase | Details |
-|-----|-------------------|---------|
-| **Component Testing** | Q1 | Add React Testing Library tests for all modules |
-| **Security Testing** | Q2 | Add OWASP ZAP scan, dependency audits (npm audit) |
-| **Accessibility Testing** | Q2 | Add axe-core, manual screen reader testing |
-| **Performance Budget** | Q2 | Set hard limits: JS bundle < 200KB, FCP < 1.8s |
-| **Error Monitoring** | Before Phase 5 Launch | Sentry for production error tracking |
-| **Analytics Setup** | Before Phase 5 Launch | Privacy-respecting analytics (Plausible/Fathom) |
+| Gap                       | Add to Which Phase    | Details                                           |
+| ------------------------- | --------------------- | ------------------------------------------------- |
+| **Component Testing**     | Q1                    | Add React Testing Library tests for all modules   |
+| **Security Testing**      | Q2                    | Add OWASP ZAP scan, dependency audits (npm audit) |
+| **Accessibility Testing** | Q2                    | Add axe-core, manual screen reader testing        |
+| **Performance Budget**    | Q2                    | Set hard limits: JS bundle < 200KB, FCP < 1.8s    |
+| **Error Monitoring**      | Before Phase 5 Launch | Sentry for production error tracking              |
+| **Analytics Setup**       | Before Phase 5 Launch | Privacy-respecting analytics (Plausible/Fathom)   |
 
 ---
 
@@ -208,7 +216,8 @@ The existing ROADMAP.md is **product/technical focused**. My recommendations inc
 
 ### Perfect Alignment ✅
 
-The existing data model (Section 18) covers all core entities. My recommendations align with:
+The existing data model (Section 18) covers all core entities. My
+recommendations align with:
 
 - `/users/{uid}/checkins/{dateKey}` - Daily check-ins ✅
 - `/users/{uid}/toughDays/{id}` - Slip logging ✅
@@ -218,12 +227,12 @@ The existing data model (Section 18) covers all core entities. My recommendation
 
 ### Suggested Additions
 
-| Collection | Purpose | Priority |
-|-----------|---------|----------|
-| `/users/{uid}/settings/privacy` | Anonymous mode, app lock settings | 🟡 HIGH |
-| `/users/{uid}/crisisLog/{logId}` | Track crisis button usage (for self-reflection) | 🟡 HIGH |
-| `/users/{uid}/achievements/{achievementId}` | Milestone tracking (30/60/90 days) | 🟢 MEDIUM |
-| `/helpLinks/{linkId}` | **Add field**: `supportsChatText: boolean` | 🔴 CRITICAL |
+| Collection                                  | Purpose                                         | Priority    |
+| ------------------------------------------- | ----------------------------------------------- | ----------- |
+| `/users/{uid}/settings/privacy`             | Anonymous mode, app lock settings               | 🟡 HIGH     |
+| `/users/{uid}/crisisLog/{logId}`            | Track crisis button usage (for self-reflection) | 🟡 HIGH     |
+| `/users/{uid}/achievements/{achievementId}` | Milestone tracking (30/60/90 days)              | 🟢 MEDIUM   |
+| `/helpLinks/{linkId}`                       | **Add field**: `supportsChatText: boolean`      | 🔴 CRITICAL |
 
 ---
 
@@ -231,21 +240,22 @@ The existing data model (Section 18) covers all core entities. My recommendation
 
 ### Strong Alignment ✅
 
-- **Notebook metaphor** - Roadmap is deeply committed; recommendations support this
+- **Notebook metaphor** - Roadmap is deeply committed; recommendations support
+  this
 - **Warm, non-shaming tone** - Both emphasize this
 - **Page-flip animations** - Both describe this
 - **Tab navigation** - Matches exactly
 
 ### Recommended Additions
 
-| UI Element | Roadmap Status | Recommendation |
-|-----------|---------------|----------------|
-| **Crisis SOS Button** | Not mentioned | Add persistent FAB (floating action button) on all pages |
-| **Offline Indicator** | "Sync status" (10.5) | Good; make prominent |
-| **Saving Indicators** | Not mentioned | Add "Saving..." / "Saved" feedback |
-| **Empty States** | Not mentioned | Add compassionate empty state messaging |
-| **Dark Mode** | Not mentioned | Consider for users with migraines/sensitivity |
-| **Panic Mode Button** | Not mentioned | Triple-tap to quick exit app |
+| UI Element            | Roadmap Status       | Recommendation                                           |
+| --------------------- | -------------------- | -------------------------------------------------------- |
+| **Crisis SOS Button** | Not mentioned        | Add persistent FAB (floating action button) on all pages |
+| **Offline Indicator** | "Sync status" (10.5) | Good; make prominent                                     |
+| **Saving Indicators** | Not mentioned        | Add "Saving..." / "Saved" feedback                       |
+| **Empty States**      | Not mentioned        | Add compassionate empty state messaging                  |
+| **Dark Mode**         | Not mentioned        | Consider for users with migraines/sensitivity            |
+| **Panic Mode Button** | Not mentioned        | Triple-tap to quick exit app                             |
 
 ---
 
@@ -260,14 +270,14 @@ The existing data model (Section 18) covers all core entities. My recommendation
 
 ### Critical Additions Needed
 
-| Security Feature | Priority | Why Critical |
-|------------------|----------|--------------|
-| **HIPAA Compliance** | 🔴 CRITICAL | If partnering with clinics/courts |
-| **CSP Headers** | 🟡 HIGH | Defense against XSS (already verified low risk) |
-| **Rate Limiting** | 🟡 HIGH | Prevent abuse (client-side done; need server-side) |
-| **Data Encryption at Rest** | 🟡 HIGH | Journal contains sensitive recovery work |
-| **Session Timeout** | 🟢 MEDIUM | Auto-lock after inactivity |
-| **Audit Logging** | 🟢 MEDIUM | Track admin content changes ✅ (already planned) |
+| Security Feature            | Priority    | Why Critical                                       |
+| --------------------------- | ----------- | -------------------------------------------------- |
+| **HIPAA Compliance**        | 🔴 CRITICAL | If partnering with clinics/courts                  |
+| **CSP Headers**             | 🟡 HIGH     | Defense against XSS (already verified low risk)    |
+| **Rate Limiting**           | 🟡 HIGH     | Prevent abuse (client-side done; need server-side) |
+| **Data Encryption at Rest** | 🟡 HIGH     | Journal contains sensitive recovery work           |
+| **Session Timeout**         | 🟢 MEDIUM   | Auto-lock after inactivity                         |
+| **Audit Logging**           | 🟢 MEDIUM   | Track admin content changes ✅ (already planned)   |
 
 ---
 
@@ -282,13 +292,13 @@ The existing data model (Section 18) covers all core entities. My recommendation
 
 ### Gaps
 
-| Feature | Priority | Details |
-|---------|----------|---------|
-| **WCAG 2.1 AA Certification** | 🟡 HIGH | Need formal audit and fixes |
-| **Keyboard Navigation** | 🟡 HIGH | Not mentioned; critical for desktop users |
-| **Color Contrast** | 🟡 HIGH | Notebook aesthetic may have low contrast |
-| **Focus Indicators** | 🟢 MEDIUM | Custom styling needed |
-| **Alternative Text** | 🟢 MEDIUM | For all images/icons |
+| Feature                       | Priority  | Details                                   |
+| ----------------------------- | --------- | ----------------------------------------- |
+| **WCAG 2.1 AA Certification** | 🟡 HIGH   | Need formal audit and fixes               |
+| **Keyboard Navigation**       | 🟡 HIGH   | Not mentioned; critical for desktop users |
+| **Color Contrast**            | 🟡 HIGH   | Notebook aesthetic may have low contrast  |
+| **Focus Indicators**          | 🟢 MEDIUM | Custom styling needed                     |
+| **Alternative Text**          | 🟢 MEDIUM | For all images/icons                      |
 
 ---
 
@@ -362,16 +372,16 @@ The existing data model (Section 18) covers all core entities. My recommendation
 
 ### Recommended Additions
 
-| Technology | Purpose | Priority | Roadmap Status |
-|-----------|---------|----------|----------------|
-| **Workbox** | Service worker caching | 🔴 CRITICAL | Not mentioned |
-| **React Error Boundaries** | Graceful error handling | 🟡 HIGH | Not mentioned |
-| **Zod** | Runtime validation | ✅ ADDED | Added in Phase 1 refactoring |
-| **Sentry** | Error monitoring | 🟡 HIGH | Not mentioned |
-| **Playwright** | E2E testing | 🟡 HIGH | "Basic E2E" mentioned |
-| **React Testing Library** | Component testing | 🟡 HIGH | Not mentioned |
-| **Lighthouse CI** | Performance monitoring | 🟢 MEDIUM | Manual Lighthouse mentioned |
-| **Husky + lint-staged** | Pre-commit hooks | 🟢 MEDIUM | Not mentioned |
+| Technology                 | Purpose                 | Priority    | Roadmap Status               |
+| -------------------------- | ----------------------- | ----------- | ---------------------------- |
+| **Workbox**                | Service worker caching  | 🔴 CRITICAL | Not mentioned                |
+| **React Error Boundaries** | Graceful error handling | 🟡 HIGH     | Not mentioned                |
+| **Zod**                    | Runtime validation      | ✅ ADDED    | Added in Phase 1 refactoring |
+| **Sentry**                 | Error monitoring        | 🟡 HIGH     | Not mentioned                |
+| **Playwright**             | E2E testing             | 🟡 HIGH     | "Basic E2E" mentioned        |
+| **React Testing Library**  | Component testing       | 🟡 HIGH     | Not mentioned                |
+| **Lighthouse CI**          | Performance monitoring  | 🟢 MEDIUM   | Manual Lighthouse mentioned  |
+| **Husky + lint-staged**    | Pre-commit hooks        | 🟢 MEDIUM   | Not mentioned                |
 
 ---
 
@@ -379,15 +389,15 @@ The existing data model (Section 18) covers all core entities. My recommendation
 
 ### Not in Roadmap (But Needed)
 
-| Requirement | Status | Action |
-|-------------|--------|--------|
-| **HIPAA Compliance** | ❌ Not mentioned | Add compliance plan if B2B strategy pursued |
-| **42 CFR Part 2** | ❌ Not mentioned | Federal substance use privacy regulations |
-| **ADA Compliance** | ⚠️ Partial (accessibility features) | Add WCAG 2.1 AA certification goal |
-| **GDPR** | ❌ Not mentioned | If expanding outside Nashville/US |
-| **Terms of Service** | ❌ Not mentioned | Draft before public launch |
-| **Privacy Policy** | ❌ Not mentioned | Draft before public launch |
-| **Crisis Disclaimer** | ⚠️ Brief mention (Section 7.3) | Expand legal disclaimer for crisis features |
+| Requirement           | Status                              | Action                                      |
+| --------------------- | ----------------------------------- | ------------------------------------------- |
+| **HIPAA Compliance**  | ❌ Not mentioned                    | Add compliance plan if B2B strategy pursued |
+| **42 CFR Part 2**     | ❌ Not mentioned                    | Federal substance use privacy regulations   |
+| **ADA Compliance**    | ⚠️ Partial (accessibility features) | Add WCAG 2.1 AA certification goal          |
+| **GDPR**              | ❌ Not mentioned                    | If expanding outside Nashville/US           |
+| **Terms of Service**  | ❌ Not mentioned                    | Draft before public launch                  |
+| **Privacy Policy**    | ❌ Not mentioned                    | Draft before public launch                  |
+| **Crisis Disclaimer** | ⚠️ Brief mention (Section 7.3)      | Expand legal disclaimer for crisis features |
 
 **Recommendation**: Create `COMPLIANCE_CHECKLIST.md` before Phase 5 launch.
 
@@ -484,7 +494,8 @@ The existing ROADMAP.md demonstrates:
 - ✅ **Clear phased approach** to implementation
 - ✅ **Privacy-first architecture** with user-scoped data
 
-However, it is **missing critical safety features** that could be the difference between relapse and recovery:
+However, it is **missing critical safety features** that could be the difference
+between relapse and recovery:
 
 - 🔴 Crisis support (SOS button, text-based help)
 - 🔴 Offline-first architecture (for users with unstable access)
@@ -492,9 +503,11 @@ However, it is **missing critical safety features** that could be the difference
 - 🟡 App lock prioritization (protect deeply personal content)
 - 🟡 HIPAA compliance (required for clinic/court partnerships)
 
-**Recommendation**: Integrate crisis support and offline-first features into Phase 3 as **non-negotiable requirements**. These are not "nice to have" features for the target population—they are essential for the app to fulfill its mission of supporting people in early recovery.
+**Recommendation**: Integrate crisis support and offline-first features into
+Phase 3 as **non-negotiable requirements**. These are not "nice to have"
+features for the target population—they are essential for the app to fulfill its
+mission of supporting people in early recovery.
 
 ---
 
-**Last Updated**: December 11, 2025
-**Next Review**: After ROADMAP.md updates
+**Last Updated**: December 11, 2025 **Next Review**: After ROADMAP.md updates

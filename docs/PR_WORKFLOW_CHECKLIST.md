@@ -1,20 +1,22 @@
 # PR Workflow Checklist - MANDATORY FOR ALL PHASES
 
-**Document Version**: 2.0
-**Created**: 2025-12-30
-**Last Updated**: 2026-01-02
+**Document Version**: 2.0 **Created**: 2025-12-30 **Last Updated**: 2026-01-02
 **Status**: ACTIVE
 
 ---
 
 ## 📋 Purpose & Scope
 
-This checklist ensures EVERY phase (PR1-PR8) follows the complete workflow from implementation through review to between-PR cleanup.
+This checklist ensures EVERY phase (PR1-PR8) follows the complete workflow from
+implementation through review to between-PR cleanup.
 
-**⚠️ CRITICAL**: Print this checklist and check off each step. Skipping steps leads to incomplete work, regressions, and scope creep.
+**⚠️ CRITICAL**: Print this checklist and check off each step. Skipping steps
+leads to incomplete work, regressions, and scope creep.
 
 **Related Documents**:
-- [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Security requirements for ALL code
+
+- [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Security
+  requirements for ALL code
 - [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md) - Processing AI review feedback
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Deliverable Audit procedure
 
@@ -63,6 +65,7 @@ This checklist ensures EVERY phase (PR1-PR8) follows the complete workflow from 
 ## 1️⃣ IMPLEMENTATION PHASE
 
 ### Required First Line
+
 ```
 IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", limitations="None"
 ```
@@ -74,7 +77,8 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
   - [ ] List CANON IDs you will satisfy
   - [ ] List expected files to touch
 
-- [ ] **SECURITY CHECK** (MANDATORY - see [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md))
+- [ ] **SECURITY CHECK** (MANDATORY - see
+      [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md))
   - [ ] Rate Limiting: Will new endpoints need limits?
   - [ ] Input Validation: Will new inputs need validation?
   - [ ] Secrets: Any new API keys or secrets needed?
@@ -116,7 +120,8 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
 
 ### Checks
 
-- [ ] **Does the PR actually satisfy the PR_OBJECT goal and the included CANON IDs?**
+- [ ] **Does the PR actually satisfy the PR_OBJECT goal and the included CANON
+      IDs?**
   - [ ] All CANON items addressed (implemented or verified)
   - [ ] PR goal achieved
 
@@ -129,11 +134,13 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
   - [ ] No React hooks in server components
   - [ ] No SSR crashes from client-only APIs
 
-- [ ] **Security regressions (App Check assumptions, rules alignment, client trust boundary)?**
+- [ ] **Security regressions (App Check assumptions, rules alignment, client
+      trust boundary)?**
   - [ ] No weakening of security posture
   - [ ] Server still enforces all critical validation
   - [ ] Client doesn't bypass security checks
-  - [ ] All 4 GLOBAL_SECURITY_STANDARDS met (rate limiting, input validation, secrets, OWASP)
+  - [ ] All 4 GLOBAL_SECURITY_STANDARDS met (rate limiting, input validation,
+        secrets, OWASP)
 
 - [ ] **Tests: do they cover the risky path or just the happy path?**
   - [ ] Error cases tested
@@ -164,7 +171,9 @@ For each claimed improvement:
 
 ### Verification Commands
 
-**Important**: Replace `<placeholders>` with actual file names and patterns from your phase. Supplement generic commands with phase-specific CANON verification patterns.
+**Important**: Replace `<placeholders>` with actual file names and patterns from
+your phase. Supplement generic commands with phase-specific CANON verification
+patterns.
 
 ```bash
 # Generic Verification (use for all phases)
@@ -204,6 +213,7 @@ grep -r "error\\.code ===" components/ hooks/
 ```
 
 **How to find phase-specific patterns**:
+
 1. Open `EIGHT_PHASE_REFACTOR_PLAN.md`
 2. Find your phase's "Canonical Surface Locked" section
 3. Copy the verification commands from "Verification Commands" subsection
@@ -236,16 +246,20 @@ grep -r "error\\.code ===" components/ hooks/
   - [ ] **Verification Commands** (grep commands with expected results)
 
 Example format:
+
 ```markdown
 **Canonical Surface Locked** (YYYY-MM-DD):
 
 **What Became Canonical**:
+
 - Journal writes: `hooks/use-journal.ts::useJournal().addEntry()`
 
 **What Is Now Forbidden**:
+
 - Direct Firestore writes: `setDoc(doc(db, 'users/...'))` - bypasses validation
 
 **Verification Commands**:
+
 - `grep -r "setDoc.*users" components/` → 0 results
 ```
 
@@ -256,6 +270,7 @@ Example format:
 - [ ] If drift detected, fix immediately
 
 Example commands:
+
 ```bash
 # Old Firestore paths
 grep -r "users/\${" .
@@ -278,7 +293,8 @@ grep -r "onAuthStateChanged(" hooks/
 
 ### Step 5: Run Deliverable Audit (MANDATORY)
 
-**See**: [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure"
+**See**: [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit
+Procedure"
 
 - [ ] Gather original goals, acceptance criteria, deliverables list
 - [ ] Verify each deliverable exists, is complete, meets criteria
@@ -292,6 +308,7 @@ grep -r "onAuthStateChanged(" hooks/
 ## 🚨 COMMON MISTAKES TO AVOID
 
 ### ❌ DON'T DO THIS:
+
 - Skip the IMPL_CAPABILITIES line
 - Skip the strict output format
 - Skip Review Prompts R1 and R2
@@ -300,6 +317,7 @@ grep -r "onAuthStateChanged(" hooks/
 - Start next phase without documenting canonical surface
 
 ### ✅ DO THIS:
+
 - Follow the workflow in order (1 → 2 → 3 → 4)
 - Check off each item on this list
 - Document everything (grep commands, decisions, risks)
@@ -318,63 +336,79 @@ Use this template for each phase:
 
 ## 1️⃣ IMPLEMENTATION
 
-IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", limitations="None"
+IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm",
+limitations="None"
 
 ### PR_HEADER
+
 PR_ID: PR[N] | TITLE: [title] | BUCKET: [bucket]
 
 ### FILES_CHANGED
+
 - [file]: [reason]
 
 ### CANONICAL_FINDINGS_SATISFIED
+
 [For each CANON...]
 
 ### COMMANDS_RUN
+
 - Baseline: [status]
 - After changes: [status]
 
 ### METRICS
+
 - Tests: X → Y
 - Lint: X → Y
 - Files: N changed
 
 ### NOTES_FOR_REVIEWERS
+
 - Risks: [list]
 - Followups: [list]
 
 ## 2️⃣ REVIEW R1
 
 ### MUST_FIX
+
 - [items]
 
 ### SHOULD_FIX
+
 - [items]
 
 ### MERGE_DECISION
+
 [MERGE/DO_NOT_MERGE + reasoning]
 
 ## 3️⃣ REVIEW R2
 
 ### PROVEN
+
 - [file+symbol evidence]
 
 ### HALLUCINATION RISK
+
 [HIGH/MEDIUM/LOW]
 
 ## 4️⃣ BETWEEN-PR CHECKLIST
 
 ### Step 1: Build ✅
+
 - lint: [status]
 - test: [status]
 - build: [status]
 
 ### Step 2: Canonical Surface ✅
+
 - Documented: [yes/no]
 
 ### Step 3: Grep Guardrails ✅
+
 - Results: [summary]
 
 ### Step 4: Tracking Updated ✅
+
 - Phase marked COMPLETE: [yes/no]
 ```
 
@@ -384,18 +418,13 @@ PR_ID: PR[N] | TITLE: [title] | BUCKET: [bucket]
 
 You've successfully completed a phase when:
 
-✅ All 4 workflow steps done (Implementation → R1 → R2 → Between-PR)
-✅ All checkboxes in this document checked
-✅ Security standards verified (GLOBAL_SECURITY_STANDARDS.md)
-✅ All tests passing
-✅ Build successful
-✅ Canonical surface documented
-✅ Tracking document updated
-✅ Grep guardrails run and passing
-✅ No MUST_FIX items remaining
-✅ No UNPROVEN claims
-✅ **Deliverable audit passed** (all deliverables verified)
-✅ **Procedure gap analysis complete** (cross-references checked)
+✅ All 4 workflow steps done (Implementation → R1 → R2 → Between-PR) ✅ All
+checkboxes in this document checked ✅ Security standards verified
+(GLOBAL_SECURITY_STANDARDS.md) ✅ All tests passing ✅ Build successful ✅
+Canonical surface documented ✅ Tracking document updated ✅ Grep guardrails run
+and passing ✅ No MUST_FIX items remaining ✅ No UNPROVEN claims ✅
+**Deliverable audit passed** (all deliverables verified) ✅ **Procedure gap
+analysis complete** (cross-references checked)
 
 **Only then** can you start the next phase.
 
@@ -403,11 +432,11 @@ You've successfully completed a phase when:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 2.0 | 2026-01-02 | Standardized structure per Phase 4 migration | Claude |
-| 1.1 | 2026-01-01 | Added security checks and deliverable audit steps | Development Team |
-| 1.0 | 2025-12-30 | Initial checklist created | Development Team |
+| Version | Date       | Changes                                           | Author           |
+| ------- | ---------- | ------------------------------------------------- | ---------------- |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 4 migration      | Claude           |
+| 1.1     | 2026-01-01 | Added security checks and deliverable audit steps | Development Team |
+| 1.0     | 2025-12-30 | Initial checklist created                         | Development Team |
 
 ---
 
@@ -426,6 +455,7 @@ You've successfully completed a phase when:
 ## 📝 Update Triggers
 
 **Update this document when:**
+
 - ✅ New mandatory steps discovered during implementation
 - ✅ Verification commands need updating
 - ✅ New security checks required

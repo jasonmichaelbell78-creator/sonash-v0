@@ -1,6 +1,7 @@
 # AI Review Output Examples
 
-Real-world examples of what each review type produces. Use these as reference for parsing automation or understanding expected output.
+Real-world examples of what each review type produces. Use these as reference
+for parsing automation or understanding expected output.
 
 ---
 
@@ -20,7 +21,8 @@ findings:
   - severity: CRITICAL
     location: "Line 23"
     issue: "Firebase API key exposed in code example: AIzaSyB3xK..."
-    recommendation: "Replace with placeholder: NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here"
+    recommendation:
+      "Replace with placeholder: NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here"
 
   - severity: WARNING
     location: "Prerequisites section, Line 8"
@@ -29,13 +31,18 @@ findings:
 
   - severity: WARNING
     location: "Line 45-52"
-    issue: "Firestore rules example shows 'allow write: if true' which contradicts actual firestore.rules"
-    recommendation: "Update example to match security model (Cloud Functions only writes)"
+    issue:
+      "Firestore rules example shows 'allow write: if true' which contradicts
+      actual firestore.rules"
+    recommendation:
+      "Update example to match security model (Cloud Functions only writes)"
 
   - severity: SUGGESTION
     location: "Installation section"
     issue: "Missing step to copy .env.example to .env.local"
-    recommendation: "Add: 'Copy .env.example to .env.local and fill in your Firebase credentials'"
+    recommendation:
+      "Add: 'Copy .env.example to .env.local and fill in your Firebase
+      credentials'"
 
   - severity: SUGGESTION
     location: "Line 67"
@@ -45,7 +52,8 @@ findings:
   - severity: SUGGESTION
     location: "Overall structure"
     issue: "No troubleshooting section for common setup issues"
-    recommendation: "Consider adding FAQ: common errors, CORS issues, emulator setup"
+    recommendation:
+      "Consider adding FAQ: common errors, CORS issues, emulator setup"
 
 summary: |
   Critical security issue with exposed API key must be fixed immediately.
@@ -118,7 +126,9 @@ findings:
   - severity: CRITICAL
     rule_path: "/users/{userId}/paymentInfo/{docId}"
     line: 142
-    issue: "No authentication check - allows public read access to payment information"
+    issue:
+      "No authentication check - allows public read access to payment
+      information"
     attack_scenario: |
       Any user (even unauthenticated) can read payment information for any user by:
       1. Guessing or enumerating userId values
@@ -133,7 +143,8 @@ findings:
   - severity: HIGH
     rule_path: "/adminSettings/{settingId}"
     line: 178
-    issue: "Admin check validates resource.data.isAdmin instead of custom claims"
+    issue:
+      "Admin check validates resource.data.isAdmin instead of custom claims"
     attack_scenario: |
       User could create/update adminSettings document with isAdmin: true field,
       bypassing admin restrictions. Always use request.auth.token.admin
@@ -145,7 +156,8 @@ findings:
   - severity: MEDIUM
     rule_path: "/users/{userId}/journal/{entryId}"
     line: 34
-    issue: "Good: writes blocked for Cloud Function enforcement. Consider App Check"
+    issue:
+      "Good: writes blocked for Cloud Function enforcement. Consider App Check"
     recommendation: |
       Add App Check validation to ensure only your Cloud Functions can write:
       function isCloudFunction() {
@@ -291,15 +303,9 @@ testing_recommendations:
 {
   "status": "REVIEW_REQUIRED",
   "change_summary": {
-    "added": [
-      "axios@1.6.2",
-      "@stripe/stripe-js@2.3.0"
-    ],
+    "added": ["axios@1.6.2", "@stripe/stripe-js@2.3.0"],
     "removed": [],
-    "updated": [
-      "next: 16.0.0 -> 16.1.1",
-      "@sentry/nextjs: 10.25.0 -> 10.30.0"
-    ]
+    "updated": ["next: 16.0.0 -> 16.1.1", "@sentry/nextjs: 10.25.0 -> 10.30.0"]
   },
   "security_audit_required": true,
   "findings": [
@@ -486,18 +492,18 @@ CRITICAL_COUNT=$(jq '.critical_count // 0' review.json)
 ### Parse for CI/CD (Node.js)
 
 ```javascript
-const review = JSON.parse(fs.readFileSync('review.json', 'utf-8'));
+const review = JSON.parse(fs.readFileSync("review.json", "utf-8"));
 
 const hasCritical = review.critical_count > 0;
-const hasHigh = review.findings.some(f => f.severity === 'HIGH');
+const hasHigh = review.findings.some((f) => f.severity === "HIGH");
 
 if (hasCritical) {
-  console.error('BLOCKED: Critical issues found');
+  console.error("BLOCKED: Critical issues found");
   process.exit(1);
 }
 
 if (hasHigh) {
-  console.warn('WARNING: High severity issues found');
+  console.warn("WARNING: High severity issues found");
   // Continue but notify
 }
 ```
@@ -512,11 +518,11 @@ function formatReviewForPR(review) {
   if (review.findings.length > 0) {
     comment += `### Findings\n\n`;
 
-    ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].forEach(severity => {
-      const findings = review.findings.filter(f => f.severity === severity);
+    ["CRITICAL", "HIGH", "MEDIUM", "LOW"].forEach((severity) => {
+      const findings = review.findings.filter((f) => f.severity === severity);
       if (findings.length > 0) {
         comment += `#### ${severity}\n\n`;
-        findings.forEach(f => {
+        findings.forEach((f) => {
           comment += `- **${f.location}**: ${f.issue}\n`;
           comment += `  - ${f.recommendation}\n\n`;
         });

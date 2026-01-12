@@ -15,28 +15,28 @@
  *   1 = Error (file not found, etc.)
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { execSync } from 'child_process';
-import { pathToFileURL } from 'url';
+import * as fs from "fs";
+import * as path from "path";
+import { execSync } from "child_process";
+import { pathToFileURL } from "url";
 
-const LEARNINGS_FILE = 'docs/AI_REVIEW_LEARNINGS_LOG.md';
+const LEARNINGS_FILE = "docs/AI_REVIEW_LEARNINGS_LOG.md";
 
 // Common topic keywords and their aliases
 const TOPIC_ALIASES = {
-  firebase: ['firebase', 'firestore', 'auth', 'cloud functions', 'app check'],
-  auth: ['authentication', 'auth', 'login', 'session', 'jwt', 'oauth'],
-  tests: ['test', 'testing', 'jest', 'coverage', 'mock'],
-  security: ['security', 'xss', 'injection', 'owasp', 'vulnerability', 'sanitize'],
-  hooks: ['hook', 'useEffect', 'useState', 'custom hook'],
-  api: ['api', 'endpoint', 'fetch', 'request', 'response'],
-  build: ['build', 'compile', 'typescript', 'tsc', 'webpack', 'next.js'],
-  lint: ['lint', 'eslint', 'prettier', 'format'],
-  ci: ['ci', 'github actions', 'workflow', 'pipeline', 'deploy'],
-  docs: ['documentation', 'readme', 'markdown', 'docs'],
-  performance: ['performance', 'bundle', 'lazy', 'optimize', 'memory'],
-  react: ['react', 'component', 'jsx', 'tsx', 'props', 'state'],
-  regex: ['regex', 'regexp', 'pattern', 'match']
+  firebase: ["firebase", "firestore", "auth", "cloud functions", "app check"],
+  auth: ["authentication", "auth", "login", "session", "jwt", "oauth"],
+  tests: ["test", "testing", "jest", "coverage", "mock"],
+  security: ["security", "xss", "injection", "owasp", "vulnerability", "sanitize"],
+  hooks: ["hook", "useEffect", "useState", "custom hook"],
+  api: ["api", "endpoint", "fetch", "request", "response"],
+  build: ["build", "compile", "typescript", "tsc", "webpack", "next.js"],
+  lint: ["lint", "eslint", "prettier", "format"],
+  ci: ["ci", "github actions", "workflow", "pipeline", "deploy"],
+  docs: ["documentation", "readme", "markdown", "docs"],
+  performance: ["performance", "bundle", "lazy", "optimize", "memory"],
+  react: ["react", "component", "jsx", "tsx", "props", "state"],
+  regex: ["regex", "regexp", "pattern", "match"],
 };
 
 /**
@@ -44,23 +44,28 @@ const TOPIC_ALIASES = {
  */
 function parseArgs() {
   const args = process.argv.slice(2);
-  const topicIndex = args.indexOf('--topic');
+  const topicIndex = args.indexOf("--topic");
   let topics = null;
 
   if (topicIndex !== -1) {
     const nextArg = args[topicIndex + 1];
     // Validate: value exists, not another flag, not empty
-    if (!nextArg || nextArg.startsWith('--') || nextArg.trim() === '') {
-      console.error('Error: --topic requires a value (comma-separated topics)');
-      console.error('Usage: node scripts/surface-lessons-learned.js --topic firebase,auth');
+    if (!nextArg || nextArg.startsWith("--") || nextArg.trim() === "") {
+      console.error("Error: --topic requires a value (comma-separated topics)");
+      console.error("Usage: node scripts/surface-lessons-learned.js --topic firebase,auth");
       process.exit(1);
     }
     // Deduplicate topics
-    topics = Array.from(new Set(
-      nextArg.split(',').map(t => t.trim().toLowerCase()).filter(t => t.length > 0)
-    ));
+    topics = Array.from(
+      new Set(
+        nextArg
+          .split(",")
+          .map((t) => t.trim().toLowerCase())
+          .filter((t) => t.length > 0)
+      )
+    );
     if (topics.length === 0) {
-      console.error('Error: --topic value cannot be empty');
+      console.error("Error: --topic value cannot be empty");
       process.exit(1);
     }
   }
@@ -75,41 +80,41 @@ function parseArgs() {
 function detectTopicsFromGitChanges() {
   try {
     // Get recently modified files - try HEAD~5 first, fall back to HEAD
-    let changedFilesOutput = '';
+    let changedFilesOutput = "";
     try {
-      changedFilesOutput = execSync('git diff --name-only HEAD~5', {
-        encoding: 'utf-8',
-        stdio: ['ignore', 'pipe', 'ignore']
+      changedFilesOutput = execSync("git diff --name-only HEAD~5", {
+        encoding: "utf-8",
+        stdio: ["ignore", "pipe", "ignore"],
       });
     } catch {
       // Fall back to diff against HEAD (no commits to compare)
-      changedFilesOutput = execSync('git diff --name-only', {
-        encoding: 'utf-8',
-        stdio: ['ignore', 'pipe', 'ignore']
+      changedFilesOutput = execSync("git diff --name-only", {
+        encoding: "utf-8",
+        stdio: ["ignore", "pipe", "ignore"],
       });
     }
 
     // Also include untracked and staged files from git status
-    let statusOutput = '';
+    let statusOutput = "";
     try {
-      statusOutput = execSync('git status --porcelain', {
-        encoding: 'utf-8',
-        stdio: ['ignore', 'pipe', 'ignore']
+      statusOutput = execSync("git status --porcelain", {
+        encoding: "utf-8",
+        stdio: ["ignore", "pipe", "ignore"],
       });
     } catch {
       // Ignore errors - continue with diff files only
     }
 
-    const diffFiles = changedFilesOutput.trim().split('\n').filter(Boolean);
+    const diffFiles = changedFilesOutput.trim().split("\n").filter(Boolean);
     const statusFiles = statusOutput
-      .split('\n')
-      .map(l => l.trim())
+      .split("\n")
+      .map((l) => l.trim())
       .filter(Boolean)
-      .map(l => {
+      .map((l) => {
         const path = l.slice(3); // drop "XY " prefix
         // Handle renamed files: "R  old -> new" format - extract the new filename
-        if (path.includes(' -> ')) {
-          return path.split(' -> ')[1];
+        if (path.includes(" -> ")) {
+          return path.split(" -> ")[1];
         }
         return path;
       });
@@ -123,14 +128,15 @@ function detectTopicsFromGitChanges() {
       const fileLower = file.toLowerCase();
 
       // Detect topics from file paths
-      if (fileLower.includes('firebase') || fileLower.includes('firestore')) detectedTopics.add('firebase');
-      if (fileLower.includes('auth')) detectedTopics.add('auth');
-      if (fileLower.includes('test')) detectedTopics.add('tests');
-      if (fileLower.includes('security')) detectedTopics.add('security');
-      if (fileLower.includes('hook')) detectedTopics.add('hooks');
-      if (fileLower.includes('api') || fileLower.includes('endpoint')) detectedTopics.add('api');
-      if (fileLower.includes('.yml') || fileLower.includes('workflow')) detectedTopics.add('ci');
-      if (fileLower.includes('.md') || fileLower.includes('doc')) detectedTopics.add('docs');
+      if (fileLower.includes("firebase") || fileLower.includes("firestore"))
+        detectedTopics.add("firebase");
+      if (fileLower.includes("auth")) detectedTopics.add("auth");
+      if (fileLower.includes("test")) detectedTopics.add("tests");
+      if (fileLower.includes("security")) detectedTopics.add("security");
+      if (fileLower.includes("hook")) detectedTopics.add("hooks");
+      if (fileLower.includes("api") || fileLower.includes("endpoint")) detectedTopics.add("api");
+      if (fileLower.includes(".yml") || fileLower.includes("workflow")) detectedTopics.add("ci");
+      if (fileLower.includes(".md") || fileLower.includes("doc")) detectedTopics.add("docs");
     }
 
     return Array.from(detectedTopics);
@@ -155,13 +161,13 @@ function extractLessons(content) {
     const reviewNum = match[1];
     const reviewContent = match[2];
     const titleMatch = reviewContent.match(/^([^\n]+)/);
-    const title = titleMatch ? titleMatch[1].trim() : 'Unknown';
+    const title = titleMatch ? titleMatch[1].trim() : "Unknown";
 
     // Extract key takeaways or lessons
     const takeawayPatterns = [
       /\*\*(?:Key )?(?:Takeaway|Lesson|Pattern|Fix)\*\*:?\s*([^\n]+)/gi,
       /- \*\*([^*]+)\*\*:?\s*([^\n]+)/gi,
-      /(?:✅|❌)\s*([^\n]+)/g
+      /(?:✅|❌)\s*([^\n]+)/g,
     ];
 
     const takeaways = [];
@@ -184,7 +190,7 @@ function extractLessons(content) {
       title,
       content: reviewContent.slice(0, 500),
       takeaways: takeaways.slice(0, 5),
-      keywords: extractKeywords(reviewContent)
+      keywords: extractKeywords(reviewContent),
     });
   }
 
@@ -223,19 +229,24 @@ function findRelevantLessons(lessons, topics) {
     expandedTopics.add(topic);
     // Add aliases - use Object.hasOwn for safe property access
     if (Object.hasOwn(TOPIC_ALIASES, topic)) {
-      TOPIC_ALIASES[topic].forEach(alias => expandedTopics.add(alias));
+      TOPIC_ALIASES[topic].forEach((alias) => expandedTopics.add(alias));
     }
   }
 
-  return lessons.filter(lesson => {
-    const lessonKeywords = new Set([...lesson.keywords, ...lesson.content.toLowerCase().split(/\W+/)]);
-    for (const topic of expandedTopics) {
-      if (lessonKeywords.has(topic) || lesson.content.toLowerCase().includes(topic)) {
-        return true;
+  return lessons
+    .filter((lesson) => {
+      const lessonKeywords = new Set([
+        ...lesson.keywords,
+        ...lesson.content.toLowerCase().split(/\W+/),
+      ]);
+      for (const topic of expandedTopics) {
+        if (lessonKeywords.has(topic) || lesson.content.toLowerCase().includes(topic)) {
+          return true;
+        }
       }
-    }
-    return false;
-  }).slice(0, 10); // Max 10 relevant lessons
+      return false;
+    })
+    .slice(0, 10); // Max 10 relevant lessons
 }
 
 /**
@@ -243,28 +254,28 @@ function findRelevantLessons(lessons, topics) {
  */
 function formatLessons(lessons, _topics) {
   if (lessons.length === 0) {
-    return '  📚 No specific lessons found for these topics.\n     Check docs/AI_REVIEW_LEARNINGS_LOG.md for all patterns.';
+    return "  📚 No specific lessons found for these topics.\n     Check docs/AI_REVIEW_LEARNINGS_LOG.md for all patterns.";
   }
 
   // Sanitize content from file before terminal output (prevent control char injection)
   const sanitizeForTerminal = (s) =>
-    String(s ?? '')
+    String(s ?? "")
       // eslint-disable-next-line no-control-regex -- intentional: strip control chars, preserve safe whitespace
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
 
-  let output = '';
+  let output = "";
 
   for (const lesson of lessons.slice(0, 5)) {
     const safeTitle = sanitizeForTerminal(lesson.title);
     output += `\n  📖 Review #${lesson.reviewNum}: ${safeTitle.slice(0, 60)}`;
-    if (safeTitle.length > 60) output += '...';
-    output += '\n';
+    if (safeTitle.length > 60) output += "...";
+    output += "\n";
 
     if (lesson.takeaways.length > 0) {
       output += `     Key points:\n`;
       for (const takeaway of lesson.takeaways.slice(0, 2)) {
         const safeTakeaway = sanitizeForTerminal(takeaway);
-        output += `       - ${safeTakeaway.slice(0, 80)}${safeTakeaway.length > 80 ? '...' : ''}\n`;
+        output += `       - ${safeTakeaway.slice(0, 80)}${safeTakeaway.length > 80 ? "..." : ""}\n`;
       }
     }
   }
@@ -277,9 +288,9 @@ function formatLessons(lessons, _topics) {
 }
 
 async function main() {
-  console.log('');
-  console.log('━━━ LESSONS LEARNED SURFACE ━━━');
-  console.log('');
+  console.log("");
+  console.log("━━━ LESSONS LEARNED SURFACE ━━━");
+  console.log("");
 
   // Find the learnings file
   const projectRoot = process.cwd();
@@ -298,22 +309,22 @@ async function main() {
   if (!topics || topics.length === 0) {
     topics = detectTopicsFromGitChanges();
     if (topics.length > 0) {
-      console.log(`  🔍 Auto-detected topics from recent changes: ${topics.join(', ')}`);
+      console.log(`  🔍 Auto-detected topics from recent changes: ${topics.join(", ")}`);
     } else {
-      console.log('  🔍 No specific topics detected, showing recent lessons');
+      console.log("  🔍 No specific topics detected, showing recent lessons");
     }
   } else {
-    console.log(`  🔍 Searching for topics: ${topics.join(', ')}`);
+    console.log(`  🔍 Searching for topics: ${topics.join(", ")}`);
   }
 
-  console.log('');
+  console.log("");
 
   // Read and parse the learnings file
   let content;
   try {
-    content = fs.readFileSync(learningsPath, 'utf-8');
+    content = fs.readFileSync(learningsPath, "utf-8");
   } catch (err) {
-    console.error(`  ❌ Error reading ${LEARNINGS_FILE}: ${err.code || 'unknown error'}`);
+    console.error(`  ❌ Error reading ${LEARNINGS_FILE}: ${err.code || "unknown error"}`);
     process.exit(1);
   }
   const allLessons = extractLessons(content);
@@ -327,14 +338,14 @@ async function main() {
     console.log(`  ✅ ${relevantLessons.length} relevant lessons found:`);
     console.log(formatLessons(relevantLessons, topics));
   } else {
-    console.log('  ℹ️  No lessons matched the detected topics');
-    console.log('     Recent reviews may still be relevant:');
+    console.log("  ℹ️  No lessons matched the detected topics");
+    console.log("     Recent reviews may still be relevant:");
     console.log(formatLessons(allLessons.slice(-3), []));
   }
 
-  console.log('');
-  console.log('  📖 Full log: docs/AI_REVIEW_LEARNINGS_LOG.md');
-  console.log('');
+  console.log("");
+  console.log("  📖 Full log: docs/AI_REVIEW_LEARNINGS_LOG.md");
+  console.log("");
 
   process.exit(0);
 }
@@ -347,7 +358,7 @@ export {
   extractKeywords,
   findRelevantLessons,
   formatLessons,
-  TOPIC_ALIASES
+  TOPIC_ALIASES,
 };
 
 // Only run main() when executed directly (not when imported for testing)
@@ -356,27 +367,26 @@ export {
 let isMainModule = false;
 try {
   isMainModule =
-    !!process.argv[1] &&
-    import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+    !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 } catch {
   isMainModule = false;
 }
 
 if (isMainModule) {
-  main().catch(err => {
+  main().catch((err) => {
     // Avoid exposing sensitive paths in error messages
     // Use .split('\n')[0] to ensure only first line (no stack trace in String(err))
     // Strip control chars (ANSI escapes) to prevent log/terminal injection in CI
-    const safeMessage = String(err?.message ?? err ?? 'Unknown error')
-      .split('\n')[0]
-      .replace(/\r$/, '')  // Strip trailing CR from Windows CRLF line endings
+    const safeMessage = String(err?.message ?? err ?? "Unknown error")
+      .split("\n")[0]
+      .replace(/\r$/, "") // Strip trailing CR from Windows CRLF line endings
       // biome-ignore lint/suspicious/noControlCharactersInRegex: intentionally stripping control characters for terminal/CI safety
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex -- intentional: strip control chars
-      .replace(/\/home\/[^/\s]+/g, '[HOME]')
-      .replace(/\/Users\/[^/\s]+/g, '[HOME]')
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "") // eslint-disable-line no-control-regex -- intentional: strip control chars
+      .replace(/\/home\/[^/\s]+/g, "[HOME]")
+      .replace(/\/Users\/[^/\s]+/g, "[HOME]")
       // Handle any Windows drive letter, case-insensitive
-      .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
-    console.error('Script error:', safeMessage);
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]");
+    console.error("Script error:", safeMessage);
     process.exit(1);
   });
 }

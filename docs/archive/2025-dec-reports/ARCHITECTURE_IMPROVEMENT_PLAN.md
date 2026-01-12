@@ -1,16 +1,18 @@
 # Architecture Quality Improvement Plan
+
 ## From 4.2/5 → 4.8+/5
 
-**Date:** 2025-12-12
-**Current Score:** 4.2/5
-**Target Score:** 4.8+/5
+**Date:** 2025-12-12 **Current Score:** 4.2/5 **Target Score:** 4.8+/5
 **Timeline:** 8-12 weeks (parallel with M1 & M2 roadmap milestones)
 
 ---
 
 ## Executive Summary
 
-The SoNash architecture scored **4.2/5** in the December 2025 deep review—a strong foundation, but with room for improvement before scaling to production. This plan outlines **6 major architectural improvements** (A1-A6) that will bring the quality to **4.8+/5**, addressing:
+The SoNash architecture scored **4.2/5** in the December 2025 deep review—a
+strong foundation, but with room for improvement before scaling to production.
+This plan outlines **6 major architectural improvements** (A1-A6) that will
+bring the quality to **4.8+/5**, addressing:
 
 1. **Performance** - 60% reduction in re-renders via context splitting
 2. **Maintainability** - All components <150 lines (target <100)
@@ -23,27 +25,27 @@ The SoNash architecture scored **4.2/5** in the December 2025 deep review—a st
 
 ### Strengths (What's Working Well) ✅
 
-| Category | Score | Evidence |
-|----------|-------|----------|
-| **Layered Architecture** | 5/5 | Clean separation: UI → Context → Service → Database |
-| **TypeScript Coverage** | 5/5 | 100% strict mode, no `any` in business logic |
-| **Security-First Design** | 4/5 | Comprehensive Firestore rules, validation, scoping |
-| **Dependency Injection** | 4/5 | `createFirestoreService()` pattern for testability |
-| **Error Handling** | 4/5 | Error boundaries, structured logging |
-| **Performance Optimization** | 4/5 | Font loading, data diffing, memoization |
+| Category                     | Score | Evidence                                            |
+| ---------------------------- | ----- | --------------------------------------------------- |
+| **Layered Architecture**     | 5/5   | Clean separation: UI → Context → Service → Database |
+| **TypeScript Coverage**      | 5/5   | 100% strict mode, no `any` in business logic        |
+| **Security-First Design**    | 4/5   | Comprehensive Firestore rules, validation, scoping  |
+| **Dependency Injection**     | 4/5   | `createFirestoreService()` pattern for testability  |
+| **Error Handling**           | 4/5   | Error boundaries, structured logging                |
+| **Performance Optimization** | 4/5   | Font loading, data diffing, memoization             |
 
 **Average:** 4.3/5
 
 ### Weaknesses (Areas for Improvement) ⚠️
 
-| Category | Score | Issue | Impact |
-|----------|-------|-------|--------|
-| **Context Design** | 3/5 | AuthProvider has 7 state variables (SRP violation) | Unnecessary re-renders |
-| **Component Size** | 3/5 | book-cover.tsx = 337 lines (mixed concerns) | Hard to test, maintain |
-| **Error Handling** | 4/5 | Inconsistent patterns (throw vs return) | Confusing for developers |
-| **Database Abstraction** | 3/5 | Adapter exists but not used consistently | Tight coupling to Firestore |
-| **Testing** | 2/5 | Only 10-15% coverage | Risky deployments |
-| **Bundle Size** | 3/5 | Unknown size, heavy dependencies | Slow initial load |
+| Category                 | Score | Issue                                              | Impact                      |
+| ------------------------ | ----- | -------------------------------------------------- | --------------------------- |
+| **Context Design**       | 3/5   | AuthProvider has 7 state variables (SRP violation) | Unnecessary re-renders      |
+| **Component Size**       | 3/5   | book-cover.tsx = 337 lines (mixed concerns)        | Hard to test, maintain      |
+| **Error Handling**       | 4/5   | Inconsistent patterns (throw vs return)            | Confusing for developers    |
+| **Database Abstraction** | 3/5   | Adapter exists but not used consistently           | Tight coupling to Firestore |
+| **Testing**              | 2/5   | Only 10-15% coverage                               | Risky deployments           |
+| **Bundle Size**          | 3/5   | Unknown size, heavy dependencies                   | Slow initial load           |
 
 **Average:** 3.0/5
 
@@ -55,19 +57,19 @@ The SoNash architecture scored **4.2/5** in the December 2025 deep review—a st
 
 ### Target Architecture Quality: 4.8/5
 
-| Category | Current | Target | Strategy |
-|----------|---------|--------|----------|
-| **Layered Architecture** | 5/5 | 5/5 | Maintain (already excellent) |
-| **TypeScript Coverage** | 5/5 | 5/5 | Maintain + add type guards |
-| **Security-First Design** | 4/5 | 5/5 | Add server-side enforcement (M1) |
-| **Dependency Injection** | 4/5 | 5/5 | Use adapter consistently |
-| **Error Handling** | 4/5 | 5/5 | Standardize patterns |
-| **Performance** | 4/5 | 5/5 | Context splitting + bundle optimization |
-| **Context Design** | 3/5 | 5/5 | **A1: Split AuthProvider** |
-| **Component Size** | 3/5 | 5/5 | **A2: Decompose large components** |
-| **Database Abstraction** | 3/5 | 5/5 | **A6: Use adapter consistently** |
-| **Testing** | 2/5 | 4/5 | Increase coverage to 60%+ (M1) |
-| **Bundle Size** | 3/5 | 4/5 | **A5: Analyze and optimize** |
+| Category                  | Current | Target | Strategy                                |
+| ------------------------- | ------- | ------ | --------------------------------------- |
+| **Layered Architecture**  | 5/5     | 5/5    | Maintain (already excellent)            |
+| **TypeScript Coverage**   | 5/5     | 5/5    | Maintain + add type guards              |
+| **Security-First Design** | 4/5     | 5/5    | Add server-side enforcement (M1)        |
+| **Dependency Injection**  | 4/5     | 5/5    | Use adapter consistently                |
+| **Error Handling**        | 4/5     | 5/5    | Standardize patterns                    |
+| **Performance**           | 4/5     | 5/5    | Context splitting + bundle optimization |
+| **Context Design**        | 3/5     | 5/5    | **A1: Split AuthProvider**              |
+| **Component Size**        | 3/5     | 5/5    | **A2: Decompose large components**      |
+| **Database Abstraction**  | 3/5     | 5/5    | **A6: Use adapter consistently**        |
+| **Testing**               | 2/5     | 4/5    | Increase coverage to 60%+ (M1)          |
+| **Bundle Size**           | 3/5     | 4/5    | **A5: Analyze and optimize**            |
 
 **New Average:** (5+5+5+5+5+5+5+5+5+4+4) / 11 = **4.8/5** ✅
 
@@ -78,6 +80,7 @@ The SoNash architecture scored **4.2/5** in the December 2025 deep review—a st
 ### Problem Statement
 
 **Current:** `AuthProvider` has 7 state variables (195 lines)
+
 - `user` - Firebase auth user
 - `profile` - User profile from Firestore
 - `loading` - Initial load state
@@ -87,16 +90,19 @@ The SoNash architecture scored **4.2/5** in the December 2025 deep review—a st
 - `profileNotFound` - Profile doesn't exist flag
 
 **Issues:**
-1. **Violates Single Responsibility Principle** - Mixes auth, profile, and daily log concerns
+
+1. **Violates Single Responsibility Principle** - Mixes auth, profile, and daily
+   log concerns
 2. **Unnecessary Re-renders** - Any state change notifies all consumers
 3. **Tight Coupling** - Components that only need auth also get profile updates
 4. **Hard to Test** - Complex state management with multiple concerns
 
 **Example Problem:**
+
 ```typescript
 // Component that only needs user ID
 function MyComponent() {
-  const { user } = useAuth() // Also subscribes to profile, todayLog, loading, etc.
+  const { user } = useAuth(); // Also subscribes to profile, todayLog, loading, etc.
   // Component re-renders when profile updates, even though it doesn't use profile
 }
 ```
@@ -328,24 +334,24 @@ export default function RootLayout({ children }) {
 ```typescript
 // BEFORE: Components subscribe to everything
 function BookCover() {
-  const { user, profile, loading } = useAuth() // Gets all 7 state vars
+  const { user, profile, loading } = useAuth(); // Gets all 7 state vars
 }
 
 // AFTER: Components subscribe to only what they need
 function BookCover() {
-  const { user, loading } = useAuth() // Only auth state
-  const { profile } = useProfile() // Only when profile updates
+  const { user, loading } = useAuth(); // Only auth state
+  const { profile } = useProfile(); // Only when profile updates
 }
 ```
 
 ### Benefits
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Re-renders** | 100% | 40% | -60% |
-| **Component coupling** | High | Low | Better |
-| **Lines per context** | 195 | ~60-80 each | Maintainable |
-| **Test complexity** | High | Low | Easier to test |
+| Metric                 | Before | After       | Improvement    |
+| ---------------------- | ------ | ----------- | -------------- |
+| **Re-renders**         | 100%   | 40%         | -60%           |
+| **Component coupling** | High   | Low         | Better         |
+| **Lines per context**  | 195    | ~60-80 each | Maintainable   |
+| **Test complexity**    | High   | Low         | Easier to test |
 
 ### Estimated Effort
 
@@ -361,6 +367,7 @@ function BookCover() {
 ### Problem: `book-cover.tsx` (337 lines)
 
 **Concerns Mixed:**
+
 1. Framer Motion animations (100+ lines)
 2. Authentication logic (20 lines)
 3. Clean days calculation (20 lines)
@@ -368,6 +375,7 @@ function BookCover() {
 5. Responsive sizing (20 lines)
 
 **Impact:**
+
 - Hard to test (can't test animation without auth)
 - Hard to reuse (animation logic tied to book)
 - Hard to maintain (change animation → might break auth)
@@ -378,27 +386,27 @@ function BookCover() {
 
 ```typescript
 // components/recovery/clean-days-calculator.tsx
-import { useMemo } from "react"
-import { differenceInDays } from "date-fns"
-import { parseFirebaseTimestamp } from "@/lib/types/firebase-guards"
-import { logger } from "@/lib/logger"
+import { useMemo } from "react";
+import { differenceInDays } from "date-fns";
+import { parseFirebaseTimestamp } from "@/lib/types/firebase-guards";
+import { logger } from "@/lib/logger";
 
 interface CleanDaysCalculatorProps {
-  cleanStart: unknown
+  cleanStart: unknown;
 }
 
 export function useCleanDays(cleanStart: unknown): number {
   return useMemo(() => {
-    if (!cleanStart) return 0
+    if (!cleanStart) return 0;
 
-    const parsedDate = parseFirebaseTimestamp(cleanStart)
+    const parsedDate = parseFirebaseTimestamp(cleanStart);
     if (!parsedDate) {
-      logger.warn("Invalid cleanStart value - could not parse timestamp")
-      return 0
+      logger.warn("Invalid cleanStart value - could not parse timestamp");
+      return 0;
     }
 
-    return Math.max(0, differenceInDays(new Date(), parsedDate))
-  }, [cleanStart])
+    return Math.max(0, differenceInDays(new Date(), parsedDate));
+  }, [cleanStart]);
 }
 ```
 
@@ -439,36 +447,40 @@ export function BookAnimation({ isAnimating, width, height, children }: BookAnim
 
 ```typescript
 // components/notebook/book-auth-guard.tsx
-import { useAuth } from "@/components/providers/auth-context"
-import { useProfile } from "@/components/providers/profile-context"
+import { useAuth } from "@/components/providers/auth-context";
+import { useProfile } from "@/components/providers/profile-context";
 
 interface BookAuthGuardProps {
-  onOpen: () => void
-  onShowSignIn: () => void
-  onShowOnboarding: () => void
+  onOpen: () => void;
+  onShowSignIn: () => void;
+  onShowOnboarding: () => void;
 }
 
-export function useBookAuthGuard({ onOpen, onShowSignIn, onShowOnboarding }: BookAuthGuardProps) {
-  const { user, loading } = useAuth()
-  const { profile } = useProfile()
+export function useBookAuthGuard({
+  onOpen,
+  onShowSignIn,
+  onShowOnboarding,
+}: BookAuthGuardProps) {
+  const { user, loading } = useAuth();
+  const { profile } = useProfile();
 
   const handleClick = () => {
-    if (loading) return
+    if (loading) return;
 
-    const isProfileComplete = !!profile?.cleanStart
+    const isProfileComplete = !!profile?.cleanStart;
 
     if (user) {
       if (isProfileComplete) {
-        onOpen()
+        onOpen();
       } else {
-        onShowOnboarding()
+        onShowOnboarding();
       }
     } else {
-      onShowSignIn()
+      onShowSignIn();
     }
-  }
+  };
 
-  return { handleClick, user, profile, loading }
+  return { handleClick, user, profile, loading };
 }
 ```
 
@@ -530,11 +542,11 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
 
 ### Component Size Target
 
-| Component | Before | After | Status |
-|-----------|--------|-------|--------|
-| book-cover.tsx | 337 | 80 | ✅ |
-| today-page.tsx | 100+ | <80 | 🎯 Target |
-| notebook-shell.tsx | 198 | <100 | 🎯 Target |
+| Component          | Before | After | Status    |
+| ------------------ | ------ | ----- | --------- |
+| book-cover.tsx     | 337    | 80    | ✅        |
+| today-page.tsx     | 100+   | <80   | 🎯 Target |
+| notebook-shell.tsx | 198    | <100  | 🎯 Target |
 
 **Goal:** All components <150 lines (prefer <100)
 
@@ -551,6 +563,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
 ### Problem: Inconsistent Patterns
 
 **Current State:**
+
 ```typescript
 // Some functions throw
 async saveDailyLog(userId: string, data: Partial<DailyLog>) {
@@ -565,6 +578,7 @@ async getTodayLog(userId: string): Promise<TodayLogResult> {
 ```
 
 **Impact:**
+
 - Developers don't know which pattern to expect
 - Inconsistent error handling in components
 - Hard to add centralized error tracking
@@ -582,35 +596,35 @@ async getTodayLog(userId: string): Promise<TodayLogResult> {
  */
 export type Result<T, E = Error> =
   | { ok: true; value: T }
-  | { ok: false; error: E }
+  | { ok: false; error: E };
 
 /**
  * Create a successful result
  */
 export function Ok<T>(value: T): Result<T> {
-  return { ok: true, value }
+  return { ok: true, value };
 }
 
 /**
  * Create a failed result
  */
 export function Err<E = Error>(error: E): Result<never, E> {
-  return { ok: false, error }
+  return { ok: false, error };
 }
 
 /**
  * Unwrap a result, throwing if it's an error
  */
 export function unwrap<T>(result: Result<T>): T {
-  if (result.ok) return result.value
-  throw result.error
+  if (result.ok) return result.value;
+  throw result.error;
 }
 
 /**
  * Get value or default
  */
 export function unwrapOr<T>(result: Result<T>, defaultValue: T): T {
-  return result.ok ? result.value : defaultValue
+  return result.ok ? result.value : defaultValue;
 }
 ```
 
@@ -670,30 +684,30 @@ async getTodayLog(userId: string): Promise<Result<DailyLog | null>> {
 
 // BEFORE: Mixed error handling
 try {
-  await FirestoreService.saveDailyLog(userId, data) // Might throw
+  await FirestoreService.saveDailyLog(userId, data); // Might throw
 } catch (error) {
-  toast.error("Failed to save")
+  toast.error("Failed to save");
 }
 
-const result = await FirestoreService.getTodayLog(userId) // Returns { log, error }
+const result = await FirestoreService.getTodayLog(userId); // Returns { log, error }
 if (result.error) {
-  toast.error("Failed to load")
+  toast.error("Failed to load");
 }
 
 // AFTER: Consistent Result<T> pattern
-const saveResult = await FirestoreService.saveDailyLog(userId, data)
+const saveResult = await FirestoreService.saveDailyLog(userId, data);
 if (!saveResult.ok) {
-  toast.error(saveResult.error.message)
-  return
+  toast.error(saveResult.error.message);
+  return;
 }
 
-const loadResult = await FirestoreService.getTodayLog(userId)
+const loadResult = await FirestoreService.getTodayLog(userId);
 if (!loadResult.ok) {
-  toast.error(loadResult.error.message)
-  return
+  toast.error(loadResult.error.message);
+  return;
 }
 
-const log = loadResult.value // Type-safe access to value
+const log = loadResult.value; // Type-safe access to value
 ```
 
 ### Error Handling Strategy Document
@@ -706,19 +720,24 @@ Create `docs/ERROR_HANDLING.md`:
 ## When to Use Each Pattern
 
 ### 1. Result<T> (Preferred for services)
+
 Use for operations that can fail predictably:
+
 - Database operations
 - API calls
 - File I/O
 - Validation
 
 ### 2. Throw (Use sparingly)
+
 Only throw for:
+
 - Programming errors (null checks, type errors)
 - Unrecoverable errors
 - Framework requirements (React error boundaries)
 
 ### 3. Error Boundaries (UI layer)
+
 Catch unexpected errors in React components
 
 ## Examples
@@ -728,12 +747,12 @@ See `lib/firestore-service.ts` for Result<T> usage.
 
 ### Benefits
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Consistency** | Mixed patterns | Single `Result<T>` pattern |
-| **Type Safety** | `any` errors | Typed error handling |
-| **Developer Experience** | Confusing | Clear expectations |
-| **Error Tracking** | Scattered | Centralized via Result |
+| Aspect                   | Before         | After                      |
+| ------------------------ | -------------- | -------------------------- |
+| **Consistency**          | Mixed patterns | Single `Result<T>` pattern |
+| **Type Safety**          | `any` errors   | Typed error handling       |
+| **Developer Experience** | Confusing      | Clear expectations         |
+| **Error Tracking**       | Scattered      | Centralized via Result     |
 
 ### Estimated Effort
 
@@ -748,6 +767,7 @@ See `lib/firestore-service.ts` for Result<T> usage.
 ### Problem: Direct Image Usage
 
 **Current:**
+
 ```tsx
 // Background images loaded directly
 <div style={{ backgroundImage: "url(/images/wood-table.jpg)" }} />
@@ -757,6 +777,7 @@ See `lib/firestore-service.ts` for Result<T> usage.
 ```
 
 **Impact:**
+
 - Slower page loads (no optimization)
 - Poor Core Web Vitals scores
 - No responsive images
@@ -810,6 +831,7 @@ import Image from "next/image"
 ### Problem: Unknown Bundle Size
 
 **Current State:**
+
 - No bundle analysis
 - Heavy dependencies (Framer Motion, Recharts)
 - Unknown if tree-shaking is working
@@ -826,15 +848,15 @@ npm install --save-dev @next/bundle-analyzer
 
 ```javascript
 // next.config.mjs
-import bundleAnalyzer from '@next/bundle-analyzer'
+import bundleAnalyzer from "@next/bundle-analyzer";
 
 const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-})
+  enabled: process.env.ANALYZE === "true",
+});
 
 export default withBundleAnalyzer({
   // existing config
-})
+});
 ```
 
 #### 3. Run Analysis
@@ -849,12 +871,15 @@ ANALYZE=true npm run build
 
 ```typescript
 // BEFORE: Framer Motion loaded on every page
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
 // AFTER: Only load when needed
-const motion = dynamic(() => import("framer-motion").then(mod => ({ default: mod.motion })), {
-  ssr: false,
-})
+const motion = dynamic(
+  () => import("framer-motion").then((mod) => ({ default: mod.motion })),
+  {
+    ssr: false,
+  }
+);
 ```
 
 **B. Code Splitting by Route**
@@ -878,11 +903,11 @@ npm uninstall [package]
 
 ### Bundle Size Targets
 
-| Bundle | Target | Rationale |
-|--------|--------|-----------|
-| **Initial JS** | <200KB gzipped | Industry standard for fast TTI |
-| **Initial CSS** | <50KB gzipped | Minimal render-blocking CSS |
-| **Largest Chunk** | <100KB gzipped | Balanced code splitting |
+| Bundle            | Target         | Rationale                      |
+| ----------------- | -------------- | ------------------------------ |
+| **Initial JS**    | <200KB gzipped | Industry standard for fast TTI |
+| **Initial CSS**   | <50KB gzipped  | Minimal render-blocking CSS    |
+| **Largest Chunk** | <100KB gzipped | Balanced code splitting        |
 
 ### Estimated Effort
 
@@ -896,6 +921,7 @@ npm uninstall [package]
 ### Problem: Inconsistent Abstraction
 
 **Current:**
+
 - `FirestoreAdapter` exists
 - But `AuthProvider` uses `FirestoreService` directly
 - Mixed direct/adapter access
@@ -913,14 +939,14 @@ npm uninstall [package]
 
 ```typescript
 // BEFORE: AuthProvider uses FirestoreService directly
-import { FirestoreService } from "@/lib/firestore-service"
+import { FirestoreService } from "@/lib/firestore-service";
 
-const result = await FirestoreService.getTodayLog(userId)
+const result = await FirestoreService.getTodayLog(userId);
 
 // AFTER: Use adapter
-import { db } from "@/lib/database" // Returns adapter instance
+import { db } from "@/lib/database"; // Returns adapter instance
 
-const result = await db.getTodayLog(userId)
+const result = await db.getTodayLog(userId);
 ```
 
 ### Migration Checklist
@@ -942,21 +968,21 @@ const result = await db.getTodayLog(userId)
 
 ### Phase 1: Quick Wins (Weeks 1-2)
 
-| Task | Effort | Impact | Priority |
-|------|--------|--------|----------|
-| **A3: Error Handling** | 1 week | High | P0 |
-| **A6: Adapter Pattern** | 3 days | Medium | P1 |
-| **A4: Image Optimization** | 3 days | High | P1 |
+| Task                       | Effort | Impact | Priority |
+| -------------------------- | ------ | ------ | -------- |
+| **A3: Error Handling**     | 1 week | High   | P0       |
+| **A6: Adapter Pattern**    | 3 days | Medium | P1       |
+| **A4: Image Optimization** | 3 days | High   | P1       |
 
 **Parallel with M1 (Security hardening)**
 
 ### Phase 2: Major Refactors (Weeks 3-6)
 
-| Task | Effort | Impact | Priority |
-|------|--------|--------|----------|
-| **A1: Context Splitting** | 1 week | Very High | P0 |
-| **A2: Component Decomposition** | 2 weeks | High | P1 |
-| **A5: Bundle Optimization** | 1 week | High | P1 |
+| Task                            | Effort  | Impact    | Priority |
+| ------------------------------- | ------- | --------- | -------- |
+| **A1: Context Splitting**       | 1 week  | Very High | P0       |
+| **A2: Component Decomposition** | 2 weeks | High      | P1       |
+| **A5: Bundle Optimization**     | 1 week  | High      | P1       |
 
 **Parallel with M2 (Architecture improvements)**
 
@@ -973,15 +999,15 @@ const result = await db.getTodayLog(userId)
 
 ### Quantitative Metrics
 
-| Metric | Before | Target | Measurement |
-|--------|--------|--------|-------------|
-| **Architecture Score** | 4.2/5 | 4.8+/5 | Manual assessment |
-| **Re-render Count** | 100% | 40% | React DevTools Profiler |
-| **Average Component Size** | 150 lines | <100 lines | Code analysis |
-| **Test Coverage** | 10% | 60% | Jest coverage report |
-| **Bundle Size (Initial)** | Unknown | <200KB | Next.js analyzer |
-| **Largest Component** | 337 lines | <150 lines | Code analysis |
-| **Context Count** | 1 large | 3 focused | Code review |
+| Metric                     | Before    | Target     | Measurement             |
+| -------------------------- | --------- | ---------- | ----------------------- |
+| **Architecture Score**     | 4.2/5     | 4.8+/5     | Manual assessment       |
+| **Re-render Count**        | 100%      | 40%        | React DevTools Profiler |
+| **Average Component Size** | 150 lines | <100 lines | Code analysis           |
+| **Test Coverage**          | 10%       | 60%        | Jest coverage report    |
+| **Bundle Size (Initial)**  | Unknown   | <200KB     | Next.js analyzer        |
+| **Largest Component**      | 337 lines | <150 lines | Code analysis           |
+| **Context Count**          | 1 large   | 3 focused  | Code review             |
 
 ### Qualitative Metrics
 
@@ -995,12 +1021,12 @@ const result = await db.getTodayLog(userId)
 
 ## Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| **Breaking Changes** | Medium | High | Comprehensive test suite before refactoring |
-| **Performance Regression** | Low | High | Benchmark before/after, rollback plan |
-| **Schedule Slip** | Medium | Medium | Prioritize P0 tasks, defer P2 if needed |
-| **Team Capacity** | Medium | Medium | Parallel work on M1/M2, not blocking |
+| Risk                       | Probability | Impact | Mitigation                                  |
+| -------------------------- | ----------- | ------ | ------------------------------------------- |
+| **Breaking Changes**       | Medium      | High   | Comprehensive test suite before refactoring |
+| **Performance Regression** | Low         | High   | Benchmark before/after, rollback plan       |
+| **Schedule Slip**          | Medium      | Medium | Prioritize P0 tasks, defer P2 if needed     |
+| **Team Capacity**          | Medium      | Medium | Parallel work on M1/M2, not blocking        |
 
 ---
 
@@ -1008,11 +1034,11 @@ const result = await db.getTodayLog(userId)
 
 ### Decision Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2025-12-12 | Split AuthProvider into 3 contexts | 60% performance gain, clearer SRP |
+| Date       | Decision                           | Rationale                                      |
+| ---------- | ---------------------------------- | ---------------------------------------------- |
+| 2025-12-12 | Split AuthProvider into 3 contexts | 60% performance gain, clearer SRP              |
 | 2025-12-12 | Adopt Result<T> for error handling | Consistency, type safety, centralized tracking |
-| 2025-12-12 | Use Next.js Image for all images | Built-in optimization, industry best practice |
+| 2025-12-12 | Use Next.js Image for all images   | Built-in optimization, industry best practice  |
 
 ### Open Questions
 
@@ -1029,7 +1055,8 @@ const result = await db.getTodayLog(userId)
 
 ## Conclusion
 
-This plan outlines **6 major architectural improvements** that will raise the quality from **4.2/5 → 4.8+/5** over **8-12 weeks**. The improvements focus on:
+This plan outlines **6 major architectural improvements** that will raise the
+quality from **4.2/5 → 4.8+/5** over **8-12 weeks**. The improvements focus on:
 
 1. **Performance** (Context splitting, bundle optimization)
 2. **Maintainability** (Component size, error handling)
@@ -1037,15 +1064,16 @@ This plan outlines **6 major architectural improvements** that will raise the qu
 4. **Scalability** (Better abstractions for future growth)
 
 **Next Steps:**
+
 1. Review and approve this plan
 2. Create GitHub issues for each task (A1-A6)
 3. Assign owners and start Phase 1 (Quick Wins)
 4. Parallel execution with M1 & M2 roadmap milestones
 
-**Expected Outcome:** Production-ready architecture that can scale to 100K+ users with predictable performance, maintainability, and developer velocity.
+**Expected Outcome:** Production-ready architecture that can scale to 100K+
+users with predictable performance, maintainability, and developer velocity.
 
 ---
 
-**Document Owner:** Engineering Team
-**Review Cycle:** Quarterly
-**Last Updated:** 2025-12-12
+**Document Owner:** Engineering Team **Review Cycle:** Quarterly **Last
+Updated:** 2025-12-12

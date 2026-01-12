@@ -6,7 +6,8 @@
 
 ## What is an ADR?
 
-An Architecture Decision Record (ADR) is a document that captures an important architectural decision made along with its context and consequences. ADRs help:
+An Architecture Decision Record (ADR) is a document that captures an important
+architectural decision made along with its context and consequences. ADRs help:
 
 - **Preserve context** for why decisions were made
 - **Onboard new team members** quickly
@@ -16,6 +17,7 @@ An Architecture Decision Record (ADR) is a document that captures an important a
 ## When to Write an ADR
 
 Create an ADR when:
+
 - Making a significant architectural choice
 - Choosing between multiple valid approaches
 - Changing an existing pattern or convention
@@ -37,8 +39,8 @@ See [TEMPLATE.md](./TEMPLATE.md) for the full template.
 
 ## ADR Index
 
-| ADR | Title | Status | Date |
-|-----|-------|--------|------|
+| ADR                                                          | Title                                | Status   | Date       |
+| ------------------------------------------------------------ | ------------------------------------ | -------- | ---------- |
 | [ADR-001](./ADR-001-integrated-improvement-plan-approach.md) | Integrated Improvement Plan Approach | Accepted | 2026-01-03 |
 
 ## Naming Convention

@@ -6,18 +6,23 @@
 >
 > - `ROADMAP.md` (deprecated pointer)
 > - `ROADMAP_COMPARISON_ANALYSIS.md` (point-in-time analysis)
-> - `REFACTORING_ACTION_PLAN.md` (engineering implementation plan that supports this roadmap)
+> - `REFACTORING_ACTION_PLAN.md` (engineering implementation plan that supports
+>   this roadmap)
 
 ## Purpose
 
-Roadmap v3 integrates product direction, platform/engineering priorities, and execution sequencing into a single source of truth.
+Roadmap v3 integrates product direction, platform/engineering priorities, and
+execution sequencing into a single source of truth.
 
 ## Guiding principles
 
-- **User value first:** prioritize outcomes that improve reliability, speed, and clarity for users.
-- **Reduce complexity:** simplify architecture and flows before adding new surface area.
+- **User value first:** prioritize outcomes that improve reliability, speed, and
+  clarity for users.
+- **Reduce complexity:** simplify architecture and flows before adding new
+  surface area.
 - **Ship incrementally:** prefer thin vertical slices with measurable impact.
-- **Operational excellence:** automation, observability, and guardrails are features.
+- **Operational excellence:** automation, observability, and guardrails are
+  features.
 
 ## North Star outcomes
 
@@ -56,7 +61,8 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 - CI/CD hardening: linting, type checks, build verification.
 - Error handling normalization and logging.
 - Dependency review and security updates.
-- **Server-side security hardening** (4-week plan in docs/SERVER_SIDE_SECURITY.md).
+- **Server-side security hardening** (4-week plan in
+  docs/SERVER_SIDE_SECURITY.md).
 - **Account linking for anonymous users** (prevent data loss).
 
 #### Priority Tasks
@@ -96,7 +102,8 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 - [ ] Set up Firebase Performance Monitoring
 - [ ] Add Cloud Functions metrics dashboard
-- [x] Configure billing alerts ($50, $100, $500 thresholds) - see docs/BILLING_ALERTS_SETUP.md
+- [x] Configure billing alerts ($50, $100, $500 thresholds) - see
+      docs/BILLING_ALERTS_SETUP.md
 - [x] Set up security event logging
 - [x] Create incident response runbook
 - [ ] Test alert triggers
@@ -115,20 +122,23 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 #### 🔄 5-AI Code Review Quality Gate (2025-12-14 - Updated)
 
-> Based on aggregated review from Gemini, Claude, ChatGPT, Jules, and GitHub Copilot.
-> See: [implementation_plan.md](file:///C:/Users/jason/.gemini/antigravity/brain/21033928-59fc-4d72-b229-75ff67acf5cc/implementation_plan.md)
+> Based on aggregated review from Gemini, Claude, ChatGPT, Jules, and GitHub
+> Copilot. See:
+> [implementation_plan.md](file:///C:/Users/jason/.gemini/antigravity/brain/21033928-59fc-4d72-b229-75ff67acf5cc/implementation_plan.md)
 
 ##### 🔴 Critical ✅ COMPLETE
 
 - [x] Re-enable App Check in `firestore.rules` (`request.app != null`)
-- [x] Remove public write access on `meetings`, `sober_living`, `daily_quotes` collections
+- [x] Remove public write access on `meetings`, `sober_living`, `daily_quotes`
+      collections
 - [x] Gate App Check debug token to development only (`lib/firebase.ts`)
 - [x] Deploy: `firebase deploy --only firestore:rules,functions`
 
 ##### 🟠 High ✅ COMPLETE
 
 - [x] Fix GDPR data export orderBy bug (`functions/src/user-data.ts` line 55)
-- [x] Implement chunked batch deletion for >500 docs (`functions/src/user-data.ts`)
+- [x] Implement chunked batch deletion for >500 docs
+      (`functions/src/user-data.ts`)
 - [x] Remove debug console.logs in lib/firestore-service.ts (commit 251c7c5)
 - [ ] Complete `useAuth` → focused hooks migration
 
@@ -176,7 +186,7 @@ Roadmap v3 integrates product direction, platform/engineering priorities, and ex
 
 #### ESLint Warning Remediation
 
-*See: docs/ESLINT_WARNINGS_PLAN.md for detailed plan*
+_See: docs/ESLINT_WARNINGS_PLAN.md for detailed plan_
 
 Current state: 0 errors ✅, 29 warnings
 
@@ -184,7 +194,8 @@ Current state: 0 errors ✅, 29 warnings
 
 - Fix 10 unused variable warnings
 - Prefix unused params with `_` or remove imports
-- Files: tab-navigation, firestore-adapter, db/meetings, db/users, scripts/seed-meetings, tests
+- Files: tab-navigation, firestore-adapter, db/meetings, db/users,
+  scripts/seed-meetings, tests
 
 ##### Phase
 
@@ -201,7 +212,8 @@ Current state: 0 errors ✅, 29 warnings
 
 - Option A: Suppress `any` warnings in test files (pragmatic)
 - Option B: Properly type all test mocks (4 hours)
-- Recommendation: Option A - add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
+- Recommendation: Option A - add
+  `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
 
 #### ESLint Config Improvements
 
@@ -215,7 +227,8 @@ Current state: 0 errors ✅, 29 warnings
 - Reduced production issues/regressions.
 - CI gates enforced and green by default.
 - **ESLint: 0 errors, 0 warnings** (or 15 if test files suppressed)
-- **Firebase bill protected** (App Check + rate limiting prevents runaway costs).
+- **Firebase bill protected** (App Check + rate limiting prevents runaway
+  costs).
 - **Data loss prevented** (account linking functional).
 - **Test coverage ≥60%** for critical paths.
 - **Security posture hardened** (server-side enforcement operational).
@@ -235,49 +248,51 @@ Current state: 0 errors ✅, 29 warnings
 
 #### UI Improvements (~10h)
 
-| Task | Description | Est |
-|------|-------------|-----|
-| Image optimization | Add `sizes` prop to Next.js images | 1h |
-| Skeleton loaders | Loading states for notebook pages | 2h |
-| Empty states | Compassionate messaging for no entries | 2h |
-| Animation polish | Refine transitions, add reduce-motion | 2h |
-| Dark mode prep | Add CSS variables for theming | 2h |
+| Task               | Description                            | Est |
+| ------------------ | -------------------------------------- | --- |
+| Image optimization | Add `sizes` prop to Next.js images     | 1h  |
+| Skeleton loaders   | Loading states for notebook pages      | 2h  |
+| Empty states       | Compassionate messaging for no entries | 2h  |
+| Animation polish   | Refine transitions, add reduce-motion  | 2h  |
+| Dark mode prep     | Add CSS variables for theming          | 2h  |
 
 #### Feature Additions (~20h)
 
-| Task | Description | Est |
-|------|-------------|-----|
-| **Sober Living Finder** | Search listings by area | 5h |
-| **Support Circle (Basic)** | Basic contacts CRUD only. Advanced features (SOS, interaction log) → M7 | 5h |
-| History search/filter | Find past journal entries | 3h |
-| Mood trends viz | Full mood visualization chart | 3h |
-| Clean time celebrations | Milestone animations (30/60/90 days) | 3h |
-| Meeting favorites | Star/save favorite meetings | 2h |
-| **Recovery Library MVP** | Static content for "Meeting Etiquette" & "Glossary" | 3h |
+| Task                       | Description                                                             | Est |
+| -------------------------- | ----------------------------------------------------------------------- | --- |
+| **Sober Living Finder**    | Search listings by area                                                 | 5h  |
+| **Support Circle (Basic)** | Basic contacts CRUD only. Advanced features (SOS, interaction log) → M7 | 5h  |
+| History search/filter      | Find past journal entries                                               | 3h  |
+| Mood trends viz            | Full mood visualization chart                                           | 3h  |
+| Clean time celebrations    | Milestone animations (30/60/90 days)                                    | 3h  |
+| Meeting favorites          | Star/save favorite meetings                                             | 2h  |
+| **Recovery Library MVP**   | Static content for "Meeting Etiquette" & "Glossary"                     | 3h  |
 
 #### Settings (Make Functional) (~5h)
 
-| Task | Description | Est |
-|------|-------------|-----|
-| Nickname editing | "Nickname & privacy" works | 1h |
-| Text size | "Language & text size" works | 2h |
-| Home screen | "Home screen & favorites" works | 2h |
+| Task             | Description                     | Est |
+| ---------------- | ------------------------------- | --- |
+| Nickname editing | "Nickname & privacy" works      | 1h  |
+| Text size        | "Language & text size" works    | 2h  |
+| Home screen      | "Home screen & favorites" works | 2h  |
 
 #### Voice-to-Text Global Adoption (~4h)
 
-> **Component exists but unused**: `components/ui/voice-text-area.tsx` is fully built but not wired into any forms.
+> **Component exists but unused**: `components/ui/voice-text-area.tsx` is fully
+> built but not wired into any forms.
 
-| Task | Description | Est |
-|------|-------------|-----|
-| Daily journal | Replace `<textarea>` with `<VoiceTextArea>` in journal entry form | 0.5h |
-| Spot-check inventory | Enable voice in M5 quick capture flows | 0.5h |
-| Contact notes | Voice-to-text for contact and interaction notes | 0.5h |
-| Morning/Night review | Voice-to-text for text fields in M5 daily flows | 0.5h |
-| Step 4 inventories | Voice-to-text for resentment/fear/harm notes | 0.5h |
-| Quick-add contact | Voice-to-text for name entry (helpful while at meeting) | 0.5h |
-| Voice toggle in settings | Allow users to disable voice button globally if desired | 1h |
+| Task                     | Description                                                       | Est  |
+| ------------------------ | ----------------------------------------------------------------- | ---- |
+| Daily journal            | Replace `<textarea>` with `<VoiceTextArea>` in journal entry form | 0.5h |
+| Spot-check inventory     | Enable voice in M5 quick capture flows                            | 0.5h |
+| Contact notes            | Voice-to-text for contact and interaction notes                   | 0.5h |
+| Morning/Night review     | Voice-to-text for text fields in M5 daily flows                   | 0.5h |
+| Step 4 inventories       | Voice-to-text for resentment/fear/harm notes                      | 0.5h |
+| Quick-add contact        | Voice-to-text for name entry (helpful while at meeting)           | 0.5h |
+| Voice toggle in settings | Allow users to disable voice button globally if desired           | 1h   |
 
-**Note**: VoiceTextArea uses Web Speech API (browser-native). Works on Chrome, Edge, Safari. May not work on all browsers.
+**Note**: VoiceTextArea uses Web Speech API (browser-native). Works on Chrome,
+Edge, Safari. May not work on all browsers.
 
 #### Exit Criteria
 
@@ -290,17 +305,18 @@ Current state: 0 errors ✅, 29 warnings
 
 #### Admin Foundation (~15h)
 
-> Build admin infrastructure now since Meetings already exists. Add tabs incrementally as features launch.
+> Build admin infrastructure now since Meetings already exists. Add tabs
+> incrementally as features launch.
 
-| Task | Description | Est |
-|------|-------------|-----|
+| Task             | Description                                      | Est     |
+| ---------------- | ------------------------------------------------ | ------- |
 | Admin auth guard | `/admin` route with Firebase Custom Claims check | ✅ Done |
-| Admin layout | Tab navigation component | ✅ Done |
-| CRUD components | Reusable table + form modal | ✅ Done |
-| Meetings tab | CRUD for existing meetings collection | ✅ Done |
-| Sober Living tab | CRUD for sober living listings | 2h |
+| Admin layout     | Tab navigation component                         | ✅ Done |
+| CRUD components  | Reusable table + form modal                      | ✅ Done |
+| Meetings tab     | CRUD for existing meetings collection            | ✅ Done |
+| Sober Living tab | CRUD for sober living listings                   | 2h      |
 
-*Additional tabs added as M6-M8 features launch (Prayers, Speakers, Readings)*
+_Additional tabs added as M6-M8 features launch (Prayers, Speakers, Readings)_
 
 #### Dec 14 Feature Ideas (~25h)
 
@@ -308,39 +324,43 @@ Current state: 0 errors ✅, 29 warnings
 
 ##### Today Page
 
-| Task | Description | Est |
-|------|-------------|-----|
-| Daily Quote Sticky Note | Admin-managed inspirational quotes, cycles daily | [/] Front |
-| Direct Reading Links | AA/NA buttons → direct external links (no toggle) | ✅ Done |
-| Mobile scroll fix | Fix horizontal scroll on narrow viewports | ✅ Done |
+| Task                    | Description                                       | Est       |
+| ----------------------- | ------------------------------------------------- | --------- |
+| Daily Quote Sticky Note | Admin-managed inspirational quotes, cycles daily  | [/] Front |
+| Direct Reading Links    | AA/NA buttons → direct external links (no toggle) | ✅ Done   |
+| Mobile scroll fix       | Fix horizontal scroll on narrow viewports         | ✅ Done   |
 
 ##### Meeting Finder
 
-| Task | Description | Est |
-|------|-------------|-----|
-| Neighborhood Picker | Replace faux map with Nashville neighborhood selector | 3h |
-| Interactive Map | Leaflet/OpenStreetMap with plotted meeting markers | 8h |
-| Fix "Nearest" sorting | Geocode meetings, calculate actual distances | 4h |
+| Task                  | Description                                           | Est |
+| --------------------- | ----------------------------------------------------- | --- |
+| Neighborhood Picker   | Replace faux map with Nashville neighborhood selector | 3h  |
+| Interactive Map       | Leaflet/OpenStreetMap with plotted meeting markers    | 8h  |
+| Fix "Nearest" sorting | Geocode meetings, calculate actual distances          | 4h  |
 
 ##### My Journal Hub
 
-> **Status:** ✅ Basic journal system implemented (Dec 2025) with Timeline, Entry Forms, and Ribbon Nav.  
-> **Next:** Unify with UNIFIED_JOURNAL_ARCHITECTURE.md (dual-write migration, Deep Search, Recovery Notepad integration).
+> **Status:** ✅ Basic journal system implemented (Dec 2025) with Timeline,
+> Entry Forms, and Ribbon Nav.  
+> **Next:** Unify with UNIFIED_JOURNAL_ARCHITECTURE.md (dual-write migration,
+> Deep Search, Recovery Notepad integration).
 
-| Task | Description | Est |
-|------|-------------|-----|
-| Hub redesign | Central hub for journal entries, step work, inventories | 6h |
-| Enhanced security | Encryption or additional access controls for sensitive data | 4h |
+| Task              | Description                                                 | Est |
+| ----------------- | ----------------------------------------------------------- | --- |
+| Hub redesign      | Central hub for journal entries, step work, inventories     | 6h  |
+| Enhanced security | Encryption or additional access controls for sensitive data | 4h  |
 
 ---
 
 ### 🔄 Architecture Review Checkpoint: Post-M1.5
 
-> **Purpose:** Evaluate code health before building major features. Architecture work (M2) is **optional** — only address what's causing friction.
+> **Purpose:** Evaluate code health before building major features. Architecture
+> work (M2) is **optional** — only address what's causing friction.
 
 **Review Process (5-AI Method):**
 
-1. Submit codebase to 5 AI models: Gemini, Claude, ChatGPT, Jules, GitHub Copilot
+1. Submit codebase to 5 AI models: Gemini, Claude, ChatGPT, Jules, GitHub
+   Copilot
 2. Each AI analyzes code for architecture issues, patterns, and recommendations
 3. Aggregate findings into consensus matrix (Critical/High/Medium/Low)
 4. Verify findings against actual code (filter false positives)
@@ -355,7 +375,8 @@ Current state: 0 errors ✅, 29 warnings
 5. Are there security issues? (If yes → address immediately)
 
 **If consensus is "no major issues"** → Proceed to feature tracks (M5-M8)  
-**If consensus identifies issues** → Pull forward relevant M2 items before continuing
+**If consensus identifies issues** → Pull forward relevant M2 items before
+continuing
 
 ---
 
@@ -372,7 +393,9 @@ Current state: 0 errors ✅, 29 warnings
 
 ### M2 — Architecture & Refactoring (OPTIONAL — As Needed)
 
-> **Note:** This milestone is a **menu of options**, not a required gate. Pull forward items only when code friction is causing problems. Review checkpoints throughout the roadmap will prompt evaluation.
+> **Note:** This milestone is a **menu of options**, not a required gate. Pull
+> forward items only when code friction is causing problems. Review checkpoints
+> throughout the roadmap will prompt evaluation.
 
 #### Objectives
 
@@ -394,7 +417,8 @@ Current state: 0 errors ✅, 29 warnings
 
 #### A1: Split AuthProvider into Focused Contexts
 
-**Current Issue:** AuthProvider has 7 state variables mixing auth, profile, and daily log concerns (195 lines, violates SRP)
+**Current Issue:** AuthProvider has 7 state variables mixing auth, profile, and
+daily log concerns (195 lines, violates SRP)
 
 ##### Tasks
 
@@ -403,11 +427,13 @@ Current state: 0 errors ✅, 29 warnings
 - Create `DailyLogContext` (todayLog, todayLogError, refreshTodayLog)
 - Update components to use specific contexts
 - Test migration with existing components
-- **Benefit:** 60% reduction in unnecessary re-renders, clearer separation of concerns
+- **Benefit:** 60% reduction in unnecessary re-renders, clearer separation of
+  concerns
 
 #### A2: Decompose Large Components
 
-**Current Issue:** `book-cover.tsx` (337 lines), mixing animation + auth + routing + modals
+**Current Issue:** `book-cover.tsx` (337 lines), mixing animation + auth +
+routing + modals
 
 ##### Tasks
 
@@ -446,7 +472,8 @@ Current state: 0 errors ✅, 29 warnings
 
 #### A5: Bundle Size Analysis & Optimization
 
-**Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion, Recharts)
+**Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion,
+Recharts)
 
 ##### Tasks
 
@@ -464,11 +491,13 @@ Current state: 0 errors ✅, 29 warnings
 
 ##### Tasks
 
-- Update `AuthProvider` to use `FirestoreAdapter` instead of direct `FirestoreService`
+- Update `AuthProvider` to use `FirestoreAdapter` instead of direct
+  `FirestoreService`
 - Ensure all data access goes through adapter layer
 - Document adapter pattern in architecture docs
 - Add adapter interface tests
-- **Benefit:** Consistent abstraction, easier to test, potential for future DB migration
+- **Benefit:** Consistent abstraction, easier to test, potential for future DB
+  migration
 
 #### Exit criteria
 
@@ -525,15 +554,15 @@ Current state: 0 errors ✅, 29 warnings
 
 **Tickets**
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 3.1.1 | Create geocoding script to populate lat/lng for all 1,173 meeting addresses | 3 |
-| 3.1.2 | Add `coordinates: { lat, lng }` to Firestore meeting documents | 1 |
-| 3.1.3 | Implement browser geolocation hook with permission handling | 2 |
-| 3.1.4 | Add Haversine distance calculation utility | 1 |
-| 3.1.5 | Add "Nearest to me" sort option in Meeting Finder | 2 |
-| 3.1.6 | Display distance (miles) on meeting cards when location available | 1 |
-| 3.1.7 | (Optional) Interactive map view using Leaflet or Google Maps SDK | 5 |
+| Ticket | Description                                                                 | Est |
+| ------ | --------------------------------------------------------------------------- | --- |
+| 3.1.1  | Create geocoding script to populate lat/lng for all 1,173 meeting addresses | 3   |
+| 3.1.2  | Add `coordinates: { lat, lng }` to Firestore meeting documents              | 1   |
+| 3.1.3  | Implement browser geolocation hook with permission handling                 | 2   |
+| 3.1.4  | Add Haversine distance calculation utility                                  | 1   |
+| 3.1.5  | Add "Nearest to me" sort option in Meeting Finder                           | 2   |
+| 3.1.6  | Display distance (miles) on meeting cards when location available           | 1   |
+| 3.1.7  | (Optional) Interactive map view using Leaflet or Google Maps SDK            | 5   |
 
 **Subtotal: 15 SP** (10 SP without interactive map)
 
@@ -548,7 +577,8 @@ Current state: 0 errors ✅, 29 warnings
 
 #### M3.2 — My Recovery Calendar (Appointments & Meetings)
 
-> **Goal:** Centralized calendar for tracking all recovery-related appointments with notifications and calendar view integration.
+> **Goal:** Centralized calendar for tracking all recovery-related appointments
+> with notifications and calendar view integration.
 
 **Why This Matters**
 
@@ -589,26 +619,26 @@ Current state: 0 errors ✅, 29 warnings
 
 **Tickets**
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 3.2.1 | Define Firestore schema: `users/{uid}/recoveryCalendar/{eventId}` with `title`, `type`, `startTime`, `endTime`, `location?`, `meetingId?`, `contactId?`, `notes`, `reminderMinutes[]`, `recurringRule?`, `createdAt` | 2 |
-| 3.2.2 | Create calendar event CRUD service with validation | 2 |
-| 3.2.3 | Build `/calendar` route with month/week/day/list view toggle | 5 |
-| 3.2.4 | Implement month view component with color-coded events | 4 |
-| 3.2.5 | Implement week view with time slots and drag-to-reschedule | 5 |
-| 3.2.6 | Implement day view with detailed schedule | 3 |
-| 3.2.7 | Build event detail modal with edit/delete functionality | 3 |
-| 3.2.8 | Implement "Add Event" form with recurring event support (daily, weekly, monthly) | 4 |
-| 3.2.9 | Add quick-add from Meeting Finder ("Add to my calendar" button on meeting cards) | 2 |
-| 3.2.10 | Implement Firebase Cloud Messaging notification service | 4 |
-| 3.2.11 | Add notification permission request and settings UI | 2 |
-| 3.2.12 | Build notification scheduler (Cloud Function to check upcoming events and send reminders) | 5 |
-| 3.2.13 | Implement iCal export functionality (.ics file generation) | 3 |
-| 3.2.14 | Add Google Calendar sync (OAuth + Calendar API integration) | 5 |
-| 3.2.15 | Add calendar widget to Today page showing "Next 3 appointments" | 2 |
-| 3.2.16 | Write Firestore security rules for calendar events (owner-only access) | 1 |
-| 3.2.17 | Add attendance logging integration (check-in after event completes) | 2 |
-| 3.2.18 | Implement recurring event instance management (skip, reschedule single occurrence) | 3 |
+| Ticket | Description                                                                                                                                                                                                          | Est |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| 3.2.1  | Define Firestore schema: `users/{uid}/recoveryCalendar/{eventId}` with `title`, `type`, `startTime`, `endTime`, `location?`, `meetingId?`, `contactId?`, `notes`, `reminderMinutes[]`, `recurringRule?`, `createdAt` | 2   |
+| 3.2.2  | Create calendar event CRUD service with validation                                                                                                                                                                   | 2   |
+| 3.2.3  | Build `/calendar` route with month/week/day/list view toggle                                                                                                                                                         | 5   |
+| 3.2.4  | Implement month view component with color-coded events                                                                                                                                                               | 4   |
+| 3.2.5  | Implement week view with time slots and drag-to-reschedule                                                                                                                                                           | 5   |
+| 3.2.6  | Implement day view with detailed schedule                                                                                                                                                                            | 3   |
+| 3.2.7  | Build event detail modal with edit/delete functionality                                                                                                                                                              | 3   |
+| 3.2.8  | Implement "Add Event" form with recurring event support (daily, weekly, monthly)                                                                                                                                     | 4   |
+| 3.2.9  | Add quick-add from Meeting Finder ("Add to my calendar" button on meeting cards)                                                                                                                                     | 2   |
+| 3.2.10 | Implement Firebase Cloud Messaging notification service                                                                                                                                                              | 4   |
+| 3.2.11 | Add notification permission request and settings UI                                                                                                                                                                  | 2   |
+| 3.2.12 | Build notification scheduler (Cloud Function to check upcoming events and send reminders)                                                                                                                            | 5   |
+| 3.2.13 | Implement iCal export functionality (.ics file generation)                                                                                                                                                           | 3   |
+| 3.2.14 | Add Google Calendar sync (OAuth + Calendar API integration)                                                                                                                                                          | 5   |
+| 3.2.15 | Add calendar widget to Today page showing "Next 3 appointments"                                                                                                                                                      | 2   |
+| 3.2.16 | Write Firestore security rules for calendar events (owner-only access)                                                                                                                                               | 1   |
+| 3.2.17 | Add attendance logging integration (check-in after event completes)                                                                                                                                                  | 2   |
+| 3.2.18 | Implement recurring event instance management (skip, reschedule single occurrence)                                                                                                                                   | 3   |
 
 **Subtotal: 57 SP**
 
@@ -619,7 +649,15 @@ interface RecoveryCalendarEvent {
   id: string;
   userId: string;
   title: string;
-  type: 'meeting' | 'sponsor' | 'therapy' | 'court' | 'sober_living' | 'treatment' | 'iop' | 'custom';
+  type:
+    | "meeting"
+    | "sponsor"
+    | "therapy"
+    | "court"
+    | "sober_living"
+    | "treatment"
+    | "iop"
+    | "custom";
   startTime: Timestamp;
   endTime: Timestamp;
   location?: string;
@@ -630,7 +668,7 @@ interface RecoveryCalendarEvent {
   reminderMinutes: number[]; // [30, 1440] = 30 min and 1 day before
   notificationsSent?: Timestamp[];
   recurringRule?: {
-    frequency: 'daily' | 'weekly' | 'monthly';
+    frequency: "daily" | "weekly" | "monthly";
     interval: number; // every N days/weeks/months
     daysOfWeek?: number[]; // [0-6] for weekly
     endDate?: Timestamp;
@@ -655,13 +693,14 @@ interface RecoveryCalendarEvent {
   - ⚪ Custom (gray)
 
 - **Today Page Widget:**
+
   ```
   📅 My Calendar
   ━━━━━━━━━━━━━━━━━━━━━━━━━━
   Today, 6:00 PM  • AA Meeting (Homegroup)
   Tomorrow, 2:00 PM • Therapy Session
   Thu Dec 19, 10:00 AM • Sponsor Coffee
-  
+
   [View Full Calendar →]
   ```
 
@@ -675,9 +714,12 @@ interface RecoveryCalendarEvent {
 
 **Suggested Phasing:**
 
-1. **Phase A (MVP):** Tickets 3.2.1-3.2.9 (Basic calendar with month/week/day views, CRUD, quick-add) → ~30 SP
-2. **Phase B (Notifications):** Tickets 3.2.10-3.2.12 (FCM notifications and reminders) → ~11 SP
-3. **Phase C (Integration):** Tickets 3.2.13-3.2.18 (Export, sync, attendance, recurring) → ~16 SP
+1. **Phase A (MVP):** Tickets 3.2.1-3.2.9 (Basic calendar with month/week/day
+   views, CRUD, quick-add) → ~30 SP
+2. **Phase B (Notifications):** Tickets 3.2.10-3.2.12 (FCM notifications and
+   reminders) → ~11 SP
+3. **Phase C (Integration):** Tickets 3.2.13-3.2.18 (Export, sync, attendance,
+   recurring) → ~16 SP
 
 **Exit Criteria**
 
@@ -693,15 +735,18 @@ interface RecoveryCalendarEvent {
 
 **Research Spikes**
 
-- [ ] **Research:** Firebase Cloud Messaging reliability for time-sensitive notifications
+- [ ] **Research:** Firebase Cloud Messaging reliability for time-sensitive
+      notifications
 - [ ] **Research:** Google Calendar API quotas and OAuth flow complexity
-- [ ] **Research:** Recurring event edge cases (timezone changes, DST, skip patterns)
+- [ ] **Research:** Recurring event edge cases (timezone changes, DST, skip
+      patterns)
 
 ---
 
 #### M3.3 — Virtual Meetings Directory
 
-> **Goal:** Help users find and join virtual AA/NA/CA meetings with direct links.
+> **Goal:** Help users find and join virtual AA/NA/CA meetings with direct
+> links.
 
 **Why Virtual Matters**
 
@@ -719,21 +764,22 @@ interface RecoveryCalendarEvent {
 
 **Research Spike**
 
-- [ ] **Research:** Analyze reliability and scrapability of online meeting lists (AA Intergroup/World Services).
+- [ ] **Research:** Analyze reliability and scrapability of online meeting lists
+      (AA Intergroup/World Services).
 
 **Tickets**
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 3.3.1 | Define Firestore schema for virtual meetings: `virtualMeetings/{id}` with `name`, `fellowship`, `platform` (Zoom/Google Meet/other), `meetingUrl`, `password?`, `schedule` (days, time, timezone), `format`, `isVerified`, `lastVerifiedAt` | 2 |
-| 3.3.2 | Create admin tab for virtual meeting CRUD with URL validation | 3 |
-| 3.3.3 | Build virtual meeting card component with "Join Now" button | 2 |
-| 3.3.4 | Implement time-zone display and "Happening Now" badge | 2 |
-| 3.3.5 | Add "Starting Soon" filter (meetings within next hour) | 2 |
-| 3.3.6 | Add virtual meetings section to Resources page (separate tab or toggle) | 3 |
-| 3.3.7 | Seed initial virtual meetings data (research + curate 50-100 quality links) | 4 |
-| 3.3.8 | Add "Report broken link" button with admin notification | 2 |
-| 3.3.9 | (Optional) Calendar integration for recurring virtual meetings (links to M3.2 Recovery Calendar) | 3 |
+| Ticket | Description                                                                                                                                                                                                                                 | Est |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| 3.3.1  | Define Firestore schema for virtual meetings: `virtualMeetings/{id}` with `name`, `fellowship`, `platform` (Zoom/Google Meet/other), `meetingUrl`, `password?`, `schedule` (days, time, timezone), `format`, `isVerified`, `lastVerifiedAt` | 2   |
+| 3.3.2  | Create admin tab for virtual meeting CRUD with URL validation                                                                                                                                                                               | 3   |
+| 3.3.3  | Build virtual meeting card component with "Join Now" button                                                                                                                                                                                 | 2   |
+| 3.3.4  | Implement time-zone display and "Happening Now" badge                                                                                                                                                                                       | 2   |
+| 3.3.5  | Add "Starting Soon" filter (meetings within next hour)                                                                                                                                                                                      | 2   |
+| 3.3.6  | Add virtual meetings section to Resources page (separate tab or toggle)                                                                                                                                                                     | 3   |
+| 3.3.7  | Seed initial virtual meetings data (research + curate 50-100 quality links)                                                                                                                                                                 | 4   |
+| 3.3.8  | Add "Report broken link" button with admin notification                                                                                                                                                                                     | 2   |
+| 3.3.9  | (Optional) Calendar integration for recurring virtual meetings (links to M3.2 Recovery Calendar)                                                                                                                                            | 3   |
 
 **Subtotal: 23 SP** (20 SP without calendar integration)
 
@@ -747,11 +793,11 @@ interface RecoveryCalendarEvent {
 
 **Risks and Mitigations**
 
-| Risk | Mitigation |
-|------|------------|
-| Link rot (meetings change URLs) | "Report broken" + `lastVerifiedAt` + periodic admin review |
-| Zoom-bombing concerns | Don't publicly expose passwords; require sign-in to view |
-| Data sourcing | Start with well-known stable meetings; grow from user suggestions |
+| Risk                            | Mitigation                                                        |
+| ------------------------------- | ----------------------------------------------------------------- |
+| Link rot (meetings change URLs) | "Report broken" + `lastVerifiedAt` + periodic admin review        |
+| Zoom-bombing concerns           | Don't publicly expose passwords; require sign-in to view          |
+| Data sourcing                   | Start with well-known stable meetings; grow from user suggestions |
 
 ---
 
@@ -777,7 +823,8 @@ interface RecoveryCalendarEvent {
 
 ### M5 — Inventories Hub (Major Feature)
 
-> **Goal:** Comprehensive inventory system supporting Step 4, Step 10/11, and daily practice journaling aligned with 12-step recovery principles.
+> **Goal:** Comprehensive inventory system supporting Step 4, Step 10/11, and
+> daily practice journaling aligned with 12-step recovery principles.
 
 **Design Principles**
 
@@ -791,34 +838,36 @@ interface RecoveryCalendarEvent {
 
 > Apply these patterns across all M5 features:
 
-| Pattern | Implementation |
-|---------|----------------|
-| **Tiered depth** | Quick-tap yes/no for tired users; tap to expand for detailed journaling |
-| **One-screen overview** | Today's completion status visible at glance with "Done for today" state |
-| **Low-friction capture** | "Fast-add" mode (minimal fields) vs "Deep-edit" mode (full structured layout) |
-| **Smart reminders** | Time to user habits (e.g., 15-30 min before bedtime for Night Review) |
+| Pattern                       | Implementation                                                                                       |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Tiered depth**              | Quick-tap yes/no for tired users; tap to expand for detailed journaling                              |
+| **One-screen overview**       | Today's completion status visible at glance with "Done for today" state                              |
+| **Low-friction capture**      | "Fast-add" mode (minimal fields) vs "Deep-edit" mode (full structured layout)                        |
+| **Smart reminders**           | Time to user habits (e.g., 15-30 min before bedtime for Night Review)                                |
 | **"Talk to a person" nudges** | When distress detected (high craving, repeated resentments), prompt: "Consider calling your sponsor" |
 
 **Research Spikes**
 
-- [ ] **Research:** Client-side encryption (Web Crypto API) for secure sensitive data.
+- [ ] **Research:** Client-side encryption (Web Crypto API) for secure sensitive
+      data.
 - [ ] **Research:** PDF layout engines for complex multi-page reports.
-- [ ] **Research:** Psychology of "Safe Prompts" (avoiding nag fatigue in depression states).
+- [ ] **Research:** Psychology of "Safe Prompts" (avoiding nag fatigue in
+      depression states).
 
 ---
 
 #### Epic 5.1 — Infrastructure & Data Model (Foundation)
 
-*Optional: Review M2 architecture patterns if experiencing code friction*
+_Optional: Review M2 architecture patterns if experiencing code friction_
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 5.1.1 | Define Firestore schema: `users/{uid}/inventoryEntries/{entryId}` with `type`, `title`, `data`, `tags`, `createdAt`, `updatedAt`, `dateKey` | 2 |
-| 5.1.2 | Implement linking system: `users/{uid}/inventoryLinks/{linkId}` with `fromId`, `toId`, `fromType`, `toType` | 3 |
-| 5.1.3 | Create inventory CRUD service with DI pattern (matching existing `createFirestoreService`) | 3 |
-| 5.1.4 | Write Firestore security rules: owner-only access, schema validation | 2 |
-| 5.1.5 | Create shared TypeScript types for all 8 inventory templates | 2 |
-| 5.1.6 | Add inventory entry validation (Zod schemas) | 2 |
+| Ticket | Description                                                                                                                                 | Est |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| 5.1.1  | Define Firestore schema: `users/{uid}/inventoryEntries/{entryId}` with `type`, `title`, `data`, `tags`, `createdAt`, `updatedAt`, `dateKey` | 2   |
+| 5.1.2  | Implement linking system: `users/{uid}/inventoryLinks/{linkId}` with `fromId`, `toId`, `fromType`, `toType`                                 | 3   |
+| 5.1.3  | Create inventory CRUD service with DI pattern (matching existing `createFirestoreService`)                                                  | 3   |
+| 5.1.4  | Write Firestore security rules: owner-only access, schema validation                                                                        | 2   |
+| 5.1.5  | Create shared TypeScript types for all 8 inventory templates                                                                                | 2   |
+| 5.1.6  | Add inventory entry validation (Zod schemas)                                                                                                | 2   |
 
 **Subtotal: 14 SP**
 
@@ -826,26 +875,26 @@ interface RecoveryCalendarEvent {
 
 #### Epic 5.2 — Step 4 Inventories
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| **5.2.1 — Resentments (4-column)** | | |
-| 5.2.1a | UI: Form with `resentfulAt`, `because`, `affectsMy` (chip multi-select), `myPartText`, optional `myPartChecks` | 3 |
-| 5.2.1b | Default chips: self-esteem, security, ambitions, personal relationships, sex relations, financial/pocketbook, pride, emotional wellbeing, peace of mind, other (with text field) | 1 |
-| 5.2.1c | List view with search/filter (date, tags) | 2 |
-| 5.2.1d | Detail view with edit capability | 2 |
-| **5.2.2 — Fears** | | |
-| 5.2.2a | UI: Form with `fear`, `why`, `showsUp`, `newResponse` | 2 |
-| 5.2.2b | **Required linking** to Resentments and/or Harms (picker UI) | 3 |
-| 5.2.2c | List/detail views | 2 |
-| **5.2.3 — Sex/Relationship Conduct** | | |
-| 5.2.3a | Guided Q&A form: situation, facts, selfishWhere, dishonestWhere, inconsiderateWhere, whoHarmedHow, repeatingPattern, idealGoingForward, oneConcreteChange | 3 |
-| 5.2.3b | Optional linking to Harms | 1 |
-| 5.2.3c | List/detail views | 2 |
-| **5.2.4 — Harms / Other Wrongs** | | |
-| 5.2.4a | UI: Form with `whoHarmed`, `whatIDid`, `impact`, `responsibility`, `whatICanDoNow`, `flagStep8_9` | 2 |
-| 5.2.4b | Status field: unreviewed → reviewed_with_sponsor → on_step8_list | 1 |
-| 5.2.4c | Optional linking to Resentments/Fears | 2 |
-| 5.2.4d | List/detail views with Step 8/9 filter | 2 |
+| Ticket                               | Description                                                                                                                                                                      | Est |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| **5.2.1 — Resentments (4-column)**   |                                                                                                                                                                                  |     |
+| 5.2.1a                               | UI: Form with `resentfulAt`, `because`, `affectsMy` (chip multi-select), `myPartText`, optional `myPartChecks`                                                                   | 3   |
+| 5.2.1b                               | Default chips: self-esteem, security, ambitions, personal relationships, sex relations, financial/pocketbook, pride, emotional wellbeing, peace of mind, other (with text field) | 1   |
+| 5.2.1c                               | List view with search/filter (date, tags)                                                                                                                                        | 2   |
+| 5.2.1d                               | Detail view with edit capability                                                                                                                                                 | 2   |
+| **5.2.2 — Fears**                    |                                                                                                                                                                                  |     |
+| 5.2.2a                               | UI: Form with `fear`, `why`, `showsUp`, `newResponse`                                                                                                                            | 2   |
+| 5.2.2b                               | **Required linking** to Resentments and/or Harms (picker UI)                                                                                                                     | 3   |
+| 5.2.2c                               | List/detail views                                                                                                                                                                | 2   |
+| **5.2.3 — Sex/Relationship Conduct** |                                                                                                                                                                                  |     |
+| 5.2.3a                               | Guided Q&A form: situation, facts, selfishWhere, dishonestWhere, inconsiderateWhere, whoHarmedHow, repeatingPattern, idealGoingForward, oneConcreteChange                        | 3   |
+| 5.2.3b                               | Optional linking to Harms                                                                                                                                                        | 1   |
+| 5.2.3c                               | List/detail views                                                                                                                                                                | 2   |
+| **5.2.4 — Harms / Other Wrongs**     |                                                                                                                                                                                  |     |
+| 5.2.4a                               | UI: Form with `whoHarmed`, `whatIDid`, `impact`, `responsibility`, `whatICanDoNow`, `flagStep8_9`                                                                                | 2   |
+| 5.2.4b                               | Status field: unreviewed → reviewed_with_sponsor → on_step8_list                                                                                                                 | 1   |
+| 5.2.4c                               | Optional linking to Resentments/Fears                                                                                                                                            | 2   |
+| 5.2.4d                               | List/detail views with Step 8/9 filter                                                                                                                                           | 2   |
 
 **Subtotal: 28 SP**
 
@@ -853,30 +902,30 @@ interface RecoveryCalendarEvent {
 
 #### Epic 5.3 — Daily Practice Inventories
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| **5.3.1 — Step 10 Spot-Check (FAST flow)** | | |
-| 5.3.1a | Wizard/progressive disclosure UI optimized for 30–90 sec completion | 3 |
-| 5.3.1b | `feelings` multi-select + other, `trigger`, `story` fields | 2 |
-| 5.3.1c | Quick checks: selfish, dishonest, self-seeking, frightened (toggle) | 1 |
-| 5.3.1d | `oweApology` boolean + notes, `nextRightAction`, `reachOutTo` | 2 |
-| 5.3.1e | "Quick save" functionality | 1 |
-| **5.3.2 — Step 11 Morning Planning** | | |
-| 5.3.2a | Form: `topPriorities` (3 items), `needHelpWithMotives`, `onePersonToHelp`, `ifAgitatedPlan`, `intention` | 2 |
-| 5.3.2b | Shortcut button to create Spot-Check | 1 |
-| 5.3.2c | List/detail views | 2 |
-| **5.3.3 — Night Review (merged 10/11)** | | |
-| 5.3.3a | 9 YES/NO questions with collapsible notes | 3 |
-| 5.3.3b | Questions: resentful, selfish, dishonest, afraid, owe apology, kept something, kind/loving, could do better, did well | 1 |
-| 5.3.3c | `tomorrowDifferent`, `gratitudeHighlight` fields | 1 |
-| 5.3.3d | List view by date | 2 |
-| **5.3.4 — Gratitude List** | | |
-| 5.3.4a | Simple list by date: `items[{text, why?}]` | 2 |
-| 5.3.4b | "Why it matters" toggle per item | 1 |
-| 5.3.4c | List/detail views | 2 |
-| **5.3.5 — HALT Check (User-Initiated)** | | |
-| 5.3.5a | 4-question quick inventory (Hungry, Angry, Lonely, Tired) | 2 |
-| 5.3.5b | One-tap "I need a HALT check" button on dashboard | 1 |
+| Ticket                                     | Description                                                                                                           | Est |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | --- |
+| **5.3.1 — Step 10 Spot-Check (FAST flow)** |                                                                                                                       |     |
+| 5.3.1a                                     | Wizard/progressive disclosure UI optimized for 30–90 sec completion                                                   | 3   |
+| 5.3.1b                                     | `feelings` multi-select + other, `trigger`, `story` fields                                                            | 2   |
+| 5.3.1c                                     | Quick checks: selfish, dishonest, self-seeking, frightened (toggle)                                                   | 1   |
+| 5.3.1d                                     | `oweApology` boolean + notes, `nextRightAction`, `reachOutTo`                                                         | 2   |
+| 5.3.1e                                     | "Quick save" functionality                                                                                            | 1   |
+| **5.3.2 — Step 11 Morning Planning**       |                                                                                                                       |     |
+| 5.3.2a                                     | Form: `topPriorities` (3 items), `needHelpWithMotives`, `onePersonToHelp`, `ifAgitatedPlan`, `intention`              | 2   |
+| 5.3.2b                                     | Shortcut button to create Spot-Check                                                                                  | 1   |
+| 5.3.2c                                     | List/detail views                                                                                                     | 2   |
+| **5.3.3 — Night Review (merged 10/11)**    |                                                                                                                       |     |
+| 5.3.3a                                     | 9 YES/NO questions with collapsible notes                                                                             | 3   |
+| 5.3.3b                                     | Questions: resentful, selfish, dishonest, afraid, owe apology, kept something, kind/loving, could do better, did well | 1   |
+| 5.3.3c                                     | `tomorrowDifferent`, `gratitudeHighlight` fields                                                                      | 1   |
+| 5.3.3d                                     | List view by date                                                                                                     | 2   |
+| **5.3.4 — Gratitude List**                 |                                                                                                                       |     |
+| 5.3.4a                                     | Simple list by date: `items[{text, why?}]`                                                                            | 2   |
+| 5.3.4b                                     | "Why it matters" toggle per item                                                                                      | 1   |
+| 5.3.4c                                     | List/detail views                                                                                                     | 2   |
+| **5.3.5 — HALT Check (User-Initiated)**    |                                                                                                                       |     |
+| 5.3.5a                                     | 4-question quick inventory (Hungry, Angry, Lonely, Tired)                                                             | 2   |
+| 5.3.5b                                     | One-tap "I need a HALT check" button on dashboard                                                                     | 1   |
 
 **Subtotal: 26 SP**
 
@@ -884,14 +933,14 @@ interface RecoveryCalendarEvent {
 
 #### Epic 5.4 — Export & Share
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 5.4.1 | PDF generation utility using `@react-pdf/renderer` (chosen for React component model, clean output) | 3 |
-| 5.4.2 | Per-entry PDF export with consistent layout, optional "include linked items" toggle | 3 |
-| 5.4.3 | "Copy as text" button | 1 |
-| 5.4.4 | Web Share API with fallback to clipboard | 2 |
-| 5.4.5 | "Email" button using `mailto:` with URL-encoded subject/body | 1 |
-| 5.4.6 | Privacy reminder modal on share/export initiation | 1 |
+| Ticket | Description                                                                                         | Est |
+| ------ | --------------------------------------------------------------------------------------------------- | --- |
+| 5.4.1  | PDF generation utility using `@react-pdf/renderer` (chosen for React component model, clean output) | 3   |
+| 5.4.2  | Per-entry PDF export with consistent layout, optional "include linked items" toggle                 | 3   |
+| 5.4.3  | "Copy as text" button                                                                               | 1   |
+| 5.4.4  | Web Share API with fallback to clipboard                                                            | 2   |
+| 5.4.5  | "Email" button using `mailto:` with URL-encoded subject/body                                        | 1   |
+| 5.4.6  | Privacy reminder modal on share/export initiation                                                   | 1   |
 
 **Subtotal: 11 SP**
 
@@ -899,15 +948,15 @@ interface RecoveryCalendarEvent {
 
 #### Epic 5.5 — Inventories Hub UI
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 5.5.1 | Hub landing page `/inventories` with section cards | 2 |
-| 5.5.2 | Step 4 section: `/inventories/step-4/*` routes | 2 |
-| 5.5.3 | Daily section: `/inventories/daily/*` routes | 2 |
-| 5.5.4 | Consistent navigation, breadcrumbs, back buttons | 2 |
-| 5.5.5 | Search/filter component (date range, tags, linked items) | 3 |
-| 5.5.6 | Linking UI component (picker for cross-referencing entries) | 3 |
-| 5.5.7 | Empty states and onboarding hints | 1 |
+| Ticket | Description                                                 | Est |
+| ------ | ----------------------------------------------------------- | --- |
+| 5.5.1  | Hub landing page `/inventories` with section cards          | 2   |
+| 5.5.2  | Step 4 section: `/inventories/step-4/*` routes              | 2   |
+| 5.5.3  | Daily section: `/inventories/daily/*` routes                | 2   |
+| 5.5.4  | Consistent navigation, breadcrumbs, back buttons            | 2   |
+| 5.5.5  | Search/filter component (date range, tags, linked items)    | 3   |
+| 5.5.6  | Linking UI component (picker for cross-referencing entries) | 3   |
+| 5.5.7  | Empty states and onboarding hints                           | 1   |
 
 **Subtotal: 15 SP**
 
@@ -915,13 +964,13 @@ interface RecoveryCalendarEvent {
 
 #### Epic 5.6 — Testing & Documentation
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 5.6.1 | Unit tests for inventory service CRUD | 3 |
-| 5.6.2 | Unit tests for linking system | 2 |
-| 5.6.3 | Integration tests for export/share | 2 |
-| 5.6.4 | User documentation for each inventory type | 2 |
-| 5.6.5 | Developer documentation (data model, adding new inventory types) | 2 |
+| Ticket | Description                                                      | Est |
+| ------ | ---------------------------------------------------------------- | --- |
+| 5.6.1  | Unit tests for inventory service CRUD                            | 3   |
+| 5.6.2  | Unit tests for linking system                                    | 2   |
+| 5.6.3  | Integration tests for export/share                               | 2   |
+| 5.6.4  | User documentation for each inventory type                       | 2   |
+| 5.6.5  | Developer documentation (data model, adding new inventory types) | 2   |
 
 **Subtotal: 11 SP**
 
@@ -929,10 +978,10 @@ interface RecoveryCalendarEvent {
 
 #### Epic 5.7 — Smart Prompts & Intelligence
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 5.7.1 | **If-Then Engine**: "If Angry > 7, suggest Spot Check". "If Resentment count > 3, suggest Sponsor Call". | 5 |
-| 5.7.2 | **Contextual Nudges**: Subtle suggestions based on recent activity (or inactivity). | 3 |
+| Ticket | Description                                                                                              | Est |
+| ------ | -------------------------------------------------------------------------------------------------------- | --- |
+| 5.7.1  | **If-Then Engine**: "If Angry > 7, suggest Spot Check". "If Resentment count > 3, suggest Sponsor Call". | 5   |
+| 5.7.2  | **Contextual Nudges**: Subtle suggestions based on recent activity (or inactivity).                      | 3   |
 
 **Subtotal: 8 SP**
 
@@ -940,20 +989,21 @@ interface RecoveryCalendarEvent {
 
 #### M5 Summary
 
-| Epic | Story Points |
-|------|--------------|
-| 5.1 Infrastructure | 14 |
-| 5.2 Step 4 Inventories | 28 |
-| 5.3 Daily Practice | 26 |
-| 5.4 Export & Share | 11 |
-| 5.5 Hub UI | 15 |
-| 5.6 Testing & Docs | 11 |
-| 5.7 Smart Prompts | 8 |
-| **Total** | **116 SP** |
+| Epic                   | Story Points |
+| ---------------------- | ------------ |
+| 5.1 Infrastructure     | 14           |
+| 5.2 Step 4 Inventories | 28           |
+| 5.3 Daily Practice     | 26           |
+| 5.4 Export & Share     | 11           |
+| 5.5 Hub UI             | 15           |
+| 5.6 Testing & Docs     | 11           |
+| 5.7 Smart Prompts      | 8            |
+| **Total**              | **116 SP**   |
 
 **Suggested phasing:**
 
-1. **Phase A (MVP):** Epic 5.1 + Resentments (5.2.1) + Spot-Check (5.3.1) + basic Export (5.4.1-2) → ~35 SP
+1. **Phase A (MVP):** Epic 5.1 + Resentments (5.2.1) + Spot-Check (5.3.1) +
+   basic Export (5.4.1-2) → ~35 SP
 2. **Phase B:** Remaining Step 4 inventories (5.2.2-4) → ~18 SP
 3. **Phase C:** Remaining Daily Practice (5.3.2-4) + Hub UI (5.5) → ~29 SP
 4. **Phase D:** Full Export/Share (5.4.3-6) + Testing/Docs (5.6) → ~23 SP
@@ -972,13 +1022,17 @@ interface RecoveryCalendarEvent {
 
 **PDF Library: `@react-pdf/renderer`**
 
-- *Rationale:* React component model matches existing stack; produces clean, consistent output; good TypeScript support; active maintenance.
-- *Alternative considered:* `jspdf` — more flexible but requires manual layout; less ergonomic for React.
+- _Rationale:_ React component model matches existing stack; produces clean,
+  consistent output; good TypeScript support; active maintenance.
+- _Alternative considered:_ `jspdf` — more flexible but requires manual layout;
+  less ergonomic for React.
 
 **Linking Strategy: Dedicated collection (`inventoryLinks`)**
 
-- *Rationale:* Clean separation of concerns; efficient queries for "what's linked to X"; easier to add link metadata (e.g., link type, notes) later.
-- *Trade-off:* Extra writes/reads vs. embedded arrays; worth it for referential integrity.
+- _Rationale:_ Clean separation of concerns; efficient queries for "what's
+  linked to X"; easier to add link metadata (e.g., link type, notes) later.
+- _Trade-off:_ Extra writes/reads vs. embedded arrays; worth it for referential
+  integrity.
 
 **Firestore Structure**
 
@@ -1014,11 +1068,11 @@ users/{uid}/
 
 > These patterns should be considered for future milestones:
 
-| Pattern | Priority | Notes |
-|---------|----------|-------|
-| **Offline-first** | M9 | Checklists/inventories work without connection, sync later. Critical for meetings with poor connectivity. |
-| **Tradition guardrails** | M7+ | Recurring prompts about anonymity and not speaking for fellowships in any community feature |
-| **Simple visual indicators** | All | Progress rings, counters over complex dashboards. Keep UI scannable. |
+| Pattern                      | Priority | Notes                                                                                                     |
+| ---------------------------- | -------- | --------------------------------------------------------------------------------------------------------- |
+| **Offline-first**            | M9       | Checklists/inventories work without connection, sync later. Critical for meetings with poor connectivity. |
+| **Tradition guardrails**     | M7+      | Recurring prompts about anonymity and not speaking for fellowships in any community feature               |
+| **Simple visual indicators** | All      | Progress rings, counters over complex dashboards. Keep UI scannable.                                      |
 
 ---
 
@@ -1029,7 +1083,8 @@ users/{uid}/
 > **Status**: 🔬 Research Phase  
 > **Document**: [docs/MONETIZATION_RESEARCH.md](docs/MONETIZATION_RESEARCH.md)
 
-Research initiative to define sustainable monetization without compromising recovery mission.
+Research initiative to define sustainable monetization without compromising
+recovery mission.
 
 **Research Areas:**
 
@@ -1047,7 +1102,8 @@ Research initiative to define sustainable monetization without compromising reco
 - [ ] Target price point and model
 - [ ] B2B opportunity (sober living, treatment centers)?
 
-**Approach:** Multi-AI aggregated research (same methodology as Feature Ideas analysis)
+**Approach:** Multi-AI aggregated research (same methodology as Feature Ideas
+analysis)
 
 ---
 
@@ -1062,7 +1118,8 @@ Research initiative to define sustainable monetization without compromising reco
 - Add accessibility (a11y) audit
 - Performance budget enforcement in CI
 - Security scanning in CI/CD pipeline
-- **ESLint warning remediation** - Ongoing maintenance (see M1 for initial cleanup)
+- **ESLint warning remediation** - Ongoing maintenance (see M1 for initial
+  cleanup)
 
 ## Governance & cadence
 
@@ -1073,9 +1130,13 @@ Research initiative to define sustainable monetization without compromising reco
 ## How to use this roadmap
 
 - Product priorities map to **Milestones (M1–M11+)**.
-- **M5 (Inventories Hub)** is a major feature milestone with detailed epics and tickets.
-- Engineering work items live in `REFACTORING_ACTION_PLAN.md` (implementation details) and issues/PRs.
-- **Desktop/web enhancements** detailed in `WEB_ENHANCEMENTS_ROADMAP.md` (15 power-user features, page-specific enhancements, performance/accessibility/security).
+- **M5 (Inventories Hub)** is a major feature milestone with detailed epics and
+  tickets.
+- Engineering work items live in `REFACTORING_ACTION_PLAN.md` (implementation
+  details) and issues/PRs.
+- **Desktop/web enhancements** detailed in `WEB_ENHANCEMENTS_ROADMAP.md` (15
+  power-user features, page-specific enhancements,
+  performance/accessibility/security).
 - If a conflict exists, **this document is the source of truth**.
 
 ## Non-Goals (Explicitly Out of Scope for M5)
@@ -1095,20 +1156,30 @@ These may be considered in future milestones based on user feedback.
 
 ### M6 — Prayers & Readings Module (AA-focused)
 
-> **Goal:** Add a Prayers & Readings feature that reproduces in-app only what we can safely ship, uses direct official links for AAWS/Grapevine-controlled text we won't reproduce, and supports user practice via Favorites, Copy/Share, and Daily Practice shortcuts.
+> **Goal:** Add a Prayers & Readings feature that reproduces in-app only what we
+> can safely ship, uses direct official links for AAWS/Grapevine-controlled text
+> we won't reproduce, and supports user practice via Favorites, Copy/Share, and
+> Daily Practice shortcuts.
 
 **Design Principles**
 
-- **Copyright compliance:** Never reproduce AAWS/Grapevine copyrighted text in-app without explicit license.
-- **Official sources:** Link directly to AA.org PDFs for Big Book prayers and AAWS literature.
-- **Public domain first:** Ship public-domain text (Serenity Prayer, Lord's Prayer, St. Francis) as in-app content.
-- **User control:** Allow user-entered text for custom prayers and personal wording preferences.
-- **Privacy-first:** Share/export only on explicit user action; include privacy reminders.
-- **Compliance by design:** Support remote toggle of displayMode without app update.
+- **Copyright compliance:** Never reproduce AAWS/Grapevine copyrighted text
+  in-app without explicit license.
+- **Official sources:** Link directly to AA.org PDFs for Big Book prayers and
+  AAWS literature.
+- **Public domain first:** Ship public-domain text (Serenity Prayer, Lord's
+  Prayer, St. Francis) as in-app content.
+- **User control:** Allow user-entered text for custom prayers and personal
+  wording preferences.
+- **Privacy-first:** Share/export only on explicit user action; include privacy
+  reminders.
+- **Compliance by design:** Support remote toggle of displayMode without app
+  update.
 
 **Research Spike**
 
-- [ ] **Research:** Exact copyright status of specific prayers/texts in target countries.
+- [ ] **Research:** Exact copyright status of specific prayers/texts in target
+      countries.
 
 ---
 
@@ -1121,7 +1192,9 @@ These may be considered in future milestones based on user feedback.
    - Include optional "history" button linking to AA's official history page/PDF
 
 2. **Lord's Prayer**
-   - Include a public-domain translation (recommend KJV wording) OR ship as "user-entered text" with a default empty field for ultra-conservative posture
+   - Include a public-domain translation (recommend KJV wording) OR ship as
+     "user-entered text" with a default empty field for ultra-conservative
+     posture
 
 3. **Prayer of St. Francis**
    - Ship a public-domain version (or let user choose "my preferred wording")
@@ -1131,15 +1204,19 @@ These may be considered in future milestones based on user feedback.
 
 1. **Third Step Prayer** → link to AA.org Big Book Chapter 5 PDF
 2. **Seventh Step Prayer** → link to AA.org Big Book Chapter 6 PDF
-3. **Step 11 passages** ("On awakening…", "When we retire at night…", "When agitated or doubtful…") → link to AA.org Big Book Chapter 6 PDF
+3. **Step 11 passages** ("On awakening…", "When we retire at night…", "When
+   agitated or doubtful…") → link to AA.org Big Book Chapter 6 PDF
 4. **A.A. Preamble** (Grapevine copyright) → link to AA.org Preamble PDF/page
-5. **Responsibility Statement / Declaration of Unity** → link-only (AAWS copyright notice on AA.org)
+5. **Responsibility Statement / Declaration of Unity** → link-only (AAWS
+   copyright notice on AA.org)
 
 **C) User-text-only (optional item)**
 
 1. **Set Aside Prayer**
-   - Default to user-text-only (common in fellowship culture but not AAWS canonical)
-   - Optional: provide a "Find online" button that opens the user's browser search, rather than shipping a third-party PDF link
+   - Default to user-text-only (common in fellowship culture but not AAWS
+     canonical)
+   - Optional: provide a "Find online" button that opens the user's browser
+     search, rather than shipping a third-party PDF link
 
 ---
 
@@ -1147,15 +1224,18 @@ These may be considered in future milestones based on user feedback.
 
 Store these raw URLs in seed data (shown in-app as "Open official source"):
 
-- **AA Big Book Chapter 5 PDF** (Third Step Prayer): <https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf>
-- **AA Big Book Chapter 6 PDF** (Seventh Step Prayer + Step 11 passages): <https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf>
+- **AA Big Book Chapter 5 PDF** (Third Step Prayer):
+  <https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt5.pdf>
+- **AA Big Book Chapter 6 PDF** (Seventh Step Prayer + Step 11 passages):
+  <https://www.aa.org/sites/default/files/2021-11/en_bigbook_chapt6.pdf>
 - **Origin of the Serenity Prayer** (AA official history page):
   - <https://www.aa.org/origin-serenity-prayer-historical-paper>
   - <https://www.aa.org/sites/default/files/literature/assets/smf-129_en.pdf>
 - **A.A. Preamble** (official PDF + page):
   - <https://www.aa.org/sites/default/files/literature/smf-92_en.pdf>
   - <https://www.aa.org/aa-preamble>
-- **Declaration of Unity page** (includes Responsibility Statement / Unity context): <https://www.aa.org/a-declaration-of-unity>
+- **Declaration of Unity page** (includes Responsibility Statement / Unity
+  context): <https://www.aa.org/a-declaration-of-unity>
 
 ---
 
@@ -1187,23 +1267,24 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 
 #### Epic P1 — Prayers Catalog + Hub UI
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| P1.1 | Define Firestore schema: `prayersCatalog/{id}` with `slug`, `title`, `category`, `stepTags`, `displayMode`, `inAppText?`, `officialLink?`, `rightsNotes` | 2 |
-| P1.2 | Seed `prayersCatalog` with 9 items (Serenity, Lord's Prayer, St. Francis, Third Step, Seventh Step, Step 11 passages, Preamble, Responsibility Statement, Set Aside) | 2 |
-| P1.3 | Create `/prayers` hub page with sections: AA Step Prayers, Meeting Prayers, My Custom | 3 |
-| P1.4 | Build prayer card component with title, category, favorite indicator | 2 |
-| P1.5 | Implement favorites pin/unpin functionality | 2 |
-| P1.6 | Create `/prayers/[slug]` detail view with conditional rendering by `displayMode` | 3 |
-| P1.7 | Build "IN_APP_TEXT" display component (readable typography, optional history/context link) | 2 |
-| P1.8 | Build "LINK_ONLY" display component (official source button, context about copyright) | 2 |
-| P1.9 | Build "USER_TEXT_ONLY" display component (editable text area, friendly empty state) | 2 |
+| Ticket | Description                                                                                                                                                          | Est |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| P1.1   | Define Firestore schema: `prayersCatalog/{id}` with `slug`, `title`, `category`, `stepTags`, `displayMode`, `inAppText?`, `officialLink?`, `rightsNotes`             | 2   |
+| P1.2   | Seed `prayersCatalog` with 9 items (Serenity, Lord's Prayer, St. Francis, Third Step, Seventh Step, Step 11 passages, Preamble, Responsibility Statement, Set Aside) | 2   |
+| P1.3   | Create `/prayers` hub page with sections: AA Step Prayers, Meeting Prayers, My Custom                                                                                | 3   |
+| P1.4   | Build prayer card component with title, category, favorite indicator                                                                                                 | 2   |
+| P1.5   | Implement favorites pin/unpin functionality                                                                                                                          | 2   |
+| P1.6   | Create `/prayers/[slug]` detail view with conditional rendering by `displayMode`                                                                                     | 3   |
+| P1.7   | Build "IN_APP_TEXT" display component (readable typography, optional history/context link)                                                                           | 2   |
+| P1.8   | Build "LINK_ONLY" display component (official source button, context about copyright)                                                                                | 2   |
+| P1.9   | Build "USER_TEXT_ONLY" display component (editable text area, friendly empty state)                                                                                  | 2   |
 
 **Subtotal: 20 SP**
 
 **Exit Criteria**
 
-- Users can browse, favorite, open detail, and see correct "in-app vs link-only" behavior
+- Users can browse, favorite, open detail, and see correct "in-app vs link-only"
+  behavior
 - No AAWS/Grapevine copyrighted text stored in `inAppText` fields
 - Link-only items open AA.org PDFs correctly on mobile
 
@@ -1211,14 +1292,14 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 
 #### Epic P2 — User Text + Preferences
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| P2.1 | Define Firestore schema: `users/{uid}/prayersUser/{id}` with `favorite`, `myText?`, `lastUsedAt?` | 1 |
-| P2.2 | Implement `myText` override for IN_APP_TEXT items ("My preferred wording" toggle) | 2 |
-| P2.3 | Implement `myText` requirement for USER_TEXT_ONLY items (show friendly empty state until user supplies text) | 2 |
-| P2.4 | Add "Privacy reminder" banner on share/export | 1 |
-| P2.5 | Create `/settings/prayers` page with display preferences (font size, theme) | 2 |
-| P2.6 | Implement user-added custom prayers (title, text, category) | 3 |
+| Ticket | Description                                                                                                  | Est |
+| ------ | ------------------------------------------------------------------------------------------------------------ | --- |
+| P2.1   | Define Firestore schema: `users/{uid}/prayersUser/{id}` with `favorite`, `myText?`, `lastUsedAt?`            | 1   |
+| P2.2   | Implement `myText` override for IN_APP_TEXT items ("My preferred wording" toggle)                            | 2   |
+| P2.3   | Implement `myText` requirement for USER_TEXT_ONLY items (show friendly empty state until user supplies text) | 2   |
+| P2.4   | Add "Privacy reminder" banner on share/export                                                                | 1   |
+| P2.5   | Create `/settings/prayers` page with display preferences (font size, theme)                                  | 2   |
+| P2.6   | Implement user-added custom prayers (title, text, category)                                                  | 3   |
 
 **Subtotal: 11 SP**
 
@@ -1232,15 +1313,15 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 
 #### Epic P3 — Share / Email / PDF Export
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| P3.1 | Implement "Copy to clipboard" functionality | 1 |
-| P3.2 | Implement Web Share API with feature detection and fallback | 2 |
-| P3.3 | Implement `mailto:` email sharing with URL-encoded subject/body | 1 |
-| P3.4 | PDF export utility using `@react-pdf/renderer` (consistent layout, metadata) | 3 |
-| P3.5 | PDF export for IN_APP_TEXT items (include text + optional official source link) | 2 |
-| P3.6 | PDF export for LINK_ONLY items (context + official source link, NO copyrighted text) | 2 |
-| P3.7 | PDF export for USER_TEXT_ONLY items (user's text only) | 1 |
+| Ticket | Description                                                                          | Est |
+| ------ | ------------------------------------------------------------------------------------ | --- |
+| P3.1   | Implement "Copy to clipboard" functionality                                          | 1   |
+| P3.2   | Implement Web Share API with feature detection and fallback                          | 2   |
+| P3.3   | Implement `mailto:` email sharing with URL-encoded subject/body                      | 1   |
+| P3.4   | PDF export utility using `@react-pdf/renderer` (consistent layout, metadata)         | 3   |
+| P3.5   | PDF export for IN_APP_TEXT items (include text + optional official source link)      | 2   |
+| P3.6   | PDF export for LINK_ONLY items (context + official source link, NO copyrighted text) | 2   |
+| P3.7   | PDF export for USER_TEXT_ONLY items (user's text only)                               | 1   |
 
 **Subtotal: 12 SP**
 
@@ -1254,13 +1335,13 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 
 #### Epic P4 — Compliance Toggles (future-proof for licensing)
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| P4.1 | Add admin-only flags in catalog: `displayMode` switch capability | 2 |
-| P4.2 | Add per-item boolean flags: `allowCopy`, `allowShare`, `allowPDF` | 1 |
-| P4.3 | Implement remote toggle logic (Firebase Remote Config or catalog update) | 2 |
-| P4.4 | Add optional "Report rights concern" link in detail view | 1 |
-| P4.5 | Write Firestore security rules: catalog is read-only for users, admin-write only | 1 |
+| Ticket | Description                                                                      | Est |
+| ------ | -------------------------------------------------------------------------------- | --- |
+| P4.1   | Add admin-only flags in catalog: `displayMode` switch capability                 | 2   |
+| P4.2   | Add per-item boolean flags: `allowCopy`, `allowShare`, `allowPDF`                | 1   |
+| P4.3   | Implement remote toggle logic (Firebase Remote Config or catalog update)         | 2   |
+| P4.4   | Add optional "Report rights concern" link in detail view                         | 1   |
+| P4.5   | Write Firestore security rules: catalog is read-only for users, admin-write only | 1   |
 
 **Subtotal: 7 SP**
 
@@ -1273,15 +1354,15 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 
 #### Epic P5 — Testing & Documentation
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| P5.1 | Unit tests for prayers catalog CRUD service | 2 |
-| P5.2 | Unit tests for user text override functionality | 2 |
-| P5.3 | Integration tests for share/export (copy, mailto, PDF) | 3 |
-| P5.4 | QA checklist: verify no Big Book/AAWS text in inAppText fields | 1 |
-| P5.5 | QA checklist: verify link-only items open AA.org PDFs correctly on mobile | 1 |
-| P5.6 | User documentation for each prayer type and how to use features | 2 |
-| P5.7 | Developer documentation (data model, adding new prayers, compliance guidelines) | 2 |
+| Ticket | Description                                                                     | Est |
+| ------ | ------------------------------------------------------------------------------- | --- |
+| P5.1   | Unit tests for prayers catalog CRUD service                                     | 2   |
+| P5.2   | Unit tests for user text override functionality                                 | 2   |
+| P5.3   | Integration tests for share/export (copy, mailto, PDF)                          | 3   |
+| P5.4   | QA checklist: verify no Big Book/AAWS text in inAppText fields                  | 1   |
+| P5.5   | QA checklist: verify link-only items open AA.org PDFs correctly on mobile       | 1   |
+| P5.6   | User documentation for each prayer type and how to use features                 | 2   |
+| P5.7   | Developer documentation (data model, adding new prayers, compliance guidelines) | 2   |
 
 **Subtotal: 13 SP**
 
@@ -1295,19 +1376,21 @@ Store these raw URLs in seed data (shown in-app as "Open official source"):
 
 #### M6 Summary
 
-| Epic | Story Points |
-|------|--------------|
-| P1 Catalog + Hub UI | 20 |
-| P2 User Text + Preferences | 11 |
-| P3 Share / Email / PDF | 12 |
-| P4 Compliance Toggles | 7 |
-| P5 Testing & Docs | 13 |
-| **Total** | **63 SP** |
+| Epic                       | Story Points |
+| -------------------------- | ------------ |
+| P1 Catalog + Hub UI        | 20           |
+| P2 User Text + Preferences | 11           |
+| P3 Share / Email / PDF     | 12           |
+| P4 Compliance Toggles      | 7            |
+| P5 Testing & Docs          | 13           |
+| **Total**                  | **63 SP**    |
 
 **Suggested phasing:**
 
-1. **Phase A (MVP):** Epic P1 (Catalog + Hub) + P2.1-2.4 (User text basics) → ~27 SP
-2. **Phase B:** Epic P3 (Share/Export) + P2.5-2.6 (Preferences + Custom prayers) → ~17 SP
+1. **Phase A (MVP):** Epic P1 (Catalog + Hub) + P2.1-2.4 (User text basics) →
+   ~27 SP
+2. **Phase B:** Epic P3 (Share/Export) + P2.5-2.6 (Preferences + Custom prayers)
+   → ~17 SP
 3. **Phase C:** Epic P4 (Compliance) + Epic P5 (Testing/Docs) → ~20 SP
 
 **Exit Criteria**
@@ -1354,27 +1437,39 @@ users/{uid}/prayersUser/{id}
 
 **PDF Library: `@react-pdf/renderer`**
 
-- *Rationale:* Same library used in M5 (Inventories Hub); consistent React component model; produces clean output; good TypeScript support.
-- *Trade-off:* Slightly larger bundle size vs. jspdf, but consistency and developer experience outweigh.
+- _Rationale:_ Same library used in M5 (Inventories Hub); consistent React
+  component model; produces clean output; good TypeScript support.
+- _Trade-off:_ Slightly larger bundle size vs. jspdf, but consistency and
+  developer experience outweigh.
 
 **Compliance Strategy: Remote Config**
 
-- *Rationale:* Allow instant compliance changes (e.g., displayMode toggle) without app deployment.
-- *Implementation:* Firebase Remote Config OR direct Firestore catalog updates with admin-only access.
+- _Rationale:_ Allow instant compliance changes (e.g., displayMode toggle)
+  without app deployment.
+- _Implementation:_ Firebase Remote Config OR direct Firestore catalog updates
+  with admin-only access.
 
 ---
 
 ### M7 — Fellowship Tools & Daily Practice
 
-> **Goal:** Complete the fellowship connection layer that makes the app useful for daily AA/NA participation. Focus on "how AA people actually stay sober" through meetings, sponsors, service, and milestones. Bridge the gap between personal introspection (M5/M6) and community connection.
+> **Goal:** Complete the fellowship connection layer that makes the app useful
+> for daily AA/NA participation. Focus on "how AA people actually stay sober"
+> through meetings, sponsors, service, and milestones. Bridge the gap between
+> personal introspection (M5/M6) and community connection.
 
 **Design Principles**
 
-- **Fellowship-first:** Prioritize features that connect users to people, meetings, and service.
-- **Complete existing stubs:** Finish the Support page (hardcoded contacts → Firestore-backed).
-- **Leverage existing infrastructure:** Build on Meeting Finder, clean time tracker, and user profile.
-- **One-tap actions:** Make sponsor calls, meeting check-ins, and emergency outreach instant.
-- **Sponsor-guided:** Remind users to involve their sponsor in step work and decisions.
+- **Fellowship-first:** Prioritize features that connect users to people,
+  meetings, and service.
+- **Complete existing stubs:** Finish the Support page (hardcoded contacts →
+  Firestore-backed).
+- **Leverage existing infrastructure:** Build on Meeting Finder, clean time
+  tracker, and user profile.
+- **One-tap actions:** Make sponsor calls, meeting check-ins, and emergency
+  outreach instant.
+- **Sponsor-guided:** Remind users to involve their sponsor in step work and
+  decisions.
 
 ---
 
@@ -1400,38 +1495,42 @@ users/{uid}/prayersUser/{id}
 
 **Research Spikes**
 
-- [ ] **Research:** Mobile URI scheme (`tel:`, `sms:`) reliability across browsers.
-- [ ] **Research:** Gamification vs. Recovery Mental Models (alternatives to "streaks").
+- [ ] **Research:** Mobile URI scheme (`tel:`, `sms:`) reliability across
+      browsers.
+- [ ] **Research:** Gamification vs. Recovery Mental Models (alternatives to
+      "streaks").
 
 ---
 
 #### Epic F1 — Sponsor & Support Network (Firestore-backed)
 
-*Complete the existing Support page stub*
+_Complete the existing Support page stub_
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F1.1 | Define Firestore schema: `users/{uid}/contacts/{contactId}` with `name`, `role` (sponsor, friend, counselor, other), `phone?`, `email?`, `address?`, `tags[]`, `notes`, `isSOS` boolean, `metAt?` (meeting name), `metDate?` | 2 |
-| F1.2 | Create contacts CRUD service with Zod validation | 2 |
-| F1.3 | Replace hardcoded Support page contacts with Firestore real-time listener | 2 |
-| F1.4 | Implement add/edit contact modal with form validation | 3 |
-| F1.5 | Wire up Call (`tel:`), Text (`sms:`), Email (`mailto:`) buttons with proper URI encoding | 2 |
-| F1.6 | Add "SOS quick contact" badge and one-tap emergency call to designated sponsor | 2 |
-| F1.7 | Implement "I need help now" flow with pre-written message templates ("Can you talk?", "I'm not okay.", "Call when you can") | 3 |
-| F1.8 | Add optional contact interaction log: `users/{uid}/contactLogs/{logId}` with `contactId`, `type` (called, no answer, left voicemail, texted), `timestamp`, `notes?` | 2 |
-| F1.9 | Write Firestore security rules for contacts (owner-only access) | 1 |
-| F1.10 | **Quick-add contact mode** - Minimal friction "I just met someone" flow: just name + phone, optional meeting context, fills out later | 3 |
-| F1.11 | **Floating quick-add button** - Accessible from Support page and Meeting Finder for instant capture | 2 |
-| F1.12 | **"Met at" context** - Auto-suggest recent/favorite meeting names, auto-fill current date | 1 |
+| Ticket | Description                                                                                                                                                                                                                  | Est |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| F1.1   | Define Firestore schema: `users/{uid}/contacts/{contactId}` with `name`, `role` (sponsor, friend, counselor, other), `phone?`, `email?`, `address?`, `tags[]`, `notes`, `isSOS` boolean, `metAt?` (meeting name), `metDate?` | 2   |
+| F1.2   | Create contacts CRUD service with Zod validation                                                                                                                                                                             | 2   |
+| F1.3   | Replace hardcoded Support page contacts with Firestore real-time listener                                                                                                                                                    | 2   |
+| F1.4   | Implement add/edit contact modal with form validation                                                                                                                                                                        | 3   |
+| F1.5   | Wire up Call (`tel:`), Text (`sms:`), Email (`mailto:`) buttons with proper URI encoding                                                                                                                                     | 2   |
+| F1.6   | Add "SOS quick contact" badge and one-tap emergency call to designated sponsor                                                                                                                                               | 2   |
+| F1.7   | Implement "I need help now" flow with pre-written message templates ("Can you talk?", "I'm not okay.", "Call when you can")                                                                                                  | 3   |
+| F1.8   | Add optional contact interaction log: `users/{uid}/contactLogs/{logId}` with `contactId`, `type` (called, no answer, left voicemail, texted), `timestamp`, `notes?`                                                          | 2   |
+| F1.9   | Write Firestore security rules for contacts (owner-only access)                                                                                                                                                              | 1   |
+| F1.10  | **Quick-add contact mode** - Minimal friction "I just met someone" flow: just name + phone, optional meeting context, fills out later                                                                                        | 3   |
+| F1.11  | **Floating quick-add button** - Accessible from Support page and Meeting Finder for instant capture                                                                                                                          | 2   |
+| F1.12  | **"Met at" context** - Auto-suggest recent/favorite meeting names, auto-fill current date                                                                                                                                    | 1   |
 
 **Subtotal: 25 SP**
 
 **Quick-Add Vision (Newcomer Focus)**
 
-> Newcomers are told "get phone numbers" constantly in early recovery. The app should make this **frictionless**:
+> Newcomers are told "get phone numbers" constantly in early recovery. The app
+> should make this **frictionless**:
 >
 > - One-tap "+" button always visible on Support page
-> - Quick-add form: just **Name** + **Phone** (required), everything else optional
+> - Quick-add form: just **Name** + **Phone** (required), everything else
+>   optional
 > - "Where did you meet?" dropdown with recent meetings pre-filled
 > - Date auto-filled to today
 > - Can flesh out details (role, notes, email) later
@@ -1450,15 +1549,15 @@ users/{uid}/prayersUser/{id}
 
 #### Epic F2 — Meeting Attendance & Homegroup
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F2.1 | Define Firestore schema: `users/{uid}/meetingAttendance/{attendanceId}` with `meetingId`, `meetingName`, `date`, `notes?`, `createdAt` | 1 |
-| F2.2 | Add `homegroup` boolean and `isFavorite` boolean to meeting document schema (or user-specific: `users/{uid}/favoriteMeetings/{meetingId}`) | 2 |
-| F2.3 | Add "Check in" button on meeting detail modal (Resources page) that creates attendance record | 2 |
-| F2.4 | Create "My Meetings" section on Resources page showing favorites + homegroup designation | 3 |
-| F2.5 | Implement "My attendance history" view (list by date, searchable, filterable by meeting) | 3 |
-| F2.6 | Add attendance stats badge on Today page: "X meetings this week" with sparkline | 2 |
-| F2.7 | Add homegroup designation UI (star/badge on meeting card, "Set as homegroup" toggle) | 2 |
+| Ticket | Description                                                                                                                                | Est |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --- |
+| F2.1   | Define Firestore schema: `users/{uid}/meetingAttendance/{attendanceId}` with `meetingId`, `meetingName`, `date`, `notes?`, `createdAt`     | 1   |
+| F2.2   | Add `homegroup` boolean and `isFavorite` boolean to meeting document schema (or user-specific: `users/{uid}/favoriteMeetings/{meetingId}`) | 2   |
+| F2.3   | Add "Check in" button on meeting detail modal (Resources page) that creates attendance record                                              | 2   |
+| F2.4   | Create "My Meetings" section on Resources page showing favorites + homegroup designation                                                   | 3   |
+| F2.5   | Implement "My attendance history" view (list by date, searchable, filterable by meeting)                                                   | 3   |
+| F2.6   | Add attendance stats badge on Today page: "X meetings this week" with sparkline                                                            | 2   |
+| F2.7   | Add homegroup designation UI (star/badge on meeting card, "Set as homegroup" toggle)                                                       | 2   |
 
 **Subtotal: 15 SP**
 
@@ -1473,16 +1572,16 @@ users/{uid}/prayersUser/{id}
 
 #### Epic F3 — Commitments & Service Tracker
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F3.1 | Define Firestore schema: `users/{uid}/commitments/{id}` with `type` (coffee, chairs, greeter, literature, secretary, treasurer, GSR, sponsor, other), `meetingId?`, `meetingName?`, `description`, `active`, `startDate`, `endDate?` | 2 |
-| F3.2 | Create commitments CRUD service with validation | 2 |
-| F3.3 | Create "My Commitments" section on Support page with active/inactive toggle | 3 |
-| F3.4 | Add commitment reminder on Today page: "You have X active commitments" | 1 |
-| F3.5 | Define Firestore schema: `users/{uid}/serviceLog/{id}` with `type` (call, ride, coffee date, sponsorship action, 12-step call, other), `description`, `date`, `personHelped?`, `notes` | 2 |
-| F3.6 | Create "Service log" form accessible from Support page or Today page | 3 |
-| F3.7 | Integrate service log with Morning Planning (M5.3.2): pre-fill "One person I can help today" from service log suggestions | 2 |
-| F3.8 | Add service stats: "X people helped this month" badge | 1 |
+| Ticket | Description                                                                                                                                                                                                                          | Est |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- |
+| F3.1   | Define Firestore schema: `users/{uid}/commitments/{id}` with `type` (coffee, chairs, greeter, literature, secretary, treasurer, GSR, sponsor, other), `meetingId?`, `meetingName?`, `description`, `active`, `startDate`, `endDate?` | 2   |
+| F3.2   | Create commitments CRUD service with validation                                                                                                                                                                                      | 2   |
+| F3.3   | Create "My Commitments" section on Support page with active/inactive toggle                                                                                                                                                          | 3   |
+| F3.4   | Add commitment reminder on Today page: "You have X active commitments"                                                                                                                                                               | 1   |
+| F3.5   | Define Firestore schema: `users/{uid}/serviceLog/{id}` with `type` (call, ride, coffee date, sponsorship action, 12-step call, other), `description`, `date`, `personHelped?`, `notes`                                               | 2   |
+| F3.6   | Create "Service log" form accessible from Support page or Today page                                                                                                                                                                 | 3   |
+| F3.7   | Integrate service log with Morning Planning (M5.3.2): pre-fill "One person I can help today" from service log suggestions                                                                                                            | 2   |
+| F3.8   | Add service stats: "X people helped this month" badge                                                                                                                                                                                | 1   |
 
 **Subtotal: 16 SP**
 
@@ -1497,16 +1596,16 @@ users/{uid}/prayersUser/{id}
 
 #### Epic F4 — Step Progress Tracker
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F4.1 | Define Firestore schema: `users/{uid}/stepProgress/{stepNum}` (1-12) with `status` (not_started, in_progress, completed), `dateStarted?`, `dateCompleted?`, `notes`, `sharedWithSponsor` boolean | 2 |
-| F4.2 | Create "My Steps" overview page with 12 step cards, color-coded by status (gray → yellow → green) | 3 |
-| F4.3 | Add step detail view with notes field and "Share with sponsor" button (pre-fills email/text with step notes) | 3 |
-| F4.4 | Add "Current step" badge on Today page (shows highest in-progress or last completed + 1) | 1 |
-| F4.5 | Add link from Step 4 card to Inventories Hub (M5) when implemented | 1 |
-| F4.6 | Add sponsor guidance reminder modal on status change: "Discuss with sponsor before marking complete" | 1 |
-| F4.7 | Add step completion celebration animation (confetti or chip animation) | 2 |
-| F4.8 | **Second-Cycle Mode**: Support for doing steps again (versioning previous Step 4s). | 3 |
+| Ticket | Description                                                                                                                                                                                      | Est |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- |
+| F4.1   | Define Firestore schema: `users/{uid}/stepProgress/{stepNum}` (1-12) with `status` (not_started, in_progress, completed), `dateStarted?`, `dateCompleted?`, `notes`, `sharedWithSponsor` boolean | 2   |
+| F4.2   | Create "My Steps" overview page with 12 step cards, color-coded by status (gray → yellow → green)                                                                                                | 3   |
+| F4.3   | Add step detail view with notes field and "Share with sponsor" button (pre-fills email/text with step notes)                                                                                     | 3   |
+| F4.4   | Add "Current step" badge on Today page (shows highest in-progress or last completed + 1)                                                                                                         | 1   |
+| F4.5   | Add link from Step 4 card to Inventories Hub (M5) when implemented                                                                                                                               | 1   |
+| F4.6   | Add sponsor guidance reminder modal on status change: "Discuss with sponsor before marking complete"                                                                                             | 1   |
+| F4.7   | Add step completion celebration animation (confetti or chip animation)                                                                                                                           | 2   |
+| F4.8   | **Second-Cycle Mode**: Support for doing steps again (versioning previous Step 4s).                                                                                                              | 3   |
 
 **Subtotal: 13 SP**
 
@@ -1521,16 +1620,16 @@ users/{uid}/prayersUser/{id}
 
 #### Epic F5 — Milestones & Chips Enhancement
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F5.1 | Create chip visualization component (24h, 30d, 60d, 90d, 6mo, 9mo, 1yr, 18mo, multi-year chips with colors) | 3 |
-| F5.2 | Add "Next chip" countdown on Today page with days/hours/minutes remaining | 2 |
-| F5.3 | Implement "I got my chip today" celebration modal with date, meeting name, notes, share button | 3 |
-| F5.4 | Add chip earned detection: trigger celebration automatically when clean time crosses milestone | 2 |
-| F5.5 | **Create milestone celebration video/animation** - Full-screen celebratory experience with chip reveal, sound effects, confetti (like gaming achievement unlocks) | 5 |
-| F5.6 | Create "My Chips" gallery page - Chips/coins scattered on table surface (like notebook cover aesthetic), tap to view details/date earned | 4 |
-| F5.7 | Add chip visualization to desktop components (replace or enhance existing sobriety-chip.tsx) | 2 |
-| F5.8 | Add optional "Share my milestone" to social/text with generated image | 2 |
+| Ticket | Description                                                                                                                                                       | Est |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| F5.1   | Create chip visualization component (24h, 30d, 60d, 90d, 6mo, 9mo, 1yr, 18mo, multi-year chips with colors)                                                       | 3   |
+| F5.2   | Add "Next chip" countdown on Today page with days/hours/minutes remaining                                                                                         | 2   |
+| F5.3   | Implement "I got my chip today" celebration modal with date, meeting name, notes, share button                                                                    | 3   |
+| F5.4   | Add chip earned detection: trigger celebration automatically when clean time crosses milestone                                                                    | 2   |
+| F5.5   | **Create milestone celebration video/animation** - Full-screen celebratory experience with chip reveal, sound effects, confetti (like gaming achievement unlocks) | 5   |
+| F5.6   | Create "My Chips" gallery page - Chips/coins scattered on table surface (like notebook cover aesthetic), tap to view details/date earned                          | 4   |
+| F5.7   | Add chip visualization to desktop components (replace or enhance existing sobriety-chip.tsx)                                                                      | 2   |
+| F5.8   | Add optional "Share my milestone" to social/text with generated image                                                                                             | 2   |
 
 **Subtotal: 23 SP**
 
@@ -1567,13 +1666,13 @@ users/{uid}/prayersUser/{id}
 
 #### Epic F6 — Relapse Prevention Plan Card
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F6.1 | Define Firestore schema: `users/{uid}/preventionPlan` (singleton doc) with `whenIFeelLike[]` (triggers), `iWill[]` (actions), `peopleToAvoid[]`, `placesToAvoid[]`, `emergencyContactIds[]`, `nearestMeetingId?`, `updatedAt` | 2 |
-| F6.2 | Create "My Prevention Plan" form with simple checklist + text fields | 3 |
-| F6.3 | Add "Emergency Plan" quick-access button on Today page (red/orange button: "I'm struggling" or SOS icon) | 2 |
-| F6.4 | Wire emergency button to show prevention plan modal + one-tap sponsor call + link to nearest meeting | 3 |
-| F6.5 | Add optional integration with meeting attendance: auto-populate "nearest meeting" based on recent attendance | 2 |
+| Ticket | Description                                                                                                                                                                                                                   | Est |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| F6.1   | Define Firestore schema: `users/{uid}/preventionPlan` (singleton doc) with `whenIFeelLike[]` (triggers), `iWill[]` (actions), `peopleToAvoid[]`, `placesToAvoid[]`, `emergencyContactIds[]`, `nearestMeetingId?`, `updatedAt` | 2   |
+| F6.2   | Create "My Prevention Plan" form with simple checklist + text fields                                                                                                                                                          | 3   |
+| F6.3   | Add "Emergency Plan" quick-access button on Today page (red/orange button: "I'm struggling" or SOS icon)                                                                                                                      | 2   |
+| F6.4   | Wire emergency button to show prevention plan modal + one-tap sponsor call + link to nearest meeting                                                                                                                          | 3   |
+| F6.5   | Add optional integration with meeting attendance: auto-populate "nearest meeting" based on recent attendance                                                                                                                  | 2   |
 
 **Subtotal: 12 SP**
 
@@ -1588,13 +1687,13 @@ users/{uid}/prayersUser/{id}
 
 #### Epic F7 — Daily Readings Integration
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| F7.1 | Implement link-only reading catalog using same pattern as M6 Prayers (displayMode: LINK_ONLY) | 2 |
-| F7.2 | Add readings catalog seed data: Daily Reflections (AA), Just for Today (NA), links to AA.org and NA.org | 2 |
-| F7.3 | Replace Today page reading placeholder with actual catalog lookup by date | 2 |
-| F7.4 | Add user notes field on Today page: "My takeaway today" (1-3 lines, saves to daily log) | 2 |
-| F7.5 | Add "Open full reading" button that opens official source link in new tab | 1 |
+| Ticket | Description                                                                                             | Est |
+| ------ | ------------------------------------------------------------------------------------------------------- | --- |
+| F7.1   | Implement link-only reading catalog using same pattern as M6 Prayers (displayMode: LINK_ONLY)           | 2   |
+| F7.2   | Add readings catalog seed data: Daily Reflections (AA), Just for Today (NA), links to AA.org and NA.org | 2   |
+| F7.3   | Replace Today page reading placeholder with actual catalog lookup by date                               | 2   |
+| F7.4   | Add user notes field on Today page: "My takeaway today" (1-3 lines, saves to daily log)                 | 2   |
+| F7.5   | Add "Open full reading" button that opens official source link in new tab                               | 1   |
 
 **Subtotal: 9 SP**
 
@@ -1609,29 +1708,33 @@ users/{uid}/prayersUser/{id}
 
 #### M7 Summary
 
-| Epic | Story Points |
-|------|--------------|
-| F1 Sponsor & Support Network | 19 |
-| F2 Meeting Attendance & Homegroup | 15 |
-| F3 Commitments & Service | 16 |
-| F4 Step Progress Tracker | 13 |
-| F5 Milestones & Chips | 16 |
-| F6 Relapse Prevention Plan | 12 |
-| F7 Daily Readings Integration | 9 |
-| **Total** | **100 SP** |
+| Epic                              | Story Points |
+| --------------------------------- | ------------ |
+| F1 Sponsor & Support Network      | 19           |
+| F2 Meeting Attendance & Homegroup | 15           |
+| F3 Commitments & Service          | 16           |
+| F4 Step Progress Tracker          | 13           |
+| F5 Milestones & Chips             | 16           |
+| F6 Relapse Prevention Plan        | 12           |
+| F7 Daily Readings Integration     | 9            |
+| **Total**                         | **100 SP**   |
 
 **Suggested phasing:**
 
-1. **Phase A (Quick Wins):** Epic F1 (Support Network) + F2 (Attendance) + F7 (Readings) → ~43 SP
+1. **Phase A (Quick Wins):** Epic F1 (Support Network) + F2 (Attendance) + F7
+   (Readings) → ~43 SP
    - Completes existing stubs, high daily-use impact
-2. **Phase B (Milestones & Service):** Epic F5 (Chips) + F3 (Commitments) → ~32 SP
+2. **Phase B (Milestones & Service):** Epic F5 (Chips) + F3 (Commitments) → ~32
+   SP
    - High motivation value, leverages existing clean time tracker
-3. **Phase C (Step Work & Safety Net):** Epic F4 (Steps) + F6 (Prevention Plan) → ~25 SP
+3. **Phase C (Step Work & Safety Net):** Epic F4 (Steps) + F6 (Prevention Plan)
+   → ~25 SP
    - Pairs with M5 (Inventories) when implemented
 
 **Exit Criteria**
 
-- Support page is fully functional with Firestore-backed contacts and tel:/sms:/mailto: links
+- Support page is fully functional with Firestore-backed contacts and
+  tel:/sms:/mailto: links
 - Meeting attendance tracking works with favorites and homegroup
 - Chip milestones display accurately with countdown and celebration
 - Emergency prevention plan accessible in one tap from Today page
@@ -1739,8 +1842,8 @@ users/{uid}/preventionPlan
 - Email: `mailto:email@example.com?subject=Subject&body=Body`
 - Maps: `https://www.google.com/maps/search/?api=1&query=address`
 
-**Security Rules Pattern**
-All collections under `users/{uid}/*` follow owner-only access:
+**Security Rules Pattern** All collections under `users/{uid}/*` follow
+owner-only access:
 
 ```
 match /users/{userId}/{document=**} {
@@ -1750,8 +1853,10 @@ match /users/{userId}/{document=**} {
 
 **Integration Points with Existing Features**
 
-- **Today Page**: Add chip countdown, meeting count, commitment reminders, emergency button
-- **Resources Page**: Enhance with attendance check-in, favorites, homegroup badge
+- **Today Page**: Add chip countdown, meeting count, commitment reminders,
+  emergency button
+- **Resources Page**: Enhance with attendance check-in, favorites, homegroup
+  badge
 - **Support Page**: Replace hardcoded contacts with Firestore CRUD
 - **Morning Planning (M5)**: Pre-fill "One person I can help" from service log
 
@@ -1759,65 +1864,76 @@ match /users/{userId}/{document=**} {
 
 - Epic F4.5 (Step 4 → Inventories link) depends on M5.2.1 being implemented
 - Epic F3.7 (Service → Morning Planning) depends on M5.3.2 being implemented
-- Epic F7 (Daily Readings) uses same compliance pattern as M6 (link-only, no reproduced text)
+- Epic F7 (Daily Readings) uses same compliance pattern as M6 (link-only, no
+  reproduced text)
 
 ---
 
 ### M8 — Speaker Tapes Library
 
-> **Goal:** Provide curated access to AA/NA speaker recordings using external links and an in-app audio player. Zero hosting costs by streaming from existing archives.
+> **Goal:** Provide curated access to AA/NA speaker recordings using external
+> links and an in-app audio player. Zero hosting costs by streaming from
+> existing archives.
 
 **Design Principles**
 
-- **Zero egress costs:** Stream audio directly from external sources (Internet Archive, etc.)
-- **In-app experience:** Native audio player with playback controls, seeking, speed adjustment
-- **Curated catalog:** Quality-controlled list of speakers and talks, not user uploads
+- **Zero egress costs:** Stream audio directly from external sources (Internet
+  Archive, etc.)
+- **In-app experience:** Native audio player with playback controls, seeking,
+  speed adjustment
+- **Curated catalog:** Quality-controlled list of speakers and talks, not user
+  uploads
 - **Personal library:** Favorites, listen history, notes on individual talks
-- **Offline-ready (future):** Architecture supports future offline download feature
+- **Offline-ready (future):** Architecture supports future offline download
+  feature
 - **Copyright-safe:** Only link to freely available recordings
 
 **Research Spike**
 
-- [ ] **Research:** Audio streaming legalities (hotlinking vs hosting) and bandwidth policies.
+- [ ] **Research:** Audio streaming legalities (hotlinking vs hosting) and
+      bandwidth policies.
 
 ---
 
 #### Known External Sources
 
-| Source | URL Pattern | Notes |
-|--------|-------------|-------|
+| Source           | URL Pattern                                    | Notes                                     |
+| ---------------- | ---------------------------------------------- | ----------------------------------------- |
 | Internet Archive | `archive.org/download/{collection}/{file}.mp3` | Largest free collection, direct MP3 links |
-| AA.org Audio | `aa.org/sites/default/files/audio/*` | Official AA content |
-| XA Speakers | Various | Community curated collections |
+| AA.org Audio     | `aa.org/sites/default/files/audio/*`           | Official AA content                       |
+| XA Speakers      | Various                                        | Community curated collections             |
 
 ---
 
 #### Epic S1 — Speaker Catalog & Hub UI
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| S1.1 | Define Firestore schema: `speakerTapesCatalog/{id}` with `title`, `speaker`, `duration`, `externalUrl`, `category`, `tags[]`, `description?`, `recordingDate?`, `source`, `searchKeywords[]`, `isActive` | 2 |
-| S1.2 | Seed initial catalog with 20-30 classic speakers (Dr. Bob, Bill W., Sandy B., etc.) | 3 |
-| S1.3 | Create `/speakers` hub page with categories: Founders, Popular, Step Talks, Topic-Based | 3 |
-| S1.4 | Build speaker card component with title, speaker name, duration, favorite indicator | 2 |
-| S1.5 | Create `/speakers/[id]` detail view with description and audio player | 3 |
-| S1.6 | Implement HTML5 audio player component with play/pause, seek, speed control (0.75x-2x) | 3 |
-| S1.7 | Add background audio support (continue playing when navigating away) | 2 |
-| S1.8 | **Admin: Speaker Tapes tab in admin panel** - CRUD for catalog entries with all fields | 4 |
-| S1.9 | **Admin: Tag management** - Create/edit/merge tags, bulk apply to multiple tapes | 3 |
-| S1.10 | **Admin: Search keywords** - Add custom search terms per tape (synonyms, topics, related terms) | 2 |
-| S1.11 | **Admin: URL validation** - Verify external URLs are reachable, flag broken links | 2 |
-| S1.12 | **Admin: Batch import** - CSV upload for bulk catalog additions | 3 |
+| Ticket | Description                                                                                                                                                                                              | Est |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| S1.1   | Define Firestore schema: `speakerTapesCatalog/{id}` with `title`, `speaker`, `duration`, `externalUrl`, `category`, `tags[]`, `description?`, `recordingDate?`, `source`, `searchKeywords[]`, `isActive` | 2   |
+| S1.2   | Seed initial catalog with 20-30 classic speakers (Dr. Bob, Bill W., Sandy B., etc.)                                                                                                                      | 3   |
+| S1.3   | Create `/speakers` hub page with categories: Founders, Popular, Step Talks, Topic-Based                                                                                                                  | 3   |
+| S1.4   | Build speaker card component with title, speaker name, duration, favorite indicator                                                                                                                      | 2   |
+| S1.5   | Create `/speakers/[id]` detail view with description and audio player                                                                                                                                    | 3   |
+| S1.6   | Implement HTML5 audio player component with play/pause, seek, speed control (0.75x-2x)                                                                                                                   | 3   |
+| S1.7   | Add background audio support (continue playing when navigating away)                                                                                                                                     | 2   |
+| S1.8   | **Admin: Speaker Tapes tab in admin panel** - CRUD for catalog entries with all fields                                                                                                                   | 4   |
+| S1.9   | **Admin: Tag management** - Create/edit/merge tags, bulk apply to multiple tapes                                                                                                                         | 3   |
+| S1.10  | **Admin: Search keywords** - Add custom search terms per tape (synonyms, topics, related terms)                                                                                                          | 2   |
+| S1.11  | **Admin: URL validation** - Verify external URLs are reachable, flag broken links                                                                                                                        | 2   |
+| S1.12  | **Admin: Batch import** - CSV upload for bulk catalog additions                                                                                                                                          | 3   |
 
 **Subtotal: 32 SP** (was 18 SP before admin integration)
 
 **Admin Panel Vision**
 
-> Since audio is hosted externally (zero storage cost), all metadata management flows through admin:
+> Since audio is hosted externally (zero storage cost), all metadata management
+> flows through admin:
 >
 > - Add new tapes with external URL + all metadata
-> - **Tags**: Step-related (Step 1, Step 4, etc.), Topics (Fear, Resentment, Service, Sponsorship), Era (Founders, Classic, Modern)
-> - **Search keywords**: Alternative terms users might search ("AA speaker", "sobriety story", etc.)
+> - **Tags**: Step-related (Step 1, Step 4, etc.), Topics (Fear, Resentment,
+>   Service, Sponsorship), Era (Founders, Classic, Modern)
+> - **Search keywords**: Alternative terms users might search ("AA speaker",
+>   "sobriety story", etc.)
 > - **Validation**: Mark tapes inactive if URL breaks; bulk URL check
 > - **Batch import**: Add many tapes at once from curated lists
 
@@ -1833,15 +1949,15 @@ match /users/{userId}/{document=**} {
 
 #### Epic S2 — User Library Features
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| S2.1 | Define Firestore schema: `users/{uid}/speakerFavorites/{tapeId}` with `addedAt` | 1 |
-| S2.2 | Define Firestore schema: `users/{uid}/speakerHistory/{id}` with `tapeId`, `listenedAt`, `progress` (seconds), `completed` boolean | 2 |
-| S2.3 | Implement favorite/unfavorite functionality | 2 |
-| S2.4 | Track listen progress (save position every 30 seconds) | 2 |
-| S2.5 | Resume playback from saved position | 2 |
-| S2.6 | Create "My Library" section: Favorites, Recently Played, In Progress | 3 |
-| S2.7 | Add per-tape notes field: `users/{uid}/speakerNotes/{tapeId}` with `notes`, `updatedAt` | 2 |
+| Ticket | Description                                                                                                                       | Est |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------- | --- |
+| S2.1   | Define Firestore schema: `users/{uid}/speakerFavorites/{tapeId}` with `addedAt`                                                   | 1   |
+| S2.2   | Define Firestore schema: `users/{uid}/speakerHistory/{id}` with `tapeId`, `listenedAt`, `progress` (seconds), `completed` boolean | 2   |
+| S2.3   | Implement favorite/unfavorite functionality                                                                                       | 2   |
+| S2.4   | Track listen progress (save position every 30 seconds)                                                                            | 2   |
+| S2.5   | Resume playback from saved position                                                                                               | 2   |
+| S2.6   | Create "My Library" section: Favorites, Recently Played, In Progress                                                              | 3   |
+| S2.7   | Add per-tape notes field: `users/{uid}/speakerNotes/{tapeId}` with `notes`, `updatedAt`                                           | 2   |
 
 **Subtotal: 14 SP**
 
@@ -1855,13 +1971,13 @@ match /users/{userId}/{document=**} {
 
 #### Epic S3 — Discovery & Search
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| S3.1 | Implement search by speaker name and title | 2 |
-| S3.2 | Add filter by category (step talks, topics, founders, etc.) | 2 |
-| S3.3 | Add "Related talks" section on detail page | 2 |
-| S3.4 | Add "Featured speaker of the week" highlight on hub | 1 |
-| S3.5 | Implement "Random speaker" button for discovery | 1 |
+| Ticket | Description                                                 | Est |
+| ------ | ----------------------------------------------------------- | --- |
+| S3.1   | Implement search by speaker name and title                  | 2   |
+| S3.2   | Add filter by category (step talks, topics, founders, etc.) | 2   |
+| S3.3   | Add "Related talks" section on detail page                  | 2   |
+| S3.4   | Add "Featured speaker of the week" highlight on hub         | 1   |
+| S3.5   | Implement "Random speaker" button for discovery             | 1   |
 
 **Subtotal: 8 SP**
 
@@ -1869,12 +1985,12 @@ match /users/{userId}/{document=**} {
 
 #### Epic S4 — Player Enhancements (Optional)
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| S4.1 | Mini player bar (shows at bottom while browsing other pages) | 3 |
-| S4.2 | Sleep timer (stop after X minutes) | 2 |
-| S4.3 | Queue/playlist functionality | 3 |
-| S4.4 | Share button (share link to external source) | 1 |
+| Ticket | Description                                                  | Est |
+| ------ | ------------------------------------------------------------ | --- |
+| S4.1   | Mini player bar (shows at bottom while browsing other pages) | 3   |
+| S4.2   | Sleep timer (stop after X minutes)                           | 2   |
+| S4.3   | Queue/playlist functionality                                 | 3   |
+| S4.4   | Share button (share link to external source)                 | 1   |
 
 **Subtotal: 9 SP**
 
@@ -1882,17 +1998,18 @@ match /users/{userId}/{document=**} {
 
 #### M8 Summary
 
-| Epic | Story Points |
-|------|--------------|
-| S1 Catalog & Hub UI + **Admin** | **32** |
-| S2 User Library | 14 |
-| S3 Discovery & Search | 8 |
-| S4 Player Enhancements | 9 |
-| **Total** | **63 SP** |
+| Epic                            | Story Points |
+| ------------------------------- | ------------ |
+| S1 Catalog & Hub UI + **Admin** | **32**       |
+| S2 User Library                 | 14           |
+| S3 Discovery & Search           | 8            |
+| S4 Player Enhancements          | 9            |
+| **Total**                       | **63 SP**    |
 
 **Suggested phasing:**
 
-1. **Phase A (MVP + Admin):** Epic S1 (Catalog + Player + Admin CRUD) + S2.1-2.3 (Favorites) → ~37 SP
+1. **Phase A (MVP + Admin):** Epic S1 (Catalog + Player + Admin CRUD) + S2.1-2.3
+   (Favorites) → ~37 SP
 2. **Phase B (Resume & History):** S2.4-2.7 (Progress tracking + Notes) → ~9 SP
 3. **Phase C (Polish):** Epic S3 (Discovery) + S4 (Player enhancements) → ~17 SP
 
@@ -1910,9 +2027,9 @@ match /users/{userId}/{document=**} {
 
 **Audio Streaming: External URLs + HTML5 Audio**
 
-- *Rationale:* Zero storage costs, leverage existing free archives
-- *Implementation:* `<audio src={externalUrl} />` with custom controls
-- *Fallback:* If URL fails, show "Open in browser" link
+- _Rationale:_ Zero storage costs, leverage existing free archives
+- _Implementation:_ `<audio src={externalUrl} />` with custom controls
+- _Fallback:_ If URL fails, show "Open in browser" link
 
 **Data Model: Firestore**
 
@@ -1961,11 +2078,13 @@ users/{uid}/speakerNotes/{tapeId}
 
 ### Admin Panel — Content Management (Foundation)
 
-> **Goal:** Single-page admin dashboard with tabs for managing all catalog content. Expandable as new features launch.
+> **Goal:** Single-page admin dashboard with tabs for managing all catalog
+> content. Expandable as new features launch.
 
 **Design Principles**
 
-- **Single page, tabbed interface:** One `/admin` route with tabs for each content type
+- **Single page, tabbed interface:** One `/admin` route with tabs for each
+  content type
 - **Role-based access:** Admin-only via Firebase Custom Claims
 - **Reusable patterns:** Same CRUD form pattern for all content types
 - **Expandable:** Add new tabs as M5-M8 features launch
@@ -1980,10 +2099,10 @@ users/{uid}/speakerNotes/{tapeId}
 
 ```typescript
 // Set admin claim (run once via Firebase Admin SDK or Cloud Function)
-await admin.auth().setCustomUserClaims(uid, { admin: true })
+await admin.auth().setCustomUserClaims(uid, { admin: true });
 
 // Check in app
-const isAdmin = user?.customClaims?.admin === true
+const isAdmin = user?.customClaims?.admin === true;
 ```
 
 **Firestore Rules**
@@ -2005,14 +2124,14 @@ match /prayersCatalog/{id} {
 
 #### Epic A1 — Admin Foundation
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| A1.1 | Create `/admin` route with auth guard (redirect non-admins) | 2 |
-| A1.2 | Set up Firebase Custom Claims for admin role | 1 |
-| A1.3 | Build admin layout with tab navigation component | 2 |
-| A1.4 | Create reusable CRUD table component (list view with search, sort, delete) | 3 |
-| A1.5 | Create reusable form modal component (add/edit with validation) | 3 |
-| A1.6 | Add confirmation dialog for delete actions | 1 |
+| Ticket | Description                                                                | Est |
+| ------ | -------------------------------------------------------------------------- | --- |
+| A1.1   | Create `/admin` route with auth guard (redirect non-admins)                | 2   |
+| A1.2   | Set up Firebase Custom Claims for admin role                               | 1   |
+| A1.3   | Build admin layout with tab navigation component                           | 2   |
+| A1.4   | Create reusable CRUD table component (list view with search, sort, delete) | 3   |
+| A1.5   | Create reusable form modal component (add/edit with validation)            | 3   |
+| A1.6   | Add confirmation dialog for delete actions                                 | 1   |
 
 **Subtotal: 12 SP**
 
@@ -2020,13 +2139,13 @@ match /prayersCatalog/{id} {
 
 #### Epic A2 — Content Tabs (add as features launch)
 
-| Ticket | Description | Est | Depends On |
-|--------|-------------|-----|------------|
-| A2.1 | Meetings tab: CRUD for `meetings` collection | 3 | Existing |
-| A2.2 | Speaker Tapes tab: CRUD for `speakerTapesCatalog` + audio URL test | 3 | M8 |
-| A2.3 | Prayers tab: CRUD for `prayersCatalog` + displayMode toggle | 3 | M6 |
-| A2.4 | Sober Living tab: CRUD for sober living listings | 3 | M1.5 |
-| A2.5 | Daily Readings tab: CRUD for readings catalog | 2 | M7 |
+| Ticket | Description                                                        | Est | Depends On |
+| ------ | ------------------------------------------------------------------ | --- | ---------- |
+| A2.1   | Meetings tab: CRUD for `meetings` collection                       | 3   | Existing   |
+| A2.2   | Speaker Tapes tab: CRUD for `speakerTapesCatalog` + audio URL test | 3   | M8         |
+| A2.3   | Prayers tab: CRUD for `prayersCatalog` + displayMode toggle        | 3   | M6         |
+| A2.4   | Sober Living tab: CRUD for sober living listings                   | 3   | M1.5       |
+| A2.5   | Daily Readings tab: CRUD for readings catalog                      | 2   | M7         |
 
 **Subtotal: 14 SP** (build incrementally as features ship)
 
@@ -2034,12 +2153,12 @@ match /prayersCatalog/{id} {
 
 #### Epic A3 — Quality of Life
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| A3.1 | Bulk import from CSV/JSON | 3 |
-| A3.2 | Export catalog to CSV | 2 |
-| A3.3 | Audit log (who changed what, when) | 3 |
-| A3.4 | "Duplicate" action for quick item creation | 1 |
+| Ticket | Description                                | Est |
+| ------ | ------------------------------------------ | --- |
+| A3.1   | Bulk import from CSV/JSON                  | 3   |
+| A3.2   | Export catalog to CSV                      | 2   |
+| A3.3   | Audit log (who changed what, when)         | 3   |
+| A3.4   | "Duplicate" action for quick item creation | 1   |
 
 **Subtotal: 9 SP** (optional, add later)
 
@@ -2047,17 +2166,18 @@ match /prayersCatalog/{id} {
 
 #### Admin Panel Summary
 
-| Epic | Story Points |
-|------|--------------|
-| A1 Foundation | 12 |
-| A2 Content Tabs | 14 |
-| A3 Quality of Life | 9 |
-| **Total** | **35 SP** |
+| Epic               | Story Points |
+| ------------------ | ------------ |
+| A1 Foundation      | 12           |
+| A2 Content Tabs    | 14           |
+| A3 Quality of Life | 9            |
+| **Total**          | **35 SP**    |
 
 **Suggested phasing:**
 
 1. **Phase A (Foundation):** Epic A1 + Meetings tab (A2.1) → ~15 SP
-2. **Phase B (As features launch):** Add tabs for each new catalog → ~2-3 SP each
+2. **Phase B (As features launch):** Add tabs for each new catalog → ~2-3 SP
+   each
 3. **Phase C (Polish):** Bulk import/export, audit log → ~9 SP
 
 **Exit Criteria**
@@ -2083,32 +2203,36 @@ match /prayersCatalog/{id} {
 
 ### M10 — Monetization & Premium Features (Post-Growth)
 
-> **Goal:** Create sustainable revenue stream by gating advanced Growth Tab features while keeping core recovery tools free. (See `docs/MONETIZATION_RESEARCH.md`)
+> **Goal:** Create sustainable revenue stream by gating advanced Growth Tab
+> features while keeping core recovery tools free. (See
+> `docs/MONETIZATION_RESEARCH.md`)
 
 **Research Phase:**
 
-- [ ] **Research:** Clinical/B2B Market Needs (Sober Living/Treatment Center requirements).
+- [ ] **Research:** Clinical/B2B Market Needs (Sober Living/Treatment Center
+      requirements).
 
 **Strategy:**
 
 - **Free:** Meetings, Today (Sobriety), Support Network, Basic Journaling
-- **Premium:** Growth Dashboard (Charts), Advanced Inventories (Step 4), Cloud Sync (future)
+- **Premium:** Growth Dashboard (Charts), Advanced Inventories (Step 4), Cloud
+  Sync (future)
 
 #### Epic 10.1 — Infrastructure
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 10.1.1 | Integrate RevenueCat SDK (handles IAP for iOS/Android) | 5 |
-| 10.1.2 | Create `PremiumGate` component to wrap advanced features | 3 |
-| 10.1.3 | Implement entitlement check hook `usePremium()` | 2 |
+| Ticket | Description                                              | Est |
+| ------ | -------------------------------------------------------- | --- |
+| 10.1.1 | Integrate RevenueCat SDK (handles IAP for iOS/Android)   | 5   |
+| 10.1.2 | Create `PremiumGate` component to wrap advanced features | 3   |
+| 10.1.3 | Implement entitlement check hook `usePremium()`          | 2   |
 
 #### Epic 10.2 — User Experience
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 10.2.1 | Design & build Paywall screen (unlock benefits list) | 5 |
-| 10.2.2 | Build "Manage Subscription" settings page | 3 |
-| 10.2.3 | Add lock icon decorators to premium nav items | 2 |
+| Ticket | Description                                          | Est |
+| ------ | ---------------------------------------------------- | --- |
+| 10.2.1 | Design & build Paywall screen (unlock benefits list) | 5   |
+| 10.2.2 | Build "Manage Subscription" settings page            | 3   |
+| 10.2.3 | Add lock icon decorators to premium nav items        | 2   |
 
 **Total Estimate: ~20 SP**
 
@@ -2116,24 +2240,25 @@ match /prayersCatalog/{id} {
 
 ### M11 — Recovery Library & Education
 
-> **Goal:** Decrease time-to-value for newcomers and answer "How do I do X?" without support tickets.
+> **Goal:** Decrease time-to-value for newcomers and answer "How do I do X?"
+> without support tickets.
 
 #### Epic 11.1 — Help Center & Guides
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 11.1.1 | **Starter's Guide**: "First 7 Days" automated walkthrough | 5 |
-| 11.1.2 | **Feature Tours**: Dismissible tooltips for complex tools (Inventories, Dashboard) | 4 |
-| 11.1.3 | **Knowledge Base**: Searchable FAQs (How to export data, How privacy works) | 3 |
-| 11.1.4 | **Video Tutorials**: Short 30s clips for key actions (embedded in "Empty States") | 3 |
+| Ticket | Description                                                                        | Est |
+| ------ | ---------------------------------------------------------------------------------- | --- |
+| 11.1.1 | **Starter's Guide**: "First 7 Days" automated walkthrough                          | 5   |
+| 11.1.2 | **Feature Tours**: Dismissible tooltips for complex tools (Inventories, Dashboard) | 4   |
+| 11.1.3 | **Knowledge Base**: Searchable FAQs (How to export data, How privacy works)        | 3   |
+| 11.1.4 | **Video Tutorials**: Short 30s clips for key actions (embedded in "Empty States")  | 3   |
 
 #### Epic 11.2 — In-App Education
 
-| Ticket | Description | Est |
-|--------|-------------|-----|
-| 11.2.1 | **"Why this matters" tooltips**: Contextual recovery education on form fields | 2 |
-| 11.2.2 | **Glossary**: Searchable dictionary of terms (linked from text) | 3 |
-| 11.2.3 | **Meeting Etiquette Guide**: "What to expect" content for newcomers | 2 |
+| Ticket | Description                                                                   | Est |
+| ------ | ----------------------------------------------------------------------------- | --- |
+| 11.2.1 | **"Why this matters" tooltips**: Contextual recovery education on form fields | 2   |
+| 11.2.2 | **Glossary**: Searchable dictionary of terms (linked from text)               | 3   |
+| 11.2.3 | **Meeting Etiquette Guide**: "What to expect" content for newcomers           | 2   |
 
 **Total Estimate: ~22 SP**
 

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
+import { useState } from "react";
+import Image from "next/image";
 
 const textColors = [
   { name: "Current Dark Brown", hex: "#3d2914", highlight: "rgba(180,160,140,0.3)" },
@@ -22,10 +22,10 @@ const textColors = [
   { name: "Pearl", hex: "#e0d8cc", highlight: "rgba(255,255,255,0.5)" },
   { name: "Warm White", hex: "#f0e8dc", highlight: "rgba(255,255,255,0.6)" },
   { name: "Off-White/Cream", hex: "#f5f0e6", highlight: "rgba(255,255,255,0.6)" },
-]
+];
 
 export default function ColorSampler() {
-  const [selectedColor, setSelectedColor] = useState(textColors[0])
+  const [selectedColor, setSelectedColor] = useState(textColors[0]);
 
   return (
     <div className="min-h-screen bg-stone-800 p-8 flex gap-8">
@@ -39,12 +39,16 @@ export default function ColorSampler() {
             <button
               key={color.hex}
               onClick={() => setSelectedColor(color)}
-              className={`flex items-center gap-4 p-3 rounded-lg transition-all ${selectedColor.hex === color.hex
+              className={`flex items-center gap-4 p-3 rounded-lg transition-all ${
+                selectedColor.hex === color.hex
                   ? "bg-stone-700 ring-2 ring-amber-500"
                   : "bg-stone-800 hover:bg-stone-700"
-                }`}
+              }`}
             >
-              <div className="w-10 h-10 rounded-lg border-2 border-stone-600" style={{ backgroundColor: color.hex }} />
+              <div
+                className="w-10 h-10 rounded-lg border-2 border-stone-600"
+                style={{ backgroundColor: color.hex }}
+              />
               <div className="text-left">
                 <p className="text-white font-medium">{color.name}</p>
                 <p className="text-stone-400 text-xs font-mono">{color.hex}</p>
@@ -166,5 +170,5 @@ export default function ColorSampler() {
         </div>
       </div>
     </div>
-  )
+  );
 }

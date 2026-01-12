@@ -25,22 +25,22 @@
  * Exit codes: 0 = pass, 1 = errors found (or warnings in --strict mode)
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
-import { join, dirname, basename, relative, extname } from 'path';
-import { fileURLToPath } from 'url';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { readFileSync, existsSync, readdirSync, statSync } from "fs";
+import { join, dirname, basename, relative, extname } from "path";
+import { fileURLToPath } from "url";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, "..");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const VERBOSE = args.includes('--verbose');
-const JSON_OUTPUT = args.includes('--json');
-const ERRORS_ONLY = args.includes('--errors-only');
-const STRICT_MODE = args.includes('--strict');
-const fileArgs = args.filter(a => !a.startsWith('--'));
+const VERBOSE = args.includes("--verbose");
+const JSON_OUTPUT = args.includes("--json");
+const ERRORS_ONLY = args.includes("--errors-only");
+const STRICT_MODE = args.includes("--strict");
+const fileArgs = args.filter((a) => !a.startsWith("--"));
 
 /**
  * Tier definitions with required sections
@@ -48,67 +48,37 @@ const fileArgs = args.filter(a => !a.startsWith('--'));
  */
 const TIER_DEFINITIONS = {
   1: {
-    name: 'Canonical',
-    files: ['ROADMAP.md', 'README.md', 'ARCHITECTURE.md'],
-    required: [
-      /purpose|overview/i,
-      /version history/i
-    ],
-    recommended: [
-      /ai instructions/i,
-      /status/i
-    ]
+    name: "Canonical",
+    files: ["ROADMAP.md", "README.md", "ARCHITECTURE.md"],
+    required: [/purpose|overview/i, /version history/i],
+    recommended: [/ai instructions/i, /status/i],
   },
   2: {
-    name: 'Foundation',
-    files: ['DOCUMENTATION_STANDARDS.md', 'AI_WORKFLOW.md', 'SECURITY.md', 'DEVELOPMENT.md'],
-    folders: ['docs/'],
-    required: [
-      /purpose|overview|scope/i,
-      /version history/i
-    ],
-    recommended: [
-      /ai instructions/i,
-      /quick start/i
-    ]
+    name: "Foundation",
+    files: ["DOCUMENTATION_STANDARDS.md", "AI_WORKFLOW.md", "SECURITY.md", "DEVELOPMENT.md"],
+    folders: ["docs/"],
+    required: [/purpose|overview|scope/i, /version history/i],
+    recommended: [/ai instructions/i, /quick start/i],
   },
   3: {
-    name: 'Planning',
+    name: "Planning",
     patterns: [/PLAN|ROADMAP|PROJECT_STATUS/i],
-    required: [
-      /purpose|overview|scope/i,
-      /status|progress/i,
-      /version history/i
-    ],
-    recommended: [
-      /ai instructions/i,
-      /acceptance criteria/i
-    ]
+    required: [/purpose|overview|scope/i, /status|progress/i, /version history/i],
+    recommended: [/ai instructions/i, /acceptance criteria/i],
   },
   4: {
-    name: 'Reference',
+    name: "Reference",
     patterns: [/PROCESS|CHECKLIST|WORKFLOW|STANDARDS/i],
-    required: [
-      /purpose|overview/i,
-      /version history/i
-    ],
-    recommended: [
-      /ai instructions/i
-    ]
+    required: [/purpose|overview/i, /version history/i],
+    recommended: [/ai instructions/i],
   },
   5: {
-    name: 'Guide',
+    name: "Guide",
     patterns: [/GUIDE|HOW.?TO|TUTORIAL/i],
-    folders: ['docs/templates/'],
-    required: [
-      /overview|purpose/i,
-      /version history/i
-    ],
-    recommended: [
-      /step|steps/i,
-      /troubleshooting/i
-    ]
-  }
+    folders: ["docs/templates/"],
+    required: [/overview|purpose/i, /version history/i],
+    recommended: [/step|steps/i, /troubleshooting/i],
+  },
 };
 
 /**
@@ -161,15 +131,15 @@ function determineTier(filePath, _content) {
  */
 function extractHeadings(content) {
   const headings = [];
-  const lines = content.split('\n');
+  const lines = content.split("\n");
 
   for (let i = 0; i < lines.length; i++) {
     const match = lines[i].match(/^(#{1,6})\s+(.+)$/);
     if (match) {
       headings.push({
         level: match[1].length,
-        text: match[2].replace(/🔗|📋|🎯|📊|🗓️|🤖|💡|🚨|✅|📝|📚|🔐|🔄|🗺️|📖|📐|🔀/gu, '').trim(),
-        line: i + 1
+        text: match[2].replace(/🔗|📋|🎯|📊|🗓️|🤖|💡|🚨|✅|📝|📚|🔐|🔄|🗺️|📖|📐|🔀/gu, "").trim(),
+        line: i + 1,
       });
     }
   }
@@ -191,7 +161,7 @@ function extractMetadata(content) {
   const lastUpdatedPatterns = [
     /\*\*Last Updated[:*]*\**\s*[:]*\s*(.+)/i,
     /Last Updated[:\s]+(.+)/i,
-    /Updated[:\s]+(.+)/i
+    /Updated[:\s]+(.+)/i,
   ];
 
   for (const pattern of lastUpdatedPatterns) {
@@ -206,7 +176,7 @@ function extractMetadata(content) {
   const versionPatterns = [
     /\*\*(?:Document )?Version[:*]*\**\s*[:]*\s*(\d+\.?\d*)/i,
     /Version[:\s]+(\d+\.?\d*)/i,
-    /\| (\d+\.\d+) \|.*\|.*\|/  // Version history table
+    /\| (\d+\.\d+) \|.*\|.*\|/, // Version history table
   ];
 
   for (const pattern of versionPatterns) {
@@ -227,7 +197,7 @@ function extractMetadata(content) {
  */
 function parseDate(dateStr) {
   if (!dateStr) {
-    return { valid: false, error: 'No date provided' };
+    return { valid: false, error: "No date provided" };
   }
 
   // Try various date formats
@@ -239,7 +209,7 @@ function parseDate(dateStr) {
 
   // Sanity check: date should be between 2020 and 10 years from now
   const now = new Date();
-  const minDate = new Date('2020-01-01');
+  const minDate = new Date("2020-01-01");
   const maxDate = new Date(now.getFullYear() + 10, 11, 31);
 
   if (date < minDate || date > maxDate) {
@@ -256,7 +226,7 @@ function parseDate(dateStr) {
  */
 function extractLinks(content) {
   const links = [];
-  const lines = content.split('\n');
+  const lines = content.split("\n");
 
   for (let i = 0; i < lines.length; i++) {
     // Match [text](target) links
@@ -267,7 +237,11 @@ function extractLinks(content) {
       const target = match[2];
 
       // Skip external links
-      if (target.startsWith('http://') || target.startsWith('https://') || target.startsWith('mailto:')) {
+      if (
+        target.startsWith("http://") ||
+        target.startsWith("https://") ||
+        target.startsWith("mailto:")
+      ) {
         continue;
       }
 
@@ -275,7 +249,7 @@ function extractLinks(content) {
         text: match[1],
         target: target,
         line: i + 1,
-        isAnchor: target.startsWith('#')
+        isAnchor: target.startsWith("#"),
       });
     }
   }
@@ -297,7 +271,7 @@ function validateFileLinks(links, docPath) {
     if (link.isAnchor) continue; // Skip anchor-only links
 
     // Handle paths with anchors
-    const [filePath] = link.target.split('#');
+    const [filePath] = link.target.split("#");
 
     if (!filePath) continue; // Pure anchor link
 
@@ -327,20 +301,20 @@ function validateAnchorLinks(links, headings) {
     // GitHub-style anchor generation
     const anchor = heading.text
       .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-');
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
     validAnchors.add(anchor);
   }
 
   for (const link of links) {
-    if (!link.isAnchor && !link.target.includes('#')) continue;
+    if (!link.isAnchor && !link.target.includes("#")) continue;
 
-    const anchor = link.target.split('#')[1];
+    const anchor = link.target.split("#")[1];
     if (!anchor) continue;
 
     // Normalize anchor for comparison
-    const normalizedAnchor = anchor.toLowerCase().replace(/-+/g, '-');
+    const normalizedAnchor = anchor.toLowerCase().replace(/-+/g, "-");
 
     if (!validAnchors.has(normalizedAnchor)) {
       // Check for partial matches (emoji removal might cause mismatches)
@@ -372,14 +346,14 @@ function checkRequiredSections(tier, headings) {
 
   const tierDef = TIER_DEFINITIONS[tier];
   if (!tierDef) {
-    return { errors: [], warnings: ['Unknown tier, skipping section checks'] };
+    return { errors: [], warnings: ["Unknown tier, skipping section checks"] };
   }
 
-  const headingTexts = headings.map(h => h.text);
+  const headingTexts = headings.map((h) => h.text);
 
   // Check required sections
   for (const pattern of tierDef.required || []) {
-    const found = headingTexts.some(text => pattern.test(text));
+    const found = headingTexts.some((text) => pattern.test(text));
     if (!found) {
       errors.push(`Missing required section matching: ${pattern.toString()}`);
     }
@@ -387,7 +361,7 @@ function checkRequiredSections(tier, headings) {
 
   // Check recommended sections
   for (const pattern of tierDef.recommended || []) {
-    const found = headingTexts.some(text => pattern.test(text));
+    const found = headingTexts.some((text) => pattern.test(text));
     if (!found) {
       warnings.push(`Missing recommended section matching: ${pattern.toString()}`);
     }
@@ -408,13 +382,13 @@ function lintDocument(filePath) {
   // Read file
   let content;
   try {
-    content = readFileSync(filePath, 'utf-8');
+    content = readFileSync(filePath, "utf-8");
   } catch (error) {
     return {
       file: filePath,
       tier: 0,
       errors: [`Cannot read file: ${error.message}`],
-      warnings: []
+      warnings: [],
     };
   }
 
@@ -422,8 +396,8 @@ function lintDocument(filePath) {
     return {
       file: filePath,
       tier: 0,
-      errors: ['File is empty'],
-      warnings: []
+      errors: ["File is empty"],
+      warnings: [],
     };
   }
 
@@ -431,7 +405,9 @@ function lintDocument(filePath) {
   const tier = determineTier(filePath, content);
 
   if (VERBOSE) {
-    console.log(`  Checking: ${relative(ROOT, filePath)} (Tier ${tier}: ${TIER_DEFINITIONS[tier]?.name || 'Unknown'})`);
+    console.log(
+      `  Checking: ${relative(ROOT, filePath)} (Tier ${tier}: ${TIER_DEFINITIONS[tier]?.name || "Unknown"})`
+    );
   }
 
   // Extract components
@@ -440,9 +416,9 @@ function lintDocument(filePath) {
   const links = extractLinks(content);
 
   // Check 1: Has title (H1)
-  const h1 = headings.find(h => h.level === 1);
+  const h1 = headings.find((h) => h.level === 1);
   if (!h1) {
-    errors.push('Missing document title (H1 heading)');
+    errors.push("Missing document title (H1 heading)");
   }
 
   // Check 2: Has metadata
@@ -489,7 +465,7 @@ function lintDocument(filePath) {
     file: relative(ROOT, filePath),
     tier,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -506,7 +482,13 @@ function findMarkdownFiles(dir, files = []) {
     const fullPath = join(dir, entry);
 
     // Skip node_modules, .git, hidden directories, and archive folders
-    if (entry.startsWith('.') || entry === 'node_modules' || entry === 'out' || entry === 'dist' || entry === 'archive') {
+    if (
+      entry.startsWith(".") ||
+      entry === "node_modules" ||
+      entry === "out" ||
+      entry === "dist" ||
+      entry === "archive"
+    ) {
       continue;
     }
 
@@ -515,7 +497,7 @@ function findMarkdownFiles(dir, files = []) {
 
       if (stat.isDirectory()) {
         findMarkdownFiles(fullPath, files);
-      } else if (extname(entry) === '.md') {
+      } else if (extname(entry) === ".md") {
         files.push(fullPath);
       }
     } catch {
@@ -530,7 +512,7 @@ function findMarkdownFiles(dir, files = []) {
  * Main function
  */
 function main() {
-  console.log('📝 Running documentation linter...\n');
+  console.log("📝 Running documentation linter...\n");
 
   // Determine files to check
   let filesToCheck = [];
@@ -538,7 +520,7 @@ function main() {
   if (fileArgs.length > 0) {
     // Check specific files
     for (const file of fileArgs) {
-      const fullPath = file.startsWith('/') ? file : join(ROOT, file);
+      const fullPath = file.startsWith("/") ? file : join(ROOT, file);
       if (existsSync(fullPath)) {
         filesToCheck.push(fullPath);
       } else {
@@ -551,7 +533,7 @@ function main() {
   }
 
   if (filesToCheck.length === 0) {
-    console.log('No markdown files found to check.');
+    console.log("No markdown files found to check.");
     process.exit(0);
   }
 
@@ -574,13 +556,13 @@ function main() {
     console.log(JSON.stringify({ results, totalErrors, totalWarnings }, null, 2));
   } else {
     // Group results by status
-    const filesWithErrors = results.filter(r => r.errors.length > 0);
-    const filesWithWarnings = results.filter(r => r.warnings.length > 0 && r.errors.length === 0);
-    const cleanFiles = results.filter(r => r.errors.length === 0 && r.warnings.length === 0);
+    const filesWithErrors = results.filter((r) => r.errors.length > 0);
+    const filesWithWarnings = results.filter((r) => r.warnings.length > 0 && r.errors.length === 0);
+    const cleanFiles = results.filter((r) => r.errors.length === 0 && r.warnings.length === 0);
 
     // Show errors
     if (filesWithErrors.length > 0) {
-      console.log('❌ FILES WITH ERRORS:\n');
+      console.log("❌ FILES WITH ERRORS:\n");
       for (const result of filesWithErrors) {
         console.log(`  ${result.file} (Tier ${result.tier}):`);
         for (const error of result.errors) {
@@ -591,24 +573,24 @@ function main() {
             console.log(`    ⚠️  ${warning}`);
           }
         }
-        console.log('');
+        console.log("");
       }
     }
 
     // Show warnings
     if (!ERRORS_ONLY && filesWithWarnings.length > 0) {
-      console.log('⚠️  FILES WITH WARNINGS:\n');
+      console.log("⚠️  FILES WITH WARNINGS:\n");
       for (const result of filesWithWarnings) {
         console.log(`  ${result.file} (Tier ${result.tier}):`);
         for (const warning of result.warnings) {
           console.log(`    ⚠️  ${warning}`);
         }
-        console.log('');
+        console.log("");
       }
     }
 
     // Summary
-    console.log('─'.repeat(50));
+    console.log("─".repeat(50));
     console.log(`\n📊 SUMMARY:`);
     console.log(`   Files checked: ${results.length}`);
     console.log(`   Files passing: ${cleanFiles.length}`);
@@ -618,11 +600,11 @@ function main() {
     console.log(`   Total warnings: ${totalWarnings}`);
 
     if (totalErrors === 0 && (totalWarnings === 0 || !STRICT_MODE)) {
-      console.log('\n✅ All documentation checks passed!');
+      console.log("\n✅ All documentation checks passed!");
     } else if (totalErrors === 0 && totalWarnings > 0 && STRICT_MODE) {
-      console.log('\n❌ Documentation checks failed (--strict mode: warnings treated as errors).');
+      console.log("\n❌ Documentation checks failed (--strict mode: warnings treated as errors).");
     } else {
-      console.log('\n❌ Documentation checks failed. Please fix errors above.');
+      console.log("\n❌ Documentation checks failed. Please fix errors above.");
     }
   }
 
@@ -640,14 +622,14 @@ try {
     try {
       return sanitizeError(value);
     } catch {
-      return 'Unknown error';
+      return "Unknown error";
     }
   };
 
   // Use sanitizeError to avoid exposing sensitive paths in CI logs
-  console.error('❌ Unexpected error:', safe(error));
+  console.error("❌ Unexpected error:", safe(error));
   // Show sanitized stack trace in verbose mode for debugging
-  if (VERBOSE && error && typeof error === 'object' && 'stack' in error && error.stack) {
+  if (VERBOSE && error && typeof error === "object" && "stack" in error && error.stack) {
     console.error(safe(error.stack));
   }
   process.exit(1);

@@ -1,16 +1,15 @@
 # Multi-AI Review Coordinator
 
-**Document Version:** 1.6
-**Created:** 2026-01-01
-**Last Updated:** 2026-01-11
-**Document Tier:** Tier 2 (Foundation)
-**Purpose:** Master index and coordination for multi-AI code review system
+**Document Version:** 1.6 **Created:** 2026-01-01 **Last Updated:** 2026-01-11
+**Document Tier:** Tier 2 (Foundation) **Purpose:** Master index and
+coordination for multi-AI code review system
 
 ---
 
 ## Purpose & Scope
 
-This document serves as the **central coordination hub** for all multi-AI review activities. It provides:
+This document serves as the **central coordination hub** for all multi-AI review
+activities. It provides:
 
 1. **Review trigger detection** - When to run each type of review
 2. **Template selection** - Which template for which situation
@@ -18,8 +17,8 @@ This document serves as the **central coordination hub** for all multi-AI review
 4. **Audit history** - Record of past reviews and outcomes
 5. **Documentation system health** - Meta-review of procedures themselves
 
-**Primary Audience:** AI Assistants performing code reviews
-**Use this when:** Starting any review process, checking if review is needed
+**Primary Audience:** AI Assistants performing code reviews **Use this when:**
+Starting any review process, checking if review is needed
 
 ---
 
@@ -27,14 +26,14 @@ This document serves as the **central coordination hub** for all multi-AI review
 
 ### Review Types and Templates
 
-| Review Type | Template | Use When |
-|-------------|----------|----------|
-| Code Review | [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) | PRs, feature completion, tactical issues |
-| Security Audit | [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) | Security concerns, auth changes, pre-release, dependency vulnerabilities |
-| Performance Audit | [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | Slow app, bundle growth, before traffic increase |
-| Refactoring Plan | [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md) | Tech debt, architecture consolidation, vibe coding cleanup, SonarQube CRITICAL items |
-| Documentation Audit | [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md) | Broken links, stale docs, coverage gaps, quarterly doc health check |
-| Process Audit | [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md) | CI/CD reliability, hook effectiveness, automation health, quarterly process review |
+| Review Type         | Template                                                                                               | Use When                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Code Review         | [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)             | PRs, feature completion, tactical issues                                             |
+| Security Audit      | [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)       | Security concerns, auth changes, pre-release, dependency vulnerabilities             |
+| Performance Audit   | [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) | Slow app, bundle growth, before traffic increase                                     |
+| Refactoring Plan    | [MULTI_AI_REFACTOR_PLAN_TEMPLATE.md](./templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md)                   | Tech debt, architecture consolidation, vibe coding cleanup, SonarQube CRITICAL items |
+| Documentation Audit | [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)       | Broken links, stale docs, coverage gaps, quarterly doc health check                  |
+| Process Audit       | [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)                   | CI/CD reliability, hook effectiveness, automation health, quarterly process review   |
 
 ### Template Selection Decision Tree
 
@@ -64,46 +63,34 @@ Before starting any work session, check if any triggers are active:
 ```markdown
 REVIEW TRIGGER CHECKLIST
 
-Code Review Triggers:
-[ ] PR ready for review
-[ ] Feature implementation complete (not yet merged)
-[ ] Major bug fix applied
-[ ] Significant refactoring done
+Code Review Triggers: [ ] PR ready for review [ ] Feature implementation
+complete (not yet merged) [ ] Major bug fix applied [ ] Significant refactoring
+done
 
-Security Audit Triggers:
-[ ] Auth system modified
-[ ] New API endpoints added
-[ ] User data handling changed
-[ ] External service integrated
-[ ] Secrets or environment variables added
-[ ] Permission or role system changed
+Security Audit Triggers: [ ] Auth system modified [ ] New API endpoints added [
+] User data handling changed [ ] External service integrated [ ] Secrets or
+environment variables added [ ] Permission or role system changed
 
-Performance Audit Triggers:
-[ ] App feels noticeably slower
-[ ] Bundle size increased >10%
-[ ] New heavy dependencies added
-[ ] Large data sets being fetched
-[ ] Users reporting slow pages
-[ ] Before expected traffic increase
+Performance Audit Triggers: [ ] App feels noticeably slower [ ] Bundle size
+increased >10% [ ] New heavy dependencies added [ ] Large data sets being
+fetched [ ] Users reporting slow pages [ ] Before expected traffic increase
 
-Refactoring Triggers:
-[ ] Multiple AIs have worked on codebase ("vibe coding")
-[ ] Same pattern implemented differently in 3+ places
-[ ] Adding new feature requires touching many files
-[ ] Test failures from pattern inconsistency
-[ ] Architecture boundaries unclear
+Refactoring Triggers: [ ] Multiple AIs have worked on codebase ("vibe coding") [
+] Same pattern implemented differently in 3+ places [ ] Adding new feature
+requires touching many files [ ] Test failures from pattern inconsistency [ ]
+Architecture boundaries unclear
 ```
 
 ### Progress-Based Triggers
 
 These triggers fire based on work volume, not calendar time:
 
-| Trigger | Threshold | Action |
-|---------|-----------|--------|
-| Session Count | Every 10 AI sessions | Review documentation system health |
-| Commit Volume | Every 50 commits | Consider lightweight code review |
-| Files Modified | 25+ docs in scope | Consider documentation review |
-| New Dependencies | 5+ new packages | Consider security + performance review |
+| Trigger          | Threshold            | Action                                 |
+| ---------------- | -------------------- | -------------------------------------- |
+| Session Count    | Every 10 AI sessions | Review documentation system health     |
+| Commit Volume    | Every 50 commits     | Consider lightweight code review       |
+| Files Modified   | 25+ docs in scope    | Consider documentation review          |
+| New Dependencies | 5+ new packages      | Consider security + performance review |
 
 ### Trigger Detection Script
 
@@ -225,15 +212,15 @@ Update baselines after major reviews or milestones:
 
 ### Currently Active Reviews
 
-| Review ID | Type | Started | Status | Template Instance |
-|-----------|------|---------|--------|-------------------|
-| *None currently active* | | | | |
+| Review ID               | Type | Started | Status | Template Instance |
+| ----------------------- | ---- | ------- | ------ | ----------------- |
+| _None currently active_ |      |         |        |                   |
 
 ### Review Queue
 
-| Priority | Review Type | Trigger | Requested By | Notes |
-|----------|-------------|---------|--------------|-------|
-| *No pending reviews* | | | | |
+| Priority             | Review Type | Trigger | Requested By | Notes |
+| -------------------- | ----------- | ------- | ------------ | ----- |
+| _No pending reviews_ |             |         |              |       |
 
 ---
 
@@ -241,17 +228,17 @@ Update baselines after major reviews or milestones:
 
 ### Completed Reviews
 
-| Date | Review ID | Type | Models Used | Findings | Key Outcomes |
-|------|-----------|------|-------------|----------|--------------|
-| 2026-01-01 | — | Documentation Setup | — | — | Multi-AI review system established |
+| Date       | Review ID | Type                | Models Used | Findings | Key Outcomes                       |
+| ---------- | --------- | ------------------- | ----------- | -------- | ---------------------------------- |
+| 2026-01-01 | —         | Documentation Setup | —           | —        | Multi-AI review system established |
 
 ### Review Outcome Tracking
 
 Track effectiveness of reviews over time:
 
-| Review ID | Findings | Addressed | Deferred | False Positives | Time Saved |
-|-----------|----------|-----------|----------|-----------------|------------|
-| *Add entries after reviews* | | | | | |
+| Review ID                   | Findings | Addressed | Deferred | False Positives | Time Saved |
+| --------------------------- | -------- | --------- | -------- | --------------- | ---------- |
+| _Add entries after reviews_ |          |           |          |                 |            |
 
 ---
 
@@ -259,7 +246,9 @@ Track effectiveness of reviews over time:
 
 ### Purpose
 
-This section tracks the health and effectiveness of ALL project systems - not just documentation, but security, code quality, performance, and architecture. This is the master health monitoring view.
+This section tracks the health and effectiveness of ALL project systems - not
+just documentation, but security, code quality, performance, and architecture.
+This is the master health monitoring view.
 
 ---
 
@@ -267,14 +256,15 @@ This section tracks the health and effectiveness of ALL project systems - not ju
 
 **Standard:** [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)
 
-| Standard | Requirement | Current Status | Last Verified |
-|----------|-------------|----------------|---------------|
-| Rate Limiting | All endpoints have limits | ✅ IMPLEMENTED | 2026-01-01 |
-| Input Validation | All inputs validated | ✅ IMPLEMENTED | 2026-01-01 |
-| Secrets Management | No hardcoded keys | ✅ COMPLIANT | 2026-01-01 |
-| OWASP Compliance | Top 10 addressed | ✅ COMPLIANT | 2026-01-01 |
+| Standard           | Requirement               | Current Status | Last Verified |
+| ------------------ | ------------------------- | -------------- | ------------- |
+| Rate Limiting      | All endpoints have limits | ✅ IMPLEMENTED | 2026-01-01    |
+| Input Validation   | All inputs validated      | ✅ IMPLEMENTED | 2026-01-01    |
+| Secrets Management | No hardcoded keys         | ✅ COMPLIANT   | 2026-01-01    |
+| OWASP Compliance   | Top 10 addressed          | ✅ COMPLIANT   | 2026-01-01    |
 
 **Verification Commands:**
+
 ```bash
 # Rate limiting check
 grep -rn "RateLimiter\|rateLimit" --include="*.ts" | wc -l
@@ -287,6 +277,7 @@ grep -rn "apiKey.*=.*['\"]" --include="*.ts" --include="*.tsx" | grep -v ".env"
 ```
 
 **Triggers for Security Review:**
+
 - [ ] Any of the 4 standards becomes non-compliant
 - [ ] New external service integrated
 - [ ] Auth system modified
@@ -296,15 +287,16 @@ grep -rn "apiKey.*=.*['\"]" --include="*.ts" --include="*.tsx" | grep -v ".env"
 
 ### 2. Code Quality Health
 
-| Metric | Target | Current | Status | Last Checked |
-|--------|--------|---------|--------|--------------|
-| Test Pass Rate | ≥95% | 99.1% | ✅ Healthy | 2026-01-05 |
-| Test Coverage | ≥80% | [Run test:coverage] | ⏳ Check | — |
-| Lint Errors | 0 | [Run npm run lint] | ⏳ Check | — |
-| Lint Warnings | <20 | [Run npm run lint] | ⏳ Check | — |
-| TypeScript Strict | true | ✅ Enabled | ✅ Healthy | 2026-01-01 |
+| Metric            | Target | Current             | Status     | Last Checked |
+| ----------------- | ------ | ------------------- | ---------- | ------------ |
+| Test Pass Rate    | ≥95%   | 99.1%               | ✅ Healthy | 2026-01-05   |
+| Test Coverage     | ≥80%   | [Run test:coverage] | ⏳ Check   | —            |
+| Lint Errors       | 0      | [Run npm run lint]  | ⏳ Check   | —            |
+| Lint Warnings     | <20    | [Run npm run lint]  | ⏳ Check   | —            |
+| TypeScript Strict | true   | ✅ Enabled          | ✅ Healthy | 2026-01-01   |
 
 **Verification Commands:**
+
 ```bash
 # Test health
 npm test 2>&1 | tail -5
@@ -317,6 +309,7 @@ npm run lint 2>&1 | tail -10
 ```
 
 **Triggers for Code Quality Review:**
+
 - [ ] Test pass rate drops below 95%
 - [ ] Coverage drops below 80%
 - [ ] Lint errors > 0
@@ -326,14 +319,15 @@ npm run lint 2>&1 | tail -10
 
 ### 3. Performance Health
 
-| Metric | Target | Current | Status | Last Checked |
-|--------|--------|---------|--------|--------------|
-| Bundle Size (JS) | <500 KB gzip | [Run build] | ⏳ Check | — |
-| Largest Chunk | <200 KB | [Run build] | ⏳ Check | — |
-| Build Time (dev) | <30s | [Time it] | ⏳ Check | — |
-| Build Time (prod) | <120s | [Time it] | ⏳ Check | — |
+| Metric            | Target       | Current     | Status   | Last Checked |
+| ----------------- | ------------ | ----------- | -------- | ------------ |
+| Bundle Size (JS)  | <500 KB gzip | [Run build] | ⏳ Check | —            |
+| Largest Chunk     | <200 KB      | [Run build] | ⏳ Check | —            |
+| Build Time (dev)  | <30s         | [Time it]   | ⏳ Check | —            |
+| Build Time (prod) | <120s        | [Time it]   | ⏳ Check | —            |
 
 **Verification Commands:**
+
 ```bash
 # Bundle size after build
 npm run build 2>&1 | grep -E "First Load|Route"
@@ -346,6 +340,7 @@ du -sh .next/static/chunks/*.js | sort -h | tail -5
 ```
 
 **Triggers for Performance Review:**
+
 - [ ] Bundle size increases >10%
 - [ ] Build time increases >30%
 - [ ] Users report slow pages
@@ -355,14 +350,15 @@ du -sh .next/static/chunks/*.js | sort -h | tail -5
 
 ### 4. Architecture Health
 
-| Aspect | Target | Current | Status | Last Checked |
-|--------|--------|---------|--------|--------------|
-| Pattern Consistency | Single canonical patterns | [Review needed] | ⏳ Check | — |
-| Component Boundaries | Clear server/client split | [Review needed] | ⏳ Check | — |
-| Service Consolidation | No duplicate services | [Review needed] | ⏳ Check | — |
-| Hook Organization | Consistent hook patterns | [Review needed] | ⏳ Check | — |
+| Aspect                | Target                    | Current         | Status   | Last Checked |
+| --------------------- | ------------------------- | --------------- | -------- | ------------ |
+| Pattern Consistency   | Single canonical patterns | [Review needed] | ⏳ Check | —            |
+| Component Boundaries  | Clear server/client split | [Review needed] | ⏳ Check | —            |
+| Service Consolidation | No duplicate services     | [Review needed] | ⏳ Check | —            |
+| Hook Organization     | Consistent hook patterns  | [Review needed] | ⏳ Check | —            |
 
 **Verification Commands:**
+
 ```bash
 # Firebase access patterns (should be consolidated)
 grep -rn "collection(db" --include="*.ts" | wc -l
@@ -375,6 +371,7 @@ grep -rn "\"use client\"" --include="*.tsx" | wc -l
 ```
 
 **Triggers for Architecture Review:**
+
 - [ ] Multiple AIs have worked on codebase
 - [ ] Same pattern in 3+ places
 - [ ] Adding feature requires touching 10+ files
@@ -384,18 +381,18 @@ grep -rn "\"use client\"" --include="*.tsx" | wc -l
 
 ### 5. Documentation Compliance
 
-| Procedure | Requirement | Compliance Rate | Status |
-|-----------|-------------|-----------------|--------|
-| Security Read | Read GLOBAL_SECURITY_STANDARDS.md at session start | 100% | ✅ Healthy |
-| Workflow Follow | Follow AI_WORKFLOW.md procedures | 100% | ✅ Healthy |
-| Doc Updates | Update docs after significant changes | 100% | ✅ Healthy |
-| Exception Process | Document any exceptions | N/A (0 exceptions) | ✅ Healthy |
+| Procedure         | Requirement                                        | Compliance Rate    | Status     |
+| ----------------- | -------------------------------------------------- | ------------------ | ---------- |
+| Security Read     | Read GLOBAL_SECURITY_STANDARDS.md at session start | 100%               | ✅ Healthy |
+| Workflow Follow   | Follow AI_WORKFLOW.md procedures                   | 100%               | ✅ Healthy |
+| Doc Updates       | Update docs after significant changes              | 100%               | ✅ Healthy |
+| Exception Process | Document any exceptions                            | N/A (0 exceptions) | ✅ Healthy |
 
 **Compliance Log:**
 
-| Date | Session | Security Read? | Workflow? | Docs Updated? | Exceptions? |
-|------|---------|----------------|-----------|---------------|-------------|
-| 2026-01-01 | Initial setup | ✅ | ✅ | ✅ | None |
+| Date       | Session       | Security Read? | Workflow? | Docs Updated? | Exceptions? |
+| ---------- | ------------- | -------------- | --------- | ------------- | ----------- |
+| 2026-01-01 | Initial setup | ✅             | ✅        | ✅            | None        |
 
 **Overall Compliance Rate:** 100% (1/1 sessions)
 
@@ -405,14 +402,14 @@ grep -rn "\"use client\"" --include="*.tsx" | wc -l
 
 Project health review is triggered when ANY of these occur:
 
-| Trigger | Threshold | Current | Status |
-|---------|-----------|---------|--------|
-| Session Count | Every 10 sessions | 1 | ⏳ Pending |
-| Security Non-Compliance | Any standard fails | 0 | ✅ Clear |
-| Test Pass Rate | Drops below 95% | 99.1% | ✅ Healthy |
-| Exception Used | Any exception invoked | 0 | ✅ Clear |
-| Documentation Compliance | Drops below 80% | 100% | ✅ Healthy |
-| Performance Regression | Any metric >20% worse | 0 | ✅ Clear |
+| Trigger                  | Threshold             | Current | Status     |
+| ------------------------ | --------------------- | ------- | ---------- |
+| Session Count            | Every 10 sessions     | 1       | ⏳ Pending |
+| Security Non-Compliance  | Any standard fails    | 0       | ✅ Clear   |
+| Test Pass Rate           | Drops below 95%       | 99.1%   | ✅ Healthy |
+| Exception Used           | Any exception invoked | 0       | ✅ Clear   |
+| Documentation Compliance | Drops below 80%       | 100%    | ✅ Healthy |
+| Performance Regression   | Any metric >20% worse | 0       | ✅ Clear   |
 
 ---
 
@@ -423,11 +420,11 @@ When any health trigger fires, complete this review:
 ```markdown
 ## Project Health Review
 
-**Trigger:** [What triggered this review]
-**Date:** YYYY-MM-DD
-**Sessions Since Last Review:** X
+**Trigger:** [What triggered this review] **Date:** YYYY-MM-DD **Sessions Since
+Last Review:** X
 
 ### 1. Security Standards Assessment
+
 - Rate Limiting: PASS/FAIL
 - Input Validation: PASS/FAIL
 - Secrets Management: PASS/FAIL
@@ -435,6 +432,7 @@ When any health trigger fires, complete this review:
 - Issues found: [list]
 
 ### 2. Code Quality Assessment
+
 - Test pass rate: X%
 - Test coverage: X%
 - Lint errors: X
@@ -442,18 +440,21 @@ When any health trigger fires, complete this review:
 - Issues found: [list]
 
 ### 3. Performance Assessment
+
 - Bundle size: X KB (target: <500 KB)
 - Build time: Xs (target: <120s)
 - Regressions: [list any]
 - Issues found: [list]
 
 ### 4. Architecture Assessment
+
 - Pattern consistency: GOOD/NEEDS_ATTENTION
 - Duplication clusters found: X
 - Boundary violations: X
 - Issues found: [list]
 
 ### 5. Documentation Compliance Assessment
+
 - Procedure compliance rate: X%
 - Exceptions used: X
 - Burden assessment: ACCEPTABLE/TOO_HIGH
@@ -461,14 +462,14 @@ When any health trigger fires, complete this review:
 
 ### Overall Health Score
 
-| Area | Score | Status |
-|------|-------|--------|
-| Security | X/100 | 🟢/🟡/🔴 |
-| Code Quality | X/100 | 🟢/🟡/🔴 |
-| Performance | X/100 | 🟢/🟡/🔴 |
-| Architecture | X/100 | 🟢/🟡/🔴 |
+| Area          | Score | Status   |
+| ------------- | ----- | -------- |
+| Security      | X/100 | 🟢/🟡/🔴 |
+| Code Quality  | X/100 | 🟢/🟡/🔴 |
+| Performance   | X/100 | 🟢/🟡/🔴 |
+| Architecture  | X/100 | 🟢/🟡/🔴 |
 | Documentation | X/100 | 🟢/🟡/🔴 |
-| **OVERALL** | X/100 | 🟢/🟡/🔴 |
+| **OVERALL**   | X/100 | 🟢/🟡/🔴 |
 
 ### Actions Required
 
@@ -482,12 +483,12 @@ When any health trigger fires, complete this review:
 
 Track if overhead is worthwhile:
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Session startup time | < 10 min | 5-10 min | ✅ On target |
-| Procedures skipped | < 20% | 0% | ✅ Healthy |
-| False positive triggers | < 10% | N/A | ⏳ Insufficient data |
-| Issues prevented | Track over time | N/A | ⏳ Insufficient data |
+| Metric                  | Target          | Current  | Status               |
+| ----------------------- | --------------- | -------- | -------------------- |
+| Session startup time    | < 10 min        | 5-10 min | ✅ On target         |
+| Procedures skipped      | < 20%           | 0%       | ✅ Healthy           |
+| False positive triggers | < 10%           | N/A      | ⏳ Insufficient data |
+| Issues prevented        | Track over time | N/A      | ⏳ Insufficient data |
 
 ---
 
@@ -525,19 +526,24 @@ Track if overhead is worthwhile:
 
 ## Scope Clarification
 
-> **NOTE**: This document is for **repo-wide multi-AI code reviews** (comprehensive audits involving multiple AI models).
+> **NOTE**: This document is for **repo-wide multi-AI code reviews**
+> (comprehensive audits involving multiple AI models).
 >
-> **Session tracking** has been moved to [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) where it belongs.
+> **Session tracking** has been moved to
+> [SESSION_CONTEXT.md](../SESSION_CONTEXT.md) where it belongs.
 >
-> **PR/commit reviews** are tracked in [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md).
+> **PR/commit reviews** are tracked in
+> [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md).
 
 This coordinator should be used when:
+
 - Planning a full-repo security audit
 - Coordinating multi-AI refactoring effort
 - Running comprehensive performance review
 - Architecture consolidation review
 
 It should NOT be used for:
+
 - Daily session tracking (use SESSION_CONTEXT.md)
 - Individual PR reviews (use AI_REVIEW_PROCESS.md)
 - Commit-level code review (use CodeRabbit/Qodo)
@@ -546,9 +552,12 @@ It should NOT be used for:
 
 ## Related Documents
 
-- **[AI_WORKFLOW.md](../AI_WORKFLOW.md)** - Master workflow guide (references this coordinator)
-- **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Mandatory security standards
-- **[DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)** - Document formatting standards
+- **[AI_WORKFLOW.md](../AI_WORKFLOW.md)** - Master workflow guide (references
+  this coordinator)
+- **[GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** - Mandatory
+  security standards
+- **[DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md)** - Document
+  formatting standards
 - **Audit Templates:**
   - [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md)
   - [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md)
@@ -557,22 +566,23 @@ It should NOT be used for:
   - [MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md](./templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md)
   - [MULTI_AI_PROCESS_AUDIT_TEMPLATE.md](./templates/MULTI_AI_PROCESS_AUDIT_TEMPLATE.md)
 - **Aggregation:**
-  - [MULTI_AI_AGGREGATOR_TEMPLATE.md](./templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) - 2-tier aggregation (per-category → cross-category)
+  - [MULTI_AI_AGGREGATOR_TEMPLATE.md](./templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) -
+    2-tier aggregation (per-category → cross-category)
 
 ---
 
 ## Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.6 | 2026-01-11 | Updated SonarQube baseline (778→941 issues, 47→61 CRITICAL); delta due to new audit scripts; updated batch fix estimates | Claude |
-| 1.5 | 2026-01-10 | Updated baseline metrics (lint warnings 181→224, baseline date to 2026-01-10); added note about +43 false positive warnings | Claude |
-| 1.4 | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate | Claude |
-| 1.3 | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability | Claude |
-| 1.2b | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator | Claude |
-| 1.2a | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics | Claude |
-| 1.1 | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md | Claude |
-| 1.0 | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers | Claude |
+| Version | Date       | Changes                                                                                                                                                                                                                            | Author |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.6     | 2026-01-11 | Updated SonarQube baseline (778→941 issues, 47→61 CRITICAL); delta due to new audit scripts; updated batch fix estimates                                                                                                           | Claude |
+| 1.5     | 2026-01-10 | Updated baseline metrics (lint warnings 181→224, baseline date to 2026-01-10); added note about +43 false positive warnings                                                                                                        | Claude |
+| 1.4     | 2026-01-06 | Review #68: Added structured remediation fields (risk, release_gate, owner, target_date) for App Check and SonarQube CRITICAL; Fixed EIGHT_PHASE path to archive location; Fixed stale test pass rate                              | Claude |
+| 1.3     | 2026-01-06 | Review #67: Added remediation tracking for App Check and SonarQube CRITICAL; Improved YAML parseability                                                                                                                            | Claude |
+| 1.2b    | 2026-01-05 | Added SonarQube baseline (778 issues, 47 CRITICAL); Added Documentation Audit and Process Audit templates; Referenced 2-tier Aggregator                                                                                            | Claude |
+| 1.2a    | 2026-01-05 | Updated baselines (116 tests, 0 lint errors, 181 warnings); Added App Check status (DISABLED); Added pattern/dependency health metrics                                                                                             | Claude |
+| 1.1     | 2026-01-02 | Clarified scope: repo-wide reviews only; moved session tracking to SESSION_CONTEXT.md                                                                                                                                              | Claude |
+| 1.0     | 2026-01-01 | Expanded to full Project Health Dashboard covering 5 areas (Security, Code Quality, Performance, Architecture, Documentation) with comprehensive health review template; Initial coordinator creation with non-time-based triggers | Claude |
 
 ---
 

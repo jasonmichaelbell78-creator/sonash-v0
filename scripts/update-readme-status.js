@@ -23,23 +23,23 @@
  * Exit codes: 0 = success, 1 = error
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, "..");
 
 // File paths
-const ROADMAP_PATH = join(ROOT, 'ROADMAP.md');
-const README_PATH = join(ROOT, 'README.md');
+const ROADMAP_PATH = join(ROOT, "ROADMAP.md");
+const README_PATH = join(ROOT, "README.md");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const DRY_RUN = args.includes('--dry-run');
-const VERBOSE = args.includes('--verbose');
+const DRY_RUN = args.includes("--dry-run");
+const VERBOSE = args.includes("--verbose");
 
 /**
  * Safely log verbose messages
@@ -47,7 +47,7 @@ const VERBOSE = args.includes('--verbose');
  */
 function verbose(...messages) {
   if (VERBOSE) {
-    console.log('[VERBOSE]', ...messages);
+    console.log("[VERBOSE]", ...messages);
   }
 }
 
@@ -63,17 +63,17 @@ function safeReadFile(filePath, description) {
   if (!existsSync(filePath)) {
     return {
       success: false,
-      error: `${description} not found at: ${filePath}`
+      error: `${description} not found at: ${filePath}`,
     };
   }
 
   try {
-    const content = readFileSync(filePath, 'utf-8');
+    const content = readFileSync(filePath, "utf-8");
 
     if (!content || content.trim().length === 0) {
       return {
         success: false,
-        error: `${description} is empty: ${filePath}`
+        error: `${description} is empty: ${filePath}`,
       };
     }
 
@@ -83,7 +83,7 @@ function safeReadFile(filePath, description) {
     // Use sanitizeError for consistent, safe error logging (Review #51)
     return {
       success: false,
-      error: `Failed to read ${description}: ${sanitizeError(error)}`
+      error: `Failed to read ${description}: ${sanitizeError(error)}`,
     };
   }
 }
@@ -104,13 +104,13 @@ function safeWriteFile(filePath, content, description) {
   verbose(`Writing ${content.length} characters to ${description}`);
 
   try {
-    writeFileSync(filePath, content, 'utf-8');
+    writeFileSync(filePath, content, "utf-8");
     return { success: true };
   } catch (error) {
     // Use sanitizeError for consistent, safe error logging (Review #51)
     return {
       success: false,
-      error: `Failed to write ${description}: ${sanitizeError(error)}`
+      error: `Failed to write ${description}: ${sanitizeError(error)}`,
     };
   }
 }
@@ -124,15 +124,19 @@ function safeWriteFile(filePath, content, description) {
 function validateMilestone(milestone, index) {
   const errors = [];
 
-  if (!milestone.name || typeof milestone.name !== 'string') {
+  if (!milestone.name || typeof milestone.name !== "string") {
     errors.push(`Row ${index}: Missing or invalid milestone name`);
   }
 
-  if (!milestone.status || typeof milestone.status !== 'string') {
+  if (!milestone.status || typeof milestone.status !== "string") {
     errors.push(`Row ${index}: Missing or invalid status`);
   }
 
-  if (typeof milestone.progress !== 'number' || milestone.progress < 0 || milestone.progress > 100) {
+  if (
+    typeof milestone.progress !== "number" ||
+    milestone.progress < 0 ||
+    milestone.progress > 100
+  ) {
     errors.push(`Row ${index}: Invalid progress value (must be 0-100): ${milestone.progress}`);
   }
 
@@ -148,19 +152,24 @@ function parseMilestonesTable(content) {
   const milestones = [];
   const warnings = [];
 
-  verbose('Looking for Milestones Overview table...');
+  verbose("Looking for Milestones Overview table...");
 
   // Find the milestones table (starts after "## 📊 Milestones Overview")
-  const tableMatch = content.match(/## 📊 Milestones Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/);
+  const tableMatch = content.match(
+    /## 📊 Milestones Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/
+  );
 
   if (!tableMatch) {
     // Try alternative heading formats
-    const altMatch = content.match(/## .*Milestones.*Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/i);
+    const altMatch = content.match(
+      /## .*Milestones.*Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/i
+    );
     if (!altMatch) {
       return {
         success: false,
-        error: 'Could not find Milestones Overview table in ROADMAP.md. Expected format:\n' +
-               '## 📊 Milestones Overview\n\n| Milestone | Status | Progress | ...'
+        error:
+          "Could not find Milestones Overview table in ROADMAP.md. Expected format:\n" +
+          "## 📊 Milestones Overview\n\n| Milestone | Status | Progress | ...",
       };
     }
   }
@@ -169,35 +178,41 @@ function parseMilestonesTable(content) {
   if (!tableContent) {
     return {
       success: false,
-      error: 'Milestones table found but no data rows present'
+      error: "Milestones table found but no data rows present",
     };
   }
 
-  const tableRows = tableContent.trim().split('\n').filter(row => row.trim());
+  const tableRows = tableContent
+    .trim()
+    .split("\n")
+    .filter((row) => row.trim());
   verbose(`Found ${tableRows.length} table rows`);
 
   for (let i = 0; i < tableRows.length; i++) {
     const row = tableRows[i];
 
     // Skip empty rows or separator rows
-    if (!row.includes('|') || row.match(/^\|[\s-|]+\|$/)) {
+    if (!row.includes("|") || row.match(/^\|[\s-|]+\|$/)) {
       verbose(`Skipping row ${i}: separator or empty`);
       continue;
     }
 
     // Parse table row: | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
-    const cells = row.split('|').map(cell => cell.trim()).filter(cell => cell);
+    const cells = row
+      .split("|")
+      .map((cell) => cell.trim())
+      .filter((cell) => cell);
 
     if (cells.length < 3) {
       warnings.push(`Row ${i + 1}: Too few columns (${cells.length}), skipping`);
       continue;
     }
 
-    const name = cells[0].replace(/\*\*/g, '').trim();
+    const name = cells[0].replace(/\*\*/g, "").trim();
     const status = cells[1].trim();
     const progressStr = cells[2].trim();
-    const target = cells[3]?.trim() || '';
-    const priority = cells[4]?.trim() || '';
+    const target = cells[3]?.trim() || "";
+    const priority = cells[4]?.trim() || "";
 
     // Parse progress percentage (handle "~50%", "100%", "0%")
     const progressMatch = progressStr.match(/~?(\d+)%/);
@@ -217,14 +232,14 @@ function parseMilestonesTable(content) {
   }
 
   if (warnings.length > 0) {
-    console.warn('⚠️  Parsing warnings:');
-    warnings.forEach(w => console.warn(`   ${w}`));
+    console.warn("⚠️  Parsing warnings:");
+    warnings.forEach((w) => console.warn(`   ${w}`));
   }
 
   if (milestones.length === 0) {
     return {
       success: false,
-      error: 'No valid milestones found in table'
+      error: "No valid milestones found in table",
     };
   }
 
@@ -241,7 +256,7 @@ function getOverallProgress(content) {
   const patterns = [
     /\*\*Overall Progress:\*\*\s*(~?\d+%)/,
     /Overall Progress[:\s]*(~?\d+%)/i,
-    /Total Progress[:\s]*(~?\d+%)/i
+    /Total Progress[:\s]*(~?\d+%)/i,
   ];
 
   for (const pattern of patterns) {
@@ -253,7 +268,7 @@ function getOverallProgress(content) {
   }
 
   // Calculate from milestones if not found
-  verbose('Overall progress not found in text, will calculate from milestones');
+  verbose("Overall progress not found in text, will calculate from milestones");
   return null;
 }
 
@@ -264,7 +279,7 @@ function getOverallProgress(content) {
  */
 function calculateOverallProgress(milestones) {
   if (!milestones || milestones.length === 0) {
-    return '0%';
+    return "0%";
   }
 
   const total = milestones.reduce((sum, m) => sum + m.progress, 0);
@@ -278,18 +293,18 @@ function calculateOverallProgress(milestones) {
  * @returns {string} - Current focus description
  */
 function getCurrentFocus(milestones) {
-  const inProgress = milestones.filter(m =>
-    m.status.includes('In Progress') || m.status.includes('🔄')
+  const inProgress = milestones.filter(
+    (m) => m.status.includes("In Progress") || m.status.includes("🔄")
   );
 
   if (inProgress.length === 0) {
-    const planned = milestones.find(m =>
-      m.status.includes('Planned') || m.status.includes('📋')
-    );
-    return planned ? `Planning: ${planned.name.replace(/^M[\d.]+ - /, '')}` : 'Planning next milestone';
+    const planned = milestones.find((m) => m.status.includes("Planned") || m.status.includes("📋"));
+    return planned
+      ? `Planning: ${planned.name.replace(/^M[\d.]+ - /, "")}`
+      : "Planning next milestone";
   }
 
-  return inProgress.map(m => m.name.replace(/^M[\d.]+ - /, '')).join(' + ');
+  return inProgress.map((m) => m.name.replace(/^M[\d.]+ - /, "")).join(" + ");
 }
 
 /**
@@ -299,8 +314,8 @@ function getCurrentFocus(milestones) {
  */
 function getRecentCompletions(milestones) {
   return milestones
-    .filter(m => m.status.includes('Complete') || m.status.includes('✅'))
-    .map(m => m.name);
+    .filter((m) => m.status.includes("Complete") || m.status.includes("✅"))
+    .map((m) => m.name);
 }
 
 /**
@@ -310,16 +325,16 @@ function getRecentCompletions(milestones) {
  * @returns {string} - New Project Status section content
  */
 function generateStatusSection(milestones, overallProgress) {
-  const today = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   const currentFocus = getCurrentFocus(milestones);
   const completed = getRecentCompletions(milestones);
-  const inProgress = milestones.filter(m =>
-    m.status.includes('In Progress') || m.status.includes('🔄')
+  const inProgress = milestones.filter(
+    (m) => m.status.includes("In Progress") || m.status.includes("🔄")
   );
 
   let section = `## Project Status
@@ -336,12 +351,18 @@ function generateStatusSection(milestones, overallProgress) {
 
   // Add milestone rows
   for (const m of milestones) {
-    const statusIcon = m.status.includes('Complete') ? '✅' :
-                       m.status.includes('In Progress') ? '🔄' :
-                       m.status.includes('Planned') ? '📋' :
-                       m.status.includes('Optional') ? '⏸️' :
-                       m.status.includes('Research') ? '🔬' : '⏸️';
-    const cleanStatus = m.status.replace(/✅|🔄|📋|⏸️|🔬/gu, '').trim();
+    const statusIcon = m.status.includes("Complete")
+      ? "✅"
+      : m.status.includes("In Progress")
+        ? "🔄"
+        : m.status.includes("Planned")
+          ? "📋"
+          : m.status.includes("Optional")
+            ? "⏸️"
+            : m.status.includes("Research")
+              ? "🔬"
+              : "⏸️";
+    const cleanStatus = m.status.replace(/✅|🔄|📋|⏸️|🔬/gu, "").trim();
     section += `| ${m.name} | ${statusIcon} ${cleanStatus} | ${m.progress}% |\n`;
   }
 
@@ -389,7 +410,7 @@ function updateReadme(readmeContent, newStatusSection) {
   const statusPattern = /## Project Status[\s\S]*?(?=\r?\n## [^#]|$)/;
 
   if (statusPattern.test(readmeContent)) {
-    const updated = readmeContent.replace(statusPattern, newStatusSection + '\n\n');
+    const updated = readmeContent.replace(statusPattern, newStatusSection + "\n\n");
 
     // Check if content actually changed
     if (updated === readmeContent) {
@@ -399,31 +420,37 @@ function updateReadme(readmeContent, newStatusSection) {
     return { success: true, content: updated };
   } else {
     // If no Project Status section exists, try to add it after specific sections
-    const insertPoints = [
-      /\n## Tech Stack/,
-      /\n## Current Features/,
-      /\n## Overview/
-    ];
+    const insertPoints = [/\n## Tech Stack/, /\n## Current Features/, /\n## Overview/];
 
     for (const pattern of insertPoints) {
       const match = readmeContent.match(pattern);
       if (match) {
         const insertPos = readmeContent.indexOf(match[0]);
-        const updated = readmeContent.slice(0, insertPos) + '\n\n' + newStatusSection + '\n' + readmeContent.slice(insertPos);
+        const updated =
+          readmeContent.slice(0, insertPos) +
+          "\n\n" +
+          newStatusSection +
+          "\n" +
+          readmeContent.slice(insertPos);
         return { success: true, content: updated };
       }
     }
 
     // Fallback: add after first heading
-    const firstHeadingEnd = readmeContent.indexOf('\n## ', readmeContent.indexOf('#'));
+    const firstHeadingEnd = readmeContent.indexOf("\n## ", readmeContent.indexOf("#"));
     if (firstHeadingEnd > 0) {
-      const updated = readmeContent.slice(0, firstHeadingEnd) + '\n\n' + newStatusSection + '\n' + readmeContent.slice(firstHeadingEnd);
+      const updated =
+        readmeContent.slice(0, firstHeadingEnd) +
+        "\n\n" +
+        newStatusSection +
+        "\n" +
+        readmeContent.slice(firstHeadingEnd);
       return { success: true, content: updated };
     }
 
     return {
       success: false,
-      error: 'Could not find suitable location to insert Project Status section'
+      error: "Could not find suitable location to insert Project Status section",
     };
   }
 }
@@ -432,19 +459,19 @@ function updateReadme(readmeContent, newStatusSection) {
  * Main function
  */
 function main() {
-  console.log('📊 Updating README.md status from ROADMAP.md...');
-  if (DRY_RUN) console.log('   (DRY RUN - no files will be modified)\n');
-  else console.log('');
+  console.log("📊 Updating README.md status from ROADMAP.md...");
+  if (DRY_RUN) console.log("   (DRY RUN - no files will be modified)\n");
+  else console.log("");
 
   // Step 1: Read ROADMAP.md
-  const roadmapResult = safeReadFile(ROADMAP_PATH, 'ROADMAP.md');
+  const roadmapResult = safeReadFile(ROADMAP_PATH, "ROADMAP.md");
   if (!roadmapResult.success) {
     console.error(`❌ Error: ${roadmapResult.error}`);
     process.exit(1);
   }
 
   // Step 2: Read README.md
-  const readmeResult = safeReadFile(README_PATH, 'README.md');
+  const readmeResult = safeReadFile(README_PATH, "README.md");
   if (!readmeResult.success) {
     console.error(`❌ Error: ${readmeResult.error}`);
     process.exit(1);
@@ -460,7 +487,9 @@ function main() {
   const milestones = parseResult.milestones;
   console.log(`Found ${milestones.length} milestones:`);
   for (const m of milestones) {
-    console.log(`  - ${m.name}: ${m.progress}% (${m.status.replace(/✅|🔄|📋|⏸️|🔬/gu, '').trim()})`);
+    console.log(
+      `  - ${m.name}: ${m.progress}% (${m.status.replace(/✅|🔄|📋|⏸️|🔬/gu, "").trim()})`
+    );
   }
 
   // Step 4: Get overall progress
@@ -474,7 +503,7 @@ function main() {
 
   // Step 5: Generate new status section
   const newStatusSection = generateStatusSection(milestones, overallProgress);
-  verbose('Generated new status section');
+  verbose("Generated new status section");
 
   // Step 6: Update README
   const updateResult = updateReadme(readmeResult.content, newStatusSection);
@@ -484,18 +513,18 @@ function main() {
   }
 
   if (updateResult.unchanged) {
-    console.log('\n✅ README.md is already up to date (no changes needed)');
+    console.log("\n✅ README.md is already up to date (no changes needed)");
     process.exit(0);
   }
 
   // Step 7: Write updated README
-  const writeResult = safeWriteFile(README_PATH, updateResult.content, 'README.md');
+  const writeResult = safeWriteFile(README_PATH, updateResult.content, "README.md");
   if (!writeResult.success) {
     console.error(`❌ Error: ${writeResult.error}`);
     process.exit(1);
   }
 
-  console.log('\n✅ README.md updated successfully!');
+  console.log("\n✅ README.md updated successfully!");
   process.exit(0);
 }
 
@@ -508,14 +537,14 @@ try {
     try {
       return sanitizeError(value);
     } catch {
-      return 'Unknown error';
+      return "Unknown error";
     }
   };
 
   // Use sanitizeError to avoid exposing sensitive paths in CI logs
-  console.error('❌ Unexpected error:', safe(error));
+  console.error("❌ Unexpected error:", safe(error));
   // Show sanitized stack trace in verbose mode for debugging
-  if (VERBOSE && error && typeof error === 'object' && 'stack' in error && error.stack) {
+  if (VERBOSE && error && typeof error === "object" && "stack" in error && error.stack) {
     console.error(safe(error.stack));
   }
   process.exit(1);

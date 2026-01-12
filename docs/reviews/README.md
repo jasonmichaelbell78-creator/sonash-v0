@@ -38,4 +38,5 @@ After 90 days, completed reviews may be moved to `docs/archive/reviews/`.
 
 ---
 
-**See**: [MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md) for review coordination.
+**See**: [MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md) for
+review coordination.

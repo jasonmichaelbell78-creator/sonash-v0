@@ -1,79 +1,76 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { getFunctions, httpsCallable } from "firebase/functions"
-import { logger } from "@/lib/logger"
-import { CheckCircle2, XCircle, Users, Activity, Clock, AlertCircle } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { useState, useEffect } from "react";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { logger } from "@/lib/logger";
+import { CheckCircle2, XCircle, Users, Activity, Clock, AlertCircle } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface HealthCheck {
-  firestore: boolean
-  auth: boolean
-  timestamp: string
+  firestore: boolean;
+  auth: boolean;
+  timestamp: string;
 }
 
 interface DashboardStats {
   activeUsers: {
-    last24h: number
-    last7d: number
-    last30d: number
-  }
-  totalUsers: number
+    last24h: number;
+    last7d: number;
+    last30d: number;
+  };
+  totalUsers: number;
   recentSignups: Array<{
-    id: string
-    nickname: string
-    createdAt: string | null
-    authProvider: string
-  }>
+    id: string;
+    nickname: string;
+    createdAt: string | null;
+    authProvider: string;
+  }>;
   recentLogs: Array<{
-    id: string
-    event: string
-    level: string
-    timestamp: string
-    details: string
-  }>
+    id: string;
+    event: string;
+    level: string;
+    timestamp: string;
+    details: string;
+  }>;
   jobStatuses: Array<{
-    id: string
-    name: string
-    lastRunStatus: string
-    lastRun: string | null
-  }>
-  generatedAt: string
+    id: string;
+    name: string;
+    lastRunStatus: string;
+    lastRun: string | null;
+  }>;
+  generatedAt: string;
 }
 
 export function DashboardTab() {
-  const [health, setHealth] = useState<HealthCheck | null>(null)
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [health, setHealth] = useState<HealthCheck | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadDashboard()
-  }, [])
+    loadDashboard();
+  }, []);
 
   async function loadDashboard() {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const functions = getFunctions()
+      const functions = getFunctions();
 
       // Call both Cloud Functions
-      const healthCheckFn = httpsCallable<void, HealthCheck>(functions, "adminHealthCheck")
-      const getStatsFn = httpsCallable<void, DashboardStats>(functions, "adminGetDashboardStats")
+      const healthCheckFn = httpsCallable<void, HealthCheck>(functions, "adminHealthCheck");
+      const getStatsFn = httpsCallable<void, DashboardStats>(functions, "adminGetDashboardStats");
 
-      const [healthResult, statsResult] = await Promise.all([
-        healthCheckFn(),
-        getStatsFn()
-      ])
+      const [healthResult, statsResult] = await Promise.all([healthCheckFn(), getStatsFn()]);
 
-      setHealth(healthResult.data)
-      setStats(statsResult.data)
+      setHealth(healthResult.data);
+      setStats(statsResult.data);
     } catch (err) {
-      logger.error("Failed to load dashboard", { error: err })
-      setError(err instanceof Error ? err.message : "Failed to load dashboard")
+      logger.error("Failed to load dashboard", { error: err });
+      setError(err instanceof Error ? err.message : "Failed to load dashboard");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -82,7 +79,7 @@ export function DashboardTab() {
       <div className="flex items-center justify-center h-96">
         <div className="text-amber-900/60">Loading dashboard...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -97,7 +94,7 @@ export function DashboardTab() {
           Retry
         </button>
       </div>
-    )
+    );
   }
 
   return (
@@ -158,9 +155,7 @@ export function DashboardTab() {
               <Users className="w-4 h-4 text-amber-700" />
               <div className="text-sm text-amber-700">Total Users</div>
             </div>
-            <div className="text-2xl font-bold text-amber-900">
-              {stats?.totalUsers ?? 0}
-            </div>
+            <div className="text-2xl font-bold text-amber-900">{stats?.totalUsers ?? 0}</div>
           </div>
 
           <div className="bg-white rounded-lg border border-amber-200 p-4">
@@ -205,9 +200,7 @@ export function DashboardTab() {
                 <div key={signup.id} className="p-4 flex items-center justify-between">
                   <div>
                     <div className="font-medium text-amber-900">{signup.nickname}</div>
-                    <div className="text-sm text-amber-700">
-                      via {signup.authProvider}
-                    </div>
+                    <div className="text-sm text-amber-700">via {signup.authProvider}</div>
                   </div>
                   <div className="text-sm text-amber-700">
                     {signup.createdAt
@@ -234,7 +227,8 @@ export function DashboardTab() {
                   <div>
                     <div className="font-medium text-amber-900">{job.name}</div>
                     <div className="text-sm text-amber-700">
-                      Last run: {job.lastRun
+                      Last run:{" "}
+                      {job.lastRun
                         ? formatDistanceToNow(new Date(job.lastRun), { addSuffix: true })
                         : "Never"}
                     </div>
@@ -245,8 +239,8 @@ export function DashboardTab() {
                         job.lastRunStatus === "success"
                           ? "bg-green-100 text-green-800"
                           : job.lastRunStatus === "failed"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
                       }`}
                     >
                       {job.lastRunStatus}
@@ -275,17 +269,15 @@ export function DashboardTab() {
                             log.level === "error"
                               ? "bg-red-100 text-red-800"
                               : log.level === "warn"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-blue-100 text-blue-800"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-blue-100 text-blue-800"
                           }`}
                         >
                           {log.level}
                         </span>
                         <span className="font-medium text-amber-900">{log.event}</span>
                       </div>
-                      {log.details && (
-                        <div className="text-sm text-amber-700">{log.details}</div>
-                      )}
+                      {log.details && <div className="text-sm text-amber-700">{log.details}</div>}
                     </div>
                     <div className="text-xs text-amber-700 whitespace-nowrap">
                       {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}
@@ -300,10 +292,11 @@ export function DashboardTab() {
 
       {/* Footer */}
       <div className="text-xs text-amber-700 text-center">
-        Last updated: {stats?.generatedAt
+        Last updated:{" "}
+        {stats?.generatedAt
           ? formatDistanceToNow(new Date(stats.generatedAt), { addSuffix: true })
           : "Unknown"}
       </div>
     </div>
-  )
+  );
 }

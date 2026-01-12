@@ -6,13 +6,16 @@
 
 ## Purpose
 
-This document provides **visual diagrams and flowcharts** for the SoNash review policy. Use it to:
+This document provides **visual diagrams and flowcharts** for the SoNash review
+policy. Use it to:
+
 - Visualize the review tier pyramid and decision flows
 - Understand PR workflows through diagrams
 - Explain the review process to new team members
 - Quick visual reference for tier-specific requirements
 
-For full policy details, see [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md).
+For full policy details, see
+[REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md).
 
 ---
 
@@ -248,6 +251,7 @@ Initial Tier Assignment (by file path)
 ## Batch Review Process
 
 ### Before Batching
+
 ```
 PR #1: docs update → Review → Merge → 2 hours
 PR #2: docs update → Review → Merge → 2 hours
@@ -259,6 +263,7 @@ Total: 10 hours
 ```
 
 ### After Batching
+
 ```
 Branch: batch/docs-2026-01-04
   ├─ Commit 1: docs update
@@ -528,19 +533,23 @@ Time: 3-5 days
 
 ## Related Documents
 
-- **Full Policy:** [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md)
-- **Quick Reference:** [REVIEW_POLICY_QUICK_REF.md](./REVIEW_POLICY_QUICK_REF.md)
-- **Security Standards:** [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)
+- **Full Policy:**
+  [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md)
+- **Quick Reference:**
+  [REVIEW_POLICY_QUICK_REF.md](./REVIEW_POLICY_QUICK_REF.md)
+- **Security Standards:**
+  [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)
 
 ---
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.1 | 2026-01-07 | Added Purpose and Version History sections for documentation standards compliance |
-| 1.0 | 2026-01-04 | Initial visual guide creation with tier pyramid, decision trees, and workflow diagrams |
+| Version | Date       | Changes                                                                                |
+| ------- | ---------- | -------------------------------------------------------------------------------------- |
+| 1.1     | 2026-01-07 | Added Purpose and Version History sections for documentation standards compliance      |
+| 1.0     | 2026-01-04 | Initial visual guide creation with tier pyramid, decision trees, and workflow diagrams |
 
 ---
 
-**Tip:** Use these diagrams in team onboarding and when explaining review process.
+**Tip:** Use these diagrams in team onboarding and when explaining review
+process.

@@ -9,7 +9,9 @@ description: Run a single-session documentation audit on the codebase
 **Step 1: Check Thresholds**
 
 Run `npm run review:check` and report results.
-- If no thresholds triggered: "⚠️ No review thresholds triggered. Proceed anyway?"
+
+- If no thresholds triggered: "⚠️ No review thresholds triggered. Proceed
+  anyway?"
 - Continue with audit regardless (user invoked intentionally)
 
 **Step 2: Gather Current Baselines**
@@ -36,6 +38,7 @@ git log --oneline --since="7 days ago" -- "*.md" | head -10
 **Step 3: Load False Positives Database**
 
 Read `docs/audits/FALSE_POSITIVES.jsonl` and filter findings matching:
+
 - Category: `documentation`
 - Expired entries (skip if `expires` date passed)
 
@@ -44,6 +47,7 @@ Note patterns to exclude from final findings.
 **Step 4: Check Template Currency**
 
 Read `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` and verify:
+
 - [ ] Document inventory is current
 - [ ] Template-instance relationships are tracked
 - [ ] Tier structure is accurate
@@ -55,6 +59,7 @@ If outdated, note discrepancies but proceed with current values.
 ## Audit Execution
 
 **Focus Areas (7 Categories):**
+
 1. Broken Links (internal cross-references that 404)
 2. Stale Content (outdated versions, deprecated info)
 3. Coverage Gaps (undocumented features, missing guides)
@@ -64,13 +69,16 @@ If outdated, note discrepancies but proceed with current values.
 7. Content Quality (coherence, bloat, contradictions, flow)
 
 **For each category:**
+
 1. Search relevant files using Grep/Glob
 2. Identify specific issues with file:line references
-3. Classify severity: S0 (Critical - blocks work) | S1 (Major - causes confusion) | S2 (Minor) | S3 (Trivial)
+3. Classify severity: S0 (Critical - blocks work) | S1 (Major - causes
+   confusion) | S2 (Minor) | S3 (Trivial)
 4. Estimate effort: E0 (trivial) | E1 (hours) | E2 (day) | E3 (major)
 5. **Assign confidence level** (see Evidence Requirements below)
 
 **Documentation Checks:**
+
 - All `[text](path.md)` links resolve
 - Version numbers in docs match package.json
 - Dates in "Last Updated" are reasonable
@@ -79,6 +87,7 @@ If outdated, note discrepancies but proceed with current values.
 - Archive docs properly excluded from lint
 
 **Content Quality Checks (Category 7):**
+
 - No circular documentation (A→B→C→A reference loops that confuse readers)
 - No redundant/duplicate content across documents
 - No contradictory information (conflicting guidance for same task)
@@ -89,7 +98,9 @@ If outdated, note discrepancies but proceed with current values.
 - No orphaned docs (no incoming links, unclear purpose)
 
 **Scope:**
-- Include: `docs/`, `README.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `DEVELOPMENT.md`
+
+- Include: `docs/`, `README.md`, `ROADMAP.md`, `ARCHITECTURE.md`,
+  `DEVELOPMENT.md`
 - Exclude: `node_modules/`, `.next/`
 
 ---
@@ -97,17 +108,25 @@ If outdated, note discrepancies but proceed with current values.
 ## Evidence Requirements (MANDATORY)
 
 **All findings MUST include:**
+
 1. **File:Line Reference** - Exact location (e.g., `docs/guides/auth.md:45`)
-2. **Content Snippet** - The actual problematic content (broken link, stale text)
-3. **Verification Method** - How you confirmed this is an issue (link check, grep, file stat)
-4. **Impact Description** - Who is affected and how (users, developers, onboarding)
+2. **Content Snippet** - The actual problematic content (broken link, stale
+   text)
+3. **Verification Method** - How you confirmed this is an issue (link check,
+   grep, file stat)
+4. **Impact Description** - Who is affected and how (users, developers,
+   onboarding)
 
 **Confidence Levels:**
-- **HIGH (90%+)**: Confirmed by tool (docs:check, link checker), verified file exists, issue reproducible
-- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no tool confirmation
+
+- **HIGH (90%+)**: Confirmed by tool (docs:check, link checker), verified file
+  exists, issue reproducible
+- **MEDIUM (70-89%)**: Found via pattern search, file verified, but no tool
+  confirmation
 - **LOW (<70%)**: Pattern match only, needs manual verification
 
 **S0/S1 findings require:**
+
 - HIGH or MEDIUM confidence (LOW confidence S0/S1 must be escalated)
 - Dual-pass verification (re-read the content after initial finding)
 - Cross-reference with docs:check or docs:sync-check output
@@ -118,10 +137,14 @@ If outdated, note discrepancies but proceed with current values.
 
 Before finalizing findings, cross-reference with:
 
-1. **docs:check output** - Mark findings as "TOOL_VALIDATED" if linter flagged same issue
-2. **docs:sync-check output** - Mark sync findings as "TOOL_VALIDATED" if sync checker flagged
-3. **git log** - Mark stale findings as "TOOL_VALIDATED" if last modified date confirms staleness
-4. **Prior audits** - Check `docs/audits/single-session/documentation/` for duplicate findings
+1. **docs:check output** - Mark findings as "TOOL_VALIDATED" if linter flagged
+   same issue
+2. **docs:sync-check output** - Mark sync findings as "TOOL_VALIDATED" if sync
+   checker flagged
+3. **git log** - Mark stale findings as "TOOL_VALIDATED" if last modified date
+   confirms staleness
+4. **Prior audits** - Check `docs/audits/single-session/documentation/` for
+   duplicate findings
 
 Findings without tool validation should note: `"cross_ref": "MANUAL_ONLY"`
 
@@ -138,46 +161,55 @@ For all S0 (blocks work) and S1 (causes confusion) findings:
    - Confirm file and line still exist
 3. **Decision**: Mark as CONFIRMED or DOWNGRADE (with reason)
 
-Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"verified": "DOWNGRADED_TO_S2"`
+Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or
+`"verified": "DOWNGRADED_TO_S2"`
 
 ---
 
 ## Output Requirements
 
 **1. Markdown Summary (display to user):**
+
 ```markdown
 ## Documentation Audit - [DATE]
 
 ### Baselines
+
 - Total docs: X files
 - docs:check errors: X
 - docs:sync-check issues: X
 - Docs changed (7 days): X
 
 ### Findings Summary
-| Severity | Count | Category | Confidence |
-|----------|-------|----------|------------|
-| S0 | X | ... | HIGH/MEDIUM |
-| S1 | X | ... | HIGH/MEDIUM |
-| S2 | X | ... | ... |
-| S3 | X | ... | ... |
+
+| Severity | Count | Category | Confidence  |
+| -------- | ----- | -------- | ----------- |
+| S0       | X     | ...      | HIGH/MEDIUM |
+| S1       | X     | ...      | HIGH/MEDIUM |
+| S2       | X     | ...      | ...         |
+| S3       | X     | ...      | ...         |
 
 ### Broken Links
+
 1. [source.md:line] -> [target.md] (missing) - TOOL_VALIDATED
 2. ...
 
 ### False Positives Filtered
+
 - X findings excluded (matched FALSE_POSITIVES.jsonl patterns)
 
 ### Stale Documents
+
 1. [file.md] - Last updated X days ago, references deprecated feature
 2. ...
 
 ### Coverage Gaps
+
 - Feature X has no documentation
 - ...
 
 ### Recommendations
+
 - ...
 ```
 
@@ -186,8 +218,23 @@ Document dual-pass result in finding: `"verified": "DUAL_PASS_CONFIRMED"` or `"v
 Create file: `docs/audits/single-session/documentation/audit-[YYYY-MM-DD].jsonl`
 
 Each line (UPDATED SCHEMA with confidence and verification):
+
 ```json
-{"id":"DOC-001","category":"Links|Stale|Coverage|Tier|Frontmatter|Sync|Quality","severity":"S0|S1|S2|S3","effort":"E0|E1|E2|E3","confidence":"HIGH|MEDIUM|LOW","verified":"DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY","file":"docs/path/to/file.md","line":123,"title":"Short description","description":"Detailed issue","recommendation":"How to fix","evidence":["broken link text","grep output","git log output"],"cross_ref":"docs_check|docs_sync|git_log|MANUAL_ONLY"}
+{
+  "id": "DOC-001",
+  "category": "Links|Stale|Coverage|Tier|Frontmatter|Sync|Quality",
+  "severity": "S0|S1|S2|S3",
+  "effort": "E0|E1|E2|E3",
+  "confidence": "HIGH|MEDIUM|LOW",
+  "verified": "DUAL_PASS_CONFIRMED|TOOL_VALIDATED|MANUAL_ONLY",
+  "file": "docs/path/to/file.md",
+  "line": 123,
+  "title": "Short description",
+  "description": "Detailed issue",
+  "recommendation": "How to fix",
+  "evidence": ["broken link text", "grep output", "git log output"],
+  "cross_ref": "docs_check|docs_sync|git_log|MANUAL_ONLY"
+}
 ```
 
 **3. Markdown Report (save to file):**
@@ -203,6 +250,7 @@ Full markdown report with all findings, baselines, and fix plan.
 **Before finalizing the audit:**
 
 1. **Run Validation Script:**
+
    ```bash
    node scripts/validate-audit.js docs/audits/single-session/documentation/audit-[YYYY-MM-DD].jsonl
    ```
@@ -234,7 +282,8 @@ Full markdown report with all findings, baselines, and fix plan.
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
    - Confidence: Overall confidence (HIGH if majority HIGH, else MEDIUM)
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
-   - Reset Threshold: YES (single-session audits reset that category's threshold)
+   - Reset Threshold: YES (single-session audits reset that category's
+     threshold)
 5. Ask: "Would you like me to fix any of these documentation issues now?"
 
 ---
@@ -243,16 +292,21 @@ Full markdown report with all findings, baselines, and fix plan.
 
 ### Category-Specific Thresholds
 
-This audit **resets the documentation category threshold** in `docs/AUDIT_TRACKER.md` (single-session audits reset their own category; multi-AI audits reset all thresholds). Reset means the commit counter for this category starts counting from zero after this audit.
+This audit **resets the documentation category threshold** in
+`docs/AUDIT_TRACKER.md` (single-session audits reset their own category;
+multi-AI audits reset all thresholds). Reset means the commit counter for this
+category starts counting from zero after this audit.
 
 **Documentation audit triggers (check AUDIT_TRACKER.md):**
+
 - 20+ doc files changed since last documentation audit, OR
 - 30+ commits since last documentation audit
 
 ### Multi-AI Escalation
 
-After 3 single-session documentation audits, a full multi-AI Documentation Audit is recommended.
-Track this in AUDIT_TRACKER.md "Single audits completed" counter.
+After 3 single-session documentation audits, a full multi-AI Documentation Audit
+is recommended. Track this in AUDIT_TRACKER.md "Single audits completed"
+counter.
 
 ---
 
@@ -274,9 +328,10 @@ node scripts/add-false-positive.js \
 
 When updating this command (categories, checklist items), also update:
 
-| Document | What to Update | Why |
-|----------|----------------|-----|
+| Document                                                  | What to Update                     | Why                            |
+| --------------------------------------------------------- | ---------------------------------- | ------------------------------ |
 | `docs/templates/MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md` | Category list, checklist structure | Multi-AI version of this audit |
-| `docs/SLASH_COMMANDS.md` | `/audit-documentation` section | Documentation of this command |
+| `docs/SLASH_COMMANDS.md`                                  | `/audit-documentation` section     | Documentation of this command  |
 
-**Why this matters:** This is the single-session version of the documentation audit. Category changes should stay synchronized with the multi-AI template.
+**Why this matters:** This is the single-session version of the documentation
+audit. Category changes should stay synchronized with the multi-AI template.

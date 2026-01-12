@@ -1,10 +1,7 @@
 # 📚 SoNash Documentation Standardization Plan
 
-**Document Version:** 1.9
-**Created:** 2025-12-31
-**Last Updated:** 2026-01-03
-**Status:** COMPLETE
-**Overall Completion:** 100% (All 7 phases complete)
+**Document Version:** 1.9 **Created:** 2025-12-31 **Last Updated:** 2026-01-03
+**Status:** COMPLETE **Overall Completion:** 100% (All 7 phases complete)
 
 ---
 
@@ -13,6 +10,7 @@
 **THIS DOCUMENTATION STANDARDIZATION EFFORT BLOCKS ALL OTHER PROJECT WORK.**
 
 No feature development, refactoring, or new initiatives should begin until:
+
 - ✅ All 6 phases + Phase 1.5 of this plan are COMPLETE
 - ✅ All docs pass automated linter
 - ✅ AI_WORKFLOW.md is published and verified
@@ -20,22 +18,27 @@ No feature development, refactoring, or new initiatives should begin until:
 - ✅ Multi-AI review system is established
 
 **Why this is a blocker:**
+
 - Without standardized docs, AI collaboration is inconsistent
 - Without clear hierarchy, work gets duplicated
 - Without update procedures, docs become stale
 - Without enforcement, standards drift
 - Without review system, code quality degrades
 
-**Estimated blocker duration:** 4-5 weeks (2026-01-01 to 2026-02-05)
-**After this completes:** M1.6 Support Tab, M1.5 remaining items can resume
+**Estimated blocker duration:** 4-5 weeks (2026-01-01 to 2026-02-05) **After
+this completes:** M1.6 Support Tab, M1.5 remaining items can resume
 
-> **📋 COORDINATION NOTE:** This plan is now coordinated under [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md), which provides a unified roadmap from current state to feature resumption. The remaining phases (5-6) of this document are tracked as Step 2 in that plan.
+> **📋 COORDINATION NOTE:** This plan is now coordinated under
+> [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md), which
+> provides a unified roadmap from current state to feature resumption. The
+> remaining phases (5-6) of this document are tracked as Step 2 in that plan.
 
 ---
 
 ## 🎯 DOCUMENT PURPOSE
 
-This is the **CANONICAL** plan for standardizing all SoNash documentation. This document serves as:
+This is the **CANONICAL** plan for standardizing all SoNash documentation. This
+document serves as:
 
 1. **Blueprint** for documentation structure across the project
 2. **Template specification** for all document tiers
@@ -44,14 +47,17 @@ This is the **CANONICAL** plan for standardizing all SoNash documentation. This 
 5. **AI workflow integration** ensuring any AI can navigate docs perfectly
 6. **Multi-AI review system** for ongoing code quality
 
-**⚠️ CRITICAL**: All new documentation must follow this standard. All existing documentation will be migrated per the timeline below.
+**⚠️ CRITICAL**: All new documentation must follow this standard. All existing
+documentation will be migrated per the timeline below.
 
 ---
 
 ## 📋 EXECUTIVE SUMMARY
 
 ### Problem Statement
+
 Current documentation lacks consistency:
+
 - Mixed structures (some have status tracking, some don't)
 - No clear hierarchy (which doc is source of truth?)
 - Duplicate content (3 docs merged, 4 archived)
@@ -60,7 +66,9 @@ Current documentation lacks consistency:
 - No systematic code review process (quality degrades over time)
 
 ### Solution
+
 Implement comprehensive documentation and review system:
+
 - **5-tier documentation system** inspired by EIGHT_PHASE_REFACTOR_PLAN.md
 - **4 specialized review templates** + coordinator for ongoing quality
 - **Progress-based review triggers** (not time-based)
@@ -69,6 +77,7 @@ Implement comprehensive documentation and review system:
 - **Template library** for all document types
 
 ### Success Criteria
+
 - ✅ All docs follow tier-appropriate template
 - ✅ Clear hierarchy established (README → ROADMAP → specialized docs)
 - ✅ Auto-update system functional (scripts + triggers)
@@ -79,6 +88,7 @@ Implement comprehensive documentation and review system:
 - ✅ Progress-based review triggers active
 
 ### Timeline
+
 - **Week 1** (Jan 1-7): Templates, AI_WORKFLOW.md, scripts
 - **Week 1.5** (Jan 8-10): Multi-AI review templates + coordinator
 - **Week 2** (Jan 11-17): Migrate Tier 1-2 docs
@@ -92,19 +102,18 @@ Implement comprehensive documentation and review system:
 
 ## 🗺️ OVERALL STATUS DASHBOARD
 
-| Phase | Title | Status | Completion | Dependencies |
-|-------|-------|--------|------------|--------------|
-| Phase 1 | Create Templates & Standards | **COMPLETE** | 100% (8/8 tasks) | None |
-| Phase 1.5 | Create Multi-AI Review System | **COMPLETE** | 100% (6/6 tasks) | Phase 1 |
-| Phase 2 | Build Automation Scripts | **COMPLETE** | 100% (6/6 + bonus) | Phase 1 |
-| Phase 3 | Migrate Tier 1-2 Docs | **COMPLETE** | 100% (7/7 tasks) | Phase 1, 2 |
-| Phase 4 | Migrate Tier 3-4 Docs | **COMPLETE** | 100% (9/9 tasks) | Phase 1, 2 |
-| Phase 5 | Migrate Tier 5 Docs | **COMPLETE** | 100% (6/6 tasks) | Phase 1, 2 |
-| Phase 6 | Archive & Cleanup | **COMPLETE** | 100% (6/6 core tasks) | Phase 3, 4, 5 |
+| Phase     | Title                         | Status       | Completion            | Dependencies  |
+| --------- | ----------------------------- | ------------ | --------------------- | ------------- |
+| Phase 1   | Create Templates & Standards  | **COMPLETE** | 100% (8/8 tasks)      | None          |
+| Phase 1.5 | Create Multi-AI Review System | **COMPLETE** | 100% (6/6 tasks)      | Phase 1       |
+| Phase 2   | Build Automation Scripts      | **COMPLETE** | 100% (6/6 + bonus)    | Phase 1       |
+| Phase 3   | Migrate Tier 1-2 Docs         | **COMPLETE** | 100% (7/7 tasks)      | Phase 1, 2    |
+| Phase 4   | Migrate Tier 3-4 Docs         | **COMPLETE** | 100% (9/9 tasks)      | Phase 1, 2    |
+| Phase 5   | Migrate Tier 5 Docs           | **COMPLETE** | 100% (6/6 tasks)      | Phase 1, 2    |
+| Phase 6   | Archive & Cleanup             | **COMPLETE** | 100% (6/6 core tasks) | Phase 3, 4, 5 |
 
-**Overall Progress:** 7/7 phases complete (100%)
-**Estimated Total Effort:** 44-56 hours
-**Target Completion:** 2026-02-05
+**Overall Progress:** 7/7 phases complete (100%) **Estimated Total Effort:**
+44-56 hours **Target Completion:** 2026-02-05
 
 ---
 
@@ -129,16 +138,18 @@ Phase 3, 4, 5 ──────────────────────
 ## 📚 DOCUMENT TIER SYSTEM
 
 ### Tier 1: Canonical Living Documents
+
 **Full treatment required - these are the project's source of truth**
 
-| Document | Purpose | Update Frequency |
-|----------|---------|------------------|
-| README.md | Entry point, project overview, status dashboard | After major milestones |
-| ROADMAP.md | Product roadmap, feature planning | Weekly |
-| ROADMAP_LOG.md | Completed work archive | After milestone completion |
-| EIGHT_PHASE_REFACTOR_PLAN.md | Refactoring plan (model doc) | After each phase |
+| Document                     | Purpose                                         | Update Frequency           |
+| ---------------------------- | ----------------------------------------------- | -------------------------- |
+| README.md                    | Entry point, project overview, status dashboard | After major milestones     |
+| ROADMAP.md                   | Product roadmap, feature planning               | Weekly                     |
+| ROADMAP_LOG.md               | Completed work archive                          | After milestone completion |
+| EIGHT_PHASE_REFACTOR_PLAN.md | Refactoring plan (model doc)                    | After each phase           |
 
 **Required Sections:**
+
 - 📊 Status Dashboard
 - 🎯 Intentions & Goals
 - 🔀 Dependencies (with graph if applicable)
@@ -153,15 +164,17 @@ Phase 3, 4, 5 ──────────────────────
 ---
 
 ### Tier 2: Foundation Documents
+
 **Full treatment required - technical and architectural foundations**
 
-| Document | Purpose | Update Frequency |
-|----------|---------|------------------|
+| Document        | Purpose                       | Update Frequency            |
+| --------------- | ----------------------------- | --------------------------- |
 | ARCHITECTURE.md | Technical decisions, patterns | After architectural changes |
-| SECURITY.md | Security posture, decisions | After security changes |
-| DEVELOPMENT.md | Setup, testing, deployment | After dev workflow changes |
+| SECURITY.md     | Security posture, decisions   | After security changes      |
+| DEVELOPMENT.md  | Setup, testing, deployment    | After dev workflow changes  |
 
 **Required Sections:**
+
 - 📊 Status Dashboard (component health)
 - 🏗️ Overview & Principles
 - 🔀 Dependencies (technical)
@@ -174,18 +187,20 @@ Phase 3, 4, 5 ──────────────────────
 ---
 
 ### Tier 3: Planning Documents
+
 **Full treatment when active - specific initiatives/plans**
 
-| Document | Purpose | Update Frequency |
-|----------|---------|------------------|
-| M1.6_SUPPORT_TAB_PLAN.md | Support Tab implementation | During active work |
-| LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md | Resources feature plan | During active work |
-| ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | Admin monitoring spec | During active work |
-| MONETIZATION_RESEARCH.md | Monetization research | During research phase |
-| POST_PHASE_8_BACKLOG.md | Post-refactor backlog | After each phase |
-| Active review docs (docs/reviews/*.md) | Multi-AI review results | Per review cycle |
+| Document                                        | Purpose                    | Update Frequency      |
+| ----------------------------------------------- | -------------------------- | --------------------- |
+| M1.6_SUPPORT_TAB_PLAN.md                        | Support Tab implementation | During active work    |
+| LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md          | Resources feature plan     | During active work    |
+| ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | Admin monitoring spec      | During active work    |
+| MONETIZATION_RESEARCH.md                        | Monetization research      | During research phase |
+| POST_PHASE_8_BACKLOG.md                         | Post-refactor backlog      | After each phase      |
+| Active review docs (docs/reviews/\*.md)         | Multi-AI review results    | Per review cycle      |
 
 **Required Sections:**
+
 - 📊 Status Dashboard
 - 🎯 Objectives & Scope
 - 🔀 Dependencies
@@ -198,18 +213,20 @@ Phase 3, 4, 5 ──────────────────────
 ---
 
 ### Tier 4: Reference Documents
+
 **Standardized flow, lighter structure - workflow and reference**
 
-| Document | Purpose | Update Frequency |
-|----------|---------|------------------|
-| **AI_WORKFLOW.md** (NEW) | Master AI navigation guide | After major doc changes |
-| **MULTI_AI_REVIEW_COORDINATOR.md** (NEW) | Review system coordinator | After each review |
-| **SESSION_CONTEXT.md** (NEW) | Session-to-session handoff | After every session |
-| claude.md | AI rules & stack versions | After stack changes |
-| IMPLEMENTATION_PROMPTS.md | Refactor prompts | After prompt refinement |
-| PR_WORKFLOW_CHECKLIST.md | PR checklist | After workflow changes |
+| Document                                 | Purpose                    | Update Frequency        |
+| ---------------------------------------- | -------------------------- | ----------------------- |
+| **AI_WORKFLOW.md** (NEW)                 | Master AI navigation guide | After major doc changes |
+| **MULTI_AI_REVIEW_COORDINATOR.md** (NEW) | Review system coordinator  | After each review       |
+| **SESSION_CONTEXT.md** (NEW)             | Session-to-session handoff | After every session     |
+| claude.md                                | AI rules & stack versions  | After stack changes     |
+| IMPLEMENTATION_PROMPTS.md                | Refactor prompts           | After prompt refinement |
+| PR_WORKFLOW_CHECKLIST.md                 | PR checklist               | After workflow changes  |
 
 **Required Sections:**
+
 - 📋 Purpose & Scope
 - 🗓️ Last Updated
 - 📝 Content (specific to doc type)
@@ -218,18 +235,20 @@ Phase 3, 4, 5 ──────────────────────
 ---
 
 ### Tier 5: Guides
+
 **Standardized flow, minimal tracking - how-to guides**
 
-| Document | Purpose | Update Frequency |
-|----------|---------|------------------|
-| SENTRY_INTEGRATION_GUIDE.md | Sentry setup | After Sentry changes |
-| APPCHECK_SETUP.md | App Check setup | After App Check changes |
-| INCIDENT_RESPONSE.md | Incident handling | After incidents/learnings |
-| recaptcha_removal_guide.md | reCAPTCHA guide | After reCAPTCHA changes |
-| ANTIGRAVITY_GUIDE.md | Antigravity feature | After feature changes |
-| TESTING_PLAN.md | Testing strategy | After testing changes |
+| Document                    | Purpose             | Update Frequency          |
+| --------------------------- | ------------------- | ------------------------- |
+| SENTRY_INTEGRATION_GUIDE.md | Sentry setup        | After Sentry changes      |
+| APPCHECK_SETUP.md           | App Check setup     | After App Check changes   |
+| INCIDENT_RESPONSE.md        | Incident handling   | After incidents/learnings |
+| recaptcha_removal_guide.md  | reCAPTCHA guide     | After reCAPTCHA changes   |
+| ANTIGRAVITY_GUIDE.md        | Antigravity feature | After feature changes     |
+| TESTING_PLAN.md             | Testing strategy    | After testing changes     |
 
 **Required Sections:**
+
 - 📋 Purpose
 - 🗓️ Last Updated
 - 📝 Prerequisites
@@ -293,6 +312,7 @@ Phase 3, 4, 5 ──────────────────────
 ### Document-Level "Last Updated"
 
 **Update when:**
+
 - ✅ Milestone status changes (pending → in_progress → complete)
 - ✅ New major section added
 - ✅ Dependency graph modified
@@ -300,6 +320,7 @@ Phase 3, 4, 5 ──────────────────────
 - ✅ Version number increments
 
 **Do NOT update for:**
+
 - ❌ Typo fixes
 - ❌ Formatting tweaks
 - ❌ Minor wording changes
@@ -308,11 +329,13 @@ Phase 3, 4, 5 ──────────────────────
 ### Section-Level "Last Updated"
 
 **Update when:**
+
 - ✅ Content materially changes (new tasks, status updates)
 - ✅ Completion percentage changes
 - ✅ Blockers added/removed
 
 **Do NOT update for:**
+
 - ❌ Grammar fixes
 - ❌ Formatting improvements
 
@@ -321,11 +344,13 @@ Phase 3, 4, 5 ──────────────────────
 **Format:** `X.Y` (Major.Minor)
 
 **Major version (X.0) increments when:**
+
 - Document restructure
 - Major milestone complete
 - Significant scope change
 
 **Minor version (X.Y) increments when:**
+
 - New section added
 - Significant content addition
 - Decision documented
@@ -336,47 +361,55 @@ Phase 3, 4, 5 ──────────────────────
 
 ### Overview
 
-Progress-based code quality reviews using multiple AI models to identify issues, with automated aggregation and phased remediation plans.
+Progress-based code quality reviews using multiple AI models to identify issues,
+with automated aggregation and phased remediation plans.
 
 ### Review Types (4 Specialized Templates)
 
 **1. Code Quality Review** (`MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`)
+
 - Focus: Hygiene/Duplication, Types/Correctness, Maintainability, Testing
 - Cadence: After 5,000+ lines changed OR milestone completion
 - Output: CANON findings → PR plan
 
 **2. Security Audit** (`MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`)
+
 - Focus: Firebase Auth/Rules, App Check, Rate Limiting, Trust Boundaries
 - Cadence: Quarterly OR after major security changes
 - Output: Security findings → remediation plan
 
 **3. Performance Audit** (`MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md`)
+
 - Focus: Bundle size, Render performance, Database queries, Memory
 - Cadence: Bi-annually OR after major UX features
 - Output: Performance findings → optimization plan
 
 **4. Refactoring Plan** (`MULTI_AI_REFACTOR_PLAN_TEMPLATE.md`)
+
 - Focus: God objects, Duplicate clusters, SOLID violations, Architecture
 - Cadence: After Code Quality review finds >30 issues
 - Output: Phased refactor plan (like EIGHT_PHASE_REFACTOR_PLAN.md)
 
 ### Progress-Based Review Triggers
 
-```markdown
+````markdown
 ## 🔍 Code Review Checkpoints (Hybrid Approach)
 
 **Automatic triggers - run review when ANY of:**
+
 - ✅ 5,000+ lines changed (additions + deletions) since last review
 - ✅ 50+ files modified since last review
 - ✅ 20+ new files added since last review
 - ✅ 10+ new components created since last review
 
 **Milestone-based triggers:**
+
 - ✅ Major milestone complete (M1, M2, M3, etc.)
 - ✅ Before starting new major initiative
 - ✅ After completing 3+ features in same area
 
 **Risk-based triggers:**
+
 - ✅ 5+ new Cloud Functions added
 - ✅ 3+ new Firestore collections created
 - ✅ Major security changes (auth, rules, App Check)
@@ -385,37 +418,33 @@ Progress-based code quality reviews using multiple AI models to identify issues,
 - ✅ Build time increases by >30%
 
 **Track via:**
+
 ```bash
 npm run review:check  # Automated checkpoint script
 ```
+````
 
-**Last Review:** 2025-12-30 (resulted in EIGHT_PHASE_REFACTOR_PLAN.md)
-**Lines Since:** 0 / 5,000
-**Files Since:** 0 / 50
-**Next Review Due:** After M1.6 completion OR trigger threshold
+**Last Review:** 2025-12-30 (resulted in EIGHT_PHASE_REFACTOR_PLAN.md) **Lines
+Since:** 0 / 5,000 **Files Since:** 0 / 50 **Next Review Due:** After M1.6
+completion OR trigger threshold
+
 ```
 
 ### Review Workflow
 
 ```
-1. Trigger Detected (progress checkpoint reached)
-   ↓
-2. Select Review Type (Code/Security/Performance/Refactor)
-   ↓
-3. Run Multi-AI Review (4-6 AI models, specialized prompts)
-   ↓
-4. Aggregate Findings (dedup, verify, rank by consensus)
-   ↓
-5. Create Review Document (docs/reviews/REVIEW_NAME_YYYY_QX.md)
-   ↓
-6. Generate PR Plan (phased remediation, small reviewable PRs)
-   ↓
-7. Link to ROADMAP (add phases as milestones if actionable)
-   ↓
-8. Execute Phases (following plan structure)
-   ↓
+
+1. Trigger Detected (progress checkpoint reached) ↓
+2. Select Review Type (Code/Security/Performance/Refactor) ↓
+3. Run Multi-AI Review (4-6 AI models, specialized prompts) ↓
+4. Aggregate Findings (dedup, verify, rank by consensus) ↓
+5. Create Review Document (docs/reviews/REVIEW_NAME_YYYY_QX.md) ↓
+6. Generate PR Plan (phased remediation, small reviewable PRs) ↓
+7. Link to ROADMAP (add phases as milestones if actionable) ↓
+8. Execute Phases (following plan structure) ↓
 9. Archive (move completed plan to docs/archive/reviews/)
-```
+
+````
 
 ---
 
@@ -433,9 +462,10 @@ npm run review:check  # Automated checkpoint script
 - [ ] **SESSION_CONTEXT.md**: Update "Next Session Goals"
 - [ ] **Check for code review trigger**: Run `npm run review:check`
 - [ ] **Check for refactoring opportunities**: Add to POST_PHASE_8_BACKLOG.md
-```
+````
 
 ### Before Starting New Milestone:
+
 ```markdown
 ## 🚀 Pre-Milestone Checklist
 
@@ -451,48 +481,53 @@ npm run review:check  # Automated checkpoint script
 
 ## 📋 PHASE 1: CREATE TEMPLATES & STANDARDS
 
-**Status:** COMPLETE
-**Completion:** 100% (8/8 tasks complete)
-**Actual Effort:** 10-12 hours
-**Completed:** 2025-12-31
-**Dependencies:** None
-**Risk Level:** Low
+**Status:** COMPLETE **Completion:** 100% (8/8 tasks complete) **Actual
+Effort:** 10-12 hours **Completed:** 2025-12-31 **Dependencies:** None **Risk
+Level:** Low
 
 ### 🎯 Phase Objectives
 
-Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to establish the foundation for consistent documentation across the project.
+Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to
+establish the foundation for consistent documentation across the project.
 
 ### 📝 Deliverables
 
 **1. docs/templates/CANONICAL_DOC_TEMPLATE.md**
+
 - Template for Tier 1 documents (README, ROADMAP, ROADMAP_LOG, major plans)
 - Full treatment with all required sections
 - Example content showing proper formatting
 
 **2. docs/templates/FOUNDATION_DOC_TEMPLATE.md**
+
 - Template for Tier 2 documents (ARCHITECTURE, SECURITY, DEVELOPMENT)
 - Technical debt tracking sections
 - ADR integration
 
 **3. docs/templates/PLANNING_DOC_TEMPLATE.md**
+
 - Template for Tier 3 documents (feature plans, initiatives, review results)
 - Active work tracking structure
 - Blocker management
 
 **4. docs/templates/REFERENCE_DOC_TEMPLATE.md**
+
 - Template for Tier 4 documents (workflow guides, reference docs)
 - Lighter structure with essential sections
 
 **5. docs/templates/GUIDE_TEMPLATE.md**
+
 - Template for Tier 5 documents (how-to guides)
 - Step-by-step format with verification
 
 **6. docs/templates/DOCUMENTATION_STANDARDS.md**
+
 - Master standards document
 - All rules, conventions, and procedures
 - Quick reference for AI agents
 
 **7. AI_WORKFLOW.md** (root level)
+
 - Master AI navigation guide
 - Document hierarchy explanation
 - Where to find what
@@ -500,6 +535,7 @@ Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to e
 - Session handoff procedures
 
 **8. SESSION_CONTEXT.md** (root level)
+
 - Replaces AI_HANDOFF.md
 - Current focus, recent completions
 - Next session goals
@@ -570,14 +606,17 @@ Create comprehensive templates for all 5 document tiers plus AI_WORKFLOW.md to e
 - [x] Templates tested by creating one sample doc from each ✅
 - [x] All templates follow markdown best practices ✅
 - [x] Cross-references between templates are correct ✅
-- [x] **Deliverable audit passed** (all deliverables verified) ✅ *(added retroactively)*
-- [x] **Procedure gap analysis complete** (cross-references checked) ✅ *(added retroactively)*
+- [x] **Deliverable audit passed** (all deliverables verified) ✅ _(added
+      retroactively)_
+- [x] **Procedure gap analysis complete** (cross-references checked) ✅ _(added
+      retroactively)_
 
 ### 📊 What Was Accomplished
 
 **Completed:** 2025-12-31
 
-All 8 Phase 1 deliverables created and committed to branch `claude/update-session-docs-uRgUs`:
+All 8 Phase 1 deliverables created and committed to branch
+`claude/update-session-docs-uRgUs`:
 
 1. **docs/templates/CANONICAL_DOC_TEMPLATE.md** (405 lines)
    - Template for Tier 1 documents (README, ROADMAP, major plans)
@@ -631,9 +670,11 @@ All 8 Phase 1 deliverables created and committed to branch `claude/update-sessio
    - Commit: [0426eba]
 
 **Evidence:**
+
 - All commits pushed to remote: `git log --oneline | head -8`
 - All templates follow EIGHT_PHASE_REFACTOR_PLAN.md model structure
-- CodeRabbit integration verified in AI_WORKFLOW.md (Standard Procedures section) and SESSION_CONTEXT.md (Pending Reviews section)
+- CodeRabbit integration verified in AI_WORKFLOW.md (Standard Procedures
+  section) and SESSION_CONTEXT.md (Pending Reviews section)
 
 **Next Phase:** Phase 1.5 - Create Multi-AI Review System (8-10 hours)
 
@@ -643,24 +684,32 @@ All 8 Phase 1 deliverables created and committed to branch `claude/update-sessio
 
 Phase 1 PR received 14 CodeRabbit suggestions, revealing 6 systemic issues:
 
-1. **Self-Compliance Failure**: DOCUMENTATION_STANDARDS.md didn't follow its own Tier 1 format (missing Created, Overall Completion fields)
-2. **Status Sync Gap**: SESSION_CONTEXT.md had stale Phase 1 status (62% vs 100%) - no protocol for keeping status docs synchronized
-3. **Template Placeholders Too Generic**: Examples needed more specificity for usability
-4. **Redundant Wording**: Static analysis not run during creation ("Specific details", "ALL of", "outcome")
+1. **Self-Compliance Failure**: DOCUMENTATION_STANDARDS.md didn't follow its own
+   Tier 1 format (missing Created, Overall Completion fields)
+2. **Status Sync Gap**: SESSION_CONTEXT.md had stale Phase 1 status (62% vs
+   100%) - no protocol for keeping status docs synchronized
+3. **Template Placeholders Too Generic**: Examples needed more specificity for
+   usability
+4. **Redundant Wording**: Static analysis not run during creation ("Specific
+   details", "ALL of", "outcome")
 5. **Missing Cross-Reference Validation**: No pre-commit verification of links
 6. **Metadata Inconsistency**: No tier-specific checklists to catch format drift
 
 **Process Improvements Implemented**:
 
 Added 4 new quality protocols to DOCUMENTATION_STANDARDS.md v1.1:
+
 - ✅ **Pre-Commit Validation Checklist**: Tier-specific metadata requirements
-- ✅ **Status Synchronization Protocol**: Matrix of which docs to sync when status changes
+- ✅ **Status Synchronization Protocol**: Matrix of which docs to sync when
+  status changes
 - ✅ **Cross-Reference Validation**: Steps to verify all links before commit
 - ✅ **Template Testing Requirement**: Create example docs for new templates
 
-**Expected Impact**: 70-80% reduction in similar issues for future documentation work.
+**Expected Impact**: 70-80% reduction in similar issues for future documentation
+work.
 
 **Recommendations for Future Phases**:
+
 - Add pre-commit hooks in Phase 2 for automated validation
 - Create cross-reference validator script in Phase 2
 - Actually test templates with real examples (defer to Phase 3 migrations)
@@ -669,11 +718,13 @@ Added 4 new quality protocols to DOCUMENTATION_STANDARDS.md v1.1:
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Read EIGHT_PHASE_REFACTOR_PLAN.md first to understand the model structure
 2. Create templates in order (1.1 → 1.8) as dependencies exist
 3. Use example content from existing docs where applicable
 4. Test each template by creating a sample document
-5. Verify AI_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8 (ensure Standard Procedures and Pending Reviews sections exist)
+5. Verify AI_REVIEW_PROCESS.md integration in Tasks 1.7 and 1.8 (ensure Standard
+   Procedures and Pending Reviews sections exist)
 6. Commit templates individually for easier review
 7. Update this phase's completion percentage after each task
 
@@ -681,22 +732,22 @@ When implementing this phase:
 
 ## 📋 PHASE 1.5: CREATE MULTI-AI REVIEW SYSTEM
 
-**Status:** COMPLETE
-**Completion:** 100% (6/6 tasks)
-**Actual Effort:** 8-10 hours
-**Completed:** 2026-01-01
-**Dependencies:** Phase 1 (templates created)
+**Status:** COMPLETE **Completion:** 100% (6/6 tasks) **Actual Effort:** 8-10
+hours **Completed:** 2026-01-01 **Dependencies:** Phase 1 (templates created)
 **Risk Level:** Medium
 
 ### 🎯 Phase Objectives
 
-Create comprehensive multi-AI code review system with 4 specialized templates and 1 coordinator document to enable ongoing code quality management through progress-based reviews.
+Create comprehensive multi-AI code review system with 4 specialized templates
+and 1 coordinator document to enable ongoing code quality management through
+progress-based reviews.
 
 ### 📝 Deliverables
 
 **Core Review System (5 documents):**
 
 **1. docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md**
+
 - General code quality review template
 - Focus: Hygiene/Duplication, Types/Correctness, Maintainability, Testing
 - Full 6-phase prompt embedded
@@ -704,24 +755,28 @@ Create comprehensive multi-AI code review system with 4 specialized templates an
 - Aggregation procedures
 
 **2. docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md**
+
 - Security-focused review template
 - Focus: Firebase Auth/Rules, App Check, Rate Limiting, Trust Boundaries
 - Security-specific categories
 - Severity scale for security issues
 
 **3. docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md**
+
 - Performance optimization review template
 - Focus: Bundle size, Render performance, Database queries, Memory
 - Performance metrics integration
 - Benchmark comparison format
 
 **4. docs/templates/MULTI_AI_REFACTOR_PLAN_TEMPLATE.md**
+
 - Large-scale refactoring plan template
 - Focus: God objects, Duplicate clusters, SOLID violations, Architecture
 - Phased approach like EIGHT_PHASE_REFACTOR_PLAN.md
 - Dependency management between refactor phases
 
 **5. docs/MULTI_AI_REVIEW_COORDINATOR.md**
+
 - Master index of all reviews
 - Progress tracking toward triggers
 - Review history
@@ -730,50 +785,61 @@ Create comprehensive multi-AI code review system with 4 specialized templates an
 **Supporting Infrastructure (3 items - added during implementation):**
 
 **6. docs/GLOBAL_SECURITY_STANDARDS.md**
-- 4 mandatory security standards (rate limiting, input validation, secrets, OWASP)
+
+- 4 mandatory security standards (rate limiting, input validation, secrets,
+  OWASP)
 - Verification commands and approved patterns
 - Exception process
 - Integration with AI_WORKFLOW.md startup checklist
 
 **7. scripts/check-review-triggers.sh**
+
 - Automated review trigger detection script
 - Checks: commits, security files, dependencies, duplication patterns
 - Outputs trigger status and recommendations
 
 **8. Documentation Updates**
+
 - README.md: Added security standards reference
-- AI_WORKFLOW.md: Added Step 2 (security), Step 3 (coordinator), Step 4 (capabilities)
+- AI_WORKFLOW.md: Added Step 2 (security), Step 3 (coordinator), Step 4
+  (capabilities)
 
 ### 📋 Individual Review Prompts (Embedded in Templates)
 
 Each template will include:
 
 **Phase 1: Repository Access Validation**
+
 ```markdown
 ### CAPABILITIES (REQUIRED FIRST OUTPUT)
 
 Before any findings, print exactly:
 
-CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/no>, limitations="<one sentence>"
+CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>,
+repo_checkout=<yes/no>, limitations="<one sentence>"
 
 If repo_checkout=no OR browse_files=no:
+
 - Run in "NO-REPO MODE": Cannot complete this review without repo access
 - Stop immediately and report limitation
 ```
 
 **Phase 2: Repository Overview**
+
 - Systematic file enumeration
 - Tech stack validation
 - Configuration review
 - Phase completion marker
 
 **Phase 3: Systematic Category Review**
+
 - Category-specific focus (varies by template type)
 - Running count of issues as discovered
 - Code snippets with file paths
 - Category completion markers
 
 **Phase 4: Draft Findings**
+
 - Numbered sequential findings
 - File path + line numbers
 - Code quotes
@@ -782,12 +848,14 @@ If repo_checkout=no OR browse_files=no:
 - Phase completion count
 
 **Phase 5: Pattern Identification**
+
 - Recurring issues across files
 - Architectural concerns
 - Systemic problems
 - Pattern numbering and counting
 
 **Phase 6: Summary Preparation**
+
 - Statistics by severity
 - Executive summary drafting
 - Priority recommendations
@@ -796,6 +864,7 @@ If repo_checkout=no OR browse_files=no:
 ### 📋 Output Format (All Templates)
 
 **1. FINDINGS_JSONL**
+
 ```json
 {
   "category": "Hygiene/Duplication|Types/Correctness|Next/React Boundaries|Security|Testing",
@@ -822,10 +891,12 @@ If repo_checkout=no OR browse_files=no:
 ```
 
 **2. SUSPECTED_FINDINGS_JSONL**
+
 - Same schema, confidence <= 40
 - Evidence missing file+symbol OR claim is broad
 
 **3. HUMAN_SUMMARY**
+
 - Top duplication clusters (5-10 bullets)
 - Top 5 high-risk items (S0/S1)
 - "Do next" shortlist (<= 10 items)
@@ -833,37 +904,39 @@ If repo_checkout=no OR browse_files=no:
 ### 📋 Aggregation Process (Embedded in Coordinator)
 
 **1. Normalization**
+
 - Validate JSONL format
 - Normalize categories to standard set
 - Validate severity/effort scales
 
 **2. Deduplication Rules**
+
 ```markdown
-1) Primary merge key: fingerprint (exact match)
-2) Secondary merge (if fingerprints differ): merge if ALL true:
+1. Primary merge key: fingerprint (exact match)
+2. Secondary merge (if fingerprints differ): merge if ALL true:
    - same category
    - overlap: >=1 shared file OR >=1 shared symbol
    - titles + suggested_fix describe same refactor direction
-3) Duplication clusters:
+3. Duplication clusters:
    - Merge by union of instances (unique by file+symbol)
    - May add more instances only if same pattern clearly present
-4) Never merge purely "similar vibes" without evidence overlap
+4. Never merge purely "similar vibes" without evidence overlap
 ```
 
 **3. Consensus Scoring**
+
 ```markdown
 For each canonical finding, compute:
+
 - sources: contributing model names
 - confirmations: count of sources in FINDINGS_JSONL
 - suspects: count of sources in SUSPECTED_FINDINGS_JSONL
 - tool_confirmed_sources: sources with run_commands=yes AND evidence[]
-- consensus_score (0-5):
-  +2 if >=2 confirmed sources
-  +1 if >=3 total sources mention
-  +1 if any tool_confirmed_sources >=1
-  +1 if shared evidence overlap across sources
-- final_confidence:
-  Start with max(confidence) among contributing lines, then adjust:
+- consensus_score (0-5): +2 if >=2 confirmed sources +1 if >=3 total sources
+  mention +1 if any tool_confirmed_sources >=1 +1 if shared evidence overlap
+  across sources
+- final_confidence: Start with max(confidence) among contributing lines, then
+  adjust:
   - if only 1 source and no tool confirmation: cap at 60
   - if all mentions are suspected: cap at 40
   - if >=2 confirmed + evidence overlap: floor at 70
@@ -871,16 +944,19 @@ For each canonical finding, compute:
 ```
 
 **4. Ranking**
+
 ```markdown
 Rank canonical findings by:
-1) severity (S0 highest)
-2) consensus_score (higher first)
-3) final_confidence (higher first)
-4) effort (lower first if ties)
-5) cross_cutting_bonus (higher first if ties)
+
+1. severity (S0 highest)
+2. consensus_score (higher first)
+3. final_confidence (higher first)
+4. effort (lower first if ties)
+5. cross_cutting_bonus (higher first if ties)
 ```
 
 **5. PR Planning**
+
 ```json
 {
   "prs": [
@@ -889,8 +965,8 @@ Rank canonical findings by:
       "title": "...",
       "goal": "...",
       "bucket": "...",
-      "included_canonical_ids": ["CANON-0007","CANON-0012"],
-      "staging": ["PR1a","PR1b"],
+      "included_canonical_ids": ["CANON-0007", "CANON-0012"],
+      "staging": ["PR1a", "PR1b"],
       "risk_level": "low|medium|high",
       "estimated_effort": "E0|E1|E2|E3",
       "acceptance_tests": ["npm run lint", "npm run typecheck", "npm test"],
@@ -905,25 +981,22 @@ Rank canonical findings by:
 ```markdown
 # 🔍 Multi-AI Review Coordinator
 
-**Last Updated:** 2025-12-31
-**Document Version:** 1.0
+**Last Updated:** 2025-12-31 **Document Version:** 1.0
 
 ## 📊 Review Progress Dashboard
 
 **Last Review:** 2025-12-30 (Code Quality → EIGHT_PHASE_REFACTOR_PLAN.md)
-**Lines Since:** 0 / 5,000
-**Files Since:** 0 / 50
-**New Components Since:** 0 / 10
-**ESLint Warnings:** baseline (track increases)
-**Test Coverage:** 97.8% (watch for drops below 90%)
+**Lines Since:** 0 / 5,000 **Files Since:** 0 / 50 **New Components Since:** 0 /
+10 **ESLint Warnings:** baseline (track increases) **Test Coverage:** 97.8%
+(watch for drops below 90%)
 
 **Next Review Due:** After M1.6 completion OR trigger threshold
 
 ## 🗂️ Review History
 
-| Date | Type | Trigger | AI Models Used | Canonical Findings | Plan Created |
-|------|------|---------|----------------|-------------------|--------------|
-| 2025-12-30 | Code Quality | Manual | ChatGPT-4o, Claude Opus 4, Gemini 2.0 Flash Thinking | 47 CANON items | EIGHT_PHASE_REFACTOR_PLAN.md |
+| Date       | Type         | Trigger | AI Models Used                                       | Canonical Findings | Plan Created                 |
+| ---------- | ------------ | ------- | ---------------------------------------------------- | ------------------ | ---------------------------- |
+| 2025-12-30 | Code Quality | Manual  | ChatGPT-4o, Claude Opus 4, Gemini 2.0 Flash Thinking | 47 CANON items     | EIGHT_PHASE_REFACTOR_PLAN.md |
 
 ## 📋 Review Templates
 
@@ -935,17 +1008,20 @@ Rank canonical findings by:
 ## 🎯 Progress-Based Triggers
 
 **Automatic triggers - run review when ANY of:**
+
 - ✅ 5,000+ lines changed since last review
 - ✅ 50+ files modified since last review
 - ✅ 20+ new files added since last review
 - ✅ 10+ new components created since last review
 
 **Milestone-based triggers:**
+
 - ✅ Major milestone complete (M1, M2, M3, etc.)
 - ✅ Before starting new major initiative
 - ✅ After completing 3+ features in same area
 
 **Risk-based triggers:**
+
 - ✅ 5+ new Cloud Functions added
 - ✅ 3+ new Firestore collections created
 - ✅ Major security changes (auth, rules, App Check)
@@ -959,7 +1035,8 @@ Rank canonical findings by:
 2. **Select Review Type**: Based on trigger and recent changes
 3. **Prepare Context**: Update repo URL, branch, recent changes summary
 4. **Run Multi-AI Review**: Use 4-6 AI models with selected template
-5. **Collect Outputs**: Save each model's FINDINGS_JSONL + SUSPECTED_FINDINGS_JSONL
+5. **Collect Outputs**: Save each model's FINDINGS_JSONL +
+   SUSPECTED_FINDINGS_JSONL
 6. **Run Aggregation**: Use aggregator prompt to deduplicate and rank
 7. **Create Review Doc**: docs/reviews/REVIEW_NAME_YYYY_QX.md
 8. **Generate PR Plan**: Create phased implementation plan
@@ -969,6 +1046,7 @@ Rank canonical findings by:
 ## 🤖 AI Instructions
 
 When starting a review:
+
 1. Check this coordinator for last review date and current progress
 2. Determine if trigger threshold reached
 3. Select appropriate review template
@@ -979,20 +1057,24 @@ When starting a review:
 
 ### 📋 Tasks
 
-- [x] **Task 1.5.1**: Create MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md (2.5 hours) ✅
+- [x] **Task 1.5.1**: Create MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md (2.5 hours)
+      ✅
   - Embed 6-phase prompt from "GitHub Code Analysis and Review Prompt.txt"
-  - Adapt categories to: Hygiene/Duplication, Types/Correctness, Next/React Boundaries, Security, Testing
+  - Adapt categories to: Hygiene/Duplication, Types/Correctness, Next/React
+    Boundaries, Security, Testing
   - Include JSONL schema
   - Add tool evidence checklist
 
-- [x] **Task 1.5.2**: Create MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md (2 hours) ✅
+- [x] **Task 1.5.2**: Create MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md (2 hours)
+      ✅
   - Adapt Phase 3 categories to security focus
   - Firebase-specific checks (Auth, Rules, App Check)
   - Trust boundary analysis
   - Rate-limiting verification
   - **Added 4 mandatory security standards as first-class categories**
 
-- [x] **Task 1.5.3**: Create MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md (2 hours) ✅
+- [x] **Task 1.5.3**: Create MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md (2
+      hours) ✅
   - Performance-specific categories
   - Bundle analysis integration
   - Render performance checks
@@ -1014,7 +1096,8 @@ When starting a review:
   - AI instructions for when/how to run reviews
   - **Documentation System Health tracking with session-based triggers**
 
-- [x] **Task 1.5.6**: Update MULTI_AI_REVIEW_COORDINATOR.md with baseline (0.5 hours) ✅
+- [x] **Task 1.5.6**: Update MULTI_AI_REVIEW_COORDINATOR.md with baseline (0.5
+      hours) ✅
   - Record initial baseline metrics
   - Set baseline metrics (lines, files, components)
   - Establish next review triggers
@@ -1022,15 +1105,19 @@ When starting a review:
 
 ### ✅ Acceptance Criteria
 
-- [x] All 8 deliverables created and committed ✅ *(updated from 5 to include supporting infrastructure)*
+- [x] All 8 deliverables created and committed ✅ _(updated from 5 to include
+      supporting infrastructure)_
 - [x] Each template includes complete 6-phase prompt ✅
 - [x] JSONL schemas are valid and complete ✅
 - [x] Aggregation procedures are detailed and actionable ✅
 - [x] Coordinator includes all review history ✅
 - [x] Progress tracking metrics are defined ✅
-- [x] Templates tested with sample review (optional: run mini-review on docs/ folder) ✅
-- [x] **Deliverable audit passed** (all deliverables verified) ✅ *(added retroactively)*
-- [x] **Procedure gap analysis complete** (cross-references checked) ✅ *(added retroactively)*
+- [x] Templates tested with sample review (optional: run mini-review on docs/
+      folder) ✅
+- [x] **Deliverable audit passed** (all deliverables verified) ✅ _(added
+      retroactively)_
+- [x] **Procedure gap analysis complete** (cross-references checked) ✅ _(added
+      retroactively)_
 
 ### 📊 What Was Accomplished
 
@@ -1040,7 +1127,8 @@ All 6 Phase 1.5 deliverables created and committed:
 
 1. **docs/templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md** (684 lines)
    - Complete 6-phase review prompt embedded
-   - 5 review categories: Hygiene/Duplication, Types/Correctness, Next/React Boundaries, Security, Testing
+   - 5 review categories: Hygiene/Duplication, Types/Correctness, Next/React
+     Boundaries, Security, Testing
    - JSONL output schema with deduplication and consensus scoring
    - Aggregation process and PR planning workflow
    - R1/R2 self-review prompts, Between-PR checklist
@@ -1048,13 +1136,15 @@ All 6 Phase 1.5 deliverables created and committed:
 
 2. **docs/templates/MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md** (614 lines)
    - 6 mandatory security categories (including 4 global standards)
-   - Rate Limiting, Input Validation, Secrets Management, OWASP Compliance as first-class categories
+   - Rate Limiting, Input Validation, Secrets Management, OWASP Compliance as
+     first-class categories
    - Firebase-specific checks (Auth, Rules, App Check)
    - Compliance status tracking with OWASP mapping
    - Commit: [Phase 1.5.2]
 
 3. **docs/templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md** (590 lines)
-   - 5 performance categories: Bundle Size, Rendering, Data Fetching, Memory, Core Web Vitals
+   - 5 performance categories: Bundle Size, Rendering, Data Fetching, Memory,
+     Core Web Vitals
    - Baseline metrics tracking (LCP, FID, CLS)
    - Impact/effort prioritization with optimization plan output
    - Performance-specific verification commands
@@ -1109,18 +1199,23 @@ All 6 Phase 1.5 deliverables created and committed:
     - Continuous improvement loop diagram
     - Key files for ongoing maintenance
 
-*Note: These advisory sections (lines 2180-2510) provide comprehensive workflow guidance added in v1.4. They are informational content within the plan, not separate deliverable files.*
+_Note: These advisory sections (lines 2180-2510) provide comprehensive workflow
+guidance added in v1.4. They are informational content within the plan, not
+separate deliverable files._
 
 **Evidence:**
+
 - All commits pushed to remote on branch `claude/review-repo-docs-D4nYF`
 - Non-time-based triggers implemented per user preference
-- 4-layer security enforcement established (README, GLOBAL_SECURITY_STANDARDS, AI_WORKFLOW, pre-commit hooks pending)
+- 4-layer security enforcement established (README, GLOBAL_SECURITY_STANDARDS,
+  AI_WORKFLOW, pre-commit hooks pending)
 
 **Next Phase:** Phase 2 - Build Automation Scripts (7-9 hours)
 
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Read all 5 source docs from docs/ folder first:
    - "GitHub Code Analysis and Review Prompt.txt"
    - "code refactor multi AI prompt.md"
@@ -1137,26 +1232,26 @@ When implementing this phase:
 
 ## 📋 PHASE 2: BUILD AUTOMATION SCRIPTS
 
-**Status:** COMPLETE
-**Completion:** 100% (6/6 core tasks + 1 enforcement gate)
-**Actual Effort:** ~6 hours
-**Completed:** 2026-01-01
-**Dependencies:** Phase 1 (templates exist for validation)
-**Risk Level:** Low
+**Status:** COMPLETE **Completion:** 100% (6/6 core tasks + 1 enforcement gate)
+**Actual Effort:** ~6 hours **Completed:** 2026-01-01 **Dependencies:** Phase 1
+(templates exist for validation) **Risk Level:** Low
 
 ### 🎯 Phase Objectives
 
-Create automation scripts for documentation maintenance, validation, and review trigger detection to reduce manual overhead and ensure consistency.
+Create automation scripts for documentation maintenance, validation, and review
+trigger detection to reduce manual overhead and ensure consistency.
 
 ### 📝 Deliverables
 
 **1. scripts/update-readme-status.js**
+
 - Extracts status from ROADMAP.md
 - Updates README.md status dashboard
 - Calculates overall completion percentage
 - Preserves manual README content
 
 **2. scripts/check-docs-light.js**
+
 - Light linting for documentation
 - Checks for required sections by tier
 - Validates "Last Updated" dates are recent
@@ -1164,12 +1259,14 @@ Create automation scripts for documentation maintenance, validation, and review 
 - Validates cross-references exist
 
 **3. scripts/archive-doc.js**
+
 - Moves doc to docs/archive/
 - Adds frontmatter with archive metadata
 - Preserves all content
 - Updates cross-references
 
 **4. scripts/check-review-needed.js**
+
 - Tracks lines changed since last review
 - Counts files modified, new files, new components
 - Checks ESLint warning delta
@@ -1178,12 +1275,14 @@ Create automation scripts for documentation maintenance, validation, and review 
 - Updates MULTI_AI_REVIEW_COORDINATOR.md
 
 **5. GitHub Actions workflow: docs-lint.yml**
+
 - Runs check-docs-light.js on every PR
 - Fails if required sections missing
 - Warns if "Last Updated" is stale
 - Comments on PR with validation results
 
 **6. package.json scripts**
+
 - `npm run docs:update-readme` → runs update-readme-status.js
 - `npm run docs:check` → runs check-docs-light.js
 - `npm run docs:archive <file>` → runs archive-doc.js
@@ -1408,11 +1507,13 @@ Create automation scripts for documentation maintenance, validation, and review 
 - [x] All scripts have clear error messages ✅
 - [x] Scripts exit with correct codes (0 success, 1 error) ✅
 - [x] npm scripts added and tested ✅
-- [x] docs-lint.yml workflow runs on PR ✅ (created, needs validation on first PR)
+- [x] docs-lint.yml workflow runs on PR ✅ (created, needs validation on first
+      PR)
 - [x] Scripts tested with current repository state ✅
 - [x] README.md status successfully updated from ROADMAP.md ✅ (commit 8fddc1f)
 - [x] check-review-needed.js correctly identifies current baseline ✅
-- [x] **Deliverable audit passed** (all deliverables verified) ✅ *(ran retroactively)*
+- [x] **Deliverable audit passed** (all deliverables verified) ✅ _(ran
+      retroactively)_
 - [x] **Procedure gap analysis complete** (cross-references checked) ✅
 
 ### 📊 What Was Accomplished
@@ -1466,6 +1567,7 @@ All 6 Phase 2 core deliverables created plus 1 enforcement gate:
    - Commit: 867cbac
 
 **Issues Found During Implementation:**
+
 - ESLint errors in scripts (169) - fixed by adding Node.js globals config
 - Emoji regex issues - fixed by using alternation instead of character classes
 - Deliverable audit missed initially - ran retroactively, added enforcement gate
@@ -1474,34 +1576,36 @@ All 6 Phase 2 core deliverables created plus 1 enforcement gate:
 
 The following items were identified during AI review but deferred to Phase 2:
 
-| Item | Description | Priority | Status | Resolution |
-|------|-------------|----------|--------|------------|
-| Pre-commit hook | Add Husky pre-commit hook for secrets detection and linting | Medium | ✅ DONE | Commit 867cbac - blocks on lint/test failures |
-| Key rotation policy | Document key rotation schedule and procedures | Medium | ❌ DEFERRED | Move to Phase 6 or security backlog |
-| Template schema consolidation | Standardize JSONL output schema across all 4 review templates | Low | ❌ DEFERRED | Move to Phase 6 |
-| Automated deliverable audit script | Create script to verify phase deliverables automatically | Low | ⚠️ PARTIAL | phase-complete-check.js is interactive; full automation deferred |
-| Lessons learned automation | Script to surface relevant past learnings when working in areas with logged issues | Medium | ❌ DEFERRED | Move to Phase 6 |
+| Item                               | Description                                                                        | Priority | Status      | Resolution                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------- | -------- | ----------- | ---------------------------------------------------------------- |
+| Pre-commit hook                    | Add Husky pre-commit hook for secrets detection and linting                        | Medium   | ✅ DONE     | Commit 867cbac - blocks on lint/test failures                    |
+| Key rotation policy                | Document key rotation schedule and procedures                                      | Medium   | ❌ DEFERRED | Move to Phase 6 or security backlog                              |
+| Template schema consolidation      | Standardize JSONL output schema across all 4 review templates                      | Low      | ❌ DEFERRED | Move to Phase 6                                                  |
+| Automated deliverable audit script | Create script to verify phase deliverables automatically                           | Low      | ⚠️ PARTIAL  | phase-complete-check.js is interactive; full automation deferred |
+| Lessons learned automation         | Script to surface relevant past learnings when working in areas with logged issues | Medium   | ❌ DEFERRED | Move to Phase 6                                                  |
 
 ### 📋 Phase 2 Deferred Items (Move to Phase 6)
 
 The following items were NOT completed in Phase 2 and need scheduling:
 
-| Item | Description | Priority | Recommended Phase |
-|------|-------------|----------|-------------------|
-| Key rotation policy | Document key rotation schedule and procedures | Medium | Phase 6 or SECURITY.md update |
-| Template schema consolidation | Standardize JSONL output schema across all 4 review templates | Low | Phase 6 |
-| Full deliverable audit automation | Auto-verify deliverables against plan (not just interactive checklist) | Low | Phase 6 |
-| Lessons learned automation | Grep AI_REVIEW_PROCESS.md for relevant past issues when starting work | Medium | Phase 6 |
-| GitHub PR lint enforcement | Add CI workflow that blocks merge if lint fails | Medium | Phase 3 (before migrations) |
-| docs-lint.yml validation | Test docs-lint.yml on actual PR | High | Phase 3 (first PR) |
-| Session hook: review trigger check | Add `npm run review:check` to session-start hook | Medium | Phase 6 |
-| Learning tracking prompt | Auto-prompt to document incidents in AI_REVIEW_PROCESS.md | Medium | Phase 6 |
+| Item                               | Description                                                            | Priority | Recommended Phase             |
+| ---------------------------------- | ---------------------------------------------------------------------- | -------- | ----------------------------- |
+| Key rotation policy                | Document key rotation schedule and procedures                          | Medium   | Phase 6 or SECURITY.md update |
+| Template schema consolidation      | Standardize JSONL output schema across all 4 review templates          | Low      | Phase 6                       |
+| Full deliverable audit automation  | Auto-verify deliverables against plan (not just interactive checklist) | Low      | Phase 6                       |
+| Lessons learned automation         | Grep AI_REVIEW_PROCESS.md for relevant past issues when starting work  | Medium   | Phase 6                       |
+| GitHub PR lint enforcement         | Add CI workflow that blocks merge if lint fails                        | Medium   | Phase 3 (before migrations)   |
+| docs-lint.yml validation           | Test docs-lint.yml on actual PR                                        | High     | Phase 3 (first PR)            |
+| Session hook: review trigger check | Add `npm run review:check` to session-start hook                       | Medium   | Phase 6                       |
+| Learning tracking prompt           | Auto-prompt to document incidents in AI_REVIEW_PROCESS.md              | Medium   | Phase 6                       |
 
-**Note**: Items marked "Phase 3" should be addressed immediately. Items marked "Phase 6" can wait until cleanup phase.
+**Note**: Items marked "Phase 3" should be addressed immediately. Items marked
+"Phase 6" can wait until cleanup phase.
 
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Use Node.js for all scripts (consistency with package.json)
 2. Add proper error handling and user-friendly messages
 3. Include usage instructions in script headers
@@ -1518,44 +1622,43 @@ When implementing this phase:
 
 ## 📋 PHASE 3: MIGRATE TIER 1-2 DOCS
 
-**Status:** ✅ COMPLETE
-**Completion:** 100% (7/7 tasks)
-**Actual Effort:** ~4 hours
-**Completed:** 2026-01-02
-**Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation)
-**Risk Level:** Medium
+**Status:** ✅ COMPLETE **Completion:** 100% (7/7 tasks) **Actual Effort:** ~4
+hours **Completed:** 2026-01-02 **Dependencies:** Phase 1 (templates), Phase 2
+(scripts for validation) **Risk Level:** Medium
 
 ### 🎯 Phase Objectives
 
-Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new standardized structure, ensuring highest-priority docs are consistent.
+Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new
+standardized structure, ensuring highest-priority docs are consistent.
 
 ### 📝 Documents to Migrate
 
 **Tier 1 (4 documents):**
+
 1. README.md
 2. ROADMAP.md
 3. ROADMAP_LOG.md
 4. EIGHT_PHASE_REFACTOR_PLAN.md (already compliant - verify only)
 
-**Tier 2 (3 documents):**
-5. ARCHITECTURE.md
-6. SECURITY.md
-7. DEVELOPMENT.md
+**Tier 2 (3 documents):** 5. ARCHITECTURE.md 6. SECURITY.md 7. DEVELOPMENT.md
 
 ### 📋 Migration Procedure (Per Document)
 
 **Step 1: Read Current Document**
+
 - Understand existing content and structure
 - Identify what sections already exist
 - Note what content is unique vs duplicate
 
 **Step 2: Map to Template**
+
 - Use CANONICAL_DOC_TEMPLATE.md (Tier 1) or FOUNDATION_DOC_TEMPLATE.md (Tier 2)
 - Map existing sections to new structure
 - Identify missing required sections
 - Identify sections to remove/consolidate
 
 **Step 3: Apply New Structure**
+
 - Add missing required sections
 - Reorganize existing content into new sections
 - Add status dashboard (if missing)
@@ -1565,23 +1668,31 @@ Migrate all Tier 1 (Canonical Living) and Tier 2 (Foundation) documents to new s
 - Add version history section
 
 **Step 4: Retroactive Improvements**
+
 - Add reasoning & decisions (from memory/context if available)
 - Document known gaps (technical debt)
 - Add blockers (current state)
-- **Limitation Note**: For ROADMAP_LOG.md, add note about pre-standardization entries having limited metadata
-- **Placeholder for Missing Context**: When reasoning/decisions cannot be reconstructed, use:
+- **Limitation Note**: For ROADMAP_LOG.md, add note about pre-standardization
+  entries having limited metadata
+- **Placeholder for Missing Context**: When reasoning/decisions cannot be
+  reconstructed, use:
+
   ```markdown
   **Reasoning & Decisions** (reconstructed 2026-01-XX):
-  - [INCOMPLETE] Original reasoning unavailable; see commit <hash> for context (or "no sources found")
+
+  - [INCOMPLETE] Original reasoning unavailable; see commit <hash> for context
+    (or "no sources found")
   ```
 
 **Step 5: Validate**
+
 - Run `npm run docs:check` on updated doc
 - Verify all required sections present
 - Check cross-references are valid
 - Verify formatting is correct
 
 **Step 6: Update Metadata**
+
 - Set "Last Updated" to current date
 - Set version to 2.0 (major restructure)
 - Add version history entry
@@ -1598,7 +1709,8 @@ These items should be addressed BEFORE starting migrations:
 - [x] **Task 3.0b**: Add GitHub PR lint enforcement (0.5 hours) ✅
   - Pre-commit hooks block commits if lint fails
   - Husky pre-commit runs `npm run lint` and `npm test`
-  - **Note:** CI-level enforcement deferred to Phase 6 (pre-commit sufficient for now)
+  - **Note:** CI-level enforcement deferred to Phase 6 (pre-commit sufficient
+    for now)
 
 ### 📋 Tasks
 
@@ -1627,7 +1739,8 @@ These items should be addressed BEFORE starting migrations:
   - AI instructions for archival procedure added
   - Update triggers section added
   - Version history table added
-  - **Deviation:** Pre-standardization metadata note not added (existing entries preserved as-is)
+  - **Deviation:** Pre-standardization metadata note not added (existing entries
+    preserved as-is)
 
 - [x] **Task 3.4**: Verify EIGHT_PHASE_REFACTOR_PLAN.md ✅
   - Already mostly compliant with template
@@ -1640,7 +1753,8 @@ These items should be addressed BEFORE starting migrations:
   - AI instructions section added
   - Update triggers section added
   - Version history table added
-  - **Deviation:** Component health dashboard and ADR sections not added (preserve existing content, don't over-engineer)
+  - **Deviation:** Component health dashboard and ADR sections not added
+    (preserve existing content, don't over-engineer)
 
 - [x] **Task 3.6**: Migrate SECURITY.md ✅
   - Added Purpose & Scope section
@@ -1648,14 +1762,16 @@ These items should be addressed BEFORE starting migrations:
   - Update triggers section added
   - Version history table added
   - Fixed broken links to archived BILLING_ALERTS_SETUP.md
-  - **Deviation:** Security posture dashboard not added (has existing checklist table)
+  - **Deviation:** Security posture dashboard not added (has existing checklist
+    table)
 
 - [x] **Task 3.7**: Migrate DEVELOPMENT.md ✅
   - Added Purpose & Scope section
   - AI instructions section added
   - Update triggers section added
   - Version history table added
-  - **Deviation:** Workflow overview/known gaps not added (existing content comprehensive)
+  - **Deviation:** Workflow overview/known gaps not added (existing content
+    comprehensive)
 
 ### ✅ Acceptance Criteria
 
@@ -1663,7 +1779,8 @@ These items should be addressed BEFORE starting migrations:
 - [x] All required sections present per tier ✅ (0 errors from docs:check)
 - [x] All documents pass `npm run docs:check` ✅ (4 warnings, 0 errors)
 - [x] Status dashboards functional and accurate ✅
-- [x] Dependency graphs included where applicable ⚠️ (deferred - existing structure preserved)
+- [x] Dependency graphs included where applicable ⚠️ (deferred - existing
+      structure preserved)
 - [x] AI instructions clear and actionable ✅
 - [x] Update triggers defined ✅
 - [x] Version metadata added (all at 2.0 due to restructure) ✅
@@ -1675,6 +1792,7 @@ These items should be addressed BEFORE starting migrations:
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Work in order (Task 3.1 → 3.7) as some docs reference others
 2. Read the template BEFORE editing each doc
 3. Preserve ALL existing content (add, don't delete)
@@ -1688,20 +1806,19 @@ When implementing this phase:
 
 ### 🔍 Phase 3 Completion Audit (2026-01-02)
 
-**Audit performed by:** Claude (AI Assistant)
-**Audit date:** 2026-01-02
+**Audit performed by:** Claude (AI Assistant) **Audit date:** 2026-01-02
 
 #### Deliverable Verification
 
-| Deliverable | Status | Evidence |
-|-------------|--------|----------|
-| README.md v2.0 | ✅ | Commit 762d516 |
-| ROADMAP.md v2.0 | ✅ | Commit 762d516 |
-| ROADMAP_LOG.md v2.0 | ✅ | Commit 762d516 |
-| EIGHT_PHASE_REFACTOR_PLAN.md v1.2 | ✅ | Commit 762d516 |
-| ARCHITECTURE.md v2.0 | ✅ | Commit 762d516 |
-| SECURITY.md v2.0 | ✅ | Commit 762d516, + Update Triggers fix |
-| DEVELOPMENT.md v2.0 | ✅ | Commit 762d516, + Update Triggers fix |
+| Deliverable                       | Status | Evidence                              |
+| --------------------------------- | ------ | ------------------------------------- |
+| README.md v2.0                    | ✅     | Commit 762d516                        |
+| ROADMAP.md v2.0                   | ✅     | Commit 762d516                        |
+| ROADMAP_LOG.md v2.0               | ✅     | Commit 762d516                        |
+| EIGHT_PHASE_REFACTOR_PLAN.md v1.2 | ✅     | Commit 762d516                        |
+| ARCHITECTURE.md v2.0              | ✅     | Commit 762d516                        |
+| SECURITY.md v2.0                  | ✅     | Commit 762d516, + Update Triggers fix |
+| DEVELOPMENT.md v2.0               | ✅     | Commit 762d516, + Update Triggers fix |
 
 #### Validation Results
 
@@ -1715,21 +1832,21 @@ Result: 0 errors, 4 warnings (all acceptable)
 
 #### Deviations from Plan
 
-| Planned | Actual | Rationale |
-|---------|--------|-----------|
-| Dependency graphs for milestones | Not added | Existing ROADMAP structure is clear; over-engineering avoided |
-| Pre-standardization metadata note | Not added | Existing entries preserved as-is; minimal disruption |
-| Component health dashboard | Not added | Existing content comprehensive; avoid over-templating |
-| Security posture dashboard | Not added | Has checklist table that serves same purpose |
-| CI-level lint enforcement | Pre-commit only | Sufficient for current needs; CI deferred to Phase 6 |
+| Planned                           | Actual          | Rationale                                                     |
+| --------------------------------- | --------------- | ------------------------------------------------------------- |
+| Dependency graphs for milestones  | Not added       | Existing ROADMAP structure is clear; over-engineering avoided |
+| Pre-standardization metadata note | Not added       | Existing entries preserved as-is; minimal disruption          |
+| Component health dashboard        | Not added       | Existing content comprehensive; avoid over-templating         |
+| Security posture dashboard        | Not added       | Has checklist table that serves same purpose                  |
+| CI-level lint enforcement         | Pre-commit only | Sufficient for current needs; CI deferred to Phase 6          |
 
 #### Additions (Not in Original Plan)
 
-| Addition | Reason |
-|----------|--------|
-| Fixed 5 broken links to archived docs | Discovered during migration |
-| Removed AI_HANDOFF.md reference from update-readme-status.js | Deprecated file reference |
-| Added Status section to ROADMAP_LOG.md | Required by docs:check |
+| Addition                                                     | Reason                      |
+| ------------------------------------------------------------ | --------------------------- |
+| Fixed 5 broken links to archived docs                        | Discovered during migration |
+| Removed AI_HANDOFF.md reference from update-readme-status.js | Deprecated file reference   |
+| Added Status section to ROADMAP_LOG.md                       | Required by docs:check      |
 
 #### Sign-off
 
@@ -1742,36 +1859,35 @@ Result: 0 errors, 4 warnings (all acceptable)
 
 ## 📋 PHASE 4: MIGRATE TIER 3-4 DOCS
 
-**Status:** ✅ COMPLETE
-**Completion:** 100%
-**Actual Effort:** ~6 hours
-**Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation)
-**Risk Level:** Low
+**Status:** ✅ COMPLETE **Completion:** 100% **Actual Effort:** ~6 hours
+**Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation) **Risk
+Level:** Low
 
 ### 🎯 Phase Objectives
 
-Migrate all Tier 3 (Planning) and Tier 4 (Reference) documents to standardized structure, ensuring planning docs support active work and reference docs provide clear guidance.
+Migrate all Tier 3 (Planning) and Tier 4 (Reference) documents to standardized
+structure, ensuring planning docs support active work and reference docs provide
+clear guidance.
 
 ### 📝 Documents to Migrate
 
 **Tier 3 (6 documents):**
+
 1. M1.6_SUPPORT_TAB_PLAN.md (NEW - will be created)
 2. LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md
 3. ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md
 4. MONETIZATION_RESEARCH.md
 5. POST_PHASE_8_BACKLOG.md
-6. docs/reviews/* (future review results - template only)
+6. docs/reviews/\* (future review results - template only)
 
-**Tier 4 (3 documents - already created or migrated in Phase 1):**
-7. AI_WORKFLOW.md (created in Phase 1)
-8. SESSION_CONTEXT.md (created in Phase 1)
-9. claude.md
-10. IMPLEMENTATION_PROMPTS.md
-11. PR_WORKFLOW_CHECKLIST.md
+**Tier 4 (3 documents - already created or migrated in Phase 1):** 7.
+AI_WORKFLOW.md (created in Phase 1) 8. SESSION_CONTEXT.md (created in
+Phase 1) 9. claude.md 10. IMPLEMENTATION_PROMPTS.md 11. PR_WORKFLOW_CHECKLIST.md
 
 ### 📋 Migration Procedure (Per Document)
 
-Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TEMPLATE.md (Tier 4).
+Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or
+REFERENCE_DOC_TEMPLATE.md (Tier 4).
 
 ### 📋 Tasks
 
@@ -1785,7 +1901,8 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
   - Dependencies on Phase 1 refactoring completion
   - Task breakdown for all sub-features
   - Acceptance criteria
-  - Include dependency graph showing: Phase 0 → Onboarding → Sponsor → Quick Actions
+  - Include dependency graph showing: Phase 0 → Onboarding → Sponsor → Quick
+    Actions
 
 - [x] **Task 4.2**: Migrate LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md (1 hour) ✅
   - Add status dashboard
@@ -1794,7 +1911,8 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
   - Add blockers section (if any)
   - Add AI instructions
 
-- [x] **Task 4.3**: Migrate ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md (1 hour) ✅
+- [x] **Task 4.3**: Migrate ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md (1
+      hour) ✅
   - Add status dashboard
   - Add objectives & scope
   - Add dependencies
@@ -1844,10 +1962,12 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
   - **Add CodeRabbit review section (links to AI_REVIEW_PROCESS.md)**
   - Add AI instructions (mandatory pre-PR checks)
 
-- [x] **Task 4.9**: Create GitHub pull_request_template (.github/pull_request_template.md) (0.75 hours) ✅
+- [x] **Task 4.9**: Create GitHub pull_request_template
+      (.github/pull_request_template.md) (0.75 hours) ✅
   - **Add PR title format guidance at top:**
     - Comment block explaining: `<type>(<scope>): <description>`
-    - Examples: `feat(auth): add password reset flow`, `fix(journal): resolve entry save bug`
+    - Examples: `feat(auth): add password reset flow`,
+      `fix(journal): resolve entry save bug`
     - Link to PR_WORKFLOW_CHECKLIST.md for full conventions
   - **Add standard PR description sections:**
     - What Changed (required)
@@ -1882,6 +2002,7 @@ Same as Phase 3, but using PLANNING_DOC_TEMPLATE.md (Tier 3) or REFERENCE_DOC_TE
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Start with Tier 3 docs (more complex)
 2. Use PLANNING_DOC_TEMPLATE.md and REFERENCE_DOC_TEMPLATE.md as guides
 3. For M1.6_SUPPORT_TAB_PLAN.md, reference ROADMAP.md for context
@@ -1894,22 +2015,21 @@ When implementing this phase:
 
 ### 🔍 Phase 4 Completion Audit
 
-**Audit performed by:** Claude
-**Audit date:** 2026-01-02
+**Audit performed by:** Claude **Audit date:** 2026-01-02
 
 #### Deliverable Verification
 
-| Deliverable | Status | Evidence |
-|-------------|--------|----------|
-| M1.6_SUPPORT_TAB_PLAN.md | ✅ | docs/M1.6_SUPPORT_TAB_PLAN.md (21KB) |
-| LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md | ✅ | docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md (13KB) |
-| ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | ✅ | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md (12KB) |
-| MONETIZATION_RESEARCH.md | ✅ | docs/MONETIZATION_RESEARCH.md (10KB) |
-| POST_PHASE_8_BACKLOG.md | ✅ | docs/POST_PHASE_8_BACKLOG.md (5KB) |
-| claude.md v2.1 | ✅ | claude.md (updated with Skill Decision Tree) |
-| IMPLEMENTATION_PROMPTS.md | ✅ | docs/IMPLEMENTATION_PROMPTS.md (14KB) |
-| PR_WORKFLOW_CHECKLIST.md | ✅ | docs/PR_WORKFLOW_CHECKLIST.md (13KB) |
-| .github/pull_request_template.md | ✅ | .github/pull_request_template.md (2KB) |
+| Deliverable                                     | Status | Evidence                                                    |
+| ----------------------------------------------- | ------ | ----------------------------------------------------------- |
+| M1.6_SUPPORT_TAB_PLAN.md                        | ✅     | docs/M1.6_SUPPORT_TAB_PLAN.md (21KB)                        |
+| LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md          | ✅     | docs/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md (13KB)          |
+| ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md | ✅     | docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md (12KB) |
+| MONETIZATION_RESEARCH.md                        | ✅     | docs/MONETIZATION_RESEARCH.md (10KB)                        |
+| POST_PHASE_8_BACKLOG.md                         | ✅     | docs/POST_PHASE_8_BACKLOG.md (5KB)                          |
+| claude.md v2.1                                  | ✅     | claude.md (updated with Skill Decision Tree)                |
+| IMPLEMENTATION_PROMPTS.md                       | ✅     | docs/IMPLEMENTATION_PROMPTS.md (14KB)                       |
+| PR_WORKFLOW_CHECKLIST.md                        | ✅     | docs/PR_WORKFLOW_CHECKLIST.md (13KB)                        |
+| .github/pull_request_template.md                | ✅     | .github/pull_request_template.md (2KB)                      |
 
 #### Validation Results
 
@@ -1917,18 +2037,18 @@ All docs pass `npm run docs:check` (verified during migration)
 
 #### Deviations from Plan
 
-| Planned | Actual | Rationale |
-|---------|--------|-----------|
+| Planned                | Actual    | Rationale                                        |
+| ---------------------- | --------- | ------------------------------------------------ |
 | Full dependency graphs | Not added | Existing structure clear; avoid over-engineering |
 
 #### Additions (Not in Original Plan)
 
-| Addition | Reason |
-|----------|--------|
-| TRIGGERS.md | Discovered need during workflow audit |
-| Skill Decision Tree in claude.md | Process improvement from workflow audit |
+| Addition                              | Reason                                  |
+| ------------------------------------- | --------------------------------------- |
+| TRIGGERS.md                           | Discovered need during workflow audit   |
+| Skill Decision Tree in claude.md      | Process improvement from workflow audit |
 | Session checklist in session-start.sh | Process improvement from workflow audit |
-| AI_HANDOFF.md archived early | Redundant with SESSION_CONTEXT.md |
+| AI_HANDOFF.md archived early          | Redundant with SESSION_CONTEXT.md       |
 
 #### Sign-off
 
@@ -1941,19 +2061,19 @@ All docs pass `npm run docs:check` (verified during migration)
 
 ## 📋 PHASE 5: MIGRATE TIER 5 DOCS
 
-**Status:** PENDING
-**Completion:** 0%
-**Estimated Effort:** 4-5 hours
-**Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation)
-**Risk Level:** Low
+**Status:** PENDING **Completion:** 0% **Estimated Effort:** 4-5 hours
+**Dependencies:** Phase 1 (templates), Phase 2 (scripts for validation) **Risk
+Level:** Low
 
 ### 🎯 Phase Objectives
 
-Migrate all Tier 5 (Guide) documents to standardized how-to format with clear steps, prerequisites, and troubleshooting.
+Migrate all Tier 5 (Guide) documents to standardized how-to format with clear
+steps, prerequisites, and troubleshooting.
 
 ### 📝 Documents to Migrate
 
 **Tier 5 (6 documents):**
+
 1. SENTRY_INTEGRATION_GUIDE.md
 2. APPCHECK_SETUP.md (merge APPCHECK_FRESH_SETUP.md into this)
 3. INCIDENT_RESPONSE.md
@@ -1966,6 +2086,7 @@ Migrate all Tier 5 (Guide) documents to standardized how-to format with clear st
 Use GUIDE_TEMPLATE.md for all migrations.
 
 **Required Sections:**
+
 - 📋 Purpose
 - 🗓️ Last Updated
 - 📝 Prerequisites
@@ -2042,6 +2163,7 @@ Use GUIDE_TEMPLATE.md for all migrations.
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Use GUIDE_TEMPLATE.md for all migrations
 2. When merging docs, preserve ALL unique content
 3. Number all steps clearly (1, 2, 3...)
@@ -2059,28 +2181,31 @@ When implementing this phase:
 **⚠️ MANDATORY: Complete this audit before marking Phase 5 COMPLETE**
 
 ```markdown
-**Audit performed by:** [Name/AI]
-**Audit date:** YYYY-MM-DD
+**Audit performed by:** [Name/AI] **Audit date:** YYYY-MM-DD
 
 #### Deliverable Verification
-| Deliverable | Status | Evidence |
-|-------------|--------|----------|
-| [Doc 1] | ✅/❌ | Commit [hash] |
-| [Doc 2] | ✅/❌ | Commit [hash] |
+
+| Deliverable | Status | Evidence      |
+| ----------- | ------ | ------------- |
+| [Doc 1]     | ✅/❌  | Commit [hash] |
+| [Doc 2]     | ✅/❌  | Commit [hash] |
 
 #### Validation Results
-npm run docs:check -- [all Phase 5 docs]
-Result: [X errors, Y warnings]
+
+npm run docs:check -- [all Phase 5 docs] Result: [X errors, Y warnings]
 
 #### Deviations from Plan
+
 | Planned | Actual | Rationale |
-|---------|--------|-----------|
+| ------- | ------ | --------- |
 
 #### Additions (Not in Original Plan)
+
 | Addition | Reason |
-|----------|--------|
+| -------- | ------ |
 
 #### Sign-off
+
 - [ ] All deliverables verified
 - [ ] All tasks completed or deviation documented
 - [ ] Validation scripts pass
@@ -2089,22 +2214,23 @@ Result: [X errors, Y warnings]
 
 ### 🔍 Phase 5 Completion Audit (RETROACTIVE)
 
-**Audit performed by:** Claude
-**Audit date:** 2026-01-03 (retroactive)
-**Note:** This audit was completed retroactively after Phase 5 work was done. See Process Improvement below.
+**Audit performed by:** Claude **Audit date:** 2026-01-03 (retroactive)
+**Note:** This audit was completed retroactively after Phase 5 work was done.
+See Process Improvement below.
 
 #### Deliverable Verification
 
-| Deliverable | Status | Evidence |
-|-------------|--------|----------|
-| APPCHECK_SETUP.md (merged) | ✅ | Commit a202abb - includes fresh setup content |
-| SENTRY_INTEGRATION_GUIDE.md | ✅ | Commit a202abb - added Tier 2 sections |
-| INCIDENT_RESPONSE.md | ✅ | Commit a202abb - added Tier 2 sections |
-| recaptcha_removal_guide.md | ✅ | Commit a202abb - added Tier 2 sections |
-| ANTIGRAVITY_GUIDE.md | ✅ | Commit a202abb - added Tier 2 sections |
-| TESTING_PLAN.md (merged) | ✅ | Commit a202abb - includes testing checklist |
+| Deliverable                 | Status | Evidence                                      |
+| --------------------------- | ------ | --------------------------------------------- |
+| APPCHECK_SETUP.md (merged)  | ✅     | Commit a202abb - includes fresh setup content |
+| SENTRY_INTEGRATION_GUIDE.md | ✅     | Commit a202abb - added Tier 2 sections        |
+| INCIDENT_RESPONSE.md        | ✅     | Commit a202abb - added Tier 2 sections        |
+| recaptcha_removal_guide.md  | ✅     | Commit a202abb - added Tier 2 sections        |
+| ANTIGRAVITY_GUIDE.md        | ✅     | Commit a202abb - added Tier 2 sections        |
+| TESTING_PLAN.md (merged)    | ✅     | Commit a202abb - includes testing checklist   |
 
 #### Validation Results
+
 ```
 npm run docs:check
 Result: 0 lint errors on Phase 5 documents
@@ -2113,19 +2239,20 @@ Note: Stub files (APPCHECK_FRESH_SETUP.md, TESTING_CHECKLIST.md) have expected e
 
 #### Deviations from Plan
 
-| Planned | Actual | Rationale |
-|---------|--------|-----------|
-| Individual migrations | Batch migrations | More efficient to do all 6 in one session |
-| Use docs:archive script | Created stub files | Better for backward compatibility |
+| Planned                 | Actual             | Rationale                                 |
+| ----------------------- | ------------------ | ----------------------------------------- |
+| Individual migrations   | Batch migrations   | More efficient to do all 6 in one session |
+| Use docs:archive script | Created stub files | Better for backward compatibility         |
 
 #### Additions (Not in Original Plan)
 
-| Addition | Reason |
-|----------|--------|
-| Tier 2 section additions | All docs needed Purpose, Quick Start, AI Instructions, Version History |
-| Stub files at original paths | Maintain backward compatibility for external links |
+| Addition                     | Reason                                                                 |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| Tier 2 section additions     | All docs needed Purpose, Quick Start, AI Instructions, Version History |
+| Stub files at original paths | Maintain backward compatibility for external links                     |
 
 #### Sign-off
+
 - [x] All deliverables verified
 - [x] All tasks completed or deviation documented
 - [x] Validation scripts pass (for target docs)
@@ -2133,41 +2260,42 @@ Note: Stub files (APPCHECK_FRESH_SETUP.md, TESTING_CHECKLIST.md) have expected e
 
 #### Process Improvement
 
-**MISSED:** This audit should have been completed before marking Phase 5 COMPLETE.
-**ACTION:** Audit requirements added to INTEGRATED_IMPROVEMENT_PLAN.md Step structure.
+**MISSED:** This audit should have been completed before marking Phase 5
+COMPLETE. **ACTION:** Audit requirements added to INTEGRATED_IMPROVEMENT_PLAN.md
+Step structure.
 
 ---
 
 ## 📋 PHASE 6: ARCHIVE & CLEANUP
 
-**Status:** PENDING
-**Completion:** 0%
-**Estimated Effort:** 3-4 hours
-**Dependencies:** Phase 3, 4, 5 (all migrations complete)
-**Risk Level:** Low
+**Status:** PENDING **Completion:** 0% **Estimated Effort:** 3-4 hours
+**Dependencies:** Phase 3, 4, 5 (all migrations complete) **Risk Level:** Low
 
 ### 🎯 Phase Objectives
 
-Archive outdated and duplicate documents, clean up repository structure, and verify all documentation is standardized and validated.
+Archive outdated and duplicate documents, clean up repository structure, and
+verify all documentation is standardized and validated.
 
 ### 📝 Documents to Archive
 
 **Duplicate Documents (merged in Phase 5):**
+
 1. APPCHECK_FRESH_SETUP.md (merged into APPCHECK_SETUP.md)
 2. TESTING_CHECKLIST.md (merged into TESTING_PLAN.md)
 
-**Outdated Documents (no longer relevant):**
-3. RECAPTCHA_PROBLEM_SUMMARY.md (historical, reCAPTCHA removed)
-4. SUPABASE_MIGRATION_ANALYSIS.md (decided against Supabase)
-5. docs/local-resources-review.md (incorporated into LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)
-6. docs/firestore-rules.md (incorporated into SECURITY.md)
+**Outdated Documents (no longer relevant):** 3. RECAPTCHA_PROBLEM_SUMMARY.md
+(historical, reCAPTCHA removed) 4. SUPABASE_MIGRATION_ANALYSIS.md (decided
+against Supabase) 5. docs/local-resources-review.md (incorporated into
+LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md) 6. docs/firestore-rules.md (incorporated
+into SECURITY.md)
 
-**Historical Documents (for reference only):**
-7. AI_HANDOFF.md (✅ ARCHIVED Jan 2, 2026 - replaced by SESSION_CONTEXT.md)
+**Historical Documents (for reference only):** 7. AI_HANDOFF.md (✅ ARCHIVED Jan
+2, 2026 - replaced by SESSION_CONTEXT.md)
 
 ### 📋 Archive Procedure (Per Document)
 
 Use `npm run docs:archive -- <filename>` which:
+
 1. Adds YAML frontmatter with metadata:
    ```yaml
    ---
@@ -2203,9 +2331,11 @@ Use `npm run docs:archive -- <filename>` which:
   - Run `npm run docs:archive -- docs/firestore-rules.md`
     - Reason: "superseded by SECURITY.md"
 
-- [x] **Task 6.3**: Archive AI_HANDOFF.md (0.5 hours) ✅ DONE EARLY (Jan 2, 2026)
+- [x] **Task 6.3**: Archive AI_HANDOFF.md (0.5 hours) ✅ DONE EARLY (Jan
+      2, 2026)
   - **Completed during workflow audit session:**
-    - [x] All collaboration notes from AI_HANDOFF.md migrated to SESSION_CONTEXT.md
+    - [x] All collaboration notes from AI_HANDOFF.md migrated to
+          SESSION_CONTEXT.md
     - [x] No unique content remains in AI_HANDOFF.md
     - [x] SESSION_CONTEXT.md contains full transition context
     - [x] Archived to `docs/archive/AI_HANDOFF-2026-01-02.md`
@@ -2233,20 +2363,25 @@ Use `npm run docs:archive -- <filename>` which:
 
 ### 📋 Deferred Items from Phase 2 (Additional Tasks)
 
-The following items were deferred from Phase 2 and should be addressed in Phase 6:
+The following items were deferred from Phase 2 and should be addressed in Phase
+6:
 
-- [x] **Task 6.7**: Template schema consolidation (1 hour) - **DONE (Session #10)**
-  - Created JSONL_SCHEMA_STANDARD.md defining canonical schema for all review templates
+- [x] **Task 6.7**: Template schema consolidation (1 hour) - **DONE (Session
+      #10)**
+  - Created JSONL_SCHEMA_STANDARD.md defining canonical schema for all review
+    templates
   - Updated all 4 review templates to reference the standard
   - Documented severity/effort scales and domain-specific extensions
 
-- [x] **Task 6.8**: Full deliverable audit automation (1.5 hours) - **DONE (Session #10)**
+- [x] **Task 6.8**: Full deliverable audit automation (1.5 hours) - **DONE
+      (Session #10)**
   - Enhanced phase-complete-check.js with `--auto` mode for CI
   - Added `--plan <path>` flag to specify plan document
   - Automated file existence verification from plan deliverables
   - Added `npm run phase:complete:auto` script
 
-- [x] **Task 6.9**: Lessons learned automation (2 hours) - **DONE (Session #10)**
+- [x] **Task 6.9**: Lessons learned automation (2 hours) - **DONE (Session
+      #10)**
   - Created scripts/surface-lessons-learned.js
   - Auto-detects topics from git changes
   - Surfaces relevant lessons from AI_REVIEW_LEARNINGS_LOG.md
@@ -2257,13 +2392,15 @@ The following items were deferred from Phase 2 and should be addressed in Phase 
   - Added Step 9: Surface relevant lessons (`npm run lessons:surface`)
   - Added Step 10: Incident documentation reminder
 
-- [x] **Task 6.11**: Key rotation policy documentation (0.5 hours) - **MOVED TO Step 4 (Session #10)**
+- [x] **Task 6.11**: Key rotation policy documentation (0.5 hours) - **MOVED TO
+      Step 4 (Session #10)**
   - Document key rotation schedule in SECURITY.md
   - Add procedures for rotating Firebase, API keys
   - Link from GLOBAL_SECURITY_STANDARDS.md
   - **Decision: Moved to INTEGRATED_IMPROVEMENT_PLAN.md Step 4, Task 4.6**
 
-- [x] **Task 6.12**: Clean up deploy-firebase.yml (0.25 hours) - **DONE (Session #8)**
+- [x] **Task 6.12**: Clean up deploy-firebase.yml (0.25 hours) - **DONE (Session
+      #8)**
   - Remove `claude/review-repo-docs-D4nYF` from triggers (line 7)
   - This branch was added temporarily during Phase 2 development
   - Should only deploy from `main` branch after PR merges
@@ -2271,30 +2408,41 @@ The following items were deferred from Phase 2 and should be addressed in Phase 
 
 ### 📋 Deferred Items from Phase 3 (Additional Tasks)
 
-The following items were intentionally skipped in Phase 3 and should be reviewed in Phase 6:
+The following items were intentionally skipped in Phase 3 and should be reviewed
+in Phase 6:
 
-- [x] **Task 6.13**: Review dependency graphs for milestones (1 hour) - **DONE (Session #10)**
+- [x] **Task 6.13**: Review dependency graphs for milestones (1 hour) - **DONE
+      (Session #10)**
   - Evaluated if Mermaid dependency graphs are needed for ROADMAP.md milestones
-  - Added Mermaid flowchart to ROADMAP.md showing M0→M1→Doc→M1.5/M1.6→M3+ dependencies
-  - Added Mermaid flowchart to INTEGRATED_IMPROVEMENT_PLAN.md showing Step 1-6 dependencies
+  - Added Mermaid flowchart to ROADMAP.md showing M0→M1→Doc→M1.5/M1.6→M3+
+    dependencies
+  - Added Mermaid flowchart to INTEGRATED_IMPROVEMENT_PLAN.md showing Step 1-6
+    dependencies
   - Both diagrams use color coding: green=complete, yellow=pending, blue=future
 
-- [x] **Task 6.14**: Review pre-standardization metadata note (0.25 hours) - **SKIPPED (Session #10)**
+- [x] **Task 6.14**: Review pre-standardization metadata note (0.25 hours) -
+      **SKIPPED (Session #10)**
   - Evaluate if existing docs need "pre-standardization" annotations
-  - Original plan called for metadata note in documents created before standardization
-  - **Decision: SKIPPED - Not needed; existing entries preserved as-is was sufficient**
+  - Original plan called for metadata note in documents created before
+    standardization
+  - **Decision: SKIPPED - Not needed; existing entries preserved as-is was
+    sufficient**
 
-- [x] **Task 6.15**: Review component health dashboard (0.5 hours) - **SKIPPED (Session #10)**
+- [x] **Task 6.15**: Review component health dashboard (0.5 hours) - **SKIPPED
+      (Session #10)**
   - Evaluate if ARCHITECTURE.md needs separate component health tracking
   - Original plan called for component health dashboard section
-  - **Decision: SKIPPED - Existing content comprehensive; add only if issues arise**
+  - **Decision: SKIPPED - Existing content comprehensive; add only if issues
+    arise**
 
-- [x] **Task 6.16**: Review security posture dashboard (0.5 hours) - **SKIPPED (Session #10)**
+- [x] **Task 6.16**: Review security posture dashboard (0.5 hours) - **SKIPPED
+      (Session #10)**
   - Evaluate if SECURITY.md needs dedicated posture dashboard
   - Original plan called for security posture dashboard section
   - **Decision: SKIPPED - Checklist table serves same purpose sufficiently**
 
-- [x] **Task 6.17**: CI-level lint enforcement (1 hour) - **MOVED TO Step 3 (Session #10)**
+- [x] **Task 6.17**: CI-level lint enforcement (1 hour) - **MOVED TO Step 3
+      (Session #10)**
   - Add lint enforcement to CI workflow (beyond pre-commit)
   - Current: Pre-commit hooks block commits if lint fails
   - Enhancement: Add `npm run lint` to GitHub Actions workflow
@@ -2317,13 +2465,15 @@ The following items were intentionally skipped in Phase 3 and should be reviewed
 ### 🤖 AI Instructions
 
 When implementing this phase:
+
 1. Use `npm run docs:archive` script for all archival
 2. Verify content merged BEFORE archiving source docs
 3. Update cross-references carefully (use find/replace)
 4. Run full validation before marking phase complete
 5. Test all npm scripts one final time
 6. Update this plan's status to COMPLETE when done
-7. Commit all changes with message: "docs: Complete documentation standardization (Phase 6)"
+7. Commit all changes with message: "docs: Complete documentation
+   standardization (Phase 6)"
 8. **Run deliverable audit before marking complete**
 9. **Run procedure gap analysis** (see AI INSTRUCTIONS section)
 
@@ -2332,32 +2482,35 @@ When implementing this phase:
 **⚠️ MANDATORY: Complete this audit before marking Phase 6 COMPLETE**
 
 ```markdown
-**Audit performed by:** [Name/AI]
-**Audit date:** YYYY-MM-DD
+**Audit performed by:** [Name/AI] **Audit date:** YYYY-MM-DD
 
 #### Deliverable Verification
-| Deliverable | Status | Evidence |
-|-------------|--------|----------|
-| [Doc 1 archived] | ✅/❌ | docs/archive/[file] |
-| [Doc 2 archived] | ✅/❌ | docs/archive/[file] |
+
+| Deliverable      | Status | Evidence            |
+| ---------------- | ------ | ------------------- |
+| [Doc 1 archived] | ✅/❌  | docs/archive/[file] |
+| [Doc 2 archived] | ✅/❌  | docs/archive/[file] |
 
 #### Validation Results
-npm run docs:check (all docs)
-Result: [X errors, Y warnings]
+
+npm run docs:check (all docs) Result: [X errors, Y warnings]
 
 #### Final Script Tests
-| Script | Result |
-|--------|--------|
-| npm run docs:update-readme | ✅/❌ |
-| npm run docs:check | ✅/❌ |
-| npm run docs:archive | ✅/❌ |
-| npm run review:check | ✅/❌ |
+
+| Script                     | Result |
+| -------------------------- | ------ |
+| npm run docs:update-readme | ✅/❌  |
+| npm run docs:check         | ✅/❌  |
+| npm run docs:archive       | ✅/❌  |
+| npm run review:check       | ✅/❌  |
 
 #### Deviations from Plan
+
 | Planned | Actual | Rationale |
-|---------|--------|-----------|
+| ------- | ------ | --------- |
 
 #### Sign-off
+
 - [ ] All deliverables verified
 - [ ] All tasks completed or deviation documented
 - [ ] All validation scripts pass
@@ -2367,24 +2520,25 @@ Result: [X errors, Y warnings]
 
 ### 🔍 Phase 6 Completion Audit (RETROACTIVE)
 
-**Audit performed by:** Claude
-**Audit date:** 2026-01-03 (retroactive)
-**Note:** This audit was completed retroactively after Phase 6 work was done. See Process Improvement below.
+**Audit performed by:** Claude **Audit date:** 2026-01-03 (retroactive)
+**Note:** This audit was completed retroactively after Phase 6 work was done.
+See Process Improvement below.
 
 #### Deliverable Verification
 
-| Deliverable | Status | Evidence |
-|-------------|--------|----------|
-| APPCHECK_FRESH_SETUP.md archived | ✅ | Stub file pointing to APPCHECK_SETUP.md |
-| TESTING_CHECKLIST.md archived | ✅ | Stub file pointing to TESTING_PLAN.md |
-| RECAPTCHA_PROBLEM_SUMMARY.md archived | ✅ | Commit a9382a8 - stub to archive |
-| SUPABASE_MIGRATION_ANALYSIS.md archived | ✅ | Commit a9382a8 - stub to archive |
-| firestore-rules.md archived | ✅ | Commit a9382a8 - stub pointing to SECURITY.md |
-| SERVER_SIDE_SECURITY.md fixed | ✅ | Commit a9382a8 - added Tier 2 sections |
-| README.md updated | ✅ | Commit a9382a8 - doc inventory updated |
-| deploy-firebase.yml cleaned | ✅ | Commit 3be9640 - removed temp branch trigger |
+| Deliverable                             | Status | Evidence                                      |
+| --------------------------------------- | ------ | --------------------------------------------- |
+| APPCHECK_FRESH_SETUP.md archived        | ✅     | Stub file pointing to APPCHECK_SETUP.md       |
+| TESTING_CHECKLIST.md archived           | ✅     | Stub file pointing to TESTING_PLAN.md         |
+| RECAPTCHA_PROBLEM_SUMMARY.md archived   | ✅     | Commit a9382a8 - stub to archive              |
+| SUPABASE_MIGRATION_ANALYSIS.md archived | ✅     | Commit a9382a8 - stub to archive              |
+| firestore-rules.md archived             | ✅     | Commit a9382a8 - stub pointing to SECURITY.md |
+| SERVER_SIDE_SECURITY.md fixed           | ✅     | Commit a9382a8 - added Tier 2 sections        |
+| README.md updated                       | ✅     | Commit a9382a8 - doc inventory updated        |
+| deploy-firebase.yml cleaned             | ✅     | Commit 3be9640 - removed temp branch trigger  |
 
 #### Validation Results
+
 ```
 npm run docs:check
 Files checked: 55
@@ -2400,30 +2554,31 @@ Note: Errors are primarily from:
 
 #### Final Script Tests
 
-| Script | Result |
-|--------|--------|
-| npm run docs:check | ✅ (0 errors on core docs) |
-| npm run lint | ✅ (0 errors) |
-| npm test | ✅ (92/93 passing, 98.9%) |
-| npm run patterns:check | ✅ (0 violations) |
+| Script                 | Result                     |
+| ---------------------- | -------------------------- |
+| npm run docs:check     | ✅ (0 errors on core docs) |
+| npm run lint           | ✅ (0 errors)              |
+| npm test               | ✅ (92/93 passing, 98.9%)  |
+| npm run patterns:check | ✅ (0 violations)          |
 
 #### Deviations from Plan
 
-| Planned | Actual | Rationale |
-|---------|--------|-----------|
-| Use docs:archive script | Created stub files | Better for backward compatibility |
-| Archive 7 documents | Archived 5 + 2 merged | 2 docs merged in Phase 5, others archived |
+| Planned                   | Actual                                                     | Rationale                                       |
+| ------------------------- | ---------------------------------------------------------- | ----------------------------------------------- |
+| Use docs:archive script   | Created stub files                                         | Better for backward compatibility               |
+| Archive 7 documents       | Archived 5 + 2 merged                                      | 2 docs merged in Phase 5, others archived       |
 | Deferred tasks (6.7-6.17) | 6.7-6.10 DONE; 6.11→Step 4, 6.17→Step 3; 6.14-6.16 skipped | Core automation done, remaining items relocated |
 
 #### Additions (Not in Original Plan)
 
-| Addition | Reason |
-|----------|--------|
-| SERVER_SIDE_SECURITY.md fix | Discovered compliance gap during review |
-| deploy-firebase.yml cleanup | Removed temp branch trigger from Phase 2 |
+| Addition                    | Reason                                          |
+| --------------------------- | ----------------------------------------------- |
+| SERVER_SIDE_SECURITY.md fix | Discovered compliance gap during review         |
+| deploy-firebase.yml cleanup | Removed temp branch trigger from Phase 2        |
 | Comprehensive stub strategy | Better than pure archival for link preservation |
 
 #### Sign-off
+
 - [x] All deliverables verified
 - [x] All tasks completed or deviation documented
 - [x] Validation scripts pass (core docs)
@@ -2432,14 +2587,16 @@ Note: Errors are primarily from:
 
 #### Process Improvement
 
-**MISSED:** This audit should have been completed before marking Phase 6 COMPLETE.
-**ACTION:** Audit requirements added to INTEGRATED_IMPROVEMENT_PLAN.md Step structure.
+**MISSED:** This audit should have been completed before marking Phase 6
+COMPLETE. **ACTION:** Audit requirements added to INTEGRATED_IMPROVEMENT_PLAN.md
+Step structure.
 
 ---
 
 ## 🎯 OVERALL ACCEPTANCE CRITERIA
 
 **Documentation Structure:**
+
 - [ ] All 22 active docs follow tier-appropriate templates
 - [ ] 5 templates created and tested
 - [ ] 4 multi-AI review templates created
@@ -2447,6 +2604,7 @@ Note: Errors are primarily from:
 - [ ] Clear hierarchy: README → AI_WORKFLOW → specific docs
 
 **Automation & Enforcement:**
+
 - [ ] All 4 automation scripts functional
 - [ ] npm scripts added and tested (with documented test results per Task 2.6)
 - [ ] GitHub Actions workflow passing with measurable criteria:
@@ -2460,6 +2618,7 @@ Note: Errors are primarily from:
   - Example output: "Lines changed: 1,234 / 5,000 (24%)"
 
 **Content Quality:**
+
 - [ ] All Tier 1-2 docs have status dashboards
 - [ ] All Tier 1-3 docs have AI instructions
 - [ ] All docs have "Last Updated" dates
@@ -2467,17 +2626,20 @@ Note: Errors are primarily from:
 - [ ] Dependency graphs where applicable
 
 **AI Navigation:**
+
 - [ ] AI_WORKFLOW.md provides clear navigation
 - [ ] SESSION_CONTEXT.md enables session handoff
 - [ ] Every doc answers "when to update me" and "how to use me"
 - [ ] Any AI can pick up any doc and know exactly how to act
 
 **Archive & Cleanup:**
+
 - [ ] 7 docs archived with full metadata
 - [ ] Zero broken cross-references
 - [ ] No duplicate content across active docs
 
 **Multi-AI Review System:**
+
 - [ ] 4 specialized review templates operational
 - [ ] Progress-based triggers defined and tracked
 - [ ] Baseline metrics established
@@ -2488,6 +2650,7 @@ Note: Errors are primarily from:
 ## 🔗 DEPENDENCIES TO OTHER WORK
 
 **This Plan Blocks:**
+
 - M1.6 Support Tab Foundation
 - M1.5 Quick Wins (remaining items)
 - M1.7 Admin Panel (renumbered from M1.6)
@@ -2495,12 +2658,14 @@ Note: Errors are primarily from:
 - Any major refactoring initiatives
 
 **This Plan Requires:**
+
 - Current ROADMAP.md structure (complete)
 - EIGHT_PHASE_REFACTOR_PLAN.md as model (complete)
 - Multi-AI review source documents (complete - in docs/)
 - Phase 1 refactoring NOT required (can proceed independently)
 
 **Integration Points:**
+
 - README.md status auto-updates from ROADMAP.md
 - ROADMAP.md triggers code reviews at milestones
 - MULTI_AI_REVIEW_COORDINATOR.md tracks progress toward review triggers
@@ -2512,6 +2677,7 @@ Note: Errors are primarily from:
 ## 📝 UPDATE TRIGGERS
 
 **Update this plan when:**
+
 - ✅ Phase status changes (pending → in_progress → complete)
 - ✅ Task completion percentage changes
 - ✅ New blocker discovered
@@ -2520,16 +2686,19 @@ Note: Errors are primarily from:
 - ✅ Script specifications updated
 
 **Do NOT update for:**
+
 - ❌ Minor wording clarifications
 - ❌ Typo fixes
 - ❌ Formatting improvements
 
 **Major version (2.0) when:**
+
 - Plan structure changes
 - New phases added
 - Major scope change
 
 **Minor version (1.X) when:**
+
 - Task added/removed
 - Script specification refined
 - Template specification updated
@@ -2538,18 +2707,18 @@ Note: Errors are primarily from:
 
 ## 🗓️ VERSION HISTORY
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.9 | 2026-01-03 | Phase 6 COMPLETE: Archived 5 docs + 2 merged stubs, fixed SERVER_SIDE_SECURITY.md compliance, updated README inventory; Tasks 6.7-6.10 DONE (automation), 6.11/6.17 moved to Steps 4/3, 6.14-6.16 skipped | Claude |
-| 1.8 | 2026-01-03 | Phase 5 COMPLETE: Merged 6 Tier 5 docs (APPCHECK, SENTRY, INCIDENT_RESPONSE, recaptcha, ANTIGRAVITY, TESTING); all content integrated into canonical docs | Claude |
-| 1.7 | 2026-01-02 | Phase 4 COMPLETE: All 9 tasks done, deliverable audit added; Task 6.3 (AI_HANDOFF.md archival) done early; updated status dashboards | Claude |
-| 1.6 | 2026-01-01 | Fixed AI_HANDOFF.md references to use SESSION_CONTEXT.md (aligns with Phase 6 archival plan); documented advisory content sections (lines 2180-2510) as Phase 1.5 informational deliverables | Claude |
-| 1.5 | 2026-01-01 | Added MANDATORY deliverable audit and procedure gap analysis to ALL phases (2-6); fixed procedure gaps (AI_WORKFLOW.md sync, docs/reviews/ folder, PR_WORKFLOW_CHECKLIST.md integration); added Procedure Gap Analysis Checklist | Claude |
-| 1.4 | 2026-01-01 | Added Project Health Dashboard (5 areas: Security, Code Quality, Performance, Architecture, Documentation); added Complete Documentation Flow Diagram and AI Workflow Guide; expanded system health beyond docs | Claude |
-| 1.3 | 2026-01-01 | Phase 1.5 complete - 4 review templates + coordinator + trigger script created; added security standards foundation (GLOBAL_SECURITY_STANDARDS.md); non-time-based triggers per user preference | Claude |
-| 1.2 | 2026-01-01 | Added "Lessons Learned" section to Phase 1 documenting CodeRabbit review findings, process improvements, and recommendations for future phases | Claude Code |
-| 1.1 | 2025-12-31 | Phase 1 complete - all 8 templates and standards created; updated status dashboard, marked all tasks complete, added "What Was Accomplished" section | Claude Code |
-| 1.0 | 2025-12-31 | Initial plan created with all 6 phases + Phase 1.5; refined after CodeRabbit feedback (effort estimates, hyphenation, GitHub capitalization, validation specifics, PR naming standards) | Claude Code |
+| Version | Date       | Changes                                                                                                                                                                                                                          | Author      |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.9     | 2026-01-03 | Phase 6 COMPLETE: Archived 5 docs + 2 merged stubs, fixed SERVER_SIDE_SECURITY.md compliance, updated README inventory; Tasks 6.7-6.10 DONE (automation), 6.11/6.17 moved to Steps 4/3, 6.14-6.16 skipped                        | Claude      |
+| 1.8     | 2026-01-03 | Phase 5 COMPLETE: Merged 6 Tier 5 docs (APPCHECK, SENTRY, INCIDENT_RESPONSE, recaptcha, ANTIGRAVITY, TESTING); all content integrated into canonical docs                                                                        | Claude      |
+| 1.7     | 2026-01-02 | Phase 4 COMPLETE: All 9 tasks done, deliverable audit added; Task 6.3 (AI_HANDOFF.md archival) done early; updated status dashboards                                                                                             | Claude      |
+| 1.6     | 2026-01-01 | Fixed AI_HANDOFF.md references to use SESSION_CONTEXT.md (aligns with Phase 6 archival plan); documented advisory content sections (lines 2180-2510) as Phase 1.5 informational deliverables                                     | Claude      |
+| 1.5     | 2026-01-01 | Added MANDATORY deliverable audit and procedure gap analysis to ALL phases (2-6); fixed procedure gaps (AI_WORKFLOW.md sync, docs/reviews/ folder, PR_WORKFLOW_CHECKLIST.md integration); added Procedure Gap Analysis Checklist | Claude      |
+| 1.4     | 2026-01-01 | Added Project Health Dashboard (5 areas: Security, Code Quality, Performance, Architecture, Documentation); added Complete Documentation Flow Diagram and AI Workflow Guide; expanded system health beyond docs                  | Claude      |
+| 1.3     | 2026-01-01 | Phase 1.5 complete - 4 review templates + coordinator + trigger script created; added security standards foundation (GLOBAL_SECURITY_STANDARDS.md); non-time-based triggers per user preference                                  | Claude      |
+| 1.2     | 2026-01-01 | Added "Lessons Learned" section to Phase 1 documenting CodeRabbit review findings, process improvements, and recommendations for future phases                                                                                   | Claude Code |
+| 1.1     | 2025-12-31 | Phase 1 complete - all 8 templates and standards created; updated status dashboard, marked all tasks complete, added "What Was Accomplished" section                                                                             | Claude Code |
+| 1.0     | 2025-12-31 | Initial plan created with all 6 phases + Phase 1.5; refined after CodeRabbit feedback (effort estimates, hyphenation, GitHub capitalization, validation specifics, PR naming standards)                                          | Claude Code |
 
 ---
 
@@ -2558,8 +2727,10 @@ Note: Errors are primarily from:
 **When picking up this plan:**
 
 1. **Check Phase Status**: Read the status dashboard to see current phase
-2. **Read Current Phase**: Review objectives, deliverables, tasks for active phase
-3. **Check Dependencies**: Verify all dependencies are COMPLETE before starting phase
+2. **Read Current Phase**: Review objectives, deliverables, tasks for active
+   phase
+3. **Check Dependencies**: Verify all dependencies are COMPLETE before starting
+   phase
 4. **Follow Task Order**: Execute tasks in sequence (dependencies within phases)
 5. **Validate as You Go**: Run `npm run docs:check` after each doc migration
 6. **Update Progress**: Mark tasks complete, update percentages
@@ -2570,7 +2741,8 @@ Note: Errors are primarily from:
 
 Before marking a phase complete, you MUST run:
 
-1. **Deliverable Audit** (see [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY: Deliverable Audit Procedure")
+1. **Deliverable Audit** (see [AI_WORKFLOW.md](../AI_WORKFLOW.md) → "MANDATORY:
+   Deliverable Audit Procedure")
    - Verify all deliverables exist and are complete
    - Check all acceptance criteria met
    - Document in "What Was Accomplished" section
@@ -2583,6 +2755,7 @@ Before marking a phase complete, you MUST run:
    - Document findings and fix before marking complete
 
 **Procedure Gap Analysis Checklist:**
+
 ```
 [ ] AI_WORKFLOW.md references new procedures?
 [ ] DOCUMENTATION_STANDARDS.md updated if new standards added?
@@ -2594,6 +2767,7 @@ Before marking a phase complete, you MUST run:
 ```
 
 **When this plan is complete:**
+
 1. Verify all acceptance criteria met
 2. Run full validation suite
 3. Run final procedure gap analysis across ALL documents
@@ -2603,6 +2777,7 @@ Before marking a phase complete, you MUST run:
 7. Create DOCUMENTATION_STANDARDS_MAINTENANCE_PLAN.md for ongoing governance
 
 **Emergency Stop:**
+
 - If any phase completely blocked, document in "Current Blockers" section
 - Do NOT proceed to next phase if dependencies incomplete
 - If scripts fail, fix before continuing (automation is critical)
@@ -2612,26 +2787,31 @@ Before marking a phase complete, you MUST run:
 ## 🚀 NEXT STEPS
 
 **Immediate (Phase 1):**
+
 1. Create all 8 templates (estimated 8 hours)
 2. Test templates by creating sample docs
 3. Commit templates individually
 
 **Week 1.5 (Phase 1.5):**
+
 1. Create 4 specialized review templates (estimated 8 hours)
 2. Create review coordinator
 3. Establish baseline metrics
 
 **Week 2 (Phase 2-3):**
+
 1. Build automation scripts (estimated 8 hours)
 2. Migrate Tier 1-2 docs (estimated 7 hours)
 3. Verify automation working
 
 **Week 3-4 (Phase 4-5):**
+
 1. Migrate Tier 3-4 docs (estimated 8 hours)
 2. Migrate Tier 5 docs (estimated 5 hours)
 3. Continuous validation
 
 **Week 5 (Phase 6):**
+
 1. Archive outdated docs (estimated 4 hours)
 2. Final validation
 3. Mark complete
@@ -2898,16 +3078,16 @@ DOCUMENTATION WORKFLOW:
 
 ### Decision Matrix: What to Do When
 
-| Situation | First Action | Key Docs | Don't Forget |
-|-----------|--------------|----------|--------------|
-| Starting new session | Read SESSION_CONTEXT.md | AI_WORKFLOW.md, GLOBAL_SECURITY_STANDARDS.md | Increment session counter |
-| User asks for feature | Check if blocked | ROADMAP.md, SESSION_CONTEXT.md | Security standards |
-| User asks to fix bug | Check known issues | SESSION_CONTEXT.md | Add regression test |
-| User asks for review | Check triggers | MULTI_AI_REVIEW_COORDINATOR.md | Select right template |
-| Writing new code | Check security | GLOBAL_SECURITY_STANDARDS.md | All 4 standards |
-| Updating docs | Check tier | DOCUMENTATION_STANDARDS.md | Required sections |
-| Session ending | Update context | SESSION_CONTEXT.md | Compliance log |
-| Health trigger fires | Full review | MULTI_AI_REVIEW_COORDINATOR.md | All 5 areas |
+| Situation             | First Action            | Key Docs                                     | Don't Forget              |
+| --------------------- | ----------------------- | -------------------------------------------- | ------------------------- |
+| Starting new session  | Read SESSION_CONTEXT.md | AI_WORKFLOW.md, GLOBAL_SECURITY_STANDARDS.md | Increment session counter |
+| User asks for feature | Check if blocked        | ROADMAP.md, SESSION_CONTEXT.md               | Security standards        |
+| User asks to fix bug  | Check known issues      | SESSION_CONTEXT.md                           | Add regression test       |
+| User asks for review  | Check triggers          | MULTI_AI_REVIEW_COORDINATOR.md               | Select right template     |
+| Writing new code      | Check security          | GLOBAL_SECURITY_STANDARDS.md                 | All 4 standards           |
+| Updating docs         | Check tier              | DOCUMENTATION_STANDARDS.md                   | Required sections         |
+| Session ending        | Update context          | SESSION_CONTEXT.md                           | Compliance log            |
+| Health trigger fires  | Full review             | MULTI_AI_REVIEW_COORDINATOR.md               | All 5 areas               |
 
 ### What NOT To Do
 
@@ -2965,6 +3145,7 @@ CONTINUOUS IMPROVEMENT LOOP:
 ```
 
 **Key Files for Ongoing Maintenance:**
+
 - MULTI_AI_REVIEW_COORDINATOR.md (health dashboard)
 - AI_WORKFLOW.md (navigation updates)
 - DOCUMENTATION_STANDARDS.md (standard updates)
@@ -2974,4 +3155,5 @@ CONTINUOUS IMPROVEMENT LOOP:
 
 **END OF DOCUMENTATION_STANDARDIZATION_PLAN.md**
 
-This plan is now **READY FOR IMPLEMENTATION**. No further project work should begin until this plan reaches 100% completion.
+This plan is now **READY FOR IMPLEMENTATION**. No further project work should
+begin until this plan reaches 100% completion.

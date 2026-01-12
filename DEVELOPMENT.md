@@ -1,22 +1,23 @@
 # Development Guide
 
-**Document Version:** 2.1
-**Last Updated:** 2026-01-04
-**Status:** ACTIVE
+**Document Version:** 2.1 **Last Updated:** 2026-01-04 **Status:** ACTIVE
 
 ---
 
 ## 🎯 Purpose & Scope
 
-This guide provides everything needed to set up and develop on the SoNash project.
+This guide provides everything needed to set up and develop on the SoNash
+project.
 
 **Scope:**
+
 - ✅ Local environment setup
 - ✅ Development workflows
 - ✅ Testing procedures
 - ✅ Deployment process
 
 **See also:**
+
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [SECURITY.md](./docs/SECURITY.md) - Security requirements
 - [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Testing strategy and QA procedures
@@ -26,6 +27,7 @@ This guide provides everything needed to set up and develop on the SoNash projec
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - npm or yarn
 - Firebase CLI: `npm install -g firebase-tools`
@@ -68,6 +70,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=false
 ```
 
 **Get these values from:**
+
 - Firebase Console → Project Settings → General → Your Apps
 - App Check → reCAPTCHA Enterprise
 
@@ -82,6 +85,7 @@ npm run dev
 ```
 
 **Emulator Ports:**
+
 - Emulator UI: `localhost:4000`
 - Firestore: `localhost:8080`
 - Auth: `localhost:9099`
@@ -198,16 +202,19 @@ sonash-v0/
 ### Automated Tests
 
 **Run all tests:**
+
 ```bash
 npm test
 ```
 
 **Test coverage:**
+
 ```bash
 npm run test:coverage
 ```
 
 **Current Status:**
+
 - ✅ 115/116 tests passing (99.1%)
 - ✅ Security validation tests
 - ✅ Date utilities
@@ -219,24 +226,28 @@ npm run test:coverage
 ### Manual Testing Checklist
 
 #### Basic Functionality
+
 - [ ] App loads at `http://localhost:3000`
 - [ ] No console errors
 - [ ] Notebook renders correctly
 - [ ] Click notebook to open
 
 #### Authentication
+
 - [ ] Sign in anonymously
 - [ ] User state persists after refresh
 - [ ] Sign out works
 - [ ] Account linking (email/password)
 
 #### Onboarding
+
 - [ ] Clean date picker appears for new users
 - [ ] Fellowship selector (AA/NA/CA/etc)
 - [ ] Nickname entry
 - [ ] Profile saves to Firestore
 
 #### Journal System (December 2025)
+
 - [ ] Mood selection creates mood stamp entry
 - [ ] Craving/used tracking creates check-in sticker
 - [ ] Recovery notepad creates sticky note entry
@@ -246,18 +257,21 @@ npm run test:coverage
 - [ ] Entry detail dialog opens on click
 
 #### Growth Tab
+
 - [ ] Spot check saves to both inventoryEntries and journal
 - [ ] Night review saves correctly
 - [ ] Gratitude list saves correctly
 - [ ] All appear in journal timeline
 
 #### Meetings
+
 - [ ] Meetings load from Firestore
 - [ ] Filter by fellowship works
 - [ ] Search by name works
 - [ ] Map view displays markers (if enabled)
 
 #### Admin Panel
+
 - [ ] Only accessible with admin claim
 - [ ] Non-admin users see "not authorized" message
 - [ ] Admin can view users
@@ -273,6 +287,7 @@ npm run test:coverage
 **Setup for Development:**
 
 1. Get debug token:
+
 ```bash
 # In browser console on localhost:3000
 firebase.appCheck().activate(window.FIREBASE_APPCHECK_DEBUG_TOKEN_FROM_CI, true)
@@ -283,11 +298,13 @@ firebase.appCheck().activate(window.FIREBASE_APPCHECK_DEBUG_TOKEN_FROM_CI, true)
    - Paste token and save
 
 3. Add to `.env.local`:
+
 ```bash
 NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
 ```
 
 **Production Setup:**
+
 - Uses reCAPTCHA Enterprise (no user interaction)
 - Configured in Firebase Console
 - Required for all Firestore and Cloud Functions access
@@ -295,11 +312,13 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN=your_debug_token
 ### Firestore Security Rules
 
 **Deploy rules:**
+
 ```bash
 firebase deploy --only firestore:rules
 ```
 
 **Key principles:**
+
 - All data user-scoped (`request.auth.uid == uid`)
 - App Check required for production
 - Validation at database level
@@ -308,11 +327,13 @@ firebase deploy --only firestore:rules
 ### Rate Limiting
 
 **Cloud Functions:**
+
 - 10 requests/minute per user
 - 429 status code if exceeded
 - Tracks by authenticated UID
 
 **Client-side:**
+
 - Toast error notification
 - Automatic retry after 60 seconds
 
@@ -358,6 +379,7 @@ firebase deploy
 ## 📦 Dependencies
 
 ### Core Stack
+
 - **Next.js** 16.1.0 - React framework with App Router
 - **React** 19.2.3 - UI library
 - **TypeScript** 5.x - Type safety
@@ -365,6 +387,7 @@ firebase deploy
 - **Framer Motion** 12.x - Animations
 
 ### Firebase
+
 - **Firebase** 12.7.0 - Backend platform
   - Authentication (Anonymous, Email, Google)
   - Firestore (Real-time database)
@@ -372,6 +395,7 @@ firebase deploy
   - App Check (reCAPTCHA Enterprise)
 
 ### UI Components
+
 - **shadcn/ui** - Component library
 - **Radix UI** - Accessible primitives
 - **Lucide React** - Icon library
@@ -379,6 +403,7 @@ firebase deploy
 - **date-fns** - Date manipulation
 
 ### Development Tools
+
 - **ESLint** - Linting (181 warnings baseline, 0 errors)
 - **Prettier** - Code formatting
 - **madge** - Circular dependency detection
@@ -388,6 +413,7 @@ firebase deploy
 - **Husky** - Git hooks (pre-commit, pre-push)
 
 ### Monitoring
+
 - **Sentry** (optional) - Error tracking
 - **Firebase Analytics** - Usage metrics
 
@@ -414,35 +440,39 @@ npm audit fix
 
 ### Code Quality Commands
 
-| Command | Purpose | Notes |
-|---------|---------|-------|
-| `npm run lint` | ESLint check | Must pass (0 errors) |
-| `npm run format` | Prettier auto-format | Formats all files |
-| `npm run format:check` | Prettier check | For CI (no changes) |
-| `npm run deps:circular` | Check circular deps | Uses madge |
-| `npm run deps:unused` | Find unused exports | Uses knip |
-| `npm test` | Run all tests | 116 tests (1 skipped) |
-| `npm run test:coverage` | Test with coverage | Uses c8 |
+| Command                 | Purpose              | Notes                 |
+| ----------------------- | -------------------- | --------------------- |
+| `npm run lint`          | ESLint check         | Must pass (0 errors)  |
+| `npm run format`        | Prettier auto-format | Formats all files     |
+| `npm run format:check`  | Prettier check       | For CI (no changes)   |
+| `npm run deps:circular` | Check circular deps  | Uses madge            |
+| `npm run deps:unused`   | Find unused exports  | Uses knip             |
+| `npm test`              | Run all tests        | 116 tests (1 skipped) |
+| `npm run test:coverage` | Test with coverage   | Uses c8               |
 
 ### Prettier (Code Formatting)
 
 **Configuration:** `.prettierrc`
+
 - 2-space tabs
 - Double quotes (consistent with JSX)
 - Trailing commas (es5)
 - 100 char line width (80 for markdown)
 
 **Format code:**
+
 ```bash
 npm run format           # Format all files
 npm run format:check     # Check without changing (CI)
 ```
 
-**Ignores:** See `.prettierignore` - excludes build output, dependencies, generated files.
+**Ignores:** See `.prettierignore` - excludes build output, dependencies,
+generated files.
 
 ### madge (Circular Dependencies)
 
 **Check for circular imports:**
+
 ```bash
 npm run deps:circular
 ```
@@ -452,16 +482,19 @@ Currently: ✅ No circular dependencies
 ### knip (Unused Exports)
 
 **Find unused code:**
+
 ```bash
 npm run deps:unused
 ```
 
 **Configuration:** `knip.json`
+
 - Analyzes `app/`, `components/`, `lib/`
 - Ignores test files and scripts
 - Some false positives ignored (fonts, CSS, test utils)
 
 **Current baseline (to investigate):**
+
 - 7 potentially unused dependencies
 - 2 unlisted dependencies
 - 1 duplicate export
@@ -469,19 +502,24 @@ npm run deps:unused
 ### ESLint
 
 **Run linting:**
+
 ```bash
 npm run lint
 ```
 
-**Current baseline:** 0 errors, 181 warnings (eslint-plugin-security + TypeScript rules)
+**Current baseline:** 0 errors, 181 warnings (eslint-plugin-security +
+TypeScript rules)
 
 **Warning breakdown (audited as false positives - 2026-01-04):**
-- `detect-object-injection` (91): Safe iteration/lookups with developer-defined keys
+
+- `detect-object-injection` (91): Safe iteration/lookups with developer-defined
+  keys
 - `detect-non-literal-fs-filename` (66): CLI scripts with controlled paths
 - `detect-unsafe-regex` (14): Bounded input, linear patterns
 - `detect-non-literal-regexp` (6): Intentional dynamic patterns
 - `detect-possible-timing-attacks` (1): Comparing user's own password inputs
-- `@typescript-eslint/no-unused-vars` (3): Legitimate unused variables in type definitions
+- `@typescript-eslint/no-unused-vars` (3): Legitimate unused variables in type
+  definitions
 
 **Configuration:** `eslint.config.mjs` (flat config)
 
@@ -491,20 +529,20 @@ npm run lint
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step | Command | Blocking? |
-|------|---------|-----------|
-| ESLint | `npm run lint` | YES - blocks commit |
-| Prettier | `npm run format:check` | NO - warning only |
-| Tests | `npm test` | YES - blocks commit |
+| Step     | Command                | Blocking?           |
+| -------- | ---------------------- | ------------------- |
+| ESLint   | `npm run lint`         | YES - blocks commit |
+| Prettier | `npm run format:check` | NO - warning only   |
+| Tests    | `npm test`             | YES - blocks commit |
 
 **Pre-push hook (`.husky/pre-push`) runs:**
 
-| Step | Command | Blocking? |
-|------|---------|-----------|
-| Tests | `npm test` | YES - blocks push |
-| Circular deps | `npm run deps:circular` | YES - blocks push |
+| Step               | Command                  | Blocking?         |
+| ------------------ | ------------------------ | ----------------- |
+| Tests              | `npm test`               | YES - blocks push |
+| Circular deps      | `npm run deps:circular`  | YES - blocks push |
 | Pattern compliance | `npm run patterns:check` | YES - blocks push |
-| Type check | `npx tsc --noEmit` | YES - blocks push |
+| Type check         | `npx tsc --noEmit`       | YES - blocks push |
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 
@@ -512,29 +550,29 @@ npm run lint
 
 **Location:** `.github/workflows/`
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| `ci.yml` | Push/PR to main | Lint, test, build |
-| `deploy-firebase.yml` | Manual/Release | Deploy to Firebase |
-| `docs-lint.yml` | PR with .md changes | Documentation linting |
-| `review-check.yml` | Scheduled/Manual | Check review triggers |
-| `auto-label-review-tier.yml` | PR opened | Auto-label PRs |
-| `sync-readme.yml` | Push to main | Sync README status |
-| `validate-plan.yml` | Manual | Validate improvement plan |
+| Workflow                     | Trigger             | Purpose                   |
+| ---------------------------- | ------------------- | ------------------------- |
+| `ci.yml`                     | Push/PR to main     | Lint, test, build         |
+| `deploy-firebase.yml`        | Manual/Release      | Deploy to Firebase        |
+| `docs-lint.yml`              | PR with .md changes | Documentation linting     |
+| `review-check.yml`           | Scheduled/Manual    | Check review triggers     |
+| `auto-label-review-tier.yml` | PR opened           | Auto-label PRs            |
+| `sync-readme.yml`            | Push to main        | Sync README status        |
+| `validate-plan.yml`          | Manual              | Validate improvement plan |
 
 **CI Workflow (`ci.yml`) steps:**
 
-| Step | Blocking? | Notes |
-|------|-----------|-------|
-| ESLint | YES | |
-| Prettier | NO | `continue-on-error: true` |
-| Circular deps | YES | |
-| Unused deps | NO | `continue-on-error: true` |
-| Pattern check | NO | `continue-on-error: true` |
-| Docs check | NO | `continue-on-error: true` |
-| Type check | YES | |
-| Tests | YES | |
-| Build | YES | |
+| Step          | Blocking? | Notes                     |
+| ------------- | --------- | ------------------------- |
+| ESLint        | YES       |                           |
+| Prettier      | NO        | `continue-on-error: true` |
+| Circular deps | YES       |                           |
+| Unused deps   | NO        | `continue-on-error: true` |
+| Pattern check | NO        | `continue-on-error: true` |
+| Docs check    | NO        | `continue-on-error: true` |
+| Type check    | YES       |                           |
+| Tests         | YES       |                           |
+| Build         | YES       |                           |
 
 ---
 
@@ -545,21 +583,22 @@ MCP servers extend Claude Code's capabilities with external integrations.
 ### Setup
 
 1. **Copy the example config:**
+
    ```bash
    cp .mcp.json.example .mcp.json
    ```
 
-2. **Add your tokens:**
-   Edit `.mcp.json` and replace placeholder values with real tokens.
+2. **Add your tokens:** Edit `.mcp.json` and replace placeholder values with
+   real tokens.
 
 3. **Restart Claude Code** to load the new configuration.
 
 ### Available Servers
 
-| Server | Purpose | Token Required |
-|--------|---------|----------------|
-| `ccusage` | Claude usage tracking | No |
-| `sonarcloud` | Code quality metrics | Yes (SONAR_TOKEN) |
+| Server       | Purpose               | Token Required    |
+| ------------ | --------------------- | ----------------- |
+| `ccusage`    | Claude usage tracking | No                |
+| `sonarcloud` | Code quality metrics  | Yes (SONAR_TOKEN) |
 
 ### SonarCloud Setup
 
@@ -582,6 +621,7 @@ MCP servers extend Claude Code's capabilities with external integrations.
 ### Adding New MCP Servers
 
 Recommended servers for this project:
+
 - **Next.js DevTools MCP** - Error detection, build status
 - **Firebase MCP** - Firestore, Auth, Storage access
 - **GitHub MCP** - PR management, issue tracking
@@ -595,6 +635,7 @@ See: https://github.com/modelcontextprotocol/servers
 ### TypeScript
 
 **Naming conventions:**
+
 - Components: `PascalCase` (BookCover.tsx)
 - Hooks: `camelCase` with `use` prefix (useJournal.ts)
 - Utilities: `camelCase` (formatDate.ts)
@@ -602,6 +643,7 @@ See: https://github.com/modelcontextprotocol/servers
 - Constants: `SCREAMING_SNAKE_CASE` (MAX_ENTRIES)
 
 **Type safety:**
+
 - Use strict mode (`tsconfig.json`)
 - Avoid `any` (use `unknown` instead)
 - Define interfaces for all data structures
@@ -610,6 +652,7 @@ See: https://github.com/modelcontextprotocol/servers
 ### React
 
 **Component patterns:**
+
 ```typescript
 // Use React.FC sparingly
 export default function BookCover({ nickname }: { nickname: string }) {
@@ -623,6 +666,7 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 ```
 
 **Hooks order:**
+
 1. `useState`
 2. `useEffect`
 3. `useContext`
@@ -633,6 +677,7 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 ### CSS/Tailwind
 
 **Class order (Prettier plugin handles this):**
+
 1. Layout (flex, grid)
 2. Positioning (absolute, relative)
 3. Box model (w-, h-, p-, m-)
@@ -641,6 +686,7 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 6. Misc (cursor-, transition-)
 
 **Custom classes:**
+
 - Prefer Tailwind utilities
 - Use CSS modules for complex animations
 - Define design tokens in `globals.css`
@@ -652,21 +698,25 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 ### Common Issues
 
 **Firebase initialization errors:**
+
 - Check `.env.local` has all required variables
 - Verify Firebase config in console
 - Ensure emulators are running (if using)
 
 **App Check errors:**
+
 - Use debug token in development
 - Check Firebase Console → App Check → Debug tokens
 - Disable App Check in emulator mode
 
 **Firestore permission errors:**
+
 - Check security rules deployed
 - Verify user is authenticated
 - Use emulator UI to inspect rules evaluation
 
 **Build errors:**
+
 - Clear `.next` folder: `rm -rf .next`
 - Reinstall dependencies: `rm -rf node_modules && npm install`
 - Check TypeScript errors: `npm run type-check`
@@ -674,17 +724,20 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 ### Debug Tools
 
 **React DevTools:**
+
 - Install browser extension
 - Inspect component tree
 - View props and state
 
 **Firebase Emulator UI:**
+
 - Visit `localhost:4000`
 - View Firestore data
 - Test security rules
 - Monitor function logs
 
 **VS Code Extensions:**
+
 - ES7+ React/Redux/React-Native snippets
 - Tailwind CSS IntelliSense
 - Firebase Explorer
@@ -708,12 +761,14 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 ### Monitoring
 
 **Lighthouse scores (target):**
+
 - Performance: >90
 - Accessibility: >90
 - Best Practices: >90
 - SEO: >90
 
 **Core Web Vitals:**
+
 - LCP (Largest Contentful Paint): <2.5s
 - INP (Interaction to Next Paint): <200ms
 - CLS (Cumulative Layout Shift): <0.1
@@ -727,10 +782,12 @@ export function JournalEntry({ entry }: { entry: JournalEntry }) {
 **⚠️ MANDATORY: Never bypass git hooks**
 
 This project uses Husky hooks to enforce code quality:
+
 - **Pre-commit**: ESLint, tests
 - **Pre-push**: Tests, pattern compliance, type check
 
 **DO NOT use `--no-verify`** to bypass hooks:
+
 ```bash
 # ❌ NEVER DO THIS
 git commit --no-verify
@@ -742,12 +799,14 @@ git push    # Let hooks run
 ```
 
 **Why this matters:**
+
 - Hooks catch issues before they enter git history
 - CI will reject PRs anyway, so bypassing wastes time
 - Bad commits pollute git history permanently
 - Team trust depends on everyone following the same rules
 
 **If hooks are blocking you:**
+
 1. Fix the underlying issue (lint errors, test failures)
 2. If legitimately stuck, ask for help in PR discussion
 3. Never bypass - the hook is telling you something important
@@ -763,6 +822,7 @@ git push    # Let hooks run
 ### Commit Messages
 
 **Format:**
+
 ```
 type(scope): subject
 
@@ -772,6 +832,7 @@ footer (optional)
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -781,6 +842,7 @@ footer (optional)
 - `chore`: Maintenance
 
 **Examples:**
+
 ```bash
 feat(journal): add entry type separation
 
@@ -807,18 +869,21 @@ Closes #123
 ## 📚 Resources
 
 ### Documentation
+
 - [Architecture Guide](./ARCHITECTURE.md)
 - [Product Roadmap](./ROADMAP.md)
 - [Security Guide](./docs/SECURITY.md)
 - [Incident Response](./docs/INCIDENT_RESPONSE.md)
 
 ### External Resources
+
 - [Next.js Docs](https://nextjs.org/docs)
 - [Firebase Docs](https://firebase.google.com/docs)
 - [Tailwind Docs](https://tailwindcss.com/docs)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 
 ### Community
+
 - GitHub Issues: Report bugs and request features
 - Discussions: Ask questions and share ideas
 
@@ -839,6 +904,7 @@ Closes #123
    - Environment (OS, Node version, browser)
 
 **Security issues:**
+
 - Do NOT create public GitHub Issue
 - Email: jason@sonash.app (or designated security contact)
 - Include detailed steps to reproduce
@@ -849,6 +915,7 @@ Closes #123
 ## 📝 Update Triggers
 
 **Update this document when:**
+
 - Development setup steps change (new dependencies, env vars)
 - Testing procedures are modified
 - Deployment process changes
@@ -861,7 +928,8 @@ Closes #123
 
 When maintaining this document:
 
-1. **Update "Quick Start"** when Node.js version or Firebase CLI requirements change
+1. **Update "Quick Start"** when Node.js version or Firebase CLI requirements
+   change
 2. **Update "Environment Setup"** when new env vars or Firebase config is added
 3. **Update "Testing"** section when test coverage or CI/CD procedures change
 4. **Update "Deployment"** when Firebase services or deployment flow change
@@ -872,8 +940,8 @@ When maintaining this document:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.1 | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip) |
-| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
-| 1.0 | 2025-12-19 | Initial guide consolidated from multiple sources |
+| Version | Date       | Changes                                                 |
+| ------- | ---------- | ------------------------------------------------------- |
+| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip) |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration            |
+| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources        |

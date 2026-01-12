@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
 interface Tab {
-  id: string
-  label: string
-  color: string
-  planned?: boolean
+  id: string;
+  label: string;
+  color: string;
+  planned?: boolean;
 }
 
 interface TabNavigationProps {
-  tabs: Tab[]
-  activeTab: string
-  onTabChange: (tabId: string) => void
+  tabs: Tab[];
+  activeTab: string;
+  onTabChange: (tabId: string) => void;
 }
 
 export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavigationProps) {
@@ -31,7 +31,8 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
             hover:w-12 md:hover:w-14
           `}
           style={{
-            boxShadow: activeTab === tab.id ? "2px 2px 8px rgba(0,0,0,0.2)" : "1px 1px 4px rgba(0,0,0,0.1)",
+            boxShadow:
+              activeTab === tab.id ? "2px 2px 8px rgba(0,0,0,0.2)" : "1px 1px 4px rgba(0,0,0,0.1)",
             writingMode: "vertical-rl",
             textOrientation: "mixed",
           }}
@@ -54,5 +55,5 @@ export default function TabNavigation({ tabs, activeTab, onTabChange }: TabNavig
       {/* Placeholder space for future tabs */}
       <div className="flex-1 min-h-8" />
     </div>
-  )
+  );
 }

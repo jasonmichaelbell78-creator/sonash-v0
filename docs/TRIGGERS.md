@@ -1,40 +1,49 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook
-**Document Version**: 1.3
-**Created**: 2026-01-02
-**Last Updated**: 2026-01-02
-**Status**: ACTIVE
+**Project**: SoNash Recovery Notebook **Document Version**: 1.3 **Created**:
+2026-01-02 **Last Updated**: 2026-01-02 **Status**: ACTIVE
 
 ---
 
 ## 🎯 DOCUMENT PURPOSE
 
-This is the **CANONICAL** reference for all automation triggers, enforcement measures, conditional directives, and compliance mechanisms in the SoNash repository. This document serves as:
+This is the **CANONICAL** reference for all automation triggers, enforcement
+measures, conditional directives, and compliance mechanisms in the SoNash
+repository. This document serves as:
 
 1. **Inventory** - Complete list of all triggers and enforcement mechanisms
 2. **Reference** - How each mechanism works and when it fires
 3. **Verification Guide** - How to check if triggers are working correctly
 4. **Compliance Tracker** - Ensuring all mechanisms are followed
 
-**⚠️ CRITICAL**: This document covers automated (CI/CD, hooks) AND manual (documentation directives) triggers. Both require compliance.
+**⚠️ CRITICAL**: This document covers automated (CI/CD, hooks) AND manual
+(documentation directives) triggers. Both require compliance.
 
 ---
 
 ## 📋 HOW TO USE THIS DOCUMENT
 
 ### For Developers
-1. **Before committing**: Review [Pre-Commit Hooks](#1-pre-commit-hooks) to understand what runs
-2. **Before pushing**: Review [CI/CD Workflows](#2-github-actions-cicd) to anticipate checks
-3. **When adding features**: Check [Documentation Directives](#5-documentation-based-directives) for update requirements
+
+1. **Before committing**: Review [Pre-Commit Hooks](#1-pre-commit-hooks) to
+   understand what runs
+2. **Before pushing**: Review [CI/CD Workflows](#2-github-actions-cicd) to
+   anticipate checks
+3. **When adding features**: Check
+   [Documentation Directives](#5-documentation-based-directives) for update
+   requirements
 
 ### For AI Assistants
-1. **Read [Documentation Directives](#5-documentation-based-directives)** - Critical workflow rules
+
+1. **Read [Documentation Directives](#5-documentation-based-directives)** -
+   Critical workflow rules
 2. **Follow process maps** - Each trigger section includes step-by-step flows
 3. **Update documentation** when triggers indicate updates are needed
 
 ### For Compliance Verification
-1. Use [Verification Commands](#verification-commands) section for each trigger type
+
+1. Use [Verification Commands](#verification-commands) section for each trigger
+   type
 2. Check [Compliance Gaps](#compliance-gaps--recommendations) for known issues
 3. Review [Compliance Matrix](#compliance-matrix) for overall status
 
@@ -42,15 +51,15 @@ This is the **CANONICAL** reference for all automation triggers, enforcement mea
 
 ## 📊 TRIGGERS OVERVIEW
 
-| Category | Count | Automated | Manual | Status |
-|----------|-------|-----------|--------|--------|
-| GitHub Actions (CI/CD) | 5 | ✅ | - | Active |
-| Pre-Commit Hooks | 1 | ✅ | - | Active |
-| Session Hooks | 1 | ✅ | - | Active |
-| npm Scripts | 8 | Semi | ✅ | Active |
-| Automation Scripts | 6 | - | ✅ | Active |
-| Documentation Directives | 12+ | - | ✅ | Active |
-| Anti-Pattern Checks | 35+ | ✅ | - | Active |
+| Category                 | Count | Automated | Manual | Status |
+| ------------------------ | ----- | --------- | ------ | ------ |
+| GitHub Actions (CI/CD)   | 5     | ✅        | -      | Active |
+| Pre-Commit Hooks         | 1     | ✅        | -      | Active |
+| Session Hooks            | 1     | ✅        | -      | Active |
+| npm Scripts              | 8     | Semi      | ✅     | Active |
+| Automation Scripts       | 6     | -         | ✅     | Active |
+| Documentation Directives | 12+   | -         | ✅     | Active |
+| Anti-Pattern Checks      | 35+   | ✅        | -      | Active |
 
 **Total Enforcement Points**: 68+
 
@@ -60,17 +69,20 @@ This is the **CANONICAL** reference for all automation triggers, enforcement mea
 
 ## 1.1 Husky Pre-Commit Hook
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Husky Pre-Commit |
-| **Location** | `.husky/pre-commit` |
-| **Trigger** | Every `git commit` command |
+| Attribute     | Value                                |
+| ------------- | ------------------------------------ |
+| **Name**      | Husky Pre-Commit                     |
+| **Location**  | `.husky/pre-commit`                  |
+| **Trigger**   | Every `git commit` command           |
 | **Execution** | Automatic (blocks commit on failure) |
 
 ### Description
-Runs lint-staged to check only staged files before allowing commits. Prevents committing code that fails linting or type-checking.
+
+Runs lint-staged to check only staged files before allowing commits. Prevents
+committing code that fails linting or type-checking.
 
 ### Function
+
 ```
 TRIGGER: git commit
   → EXECUTE: npx lint-staged
@@ -81,6 +93,7 @@ TRIGGER: git commit
 ```
 
 ### Process Map
+
 ```
 Developer runs `git commit`
         ↓
@@ -97,6 +110,7 @@ proceeds  Block commit
 ```
 
 ### Verification
+
 ```bash
 # Test the hook manually
 npx lint-staged
@@ -109,6 +123,7 @@ npm run prepare
 ```
 
 ### Compliance Status
+
 - ✅ **Automated**: Cannot be bypassed without `--no-verify`
 - ⚠️ **Weakness**: Developers can use `git commit --no-verify`
 
@@ -118,17 +133,20 @@ npm run prepare
 
 ## 2.1 CI Workflow
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | CI (Continuous Integration) |
-| **Location** | `.github/workflows/ci.yml` |
-| **Trigger** | Push to `main`, Pull Requests to `main` |
-| **Execution** | Automatic |
+| Attribute     | Value                                   |
+| ------------- | --------------------------------------- |
+| **Name**      | CI (Continuous Integration)             |
+| **Location**  | `.github/workflows/ci.yml`              |
+| **Trigger**   | Push to `main`, Pull Requests to `main` |
+| **Execution** | Automatic                               |
 
 ### Description
-Primary CI pipeline that runs on all PRs and main branch pushes. Validates code quality, runs tests, builds the project.
+
+Primary CI pipeline that runs on all PRs and main branch pushes. Validates code
+quality, runs tests, builds the project.
 
 ### Function
+
 ```
 TRIGGER: push to main OR pull_request to main
   → CHECKOUT: Repository code
@@ -143,6 +161,7 @@ TRIGGER: push to main OR pull_request to main
 ```
 
 ### Process Map
+
 ```
 Push/PR to main
       ↓
@@ -164,6 +183,7 @@ check  (blocks PR)
 ```
 
 ### Verification
+
 ```bash
 # Run same checks locally
 npm run lint && npm run type-check && npm test && npm run build
@@ -176,17 +196,20 @@ gh run list --workflow=ci.yml
 
 ## 2.2 CodeQL Analysis
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | CodeQL Security Analysis |
-| **Location** | `.github/workflows/codeql.yml` |
-| **Trigger** | Push to `main`, PRs to `main`, Weekly schedule (Mondays) |
-| **Execution** | Automatic |
+| Attribute     | Value                                                    |
+| ------------- | -------------------------------------------------------- |
+| **Name**      | CodeQL Security Analysis                                 |
+| **Location**  | `.github/workflows/codeql.yml`                           |
+| **Trigger**   | Push to `main`, PRs to `main`, Weekly schedule (Mondays) |
+| **Execution** | Automatic                                                |
 
 ### Description
-Static security analysis scanning for vulnerabilities, code quality issues, and security anti-patterns in JavaScript/TypeScript.
+
+Static security analysis scanning for vulnerabilities, code quality issues, and
+security anti-patterns in JavaScript/TypeScript.
 
 ### Function
+
 ```
 TRIGGER: push to main OR PR to main OR schedule (Monday 0:00 UTC)
   → CHECKOUT: Repository
@@ -198,6 +221,7 @@ TRIGGER: push to main OR PR to main OR schedule (Monday 0:00 UTC)
 ```
 
 ### Process Map
+
 ```
 Trigger (push/PR/schedule)
          ↓
@@ -216,6 +240,7 @@ No issues   Issues found
 ```
 
 ### Verification
+
 ```bash
 # View security alerts
 gh api repos/:owner/:repo/code-scanning/alerts
@@ -228,17 +253,20 @@ gh run list --workflow=codeql.yml
 
 ## 2.3 Dependency Review
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Dependency Review |
-| **Location** | `.github/workflows/dependency-review.yml` |
-| **Trigger** | Pull Requests only |
-| **Execution** | Automatic |
+| Attribute     | Value                                     |
+| ------------- | ----------------------------------------- |
+| **Name**      | Dependency Review                         |
+| **Location**  | `.github/workflows/dependency-review.yml` |
+| **Trigger**   | Pull Requests only                        |
+| **Execution** | Automatic                                 |
 
 ### Description
-Scans dependency changes in PRs for known vulnerabilities. Blocks PRs that introduce vulnerable dependencies.
+
+Scans dependency changes in PRs for known vulnerabilities. Blocks PRs that
+introduce vulnerable dependencies.
 
 ### Function
+
 ```
 TRIGGER: pull_request
   → CHECKOUT: Repository
@@ -249,6 +277,7 @@ TRIGGER: pull_request
 ```
 
 ### Process Map
+
 ```
 PR opened/updated
        ↓
@@ -267,6 +296,7 @@ PR opened/updated
 ```
 
 ### Verification
+
 ```bash
 # Check for vulnerabilities locally
 npm audit
@@ -279,17 +309,19 @@ gh pr checks <PR_NUMBER>
 
 ## 2.4 Firebase Deploy
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Firebase Deploy |
-| **Location** | `.github/workflows/firebase-deploy.yml` |
-| **Trigger** | Push to `main` (after CI passes) |
-| **Execution** | Automatic |
+| Attribute     | Value                                   |
+| ------------- | --------------------------------------- |
+| **Name**      | Firebase Deploy                         |
+| **Location**  | `.github/workflows/firebase-deploy.yml` |
+| **Trigger**   | Push to `main` (after CI passes)        |
+| **Execution** | Automatic                               |
 
 ### Description
+
 Deploys application to Firebase Hosting after successful CI on main branch.
 
 ### Function
+
 ```
 TRIGGER: push to main (needs: ci to pass)
   → CHECKOUT: Repository
@@ -301,6 +333,7 @@ TRIGGER: push to main (needs: ci to pass)
 ```
 
 ### Process Map
+
 ```
 Push to main
      ↓
@@ -320,6 +353,7 @@ Live on firebase URL
 ```
 
 ### Verification
+
 ```bash
 # Check deployment status
 firebase hosting:channel:list
@@ -332,17 +366,19 @@ gh run list --workflow=firebase-deploy.yml
 
 ## 2.5 Stale Issues/PRs
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Stale Issue Handler |
-| **Location** | `.github/workflows/stale.yml` |
-| **Trigger** | Daily schedule |
-| **Execution** | Automatic |
+| Attribute     | Value                         |
+| ------------- | ----------------------------- |
+| **Name**      | Stale Issue Handler           |
+| **Location**  | `.github/workflows/stale.yml` |
+| **Trigger**   | Daily schedule                |
+| **Execution** | Automatic                     |
 
 ### Description
+
 Automatically labels and closes stale issues/PRs that have had no activity.
 
 ### Function
+
 ```
 TRIGGER: schedule (daily)
   → SCAN: All open issues and PRs
@@ -357,17 +393,20 @@ TRIGGER: schedule (daily)
 
 ## 3.1 Claude Session Start Hook
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Claude Session Start |
-| **Location** | `.claude/hooks/session-start.sh` |
-| **Trigger** | Every new Claude Code session |
-| **Execution** | Automatic |
+| Attribute     | Value                            |
+| ------------- | -------------------------------- |
+| **Name**      | Claude Session Start             |
+| **Location**  | `.claude/hooks/session-start.sh` |
+| **Trigger**   | Every new Claude Code session    |
+| **Execution** | Automatic                        |
 
 ### Description
-Ensures development environment is ready when AI assistant starts a session. Installs dependencies, builds functions, runs tests.
+
+Ensures development environment is ready when AI assistant starts a session.
+Installs dependencies, builds functions, runs tests.
 
 ### Function
+
 ```
 TRIGGER: Claude Code session starts
   → CHECK: If node_modules exists
@@ -379,6 +418,7 @@ TRIGGER: Claude Code session starts
 ```
 
 ### Process Map
+
 ```
 Claude session starts
         ↓
@@ -406,6 +446,7 @@ Skip     npm run build
 ```
 
 ### Verification
+
 ```bash
 # Run hook manually
 bash .claude/hooks/session-start.sh
@@ -415,6 +456,7 @@ cat .claude/settings.json
 ```
 
 ### Compliance Status
+
 - ✅ **Automated**: Runs automatically on session start
 - ✅ **Non-blocking**: Session continues even if tests fail (reports status)
 
@@ -424,17 +466,20 @@ cat .claude/settings.json
 
 ## 4.1 Pattern Compliance Check
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Pattern Compliance Check |
-| **Command** | `npm run patterns:check` |
-| **Location** | `scripts/check-patterns.js` |
-| **Trigger** | Manual (should run before commits) |
+| Attribute    | Value                              |
+| ------------ | ---------------------------------- |
+| **Name**     | Pattern Compliance Check           |
+| **Command**  | `npm run patterns:check`           |
+| **Location** | `scripts/check-patterns.js`        |
+| **Trigger**  | Manual (should run before commits) |
 
 ### Description
-Scans codebase for 35+ anti-patterns including security issues, code smells, and violations of project standards.
+
+Scans codebase for 35+ anti-patterns including security issues, code smells, and
+violations of project standards.
 
 ### Function
+
 ```
 TRIGGER: npm run patterns:check
   → SCAN: All .ts, .tsx, .js files
@@ -455,18 +500,19 @@ TRIGGER: npm run patterns:check
 
 ### Anti-Patterns Checked (35+)
 
-| Category | Patterns |
-|----------|----------|
-| **Debug/Console** | console.log, console.error, console.warn, debugger |
-| **Security** | eval(), innerHTML, hardcoded secrets, API keys |
-| **Type Safety** | any type, @ts-ignore, @ts-nocheck |
-| **Code Quality** | TODO, FIXME, XXX, HACK comments |
-| **Error Handling** | Empty catch blocks, unhandled rejections |
-| **React** | Disabled exhaustive-deps, missing keys |
-| **Testing** | .only(), .skip() in tests |
-| **Performance** | Sync fs operations, blocking calls |
+| Category           | Patterns                                           |
+| ------------------ | -------------------------------------------------- |
+| **Debug/Console**  | console.log, console.error, console.warn, debugger |
+| **Security**       | eval(), innerHTML, hardcoded secrets, API keys     |
+| **Type Safety**    | any type, @ts-ignore, @ts-nocheck                  |
+| **Code Quality**   | TODO, FIXME, XXX, HACK comments                    |
+| **Error Handling** | Empty catch blocks, unhandled rejections           |
+| **React**          | Disabled exhaustive-deps, missing keys             |
+| **Testing**        | .only(), .skip() in tests                          |
+| **Performance**    | Sync fs operations, blocking calls                 |
 
 ### Verification
+
 ```bash
 # Run the check
 npm run patterns:check
@@ -479,17 +525,20 @@ grep -r "console\.log" --include="*.ts" --include="*.tsx"
 
 ## 4.2 Documentation Status Update
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | README Status Update |
-| **Command** | `npm run docs:update-readme` |
+| Attribute    | Value                             |
+| ------------ | --------------------------------- |
+| **Name**     | README Status Update              |
+| **Command**  | `npm run docs:update-readme`      |
 | **Location** | `scripts/update-readme-status.js` |
-| **Trigger** | Manual (after ROADMAP.md changes) |
+| **Trigger**  | Manual (after ROADMAP.md changes) |
 
 ### Description
-Syncs project status from ROADMAP.md to README.md, ensuring status dashboard stays current.
+
+Syncs project status from ROADMAP.md to README.md, ensuring status dashboard
+stays current.
 
 ### Function
+
 ```
 TRIGGER: npm run docs:update-readme
   → READ: ROADMAP.md milestone data
@@ -500,6 +549,7 @@ TRIGGER: npm run docs:update-readme
 ```
 
 ### Process Map
+
 ```
 Developer updates ROADMAP.md
           ↓
@@ -518,46 +568,48 @@ README.md reflects current status
 
 ## 4.3 Test Commands
 
-| Command | Function | Trigger |
-|---------|----------|---------|
-| `npm test` | Run all unit tests | Manual/CI |
-| `npm run test:coverage` | Tests with c8 coverage | Manual |
+| Command                 | Function               | Trigger   |
+| ----------------------- | ---------------------- | --------- |
+| `npm test`              | Run all unit tests     | Manual/CI |
+| `npm run test:coverage` | Tests with c8 coverage | Manual    |
 
 ---
 
 ## 4.4 Build Commands
 
-| Command | Function | Trigger |
-|---------|----------|---------|
-| `npm run build` | Production Next.js build | Manual/CI |
-| `npm run dev` | Development server | Manual |
-| `npm run lint` | ESLint check | Manual/CI |
-| `npm run type-check` | TypeScript validation | Manual/CI |
+| Command              | Function                 | Trigger   |
+| -------------------- | ------------------------ | --------- |
+| `npm run build`      | Production Next.js build | Manual/CI |
+| `npm run dev`        | Development server       | Manual    |
+| `npm run lint`       | ESLint check             | Manual/CI |
+| `npm run type-check` | TypeScript validation    | Manual/CI |
 
 ---
 
 # 5. DOCUMENTATION-BASED DIRECTIVES
 
-These are conditional rules written in documentation that require **manual compliance** by developers and AI assistants.
+These are conditional rules written in documentation that require **manual
+compliance** by developers and AI assistants.
 
 ## 5.1 AI Workflow Directives
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | AI Workflow Protocol |
-| **Location** | `AI_WORKFLOW.md` |
-| **Trigger** | AI session start, task completion |
+| Attribute    | Value                             |
+| ------------ | --------------------------------- |
+| **Name**     | AI Workflow Protocol              |
+| **Location** | `AI_WORKFLOW.md`                  |
+| **Trigger**  | AI session start, task completion |
 
 ### Directives
 
-| Directive | Trigger Condition | Required Action |
-|-----------|-------------------|-----------------|
-| Read claude.md first | New session starts | Read critical patterns before coding |
-| Check ROADMAP.md | Before any feature work | Verify alignment with priorities |
-| Update docs | After completing feature | Update relevant documentation |
-| Run patterns:check | Before committing | Verify no anti-patterns introduced |
+| Directive            | Trigger Condition        | Required Action                      |
+| -------------------- | ------------------------ | ------------------------------------ |
+| Read claude.md first | New session starts       | Read critical patterns before coding |
+| Check ROADMAP.md     | Before any feature work  | Verify alignment with priorities     |
+| Update docs          | After completing feature | Update relevant documentation        |
+| Run patterns:check   | Before committing        | Verify no anti-patterns introduced   |
 
 ### Process Map
+
 ```
 AI Session Starts
        ↓
@@ -580,98 +632,98 @@ AI Session Starts
 
 ## 5.2 Documentation Standards Directives
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Documentation Standards |
+| Attribute    | Value                             |
+| ------------ | --------------------------------- |
+| **Name**     | Documentation Standards           |
 | **Location** | `docs/DOCUMENTATION_STANDARDS.md` |
-| **Trigger** | Creating/updating documentation |
+| **Trigger**  | Creating/updating documentation   |
 
 ### Directives
 
-| Directive | Trigger Condition | Required Action |
-|-----------|-------------------|-----------------|
-| Use correct tier template | Creating new doc | Select Tier 1-5 template |
-| Include required sections | All docs | Must have Purpose, Status, AI Instructions |
-| Follow naming conventions | New files | Use SCREAMING_SNAKE_CASE.md |
-| Add to index | New docs | Update README.md Documentation Index |
-| Include version history | All docs | Track version changes |
+| Directive                 | Trigger Condition | Required Action                            |
+| ------------------------- | ----------------- | ------------------------------------------ |
+| Use correct tier template | Creating new doc  | Select Tier 1-5 template                   |
+| Include required sections | All docs          | Must have Purpose, Status, AI Instructions |
+| Follow naming conventions | New files         | Use SCREAMING_SNAKE_CASE.md                |
+| Add to index              | New docs          | Update README.md Documentation Index       |
+| Include version history   | All docs          | Track version changes                      |
 
 ---
 
 ## 5.3 Security Directives
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Global Security Standards |
+| Attribute    | Value                               |
+| ------------ | ----------------------------------- |
+| **Name**     | Global Security Standards           |
 | **Location** | `docs/GLOBAL_SECURITY_STANDARDS.md` |
-| **Trigger** | Any code changes |
+| **Trigger**  | Any code changes                    |
 
 ### Directives
 
-| Directive | Trigger Condition | Required Action |
-|-----------|-------------------|-----------------|
-| Rate limiting | New endpoints | Add IP + user-based limits |
-| Input validation | User input | Validate with schemas |
-| No hardcoded secrets | Any code | Use environment variables |
-| Error sanitization | Error responses | Never expose stack traces |
-| Path traversal check | File operations | Validate paths |
+| Directive            | Trigger Condition | Required Action            |
+| -------------------- | ----------------- | -------------------------- |
+| Rate limiting        | New endpoints     | Add IP + user-based limits |
+| Input validation     | User input        | Validate with schemas      |
+| No hardcoded secrets | Any code          | Use environment variables  |
+| Error sanitization   | Error responses   | Never expose stack traces  |
+| Path traversal check | File operations   | Validate paths             |
 
 ---
 
 ## 5.4 README Update Triggers
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | README Update Triggers |
-| **Location** | `README.md` (bottom) |
-| **Trigger** | Various project changes |
+| Attribute    | Value                   |
+| ------------ | ----------------------- |
+| **Name**     | README Update Triggers  |
+| **Location** | `README.md` (bottom)    |
+| **Trigger**  | Various project changes |
 
 ### Directives
 
-| Trigger Condition | Required Action |
-|-------------------|-----------------|
-| Milestone progress changes | Update status dashboard |
-| New major features added | Add to Current Features |
-| Tech stack changes | Update Tech Stack section |
+| Trigger Condition               | Required Action            |
+| ------------------------------- | -------------------------- |
+| Milestone progress changes      | Update status dashboard    |
+| New major features added        | Add to Current Features    |
+| Tech stack changes              | Update Tech Stack section  |
 | Documentation structure changes | Update Documentation Index |
-| Project structure changes | Update Project Structure |
+| Project structure changes       | Update Project Structure   |
 
 ---
 
 ## 5.5 Review Process Directives
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | AI Review Process |
-| **Location** | `AI_REVIEW_PROCESS.md` |
-| **Trigger** | Code reviews, PR submissions |
+| Attribute    | Value                        |
+| ------------ | ---------------------------- |
+| **Name**     | AI Review Process            |
+| **Location** | `AI_REVIEW_PROCESS.md`       |
+| **Trigger**  | Code reviews, PR submissions |
 
 ### Directives
 
-| Directive | Trigger Condition | Required Action |
-|-----------|-------------------|-----------------|
-| Log learnings | After code review | Update AI_REVIEW_LEARNINGS_LOG.md |
-| Follow checklist | PR review | Use review checklist |
-| Security review | Security-sensitive changes | Extra security scrutiny |
+| Directive        | Trigger Condition          | Required Action                   |
+| ---------------- | -------------------------- | --------------------------------- |
+| Log learnings    | After code review          | Update AI_REVIEW_LEARNINGS_LOG.md |
+| Follow checklist | PR review                  | Use review checklist              |
+| Security review  | Security-sensitive changes | Extra security scrutiny           |
 
 ---
 
 ## 5.6 Phase Completion Audit
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | Phase Completion Audits |
+| Attribute    | Value                                        |
+| ------------ | -------------------------------------------- |
+| **Name**     | Phase Completion Audits                      |
 | **Location** | `docs/DOCUMENTATION_STANDARDIZATION_PLAN.md` |
-| **Trigger** | Completing any phase |
+| **Trigger**  | Completing any phase                         |
 
 ### Directives
 
-| Directive | Trigger Condition | Required Action |
-|-----------|-------------------|-----------------|
-| Run audit template | Phase complete | Complete all audit sections |
-| Verify all tasks | Before marking complete | Check each deliverable |
-| Document deviations | Any changes from plan | Record in audit |
-| Update plan | After audit | Mark phase complete, update % |
+| Directive           | Trigger Condition       | Required Action               |
+| ------------------- | ----------------------- | ----------------------------- |
+| Run audit template  | Phase complete          | Complete all audit sections   |
+| Verify all tasks    | Before marking complete | Check each deliverable        |
+| Document deviations | Any changes from plan   | Record in audit               |
+| Update plan         | After audit             | Mark phase complete, update % |
 
 ---
 
@@ -679,13 +731,14 @@ AI Session Starts
 
 ## 6.1 Check Patterns Script
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | check-patterns.js |
+| Attribute    | Value                       |
+| ------------ | --------------------------- |
+| **Name**     | check-patterns.js           |
 | **Location** | `scripts/check-patterns.js` |
-| **Run via** | `npm run patterns:check` |
+| **Run via**  | `npm run patterns:check`    |
 
 ### Conditional Logic
+
 ```javascript
 // For each file scanned:
 IF file matches *.ts OR *.tsx OR *.js:
@@ -703,13 +756,14 @@ ELSE:
 
 ## 6.2 Update README Status Script
 
-| Attribute | Value |
-|-----------|-------|
-| **Name** | update-readme-status.js |
+| Attribute    | Value                             |
+| ------------ | --------------------------------- |
+| **Name**     | update-readme-status.js           |
 | **Location** | `scripts/update-readme-status.js` |
-| **Run via** | `npm run docs:update-readme` |
+| **Run via**  | `npm run docs:update-readme`      |
 
 ### Conditional Logic
+
 ```javascript
 // Parse ROADMAP.md:
 FOR each milestone:
@@ -780,15 +834,15 @@ gh run view <RUN_ID>
 
 # 8. COMPLIANCE MATRIX
 
-| Trigger | Type | Enforcement | Bypass Method | Risk if Bypassed |
-|---------|------|-------------|---------------|------------------|
-| Pre-commit hook | Automated | Strong | `--no-verify` | Medium |
-| CI workflow | Automated | Strong | None (blocks PR) | N/A |
-| CodeQL | Automated | Advisory | Dismiss alert | High |
-| Dependency review | Automated | Strong | None (blocks PR) | N/A |
-| Pattern check | Manual | Weak | Don't run it | Medium |
-| Doc directives | Manual | Weak | Ignore them | Low-Medium |
-| Session hook | Automated | Advisory | Skip output | Low |
+| Trigger           | Type      | Enforcement | Bypass Method    | Risk if Bypassed |
+| ----------------- | --------- | ----------- | ---------------- | ---------------- |
+| Pre-commit hook   | Automated | Strong      | `--no-verify`    | Medium           |
+| CI workflow       | Automated | Strong      | None (blocks PR) | N/A              |
+| CodeQL            | Automated | Advisory    | Dismiss alert    | High             |
+| Dependency review | Automated | Strong      | None (blocks PR) | N/A              |
+| Pattern check     | Manual    | Weak        | Don't run it     | Medium           |
+| Doc directives    | Manual    | Weak        | Ignore them      | Low-Medium       |
+| Session hook      | Automated | Advisory    | Skip output      | Low              |
 
 ---
 
@@ -797,40 +851,47 @@ gh run view <RUN_ID>
 ## Resolved Gaps ✅
 
 ### Gap 1: Pattern Check Not in CI - RESOLVED
-**Resolved**: 2026-01-02
-**Solution**: Added `npm run patterns:check` to CI workflow (`.github/workflows/ci.yml`)
-**Commit**: ci: Add pattern compliance check to CI workflow
+
+**Resolved**: 2026-01-02 **Solution**: Added `npm run patterns:check` to CI
+workflow (`.github/workflows/ci.yml`) **Commit**: ci: Add pattern compliance
+check to CI workflow
 
 ### Gap 2: Documentation Directives Not Enforced - RESOLVED
-**Resolved**: 2026-01-02
-**Solution**:
-- Added `--strict` flag to `scripts/check-docs-light.js` (treats warnings as errors)
+
+**Resolved**: 2026-01-02 **Solution**:
+
+- Added `--strict` flag to `scripts/check-docs-light.js` (treats warnings as
+  errors)
 - Added `npm run docs:check -- --strict` to CI workflow
-- Warnings now block PRs (exit code 1)
-**Commit**: ci: Add docs:check --strict to CI workflow (Gap 2 fix)
+- Warnings now block PRs (exit code 1) **Commit**: ci: Add docs:check --strict
+  to CI workflow (Gap 2 fix)
 
 ### Gap 3: Pre-commit Hook Bypass - MITIGATED
-**Resolved**: 2026-01-02
-**Solution**:
+
+**Resolved**: 2026-01-02 **Solution**:
+
 - Added pre-push hook (`.husky/pre-push`) with tests, pattern check, type check
 - Added team policy in DEVELOPMENT.md prohibiting `--no-verify`
-- CI catches any issues that slip through (defense in depth)
-**Commit**: feat: Add pre-push hook and git hooks policy (Gap 3 fix)
+- CI catches any issues that slip through (defense in depth) **Commit**: feat:
+  Add pre-push hook and git hooks policy (Gap 3 fix)
 
 ### Gap 4: Security Directives Not Automated - RESOLVED
-**Resolved**: 2026-01-02
-**Solution**:
-- Installed `eslint-plugin-security` (detects eval, timing attacks, regex DoS, object injection)
+
+**Resolved**: 2026-01-02 **Solution**:
+
+- Installed `eslint-plugin-security` (detects eval, timing attacks, regex DoS,
+  object injection)
 - Added 6 security patterns to `check-pattern-compliance.js`:
   - Hardcoded API keys/secrets
   - innerHTML XSS risks
   - eval() usage
   - SQL injection patterns
   - Unsanitized error responses
-  - Rate limiting reminders for endpoints
-**Commit**: feat: Add security linting and patterns (Gap 4 fix)
+  - Rate limiting reminders for endpoints **Commit**: feat: Add security linting
+    and patterns (Gap 4 fix)
 
 **Future Improvements** (documented for later):
+
 - Option B: Custom ESLint rules for project-specific security patterns
 - Option D: Semgrep rules for advanced security scanning
 
@@ -838,29 +899,36 @@ gh run view <RUN_ID>
 
 ## Current Gaps
 
-*All identified gaps have been resolved!*
+_All identified gaps have been resolved!_
 
 ---
 
 ## Recommended Additions
 
 ### ~~1. Add Pattern Check to CI~~ ✅ DONE
-*Implemented via Gap 1 resolution above*
+
+_Implemented via Gap 1 resolution above_
 
 ### ~~2. Add Documentation Drift Check~~ SKIPPED
-*Deferred - docs:check already covers link validation, section requirements, and date checks. Revisit if drift becomes a real problem.*
+
+_Deferred - docs:check already covers link validation, section requirements, and
+date checks. Revisit if drift becomes a real problem._
 
 ### ~~3. Add Pre-push Hook~~ ✅ DONE
-*Implemented via Gap 3 resolution above*
+
+_Implemented via Gap 3 resolution above_
 
 ### ~~4. Automate Doc Update Reminders~~ SKIPPED
-*Deferred - CodeRabbit reviews + docs:check + PR template checkbox provide sufficient coverage. Revisit if doc drift becomes a problem.*
+
+_Deferred - CodeRabbit reviews + docs:check + PR template checkbox provide
+sufficient coverage. Revisit if doc drift becomes a problem._
 
 ---
 
 ## 📝 UPDATE TRIGGERS
 
 **Update this document when:**
+
 - ✅ New automation or enforcement added
 - ✅ Existing trigger behavior changes
 - ✅ New GitHub Actions workflows added
@@ -872,12 +940,12 @@ gh run view <RUN_ID>
 
 ## 🗓️ VERSION HISTORY
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.3 | 2026-01-02 | Resolved Gap 4, added security linting | Claude |
-| 1.2 | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
-| 1.1 | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow | Claude |
-| 1.0 | 2026-01-02 | Initial document created | Claude |
+| Version | Date       | Changes                                             | Author |
+| ------- | ---------- | --------------------------------------------------- | ------ |
+| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting              | Claude |
+| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
+| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow            | Claude |
+| 1.0     | 2026-01-02 | Initial document created                            | Claude |
 
 ---
 

@@ -12,29 +12,29 @@
  * Supports HTTP_PROXY/HTTPS_PROXY for environments behind a proxy.
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
-import { ProxyAgent, fetch as undiciFetch } from 'undici';
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { ProxyAgent, fetch as undiciFetch } from "undici";
 
-const SONAR_BASE_URL = process.env.SONAR_URL || 'https://sonarcloud.io';
+const SONAR_BASE_URL = process.env.SONAR_URL || "https://sonarcloud.io";
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
 // Proxy configuration - use HTTPS_PROXY for HTTPS URLs, HTTP_PROXY for HTTP
-const PROXY_URL = process.env.HTTPS_PROXY || process.env.https_proxy ||
-                  process.env.HTTP_PROXY || process.env.http_proxy;
+const PROXY_URL =
+  process.env.HTTPS_PROXY ||
+  process.env.https_proxy ||
+  process.env.HTTP_PROXY ||
+  process.env.http_proxy;
 const proxyAgent = PROXY_URL ? new ProxyAgent(PROXY_URL) : undefined;
 
 // SSRF protection: Only allow known SonarCloud/SonarQube domains
 // localhost/127.0.0.1 only allowed when SONAR_ALLOW_LOCAL=true (for development)
-const ALLOW_LOCAL = process.env.SONAR_ALLOW_LOCAL === 'true';
+const ALLOW_LOCAL = process.env.SONAR_ALLOW_LOCAL === "true";
 const ALLOWED_SONAR_HOSTS = [
-  'sonarcloud.io',
-  'sonarqube.com',
-  ...(ALLOW_LOCAL ? ['localhost', '127.0.0.1'] : []),
+  "sonarcloud.io",
+  "sonarqube.com",
+  ...(ALLOW_LOCAL ? ["localhost", "127.0.0.1"] : []),
 ];
 
 function isAllowedSonarHost(urlString) {
@@ -44,13 +44,13 @@ function isAllowedSonarHost(urlString) {
     const protocol = url.protocol.toLowerCase();
 
     // Enforce HTTPS for non-local hosts (security requirement)
-    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
-    if (!isLocalHost && protocol !== 'https:') {
+    const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
+    if (!isLocalHost && protocol !== "https:") {
       return false;
     }
 
-    return ALLOWED_SONAR_HOSTS.some(allowed =>
-      hostname === allowed || hostname.endsWith(`.${allowed}`)
+    return ALLOWED_SONAR_HOSTS.some(
+      (allowed) => hostname === allowed || hostname.endsWith(`.${allowed}`)
     );
   } catch {
     return false;
@@ -60,7 +60,7 @@ function isAllowedSonarHost(urlString) {
 // Validate SONAR_BASE_URL at startup
 if (!isAllowedSonarHost(SONAR_BASE_URL)) {
   console.error(`Error: SONAR_URL "${SONAR_BASE_URL}" is not in the allowed hosts list.`);
-  console.error(`Allowed hosts: ${ALLOWED_SONAR_HOSTS.join(', ')}`);
+  console.error(`Allowed hosts: ${ALLOWED_SONAR_HOSTS.join(", ")}`);
   process.exit(1);
 }
 
@@ -78,13 +78,13 @@ async function sonarFetch(endpoint, params = {}) {
   });
 
   const headers = {
-    'Accept': 'application/json',
+    Accept: "application/json",
   };
 
   if (SONAR_TOKEN) {
     // SonarCloud API uses Basic auth with token as username, empty password
-    const credentials = Buffer.from(`${SONAR_TOKEN}:`).toString('base64');
-    headers['Authorization'] = `Basic ${credentials}`;
+    const credentials = Buffer.from(`${SONAR_TOKEN}:`).toString("base64");
+    headers["Authorization"] = `Basic ${credentials}`;
   }
 
   // Add timeout using AbortController
@@ -101,10 +101,10 @@ async function sonarFetch(endpoint, params = {}) {
     };
     response = await undiciFetch(url.toString(), fetchOptions);
   } catch (error) {
-    if (error.name === 'AbortError') {
-      throw new Error('SonarCloud API error: Request timed out');
+    if (error.name === "AbortError") {
+      throw new Error("SonarCloud API error: Request timed out");
     }
-    throw new Error(`SonarCloud API error: Network request failed - ${error.message || 'unknown'}`);
+    throw new Error(`SonarCloud API error: Network request failed - ${error.message || "unknown"}`);
   } finally {
     clearTimeout(timeoutId);
   }
@@ -112,23 +112,23 @@ async function sonarFetch(endpoint, params = {}) {
   if (!response.ok) {
     // Sanitize error response - don't expose full upstream error details
     const status = response.status;
-    let message = 'Request failed';
-    if (status === 401) message = 'Authentication failed - check SONAR_TOKEN';
-    else if (status === 403) message = 'Access denied - insufficient permissions';
-    else if (status === 404) message = 'Resource not found';
-    else if (status >= 500) message = 'SonarCloud server error';
+    let message = "Request failed";
+    if (status === 401) message = "Authentication failed - check SONAR_TOKEN";
+    else if (status === 403) message = "Access denied - insufficient permissions";
+    else if (status === 404) message = "Resource not found";
+    else if (status >= 500) message = "SonarCloud server error";
     throw new Error(`SonarCloud API error: ${status} - ${message}`);
   }
 
   try {
     return await response.json();
   } catch {
-    throw new Error('SonarCloud API error: Invalid JSON response');
+    throw new Error("SonarCloud API error: Invalid JSON response");
   }
 }
 
 // Helper to fetch all pages of paginated results
-async function sonarFetchAll(endpoint, params = {}, itemsKey = 'items') {
+async function sonarFetchAll(endpoint, params = {}, itemsKey = "items") {
   const allItems = [];
   let page = 1;
   const pageSize = 100;
@@ -163,12 +163,12 @@ const MAX_INPUT_LENGTH = 500; // Maximum length for string inputs
 // Input validation helper
 function validateRequired(args, ...requiredFields) {
   // Guard against undefined/null args
-  if (!args || typeof args !== 'object') {
-    throw new Error('Invalid request: missing arguments');
+  if (!args || typeof args !== "object") {
+    throw new Error("Invalid request: missing arguments");
   }
   for (const field of requiredFields) {
     const value = args[field];
-    if (!value || typeof value !== 'string' || value.trim() === '') {
+    if (!value || typeof value !== "string" || value.trim() === "") {
       throw new Error(`Missing or invalid required parameter: ${field}`);
     }
     if (value.length > MAX_INPUT_LENGTH) {
@@ -180,8 +180,8 @@ function validateRequired(args, ...requiredFields) {
 // Create the MCP server
 const server = new Server(
   {
-    name: 'sonarcloud',
-    version: '1.0.0',
+    name: "sonarcloud",
+    version: "1.0.0",
   },
   {
     capabilities: {
@@ -195,84 +195,86 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: 'get_security_hotspots',
-        description: 'Get security hotspots for a project/PR with file paths, line numbers, and descriptions',
+        name: "get_security_hotspots",
+        description:
+          "Get security hotspots for a project/PR with file paths, line numbers, and descriptions",
         inputSchema: {
-          type: 'object',
+          type: "object",
           properties: {
             projectKey: {
-              type: 'string',
+              type: "string",
               description: 'SonarCloud project key (e.g., "owner_repo")',
             },
             pullRequest: {
-              type: 'string',
-              description: 'Pull request number (optional, for PR-specific analysis)',
+              type: "string",
+              description: "Pull request number (optional, for PR-specific analysis)",
             },
             status: {
-              type: 'string',
-              enum: ['TO_REVIEW', 'ACKNOWLEDGED', 'FIXED', 'SAFE'],
-              description: 'Filter by hotspot status (default: TO_REVIEW)',
+              type: "string",
+              enum: ["TO_REVIEW", "ACKNOWLEDGED", "FIXED", "SAFE"],
+              description: "Filter by hotspot status (default: TO_REVIEW)",
             },
           },
-          required: ['projectKey'],
+          required: ["projectKey"],
         },
       },
       {
-        name: 'get_issues',
-        description: 'Get code issues (bugs, vulnerabilities, code smells) for a project/PR',
+        name: "get_issues",
+        description: "Get code issues (bugs, vulnerabilities, code smells) for a project/PR",
         inputSchema: {
-          type: 'object',
+          type: "object",
           properties: {
             projectKey: {
-              type: 'string',
-              description: 'SonarCloud project key',
+              type: "string",
+              description: "SonarCloud project key",
             },
             pullRequest: {
-              type: 'string',
-              description: 'Pull request number (optional)',
+              type: "string",
+              description: "Pull request number (optional)",
             },
             types: {
-              type: 'string',
-              description: 'Comma-separated issue types: BUG, VULNERABILITY, CODE_SMELL',
+              type: "string",
+              description: "Comma-separated issue types: BUG, VULNERABILITY, CODE_SMELL",
             },
             severities: {
-              type: 'string',
-              description: 'Comma-separated severities: BLOCKER, CRITICAL, MAJOR, MINOR, INFO',
+              type: "string",
+              description: "Comma-separated severities: BLOCKER, CRITICAL, MAJOR, MINOR, INFO",
             },
           },
-          required: ['projectKey'],
+          required: ["projectKey"],
         },
       },
       {
-        name: 'get_quality_gate',
-        description: 'Get quality gate status for a project/PR',
+        name: "get_quality_gate",
+        description: "Get quality gate status for a project/PR",
         inputSchema: {
-          type: 'object',
+          type: "object",
           properties: {
             projectKey: {
-              type: 'string',
-              description: 'SonarCloud project key',
+              type: "string",
+              description: "SonarCloud project key",
             },
             pullRequest: {
-              type: 'string',
-              description: 'Pull request number (optional)',
+              type: "string",
+              description: "Pull request number (optional)",
             },
           },
-          required: ['projectKey'],
+          required: ["projectKey"],
         },
       },
       {
-        name: 'get_hotspot_details',
-        description: 'Get detailed information about a specific security hotspot including code context',
+        name: "get_hotspot_details",
+        description:
+          "Get detailed information about a specific security hotspot including code context",
         inputSchema: {
-          type: 'object',
+          type: "object",
           properties: {
             hotspotKey: {
-              type: 'string',
-              description: 'The hotspot key/ID',
+              type: "string",
+              description: "The hotspot key/ID",
             },
           },
-          required: ['hotspotKey'],
+          required: ["hotspotKey"],
         },
       },
     ],
@@ -285,24 +287,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     switch (name) {
-      case 'get_security_hotspots': {
+      case "get_security_hotspots": {
         // Validate required inputs
-        validateRequired(args, 'projectKey');
+        validateRequired(args, "projectKey");
 
         const params = {
           projectKey: args.projectKey.trim(),
           pullRequest: args.pullRequest?.trim(),
-          status: args.status || 'TO_REVIEW',
+          status: args.status || "TO_REVIEW",
         };
 
         // Use pagination to get all hotspots
-        const { items: allHotspots, truncated } = await sonarFetchAll('/api/hotspots/search', params, 'hotspots');
+        const { items: allHotspots, truncated } = await sonarFetchAll(
+          "/api/hotspots/search",
+          params,
+          "hotspots"
+        );
 
         // Format hotspots with relevant details
-        const hotspots = allHotspots.map(h => ({
+        const hotspots = allHotspots.map((h) => ({
           key: h.key,
           message: h.message,
-          file: h.component?.split(':').pop() || h.component,
+          file: h.component?.split(":").pop() || h.component,
           line: h.line,
           status: h.status,
           vulnerabilityProbability: h.vulnerabilityProbability,
@@ -313,38 +319,46 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: 'text',
-              text: JSON.stringify({
-                total: hotspots.length,
-                truncated,
-                hotspots,
-              }, null, 2),
+              type: "text",
+              text: JSON.stringify(
+                {
+                  total: hotspots.length,
+                  truncated,
+                  hotspots,
+                },
+                null,
+                2
+              ),
             },
           ],
         };
       }
 
-      case 'get_issues': {
+      case "get_issues": {
         // Validate required inputs
-        validateRequired(args, 'projectKey');
+        validateRequired(args, "projectKey");
 
         const params = {
           componentKeys: args.projectKey.trim(),
           pullRequest: args.pullRequest?.trim(),
           types: args.types?.trim(),
           severities: args.severities?.trim(),
-          resolved: 'false',
+          resolved: "false",
         };
 
         // Use pagination to get all issues
-        const { items: allIssues, truncated } = await sonarFetchAll('/api/issues/search', params, 'issues');
+        const { items: allIssues, truncated } = await sonarFetchAll(
+          "/api/issues/search",
+          params,
+          "issues"
+        );
 
-        const issues = allIssues.map(i => ({
+        const issues = allIssues.map((i) => ({
           key: i.key,
           type: i.type,
           severity: i.severity,
           message: i.message,
-          file: i.component?.split(':').pop() || i.component,
+          file: i.component?.split(":").pop() || i.component,
           line: i.line,
           rule: i.rule,
           effort: i.effort,
@@ -353,74 +367,86 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [
             {
-              type: 'text',
-              text: JSON.stringify({
-                total: issues.length,
-                truncated,
-                issues,
-              }, null, 2),
+              type: "text",
+              text: JSON.stringify(
+                {
+                  total: issues.length,
+                  truncated,
+                  issues,
+                },
+                null,
+                2
+              ),
             },
           ],
         };
       }
 
-      case 'get_quality_gate': {
+      case "get_quality_gate": {
         // Validate required inputs
-        validateRequired(args, 'projectKey');
+        validateRequired(args, "projectKey");
 
         const params = {
           projectKey: args.projectKey.trim(),
           pullRequest: args.pullRequest?.trim(),
         };
 
-        const data = await sonarFetch('/api/qualitygates/project_status', params);
+        const data = await sonarFetch("/api/qualitygates/project_status", params);
 
         return {
           content: [
             {
-              type: 'text',
-              text: JSON.stringify({
-                status: data.projectStatus?.status,
-                conditions: data.projectStatus?.conditions?.map(c => ({
-                  metric: c.metricKey,
-                  status: c.status,
-                  actualValue: c.actualValue,
-                  errorThreshold: c.errorThreshold,
-                })),
-              }, null, 2),
+              type: "text",
+              text: JSON.stringify(
+                {
+                  status: data.projectStatus?.status,
+                  conditions: data.projectStatus?.conditions?.map((c) => ({
+                    metric: c.metricKey,
+                    status: c.status,
+                    actualValue: c.actualValue,
+                    errorThreshold: c.errorThreshold,
+                  })),
+                },
+                null,
+                2
+              ),
             },
           ],
         };
       }
 
-      case 'get_hotspot_details': {
+      case "get_hotspot_details": {
         // Validate required inputs
-        validateRequired(args, 'hotspotKey');
+        validateRequired(args, "hotspotKey");
 
-        const data = await sonarFetch('/api/hotspots/show', {
+        const data = await sonarFetch("/api/hotspots/show", {
           hotspot: args.hotspotKey.trim(),
         });
 
         return {
           content: [
             {
-              type: 'text',
-              text: JSON.stringify({
-                key: data.key,
-                message: data.message,
-                file: data.component?.path,
-                line: data.line,
-                status: data.status,
-                rule: {
-                  key: data.rule?.key,
-                  name: data.rule?.name,
-                  securityCategory: data.rule?.securityCategory,
-                  vulnerabilityProbability: data.rule?.vulnerabilityProbability,
-                  riskDescription: data.rule?.riskDescription,
-                  vulnerabilityDescription: data.rule?.vulnerabilityDescription,
-                  fixRecommendations: data.rule?.fixRecommendations,
+              type: "text",
+              text: JSON.stringify(
+                {
+                  key: data.key,
+                  message: data.message,
+                  file: data.component?.path,
+                  line: data.line,
+                  status: data.status,
+                  rule: {
+                    key: data.rule?.key,
+                    name: data.rule?.name,
+                    securityCategory: data.rule?.securityCategory,
+                    vulnerabilityProbability: data.rule?.vulnerabilityProbability,
+                    riskDescription: data.rule?.riskDescription,
+                    vulnerabilityDescription: data.rule?.vulnerabilityDescription,
+                    fixRecommendations: data.rule?.fixRecommendations,
+                  },
                 },
-              }, null, 2),
+                null,
+                2
+              ),
             },
           ],
         };
@@ -433,7 +459,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return {
       content: [
         {
-          type: 'text',
+          type: "text",
           text: `Error: ${error.message}`,
         },
       ],
@@ -446,17 +472,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('SonarCloud MCP server running on stdio');
+  console.error("SonarCloud MCP server running on stdio");
   if (proxyAgent) {
-    console.error('Using proxy for API requests');
+    console.error("Using proxy for API requests");
   }
   if (!SONAR_TOKEN) {
-    console.error('Warning: SONAR_TOKEN not set. Set it via environment variable for authenticated access.');
+    console.error(
+      "Warning: SONAR_TOKEN not set. Set it via environment variable for authenticated access."
+    );
   }
 }
 
-main().catch(error => {
+main().catch((error) => {
   // Sanitize error output - don't expose stack traces
-  console.error(`Fatal error: ${error.message || 'Unknown error'}`);
+  console.error(`Fatal error: ${error.message || "Unknown error"}`);
   process.exit(1);
 });

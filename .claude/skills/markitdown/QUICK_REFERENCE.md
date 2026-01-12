@@ -34,12 +34,14 @@ markitdown --use-plugins file.pdf -o output.md
 ## Common Tasks
 
 ### Convert PDF
+
 ```python
 md = MarkItDown()
 result = md.convert("paper.pdf")
 ```
 
 ### Convert with AI
+
 ```python
 from openai import OpenAI
 
@@ -57,30 +59,32 @@ result = md.convert("slides.pptx")
 ```
 
 ### Batch Convert
+
 ```bash
 python scripts/batch_convert.py input/ output/ --extensions .pdf .docx
 ```
 
 ### Literature Conversion
+
 ```bash
 python scripts/convert_literature.py papers/ markdown/ --create-index
 ```
 
 ## Supported Formats
 
-| Format | Extension | Notes |
-|--------|-----------|-------|
-| PDF | `.pdf` | Full text + OCR |
-| Word | `.docx` | Tables, formatting |
-| PowerPoint | `.pptx` | Slides + notes |
-| Excel | `.xlsx`, `.xls` | Tables |
-| Images | `.jpg`, `.png`, `.gif`, `.webp` | EXIF + OCR |
-| Audio | `.wav`, `.mp3` | Transcription |
-| HTML | `.html`, `.htm` | Clean conversion |
-| Data | `.csv`, `.json`, `.xml` | Structured |
-| Archives | `.zip` | Iterates contents |
-| E-books | `.epub` | Full text |
-| YouTube | URLs | Transcripts |
+| Format     | Extension                       | Notes              |
+| ---------- | ------------------------------- | ------------------ |
+| PDF        | `.pdf`                          | Full text + OCR    |
+| Word       | `.docx`                         | Tables, formatting |
+| PowerPoint | `.pptx`                         | Slides + notes     |
+| Excel      | `.xlsx`, `.xls`                 | Tables             |
+| Images     | `.jpg`, `.png`, `.gif`, `.webp` | EXIF + OCR         |
+| Audio      | `.wav`, `.mp3`                  | Transcription      |
+| HTML       | `.html`, `.htm`                 | Clean conversion   |
+| Data       | `.csv`, `.json`, `.xml`         | Structured         |
+| Archives   | `.zip`                          | Iterates contents  |
+| E-books    | `.epub`                         | Full text          |
+| YouTube    | URLs                            | Transcripts        |
 
 ## Optional Dependencies
 
@@ -100,6 +104,7 @@ python scripts/convert_literature.py papers/ markdown/ --create-index
 ## AI-Enhanced Conversion
 
 ### Scientific Papers
+
 ```python
 from openai import OpenAI
 
@@ -118,6 +123,7 @@ result = md.convert("paper.pdf")
 ```
 
 ### Custom Prompts
+
 ```python
 prompt = """
 Analyze this data visualization. Describe:
@@ -134,6 +140,7 @@ md = MarkItDown(
 ```
 
 ### Available Models via OpenRouter
+
 - `anthropic/claude-sonnet-4.5` - **Recommended for scientific vision**
 - `anthropic/claude-opus-4.5` - Advanced vision model
 - `openai/gpt-4o` - GPT-4 Omni (vision)
@@ -152,6 +159,7 @@ result = md.convert("complex_layout.pdf")
 ## Batch Processing
 
 ### Python
+
 ```python
 from markitdown import MarkItDown
 from pathlib import Path
@@ -165,6 +173,7 @@ for file in Path("input/").glob("*.pdf"):
 ```
 
 ### Script
+
 ```bash
 # Parallel conversion
 python scripts/batch_convert.py input/ output/ --workers 8
@@ -194,6 +203,7 @@ with open("large_file.pdf", "rb") as f:
 ## Common Prompts
 
 ### Scientific
+
 ```
 Analyze this scientific figure. Describe:
 - Type of visualization
@@ -203,6 +213,7 @@ Analyze this scientific figure. Describe:
 ```
 
 ### Medical
+
 ```
 Describe this medical image. Include:
 - Type of imaging (X-ray, MRI, CT, etc.)
@@ -212,6 +223,7 @@ Describe this medical image. Include:
 ```
 
 ### Data Visualization
+
 ```
 Analyze this data visualization:
 - Chart type
@@ -241,6 +253,7 @@ export AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT="https://..."
 ## Scripts Quick Reference
 
 ### batch_convert.py
+
 ```bash
 python scripts/batch_convert.py INPUT OUTPUT [OPTIONS]
 
@@ -253,6 +266,7 @@ Options:
 ```
 
 ### convert_with_ai.py
+
 ```bash
 python scripts/convert_with_ai.py INPUT OUTPUT [OPTIONS]
 
@@ -265,6 +279,7 @@ Options:
 ```
 
 ### convert_literature.py
+
 ```bash
 python scripts/convert_literature.py INPUT OUTPUT [OPTIONS]
 
@@ -277,11 +292,13 @@ Options:
 ## Troubleshooting
 
 ### Missing Dependencies
+
 ```bash
 pip install 'markitdown[pdf]'  # Install PDF support
 ```
 
 ### Binary File Error
+
 ```python
 # Wrong
 with open("file.pdf", "r") as f:
@@ -291,6 +308,7 @@ with open("file.pdf", "rb") as f:  # Binary mode
 ```
 
 ### OCR Not Working
+
 ```bash
 # macOS
 brew install tesseract
@@ -306,4 +324,3 @@ sudo apt-get install tesseract-ocr
 - **Format Details**: See `references/file_formats.md`
 - **Examples**: See `assets/example_usage.md`
 - **GitHub**: https://github.com/microsoft/markitdown
-
