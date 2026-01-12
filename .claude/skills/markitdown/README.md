@@ -1,10 +1,12 @@
 # MarkItDown Skill
 
-This skill provides comprehensive support for converting various file formats to Markdown using Microsoft's MarkItDown tool.
+This skill provides comprehensive support for converting various file formats to
+Markdown using Microsoft's MarkItDown tool.
 
 ## Overview
 
-MarkItDown is a Python tool that converts files and office documents to Markdown format. This skill includes:
+MarkItDown is a Python tool that converts files and office documents to Markdown
+format. This skill includes:
 
 - Complete API documentation
 - Format-specific conversion guides
@@ -15,18 +17,25 @@ MarkItDown is a Python tool that converts files and office documents to Markdown
 ## Contents
 
 ### Main Skill File
-- **SKILL.md** - Complete guide to using MarkItDown with quick start, examples, and best practices
+
+- **SKILL.md** - Complete guide to using MarkItDown with quick start, examples,
+  and best practices
 
 ### References
-- **api_reference.md** - Detailed API documentation, class references, and method signatures
+
+- **api_reference.md** - Detailed API documentation, class references, and
+  method signatures
 - **file_formats.md** - Format-specific details for all supported file types
 
 ### Scripts
+
 - **batch_convert.py** - Batch convert multiple files with parallel processing
 - **convert_with_ai.py** - AI-enhanced conversion with custom prompts
-- **convert_literature.py** - Scientific literature conversion with metadata extraction
+- **convert_literature.py** - Scientific literature conversion with metadata
+  extraction
 
 ### Assets
+
 - **example_usage.md** - Practical examples for common use cases
 
 ## Installation
@@ -61,6 +70,7 @@ print(result.text_content)
 ## Key Features
 
 ### 1. AI-Enhanced Conversions
+
 Use AI models via OpenRouter to generate detailed image descriptions:
 
 ```python
@@ -80,6 +90,7 @@ result = md.convert("presentation.pptx")
 ```
 
 ### 2. Batch Processing
+
 Convert multiple files efficiently:
 
 ```bash
@@ -87,6 +98,7 @@ python scripts/batch_convert.py papers/ output/ --extensions .pdf .docx
 ```
 
 ### 3. Scientific Literature
+
 Convert and organize research papers:
 
 ```bash
@@ -94,6 +106,7 @@ python scripts/convert_literature.py papers/ output/ --organize-by-year --create
 ```
 
 ### 4. Azure Document Intelligence
+
 Enhanced PDF conversion with Microsoft Document Intelligence:
 
 ```python
@@ -104,23 +117,29 @@ result = md.convert("complex_document.pdf")
 ## Use Cases
 
 ### Literature Review
+
 Convert research papers to Markdown for easier analysis and note-taking.
 
 ### Data Extraction
+
 Extract tables from Excel files into Markdown format.
 
 ### Presentation Processing
+
 Convert PowerPoint slides with AI-generated descriptions.
 
 ### Document Analysis
+
 Process documents for LLM consumption with token-efficient Markdown.
 
 ### YouTube Transcripts
+
 Fetch and convert YouTube video transcriptions.
 
 ## Scripts Usage
 
 ### Batch Convert
+
 ```bash
 # Convert all PDFs in a directory
 python scripts/batch_convert.py input_dir/ output_dir/ --extensions .pdf
@@ -130,6 +149,7 @@ python scripts/batch_convert.py docs/ markdown/ --extensions .pdf .docx .pptx -r
 ```
 
 ### AI-Enhanced Conversion
+
 ```bash
 # Convert with AI descriptions via OpenRouter
 export OPENROUTER_API_KEY="sk-or-v1-..."
@@ -143,6 +163,7 @@ python scripts/convert_with_ai.py image.png output.md --custom-prompt "Describe 
 ```
 
 ### Literature Conversion
+
 ```bash
 # Convert papers with metadata extraction
 python scripts/convert_literature.py papers/ markdown/ --organize-by-year --create-index
@@ -151,6 +172,7 @@ python scripts/convert_literature.py papers/ markdown/ --organize-by-year --crea
 ## Integration with Scientific Writer
 
 This skill integrates seamlessly with the Scientific Writer CLI for:
+
 - Converting source materials for paper writing
 - Processing literature for reviews
 - Extracting data from various document formats
@@ -169,16 +191,17 @@ This skill integrates seamlessly with the Scientific Writer CLI for:
 
 - Python 3.10+
 - Optional dependencies based on formats needed
-- OpenRouter API key (for AI-enhanced conversions) - Get at https://openrouter.ai/keys
+- OpenRouter API key (for AI-enhanced conversions) - Get at
+  https://openrouter.ai/keys
 - Azure subscription (optional, for Document Intelligence)
 
 ## Examples
 
 See `assets/example_usage.md` for comprehensive examples covering:
+
 - Basic conversions
 - Scientific workflows
 - AI-enhanced processing
 - Batch operations
 - Error handling
 - Integration patterns
-

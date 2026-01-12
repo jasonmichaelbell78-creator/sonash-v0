@@ -3,15 +3,18 @@
 **Version:** v1.0  
 **Created:** 2024-12-22  
 **Status:** In Progress  
-**Owner:** Jason  
+**Owner:** Jason
 
 ---
 
 ## Executive Summary
 
-Enhance the existing SoNash admin panel (`/admin` route) with operational monitoring capabilities including a system dashboard, enhanced user lookup, error tracking, logging visibility, and background job monitoring.
+Enhance the existing SoNash admin panel (`/admin` route) with operational
+monitoring capabilities including a system dashboard, enhanced user lookup,
+error tracking, logging visibility, and background job monitoring.
 
-**Approach:** Build custom within existing Next.js app, extending the current tab-based admin pattern with shadcn/ui components.
+**Approach:** Build custom within existing Next.js app, extending the current
+tab-based admin pattern with shadcn/ui components.
 
 ---
 
@@ -19,29 +22,29 @@ Enhance the existing SoNash admin panel (`/admin` route) with operational monito
 
 ### Existing Admin Infrastructure
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Admin route (`/app/admin/`) | ✅ Exists | Client-side protected via Firebase custom claims |
-| Tab navigation | ✅ Exists | 8 tabs currently (Meetings, Sober Living, Quotes, etc.) |
-| `AdminCrudTable<T>` | ✅ Exists | Reusable CRUD component |
-| Cloud Functions auth | ✅ Exists | `requireAdmin()` helper in place |
-| Firestore rules | ✅ Exists | `isAdmin()` function defined |
-| Sentry integration | ✅ Exists | Initialized in Cloud Functions |
-| `logSecurityEvent()` | ✅ Exists | Writes to GCP Cloud Logging |
-| Users tab | ✅ Exists | Basic user list (to be enhanced) |
+| Component                   | Status    | Notes                                                   |
+| --------------------------- | --------- | ------------------------------------------------------- |
+| Admin route (`/app/admin/`) | ✅ Exists | Client-side protected via Firebase custom claims        |
+| Tab navigation              | ✅ Exists | 8 tabs currently (Meetings, Sober Living, Quotes, etc.) |
+| `AdminCrudTable<T>`         | ✅ Exists | Reusable CRUD component                                 |
+| Cloud Functions auth        | ✅ Exists | `requireAdmin()` helper in place                        |
+| Firestore rules             | ✅ Exists | `isAdmin()` function defined                            |
+| Sentry integration          | ✅ Exists | Initialized in Cloud Functions                          |
+| `logSecurityEvent()`        | ✅ Exists | Writes to GCP Cloud Logging                             |
+| Users tab                   | ✅ Exists | Basic user list (to be enhanced)                        |
 
 ### Identified Gaps
 
-| Gap | Impact | Resolution Phase |
-|-----|--------|------------------|
-| No system health visibility | Can't tell if services are down | Phase 1 |
-| No user activity metrics | Don't know engagement levels | Phase 1 |
-| Basic user lookup only | Can't debug user-specific issues | Phase 2 |
-| No scheduled job monitoring | Jobs could fail silently | Phase 3 |
-| Errors only in Sentry UI | Context switching to debug | Phase 4 |
-| Logs only in GCP Console | No in-app log access | Phase 5 |
-| `cleanupOldRateLimits` not scheduled | Rate limit docs accumulate | Phase 3 |
-| No `lastActive` tracking | Can't measure active users | Phase 1 |
+| Gap                                  | Impact                           | Resolution Phase |
+| ------------------------------------ | -------------------------------- | ---------------- |
+| No system health visibility          | Can't tell if services are down  | Phase 1          |
+| No user activity metrics             | Don't know engagement levels     | Phase 1          |
+| Basic user lookup only               | Can't debug user-specific issues | Phase 2          |
+| No scheduled job monitoring          | Jobs could fail silently         | Phase 3          |
+| Errors only in Sentry UI             | Context switching to debug       | Phase 4          |
+| Logs only in GCP Console             | No in-app log access             | Phase 5          |
+| `cleanupOldRateLimits` not scheduled | Rate limit docs accumulate       | Phase 3          |
+| No `lastActive` tracking             | Can't measure active users       | Phase 1          |
 
 ---
 
@@ -121,7 +124,7 @@ Admin Panel Tabs (Updated Order)
 **Status:** 🔄 In Progress  
 **Priority:** High  
 **Effort:** Medium  
-**Value:** High — instant system visibility  
+**Value:** High — instant system visibility
 
 ### Objectives
 
@@ -133,29 +136,31 @@ Admin Panel Tabs (Updated Order)
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
+| File                                 | Type      | Purpose      |
+| ------------------------------------ | --------- | ------------ |
 | `components/admin/dashboard-tab.tsx` | Component | Dashboard UI |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `functions/src/admin.ts` | Add `adminHealthCheck`, `adminGetDashboardStats` |
-| `functions/src/index.ts` | Export new functions (if needed) |
-| `components/admin/admin-tabs.tsx` | Add Dashboard tab (first position) |
-| Auth provider / firebase.ts | Add `lastActive` timestamp updates |
-| `firestore.indexes.json` | Add indexes for queries |
+| File                              | Changes                                          |
+| --------------------------------- | ------------------------------------------------ |
+| `functions/src/admin.ts`          | Add `adminHealthCheck`, `adminGetDashboardStats` |
+| `functions/src/index.ts`          | Export new functions (if needed)                 |
+| `components/admin/admin-tabs.tsx` | Add Dashboard tab (first position)               |
+| Auth provider / firebase.ts       | Add `lastActive` timestamp updates               |
+| `firestore.indexes.json`          | Add indexes for queries                          |
 
 ### Cloud Functions
 
 #### `adminHealthCheck`
+
 ```typescript
 // Returns: { firestore: boolean, auth: boolean, timestamp: string }
 // Tests connectivity to Firestore and Auth services
 ```
 
 #### `adminGetDashboardStats`
+
 ```typescript
 // Returns:
 // - activeUsers: { last24h, last7d, last30d }
@@ -169,10 +174,11 @@ Admin Panel Tabs (Updated Order)
 ### User Activity Tracking
 
 Add to auth state listener:
+
 ```typescript
 if (user && !user.isAnonymous) {
   updateDoc(doc(db, "users", user.uid), {
-    lastActive: serverTimestamp()
+    lastActive: serverTimestamp(),
   }).catch(console.warn);
 }
 ```
@@ -194,7 +200,7 @@ if (user && !user.isAnonymous) {
 **Status:** ⏳ Planned  
 **Priority:** High  
 **Effort:** Medium  
-**Value:** High — "what's happening with this user?"  
+**Value:** High — "what's happening with this user?"
 
 ### Objectives
 
@@ -206,20 +212,21 @@ if (user && !user.isAnonymous) {
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
+| File                                      | Type      | Purpose                     |
+| ----------------------------------------- | --------- | --------------------------- |
 | `components/admin/user-detail-drawer.tsx` | Component | Slide-out user detail panel |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `components/admin/users-tab.tsx` | Add search, click-to-detail, enhanced UI |
-| `functions/src/admin.ts` | Add `adminGetUserDetail`, `adminUpdateUser`, `adminDisableUser` |
+| File                             | Changes                                                         |
+| -------------------------------- | --------------------------------------------------------------- |
+| `components/admin/users-tab.tsx` | Add search, click-to-detail, enhanced UI                        |
+| `functions/src/admin.ts`         | Add `adminGetUserDetail`, `adminUpdateUser`, `adminDisableUser` |
 
 ### Cloud Functions
 
 #### `adminGetUserDetail`
+
 ```typescript
 // Input: { uid: string }
 // Returns:
@@ -229,12 +236,14 @@ if (user && !user.isAnonymous) {
 ```
 
 #### `adminUpdateUser`
+
 ```typescript
 // Input: { uid: string, updates: { adminNotes?: string, ... } }
 // Allows admin to update specific user fields
 ```
 
 #### `adminDisableUser`
+
 ```typescript
 // Input: { uid: string, disabled: boolean }
 // Sets disabled flag + revokes refresh tokens
@@ -243,11 +252,13 @@ if (user && !user.isAnonymous) {
 ### UI Components
 
 **Search Bar:**
+
 - Text input with dropdown: "Search by Email / UID / Nickname"
 - Debounced search (300ms)
 - Results update table in real-time
 
 **User Detail Drawer:**
+
 - Slide-out panel (right side)
 - Sections: Profile, Activity Timeline, Account Actions, Admin Notes
 - Activity timeline with infinite scroll
@@ -268,7 +279,7 @@ if (user && !user.isAnonymous) {
 **Status:** ⏳ Planned  
 **Priority:** Medium  
 **Effort:** Low  
-**Value:** Medium — peace of mind on scheduled tasks  
+**Value:** Medium — peace of mind on scheduled tasks
 
 ### Objectives
 
@@ -280,17 +291,17 @@ if (user && !user.isAnonymous) {
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
-| `components/admin/jobs-tab.tsx` | Component | Jobs monitoring UI |
-| `functions/src/jobs.ts` | Functions | Job wrapper + scheduled functions |
+| File                            | Type      | Purpose                           |
+| ------------------------------- | --------- | --------------------------------- |
+| `components/admin/jobs-tab.tsx` | Component | Jobs monitoring UI                |
+| `functions/src/jobs.ts`         | Functions | Job wrapper + scheduled functions |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `functions/src/index.ts` | Export scheduled functions |
-| `components/admin/admin-tabs.tsx` | Add Jobs tab |
+| File                              | Changes                    |
+| --------------------------------- | -------------------------- |
+| `functions/src/index.ts`          | Export scheduled functions |
+| `components/admin/admin-tabs.tsx` | Add Jobs tab               |
 
 ### Job Wrapper Pattern
 
@@ -298,24 +309,24 @@ if (user && !user.isAnonymous) {
 async function runJob(jobId: string, jobFn: () => Promise<void>) {
   const jobRef = db.doc(`admin_jobs/${jobId}`);
   const startTime = Date.now();
-  
-  await jobRef.update({ 
-    lastRunStatus: 'running', 
-    lastRun: FieldValue.serverTimestamp() 
+
+  await jobRef.update({
+    lastRunStatus: "running",
+    lastRun: FieldValue.serverTimestamp(),
   });
-  
+
   try {
     await jobFn();
     await jobRef.update({
-      lastRunStatus: 'success',
+      lastRunStatus: "success",
       lastRunDuration: Date.now() - startTime,
-      lastError: null
+      lastError: null,
     });
   } catch (error) {
     await jobRef.update({
-      lastRunStatus: 'failed',
+      lastRunStatus: "failed",
       lastRunDuration: Date.now() - startTime,
-      lastError: error.message
+      lastError: error.message,
     });
     throw error;
   }
@@ -324,8 +335,8 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 
 ### Jobs to Register
 
-| Job ID | Name | Schedule | Description |
-|--------|------|----------|-------------|
+| Job ID                 | Name                | Schedule      | Description                          |
+| ---------------------- | ------------------- | ------------- | ------------------------------------ |
 | `cleanupOldRateLimits` | Cleanup Rate Limits | Daily 3 AM CT | Removes expired rate limit documents |
 
 ### Verification Checklist
@@ -344,7 +355,7 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 **Status:** ⏳ Planned  
 **Priority:** High  
 **Effort:** Medium  
-**Value:** High — catch issues before users report  
+**Value:** High — catch issues before users report
 
 ### Objectives
 
@@ -355,33 +366,36 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
-| `components/admin/errors-tab.tsx` | Component | Error tracking UI |
-| `lib/sentry-admin.ts` | Utility | Sentry API client |
-| `lib/error-translations.ts` | Utility | Error code → plain English mapping |
+| File                              | Type      | Purpose                            |
+| --------------------------------- | --------- | ---------------------------------- |
+| `components/admin/errors-tab.tsx` | Component | Error tracking UI                  |
+| `lib/sentry-admin.ts`             | Utility   | Sentry API client                  |
+| `lib/error-translations.ts`       | Utility   | Error code → plain English mapping |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `components/admin/admin-tabs.tsx` | Add Errors tab |
-| `.env.local` | Add `SENTRY_API_TOKEN` |
+| File                              | Changes                |
+| --------------------------------- | ---------------------- |
+| `components/admin/admin-tabs.tsx` | Add Errors tab         |
+| `.env.local`                      | Add `SENTRY_API_TOKEN` |
 
 ### Error Translation Map
 
 ```typescript
 const ERROR_TRANSLATIONS: Record<string, string> = {
-  'auth/invalid-credential': "User entered wrong password or account doesn't exist",
-  'permission-denied': "User tried to access data they don't have permission for",
-  'unauthenticated': "User's session expired or they weren't logged in",
-  'resource-exhausted': "Rate limit hit — too many requests",
-  'deadline-exceeded': "Request took too long (slow connection or overloaded function)",
-  'not-found': "Requested data doesn't exist",
-  'already-exists': "Tried to create something that already exists",
-  'internal': "Something went wrong on our end",
-  'unavailable': "Service temporarily unavailable",
-  'failed-precondition': "Operation rejected due to system state",
+  "auth/invalid-credential":
+    "User entered wrong password or account doesn't exist",
+  "permission-denied":
+    "User tried to access data they don't have permission for",
+  unauthenticated: "User's session expired or they weren't logged in",
+  "resource-exhausted": "Rate limit hit — too many requests",
+  "deadline-exceeded":
+    "Request took too long (slow connection or overloaded function)",
+  "not-found": "Requested data doesn't exist",
+  "already-exists": "Tried to create something that already exists",
+  internal: "Something went wrong on our end",
+  unavailable: "Service temporarily unavailable",
+  "failed-precondition": "Operation rejected due to system state",
 };
 ```
 
@@ -400,14 +414,14 @@ export async function fetchRecentErrors(hours = 24) {
 
 ### UI Columns
 
-| Column | Description |
-|--------|-------------|
-| When | Relative time (e.g., "2 hours ago") |
-| What Happened | Plain English translation |
-| Technical Details | Expandable original error |
-| Affected User | Link to user profile (if available) |
-| Count | Occurrence frequency |
-| Status | New / Investigating / Resolved |
+| Column            | Description                         |
+| ----------------- | ----------------------------------- |
+| When              | Relative time (e.g., "2 hours ago") |
+| What Happened     | Plain English translation           |
+| Technical Details | Expandable original error           |
+| Affected User     | Link to user profile (if available) |
+| Count             | Occurrence frequency                |
+| Status            | New / Investigating / Resolved      |
 
 ### Verification Checklist
 
@@ -425,7 +439,7 @@ export async function fetchRecentErrors(hours = 24) {
 **Status:** ⏳ Planned  
 **Priority:** Medium  
 **Effort:** Higher  
-**Value:** Medium — deep debugging capability  
+**Value:** Medium — deep debugging capability
 
 ### Objectives
 
@@ -436,29 +450,29 @@ export async function fetchRecentErrors(hours = 24) {
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
+| File                            | Type      | Purpose        |
+| ------------------------------- | --------- | -------------- |
 | `components/admin/logs-tab.tsx` | Component | Logs viewer UI |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `functions/src/index.ts` or logging utility | Parallel write to Firestore |
-| `functions/src/jobs.ts` | Add `cleanupOldLogs` scheduled function |
-| `components/admin/admin-tabs.tsx` | Add Logs tab |
+| File                                        | Changes                                 |
+| ------------------------------------------- | --------------------------------------- |
+| `functions/src/index.ts` or logging utility | Parallel write to Firestore             |
+| `functions/src/jobs.ts`                     | Add `cleanupOldLogs` scheduled function |
+| `components/admin/admin-tabs.tsx`           | Add Logs tab                            |
 
 ### Firestore Log Entry Schema
 
 ```typescript
 interface AdminLogEntry {
-  id: string;           // Auto-generated
+  id: string; // Auto-generated
   timestamp: Timestamp;
-  event: string;        // e.g., "AUTH_FAILURE", "ADMIN_ACTION"
-  level: 'info' | 'warn' | 'error';
-  userId: string;       // Hashed for privacy
-  details: string;      // Additional context
-  source: string;       // Function name
+  event: string; // e.g., "AUTH_FAILURE", "ADMIN_ACTION"
+  level: "info" | "warn" | "error";
+  userId: string; // Hashed for privacy
+  details: string; // Additional context
+  source: string; // Function name
   metadata?: Record<string, any>;
 }
 ```
@@ -467,10 +481,10 @@ interface AdminLogEntry {
 
 ```typescript
 // Add to existing logSecurityEvent or create wrapper
-async function logToFirestore(entry: Omit<AdminLogEntry, 'id'>) {
-  await db.collection('admin_logs').add({
+async function logToFirestore(entry: Omit<AdminLogEntry, "id">) {
+  await db.collection("admin_logs").add({
     ...entry,
-    timestamp: FieldValue.serverTimestamp()
+    timestamp: FieldValue.serverTimestamp(),
   });
 }
 ```
@@ -479,17 +493,18 @@ async function logToFirestore(entry: Omit<AdminLogEntry, 'id'>) {
 
 ```typescript
 export const cleanupOldLogs = onSchedule("0 4 * * *", async () => {
-  await runJob('cleanupOldLogs', async () => {
+  await runJob("cleanupOldLogs", async () => {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 7);
-    
-    const oldLogs = await db.collection('admin_logs')
-      .where('timestamp', '<', cutoff)
+
+    const oldLogs = await db
+      .collection("admin_logs")
+      .where("timestamp", "<", cutoff)
       .limit(500)
       .get();
-    
+
     const batch = db.batch();
-    oldLogs.docs.forEach(doc => batch.delete(doc.ref));
+    oldLogs.docs.forEach((doc) => batch.delete(doc.ref));
     await batch.commit();
   });
 });
@@ -497,14 +512,14 @@ export const cleanupOldLogs = onSchedule("0 4 * * *", async () => {
 
 ### UI Features
 
-| Feature | Description |
-|---------|-------------|
-| Date Range Picker | Filter logs by time window |
-| Level Filter | Checkboxes for info/warn/error |
-| Event Type Filter | Dropdown of event types |
-| Search | Free-text search in details |
-| Auto-refresh | Toggle for live updates |
-| Export | Download filtered logs as JSON |
+| Feature           | Description                    |
+| ----------------- | ------------------------------ |
+| Date Range Picker | Filter logs by time window     |
+| Level Filter      | Checkboxes for info/warn/error |
+| Event Type Filter | Dropdown of event types        |
+| Search            | Free-text search in details    |
+| Auto-refresh      | Toggle for live updates        |
+| Export            | Download filtered logs as JSON |
 
 ### Verification Checklist
 
@@ -521,44 +536,44 @@ export const cleanupOldLogs = onSchedule("0 4 * * *", async () => {
 
 ### Admin Protection Layers
 
-| Layer | Implementation | Status |
-|-------|----------------|--------|
-| Client-side auth check | `tokenResult.claims.admin === true` | ✅ Exists |
-| Cloud Function check | `requireAdmin(request)` | ✅ Exists |
-| Firestore rules | `isAdmin()` function | ✅ Exists |
-| Middleware (server-side) | Next.js middleware | ⚠️ Recommended addition |
+| Layer                    | Implementation                      | Status                  |
+| ------------------------ | ----------------------------------- | ----------------------- |
+| Client-side auth check   | `tokenResult.claims.admin === true` | ✅ Exists               |
+| Cloud Function check     | `requireAdmin(request)`             | ✅ Exists               |
+| Firestore rules          | `isAdmin()` function                | ✅ Exists               |
+| Middleware (server-side) | Next.js middleware                  | ⚠️ Recommended addition |
 
 ### Recommended: Add Server-Side Middleware
 
 ```typescript
 // middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  if (request.nextUrl.pathname.startsWith("/admin")) {
     // Check for admin session cookie
-    const session = request.cookies.get('__session');
+    const session = request.cookies.get("__session");
     if (!session) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: "/admin/:path*",
 };
 ```
 
 ### Data Privacy
 
-| Data Type | Handling |
-|-----------|----------|
+| Data Type        | Handling                              |
+| ---------------- | ------------------------------------- |
 | User IDs in logs | SHA-256 hashed, truncated to 12 chars |
-| User activity | Only accessible to admins |
-| Error details | Sensitive data redacted |
-| Admin actions | Full audit trail |
+| User activity    | Only accessible to admins             |
+| Error details    | Sensitive data redacted               |
+| Admin actions    | Full audit trail                      |
 
 ---
 
@@ -570,23 +585,17 @@ export const config = {
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "lastActive", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "lastActive", "order": "DESCENDING" }]
     },
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
     },
     {
       "collectionGroup": "admin_logs",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "timestamp", "order": "DESCENDING" }]
     },
     {
       "collectionGroup": "admin_logs",
@@ -606,11 +615,11 @@ export const config = {
 
 ### New Variables Required
 
-| Variable | Phase | Purpose |
-|----------|-------|---------|
-| `SENTRY_API_TOKEN` | 4 | Sentry API access for error fetching |
-| `SENTRY_ORG` | 4 | Sentry organization slug |
-| `SENTRY_PROJECT` | 4 | Sentry project slug |
+| Variable           | Phase | Purpose                              |
+| ------------------ | ----- | ------------------------------------ |
+| `SENTRY_API_TOKEN` | 4     | Sentry API access for error fetching |
+| `SENTRY_ORG`       | 4     | Sentry organization slug             |
+| `SENTRY_PROJECT`   | 4     | Sentry project slug                  |
 
 ---
 
@@ -618,20 +627,20 @@ export const config = {
 
 ### Unit Tests
 
-| Component | Test Cases |
-|-----------|------------|
-| `dashboard-tab.tsx` | Loading state, error state, data display |
-| `error-translations.ts` | All error codes translate correctly |
-| `user-detail-drawer.tsx` | Opens/closes, displays data |
+| Component                | Test Cases                               |
+| ------------------------ | ---------------------------------------- |
+| `dashboard-tab.tsx`      | Loading state, error state, data display |
+| `error-translations.ts`  | All error codes translate correctly      |
+| `user-detail-drawer.tsx` | Opens/closes, displays data              |
 
 ### Integration Tests
 
-| Flow | Validation |
-|------|------------|
-| Dashboard load | All stats populate, no errors |
-| User search | Returns correct results |
-| Job status | Reflects actual Cloud Scheduler state |
-| Error display | Matches Sentry data |
+| Flow           | Validation                            |
+| -------------- | ------------------------------------- |
+| Dashboard load | All stats populate, no errors         |
+| User search    | Returns correct results               |
+| Job status     | Reflects actual Cloud Scheduler state |
+| Error display  | Matches Sentry data                   |
 
 ### Manual Testing Checklist
 
@@ -646,43 +655,43 @@ export const config = {
 
 ## Rollout Plan
 
-| Phase | Target Date | Dependencies |
-|-------|-------------|--------------|
-| Phase 1: Dashboard | Week 1 | None |
-| Phase 2: User Lookup | Week 2 | Phase 1 (`lastActive` tracking) |
-| Phase 3: Jobs | Week 2-3 | Phase 1 (jobs display on dashboard) |
-| Phase 4: Errors | Week 3 | Sentry API token |
-| Phase 5: Logs | Week 4 | Phase 3 (log cleanup job) |
+| Phase                | Target Date | Dependencies                        |
+| -------------------- | ----------- | ----------------------------------- |
+| Phase 1: Dashboard   | Week 1      | None                                |
+| Phase 2: User Lookup | Week 2      | Phase 1 (`lastActive` tracking)     |
+| Phase 3: Jobs        | Week 2-3    | Phase 1 (jobs display on dashboard) |
+| Phase 4: Errors      | Week 3      | Sentry API token                    |
+| Phase 5: Logs        | Week 4      | Phase 3 (log cleanup job)           |
 
 ---
 
 ## Success Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Time to identify issue | < 2 minutes | Manual timing |
-| Dashboard load time | < 3 seconds | Performance monitoring |
-| Error visibility | 100% of Cloud Function errors | Compare Sentry vs. Errors tab |
-| Job failure detection | < 1 hour after failure | Alert setup |
+| Metric                 | Target                        | Measurement                   |
+| ---------------------- | ----------------------------- | ----------------------------- |
+| Time to identify issue | < 2 minutes                   | Manual timing                 |
+| Dashboard load time    | < 3 seconds                   | Performance monitoring        |
+| Error visibility       | 100% of Cloud Function errors | Compare Sentry vs. Errors tab |
+| Job failure detection  | < 1 hour after failure        | Alert setup                   |
 
 ---
 
 ## Open Questions / Parking Lot
 
-| ID | Question | Priority | Status |
-|----|----------|----------|--------|
-| AP-001 | Should we add email alerts for job failures? | M | Deferred |
-| AP-002 | Rate limiting on admin endpoints? | L | Deferred |
-| AP-003 | Admin action approval workflow for destructive actions? | L | Deferred |
-| AP-004 | Export all user data as ZIP for GDPR requests? | M | Deferred |
+| ID     | Question                                                | Priority | Status   |
+| ------ | ------------------------------------------------------- | -------- | -------- |
+| AP-001 | Should we add email alerts for job failures?            | M        | Deferred |
+| AP-002 | Rate limiting on admin endpoints?                       | L        | Deferred |
+| AP-003 | Admin action approval workflow for destructive actions? | L        | Deferred |
+| AP-004 | Export all user data as ZIP for GDPR requests?          | M        | Deferred |
 
 ---
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| v1.0 | 2024-12-22 | Initial specification |
+| Version | Date       | Changes               |
+| ------- | ---------- | --------------------- |
+| v1.0    | 2024-12-22 | Initial specification |
 
 ---
 

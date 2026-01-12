@@ -17,42 +17,30 @@
  *   2 - Usage/file access error
  */
 
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { join, basename } from "node:path";
 
 // Required fields per MULTI_AI_AGGREGATOR_TEMPLATE.md
-const REQUIRED_FIELDS = [
-  'canonical_id',
-  'category',
-  'title',
-  'severity',
-  'effort',
-  'files'
-];
+const REQUIRED_FIELDS = ["canonical_id", "category", "title", "severity", "effort", "files"];
 
 // Strongly recommended fields
-const RECOMMENDED_FIELDS = [
-  'confidence',
-  'consensus',
-  'why_it_matters',
-  'suggested_fix'
-];
+const RECOMMENDED_FIELDS = ["confidence", "consensus", "why_it_matters", "suggested_fix"];
 
 // Valid enum values
-const VALID_SEVERITY = ['S0', 'S1', 'S2', 'S3'];
-const VALID_EFFORT = ['E0', 'E1', 'E2', 'E3'];
-const VALID_STATUS = ['CONFIRMED', 'SUSPECTED', 'NEW', 'TRACKED_ELSEWHERE'];
+const VALID_SEVERITY = ["S0", "S1", "S2", "S3"];
+const VALID_EFFORT = ["E0", "E1", "E2", "E3"];
+const VALID_STATUS = ["CONFIRMED", "SUSPECTED", "NEW", "TRACKED_ELSEWHERE"];
 
 // ID format regex: CANON-XXXX (4 digits)
 const CANON_ID_REGEX = /^CANON-\d{4}$/;
 
 // Alternative ID formats (for reporting, not valid)
 const ALT_ID_PATTERNS = [
-  { pattern: /^F-\d{3}$/, name: 'Security (F-XXX)' },
-  { pattern: /^PERF-\d{3}$/, name: 'Performance (PERF-XXX)' },
-  { pattern: /^CANON-R-\d{3}$/, name: 'Refactoring (CANON-R-XXX)' },
-  { pattern: /^CANON-D-\d{3}$/, name: 'Documentation (CANON-D-XXX)' },
-  { pattern: /^CANON-P-\d{3}$/, name: 'Process (CANON-P-XXX)' }
+  { pattern: /^F-\d{3}$/, name: "Security (F-XXX)" },
+  { pattern: /^PERF-\d{3}$/, name: "Performance (PERF-XXX)" },
+  { pattern: /^CANON-R-\d{3}$/, name: "Refactoring (CANON-R-XXX)" },
+  { pattern: /^CANON-D-\d{3}$/, name: "Documentation (CANON-D-XXX)" },
+  { pattern: /^CANON-P-\d{3}$/, name: "Process (CANON-P-XXX)" },
 ];
 
 class ValidationResult {
@@ -117,7 +105,7 @@ function validateFinding(finding, lineNum, result) {
   // Validate canonical_id format
   if (finding.canonical_id) {
     if (!CANON_ID_REGEX.test(finding.canonical_id)) {
-      let altFormat = 'Unknown';
+      let altFormat = "Unknown";
       for (const alt of ALT_ID_PATTERNS) {
         if (alt.pattern.test(finding.canonical_id)) {
           altFormat = alt.name;
@@ -126,7 +114,7 @@ function validateFinding(finding, lineNum, result) {
       }
       result.addError(
         lineNum,
-        'canonical_id',
+        "canonical_id",
         `Invalid ID format: "${finding.canonical_id}" (detected: ${altFormat}, expected: CANON-XXXX)`
       );
     }
@@ -134,38 +122,66 @@ function validateFinding(finding, lineNum, result) {
 
   // Validate severity
   if (finding.severity && !VALID_SEVERITY.includes(finding.severity)) {
-    result.addError(lineNum, 'severity', `Invalid severity: "${finding.severity}" (expected: ${VALID_SEVERITY.join(', ')})`);
+    result.addError(
+      lineNum,
+      "severity",
+      `Invalid severity: "${finding.severity}" (expected: ${VALID_SEVERITY.join(", ")})`
+    );
   }
 
   // Validate effort
   if (finding.effort && !VALID_EFFORT.includes(finding.effort)) {
-    result.addError(lineNum, 'effort', `Invalid effort: "${finding.effort}" (expected: ${VALID_EFFORT.join(', ')})`);
+    result.addError(
+      lineNum,
+      "effort",
+      `Invalid effort: "${finding.effort}" (expected: ${VALID_EFFORT.join(", ")})`
+    );
   }
 
   // Validate status if present
   if (finding.status && !VALID_STATUS.includes(finding.status)) {
-    result.addWarning(lineNum, 'status', `Non-standard status: "${finding.status}" (expected: ${VALID_STATUS.join(', ')})`);
+    result.addWarning(
+      lineNum,
+      "status",
+      `Non-standard status: "${finding.status}" (expected: ${VALID_STATUS.join(", ")})`
+    );
   }
 
   // Validate files is array
   if (finding.files && !Array.isArray(finding.files)) {
-    result.addError(lineNum, 'files', `"files" must be an array, got: ${typeof finding.files}`);
+    result.addError(lineNum, "files", `"files" must be an array, got: ${typeof finding.files}`);
   }
 
   // Validate confidence range
-  if ('confidence' in finding || 'final_confidence' in finding) {
+  if ("confidence" in finding || "final_confidence" in finding) {
     const conf = finding.confidence ?? finding.final_confidence;
-    if (typeof conf === 'number' && (conf < 0 || conf > 100)) {
-      result.addWarning(lineNum, 'confidence', `Confidence out of range: ${conf} (expected: 0-100)`);
+    if (typeof conf === "number" && (conf < 0 || conf > 100)) {
+      result.addWarning(
+        lineNum,
+        "confidence",
+        `Confidence out of range: ${conf} (expected: 0-100)`
+      );
     }
   }
 
   // Check for consensus field variations
-  if ('consensus_score' in finding && typeof finding.consensus_score !== 'number') {
-    result.addWarning(lineNum, 'consensus_score', `consensus_score should be number, got: ${typeof finding.consensus_score}`);
+  if ("consensus_score" in finding && typeof finding.consensus_score !== "number") {
+    result.addWarning(
+      lineNum,
+      "consensus_score",
+      `consensus_score should be number, got: ${typeof finding.consensus_score}`
+    );
   }
-  if ('consensus' in finding && typeof finding.consensus === 'string' && finding.consensus.includes('/')) {
-    result.addWarning(lineNum, 'consensus', `consensus as string "X/Y" should be normalized to number`);
+  if (
+    "consensus" in finding &&
+    typeof finding.consensus === "string" &&
+    finding.consensus.includes("/")
+  ) {
+    result.addWarning(
+      lineNum,
+      "consensus",
+      `consensus as string "X/Y" should be normalized to number`
+    );
   }
 }
 
@@ -174,13 +190,13 @@ function validateFile(filepath) {
 
   let content;
   try {
-    content = readFileSync(filepath, 'utf-8');
+    content = readFileSync(filepath, "utf-8");
   } catch (err) {
-    result.addError(0, 'file', `Cannot read file: ${err.message}`);
+    result.addError(0, "file", `Cannot read file: ${err.message}`);
     return result;
   }
 
-  const lines = content.trim().split('\n');
+  const lines = content.trim().split("\n");
   const seenIds = new Map(); // Track seen IDs for duplicate detection
 
   for (let i = 0; i < lines.length; i++) {
@@ -191,7 +207,7 @@ function validateFile(filepath) {
     try {
       finding = JSON.parse(line);
     } catch (err) {
-      result.addError(i + 1, 'json', `Invalid JSON: ${err.message}`);
+      result.addError(i + 1, "json", `Invalid JSON: ${err.message}`);
       continue;
     }
 
@@ -202,7 +218,7 @@ function validateFile(filepath) {
       if (seenIds.has(finding.canonical_id)) {
         result.addError(
           i + 1,
-          'canonical_id',
+          "canonical_id",
           `Duplicate ID: "${finding.canonical_id}" (first seen on line ${seenIds.get(finding.canonical_id)})`
         );
       } else {
@@ -217,11 +233,13 @@ function validateFile(filepath) {
 }
 
 function printResult(result) {
-  const status = result.isValid ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
-  console.log(`\n${status} ${result.filename} (${result.findings} findings, ${result.compliance}% compliance)`);
+  const status = result.isValid ? "\x1b[32m✓\x1b[0m" : "\x1b[31m✗\x1b[0m";
+  console.log(
+    `\n${status} ${result.filename} (${result.findings} findings, ${result.compliance}% compliance)`
+  );
 
   if (result.errors.length > 0) {
-    console.log('\x1b[31m  Errors:\x1b[0m');
+    console.log("\x1b[31m  Errors:\x1b[0m");
     for (const err of result.errors.slice(0, 10)) {
       console.log(`    Line ${err.line}: [${err.field}] ${err.message}`);
     }
@@ -230,8 +248,8 @@ function printResult(result) {
     }
   }
 
-  if (result.warnings.length > 0 && process.argv.includes('--verbose')) {
-    console.log('\x1b[33m  Warnings:\x1b[0m');
+  if (result.warnings.length > 0 && process.argv.includes("--verbose")) {
+    console.log("\x1b[33m  Warnings:\x1b[0m");
     for (const warn of result.warnings.slice(0, 5)) {
       console.log(`    Line ${warn.line}: [${warn.field}] ${warn.message}`);
     }
@@ -241,37 +259,38 @@ function printResult(result) {
   }
 
   // Field coverage summary (includes both required and recommended fields to match compliance calculation)
-  if (process.argv.includes('--coverage')) {
-    console.log('  Field Coverage:');
-    console.log('    Required:');
+  if (process.argv.includes("--coverage")) {
+    console.log("  Field Coverage:");
+    console.log("    Required:");
     for (const field of REQUIRED_FIELDS) {
       const count = result.fieldCoverage[field] || 0;
       const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-      const indicator = pct === 100 ? '\x1b[32m✓\x1b[0m' : '\x1b[31m✗\x1b[0m';
+      const indicator = pct === 100 ? "\x1b[32m✓\x1b[0m" : "\x1b[31m✗\x1b[0m";
       console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
     }
-    console.log('    Recommended:');
+    console.log("    Recommended:");
     for (const field of RECOMMENDED_FIELDS) {
       const count = result.fieldCoverage[field] || 0;
       const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-      const indicator = pct === 100 ? '\x1b[32m✓\x1b[0m' : '\x1b[33m○\x1b[0m';
+      const indicator = pct === 100 ? "\x1b[32m✓\x1b[0m" : "\x1b[33m○\x1b[0m";
       console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
     }
   }
 }
 
 function printSummary(results) {
-  console.log('\n' + '='.repeat(60));
-  console.log('SUMMARY');
-  console.log('='.repeat(60));
+  console.log("\n" + "=".repeat(60));
+  console.log("SUMMARY");
+  console.log("=".repeat(60));
 
-  const valid = results.filter(r => r.isValid).length;
+  const valid = results.filter((r) => r.isValid).length;
   const total = results.length;
   const totalFindings = results.reduce((sum, r) => sum + r.findings, 0);
   const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
-  const avgCompliance = results.length > 0
-    ? Math.round(results.reduce((sum, r) => sum + r.compliance, 0) / results.length)
-    : 0;
+  const avgCompliance =
+    results.length > 0
+      ? Math.round(results.reduce((sum, r) => sum + r.compliance, 0) / results.length)
+      : 0;
 
   console.log(`Files:      ${valid}/${total} valid`);
   console.log(`Findings:   ${totalFindings} total`);
@@ -279,19 +298,19 @@ function printSummary(results) {
   console.log(`Compliance: ${avgCompliance}% average`);
 
   if (totalErrors > 0) {
-    console.log('\n\x1b[31mValidation failed.\x1b[0m');
-    console.log('Run with --verbose for warnings, --coverage for field details.');
+    console.log("\n\x1b[31mValidation failed.\x1b[0m");
+    console.log("Run with --verbose for warnings, --coverage for field details.");
   } else {
-    console.log('\n\x1b[32mAll files valid.\x1b[0m');
+    console.log("\n\x1b[32mAll files valid.\x1b[0m");
   }
 }
 
 function main() {
-  const args = process.argv.slice(2).filter(a => !a.startsWith('--'));
+  const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 
   if (args.length === 0) {
     // Default: validate all CANON files in docs/reviews/*/canonical/
-    args.push('docs/reviews');
+    args.push("docs/reviews");
   }
 
   const files = [];
@@ -327,7 +346,7 @@ function main() {
             const entryStat = statSync(fullPath);
             if (entryStat.isDirectory()) {
               findCanonFiles(fullPath);
-            } else if (entry.startsWith('CANON-') && entry.endsWith('.jsonl')) {
+            } else if (entry.startsWith("CANON-") && entry.endsWith(".jsonl")) {
               files.push(fullPath);
             }
           } catch (err) {
@@ -336,23 +355,23 @@ function main() {
         }
       };
       findCanonFiles(arg);
-    } else if (arg.endsWith('.jsonl')) {
+    } else if (arg.endsWith(".jsonl")) {
       files.push(arg);
     }
   }
 
   if (files.length === 0) {
-    console.log('No CANON-*.jsonl files found.');
+    console.log("No CANON-*.jsonl files found.");
     process.exit(0);
   }
 
   console.log(`Validating ${files.length} CANON file(s)...`);
 
-  const results = files.map(f => validateFile(f));
+  const results = files.map((f) => validateFile(f));
   results.forEach(printResult);
   printSummary(results);
 
-  const hasErrors = results.some(r => !r.isValid);
+  const hasErrors = results.some((r) => !r.isValid);
   process.exit(hasErrors ? 1 : 0);
 }
 

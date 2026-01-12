@@ -2,9 +2,12 @@
 
 ## OVERVIEW
 
-I need you to implement the Dashboard tab for the admin panel, plus set up foundational pieces for future phases. This is Phase 1 of a larger admin panel enhancement.
+I need you to implement the Dashboard tab for the admin panel, plus set up
+foundational pieces for future phases. This is Phase 1 of a larger admin panel
+enhancement.
 
 **Key Security Requirements:**
+
 - All admin Cloud Functions MUST call `requireAdmin(request)` as first operation
 - All admin Cloud Functions MUST have `enforceAppCheck: true`
 - Dashboard data MUST NOT expose PII (emails, full profiles, etc.)
@@ -53,23 +56,23 @@ export const adminHealthCheck = onCall(
   async (request) => {
     // SECURITY: Admin check must be first operation
     requireAdmin(request);
-    
+
     const checks = {
       firestore: false,
       auth: false,
       timestamp: new Date().toISOString(),
     };
-    
+
     try {
       // Test Firestore connectivity
-      await db.collection("_health").doc("ping").set({ 
-        lastCheck: FieldValue.serverTimestamp() 
+      await db.collection("_health").doc("ping").set({
+        lastCheck: FieldValue.serverTimestamp(),
       });
       checks.firestore = true;
     } catch (e) {
       console.error("Firestore health check failed:", e);
     }
-    
+
     try {
       // Test Auth connectivity (just verify we can access it)
       await admin.auth().getUser(request.auth!.uid);
@@ -77,7 +80,7 @@ export const adminHealthCheck = onCall(
     } catch (e) {
       console.error("Auth health check failed:", e);
     }
-    
+
     return checks;
   }
 );
@@ -95,12 +98,12 @@ export const adminGetDashboardStats = onCall(
   async (request) => {
     // SECURITY: Admin check must be first operation
     requireAdmin(request);
-    
+
     const now = new Date();
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const last30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    
+
     try {
       // Run queries in parallel for performance
       const [
@@ -116,12 +119,17 @@ export const adminGetDashboardStats = onCall(
         db.collection("users").count().get(),
         db.collection("users").orderBy("createdAt", "desc").limit(10).get(),
       ]);
-      
+
       // Get job statuses if they exist
-      let jobStatuses: Array<{id: string; name: string; lastRunStatus: string; lastRun: any}> = [];
+      let jobStatuses: Array<{
+        id: string;
+        name: string;
+        lastRunStatus: string;
+        lastRun: any;
+      }> = [];
       try {
         const jobsSnapshot = await db.collection("admin_jobs").get();
-        jobStatuses = jobsSnapshot.docs.map(doc => ({
+        jobStatuses = jobsSnapshot.docs.map((doc) => ({
           id: doc.id,
           name: doc.data().name,
           lastRunStatus: doc.data().lastRunStatus || "unknown",
@@ -130,15 +138,15 @@ export const adminGetDashboardStats = onCall(
       } catch (e) {
         // Jobs collection may not exist yet - that's fine
       }
-      
+
       // PRIVACY: Only return nickname and auth provider, NOT email or other PII
-      const recentSignups = recentSignupsSnapshot.docs.map(doc => ({
+      const recentSignups = recentSignupsSnapshot.docs.map((doc) => ({
         id: doc.id,
         nickname: doc.data().nickname || "Anonymous",
         createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || null,
         authProvider: doc.data().authProvider || "unknown",
       }));
-      
+
       return {
         activeUsers: {
           last24h: activeUsers24h.data().count,
@@ -158,7 +166,8 @@ export const adminGetDashboardStats = onCall(
 );
 ```
 
-**Important:** Make sure these are exported in `functions/src/index.ts` if admin.ts exports aren't already re-exported there.
+**Important:** Make sure these are exported in `functions/src/index.ts` if
+admin.ts exports aren't already re-exported there.
 
 ---
 
@@ -173,19 +182,19 @@ import { useState, useEffect, useCallback } from "react";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { 
-  RefreshCw, 
-  Users, 
-  Activity, 
-  AlertCircle, 
-  CheckCircle2, 
+import {
+  RefreshCw,
+  Users,
+  Activity,
+  AlertCircle,
+  CheckCircle2,
   XCircle,
   Clock,
   UserPlus,
   Loader2,
   Server,
   Database,
-  Shield
+  Shield,
 } from "lucide-react";
 
 interface HealthStatus {
@@ -226,13 +235,16 @@ export function DashboardTab() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const [healthResult, statsResult] = await Promise.all([
         httpsCallable<void, HealthStatus>(functions, "adminHealthCheck")(),
-        httpsCallable<void, DashboardStats>(functions, "adminGetDashboardStats")(),
+        httpsCallable<void, DashboardStats>(
+          functions,
+          "adminGetDashboardStats"
+        )(),
       ]);
-      
+
       setHealth(healthResult.data);
       setStats(statsResult.data);
       setLastRefresh(new Date());
@@ -256,7 +268,7 @@ export function DashboardTab() {
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
-    
+
     if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
@@ -264,10 +276,16 @@ export function DashboardTab() {
   };
 
   const StatusBadge = ({ ok }: { ok: boolean }) => (
-    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-      ok ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-    }`}>
-      {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+        ok ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+      }`}
+    >
+      {ok ? (
+        <CheckCircle2 className="w-3 h-3" />
+      ) : (
+        <XCircle className="w-3 h-3" />
+      )}
       {ok ? "Healthy" : "Error"}
     </span>
   );
@@ -280,7 +298,9 @@ export function DashboardTab() {
       unknown: "bg-gray-100 text-gray-800",
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || styles.unknown}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || styles.unknown}`}
+      >
         {status}
       </span>
     );
@@ -299,20 +319,24 @@ export function DashboardTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">System Overview</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            System Overview
+          </h2>
           {lastRefresh && (
             <p className="text-sm text-gray-500">
               Last updated: {lastRefresh.toLocaleTimeString()}
             </p>
           )}
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={fetchData}
           disabled={loading}
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -338,7 +362,7 @@ export function DashboardTab() {
             {health && <StatusBadge ok={health.firestore} />}
           </div>
         </div>
-        
+
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -348,7 +372,7 @@ export function DashboardTab() {
             {health && <StatusBadge ok={health.auth} />}
           </div>
         </div>
-        
+
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -368,31 +392,39 @@ export function DashboardTab() {
               <Users className="w-4 h-4" />
               <span className="text-sm">Total Users</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.totalUsers}
+            </p>
           </div>
-          
+
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <Activity className="w-4 h-4" />
               <span className="text-sm">Active (24h)</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.activeUsers.last24h}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeUsers.last24h}
+            </p>
           </div>
-          
+
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <Activity className="w-4 h-4" />
               <span className="text-sm">Active (7d)</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.activeUsers.last7d}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeUsers.last7d}
+            </p>
           </div>
-          
+
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <Activity className="w-4 h-4" />
               <span className="text-sm">Active (30d)</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats.activeUsers.last30d}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeUsers.last30d}
+            </p>
           </div>
         </div>
       )}
@@ -409,10 +441,15 @@ export function DashboardTab() {
           </div>
           <div className="divide-y divide-gray-100">
             {stats?.recentSignups.length === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-500">No recent signups</p>
+              <p className="px-4 py-3 text-sm text-gray-500">
+                No recent signups
+              </p>
             )}
             {stats?.recentSignups.map((user) => (
-              <div key={user.id} className="px-4 py-3 flex items-center justify-between">
+              <div
+                key={user.id}
+                className="px-4 py-3 flex items-center justify-between"
+              >
                 <div>
                   <p className="font-medium text-gray-900">{user.nickname}</p>
                   <p className="text-xs text-gray-500">{user.authProvider}</p>
@@ -435,10 +472,15 @@ export function DashboardTab() {
           </div>
           <div className="divide-y divide-gray-100">
             {stats?.jobStatuses.length === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-500">No jobs configured yet</p>
+              <p className="px-4 py-3 text-sm text-gray-500">
+                No jobs configured yet
+              </p>
             )}
             {stats?.jobStatuses.map((job) => (
-              <div key={job.id} className="px-4 py-3 flex items-center justify-between">
+              <div
+                key={job.id}
+                className="px-4 py-3 flex items-center justify-between"
+              >
                 <div>
                   <p className="font-medium text-gray-900">{job.name}</p>
                   <p className="text-xs text-gray-500">
@@ -463,23 +505,29 @@ export function DashboardTab() {
 Modify `components/admin/admin-tabs.tsx` to add Dashboard as the FIRST tab:
 
 1. Import the new component at the top:
+
 ```tsx
 import { DashboardTab } from "./dashboard-tab";
 ```
 
-2. Add "Dashboard" as the first item in the tabs array/config (before Meetings, Sober Living, etc.)
+2. Add "Dashboard" as the first item in the tabs array/config (before Meetings,
+   Sober Living, etc.)
 
 3. Add the DashboardTab component to render when Dashboard tab is selected
 
-The Dashboard tab should appear first in the tab order, before all existing tabs.
+The Dashboard tab should appear first in the tab order, before all existing
+tabs.
 
 ---
 
 ## TASK 5: Add lastActive Tracking
 
-We need users to have a `lastActive` timestamp that updates when they use the app. 
+We need users to have a `lastActive` timestamp that updates when they use the
+app.
 
-Find where the app initializes auth or where the AuthProvider tracks auth state (likely in `lib/firebase.ts` or a context provider). Add logic to update the user's `lastActive` field.
+Find where the app initializes auth or where the AuthProvider tracks auth state
+(likely in `lib/firebase.ts` or a context provider). Add logic to update the
+user's `lastActive` field.
 
 Look for the auth state change handler (onAuthStateChanged or similar) and add:
 
@@ -491,15 +539,16 @@ if (user && !user.isAnonymous) {
   // Update lastActive timestamp (non-blocking)
   const userRef = doc(db, "users", user.uid);
   updateDoc(userRef, {
-    lastActive: serverTimestamp()
-  }).catch(err => {
+    lastActive: serverTimestamp(),
+  }).catch((err) => {
     // Don't block app initialization if this fails
     console.warn("Failed to update lastActive:", err);
   });
 }
 ```
 
-**Important:** This should be non-blocking (don't await it) so it doesn't slow down app initialization.
+**Important:** This should be non-blocking (don't await it) so it doesn't slow
+down app initialization.
 
 ---
 
@@ -513,16 +562,12 @@ Create or update `firestore.indexes.json` to include:
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "lastActive", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "lastActive", "order": "DESCENDING" }]
     },
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
     }
   ]
 }
@@ -534,7 +579,8 @@ If the file already exists, merge these indexes with existing ones.
 
 ## TASK 7: Export Functions (if needed)
 
-Check `functions/src/index.ts` - if it doesn't already re-export everything from admin.ts, make sure the new functions are exported:
+Check `functions/src/index.ts` - if it doesn't already re-export everything from
+admin.ts, make sure the new functions are exported:
 
 ```typescript
 // If admin.ts exports aren't already re-exported, add:
@@ -547,9 +593,11 @@ export { adminHealthCheck, adminGetDashboardStats } from "./admin";
 
 After implementation, verify:
 
-1. [ ] Firestore rules include `/admin_jobs` and `/_health` with admin-only access
+1. [ ] Firestore rules include `/admin_jobs` and `/_health` with admin-only
+       access
 2. [ ] Cloud Functions compile: `cd functions && npm run build`
-3. [ ] Both new functions have `requireAdmin(request)` as FIRST line after destructuring
+3. [ ] Both new functions have `requireAdmin(request)` as FIRST line after
+       destructuring
 4. [ ] Both new functions have `enforceAppCheck: true`
 5. [ ] No TypeScript errors in components
 6. [ ] Dashboard tab appears FIRST in admin panel tab order
@@ -563,9 +611,12 @@ After implementation, verify:
 
 ## SECURITY NOTES
 
-- The `adminHealthCheck` and `adminGetDashboardStats` functions contain `requireAdmin()` checks - do not remove these
-- The dashboard intentionally does NOT show user emails - only nicknames and auth provider
-- The `/_health/ping` document is only used for connectivity testing and contains no sensitive data
+- The `adminHealthCheck` and `adminGetDashboardStats` functions contain
+  `requireAdmin()` checks - do not remove these
+- The dashboard intentionally does NOT show user emails - only nicknames and
+  auth provider
+- The `/_health/ping` document is only used for connectivity testing and
+  contains no sensitive data
 - Firestore rules must be deployed: `firebase deploy --only firestore:rules`
 
 ---
@@ -573,6 +624,7 @@ After implementation, verify:
 ## OUTPUT
 
 When complete, please provide:
+
 1. List of files created/modified
 2. Any errors encountered and how they were resolved
 3. Confirmation that functions compile successfully

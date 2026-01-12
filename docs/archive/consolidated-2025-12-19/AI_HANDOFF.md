@@ -1,8 +1,6 @@
 # AI Handoff Document
 
-**Date:** December 19, 2025
-**Status:** Active Development
-**Branch:** `main`
+**Date:** December 19, 2025 **Status:** Active Development **Branch:** `main`
 
 ---
 
@@ -12,11 +10,13 @@
 
 1. **Codebase Analysis & Review**
    - ✅ Reviewed ROADMAP_V3.md, PROJECT_STATUS.md, and Dec 19 handoff docs
-   - ✅ Analyzed codebase structure (127+ TypeScript files, 97.8% test pass rate)
+   - ✅ Analyzed codebase structure (127+ TypeScript files, 97.8% test pass
+     rate)
    - ✅ Identified single-save journal architecture refactor was completed
 
 2. **ESLint Error Fixes**
-   - ✅ Fixed 4 ESLint errors in `app/meetings/all/page.tsx` (prefer-const violations)
+   - ✅ Fixed 4 ESLint errors in `app/meetings/all/page.tsx` (prefer-const
+     violations)
    - ✅ Fixed unused import `user` → `_user` prefix
    - ✅ Build now passes with 0 TypeScript errors
 
@@ -42,8 +42,10 @@
 ### Previous Session (December 18-19) ✅
 
 1. **Debug Cleanup (Priority 1)**
-   - ✅ Removed 4 debug `console.error` statements from `lib/firestore-service.ts` (lines 119-122)
-   - ✅ Verified Firestore composite index exists (`isSoftDeleted` + `createdAt`)
+   - ✅ Removed 4 debug `console.error` statements from
+     `lib/firestore-service.ts` (lines 119-122)
+   - ✅ Verified Firestore composite index exists (`isSoftDeleted` +
+     `createdAt`)
    - **Commit:** `251c7c5`
 
 2. **User Error Notifications (Priority 2)**
@@ -59,7 +61,8 @@
 3. **Architecture Design**
    - ✅ Created `docs/UNIFIED_JOURNAL_ARCHITECTURE.md` (757 lines)
    - ✅ Defined unified schema for 9+ journal entry types
-   - ✅ Documented 4-phase migration strategy (dual-write → migrate → transition → cleanup)
+   - ✅ Documented 4-phase migration strategy (dual-write → migrate → transition
+     → cleanup)
    - ✅ Designed two-tier UI (Timeline scrapbook + Deep Search analytics)
    - ✅ User decisions documented for 7 open questions
    - **Commit:** `3f2537e`
@@ -74,7 +77,8 @@
 
 5. **Recovery Calendar Feature**
    - ✅ Added M3.2 to `ROADMAP_V3.md` (57 Story Points)
-   - ✅ Full specs: month/week/day views, notifications, recurring events, integrations
+   - ✅ Full specs: month/week/day views, notifications, recurring events,
+     integrations
    - **Commit:** `ed051e1`
 
 6. **File Organization**
@@ -90,10 +94,13 @@
 
 1. **Begin Unified Journal Implementation (Phase 1)**
    - [ ] Update `types/journal.ts` with expanded JournalEntryType union
-   - [ ] Create helper functions in `hooks/use-journal.ts` for searchableText generation
+   - [ ] Create helper functions in `hooks/use-journal.ts` for searchableText
+         generation
    - [ ] Modify Today page to dual-write (daily_logs + journal collections)
-   - [ ] Update Growth page components (SpotCheckCard, NightReviewCard) to dual-write
-   - [ ] Add denormalized fields (hasCravings, hasUsed, mood) for efficient querying
+   - [ ] Update Growth page components (SpotCheckCard, NightReviewCard) to
+         dual-write
+   - [ ] Add denormalized fields (hasCravings, hasUsed, mood) for efficient
+         querying
 
 2. **Replace Simple Inventory Form**
    - [ ] Remove simple 4-question `inventory-form.tsx`
@@ -140,16 +147,21 @@
   - ⏳ Cloud Functions metrics dashboard
   - ⏳ Test alert triggers
 
-- **Unified Journal Architecture:** Design phase complete, implementation Phase 1 ready to start
+- **Unified Journal Architecture:** Design phase complete, implementation Phase
+  1 ready to start
 
 ### 📅 Upcoming
 
-- **M1.5 Completion:** Settings pages, voice-to-text adoption, sober living finder
+- **M1.5 Completion:** Settings pages, voice-to-text adoption, sober living
+  finder
 - **M2 Architecture (As Needed):** Optional refactoring based on friction points
-- **M3 Product Improvements:** Meeting Finder proximity, Recovery Calendar, Virtual Meetings
+- **M3 Product Improvements:** Meeting Finder proximity, Recovery Calendar,
+  Virtual Meetings
 - **M5 Inventories Hub:** Full Step 4 and daily practice inventories (116 SP)
-- **M6 Prayers & Readings:** AA-compliant content with link-only approach (63 SP)
-- **M7 Fellowship Tools:** Support network, attendance tracking, milestones (100 SP)
+- **M6 Prayers & Readings:** AA-compliant content with link-only approach (63
+  SP)
+- **M7 Fellowship Tools:** Support network, attendance tracking, milestones (100
+  SP)
 
 ---
 
@@ -170,6 +182,7 @@
 ### Data Collections
 
 **Existing:**
+
 - `users/{uid}/daily_logs/{date}` - Daily check-ins
 - `users/{uid}/inventoryEntries/{id}` - Growth page inventories
 - `users/{uid}/journal/{id}` - New journal entries
@@ -177,17 +190,24 @@
 - `virtualMeetings/{id}` - Online meetings (planned)
 
 **Planned Unification:**
+
 - Migrate all to unified `journal` collection with discriminated union types
 - Maintain backward compatibility during dual-write phase
 - Denormalize key fields for efficient querying
 
 ### Key Architectural Decisions
 
-1. **Journal System:** Unified schema with 9+ entry types (check-in, daily-log, mood, gratitude, spot-check, inventory, night-review, free-write, meeting-note)
-2. **Desktop Features:** Enhanced web functionality with 15 power-user features (see WEB_ENHANCEMENTS_ROADMAP.md)
-3. **Recovery Calendar:** Centralized appointment tracking with FCM notifications and Google Calendar sync
-4. **Privacy-First:** Private by default, user-initiated sharing only, no copyrighted AA content
-5. **Mobile-Optimized:** Different UI layouts for mobile vs desktop per user decision
+1. **Journal System:** Unified schema with 9+ entry types (check-in, daily-log,
+   mood, gratitude, spot-check, inventory, night-review, free-write,
+   meeting-note)
+2. **Desktop Features:** Enhanced web functionality with 15 power-user features
+   (see WEB_ENHANCEMENTS_ROADMAP.md)
+3. **Recovery Calendar:** Centralized appointment tracking with FCM
+   notifications and Google Calendar sync
+4. **Privacy-First:** Private by default, user-initiated sharing only, no
+   copyrighted AA content
+5. **Mobile-Optimized:** Different UI layouts for mobile vs desktop per user
+   decision
 
 ---
 
@@ -266,23 +286,29 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 
 ### High Priority
 
-1. **Simple Inventory Form** - Current 4-question form needs replacement with full NightReviewCard (4 steps: actions, traits, reflections, gratitude)
-2. **Recovery Notepad** - Scratchpad from front page not integrated with journal yet
+1. **Simple Inventory Form** - Current 4-question form needs replacement with
+   full NightReviewCard (4 steps: actions, traits, reflections, gratitude)
+2. **Recovery Notepad** - Scratchpad from front page not integrated with journal
+   yet
 3. **Deep Search** - Not yet implemented for mood/craving tracking separation
 
 ### Medium Priority
 
-1. **ESLint Warnings** - 29 warnings remaining (mostly unused variables and test file `any` types)
+1. **ESLint Warnings** - 29 warnings remaining (mostly unused variables and test
+   file `any` types)
 2. **Firebase Performance Monitoring** - Not yet configured
 3. **Cloud Functions Dashboard** - Metrics dashboard not set up
 4. **Test Coverage** - Currently 97.8%, target is 60%+ for critical paths
-5. **Hide Reset Button** - Still visible in production on resources-page.tsx line 498
-6. **Share Button** - Clipboard functionality broken on resources-page.tsx line 632
+5. **Hide Reset Button** - Still visible in production on resources-page.tsx
+   line 498
+6. **Share Button** - Clipboard functionality broken on resources-page.tsx line
+   632
 
 ### Low Priority
 
 1. **README Version** - Still shows Next.js 14, should be 16
-2. **Package Versions** - 3 packages pinned to "latest" should use specific versions
+2. **Package Versions** - 3 packages pinned to "latest" should use specific
+   versions
 3. **Zod Version Alignment** - App uses 3.25.76, functions use 4.1.13
 4. **TypeScript Version** - App uses 5.7.3, functions use 5.9.3
 5. **suppressHydrationWarning** - Root cause not investigated yet
@@ -294,6 +320,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 ### Automated Tests: 89/91 Passing (97.8%)
 
 **Passing:**
+
 - ✅ Security validation tests
 - ✅ Date utilities
 - ✅ Firebase type guards
@@ -301,11 +328,13 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 - ✅ Rate limiter
 
 **Failing:**
+
 - ⚠️ 2 Firebase initialization failures (require emulator setup)
 
 ### Manual Testing Required
 
 **Journal System:**
+
 - ✅ All entry forms working (mood, gratitude, inventory, free-write)
 - ✅ Timeline displays entries correctly
 - ✅ Ribbon navigation filters working
@@ -314,6 +343,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 - ⏳ Recovery Notepad integration pending
 
 **Meeting Finder:**
+
 - ✅ Search and filters working
 - ✅ Load all meetings strategy successful
 - ⏳ Proximity/geolocation feature not implemented
@@ -328,14 +358,17 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 - **Notebook Aesthetic:** Scrapbook-style with sticky notes, ribbon navigation
 - **Desktop Furniture:** Lamp, pencil, sobriety chip, cellphone decorations
 - **Color Coding:** Entry types have distinct colors for quick scanning
-- **Motion:** Framer Motion for smooth transitions (respect prefers-reduced-motion)
+- **Motion:** Framer Motion for smooth transitions (respect
+  prefers-reduced-motion)
 
 ### Code Patterns
 
-- **Discriminated Unions:** TypeScript unions with `type` discriminator for journal entries
+- **Discriminated Unions:** TypeScript unions with `type` discriminator for
+  journal entries
 - **Dependency Injection:** Services passed to components for testability
 - **Error Boundaries:** React error boundaries for graceful failure
-- **Toast Notifications:** User-facing error messages via Sonner, not console.error
+- **Toast Notifications:** User-facing error messages via Sonner, not
+  console.error
 - **Rate Limiting:** Client-side and server-side rate limiters prevent abuse
 
 ### Data Patterns
@@ -359,6 +392,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 ### Common Tasks
 
 **Add a new journal entry type:**
+
 1. Update `JournalEntryType` union in `types/journal.ts`
 2. Create form component in `components/journal/entry-forms/`
 3. Add to `EntryCreatorMenu` options
@@ -366,6 +400,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 5. Update Firestore security rules if needed
 
 **Add a new admin-managed catalog:**
+
 1. Define Firestore schema in `ROADMAP_V3.md`
 2. Add tab to `/admin` page
 3. Use reusable CRUD table/form components
@@ -373,6 +408,7 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 5. Seed initial data with script
 
 **Fix an ESLint warning:**
+
 1. Prefix unused variables with `_`
 2. Use proper types instead of `any`
 3. Add missing dependencies to `useEffect`
@@ -405,7 +441,8 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 
 ### Documentation
 
-- **Library Analysis:** `docs/LIBRARY_ANALYSIS.md` - Context7 documentation for all dependencies
+- **Library Analysis:** `docs/LIBRARY_ANALYSIS.md` - Context7 documentation for
+  all dependencies
 - **Unified Journal Architecture:** `docs/UNIFIED_JOURNAL_ARCHITECTURE.md`
 - **Web Enhancements Roadmap:** `WEB_ENHANCEMENTS_ROADMAP.md`
 - **Product Roadmap:** `ROADMAP_V3.md`
@@ -457,7 +494,5 @@ NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN= (development only)
 
 ---
 
-**Last Updated:** December 19, 2025
-**Next Review:** Start of Phase 1 unified journal implementation
-**Status:** Ready for implementation sprint
-
+**Last Updated:** December 19, 2025 **Next Review:** Start of Phase 1 unified
+journal implementation **Status:** Ready for implementation sprint

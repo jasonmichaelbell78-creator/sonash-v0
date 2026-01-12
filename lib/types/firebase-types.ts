@@ -2,7 +2,7 @@
  * Type guards and helpers for Firebase types
  */
 
-import { Timestamp } from "firebase/firestore"
+import { Timestamp } from "firebase/firestore";
 
 /**
  * Type guard to check if a value is a Firestore Timestamp
@@ -23,7 +23,7 @@ export function isFirestoreTimestamp(value: unknown): value is Timestamp {
     typeof (value as { toDate?: unknown }).toDate === "function" &&
     "seconds" in value &&
     "nanoseconds" in value
-  )
+  );
 }
 
 /**
@@ -41,20 +41,20 @@ export function isFirestoreTimestamp(value: unknown): value is Timestamp {
  * }
  */
 export function toDate(value: unknown): Date | null {
-  if (!value) return null
+  if (!value) return null;
 
   if (isFirestoreTimestamp(value)) {
-    return value.toDate()
+    return value.toDate();
   }
 
   if (value instanceof Date) {
-    return value
+    return value;
   }
 
   if (typeof value === "string" || typeof value === "number") {
-    const date = new Date(value)
-    return isNaN(date.getTime()) ? null : date
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : date;
   }
 
-  return null
+  return null;
 }

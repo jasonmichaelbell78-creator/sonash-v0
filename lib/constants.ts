@@ -8,7 +8,7 @@
 export const STORAGE_KEYS = {
   JOURNAL_TEMP: "sonash_journal_temp",
   READING_PREF: "sonash_reading_pref",
-} as const
+} as const;
 
 /**
  * Days of the week
@@ -21,7 +21,7 @@ export const DAYS = {
   FRIDAY: "Friday",
   SATURDAY: "Saturday",
   SUNDAY: "Sunday",
-} as const
+} as const;
 
 /**
  * Day order for sorting (1 = Monday, 7 = Sunday)
@@ -34,7 +34,7 @@ export const DAY_ORDER: Record<string, number> = {
   [DAYS.FRIDAY]: 5,
   [DAYS.SATURDAY]: 6,
   [DAYS.SUNDAY]: 7,
-} as const
+} as const;
 
 /**
  * Meeting types
@@ -44,7 +44,7 @@ export const MEETING_TYPES = {
   NA: "NA",
   SMART: "Smart",
   AL_ANON: "Al-Anon",
-} as const
+} as const;
 
 /**
  * Reading preferences
@@ -52,7 +52,7 @@ export const MEETING_TYPES = {
 export const READING_PREFS = {
   AA: "AA",
   NA: "NA",
-} as const
+} as const;
 
 /**
  * Debounce delays (in milliseconds)
@@ -60,7 +60,7 @@ export const READING_PREFS = {
 export const DEBOUNCE_DELAYS = {
   AUTO_SAVE: 1000, // 1 second - quick save for better UX
   SEARCH: 300, // 300ms
-} as const
+} as const;
 
 /**
  * Firestore query limits
@@ -69,7 +69,7 @@ export const QUERY_LIMITS = {
   HISTORY_MAX: 30, // Max history entries to fetch
   JOURNAL_MAX: 100, // Max journal entries to fetch
   INVENTORY_MAX: 50, // Max inventory entries to fetch
-} as const
+} as const;
 
 /**
  * Rate limiting configuration
@@ -114,7 +114,7 @@ export const RATE_LIMITS = {
     MAX_CALLS: 30,
     WINDOW_MS: 60000, // 30 reads per minute
   },
-} as const
+} as const;
 
 /**
  * Timeout values (in milliseconds)
@@ -124,7 +124,7 @@ export const TIMEOUTS = {
   DEBOUNCE_SHORT: 300, // 300ms for search/filter debounce
   DEBOUNCE_MEDIUM: 1000, // 1 second for auto-save
   RETRY_DELAY_BASE: 1000, // Base delay for exponential backoff (1s, 2s, 4s...)
-} as const
+} as const;
 
 /**
  * Firestore collection paths
@@ -135,7 +135,7 @@ export const FIRESTORE_COLLECTIONS = {
   MEETINGS: "meetings",
   CONTACTS: "contacts",
   JOURNAL_ENTRIES: "journalEntries",
-} as const
+} as const;
 
 /**
  * Helper functions for building Firestore paths
@@ -148,6 +148,5 @@ export const buildPath = {
     `${FIRESTORE_COLLECTIONS.USERS}/${userId}/${FIRESTORE_COLLECTIONS.DAILY_LOGS}`,
   inventoryEntry: (userId: string, entryId: string) =>
     `${FIRESTORE_COLLECTIONS.USERS}/${userId}/inventoryEntries/${entryId}`,
-  inventoryEntries: (userId: string) =>
-    `${FIRESTORE_COLLECTIONS.USERS}/${userId}/inventoryEntries`,
-} as const
+  inventoryEntries: (userId: string) => `${FIRESTORE_COLLECTIONS.USERS}/${userId}/inventoryEntries`,
+} as const;

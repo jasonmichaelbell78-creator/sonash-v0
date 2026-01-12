@@ -29,23 +29,23 @@ export async function getRecaptchaToken(action: string): Promise<string> {
   const siteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY;
 
   if (!siteKey) {
-    throw new Error('reCAPTCHA site key not configured');
+    throw new Error("reCAPTCHA site key not configured");
   }
 
   // Check if we're in the browser
-  if (typeof window === 'undefined') {
-    throw new Error('reCAPTCHA can only be used in the browser');
+  if (typeof window === "undefined") {
+    throw new Error("reCAPTCHA can only be used in the browser");
   }
 
   // Wait for reCAPTCHA to be ready
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
-      reject(new Error('reCAPTCHA failed to load'));
+      reject(new Error("reCAPTCHA failed to load"));
     }, 10000); // 10 second timeout
 
     if (!window.grecaptcha?.enterprise) {
       clearTimeout(timeout);
-      reject(new Error('reCAPTCHA library not loaded'));
+      reject(new Error("reCAPTCHA library not loaded"));
       return;
     }
 

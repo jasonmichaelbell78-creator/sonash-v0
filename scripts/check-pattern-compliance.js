@@ -16,23 +16,23 @@
  * Exit codes: 0 = no violations, 1 = violations found, 2 = error
  */
 
-import { readFileSync, existsSync, readdirSync, lstatSync } from 'fs';
-import { join, dirname, extname, relative } from 'path';
-import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { readFileSync, existsSync, readdirSync, lstatSync } from "fs";
+import { join, dirname, extname, relative } from "path";
+import { fileURLToPath } from "url";
+import { execSync } from "child_process";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, "..");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const STAGED = args.includes('--staged');
-const ALL = args.includes('--all');
-const VERBOSE = args.includes('--verbose');
-const JSON_OUTPUT = args.includes('--json');
-const FILES = args.filter(a => !a.startsWith('--'));
+const STAGED = args.includes("--staged");
+const ALL = args.includes("--all");
+const VERBOSE = args.includes("--verbose");
+const JSON_OUTPUT = args.includes("--json");
+const FILES = args.filter((a) => !a.startsWith("--"));
 
 /**
  * Known anti-patterns to check for
@@ -46,76 +46,78 @@ const FILES = args.filter(a => !a.startsWith('--'));
 const ANTI_PATTERNS = [
   // Bash/Shell patterns
   {
-    id: 'exit-code-capture',
+    id: "exit-code-capture",
     pattern: /\$\(\s*[^)]+\s*\)\s*;\s*if\s+\[\s*\$\?\s/g,
-    message: 'Exit code capture bug: $? after assignment captures assignment exit (always 0), not command exit',
-    fix: 'Use: if ! OUT=$(cmd); then',
-    review: '#4, #14',
-    fileTypes: ['.sh', '.yml', '.yaml'],
+    message:
+      "Exit code capture bug: $? after assignment captures assignment exit (always 0), not command exit",
+    fix: "Use: if ! OUT=$(cmd); then",
+    review: "#4, #14",
+    fileTypes: [".sh", ".yml", ".yaml"],
   },
   {
-    id: 'for-file-iteration',
+    id: "for-file-iteration",
     pattern: /for\s+\w+\s+in\s+\$\{?\w+\}?\s*;?\s*do/g,
-    message: 'File iteration with for loop breaks on spaces in filenames',
-    fix: 'Use: while IFS= read -r file; do ... done < file_list',
-    review: '#4, #14',
-    fileTypes: ['.sh', '.yml', '.yaml'],
+    message: "File iteration with for loop breaks on spaces in filenames",
+    fix: "Use: while IFS= read -r file; do ... done < file_list",
+    review: "#4, #14",
+    fileTypes: [".sh", ".yml", ".yaml"],
   },
   {
-    id: 'missing-trap',
+    id: "missing-trap",
     pattern: /mktemp\)(?![\s\S]{0,50}trap)/g,
-    message: 'Temp file created without trap for cleanup',
-    fix: 'Add: trap \'rm -f "$TMPFILE"\' EXIT after mktemp',
-    review: '#17, #18',
-    fileTypes: ['.sh', '.yml', '.yaml'],
+    message: "Temp file created without trap for cleanup",
+    fix: "Add: trap 'rm -f \"$TMPFILE\"' EXIT after mktemp",
+    review: "#17, #18",
+    fileTypes: [".sh", ".yml", ".yaml"],
   },
   {
-    id: 'retry-loop-no-success-tracking',
+    id: "retry-loop-no-success-tracking",
     // Use lazy quantifiers and word boundaries for accurate matching
     // Note: Global flag required - checkFile uses exec() in a loop which needs /g to advance lastIndex
-    pattern: /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/g,
-    message: 'Retry loop may silently succeed on failure - not tracking success',
-    fix: 'Track: SUCCESS=false; for i in 1 2 3; do cmd && { SUCCESS=true; break; }; done; $SUCCESS || exit 1',
-    review: '#18, #19, #51',
-    fileTypes: ['.sh', '.yml', '.yaml'],
+    pattern:
+      /for\s+\w+\s+in\s+1\s+2\s+3\s*;\s*do[\s\S]{0,120}?&&\s*break[\s\S]{0,80}?done(?![\s\S]{0,80}?(?:\bSUCCESS\b|\bsuccess\b|\bFAILED\b|\bfailed\b))/g,
+    message: "Retry loop may silently succeed on failure - not tracking success",
+    fix: "Track: SUCCESS=false; for i in 1 2 3; do cmd && { SUCCESS=true; break; }; done; $SUCCESS || exit 1",
+    review: "#18, #19, #51",
+    fileTypes: [".sh", ".yml", ".yaml"],
   },
   {
-    id: 'npm-install-automation',
+    id: "npm-install-automation",
     pattern: /npm\s+install(?!\s+--)/g,
-    message: 'npm install in automation can modify lockfile',
-    fix: 'Use: npm ci (reads lockfile exactly)',
-    review: '#10, #12',
-    fileTypes: ['.sh', '.yml', '.yaml'],
+    message: "npm install in automation can modify lockfile",
+    fix: "Use: npm ci (reads lockfile exactly)",
+    review: "#10, #12",
+    fileTypes: [".sh", ".yml", ".yaml"],
     exclude: /--legacy-peer-deps|--save|--save-dev|-D|-S/,
   },
 
   // JavaScript/TypeScript patterns
   {
-    id: 'unsafe-error-message',
+    id: "unsafe-error-message",
     // Match catch blocks with .message access that DON'T have instanceof check anywhere in block
     // Uses [^}] to constrain search to current catch block (Review #53: prevents false negatives)
     // Note: May miss deeply nested blocks, but safer than unbounded [\s\S]
     pattern: /catch\s*\(\s*(\w+)\s*\)\s*\{(?![^}]*instanceof\s+Error)[^}]*?\b\1\b\.message/g,
-    message: 'Unsafe error.message access - crashes if non-Error is thrown',
-    fix: 'Use: error instanceof Error ? error.message : String(error)',
-    review: '#17, #51, #53',
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    message: "Unsafe error.message access - crashes if non-Error is thrown",
+    fix: "Use: error instanceof Error ? error.message : String(error)",
+    review: "#17, #51, #53",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
   {
-    id: 'catch-console-error',
+    id: "catch-console-error",
     pattern: /\.catch\s*\(\s*console\.error\s*\)/g,
-    message: 'Unsanitized error logging - may expose sensitive paths/credentials',
-    fix: 'Use: .catch((e) => console.error(sanitizeError(e))) or handle specific errors',
-    review: '#20',
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    message: "Unsanitized error logging - may expose sensitive paths/credentials",
+    fix: "Use: .catch((e) => console.error(sanitizeError(e))) or handle specific errors",
+    review: "#20",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
   {
-    id: 'path-startswith',
+    id: "path-startswith",
     pattern: /\.startsWith\s*\(\s*['"`][./\\]+['"`]\s*\)/g,
-    message: 'Path validation with startsWith() fails on Windows or edge cases',
+    message: "Path validation with startsWith() fails on Windows or edge cases",
     fix: 'Use: path.relative() and check for ".." prefix with regex',
-    review: '#17, #18',
-    fileTypes: ['.js', '.ts'],
+    review: "#17, #18",
+    fileTypes: [".js", ".ts"],
     // Exclude files verified:
     // 2026-01-04:
     // - check-pattern-compliance.js: contains patterns as strings
@@ -123,181 +125,198 @@ const ANTI_PATTERNS = [
     // - phase-complete-check.js: uses path.relative() THEN startsWith('..') which is correct
     // 2026-01-12 (Review #134):
     // - pattern-check.js: L61,64 check for absolute paths (/, //, drive letters) before path.relative() containment at L98
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check)\.js$/,
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|archive-doc|phase-complete-check|pattern-check)\.js$/,
   },
   {
-    id: 'regex-global-test-loop',
+    id: "regex-global-test-loop",
     pattern: /new\s+RegExp\s*\([^)]+,\s*['"`][^'"]*g[^'"]*['"`]\s*\)[\s\S]{0,200}\.test\s*\(/g,
-    message: 'Regex with global flag used with .test() in loop - stateful lastIndex causes missed matches',
+    message:
+      "Regex with global flag used with .test() in loop - stateful lastIndex causes missed matches",
     fix: 'Remove "g" flag when using .test(), or reset lastIndex between iterations',
-    review: '#13, #14',
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    review: "#13, #14",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
 
   // GitHub Actions patterns
   {
-    id: 'unsafe-interpolation',
+    id: "unsafe-interpolation",
     pattern: /`[^`]*\$\{\{\s*(?:steps|github|env|inputs)\.[^}]+\}\}[^`]*`/g,
-    message: 'Unsafe ${{ }} interpolation in JavaScript template literal',
-    fix: 'Use env: block to pass value, then process.env.VAR',
-    review: '#16',
-    fileTypes: ['.yml', '.yaml'],
+    message: "Unsafe ${{ }} interpolation in JavaScript template literal",
+    fix: "Use env: block to pass value, then process.env.VAR",
+    review: "#16",
+    fileTypes: [".yml", ".yaml"],
   },
   {
-    id: 'hardcoded-temp-path',
+    id: "hardcoded-temp-path",
     pattern: /[>|]\s*\/tmp\/\w+(?!\.)/g,
-    message: 'Hardcoded /tmp path - use mktemp for unique files',
-    fix: 'Use: TMPFILE=$(mktemp) and trap for cleanup',
-    review: '#18',
-    fileTypes: ['.yml', '.yaml', '.sh'],
+    message: "Hardcoded /tmp path - use mktemp for unique files",
+    fix: "Use: TMPFILE=$(mktemp) and trap for cleanup",
+    review: "#18",
+    fileTypes: [".yml", ".yaml", ".sh"],
   },
   {
-    id: 'implicit-if-expression',
+    id: "implicit-if-expression",
     pattern: /^\s*if:\s+(?!.*\$\{\{).*(?:steps|github|env|inputs|needs)\./gm,
-    message: 'Implicit expression in if: condition can cause YAML parser issues',
-    fix: 'Always use explicit ${{ }} in if: conditions',
-    review: '#17, #21',
-    fileTypes: ['.yml', '.yaml'],
+    message: "Implicit expression in if: condition can cause YAML parser issues",
+    fix: "Always use explicit ${{ }} in if: conditions",
+    review: "#17, #21",
+    fileTypes: [".yml", ".yaml"],
   },
   {
-    id: 'fragile-bot-detection',
+    id: "fragile-bot-detection",
     pattern: /\.user\.type\s*===?\s*['"`]Bot['"`]/g,
-    message: 'Fragile bot detection - user.type is unreliable',
+    message: "Fragile bot detection - user.type is unreliable",
     fix: 'Use: user.login === "github-actions[bot]"',
-    review: '#15',
-    fileTypes: ['.yml', '.yaml', '.js', '.ts'],
+    review: "#15",
+    fileTypes: [".yml", ".yaml", ".js", ".ts"],
   },
 
   // Security patterns
   {
-    id: 'simple-path-traversal-check',
+    id: "simple-path-traversal-check",
     pattern: /startsWith\s*\(\s*['"`]\.\.['"`]\s*\)/g,
     message: 'Simple ".." check has false positives (e.g., "..hidden.md")',
-    fix: 'Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)',
-    review: '#18, #53',
-    fileTypes: ['.js', '.ts'],
+    fix: "Use: /^\\.\\.(?:[\\\\/]|$)/.test(rel)",
+    review: "#18, #53",
+    fileTypes: [".js", ".ts"],
     // NOTE: Do NOT exclude files even if they use path.relative() first.
     // path.relative() CAN return just ".." (no separator) for parent directories.
     // All files must use the proper regex check: /^\.\.(?:[\/\\]|$)/.test(rel)
+    // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
   {
-    id: 'hardcoded-api-key',
-    pattern: /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Za-z0-9_/+=-]{20,}['"`]/gi,
-    message: 'Potential hardcoded API key or secret detected',
-    fix: 'Use environment variables: process.env.API_KEY',
-    review: 'Security Standards',
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    id: "hardcoded-api-key",
+    pattern:
+      /\b(?:api[_-]?key|apikey|secret|password|token)\b\s*[:=]\s*['"`][A-Za-z0-9_/+=-]{20,}['"`]/gi,
+    message: "Potential hardcoded API key or secret detected",
+    fix: "Use environment variables: process.env.API_KEY",
+    review: "Security Standards",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     exclude: /(?:test|mock|fake|dummy|example|placeholder|xxx+|your[_-]?api|insert[_-]?your)/i,
   },
   {
-    id: 'unsafe-innerhtml',
+    id: "unsafe-innerhtml",
     pattern: /\.innerHTML\s*=/g,
-    message: 'innerHTML assignment can lead to XSS vulnerabilities',
-    fix: 'Use textContent for text, or sanitize with DOMPurify for HTML',
-    review: 'Security Standards',
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    message: "innerHTML assignment can lead to XSS vulnerabilities",
+    fix: "Use textContent for text, or sanitize with DOMPurify for HTML",
+    review: "Security Standards",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
   {
-    id: 'eval-usage',
+    id: "eval-usage",
     pattern: /\beval\s*\(/g,
-    message: 'eval() is a security risk - allows arbitrary code execution',
-    fix: 'Avoid eval. Use JSON.parse for JSON, or restructure code',
-    review: 'Security Standards',
-    fileTypes: ['.js', '.ts', '.tsx', '.jsx'],
+    message: "eval() is a security risk - allows arbitrary code execution",
+    fix: "Avoid eval. Use JSON.parse for JSON, or restructure code",
+    review: "Security Standards",
+    fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
   {
-    id: 'sql-injection-risk',
-    pattern: /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
-    message: 'Potential SQL injection: string interpolation or concatenation in query',
+    id: "sql-injection-risk",
+    pattern:
+      /(?:query|exec|execute|prepare|run|all|get)\s*\(\s*(?:`[^`]*(?:\$\{|\+\s*)|'[^']*(?:\$\{|\+\s*)|"[^"]*(?:\$\{|\+\s*))/g,
+    message: "Potential SQL injection: string interpolation or concatenation in query",
     fix: 'Use parameterized queries with placeholders (e.g., db.query("SELECT * FROM users WHERE id = ?", [userId]))',
-    review: 'Security Standards',
-    fileTypes: ['.js', '.ts'],
+    review: "Security Standards",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'unsanitized-error-response',
-    pattern: /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g,
-    message: 'Exposing raw error messages/stack traces to clients',
+    id: "unsanitized-error-response",
+    pattern:
+      /res\.(?:json|send|status\s*\([^)]*\)\s*\.json)\s*\(\s*\{[\s\S]{0,300}?(?:error|err|e|exception)\.(?:message|stack|toString\s*\()/g,
+    message: "Exposing raw error messages/stack traces to clients",
     fix: 'Return sanitized error messages (e.g., "An error occurred"), log full details server-side',
-    review: 'Security Standards',
-    fileTypes: ['.js', '.ts'],
+    review: "Security Standards",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'missing-rate-limit-comment',
-    pattern: /(?:exports\.|module\.exports|export\s+(?:default\s+)?(?:async\s+)?function)\s+\w+(?:Handler|API|Endpoint)/gi,
-    message: 'API endpoint may need rate limiting (verify rate limit is implemented)',
-    fix: 'Ensure endpoint has rate limiting per GLOBAL_SECURITY_STANDARDS.md',
-    review: 'Security Standards',
-    fileTypes: ['.js', '.ts'],
+    id: "missing-rate-limit-comment",
+    pattern:
+      /(?:exports\.|module\.exports|export\s+(?:default\s+)?(?:async\s+)?function)\s+\w+(?:Handler|API|Endpoint)/gi,
+    message: "API endpoint may need rate limiting (verify rate limit is implemented)",
+    fix: "Ensure endpoint has rate limiting per GLOBAL_SECURITY_STANDARDS.md",
+    review: "Security Standards",
+    fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)(?:pages|app|routes|api|functions)\/.*(?:api|routes|handlers|endpoints)?/i,
   },
 
   // New patterns from Consolidation #3 (Reviews #31-40)
   {
-    id: 'path-join-without-containment',
-    pattern: /path\.join\s*\([^)]*,\s*(?:deliverable|user|input|arg|param|file)\w*(?:\.path)?[^)]*\)(?![\s\S]{0,100}(?:relative|isWithin|contains|startsWith))/g,
-    message: 'Path joined with user input without containment check',
+    id: "path-join-without-containment",
+    pattern:
+      /path\.join\s*\([^)]*,\s*(?:deliverable|user|input|arg|param|file)\w*(?:\.path)?[^)]*\)(?![\s\S]{0,100}(?:relative|isWithin|contains|startsWith))/g,
+    message: "Path joined with user input without containment check",
     fix: 'Verify path.relative(root, resolved) does not start with ".." or equal ""',
-    review: '#33, #34, #38, #39, #40',
-    fileTypes: ['.js', '.ts'],
+    review: "#33, #34, #38, #39, #40",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'error-without-first-line',
-    pattern: /String\s*\(\s*(?:err|error|e)(?:\?\.message|\s*\?\?\s*err|\s*\?\?\s*error)[\s\S]{0,30}\)(?![\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\))/g,
-    message: 'Error converted to string without extracting first line (stack trace leakage)',
+    id: "error-without-first-line",
+    pattern:
+      /String\s*\(\s*(?:err|error|e)(?:\?\.message|\s*\?\?\s*err|\s*\?\?\s*error)[\s\S]{0,30}\)(?![\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\))/g,
+    message: "Error converted to string without extracting first line (stack trace leakage)",
     fix: 'Use: String(err?.message ?? err).split("\\n")[0].replace(/\\r$/, "")',
-    review: '#36, #37, #38',
-    fileTypes: ['.js', '.ts'],
+    review: "#36, #37, #38",
+    fileTypes: [".js", ".ts"],
+    // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
   {
-    id: 'console-log-file-content',
-    pattern: /console\.(?:log|error|warn)\s*\([^)]*(?:content|fileContent|data|text|body)(?:\s*[,)])/g,
-    message: 'File-derived content logged without control char sanitization',
+    id: "console-log-file-content",
+    pattern:
+      /console\.(?:log|error|warn)\s*\([^)]*(?:content|fileContent|data|text|body)(?:\s*[,)])/g,
+    message: "File-derived content logged without control char sanitization",
     fix: 'Sanitize with: content.replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, "")',
-    review: '#39, #40',
-    fileTypes: ['.js', '.ts'],
+    review: "#39, #40",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'split-newline-without-cr-strip',
-    pattern: /\.split\s*\(\s*['"`]\\n['"`]\s*\)\s*\[\s*0\s*\](?![\s\S]{0,30}\.replace\s*\(\s*\/\\r\$\/)/g,
-    message: 'Line split without stripping trailing \\r (Windows CRLF issue)',
+    id: "split-newline-without-cr-strip",
+    pattern:
+      /\.split\s*\(\s*['"`]\\n['"`]\s*\)\s*\[\s*0\s*\](?![\s\S]{0,30}\.replace\s*\(\s*\/\\r\$\/)/g,
+    message: "Line split without stripping trailing \\r (Windows CRLF issue)",
     fix: 'Add: .replace(/\\r$/, "") after split to handle CRLF',
-    review: '#39, #40',
-    fileTypes: ['.js', '.ts'],
+    review: "#39, #40",
+    fileTypes: [".js", ".ts"],
     // Exclude files verified 2026-01-04 to have proper CRLF handling:
     // - phase-complete-check.js: L555 has .replace(/\r$/, '')
     // - surface-lessons-learned.js: L372 has .replace(/\r$/, '')
     pathExclude: /(?:^|[\\/])(?:phase-complete-check|surface-lessons-learned)\.js$/,
   },
   {
-    id: 'regex-newline-lookahead',
+    id: "regex-newline-lookahead",
     // Match lookaheads in regex literals `(?=\n` and in string patterns `"(?=\\n"`
     pattern: /\(\?=(?:\\n|\\\\n)(?!\?)/g,
-    message: 'Regex lookahead uses \\n without optional \\r (fails on CRLF)',
-    fix: 'Use: (?=\\r?\\n for cross-platform line endings',
-    review: '#40',
-    fileTypes: ['.js', '.ts'],
+    message: "Regex lookahead uses \\n without optional \\r (fails on CRLF)",
+    fix: "Use: (?=\\r?\\n for cross-platform line endings",
+    review: "#40",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'path-split-without-normalize',
-    pattern: /\.split\s*\(\s*['"`]\/['"`]\s*\)[\s\S]{0,50}includes\s*\(\s*['"`]\.\.['"`]\s*\)(?![\s\S]{0,100}replace\s*\(\s*\/\\\\\/g)/g,
-    message: 'Path traversal check splits on / without normalizing Windows backslashes',
+    id: "path-split-without-normalize",
+    pattern:
+      /\.split\s*\(\s*['"`]\/['"`]\s*\)[\s\S]{0,50}includes\s*\(\s*['"`]\.\.['"`]\s*\)(?![\s\S]{0,100}replace\s*\(\s*\/\\\\\/g)/g,
+    message: "Path traversal check splits on / without normalizing Windows backslashes",
     fix: 'First normalize: path.replace(/\\\\/g, "/").split("/").includes("..")',
-    review: '#39, #40',
-    fileTypes: ['.js', '.ts'],
+    review: "#39, #40",
+    fileTypes: [".js", ".ts"],
     // Exclude files verified 2026-01-04 to normalize before split:
     // - phase-complete-check.js: L290 has .replace(/\\/g, '/').split('/').includes('..')
     pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
   {
-    id: 'readfilesync-without-try',
+    id: "readfilesync-without-try",
     // Avoid variable-length lookbehind (engine compatibility); match both fs.readFileSync and readFileSync
     // Note: This pattern has HIGH false positive rate - regex can't detect try/catch context
     // Files with verified proper error handling are excluded below
     pattern: /\b(?:fs\.)?readFileSync\s*\(/g,
-    message: 'readFileSync without try/catch - existsSync does not guarantee read success',
-    fix: 'Wrap in try/catch: race conditions, permissions, encoding errors',
-    review: '#36, #37',
-    fileTypes: ['.js', '.ts'],
+    message: "readFileSync without try/catch - existsSync does not guarantee read success",
+    fix: "Wrap in try/catch: race conditions, permissions, encoding errors",
+    review: "#36, #37",
+    fileTypes: [".js", ".ts"],
     // Exclude files verified to have proper try/catch:
     // 2026-01-04 audit:
     // - check-pattern-compliance.js: pattern definition + proper try/catch at L440
@@ -311,35 +330,40 @@ const ANTI_PATTERNS = [
     // - check-mcp-servers.js: readFileSync at L60 IS in try/catch (L58-106)
     // - session-start.js: computeHash() L72 in try/catch L70-76, needsRootInstall() L88 in try/catch L83-92, needsFunctionsInstall() L105 in try/catch L99-110
     // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start)\.js$/,
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start)\.js$/,
   },
   {
-    id: 'auto-mode-slice-truncation',
+    id: "auto-mode-slice-truncation",
     pattern: /(?:isAutoMode|isAuto|autoMode)\s*\?[\s\S]{0,50}\.slice\s*\(\s*0\s*,/g,
-    message: 'Auto/CI mode should check ALL items, not truncate - limits are for interactive only',
-    fix: 'Use: isAutoMode ? allItems : allItems.slice(0, MAX)',
-    review: '#35',
-    fileTypes: ['.js', '.ts'],
+    message: "Auto/CI mode should check ALL items, not truncate - limits are for interactive only",
+    fix: "Use: isAutoMode ? allItems : allItems.slice(0, MAX)",
+    review: "#35",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'readline-no-close',
-    pattern: /readline\.createInterface\s*\([\s\S]{0,500}process\.exit\s*\(\s*\d+\s*\)(?![\s\S]{0,50}close\s*\()/g,
-    message: 'Script exits without closing readline interface (may hang)',
-    fix: 'Create closeRl() helper and call before every process.exit()',
-    review: '#33',
-    fileTypes: ['.js', '.ts'],
+    id: "readline-no-close",
+    pattern:
+      /readline\.createInterface\s*\([\s\S]{0,500}process\.exit\s*\(\s*\d+\s*\)(?![\s\S]{0,50}close\s*\()/g,
+    message: "Script exits without closing readline interface (may hang)",
+    fix: "Create closeRl() helper and call before every process.exit()",
+    review: "#33",
+    fileTypes: [".js", ".ts"],
   },
   {
-    id: 'empty-path-not-rejected',
-    pattern: /(?:startsWith\s*\(\s*['"`]\.\.['"`]\s*\)|\.isAbsolute\s*\(\s*rel\s*\))(?![\s\S]{0,50}===\s*['"`]['"`])/g,
+    id: "empty-path-not-rejected",
+    pattern:
+      /(?:startsWith\s*\(\s*['"`]\.\.['"`]\s*\)|\.isAbsolute\s*\(\s*rel\s*\))(?![\s\S]{0,50}===\s*['"`]['"`])/g,
     message: 'Path validation may miss empty string edge case (rel === "")',
     fix: 'Add: rel === "" || rel.startsWith("..") || path.isAbsolute(rel)',
-    review: '#40',
-    fileTypes: ['.js', '.ts'],
+    review: "#40",
+    fileTypes: [".js", ".ts"],
     // Exclude files verified to check for empty string (regex looks FORWARD only, misses rel === '' at START):
     // - phase-complete-check.js: L55, L140, L165, L244 all have `rel === '' || rel.startsWith('..')`
     // - .claude/hooks/*.js: All verified 2026-01-12 (Review #134) to have `rel === '' ||` at start of condition
-    pathExclude: /(?:^|[\\/])(?:phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|coderabbit-review|pattern-check|session-start)\.js$/,
+    // - check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
+    pathExclude:
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|coderabbit-review|pattern-check|session-start)\.js$/,
   },
 ];
 
@@ -350,31 +374,29 @@ function getFilesToCheck() {
   if (FILES.length > 0) {
     // Block absolute paths, drive letters, UNC paths, and Windows rooted paths before processing
     // Then normalize relative to ROOT and filter out any path traversal attempts
-    return FILES
-      .filter(f => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/|\\(?!\\))/.test(f)) // Block absolute/drive/UNC/rooted inputs
-      .map(f => join(ROOT, f))
-      .filter(abs => {
+    return FILES.filter((f) => !/^(?:\/|[A-Za-z]:[\\/]|\\\\|\/\/|\\(?!\\))/.test(f)) // Block absolute/drive/UNC/rooted inputs
+      .map((f) => join(ROOT, f))
+      .filter((abs) => {
         const rel = relative(ROOT, abs);
 
         // `relative()` can return an absolute/UNC path on Windows (e.g., cross-drive),
         // so explicitly reject those in addition to ".." traversal.
-        return (
-          rel &&
-          !/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/.test(rel) &&
-          !/^\.\.(?:[\\/]|$)/.test(rel)
-        );
+        return rel && !/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/.test(rel) && !/^\.\.(?:[\\/]|$)/.test(rel);
       })
-      .map(abs => relative(ROOT, abs))
-      .filter(rel => existsSync(join(ROOT, rel)));
+      .map((abs) => relative(ROOT, abs))
+      .filter((rel) => existsSync(join(ROOT, rel)));
   }
 
   if (STAGED) {
     try {
-      const output = execSync('git diff --cached --name-only --diff-filter=ACM', {
+      const output = execSync("git diff --cached --name-only --diff-filter=ACM", {
         cwd: ROOT,
-        encoding: 'utf-8'
+        encoding: "utf-8",
       });
-      return output.trim().split('\n').filter(f => f.trim());
+      return output
+        .trim()
+        .split("\n")
+        .filter((f) => f.trim());
     } catch (error) {
       // Log git errors for debugging but don't abort (may not be a git repo)
       if (VERBOSE && !JSON_OUTPUT) {
@@ -386,8 +408,8 @@ function getFilesToCheck() {
 
   if (ALL) {
     const files = [];
-    const extensions = ['.sh', '.yml', '.yaml', '.js', '.ts', '.tsx', '.jsx'];
-    const ignoreDirs = ['node_modules', '.next', 'dist', 'dist-tests', '.git', 'coverage'];
+    const extensions = [".sh", ".yml", ".yaml", ".js", ".ts", ".tsx", ".jsx"];
+    const ignoreDirs = ["node_modules", ".next", "dist", "dist-tests", ".git", "coverage"];
 
     function walk(dir) {
       try {
@@ -402,7 +424,9 @@ function getFilesToCheck() {
           } catch (error) {
             // Skip unreadable entries without aborting entire scan
             if (VERBOSE && !JSON_OUTPUT) {
-              console.warn(`⚠️ Skipping unreadable entry: ${relative(ROOT, fullPath)} (${sanitizeError(error)})`);
+              console.warn(
+                `⚠️ Skipping unreadable entry: ${relative(ROOT, fullPath)} (${sanitizeError(error)})`
+              );
             }
             continue;
           }
@@ -420,7 +444,7 @@ function getFilesToCheck() {
             // Include files with known extensions OR extensionless files in .husky
             if (extensions.includes(ext)) {
               files.push(relative(ROOT, fullPath));
-            } else if (!ext && relative(ROOT, dir).startsWith('.husky')) {
+            } else if (!ext && relative(ROOT, dir).startsWith(".husky")) {
               // Extensionless files in .husky are shell scripts
               files.push(relative(ROOT, fullPath));
             }
@@ -438,25 +462,25 @@ function getFilesToCheck() {
   // Default: check common problem areas
   // Expanded in Review Audit (Session #18) to cover scripts that caused most issues
   return [
-    '.husky/pre-commit',
-    '.github/workflows/docs-lint.yml',
-    '.github/workflows/review-check.yml',
-    '.github/workflows/sync-readme.yml',
+    ".husky/pre-commit",
+    ".github/workflows/docs-lint.yml",
+    ".github/workflows/review-check.yml",
+    ".github/workflows/sync-readme.yml",
     // Scripts that have had repeated review issues (Reviews #31-40)
-    'scripts/phase-complete-check.js',
-    'scripts/surface-lessons-learned.js',
+    "scripts/phase-complete-check.js",
+    "scripts/surface-lessons-learned.js",
     // Note: check-pattern-compliance.js excluded - contains pattern definitions as strings
     // which cause false positives (meta-detection of its own patterns)
-    'scripts/suggest-pattern-automation.js',
-    'scripts/archive-doc.js',
-    'scripts/validate-phase-completion.js',
+    "scripts/suggest-pattern-automation.js",
+    "scripts/archive-doc.js",
+    "scripts/validate-phase-completion.js",
     // Claude hooks that are security-critical
-    '.claude/hooks/check-edit-requirements.sh',
-    '.claude/hooks/check-write-requirements.sh',
-    '.claude/hooks/coderabbit-review.sh',
-    '.claude/hooks/check-mcp-servers.sh',
-    '.claude/hooks/pattern-check.sh',
-  ].filter(f => existsSync(join(ROOT, f)));
+    ".claude/hooks/check-edit-requirements.sh",
+    ".claude/hooks/check-write-requirements.sh",
+    ".claude/hooks/coderabbit-review.sh",
+    ".claude/hooks/check-mcp-servers.sh",
+    ".claude/hooks/pattern-check.sh",
+  ].filter((f) => existsSync(join(ROOT, f)));
 }
 
 /**
@@ -471,7 +495,7 @@ function checkFile(filePath) {
   let ext = extname(filePath);
   let content;
   try {
-    content = readFileSync(fullPath, 'utf-8');
+    content = readFileSync(fullPath, "utf-8");
   } catch (error) {
     // Skip unreadable files (permissions, binary, etc.) to prevent scan abort
     if (VERBOSE && !JSON_OUTPUT) {
@@ -482,19 +506,21 @@ function checkFile(filePath) {
 
   // Extensionless files: detect type by shebang or path
   if (!ext) {
-    if (filePath.startsWith('.husky/') ||
-        content.startsWith('#!/bin/sh') ||
-        content.startsWith('#!/bin/bash') ||
-        content.startsWith('#!/usr/bin/env bash') ||
-        content.startsWith('#!/usr/bin/env sh')) {
-      ext = '.sh'; // Treat as shell script
+    if (
+      filePath.startsWith(".husky/") ||
+      content.startsWith("#!/bin/sh") ||
+      content.startsWith("#!/bin/bash") ||
+      content.startsWith("#!/usr/bin/env bash") ||
+      content.startsWith("#!/usr/bin/env sh")
+    ) {
+      ext = ".sh"; // Treat as shell script
     }
   }
 
   const violations = [];
 
   // Normalize path separators for consistent regex matching on Windows
-  const normalizedPath = filePath.replace(/\\/g, '/');
+  const normalizedPath = filePath.replace(/\\/g, "/");
 
   for (const antiPattern of ANTI_PATTERNS) {
     // Skip if file type doesn't match
@@ -533,7 +559,7 @@ function checkFile(filePath) {
         message: antiPattern.message,
         fix: antiPattern.fix,
         review: antiPattern.review,
-        match: match[0].slice(0, 50) + (match[0].length > 50 ? '...' : ''),
+        match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
       });
     }
   }
@@ -546,8 +572,10 @@ function checkFile(filePath) {
  */
 function formatTextOutput(violations, filesChecked) {
   if (violations.length === 0) {
-    console.log('✅ No pattern violations found');
-    console.log(`   Checked ${filesChecked} file(s) against ${ANTI_PATTERNS.length} known anti-patterns`);
+    console.log("✅ No pattern violations found");
+    console.log(
+      `   Checked ${filesChecked} file(s) against ${ANTI_PATTERNS.length} known anti-patterns`
+    );
     return;
   }
 
@@ -569,13 +597,13 @@ function formatTextOutput(violations, filesChecked) {
       if (VERBOSE) {
         console.log(`   Match: ${v.match}`);
       }
-      console.log('');
+      console.log("");
     }
   }
 
-  console.log('---');
-  console.log('These patterns have caused issues before. Review and fix if applicable.');
-  console.log('Some may be false positives - use judgment based on context.');
+  console.log("---");
+  console.log("These patterns have caused issues before. Review and fix if applicable.");
+  console.log("Some may be false positives - use judgment based on context.");
 }
 
 /**
@@ -586,7 +614,7 @@ function main() {
 
   if (files.length === 0) {
     if (!JSON_OUTPUT) {
-      console.log('No files to check. Use --all to scan entire repo or specify files.');
+      console.log("No files to check. Use --all to scan entire repo or specify files.");
     }
     process.exit(0);
   }
@@ -603,11 +631,17 @@ function main() {
   }
 
   if (JSON_OUTPUT) {
-    console.log(JSON.stringify({
-      filesChecked: files.length,
-      patternsChecked: ANTI_PATTERNS.length,
-      violations: allViolations,
-    }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          filesChecked: files.length,
+          patternsChecked: ANTI_PATTERNS.length,
+          violations: allViolations,
+        },
+        null,
+        2
+      )
+    );
   } else {
     formatTextOutput(allViolations, files.length);
   }

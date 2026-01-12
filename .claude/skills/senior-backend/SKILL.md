@@ -1,6 +1,12 @@
 ---
 name: senior-backend
-description: Comprehensive backend development skill for building scalable backend systems using NodeJS, Express, Go, Python, Postgres, GraphQL, REST APIs. Includes API scaffolding, database optimization, security implementation, and performance tuning. Use when designing APIs, optimizing database queries, implementing business logic, handling authentication/authorization, or reviewing backend code.
+description:
+  Comprehensive backend development skill for building scalable backend systems
+  using NodeJS, Express, Go, Python, Postgres, GraphQL, REST APIs. Includes API
+  scaffolding, database optimization, security implementation, and performance
+  tuning. Use when designing APIs, optimizing database queries, implementing
+  business logic, handling authentication/authorization, or reviewing backend
+  code.
 ---
 
 # Senior Backend
@@ -31,12 +37,14 @@ python scripts/api_load_tester.py [options]
 Automated tool for api scaffolder tasks.
 
 **Features:**
+
 - Automated scaffolding
 - Best practices built-in
 - Configurable templates
 - Quality checks
 
 **Usage:**
+
 ```bash
 python scripts/api_scaffolder.py <project-path> [options]
 ```
@@ -46,12 +54,14 @@ python scripts/api_scaffolder.py <project-path> [options]
 Comprehensive analysis and optimization tool.
 
 **Features:**
+
 - Deep analysis
 - Performance metrics
 - Recommendations
 - Automated fixes
 
 **Usage:**
+
 ```bash
 python scripts/database_migration_tool.py <target-path> [--verbose]
 ```
@@ -61,12 +71,14 @@ python scripts/database_migration_tool.py <target-path> [--verbose]
 Advanced tooling for specialized tasks.
 
 **Features:**
+
 - Expert-level automation
 - Custom configurations
 - Integration ready
 - Production-grade output
 
 **Usage:**
+
 ```bash
 python scripts/api_load_tester.py [arguments] [options]
 ```
@@ -105,12 +117,10 @@ Technical reference guide in `references/backend_security_practices.md`:
 
 ## Tech Stack
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
-**Frontend:** React, Next.js, React Native, Flutter
-**Backend:** Node.js, Express, GraphQL, REST APIs
-**Database:** PostgreSQL, Prisma, NeonDB, Supabase
-**DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
-**Cloud:** AWS, GCP, Azure
+**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**
+React, Next.js, React Native, Flutter **Backend:** Node.js, Express, GraphQL,
+REST APIs **Database:** PostgreSQL, Prisma, NeonDB, Supabase **DevOps:** Docker,
+Kubernetes, Terraform, GitHub Actions, CircleCI **Cloud:** AWS, GCP, Azure
 
 ## Development Workflow
 
@@ -139,6 +149,7 @@ python scripts/database_migration_tool.py .
 ### 3. Implement Best Practices
 
 Follow the patterns and practices documented in:
+
 - `references/api_design_patterns.md`
 - `references/database_optimization_guide.md`
 - `references/backend_security_practices.md`
@@ -146,24 +157,28 @@ Follow the patterns and practices documented in:
 ## Best Practices Summary
 
 ### Code Quality
+
 - Follow established patterns
 - Write comprehensive tests
 - Document decisions
 - Review regularly
 
 ### Performance
+
 - Measure before optimizing
 - Use appropriate caching
 - Optimize critical paths
 - Monitor in production
 
 ### Security
+
 - Validate all inputs
 - Use parameterized queries
 - Implement proper authentication
 - Keep dependencies updated
 
 ### Maintainability
+
 - Write clear code
 - Use consistent naming
 - Add helpful comments
@@ -192,7 +207,8 @@ kubectl apply -f k8s/
 
 ### Common Issues
 
-Check the comprehensive troubleshooting section in `references/backend_security_practices.md`.
+Check the comprehensive troubleshooting section in
+`references/backend_security_practices.md`.
 
 ### Getting Help
 

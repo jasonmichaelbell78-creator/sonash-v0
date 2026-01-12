@@ -1,207 +1,221 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { getFunctions, httpsCallable } from "firebase/functions"
-import { logger, maskIdentifier } from "@/lib/logger"
-import { Search, Users, Mail, Calendar, Activity, Edit2, Ban, CheckCircle, X, Save, AlertCircle } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { useState } from "react";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { logger, maskIdentifier } from "@/lib/logger";
+import {
+  Search,
+  Users,
+  Mail,
+  Calendar,
+  Activity,
+  Edit2,
+  Ban,
+  CheckCircle,
+  X,
+  Save,
+  AlertCircle,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface UserSearchResult {
-  uid: string
-  email: string | null
-  nickname: string
-  disabled: boolean
-  lastActive: string | null
-  createdAt: string | null
+  uid: string;
+  email: string | null;
+  nickname: string;
+  disabled: boolean;
+  lastActive: string | null;
+  createdAt: string | null;
 }
 
 interface UserProfile {
-  uid: string
-  email: string | null
-  emailVerified: boolean
-  disabled: boolean
-  createdAt: string
-  lastSignIn: string
-  provider: string
-  nickname: string
-  soberDate: string | null
-  lastActive: string | null
-  adminNotes: string | null
-  isAdmin: boolean
+  uid: string;
+  email: string | null;
+  emailVerified: boolean;
+  disabled: boolean;
+  createdAt: string;
+  lastSignIn: string;
+  provider: string;
+  nickname: string;
+  soberDate: string | null;
+  lastActive: string | null;
+  adminNotes: string | null;
+  isAdmin: boolean;
 }
 
 interface ActivityItem {
-  id: string
-  type: "journal" | "daily_log"
-  date: string | null
-  dateLabel: string | null
-  entryType?: string
-  mood: string | null
-  hasCravings?: boolean
-  hasUsed?: boolean
-  cravings?: boolean
-  used?: boolean
+  id: string;
+  type: "journal" | "daily_log";
+  date: string | null;
+  dateLabel: string | null;
+  entryType?: string;
+  mood: string | null;
+  hasCravings?: boolean;
+  hasUsed?: boolean;
+  cravings?: boolean;
+  used?: boolean;
 }
 
 interface UserDetail {
-  profile: UserProfile
+  profile: UserProfile;
   stats: {
-    totalJournalEntries: number
-    totalCheckIns: number
-    totalInventory: number
-  }
-  recentActivity: ActivityItem[]
+    totalJournalEntries: number;
+    totalCheckIns: number;
+    totalInventory: number;
+  };
+  recentActivity: ActivityItem[];
 }
 
 export function UsersTab() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<UserSearchResult[]>([])
-  const [searching, setSearching] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null)
-  const [loadingDetail, setLoadingDetail] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Edit state
-  const [editingNotes, setEditingNotes] = useState(false)
-  const [adminNotes, setAdminNotes] = useState("")
-  const [saving, setSaving] = useState(false)
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [adminNotes, setAdminNotes] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function handleSearch() {
-    if (!searchQuery.trim()) return
+    if (!searchQuery.trim()) return;
 
-    setSearching(true)
-    setError(null)
+    setSearching(true);
+    setError(null);
 
     try {
-      const functions = getFunctions()
-      const searchFn = httpsCallable<{ query: string; limit?: number }, { results: UserSearchResult[]; total: number }>(
-        functions,
-        "adminSearchUsers"
-      )
+      const functions = getFunctions();
+      const searchFn = httpsCallable<
+        { query: string; limit?: number },
+        { results: UserSearchResult[]; total: number }
+      >(functions, "adminSearchUsers");
 
-      const result = await searchFn({ query: searchQuery.trim(), limit: 50 })
-      setSearchResults(result.data.results)
+      const result = await searchFn({ query: searchQuery.trim(), limit: 50 });
+      setSearchResults(result.data.results);
 
       if (result.data.results.length === 0) {
-        setError("No users found matching your search")
+        setError("No users found matching your search");
       }
     } catch (err) {
       // CANON-0076: Log error type only - don't expose raw error objects or user queries (PII risk)
       logger.error("Admin user search failed", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         errorCode: (err as { code?: string })?.code,
-      })
-      setError(err instanceof Error ? err.message : "Search failed")
+      });
+      setError(err instanceof Error ? err.message : "Search failed");
     } finally {
-      setSearching(false)
+      setSearching(false);
     }
   }
 
   async function loadUserDetail(uid: string) {
-    setLoadingDetail(true)
-    setError(null)
+    setLoadingDetail(true);
+    setError(null);
 
     try {
-      const functions = getFunctions()
+      const functions = getFunctions();
       const getDetailFn = httpsCallable<{ uid: string; activityLimit?: number }, UserDetail>(
         functions,
         "adminGetUserDetail"
-      )
+      );
 
-      const result = await getDetailFn({ uid, activityLimit: 30 })
-      setSelectedUser(result.data)
-      setAdminNotes(result.data.profile.adminNotes || "")
-      setEditingNotes(false)
+      const result = await getDetailFn({ uid, activityLimit: 30 });
+      setSelectedUser(result.data);
+      setAdminNotes(result.data.profile.adminNotes || "");
+      setEditingNotes(false);
     } catch (err) {
       logger.error("Failed to load user detail", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(uid),
-      })
-      setError(err instanceof Error ? err.message : "Failed to load user detail")
+      });
+      setError(err instanceof Error ? err.message : "Failed to load user detail");
     } finally {
-      setLoadingDetail(false)
+      setLoadingDetail(false);
     }
   }
 
   async function handleSaveNotes() {
-    if (!selectedUser) return
+    if (!selectedUser) return;
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
-      const functions = getFunctions()
-      const updateFn = httpsCallable<{ uid: string; updates: { adminNotes?: string } }, { success: boolean }>(
-        functions,
-        "adminUpdateUser"
-      )
+      const functions = getFunctions();
+      const updateFn = httpsCallable<
+        { uid: string; updates: { adminNotes?: string } },
+        { success: boolean }
+      >(functions, "adminUpdateUser");
 
-      await updateFn({ uid: selectedUser.profile.uid, updates: { adminNotes } })
+      await updateFn({ uid: selectedUser.profile.uid, updates: { adminNotes } });
 
       // Update local state
       setSelectedUser({
         ...selectedUser,
-        profile: { ...selectedUser.profile, adminNotes }
-      })
-      setEditingNotes(false)
+        profile: { ...selectedUser.profile, adminNotes },
+      });
+      setEditingNotes(false);
     } catch (err) {
       logger.error("Failed to save notes", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(selectedUser.profile.uid),
-      })
-      setError(err instanceof Error ? err.message : "Failed to save notes")
+      });
+      setError(err instanceof Error ? err.message : "Failed to save notes");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function handleToggleDisabled() {
-    if (!selectedUser) return
+    if (!selectedUser) return;
 
-    const newDisabledState = !selectedUser.profile.disabled
+    const newDisabledState = !selectedUser.profile.disabled;
     const confirmMessage = newDisabledState
       ? "Are you sure you want to disable this user? They will be immediately logged out and unable to sign in."
-      : "Are you sure you want to enable this user?"
+      : "Are you sure you want to enable this user?";
 
-    if (!confirm(confirmMessage)) return
+    if (!confirm(confirmMessage)) return;
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
-      const functions = getFunctions()
-      const disableFn = httpsCallable<{ uid: string; disabled: boolean; reason?: string }, { success: boolean }>(
-        functions,
-        "adminDisableUser"
-      )
+      const functions = getFunctions();
+      const disableFn = httpsCallable<
+        { uid: string; disabled: boolean; reason?: string },
+        { success: boolean }
+      >(functions, "adminDisableUser");
 
-      const reason = newDisabledState ? prompt("Reason for disabling (optional):") : undefined
+      const reason = newDisabledState ? prompt("Reason for disabling (optional):") : undefined;
 
       await disableFn({
         uid: selectedUser.profile.uid,
         disabled: newDisabledState,
-        reason: reason || undefined
-      })
+        reason: reason || undefined,
+      });
 
       // Update local state
       setSelectedUser({
         ...selectedUser,
-        profile: { ...selectedUser.profile, disabled: newDisabledState }
-      })
+        profile: { ...selectedUser.profile, disabled: newDisabledState },
+      });
 
       // Update search results
-      setSearchResults(searchResults.map(user =>
-        user.uid === selectedUser.profile.uid ? { ...user, disabled: newDisabledState } : user
-      ))
+      setSearchResults(
+        searchResults.map((user) =>
+          user.uid === selectedUser.profile.uid ? { ...user, disabled: newDisabledState } : user
+        )
+      );
     } catch (err) {
       logger.error("Failed to toggle user status", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(selectedUser.profile.uid),
         newDisabledState,
-      })
-      setError(err instanceof Error ? err.message : "Failed to update user status")
+      });
+      setError(err instanceof Error ? err.message : "Failed to update user status");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -245,10 +259,18 @@ export function UsersTab() {
             <table className="w-full">
               <thead className="bg-amber-50 border-b border-amber-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">Last Active</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">
+                    Last Active
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-amber-900 uppercase tracking-wider">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-amber-50">
@@ -276,7 +298,9 @@ export function UsersTab() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-amber-700">
-                      {user.lastActive ? formatDistanceToNow(new Date(user.lastActive), { addSuffix: true }) : "Never"}
+                      {user.lastActive
+                        ? formatDistanceToNow(new Date(user.lastActive), { addSuffix: true })
+                        : "Never"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {user.disabled ? (
@@ -323,15 +347,21 @@ export function UsersTab() {
                     <Users className="w-8 h-8 text-amber-700" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-heading text-amber-900">{selectedUser.profile.nickname}</h3>
-                    <p className="text-sm text-amber-600">{selectedUser.profile.email || "No email"}</p>
+                    <h3 className="text-lg font-heading text-amber-900">
+                      {selectedUser.profile.nickname}
+                    </h3>
+                    <p className="text-sm text-amber-600">
+                      {selectedUser.profile.email || "No email"}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-amber-600">UID:</span>
-                    <p className="font-mono text-xs text-amber-900 break-all">{selectedUser.profile.uid}</p>
+                    <p className="font-mono text-xs text-amber-900 break-all">
+                      {selectedUser.profile.uid}
+                    </p>
                   </div>
                   <div>
                     <span className="text-amber-600">Provider:</span>
@@ -339,21 +369,33 @@ export function UsersTab() {
                   </div>
                   <div>
                     <span className="text-amber-600">Created:</span>
-                    <p className="text-amber-900">{formatDistanceToNow(new Date(selectedUser.profile.createdAt), { addSuffix: true })}</p>
+                    <p className="text-amber-900">
+                      {formatDistanceToNow(new Date(selectedUser.profile.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </p>
                   </div>
                   <div>
                     <span className="text-amber-600">Last Sign In:</span>
-                    <p className="text-amber-900">{formatDistanceToNow(new Date(selectedUser.profile.lastSignIn), { addSuffix: true })}</p>
+                    <p className="text-amber-900">
+                      {formatDistanceToNow(new Date(selectedUser.profile.lastSignIn), {
+                        addSuffix: true,
+                      })}
+                    </p>
                   </div>
                   {selectedUser.profile.soberDate && (
                     <div>
                       <span className="text-amber-600">Sober Date:</span>
-                      <p className="text-amber-900">{new Date(selectedUser.profile.soberDate).toLocaleDateString()}</p>
+                      <p className="text-amber-900">
+                        {new Date(selectedUser.profile.soberDate).toLocaleDateString()}
+                      </p>
                     </div>
                   )}
                   <div>
                     <span className="text-amber-600">Email Verified:</span>
-                    <p className="text-amber-900">{selectedUser.profile.emailVerified ? "Yes" : "No"}</p>
+                    <p className="text-amber-900">
+                      {selectedUser.profile.emailVerified ? "Yes" : "No"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -361,15 +403,21 @@ export function UsersTab() {
               {/* Stats Section */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-white border border-amber-100 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-amber-900">{selectedUser.stats.totalJournalEntries}</div>
+                  <div className="text-2xl font-bold text-amber-900">
+                    {selectedUser.stats.totalJournalEntries}
+                  </div>
                   <div className="text-xs text-amber-600">Journal Entries</div>
                 </div>
                 <div className="bg-white border border-amber-100 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-amber-900">{selectedUser.stats.totalCheckIns}</div>
+                  <div className="text-2xl font-bold text-amber-900">
+                    {selectedUser.stats.totalCheckIns}
+                  </div>
                   <div className="text-xs text-amber-600">Check-Ins</div>
                 </div>
                 <div className="bg-white border border-amber-100 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-amber-900">{selectedUser.stats.totalInventory}</div>
+                  <div className="text-2xl font-bold text-amber-900">
+                    {selectedUser.stats.totalInventory}
+                  </div>
                   <div className="text-xs text-amber-600">Inventory</div>
                 </div>
               </div>
@@ -396,8 +444,8 @@ export function UsersTab() {
                       </button>
                       <button
                         onClick={() => {
-                          setEditingNotes(false)
-                          setAdminNotes(selectedUser.profile.adminNotes || "")
+                          setEditingNotes(false);
+                          setAdminNotes(selectedUser.profile.adminNotes || "");
                         }}
                         className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
                       >
@@ -460,7 +508,10 @@ export function UsersTab() {
                     <p className="text-sm text-amber-600">No recent activity</p>
                   ) : (
                     selectedUser.recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-lg">
+                      <div
+                        key={activity.id}
+                        className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-lg"
+                      >
                         <Calendar className="w-4 h-4 text-amber-600 mt-0.5" />
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
@@ -474,9 +525,15 @@ export function UsersTab() {
                             )}
                           </div>
                           <p className="text-xs text-amber-600">
-                            {activity.dateLabel} • {activity.date ? formatDistanceToNow(new Date(activity.date), { addSuffix: true }) : "Unknown date"}
+                            {activity.dateLabel} •{" "}
+                            {activity.date
+                              ? formatDistanceToNow(new Date(activity.date), { addSuffix: true })
+                              : "Unknown date"}
                           </p>
-                          {(activity.hasCravings || activity.cravings || activity.hasUsed || activity.used) && (
+                          {(activity.hasCravings ||
+                            activity.cravings ||
+                            activity.hasUsed ||
+                            activity.used) && (
                             <div className="flex gap-2 mt-1">
                               {(activity.hasCravings || activity.cravings) && (
                                 <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full">
@@ -503,11 +560,8 @@ export function UsersTab() {
 
       {/* Overlay */}
       {selectedUser && (
-        <div
-          className="fixed inset-0 bg-black/20 z-40"
-          onClick={() => setSelectedUser(null)}
-        />
+        <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSelectedUser(null)} />
       )}
     </div>
-  )
+  );
 }

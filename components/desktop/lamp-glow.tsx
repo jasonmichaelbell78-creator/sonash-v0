@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 export default function LampGlow() {
   return (
@@ -20,10 +20,11 @@ export default function LampGlow() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "linear-gradient(135deg, rgba(255,240,200,0.08) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)",
+          background:
+            "linear-gradient(135deg, rgba(255,240,200,0.08) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)",
           zIndex: 1,
         }}
       />
     </>
-  )
+  );
 }

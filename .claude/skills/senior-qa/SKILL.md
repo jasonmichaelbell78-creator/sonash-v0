@@ -1,6 +1,11 @@
 ---
 name: senior-qa
-description: Comprehensive QA and testing skill for quality assurance, test automation, and testing strategies for ReactJS, NextJS, NodeJS applications. Includes test suite generation, coverage analysis, E2E testing setup, and quality metrics. Use when designing test strategies, writing test cases, implementing test automation, performing manual testing, or analyzing test coverage.
+description:
+  Comprehensive QA and testing skill for quality assurance, test automation, and
+  testing strategies for ReactJS, NextJS, NodeJS applications. Includes test
+  suite generation, coverage analysis, E2E testing setup, and quality metrics.
+  Use when designing test strategies, writing test cases, implementing test
+  automation, performing manual testing, or analyzing test coverage.
 ---
 
 # Senior Qa
@@ -31,12 +36,14 @@ python scripts/e2e_test_scaffolder.py [options]
 Automated tool for test suite generator tasks.
 
 **Features:**
+
 - Automated scaffolding
 - Best practices built-in
 - Configurable templates
 - Quality checks
 
 **Usage:**
+
 ```bash
 python scripts/test_suite_generator.py <project-path> [options]
 ```
@@ -46,12 +53,14 @@ python scripts/test_suite_generator.py <project-path> [options]
 Comprehensive analysis and optimization tool.
 
 **Features:**
+
 - Deep analysis
 - Performance metrics
 - Recommendations
 - Automated fixes
 
 **Usage:**
+
 ```bash
 python scripts/coverage_analyzer.py <target-path> [--verbose]
 ```
@@ -61,12 +70,14 @@ python scripts/coverage_analyzer.py <target-path> [--verbose]
 Advanced tooling for specialized tasks.
 
 **Features:**
+
 - Expert-level automation
 - Custom configurations
 - Integration ready
 - Production-grade output
 
 **Usage:**
+
 ```bash
 python scripts/e2e_test_scaffolder.py [arguments] [options]
 ```
@@ -105,12 +116,10 @@ Technical reference guide in `references/qa_best_practices.md`:
 
 ## Tech Stack
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
-**Frontend:** React, Next.js, React Native, Flutter
-**Backend:** Node.js, Express, GraphQL, REST APIs
-**Database:** PostgreSQL, Prisma, NeonDB, Supabase
-**DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
-**Cloud:** AWS, GCP, Azure
+**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**
+React, Next.js, React Native, Flutter **Backend:** Node.js, Express, GraphQL,
+REST APIs **Database:** PostgreSQL, Prisma, NeonDB, Supabase **DevOps:** Docker,
+Kubernetes, Terraform, GitHub Actions, CircleCI **Cloud:** AWS, GCP, Azure
 
 ## Development Workflow
 
@@ -139,6 +148,7 @@ python scripts/coverage_analyzer.py .
 ### 3. Implement Best Practices
 
 Follow the patterns and practices documented in:
+
 - `references/testing_strategies.md`
 - `references/test_automation_patterns.md`
 - `references/qa_best_practices.md`
@@ -146,24 +156,28 @@ Follow the patterns and practices documented in:
 ## Best Practices Summary
 
 ### Code Quality
+
 - Follow established patterns
 - Write comprehensive tests
 - Document decisions
 - Review regularly
 
 ### Performance
+
 - Measure before optimizing
 - Use appropriate caching
 - Optimize critical paths
 - Monitor in production
 
 ### Security
+
 - Validate all inputs
 - Use parameterized queries
 - Implement proper authentication
 - Keep dependencies updated
 
 ### Maintainability
+
 - Write clear code
 - Use consistent naming
 - Add helpful comments
@@ -192,7 +206,8 @@ kubectl apply -f k8s/
 
 ### Common Issues
 
-Check the comprehensive troubleshooting section in `references/qa_best_practices.md`.
+Check the comprehensive troubleshooting section in
+`references/qa_best_practices.md`.
 
 ### Getting Help
 

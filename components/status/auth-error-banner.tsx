@@ -1,38 +1,39 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo } from "react"
-import { AlertCircle } from "lucide-react"
-import { toast } from "sonner"
-import { useAuth } from "@/components/providers/auth-provider"
+import { useEffect, useMemo } from "react";
+import { AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/components/providers/auth-provider";
 
 interface AuthErrorBannerProps {
-  className?: string
+  className?: string;
 }
 
-const seenMessages = new Set<string>()
+const seenMessages = new Set<string>();
 
 export function AuthErrorBanner({ className }: AuthErrorBannerProps) {
-  const { profileError, todayLogError, profileNotFound } = useAuth()
+  const { profileError, todayLogError, profileNotFound } = useAuth();
 
   const messages = useMemo(() => {
-    const list: string[] = []
-    if (profileError) list.push(profileError)
+    const list: string[] = [];
+    if (profileError) list.push(profileError);
     // Only show today log error if we have a profile - new users have no logs (expected)
-    if (todayLogError && !profileNotFound) list.push(todayLogError)
-    if (profileNotFound) list.push("We couldn't find your profile. Complete onboarding to continue.")
-    return list
-  }, [profileError, profileNotFound, todayLogError])
+    if (todayLogError && !profileNotFound) list.push(todayLogError);
+    if (profileNotFound)
+      list.push("We couldn't find your profile. Complete onboarding to continue.");
+    return list;
+  }, [profileError, profileNotFound, todayLogError]);
 
   useEffect(() => {
     messages.forEach((message) => {
       if (!seenMessages.has(message)) {
-        toast.error(message)
-        seenMessages.add(message)
+        toast.error(message);
+        seenMessages.add(message);
       }
-    })
-  }, [messages])
+    });
+  }, [messages]);
 
-  if (messages.length === 0) return null
+  if (messages.length === 0) return null;
 
   return (
     <div
@@ -47,5 +48,5 @@ export function AuthErrorBanner({ className }: AuthErrorBannerProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

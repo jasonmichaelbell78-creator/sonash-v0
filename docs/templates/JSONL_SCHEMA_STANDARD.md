@@ -1,15 +1,15 @@
 # Multi-AI Review JSONL Schema Standard
 
-**Document Version:** 1.0
-**Created:** 2026-01-03
-**Last Updated:** 2026-01-03
+**Document Version:** 1.0 **Created:** 2026-01-03 **Last Updated:** 2026-01-03
 **Purpose:** Standardized JSONL output schema for all multi-AI review templates
 
 ---
 
 ## Purpose
 
-This document defines the **canonical JSONL schema** used across all multi-AI review templates. Consistent schemas enable:
+This document defines the **canonical JSONL schema** used across all multi-AI
+review templates. Consistent schemas enable:
+
 - Automated aggregation across review types
 - Unified tooling for parsing and analyzing findings
 - Cross-review comparison and trending
@@ -39,46 +39,47 @@ All finding objects MUST include these fields:
 
 ### Field Definitions
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `category` | string | Yes | Review-type-specific category (see below) |
-| `title` | string | Yes | Short, specific description of finding |
-| `fingerprint` | string | Yes | Unique identifier for deduplication |
-| `severity` | enum | Yes | S0 (critical) to S3 (low) |
-| `effort` | enum | Yes | E0 (minutes) to E3 (multi-week) |
-| `confidence` | number | Yes | 0-100 confidence score |
-| `files` | array | Yes | Affected file paths |
-| `why_it_matters` | string | Yes | Impact explanation |
-| `suggested_fix` | string | Yes | Remediation direction |
-| `acceptance_tests` | array | Yes | How to verify fix |
-| `evidence` | array | No | Grep output, code snippets |
-| `notes` | string | No | Additional context |
+| Field              | Type   | Required | Description                               |
+| ------------------ | ------ | -------- | ----------------------------------------- |
+| `category`         | string | Yes      | Review-type-specific category (see below) |
+| `title`            | string | Yes      | Short, specific description of finding    |
+| `fingerprint`      | string | Yes      | Unique identifier for deduplication       |
+| `severity`         | enum   | Yes      | S0 (critical) to S3 (low)                 |
+| `effort`           | enum   | Yes      | E0 (minutes) to E3 (multi-week)           |
+| `confidence`       | number | Yes      | 0-100 confidence score                    |
+| `files`            | array  | Yes      | Affected file paths                       |
+| `why_it_matters`   | string | Yes      | Impact explanation                        |
+| `suggested_fix`    | string | Yes      | Remediation direction                     |
+| `acceptance_tests` | array  | Yes      | How to verify fix                         |
+| `evidence`         | array  | No       | Grep output, code snippets                |
+| `notes`            | string | No       | Additional context                        |
 
 ---
 
 ## Severity Scale (Universal)
 
-| Level | Name | Definition |
-|-------|------|------------|
+| Level  | Name     | Definition                                      |
+| ------ | -------- | ----------------------------------------------- |
 | **S0** | Critical | Security breach, data loss, production breaking |
-| **S1** | High | Likely bugs, significant risk, major tech debt |
-| **S2** | Medium | Maintainability drag, inconsistency, friction |
-| **S3** | Low | Polish, cosmetic, minor improvements |
+| **S1** | High     | Likely bugs, significant risk, major tech debt  |
+| **S2** | Medium   | Maintainability drag, inconsistency, friction   |
+| **S3** | Low      | Polish, cosmetic, minor improvements            |
 
 ## Effort Scale (Universal)
 
-| Level | Name | Definition |
-|-------|------|------------|
-| **E0** | Minutes | Quick fix, trivial change |
-| **E1** | Hours | Single-session work |
-| **E2** | Days | 1-3 days or staged PR |
-| **E3** | Weeks | Multi-PR, multi-week effort |
+| Level  | Name    | Definition                  |
+| ------ | ------- | --------------------------- |
+| **E0** | Minutes | Quick fix, trivial change   |
+| **E1** | Hours   | Single-session work         |
+| **E2** | Days    | 1-3 days or staged PR       |
+| **E3** | Weeks   | Multi-PR, multi-week effort |
 
 ---
 
 ## Domain-Specific Extensions
 
-Each review type MAY add domain-specific fields. These are OPTIONAL and supplement the base schema.
+Each review type MAY add domain-specific fields. These are OPTIONAL and
+supplement the base schema.
 
 ### Code Review / Refactor Extensions
 
@@ -88,7 +89,7 @@ Each review type MAY add domain-specific fields. These are OPTIONAL and suppleme
   "duplication_cluster": {
     "is_cluster": "boolean",
     "cluster_summary": "string (pattern description)",
-    "instances": [{"file": "string", "symbol": "string"}],
+    "instances": [{ "file": "string", "symbol": "string" }],
     "consolidation_target": "string (optional, for refactor)"
   },
   "pr_bucket_suggestion": "string (firebase-access|ui-primitives|hooks-standardization|types-domain|boundaries|security-hardening|tests-hardening|misc)",
@@ -97,6 +98,7 @@ Each review type MAY add domain-specific fields. These are OPTIONAL and suppleme
 ```
 
 **Categories for Code Review:**
+
 - Hygiene/Duplication
 - Types/Correctness
 - Next/React Boundaries
@@ -104,6 +106,7 @@ Each review type MAY add domain-specific fields. These are OPTIONAL and suppleme
 - Testing
 
 **Categories for Refactor:**
+
 - Hygiene/Duplication
 - Types/Correctness
 - Architecture/Boundaries
@@ -131,6 +134,7 @@ Each review type MAY add domain-specific fields. These are OPTIONAL and suppleme
 ```
 
 **Categories for Security:**
+
 - Rate Limiting
 - Input Validation
 - Secrets Management
@@ -157,6 +161,7 @@ Each review type MAY add domain-specific fields. These are OPTIONAL and suppleme
 ```
 
 **Categories for Performance:**
+
 - Bundle Size
 - Rendering
 - Data Fetching
@@ -192,10 +197,9 @@ All review outputs MUST follow this section order:
 2. **SUSPECTED_FINDINGS_JSONL** - Suspected findings (confidence ≤ 40)
 3. **HUMAN_SUMMARY** - Markdown summary with priorities
 
-Aggregation outputs add:
-4. **PARSE_ERRORS_JSON** - Any parsing errors encountered
-5. **DEDUPED_FINDINGS_JSONL** - Canonical findings with IDs
-6. **[TYPE]_PLAN_JSON** - PR/Remediation/Optimization plan
+Aggregation outputs add: 4. **PARSE_ERRORS_JSON** - Any parsing errors
+encountered 5. **DEDUPED_FINDINGS_JSONL** - Canonical findings with IDs 6.
+**[TYPE]\_PLAN_JSON** - PR/Remediation/Optimization plan
 
 ---
 
@@ -207,16 +211,17 @@ Aggregation outputs add:
 2. **Required fields**: All base schema fields must be present
 3. **Enum validation**: severity, effort must match defined values
 4. **Non-empty arrays**: `files` and `acceptance_tests` must have ≥1 item
-5. **Fingerprint format**: Must follow `<category>::<file>::<identifier>` pattern
+5. **Fingerprint format**: Must follow `<category>::<file>::<identifier>`
+   pattern
 
 ### Confidence Thresholds
 
-| Category | Threshold | Action |
-|----------|-----------|--------|
-| FINDINGS_JSONL | confidence > 40 | Include as confirmed |
-| SUSPECTED_FINDINGS_JSONL | confidence ≤ 40 | Include as suspected |
-| Post-aggregation cap | Single source, no tool | Max 60 |
-| Post-aggregation floor | ≥2 confirmed + evidence | Min 70 |
+| Category                 | Threshold               | Action               |
+| ------------------------ | ----------------------- | -------------------- |
+| FINDINGS_JSONL           | confidence > 40         | Include as confirmed |
+| SUSPECTED_FINDINGS_JSONL | confidence ≤ 40         | Include as suspected |
+| Post-aggregation cap     | Single source, no tool  | Max 60               |
+| Post-aggregation floor   | ≥2 confirmed + evidence | Min 70               |
 
 ---
 
@@ -231,6 +236,7 @@ When outputting JSONL:
 5. **Be conservative with confidence** - Err on side of lower confidence
 
 When aggregating:
+
 1. **Normalize categories** - Map to standard category names
 2. **Merge by fingerprint first** - Primary deduplication key
 3. **Check evidence overlap** - Secondary merge criteria
@@ -241,9 +247,9 @@ When aggregating:
 
 ## Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.0 | 2026-01-03 | Initial schema standard creation (Task 6.7) | Claude |
+| Version | Date       | Changes                                     | Author |
+| ------- | ---------- | ------------------------------------------- | ------ |
+| 1.0     | 2026-01-03 | Initial schema standard creation (Task 6.7) | Claude |
 
 ---
 

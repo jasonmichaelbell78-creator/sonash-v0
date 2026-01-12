@@ -1,16 +1,18 @@
 # PR Review Prompt Template
 
-**Document Version:** 1.0
-**Created:** 2026-01-04
-**Purpose:** Reproducible prompt for processing AI code review feedback
+**Document Version:** 1.0 **Created:** 2026-01-04 **Purpose:** Reproducible
+prompt for processing AI code review feedback
 
 ---
 
 ## Overview
 
-This document contains the stock prompt template for processing AI code review feedback (CodeRabbit, Qodo, etc.). Use this template to ensure thorough, standardized review processing.
+This document contains the stock prompt template for processing AI code review
+feedback (CodeRabbit, Qodo, etc.). Use this template to ensure thorough,
+standardized review processing.
 
 **Also available as:**
+
 - Slash command: `/pr-review`
 - Skill: `skill: "pr-review-processor"`
 
@@ -19,6 +21,7 @@ This document contains the stock prompt template for processing AI code review f
 ## How to Use
 
 ### Option 1: Slash Command (Recommended)
+
 ```
 /pr-review
 
@@ -26,6 +29,7 @@ This document contains the stock prompt template for processing AI code review f
 ```
 
 ### Option 2: Skill Invocation
+
 ```
 skill: "pr-review-processor"
 
@@ -33,7 +37,9 @@ skill: "pr-review-processor"
 ```
 
 ### Option 3: Manual (Copy Below)
-Copy the entire prompt template from the section below, paste into Claude Code, then append your review feedback.
+
+Copy the entire prompt template from the section below, paste into Claude Code,
+then append your review feedback.
 
 ---
 
@@ -47,19 +53,22 @@ Copy everything between the `--- START ---` and `--- END ---` markers:
 
 **PROCESS AI CODE REVIEW FEEDBACK**
 
-I am pasting AI code review feedback below. Process it using the following protocol:
+I am pasting AI code review feedback below. Process it using the following
+protocol:
 
 ---
 
 **PHASE 1: CONTEXT LOADING**
+
 1. Read `docs/AI_REVIEW_PROCESS.md` for categorization matrix
-2. Read `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) for recent patterns and next review number
+2. Read `docs/AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) for recent patterns
+   and next review number
 3. Reference `claude.md` Section 4 for anti-patterns to avoid
 
 ---
 
-**PHASE 2: MULTI-PASS PARSING**
-For this review feedback, perform thorough extraction:
+**PHASE 2: MULTI-PASS PARSING** For this review feedback, perform thorough
+extraction:
 
 - **Pass 1**: Extract all issue headers, file paths, and line numbers
 - **Pass 2**: Extract full details, code snippets, and suggested fixes for each
@@ -67,12 +76,13 @@ For this review feedback, perform thorough extraction:
 
 Create a numbered master list of ALL suggestions found.
 
-Announce: "I identified **N total suggestions**. Proceeding with categorization."
+Announce: "I identified **N total suggestions**. Proceeding with
+categorization."
 
 ---
 
-**PHASE 3: CATEGORIZATION**
-Categorize EVERY suggestion:
+**PHASE 3: CATEGORIZATION** Categorize EVERY suggestion:
+
 - **CRITICAL**: Security, data loss, breaking changes → Fix immediately
 - **MAJOR**: Bugs, performance, missing validation → Fix before proceeding
 - **MINOR**: Style, naming, tests, docs → **FIX** (do not defer)
@@ -82,35 +92,36 @@ Output a categorized summary with counts for each level.
 
 ---
 
-**PHASE 4: TODO TRACKING**
-Use **TodoWrite** to create a trackable list. The FIRST item must be:
+**PHASE 4: TODO TRACKING** Use **TodoWrite** to create a trackable list. The
+FIRST item must be:
+
 ```
 "Add Review #N stub to docs/AI_REVIEW_LEARNINGS_LOG.md" - status: in_progress
 ```
+
 Include ALL issues as todos, even trivial ones.
 
 ---
 
-**PHASE 5: LEARNING ENTRY STUB**
-BEFORE addressing any issues, create a stub entry in `docs/AI_REVIEW_LEARNINGS_LOG.md`:
+**PHASE 5: LEARNING ENTRY STUB** BEFORE addressing any issues, create a stub
+entry in `docs/AI_REVIEW_LEARNINGS_LOG.md`:
+
 ```markdown
 #### Review #N: [Brief Description] (YYYY-MM-DD)
 
-**Source:** [CodeRabbit PR | Qodo Compliance | etc.]
-**Branch:** [current branch]
-**Suggestions:** X total (Critical: X, Major: X, Minor: X, Trivial: X)
+**Source:** [CodeRabbit PR | Qodo Compliance | etc.] **Branch:** [current
+branch] **Suggestions:** X total (Critical: X, Major: X, Minor: X, Trivial: X)
 
-**Patterns Identified:**
-[To be filled during fixes]
+**Patterns Identified:** [To be filled during fixes]
 
-**Resolution:**
-[To be filled after fixes]
+**Resolution:** [To be filled after fixes]
 ```
 
 ---
 
-**PHASE 6: INVOKE SPECIALIST AGENTS**
-Based on issue types, invoke appropriate agents via Task tool:
+**PHASE 6: INVOKE SPECIALIST AGENTS** Based on issue types, invoke appropriate
+agents via Task tool:
+
 - Security issues → `security-auditor` agent
 - Test gaps → `test-engineer` agent
 - Performance → `performance-engineer` agent
@@ -121,24 +132,26 @@ Invoke agents in parallel when issues are independent.
 
 ---
 
-**PHASE 7: FIX ALL ISSUES**
-Process in priority order:
+**PHASE 7: FIX ALL ISSUES** Process in priority order:
+
 1. CRITICAL (separate commits if major)
 2. MAJOR (batch by area)
 3. MINOR (batch by file)
 4. TRIVIAL (batch all)
 
 For each fix:
+
 - Read the file first (never edit blindly)
 - Apply the fix
 - Mark todo as completed
 
-**IMPORTANT**: Fix trivial items too. Do not skip or defer without explicit user permission.
+**IMPORTANT**: Fix trivial items too. Do not skip or defer without explicit user
+permission.
 
 ---
 
-**PHASE 8: VERIFICATION**
-After all fixes:
+**PHASE 8: VERIFICATION** After all fixes:
+
 - **Pass 1**: Re-read each modified file
 - **Pass 2**: Run `npm run lint` and `npm run test` if available
 - **Pass 3**: Cross-reference original list - confirm EVERY item is addressed
@@ -146,8 +159,8 @@ After all fixes:
 
 ---
 
-**PHASE 9: COMPLETE LEARNING ENTRY**
-Fill in the stub entry with:
+**PHASE 9: COMPLETE LEARNING ENTRY** Fill in the stub entry with:
+
 - Patterns identified (root cause + prevention)
 - Resolution counts (fixed/deferred/rejected)
 - Key learnings
@@ -156,8 +169,8 @@ Update consolidation counter if nearing threshold.
 
 ---
 
-**PHASE 10: FINAL OUTPUT**
-Provide structured summary:
+**PHASE 10: FINAL OUTPUT** Provide structured summary:
+
 ```
 ## PR Review Processing Complete
 
@@ -189,6 +202,7 @@ Review #N added to AI_REVIEW_LEARNINGS_LOG.md
 ---
 
 **RULES (NON-NEGOTIABLE)**
+
 1. NEVER skip trivial items without explicit user permission
 2. ALWAYS create learning entry FIRST (before any fixes)
 3. ALWAYS read files before editing
@@ -211,9 +225,9 @@ Review #N added to AI_REVIEW_LEARNINGS_LOG.md
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-04 | Initial template creation |
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-01-04 | Initial template creation |
 
 ---
 

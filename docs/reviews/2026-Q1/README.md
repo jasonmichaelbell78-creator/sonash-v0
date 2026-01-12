@@ -1,21 +1,28 @@
 # 2026 Q1 Multi-AI Audit - Execution Guide
 
-**Created**: 2026-01-06
-**Status**: Ready for Execution
-**Part of**: INTEGRATED_IMPROVEMENT_PLAN.md Step 4.2
+**Created**: 2026-01-06 **Status**: Ready for Execution **Part of**:
+INTEGRATED_IMPROVEMENT_PLAN.md Step 4.2
 
 ---
 
 ## 📋 Overview
 
-This directory contains **6 complete, filled audit plans** ready for multi-AI execution. SoNash-specific context (tech stack, scope, focus areas) has been filled. Baseline metrics and audit results are filled during execution.
+This directory contains **6 complete, filled audit plans** ready for multi-AI
+execution. SoNash-specific context (tech stack, scope, focus areas) has been
+filled. Baseline metrics and audit results are filled during execution.
 
 **Audit Categories:**
-1. **CODE_REVIEW_PLAN_2026_Q1.md** - Code quality, duplication, types, boundaries, testing
-2. **SECURITY_AUDIT_PLAN_2026_Q1.md** - Security compliance, OWASP, Firebase, secrets
-3. **PERFORMANCE_AUDIT_PLAN_2026_Q1.md** - Bundle size, rendering, data fetching, Core Web Vitals
-4. **REFACTORING_AUDIT_PLAN_2026_Q1.md** - Technical debt, architecture, SonarQube targets
-5. **DOCUMENTATION_AUDIT_PLAN_2026_Q1.md** - Docs coverage, staleness, cross-references
+
+1. **CODE_REVIEW_PLAN_2026_Q1.md** - Code quality, duplication, types,
+   boundaries, testing
+2. **SECURITY_AUDIT_PLAN_2026_Q1.md** - Security compliance, OWASP, Firebase,
+   secrets
+3. **PERFORMANCE_AUDIT_PLAN_2026_Q1.md** - Bundle size, rendering, data
+   fetching, Core Web Vitals
+4. **REFACTORING_AUDIT_PLAN_2026_Q1.md** - Technical debt, architecture,
+   SonarQube targets
+5. **DOCUMENTATION_AUDIT_PLAN_2026_Q1.md** - Docs coverage, staleness,
+   cross-references
 6. **PROCESS_AUDIT_PLAN_2026_Q1.md** - CI/CD, automation, developer workflows
 
 ---
@@ -30,8 +37,10 @@ Each plan includes:
 - **Tech Stack**: Next.js 16.1.1, React 19.2.3, TypeScript 5.x, Firebase 12.6.0
 - **Scope**: app/, components/, hooks/, lib/, functions/src/, tests/, types/
 - **Baseline**: 778 SonarQube issues (47 CRITICAL), 115/116 tests passing
-- **Security Context**: App Check disabled, reCAPTCHA optional, Firestore Rules active
-- **Recent Changes**: Step 4.1 complete (6 templates updated), 53 commits since last review
+- **Security Context**: App Check disabled, reCAPTCHA optional, Firestore Rules
+  active
+- **Recent Changes**: Step 4.1 complete (6 templates updated), 53 commits since
+  last review
 
 ---
 
@@ -40,15 +49,21 @@ Each plan includes:
 ### Step 1: Select AI Models (3-6 recommended)
 
 **Recommended configuration:**
-- **Claude Opus 4.5** (browse_files=yes, run_commands=yes) - Comprehensive analysis
+
+- **Claude Opus 4.5** (browse_files=yes, run_commands=yes) - Comprehensive
+  analysis
 - **Claude Sonnet 4.5** (browse_files=yes, run_commands=yes) - Cost-effective
 - **GPT-5-Codex** (browse_files=yes, run_commands=yes) - Code analysis
-- **Gemini 3 Pro** (browse_files=yes, run_commands=yes) - Alternative perspective
+- **Gemini 3 Pro** (browse_files=yes, run_commands=yes) - Alternative
+  perspective
 - **GPT-4o** (browse_files=no, run_commands=no) - Broad coverage (optional)
-  - **Note**: GPT-4o capabilities vary by platform. ChatGPT web UI typically does NOT support file browsing or command execution. Use only for general knowledge queries, not detailed code analysis.
+  - **Note**: GPT-4o capabilities vary by platform. ChatGPT web UI typically
+    does NOT support file browsing or command execution. Use only for general
+    knowledge queries, not detailed code analysis.
 
-**Minimum**: 3 models (at least 2 with run_commands=yes)
-**Important**: Models with browse_files=no will run in "NO-REPO MODE" and provide limited analysis. Prioritize models with full repo access for best results.
+**Minimum**: 3 models (at least 2 with run_commands=yes) **Important**: Models
+with browse_files=no will run in "NO-REPO MODE" and provide limited analysis.
+Prioritize models with full repo access for best results.
 
 ### Step 2: Run Each Audit
 
@@ -57,7 +72,9 @@ For each of the 6 plans:
 1. **Open the plan file** (e.g., `CODE_REVIEW_PLAN_2026_Q1.md`)
 2. **Copy the "Review Prompt" section** (starts at "## 📝 Review Prompt")
 3. **Paste into AI platform** (include all Parts 1-5)
-4. **Wait for completion** (AIs will output 3-4 sections: FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, HUMAN_SUMMARY, and for performance audits: METRICS_BASELINE_JSON)
+4. **Wait for completion** (AIs will output 3-4 sections: FINDINGS_JSONL,
+   SUSPECTED_FINDINGS_JSONL, HUMAN_SUMMARY, and for performance audits:
+   METRICS_BASELINE_JSON)
 5. **Save outputs** to:
    ```
    docs/reviews/2026-Q1/outputs/code-review/[model-name]_findings.jsonl
@@ -72,6 +89,7 @@ Repeat for all 6 categories and all selected models.
 ### Step 3: Organize Outputs
 
 Create directory structure:
+
 ```
 docs/reviews/2026-Q1/outputs/
 ├── code-review/
@@ -92,6 +110,7 @@ docs/reviews/2026-Q1/outputs/
 ### Step 4: Validate JSONL Format
 
 For each JSONL file, validate it's proper JSON-per-line:
+
 ```bash
 # If jq is available (fails fast on first error):
 bash -lc '
@@ -105,14 +124,17 @@ done < <(grep -v -E "^[[:space:]]*$" [model-name]_findings.jsonl | nl -ba)
 grep -v '^$' [model-name]_findings.jsonl | python3 -c 'import json, sys; [json.loads(line) for line in sys.stdin]' || { echo "JSON parse error"; exit 1; }
 ```
 
-**Note**: Scripts filter empty lines before parsing (JSONL allows blank lines), then exit immediately on first parse error. Fix any parse errors before aggregation.
+**Note**: Scripts filter empty lines before parsing (JSONL allows blank lines),
+then exit immediately on first parse error. Fix any parse errors before
+aggregation.
 
 ### Step 5: Run Tier-1 Aggregation
 
 Once all outputs are collected and validated:
 
 1. **Notify Claude** that outputs are ready
-2. **Claude will run the aggregator** (from each plan's "Aggregation Process" section)
+2. **Claude will run the aggregator** (from each plan's "Aggregation Process"
+   section)
 3. **Outputs** will be 6 CANON files:
    - `CANON-CODE.jsonl` (deduplicated code review findings)
    - `CANON-SECURITY.jsonl`
@@ -123,13 +145,15 @@ Once all outputs are collected and validated:
 
 ### Step 6: Tier-2 Aggregation (Optional)
 
-After Tier-1, can optionally merge all 6 CANON files into single master backlog using Tier-2 aggregator.
+After Tier-1, can optionally merge all 6 CANON files into single master backlog
+using Tier-2 aggregator.
 
 ---
 
 ## 📊 Expected Timeline
 
 **Conservative Estimates:**
+
 - **Audit execution**:
   - Sequential: 36 runs × 20 min avg = 12 hours
   - Parallel (3 concurrent models): 4-6 hours
@@ -140,6 +164,7 @@ After Tier-1, can optionally merge all 6 CANON files into single master backlog 
   - Parallel: ~17-32 hours
 
 **Contingencies:**
+
 - Add 25% buffer for model failures, timeouts, or API rate limits
 - Budget extra time for fixing invalid JSONL outputs
 - Plan for multiple aggregation iterations if models significantly disagree
@@ -149,6 +174,7 @@ After Tier-1, can optionally merge all 6 CANON files into single master backlog 
 ## 📁 Output Directory Structure
 
 After completion, you'll have:
+
 ```
 docs/reviews/2026-Q1/
 ├── README.md (this file)
@@ -178,9 +204,12 @@ docs/reviews/2026-Q1/
 
 ## 🔗 Related Documents
 
-- **[INTEGRATED_IMPROVEMENT_PLAN.md](../../INTEGRATED_IMPROVEMENT_PLAN.md)** - Step 4.2 context
-- **[MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)** - Aggregation prompt
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index
+- **[INTEGRATED_IMPROVEMENT_PLAN.md](../../INTEGRATED_IMPROVEMENT_PLAN.md)** -
+  Step 4.2 context
+- **[MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)** -
+  Aggregation prompt
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** -
+  Master index
 
 ---
 
@@ -196,7 +225,8 @@ docs/reviews/2026-Q1/
   - **A**: No - can run sequentially. Parallel execution saves time.
 
 - **Q**: What if a model can't access the repo?
-  - **A**: It will output "NO-REPO MODE" limitation. Skip that model or provide repo access.
+  - **A**: It will output "NO-REPO MODE" limitation. Skip that model or provide
+    repo access.
 
 ---
 

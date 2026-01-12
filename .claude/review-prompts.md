@@ -1,6 +1,7 @@
 # AI Review Prompts for Non-Code Artifacts
 
-Specialized review prompts optimized for Claude Code integration via hooks and slash commands.
+Specialized review prompts optimized for Claude Code integration via hooks and
+slash commands.
 
 ---
 
@@ -8,7 +9,7 @@ Specialized review prompts optimized for Claude Code integration via hooks and s
 
 ### System Prompt
 
-```
+````
 You are an expert technical documentation reviewer. Review the provided markdown documentation focusing on clarity, accuracy, completeness, and maintainability.
 
 Analyze the document and provide a structured review covering:
@@ -58,8 +59,9 @@ findings:
 
 summary: |
   Brief overall assessment and priority actions needed.
-```
-```
+````
+
+````
 
 ### Key Questions
 
@@ -114,7 +116,7 @@ summary: |
   Documentation needs critical security fix (exposed API key) and consistency
   updates before merge. Overall structure is good but needs alignment with
   current codebase state.
-```
+````
 
 ---
 
@@ -122,7 +124,7 @@ summary: |
 
 ### System Prompt
 
-```
+````
 You are a configuration security and best practices reviewer. Review the provided configuration file for security issues, best practices, and compatibility concerns.
 
 Analyze the configuration and provide findings in these categories:
@@ -173,8 +175,9 @@ Output Format:
   ],
   "summary": "Brief assessment"
 }
-```
-```
+````
+
+````
 
 ### Key Questions
 
@@ -236,7 +239,7 @@ Output Format:
   ],
   "summary": "BLOCKED due to hardcoded API key in test script. Fix critical security issue before merge. Compatibility concerns should be verified via testing."
 }
-```
+````
 
 ---
 
@@ -244,7 +247,7 @@ Output Format:
 
 ### System Prompt
 
-```
+````
 You are a Firebase security rules expert and security policy reviewer. Review the provided security rules or policy changes for vulnerabilities, correctness, and adherence to least-privilege principles.
 
 Analyze the rules focusing on:
@@ -302,8 +305,9 @@ findings:
 
 summary: |
   Risk assessment and required actions before deployment.
-```
-```
+````
+
+````
 
 ### Key Questions
 
@@ -372,7 +376,7 @@ summary: |
   BLOCKED - Critical vulnerability in payment methods allowing cross-user data access.
   High severity admin bypass possible. These must be fixed before deploying to production.
   Medium/advisory items should be addressed in follow-up security hardening.
-```
+````
 
 ---
 
@@ -380,7 +384,7 @@ summary: |
 
 ### System Prompt
 
-```
+````
 You are a DevOps and automation reviewer specializing in CI/CD workflows, Git hooks, and development process automation. Review the provided workflow or automation changes for correctness, safety, and maintainability.
 
 Evaluate changes across:
@@ -437,8 +441,9 @@ testing_recommendations:
   - "Test with empty/invalid inputs"
   - "Verify error handling with network failures"
   - "Confirm rollback procedure works"
-```
-```
+````
+
+````
 
 ### Key Questions
 
@@ -511,7 +516,7 @@ testing_recommendations:
   - "Verify behavior when docs:update-readme fails"
   - "Test with network disconnected"
   - "Confirm SKIP_HOOKS mechanism works"
-```
+````
 
 ---
 
@@ -519,7 +524,7 @@ testing_recommendations:
 
 ### System Prompt
 
-```
+````
 You are a dependency security and compatibility reviewer. Review package.json changes for security vulnerabilities, breaking changes, compatibility issues, and supply chain risks.
 
 Analyze dependency changes across:
@@ -586,8 +591,9 @@ Output Format:
   ],
   "summary": "Brief risk assessment"
 }
-```
-```
+````
+
+````
 
 ### Key Questions
 
@@ -677,7 +683,7 @@ Output Format:
   ],
   "summary": "Major framework updates require thorough testing. React 19 and Next.js 16 are significant upgrades with breaking changes. Firebase 12 also needs testing. Run full test suite and manual QA before merge. No critical security issues detected but run npm audit to confirm."
 }
-```
+````
 
 ---
 
@@ -719,9 +725,11 @@ fi
 ### Using as Slash Commands
 
 Create `.claude/commands/review-docs.md`:
+
 ```markdown
 Review the following documentation using the Documentation Review prompt.
-Include the full file content and check for security leaks, accuracy, and completeness.
+Include the full file content and check for security leaks, accuracy, and
+completeness.
 ```
 
 ### Using in NPM Scripts
@@ -741,11 +749,16 @@ Include the full file content and check for security leaks, accuracy, and comple
 
 ## Customization Tips
 
-1. **Adjust Severity Thresholds**: Modify what counts as CRITICAL vs WARNING for your project
-2. **Add Project-Specific Checks**: Include your coding standards or architectural rules
-3. **Chain Reviews**: Pipe output to decision tools (auto-approve if 0 critical issues)
-4. **Context Injection**: Prepend project-specific context to prompts (coding standards, security model)
-5. **Output Parsers**: Use YAML/JSON output for automated decision-making in CI/CD
+1. **Adjust Severity Thresholds**: Modify what counts as CRITICAL vs WARNING for
+   your project
+2. **Add Project-Specific Checks**: Include your coding standards or
+   architectural rules
+3. **Chain Reviews**: Pipe output to decision tools (auto-approve if 0 critical
+   issues)
+4. **Context Injection**: Prepend project-specific context to prompts (coding
+   standards, security model)
+5. **Output Parsers**: Use YAML/JSON output for automated decision-making in
+   CI/CD
 
 ## Best Practices
 

@@ -15,7 +15,12 @@
       "risk_level": "medium",
       "estimated_effort": "E1",
       "prerequisites": [],
-      "acceptance_tests": ["npm test", "npm run lint", "Navigate away/back - verify single listener", "React DevTools shows fewer renders"],
+      "acceptance_tests": [
+        "npm test",
+        "npm run lint",
+        "Navigate away/back - verify single listener",
+        "React DevTools shows fewer renders"
+      ],
       "notes": "Memory leak potential - prioritize. Refactor to consume user from useAuthCore()."
     },
     {
@@ -29,7 +34,11 @@
       "risk_level": "high",
       "estimated_effort": "E2",
       "prerequisites": [],
-      "acceptance_tests": ["Attempt direct client write to legacy path - denied", "All journal writes succeed via secured path", "npm test"],
+      "acceptance_tests": [
+        "Attempt direct client write to legacy path - denied",
+        "All journal writes succeed via secured path",
+        "npm test"
+      ],
       "notes": "Data migration required before rule change. Verify no active usage of legacy path."
     },
     {
@@ -43,7 +52,11 @@
       "risk_level": "medium",
       "estimated_effort": "E1",
       "prerequisites": [],
-      "acceptance_tests": ["Requests without token rejected", "Valid tokens succeed", "Low-score tokens rejected per policy"],
+      "acceptance_tests": [
+        "Requests without token rejected",
+        "Valid tokens succeed",
+        "Low-score tokens rejected per policy"
+      ],
       "notes": "Allow bypass only in explicit dev/test modes."
     },
     {
@@ -56,7 +69,11 @@
       "risk_level": "medium",
       "estimated_effort": "E2",
       "prerequisites": ["PR3"],
-      "acceptance_tests": ["Burst calls produce resource-exhausted", "Account cycling triggers IP limiter", "Admin callables throttle under burst"],
+      "acceptance_tests": [
+        "Burst calls produce resource-exhausted",
+        "Account cycling triggers IP limiter",
+        "Admin callables throttle under burst"
+      ],
       "notes": "Secondary limiter keyed by IP in addition to userId."
     },
     {
@@ -69,7 +86,11 @@
       "risk_level": "low",
       "estimated_effort": "E2",
       "prerequisites": [],
-      "acceptance_tests": ["PR with pattern violation fails CI", "Baseline violations tracked", "No false positives on unchanged files"],
+      "acceptance_tests": [
+        "PR with pattern violation fails CI",
+        "Baseline violations tracked",
+        "No false positives on unchanged files"
+      ],
       "notes": "Implement diff-based blocking first, then burn down baseline."
     },
     {
@@ -82,7 +103,11 @@
       "risk_level": "low",
       "estimated_effort": "E0",
       "prerequisites": [],
-      "acceptance_tests": ["step-1-worksheet saves succeed", "npm run build passes", "cd functions && npm run build passes"],
+      "acceptance_tests": [
+        "step-1-worksheet saves succeed",
+        "npm run build passes",
+        "cd functions && npm run build passes"
+      ],
       "notes": "Quick win. Establish single source of truth for future."
     },
     {
@@ -95,7 +120,11 @@
       "risk_level": "low",
       "estimated_effort": "E1",
       "prerequisites": [],
-      "acceptance_tests": ["npm test passes", "Error messages consistent", "Single CloudFunctionError definition"],
+      "acceptance_tests": [
+        "npm test passes",
+        "Error messages consistent",
+        "Single CloudFunctionError definition"
+      ],
       "notes": "Create lib/utils/callable-errors.ts with handleCloudFunctionError()."
     },
     {
@@ -108,7 +137,11 @@
       "risk_level": "low",
       "estimated_effort": "E1",
       "prerequisites": [],
-      "acceptance_tests": ["grep console.* in production paths returns 0", "Production builds emit no console logs", "npm run lint passes"],
+      "acceptance_tests": [
+        "grep console.* in production paths returns 0",
+        "Production builds emit no console logs",
+        "npm run lint passes"
+      ],
       "notes": "Add ESLint no-console rule after migration."
     },
     {
@@ -121,7 +154,11 @@
       "risk_level": "low",
       "estimated_effort": "E1",
       "prerequisites": [],
-      "acceptance_tests": ["Quote displays correctly in all contexts", "Network shows single quote fetch", "Bundle size reduced"],
+      "acceptance_tests": [
+        "Quote displays correctly in all contexts",
+        "Network shows single quote fetch",
+        "Bundle size reduced"
+      ],
       "notes": "Delete features/ version, keep widgets version with variant prop."
     },
     {
@@ -173,7 +210,11 @@
       "risk_level": "medium",
       "estimated_effort": "E2",
       "prerequisites": [],
-      "acceptance_tests": ["View source shows rendered HTML", "Lighthouse FCP/LCP improved", "No hydration errors"],
+      "acceptance_tests": [
+        "View source shows rendered HTML",
+        "Lighthouse FCP/LCP improved",
+        "No hydration errors"
+      ],
       "notes": "Move NotebookShell behind dynamic import."
     },
     {
@@ -199,7 +240,11 @@
       "risk_level": "medium",
       "estimated_effort": "E2",
       "prerequisites": [],
-      "acceptance_tests": ["DOM shows <20 entries regardless of total", "Scroll smooth with 100+ entries", "Memory reduced"],
+      "acceptance_tests": [
+        "DOM shows <20 entries regardless of total",
+        "Scroll smooth with 100+ entries",
+        "Memory reduced"
+      ],
       "notes": "Use react-window or @tanstack/virtual."
     },
     {
@@ -207,12 +252,22 @@
       "title": "docs: fix broken links and replace placeholders",
       "goal": "Resolve documentation link rot and stale placeholders",
       "categories_involved": ["DOCS"],
-      "included_canonical_ids": ["CANON-0091", "CANON-0092", "CANON-0095", "CANON-0098", "CANON-0099"],
+      "included_canonical_ids": [
+        "CANON-0091",
+        "CANON-0092",
+        "CANON-0095",
+        "CANON-0098",
+        "CANON-0099"
+      ],
       "staging": [],
       "risk_level": "low",
       "estimated_effort": "E1",
       "prerequisites": [],
-      "acceptance_tests": ["Link validation passes", "grep [X] returns 0 matches", "No duplicate plan files"],
+      "acceptance_tests": [
+        "Link validation passes",
+        "grep [X] returns 0 matches",
+        "No duplicate plan files"
+      ],
       "notes": "Batch all doc fixes together."
     },
     {
@@ -264,7 +319,11 @@
       "risk_level": "medium",
       "estimated_effort": "E2",
       "prerequisites": ["PR-BATCH-AUTO"],
-      "acceptance_tests": ["Nested ternaries replaced", "Deprecated APIs updated", "npm test passes"],
+      "acceptance_tests": [
+        "Nested ternaries replaced",
+        "Deprecated APIs updated",
+        "npm test passes"
+      ],
       "notes": "Nested ternaries (41), deprecated APIs (31), shell scripts (47)."
     },
     {
@@ -282,10 +341,27 @@
     }
   ],
   "execution_order": [
-    "PR1", "PR2", "PR3", "PR4", "PR5", "PR6", "PR7", "PR8",
-    "PR-BATCH-AUTO", "PR9", "PR10", "PR11", "PR12",
-    "PR13", "PR14", "PR15", "PR16", "PR17", "PR18",
-    "PR-BATCH-MANUAL", "PR-LINT-WARNINGS"
+    "PR1",
+    "PR2",
+    "PR3",
+    "PR4",
+    "PR5",
+    "PR6",
+    "PR7",
+    "PR8",
+    "PR-BATCH-AUTO",
+    "PR9",
+    "PR10",
+    "PR11",
+    "PR12",
+    "PR13",
+    "PR14",
+    "PR15",
+    "PR16",
+    "PR17",
+    "PR18",
+    "PR-BATCH-MANUAL",
+    "PR-LINT-WARNINGS"
   ],
   "parallel_groups": [
     ["PR1", "PR3", "PR5", "PR6"],

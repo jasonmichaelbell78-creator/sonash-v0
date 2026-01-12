@@ -2,7 +2,9 @@
 
 ## Session 2 Summary (Evening)
 
-Refactored from dual-write to **single-save architecture**. Entries now save ONLY to `journal` collection. Fixed cravings/used UI and auto-save behavior. **Journal tab display issue remains unresolved**.
+Refactored from dual-write to **single-save architecture**. Entries now save
+ONLY to `journal` collection. Fixed cravings/used UI and auto-save behavior.
+**Journal tab display issue remains unresolved**.
 
 ---
 
@@ -12,12 +14,12 @@ Refactored from dual-write to **single-save architecture**. Entries now save ONL
 
 Removed dual-write - all entries now save ONLY to the `journal` collection.
 
-| Component | Entry Type | Now Saves To |
-|-----------|------------|--------------|
-| `TodayPage.tsx` | `check-in`, `daily-log` | `journal` only |
-| `SpotCheckCard.tsx` | `spot-check` | `journal` only |
-| `NightReviewCard.tsx` | `night-review` | `journal` only |
-| `GratitudeCard.tsx` | `gratitude` | `journal` only |
+| Component             | Entry Type              | Now Saves To   |
+| --------------------- | ----------------------- | -------------- |
+| `TodayPage.tsx`       | `check-in`, `daily-log` | `journal` only |
+| `SpotCheckCard.tsx`   | `spot-check`            | `journal` only |
+| `NightReviewCard.tsx` | `night-review`          | `journal` only |
+| `GratitudeCard.tsx`   | `gratitude`             | `journal` only |
 
 ### 2. Cravings/Used UI Redesigned
 
@@ -51,7 +53,8 @@ New file: `scripts/migrate-to-journal.ts`
 
 **Status:** UNRESOLVED
 
-Data IS saving correctly to Firestore `journal` collection (visible in console logs and Firebase Console). However, entries do not appear in the Journal tab.
+Data IS saving correctly to Firestore `journal` collection (visible in console
+logs and Firebase Console). However, entries do not appear in the Journal tab.
 
 **Debugging Done:**
 
@@ -60,8 +63,9 @@ Data IS saving correctly to Firestore `journal` collection (visible in console l
 - Added client-side filter for soft-deleted entries
 - Query still fails silently
 
-**Suspected Cause:**
-The `orderBy('createdAt', 'desc')` query requires an index on the `createdAt` field in the `journal` subcollection. Firestore may not be auto-creating this index.
+**Suspected Cause:** The `orderBy('createdAt', 'desc')` query requires an index
+on the `createdAt` field in the `journal` subcollection. Firestore may not be
+auto-creating this index.
 
 **Next Steps to Try:**
 
@@ -88,7 +92,8 @@ scripts/migrate-to-journal.ts            - NEW: Migration script for legacy data
 
 ## Session 1 Summary (Morning)
 
-Completed **Unified Journal Phase 1** implementation with dual-write architecture and fixed critical Firestore security rules.
+Completed **Unified Journal Phase 1** implementation with dual-write
+architecture and fixed critical Firestore security rules.
 
 ### Firestore Security Rules
 

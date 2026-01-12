@@ -1,6 +1,11 @@
 ---
 name: senior-frontend
-description: Comprehensive frontend development skill for building modern, performant web applications using ReactJS, NextJS, TypeScript, Tailwind CSS. Includes component scaffolding, performance optimization, bundle analysis, and UI best practices. Use when developing frontend features, optimizing performance, implementing UI/UX designs, managing state, or reviewing frontend code.
+description:
+  Comprehensive frontend development skill for building modern, performant web
+  applications using ReactJS, NextJS, TypeScript, Tailwind CSS. Includes
+  component scaffolding, performance optimization, bundle analysis, and UI best
+  practices. Use when developing frontend features, optimizing performance,
+  implementing UI/UX designs, managing state, or reviewing frontend code.
 ---
 
 # Senior Frontend
@@ -31,12 +36,14 @@ python scripts/frontend_scaffolder.py [options]
 Automated tool for component generator tasks.
 
 **Features:**
+
 - Automated scaffolding
 - Best practices built-in
 - Configurable templates
 - Quality checks
 
 **Usage:**
+
 ```bash
 python scripts/component_generator.py <project-path> [options]
 ```
@@ -46,12 +53,14 @@ python scripts/component_generator.py <project-path> [options]
 Comprehensive analysis and optimization tool.
 
 **Features:**
+
 - Deep analysis
 - Performance metrics
 - Recommendations
 - Automated fixes
 
 **Usage:**
+
 ```bash
 python scripts/bundle_analyzer.py <target-path> [--verbose]
 ```
@@ -61,12 +70,14 @@ python scripts/bundle_analyzer.py <target-path> [--verbose]
 Advanced tooling for specialized tasks.
 
 **Features:**
+
 - Expert-level automation
 - Custom configurations
 - Integration ready
 - Production-grade output
 
 **Usage:**
+
 ```bash
 python scripts/frontend_scaffolder.py [arguments] [options]
 ```
@@ -105,12 +116,10 @@ Technical reference guide in `references/frontend_best_practices.md`:
 
 ## Tech Stack
 
-**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
-**Frontend:** React, Next.js, React Native, Flutter
-**Backend:** Node.js, Express, GraphQL, REST APIs
-**Database:** PostgreSQL, Prisma, NeonDB, Supabase
-**DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
-**Cloud:** AWS, GCP, Azure
+**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin **Frontend:**
+React, Next.js, React Native, Flutter **Backend:** Node.js, Express, GraphQL,
+REST APIs **Database:** PostgreSQL, Prisma, NeonDB, Supabase **DevOps:** Docker,
+Kubernetes, Terraform, GitHub Actions, CircleCI **Cloud:** AWS, GCP, Azure
 
 ## Development Workflow
 
@@ -139,6 +148,7 @@ python scripts/bundle_analyzer.py .
 ### 3. Implement Best Practices
 
 Follow the patterns and practices documented in:
+
 - `references/react_patterns.md`
 - `references/nextjs_optimization_guide.md`
 - `references/frontend_best_practices.md`
@@ -146,24 +156,28 @@ Follow the patterns and practices documented in:
 ## Best Practices Summary
 
 ### Code Quality
+
 - Follow established patterns
 - Write comprehensive tests
 - Document decisions
 - Review regularly
 
 ### Performance
+
 - Measure before optimizing
 - Use appropriate caching
 - Optimize critical paths
 - Monitor in production
 
 ### Security
+
 - Validate all inputs
 - Use parameterized queries
 - Implement proper authentication
 - Keep dependencies updated
 
 ### Maintainability
+
 - Write clear code
 - Use consistent naming
 - Add helpful comments
@@ -192,7 +206,8 @@ kubectl apply -f k8s/
 
 ### Common Issues
 
-Check the comprehensive troubleshooting section in `references/frontend_best_practices.md`.
+Check the comprehensive troubleshooting section in
+`references/frontend_best_practices.md`.
 
 ### Getting Help
 

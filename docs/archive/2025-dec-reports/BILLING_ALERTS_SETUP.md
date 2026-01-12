@@ -1,6 +1,7 @@
 # Billing Alerts Setup Guide
 
-> **Purpose:** Configure GCP billing alerts to prevent runaway costs from attacks or bugs.
+> **Purpose:** Configure GCP billing alerts to prevent runaway costs from
+> attacks or bugs.
 
 ## Prerequisites
 
@@ -23,32 +24,32 @@ Click **Create Budget** and configure the following thresholds:
 
 ### Budget 1: Early Warning ($50)
 
-| Field | Value |
-|-------|-------|
-| Name | SoNash Early Warning |
-| Budget type | Specified amount |
-| Target amount | $50 |
-| Alert thresholds | 50%, 90%, 100% |
-| Email recipients | Your email |
+| Field            | Value                |
+| ---------------- | -------------------- |
+| Name             | SoNash Early Warning |
+| Budget type      | Specified amount     |
+| Target amount    | $50                  |
+| Alert thresholds | 50%, 90%, 100%       |
+| Email recipients | Your email           |
 
 ### Budget 2: Concern Level ($100)
 
-| Field | Value |
-|-------|-------|
-| Name | SoNash Concern |
-| Target amount | $100 |
-| Alert thresholds | 75%, 90%, 100% |
+| Field            | Value                          |
+| ---------------- | ------------------------------ |
+| Name             | SoNash Concern                 |
+| Target amount    | $100                           |
+| Alert thresholds | 75%, 90%, 100%                 |
 | Email recipients | Your email + secondary contact |
 
 ### Budget 3: Emergency ($500)
 
-| Field | Value |
-|-------|-------|
-| Name | SoNash Emergency |
-| Target amount | $500 |
-| Alert thresholds | 80%, 100% |
-| Email recipients | All team members |
-| Optional | Enable Pub/Sub for automated actions |
+| Field            | Value                                |
+| ---------------- | ------------------------------------ |
+| Name             | SoNash Emergency                     |
+| Target amount    | $500                                 |
+| Alert thresholds | 80%, 100%                            |
+| Email recipients | All team members                     |
+| Optional         | Enable Pub/Sub for automated actions |
 
 ---
 
@@ -56,13 +57,13 @@ Click **Create Budget** and configure the following thresholds:
 
 Under normal usage for SoNash:
 
-| Service | Expected Monthly Cost |
-|---------|----------------------|
-| Firestore | $5-10 |
-| Cloud Functions | $5-15 |
-| App Check | Free (under 500K/month) |
-| Authentication | Free (anonymous auth) |
-| **Total** | **$10-25/month** |
+| Service         | Expected Monthly Cost   |
+| --------------- | ----------------------- |
+| Firestore       | $5-10                   |
+| Cloud Functions | $5-15                   |
+| App Check       | Free (under 500K/month) |
+| Authentication  | Free (anonymous auth)   |
+| **Total**       | **$10-25/month**        |
 
 ---
 
@@ -92,8 +93,10 @@ If you receive a $500+ alert:
 
 ## Related Documentation
 
-- [docs/INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md) - Full incident response procedures
-- [docs/SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Security implementation details
+- [docs/INCIDENT_RESPONSE.md](./INCIDENT_RESPONSE.md) - Full incident response
+  procedures
+- [docs/SERVER_SIDE_SECURITY.md](./SERVER_SIDE_SECURITY.md) - Security
+  implementation details
 
 ---
 

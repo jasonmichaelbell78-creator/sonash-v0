@@ -1,73 +1,92 @@
 # GitHub Code Analysis and Review Prompt
 
 **Document Type:** Historical Archive  
-**Original Format:** .txt (prompt template)
-**Date Created:** December 2025
-**Converted to Markdown:** 2026-01-03
-**Purpose:** Master prompt template for multi-AI code review analysis
+**Original Format:** .txt (prompt template) **Date Created:** December 2025
+**Converted to Markdown:** 2026-01-03 **Purpose:** Master prompt template for
+multi-AI code review analysis
 
 ---
 
 ## About This Document
 
-This prompt template was designed to be fed into multiple AI models (ChatGPT, Gemini, Claude, etc.) to produce standardized code review outputs that could be aggregated and deduplicated.
+This prompt template was designed to be fed into multiple AI models (ChatGPT,
+Gemini, Claude, etc.) to produce standardized code review outputs that could be
+aggregated and deduplicated.
 
 **Key Features:**
+
 - 9-category analysis framework
 - Standardized output format for comparison
 - Repository access validation
 - Severity classification system
 
 **Related Documents:**
-- [ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](./ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) - Planning conversation
-- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - The resulting refactor plan
+
+- [ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](./ChatGPT_Multi_AI_Refactoring_Plan_Chat.md) -
+  Planning conversation
+- [EIGHT_PHASE_REFACTOR_PLAN.md](../EIGHT_PHASE_REFACTOR_PLAN.md) - The
+  resulting refactor plan
 
 ---
 
 ## Prompt Template
 
-You will act as a senior developer and code analyst to conduct a comprehensive code review of a GitHub repository. Your task is to analyze the codebase systematically and produce a standardized analysis report.
+You will act as a senior developer and code analyst to conduct a comprehensive
+code review of a GitHub repository. Your task is to analyze the codebase
+systematically and produce a standardized analysis report.
 
 # Repository and Model Information
 
 Here is the GitHub repository you will analyze:
 
-<github_repository>
-{{GITHUB_REPO}}
-</github_repository>
+<github_repository> {{GITHUB_REPO}} </github_repository>
 
-This repository contains a Next.js 15 recovery support application that uses Firebase for backend services (Authentication, Firestore database, and App Check).
+This repository contains a Next.js 15 recovery support application that uses
+Firebase for backend services (Authentication, Firestore database, and App
+Check).
 
 You are performing this analysis as the following AI model:
 
-<ai_model>
-{{AI_MODEL}}
-</ai_model>
+<ai_model> {{AI_MODEL}} </ai_model>
 
 # Analysis Process
 
-Before writing your final report, conduct comprehensive analysis work in `<analysis_work>` tags. This is your thinking block for detailed reasoning - your internal workspace that will not be shown to the user. Take your time and be thorough. It's OK for this section to be very long and detailed.
+Before writing your final report, conduct comprehensive analysis work in
+`<analysis_work>` tags. This is your thinking block for detailed reasoning -
+your internal workspace that will not be shown to the user. Take your time and
+be thorough. It's OK for this section to be very long and detailed.
 
 Structure your analysis using six phases:
 
 ## Phase 1: Repository Access Validation
 
-**CRITICAL FIRST STEP**: Before beginning any analysis, verify that you can actually access and read the repository content.
+**CRITICAL FIRST STEP**: Before beginning any analysis, verify that you can
+actually access and read the repository content.
 
-In your analysis_work thinking block, start with a "Repository Access Validation" section where you:
+In your analysis_work thinking block, start with a "Repository Access
+Validation" section where you:
+
 1. Explicitly state whether you can or cannot access the repository files
-2. If you CAN access it, list at least 3-5 actual files you can see to prove access
-3. If you CANNOT access it, explicitly state "I cannot access this repository" and explain why (e.g., "I cannot access external URLs", "I cannot browse GitHub repositories", etc.)
+2. If you CAN access it, list at least 3-5 actual files you can see to prove
+   access
+3. If you CANNOT access it, explicitly state "I cannot access this repository"
+   and explain why (e.g., "I cannot access external URLs", "I cannot browse
+   GitHub repositories", etc.)
 
-**If you cannot access the repository**: Stop immediately after stating this. Output a brief message explaining that you cannot complete the analysis because you cannot access the repository. Do not fabricate any findings. Do not make assumptions about code. Do not hallucinate issues.
+**If you cannot access the repository**: Stop immediately after stating this.
+Output a brief message explaining that you cannot complete the analysis because
+you cannot access the repository. Do not fabricate any findings. Do not make
+assumptions about code. Do not hallucinate issues.
 
 **If you can access the repository**: Proceed with the full analysis below.
 
 ## Phase 2: Repository Overview
 
-After validating repository access, systematically review the entire repository. It's OK for this phase to be quite long.
+After validating repository access, systematically review the entire repository.
+It's OK for this phase to be quite long.
 
-- List ALL files in the repository, one by one. Write down each file path as you encounter it.
+- List ALL files in the repository, one by one. Write down each file path as you
+  encounter it.
 - For each file, note what it does (one sentence is sufficient)
 - Pay special attention to:
   - Configuration files (tsconfig.json, .eslintrc, package.json, etc.)
@@ -75,23 +94,35 @@ After validating repository access, systematically review the entire repository.
   - Cloud Functions (especially rate limiting implementation)
   - Meeting finder components
   - Journal entry components
-- This comprehensive file listing ensures you don't miss anything in subsequent analysis
-- At the end of this phase, write: "Phase 2 complete - Total files reviewed: [count them]"
+- This comprehensive file listing ensures you don't miss anything in subsequent
+  analysis
+- At the end of this phase, write: "Phase 2 complete - Total files reviewed:
+  [count them]"
 
 ## Phase 3: Systematic Category Review
 
-For each of the 9 categories below, explicitly examine the codebase and document every legitimate issue you find. Do not artificially limit the number of issues - report all genuine problems you discover. It's OK for this phase to be very long.
+For each of the 9 categories below, explicitly examine the codebase and document
+every legitimate issue you find. Do not artificially limit the number of
+issues - report all genuine problems you discover. It's OK for this phase to be
+very long.
 
 As you work through each category:
+
 - Quote specific code snippets directly from the files
 - Note the exact file path and line numbers
-- Maintain a running count of issues as you find them by numbering them explicitly (e.g., "Issue 1 in this category:", "Issue 2 in this category:", "Issue 3 in this category:", etc.)
-- After completing each category, write a summary line: "Category X complete - Total issues found in this category: [number]"
+- Maintain a running count of issues as you find them by numbering them
+  explicitly (e.g., "Issue 1 in this category:", "Issue 2 in this category:",
+  "Issue 3 in this category:", etc.)
+- After completing each category, write a summary line: "Category X complete -
+  Total issues found in this category: [number]"
 
 ### Category 1: Syntax Errors, TypeScript Errors, and Lint Errors
 
-Identify code that will not compile or execute correctly. **Pay special attention to**:
-- TypeScript compilation errors (type mismatches, missing type definitions, incorrect type usage)
+Identify code that will not compile or execute correctly. **Pay special
+attention to**:
+
+- TypeScript compilation errors (type mismatches, missing type definitions,
+  incorrect type usage)
 - Examine tsconfig.json for proper TypeScript configuration
 - Check for any TypeScript strict mode violations
 - ESLint/TSLint errors and warnings
@@ -103,11 +134,14 @@ Identify code that will not compile or execute correctly. **Pay special attentio
 
 ### Category 2: Logic Errors and Potential Runtime Issues
 
-Identify code that runs but produces incorrect results or may fail under certain conditions.
+Identify code that runs but produces incorrect results or may fail under certain
+conditions.
 
 ### Category 3: Security Vulnerabilities
 
-Identify code that exposes security risks or attack vectors. Pay special attention to:
+Identify code that exposes security risks or attack vectors. Pay special
+attention to:
+
 - Firebase Authentication implementation
 - Firestore security rules
 - App Check configuration
@@ -124,36 +158,55 @@ Identify code that is hard to read, understand, or maintain.
 
 ### Category 6: Refactoring Opportunities
 
-Thoroughly examine ALL of the following refactoring issues. It's OK for this category to be quite long as you systematically work through each type:
+Thoroughly examine ALL of the following refactoring issues. It's OK for this
+category to be quite long as you systematically work through each type:
 
-- **Code duplication**: Duplicated code blocks, repeated logic patterns, copy-pasted functions
-- **Function complexity**: Functions >50 lines, >5 parameters, deeply nested logic (>3 levels), high cyclomatic complexity
-- **Separation of concerns**: Mixed responsibilities in single components, business logic in UI components, data fetching mixed with rendering, single responsibility principle violations
+- **Code duplication**: Duplicated code blocks, repeated logic patterns,
+  copy-pasted functions
+- **Function complexity**: Functions >50 lines, >5 parameters, deeply nested
+  logic (>3 levels), high cyclomatic complexity
+- **Separation of concerns**: Mixed responsibilities in single components,
+  business logic in UI components, data fetching mixed with rendering, single
+  responsibility principle violations
 - **SOLID principle violations**:
   - Single Responsibility violations (classes/functions doing too much)
   - Open/Closed violations (code not extensible without modification)
   - Liskov Substitution violations (improper inheritance/interface usage)
   - Interface Segregation violations (bloated interfaces)
   - Dependency Inversion violations (tight coupling to concrete implementations)
-- **Component extraction opportunities**: Reusable UI patterns not extracted, large components that should be split, shared logic not abstracted into hooks or utilities
-- **Magic numbers and strings**: Hard-coded values that should be constants or configuration
-- **God objects/classes**: Classes or components that know too much or do too much
+- **Component extraction opportunities**: Reusable UI patterns not extracted,
+  large components that should be split, shared logic not abstracted into hooks
+  or utilities
+- **Magic numbers and strings**: Hard-coded values that should be constants or
+  configuration
+- **God objects/classes**: Classes or components that know too much or do too
+  much
 - **Feature envy**: Methods that use data from other classes more than their own
-- **Data clumps**: Groups of variables that appear together repeatedly and should be objects
-- **Long parameter lists**: Functions with too many parameters that could use object parameters or builder patterns
-- **Primitive obsession**: Over-reliance on primitives instead of small objects for simple tasks
-- **Switch statement/conditional complexity**: Complex conditional logic that could be replaced with polymorphism or strategy pattern
+- **Data clumps**: Groups of variables that appear together repeatedly and
+  should be objects
+- **Long parameter lists**: Functions with too many parameters that could use
+  object parameters or builder patterns
+- **Primitive obsession**: Over-reliance on primitives instead of small objects
+  for simple tasks
+- **Switch statement/conditional complexity**: Complex conditional logic that
+  could be replaced with polymorphism or strategy pattern
 - **Temporary fields**: Fields only set in certain circumstances
-- **Message chains**: Code that navigates through multiple object relationships (a.b.c.d)
+- **Message chains**: Code that navigates through multiple object relationships
+  (a.b.c.d)
 - **Middle man**: Classes that delegate most of their work to other classes
-- **Inappropriate intimacy**: Classes that access each other's internal details too much
+- **Inappropriate intimacy**: Classes that access each other's internal details
+  too much
 - **Incomplete library class**: Missing utility functions that would be useful
 - **Lazy class**: Classes that don't do enough to justify their existence
-- **Speculative generality**: Unused abstraction or over-engineering for future needs
+- **Speculative generality**: Unused abstraction or over-engineering for future
+  needs
 - **Dead code**: Unused functions, variables, parameters, or code blocks
-- **Comments as deodorant**: Excessive comments explaining confusing code that should be refactored instead
-- **Inconsistent naming**: Similar concepts named differently, or unclear/misleading names
-- **Type checking instead of polymorphism**: Repeated type checks that could use inheritance or interfaces
+- **Comments as deodorant**: Excessive comments explaining confusing code that
+  should be refactored instead
+- **Inconsistent naming**: Similar concepts named differently, or
+  unclear/misleading names
+- **Type checking instead of polymorphism**: Repeated type checks that could use
+  inheritance or interfaces
 
 ### Category 7: Missing Error Handling
 
@@ -162,11 +215,14 @@ Identify places where errors could occur but aren't caught or handled.
 ### Category 8: Deprecated or Outdated Practices
 
 Identify use of obsolete APIs, libraries, or coding patterns:
+
 - Verify adherence to Next.js 15 best practices
 - **Thoroughly examine package.json** for outdated libraries
-- Check for packages with known vulnerabilities or newer stable versions available
+- Check for packages with known vulnerabilities or newer stable versions
+  available
 - Review npm/yarn lock files if present
-- Quote specific version numbers from package.json and note which packages are outdated
+- Quote specific version numbers from package.json and note which packages are
+  outdated
 
 ### Category 9: Documentation Gaps
 
@@ -174,27 +230,38 @@ Identify missing or inadequate comments, docstrings, or README content.
 
 ## Phase 4: Draft Your Findings
 
-For each issue you identified in Phase 3, create a detailed draft entry. Write them out one by one, numbering them sequentially (e.g., "Draft Finding 1:", "Draft Finding 2:", "Draft Finding 3:", etc.). It's OK for this phase to be quite long - list every finding individually.
+For each issue you identified in Phase 3, create a detailed draft entry. Write
+them out one by one, numbering them sequentially (e.g., "Draft Finding 1:",
+"Draft Finding 2:", "Draft Finding 3:", etc.). It's OK for this phase to be
+quite long - list every finding individually.
 
 For each draft finding, include:
+
 - The exact file path and specific line numbers
 - A quote of the actual problematic code snippet from the repository
 - A detailed description of the problem
 - A severity assessment with justification:
-  - **Critical**: Will cause system failure, data loss, or severe security breach
+  - **Critical**: Will cause system failure, data loss, or severe security
+    breach
   - **High**: Will likely cause significant problems in production
-  - **Medium**: Will cause problems in specific scenarios or reduces code quality notably
+  - **Medium**: Will cause problems in specific scenarios or reduces code
+    quality notably
   - **Low**: Minor issues or suggestions for improvement
-- Initial thoughts on recommendations (what specifically should be done to fix this)
+- Initial thoughts on recommendations (what specifically should be done to fix
+  this)
 - Whether code examples would be helpful in the final report
 
-At the end of this phase, count your draft findings and write: "Phase 4 complete - Total draft findings: [count them]"
+At the end of this phase, count your draft findings and write: "Phase 4
+complete - Total draft findings: [count them]"
 
 ## Phase 5: Pattern Identification
 
 Review your draft findings and identify patterns:
+
 - Note any recurring issues across multiple files
-- Write out specific patterns you observe, numbering each one explicitly (e.g., "Pattern 1: Error handling is missing in 5 different API call locations", "Pattern 2: TypeScript any types used in 8 locations", etc.)
+- Write out specific patterns you observe, numbering each one explicitly (e.g.,
+  "Pattern 1: Error handling is missing in 5 different API call locations",
+  "Pattern 2: TypeScript any types used in 8 locations", etc.)
 - List each pattern you identify, one by one
 - Consider architectural concerns, especially around:
   - Firebase integration
@@ -205,28 +272,37 @@ Review your draft findings and identify patterns:
 - Identify systemic issues that might indicate broader problems
 - Note which patterns are most critical to address
 
-At the end of this phase, count your patterns and write: "Phase 5 complete - Total patterns identified: [count them]"
+At the end of this phase, count your patterns and write: "Phase 5 complete -
+Total patterns identified: [count them]"
 
 ## Phase 6: Summary Preparation
 
 Prepare your summary statistics and recommendations:
-- Count your total draft findings by severity. Explicitly count them by listing each one:
-  - Critical: [list them by number, e.g., "Finding 1, Finding 5, Finding 12" and count]
+
+- Count your total draft findings by severity. Explicitly count them by listing
+  each one:
+  - Critical: [list them by number, e.g., "Finding 1, Finding 5, Finding 12" and
+    count]
   - High: [list them by number and count]
   - Medium: [list them by number and count]
   - Low: [list them by number and count]
   - Total: [sum]
 - Draft your executive summary points:
   - Overall assessment of code quality
-  - Major findings and patterns observed (reference specific patterns from Phase 5)
+  - Major findings and patterns observed (reference specific patterns from
+    Phase 5)
   - General recommendations for improvement
-- Identify your top 3-5 priority recommendations based on impact and urgency, with brief justification for each
+- Identify your top 3-5 priority recommendations based on impact and urgency,
+  with brief justification for each
 
-At the end of this phase, write: "Phase 6 complete - Ready to write final report"
+At the end of this phase, write: "Phase 6 complete - Ready to write final
+report"
 
 # Final Report Format
 
-After completing your analysis in the `<analysis_work>` thinking block, write your final standardized report outside the thinking block. Your report must follow this exact structure:
+After completing your analysis in the `<analysis_work>` thinking block, write
+your final standardized report outside the thinking block. Your report must
+follow this exact structure:
 
 ```
 AI Model: [State the AI model name from the ai_model section]
@@ -254,16 +330,20 @@ Finding #[Number]
 - Impact: [What will happen if this is not fixed]
 - Recommendation: [Specific steps to fix or improve]
 - Code Example (if applicable):
-  
+
   Problematic code:
-  ```
-  [Show the current problematic code]
-  ```
-  
-  Suggested fix:
-  ```
-  [Show the improved code]
-  ```
+```
+
+[Show the current problematic code]
+
+```
+
+Suggested fix:
+```
+
+[Show the improved code]
+
+```
 
 [Continue with Finding #2, Finding #3, etc., numbering sequentially]
 
@@ -285,15 +365,22 @@ Priority Recommendations:
 
 # Important Requirements
 
-- Your final output must contain ONLY the standardized report in the exact format specified above
-- Do NOT include or reproduce any of your analysis work from the `<analysis_work>` thinking block in the final report
-- The `<analysis_work>` section is exclusively for your internal reasoning and must remain in the thinking block only
-- Your final report should not duplicate, reference, or rehash any of the detailed work you did in the thinking block
+- Your final output must contain ONLY the standardized report in the exact
+  format specified above
+- Do NOT include or reproduce any of your analysis work from the
+  `<analysis_work>` thinking block in the final report
+- The `<analysis_work>` section is exclusively for your internal reasoning and
+  must remain in the thinking block only
+- Your final report should not duplicate, reference, or rehash any of the
+  detailed work you did in the thinking block
 - Follow the exact format specified to enable comparison with other AI models
 - Number your findings sequentially starting from 1
-- Report ALL legitimate issues you discover - do not artificially limit the number of findings
-- If you cannot access the repository, explicitly state this in your analysis_work section and stop immediately without producing a report
-- Do not fabricate findings or make assumptions about code you cannot actually see
+- Report ALL legitimate issues you discover - do not artificially limit the
+  number of findings
+- If you cannot access the repository, explicitly state this in your
+  analysis_work section and stop immediately without producing a report
+- Do not fabricate findings or make assumptions about code you cannot actually
+  see
 - Pay special attention to:
   - TypeScript errors and configuration (per user feedback requirement)
   - Linting errors and rule violations (per user feedback requirement)

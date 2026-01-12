@@ -1,6 +1,7 @@
 # AI Review Prompts - Quick Reference
 
-Quick lookup for specialized review prompts. See full details in `review-prompts.md`.
+Quick lookup for specialized review prompts. See full details in
+`review-prompts.md`.
 
 ---
 
@@ -9,12 +10,14 @@ Quick lookup for specialized review prompts. See full details in `review-prompts
 **When to use:** `.md`, `.mdx` files
 
 **Key Focus:**
+
 - Security leaks (API keys, credentials)
 - Broken links and references
 - Accuracy vs codebase
 - Missing sections
 
 **Auto-block on:**
+
 - Exposed secrets
 - Broken critical links
 - Contradictions with code
@@ -28,12 +31,14 @@ Quick lookup for specialized review prompts. See full details in `review-prompts
 **When to use:** `package.json`, `.env`, `firebase.json`, `tsconfig.json`
 
 **Key Focus:**
+
 - Hardcoded secrets
 - Insecure defaults
 - Missing env vars
 - Version conflicts
 
 **Auto-block on:**
+
 - API keys in config
 - CORS wildcards (`*`)
 - Disabled security features
@@ -47,12 +52,14 @@ Quick lookup for specialized review prompts. See full details in `review-prompts
 **When to use:** `firestore.rules`, `storage.rules`, auth policies
 
 **Key Focus:**
+
 - Unauthorized access paths
 - Missing auth checks
 - Privilege escalation
 - Public data exposure
 
 **Auto-block on:**
+
 - `allow read: if true` on user data
 - Missing auth validation
 - Admin bypass vulnerabilities
@@ -66,12 +73,14 @@ Quick lookup for specialized review prompts. See full details in `review-prompts
 **When to use:** Git hooks, GitHub Actions, npm scripts, automation
 
 **Key Focus:**
+
 - Destructive operations
 - Missing error handling
 - Security in automation
 - Idempotency
 
 **Auto-block on:**
+
 - Unguarded `rm -rf`
 - Force operations without confirm
 - Missing fail-safes
@@ -85,12 +94,14 @@ Quick lookup for specialized review prompts. See full details in `review-prompts
 **When to use:** `package.json` changes
 
 **Key Focus:**
+
 - Known CVEs
 - Breaking changes
 - Version conflicts
 - Supply chain risks
 
 **Auto-block on:**
+
 - Packages with critical CVEs
 - Unmaintained dependencies
 - Typosquatting risks
@@ -135,18 +146,19 @@ node scripts/ai-review.js --type=documentation --staged | claude chat
 
 ## Severity Levels
 
-| Level | Meaning | Action |
-|-------|---------|--------|
-| **CRITICAL** | Security vulnerability or data loss risk | Block merge |
-| **HIGH** | Breaking change or significant issue | Require review |
-| **MEDIUM** | Best practice violation | Advisory |
-| **LOW** | Style/optimization suggestion | Optional |
+| Level        | Meaning                                  | Action         |
+| ------------ | ---------------------------------------- | -------------- |
+| **CRITICAL** | Security vulnerability or data loss risk | Block merge    |
+| **HIGH**     | Breaking change or significant issue     | Require review |
+| **MEDIUM**   | Best practice violation                  | Advisory       |
+| **LOW**      | Style/optimization suggestion            | Optional       |
 
 ---
 
 ## Common Patterns
 
 ### Documentation
+
 - ❌ Hardcoded API keys in examples
 - ❌ Links to localhost or internal URLs
 - ❌ Outdated version numbers
@@ -155,6 +167,7 @@ node scripts/ai-review.js --type=documentation --staged | claude chat
 - ✅ Valid cross-references
 
 ### Configuration
+
 - ❌ Secrets in plain text
 - ❌ Debug mode in production
 - ❌ CORS `"*"` for APIs
@@ -163,6 +176,7 @@ node scripts/ai-review.js --type=documentation --staged | claude chat
 - ✅ Version pinning strategy
 
 ### Security Rules
+
 - ❌ `allow read: if true` on user data
 - ❌ Missing `isSignedIn()` checks
 - ❌ String comparison for user IDs
@@ -171,6 +185,7 @@ node scripts/ai-review.js --type=documentation --staged | claude chat
 - ✅ Cloud Function only paths
 
 ### Process Automation
+
 - ❌ Destructive commands without guards
 - ❌ Missing error handling
 - ❌ No skip mechanism
@@ -179,6 +194,7 @@ node scripts/ai-review.js --type=documentation --staged | claude chat
 - ✅ Emergency bypass option
 
 ### Dependencies
+
 - ❌ Packages with known CVEs
 - ❌ Unmaintained (2+ years old)
 - ❌ Major version jumps untested
@@ -215,14 +231,17 @@ Edit `.claude/review-prompts.md` to:
 ## Troubleshooting
 
 **No files detected:**
+
 - Check file extensions match review type
 - Verify files are staged with `git diff --cached --name-only`
 
 **Prompt not found:**
+
 - Ensure `.claude/review-prompts.md` exists
 - Check section headers match exactly
 
 **False positives:**
+
 - Document in review-prompts.md
 - Adjust prompt to exclude known patterns
 - Use inline comments to suppress (e.g., `<!-- ai-review: ignore -->`)
@@ -285,5 +304,6 @@ fi
 ---
 
 For detailed prompts, implementation notes, and examples, see:
+
 - **Full Guide:** `.claude/review-prompts.md`
 - **Implementation:** `scripts/ai-review.js`

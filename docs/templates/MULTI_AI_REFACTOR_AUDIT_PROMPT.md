@@ -1,26 +1,31 @@
 # Multi-AI Refactor Audit Prompt Template
 
-**Last Updated:** 2026-01-05
-**Document Tier:** 3 (Template)
-**Status:** Active
+**Last Updated:** 2026-01-05 **Document Tier:** 3 (Template) **Status:** Active
 
 ---
 
 ## Purpose
 
-This template provides a standardized prompt for running refactor audits across multiple AI coding assistants. Use it to identify cross-cutting duplication, inconsistencies, and tech debt in the codebase.
+This template provides a standardized prompt for running refactor audits across
+multiple AI coding assistants. Use it to identify cross-cutting duplication,
+inconsistencies, and tech debt in the codebase.
 
 **Related Templates:**
-- [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) - Code review audits
-- [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) - Security audits
-- [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) - Performance audits
+
+- [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](./MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) -
+  Code review audits
+- [MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md) -
+  Security audits
+- [MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](./MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md) -
+  Performance audits
 
 ---
 
 ## Quick Start
 
 1. Copy the **Main Prompt** section below
-2. Paste into your AI assistant (Claude Code, Codex, Copilot, Gemini Jules, etc.)
+2. Paste into your AI assistant (Claude Code, Codex, Copilot, Gemini Jules,
+   etc.)
 3. For tool-capable agents, also include the **Tool Checklist Addendum**
 4. Collect FINDINGS_JSONL output for aggregation
 
@@ -30,13 +35,13 @@ This template provides a standardized prompt for running refactor audits across 
 
 For maximum signal, run audits in this order:
 
-| Order | AI Tool | Strengths |
-|-------|---------|-----------|
-| 1 | Claude Code (tool-capable) | Repo-wide audits, grep-based proof |
-| 2 | Codex (tool-capable) | Refactor detection, TS ergonomics |
-| 3 | Copilot (IDE) | Local pattern spotting, quick confirmations |
-| 4 | Gemini Jules | Second opinion, alternative refactor lens |
-| 5 | Kimi K2 | Extra coverage (may have more suspected findings) |
+| Order | AI Tool                    | Strengths                                         |
+| ----- | -------------------------- | ------------------------------------------------- |
+| 1     | Claude Code (tool-capable) | Repo-wide audits, grep-based proof                |
+| 2     | Codex (tool-capable)       | Refactor detection, TS ergonomics                 |
+| 3     | Copilot (IDE)              | Local pattern spotting, quick confirmations       |
+| 4     | Gemini Jules               | Second opinion, alternative refactor lens         |
+| 5     | Kimi K2                    | Extra coverage (may have more suspected findings) |
 
 ---
 
@@ -44,7 +49,9 @@ For maximum signal, run audits in this order:
 
 ### ROLE
 
-You are a senior TypeScript/Next.js engineer performing a refactor audit on a repo that was "vibe coded" by multiple AI agents. Your #1 priority is cross-cutting duplication/inconsistency across the codebase.
+You are a senior TypeScript/Next.js engineer performing a refactor audit on a
+repo that was "vibe coded" by multiple AI agents. Your #1 priority is
+cross-cutting duplication/inconsistency across the codebase.
 
 ### REPO
 
@@ -57,7 +64,8 @@ https://github.com/jasonmichaelbell78-creator/sonash-v0
 - Firebase: Auth, Firestore, Cloud Functions v2, App Check
 - Security: reCAPTCHA v3, App Check, Firestore Rules, rate-limiting
 - Quality gates: npm run lint, npm test, npm run test:coverage
-- Client-side Firestore path validation mirrors rules: lib/security/firestore-validation.ts
+- Client-side Firestore path validation mirrors rules:
+  lib/security/firestore-validation.ts
 
 ### SCOPE
 
@@ -78,6 +86,7 @@ CAPABILITIES: browse_files=<yes/no>, run_commands=<yes/no>, repo_checkout=<yes/n
 ### NON-NEGOTIABLE EVIDENCE RULE (ANTI-HALLUCINATION)
 
 A finding is CONFIRMED only if it includes:
+
 - at least one concrete file path AND
 - at least one primary symbol name (component/function/type) from those files
 
@@ -95,40 +104,58 @@ If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 
 **PASS 1 — Cross-cutting duplication/inconsistency (highest priority)**
 
-Identify duplicated or inconsistent implementations across multiple areas, especially:
-- Firebase init/service wrappers, auth guards, Firestore read/write helpers, path validation, rate-limiting, logging/audit, analytics
-- UI primitives duplicated outside components/ui (buttons/cards/modals/toasts/spinners/loading states)
-- Repeated hook patterns (state sync, localStorage, keyboard shortcuts, scrolling, prompts, networking/offline)
-- Repeated types/enums/constants (entry types, statuses, feature flags, routes, Firestore paths)
+Identify duplicated or inconsistent implementations across multiple areas,
+especially:
 
-For each duplication cluster: produce ONE consolidated finding with a list of the duplicated files/symbols.
+- Firebase init/service wrappers, auth guards, Firestore read/write helpers,
+  path validation, rate-limiting, logging/audit, analytics
+- UI primitives duplicated outside components/ui
+  (buttons/cards/modals/toasts/spinners/loading states)
+- Repeated hook patterns (state sync, localStorage, keyboard shortcuts,
+  scrolling, prompts, networking/offline)
+- Repeated types/enums/constants (entry types, statuses, feature flags, routes,
+  Firestore paths)
+
+For each duplication cluster: produce ONE consolidated finding with a list of
+the duplicated files/symbols.
 
 **PASS 2 — Types/Correctness**
 
-- any/unknown leakage, inconsistent domain types, nullable handling, unsafe casts
-- places where runtime validation should match TS types (esp. data in/out of Firestore)
+- any/unknown leakage, inconsistent domain types, nullable handling, unsafe
+  casts
+- places where runtime validation should match TS types (esp. data in/out of
+  Firestore)
 
-**PASS 3 — Next/React Boundaries + Security + Tests (only after pass 1 is done)**
+**PASS 3 — Next/React Boundaries + Security + Tests (only after pass 1 is
+done)**
 
-- Server vs client component boundary issues, data fetching patterns, state placement
-- Trust boundaries: where client code assumes privileges; rules alignment; secrets/config; App Check usage assumptions
+- Server vs client component boundary issues, data fetching patterns, state
+  placement
+- Trust boundaries: where client code assumes privileges; rules alignment;
+  secrets/config; App Check usage assumptions
 - Missing or weak tests around shared helpers and security-critical code paths
 
 ### OPTIONAL: TOOL EVIDENCE (ONLY IF you can run commands)
 
 If run_commands=yes and repo_checkout=yes:
-- Prefer to support PASS 1 claims with at least one "hard artifact" per major cluster:
+
+- Prefer to support PASS 1 claims with at least one "hard artifact" per major
+  cluster:
   - search output (grep/ripgrep) OR
   - duplication scan output OR
   - lint/type/test output that points at repeated patterns
 
-If you cannot run tools, proceed with static browsing and keep confidence lower for cross-cutting claims.
+If you cannot run tools, proceed with static browsing and keep confidence lower
+for cross-cutting claims.
 
 ### OUTPUT FORMAT (STRICT)
 
 Return 3 sections in this exact order.
 
-**⚠️ NO CODE FENCES:** Output raw JSONL lines directly — do NOT wrap FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, or HUMAN_SUMMARY in Markdown fenced code blocks (including ` ```json ` blocks). The schema example below is for reference only.
+**⚠️ NO CODE FENCES:** Output raw JSONL lines directly — do NOT wrap
+FINDINGS_JSONL, SUSPECTED_FINDINGS_JSONL, or HUMAN_SUMMARY in Markdown fenced
+code blocks (including ` ```json ` blocks). The schema example below is for
+reference only.
 
 **1) FINDINGS_JSONL**
 
@@ -136,7 +163,8 @@ Return 3 sections in this exact order.
 
 Schema (reference only — do not copy formatting):
 
-- category: "Hygiene/Duplication" | "Types/Correctness" | "Next/React Boundaries" | "Security" | "Testing"
+- category: "Hygiene/Duplication" | "Types/Correctness" | "Next/React
+  Boundaries" | "Security" | "Testing"
 - title: "short, specific description"
 - fingerprint: "<category>::<primary_file>::<primary_symbol>::<problem_slug>"
 - severity: "S0" | "S1" | "S2" | "S3"
@@ -148,7 +176,9 @@ Schema (reference only — do not copy formatting):
 - why_it_matters: "1-3 sentences explaining impact"
 - suggested_fix: "concrete refactor direction (no full rewrites)"
 - acceptance_tests: ["what to run/verify after change"]
-- pr_bucket_suggestion: "firebase-access" | "ui-primitives" | "hooks-standardization" | "types-domain" | "boundaries" | "security-hardening" | "tests-hardening" | "misc"
+- pr_bucket_suggestion: "firebase-access" | "ui-primitives" |
+  "hooks-standardization" | "types-domain" | "boundaries" | "security-hardening"
+  | "tests-hardening" | "misc"
 - dependencies: [] (array of fingerprints this depends on, or empty)
 - evidence: [] (optional: short grep output or tool summary)
 - notes: "" (optional additional context)
@@ -162,12 +192,14 @@ When the finding is NOT a duplication cluster:
 `"duplication_cluster": { "is_cluster": false, "cluster_summary": "", "instances": [] }`
 
 **Severity guide:**
+
 - S0: high-risk security/data loss/major bug
 - S1: likely bug/perf/security footgun
 - S2: maintainability drag/inconsistency/duplication
 - S3: cosmetic cleanup
 
 **Effort guide:**
+
 - E0: minutes
 - E1: hours
 - E2: 1–3 days or staged PR
@@ -175,7 +207,8 @@ When the finding is NOT a duplication cluster:
 
 **2) SUSPECTED_FINDINGS_JSONL**
 
-(same schema, but confidence <= 40; evidence missing file+symbol OR claim is broad)
+(same schema, but confidence <= 40; evidence missing file+symbol OR claim is
+broad)
 
 **3) HUMAN_SUMMARY (markdown)**
 
@@ -187,7 +220,8 @@ When the finding is NOT a duplication cluster:
 
 ## Tool Checklist Addendum
 
-Use this as a second message only to tool-capable agents (Claude Code, Codex, Copilot-in-IDE, Jules), after the main prompt:
+Use this as a second message only to tool-capable agents (Claude Code, Codex,
+Copilot-in-IDE, Jules), after the main prompt:
 
 ```
 If (run_commands=yes AND repo_checkout=yes), prioritize PASS 1 duplication with these checks (do not install heavy tooling unless already present):
@@ -213,22 +247,25 @@ If a command is not available, write "SKIPPED: <reason>" and continue.
 
 **For AI Assistants using this template:**
 
-1. **Before running audit**: Update REPO and STACK sections if project details have changed
+1. **Before running audit**: Update REPO and STACK sections if project details
+   have changed
 2. **During audit**: Follow PASS 1→2→3 order strictly
-3. **Evidence requirements**: Every CONFIRMED finding must have file path + symbol
+3. **Evidence requirements**: Every CONFIRMED finding must have file path +
+   symbol
 4. **Output format**: Use JSONL (one JSON per line), not JSON arrays
 5. **After audit**: Feed FINDINGS_JSONL to aggregator template
 
-**Template updates**: If you modify this template, update the Version History below.
+**Template updates**: If you modify this template, update the Version History
+below.
 
 ---
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.1 | 2026-01-05 | Added template structure (H1, Purpose, Quick Start, AI Instructions, Version History) for docs-lint compliance |
-| 1.0 | 2025-12-30 | Initial prompt created |
+| Version | Date       | Changes                                                                                                        |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-01-05 | Added template structure (H1, Purpose, Quick Start, AI Instructions, Version History) for docs-lint compliance |
+| 1.0     | 2025-12-30 | Initial prompt created                                                                                         |
 
 ---
 

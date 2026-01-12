@@ -1,80 +1,80 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { getFunctions, httpsCallable } from "firebase/functions"
-import { logger } from "@/lib/logger"
-import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Calendar } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { useState, useEffect } from "react";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { logger } from "@/lib/logger";
+import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Calendar } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface Job {
-  id: string
-  name: string
-  schedule: string
-  description: string
-  lastRunStatus: "success" | "failed" | "running" | "never"
-  lastRun: string | null
-  lastSuccessRun: string | null
-  lastRunDuration: number | null
-  lastError: string | null
+  id: string;
+  name: string;
+  schedule: string;
+  description: string;
+  lastRunStatus: "success" | "failed" | "running" | "never";
+  lastRun: string | null;
+  lastSuccessRun: string | null;
+  lastRunDuration: number | null;
+  lastError: string | null;
 }
 
 export function JobsTab() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [runningJobs, setRunningJobs] = useState<Set<string>>(new Set())
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [runningJobs, setRunningJobs] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    loadJobs()
-  }, [])
+    loadJobs();
+  }, []);
 
   async function loadJobs() {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const functions = getFunctions()
-      const getJobsFn = httpsCallable<void, { jobs: Job[] }>(functions, "adminGetJobsStatus")
+      const functions = getFunctions();
+      const getJobsFn = httpsCallable<void, { jobs: Job[] }>(functions, "adminGetJobsStatus");
 
-      const result = await getJobsFn()
-      setJobs(result.data.jobs)
+      const result = await getJobsFn();
+      setJobs(result.data.jobs);
     } catch (err) {
-      logger.error("Failed to load jobs", { error: err })
-      setError(err instanceof Error ? err.message : "Failed to load jobs")
+      logger.error("Failed to load jobs", { error: err });
+      setError(err instanceof Error ? err.message : "Failed to load jobs");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function triggerJob(jobId: string) {
-    if (runningJobs.has(jobId)) return
+    if (runningJobs.has(jobId)) return;
 
-    setRunningJobs(prev => new Set(prev).add(jobId))
-    setError(null)
+    setRunningJobs((prev) => new Set(prev).add(jobId));
+    setError(null);
 
     try {
-      const functions = getFunctions()
+      const functions = getFunctions();
       const triggerFn = httpsCallable<{ jobId: string }, { success: boolean; message: string }>(
         functions,
         "adminTriggerJob"
-      )
+      );
 
-      const result = await triggerFn({ jobId })
+      const result = await triggerFn({ jobId });
 
       // Reload jobs to get updated status
-      await loadJobs()
+      await loadJobs();
 
-      alert(result.data.message)
+      alert(result.data.message);
     } catch (err) {
-      logger.error("Failed to trigger job", { error: err, jobId })
-      setError(err instanceof Error ? err.message : "Failed to trigger job")
-      alert(`Failed to trigger job: ${err instanceof Error ? err.message : "Unknown error"}`)
+      logger.error("Failed to trigger job", { error: err, jobId });
+      setError(err instanceof Error ? err.message : "Failed to trigger job");
+      alert(`Failed to trigger job: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
-      setRunningJobs(prev => {
-        const next = new Set(prev)
-        next.delete(jobId)
-        return next
-      })
+      setRunningJobs((prev) => {
+        const next = new Set(prev);
+        next.delete(jobId);
+        return next;
+      });
     }
   }
 
@@ -86,28 +86,28 @@ export function JobsTab() {
             <CheckCircle className="w-3 h-3" />
             Success
           </span>
-        )
+        );
       case "failed":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
             <XCircle className="w-3 h-3" />
             Failed
           </span>
-        )
+        );
       case "running":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             <RefreshCw className="w-3 h-3 animate-spin" />
             Running
           </span>
-        )
+        );
       case "never":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
             <Clock className="w-3 h-3" />
             Never Run
           </span>
-        )
+        );
     }
   }
 
@@ -116,7 +116,7 @@ export function JobsTab() {
       <div className="flex items-center justify-center p-12">
         <div className="text-amber-600">Loading jobs...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -146,7 +146,7 @@ export function JobsTab() {
       {/* Jobs List */}
       <div className="grid gap-4">
         {jobs.map((job) => {
-          const isRunning = runningJobs.has(job.id)
+          const isRunning = runningJobs.has(job.id);
 
           return (
             <div
@@ -177,7 +177,9 @@ export function JobsTab() {
                         <span className="font-medium">Last Run</span>
                       </div>
                       <div className="text-amber-900">
-                        {job.lastRun ? formatDistanceToNow(new Date(job.lastRun), { addSuffix: true }) : "Never"}
+                        {job.lastRun
+                          ? formatDistanceToNow(new Date(job.lastRun), { addSuffix: true })
+                          : "Never"}
                       </div>
                     </div>
 
@@ -187,7 +189,9 @@ export function JobsTab() {
                         <span className="font-medium">Last Success</span>
                       </div>
                       <div className="text-amber-900">
-                        {job.lastSuccessRun ? formatDistanceToNow(new Date(job.lastSuccessRun), { addSuffix: true }) : "Never"}
+                        {job.lastSuccessRun
+                          ? formatDistanceToNow(new Date(job.lastSuccessRun), { addSuffix: true })
+                          : "Never"}
                       </div>
                     </div>
 
@@ -230,7 +234,7 @@ export function JobsTab() {
                 </button>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -241,5 +245,5 @@ export function JobsTab() {
         </div>
       )}
     </div>
-  )
+  );
 }

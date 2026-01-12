@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import assert from "node:assert/strict"
-import { beforeEach, test } from "node:test"
+import assert from "node:assert/strict";
+import { beforeEach, test } from "node:test";
 
 const envVars = [
   "NEXT_PUBLIC_FIREBASE_API_KEY",
@@ -9,30 +9,30 @@ const envVars = [
   "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
   "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
   "NEXT_PUBLIC_FIREBASE_APP_ID",
-]
+];
 
 envVars.forEach((key) => {
-  process.env[key] = process.env[key] || "test-value"
-})
+  process.env[key] = process.env[key] || "test-value";
+});
 
-let setDocCalls: any[][]
-let validateCalls: any[][]
-let getDocReturn: any
-let getDocsReturn: any
+let setDocCalls: any[][];
+let validateCalls: any[][];
+let getDocReturn: any;
+let getDocsReturn: any;
 
 const mockDeps = () => ({
   db: {},
   assertUserScope: (_: any) => {
-    validateCalls.push(["scope"])
+    validateCalls.push(["scope"]);
   },
   validateUserDocumentPath: (_userId: string, path: string) => {
-    validateCalls.push(["path", path])
+    validateCalls.push(["path", path]);
   },
   collection: (_db: unknown, path: string) => ({ path }),
   doc: (_db: unknown, path: string) => ({ path }),
   setDoc: (...args: any[]) => {
-    setDocCalls.push(args)
-    return Promise.resolve()
+    setDocCalls.push(args);
+    return Promise.resolve();
   },
   getDoc: () => Promise.resolve(getDocReturn),
   getDocs: () => Promise.resolve(getDocsReturn),
@@ -41,52 +41,56 @@ const mockDeps = () => ({
   limit: (value: number) => ({ limit: value }),
   serverTimestamp: () => "timestamp",
   logger: { error: () => undefined },
-})
+});
 
 beforeEach(() => {
-  setDocCalls = []
-  validateCalls = []
-  getDocReturn = { exists: () => false, data: () => ({}) }
-  getDocsReturn = { docs: [] }
-})
+  setDocCalls = [];
+  validateCalls = [];
+  getDocReturn = { exists: () => false, data: () => ({}) };
+  getDocsReturn = { docs: [] };
+});
 
-test("saves merged daily log calls Cloud Function", { skip: "Requires Firebase Cloud Functions - integration test" }, async () => {
-  const { createFirestoreService } = await import("../lib/firestore-service")
-  const service = createFirestoreService(mockDeps() as any)
+test(
+  "saves merged daily log calls Cloud Function",
+  { skip: "Requires Firebase Cloud Functions - integration test" },
+  async () => {
+    const { createFirestoreService } = await import("../lib/firestore-service");
+    const service = createFirestoreService(mockDeps() as any);
 
-  // This test is skipped because saveDailyLog now uses Cloud Functions
-  // which require actual Firebase connectivity. This should be moved to
-  // integration tests or properly mocked with module-level mocking.
-  await service.saveDailyLog("user123", { content: "Test note" })
+    // This test is skipped because saveDailyLog now uses Cloud Functions
+    // which require actual Firebase connectivity. This should be moved to
+    // integration tests or properly mocked with module-level mocking.
+    await service.saveDailyLog("user123", { content: "Test note" });
 
-  assert.ok(validateCalls.some(([key]) => key === "scope"))
-})
+    assert.ok(validateCalls.some(([key]) => key === "scope"));
+  }
+);
 
 test("returns today's log when snapshot exists", async () => {
-  const { createFirestoreService } = await import("../lib/firestore-service")
-  getDocReturn = { exists: () => true, data: () => ({ mood: "great" }) }
-  const service = createFirestoreService(mockDeps() as any)
+  const { createFirestoreService } = await import("../lib/firestore-service");
+  getDocReturn = { exists: () => true, data: () => ({ mood: "great" }) };
+  const service = createFirestoreService(mockDeps() as any);
 
-  const result = await service.getTodayLog("abc")
+  const result = await service.getTodayLog("abc");
 
-  assert.deepEqual(result, { log: { mood: "great" }, error: null })
-})
+  assert.deepEqual(result, { log: { mood: "great" }, error: null });
+});
 
 test("maps history documents with ids", async () => {
-  const { createFirestoreService } = await import("../lib/firestore-service")
+  const { createFirestoreService } = await import("../lib/firestore-service");
   getDocsReturn = {
     docs: [
       { id: "2024-01-02", data: () => ({ content: "note" }) },
       { id: "2024-01-01", data: () => ({ content: "yesterday" }) },
     ],
-  }
-  const service = createFirestoreService(mockDeps() as any)
+  };
+  const service = createFirestoreService(mockDeps() as any);
 
-  const result = await service.getHistory("abc")
+  const result = await service.getHistory("abc");
 
   assert.deepEqual(result.entries, [
     { id: "2024-01-02", content: "note" },
     { id: "2024-01-01", content: "yesterday" },
-  ])
-  assert.equal(result.error, null)
-})
+  ]);
+  assert.equal(result.error, null);
+});

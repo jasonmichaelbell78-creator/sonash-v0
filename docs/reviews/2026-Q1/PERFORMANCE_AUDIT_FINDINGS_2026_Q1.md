@@ -1,22 +1,20 @@
 # SoNash Multi-AI Performance Audit - Aggregated Findings
 
-**Document Version:** 1.0
-**Audit Date:** 2026-01-09
-**Status:** COMPLETE
-**Last Updated:** 2026-01-09
+**Document Version:** 1.0 **Audit Date:** 2026-01-09 **Status:** COMPLETE **Last
+Updated:** 2026-01-09
 
 ---
 
 ## Audit Metadata
 
-| Field | Value |
-|-------|-------|
-| Audit Type | Multi-AI Performance Audit |
-| Models Used | Claude Opus 4.5, Claude Sonnet 4.5, Codex, GitHub Copilot, ChatGPT 5.2 |
-| Total Raw Findings | 73 |
-| Deduplicated Findings | 20 |
-| Consensus Threshold | 2+ models agreeing |
-| Sub-threshold Findings | 5 (included for completeness) |
+| Field                  | Value                                                                  |
+| ---------------------- | ---------------------------------------------------------------------- |
+| Audit Type             | Multi-AI Performance Audit                                             |
+| Models Used            | Claude Opus 4.5, Claude Sonnet 4.5, Codex, GitHub Copilot, ChatGPT 5.2 |
+| Total Raw Findings     | 73                                                                     |
+| Deduplicated Findings  | 20                                                                     |
+| Consensus Threshold    | 2+ models agreeing                                                     |
+| Sub-threshold Findings | 5 (included for completeness)                                          |
 
 ---
 
@@ -25,7 +23,13 @@
 ```json
 {
   "audit_date": "2026-01-09",
-  "models_used": ["Claude Opus 4.5", "Claude Sonnet 4.5", "Codex", "GitHub Copilot", "ChatGPT 5.2"],
+  "models_used": [
+    "Claude Opus 4.5",
+    "Claude Sonnet 4.5",
+    "Codex",
+    "GitHub Copilot",
+    "ChatGPT 5.2"
+  ],
   "total_raw_findings": 73,
   "confirmed_findings": 62,
   "suspected_findings": 11,
@@ -80,8 +84,8 @@
   "plan_version": "1.0",
   "generated_date": "2026-01-09",
   "total_findings": 20,
-  "by_severity": {"S0": 1, "S1": 5, "S2": 14},
-  "by_effort": {"E0": 3, "E1": 9, "E2": 7, "E3": 1},
+  "by_severity": { "S0": 1, "S1": 5, "S2": 14 },
+  "by_effort": { "E0": 3, "E1": 9, "E2": 7, "E3": 1 },
   "implementation_phases": [
     {
       "phase": 1,
@@ -125,16 +129,76 @@
     }
   ],
   "priority_ranking": [
-    {"id": "PERF-002", "severity": "S0", "effort": "E1", "score": 10.0, "reason": "Memory leak - must fix"},
-    {"id": "PERF-018", "severity": "S1", "effort": "E0", "score": 9.0, "reason": "Quick fix, high impact"},
-    {"id": "PERF-009", "severity": "S2", "effort": "E0", "score": 8.0, "reason": "Trivial, measurable gain"},
-    {"id": "PERF-010", "severity": "S2", "effort": "E0", "score": 8.0, "reason": "Trivial, cleaner code"},
-    {"id": "PERF-001", "severity": "S1", "effort": "E2", "score": 7.5, "reason": "Highest LCP impact"},
-    {"id": "PERF-003", "severity": "S2", "effort": "E1", "score": 7.0, "reason": "Easy render optimization"},
-    {"id": "PERF-004", "severity": "S2", "effort": "E1", "score": 7.0, "reason": "Consolidation + fetch fix"},
-    {"id": "PERF-007", "severity": "S2", "effort": "E1", "score": 7.0, "reason": "Enables future optimization"},
-    {"id": "PERF-011", "severity": "S1", "effort": "E2", "score": 6.5, "reason": "Broad SSR improvement"},
-    {"id": "PERF-016", "severity": "S1", "effort": "E2", "score": 6.5, "reason": "Critical code splitting"}
+    {
+      "id": "PERF-002",
+      "severity": "S0",
+      "effort": "E1",
+      "score": 10.0,
+      "reason": "Memory leak - must fix"
+    },
+    {
+      "id": "PERF-018",
+      "severity": "S1",
+      "effort": "E0",
+      "score": 9.0,
+      "reason": "Quick fix, high impact"
+    },
+    {
+      "id": "PERF-009",
+      "severity": "S2",
+      "effort": "E0",
+      "score": 8.0,
+      "reason": "Trivial, measurable gain"
+    },
+    {
+      "id": "PERF-010",
+      "severity": "S2",
+      "effort": "E0",
+      "score": 8.0,
+      "reason": "Trivial, cleaner code"
+    },
+    {
+      "id": "PERF-001",
+      "severity": "S1",
+      "effort": "E2",
+      "score": 7.5,
+      "reason": "Highest LCP impact"
+    },
+    {
+      "id": "PERF-003",
+      "severity": "S2",
+      "effort": "E1",
+      "score": 7.0,
+      "reason": "Easy render optimization"
+    },
+    {
+      "id": "PERF-004",
+      "severity": "S2",
+      "effort": "E1",
+      "score": 7.0,
+      "reason": "Consolidation + fetch fix"
+    },
+    {
+      "id": "PERF-007",
+      "severity": "S2",
+      "effort": "E1",
+      "score": 7.0,
+      "reason": "Enables future optimization"
+    },
+    {
+      "id": "PERF-011",
+      "severity": "S1",
+      "effort": "E2",
+      "score": 6.5,
+      "reason": "Broad SSR improvement"
+    },
+    {
+      "id": "PERF-016",
+      "severity": "S1",
+      "effort": "E2",
+      "score": 6.5,
+      "reason": "Critical code splitting"
+    }
   ]
 }
 ```
@@ -145,7 +209,8 @@
 
 ### Executive Summary
 
-All 5 AI models identified **consistent performance bottlenecks** in the SoNash codebase. The highest-consensus issues center around:
+All 5 AI models identified **consistent performance bottlenecks** in the SoNash
+codebase. The highest-consensus issues center around:
 
 1. **Client-side rendering blocking SSR** (5/5 models)
 2. **useJournal memory leak + redundant listeners** (5/5 models)
@@ -155,90 +220,99 @@ All 5 AI models identified **consistent performance bottlenecks** in the SoNash 
 
 ### Metrics Baseline
 
-| Metric | Value | Source |
-|--------|-------|--------|
-| Bundle Size | 2.7 MB | Claude Sonnet 4.5 |
-| Build Time | 6.1s | Claude Opus 4.5 |
-| 'use client' Count | 88-94 | Multiple models |
-| React.memo Usage | 0 | Confirmed |
-| LCP/FCP/CLS | Unmeasured | Build issues in sandboxes |
+| Metric             | Value      | Source                    |
+| ------------------ | ---------- | ------------------------- |
+| Bundle Size        | 2.7 MB     | Claude Sonnet 4.5         |
+| Build Time         | 6.1s       | Claude Opus 4.5           |
+| 'use client' Count | 88-94      | Multiple models           |
+| React.memo Usage   | 0          | Confirmed                 |
+| LCP/FCP/CLS        | Unmeasured | Build issues in sandboxes |
 
 ### Severity Distribution
 
-| Severity | Count | Description |
-|----------|-------|-------------|
-| **S0** | 1 | Critical memory leak (must fix immediately) |
-| **S1** | 5 | High impact (20-40% improvement potential) |
-| **S2** | 14 | Medium impact (5-20% improvement) |
+| Severity | Count | Description                                 |
+| -------- | ----- | ------------------------------------------- |
+| **S0**   | 1     | Critical memory leak (must fix immediately) |
+| **S1**   | 5     | High impact (20-40% improvement potential)  |
+| **S2**   | 14    | Medium impact (5-20% improvement)           |
 
 ### Top 10 Findings by Priority
 
-| Rank | ID | Issue | Severity | Effort | Models |
-|------|----|----|----------|--------|--------|
-| 1 | PERF-002 | useJournal memory leak | S0 | E1 | 5/5 |
-| 2 | PERF-018 | TodayPage resubscription bug | S1 | E0 | 1/5 |
-| 3 | PERF-009 | 7 unused dependencies | S2 | E0 | 2/5 |
-| 4 | PERF-010 | Console statements | S2 | E0 | 2/5 |
-| 5 | PERF-001 | Landing page client-only | S1 | E2 | 5/5 |
-| 6 | PERF-003 | No React.memo | S2 | E1 | 3/5 |
-| 7 | PERF-004 | Duplicate DailyQuoteCard | S2 | E1 | 4/5 |
-| 8 | PERF-007 | Sentry incomplete | S2 | E1 | 5/5 |
-| 9 | PERF-011 | Excessive 'use client' | S1 | E2 | 3/5 |
-| 10 | PERF-016 | Notebook eager imports | S1 | E2 | 1/5 |
+| Rank | ID       | Issue                        | Severity | Effort | Models |
+| ---- | -------- | ---------------------------- | -------- | ------ | ------ |
+| 1    | PERF-002 | useJournal memory leak       | S0       | E1     | 5/5    |
+| 2    | PERF-018 | TodayPage resubscription bug | S1       | E0     | 1/5    |
+| 3    | PERF-009 | 7 unused dependencies        | S2       | E0     | 2/5    |
+| 4    | PERF-010 | Console statements           | S2       | E0     | 2/5    |
+| 5    | PERF-001 | Landing page client-only     | S1       | E2     | 5/5    |
+| 6    | PERF-003 | No React.memo                | S2       | E1     | 3/5    |
+| 7    | PERF-004 | Duplicate DailyQuoteCard     | S2       | E1     | 4/5    |
+| 8    | PERF-007 | Sentry incomplete            | S2       | E1     | 5/5    |
+| 9    | PERF-011 | Excessive 'use client'       | S1       | E2     | 3/5    |
+| 10   | PERF-016 | Notebook eager imports       | S1       | E2     | 1/5    |
 
 ### Quick Wins (E0 Effort)
 
 These can be done in **under 1 hour** each:
 
 1. **PERF-018**: Remove `journalEntry` from TodayPage useEffect deps
-2. **PERF-009**: `npm uninstall @hookform/resolvers cmdk react-day-picker react-hook-form react-resizable-panels recharts vaul`
-3. **PERF-010**: Replace console.* with logger + add ESLint no-console rule
+2. **PERF-009**:
+   `npm uninstall @hookform/resolvers cmdk react-day-picker react-hook-form react-resizable-panels recharts vaul`
+3. **PERF-010**: Replace console.\* with logger + add ESLint no-console rule
 
-**Combined quick win impact:** ~200-500KB bundle reduction, eliminate resubscription storm
+**Combined quick win impact:** ~200-500KB bundle reduction, eliminate
+resubscription storm
 
 ### Estimated Total Improvement
 
-| Scenario | Expected Improvement |
-|----------|---------------------|
-| S0/S1 issues addressed | 30-40% perceived performance gain |
-| All S2 issues addressed | Additional 15-25% improvement |
-| Full implementation | ~50% overall improvement in load time + render performance |
+| Scenario                | Expected Improvement                                       |
+| ----------------------- | ---------------------------------------------------------- |
+| S0/S1 issues addressed  | 30-40% perceived performance gain                          |
+| All S2 issues addressed | Additional 15-25% improvement                              |
+| Full implementation     | ~50% overall improvement in load time + render performance |
 
 ### Recommended Implementation Order
 
 #### Phase 1: Critical + Quick Wins (1-2 days)
+
 - Fix PERF-002 (memory leak)
 - Fix PERF-018 (resubscription bug)
 - Remove unused deps (PERF-009)
 - Clean console statements (PERF-010)
 
 #### Phase 2: High-Impact Rendering (2-3 days)
+
 - Landing page SSR (PERF-001)
 - Reduce 'use client' count (PERF-011)
 - Add React.memo (PERF-003)
 - Wire up Sentry (PERF-007)
 
 #### Phase 3: Bundle Optimization (2-3 days)
+
 - Dynamic import notebook modules (PERF-016)
 - Dynamic import journal forms (PERF-017)
 - Consolidate DailyQuoteCard (PERF-004)
 - Optimize celebrations (PERF-006)
 
 #### Phase 4: Data & Scaling (3-5 days)
+
 - List virtualization (PERF-005)
 - Admin pagination (PERF-012)
 - Map marker clustering (PERF-013)
 - Firebase query optimization (PERF-014)
 
 #### Phase 5: Polish (5+ days)
+
 - Image optimization (PERF-008, PERF-019)
 - Step1WorksheetCard decomposition (PERF-015)
 - Loading states (PERF-020)
 
 ### Key Consensus Points (5/5 Models Agree)
 
-1. **Landing page must become server-first** - All models identified this as blocking SSR benefits
-2. **useJournal pattern is problematic** - Redundant listeners, potential memory leak
+1. **Landing page must become server-first** - All models identified this as
+   blocking SSR benefits
+2. **useJournal pattern is problematic** - Redundant listeners, potential memory
+   leak
 3. **Sentry needs activation** - Can't optimize what you can't measure
 4. **DailyQuoteCard duplication is wasteful** - Easy consolidation win
 
@@ -246,17 +320,20 @@ These can be done in **under 1 hour** each:
 
 ## Related Documents
 
-- **[PERFORMANCE_AUDIT_PLAN_2026_Q1.md](./PERFORMANCE_AUDIT_PLAN_2026_Q1.md)** - Audit execution plan and prompts
-- **[../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)** - Template used
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Overall review coordination
+- **[PERFORMANCE_AUDIT_PLAN_2026_Q1.md](./PERFORMANCE_AUDIT_PLAN_2026_Q1.md)** -
+  Audit execution plan and prompts
+- **[../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)** -
+  Template used
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** -
+  Overall review coordination
 
 ---
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-09 | Initial aggregated audit from 5 AI models |
+| Version | Date       | Changes                                   |
+| ------- | ---------- | ----------------------------------------- |
+| 1.0     | 2026-01-09 | Initial aggregated audit from 5 AI models |
 
 ---
 

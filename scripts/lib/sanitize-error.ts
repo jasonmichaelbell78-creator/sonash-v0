@@ -4,7 +4,7 @@
  */
 
 // Import from the JS module
-import sanitizeErrorModule from './sanitize-error.js';
+import sanitizeErrorModule from "./sanitize-error.js";
 
 /**
  * Sanitize an error message to remove potentially sensitive information.
@@ -17,7 +17,11 @@ export function sanitizeError(error: unknown): string {
 /**
  * Sanitize error for JSON output (e.g., API responses, structured logs).
  */
-export function sanitizeErrorForJson(error: unknown): { error: boolean; message: string; type: string } {
+export function sanitizeErrorForJson(error: unknown): {
+  error: boolean;
+  message: string;
+  type: string;
+} {
   return sanitizeErrorModule.sanitizeErrorForJson(error);
 }
 

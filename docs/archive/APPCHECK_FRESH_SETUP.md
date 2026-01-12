@@ -1,8 +1,12 @@
 # App Check Fresh Setup Guide
 
-> ⚠️ **SECRET HANDLING WARNING**: This document contains placeholder values like `<RECAPTCHA_SITE_KEY>` and `<YOUR_NEW_SITE_KEY>`. Before following these instructions:
+> ⚠️ **SECRET HANDLING WARNING**: This document contains placeholder values like
+> `<RECAPTCHA_SITE_KEY>` and `<YOUR_NEW_SITE_KEY>`. Before following these
+> instructions:
+>
 > 1. **NEVER** commit actual secrets/keys to version control
-> 2. Replace ALL placeholders with your actual values in `.env.*` files (gitignored)
+> 2. Replace ALL placeholders with your actual values in `.env.*` files
+>    (gitignored)
 > 3. Verify your `.gitignore` includes `.env*` patterns
 > 4. Review each step - this is archived documentation that may be outdated
 
@@ -16,14 +20,18 @@ Follow these steps in order to set up App Check from scratch.
 
 ### 1.1 Remove App from Firebase App Check
 
-1. Go to [Firebase Console → App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+1. Go to
+   [Firebase Console → App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
 2. Find "SoNash" web app
-3. If there's a way to unregister/remove the providers (reCAPTCHA or reCAPTCHA Enterprise), do so
-4. If you can't remove providers individually, we'll just overwrite them in the next steps
+3. If there's a way to unregister/remove the providers (reCAPTCHA or reCAPTCHA
+   Enterprise), do so
+4. If you can't remove providers individually, we'll just overwrite them in the
+   next steps
 
 ### 1.2 Delete Old reCAPTCHA Key
 
-1. Go to [Google Cloud Console → reCAPTCHA](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
+1. Go to
+   [Google Cloud Console → reCAPTCHA](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
 2. Find "SoNash-v2" key (ID: `<RECAPTCHA_SITE_KEY>`)
 3. Click the three-dot menu (⋮) → **Delete**
 4. Confirm deletion
@@ -34,7 +42,8 @@ Follow these steps in order to set up App Check from scratch.
 
 ### 2.1 Create the Key
 
-1. In [Google Cloud Console → reCAPTCHA](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
+1. In
+   [Google Cloud Console → reCAPTCHA](https://console.cloud.google.com/security/recaptcha?project=sonash-app)
 2. Click **"+ Create Key"**
 3. Configure:
    - **Display name**: `SoNash-Production`
@@ -50,8 +59,10 @@ Follow these steps in order to set up App Check from scratch.
 ### 2.2 Save the Site Key
 
 After creation, you'll see:
+
 - **Site key** (starts with `6L...`) - COPY THIS
-- The key should NOT show "Incomplete" status (if it does, that's OK, it will complete on first use)
+- The key should NOT show "Incomplete" status (if it does, that's OK, it will
+  complete on first use)
 
 ---
 
@@ -59,7 +70,8 @@ After creation, you'll see:
 
 ### 3.1 Register with reCAPTCHA Enterprise
 
-1. Go to [Firebase Console → App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+1. Go to
+   [Firebase Console → App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
 2. Find "SoNash" web app
 3. Click to configure providers
 4. Select **"reCAPTCHA Enterprise"** (NOT the regular "reCAPTCHA")
@@ -108,7 +120,11 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<FIREBASE_APP_ID>
 Verify the code uses `ReCaptchaEnterpriseProvider`:
 
 ```typescript
-import { initializeAppCheck, ReCaptchaEnterpriseProvider, AppCheck } from "firebase/app-check"
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+  AppCheck,
+} from "firebase/app-check";
 
 // ...later in the file...
 
@@ -116,14 +132,15 @@ import { initializeAppCheck, ReCaptchaEnterpriseProvider, AppCheck } from "fireb
 _appCheck = initializeAppCheck(_app, {
   provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
   isTokenAutoRefreshEnabled: true,
-})
+});
 ```
 
 **This should already be correct** from the previous commit.
 
 ### 5.2 Check Cloud Functions
 
-Verify all Cloud Functions have App Check enforcement enabled in `functions/src/index.ts`:
+Verify all Cloud Functions have App Check enforcement enabled in
+`functions/src/index.ts`:
 
 ```typescript
 export const saveDailyLog = onCall<DailyLogData>(
@@ -135,7 +152,10 @@ export const saveDailyLog = onCall<DailyLogData>(
 
     // App Check verification
     if (!app) {
-      throw new HttpsError("failed-precondition", "App Check verification failed");
+      throw new HttpsError(
+        "failed-precondition",
+        "App Check verification failed"
+      );
     }
     // ... rest of function
   }
@@ -150,7 +170,8 @@ export const saveDailyLog = onCall<DailyLogData>(
 
 ### 6.1 Create Debug Token
 
-1. Go to [Firebase Console → App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
+1. Go to
+   [Firebase Console → App Check](https://console.firebase.google.com/project/sonash-app/appcheck)
 2. Click **"Apps"** tab
 3. Find "SoNash" web app
 4. In the **"App Check Debug Tokens"** section (might be under "overflow menu")
@@ -172,9 +193,13 @@ NEXT_PUBLIC_FIREBASE_APPCHECK_DEBUG_TOKEN=<YOUR_DEBUG_TOKEN>
 
 ### 7.1 Configure Production Environment Variable (Do Not Commit)
 
-**Do not commit `.env.production`**. Configure `NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY` in your production deployment environment (e.g., Firebase Hosting build environment, Vercel environment variables, GitHub Actions secrets), then redeploy.
+**Do not commit `.env.production`**. Configure
+`NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY` in your production deployment
+environment (e.g., Firebase Hosting build environment, Vercel environment
+variables, GitHub Actions secrets), then redeploy.
 
-If you maintain local `.env.*` files for development, keep them gitignored and never commit real keys.
+If you maintain local `.env.*` files for development, keep them gitignored and
+never commit real keys.
 
 ### 7.2 Deploy
 
@@ -183,16 +208,20 @@ The PR will rebuild automatically. Once deployed:
 1. Open the app in your browser
 2. Open DevTools Console
 3. Look for App Check initialization messages
-4. Try to perform an action that calls a Cloud Function (e.g., save a journal entry)
+4. Try to perform an action that calls a Cloud Function (e.g., save a journal
+   entry)
 
 ### 7.3 Expected Behavior
 
 **Success indicators:**
+
 - No App Check errors in console
 - Cloud Function calls succeed
-- reCAPTCHA key status changes from "Incomplete" to "Complete" (if it was incomplete)
+- reCAPTCHA key status changes from "Incomplete" to "Complete" (if it was
+  incomplete)
 
 **If you still see errors:**
+
 - Note the exact error message
 - Check the Network tab for failed requests
 - Share the error details for further troubleshooting
@@ -203,9 +232,12 @@ The PR will rebuild automatically. Once deployed:
 
 If it still doesn't work after fresh setup:
 
-- [ ] Verify the site key in `.env.production` matches the key in Firebase App Check
-- [ ] Verify the site key in Firebase App Check matches the key in Google Cloud Console
-- [ ] Check that all your domains are added to the reCAPTCHA key in Google Cloud Console
+- [ ] Verify the site key in `.env.production` matches the key in Firebase App
+      Check
+- [ ] Verify the site key in Firebase App Check matches the key in Google Cloud
+      Console
+- [ ] Check that all your domains are added to the reCAPTCHA key in Google Cloud
+      Console
 - [ ] Verify reCAPTCHA Enterprise API is enabled in Google Cloud Console
 - [ ] Check browser console for specific error messages
 - [ ] Check Cloud Functions logs for App Check verification failures
@@ -216,11 +248,16 @@ If it still doesn't work after fresh setup:
 
 ## Notes
 
-- **DO NOT** remove the Firebase API key or any other Firebase config - only update the App Check reCAPTCHA site key
-- The fresh setup keeps all existing Firebase services (Auth, Firestore, Functions) unchanged
-- App Check is an additional security layer - your app will work without it, but it provides bot protection
-- The key will show "Incomplete" until it receives its first successful token request - this is normal
+- **DO NOT** remove the Firebase API key or any other Firebase config - only
+  update the App Check reCAPTCHA site key
+- The fresh setup keeps all existing Firebase services (Auth, Firestore,
+  Functions) unchanged
+- App Check is an additional security layer - your app will work without it, but
+  it provides bot protection
+- The key will show "Incomplete" until it receives its first successful token
+  request - this is normal
 
 ---
 
-**Ready to start?** Follow Steps 1-7 in order, and let me know if you hit any issues along the way!
+**Ready to start?** Follow Steps 1-7 in order, and let me know if you hit any
+issues along the way!

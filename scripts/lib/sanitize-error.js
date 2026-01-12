@@ -16,24 +16,24 @@
  */
 const SENSITIVE_PATTERNS = [
   // File paths that might expose system structure
-  /\/home\/[^/\s]+/gi,           // Linux home directories
-  /\/Users\/[^/\s]+/gi,          // macOS home directories
-  /C:\\Users\\[^\\]+/gi,         // Windows user directories
-  /\/etc\/[^\s]+/gi,             // System config paths
-  /\/var\/[^\s]+/gi,             // Variable data paths
+  /\/home\/[^/\s]+/gi, // Linux home directories
+  /\/Users\/[^/\s]+/gi, // macOS home directories
+  /C:\\Users\\[^\\]+/gi, // Windows user directories
+  /\/etc\/[^\s]+/gi, // System config paths
+  /\/var\/[^\s]+/gi, // Variable data paths
 
   // Credentials and secrets
-  /password[=:]\s*\S+/gi,        // Password assignments
-  /api[_-]?key[=:]\s*\S+/gi,     // API keys
-  /token[=:]\s*\S+/gi,           // Tokens
-  /secret[=:]\s*\S+/gi,          // Secrets
-  /Bearer\s+[A-Za-z0-9._-]+/gi,  // Bearer tokens
+  /password[=:]\s*\S+/gi, // Password assignments
+  /api[_-]?key[=:]\s*\S+/gi, // API keys
+  /token[=:]\s*\S+/gi, // Tokens
+  /secret[=:]\s*\S+/gi, // Secrets
+  /Bearer\s+[A-Za-z0-9._-]+/gi, // Bearer tokens
 
   // Connection strings
-  /mongodb(\+srv)?:\/\/[^\s]+/gi,  // MongoDB
-  /postgres(ql)?:\/\/[^\s]+/gi,    // PostgreSQL
-  /mysql:\/\/[^\s]+/gi,            // MySQL
-  /redis:\/\/[^\s]+/gi,            // Redis
+  /mongodb(\+srv)?:\/\/[^\s]+/gi, // MongoDB
+  /postgres(ql)?:\/\/[^\s]+/gi, // PostgreSQL
+  /mysql:\/\/[^\s]+/gi, // MySQL
+  /redis:\/\/[^\s]+/gi, // Redis
 
   // Environment variables with sensitive data
   /process\.env\.[A-Z_]+/gi,
@@ -49,7 +49,7 @@ const SENSITIVE_PATTERNS = [
 /**
  * Replacement text for sanitized content
  */
-const REDACTED = '[REDACTED]';
+const REDACTED = "[REDACTED]";
 
 /**
  * Sanitize an error message to remove potentially sensitive information.
@@ -70,16 +70,16 @@ export function sanitizeError(error, options = {}) {
   let message;
   if (error instanceof Error) {
     message = error.message;
-  } else if (typeof error === 'string') {
+  } else if (typeof error === "string") {
     message = error;
-  } else if (error && typeof error === 'object' && 'message' in error) {
+  } else if (error && typeof error === "object" && "message" in error) {
     message = String(error.message);
   } else {
     message = String(error);
   }
 
   // In verbose/dev mode with explicit opt-in, return original
-  if (verbose && process.env.NODE_ENV === 'development') {
+  if (verbose && process.env.NODE_ENV === "development") {
     return message;
   }
 
@@ -108,7 +108,7 @@ export function sanitizeErrorForJson(error, options = {}) {
     error: true,
     message,
     // Include error name/type if available, but not stack
-    type: error instanceof Error ? error.name : 'Error',
+    type: error instanceof Error ? error.name : "Error",
   };
 }
 
@@ -118,16 +118,16 @@ export function sanitizeErrorForJson(error, options = {}) {
  * @param {string} prefix - Prefix for log messages (e.g., script name)
  * @returns {object} - Logger object with error, warn methods
  */
-export function createSafeLogger(prefix = '') {
-  const formatPrefix = prefix ? `[${prefix}] ` : '';
+export function createSafeLogger(prefix = "") {
+  const formatPrefix = prefix ? `[${prefix}] ` : "";
 
   return {
     error: (msg, error) => {
-      const errorMsg = error ? `: ${sanitizeError(error)}` : '';
+      const errorMsg = error ? `: ${sanitizeError(error)}` : "";
       console.error(`${formatPrefix}${msg}${errorMsg}`);
     },
     warn: (msg, error) => {
-      const errorMsg = error ? `: ${sanitizeError(error)}` : '';
+      const errorMsg = error ? `: ${sanitizeError(error)}` : "";
       console.warn(`${formatPrefix}${msg}${errorMsg}`);
     },
     info: (msg) => {

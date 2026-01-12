@@ -1,107 +1,106 @@
 /**
  * Migration Script: Split Address into Structured Fields
- * 
+ *
  * This script updates existing meetings to include city, state, and zip fields.
  * It assumes existing 'address' fields are street addresses and defaults location to Nashville, TN.
- * 
+ *
  * Run with: npx tsx scripts/migrate-addresses.ts
  */
 
-import { initializeApp, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import * as path from 'path';
-import * as fs from 'fs';
-import { sanitizeError } from './lib/sanitize-error.js';
+import { initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import * as path from "path";
+import * as fs from "fs";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 async function migrateAddresses() {
-    console.log('🚀 Starting address migration...\n');
+  console.log("🚀 Starting address migration...\n");
 
-    // Initialize Firebase Admin SDK
-    try {
-        const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
-        const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-        initializeApp({
-            credential: cert(serviceAccount),
-        });
-        console.log('✅ Firebase Admin initialized\n');
-    } catch (error) {
-        console.error('❌ Failed to initialize Firebase Admin.');
-        // Use sanitizeError to avoid exposing sensitive paths
-        console.error(sanitizeError(error));
-        process.exit(1);
+  // Initialize Firebase Admin SDK
+  try {
+    const serviceAccountPath = path.join(process.cwd(), "firebase-service-account.json");
+    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+    initializeApp({
+      credential: cert(serviceAccount),
+    });
+    console.log("✅ Firebase Admin initialized\n");
+  } catch (error) {
+    console.error("❌ Failed to initialize Firebase Admin.");
+    // Use sanitizeError to avoid exposing sensitive paths
+    console.error(sanitizeError(error));
+    process.exit(1);
+  }
+
+  const db = getFirestore();
+  const meetingsRef = db.collection("meetings");
+
+  try {
+    const snapshot = await meetingsRef.get();
+    console.log(`📊 Found ${snapshot.size} meetings to check\n`);
+
+    if (snapshot.empty) {
+      console.log("⚠️  No meetings found. Nothing to migrate.");
+      return;
     }
 
-    const db = getFirestore();
-    const meetingsRef = db.collection('meetings');
+    let successCount = 0;
+    let skippedCount = 0;
+    const batchSize = 500;
+    let batch = db.batch();
+    let operationCount = 0;
 
-    try {
-        const snapshot = await meetingsRef.get();
-        console.log(`📊 Found ${snapshot.size} meetings to check\n`);
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
 
-        if (snapshot.empty) {
-            console.log('⚠️  No meetings found. Nothing to migrate.');
-            return;
-        }
+      // Skip if already migrated (has city field)
+      if (data.city && data.state) {
+        skippedCount++;
+        continue;
+      }
 
-        let successCount = 0;
-        let skippedCount = 0;
-        const batchSize = 500;
-        let batch = db.batch();
-        let operationCount = 0;
+      // Update with defaults
+      batch.update(doc.ref, {
+        city: "Nashville",
+        state: "TN",
+        zip: "00000", // Placeholder zip as documented
+        // Preserve existing address as street address
+      });
 
-        for (const doc of snapshot.docs) {
-            const data = doc.data();
+      operationCount++;
+      console.log(`✅ Queued ${doc.id}: Adding Nashville, TN context`);
 
-            // Skip if already migrated (has city field)
-            if (data.city && data.state) {
-                skippedCount++;
-                continue;
-            }
-
-            // Update with defaults
-            batch.update(doc.ref, {
-                city: 'Nashville',
-                state: 'TN',
-                zip: '00000', // Placeholder zip as documented
-                // Preserve existing address as street address
-            });
-
-            operationCount++;
-            console.log(`✅ Queued ${doc.id}: Adding Nashville, TN context`);
-
-            if (operationCount >= batchSize) {
-                await batch.commit();
-                successCount += operationCount;
-                console.log(`\n💾 Committed batch of ${operationCount} updates\n`);
-                batch = db.batch();
-                operationCount = 0;
-            }
-        }
-
-        if (operationCount > 0) {
-            await batch.commit();
-            successCount += operationCount;
-            console.log(`\n💾 Committed final batch of ${operationCount} updates\n`);
-        }
-
-        console.log('\n' + '='.repeat(60));
-        console.log('📋 Migration Summary:');
-        console.log('='.repeat(60));
-        console.log(`✅ Migrated: ${successCount}`);
-        console.log(`⏭️  Skipped: ${skippedCount}`);
-        console.log('='.repeat(60));
-
-    } catch (error) {
-        // Use sanitizeError to avoid exposing sensitive paths
-        console.error('\n❌ Migration failed:', sanitizeError(error));
-        process.exit(1);
+      if (operationCount >= batchSize) {
+        await batch.commit();
+        successCount += operationCount;
+        console.log(`\n💾 Committed batch of ${operationCount} updates\n`);
+        batch = db.batch();
+        operationCount = 0;
+      }
     }
+
+    if (operationCount > 0) {
+      await batch.commit();
+      successCount += operationCount;
+      console.log(`\n💾 Committed final batch of ${operationCount} updates\n`);
+    }
+
+    console.log("\n" + "=".repeat(60));
+    console.log("📋 Migration Summary:");
+    console.log("=".repeat(60));
+    console.log(`✅ Migrated: ${successCount}`);
+    console.log(`⏭️  Skipped: ${skippedCount}`);
+    console.log("=".repeat(60));
+  } catch (error) {
+    // Use sanitizeError to avoid exposing sensitive paths
+    console.error("\n❌ Migration failed:", sanitizeError(error));
+    process.exit(1);
+  }
 }
 
 migrateAddresses()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        // Use sanitizeError to avoid exposing sensitive paths
-        console.error('Unexpected error:', sanitizeError(error));
-        process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    // Use sanitizeError to avoid exposing sensitive paths
+    console.error("Unexpected error:", sanitizeError(error));
+    process.exit(1);
+  });

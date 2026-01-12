@@ -1,17 +1,16 @@
 # [Document Title]
 
-**Project**: SoNash Recovery Notebook
-**Document Version**: 1.0
-**Created**: [Creation Date]
-**Last Updated**: [Last Update Date]
-**Status**: [ACTIVE | COMPLETE | ARCHIVED | DEPRECATED]
-**Overall Completion**: X/Y items complete (Z%)
+**Project**: SoNash Recovery Notebook **Document Version**: 1.0 **Created**:
+[Creation Date] **Last Updated**: [Last Update Date] **Status**: [ACTIVE |
+COMPLETE | ARCHIVED | DEPRECATED] **Overall Completion**: X/Y items complete
+(Z%)
 
 ---
 
 ## 🎯 DOCUMENT PURPOSE
 
-This is the **CANONICAL** [tracking document | reference | plan] for [specific purpose]. This document serves as:
+This is the **CANONICAL** [tracking document | reference | plan] for [specific
+purpose]. This document serves as:
 
 1. **[Primary purpose]** - Brief description
 2. **[Secondary purpose]** - Brief description
@@ -40,7 +39,8 @@ This is the **CANONICAL** [tracking document | reference | plan] for [specific p
 1️⃣ [Initial condition/prerequisite] → 2️⃣ [Decision point/action trigger] → 3️⃣ [Primary action] → 4️⃣ [Expected outcome/next state]
 ```
 
-*Example: 1️⃣ Read current status → 2️⃣ Identify next task → 3️⃣ Complete task → 4️⃣ Update dashboard*
+_Example: 1️⃣ Read current status → 2️⃣ Identify next task → 3️⃣ Complete task → 4️⃣
+Update dashboard_
 
 **See [related document] for complete workflow details.**
 
@@ -93,6 +93,7 @@ This is the **CANONICAL** [tracking document | reference | plan] for [specific p
 ### Version Control for This Document
 
 Every update should:
+
 - Increment the "Last Updated" date
 - Consider incrementing version number for major milestones
 - Preserve historical information rather than deleting
@@ -103,6 +104,7 @@ Every update should:
 ## 📊 STATUS LEGEND
 
 ### Status Values
+
 - **PENDING**: Not started; prerequisites may or may not be complete
 - **IN_PROGRESS**: Currently being worked on
 - **COMPLETE**: All acceptance criteria met and verified
@@ -111,17 +113,20 @@ Every update should:
 - **DEPRECATED**: No longer relevant or superseded by newer work
 
 ### Priority Values
+
 - **P0**: Critical - Must be done immediately
 - **P1**: High - Should be done soon
 - **P2**: Medium - Should be done eventually
 - **P3**: Low - Nice to have
 
 ### Risk Values
+
 - **HIGH**: Significant risk to project success, timeline, or quality
 - **MEDIUM**: Moderate risk with manageable impact
 - **LOW**: Minimal risk with low impact
 
 **📌 Note on Status Dimensions:**
+
 - **Status**, **Priority**, and **Risk** are independent fields
 - A COMPLETE item can still have HIGH risk if mitigation is pending
 - BLOCKED items don't automatically become P0 unless escalation is required
@@ -131,16 +136,15 @@ Every update should:
 
 ## 🗺️ OVERALL STATUS DASHBOARD
 
-| Item/Phase | ID | Title/Description | Status | Progress | Priority | Dependencies |
-|------------|----|--------------------|--------|----------|----------|--------------|
-| [Item 1] | [ID1] | [Brief description] | **[STATUS]** | X% | P0 | [Deps] |
-| [Item 2] | [ID2] | [Brief description] | **[STATUS]** | Y% | P1 | [Deps] |
-| [Item 3] | [ID3] | [Brief description] | **[STATUS]** | Z% | P2 | [Deps] |
+| Item/Phase | ID    | Title/Description   | Status       | Progress | Priority | Dependencies |
+| ---------- | ----- | ------------------- | ------------ | -------- | -------- | ------------ |
+| [Item 1]   | [ID1] | [Brief description] | **[STATUS]** | X%       | P0       | [Deps]       |
+| [Item 2]   | [ID2] | [Brief description] | **[STATUS]** | Y%       | P1       | [Deps]       |
+| [Item 3]   | [ID3] | [Brief description] | **[STATUS]** | Z%       | P2       | [Deps]       |
 
-**Overall Progress**: X/Y items complete (Z%)
-**Estimated Total Effort**: [X-Y hours | weeks | months]
-**Target Completion**: YYYY-MM-DD
-**Highest Risk Items**: [List critical items]
+**Overall Progress**: X/Y items complete (Z%) **Estimated Total Effort**: [X-Y
+hours | weeks | months] **Target Completion**: YYYY-MM-DD **Highest Risk
+Items**: [List critical items]
 
 ---
 
@@ -159,10 +163,12 @@ Every update should:
 ### Dependency Details
 
 **[Item 1]** blocks:
+
 - [Item 2] - [Reason why]
 - [Item 3] - [Reason why]
 
 **[Item 2]** blocks:
+
 - [Item 5] - [Reason why]
 
 ### Recommended Execution Order
@@ -186,6 +192,7 @@ Every update should:
 [Description of the problem being solved or need being addressed]
 
 Key issues:
+
 1. **[Issue 1]**: Description
 2. **[Issue 2]**: Description
 3. **[Issue 3]**: Description
@@ -193,6 +200,7 @@ Key issues:
 ### Success Criteria
 
 Upon completion:
+
 - ✅ [Criterion 1]
 - ✅ [Criterion 2]
 - ✅ [Criterion 3]
@@ -210,10 +218,12 @@ Upon completion:
 ## 📚 RELATED DOCUMENTATION
 
 **Primary References:**
+
 - [Related Doc 1] - Purpose
 - [Related Doc 2] - Purpose
 
 **Supporting Documentation:**
+
 - [Supporting Doc 1] - Purpose
 - [Supporting Doc 2] - Purpose
 
@@ -227,33 +237,36 @@ Upon completion:
 
 ### [Item/Phase Header]
 
-| Attribute | Value |
-|-----------|-------|
-| **ID** | [Unique identifier] |
-| **Title** | [Full title] |
-| **Category** | [Category/bucket] |
-| **Status** | **[STATUS]** |
-| **Risk Level** | [HIGH/MEDIUM/LOW] |
-| **Estimated Effort** | [X-Y hours/days/weeks] |
-| **Completion** | X% ([details]) |
-| **Started** | YYYY-MM-DD |
-| **Completed** | YYYY-MM-DD or "Not completed" |
-| **Last Updated** | YYYY-MM-DD ([what was updated]) |
-| **Blocking** | [List of blocked items] |
+| Attribute            | Value                           |
+| -------------------- | ------------------------------- |
+| **ID**               | [Unique identifier]             |
+| **Title**            | [Full title]                    |
+| **Category**         | [Category/bucket]               |
+| **Status**           | **[STATUS]**                    |
+| **Risk Level**       | [HIGH/MEDIUM/LOW]               |
+| **Estimated Effort** | [X-Y hours/days/weeks]          |
+| **Completion**       | X% ([details])                  |
+| **Started**          | YYYY-MM-DD                      |
+| **Completed**        | YYYY-MM-DD or "Not completed"   |
+| **Last Updated**     | YYYY-MM-DD ([what was updated]) |
+| **Blocking**         | [List of blocked items]         |
 
 ---
 
 ### Intentions & Goals
 
 #### Primary Goal
+
 [Clear, concise statement of the main objective]
 
 #### Secondary Goals
+
 - [Goal 1]
 - [Goal 2]
 - [Goal 3]
 
 #### Context
+
 [Additional context, constraints, or background information]
 
 ---
@@ -261,6 +274,7 @@ Upon completion:
 ### What Was Accomplished
 
 **Completed Items** (X/Y = Z%):
+
 - ✅ **[Item 1]** (YYYY-MM-DD)
   - [Details of what was done]
   - [Files changed, commits made, evidence]
@@ -268,6 +282,7 @@ Upon completion:
   - [Details]
 
 **In Progress Items**:
+
 - ⏳ **[Item 3]** (started YYYY-MM-DD)
   - [Current status]
   - [Blockers or next steps]
@@ -277,11 +292,13 @@ Upon completion:
 ### What Was NOT Accomplished
 
 **Deferred Items**:
+
 - ⏸️ **[Item X]** → Deferred to [future phase/date]
   - **Reason**: [Explanation]
   - **Impact**: [What this means]
 
 **Items Not Done**:
+
 - ❌ **[Item Y]**
   - **Reason**: [Why not done]
   - **Plan**: [What will happen]
@@ -291,6 +308,7 @@ Upon completion:
 ### Reasoning & Decisions
 
 **Key Decisions**:
+
 1. **[Decision 1]**: [What was decided and why]
    - **Trade-offs**: [What was considered]
    - **Rationale**: [Why this choice was made]
@@ -300,6 +318,7 @@ Upon completion:
    - **Chosen Approach**: [What was selected]
 
 **Design Choices**:
+
 - [Choice 1]: [Reasoning]
 - [Choice 2]: [Reasoning]
 
@@ -312,14 +331,17 @@ Upon completion:
 **Status**: ✅ DONE | ⏳ IN_PROGRESS | ❌ NOT DONE | 🚫 WONTFIX | ⏸️ DEFERRED
 
 **Details**:
+
 - [Specific information about this work item]
 - [Files affected, changes made]
 - [Acceptance criteria]
 
 **Evidence of Completion**:
+
 - [Commit SHA, PR number, test results]
 
 **Notes**:
+
 - [Additional context or observations]
 
 ---
@@ -328,22 +350,25 @@ Upon completion:
 
 **Intended vs. Actual Work**:
 
-| Intended Work | Actual Work | Gap | Status |
-|---------------|-------------|-----|--------|
-| [Intent 1] | [Actual 1] | [Difference] | ✅/⏳/❌ |
-| [Intent 2] | [Actual 2] | [Difference] | ✅/⏳/❌ |
+| Intended Work | Actual Work | Gap          | Status   |
+| ------------- | ----------- | ------------ | -------- |
+| [Intent 1]    | [Actual 1]  | [Difference] | ✅/⏳/❌ |
+| [Intent 2]    | [Actual 2]  | [Difference] | ✅/⏳/❌ |
 
 **Completion Analysis**:
+
 - **Items Complete**: X/Y (Z%)
 - **Items In Progress**: A
 - **Items Not Started**: B
 - **Items Deferred/Won't Fix**: C
 
 **Patterns in Gaps**:
+
 1. [Pattern 1]: [Description and impact]
 2. [Pattern 2]: [Description and impact]
 
 **Corrective Actions**:
+
 - [Action 1 to address gaps]
 - [Action 2 to address gaps]
 
@@ -357,17 +382,20 @@ Upon completion:
 - [ ] [Criterion 4]: [How to verify]
 
 **Definition of Done**:
+
 1. All acceptance criteria checkboxes checked
 2. [Additional requirement]
 3. [Additional requirement]
 
 **Verification Steps**:
+
 ```bash
 # [Command 1 to verify completion]
 # [Command 2 to verify completion]
 ```
 
 **Expected Results**:
+
 - [Expected result 1]
 - [Expected result 2]
 
@@ -376,6 +404,7 @@ Upon completion:
 ## 📝 UPDATE TRIGGERS
 
 **Update this document when:**
+
 - ✅ [Trigger 1] (e.g., Status changes)
 - ✅ [Trigger 2] (e.g., Work completed)
 - ✅ [Trigger 3] (e.g., Dependencies change)
@@ -386,15 +415,16 @@ Upon completion:
 
 ## 🗓️ VERSION HISTORY
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.0 | YYYY-MM-DD | Initial document created | [Author] |
+| Version | Date       | Changes                  | Author   |
+| ------- | ---------- | ------------------------ | -------- |
+| 1.0     | YYYY-MM-DD | Initial document created | [Author] |
 
 ---
 
 ## 🤖 AI INSTRUCTIONS
 
 When implementing work tracked by this document:
+
 1. [Instruction 1]
 2. [Instruction 2]
 3. [Instruction 3]
@@ -406,6 +436,7 @@ When implementing work tracked by this document:
 **END OF TEMPLATE**
 
 **Usage Notes:**
+
 - Replace all [bracketed placeholders] with actual content
 - Remove sections not applicable to your specific document
 - Add sections as needed for your use case
@@ -414,15 +445,19 @@ When implementing work tracked by this document:
 
 **When to Use Simplified Version:**
 
-This full template is comprehensive (16+ sections) and best for large initiatives. **Use a lighter version** for:
+This full template is comprehensive (16+ sections) and best for large
+initiatives. **Use a lighter version** for:
+
 - Small features, quick wins, or bug fixes
 - Experiments or proof-of-concepts
 - Single-task work items
 
 **Sections to omit for lightweight docs:**
+
 - Gap Analysis (skip detailed analysis)
 - Detailed Work Items (keep task list minimal)
 - Extensive Acceptance Criteria (keep 3-5 items max)
 - Reasoning & Decisions (include only if critical)
 
-**Simplified template = Core sections only:** Purpose, Status Dashboard, one Item/Phase section (with What Was Accomplished), AI Instructions
+**Simplified template = Core sections only:** Purpose, Status Dashboard, one
+Item/Phase section (with What Was Accomplished), AI Instructions

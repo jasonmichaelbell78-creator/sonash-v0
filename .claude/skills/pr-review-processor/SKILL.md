@@ -1,11 +1,16 @@
 ---
 name: pr-review-processor
-description: Comprehensive AI code review processor for CodeRabbit and Qodo feedback. Handles 50-3000+ line reviews with multi-pass verification, mandatory learning capture, and full issue resolution. Use when processing any AI-generated code review feedback.
+description:
+  Comprehensive AI code review processor for CodeRabbit and Qodo feedback.
+  Handles 50-3000+ line reviews with multi-pass verification, mandatory learning
+  capture, and full issue resolution. Use when processing any AI-generated code
+  review feedback.
 ---
 
 # PR Review Processor
 
-Standardized protocol for processing AI code review feedback with maximum thoroughness and complete issue resolution.
+Standardized protocol for processing AI code review feedback with maximum
+thoroughness and complete issue resolution.
 
 ## When to Use This Skill
 
@@ -60,11 +65,14 @@ COMMIT (Following project conventions)
 **For large reviews (500+ lines), use multi-pass parsing:**
 
 **Pass 1 - Header Extraction:**
-- Scan for issue markers: "suggestion", "issue", "warning", "error", "nitpick", "improvement"
+
+- Scan for issue markers: "suggestion", "issue", "warning", "error", "nitpick",
+  "improvement"
 - Extract file paths and line numbers
 - Create skeleton list
 
 **Pass 2 - Detail Extraction:**
+
 - For each identified issue, extract:
   - Full description
   - Code snippets (before/after if provided)
@@ -72,6 +80,7 @@ COMMIT (Following project conventions)
   - Suggested fixes
 
 **Pass 3 - Verification:**
+
 - Re-scan entire input
 - Compare against extracted list
 - Catch any missed items
@@ -82,12 +91,12 @@ COMMIT (Following project conventions)
 
 Use the categorization matrix from `AI_REVIEW_PROCESS.md`:
 
-| Severity | Examples | This Protocol's Action |
-|----------|----------|----------------------|
-| **CRITICAL** | Security holes, data loss, breaking changes | Fix immediately |
-| **MAJOR** | Bugs, performance, missing validation | Fix before proceeding |
-| **MINOR** | Style, naming, tests, docs | **Fix** (not defer) |
-| **TRIVIAL** | Typos, whitespace, comments | **Fix** (not skip) |
+| Severity     | Examples                                    | This Protocol's Action |
+| ------------ | ------------------------------------------- | ---------------------- |
+| **CRITICAL** | Security holes, data loss, breaking changes | Fix immediately        |
+| **MAJOR**    | Bugs, performance, missing validation       | Fix before proceeding  |
+| **MINOR**    | Style, naming, tests, docs                  | **Fix** (not defer)    |
+| **TRIVIAL**  | Typos, whitespace, comments                 | **Fix** (not skip)     |
 
 ### Phase 3: Planning with TodoWrite
 
@@ -98,47 +107,51 @@ todos: [
   {
     content: "Add Review #N stub to AI_REVIEW_LEARNINGS_LOG.md",
     status: "in_progress",
-    activeForm: "Adding Review #N stub to learnings log"
+    activeForm: "Adding Review #N stub to learnings log",
   },
   // ALL issues, including trivial
   {
     content: "Fix [SEVERITY]: [description] in [file]",
     status: "pending",
-    activeForm: "Fixing [SEVERITY]: [description]"
-  }
-]
+    activeForm: "Fixing [SEVERITY]: [description]",
+  },
+];
 ```
 
 ### Phase 4: Context Loading
 
 **Automatically read:**
+
 1. `AI_REVIEW_PROCESS.md` - Full process
 2. `AI_REVIEW_LEARNINGS_LOG.md` (first 200 lines) - Recent patterns
 3. `claude.md` Section 4 - Anti-patterns to avoid
 
 ### Phase 5: Agent Invocation
 
-| Issue Domain | Agent | Invocation |
-|--------------|-------|------------|
-| Security vulnerabilities | `security-auditor` | Task tool with security issues |
-| Test gaps | `test-engineer` | Task tool with test requirements |
-| Performance | `performance-engineer` | Task tool with perf issues |
-| Documentation | `technical-writer` | Task tool with doc issues |
-| Complex debugging | `debugger` | Task tool with bug context |
-| Architecture | `backend-architect` | Task tool with design concerns |
-| Frontend issues | `frontend-developer` | Task tool with UI/component issues |
+| Issue Domain             | Agent                  | Invocation                         |
+| ------------------------ | ---------------------- | ---------------------------------- |
+| Security vulnerabilities | `security-auditor`     | Task tool with security issues     |
+| Test gaps                | `test-engineer`        | Task tool with test requirements   |
+| Performance              | `performance-engineer` | Task tool with perf issues         |
+| Documentation            | `technical-writer`     | Task tool with doc issues          |
+| Complex debugging        | `debugger`             | Task tool with bug context         |
+| Architecture             | `backend-architect`    | Task tool with design concerns     |
+| Frontend issues          | `frontend-developer`   | Task tool with UI/component issues |
 
-**Invoke in parallel when possible** - Multiple agents can work simultaneously on different issue types.
+**Invoke in parallel when possible** - Multiple agents can work simultaneously
+on different issue types.
 
 ### Phase 6: Issue Resolution
 
 **Priority Order:**
+
 1. CRITICAL (separate commits if needed)
 2. MAJOR (batch by area)
 3. MINOR (batch by file)
 4. TRIVIAL (batch all)
 
 **For each issue:**
+
 1. Read the target file
 2. Understand surrounding context
 3. Apply fix
@@ -148,20 +161,24 @@ todos: [
 ### Phase 7: Verification Passes
 
 **Pass 1 - File Review:**
+
 - Re-read each modified file
 - Check for introduced issues
 
 **Pass 2 - Tooling:**
+
 - Run `npm run lint` if available
 - Run `npm run test` if available
 - Run `npm run build` if available
 
 **Pass 3 - Cross-Reference:**
+
 - Go through original numbered list
 - Confirm each item is addressed
 - Mark any gaps
 
 **Pass 4 - Pattern Check:**
+
 - Run `npm run patterns:check` if available
 - Verify no anti-patterns introduced
 
@@ -172,21 +189,23 @@ todos: [
 ```markdown
 #### Review #N: <Description> (YYYY-MM-DD)
 
-**Source:** <CodeRabbit PR | Qodo Compliance | Mixed>
-**Branch:** <branch name>
+**Source:** <CodeRabbit PR | Qodo Compliance | Mixed> **Branch:** <branch name>
 **Suggestions:** X total (Critical: X, Major: X, Minor: X, Trivial: X)
 
 **Patterns Identified:**
+
 1. [Pattern]: [Description]
    - Root cause: [Why]
    - Prevention: [How to avoid]
 
 **Resolution:**
+
 - Fixed: X
 - Deferred: X (rare - with justification)
 - Rejected: X (rare - with justification)
 
 **Key Learnings:**
+
 - <Learning 1>
 - <Learning 2>
 ```
@@ -197,27 +216,32 @@ todos: [
 ## PR Review Processing Complete
 
 ### Summary
-| Category | Count | Status |
-|----------|-------|--------|
-| Critical | X | All Fixed |
-| Major | X | All Fixed |
-| Minor | X | All Fixed |
-| Trivial | X | All Fixed |
+
+| Category  | Count | Status             |
+| --------- | ----- | ------------------ |
+| Critical  | X     | All Fixed          |
+| Major     | X     | All Fixed          |
+| Minor     | X     | All Fixed          |
+| Trivial   | X     | All Fixed          |
 | **Total** | **X** | **100% Addressed** |
 
 ### Files Modified
+
 - `file1.ts:L45-67` - [what was fixed]
 - `file2.md:L12` - [what was fixed]
 
 ### Agents Used
+
 - security-auditor: [X issues]
 - test-engineer: [X issues]
 
 ### Learning Entry
+
 - Review #N added to AI_REVIEW_LEARNINGS_LOG.md
 - Patterns: [list key patterns]
 
 ### Verification
+
 - [x] All suggestions cross-referenced
 - [x] Linter passing
 - [x] Tests passing
@@ -225,13 +249,17 @@ todos: [
 
 ### Commit Ready
 ```
+
 fix: Address Review #N - [summary]
 
 Resolved X suggestions from [source]:
+
 - Critical: X, Major: X, Minor: X, Trivial: X
 
 See AI_REVIEW_LEARNINGS_LOG.md Review #N for patterns.
+
 ```
+
 ```
 
 ---
@@ -239,6 +267,7 @@ See AI_REVIEW_LEARNINGS_LOG.md Review #N for patterns.
 ## Quick Reference
 
 ### Commands to Run
+
 ```bash
 # Get next review number
 grep -c "#### Review #" AI_REVIEW_LEARNINGS_LOG.md
@@ -250,11 +279,13 @@ npm run patterns:check
 ```
 
 ### Files to Update
+
 1. All files mentioned in review (fixes)
 2. `AI_REVIEW_LEARNINGS_LOG.md` (learning entry)
 3. Update consolidation counter if needed
 
 ### Agents Available
+
 - `security-auditor`, `test-engineer`, `performance-engineer`
 - `technical-writer`, `debugger`, `backend-architect`
 - `frontend-developer`, `code-reviewer`

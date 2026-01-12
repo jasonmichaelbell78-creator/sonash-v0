@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 interface PlaceholderPageProps {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }
 
 export default function PlaceholderPage({ title, description }: PlaceholderPageProps) {
@@ -12,5 +12,5 @@ export default function PlaceholderPage({ title, description }: PlaceholderPageP
       <p className="font-body text-lg text-amber-900/60 max-w-md">{description}</p>
       <div className="mt-8 w-24 h-1 bg-amber-200 rounded-full" />
     </div>
-  )
+  );
 }

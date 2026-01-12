@@ -1,9 +1,7 @@
 # [Document Title]
 
-**Last Updated**: YYYY-MM-DD
-**Document Version**: X.Y
-**Status**: Active | Under Review | Deprecated
-**Applies To**: [Version/Release/All]
+**Last Updated**: YYYY-MM-DD **Document Version**: X.Y **Status**: Active |
+Under Review | Deprecated **Applies To**: [Version/Release/All]
 
 ---
 
@@ -11,22 +9,26 @@
 
 ### Document Purpose
 
-This document provides [comprehensive | reference | canonical] information about [subject area] for the SoNash Recovery Notebook project.
+This document provides [comprehensive | reference | canonical] information about
+[subject area] for the SoNash Recovery Notebook project.
 
 **Primary Audience**: [Developers | Security Team | DevOps | All Contributors]
 
 **Scope**:
+
 - ✅ **In Scope**: [What this document covers]
 - ❌ **Out of Scope**: [What this document doesn't cover]
 
 ### When to Use This Document
 
 **Use this document when:**
+
 - [Use case 1]
 - [Use case 2]
 - [Use case 3]
 
 **See also:**
+
 - [Related Doc 1] - For [specific topic]
 - [Related Doc 2] - For [specific topic]
 
@@ -36,21 +38,27 @@ This document provides [comprehensive | reference | canonical] information about
 
 ### For New Team Members
 
-1. **Clone repo and run setup**: `git clone <repo-url> && cd <repo-dir> && npm install && npm test`
+1. **Clone repo and run setup**:
+   `git clone <repo-url> && cd <repo-dir> && npm install && npm test`
 2. **Read sections in order**: Overview → Architecture → Patterns → Examples
 3. **Run tests to verify setup**: All tests should pass before starting work
 
-*Tip: Start with the "Quick Reference" and "Common Patterns" sections for practical examples.*
+_Tip: Start with the "Quick Reference" and "Common Patterns" sections for
+practical examples._
 
 ### For AI Assistants
 
 **Before making changes that affect [subject area]:**
-1. **Prioritize these sections**: Overview, Architecture, Patterns/Conventions, Coding Standards, Examples
-2. **Verify patterns**: Search for repeated implementations across modules, check unit tests/examples, review recent PRs
+
+1. **Prioritize these sections**: Overview, Architecture, Patterns/Conventions,
+   Coding Standards, Examples
+2. **Verify patterns**: Search for repeated implementations across modules,
+   check unit tests/examples, review recent PRs
 3. **Distinguish patterns from anomalies**:
    - **Pattern** = repeated, documented, covered by tests/examples
    - **Anomaly** = one-off, undocumented, or flagged in issues
-4. **When introducing new patterns**: Add description, examples, link to related tests/PRs, commit docs with code
+4. **When introducing new patterns**: Add description, examples, link to related
+   tests/PRs, commit docs with code
 
 ---
 
@@ -74,6 +82,7 @@ This document is organized into the following sections:
 [High-level description of this concept/component]
 
 **Key Characteristics**:
+
 - [Characteristic 1]
 - [Characteristic 2]
 - [Characteristic 3]
@@ -101,16 +110,19 @@ Example:
 ### Implementation Details
 
 **Technology Stack**:
+
 - [Tech 1]: [Purpose]
 - [Tech 2]: [Purpose]
 - [Tech 3]: [Purpose]
 
 **Key Files/Directories**:
+
 - `[path/to/file1]` - [Purpose]
 - `[path/to/file2]` - [Purpose]
 - `[directory/]` - [Contents and purpose]
 
 **Configuration**:
+
 ```bash
 # [Configuration location]
 # [Configuration example]
@@ -119,11 +131,13 @@ Example:
 ### Best Practices
 
 #### ✅ DO
+
 - [Best practice 1]
 - [Best practice 2]
 - [Best practice 3]
 
 #### ❌ DON'T
+
 - [Anti-pattern 1]
 - [Anti-pattern 2]
 - [Anti-pattern 3]
@@ -150,11 +164,13 @@ Example:
 ### Common Patterns
 
 **Pattern 1: [Pattern Name]**
+
 - **When to use**: [Scenarios]
 - **Implementation**: [Brief description]
 - **Example**: See `[file reference]:[line number]`
 
 **Pattern 2: [Pattern Name]**
+
 - **When to use**: [Scenarios]
 - **Implementation**: [Brief description]
 - **Example**: See `[file reference]:[line number]`
@@ -162,6 +178,7 @@ Example:
 ### Anti-Patterns to Avoid
 
 **Anti-Pattern 1: [Name]**
+
 - **Why it's bad**: [Explanation]
 - **Instead, do**: [Better approach]
 - **Migration guide**: [If replacing existing pattern]
@@ -203,18 +220,22 @@ Example:
 ### Pitfall 1: [Description]
 
 **Symptoms**:
+
 - [How this manifests]
 - [Error messages or behaviors]
 
 **Root Cause**:
+
 - [Why this happens]
 
 **Solution**:
+
 ```bash
 # [Steps to resolve]
 ```
 
 **Prevention**:
+
 - [How to avoid this pitfall]
 
 ### Pitfall 2: [Description]
@@ -228,11 +249,13 @@ Example:
 ### When This Document Should Be Updated
 
 **Update immediately when:**
+
 - ✅ [Trigger 1] (e.g., New architecture patterns introduced)
 - ✅ [Trigger 2] (e.g., Technology stack changes)
 - ✅ [Trigger 3] (e.g., Best practices evolve)
 
 **Update periodically:**
+
 - 🔁 [Periodic review trigger] (e.g., Quarterly review)
 
 ### How to Update
@@ -249,8 +272,10 @@ Example:
 
 ### Version Number Guide
 
-- **Major version (X.0)**: Significant architectural changes, breaking changes, complete rewrites
-- **Minor version (X.Y)**: Updates, additions, clarifications, non-breaking changes
+- **Major version (X.0)**: Significant architectural changes, breaking changes,
+  complete rewrites
+- **Minor version (X.Y)**: Updates, additions, clarifications, non-breaking
+  changes
 
 ---
 
@@ -259,25 +284,30 @@ Example:
 ### Internal Documentation
 
 **Foundation Documents**:
+
 - [ARCHITECTURE.md](../../ARCHITECTURE.md) - System architecture
 - [SECURITY.md](../SECURITY.md) - Security guidelines
 - [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development procedures
 
 **Planning Documents**:
+
 - [ROADMAP.md](../ROADMAP.md) - Product roadmap
 - [Feature plans] - Specific feature documentation
 
 **Reference Documents**:
+
 - [Reference doc 1] - Purpose
 - [Reference doc 2] - Purpose
 
 ### External Documentation
 
 **Official Documentation**:
+
 - [Technology 1 docs] - [URL]
 - [Technology 2 docs] - [URL]
 
 **Learning Resources**:
+
 - [Resource 1] - [Description]
 - [Resource 2] - [Description]
 
@@ -305,10 +335,10 @@ Example:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes | Author/Team |
-|---------|------|---------|-------------|
-| 1.0 | YYYY-MM-DD | Initial document created | [Author] |
-| 1.1 | YYYY-MM-DD | [Description of changes] | [Author] |
+| Version | Date       | Changes                  | Author/Team |
+| ------- | ---------- | ------------------------ | ----------- |
+| 1.0     | YYYY-MM-DD | Initial document created | [Author]    |
+| 1.1     | YYYY-MM-DD | [Description of changes] | [Author]    |
 
 ---
 
@@ -317,18 +347,25 @@ Example:
 **For AI Assistants:**
 
 When working with [subject area]:
-1. **Always read this document** before making architectural/security/development decisions
-2. **Follow documented patterns** - don't invent new patterns without updating docs
+
+1. **Always read this document** before making
+   architectural/security/development decisions
+2. **Follow documented patterns** - don't invent new patterns without updating
+   docs
 3. **Update this document** when introducing new patterns or approaches
-4. **Maintain consistency** - if documented approach conflicts with code, flag it
+4. **Maintain consistency** - if documented approach conflicts with code, flag
+   it
 5. **Ask clarifying questions** if documented guidance is unclear
 
 **Role-Specific Guidance:**
+
 - **Code Reviewers**: Focus on Patterns section and change compatibility checks
-- **Feature Developers**: Focus on Best Practices, Pitfalls, and commit pairing (docs + code)
+- **Feature Developers**: Focus on Best Practices, Pitfalls, and commit pairing
+  (docs + code)
 - **Architects**: Focus on Design, Requirements, and system compatibility
 
 **When updating this document:**
+
 1. Preserve existing structure and formatting
 2. Add examples for new patterns
 3. Update best practices based on learnings
@@ -340,6 +377,7 @@ When working with [subject area]:
 **END OF TEMPLATE**
 
 **Usage Notes:**
+
 - Replace all [bracketed placeholders] with actual content
 - Remove sections not applicable to your specific document type
 - Add sections as needed for comprehensive coverage
@@ -348,12 +386,22 @@ When working with [subject area]:
 - Include file references with line numbers for traceability
 
 **For Non-Code or Polyglot Projects:**
+
 - Replace "Technology Stack" and "Key Files" sections with appropriate headings:
-  - **Infrastructure docs**: "Technology Stack" → "Platform Components" (list services, hosting, IaC tools); "Key Files" → "Configuration Locations" (point to terraform/, k8s/, .env files, CI/CD configs)
-  - **Multi-language repos**: "Technology Stack" → Group by language/service with main entry points and build commands; "Key Files" → Integration points and shared libraries (e.g., protobuf definitions, API contracts, shared utilities)
-  - **Non-technical docs**: "Technology Stack" → "Stakeholders and Tools" (decision-making tools, collaboration platforms); "Key Files" → "Core Documents" (RACI matrix, OKRs, decision logs, strategy docs)
+  - **Infrastructure docs**: "Technology Stack" → "Platform Components" (list
+    services, hosting, IaC tools); "Key Files" → "Configuration Locations"
+    (point to terraform/, k8s/, .env files, CI/CD configs)
+  - **Multi-language repos**: "Technology Stack" → Group by language/service
+    with main entry points and build commands; "Key Files" → Integration points
+    and shared libraries (e.g., protobuf definitions, API contracts, shared
+    utilities)
+  - **Non-technical docs**: "Technology Stack" → "Stakeholders and Tools"
+    (decision-making tools, collaboration platforms); "Key Files" → "Core
+    Documents" (RACI matrix, OKRs, decision logs, strategy docs)
 
 **Path Customization:**
-- Internal reference paths (e.g., `./ARCHITECTURE.md`, `../ROADMAP.md`) are examples
+
+- Internal reference paths (e.g., `./ARCHITECTURE.md`, `../ROADMAP.md`) are
+  examples
 - Adjust paths to match your actual project structure
 - Verify all links work before committing

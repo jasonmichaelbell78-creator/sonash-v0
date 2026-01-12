@@ -22,14 +22,11 @@ export interface CloudFunctionError {
  * Validates that error has a string `code` property starting with 'functions/'.
  */
 export function isCloudFunctionError(error: unknown): error is CloudFunctionError {
-  if (error === null || typeof error !== 'object') {
+  if (error === null || typeof error !== "object") {
     return false;
   }
   const obj = error as Record<string, unknown>;
-  return (
-    typeof obj.code === 'string' &&
-    obj.code.startsWith('functions/')
-  );
+  return typeof obj.code === "string" && obj.code.startsWith("functions/");
 }
 
 /**
@@ -37,32 +34,22 @@ export function isCloudFunctionError(error: unknown): error is CloudFunctionErro
  * Keeps technical details server-side while providing helpful guidance to users.
  */
 const ERROR_MESSAGES: Record<string, string> = {
-  'functions/resource-exhausted':
-    'Too many requests. Please wait a moment and try again.',
-  'functions/unauthenticated':
-    'Please sign in to continue.',
-  'functions/permission-denied':
-    'You do not have permission to perform this action.',
-  'functions/invalid-argument':
-    'Invalid data. Please check your input and try again.',
-  'functions/not-found':
-    'The requested item was not found.',
-  'functions/failed-precondition':
-    'Security verification failed. Please refresh the page.',
-  'functions/unavailable':
-    'Service temporarily unavailable. Please try again in a moment.',
-  'functions/internal':
-    'Something went wrong. Please try again.',
-  'functions/cancelled':
-    'The operation was cancelled. Please try again.',
-  'functions/deadline-exceeded':
-    'The operation took too long. Please try again.',
+  "functions/resource-exhausted": "Too many requests. Please wait a moment and try again.",
+  "functions/unauthenticated": "Please sign in to continue.",
+  "functions/permission-denied": "You do not have permission to perform this action.",
+  "functions/invalid-argument": "Invalid data. Please check your input and try again.",
+  "functions/not-found": "The requested item was not found.",
+  "functions/failed-precondition": "Security verification failed. Please refresh the page.",
+  "functions/unavailable": "Service temporarily unavailable. Please try again in a moment.",
+  "functions/internal": "Something went wrong. Please try again.",
+  "functions/cancelled": "The operation was cancelled. Please try again.",
+  "functions/deadline-exceeded": "The operation took too long. Please try again.",
 };
 
 /**
  * Default error message when the error code is not recognized.
  */
-const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred. Please try again.';
+const DEFAULT_ERROR_MESSAGE = "An unexpected error occurred. Please try again.";
 
 /**
  * Checks if a message is safe to show to users (no internal details).
@@ -71,11 +58,11 @@ const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred. Please try again.';
 function isSafeUserMessage(msg: string, maxLength: number = 150): boolean {
   return (
     msg.length < maxLength &&
-    !msg.includes('at ') &&
-    !msg.includes('Error:') &&
-    !msg.includes('/') &&
-    !msg.includes('\\') &&
-    !msg.includes('node_modules')
+    !msg.includes("at ") &&
+    !msg.includes("Error:") &&
+    !msg.includes("/") &&
+    !msg.includes("\\") &&
+    !msg.includes("node_modules")
   );
 }
 
@@ -137,7 +124,11 @@ export function getCloudFunctionErrorMessage(
     }
 
     // For validation errors (invalid-argument), only use server message if safe
-    if (error.code === 'functions/invalid-argument' && error.message && isSafeUserMessage(error.message)) {
+    if (
+      error.code === "functions/invalid-argument" &&
+      error.message &&
+      isSafeUserMessage(error.message)
+    ) {
       return error.message;
     }
 
@@ -183,14 +174,14 @@ export function handleCloudFunctionError(
   error: unknown,
   options: HandleErrorOptions = {}
 ): { success: false; error: string } {
-  const { operation = 'operation' } = options;
+  const { operation = "operation" } = options;
   const errorMessage = getCloudFunctionErrorMessage(error, options);
 
   // Log for debugging (development only - production logs go through logger)
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === "development") {
     console.error(`❌ Cloud Function error during ${operation}:`, error);
     if (isCloudFunctionError(error)) {
-      console.error('Error details:', {
+      console.error("Error details:", {
         code: error.code,
         message: error.message,
         details: error.details,
@@ -211,10 +202,7 @@ export function handleCloudFunctionError(
  * @returns true if the error indicates rate limiting
  */
 export function isRateLimitError(error: unknown): boolean {
-  return (
-    isCloudFunctionError(error) &&
-    error.code === 'functions/resource-exhausted'
-  );
+  return isCloudFunctionError(error) && error.code === "functions/resource-exhausted";
 }
 
 /**
@@ -224,10 +212,7 @@ export function isRateLimitError(error: unknown): boolean {
  * @returns true if the error indicates authentication failure
  */
 export function isAuthError(error: unknown): boolean {
-  return (
-    isCloudFunctionError(error) &&
-    error.code === 'functions/unauthenticated'
-  );
+  return isCloudFunctionError(error) && error.code === "functions/unauthenticated";
 }
 
 /**
@@ -237,10 +222,7 @@ export function isAuthError(error: unknown): boolean {
  * @returns true if the error indicates a security check failure
  */
 export function isSecurityError(error: unknown): boolean {
-  return (
-    isCloudFunctionError(error) &&
-    error.code === 'functions/failed-precondition'
-  );
+  return isCloudFunctionError(error) && error.code === "functions/failed-precondition";
 }
 
 /**
@@ -250,10 +232,7 @@ export function isSecurityError(error: unknown): boolean {
  * @returns true if the error indicates invalid input
  */
 export function isValidationError(error: unknown): boolean {
-  return (
-    isCloudFunctionError(error) &&
-    error.code === 'functions/invalid-argument'
-  );
+  return isCloudFunctionError(error) && error.code === "functions/invalid-argument";
 }
 
 /**
@@ -263,8 +242,5 @@ export function isValidationError(error: unknown): boolean {
  * @returns true if the error indicates resource not found
  */
 export function isNotFoundError(error: unknown): boolean {
-  return (
-    isCloudFunctionError(error) &&
-    error.code === 'functions/not-found'
-  );
+  return isCloudFunctionError(error) && error.code === "functions/not-found";
 }

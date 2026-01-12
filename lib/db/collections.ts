@@ -9,19 +9,14 @@
  * - Common query patterns
  */
 
-import {
-  collection,
-  doc,
-  CollectionReference,
-  DocumentReference,
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { collection, doc, CollectionReference, DocumentReference } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 // Re-export types for convenience
-import type { Meeting } from './meetings';
-import type { Quote } from './quotes';
-import type { Slogan } from './slogans';
-import type { SoberLivingHome } from './sober-living';
+import type { Meeting } from "./meetings";
+import type { Quote } from "./quotes";
+import type { Slogan } from "./slogans";
+import type { SoberLivingHome } from "./sober-living";
 
 /**
  * Collection name constants
@@ -29,14 +24,14 @@ import type { SoberLivingHome } from './sober-living';
  */
 export const COLLECTIONS = {
   // Root collections
-  MEETINGS: 'meetings',
-  DAILY_QUOTES: 'daily_quotes',
-  SLOGANS: 'slogans',
-  SOBER_LIVING: 'sober_living',
-  GLOSSARY: 'recovery_glossary',
-  LIBRARY: 'library',
-  USERS: 'users',
-  RATE_LIMITS: 'rate_limits',
+  MEETINGS: "meetings",
+  DAILY_QUOTES: "daily_quotes",
+  SLOGANS: "slogans",
+  SOBER_LIVING: "sober_living",
+  GLOSSARY: "recovery_glossary",
+  LIBRARY: "library",
+  USERS: "users",
+  RATE_LIMITS: "rate_limits",
 
   // User subcollections (use with user ID)
   userJournal: (userId: string) => `users/${userId}/journal`,
@@ -99,7 +94,7 @@ export function getDocument<K extends keyof CollectionTypes>(
  */
 export function getUserCollection(
   userId: string,
-  subcollection: 'journal' | 'daily_logs' | 'inventory' | 'worksheets'
+  subcollection: "journal" | "daily_logs" | "inventory" | "worksheets"
 ): CollectionReference {
   return collection(db, COLLECTIONS.USERS, userId, subcollection);
 }
@@ -109,7 +104,7 @@ export function getUserCollection(
  */
 export function getUserDocument(
   userId: string,
-  subcollection: 'journal' | 'daily_logs' | 'inventory' | 'worksheets',
+  subcollection: "journal" | "daily_logs" | "inventory" | "worksheets",
   documentId: string
 ): DocumentReference {
   return doc(db, COLLECTIONS.USERS, userId, subcollection, documentId);
@@ -121,16 +116,16 @@ export function getUserDocument(
  */
 export function buildUserPath(
   userId: string,
-  subcollection: 'journal' | 'daily_logs' | 'inventory' | 'worksheets'
+  subcollection: "journal" | "daily_logs" | "inventory" | "worksheets"
 ): string {
   switch (subcollection) {
-    case 'journal':
+    case "journal":
       return COLLECTIONS.userJournal(userId);
-    case 'daily_logs':
+    case "daily_logs":
       return COLLECTIONS.userDailyLogs(userId);
-    case 'inventory':
+    case "inventory":
       return COLLECTIONS.userInventory(userId);
-    case 'worksheets':
+    case "worksheets":
       return COLLECTIONS.userWorksheets(userId);
   }
 }

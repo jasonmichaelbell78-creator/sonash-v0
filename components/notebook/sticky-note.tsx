@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { motion } from "framer-motion"
-import { X } from "lucide-react"
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
 
 interface StickyNoteProps {
-  title: string
-  onClose: () => void
-  children: React.ReactNode
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
 }
 
 export default function StickyNote({ title, onClose, children }: StickyNoteProps) {
@@ -68,5 +68,5 @@ export default function StickyNote({ title, onClose, children }: StickyNoteProps
         />
       </motion.div>
     </motion.div>
-  )
+  );
 }

@@ -6,23 +6,23 @@
  * These tests verify the hook module is properly structured.
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { describe, it } from "node:test";
+import assert from "node:assert";
 
 // Import hook to verify module structure
-import { useDailyQuote, type UseDailyQuoteResult } from '../hooks/use-daily-quote';
+import { useDailyQuote, type UseDailyQuoteResult } from "../hooks/use-daily-quote";
 
-describe('useDailyQuote module', () => {
-  it('exports useDailyQuote hook function', () => {
-    assert.strictEqual(typeof useDailyQuote, 'function');
+describe("useDailyQuote module", () => {
+  it("exports useDailyQuote hook function", () => {
+    assert.strictEqual(typeof useDailyQuote, "function");
   });
 
-  it('hook function has expected name', () => {
-    assert.strictEqual(useDailyQuote.name, 'useDailyQuote');
+  it("hook function has expected name", () => {
+    assert.strictEqual(useDailyQuote.name, "useDailyQuote");
   });
 
-  describe('UseDailyQuoteResult type', () => {
-    it('is properly typed with quote, loading, and refresh', () => {
+  describe("UseDailyQuoteResult type", () => {
+    it("is properly typed with quote, loading, and refresh", () => {
       // Type assertion test - this verifies the type structure at compile time
       const mockResult: UseDailyQuoteResult = {
         quote: null,
@@ -32,22 +32,22 @@ describe('useDailyQuote module', () => {
 
       assert.strictEqual(mockResult.quote, null);
       assert.strictEqual(mockResult.loading, true);
-      assert.strictEqual(typeof mockResult.refresh, 'function');
+      assert.strictEqual(typeof mockResult.refresh, "function");
     });
 
-    it('allows Quote object in quote property', () => {
+    it("allows Quote object in quote property", () => {
       const mockResult: UseDailyQuoteResult = {
         quote: {
-          id: 'test-id',
-          text: 'Test quote',
-          author: 'Test Author',
+          id: "test-id",
+          text: "Test quote",
+          author: "Test Author",
         },
         loading: false,
         refresh: () => {},
       };
 
-      assert.strictEqual(mockResult.quote?.text, 'Test quote');
-      assert.strictEqual(mockResult.quote?.author, 'Test Author');
+      assert.strictEqual(mockResult.quote?.text, "Test quote");
+      assert.strictEqual(mockResult.quote?.author, "Test Author");
     });
   });
 });

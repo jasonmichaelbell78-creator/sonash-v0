@@ -5,7 +5,7 @@
  * eliminating the need for type gymnastics with 'as unknown' and multiple casts.
  */
 
-import { Timestamp } from "firebase/firestore"
+import { Timestamp } from "firebase/firestore";
 
 /**
  * Type guard to check if a value is a Firebase Timestamp
@@ -25,7 +25,7 @@ export function isFirebaseTimestamp(value: unknown): value is Timestamp {
     typeof value === "object" &&
     "toDate" in value &&
     typeof value.toDate === "function"
-  )
+  );
 }
 
 /**
@@ -49,35 +49,35 @@ export function isFirebaseTimestamp(value: unknown): value is Timestamp {
 export function parseFirebaseTimestamp(value: unknown): Date | null {
   // Handle null/undefined
   if (value === null || value === undefined) {
-    return null
+    return null;
   }
 
   // Handle Firebase Timestamp
   if (isFirebaseTimestamp(value)) {
     try {
-      return value.toDate()
+      return value.toDate();
     } catch {
-      return null
+      return null;
     }
   }
 
   // Handle Date object
   if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : value
+    return Number.isNaN(value.getTime()) ? null : value;
   }
 
   // Handle string (ISO date)
   if (typeof value === "string") {
     try {
-      const date = new Date(value)
-      return Number.isNaN(date.getTime()) ? null : date
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
     } catch {
-      return null
+      return null;
     }
   }
 
   // Unknown format
-  return null
+  return null;
 }
 
 /**
@@ -103,7 +103,7 @@ export function isFirestoreError(error: unknown): error is { code: string; messa
     "message" in error &&
     typeof error.code === "string" &&
     typeof error.message === "string"
-  )
+  );
 }
 
 /**
@@ -113,7 +113,7 @@ export function isFirestoreError(error: unknown): error is { code: string; messa
  * @returns true if error is a permission-denied FirestoreError
  */
 export function isPermissionDenied(error: unknown): boolean {
-  return isFirestoreError(error) && error.code === "permission-denied"
+  return isFirestoreError(error) && error.code === "permission-denied";
 }
 
 /**
@@ -123,7 +123,7 @@ export function isPermissionDenied(error: unknown): boolean {
  * @returns true if error is a not-found FirestoreError
  */
 export function isNotFound(error: unknown): boolean {
-  return isFirestoreError(error) && error.code === "not-found"
+  return isFirestoreError(error) && error.code === "not-found";
 }
 
 /**
@@ -140,16 +140,16 @@ export function isNotFound(error: unknown): boolean {
  */
 export function getErrorMessage(error: unknown, fallback = "An unexpected error occurred"): string {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
 
   if (isFirestoreError(error)) {
-    return error.message
+    return error.message;
   }
 
   if (typeof error === "string") {
-    return error
+    return error;
   }
 
-  return fallback
+  return fallback;
 }

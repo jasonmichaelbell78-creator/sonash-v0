@@ -24,35 +24,45 @@
  * Exit codes: 0 = success, 1 = error
  */
 
-import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync, readdirSync, statSync, realpathSync } from 'fs';
-import { join, dirname, basename, relative } from 'path';
-import { fileURLToPath } from 'url';
-import matter from 'gray-matter';
-import { sanitizeError } from './lib/sanitize-error.js';
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  unlinkSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  realpathSync,
+} from "fs";
+import { join, dirname, basename, relative } from "path";
+import { fileURLToPath } from "url";
+import matter from "gray-matter";
+import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, "..");
 
 // Directories
-const ARCHIVE_DIR = join(ROOT, 'docs', 'archive');
-const DOCS_DIR = join(ROOT, 'docs');
-const ROADMAP_LOG_PATH = join(ROOT, 'ROADMAP_LOG.md');
+const ARCHIVE_DIR = join(ROOT, "docs", "archive");
+const DOCS_DIR = join(ROOT, "docs");
+const ROADMAP_LOG_PATH = join(ROOT, "ROADMAP_LOG.md");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const DRY_RUN = args.includes('--dry-run');
-const VERBOSE = args.includes('--verbose');
-const UPDATE_LOG = args.includes('--update-log');
+const DRY_RUN = args.includes("--dry-run");
+const VERBOSE = args.includes("--verbose");
+const UPDATE_LOG = args.includes("--update-log");
 
 // Get reason flag value
-const reasonIndex = args.indexOf('--reason');
-const ARCHIVE_REASON = reasonIndex !== -1 && args[reasonIndex + 1]
-  ? args[reasonIndex + 1]
-  : 'Superseded or outdated';
+const reasonIndex = args.indexOf("--reason");
+const ARCHIVE_REASON =
+  reasonIndex !== -1 && args[reasonIndex + 1] ? args[reasonIndex + 1] : "Superseded or outdated";
 
 // Get the filename (first non-flag argument)
-const FILE_ARG = args.find(arg => !arg.startsWith('--') && (reasonIndex === -1 || args.indexOf(arg) !== reasonIndex + 1));
+const FILE_ARG = args.find(
+  (arg) => !arg.startsWith("--") && (reasonIndex === -1 || args.indexOf(arg) !== reasonIndex + 1)
+);
 
 /**
  * Safely log verbose messages
@@ -60,7 +70,7 @@ const FILE_ARG = args.find(arg => !arg.startsWith('--') && (reasonIndex === -1 |
  */
 function verbose(...messages) {
   if (VERBOSE) {
-    console.log('[VERBOSE]', ...messages);
+    console.log("[VERBOSE]", ...messages);
   }
 }
 
@@ -79,14 +89,14 @@ function validatePathWithinRepo(filePath) {
     // On Windows, path.relative() across different drives returns an absolute path
     // Block cross-drive paths as a security measure
     if (
-      process.platform === 'win32' &&
+      process.platform === "win32" &&
       /^[A-Za-z]:/.test(resolvedPath) &&
       /^[A-Za-z]:/.test(resolvedRoot) &&
       resolvedPath.slice(0, 2).toLowerCase() !== resolvedRoot.slice(0, 2).toLowerCase()
     ) {
       return {
         valid: false,
-        error: `Path "${filePath}" resolves outside repository root (cross-drive)`
+        error: `Path "${filePath}" resolves outside repository root (cross-drive)`,
       };
     }
 
@@ -96,15 +106,15 @@ function validatePathWithinRepo(filePath) {
     if (/^\.\.(?:[\\/]|$)/.test(rel)) {
       return {
         valid: false,
-        error: `Path "${filePath}" resolves outside repository root`
+        error: `Path "${filePath}" resolves outside repository root`,
       };
     }
 
     // Additional check: must be a markdown file
-    if (!resolvedPath.endsWith('.md')) {
+    if (!resolvedPath.endsWith(".md")) {
       return {
         valid: false,
-        error: `Path "${filePath}" is not a markdown file`
+        error: `Path "${filePath}" is not a markdown file`,
       };
     }
 
@@ -112,7 +122,7 @@ function validatePathWithinRepo(filePath) {
   } catch (err) {
     return {
       valid: false,
-      error: `Cannot validate path: ${err instanceof Error ? err.message : String(err)}`
+      error: `Cannot validate path: ${err instanceof Error ? err.message : String(err)}`,
     };
   }
 }
@@ -129,17 +139,17 @@ function safeReadFile(filePath, description) {
   if (!existsSync(filePath)) {
     return {
       success: false,
-      error: `${description} not found at: ${filePath}`
+      error: `${description} not found at: ${filePath}`,
     };
   }
 
   try {
-    const content = readFileSync(filePath, 'utf-8');
+    const content = readFileSync(filePath, "utf-8");
 
     if (!content || content.trim().length === 0) {
       return {
         success: false,
-        error: `${description} is empty: ${filePath}`
+        error: `${description} is empty: ${filePath}`,
       };
     }
 
@@ -148,7 +158,7 @@ function safeReadFile(filePath, description) {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to read ${description}: ${sanitizeError(error)}`
+      error: `Failed to read ${description}: ${sanitizeError(error)}`,
     };
   }
 }
@@ -169,12 +179,12 @@ function safeWriteFile(filePath, content, description) {
   verbose(`Writing ${content.length} characters to ${description}`);
 
   try {
-    writeFileSync(filePath, content, 'utf-8');
+    writeFileSync(filePath, content, "utf-8");
     return { success: true };
   } catch (error) {
     return {
       success: false,
-      error: `Failed to write ${description}: ${sanitizeError(error)}`
+      error: `Failed to write ${description}: ${sanitizeError(error)}`,
     };
   }
 }
@@ -184,10 +194,10 @@ function safeWriteFile(filePath, content, description) {
  * @returns {{success: boolean, error?: string}}
  */
 function ensureArchiveDir() {
-  verbose('Checking archive directory:', ARCHIVE_DIR);
+  verbose("Checking archive directory:", ARCHIVE_DIR);
 
   if (existsSync(ARCHIVE_DIR)) {
-    verbose('Archive directory already exists');
+    verbose("Archive directory already exists");
     return { success: true };
   }
 
@@ -203,7 +213,7 @@ function ensureArchiveDir() {
   } catch (error) {
     return {
       success: false,
-      error: `Failed to create archive directory: ${sanitizeError(error)}`
+      error: `Failed to create archive directory: ${sanitizeError(error)}`,
     };
   }
 }
@@ -218,7 +228,7 @@ function extractLastUpdated(content) {
     /\*\*Last Updated:\*\*\s*(.+?)(?:\n|$)/i,
     /Last Updated:\s*(.+?)(?:\n|$)/i,
     /Updated:\s*(.+?)(?:\n|$)/i,
-    /Date:\s*(.+?)(?:\n|$)/i
+    /Date:\s*(.+?)(?:\n|$)/i,
   ];
 
   for (const pattern of patterns) {
@@ -241,21 +251,21 @@ function extractLastUpdated(content) {
 function addArchiveFrontmatter(content, originalPath, reason) {
   const parsed = matter(content);
   const lastUpdated = extractLastUpdated(content);
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   // Merge with existing frontmatter if any
   const newFrontmatter = {
     ...parsed.data,
     archived_date: today,
     original_path: originalPath,
-    archive_reason: reason
+    archive_reason: reason,
   };
 
   if (lastUpdated) {
     newFrontmatter.last_updated = lastUpdated;
   }
 
-  verbose('Generated frontmatter:', JSON.stringify(newFrontmatter, null, 2));
+  verbose("Generated frontmatter:", JSON.stringify(newFrontmatter, null, 2));
 
   // Reconstruct document with frontmatter
   return matter.stringify(parsed.content, newFrontmatter);
@@ -279,7 +289,7 @@ function getMarkdownFiles(dir, files = []) {
       const fullPath = join(dir, entry);
 
       // Skip archive directory and node_modules
-      if (entry === 'archive' || entry === 'node_modules' || entry === '.git') {
+      if (entry === "archive" || entry === "node_modules" || entry === ".git") {
         continue;
       }
 
@@ -288,7 +298,7 @@ function getMarkdownFiles(dir, files = []) {
 
         if (stat.isDirectory()) {
           getMarkdownFiles(fullPath, files);
-        } else if (entry.endsWith('.md')) {
+        } else if (entry.endsWith(".md")) {
           files.push(fullPath);
         }
       } catch {
@@ -316,8 +326,8 @@ function updateCrossReferences(oldPath, _newPath) {
 
   // Get all markdown files in root and docs
   const markdownFiles = [
-    ...getMarkdownFiles(ROOT).filter(f => !f.includes('/docs/') && f !== oldPath),
-    ...getMarkdownFiles(DOCS_DIR)
+    ...getMarkdownFiles(ROOT).filter((f) => !f.includes("/docs/") && f !== oldPath),
+    ...getMarkdownFiles(DOCS_DIR),
   ];
 
   verbose(`Found ${markdownFiles.length} markdown files to check`);
@@ -327,7 +337,7 @@ function updateCrossReferences(oldPath, _newPath) {
   // Note: NO 'g' flag - using .test() in loop with 'g' flag causes bugs (stateful lastIndex)
   const patterns = [
     new RegExp(`\\]\\(\\.?\\/?${escapeRegex(oldFilename)}\\)`),
-    new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`)
+    new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`),
   ];
 
   for (const filePath of markdownFiles) {
@@ -345,7 +355,7 @@ function updateCrossReferences(oldPath, _newPath) {
     let modified = false;
 
     // Check each line for matches (to track line numbers)
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     const newLines = [];
 
     for (let i = 0; i < lines.length; i++) {
@@ -355,11 +365,14 @@ function updateCrossReferences(oldPath, _newPath) {
         if (pattern.test(line)) {
           // Calculate relative path from this file to archive (normalize for cross-platform)
           const fileDir = dirname(filePath);
-          const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename)).replace(/\\/g, '/');
+          const relativePath = relative(fileDir, join(ARCHIVE_DIR, oldFilename)).replace(
+            /\\/g,
+            "/"
+          );
 
           // Replace the link (relativePath already has correct structure)
           const newLine = line.replace(
-            new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`, 'g'),
+            new RegExp(`\\]\\(\\.?\\/?(?:docs\\/)?${escapeRegex(oldFilename)}\\)`, "g"),
             `](${relativePath})`
           );
 
@@ -377,7 +390,7 @@ function updateCrossReferences(oldPath, _newPath) {
     }
 
     if (modified) {
-      const writeResult = safeWriteFile(filePath, newLines.join('\n'), basename(filePath));
+      const writeResult = safeWriteFile(filePath, newLines.join("\n"), basename(filePath));
       if (!writeResult.success) {
         return { success: false, updated, error: writeResult.error };
       }
@@ -393,7 +406,7 @@ function updateCrossReferences(oldPath, _newPath) {
  * @returns {string} - Escaped string
  */
 function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -403,14 +416,14 @@ function escapeRegex(str) {
  * @returns {{success: boolean, error?: string}}
  */
 function updateRoadmapLog(filename, reason) {
-  const readResult = safeReadFile(ROADMAP_LOG_PATH, 'ROADMAP_LOG.md');
+  const readResult = safeReadFile(ROADMAP_LOG_PATH, "ROADMAP_LOG.md");
   if (!readResult.success) {
     console.warn(`⚠️  Warning: ${readResult.error}`);
-    console.warn('   Skipping ROADMAP_LOG.md update');
+    console.warn("   Skipping ROADMAP_LOG.md update");
     return { success: true }; // Non-fatal
   }
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
   const entry = `\n## [${today}] Archived: ${filename}\n\n**Reason:** ${reason}\n\nMoved to \`docs/archive/${filename}\`\n`;
 
   // Find the right place to insert (after main heading)
@@ -423,10 +436,10 @@ function updateRoadmapLog(filename, reason) {
   } else {
     // Fallback: prepend after any frontmatter
     const parsed = matter(content);
-    content = matter.stringify(entry + '\n' + parsed.content, parsed.data);
+    content = matter.stringify(entry + "\n" + parsed.content, parsed.data);
   }
 
-  return safeWriteFile(ROADMAP_LOG_PATH, content, 'ROADMAP_LOG.md');
+  return safeWriteFile(ROADMAP_LOG_PATH, content, "ROADMAP_LOG.md");
 }
 
 /**
@@ -458,27 +471,27 @@ Examples:
  * Main function
  */
 function main() {
-  console.log('📦 Document Archive Tool');
-  if (DRY_RUN) console.log('   (DRY RUN - no files will be modified)\n');
-  else console.log('');
+  console.log("📦 Document Archive Tool");
+  if (DRY_RUN) console.log("   (DRY RUN - no files will be modified)\n");
+  else console.log("");
 
   // Validate input
   if (!FILE_ARG) {
-    console.error('❌ Error: No filename provided\n');
+    console.error("❌ Error: No filename provided\n");
     printUsage();
     process.exit(1);
   }
 
   // SECURITY: Block absolute and UNC paths from user input
   // Only relative paths (resolved against known safe directories) are allowed
-  const isAbsoluteUnix = FILE_ARG.startsWith('/');
+  const isAbsoluteUnix = FILE_ARG.startsWith("/");
   const isAbsoluteWindows = /^[A-Za-z]:/.test(FILE_ARG);
-  const isWindowsRooted = FILE_ARG.startsWith('\\') && !FILE_ARG.startsWith('\\\\'); // Single backslash (e.g., \Windows)
-  const isUNCPath = FILE_ARG.startsWith('\\\\') || FILE_ARG.startsWith('//');
+  const isWindowsRooted = FILE_ARG.startsWith("\\") && !FILE_ARG.startsWith("\\\\"); // Single backslash (e.g., \Windows)
+  const isUNCPath = FILE_ARG.startsWith("\\\\") || FILE_ARG.startsWith("//");
 
   if (isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath) {
-    console.error('❌ Security Error: Absolute or UNC paths are not allowed');
-    console.error('   Please provide a relative path or filename');
+    console.error("❌ Security Error: Absolute or UNC paths are not allowed");
+    console.error("   Please provide a relative path or filename");
     process.exit(1);
   }
 
@@ -492,7 +505,7 @@ function main() {
     sourcePath = join(DOCS_DIR, FILE_ARG);
   } else {
     console.error(`❌ Error: File not found: ${FILE_ARG}`);
-    console.error('   Searched in: current directory, project root, docs/');
+    console.error("   Searched in: current directory, project root, docs/");
     process.exit(1);
   }
 
@@ -500,7 +513,7 @@ function main() {
   const pathValidation = validatePathWithinRepo(sourcePath);
   if (!pathValidation.valid) {
     console.error(`❌ Security Error: ${pathValidation.error}`);
-    console.error('   This script only operates on files within the repository');
+    console.error("   This script only operates on files within the repository");
     process.exit(1);
   }
 
@@ -513,15 +526,15 @@ function main() {
   console.log(`Reason: ${ARCHIVE_REASON}\n`);
 
   // Check if already archived (cross-platform: handle both / and \ separators)
-  if (sourcePath.includes('/archive/') || sourcePath.includes('\\archive\\')) {
-    console.error('❌ Error: File is already in the archive directory');
+  if (sourcePath.includes("/archive/") || sourcePath.includes("\\archive\\")) {
+    console.error("❌ Error: File is already in the archive directory");
     process.exit(1);
   }
 
   // Check if destination exists
   if (existsSync(archivePath)) {
     console.error(`❌ Error: Destination already exists: ${archivePath}`);
-    console.error('   Remove or rename the existing file first');
+    console.error("   Remove or rename the existing file first");
     process.exit(1);
   }
 
@@ -533,7 +546,7 @@ function main() {
   }
 
   // Step 2: Read source file
-  const readResult = safeReadFile(sourcePath, 'source document');
+  const readResult = safeReadFile(sourcePath, "source document");
   if (!readResult.success) {
     console.error(`❌ Error: ${readResult.error}`);
     process.exit(1);
@@ -545,7 +558,7 @@ function main() {
     originalRelPath,
     ARCHIVE_REASON
   );
-  verbose('Added archive frontmatter');
+  verbose("Added archive frontmatter");
 
   // Step 4: Write to archive location
   const writeResult = safeWriteFile(archivePath, archivedContent, `archive/${filename}`);
@@ -569,7 +582,7 @@ function main() {
   }
 
   // Step 6: Update cross-references
-  console.log('\nUpdating cross-references...');
+  console.log("\nUpdating cross-references...");
   const refResult = updateCrossReferences(sourcePath, archivePath);
   if (!refResult.success) {
     console.error(`❌ Error: ${refResult.error}`);
@@ -582,21 +595,21 @@ function main() {
       console.log(`  - ${relative(ROOT, update.file)}:${update.line}`);
     }
   } else {
-    console.log('No cross-references found to update');
+    console.log("No cross-references found to update");
   }
 
   // Step 7: Update ROADMAP_LOG.md if requested
   if (UPDATE_LOG) {
-    console.log('\nUpdating ROADMAP_LOG.md...');
+    console.log("\nUpdating ROADMAP_LOG.md...");
     const logResult = updateRoadmapLog(filename, ARCHIVE_REASON);
     if (!logResult.success) {
       console.error(`❌ Error: ${logResult.error}`);
       process.exit(1);
     }
-    console.log('✅ Added entry to ROADMAP_LOG.md');
+    console.log("✅ Added entry to ROADMAP_LOG.md");
   }
 
-  console.log('\n✅ Archive complete!');
+  console.log("\n✅ Archive complete!");
   process.exit(0);
 }
 
@@ -604,6 +617,6 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error('❌ Unexpected error:', sanitizeError(error));
+  console.error("❌ Unexpected error:", sanitizeError(error));
   process.exit(1);
 }

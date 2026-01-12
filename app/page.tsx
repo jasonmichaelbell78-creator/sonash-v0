@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import BookCover from "@/components/notebook/book-cover"
-import NotebookShell from "@/components/notebook/notebook-shell"
-import LampGlow from "@/components/desktop/lamp-glow"
-import { AnimatePresence } from "framer-motion"
-import { useAuth } from "@/components/providers/auth-provider"
-import { AuthErrorBanner } from "@/components/status/auth-error-banner"
+import { useState } from "react";
+import BookCover from "@/components/notebook/book-cover";
+import NotebookShell from "@/components/notebook/notebook-shell";
+import LampGlow from "@/components/desktop/lamp-glow";
+import { AnimatePresence } from "framer-motion";
+import { useAuth } from "@/components/providers/auth-provider";
+import { AuthErrorBanner } from "@/components/status/auth-error-banner";
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { profile } = useAuth()
+  const [isOpen, setIsOpen] = useState(false);
+  const { profile } = useAuth();
 
   const handleOpenBook = () => {
     if (!isOpen) {
-      setIsOpen(true)
+      setIsOpen(true);
     }
-  }
+  };
 
   const handleCloseBook = () => {
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   return (
     <main className="fixed inset-0 overflow-y-auto overflow-x-hidden">
@@ -61,5 +61,5 @@ export default function Home() {
         </AnimatePresence>
       </div>
     </main>
-  )
+  );
 }

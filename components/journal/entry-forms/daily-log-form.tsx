@@ -1,177 +1,182 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { motion } from "framer-motion"
-import { X, Save } from "lucide-react"
-import { useJournal } from "@/hooks/use-journal"
-import { toast } from "sonner"
-import { logger } from "@/lib/logger"
+import * as React from "react";
+import { motion } from "framer-motion";
+import { X, Save } from "lucide-react";
+import { useJournal } from "@/hooks/use-journal";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface DailyLogFormProps {
-    onClose: () => void
-    onSuccess: () => void
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
 const MOOD_OPTIONS = [
-    { emoji: "🤩", label: "Great" },
-    { emoji: "😃", label: "Good" },
-    { emoji: "😌", label: "Calm" },
-    { emoji: "😐", label: "Okay" },
-    { emoji: "😕", label: "Uneasy" },
-    { emoji: "😢", label: "Sad" },
-    { emoji: "😤", label: "Angry" },
-]
+  { emoji: "🤩", label: "Great" },
+  { emoji: "😃", label: "Good" },
+  { emoji: "😌", label: "Calm" },
+  { emoji: "😐", label: "Okay" },
+  { emoji: "😕", label: "Uneasy" },
+  { emoji: "😢", label: "Sad" },
+  { emoji: "😤", label: "Angry" },
+];
 
 export function DailyLogForm({ onClose, onSuccess }: DailyLogFormProps) {
-    const { addEntry } = useJournal()
-    const [mood, setMood] = React.useState<string | null>(null)
-    const [cravings, setCravings] = React.useState<boolean | null>(null)
-    const [used, setUsed] = React.useState<boolean | null>(null)
-    const [note, setNote] = React.useState("")
-    const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const { addEntry } = useJournal();
+  const [mood, setMood] = React.useState<string | null>(null);
+  const [cravings, setCravings] = React.useState<boolean | null>(null);
+  const [used, setUsed] = React.useState<boolean | null>(null);
+  const [note, setNote] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!mood && cravings === null && used === null && !note.trim()) {
-            toast.error("Add a mood, cravings/used status, or note before saving.")
-            return
-        }
-
-        try {
-            setIsSubmitting(true)
-            await addEntry('daily-log', { mood, cravings, used, note })
-            onSuccess()
-            onClose()
-        } catch (error) {
-            logger.error("Failed to save daily log", { error })
-            toast.error("Couldn't save your check-in. Please try again.")
-        } finally {
-            setIsSubmitting(false)
-        }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mood && cravings === null && used === null && !note.trim()) {
+      toast.error("Add a mood, cravings/used status, or note before saving.");
+      return;
     }
 
-    return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+    try {
+      setIsSubmitting(true);
+      await addEntry("daily-log", { mood, cravings, used, note });
+      onSuccess();
+      onClose();
+    } catch (error) {
+      logger.error("Failed to save daily log", { error });
+      toast.error("Couldn't save your check-in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+    >
+      <div className="bg-[#f0eadd] w-full max-w-lg rounded-lg shadow-2xl p-6 relative pointer-events-auto border-2 border-[var(--journal-line)]/20 flex flex-col max-h-[90vh]">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-[var(--journal-text)]/50 hover:text-[var(--journal-text)] transition-colors"
         >
-            <div className="bg-[#f0eadd] w-full max-w-lg rounded-lg shadow-2xl p-6 relative pointer-events-auto border-2 border-[var(--journal-line)]/20 flex flex-col max-h-[90vh]">
+          <X className="w-6 h-6" />
+        </button>
+
+        <h2 className="font-heading text-2xl text-[var(--journal-ribbon-red)] text-center mb-6">
+          Daily Check-in
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto pr-2">
+          {/* Mood Selection */}
+          <div className="space-y-2">
+            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+              Mood (optional)
+            </label>
+            <div className="flex flex-wrap gap-3 justify-center">
+              {MOOD_OPTIONS.map((option) => (
                 <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-[var(--journal-text)]/50 hover:text-[var(--journal-text)] transition-colors"
-                >
-                    <X className="w-6 h-6" />
-                </button>
-
-                <h2 className="font-heading text-2xl text-[var(--journal-ribbon-red)] text-center mb-6">
-                    Daily Check-in
-                </h2>
-
-                <form onSubmit={handleSubmit} className="space-y-6 overflow-y-auto pr-2">
-                    {/* Mood Selection */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
-                            Mood (optional)
-                        </label>
-                        <div className="flex flex-wrap gap-3 justify-center">
-                            {MOOD_OPTIONS.map((option) => (
-                                <button
-                                    key={option.label}
-                                    type="button"
-                                    onClick={() => setMood(mood === option.emoji ? null : option.emoji)}
-                                    className={`
+                  key={option.label}
+                  type="button"
+                  onClick={() => setMood(mood === option.emoji ? null : option.emoji)}
+                  className={`
                                         w-12 h-12 rounded-full text-2xl flex items-center justify-center transition-all
-                                        ${mood === option.emoji
-                                            ? 'bg-[var(--journal-ribbon-red)] text-white scale-110 shadow-lg'
-                                            : 'bg-white/50 hover:bg-white hover:scale-105'
+                                        ${
+                                          mood === option.emoji
+                                            ? "bg-[var(--journal-ribbon-red)] text-white scale-110 shadow-lg"
+                                            : "bg-white/50 hover:bg-white hover:scale-105"
                                         }
                                     `}
-                                    title={option.label}
-                                >
-                                    {option.emoji}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Cravings / Used */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
-                                Cravings?
-                            </label>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setCravings(false)}
-                                    className={`px-3 py-2 rounded-full border text-sm ${cravings === false ? 'bg-white text-[var(--journal-text)] border-[var(--journal-ribbon-red)]' : 'border-transparent bg-white/40 text-[var(--journal-text)]/60'}`}
-                                >
-                                    No
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setCravings(cravings === true ? null : true)}
-                                    className={`px-3 py-2 rounded-full border text-sm ${cravings === true ? 'bg-[var(--journal-ribbon-red)] text-white border-[var(--journal-ribbon-red)]' : 'border-transparent bg-white/40 text-[var(--journal-text)]/60'}`}
-                                >
-                                    Yes
-                                </button>
-                            </div>
-                            <p className="text-xs text-[var(--journal-text)]/50 font-handlee">Leave unanswered if not sure.</p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
-                                Used?
-                            </label>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setUsed(false)}
-                                    className={`px-3 py-2 rounded-full border text-sm ${used === false ? 'bg-white text-[var(--journal-text)] border-[var(--journal-ribbon-red)]' : 'border-transparent bg-white/40 text-[var(--journal-text)]/60'}`}
-                                >
-                                    No
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setUsed(used === true ? null : true)}
-                                    className={`px-3 py-2 rounded-full border text-sm ${used === true ? 'bg-[var(--journal-ribbon-red)] text-white border-[var(--journal-ribbon-red)]' : 'border-transparent bg-white/40 text-[var(--journal-text)]/60'}`}
-                                >
-                                    Yes
-                                </button>
-                            </div>
-                            <p className="text-xs text-[var(--journal-text)]/50 font-handlee">Leave blank if not ready to share.</p>
-                        </div>
-                    </div>
-
-                    {/* Note */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
-                            Quick Note (optional)
-                        </label>
-                        <textarea
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            placeholder="Jot a few words about today..."
-                            className="w-full h-32 p-3 rounded-md bg-white/50 border border-[var(--journal-line)]/30 focus:border-[var(--journal-ribbon-red)] focus:ring-1 focus:ring-[var(--journal-ribbon-red)] outline-none resize-none font-handlee text-lg"
-                            spellCheck={false}
-                        />
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="pt-4 flex justify-end">
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="flex items-center gap-2 bg-[var(--journal-ribbon-red)] text-white px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <Save className="w-4 h-4" />
-                            {isSubmitting ? 'Saving...' : 'Save Check-in'}
-                        </button>
-                    </div>
-                </form>
+                  title={option.label}
+                >
+                  {option.emoji}
+                </button>
+              ))}
             </div>
-        </motion.div>
-    )
+          </div>
+
+          {/* Cravings / Used */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+                Cravings?
+              </label>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setCravings(false)}
+                  className={`px-3 py-2 rounded-full border text-sm ${cravings === false ? "bg-white text-[var(--journal-text)] border-[var(--journal-ribbon-red)]" : "border-transparent bg-white/40 text-[var(--journal-text)]/60"}`}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCravings(cravings === true ? null : true)}
+                  className={`px-3 py-2 rounded-full border text-sm ${cravings === true ? "bg-[var(--journal-ribbon-red)] text-white border-[var(--journal-ribbon-red)]" : "border-transparent bg-white/40 text-[var(--journal-text)]/60"}`}
+                >
+                  Yes
+                </button>
+              </div>
+              <p className="text-xs text-[var(--journal-text)]/50 font-handlee">
+                Leave unanswered if not sure.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+                Used?
+              </label>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setUsed(false)}
+                  className={`px-3 py-2 rounded-full border text-sm ${used === false ? "bg-white text-[var(--journal-text)] border-[var(--journal-ribbon-red)]" : "border-transparent bg-white/40 text-[var(--journal-text)]/60"}`}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUsed(used === true ? null : true)}
+                  className={`px-3 py-2 rounded-full border text-sm ${used === true ? "bg-[var(--journal-ribbon-red)] text-white border-[var(--journal-ribbon-red)]" : "border-transparent bg-white/40 text-[var(--journal-text)]/60"}`}
+                >
+                  Yes
+                </button>
+              </div>
+              <p className="text-xs text-[var(--journal-text)]/50 font-handlee">
+                Leave blank if not ready to share.
+              </p>
+            </div>
+          </div>
+
+          {/* Note */}
+          <div className="space-y-2">
+            <label className="block text-sm font-bold text-[var(--journal-text)]/70 uppercase tracking-wider">
+              Quick Note (optional)
+            </label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Jot a few words about today..."
+              className="w-full h-32 p-3 rounded-md bg-white/50 border border-[var(--journal-line)]/30 focus:border-[var(--journal-ribbon-red)] focus:ring-1 focus:ring-[var(--journal-ribbon-red)] outline-none resize-none font-handlee text-lg"
+              spellCheck={false}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="pt-4 flex justify-end">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 bg-[var(--journal-ribbon-red)] text-white px-6 py-2 rounded-full font-bold shadow-md hover:shadow-lg hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="w-4 h-4" />
+              {isSubmitting ? "Saving..." : "Save Check-in"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </motion.div>
+  );
 }

@@ -1,9 +1,7 @@
 # How to [Accomplish Task]
 
-**Last Updated**: YYYY-MM-DD
-**Difficulty**: Beginner | Intermediate | Advanced
-**Estimated Time**: X minutes
-**Prerequisites**: [What you need to know/have]
+**Last Updated**: YYYY-MM-DD **Difficulty**: Beginner | Intermediate | Advanced
+**Estimated Time**: X minutes **Prerequisites**: [What you need to know/have]
 
 ---
 
@@ -12,6 +10,7 @@
 ### What You'll Learn
 
 By the end of this guide, you will be able to:
+
 - [Learning objective 1]
 - [Learning objective 2]
 - [Learning objective 3]
@@ -23,14 +22,17 @@ By the end of this guide, you will be able to:
 ### Prerequisites
 
 **Required Knowledge**:
+
 - [Skill/knowledge 1]
 - [Skill/knowledge 2]
 
 **Required Tools/Setup**:
+
 - [Tool 1] - [Version/details]
 - [Tool 2] - [Version/details]
 
 **Required Access**:
+
 - [Access requirement 1]
 - [Access requirement 2]
 
@@ -69,6 +71,7 @@ If you're familiar with [topic] and just need a quick reference:
    ```
 
    **Expected output**:
+
    ```
    [What you should see]
    ```
@@ -78,9 +81,10 @@ If you're familiar with [topic] and just need a quick reference:
    [Explanation]
 
    **Example**:
+
    ```typescript
    // [Code example with comments]
-   [code]
+   [code];
    ```
 
 3. **[Sub-step 3]**
@@ -88,10 +92,12 @@ If you're familiar with [topic] and just need a quick reference:
    [Explanation]
 
 **Verify this step**:
+
 - [ ] [Verification checkpoint 1]
 - [ ] [Verification checkpoint 2]
 
 **Troubleshooting**:
+
 - **Problem**: [Common issue]
   - **Solution**: [How to fix]
 
@@ -112,11 +118,13 @@ If you're familiar with [topic] and just need a quick reference:
    [Explanation]
 
    **Visual reference**:
+
    ```
    [ASCII diagram or description of what you should see]
    ```
 
 **Verify this step**:
+
 - [ ] [Checkpoint]
 
 ---
@@ -167,10 +175,12 @@ When [doing this task], we recommend:
 ### Common Pitfalls to Avoid
 
 ❌ **Don't [anti-pattern]**
+
 - **Why**: [Explanation of problem]
 - **Instead**: [Correct approach]
 
 ❌ **Don't [anti-pattern]**
+
 - **Why**: [Explanation]
 - **Instead**: [Correct approach]
 
@@ -183,16 +193,13 @@ When [doing this task], we recommend:
 **Scenario**: [Description of scenario]
 
 **Step-by-step**:
+
 ```typescript
 // [Commented code example]
 // Step 1: [Description]
-[code]
-
-// Step 2: [Description]
-[code]
-
 // Result: [What this produces]
-[code]
+// Step 2: [Description]
+[code][code][code];
 ```
 
 **Explanation**: [Why this works]
@@ -204,12 +211,14 @@ When [doing this task], we recommend:
 **Scenario**: [Description]
 
 **Complete example**:
+
 ```typescript
 // [Full working example with extensive comments]
-[code]
+[code];
 ```
 
 **Key points**:
+
 - [Point 1]: [Explanation]
 - [Point 2]: [Explanation]
 
@@ -222,16 +231,19 @@ When [doing this task], we recommend:
 Once you're comfortable with the basics, you might want to explore:
 
 **[Advanced topic 1]**:
+
 - [Brief description]
 - See: [Link to relevant doc]
 
 **[Advanced topic 2]**:
+
 - [Brief description]
 - See: [Link to relevant doc]
 
 ### Related Guides
 
 **If you want to learn more about [related topic]**:
+
 - [Guide 1] - [What it covers]
 - [Guide 2] - [What it covers]
 
@@ -242,20 +254,24 @@ Once you're comfortable with the basics, you might want to explore:
 ### Problem: [Common issue 1]
 
 **Symptoms**:
+
 - [How this manifests]
 
 **Possible causes**:
+
 1. [Cause 1]: [Check this]
 2. [Cause 2]: [Check this]
 
 **Solutions**:
 
 **If [condition]**:
+
 ```bash
 # [Fix command]
 ```
 
 **If [other condition]**:
+
 ```bash
 # [Different fix]
 ```
@@ -289,10 +305,12 @@ Once you're comfortable with the basics, you might want to explore:
 ### Documentation
 
 **Official Docs**:
+
 - [Doc 1] - [URL] - [What it covers]
 - [Doc 2] - [URL] - [What it covers]
 
 **Internal Docs**:
+
 - [ARCHITECTURE.md](../../ARCHITECTURE.md) - [Relevant section]
 - [DEVELOPMENT.md](../../DEVELOPMENT.md) - [Relevant section]
 
@@ -323,9 +341,11 @@ Now that you've completed this guide:
 ### Continue Learning
 
 **Beginner → Intermediate**:
+
 - [Next level guide]
 
 **Intermediate → Advanced**:
+
 - [Advanced guide]
 
 ---
@@ -335,6 +355,7 @@ Now that you've completed this guide:
 ### When to Update
 
 Update this guide when:
+
 - Tools or dependencies change
 - Steps become outdated
 - New best practices emerge
@@ -357,8 +378,8 @@ If you find issues or have improvements:
 
 ## 🗓️ Version History
 
-| Date | Changes | Author |
-|------|---------|--------|
+| Date       | Changes               | Author   |
+| ---------- | --------------------- | -------- |
 | YYYY-MM-DD | Initial guide created | [Author] |
 
 ---
@@ -368,6 +389,7 @@ If you find issues or have improvements:
 **Usage Notes for Guide Authors:**
 
 **Structure Guidelines**:
+
 - Keep steps focused and sequential
 - Use clear, action-oriented headings
 - Include verification at each major step
@@ -375,6 +397,7 @@ If you find issues or have improvements:
 - Use examples liberally
 
 **Writing Style**:
+
 - Use second person ("you will")
 - Be conversational but precise
 - Explain WHY not just WHAT
@@ -382,12 +405,14 @@ If you find issues or have improvements:
 - Link to other docs for deep dives
 
 **Code Examples**:
+
 - Always include comments
 - Show expected output
 - Use realistic examples
 - Test all code before committing
 
 **Maintenance**:
+
 - Review quarterly
 - Update when dependencies change
 - Add troubleshooting as issues discovered

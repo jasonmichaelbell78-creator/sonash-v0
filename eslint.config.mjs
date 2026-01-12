@@ -15,14 +15,14 @@ export default [
   },
   {
     ignores: [
-      'node_modules/**',
-      '.next/**',
-      'out/**',
-      'dist-tests/**',
-      'coverage/**',
-      'src/dataconnect-generated/**',
-      'functions/lib/**',
-      '*.config.mjs',
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "dist-tests/**",
+      "coverage/**",
+      "src/dataconnect-generated/**",
+      "functions/lib/**",
+      "*.config.mjs",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
@@ -33,7 +33,10 @@ export default [
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-hooks/set-state-in-effect": "warn",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
       "@typescript-eslint/no-explicit-any": "warn",
       "no-console": "off",
     },
@@ -46,7 +49,7 @@ export default [
       globals: {
         // Node.js globals except __filename/__dirname (scripts define these from import.meta.url)
         ...Object.fromEntries(
-          Object.entries(globals.node).filter(([k]) => !['__filename', '__dirname'].includes(k))
+          Object.entries(globals.node).filter(([k]) => !["__filename", "__dirname"].includes(k))
         ),
       },
     },

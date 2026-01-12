@@ -1,32 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from "react"
-import { type Coordinates } from "@/lib/utils/distance"
+import { useState, useEffect, useCallback } from "react";
+import { type Coordinates } from "@/lib/utils/distance";
 
-export type GeolocationStatus = "idle" | "requesting" | "granted" | "denied" | "unavailable" | "error"
+export type GeolocationStatus =
+  | "idle"
+  | "requesting"
+  | "granted"
+  | "denied"
+  | "unavailable"
+  | "error";
 
 export interface GeolocationState {
   /** User's current coordinates (null if not available) */
-  coordinates: Coordinates | null
+  coordinates: Coordinates | null;
   /** Current status of geolocation permission/request */
-  status: GeolocationStatus
+  status: GeolocationStatus;
   /** Error message if status is "error" or "denied" */
-  error: string | null
+  error: string | null;
   /** Whether coordinates are currently being fetched */
-  loading: boolean
+  loading: boolean;
   /** Timestamp of last successful location update */
-  lastUpdated: number | null
+  lastUpdated: number | null;
 }
 
 export interface UseGeolocationOptions {
   /** Whether to request location immediately on mount (default: false) */
-  requestOnMount?: boolean
+  requestOnMount?: boolean;
   /** Enable high accuracy mode - uses GPS if available (default: false) */
-  enableHighAccuracy?: boolean
+  enableHighAccuracy?: boolean;
   /** Maximum age of cached position in milliseconds (default: 5 minutes) */
-  maximumAge?: number
+  maximumAge?: number;
   /** Timeout for location request in milliseconds (default: 10 seconds) */
-  timeout?: number
+  timeout?: number;
 }
 
 const DEFAULT_OPTIONS: UseGeolocationOptions = {
@@ -34,7 +40,7 @@ const DEFAULT_OPTIONS: UseGeolocationOptions = {
   enableHighAccuracy: false,
   maximumAge: 5 * 60 * 1000, // 5 minutes - avoid repeated permission prompts
   timeout: 10000, // 10 seconds
-}
+};
 
 /**
  * React hook for browser geolocation with permission handling
@@ -60,7 +66,7 @@ const DEFAULT_OPTIONS: UseGeolocationOptions = {
  * }
  */
 export function useGeolocation(options: UseGeolocationOptions = {}) {
-  const opts = { ...DEFAULT_OPTIONS, ...options }
+  const opts = { ...DEFAULT_OPTIONS, ...options };
 
   const [state, setState] = useState<GeolocationState>({
     coordinates: null,
@@ -68,10 +74,10 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
     error: null,
     loading: false,
     lastUpdated: null,
-  })
+  });
 
   // Check if geolocation is available in this browser
-  const isAvailable = typeof window !== "undefined" && "geolocation" in navigator
+  const isAvailable = typeof window !== "undefined" && "geolocation" in navigator;
 
   /**
    * Request the user's location
@@ -84,8 +90,8 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
         status: "unavailable",
         error: "Geolocation is not supported by your browser",
         loading: false,
-      }))
-      return
+      }));
+      return;
     }
 
     setState((prev) => ({
@@ -93,7 +99,7 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
       status: "requesting",
       loading: true,
       error: null,
-    }))
+    }));
 
     navigator.geolocation.getCurrentPosition(
       // Success callback
@@ -107,24 +113,25 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
           error: null,
           loading: false,
           lastUpdated: Date.now(),
-        })
+        });
       },
       // Error callback
       (error) => {
-        let status: GeolocationStatus = "error"
-        let errorMessage = "Unable to retrieve your location"
+        let status: GeolocationStatus = "error";
+        let errorMessage = "Unable to retrieve your location";
 
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            status = "denied"
-            errorMessage = "Location access was denied. Please enable location in your browser settings."
-            break
+            status = "denied";
+            errorMessage =
+              "Location access was denied. Please enable location in your browser settings.";
+            break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = "Location information is unavailable."
-            break
+            errorMessage = "Location information is unavailable.";
+            break;
           case error.TIMEOUT:
-            errorMessage = "Location request timed out. Please try again."
-            break
+            errorMessage = "Location request timed out. Please try again.";
+            break;
         }
 
         setState((prev) => ({
@@ -132,7 +139,7 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
           status,
           error: errorMessage,
           loading: false,
-        }))
+        }));
       },
       // Options
       {
@@ -140,8 +147,8 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
         maximumAge: opts.maximumAge,
         timeout: opts.timeout,
       }
-    )
-  }, [isAvailable, opts.enableHighAccuracy, opts.maximumAge, opts.timeout])
+    );
+  }, [isAvailable, opts.enableHighAccuracy, opts.maximumAge, opts.timeout]);
 
   /**
    * Clear the current location and reset to idle state
@@ -153,20 +160,20 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
       error: null,
       loading: false,
       lastUpdated: null,
-    })
-  }, [])
+    });
+  }, []);
 
   // Request on mount if option is enabled
   useEffect(() => {
     if (opts.requestOnMount && isAvailable) {
-      requestLocation()
+      requestLocation();
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     ...state,
     requestLocation,
     clearLocation,
     isAvailable,
-  }
+  };
 }

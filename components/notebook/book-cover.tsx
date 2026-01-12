@@ -1,87 +1,87 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
-import dynamic from "next/dynamic"
-import { useEffect, useMemo, useState } from "react"
-import { useAuth } from "@/components/providers/auth-provider"
-import { differenceInDays } from "date-fns"
-import { logger } from "@/lib/logger"
-import { parseFirebaseTimestamp } from "@/lib/types/firebase-guards"
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/components/providers/auth-provider";
+import { differenceInDays } from "date-fns";
+import { logger } from "@/lib/logger";
+import { parseFirebaseTimestamp } from "@/lib/types/firebase-guards";
 
 // Code splitting: Lazy load heavy modal components
 const SignInModal = dynamic(() => import("@/components/auth/sign-in-modal"), {
   loading: () => null, // No loading indicator needed for modals
-  ssr: false // Don't server-render modals
-})
+  ssr: false, // Don't server-render modals
+});
 
 const OnboardingWizard = dynamic(() => import("@/components/onboarding/onboarding-wizard"), {
   loading: () => null,
-  ssr: false
-})
+  ssr: false,
+});
 
 interface BookCoverProps {
-  onOpen: () => void
-  isAnimating?: boolean
-  nickname?: string // Fallback prop
-  cleanDays?: number // Fallback prop
+  onOpen: () => void;
+  isAnimating?: boolean;
+  nickname?: string; // Fallback prop
+  cleanDays?: number; // Fallback prop
 }
 
 export default function BookCover({ onOpen, isAnimating = false }: BookCoverProps) {
-  const { user, profile, loading } = useAuth()
-  const [viewportWidth, setViewportWidth] = useState(0)
-  const [showSignIn, setShowSignIn] = useState(false)
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const { user, profile, loading } = useAuth();
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === "undefined") return;
 
-    const updateDimensions = () => setViewportWidth(window.innerWidth)
-    updateDimensions()
+    const updateDimensions = () => setViewportWidth(window.innerWidth);
+    updateDimensions();
 
-    window.addEventListener("resize", updateDimensions)
-    return () => window.removeEventListener("resize", updateDimensions)
-  }, [])
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
 
-  const isMobile = viewportWidth > 0 && viewportWidth < 768
-  const bookWidth = isMobile ? Math.min(viewportWidth * 0.9, 600) : 600
-  const bookHeight = isMobile ? bookWidth * 1.42 : 850
+  const isMobile = viewportWidth > 0 && viewportWidth < 768;
+  const bookWidth = isMobile ? Math.min(viewportWidth * 0.9, 600) : 600;
+  const bookHeight = isMobile ? bookWidth * 1.42 : 850;
 
   // Calculate real clean days if available
   const cleanDays = useMemo(() => {
-    if (!profile?.cleanStart) return 0
+    if (!profile?.cleanStart) return 0;
 
     try {
-      const parsedDate = parseFirebaseTimestamp(profile.cleanStart)
+      const parsedDate = parseFirebaseTimestamp(profile.cleanStart);
 
       if (!parsedDate) {
-        logger.warn("Invalid cleanStart value - could not parse timestamp")
-        return 0
+        logger.warn("Invalid cleanStart value - could not parse timestamp");
+        return 0;
       }
 
-      return Math.max(0, differenceInDays(new Date(), parsedDate))
+      return Math.max(0, differenceInDays(new Date(), parsedDate));
     } catch (error) {
-      logger.warn("Error calculating clean days", { error })
-      return 0
+      logger.warn("Error calculating clean days", { error });
+      return 0;
     }
-  }, [profile])
+  }, [profile]);
 
-  const displayNickname = profile?.nickname || "Friend"
-  const isProfileComplete = !!profile?.cleanStart
+  const displayNickname = profile?.nickname || "Friend";
+  const isProfileComplete = !!profile?.cleanStart;
 
   const handleInteraction = () => {
-    if (loading) return
+    if (loading) return;
 
     if (user) {
       if (isProfileComplete) {
-        onOpen()
+        onOpen();
       } else {
-        setShowOnboarding(true)
+        setShowOnboarding(true);
       }
     } else {
-      setShowSignIn(true)
+      setShowSignIn(true);
     }
-  }
+  };
 
   return (
     <>
@@ -100,7 +100,8 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
           style={{
             width: "90%",
             height: "64px",
-            background: "radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 80%)",
+            background:
+              "radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 80%)",
             filter: "blur(20px)",
             transform: "translateX(-50%) scaleY(0.4)",
           }}
@@ -237,7 +238,7 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
                 <p
                   className="font-handlee text-2xl text-[#e0d8cc] mb-2"
                   style={{
-                    textShadow: "1px 1px 0 rgba(0,0,0,0.5)"
+                    textShadow: "1px 1px 0 rgba(0,0,0,0.5)",
                   }}
                 >
                   Sign in to open your notebook.
@@ -319,18 +320,14 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
           <SignInModal
             onClose={() => setShowSignIn(false)}
             onSuccess={() => {
-              setShowSignIn(false)
+              setShowSignIn(false);
               // If profile incomplete, onboarding will trigger on next tap or we could trigger immediately
               // Let's rely on user tapping "Finish Setup" to keep it intentional
             }}
           />
         )}
-        {showOnboarding && (
-          <OnboardingWizard
-            onComplete={() => setShowOnboarding(false)}
-          />
-        )}
+        {showOnboarding && <OnboardingWizard onComplete={() => setShowOnboarding(false)} />}
       </AnimatePresence>
     </>
-  )
+  );
 }

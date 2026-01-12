@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
 interface NotebookPageProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function NotebookPage({ children }: NotebookPageProps) {
-  return <div className="h-full overflow-y-auto scrollbar-hide">{children}</div>
+  return <div className="h-full overflow-y-auto scrollbar-hide">{children}</div>;
 }

@@ -12,9 +12,9 @@
  * - Handles loading and error states
  * - Uses QuotesService for date-based rotation
  */
-import { useState, useEffect } from 'react';
-import { QuotesService, type Quote } from '@/lib/db/quotes';
-import { logger } from '@/lib/logger';
+import { useState, useEffect } from "react";
+import { QuotesService, type Quote } from "@/lib/db/quotes";
+import { logger } from "@/lib/logger";
 
 // Module-level cache to prevent redundant fetches across components
 let cachedQuote: Quote | null = null;
@@ -25,7 +25,7 @@ let fetchPromise: Promise<Quote | null> | null = null;
  * Get today's date string for cache invalidation
  */
 function getTodayString(): string {
-  return new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+  return new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
 }
 
 /**
@@ -62,7 +62,7 @@ async function fetchDailyQuote(): Promise<Quote | null> {
       cacheDate = today;
       return todayQuote;
     } catch (error) {
-      logger.error('Failed to fetch daily quote', {
+      logger.error("Failed to fetch daily quote", {
         errorType: error instanceof Error ? error.constructor.name : typeof error,
       });
       // Cache the failure to prevent repeated fetch attempts during outages
@@ -154,7 +154,9 @@ export function useDailyQuote(): UseDailyQuoteResult {
         cacheDate = null;
         fetchPromise = null;
         setLoading(true);
-        fetchDailyQuote().then(setQuote).finally(() => setLoading(false));
+        fetchDailyQuote()
+          .then(setQuote)
+          .finally(() => setLoading(false));
         // Reschedule for next day
         scheduleMidnightRefresh();
       }, msUntilMidnight);
@@ -165,7 +167,7 @@ export function useDailyQuote(): UseDailyQuoteResult {
     };
 
     // Only schedule if window is available (client-side)
-    if (typeof globalThis.window !== 'undefined') {
+    if (typeof globalThis.window !== "undefined") {
       return scheduleMidnightRefresh();
     }
     return undefined;
@@ -177,7 +179,9 @@ export function useDailyQuote(): UseDailyQuoteResult {
     cacheDate = null;
     fetchPromise = null;
     setLoading(true);
-    fetchDailyQuote().then(setQuote).finally(() => setLoading(false));
+    fetchDailyQuote()
+      .then(setQuote)
+      .finally(() => setLoading(false));
   };
 
   return { quote, loading, refresh };

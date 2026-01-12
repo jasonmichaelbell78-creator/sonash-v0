@@ -1,26 +1,29 @@
 # SoNash Roadmap Log
 
-**Document Version:** 2.0
-**Last Updated:** 2026-01-02
-**Status:** ACTIVE (append-only archive)
+**Document Version:** 2.0 **Last Updated:** 2026-01-02 **Status:** ACTIVE
+(append-only archive)
 
 ---
 
 ## 🎯 Document Purpose
 
-This is the **archive** of completed roadmap items for SoNash. This document serves as:
+This is the **archive** of completed roadmap items for SoNash. This document
+serves as:
 
 1. **Historical Record** - All completed milestones and features
 2. **Reference for Context** - What was accomplished and when
 3. **Audit Trail** - Evidence of completed work
 
-**⚠️ IMPORTANT**: This document is append-only. Items are moved here from [ROADMAP.md](./ROADMAP.md) when completed.
+**⚠️ IMPORTANT**: This document is append-only. Items are moved here from
+[ROADMAP.md](./ROADMAP.md) when completed.
 
 ---
 
 ## 📊 Status
 
-This document contains **all completed milestones** from the SoNash product roadmap:
+This document contains **all completed milestones** from the SoNash product
+roadmap:
+
 - **M0 - Baseline**: ✅ Complete (Q4 2025)
 - **M1 - Foundation**: ✅ Complete (Q1 2026)
 - **M1.6 Today Page Enhancement**: ✅ Complete (December 2025)
@@ -51,6 +54,7 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
 ### January 2, 2026 - Documentation Standardization Phase 3 & 4 Complete
 
 **Completed:**
+
 - ✅ **Phase 3 - Migrate Tier 1-2 Documents** (100% complete, 5/5 tasks)
   - Migrated SESSION_CONTEXT.md to v1.2 with standardized structure
   - Migrated ROADMAP.md to v2.0 with status dashboard
@@ -88,6 +92,7 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
   - Patterns distilled to claude.md and AI_REVIEW_LEARNINGS_LOG.md
 
 **Impact:**
+
 - 📊 **Overall Progress:** 57% complete (4/7 phases)
 - 📝 **Commits:** 43 commits made on 2026-01-02
 - 🔒 **Security:** Automated security scanning now in CI
@@ -100,7 +105,9 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
 ### December 31, 2025 - Documentation Standardization Initiative
 
 **Completed:**
-- ✅ Created DOCUMENTATION_STANDARDIZATION_PLAN.md (comprehensive 6-phase + Phase 1.5 plan)
+
+- ✅ Created DOCUMENTATION_STANDARDIZATION_PLAN.md (comprehensive 6-phase +
+  Phase 1.5 plan)
   - Phase 1: Templates & Standards (10-12h)
   - Phase 1.5: Multi-AI Review System (8-10h)
   - Phase 2: Automation Scripts (7-9h)
@@ -111,7 +118,8 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
   - 4-tier categorization (Critical/Major/Minor/Trivial)
   - Triage decision matrix
   - Documentation template for reviews
-- ✅ Created .github/pull_request_template.md (PR naming & description standards)
+- ✅ Created .github/pull_request_template.md (PR naming & description
+  standards)
   - Conventional Commits format: `<type>(<scope>): <description>`
   - Required sections (What/Why/How/Testing)
   - CodeRabbit review integration
@@ -129,17 +137,22 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
   - PR template clarity improvements
 
 **Impact:**
-- 🎯 **Hard blocker established:** All project work blocked until documentation standardization complete
-- 📝 **Standards defined:** PR naming, description, and commit message conventions
+
+- 🎯 **Hard blocker established:** All project work blocked until documentation
+  standardization complete
+- 📝 **Standards defined:** PR naming, description, and commit message
+  conventions
 - 🤖 **AI workflow improved:** Systematic CodeRabbit review process
-- 🔄 **Multi-AI reviews:** Reusable templates for ongoing code quality management
+- 🔄 **Multi-AI reviews:** Reusable templates for ongoing code quality
+  management
 - ✅ **Immediate enforcement:** PR template active on all new PRs
 
-**Documentation Created:** 3 new files (1,923 + 244 + 79 lines)
-**Documentation Added:** 5 source files (4,427 lines)
-**Total Documentation:** ~6,673 lines added
+**Documentation Created:** 3 new files (1,923 + 244 + 79 lines) **Documentation
+Added:** 5 source files (4,427 lines) **Total Documentation:** ~6,673 lines
+added
 
 **Branch Cleanup:**
+
 - Cleaned up local merged branches
 - Identified 8 old remote branches for deletion (Dec 28-30)
 
@@ -147,7 +160,9 @@ For **active work**, see [ROADMAP.md](./ROADMAP.md).
 
 ## Overview
 
-This document contains the historical record of completed milestones, tasks, and features from the SoNash roadmap. Items are moved here once they are fully completed to keep the active roadmap focused on current and future work.
+This document contains the historical record of completed milestones, tasks, and
+features from the SoNash roadmap. Items are moved here once they are fully
+completed to keep the active roadmap focused on current and future work.
 
 ---
 
@@ -156,10 +171,12 @@ This document contains the historical record of completed milestones, tasks, and
 ### M0 - Baseline & Alignment (✅ Complete - Q4 2025)
 
 **Objectives:**
+
 - Establish project documentation and success metrics
 - Define owners and reporting cadence
 
 **Deliverables:**
+
 - ✅ Canonical roadmap published
 - ✅ Definitions of Done for each milestone
 - ✅ Initial KPI tracking
@@ -173,6 +190,7 @@ This document contains the historical record of completed milestones, tasks, and
 ### Week 1-3: Security Hardening (✅ Complete)
 
 **Completed Items:**
+
 - ✅ Server-side validation (Zod schemas in Cloud Functions)
 - ✅ Rate limiting (10 req/min per user)
 - ✅ Firestore security rules hardened
@@ -183,19 +201,25 @@ This document contains the historical record of completed milestones, tasks, and
 - ✅ Incident response runbook
 
 **Deferred Items:**
-- ⏸️ Firebase App Check with reCAPTCHA v3 *(deferred - blocking users, see recaptcha_removal_guide.md)*
 
-**Documentation:** [docs/SECURITY.md](./docs/SECURITY.md), [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md), [docs/SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)
+- ⏸️ Firebase App Check with reCAPTCHA v3 _(deferred - blocking users, see
+  recaptcha_removal_guide.md)_
+
+**Documentation:** [docs/SECURITY.md](./docs/SECURITY.md),
+[docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md),
+[docs/SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)
 
 ---
 
 ### Week 4-6: Monitoring & Observability (✅ Foundation Complete)
 
 **Completed Items:**
+
 - ✅ Sentry error monitoring configured
 - ✅ Security audit logging (Cloud Logging)
 
 **Deferred Items:**
+
 - ⏸️ Additional monitoring moved to M2 (Technical Debt)
 
 ---
@@ -203,11 +227,13 @@ This document contains the historical record of completed milestones, tasks, and
 ### Week 7-9: Code Quality (✅ Foundation Complete)
 
 **Completed Items:**
+
 - ✅ ESLint configuration (0 errors, 29 warnings)
 - ✅ TypeScript strict mode
 - ✅ Test coverage: 97.8% (89/91 passing)
 
 **Deferred Items:**
+
 - ⏸️ CI/CD and automation moved to M2 (Technical Debt)
 
 ---
@@ -226,15 +252,17 @@ This document contains the historical record of completed milestones, tasks, and
 - ✅ Date handling standardization (`getTodayDateId()` in `date-utils.ts`)
 - ✅ Listener memory leak prevention (`isMounted` pattern in `today-page.tsx`)
 - ✅ useEffect dependency optimization (`isEditingRef` instead of state)
-- ✅ Auto-save race condition fix (`pendingSaveRef` + `saveScheduledRef` pattern)
+- ✅ Auto-save race condition fix (`pendingSaveRef` + `saveScheduledRef`
+  pattern)
 - ✅ Resources page auth race condition (`if (authLoading) return` gate)
 - ✅ Add pagination to large queries (meetings: 50, journal: 100)
 
 #### Code Quality Improvements (✅ Complete)
 
-- ✅ Refactor monolithic components - *Extracted: CleanTimeDisplay, MoodSelector, CheckInQuestions, RecoveryNotepad*
+- ✅ Refactor monolithic components - _Extracted: CleanTimeDisplay,
+  MoodSelector, CheckInQuestions, RecoveryNotepad_
 - ✅ App Check debug token production guard (in `lib/firebase.ts`)
-- ✅ Onboarding AnimatePresence fix - *Verified correct*
+- ✅ Onboarding AnimatePresence fix - _Verified correct_
 
 #### Phase 4 Backlog (✅ Complete)
 
@@ -242,16 +270,20 @@ This document contains the historical record of completed milestones, tasks, and
 - ✅ Code splitting (dynamic imports for MeetingMap and heavy components)
 - ✅ Unused dependencies cleanup (removed `embla-carousel-react`, `input-otp`)
 - ✅ Production-aware logging (logger.ts only logs errors in production)
-- ✅ Component documentation (JSDoc) - *Added to extracted components, firestore-service.ts*
-- ✅ Accessibility improvements (ARIA labels) - *Added rolegroup, radiogroup, live regions*
+- ✅ Component documentation (JSDoc) - _Added to extracted components,
+  firestore-service.ts_
+- ✅ Accessibility improvements (ARIA labels) - _Added rolegroup, radiogroup,
+  live regions_
 
-**Analysis Report:** [docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
+**Analysis Report:**
+[docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md](./docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md)
 
 ---
 
 ### Week 13+: Multi-AI Security Review Remediation (✅ Complete - Dec 21, 2025)
 
 **Analysis Results:**
+
 - **Total Issues Identified:** 95 → **71 TRUE OPEN** (after verification)
 - **Sources:** 5 new AI models + baseline 6-model aggregation
 - **Report:** See artifacts - `AUTHORITATIVE_ISSUE_REPORT.md`
@@ -259,19 +291,24 @@ This document contains the historical record of completed milestones, tasks, and
 #### Critical Security Fixes (✅ Complete)
 
 - ✅ **Journal Collection Security Gap** (JULES #3)
-  - **Issue:** `journal` collection allows direct client writes while `daily_logs` properly blocks them
-  - **Fix:** Block direct writes in `firestore.rules:35-40`, create `saveJournalEntry` Cloud Function
+  - **Issue:** `journal` collection allows direct client writes while
+    `daily_logs` properly blocks them
+  - **Fix:** Block direct writes in `firestore.rules:35-40`, create
+    `saveJournalEntry` Cloud Function
   - **Status:** Verified complete - identical security to daily_logs
 
 - ✅ **Account Linking Data Loss** (CODEX #5)
-  - **Issue:** When credential-already-in-use, signs into existing account WITHOUT migrating anonymous data
-  - **Fix:** Implemented data migration Cloud Function with smart conflict resolution
+  - **Issue:** When credential-already-in-use, signs into existing account
+    WITHOUT migrating anonymous data
+  - **Fix:** Implemented data migration Cloud Function with smart conflict
+    resolution
   - **Status:** Deployed to production (sonash-app)
 
 #### High-Priority Fixes (✅ Complete)
 
 - ✅ **Feature Flag System Non-Functional** (CLAUDE CODE #3)
-  - **Fix:** Implemented proper environment variable reading with Next.js integration
+  - **Fix:** Implemented proper environment variable reading with Next.js
+    integration
   - **Status:** Working - supports `NEXT_PUBLIC_*` flags for staged rollouts
 
 - ✅ **Timeline Array Mutation**
@@ -287,24 +324,31 @@ This document contains the historical record of completed milestones, tasks, and
 ### Week 14+: Consolidated 6-AI Code Review Remediation (✅ Majority Complete - Dec 24, 2025)
 
 **Analysis Results:**
+
 - **Total Raw Findings:** 85 → **~42 Deduplicated Issues**
 - **Consensus Score:** 6.3/10
-- **Report:** [SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)
+- **Report:**
+  [SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)
 
 #### P0 - Immediate Blockers (✅ Complete)
 
 **Package Version Fixes:**
+
 - ✅ **C1: Next.js 16.1.0 Does Not Exist** - FALSE POSITIVE (updated to 16.1.1)
 - ✅ **C2: Zod 4.1.13 Does Not Exist** - FALSE POSITIVE (updated to 4.2.1)
 - ✅ **C5: React 19 is Release Candidate** - FALSE POSITIVE (updated to 19.2.3)
 
 **Security Bypasses:**
-- ✅ **C4: Journal Collection Bypasses Cloud Functions** - ALREADY FIXED in Week 13
-- ⏸️ **C3: App Check Not Initialized on Client** - DEFERRED (see recaptcha_removal_guide.md)
+
+- ✅ **C4: Journal Collection Bypasses Cloud Functions** - ALREADY FIXED in Week
+  13
+- ⏸️ **C3: App Check Not Initialized on Client** - DEFERRED (see
+  recaptcha_removal_guide.md)
 
 #### P1 - Short-Term Fixes (✅ Complete)
 
 **Data Integrity & Migration:**
+
 - ✅ **H1: Migration Batch Exceeds 500-Operation Limit**
   - **Fix:** Implemented batch chunking with 499-operation limit per batch
   - **Status:** Supports unlimited document migration
@@ -314,24 +358,30 @@ This document contains the historical record of completed milestones, tasks, and
   - **Status:** Best-effort solution given Firestore constraints
 
 **Error Handling & UX:**
+
 - ✅ **H5: Auth Error Leaves Indefinite Loading**
   - **Fix:** Added retry mechanism with exponential backoff (3 retries)
   - **Status:** Users no longer stuck on indefinite loading
 
 - ✅ **H6: Silent Data Loss in addEntry**
-  - **Fix:** Changed return type to `Promise<{ success: boolean; error?: string }>`
+  - **Fix:** Changed return type to
+    `Promise<{ success: boolean; error?: string }>`
   - **Status:** Users now receive clear feedback about save success/failure
 
 **Performance & Memory:**
+
 - ✅ **H7: Journal Snapshot Listener Memory Leak** - ALREADY FIXED in Week 10-12
 - ✅ **H8: Journal Query Has No Pagination** - ALREADY FIXED in Week 10-12
 
 **Security Gaps:**
+
 - ✅ **H3: Inventory Bypasses Rate Limiting**
-  - **Fix:** Created `saveInventoryEntry` Cloud Function with full security stack
+  - **Fix:** Created `saveInventoryEntry` Cloud Function with full security
+    stack
   - **Status:** Inventory entries now have same security as journal & daily logs
 
 **Admin Panel Issues:**
+
 - ✅ **H2: Admin Mobile Detection Logic Missing**
   - **Fix:** Added mobile detection at start of useEffect
   - **Status:** Desktop-only restriction now enforced properly
@@ -339,8 +389,10 @@ This document contains the historical record of completed milestones, tasks, and
 #### P2 - Medium-Term Improvements (✅ Majority Complete)
 
 **Code Quality:**
+
 - ✅ **M1: Cloud Functions Code Duplication**
-  - **Fix:** Created `functions/src/security-wrapper.ts` with `withSecurityChecks()`
+  - **Fix:** Created `functions/src/security-wrapper.ts` with
+    `withSecurityChecks()`
   - **Status:** Reduced code duplication by ~65%
 
 - ✅ **M4: Meeting Countdown Date Calculation Wrong**
@@ -369,14 +421,16 @@ This document contains the historical record of completed milestones, tasks, and
   - **Fix:** Created `sanitizeForSearch()` function to strip HTML/JS
   - **Status:** COMPLETED
 
-- ✅ **M12: Date Timezone Handling Inconsistent** - ALREADY ADDRESSED in Week 10-12
+- ✅ **M12: Date Timezone Handling Inconsistent** - ALREADY ADDRESSED in Week
+  10-12
 
 - ✅ **M13: Duplicate Zod Schemas**
   - **Fix:** Moved admin schemas to schemas.ts
   - **Status:** COMPLETED
 
 - ✅ **M14: No Retry Logic for Cloud Functions**
-  - **Fix:** Created `lib/utils/retry.ts` with `retryWithBackoff()` and `retryCloudFunction()`
+  - **Fix:** Created `lib/utils/retry.ts` with `retryWithBackoff()` and
+    `retryCloudFunction()`
   - **Status:** COMPLETED
 
 - ✅ **M16: getUserProfile Returns Null for Both Not-Found and Error**
@@ -387,13 +441,17 @@ This document contains the historical record of completed milestones, tasks, and
 
 - ✅ **L1: Unused `_bounds` Variable** - Removed
 - ✅ **L2: Duplicate Comment** - Removed
-- ✅ **L3: Leaflet Icons from External CDN** - Downloaded icons to public/leaflet-icons/
+- ✅ **L3: Leaflet Icons from External CDN** - Downloaded icons to
+  public/leaflet-icons/
 - ✅ **L4: Unused rate-limiter-flexible Dependency** - Removed
-- ✅ **L5: Record<string, any> Loses Type Safety** - Created MigrationMergeData interface
+- ✅ **L5: Record<string, any> Loses Type Safety** - Created MigrationMergeData
+  interface
 - ✅ **L6: TypeScript Target es2017 Outdated** - Updated to ES2022
-- ✅ **L9: Magic Numbers Throughout** - Created QUERY_LIMITS and TIMEOUTS constants
+- ✅ **L9: Magic Numbers Throughout** - Created QUERY_LIMITS and TIMEOUTS
+  constants
 
 **Status Summary:**
+
 - ✅ Completed: 26 real issues (~20 hours)
 - ⚠️ False Positives: 5 issues (AI models had outdated knowledge)
 - ⏸️ Deferred: 1 issue (App Check)
@@ -404,19 +462,24 @@ This document contains the historical record of completed milestones, tasks, and
 ### Week 18+: Gemini 2.0 Flash Thinking Aggregated Security Review (✅ Complete - Dec 27, 2025)
 
 **Analysis Results:**
+
 - **Model:** Gemini 2.0 Flash Thinking (Aggregator)
 - **Total Raw Findings:** 46 → **9 Deduplicated Issues**
 - **Consensus Score:** 6.5/10 ("Ferrari with no brakes")
-- **Key Insight:** Repository uses "bleeding edge" tech stack (Next.js 16, Firebase 12)
+- **Key Insight:** Repository uses "bleeding edge" tech stack (Next.js 16,
+  Firebase 12)
 
 #### P0 - CRITICAL Security Fixes
 
-- ⏸️ **CRITICAL-1: Firebase App Check Explicitly Disabled** - DEFERRED (see recaptcha_removal_guide.md)
-- ✅ **CRITICAL-2: Firestore Rules Allow Direct Client Writes** - ALREADY FIXED in Week 13
+- ⏸️ **CRITICAL-1: Firebase App Check Explicitly Disabled** - DEFERRED (see
+  recaptcha_removal_guide.md)
+- ✅ **CRITICAL-2: Firestore Rules Allow Direct Client Writes** - ALREADY FIXED
+  in Week 13
 
 #### P1 - HIGH Priority Fixes (✅ Complete)
 
-- ✅ **HIGH-1: Stored XSS in searchableText Field** - ALREADY FIXED in Week 14 (M11)
+- ✅ **HIGH-1: Stored XSS in searchableText Field** - ALREADY FIXED in Week 14
+  (M11)
 - ✅ **HIGH-2: Hoisting Bug in Meeting Countdown**
   - **Fix:** Wrapped `updateTimeUntil` in `useCallback` with proper dependencies
   - **Status:** Tests passing, lint clean
@@ -425,11 +488,13 @@ This document contains the historical record of completed milestones, tasks, and
 
 - ✅ **MEDIUM-1: Silent Auth Failures** - ALREADY FIXED in Week 14 (H5)
 - ✅ **MEDIUM-2: Meeting Pagination Sort Mismatch**
-  - **Fix:** Added dayIndex field, created composite index, updated query to server-side sort
+  - **Fix:** Added dayIndex field, created composite index, updated query to
+    server-side sort
   - **Status:** Pagination now correctly ordered by time
 
 - ✅ **MEDIUM-3: Accessibility Violation - Zoom Disabled**
-  - **Fix:** Removed `maximumScale: 1` and `userScalable: false` from viewport config
+  - **Fix:** Removed `maximumScale: 1` and `userScalable: false` from viewport
+    config
   - **Status:** Users can now pinch-to-zoom, WCAG 2.1 compliant
 
 - ✅ **MEDIUM-4: Zod Version Mismatch Between Client/Server**
@@ -439,10 +504,12 @@ This document contains the historical record of completed milestones, tasks, and
 #### P3 - LOW Priority Cleanup (✅ Complete)
 
 - ✅ **LOW-1: Debug Logging in Production**
-  - **Fix:** Wrapped console logs in `if (process.env.NODE_ENV === 'development')` checks
+  - **Fix:** Wrapped console logs in
+    `if (process.env.NODE_ENV === 'development')` checks
   - **Status:** Production console now only shows structured logger output
 
 **Status Summary:**
+
 - ⏸️ Deferred: 1 issue (App Check)
 - ✅ Completed: 8 issues (5.5 hours)
 - **All issues complete!** ✅
@@ -464,7 +531,8 @@ This document contains the historical record of completed milestones, tasks, and
 - ✅ "I Made It Through Today" Button
 - ✅ Sobriety Clock (Minutes display)
 
-**Documentation:** [JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)
+**Documentation:**
+[JOURNAL_SYSTEM_UPDATE.md](./docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)
 
 ---
 
@@ -473,6 +541,7 @@ This document contains the historical record of completed milestones, tasks, and
 ### Phase 1: Dashboard + Foundations (✅ Complete - Dec 23, 2025)
 
 **Completed Items:**
+
 - [x] System health at a glance (Firestore, Auth, Functions status)
 - [x] Active user metrics (24h, 7d, 30d)
 - [x] Recent signups list
@@ -481,6 +550,7 @@ This document contains the historical record of completed milestones, tasks, and
 - [x] Firestore rules for `/_health` and `/admin_jobs`
 
 **Cloud Functions Deployed:**
+
 - `adminHealthCheck` - Tests Firestore/Auth connectivity
 - `adminGetDashboardStats` - Returns user counts, signups, job statuses
 
@@ -489,6 +559,7 @@ This document contains the historical record of completed milestones, tasks, and
 ### Phase 2: Enhanced User Lookup (✅ Complete - Dec 23, 2025)
 
 **Completed Items:**
+
 - [x] Search users by email, UID, or nickname
 - [x] User detail drawer with full profile
 - [x] Activity timeline (daily logs, journal entries)
@@ -497,6 +568,7 @@ This document contains the historical record of completed milestones, tasks, and
 - [x] All admin actions logged to GCP Cloud Logging
 
 **Cloud Functions Deployed:**
+
 - `adminSearchUsers` - Search by email/UID/nickname
 - `adminGetUserDetail` - Full user profile + activity
 - `adminUpdateUser` - Update user fields (admin notes)
@@ -507,6 +579,7 @@ This document contains the historical record of completed milestones, tasks, and
 ### Phase 3: Background Jobs Monitoring (✅ Complete - Dec 23, 2025)
 
 **Completed Items:**
+
 - [x] Jobs registry in Firestore (`admin_jobs` collection)
 - [x] Job wrapper for status tracking (with `logSecurityEvent()`)
 - [x] Jobs tab UI
@@ -514,6 +587,7 @@ This document contains the historical record of completed milestones, tasks, and
 - [x] Scheduled `cleanupOldRateLimits` (daily 3 AM CT)
 
 **Cloud Functions Deployed:**
+
 - `adminTriggerJob` - Manual job execution
 - `adminGetJobsStatus` - Job status retrieval
 - `scheduledCleanupRateLimits` - Daily rate limit cleanup
@@ -523,6 +597,7 @@ This document contains the historical record of completed milestones, tasks, and
 ### Today Page Enhancement - UX Polish (✅ Complete - Dec 23, 2025)
 
 **All 10 Objectives Completed:**
+
 - [x] Progressive check-in flow with visual progress indicator
 - [x] Loading states and skeleton screens
 - [x] Enhanced visual feedback (animations, scale effects, glow)
@@ -536,6 +611,7 @@ This document contains the historical record of completed milestones, tasks, and
 - [x] Code quality improvements (custom hooks, localStorage persistence)
 
 **New Components Created (6):**
+
 - `TodayPageSkeleton` - Loading state skeleton screen
 - `CheckInProgress` - Step-by-step progress indicator
 - `QuickActionsFab` - Floating action button with 4 shortcuts
@@ -544,6 +620,7 @@ This document contains the historical record of completed milestones, tasks, and
 - `OfflineIndicator` - Network status awareness
 
 **Custom Hooks Created (2):**
+
 - `useSmartPrompts` - Smart prompt visibility + localStorage persistence
 - `useScrollToSection` - Scroll management with useEffect
 
@@ -551,9 +628,11 @@ This document contains the historical record of completed milestones, tasks, and
 
 ### Today Page Mobile Layout Reordering (✅ Complete)
 
-**Status:** Verified - Codebase implementation matches desired mobile order through logical column grouping.
+**Status:** Verified - Codebase implementation matches desired mobile order
+through logical column grouping.
 
 **Mobile Order:**
+
 1. Time Tracker (clean time display)
 2. Daily Quote (inspiration)
 3. Today's Reading (external links)
@@ -569,86 +648,114 @@ This document contains the historical record of completed milestones, tasks, and
 
 ### Recent Completions (December 2025)
 
-**December 30, 2025: Manual reCAPTCHA Implementation + 8-Phase Refactoring Plan (🔄 Partial - See Phase 1)**
+**December 30, 2025: Manual reCAPTCHA Implementation + 8-Phase Refactoring Plan
+(🔄 Partial - See Phase 1)**
 
 **Completed Items:**
+
 - ✅ **Manual reCAPTCHA Enterprise Integration:**
-  - Frontend: `lib/recaptcha.ts` - `getRecaptchaToken()` helper for all protected operations
-  - Backend: `functions/src/recaptcha-verify.ts` - Server-side token validation with Google reCAPTCHA Enterprise API
-  - Security wrapper: Integrated into all 5 Cloud Functions (`saveDailyLog`, `saveJournalEntry`, `softDeleteJournalEntry`, `saveInventoryEntry`, `migrateAnonymousUserData`)
-  - Made optional: Corporate networks block Google reCAPTCHA → logs `RECAPTCHA_MISSING_TOKEN` (WARNING) instead of blocking
+  - Frontend: `lib/recaptcha.ts` - `getRecaptchaToken()` helper for all
+    protected operations
+  - Backend: `functions/src/recaptcha-verify.ts` - Server-side token validation
+    with Google reCAPTCHA Enterprise API
+  - Security wrapper: Integrated into all 5 Cloud Functions (`saveDailyLog`,
+    `saveJournalEntry`, `softDeleteJournalEntry`, `saveInventoryEntry`,
+    `migrateAnonymousUserData`)
+  - Made optional: Corporate networks block Google reCAPTCHA → logs
+    `RECAPTCHA_MISSING_TOKEN` (WARNING) instead of blocking
   - Event logging: Added 8 reCAPTCHA event types to `security-logger.ts`
   - Commits: `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
 - ✅ **8-Phase Refactoring Plan Documentation:**
-  - Created `docs/EIGHT_PHASE_REFACTOR_PLAN.md` (2,130 lines) - Comprehensive plan addressing 44 CANON findings
-  - Created `docs/IMPLEMENTATION_PROMPTS.md` (461 lines) - Reusable prompts for implementing each phase
-  - **Phase 1 Status (Lock Down Journal Writes + Enable App Check):** 33% complete (2/6 CANON items fully done)
+  - Created `docs/EIGHT_PHASE_REFACTOR_PLAN.md` (2,130 lines) - Comprehensive
+    plan addressing 44 CANON findings
+  - Created `docs/IMPLEMENTATION_PROMPTS.md` (461 lines) - Reusable prompts for
+    implementing each phase
+  - **Phase 1 Status (Lock Down Journal Writes + Enable App Check):** 33%
+    complete (2/6 CANON items fully done)
     - ✅ CANON-0003: Firestore rules alignment (100% complete)
     - ✅ CANON-0044: Rules comment mismatch fixed (100% complete)
-    - ⚠️ CANON-0001: Journal writes unified (95% complete - 1 deprecated method remains)
-    - ⚠️ CANON-0041: Rate limiting alignment (60% complete - primary ops aligned)
+    - ⚠️ CANON-0001: Journal writes unified (95% complete - 1 deprecated method
+      remains)
+    - ⚠️ CANON-0041: Rate limiting alignment (60% complete - primary ops
+      aligned)
     - ❌ CANON-0002: App Check enforcement (0% - DISABLED everywhere)
     - ❓ CANON-0043: Client validation strategy (unknown - needs decision)
   - Commit: `50e5c3e`, `f391927`
 - ✅ **Admin Panel Security Monitoring Requirements:**
-  - Created `docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md` - Detailed spec for monitoring missing reCAPTCHA tokens
+  - Created `docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md` - Detailed
+    spec for monitoring missing reCAPTCHA tokens
   - Commit: `3b651fa`
 - ✅ **CodeRabbit Technical Debt Items:**
-  - Added to `ROADMAP.md` M2 section (duplicate reCAPTCHA logic, migrateAnonymousUserData manual security checks, FirestoreService god object)
+  - Added to `ROADMAP.md` M2 section (duplicate reCAPTCHA logic,
+    migrateAnonymousUserData manual security checks, FirestoreService god
+    object)
   - Commit: `ce9cdb3`
 
 **Status Changes:**
-- ❌ **Firebase App Check:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
+
+- ❌ **Firebase App Check:** DISABLED in all Cloud Functions
+  (`requireAppCheck: false`)
   - Reason: Hit 403 throttle errors (24-hour limit)
   - Impact: Security posture weakened vs. intended PR1 goal
   - Decision needed: Re-enable App Check strategy (see Phase 1 CANON-0002)
 
 **Blockers/Issues:**
-- ⚠️ **Phase 1 NOT Complete:** App Check disabled (opposite of goal), 1 deprecated write method still in use
-- 🔴 **Security Decision Required:** How to handle App Check + optional reCAPTCHA (defense in depth vs. single layer)
+
+- ⚠️ **Phase 1 NOT Complete:** App Check disabled (opposite of goal), 1
+  deprecated write method still in use
+- 🔴 **Security Decision Required:** How to handle App Check + optional
+  reCAPTCHA (defense in depth vs. single layer)
 
 **Reference:**
-- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) - Full plan with gap analysis (archived)
-- [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) - Implementation and review prompts (archived)
-- [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) - Monitoring spec
+
+- [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) -
+  Full plan with gap analysis (archived)
+- [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md) -
+  Implementation and review prompts (archived)
+- [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) -
+  Monitoring spec
 
 ---
 
 **December 28, 2025: Resource Aggregation & Code Compliance (✅ Complete)**
 
 **Completed Items:**
+
 - ✅ **Local Recovery Resources Aggregated:**
   - Compiled and verified 60+ local Nashville resources
   - Generated `data/local-resources.ts` with strict types
   - Added `locationType` support ('physical', 'hotline', 'multi-site')
-- ✅ **Code Review Compliance:**
-  -Addressed Qodo & CodeRabbit feedback
+- ✅ **Code Review Compliance:** -Addressed Qodo & CodeRabbit feedback
   - Refactored `LocalResource` interface (optional fields)
   - Fixed vanity numbers and formatting issues
   - Correction of "48hrs" typo in documentation
 
 **Documentation:** `data/local-resources.ts`, `local-resources-review.md`
 
-
-
 **December 27, 2025:**
+
 - Gemini 2.0 Flash Thinking Aggregated Security Review completed
-- 8 additional issues fixed (meeting countdown hoisting, pagination sorting, accessibility, Zod version sync, debug logging)
+- 8 additional issues fixed (meeting countdown hoisting, pagination sorting,
+  accessibility, Zod version sync, debug logging)
 
 **December 24, 2025:**
+
 - Consolidated 6-AI Code Review remediation completed
 - 26 real issues fixed across all priority levels
 
 **December 23, 2025:**
+
 - Today Page UX Enhancement complete (all 10 improvements)
 - Admin Panel Phases 1-3 complete
 
 **December 21, 2025:**
+
 - Multi-AI Security Review remediation completed
 - Journal security gap closed
 - Account linking data migration implemented
 
 **December 20, 2025:**
+
 - Code Remediation Week 10-12 completed
 - All security fixes deployed
 - Test coverage: 97.8%
@@ -685,6 +792,7 @@ This document contains the historical record of completed milestones, tasks, and
 ## 📝 Update Triggers
 
 **Update this document when:**
+
 - A milestone or feature is completed in ROADMAP.md
 - Using `npm run docs:archive` to move content
 - Adding retrospective notes about past implementations
@@ -706,11 +814,13 @@ When archiving completed work:
 
 ## 🗓️ Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.0 | 2026-01-02 | Standardized structure per Phase 3 migration |
-| 1.0 | 2025-12-28 | Initial creation, consolidated from ROADMAP.md |
+| Version | Date       | Changes                                        |
+| ------- | ---------- | ---------------------------------------------- |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration   |
+| 1.0     | 2025-12-28 | Initial creation, consolidated from ROADMAP.md |
 
 **Historical Notes:**
-- December 28, 2025: Roadmap log created - consolidated all completed items from ROADMAP.md
+
+- December 28, 2025: Roadmap log created - consolidated all completed items from
+  ROADMAP.md
 - Before Dec 28: Items tracked in active ROADMAP.md document

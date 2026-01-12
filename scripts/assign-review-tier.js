@@ -17,26 +17,28 @@
  *   Exit code: 0 (success)
  */
 
-import { readFileSync, existsSync, realpathSync } from 'fs';
-import { join, resolve, relative, isAbsolute } from 'path';
-import { pathToFileURL } from 'url';
+import { readFileSync, existsSync, realpathSync } from "fs";
+import { join, resolve, relative, isAbsolute } from "path";
+import { pathToFileURL } from "url";
 
 /**
  * Sanitize file paths in error messages to avoid exposing absolute paths
  */
 function sanitizePath(filePath) {
-  return String(filePath)
-    .replace(/\/home\/[^/\s]+/g, '[HOME]')
-    .replace(/\/Users\/[^/\s]+/g, '[HOME]')
-    // Handle any Windows drive letter, case-insensitive
-    .replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]');
+  return (
+    String(filePath)
+      .replace(/\/home\/[^/\s]+/g, "[HOME]")
+      .replace(/\/Users\/[^/\s]+/g, "[HOME]")
+      // Handle any Windows drive letter, case-insensitive
+      .replace(/[A-Z]:\\Users\\[^\\]+/gi, "[HOME]")
+  );
 }
 
 /**
  * Normalize path separators for cross-platform regex matching
  */
 function normalizePath(filePath) {
-  return String(filePath).replace(/\\/g, '/');
+  return String(filePath).replace(/\\/g, "/");
 }
 
 // Tier classification rules
@@ -50,9 +52,7 @@ const TIER_RULES = {
       /^\.github\/PULL_REQUEST_TEMPLATE\.md$/,
     ],
     // Only Tier 0 if package.json unchanged
-    conditional: [
-      { pattern: /^package-lock\.json$/, requires_unchanged: ['package.json'] }
-    ],
+    conditional: [{ pattern: /^package-lock\.json$/, requires_unchanged: ["package.json"] }],
   },
 
   // Tier 1: Light (AI review only)
@@ -112,32 +112,32 @@ const ESCALATION_TRIGGERS = [
   {
     pattern: /\beval\s*\(/,
     escalate_to: 4,
-    reason: 'Code injection risk (eval usage)',
+    reason: "Code injection risk (eval usage)",
   },
   {
     pattern: /dangerouslySetInnerHTML/,
     escalate_to: 3,
-    reason: 'XSS risk (dangerouslySetInnerHTML)',
+    reason: "XSS risk (dangerouslySetInnerHTML)",
   },
   {
     pattern: /firebase\.auth\(\)/,
     escalate_to: 3,
-    reason: 'Auth flow modification',
+    reason: "Auth flow modification",
   },
   {
     pattern: /admin\.firestore\(\)/,
     escalate_to: 3,
-    reason: 'Direct Firestore admin access',
+    reason: "Direct Firestore admin access",
   },
   {
     pattern: /BREAKING CHANGE:/,
     escalate_to: 3,
-    reason: 'Breaking change declared in commit',
+    reason: "Breaking change declared in commit",
   },
   {
     pattern: /TODO:\s*SECURITY/i,
-    escalate_to: 'BLOCK',
-    reason: 'Incomplete security work',
+    escalate_to: "BLOCK",
+    reason: "Incomplete security work",
   },
 ];
 
@@ -147,23 +147,24 @@ const ESCALATION_TRIGGERS = [
 const FORBIDDEN_PATTERNS = [
   {
     pattern: /sk_live_[A-Za-z0-9]+/,
-    reason: 'Hardcoded API key detected',
+    reason: "Hardcoded API key detected",
     checkContent: true,
   },
   {
     pattern: /sk_test_[A-Za-z0-9]+/,
-    reason: 'Hardcoded test API key detected',
+    reason: "Hardcoded test API key detected",
     checkContent: true,
   },
   {
     pattern: /password\s*=\s*["'][^"']+["']/,
-    reason: 'Hardcoded password detected',
+    reason: "Hardcoded password detected",
     checkContent: true,
   },
   {
     // Matches .env, .env.local, .env.production, .env.development.local (multi-segment)
     pattern: /(^|[/\\])\.env(\.[a-zA-Z0-9_.-]+)?$/,
-    reason: '.env file (or variant like .env.local, .env.development.local) should not be committed',
+    reason:
+      ".env file (or variant like .env.local, .env.development.local) should not be committed",
     checkPath: true, // Path-only check
   },
 ];
@@ -178,27 +179,27 @@ function assignTierByPath(filePath, allFiles = []) {
   const normalizedPath = normalizePath(filePath);
 
   // Check Tier 4 first (highest priority)
-  if (TIER_RULES.tier_4.patterns.some(p => p.test(normalizedPath))) {
+  if (TIER_RULES.tier_4.patterns.some((p) => p.test(normalizedPath))) {
     return { tier: 4, reason: `Critical file: ${filePath}` };
   }
 
   // Tier 3
-  if (TIER_RULES.tier_3.patterns.some(p => p.test(normalizedPath))) {
+  if (TIER_RULES.tier_3.patterns.some((p) => p.test(normalizedPath))) {
     return { tier: 3, reason: `Security-sensitive file: ${filePath}` };
   }
 
   // Tier 2
-  if (TIER_RULES.tier_2.patterns.some(p => p.test(normalizedPath))) {
+  if (TIER_RULES.tier_2.patterns.some((p) => p.test(normalizedPath))) {
     return { tier: 2, reason: `Standard code file: ${filePath}` };
   }
 
   // Tier 1
-  if (TIER_RULES.tier_1.patterns.some(p => p.test(normalizedPath))) {
+  if (TIER_RULES.tier_1.patterns.some((p) => p.test(normalizedPath))) {
     return { tier: 1, reason: `Documentation/test file: ${filePath}` };
   }
 
   // Tier 0 - check both patterns and conditional rules
-  if (TIER_RULES.tier_0.patterns.some(p => p.test(normalizedPath))) {
+  if (TIER_RULES.tier_0.patterns.some((p) => p.test(normalizedPath))) {
     return { tier: 0, reason: `Low-risk file: ${filePath}` };
   }
 
@@ -208,12 +209,15 @@ function assignTierByPath(filePath, allFiles = []) {
       if (rule.pattern.test(normalizedPath)) {
         // Check if required files are unchanged (not in allFiles)
         const requiredUnchanged = rule.requires_unchanged || [];
-        const allUnchanged = requiredUnchanged.every(req => !allFiles.includes(req));
+        const allUnchanged = requiredUnchanged.every((req) => !allFiles.includes(req));
         if (allUnchanged) {
           return { tier: 0, reason: `Low-risk file (conditional): ${filePath}` };
         } else {
           // If conditional not met, escalate to Tier 2 (standard review)
-          return { tier: 2, reason: `${filePath} changed with ${requiredUnchanged.join(', ')} - requires standard review` };
+          return {
+            tier: 2,
+            reason: `${filePath} changed with ${requiredUnchanged.join(", ")} - requires standard review`,
+          };
         }
       }
     }
@@ -277,7 +281,7 @@ function isPathContained(filePath, projectRoot) {
     // 1. Not empty (exact root match)
     // 2. Doesn't start with '..' (traversal)
     // 3. Isn't absolute (Windows edge case)
-    return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
+    return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
   } catch {
     return false;
   }
@@ -311,15 +315,14 @@ function assignReviewTier(files, options = {}) {
         const realProjectRoot = realpathSync(projectRoot);
         realResolvedFile = realpathSync(resolvedFile);
         const realRel = relative(realProjectRoot, realResolvedFile);
-        if (realRel === '' || realRel.startsWith('..') || isAbsolute(realRel)) {
+        if (realRel === "" || realRel.startsWith("..") || isAbsolute(realRel)) {
           warnings.push(`Skipping symlinked file outside project root: ${sanitizePath(file)}`);
           continue;
         }
       } catch (error) {
         // realpathSync can fail on permission issues; skip file safely
-        const errorMsg = error && typeof error === 'object' && 'message' in error
-          ? error.message
-          : String(error);
+        const errorMsg =
+          error && typeof error === "object" && "message" in error ? error.message : String(error);
         warnings.push(`Could not resolve real path: ${sanitizePath(errorMsg)}`);
         continue;
       }
@@ -339,7 +342,7 @@ function assignReviewTier(files, options = {}) {
     // Check file content if it exists (use realpath for security against symlink attacks)
     if (existsSync(realResolvedFile)) {
       try {
-        const content = readFileSync(realResolvedFile, 'utf-8');
+        const content = readFileSync(realResolvedFile, "utf-8");
 
         // Check for escalation triggers
         const fileEscalations = checkEscalationTriggers(file, content);
@@ -347,13 +350,13 @@ function assignReviewTier(files, options = {}) {
 
         // Apply escalations
         for (const esc of fileEscalations) {
-          if (esc.escalate_to === 'BLOCK') {
+          if (esc.escalate_to === "BLOCK") {
             violations.push({
               pattern: esc.trigger,
               reason: esc.reason,
               file: esc.file,
             });
-          } else if (typeof esc.escalate_to === 'number' && esc.escalate_to > highestTier) {
+          } else if (typeof esc.escalate_to === "number" && esc.escalate_to > highestTier) {
             highestTier = esc.escalate_to;
             reasons.push(`Escalated to Tier ${esc.escalate_to}: ${esc.reason}`);
           }
@@ -362,13 +365,11 @@ function assignReviewTier(files, options = {}) {
         // Check for forbidden patterns
         const fileViolations = checkForbiddenPatterns(file, content);
         violations.push(...fileViolations);
-
       } catch (error) {
         // File might be binary or unreadable, skip content checks
         // Handle non-Error throws safely
-        const errorMsg = error && typeof error === 'object' && 'message' in error
-          ? error.message
-          : String(error);
+        const errorMsg =
+          error && typeof error === "object" && "message" in error ? error.message : String(error);
         warnings.push(`Could not read file: ${sanitizePath(errorMsg)}`);
       }
     }
@@ -391,26 +392,26 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error('Usage: assign-review-tier.js [files...]');
-    console.error('       assign-review-tier.js --pr <PR_NUMBER>');
+    console.error("Usage: assign-review-tier.js [files...]");
+    console.error("       assign-review-tier.js --pr <PR_NUMBER>");
     process.exit(1);
   }
 
   // Check for --pr flag (not yet implemented)
-  const prIndex = args.indexOf('--pr');
+  const prIndex = args.indexOf("--pr");
   if (prIndex !== -1) {
-    console.error('Error: --pr flag is not yet implemented');
-    console.error('Please specify files directly: assign-review-tier.js [files...]');
+    console.error("Error: --pr flag is not yet implemented");
+    console.error("Please specify files directly: assign-review-tier.js [files...]");
     process.exit(1);
   }
 
   // Check for unknown flags (reject early rather than silently ignoring)
-  const knownFlags = ['--pr'];
+  const knownFlags = ["--pr"];
   for (const arg of args) {
-    if (arg.startsWith('--') && !knownFlags.includes(arg.split('=')[0])) {
+    if (arg.startsWith("--") && !knownFlags.includes(arg.split("=")[0])) {
       console.error(`Error: Unknown flag "${arg}"`);
-      console.error('Usage: assign-review-tier.js [files...]');
-      console.error('       assign-review-tier.js --pr <PR_NUMBER>');
+      console.error("Usage: assign-review-tier.js [files...]");
+      console.error("       assign-review-tier.js --pr <PR_NUMBER>");
       process.exit(1);
     }
   }
@@ -418,15 +419,15 @@ function main() {
   // Filter out flags and their values explicitly
   const files = [];
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--pr') {
+    if (args[i] === "--pr") {
       i++; // Skip the value too
-    } else if (!args[i].startsWith('--')) {
+    } else if (!args[i].startsWith("--")) {
       files.push(args[i]);
     }
   }
 
   if (files.length === 0) {
-    console.error('Error: No files specified');
+    console.error("Error: No files specified");
     process.exit(1);
   }
 
@@ -437,7 +438,7 @@ function main() {
 
   // Exit with error if blocked
   if (result.blocked) {
-    console.error('\n❌ MERGE BLOCKED: Forbidden patterns detected');
+    console.error("\n❌ MERGE BLOCKED: Forbidden patterns detected");
     process.exit(1);
   }
 
@@ -450,8 +451,7 @@ function main() {
 let isMainModule = false;
 try {
   isMainModule =
-    !!process.argv[1] &&
-    import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+    !!process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
 } catch {
   isMainModule = false;
 }

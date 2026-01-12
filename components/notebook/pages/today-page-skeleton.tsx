@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function TodayPageSkeleton() {
   return (
@@ -75,5 +75,5 @@ export function TodayPageSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

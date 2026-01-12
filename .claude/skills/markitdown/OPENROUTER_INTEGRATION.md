@@ -2,13 +2,17 @@
 
 ## Overview
 
-This MarkItDown skill has been configured to use **OpenRouter** instead of direct OpenAI API access. OpenRouter provides a unified API gateway to access 100+ AI models from different providers through a single, OpenAI-compatible interface.
+This MarkItDown skill has been configured to use **OpenRouter** instead of
+direct OpenAI API access. OpenRouter provides a unified API gateway to access
+100+ AI models from different providers through a single, OpenAI-compatible
+interface.
 
 ## Why OpenRouter?
 
 ### Benefits
 
-1. **Multiple Model Access**: Access GPT-4, Claude, Gemini, and 100+ other models through one API
+1. **Multiple Model Access**: Access GPT-4, Claude, Gemini, and 100+ other
+   models through one API
 2. **No Vendor Lock-in**: Switch between models without code changes
 3. **Competitive Pricing**: Often better rates than going direct
 4. **Simple Migration**: OpenAI-compatible API means minimal code changes
@@ -16,13 +20,13 @@ This MarkItDown skill has been configured to use **OpenRouter** instead of direc
 
 ### Popular Models for Image Description
 
-| Model | Provider | Use Case | Vision Support |
-|-------|----------|----------|----------------|
-| `anthropic/claude-sonnet-4.5` | Anthropic | **Recommended** - Best overall for scientific analysis | ✅ |
-| `anthropic/claude-opus-4.5` | Anthropic | Excellent technical analysis | ✅ |
-| `openai/gpt-4o` | OpenAI | Strong vision understanding | ✅ |
-| `openai/gpt-4-vision` | OpenAI | GPT-4 with vision | ✅ |
-| `google/gemini-pro-vision` | Google | Cost-effective option | ✅ |
+| Model                         | Provider  | Use Case                                               | Vision Support |
+| ----------------------------- | --------- | ------------------------------------------------------ | -------------- |
+| `anthropic/claude-sonnet-4.5` | Anthropic | **Recommended** - Best overall for scientific analysis | ✅             |
+| `anthropic/claude-opus-4.5`   | Anthropic | Excellent technical analysis                           | ✅             |
+| `openai/gpt-4o`               | OpenAI    | Strong vision understanding                            | ✅             |
+| `openai/gpt-4-vision`         | OpenAI    | GPT-4 with vision                                      | ✅             |
+| `google/gemini-pro-vision`    | Google    | Cost-effective option                                  | ✅             |
 
 See https://openrouter.ai/models for the complete list.
 
@@ -182,7 +186,7 @@ def convert_with_best_model(filepath):
             llm_client=client,
             llm_model="anthropic/claude-sonnet-4.5"
         )
-    
+
     return md.convert(filepath)
 
 # Use it
@@ -237,6 +241,7 @@ md_visual = MarkItDown(
 ### For Scientific Content
 
 **Recommended: anthropic/claude-sonnet-4.5**
+
 - Excellent at technical analysis
 - Superior reasoning capabilities
 - Best at understanding scientific figures
@@ -244,6 +249,7 @@ md_visual = MarkItDown(
 - Advanced vision capabilities
 
 **Alternative: openai/gpt-4o**
+
 - Good vision understanding
 - Fast processing
 - Good at charts and graphs
@@ -251,6 +257,7 @@ md_visual = MarkItDown(
 ### For Presentations
 
 **Recommended: anthropic/claude-sonnet-4.5**
+
 - Superior vision capabilities
 - Excellent at understanding slide layouts
 - Fast and reliable
@@ -259,15 +266,18 @@ md_visual = MarkItDown(
 ### For Cost-Effectiveness
 
 **Recommended: google/gemini-pro-vision**
+
 - Lower cost per request
 - Good quality
 - Fast processing
 
 ## Pricing Considerations
 
-OpenRouter pricing varies by model. Check current rates at https://openrouter.ai/models
+OpenRouter pricing varies by model. Check current rates at
+https://openrouter.ai/models
 
 **Tips for Cost Optimization:**
+
 1. Use advanced vision models for best quality on complex scientific content
 2. Use cheaper models (Gemini) for simple images
 3. Batch process similar content with the same model
@@ -289,6 +299,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 ### Model Not Found
 
 If you get a "model not found" error, check:
+
 1. Model name format: `provider/model-name`
 2. Model availability: https://openrouter.ai/models
 3. Vision support: Ensure model supports vision for image description
@@ -296,6 +307,7 @@ If you get a "model not found" error, check:
 ### Rate Limits
 
 OpenRouter has rate limits. If you hit them:
+
 1. Add delays between requests
 2. Use batch processing scripts with `--workers` parameter
 3. Consider upgrading your OpenRouter plan
@@ -350,10 +362,11 @@ python scripts/batch_convert.py \
 ## Support
 
 For OpenRouter-specific issues:
+
 - Discord: https://openrouter.ai/discord
 - Email: support@openrouter.ai
 
 For MarkItDown skill issues:
+
 - Check documentation in this skill directory
 - Review examples in `assets/example_usage.md`
-

@@ -16,20 +16,20 @@
  */
 
 // Get user request from arguments (trim to handle whitespace)
-let userRequest = (process.argv[2] || '').trim();
+let userRequest = (process.argv[2] || "").trim();
 
 // Try to parse as JSON if it looks like JSON
-if (userRequest.startsWith('{')) {
+if (userRequest.startsWith("{")) {
   try {
     const parsed = JSON.parse(userRequest);
-    userRequest = parsed.prompt || parsed.request || parsed.message || '';
+    userRequest = parsed.prompt || parsed.request || parsed.message || "";
   } catch {
     // Not JSON, use as-is
   }
 }
 
 if (!userRequest) {
-  console.log('ok');
+  console.log("ok");
   process.exit(0);
 }
 
@@ -42,57 +42,97 @@ if (userRequest.length > MAX_LENGTH) {
 const requestLower = userRequest.toLowerCase();
 
 // Helper for word boundary matching (escapes regex special chars to prevent ReDoS)
+// Supports ".?" convention for optional separator (e.g., api.?key matches apikey, api-key, api_key)
 function matchesWord(pattern) {
-  const escaped = pattern.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-  const regex = new RegExp(`(^|[^a-z0-9])(${escaped})([^a-z0-9]|$)`, 'i');
+  // Split on ".?" to preserve wildcard semantics, escape each part, then rejoin with optional separator
+  const parts = pattern.split(".?").map((part) => part.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
+  const joined = parts.join("[^a-z0-9]?");
+  const regex = new RegExp(`(^|[^a-z0-9])(${joined})([^a-z0-9]|$)`, "i");
   return regex.test(requestLower);
 }
 
 // Priority 1: SECURITY (HIGHEST)
 const securityPatterns = [
-  'security', 'auth', 'authentication', 'token', 'password', 'credential',
-  'secret', 'oauth', 'jwt', 'encrypt', 'decrypt', 'api.?key', 'session',
-  'permission', 'access.?control'
+  "security",
+  "auth",
+  "authentication",
+  "token",
+  "password",
+  "credential",
+  "secret",
+  "oauth",
+  "jwt",
+  "encrypt",
+  "decrypt",
+  "api.?key",
+  "session",
+  "permission",
+  "access.?control",
 ];
 for (const pattern of securityPatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: MUST use security-auditor agent');
+    console.log("PRE-TASK: MUST use security-auditor agent");
     process.exit(0);
   }
 }
 
 // Priority 2: Bug/Error/Debugging
 const bugPatterns = [
-  'bug', 'error', 'fix', 'broken', 'not.?working', 'crash',
-  'fail', 'issue', 'problem', 'debug'
+  "bug",
+  "error",
+  "fix",
+  "broken",
+  "not.?working",
+  "crash",
+  "fail",
+  "issue",
+  "problem",
+  "debug",
 ];
 for (const pattern of bugPatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: MUST use systematic-debugging skill FIRST');
+    console.log("PRE-TASK: MUST use systematic-debugging skill FIRST");
     process.exit(0);
   }
 }
 
 // Priority 3: Database
 const dbPatterns = [
-  'database', 'query', 'schema', 'migration', 'sql', 'postgres',
-  'mysql', 'firestore', 'mongodb'
+  "database",
+  "query",
+  "schema",
+  "migration",
+  "sql",
+  "postgres",
+  "mysql",
+  "firestore",
+  "mongodb",
 ];
 for (const pattern of dbPatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: MUST use database-architect agent');
+    console.log("PRE-TASK: MUST use database-architect agent");
     process.exit(0);
   }
 }
 
 // Priority 4: UI/Frontend
 const uiPatterns = [
-  'ui', 'frontend', 'component', 'css', 'styling', 'design',
-  'layout', 'responsive', 'tailwind', 'react', 'button', 'form'
+  "ui",
+  "frontend",
+  "component",
+  "css",
+  "styling",
+  "design",
+  "layout",
+  "responsive",
+  "tailwind",
+  "react",
+  "button",
+  "form",
 ];
 for (const pattern of uiPatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: MUST use frontend-design skill');
+    console.log("PRE-TASK: MUST use frontend-design skill");
     process.exit(0);
   }
 }
@@ -100,37 +140,45 @@ for (const pattern of uiPatterns) {
 // Priority 5: Planning/Architecture
 // Note: 'design' removed - already in uiPatterns (Priority 4) to avoid ambiguity
 const planPatterns = [
-  'plan', 'architect', 'implement.?feature',
-  'add.?feature', 'new.?feature', 'refactor'
+  "plan",
+  "architect",
+  "implement.?feature",
+  "add.?feature",
+  "new.?feature",
+  "refactor",
 ];
 for (const pattern of planPatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: SHOULD use Plan agent for multi-step work');
+    console.log("PRE-TASK: SHOULD use Plan agent for multi-step work");
     process.exit(0);
   }
 }
 
 // Priority 6: Exploration/Understanding
 const explorePatterns = [
-  'explore', 'understand', 'find', 'where.?is', 'how.?does',
-  'what.?is', 'explain', 'show.?me'
+  "explore",
+  "understand",
+  "find",
+  "where.?is",
+  "how.?does",
+  "what.?is",
+  "explain",
+  "show.?me",
 ];
 for (const pattern of explorePatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: SHOULD use Explore agent for codebase exploration');
+    console.log("PRE-TASK: SHOULD use Explore agent for codebase exploration");
     process.exit(0);
   }
 }
 
 // Priority 7: Testing
-const testPatterns = [
-  'test', 'testing', 'coverage', 'jest', 'cypress', 'playwright'
-];
+const testPatterns = ["test", "testing", "coverage", "jest", "cypress", "playwright"];
 for (const pattern of testPatterns) {
   if (matchesWord(pattern)) {
-    console.log('PRE-TASK: SHOULD use test-engineer agent');
+    console.log("PRE-TASK: SHOULD use test-engineer agent");
     process.exit(0);
   }
 }
 
-console.log('ok');
+console.log("ok");

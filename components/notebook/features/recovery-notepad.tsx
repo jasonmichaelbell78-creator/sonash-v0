@@ -1,14 +1,14 @@
-import { Loader2 } from "lucide-react"
-import { RefObject } from "react"
+import { Loader2 } from "lucide-react";
+import { RefObject } from "react";
 
 interface RecoveryNotepadProps {
-  textareaRef: RefObject<HTMLTextAreaElement | null>
-  journalEntry: string
-  onJournalChange: (value: string) => void
-  onTouched: () => void
-  isEditingRef: React.MutableRefObject<boolean>
-  isSaving: boolean
-  saveComplete: boolean
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
+  journalEntry: string;
+  onJournalChange: (value: string) => void;
+  onTouched: () => void;
+  isEditingRef: React.MutableRefObject<boolean>;
+  isSaving: boolean;
+  saveComplete: boolean;
 }
 
 /**
@@ -37,7 +37,7 @@ export function RecoveryNotepad({
 
       <div
         className="relative min-h-[400px] w-full rounded-xl overflow-hidden shadow-sm border border-amber-200/60"
-        style={{ backgroundColor: '#fdfbf7' }}
+        style={{ backgroundColor: "#fdfbf7" }}
       >
         {/* Top binding/Yellow Header */}
         <div className="h-12 bg-yellow-200 border-b border-yellow-300 flex items-center px-4">
@@ -50,9 +50,9 @@ export function RecoveryNotepad({
         <div
           className="absolute inset-0 top-12 pointer-events-none"
           style={{
-            backgroundImage: 'linear-gradient(transparent 95%, #e5e7eb 95%)',
-            backgroundSize: '100% 2rem',
-            marginTop: '0.5rem'
+            backgroundImage: "linear-gradient(transparent 95%, #e5e7eb 95%)",
+            backgroundSize: "100% 2rem",
+            marginTop: "0.5rem",
           }}
         />
 
@@ -64,27 +64,27 @@ export function RecoveryNotepad({
           ref={textareaRef}
           value={journalEntry}
           onChange={(e) => {
-            onJournalChange(e.target.value)
-            onTouched()
+            onJournalChange(e.target.value);
+            onTouched();
           }}
           onFocus={(e) => {
-            isEditingRef.current = true
+            isEditingRef.current = true;
             if (journalEntry && e.target.selectionStart !== journalEntry.length) {
-              const len = journalEntry.length
-              e.target.setSelectionRange(len, len)
-              e.target.scrollTop = e.target.scrollHeight
+              const len = journalEntry.length;
+              e.target.setSelectionRange(len, len);
+              e.target.scrollTop = e.target.scrollHeight;
             }
           }}
           onBlur={() => (isEditingRef.current = false)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') e.stopPropagation()
+            if (e.key === "Enter") e.stopPropagation();
           }}
           placeholder="Jot down numbers, thoughts, or reminders..."
           aria-label="Recovery notepad input"
           className="w-full h-full min-h-[350px] bg-transparent resize-none focus:outline-none text-xl md:text-2xl text-slate-800 leading-[2rem] p-4 pl-14 pt-2"
           style={{
-            fontFamily: 'var(--font-handlee), cursive',
-            lineHeight: '2rem'
+            fontFamily: "var(--font-handlee), cursive",
+            lineHeight: "2rem",
           }}
           spellCheck={false}
         />
@@ -102,5 +102,5 @@ export function RecoveryNotepad({
         </div>
       </div>
     </div>
-  )
+  );
 }

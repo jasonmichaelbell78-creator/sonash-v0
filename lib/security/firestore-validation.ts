@@ -22,9 +22,9 @@
  */
 
 export interface UserScopeOptions {
-  userId: string
-  targetUserId?: string
-  resource?: string
+  userId: string;
+  targetUserId?: string;
+  resource?: string;
 }
 
 /**
@@ -40,27 +40,27 @@ export interface UserScopeOptions {
 const isValidUserId = (userId: string): boolean => {
   // Check for empty/whitespace
   if (!userId || !userId.trim()) {
-    return false
+    return false;
   }
 
   // Firebase UIDs are typically 28 characters, but allow up to 128 for flexibility
   if (userId.length > 128) {
-    return false
+    return false;
   }
 
   // Only allow alphanumeric, hyphens, and underscores
   // This prevents path traversal and injection attacks
   if (!/^[A-Za-z0-9_-]+$/.test(userId)) {
-    return false
+    return false;
   }
 
   // Prevent path traversal patterns
   if (userId.includes("..") || userId.includes("./") || userId.includes("/.")) {
-    return false
+    return false;
   }
 
-  return true
-}
+  return true;
+};
 
 /**
  * Assert that the current user has permission to access a resource
@@ -84,20 +84,22 @@ const isValidUserId = (userId: string): boolean => {
  */
 export const assertUserScope = ({ userId, targetUserId, resource }: UserScopeOptions) => {
   if (!userId) {
-    throw new Error("Firestore access requires a user id")
+    throw new Error("Firestore access requires a user id");
   }
 
   if (!isValidUserId(userId)) {
     throw new Error(
       "Firestore access rejected: invalid user id format. " +
-      "User IDs must be alphanumeric with hyphens/underscores only."
-    )
+        "User IDs must be alphanumeric with hyphens/underscores only."
+    );
   }
 
   if (targetUserId && targetUserId !== userId) {
-    throw new Error(`Access to another user's data is not allowed${resource ? ` for ${resource}` : ""}`)
+    throw new Error(
+      `Access to another user's data is not allowed${resource ? ` for ${resource}` : ""}`
+    );
   }
-}
+};
 
 /**
  * Validate that a Firestore path belongs to the specified user
@@ -117,19 +119,19 @@ export const assertUserScope = ({ userId, targetUserId, resource }: UserScopeOpt
  * validateUserDocumentPath("abc123", "users/other")               // ❌ Throws
  */
 export const validateUserDocumentPath = (userId: string, path: string) => {
-  const userPrefix = `users/${userId}`
+  const userPrefix = `users/${userId}`;
 
   // Path must be exactly "users/{userId}" or start with "users/{userId}/"
   // This prevents prefix attacks like "users/user123evil" when userId is "user123"
-  const isExactMatch = path === userPrefix
-  const isSubpath = path.startsWith(`${userPrefix}/`)
+  const isExactMatch = path === userPrefix;
+  const isSubpath = path.startsWith(`${userPrefix}/`);
 
   if (!isExactMatch && !isSubpath) {
-    throw new Error("Firestore access is limited to the signed-in user's document")
+    throw new Error("Firestore access is limited to the signed-in user's document");
   }
 
   // Additional check: Ensure no path traversal after user prefix
   if (path.includes("../") || path.includes("/./")) {
-    throw new Error("Path traversal detected in Firestore path")
+    throw new Error("Path traversal detected in Firestore path");
   }
-}
+};

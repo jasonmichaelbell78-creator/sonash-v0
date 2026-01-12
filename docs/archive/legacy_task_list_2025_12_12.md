@@ -9,9 +9,9 @@
 ## ⏳ In Progress
 
 - [x] **Daily Inspiration Logic:**
-    - [x] Admin Tab for CRUD
-    - [x] Quote Rotation Logic
-    - [x] Display on Today Page
+  - [x] Admin Tab for CRUD
+  - [x] Quote Rotation Logic
+  - [x] Display on Today Page
 
 ### Week 1: Firebase App Check (Bot Protection)
 
@@ -31,7 +31,8 @@
 
 - [ ] Set up Firebase Functions project (`firebase init functions`)
 - [ ] Install dependencies (`firebase-functions`, `firebase-admin`)
-- [ ] Implement rate-limited Cloud Functions (see `docs/SERVER_SIDE_SECURITY.md`)
+- [ ] Implement rate-limited Cloud Functions (see
+      `docs/SERVER_SIDE_SECURITY.md`)
 - [ ] Add auth token verification in Cloud Functions
 - [ ] Add request validation and sanitization
 - [ ] Deploy Cloud Functions to Firebase
@@ -40,7 +41,8 @@
 - [ ] Monitor Cloud Functions metrics in Firebase Console
 - [ ] Document Cloud Functions API in README
 
-**Exit Criteria:** Rate limits enforced server-side, impossible to bypass client-side
+**Exit Criteria:** Rate limits enforced server-side, impossible to bypass
+client-side
 
 ---
 
@@ -55,7 +57,8 @@
 - [ ] Update `docs/SECURITY.md` with security model documentation
 - [ ] Create security incident response procedures
 
-**Exit Criteria:** All critical operations validated server-side, malicious requests rejected
+**Exit Criteria:** All critical operations validated server-side, malicious
+requests rejected
 
 ---
 
@@ -87,7 +90,8 @@
 - [ ] Document data migration process for users
 - [ ] Add help documentation for account linking
 
-**Exit Criteria:** Users can convert anonymous accounts to permanent ones without data loss
+**Exit Criteria:** Users can convert anonymous accounts to permanent ones
+without data loss
 
 ---
 
@@ -102,18 +106,21 @@
 - [x] Fix unused variable warnings in `firestore-adapter.ts`
 - [x] Fix unused variable warnings in `db/meetings.ts`
 - [x] Fix unused variable warnings in `db/users.ts`
-- [ ] Fix unused variable warnings in `scripts/seed-meetings.ts` (remaining 2 vars - dev utility)
+- [ ] Fix unused variable warnings in `scripts/seed-meetings.ts` (remaining 2
+      vars - dev utility)
 - [x] Fix unused variable warnings in test files (added eslint-disable)
 - [x] Remove unused imports across codebase
 - [ ] Prefix unused params with `_` where needed (optional cleanup)
 
-**Files:** `tab-navigation`, `firestore-adapter`, `db/meetings`, `db/users`, `scripts/seed-meetings`, tests  
+**Files:** `tab-navigation`, `firestore-adapter`, `db/meetings`, `db/users`,
+`scripts/seed-meetings`, tests  
 **Result:** 29 → 14 warnings
 
 #### Phase 2: Application Code Type Safety (1 hour) ✅
 
 - [x] Fix `any` type in `sign-in-modal.tsx` line 29 (use proper Error typing)
-- [x] Fix `any` type in `sign-in-modal.tsx` line 48 (use Firebase error type narrowing)
+- [x] Fix `any` type in `sign-in-modal.tsx` line 48 (use Firebase error type
+      narrowing)
 - [ ] Fix `any` type in `firebase-types.ts` (not found - may be already fixed)
 
 **Result:** 14 → 11 warnings
@@ -128,15 +135,17 @@
 
 #### Phase 4: Test File Types (5 minutes) ✅
 
-- [x] Add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test files
+- [x] Add `/* eslint-disable @typescript-eslint/no-explicit-any */` to test
+      files
 - [x] Document decision to allow `any` in test mocks
 
-**Result:** Clean test file linting (6 unused directive warnings remaining - cosmetic)
+**Result:** Clean test file linting (6 unused directive warnings remaining -
+cosmetic)
 
 #### ESLint Config Improvements
 
 - [ ] Update `eslint.config.mjs` to enforce stricter rules for app code
-- [ ] Configure exception for `any` in test files (*.test.ts,*.test.tsx)
+- [ ] Configure exception for `any` in test files (_.test.ts,_.test.tsx)
 - [ ] Add pre-commit hook: `npm run lint && npm run type-check`
 - [ ] Update CI workflow to fail on warnings: `--max-warnings 0`
 - [ ] Test pre-commit hook locally
@@ -192,7 +201,8 @@
 
 ### A1: Split AuthProvider into Focused Contexts (Week 5-6)
 
-**Current Issue:** AuthProvider has 7 state variables (195 lines), violates Single Responsibility Principle
+**Current Issue:** AuthProvider has 7 state variables (195 lines), violates
+Single Responsibility Principle
 
 - [ ] Create `AuthContext` (user, loading only)
 - [ ] Create `ProfileContext` (profile, profileError, profileNotFound)
@@ -207,7 +217,8 @@
 - [ ] Measure re-render performance improvement (use React DevTools Profiler)
 - [ ] Document context usage patterns
 
-**Benefit:** 60% reduction in unnecessary re-renders, clearer separation of concerns
+**Benefit:** 60% reduction in unnecessary re-renders, clearer separation of
+concerns
 
 **Exit Criteria:** All components migrated, re-renders reduced by 60%
 
@@ -215,7 +226,8 @@
 
 ### A2: Decompose Large Components (Week 7-8)
 
-**Current Issue:** `book-cover.tsx` is 337 lines, mixing animation + auth + routing + modals
+**Current Issue:** `book-cover.tsx` is 337 lines, mixing animation + auth +
+routing + modals
 
 #### Extract Components
 
@@ -230,7 +242,8 @@
 
 **Benefit:** Each component <100 lines, testable in isolation, reusable
 
-**Exit Criteria:** `book-cover.tsx` reduced to <100 lines, 4 new reusable components created
+**Exit Criteria:** `book-cover.tsx` reduced to <100 lines, 4 new reusable
+components created
 
 ---
 
@@ -239,8 +252,10 @@
 **Current Issue:** Inconsistent patterns (some throw, some return `{ error }`)
 
 - [ ] Document error handling strategy (when to throw vs return)
-- [ ] Create `Result<T>` type: `{ success: true, data: T } | { success: false, error: Error }`
-- [ ] Create utility functions: `success<T>(data: T)` and `failure(error: Error)`
+- [ ] Create `Result<T>` type:
+      `{ success: true, data: T } | { success: false, error: Error }`
+- [ ] Create utility functions: `success<T>(data: T)` and
+      `failure(error: Error)`
 - [ ] Standardize Firestore service methods to return `Result<T>`
 - [ ] Update `FirestoreService.saveDailyLog()` to use Result pattern
 - [ ] Update `FirestoreService.getTodayLog()` to use Result pattern
@@ -249,7 +264,8 @@
 - [ ] Update all service method call sites to handle Result type
 - [ ] Write tests for error scenarios
 
-**Benefit:** Predictable error handling, easier debugging, type-safe error handling
+**Benefit:** Predictable error handling, easier debugging, type-safe error
+handling
 
 **Exit Criteria:** All services use `Result<T>` pattern consistently
 
@@ -270,7 +286,8 @@
 - [ ] Test image loading performance (Lighthouse)
 - [ ] Measure Core Web Vitals improvement
 
-**Benefit:** Faster page loads, better Core Web Vitals, automatic image optimization
+**Benefit:** Faster page loads, better Core Web Vitals, automatic image
+optimization
 
 **Exit Criteria:** All images use Next.js Image component, LCP improved by 30%+
 
@@ -278,7 +295,8 @@
 
 ### A5: Bundle Size Analysis & Optimization (Week 11)
 
-**Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion, Recharts)
+**Current Issue:** Unknown bundle size, heavy dependencies (Framer Motion,
+Recharts)
 
 - [ ] Install `@next/bundle-analyzer`
 - [ ] Configure bundle analyzer in `next.config.js`
@@ -294,7 +312,8 @@
 - [ ] Verify bundle size <200KB gzipped (initial load)
 - [ ] Document bundle optimization decisions
 
-**Benefit:** Faster initial load, improved Time to Interactive, smaller bundle size
+**Benefit:** Faster initial load, improved Time to Interactive, smaller bundle
+size
 
 **Exit Criteria:** Initial bundle <200KB gzipped, TTI <2s
 
@@ -307,16 +326,19 @@
 - [ ] Review current `FirestoreAdapter` implementation
 - [ ] Define `IDatabaseAdapter` interface (TypeScript)
 - [ ] Update `FirestoreAdapter` to implement interface fully
-- [ ] Update `AuthProvider` to use `FirestoreAdapter` instead of direct `FirestoreService`
+- [ ] Update `AuthProvider` to use `FirestoreAdapter` instead of direct
+      `FirestoreService`
 - [ ] Ensure ALL data access goes through adapter layer
 - [ ] Document adapter pattern in `docs/ARCHITECTURE.md`
 - [ ] Write adapter interface tests (mock implementation)
 - [ ] Add integration tests with Firebase emulators
 - [ ] Document benefits for potential future DB migration
 
-**Benefit:** Consistent abstraction, easier to test, potential for future database migration
+**Benefit:** Consistent abstraction, easier to test, potential for future
+database migration
 
-**Exit Criteria:** All database access uses adapter pattern, architecture docs updated
+**Exit Criteria:** All database access uses adapter pattern, architecture docs
+updated
 
 ---
 
@@ -364,7 +386,8 @@ By end of Week 12, verify:
 
 - [ ] Remove TODO comments (convert to GitHub issues)
 - [ ] Add JSDoc comments with rationale for magic numbers
-- [ ] Consistent naming conventions (`getTodayLog` vs `getHistory` → standardize)
+- [ ] Consistent naming conventions (`getTodayLog` vs `getHistory` →
+      standardize)
 - [ ] Remove unused function parameters
 - [ ] Add accessibility (a11y) audit (WCAG 2.1 AA)
 - [ ] Performance budget enforcement in CI

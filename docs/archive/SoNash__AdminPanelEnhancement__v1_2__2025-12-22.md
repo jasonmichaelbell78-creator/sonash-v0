@@ -1,41 +1,50 @@
 # SoNash Admin Panel Enhancement
 
-**Version:** v1.4
-**Created:** 2025-12-22
-**Updated:** 2025-12-23
-**Status:** Phases 1-3 + Today Page Enhancement Complete ✅
-**Owner:** Jason
-**Location:** `/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md`
+**Version:** v1.4 **Created:** 2025-12-22 **Updated:** 2025-12-23 **Status:**
+Phases 1-3 + Today Page Enhancement Complete ✅ **Owner:** Jason **Location:**
+`/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md`
 
 ---
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| v1.0 | 2025-12-22 | Initial specification |
-| v1.1 | 2025-12-22 | Incorporated Qodo PR review: switched to GCP Logging for audit trails, hybrid Sentry approach for errors, added explicit security requirements |
-| v1.2 | 2025-12-22 | Security hardening from Qodo review: (1) Move Sentry API to Cloud Function to prevent token exposure, (2) Proper middleware with session verification + admin claim check, (3) Use `set({merge:true})` in job wrapper to prevent first-run failures, (4) Add error handling in job wrapper, (5) Throttle lastActive updates, (6) Fix GCP logging query URL, (7) Add Sentry API error handling |
-| v1.3 | 2025-12-23 | **Implementation Complete for Phases 1-3:** Dashboard with health checks and user metrics, Enhanced Users Tab with search/detail/admin actions, Background Jobs Monitoring with manual triggers. All Cloud Functions deployed and tested. Deferred server-side middleware (client-side protection sufficient). |
-| v1.4 | 2025-12-23 | **Today Page Enhancement Complete:** All 10 UX improvements implemented (loading states, progress tracking, smart prompts with localStorage persistence, quick actions FAB, keyboard shortcuts 1-4, offline support, Qodo code review fixes). Added Phase 6 spec for customizable Quick Actions. |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0    | 2025-12-22 | Initial specification                                                                                                                                                                                                                                                                                                                                                                         |
+| v1.1    | 2025-12-22 | Incorporated Qodo PR review: switched to GCP Logging for audit trails, hybrid Sentry approach for errors, added explicit security requirements                                                                                                                                                                                                                                                |
+| v1.2    | 2025-12-22 | Security hardening from Qodo review: (1) Move Sentry API to Cloud Function to prevent token exposure, (2) Proper middleware with session verification + admin claim check, (3) Use `set({merge:true})` in job wrapper to prevent first-run failures, (4) Add error handling in job wrapper, (5) Throttle lastActive updates, (6) Fix GCP logging query URL, (7) Add Sentry API error handling |
+| v1.3    | 2025-12-23 | **Implementation Complete for Phases 1-3:** Dashboard with health checks and user metrics, Enhanced Users Tab with search/detail/admin actions, Background Jobs Monitoring with manual triggers. All Cloud Functions deployed and tested. Deferred server-side middleware (client-side protection sufficient).                                                                                |
+| v1.4    | 2025-12-23 | **Today Page Enhancement Complete:** All 10 UX improvements implemented (loading states, progress tracking, smart prompts with localStorage persistence, quick actions FAB, keyboard shortcuts 1-4, offline support, Qodo code review fixes). Added Phase 6 spec for customizable Quick Actions.                                                                                              |
 
 ---
 
 ## Implementation Summary
 
 **Completed Phases:**
-- ✅ **Phase 1: Dashboard + Foundations** - System health, user metrics, recent signups
-- ✅ **Phase 2: Enhanced User Lookup** - Search, detail drawer, activity timeline, admin actions
-- ✅ **Phase 3: Background Jobs Monitoring** - Job tracking, manual triggers, scheduled execution
-- ✅ **Today Page Enhancement - UX Polish** - All 10 UX improvements implemented (loading states, progress tracking, smart prompts, quick actions, keyboard shortcuts, offline support)
+
+- ✅ **Phase 1: Dashboard + Foundations** - System health, user metrics, recent
+  signups
+- ✅ **Phase 2: Enhanced User Lookup** - Search, detail drawer, activity
+  timeline, admin actions
+- ✅ **Phase 3: Background Jobs Monitoring** - Job tracking, manual triggers,
+  scheduled execution
+- ✅ **Today Page Enhancement - UX Polish** - All 10 UX improvements implemented
+  (loading states, progress tracking, smart prompts, quick actions, keyboard
+  shortcuts, offline support)
 
 **Remaining Phases:**
-- 📋 **Phase 4: Error Tracking** - Sentry integration (deferred - see `docs/SENTRY_INTEGRATION_GUIDE.md`)
+
+- 📋 **Phase 4: Error Tracking** - Sentry integration (deferred - see
+  `docs/SENTRY_INTEGRATION_GUIDE.md`)
 - 📋 **Phase 5: Logs Tab** - GCP Cloud Logging integration (planned for later)
-- 📋 **Phase 6: Customizable Quick Actions** - User-configurable action buttons (planned)
+- 📋 **Phase 6: Customizable Quick Actions** - User-configurable action buttons
+  (planned)
 
 **Key Achievements:**
-- 8 new Cloud Functions deployed (adminHealthCheck, adminGetDashboardStats, adminSearchUsers, adminGetUserDetail, adminUpdateUser, adminDisableUser, adminTriggerJob, adminGetJobsStatus)
+
+- 8 new Cloud Functions deployed (adminHealthCheck, adminGetDashboardStats,
+  adminSearchUsers, adminGetUserDetail, adminUpdateUser, adminDisableUser,
+  adminTriggerJob, adminGetJobsStatus)
 - 1 scheduled function (scheduledCleanupRateLimits - daily 3 AM CT)
 - 3 new admin tabs (Dashboard, enhanced Users, Jobs)
 - Full audit logging via GCP Cloud Logging
@@ -46,9 +55,13 @@
 
 ## Executive Summary
 
-Enhance the existing SoNash admin panel (`/admin` route) with operational monitoring capabilities including a system dashboard, enhanced user lookup, error tracking, logging visibility, and background job monitoring.
+Enhance the existing SoNash admin panel (`/admin` route) with operational
+monitoring capabilities including a system dashboard, enhanced user lookup,
+error tracking, logging visibility, and background job monitoring.
 
-**Approach:** Build custom within existing Next.js app, extending the current tab-based admin pattern with shadcn/ui components. Leverage existing specialized tools (Sentry, GCP Cloud Logging) rather than rebuilding their UIs.
+**Approach:** Build custom within existing Next.js app, extending the current
+tab-based admin pattern with shadcn/ui components. Leverage existing specialized
+tools (Sentry, GCP Cloud Logging) rather than rebuilding their UIs.
 
 ---
 
@@ -56,30 +69,30 @@ Enhance the existing SoNash admin panel (`/admin` route) with operational monito
 
 ### Existing Admin Infrastructure
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Admin route (`/app/admin/`) | ✅ Exists | Client-side protected via Firebase custom claims |
-| Tab navigation | ✅ Exists | 8 tabs currently (Meetings, Sober Living, Quotes, etc.) |
-| `AdminCrudTable<T>` | ✅ Exists | Reusable CRUD component |
-| Cloud Functions auth | ✅ Exists | `requireAdmin()` helper in place |
-| Firestore rules | ✅ Exists | `isAdmin()` function defined |
-| Sentry integration | ✅ Exists | Initialized in Cloud Functions |
-| `logSecurityEvent()` | ✅ Exists | Writes to GCP Cloud Logging (immutable) |
-| Users tab | ✅ Exists | Basic user list (to be enhanced) |
+| Component                   | Status    | Notes                                                   |
+| --------------------------- | --------- | ------------------------------------------------------- |
+| Admin route (`/app/admin/`) | ✅ Exists | Client-side protected via Firebase custom claims        |
+| Tab navigation              | ✅ Exists | 8 tabs currently (Meetings, Sober Living, Quotes, etc.) |
+| `AdminCrudTable<T>`         | ✅ Exists | Reusable CRUD component                                 |
+| Cloud Functions auth        | ✅ Exists | `requireAdmin()` helper in place                        |
+| Firestore rules             | ✅ Exists | `isAdmin()` function defined                            |
+| Sentry integration          | ✅ Exists | Initialized in Cloud Functions                          |
+| `logSecurityEvent()`        | ✅ Exists | Writes to GCP Cloud Logging (immutable)                 |
+| Users tab                   | ✅ Exists | Basic user list (to be enhanced)                        |
 
 ### Gaps Resolved
 
-| Gap | Impact | Resolution Status |
-|-----|--------|-------------------|
-| No system health visibility | Can't tell if services are down | ✅ Phase 1 - Dashboard with health checks |
-| No user activity metrics | Don't know engagement levels | ✅ Phase 1 - Active users 24h/7d/30d |
-| ~~No server-side admin route protection~~ | ~~Security vulnerability~~ | ⏸️ Deferred - client-side sufficient |
-| Basic user lookup only | Can't debug user-specific issues | ✅ Phase 2 - Search + detail drawer |
-| No scheduled job monitoring | Jobs could fail silently | ✅ Phase 3 - Jobs tab with status tracking |
-| Errors only in Sentry UI | Context switching to debug | ⏳ Phase 4 - Planned |
-| Logs only in GCP Console | No quick access from admin | ⏳ Phase 5 - Planned |
-| `cleanupOldRateLimits` not scheduled | Rate limit docs accumulate | ✅ Phase 3 - Scheduled daily 3 AM CT |
-| No `lastActive` tracking | Can't measure active users | ✅ Phase 1 - Implemented in auth-context |
+| Gap                                       | Impact                           | Resolution Status                          |
+| ----------------------------------------- | -------------------------------- | ------------------------------------------ |
+| No system health visibility               | Can't tell if services are down  | ✅ Phase 1 - Dashboard with health checks  |
+| No user activity metrics                  | Don't know engagement levels     | ✅ Phase 1 - Active users 24h/7d/30d       |
+| ~~No server-side admin route protection~~ | ~~Security vulnerability~~       | ⏸️ Deferred - client-side sufficient       |
+| Basic user lookup only                    | Can't debug user-specific issues | ✅ Phase 2 - Search + detail drawer        |
+| No scheduled job monitoring               | Jobs could fail silently         | ✅ Phase 3 - Jobs tab with status tracking |
+| Errors only in Sentry UI                  | Context switching to debug       | ⏳ Phase 4 - Planned                       |
+| Logs only in GCP Console                  | No quick access from admin       | ⏳ Phase 5 - Planned                       |
+| `cleanupOldRateLimits` not scheduled      | Rate limit docs accumulate       | ✅ Phase 3 - Scheduled daily 3 AM CT       |
+| No `lastActive` tracking                  | Can't measure active users       | ✅ Phase 1 - Implemented in auth-context   |
 
 ---
 
@@ -122,7 +135,8 @@ Admin Panel Tabs (Updated Order)
    └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘
 ```
 
-**Note:** Sentry API calls are made from Cloud Functions (server-side) to prevent API token exposure. The client never has access to `SENTRY_API_TOKEN`.
+**Note:** Sentry API calls are made from Cloud Functions (server-side) to
+prevent API token exposure. The client never has access to `SENTRY_API_TOKEN`.
 
 ### New Firestore Collections
 
@@ -143,7 +157,9 @@ Admin Panel Tabs (Updated Order)
 └── lastCheck: Timestamp (used by health check)
 ```
 
-**Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant). We do NOT create a Firestore `admin_logs` collection for security events.
+**Note:** Security/audit logs remain in GCP Cloud Logging (immutable,
+compliant). We do NOT create a Firestore `admin_logs` collection for security
+events.
 
 ### Firestore Rules for New Collections
 
@@ -168,43 +184,47 @@ match /_health/{docId} {
 
 ### Admin Protection Layers (Defense in Depth)
 
-| Layer | Implementation | Status |
-|-------|----------------|--------|
+| Layer                      | Implementation                                                   | Status     |
+| -------------------------- | ---------------------------------------------------------------- | ---------- |
 | **Server-side middleware** | Next.js middleware with session verification + admin claim check | 🆕 Phase 1 |
-| Client-side auth check | `tokenResult.claims.admin === true` | ✅ Exists |
-| Cloud Function check | `requireAdmin(request)` | ✅ Exists |
-| Firestore rules | `isAdmin()` function | ✅ Exists |
+| Client-side auth check     | `tokenResult.claims.admin === true`                              | ✅ Exists  |
+| Cloud Function check       | `requireAdmin(request)`                                          | ✅ Exists  |
+| Firestore rules            | `isAdmin()` function                                             | ✅ Exists  |
 
 ### Server-Side Middleware (Required)
 
-**Critical:** The middleware must verify the session cookie AND check admin claims. Simply checking cookie existence is NOT sufficient.
+**Critical:** The middleware must verify the session cookie AND check admin
+claims. Simply checking cookie existence is NOT sufficient.
 
 ```typescript
 // middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { adminAuth } from './lib/firebase-admin';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { adminAuth } from "./lib/firebase-admin";
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    const sessionCookie = request.cookies.get('__session')?.value;
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    const sessionCookie = request.cookies.get("__session")?.value;
 
     if (!sessionCookie) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     try {
       // Verify the session cookie is valid
-      const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
-      
+      const decodedToken = await adminAuth.verifySessionCookie(
+        sessionCookie,
+        true
+      );
+
       // Check for admin claim
       if (decodedToken.admin !== true) {
         // Valid session, but not an admin
-        return NextResponse.redirect(new URL('/unauthorized', request.url));
+        return NextResponse.redirect(new URL("/unauthorized", request.url));
       }
     } catch (error) {
       // Invalid or expired session cookie
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
@@ -212,13 +232,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: "/admin/:path*",
 };
 ```
 
 ### Cloud Function Security Requirements
 
 **All new admin Cloud Functions MUST:**
+
 1. Call `requireAdmin(request)` as first operation
 2. Enforce App Check (`enforceAppCheck: true`)
 3. Return only non-sensitive aggregated data
@@ -230,17 +251,19 @@ export const config = {
 
 **Critical:** API tokens (Sentry, etc.) must NEVER be exposed to the client.
 
-| Token | Location | Access |
-|-------|----------|--------|
+| Token              | Location                         | Access                                            |
+| ------------------ | -------------------------------- | ------------------------------------------------- |
 | `SENTRY_API_TOKEN` | Cloud Functions environment only | Server-side only via `adminGetSentryErrorSummary` |
-| Firebase Admin SDK | Cloud Functions only | Server-side only |
+| Firebase Admin SDK | Cloud Functions only             | Server-side only                                  |
 
 **Wrong:** `lib/sentry-admin.ts` (client-accessible)  
-**Correct:** `functions/src/admin.ts` → `adminGetSentryErrorSummary` Cloud Function
+**Correct:** `functions/src/admin.ts` → `adminGetSentryErrorSummary` Cloud
+Function
 
 ### Audit Trail Requirements
 
-**Security events MUST be logged to GCP Cloud Logging (immutable), NOT Firestore.**
+**Security events MUST be logged to GCP Cloud Logging (immutable), NOT
+Firestore.**
 
 - Existing `logSecurityEvent()` already writes to GCP Cloud Logging ✅
 - Configure log retention: 90+ days minimum for compliance
@@ -248,13 +271,13 @@ export const config = {
 
 ### Data Privacy
 
-| Data Type | Handling |
-|-----------|----------|
-| User IDs in logs | SHA-256 hashed, truncated to 12 chars |
-| User activity | Only accessible to admins |
-| Error details | Sensitive data redacted |
-| Admin actions | Full audit trail in GCP Cloud Logging |
-| API tokens | Server-side only, never in client bundles |
+| Data Type        | Handling                                  |
+| ---------------- | ----------------------------------------- |
+| User IDs in logs | SHA-256 hashed, truncated to 12 chars     |
+| User activity    | Only accessible to admins                 |
+| Error details    | Sensitive data redacted                   |
+| Admin actions    | Full audit trail in GCP Cloud Logging     |
+| API tokens       | Server-side only, never in client bundles |
 
 ---
 
@@ -264,14 +287,13 @@ export const config = {
 
 ## Phase 1: Dashboard + Foundations
 
-**Status:** ✅ COMPLETE (2025-12-23)
-**Priority:** High
-**Effort:** Medium
+**Status:** ✅ COMPLETE (2025-12-23) **Priority:** High **Effort:** Medium
 **Value:** High — instant system visibility
 
 ### Objectives
 
-- [x] ~~Server-side middleware with proper session + admin verification~~ (Deferred - client-side protection sufficient for now)
+- [x] ~~Server-side middleware with proper session + admin verification~~
+      (Deferred - client-side protection sufficient for now)
 - [x] System health at a glance (Firestore, Auth, Functions status)
 - [x] Active user metrics (24h, 7d, 30d)
 - [x] Recent signups list
@@ -281,29 +303,31 @@ export const config = {
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
-| `middleware.ts` | Middleware | Server-side admin route protection |
-| `lib/firebase-admin.ts` | Utility | Firebase Admin SDK initialization (if not exists) |
-| `components/admin/dashboard-tab.tsx` | Component | Dashboard UI |
-| `app/unauthorized/page.tsx` | Page | Unauthorized access page |
+| File                                 | Type       | Purpose                                           |
+| ------------------------------------ | ---------- | ------------------------------------------------- |
+| `middleware.ts`                      | Middleware | Server-side admin route protection                |
+| `lib/firebase-admin.ts`              | Utility    | Firebase Admin SDK initialization (if not exists) |
+| `components/admin/dashboard-tab.tsx` | Component  | Dashboard UI                                      |
+| `app/unauthorized/page.tsx`          | Page       | Unauthorized access page                          |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `functions/src/admin.ts` | Add `adminHealthCheck`, `adminGetDashboardStats` |
-| `functions/src/index.ts` | Export new functions (if needed) |
-| `components/admin/admin-tabs.tsx` | Add Dashboard tab (first position) |
-| Auth provider / firebase.ts | Add throttled `lastActive` timestamp updates |
-| `firestore.indexes.json` | Add indexes for queries |
-| `firestore.rules` | Add rules for `/_health` and `/admin_jobs` |
+| File                              | Changes                                          |
+| --------------------------------- | ------------------------------------------------ |
+| `functions/src/admin.ts`          | Add `adminHealthCheck`, `adminGetDashboardStats` |
+| `functions/src/index.ts`          | Export new functions (if needed)                 |
+| `components/admin/admin-tabs.tsx` | Add Dashboard tab (first position)               |
+| Auth provider / firebase.ts       | Add throttled `lastActive` timestamp updates     |
+| `firestore.indexes.json`          | Add indexes for queries                          |
+| `firestore.rules`                 | Add rules for `/_health` and `/admin_jobs`       |
 
 ### Cloud Functions
 
-**Security:** Both functions MUST call `requireAdmin(request)` and enforce App Check.
+**Security:** Both functions MUST call `requireAdmin(request)` and enforce App
+Check.
 
 #### `adminHealthCheck`
+
 ```typescript
 // Returns: { firestore: boolean, auth: boolean, timestamp: string }
 // Tests connectivity to Firestore and Auth services
@@ -312,6 +336,7 @@ export const config = {
 ```
 
 #### `adminGetDashboardStats`
+
 ```typescript
 // Returns:
 // - activeUsers: { last24h, last7d, last30d } (counts only)
@@ -345,7 +370,7 @@ if (user && !user.isAnonymous) {
       doc(db, "users", user.uid),
       { lastActive: serverTimestamp() },
       { merge: true }
-    ).catch(err => {
+    ).catch((err) => {
       console.warn("Failed to update lastActive:", err);
     });
   }
@@ -358,7 +383,8 @@ if (user && !user.isAnonymous) {
 - [x] ~~Middleware redirects non-admins to `/unauthorized`~~ (Deferred)
 - [x] Cloud Functions compile without errors
 - [x] Both new functions have `requireAdmin(request)` as FIRST line
-- [x] ~~Both new functions have `enforceAppCheck: true`~~ (Not needed - simple onCall pattern)
+- [x] ~~Both new functions have `enforceAppCheck: true`~~ (Not needed - simple
+      onCall pattern)
 - [x] No TypeScript errors in components
 - [x] Dashboard tab appears FIRST in admin panel tab order
 - [x] Health check shows green status for all services
@@ -372,9 +398,7 @@ if (user && !user.isAnonymous) {
 
 ## Phase 2: Enhanced User Lookup
 
-**Status:** ✅ COMPLETE (2025-12-23)
-**Priority:** High
-**Effort:** Medium
+**Status:** ✅ COMPLETE (2025-12-23) **Priority:** High **Effort:** Medium
 **Value:** High — "what's happening with this user?"
 
 ### Objectives
@@ -387,22 +411,24 @@ if (user && !user.isAnonymous) {
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
+| File                                      | Type      | Purpose                     |
+| ----------------------------------------- | --------- | --------------------------- |
 | `components/admin/user-detail-drawer.tsx` | Component | Slide-out user detail panel |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `components/admin/users-tab.tsx` | Add search, click-to-detail, enhanced UI |
-| `functions/src/admin.ts` | Add `adminGetUserDetail`, `adminUpdateUser`, `adminDisableUser` |
+| File                             | Changes                                                         |
+| -------------------------------- | --------------------------------------------------------------- |
+| `components/admin/users-tab.tsx` | Add search, click-to-detail, enhanced UI                        |
+| `functions/src/admin.ts`         | Add `adminGetUserDetail`, `adminUpdateUser`, `adminDisableUser` |
 
 ### Cloud Functions
 
-**Security:** All functions MUST call `requireAdmin(request)` and log admin actions.
+**Security:** All functions MUST call `requireAdmin(request)` and log admin
+actions.
 
 #### `adminGetUserDetail`
+
 ```typescript
 // Input: { uid: string }
 // Returns:
@@ -413,6 +439,7 @@ if (user && !user.isAnonymous) {
 ```
 
 #### `adminUpdateUser`
+
 ```typescript
 // Input: { uid: string, updates: { adminNotes?: string, ... } }
 // Allows admin to update specific user fields
@@ -420,6 +447,7 @@ if (user && !user.isAnonymous) {
 ```
 
 #### `adminDisableUser`
+
 ```typescript
 // Input: { uid: string, disabled: boolean }
 // Sets disabled flag + revokes refresh tokens
@@ -435,42 +463,45 @@ if (user && !user.isAnonymous) {
 - [x] Activity timeline loads with merged journal + daily logs
 - [x] Disable/enable user works with confirmation
 - [x] Admin notes save correctly with edit/save/cancel UI
-- [x] ~~Export user data generates valid JSON~~ (Not implemented - can add later if needed)
+- [x] ~~Export user data generates valid JSON~~ (Not implemented - can add later
+      if needed)
 
 ---
 
 ## Phase 3: Background Jobs Monitoring
 
-**Status:** ✅ COMPLETE (2025-12-23)
-**Priority:** Medium
-**Effort:** Low
+**Status:** ✅ COMPLETE (2025-12-23) **Priority:** Medium **Effort:** Low
 **Value:** Medium — peace of mind on scheduled tasks
 
 ### Objectives
 
 - [x] Jobs registry in Firestore (`/admin_jobs`)
-- [x] Job wrapper for status tracking (with proper error handling and first-run safety)
+- [x] Job wrapper for status tracking (with proper error handling and first-run
+      safety)
 - [x] Jobs tab UI with status badges and manual triggers
 - [x] Manual trigger capability via adminTriggerJob Cloud Function
-- [x] Schedule `cleanupOldRateLimits` (implemented as scheduledCleanupRateLimits v2 function)
+- [x] Schedule `cleanupOldRateLimits` (implemented as scheduledCleanupRateLimits
+      v2 function)
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
-| `components/admin/jobs-tab.tsx` | Component | Jobs monitoring UI |
-| `functions/src/jobs.ts` | Functions | Job wrapper + scheduled functions |
+| File                            | Type      | Purpose                           |
+| ------------------------------- | --------- | --------------------------------- |
+| `components/admin/jobs-tab.tsx` | Component | Jobs monitoring UI                |
+| `functions/src/jobs.ts`         | Functions | Job wrapper + scheduled functions |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `functions/src/index.ts` | Export scheduled functions |
-| `components/admin/admin-tabs.tsx` | Add Jobs tab |
+| File                              | Changes                    |
+| --------------------------------- | -------------------------- |
+| `functions/src/index.ts`          | Export scheduled functions |
+| `components/admin/admin-tabs.tsx` | Add Jobs tab               |
 
 ### Job Wrapper Pattern (Robust)
 
-**Important:** Uses `set({ merge: true })` to handle first-run case when document doesn't exist. Includes nested error handling to preserve original errors.
+**Important:** Uses `set({ merge: true })` to handle first-run case when
+document doesn't exist. Includes nested error handling to preserve original
+errors.
 
 ```typescript
 async function runJob(jobId: string, jobFn: () => Promise<void>) {
@@ -480,7 +511,7 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
   // Use set with merge to handle first-run case
   await jobRef.set(
     {
-      lastRunStatus: 'running',
+      lastRunStatus: "running",
       lastRun: FieldValue.serverTimestamp(),
     },
     { merge: true }
@@ -494,14 +525,14 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 
     await jobRef.set(
       {
-        lastRunStatus: 'success',
+        lastRunStatus: "success",
         lastRunDuration: duration,
         lastError: null,
       },
       { merge: true }
     );
 
-    logSecurityEvent('JOB_SUCCESS', { jobId, duration });
+    logSecurityEvent("JOB_SUCCESS", { jobId, duration });
   } catch (error) {
     jobError = error; // Capture the original error
     const duration = Date.now() - startTime;
@@ -511,7 +542,7 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
     try {
       await jobRef.set(
         {
-          lastRunStatus: 'failed',
+          lastRunStatus: "failed",
           lastRunDuration: duration,
           lastError: errorMessage,
         },
@@ -521,7 +552,7 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
       console.error(`Failed to update job status for ${jobId}`, updateError);
     }
 
-    logSecurityEvent('JOB_FAILURE', { jobId, error: errorMessage });
+    logSecurityEvent("JOB_FAILURE", { jobId, error: errorMessage });
     throw jobError; // Re-throw the original error
   }
 }
@@ -529,8 +560,8 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 
 ### Jobs to Register
 
-| Job ID | Name | Schedule | Description |
-|--------|------|----------|-------------|
+| Job ID                 | Name                | Schedule      | Description                          |
+| ---------------------- | ------------------- | ------------- | ------------------------------------ |
 | `cleanupOldRateLimits` | Cleanup Rate Limits | Daily 3 AM CT | Removes expired rate limit documents |
 
 ### Verification Checklist
@@ -541,16 +572,15 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 - [x] Manual trigger works (calls `requireAdmin()`)
 - [x] Failed jobs show error message in expandable section
 - [x] First-run jobs work (no "document not found" error - using set merge:true)
-- [x] Scheduled function deployed (scheduledCleanupRateLimits runs daily 3 AM CT)
+- [x] Scheduled function deployed (scheduledCleanupRateLimits runs daily 3 AM
+      CT)
 - [x] Job runs logged to GCP Cloud Logging (JOB_SUCCESS/JOB_FAILURE events)
 
 ---
 
 ## Today Page Enhancement - UX Polish
 
-**Status:** ✅ COMPLETE (2025-12-23)
-**Priority:** High
-**Effort:** Medium
+**Status:** ✅ COMPLETE (2025-12-23) **Priority:** High **Effort:** Medium
 **Value:** High — dramatically improved user experience
 
 ### Objectives
@@ -569,62 +599,70 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 
 ### New Components Created
 
-| Component | Purpose | Location |
-|-----------|---------|----------|
-| `TodayPageSkeleton` | Loading state skeleton screen | `components/notebook/pages/today-page-skeleton.tsx` |
-| `CheckInProgress` | Step-by-step progress indicator | `components/notebook/features/check-in-progress.tsx` |
-| `QuickActionsFab` | Floating action button with 4 shortcuts | `components/notebook/features/quick-actions-fab.tsx` |
-| `EnhancedMoodSelector` | Mood picker with keyboard shortcuts | `components/notebook/features/enhanced-mood-selector.tsx` |
-| `SmartPrompt` | Contextual AI-driven suggestions | `components/notebook/features/smart-prompt.tsx` |
-| `OfflineIndicator` | Network status awareness | `components/status/offline-indicator.tsx` |
+| Component              | Purpose                                 | Location                                                  |
+| ---------------------- | --------------------------------------- | --------------------------------------------------------- |
+| `TodayPageSkeleton`    | Loading state skeleton screen           | `components/notebook/pages/today-page-skeleton.tsx`       |
+| `CheckInProgress`      | Step-by-step progress indicator         | `components/notebook/features/check-in-progress.tsx`      |
+| `QuickActionsFab`      | Floating action button with 4 shortcuts | `components/notebook/features/quick-actions-fab.tsx`      |
+| `EnhancedMoodSelector` | Mood picker with keyboard shortcuts     | `components/notebook/features/enhanced-mood-selector.tsx` |
+| `SmartPrompt`          | Contextual AI-driven suggestions        | `components/notebook/features/smart-prompt.tsx`           |
+| `OfflineIndicator`     | Network status awareness                | `components/status/offline-indicator.tsx`                 |
 
 ### Custom Hooks Created
 
-| Hook | Purpose | Location |
-|------|---------|----------|
-| `useSmartPrompts` | Smart prompt visibility + localStorage persistence | `components/notebook/hooks/use-smart-prompts.ts` |
-| `useScrollToSection` | Scroll management with useEffect (no setTimeout) | `components/notebook/hooks/use-scroll-to-section.ts` |
+| Hook                 | Purpose                                            | Location                                             |
+| -------------------- | -------------------------------------------------- | ---------------------------------------------------- |
+| `useSmartPrompts`    | Smart prompt visibility + localStorage persistence | `components/notebook/hooks/use-smart-prompts.ts`     |
+| `useScrollToSection` | Scroll management with useEffect (no setTimeout)   | `components/notebook/hooks/use-scroll-to-section.ts` |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
+| File                                       | Changes                                    |
+| ------------------------------------------ | ------------------------------------------ |
 | `components/notebook/pages/today-page.tsx` | Full integration of all 10 UX improvements |
 
 ### Features Implemented
 
 #### 1. Progressive Check-In Flow
+
 - **What:** Visual progress indicator showing completion of Mood → Check → HALT
 - **Why:** Users can see their progress through the check-in process
 - **How:** `CheckInProgress` component with animated progress bar
 - **Impact:** Reduces abandonment, encourages completion
 
 #### 2. Loading States & Skeleton Screens
+
 - **What:** Professional skeleton screen while data loads
 - **Why:** No more blank screen flash on page load
 - **How:** `TodayPageSkeleton` component matching page layout
 - **Impact:** Perceived performance improvement
 
 #### 3. Enhanced Visual Feedback
+
 - **What:** Animations, scale effects, glow on interactions
 - **Why:** User actions feel responsive and engaging
-- **How:** CSS `animate-in`, `slide-in-from-top`, `active:scale-95`, glow effects
+- **How:** CSS `animate-in`, `slide-in-from-top`, `active:scale-95`, glow
+  effects
 - **Impact:** More polished, modern feel
 
 #### 4. Mobile-Specific Improvements
+
 - **What:** Larger touch targets, active states, better spacing
 - **Why:** Mobile is primary platform for recovery app
 - **How:** Responsive sizing, touch-optimized button sizes
 - **Impact:** Easier to use on phone
 
 #### 5. Quick Actions FAB
-- **What:** Floating action button with 4 shortcuts: Quick Mood, Call Sponsor, Community, Resources
+
+- **What:** Floating action button with 4 shortcuts: Quick Mood, Call Sponsor,
+  Community, Resources
 - **Why:** Fast access to most-used actions
 - **How:** `QuickActionsFab` component with staggered animations
 - **Impact:** Reduces navigation clicks by 2-3 steps
 - **Z-Index Fix:** Set to `z-[60]` to appear above journal pen button
 
 #### 6. Smart Defaults & Contextual Prompts
+
 - **What:** 3 types of context-aware suggestions:
   1. Evening check-in reminder (6-10 PM)
   2. HALT suggestion when struggling
@@ -635,24 +673,28 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 - **Impact:** Proactive support without being annoying
 
 #### 7. Keyboard Shortcuts
+
 - **What:** Press 1-4 keys to select mood on desktop
 - **Why:** Power users can check in faster
 - **How:** `EnhancedMoodSelector` with keypress event listener
 - **Impact:** 3-second check-in for keyboard users
 
 #### 8. Data Visualization
+
 - **What:** Progress bars, completion indicators
 - **Why:** Visual feedback on streaks and progress
 - **How:** Gradient progress bars with animations
 - **Impact:** Motivational visual cues
 
 #### 9. Accessibility
+
 - **What:** ARIA labels, keyboard navigation, focus management
 - **Why:** Inclusive design for all users
 - **How:** Proper semantic HTML + ARIA attributes
 - **Impact:** Screen reader compatible
 
 #### 10. Offline-First Enhancement
+
 - **What:** Network status indicator, auto-sync on reconnection
 - **Why:** Works even with poor mobile connection
 - **How:** `OfflineIndicator` component with online/offline event listeners
@@ -661,12 +703,16 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 ### Code Quality Improvements (Qodo Review)
 
 #### Critical Bug Fixes
-- **Invalid CSS Selector:** Replaced non-standard `:has-text()` with standard DOM query
+
+- **Invalid CSS Selector:** Replaced non-standard `:has-text()` with standard
+  DOM query
   - **Before:** `document.querySelector('h2:has-text("HALT Check")')`
-  - **After:** `Array.from(document.querySelectorAll('h2')).find(h => h.textContent?.includes('HALT Check'))`
+  - **After:**
+    `Array.from(document.querySelectorAll('h2')).find(h => h.textContent?.includes('HALT Check'))`
   - **Impact:** Prevents DOMException runtime errors
 
 #### Architectural Improvements
+
 - **Custom Hook Extraction:** Created `useSmartPrompts` hook
   - Extracted 30+ lines of prompt logic from TodayPage
   - Better separation of concerns
@@ -702,6 +748,7 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 ### Files Changed
 
 **New Files (8):**
+
 - `components/notebook/pages/today-page-skeleton.tsx`
 - `components/notebook/features/check-in-progress.tsx`
 - `components/notebook/features/quick-actions-fab.tsx`
@@ -712,11 +759,13 @@ async function runJob(jobId: string, jobFn: () => Promise<void>) {
 - `components/notebook/hooks/use-scroll-to-section.ts`
 
 **Modified Files (1):**
+
 - `components/notebook/pages/today-page.tsx` (major refactor)
 
 ### Future Enhancements (Planned)
 
-See **Phase 6: Customizable Quick Actions** below for planned user customization features.
+See **Phase 6: Customizable Quick Actions** below for planned user customization
+features.
 
 ---
 
@@ -725,13 +774,15 @@ See **Phase 6: Customizable Quick Actions** below for planned user customization
 **Status:** ⏳ Planned  
 **Priority:** High  
 **Effort:** Low-Medium  
-**Value:** High — catch issues before users report  
+**Value:** High — catch issues before users report
 
 ### Approach: Hybrid Summary + Deep Links (Server-Side API)
 
-**Critical Security:** Sentry API calls MUST be made from a Cloud Function, NOT client-side code. The `SENTRY_API_TOKEN` must never be exposed to the browser.
+**Critical Security:** Sentry API calls MUST be made from a Cloud Function, NOT
+client-side code. The `SENTRY_API_TOKEN` must never be exposed to the browser.
 
 **Do NOT rebuild Sentry's UI.** Instead:
+
 1. Cloud Function fetches error summary from Sentry API (server-side)
 2. Show summary card with error count and last 5 errors (plain English)
 3. Provide deep links to Sentry for full details
@@ -747,18 +798,18 @@ See **Phase 6: Customizable Quick Actions** below for planned user customization
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
-| `components/admin/errors-tab.tsx` | Component | Error summary UI with Sentry links |
-| `lib/error-translations.ts` | Utility | Error code → plain English mapping (client-safe) |
+| File                              | Type      | Purpose                                          |
+| --------------------------------- | --------- | ------------------------------------------------ |
+| `components/admin/errors-tab.tsx` | Component | Error summary UI with Sentry links               |
+| `lib/error-translations.ts`       | Utility   | Error code → plain English mapping (client-safe) |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `functions/src/admin.ts` | Add `adminGetSentryErrorSummary` Cloud Function |
-| `components/admin/admin-tabs.tsx` | Add Errors tab |
-| Cloud Functions `.env` | Add `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` |
+| File                              | Changes                                                |
+| --------------------------------- | ------------------------------------------------------ |
+| `functions/src/admin.ts`          | Add `adminGetSentryErrorSummary` Cloud Function        |
+| `components/admin/admin-tabs.tsx` | Add Errors tab                                         |
+| Cloud Functions `.env`            | Add `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` |
 
 ### Cloud Function: `adminGetSentryErrorSummary`
 
@@ -776,18 +827,23 @@ export const adminGetSentryErrorSummary = onCall(
   },
   async (request) => {
     requireAdmin(request);
-    
+
     const hours = Math.min(Math.max(request.data?.hours || 24, 1), 168); // 1h..7d
-    
+
     const response = await fetch(
       `https://sentry.io/api/0/projects/${SENTRY_ORG}/${SENTRY_PROJECT}/issues/?statsPeriod=${hours}h&query=is:unresolved`,
       { headers: { Authorization: `Bearer ${SENTRY_API_TOKEN}` } }
     );
 
     if (!response.ok) {
-      const body = await response.text().catch(() => '');
-      console.error(`Sentry API error (${response.status}): ${body.slice(0, 200)}`);
-      throw new HttpsError('internal', 'Failed to fetch error summary from Sentry');
+      const body = await response.text().catch(() => "");
+      console.error(
+        `Sentry API error (${response.status}): ${body.slice(0, 200)}`
+      );
+      throw new HttpsError(
+        "internal",
+        "Failed to fetch error summary from Sentry"
+      );
     }
 
     const issues = await response.json();
@@ -796,11 +852,11 @@ export const adminGetSentryErrorSummary = onCall(
     return {
       count: list.length,
       recent: list.slice(0, 10).map((issue: any) => ({
-        id: String(issue.id ?? ''),
-        title: String(issue.title ?? ''),
+        id: String(issue.id ?? ""),
+        title: String(issue.title ?? ""),
         count: Number(issue.count ?? 0),
-        lastSeen: String(issue.lastSeen ?? ''),
-        link: String(issue.permalink ?? ''),
+        lastSeen: String(issue.lastSeen ?? ""),
+        link: String(issue.permalink ?? ""),
       })),
     };
   }
@@ -814,15 +870,18 @@ export const adminGetSentryErrorSummary = onCall(
 // This file is safe for client-side - no secrets
 
 const ERROR_TRANSLATIONS: Record<string, string> = {
-  'auth/invalid-credential': "User entered wrong password or account doesn't exist",
-  'permission-denied': "User tried to access data they don't have permission for",
-  'unauthenticated': "User's session expired or they weren't logged in",
-  'resource-exhausted': "Rate limit hit — too many requests",
-  'deadline-exceeded': "Request took too long (slow connection or overloaded function)",
-  'not-found': "Requested data doesn't exist",
-  'already-exists': "Tried to create something that already exists",
-  'internal': "Something went wrong on our end",
-  'unavailable': "Service temporarily unavailable",
+  "auth/invalid-credential":
+    "User entered wrong password or account doesn't exist",
+  "permission-denied":
+    "User tried to access data they don't have permission for",
+  unauthenticated: "User's session expired or they weren't logged in",
+  "resource-exhausted": "Rate limit hit — too many requests",
+  "deadline-exceeded":
+    "Request took too long (slow connection or overloaded function)",
+  "not-found": "Requested data doesn't exist",
+  "already-exists": "Tried to create something that already exists",
+  internal: "Something went wrong on our end",
+  unavailable: "Service temporarily unavailable",
 };
 
 export function translateError(errorCode: string): string {
@@ -830,26 +889,26 @@ export function translateError(errorCode: string): string {
   if (ERROR_TRANSLATIONS[errorCode]) {
     return ERROR_TRANSLATIONS[errorCode];
   }
-  
+
   // Check for partial match (e.g., "auth/invalid-credential" matches "invalid-credential")
   for (const [key, value] of Object.entries(ERROR_TRANSLATIONS)) {
     if (errorCode.includes(key) || key.includes(errorCode)) {
       return value;
     }
   }
-  
+
   return `Error: ${errorCode}`;
 }
 ```
 
 ### UI Design
 
-| Element | Description |
-|---------|-------------|
-| Error Count Card | "12 errors in last 24h" with trend indicator |
-| Recent Errors List | Last 5-10 errors with plain English description |
-| Each Error Row | Time, What Happened, User (if available), "View in Sentry →" link |
-| Sentry Deep Link | Opens Sentry issue page directly |
+| Element            | Description                                                       |
+| ------------------ | ----------------------------------------------------------------- |
+| Error Count Card   | "12 errors in last 24h" with trend indicator                      |
+| Recent Errors List | Last 5-10 errors with plain English description                   |
+| Each Error Row     | Time, What Happened, User (if available), "View in Sentry →" link |
+| Sentry Deep Link   | Opens Sentry issue page directly                                  |
 
 ### Verification Checklist
 
@@ -868,11 +927,12 @@ export function translateError(errorCode: string): string {
 **Status:** ⏳ Planned  
 **Priority:** Medium  
 **Effort:** Low  
-**Value:** Medium — quick access to recent events  
+**Value:** Medium — quick access to recent events
 
 ### Approach: Recent Events + Deep Links
 
 **Do NOT rebuild GCP Cloud Logging UI.** Instead:
+
 1. Show recent security events (last 20-50)
 2. Provide filtered deep link to GCP Console for full logs
 3. Ensure structured logging is in place
@@ -886,15 +946,17 @@ export function translateError(errorCode: string): string {
 
 ### Implementation Notes
 
-Your existing `logSecurityEvent()` already writes to GCP Cloud Logging. This phase is about:
+Your existing `logSecurityEvent()` already writes to GCP Cloud Logging. This
+phase is about:
+
 1. **Visibility:** Adding a Logs tab that shows recent events
 2. **Access:** Providing a quick link to GCP Console
 3. **Retention:** Ensuring logs are kept long enough for compliance
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
+| File                            | Type      | Purpose                     |
+| ------------------------------- | --------- | --------------------------- |
 | `components/admin/logs-tab.tsx` | Component | Recent logs + GCP deep link |
 
 ### GCP Console Deep Link (Corrected)
@@ -905,7 +967,7 @@ Your existing `logSecurityEvent()` already writes to GCP Cloud Logging. This pha
 // Assumes logSecurityEvent writes to a log named 'sonash-security-log'
 // Adjust the log name to match your actual logging configuration
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-const LOG_NAME = 'sonash-security-log'; // Update to match your log name
+const LOG_NAME = "sonash-security-log"; // Update to match your log name
 
 const query = `resource.type="cloud_function"
 logName="projects/${PROJECT_ID}/logs/${LOG_NAME}"`;
@@ -916,12 +978,12 @@ const GCP_LOGS_URL = `https://console.cloud.google.com/logs/query;query=${encode
 
 ### UI Design
 
-| Element | Description |
-|---------|-------------|
-| Recent Events List | Last 20 security events from Cloud Functions |
-| Event Row | Time, Event Type, Level badge, Details (truncated) |
-| "View All in GCP →" | Deep link to GCP Cloud Logging Console |
-| Filter Hint | Show the GCP query string so admins can modify |
+| Element             | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| Recent Events List  | Last 20 security events from Cloud Functions       |
+| Event Row           | Time, Event Type, Level badge, Details (truncated) |
+| "View All in GCP →" | Deep link to GCP Cloud Logging Console             |
+| Filter Hint         | Show the GCP query string so admins can modify     |
 
 ### Verification Checklist
 
@@ -934,14 +996,13 @@ const GCP_LOGS_URL = `https://console.cloud.google.com/logs/query;query=${encode
 
 ## Phase 6: Customizable Quick Actions
 
-**Status:** 📋 Planned
-**Priority:** Medium
-**Effort:** Medium
-**Value:** High — personalized user experience
+**Status:** 📋 Planned **Priority:** Medium **Effort:** Medium **Value:** High —
+personalized user experience
 
 ### Approach: User-Configurable FAB
 
-Allow users to customize the Quick Actions FAB to suit their individual recovery needs.
+Allow users to customize the Quick Actions FAB to suit their individual recovery
+needs.
 
 ### Objectives
 
@@ -954,24 +1015,26 @@ Allow users to customize the Quick Actions FAB to suit their individual recovery
 
 ### Use Cases
 
-1. **Power User:** Removes "Quick Mood" (doesn't use it), adds custom sponsor phone
+1. **Power User:** Removes "Quick Mood" (doesn't use it), adds custom sponsor
+   phone
 2. **Minimalist:** Shows only 2 actions (Call Sponsor, Community)
 3. **Meeting-Focused:** Reorders to prioritize Community at top
-4. **Contact-Heavy:** Adds multiple phone numbers (sponsor, accountability partner, hotline)
+4. **Contact-Heavy:** Adds multiple phone numbers (sponsor, accountability
+   partner, hotline)
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
+| File                                             | Type      | Purpose                          |
+| ------------------------------------------------ | --------- | -------------------------------- |
 | `components/settings/quick-actions-settings.tsx` | Component | Settings panel for Quick Actions |
-| `lib/quick-actions-config.ts` | Utility | Default actions + validation |
+| `lib/quick-actions-config.ts`                    | Utility   | Default actions + validation     |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `components/notebook/features/quick-actions-fab.tsx` | Load user preferences, render custom actions |
-| `firestore.rules` | Allow user to read/write `users/{uid}/preferences/quickActions` |
+| File                                                 | Changes                                                         |
+| ---------------------------------------------------- | --------------------------------------------------------------- |
+| `components/notebook/features/quick-actions-fab.tsx` | Load user preferences, render custom actions                    |
+| `firestore.rules`                                    | Allow user to read/write `users/{uid}/preferences/quickActions` |
 
 ### Data Model
 
@@ -1046,6 +1109,7 @@ export const DEFAULT_QUICK_ACTIONS = [
 **Location:** More tab → Settings → Quick Actions
 
 **Sections:**
+
 1. **Enable/Disable:** Toggle to show/hide FAB
 2. **Active Actions:** List of enabled actions with:
    - Drag handle for reordering
@@ -1110,21 +1174,22 @@ export const DEFAULT_QUICK_ACTIONS = [
 
 ## Environment Variables
 
-### Client-Side (NEXT_PUBLIC_*)
+### Client-Side (NEXT*PUBLIC*\*)
 
-| Variable | Phase | Purpose |
-|----------|-------|---------|
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | 5 | GCP Console deep link |
+| Variable                          | Phase | Purpose               |
+| --------------------------------- | ----- | --------------------- |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | 5     | GCP Console deep link |
 
 ### Server-Side (Cloud Functions)
 
-| Variable | Phase | Purpose | Security |
-|----------|-------|---------|----------|
-| `SENTRY_API_TOKEN` | 4 | Sentry API access | **Server-only** |
-| `SENTRY_ORG` | 4 | Sentry organization slug | Server-only |
-| `SENTRY_PROJECT` | 4 | Sentry project slug | Server-only |
+| Variable           | Phase | Purpose                  | Security        |
+| ------------------ | ----- | ------------------------ | --------------- |
+| `SENTRY_API_TOKEN` | 4     | Sentry API access        | **Server-only** |
+| `SENTRY_ORG`       | 4     | Sentry organization slug | Server-only     |
+| `SENTRY_PROJECT`   | 4     | Sentry project slug      | Server-only     |
 
-**Critical:** `SENTRY_API_TOKEN` must be set in Cloud Functions environment, NOT in `.env.local` or any client-accessible location.
+**Critical:** `SENTRY_API_TOKEN` must be set in Cloud Functions environment, NOT
+in `.env.local` or any client-accessible location.
 
 ---
 
@@ -1136,16 +1201,12 @@ export const DEFAULT_QUICK_ACTIONS = [
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "lastActive", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "lastActive", "order": "DESCENDING" }]
     },
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
+      "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
     }
   ]
 }
@@ -1157,31 +1218,31 @@ export const DEFAULT_QUICK_ACTIONS = [
 
 ### Unit Tests
 
-| Component | Test Cases |
-|-----------|------------|
-| `dashboard-tab.tsx` | Loading state, error state, data display |
-| `error-translations.ts` | All error codes translate correctly |
-| `user-detail-drawer.tsx` | Opens/closes, displays data |
-| Middleware | Rejects invalid sessions, rejects non-admins, allows admins |
+| Component                | Test Cases                                                  |
+| ------------------------ | ----------------------------------------------------------- |
+| `dashboard-tab.tsx`      | Loading state, error state, data display                    |
+| `error-translations.ts`  | All error codes translate correctly                         |
+| `user-detail-drawer.tsx` | Opens/closes, displays data                                 |
+| Middleware               | Rejects invalid sessions, rejects non-admins, allows admins |
 
 ### Integration Tests
 
-| Flow | Validation |
-|------|------------|
-| Dashboard load | All stats populate, no errors |
-| User search | Returns correct results |
-| Job status | Reflects actual Cloud Scheduler state |
-| Error display | Matches Sentry data |
+| Flow           | Validation                            |
+| -------------- | ------------------------------------- |
+| Dashboard load | All stats populate, no errors         |
+| User search    | Returns correct results               |
+| Job status     | Reflects actual Cloud Scheduler state |
+| Error display  | Matches Sentry data                   |
 
 ### Security Tests
 
-| Test | Expected Result |
-|------|-----------------|
-| Access `/admin` without session | Redirect to `/login` |
-| Access `/admin` with non-admin session | Redirect to `/unauthorized` |
-| Access `/admin` with admin session | Allow access |
-| Call `adminGetSentryErrorSummary` without admin | Reject with error |
-| Check client bundle for `SENTRY_API_TOKEN` | Token NOT present |
+| Test                                            | Expected Result             |
+| ----------------------------------------------- | --------------------------- |
+| Access `/admin` without session                 | Redirect to `/login`        |
+| Access `/admin` with non-admin session          | Redirect to `/unauthorized` |
+| Access `/admin` with admin session              | Allow access                |
+| Call `adminGetSentryErrorSummary` without admin | Reject with error           |
+| Check client bundle for `SENTRY_API_TOKEN`      | Token NOT present           |
 
 ### Manual Testing Checklist
 
@@ -1198,36 +1259,36 @@ export const DEFAULT_QUICK_ACTIONS = [
 
 ## Rollout Plan
 
-| Phase | Target | Dependencies |
-|-------|--------|--------------|
-| Phase 1: Dashboard | Week 1 | None |
-| Phase 2: User Lookup | Week 2 | Phase 1 (`lastActive` tracking) |
-| Phase 3: Jobs | Week 2-3 | Phase 1 (jobs display on dashboard) |
-| Phase 4: Errors | Week 3 | Sentry API token in Cloud Functions env |
-| Phase 5: Logs | Week 4 | GCP Console access configured |
+| Phase                | Target   | Dependencies                            |
+| -------------------- | -------- | --------------------------------------- |
+| Phase 1: Dashboard   | Week 1   | None                                    |
+| Phase 2: User Lookup | Week 2   | Phase 1 (`lastActive` tracking)         |
+| Phase 3: Jobs        | Week 2-3 | Phase 1 (jobs display on dashboard)     |
+| Phase 4: Errors      | Week 3   | Sentry API token in Cloud Functions env |
+| Phase 5: Logs        | Week 4   | GCP Console access configured           |
 
 ---
 
 ## Success Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Time to identify issue | < 2 minutes | Manual timing |
-| Dashboard load time | < 3 seconds | Performance monitoring |
-| Error visibility | 100% of Cloud Function errors | Compare Sentry vs. summary |
-| Job failure detection | < 1 hour after failure | Alert setup |
+| Metric                 | Target                        | Measurement                |
+| ---------------------- | ----------------------------- | -------------------------- |
+| Time to identify issue | < 2 minutes                   | Manual timing              |
+| Dashboard load time    | < 3 seconds                   | Performance monitoring     |
+| Error visibility       | 100% of Cloud Function errors | Compare Sentry vs. summary |
+| Job failure detection  | < 1 hour after failure        | Alert setup                |
 
 ---
 
 ## Open Questions / Parking Lot
 
-| ID | Question | Priority | Status |
-|----|----------|----------|--------|
-| AP-001 | Should we add email alerts for job failures? | M | Deferred |
-| AP-002 | Rate limiting on admin endpoints? | L | Deferred |
-| AP-003 | Admin action approval workflow for destructive actions? | L | Deferred |
-| AP-004 | Export all user data as ZIP for GDPR requests? | M | Deferred |
-| AP-005 | Embed Sentry widget vs. API fetch? | L | Closed — using Cloud Function API |
+| ID     | Question                                                | Priority | Status                            |
+| ------ | ------------------------------------------------------- | -------- | --------------------------------- |
+| AP-001 | Should we add email alerts for job failures?            | M        | Deferred                          |
+| AP-002 | Rate limiting on admin endpoints?                       | L        | Deferred                          |
+| AP-003 | Admin action approval workflow for destructive actions? | L        | Deferred                          |
+| AP-004 | Export all user data as ZIP for GDPR requests?          | M        | Deferred                          |
+| AP-005 | Embed Sentry widget vs. API fetch?                      | L        | Closed — using Cloud Function API |
 
 ---
 
