@@ -33,6 +33,33 @@ Before starting any work, complete these verification steps:
 - [ ] Increment session counter in [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md)
 - [ ] Check [ROADMAP.md](../../ROADMAP.md) for priority changes
 
+## 1b. Stale Documentation Check (MANDATORY - NEW)
+
+**Documentation often drifts from reality.** Before trusting any status in docs, verify against actual commits:
+
+```bash
+# Check recent commits to see actual work done
+git log --oneline -30
+
+# Check commits since last documented session date
+git log --oneline --since="YYYY-MM-DD"
+```
+
+**Compare commits against documented status:**
+1. Look for PR/feature commits (e.g., "PR7:", "refactor:", "fix:")
+2. Cross-reference with INTEGRATED_IMPROVEMENT_PLAN.md task checkboxes
+3. If commits show work done but docs show incomplete → **UPDATE THE DOCS**
+
+**Common discrepancies to check:**
+- Step 4B PRs: Check for commits like "PR7:", "PR8:", etc. and verify checkboxes match
+- Session counter: Check AI_REVIEW_LEARNINGS_LOG.md version history for session numbers
+- Test counts: Run `npm test` to verify actual vs documented
+
+**If docs are stale:**
+1. Update the stale document with correct status
+2. Note which sessions failed to update docs
+3. Commit the corrections before proceeding
+
 ## 2. Consolidation Status Check
 Check [AI_REVIEW_LEARNINGS_LOG.md](../../docs/AI_REVIEW_LEARNINGS_LOG.md) for the "Consolidation Trigger" section:
 - If "Reviews since last consolidation" >= 10: **⚠️ CONSOLIDATION WAS MISSED**
