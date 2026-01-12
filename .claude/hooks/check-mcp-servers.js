@@ -22,8 +22,9 @@ const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
-// Security: Ensure projectDir is within baseDir (prevent path traversal)
-if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
+// Security: Ensure projectDir is within baseDir using path.relative() (prevent path traversal)
+const rel = path.relative(safeBaseDir, projectDir);
+if (rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
   console.log('No MCP servers configured');
   process.exit(0);
 }
@@ -74,8 +75,18 @@ try {
     process.exit(0);
   }
 
-  // Sanitize and join server names
-  let output = serverNames.map(sanitizeOutput).join(', ');
+  // Sanitize and join server names (filter out empty after sanitization)
+  let output = serverNames
+    .map(sanitizeOutput)
+    .map(s => s.trim())
+    .filter(s => s.length > 0)
+    .join(', ');
+
+  // Handle case where all names became empty after sanitization
+  if (output.length === 0) {
+    console.log('No MCP servers configured');
+    process.exit(0);
+  }
 
   // Cap output length to prevent terminal spam
   if (output.length > 500) {
