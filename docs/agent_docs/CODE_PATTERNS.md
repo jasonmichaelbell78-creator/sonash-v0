@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.6 **Last Updated:** 2026-01-11 **Source:** Distilled
-from 120 AI code reviews
+**Document Version:** 1.7 **Last Updated:** 2026-01-12 **Source:** Distilled
+from 136 AI code reviews
 
 ---
 
@@ -99,23 +99,30 @@ critical patterns that apply to every session.
 | Entity escaping order    | Escape `&` FIRST, then `<`, `>`, quotes                             | `&lt;` becomes `&amp;lt;` if ampersand escaped last |
 | SSRF allowlist           | Explicit hostname allowlist + protocol enforcement (HTTPS only)     | Environment variables alone insufficient            |
 | External request timeout | Use `AbortController` with explicit timeout on all fetch/HTTP calls | Network calls can hang indefinitely                 |
+| IPv6-safe IP parsing     | Only strip port from IPv4 (contains `.`); preserve full IPv6        | Splitting by `:` breaks IPv6 addresses              |
+| Third-party PII hygiene  | Set `captureToSentry: false` for logs containing IP/PII             | Internal logs flow to third parties                 |
+| Defense-in-depth bypass  | Multi-condition: `bypass = flagSet && (isEmulator \|\| !isProd)`    | Single env var shouldn't disable prod security      |
+| Production fail-closed   | Security features (reCAPTCHA) fail-closed in production             | Degraded security should fail, not bypass           |
+| Firestore batch chunking | Chunk batch operations under 500-op limit                           | Firestore batch write limit                         |
+| Sensitive file filtering | Filter sensitive paths before passing to external tools             | Don't expose secrets to code review tools           |
 
 ---
 
 ## GitHub Actions
 
-| Pattern              | Rule                                        | Why                              |
-| -------------------- | ------------------------------------------- | -------------------------------- |
-| JS template literals | `process.env.VAR` NOT `${{ }}`              | Injection risk                   |
-| Command failure      | Use exit codes, not output parsing          | Reliable detection               |
-| File list separator  | `separator: "\n"` with `while IFS= read -r` | Proper iteration                 |
-| Separate stderr      | `cmd 2>err.log`                             | Keep JSON parseable              |
-| if conditions        | Explicit `${{ }}`                           | YAML parser issues               |
-| Retry loops          | Track success explicitly                    | Don't assume loop exit = success |
-| Output comparison    | `== '4'` not `== 4`                         | Outputs are strings              |
-| Label auto-creation  | Check getLabel, create on 404               | Fresh repos/forks                |
-| Event-specific       | `context.payload.action === 'opened'`       | Avoid spam on synchronize        |
-| API error tolerance  | Catch 404/422 on removeLabel                | Label may be gone                |
+| Pattern              | Rule                                                        | Why                                           |
+| -------------------- | ----------------------------------------------------------- | --------------------------------------------- |
+| Supply chain pinning | Pin third-party actions to full SHA: `action@SHA # vX.Y.Z`  | Tag retargeting attacks (CVE-2025-30066)      |
+| JS template literals | `process.env.VAR` NOT `${{ }}`                              | Injection risk                                |
+| Command failure      | Use exit codes, not output parsing                          | Reliable detection                            |
+| File list separator  | `separator: "\n"` with `while IFS= read -r`                 | Proper iteration                              |
+| Separate stderr      | `cmd 2>err.log`                                             | Keep JSON parseable                           |
+| if conditions        | Explicit `${{ }}`                                           | YAML parser issues                            |
+| Retry loops          | Track success explicitly                                    | Don't assume loop exit = success              |
+| Output comparison    | `== '4'` not `== 4`                                         | Outputs are strings                           |
+| Label auto-creation  | Check getLabel, create on 404                               | Fresh repos/forks                             |
+| Event-specific       | `context.payload.action === 'opened'`                       | Avoid spam on synchronize                     |
+| API error tolerance  | Catch 404/422 on removeLabel                                | Label may be gone                             |
 
 ---
 
@@ -152,6 +159,10 @@ critical patterns that apply to every session.
 | Cognitive complexity     | Keep functions under 15; extract helpers                   | SonarQube S3776 threshold                     |
 | lstatSync for symlinks   | Use `lstatSync` to detect symlinks without following       | `statSync` follows symlinks, misses escapes   |
 | NaN-safe numeric sorting | `Number(a) - Number(b)` with `\|\| 0` fallback             | NaN in sort comparator causes undefined order |
+| path.relative() empty    | Include `rel === ''` in containment checks                 | Resolving `.` gives empty relative path       |
+| Error cause preservation | Use `new Error(msg, { cause: originalError })`             | Preserves error chain for debugging           |
+| globalThis over window   | Use `globalThis.window` for SSR-safe browser detection     | `window` throws in Node.js                    |
+| Array.isArray guards     | Check `Array.isArray()` before array operations            | External data may not match expected type     |
 
 ---
 
@@ -167,6 +178,11 @@ critical patterns that apply to every session.
 | JSON output isolation   | Guard all console.error when JSON mode active | Mixed output breaks parsers                |
 | Empty-state guards      | Handle "no prior data" case in triggers       | Prevents false positives on fresh projects |
 | Unimplemented CLI flags | Block with error message, exit code 2         | Silent acceptance = false confidence       |
+| CLI arg separator       | Use `--` before file args: `script -- $FILES` | Prevents `-filename` injection             |
+| Quote shell arguments   | Always quote `$ARGS` in shell hook settings   | Command injection prevention               |
+| Project dir validation  | Validate cwd is within expected project root  | Prevent traversal in hooks                 |
+| Cross-platform paths    | Use `path.sep` and normalize backslashes      | Windows compatibility                      |
+| Exit code best practice | Use `process.exitCode` not `process.exit()`   | Allows buffer flush                        |
 
 ---
 
@@ -254,6 +270,7 @@ fix guidance.
 
 | Version | Date       | Changes                                                                                                                                                                                   |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.7     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 - Added 15 patterns (6 Security: IPv6, PII, bypass, fail-closed, batch, filtering; 4 JS/TS: path.relative, Error.cause, globalThis, Array.isArray; 5 CI: arg separator, quote args, project validation, cross-platform, exit code; 1 GitHub Actions: supply chain) |
 | 1.6     | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns. |
 | 1.5     | 2026-01-11 | Added prototype pollution, secure logging, fail-fast patterns from Reviews #117-120                                                                                                       |
 | 1.4     | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General)                                                                  |

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 5.8 **Created:** 2026-01-02 **Last Updated:** 2026-01-12
+**Document Version:** 5.9 **Created:** 2026-01-02 **Last Updated:** 2026-01-12
 
 ## Purpose
 
@@ -20,6 +20,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 5.9     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 → CODE_PATTERNS.md v1.7 (16 new patterns: 6 Security, 4 JS/TS, 5 CI/Automation, 1 GitHub Actions). Counter reset. Session #57. |
 | 5.8     | 2026-01-12 | Review #136: PR CI Feedback Round 3 (SonarQube + Qodo + CI) - 14 items. Fixed: 7 MAJOR security (admin.ts PII logging sanitized - log queryLength/queryType instead of raw query, leaky error message in adminTriggerJob, Firestore auto-ID instead of Date.now() for collision resistance, id field placement after spread, HttpsError preservation in migrateAnonymousUserData, meetings.ts batch delete chunking for 500-doc limit, use-journal.ts sanitization order - script/style before tags), 3 MAJOR quality (Array.isArray guards in generateSearchableText, unused deps added to knip ignore), 4 MINOR (GLOBAL_EXCLUDE added to pattern checker for dev utility scripts with pre-existing debt). New pattern: Chunk batch operations under Firestore 500-op limit. Session #55. |
 | 5.7     | 2026-01-12 | Review #135: PR Cherry-Pick CI Feedback Round 2 (Qodo + CI) - 10 items. Fixed: 6 MAJOR (Prettier formatting 518 files, dependency issues - removed @modelcontextprotocol/sdk + undici, added globals + postcss-load-config, duplicate exports in error-boundary.tsx, pattern compliance pathExclude for meta-detection, matchesWord() wildcard support for ".?" patterns), 4 MINOR (coderabbit exit code opt-in via CODERABBIT_EXIT_ON_FINDINGS env var, pattern-check.js cross-platform path handling using path.sep). Pre-existing issues documented in ROADMAP.md. Session #55.                                                                                                                                                                                                         |
 | 5.6     | 2026-01-12 | Review #134: PR Cherry-Pick CI Feedback (Qodo + CI) - 12 items. Fixed: 7 MAJOR (session-start.js path containment security bug using path.relative(), add rel === "" checks to 5 hook files, escape regex in analyze-user-request.js), 5 MINOR (detect sensitive paths in coderabbit-review.js, cap file sizes, exit non-zero on findings, trim input, secure logging). Verified 4 false positives from pattern checker (readFileSync already in try/catch). New pattern: Include rel === "" in all path.relative() containment checks. Session #55.                                                                                                                                                                                                                                       |
@@ -218,8 +219,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #134
+**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #146
 
 ### When to Consolidate
 
@@ -241,6 +242,33 @@ Consolidation is needed when:
 
 ### Last Consolidation
 
+- **Date:** 2026-01-12 (Session #57)
+- **Reviews consolidated:** #121-#136 (16 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.7:**
+  - **Security (6 patterns):**
+    - IPv6-safe IP parsing
+    - Third-party PII hygiene (Sentry)
+    - Defense-in-depth bypass protection
+    - Production fail-closed security
+    - Firestore batch chunking (500-op limit)
+    - Sensitive file filtering before external tools
+  - **JavaScript/TypeScript (4 patterns):**
+    - path.relative() empty string check
+    - Error cause preservation
+    - globalThis over window (SSR-safe)
+    - Array.isArray guards
+  - **CI/Automation (5 patterns):**
+    - CLI arg separator (--)
+    - Quote shell arguments
+    - Project directory validation
+    - Cross-platform paths
+    - Exit code best practice (process.exitCode)
+  - **GitHub Actions (1 pattern):**
+    - Supply chain pinning (SHA over tag)
+
+<details>
+<summary>Previous Consolidation (#10)</summary>
+
 - **Date:** 2026-01-11 (Session #48)
 - **Reviews consolidated:** #109-#120 (12 reviews)
 - **Patterns added to CODE_PATTERNS.md v1.6:**
@@ -255,6 +283,8 @@ Consolidation is needed when:
     - Prototype pollution prevention
     - Secure error logging
     - Fail-fast validation
+
+</details>
 
 <details>
 <summary>Previous Consolidation (#9)</summary>
@@ -419,7 +449,7 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #61-127 are actively maintained below. Older reviews are in the archive.
+Reviews #61-136 are actively maintained below. Older reviews are in the archive.
 
 ---
 
