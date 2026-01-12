@@ -42,7 +42,12 @@ export function useSmartPrompts({
   weekStats,
 }: UseSmartPromptsProps): SmartPromptState {
   // Load dismissed prompts from localStorage on mount using lazy initializer
+  // SSR guard: localStorage is not available during server-side rendering
   const [dismissedPrompts, setDismissedPrompts] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') {
+      return new Set()
+    }
+
     const today = getTodayDateId(new Date())
     const storageKey = `dismissed-prompts-${today}`
     const stored = localStorage.getItem(storageKey)
@@ -63,10 +68,12 @@ export function useSmartPrompts({
     setDismissedPrompts(prev => {
       const updated = new Set(prev).add(promptId)
 
-      // Persist to localStorage with today's date
-      const today = getTodayDateId(new Date())
-      const storageKey = `dismissed-prompts-${today}`
-      localStorage.setItem(storageKey, JSON.stringify(Array.from(updated)))
+      // SSR guard: persist to localStorage only in browser
+      if (typeof window !== 'undefined') {
+        const today = getTodayDateId(new Date())
+        const storageKey = `dismissed-prompts-${today}`
+        localStorage.setItem(storageKey, JSON.stringify(Array.from(updated)))
+      }
 
       return updated
     })

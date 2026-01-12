@@ -35,8 +35,9 @@ function getTodayString(): string {
 async function fetchDailyQuote(): Promise<Quote | null> {
   const today = getTodayString();
 
-  // Return cached quote if still valid (same day)
-  if (cachedQuote && cacheDate === today) {
+  // Return cached result if already fetched today (even if result was null/empty)
+  // This prevents redundant fetches when no quotes are available
+  if (cacheDate === today) {
     return cachedQuote;
   }
 
@@ -99,14 +100,15 @@ export interface UseDailyQuoteResult {
  */
 export function useDailyQuote(): UseDailyQuoteResult {
   const [quote, setQuote] = useState<Quote | null>(cachedQuote);
-  const [loading, setLoading] = useState(!cachedQuote || cacheDate !== getTodayString());
+  // Only show loading if we haven't fetched for today yet
+  const [loading, setLoading] = useState(cacheDate !== getTodayString());
 
   useEffect(() => {
     let mounted = true;
 
-    // If we have a valid cached quote, use it immediately
+    // If we have a valid cache for today (even if null), use it immediately
     const today = getTodayString();
-    if (cachedQuote && cacheDate === today) {
+    if (cacheDate === today) {
       setQuote(cachedQuote);
       setLoading(false);
       return;

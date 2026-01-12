@@ -14,6 +14,7 @@ import { getFunctions, httpsCallable, HttpsCallableResult } from 'firebase/funct
 import { getRecaptchaToken } from '@/lib/recaptcha';
 import { retryCloudFunction } from '@/lib/utils/retry';
 import { logger } from '@/lib/logger';
+import { getCloudFunctionErrorMessage, isCloudFunctionError } from '@/lib/utils/callable-errors';
 
 /**
  * CANON-0078: Shared reCAPTCHA action constants
@@ -105,12 +106,15 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
       try {
         recaptchaToken = await getRecaptchaToken(action);
       } catch (recaptchaError) {
+        // Log warning with error type only (not full error to avoid leaking details)
         logger.warn('Failed to get reCAPTCHA token, proceeding without', {
           action,
-          error: recaptchaError instanceof Error ? recaptchaError.message : 'Unknown error',
+          errorType: recaptchaError instanceof Error ? recaptchaError.constructor.name : typeof recaptchaError,
         });
-        // Continue without token - server will handle based on configuration
-        // (may bypass in emulator, reject in production)
+        // SECURITY NOTE: Continue without token - defense in depth:
+        // - Server MUST validate reCAPTCHA in production (enforced by Cloud Functions)
+        // - Emulator may bypass for local development only
+        // - This graceful degradation prevents client-side reCAPTCHA issues from blocking users
       }
     }
 
@@ -136,11 +140,16 @@ export async function callSecureFunction<TResponse = unknown, TPayload = Record<
       data: result.data,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    // Use centralized error handler for sanitized, user-friendly messages
+    const errorMessage = getCloudFunctionErrorMessage(error, {
+      defaultMessage: 'The operation could not be completed. Please try again.',
+    });
 
+    // Log error metadata without exposing raw error objects (security best practice)
     logger.error(`Cloud Function call failed: ${functionName}`, {
-      error,
       action,
+      errorCode: isCloudFunctionError(error) ? error.code : 'unknown',
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
     });
 
     return {

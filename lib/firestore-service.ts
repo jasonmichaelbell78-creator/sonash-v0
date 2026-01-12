@@ -40,8 +40,56 @@ import { getRecaptchaToken } from "./recaptcha"
 import {
   getCloudFunctionErrorMessage,
   isCloudFunctionError,
+  type HandleErrorOptions,
 } from "./utils/callable-errors"
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log"
+
+/**
+ * Shared error handler for Cloud Function calls in FirestoreService.
+ * Consolidates duplicate error handling logic from saveDailyLog and saveNotebookJournalEntry.
+ * CANON-0006: Reduces code duplication.
+ */
+function handleCloudFunctionCallError(
+  error: unknown,
+  userId: string,
+  logger: typeof defaultLogger,
+  options: HandleErrorOptions & { operation: string }
+): never {
+  const maskedUserId = maskIdentifier(userId)
+
+  // Debug: Log error code only (not full object) in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error(`❌ Cloud Function error during ${options.operation}:`,
+      isCloudFunctionError(error) ? error.code : 'non-CF-error'
+    )
+  }
+
+  // Log error with appropriate severity based on error type
+  if (isCloudFunctionError(error)) {
+    if (error.code === "functions/resource-exhausted") {
+      logger.warn("Rate limit exceeded", { userId: maskedUserId })
+    } else if (error.code === "functions/invalid-argument") {
+      logger.error("Invalid data sent to Cloud Function", {
+        userId: maskedUserId,
+        code: error.code,
+      })
+    } else {
+      logger.error("Cloud Function call failed", {
+        userId: maskedUserId,
+        code: error.code,
+      })
+    }
+  } else {
+    logger.error("Cloud Function call failed", {
+      userId: maskedUserId,
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+    })
+  }
+
+  // Extract user-friendly message using consolidated utility
+  const errorMessage = getCloudFunctionErrorMessage(error, options)
+  throw new Error(errorMessage)
+}
 
 // Re-export types for backwards compatibility
 export type { DailyLog, DailyLogHistoryResult }
@@ -186,41 +234,8 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           userId: maskIdentifier(userId),
         })
       } catch (error: unknown) {
-        // Debug: Log structured error details (development only)
-        if (process.env.NODE_ENV === 'development') {
-          console.error('❌ Cloud Function error:', error)
-          if (isCloudFunctionError(error)) {
-            console.error('Error details:', JSON.stringify({
-              code: error.code,
-              message: error.message,
-            }, null, 2))
-          }
-        }
-
-        // Log error with appropriate severity
-        if (isCloudFunctionError(error)) {
-          if (error.code === "functions/resource-exhausted") {
-            deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
-          } else if (error.code === "functions/invalid-argument") {
-            deps.logger.error("Invalid data sent to Cloud Function", {
-              userId: maskIdentifier(userId),
-              error: error.message,
-            })
-          } else {
-            deps.logger.error("Cloud Function call failed", {
-              userId: maskIdentifier(userId),
-              code: error.code,
-            })
-          }
-        } else {
-          deps.logger.error("Cloud Function call failed", {
-            userId: maskIdentifier(userId),
-            error,
-          })
-        }
-
-        // Extract user-friendly message using consolidated utility
-        const errorMessage = getCloudFunctionErrorMessage(error, {
+        handleCloudFunctionCallError(error, userId, deps.logger, {
+          operation: 'saveDailyLog',
           customMessages: {
             'functions/resource-exhausted': "You're saving too quickly. Please wait 60 seconds and try again.",
             'functions/unauthenticated': "Please sign in to save your journal.",
@@ -228,7 +243,6 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           },
           defaultMessage: "Couldn't save your journal right now. Please try again in a moment.",
         })
-        throw new Error(errorMessage)
       }
     },
 
@@ -404,41 +418,8 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         })
         return response.entryId
       } catch (error: unknown) {
-        // Debug: Log structured error details (development only)
-        if (process.env.NODE_ENV === 'development') {
-          console.error('❌ Cloud Function error:', error)
-          if (isCloudFunctionError(error)) {
-            console.error('Error details:', JSON.stringify({
-              code: error.code,
-              message: error.message,
-            }, null, 2))
-          }
-        }
-
-        // Log error with appropriate severity
-        if (isCloudFunctionError(error)) {
-          if (error.code === "functions/resource-exhausted") {
-            deps.logger.warn("Rate limit exceeded", { userId: maskIdentifier(userId) })
-          } else if (error.code === "functions/invalid-argument") {
-            deps.logger.error("Invalid data sent to Cloud Function", {
-              userId: maskIdentifier(userId),
-              error: error.message,
-            })
-          } else {
-            deps.logger.error("Cloud Function call failed", {
-              userId: maskIdentifier(userId),
-              code: error.code,
-            })
-          }
-        } else {
-          deps.logger.error("Cloud Function call failed", {
-            userId: maskIdentifier(userId),
-            error,
-          })
-        }
-
-        // Extract user-friendly message using consolidated utility
-        const errorMessage = getCloudFunctionErrorMessage(error, {
+        handleCloudFunctionCallError(error, userId, deps.logger, {
+          operation: 'saveNotebookJournalEntry',
           customMessages: {
             'functions/resource-exhausted': "You're saving too quickly. Please wait 60 seconds and try again.",
             'functions/unauthenticated': "Please sign in to save your journal.",
@@ -446,7 +427,6 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
           },
           defaultMessage: "Couldn't save your journal right now. Please try again in a moment.",
         })
-        throw new Error(errorMessage)
       }
     }
   }

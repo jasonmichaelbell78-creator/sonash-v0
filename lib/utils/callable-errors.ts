@@ -19,12 +19,16 @@ export interface CloudFunctionError {
 
 /**
  * Type guard to check if an error is a CloudFunctionError.
+ * Validates that error has a string `code` property starting with 'functions/'.
  */
 export function isCloudFunctionError(error: unknown): error is CloudFunctionError {
+  if (error === null || typeof error !== 'object') {
+    return false;
+  }
+  const obj = error as Record<string, unknown>;
   return (
-    error !== null &&
-    typeof error === 'object' &&
-    'code' in error
+    typeof obj.code === 'string' &&
+    obj.code.startsWith('functions/')
   );
 }
 
@@ -117,10 +121,24 @@ export function getCloudFunctionErrorMessage(
       return customMessage;
     }
 
-    // For validation errors (invalid-argument), prefer server message if available
-    // since it often contains useful details like which field failed
+    // For validation errors (invalid-argument), only use server message if it
+    // looks like a safe, user-friendly validation message (not stack trace or internal info)
     if (error.code === 'functions/invalid-argument' && error.message) {
-      return error.message;
+      const msg = error.message;
+      // Only allow messages that look like validation feedback:
+      // - Short (<150 chars), no stack indicators, no internal paths
+      const isSafeMessage = (
+        msg.length < 150 &&
+        !msg.includes('at ') &&
+        !msg.includes('Error:') &&
+        !msg.includes('/') &&
+        !msg.includes('\\') &&
+        !msg.includes('node_modules')
+      );
+      if (isSafeMessage) {
+        return msg;
+      }
+      // Fall through to default message for unsafe messages
     }
 
     // Fall back to default messages for known error codes

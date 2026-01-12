@@ -21,7 +21,7 @@ import {
 
 describe('callable-errors utility', () => {
   describe('isCloudFunctionError', () => {
-    it('returns true for objects with code property', () => {
+    it('returns true for objects with functions/ prefixed code', () => {
       const error: CloudFunctionError = { code: 'functions/resource-exhausted' };
       assert.strictEqual(isCloudFunctionError(error), true);
     });
@@ -52,6 +52,16 @@ describe('callable-errors utility', () => {
 
     it('returns false for plain Error instances', () => {
       assert.strictEqual(isCloudFunctionError(new Error('error')), false);
+    });
+
+    it('returns false for non-functions/ code prefixes', () => {
+      assert.strictEqual(isCloudFunctionError({ code: 'auth/invalid-token' }), false);
+      assert.strictEqual(isCloudFunctionError({ code: 'storage/not-found' }), false);
+    });
+
+    it('returns false for non-string code values', () => {
+      assert.strictEqual(isCloudFunctionError({ code: 123 }), false);
+      assert.strictEqual(isCloudFunctionError({ code: null }), false);
     });
   });
 
@@ -85,6 +95,25 @@ describe('callable-errors utility', () => {
 
     it('returns default invalid-argument message when no server message', () => {
       const error: CloudFunctionError = { code: 'functions/invalid-argument' };
+      const message = getCloudFunctionErrorMessage(error);
+      assert.strictEqual(message, 'Invalid data. Please check your input and try again.');
+    });
+
+    it('filters unsafe validation messages containing paths', () => {
+      const error: CloudFunctionError = {
+        code: 'functions/invalid-argument',
+        message: 'Error at /home/user/functions/index.js:123',
+      };
+      const message = getCloudFunctionErrorMessage(error);
+      // Should return default message, not the unsafe path-containing message
+      assert.strictEqual(message, 'Invalid data. Please check your input and try again.');
+    });
+
+    it('filters overly long validation messages', () => {
+      const error: CloudFunctionError = {
+        code: 'functions/invalid-argument',
+        message: 'A'.repeat(200), // 200 chars is too long
+      };
       const message = getCloudFunctionErrorMessage(error);
       assert.strictEqual(message, 'Invalid data. Please check your input and try again.');
     });
