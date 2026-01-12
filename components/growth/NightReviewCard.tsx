@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { FirestoreService } from "@/lib/firestore-service"
+import { logger, maskIdentifier } from "@/lib/logger"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { Mic, MicOff } from "lucide-react"
 import { toast } from "sonner"
@@ -168,7 +169,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
             setOpen(false)
             // Reset form? Optional.
         } catch (error) {
-            console.error("Save error:", error)
+            logger.error("Failed to save Night Review", { error, userId: maskIdentifier(user?.uid) })
             toast.error("Failed to save.")
         } finally {
             setIsSaving(false)
@@ -477,8 +478,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
                                                 return
                                             }
                                             // Log other share errors (sanitized, no sensitive paths in browser)
-                                            const message = error instanceof Error ? error.name : 'Share failed'
-                                            console.error('Share error:', message)
+                                            logger.error('Share error', { errorName: error instanceof Error ? error.name : 'unknown' })
                                         })
                                     } else {
                                         // Fallback to mailto

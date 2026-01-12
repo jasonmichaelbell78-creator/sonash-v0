@@ -760,7 +760,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                   }
                 } catch (error) {
                   // Gracefully degrade - log error but don't crash UI
-                  console.warn('Could not scroll to HALT section:', error)
+                  logger.warn('Could not scroll to HALT section', { error })
                 }
               }
             }}

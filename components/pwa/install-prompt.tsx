@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Download, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { logger } from "@/lib/logger"
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>
@@ -52,7 +53,7 @@ export function InstallPrompt() {
 
         // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice
-        console.log(`User response to the install promise: ${outcome}`)
+        logger.info("User response to install prompt", { outcome })
 
         // We've used the prompt, and can't use it again, throw it away
         setDeferredPrompt(null)

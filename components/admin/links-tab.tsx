@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { logger } from "@/lib/logger"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -62,7 +63,7 @@ export default function LinksTab() {
             const data = await getAllQuickLinks(true) // Include inactive
             setLinks(data)
         } catch (error) {
-            console.error('Failed to load links:', error)
+            logger.error('Failed to load links', { error })
             toast.error('Failed to load links. Please refresh the page.')
             setLinks([]) // Set empty array to show UI
         } finally {
@@ -117,7 +118,7 @@ export default function LinksTab() {
                 toast.success("Link added!")
             }
         } catch (error) {
-            console.error(error)
+            logger.error("Failed to save link", { error })
             toast.error("Failed to save link")
         } finally {
             setDialogOpen(false)
@@ -132,7 +133,7 @@ export default function LinksTab() {
             await deleteQuickLink(id)
             toast.success("Link deleted!")
         } catch (error) {
-            console.error(error)
+            logger.error("Failed to delete link", { error, linkId: id })
             toast.error("Failed to delete link")
         } finally {
             void loadLinks()
@@ -144,7 +145,7 @@ export default function LinksTab() {
             await toggleQuickLinkActive(id, !isActive)
             toast.success(isActive ? "Link hidden" : "Link activated")
         } catch (error) {
-            console.error(error)
+            logger.error("Failed to update link", { error, linkId: id })
             toast.error("Failed to update link")
         } finally {
             void loadLinks()

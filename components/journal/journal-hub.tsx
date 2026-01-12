@@ -19,6 +19,7 @@ import { FreeWriteForm } from "./entry-forms/free-write-form"
 import { DailyLogForm } from "./entry-forms/daily-log-form"
 import { JournalEntryType } from "@/types/journal"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 
 export default function JournalHub() {
@@ -31,7 +32,7 @@ export default function JournalHub() {
         try {
             await signInAnonymously(auth)
         } catch (error) {
-            console.error("Failed to sign in anonymously", error)
+            logger.error("Failed to sign in anonymously", { error })
             toast.error("Failed to unlock journal. Please try again.")
         }
     }

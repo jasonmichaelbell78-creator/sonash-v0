@@ -1,31 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Sparkles } from "lucide-react"
-import { QuotesService, Quote } from "@/lib/db/quotes"
+import { useDailyQuote } from "@/hooks/use-daily-quote"
 
 /**
  * Compact Daily Quote - Minimal version for top-right header
  * Just shows first few words as a hint
+ *
+ * CANON-0023: Uses shared useDailyQuote hook for consolidated fetch logic
  */
 export default function CompactDailyQuote() {
-    const [quote, setQuote] = useState<Quote | null>(null)
-
-    useEffect(() => {
-        async function fetchQuote() {
-            try {
-                const allQuotes = await QuotesService.getAllQuotes()
-                if (allQuotes.length === 0) return
-
-                const todayQuote = QuotesService.getQuoteForToday(allQuotes)
-                setQuote(todayQuote)
-            } catch (error) {
-                console.error("Error fetching daily quote:", error)
-            }
-        }
-
-        fetchQuote()
-    }, [])
+    const { quote } = useDailyQuote()
 
     if (!quote) return null
 

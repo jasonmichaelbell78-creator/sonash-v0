@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getFunctions, httpsCallable } from "firebase/functions"
+import { logger } from "@/lib/logger"
 import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Calendar } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -38,7 +39,7 @@ export function JobsTab() {
       const result = await getJobsFn()
       setJobs(result.data.jobs)
     } catch (err) {
-      console.error("Failed to load jobs:", err)
+      logger.error("Failed to load jobs", { error: err })
       setError(err instanceof Error ? err.message : "Failed to load jobs")
     } finally {
       setLoading(false)
@@ -65,7 +66,7 @@ export function JobsTab() {
 
       alert(result.data.message)
     } catch (err) {
-      console.error("Failed to trigger job:", err)
+      logger.error("Failed to trigger job", { error: err, jobId })
       setError(err instanceof Error ? err.message : "Failed to trigger job")
       alert(`Failed to trigger job: ${err instanceof Error ? err.message : "Unknown error"}`)
     } finally {

@@ -1,30 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { QuotesService, type Quote } from "@/lib/db/quotes"
 import { Loader2 } from "lucide-react"
+import { useDailyQuote } from "@/hooks/use-daily-quote"
 
+/**
+ * Daily Quote Card (Notebook variant) - Sticky note style quote display
+ *
+ * CANON-0023: Uses shared useDailyQuote hook for consolidated fetch logic
+ */
 export function DailyQuoteCard() {
-    const [quote, setQuote] = useState<Quote | null>(null)
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        const fetchQuote = async () => {
-            try {
-                // Fetch all quotes and pick one for today
-                // In a real production app with thousands of quotes, we'd query for a specific ID or use a Cloud Function
-                // For MVP, client-side rotation is fine
-                const allQuotes = await QuotesService.getAllQuotes()
-                const todayQuote = QuotesService.getQuoteForToday(allQuotes)
-                setQuote(todayQuote)
-            } catch (error) {
-                console.error("Failed to fetch quote", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchQuote()
-    }, [])
+    const { quote, loading } = useDailyQuote()
 
     if (loading) {
         return (

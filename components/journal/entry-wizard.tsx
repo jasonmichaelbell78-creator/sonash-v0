@@ -3,6 +3,7 @@ import { JournalEntryType } from "@/types/journal"
 import { useJournal } from "@/hooks/use-journal"
 import { Loader2, X } from "lucide-react"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 interface EntryWizardProps {
     type: JournalEntryType
@@ -41,7 +42,7 @@ export function EntryWizard({ type, onClose }: EntryWizardProps) {
             await addEntry(type, data)
             onClose()
         } catch (error) {
-            console.error("Failed to save entry", error)
+            logger.error("Failed to save entry", { error })
             toast.error("Failed to save entry. Please try again.")
         } finally {
             setSubmitting(false)
