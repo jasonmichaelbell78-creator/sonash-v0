@@ -43,27 +43,100 @@ function toLower(str) {
   return str.toLowerCase();
 }
 
+// Sensitive file patterns to skip (security: prevent data exfiltration)
+const SENSITIVE_PATTERNS = [
+  /\.env/i,
+  /secret/i,
+  /credential/i,
+  /password/i,
+  /\.pem$/i,
+  /\.key$/i,
+  /\.p12$/i,
+  /\.pfx$/i,
+  /serviceaccount/i,
+  /firebase.*config/i
+];
+
+function isSensitiveFile(filename) {
+  return SENSITIVE_PATTERNS.some(pattern => pattern.test(filename));
+}
+
+// Get and validate base directory for path containment
+const baseDir = path.resolve(process.env.CLAUDE_PROJECT_DIR || process.cwd());
+let realBaseDir = '';
+try {
+  realBaseDir = fs.realpathSync(baseDir);
+} catch {
+  console.log('ok');
+  process.exit(0);
+}
+
 // Track findings
 let foundIssues = false;
 let allFindings = '';
 const MAX_FILES = 10;
 let reviewed = 0;
 
-// Get file paths from arguments
-const filePaths = process.argv.slice(2);
+// Get file paths from arguments (may be JSON payload passed as a single argument)
+let filePaths = process.argv.slice(2);
+
+// Parse JSON argument if present
+if (filePaths.length === 1 && typeof filePaths[0] === 'string' && filePaths[0].trim().startsWith('{')) {
+  try {
+    const parsed = JSON.parse(filePaths[0]);
+    if (Array.isArray(parsed.file_paths)) {
+      filePaths = parsed.file_paths.filter(p => typeof p === 'string' && p.length > 0);
+    } else if (typeof parsed.file_path === 'string' && parsed.file_path.length > 0) {
+      filePaths = [parsed.file_path];
+    }
+  } catch {
+    // Not JSON, keep as-is
+  }
+}
 
 for (const filePath of filePaths) {
+  // Security: Reject invalid path inputs
+  if (
+    typeof filePath !== 'string' ||
+    filePath.length === 0 ||
+    filePath.startsWith('-') ||
+    filePath.includes('\n') ||
+    filePath.includes('\r')
+  ) {
+    continue;
+  }
+
+  // Resolve path against repo root
+  const candidatePath = path.isAbsolute(filePath) ? filePath : path.resolve(baseDir, filePath);
+
   // Skip non-existent files (guard against TOCTOU race)
   try {
-    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+    if (!fs.existsSync(candidatePath) || !fs.statSync(candidatePath).isFile()) {
       continue;
     }
   } catch {
     continue;
   }
 
-  const filename = path.basename(filePath);
+  // Security: Path containment check (handles symlinks)
+  let realCandidate = '';
+  try {
+    realCandidate = fs.realpathSync(candidatePath);
+  } catch {
+    continue;
+  }
+  const rel = path.relative(realBaseDir, realCandidate);
+  if (rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
+    continue;
+  }
+
+  const filename = path.basename(candidatePath);
   const filenameLower = toLower(filename);
+
+  // Security: Skip sensitive files to prevent data exfiltration
+  if (isSensitiveFile(filename)) {
+    continue;
+  }
 
   // Only review code files
   if (!/\.(ts|tsx|js|jsx|py|sh|go|rs|rb|php|java|kt|swift)$/.test(filenameLower)) {
@@ -81,7 +154,7 @@ for (const filePath of filePaths) {
     // Note: Options must come before -- separator
     const result = spawnSync(
       'coderabbit',
-      ['review', '--plain', '--severity', 'medium', '--', filePath],
+      ['review', '--plain', '--severity', 'medium', '--', candidatePath],
       {
         encoding: 'utf8',
         timeout: 20000,

@@ -18,8 +18,9 @@ const safeBaseDir = path.resolve(process.cwd());
 const projectDirInput = process.env.CLAUDE_PROJECT_DIR || safeBaseDir;
 const projectDir = path.resolve(safeBaseDir, projectDirInput);
 
-// Security: Ensure projectDir is within baseDir (prevent path traversal)
-if (!projectDir.startsWith(safeBaseDir + path.sep) && projectDir !== safeBaseDir) {
+// Security: Ensure projectDir is within baseDir using path.relative() (prevent path traversal)
+const baseRel = path.relative(safeBaseDir, projectDir);
+if (baseRel.startsWith('..' + path.sep) || baseRel === '..' || path.isAbsolute(baseRel)) {
   process.exit(0);
 }
 
@@ -84,10 +85,17 @@ if (!fs.existsSync(fullPath)) {
   process.exit(0);
 }
 
-// Verify containment
-const realPath = fs.realpathSync(fullPath);
-const realProject = fs.realpathSync(projectDir);
-if (!realPath.startsWith(realProject + path.sep) && realPath !== realProject) {
+// Verify containment (wrap realpathSync in try/catch for filesystem errors)
+let realPath = '';
+let realProject = '';
+try {
+  realPath = fs.realpathSync(fullPath);
+  realProject = fs.realpathSync(projectDir);
+} catch {
+  process.exit(0);
+}
+const pathRel = path.relative(realProject, realPath);
+if (pathRel.startsWith('..' + path.sep) || pathRel === '..' || path.isAbsolute(pathRel)) {
   process.exit(0);
 }
 
@@ -102,27 +110,35 @@ const result = spawnSync('node', ['scripts/check-pattern-compliance.js', relPath
 // Combine stdout and stderr - violations may be written to either
 const output = `${result.stdout || ''}${result.stderr || ''}`;
 
-// Check for violations
+// If the checker couldn't run (timeout / spawn error), don't emit misleading warnings
+if (result.error || result.signal) {
+  console.log('ok');
+  process.exit(0);
+}
+
+// Check for violations - use stderr for informational messages
 if (output.includes('potential pattern violation')) {
-  console.log('');
-  console.log('\u26a0\ufe0f  PATTERN CHECK REMINDER');
-  console.log('\u2501'.repeat(28));
+  console.error('');
+  console.error('\u26a0\ufe0f  PATTERN CHECK REMINDER');
+  console.error('\u2501'.repeat(28));
 
   // Extract relevant lines
   const lines = output.split('\n');
   for (const line of lines) {
     if (/📄|Line|✓ Fix|📚 See/.test(line)) {
-      console.log(line);
+      console.error(line);
     }
   }
 
-  console.log('');
-  console.log('Review docs/agent_docs/CODE_PATTERNS.md for documented patterns.');
-  console.log('\u2501'.repeat(28));
-} else if (result.status !== 0) {
+  console.error('');
+  console.error('Review docs/agent_docs/CODE_PATTERNS.md for documented patterns.');
+  console.error('\u2501'.repeat(28));
+} else if (typeof result.status === 'number' && result.status !== 0) {
   // Non-zero exit without explicit violation - non-blocking reminder
-  console.log('');
-  console.log('\u26a0\ufe0f  PATTERN CHECK: Review docs/agent_docs/CODE_PATTERNS.md');
+  console.error('');
+  console.error('\u26a0\ufe0f  PATTERN CHECK: Review docs/agent_docs/CODE_PATTERNS.md');
 }
 
+// Protocol: stdout only contains "ok"
+console.log('ok');
 process.exit(0);

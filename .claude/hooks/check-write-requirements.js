@@ -46,9 +46,10 @@ if (filePath.startsWith('-') || filePath.includes('\n') || filePath.includes('\r
 // Normalize Windows backslashes to forward slashes for cross-platform consistency
 filePath = filePath.replace(/\\/g, '/');
 
-// Security: Resolve path and verify containment within baseDir
+// Security: Resolve path and verify containment within baseDir using path.relative()
 const resolvedPath = path.resolve(baseDir, filePath);
-if (!resolvedPath.startsWith(baseDir + path.sep) && resolvedPath !== baseDir) {
+const rel = path.relative(baseDir, resolvedPath);
+if (rel.startsWith('..' + path.sep) || rel === '..' || path.isAbsolute(rel)) {
   console.log('ok');
   process.exit(0);
 }

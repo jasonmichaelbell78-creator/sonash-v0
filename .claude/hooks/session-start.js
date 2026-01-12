@@ -71,7 +71,7 @@ function computeHash(filePath) {
     const content = fs.readFileSync(filePath);
     return crypto.createHash('sha256').update(content).digest('hex');
   } catch {
-    return 'unknown';
+    return null; // Return null on error to force reinstall
   }
 }
 
@@ -81,6 +81,8 @@ function needsRootInstall() {
 
   try {
     const currentHash = computeHash('package-lock.json');
+    if (!currentHash) return true; // Force reinstall if hash failed
+
     const cachedHash = fs.existsSync(LOCKFILE_HASH_FILE)
       ? fs.readFileSync(LOCKFILE_HASH_FILE, 'utf8').trim()
       : '';
@@ -96,6 +98,8 @@ function needsFunctionsInstall() {
 
   try {
     const currentHash = computeHash('functions/package-lock.json');
+    if (!currentHash) return true; // Force reinstall if hash failed
+
     const cachedHash = fs.existsSync(FUNCTIONS_LOCKFILE_HASH_FILE)
       ? fs.readFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, 'utf8').trim()
       : '';
@@ -106,15 +110,19 @@ function needsFunctionsInstall() {
 }
 
 function saveRootHash() {
+  const hash = computeHash('package-lock.json');
+  if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(LOCKFILE_HASH_FILE, computeHash('package-lock.json'));
+  fs.writeFileSync(LOCKFILE_HASH_FILE, hash);
 }
 
 function saveFunctionsHash() {
+  const hash = computeHash('functions/package-lock.json');
+  if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, computeHash('functions/package-lock.json'));
+  fs.writeFileSync(FUNCTIONS_LOCKFILE_HASH_FILE, hash);
 }
 
 function runCommand(description, command, timeoutMs = 120000) {
