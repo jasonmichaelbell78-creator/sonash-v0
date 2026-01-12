@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Book, Users, Link2, Heart, Search, ArrowLeft, ChevronRight, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { getAllQuickLinks, getAllPrayers, QuickLink, Prayer } from "@/lib/db/library"
+import { logger } from "@/lib/logger"
 
 type LibrarySection = "home" | "glossary" | "etiquette" | "links" | "prayers"
 
@@ -211,7 +212,7 @@ function LinksSection() {
                 const data = await getAllQuickLinks(false)
                 setLinks(data)
             } catch (error) {
-                console.error("Failed to load links:", error)
+                logger.error("Failed to load links", { error })
             } finally {
                 setLoading(false)
             }
@@ -293,7 +294,7 @@ function PrayersSection() {
                 const data = await getAllPrayers(false)
                 setPrayers(data)
             } catch (error) {
-                console.error("Failed to load prayers:", error)
+                logger.error("Failed to load prayers", { error })
             } finally {
                 setLoading(false)
             }

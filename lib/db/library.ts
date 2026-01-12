@@ -12,6 +12,7 @@ import {
     Timestamp
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { logger } from '@/lib/logger'
 
 // ==================== TYPES ====================
 
@@ -56,7 +57,7 @@ export async function getAllQuickLinks(includeInactive = false): Promise<QuickLi
             ...doc.data()
         } as QuickLink))
     } catch (error) {
-        console.error('Error fetching quick links:', error)
+        logger.error('Error fetching quick links', { error })
         return []
     }
 }
@@ -103,7 +104,7 @@ export async function getAllPrayers(includeInactive = false): Promise<Prayer[]> 
             ...doc.data()
         } as Prayer))
     } catch (error) {
-        console.error('Error fetching prayers:', error)
+        logger.error('Error fetching prayers', { error })
         return []
     }
 }

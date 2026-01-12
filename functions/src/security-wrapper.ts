@@ -26,9 +26,15 @@ interface SecurityOptions<T> {
     functionName: string;
 
     /**
-     * Rate limiter instance (optional, skips rate limiting if not provided)
+     * Rate limiter instance by userId (optional, skips rate limiting if not provided)
      */
     rateLimiter?: FirestoreRateLimiter;
+
+    /**
+     * CANON-0036: IP-based rate limiter (optional, secondary defense against account cycling)
+     * Applied in addition to userId-based rate limiting
+     */
+    ipRateLimiter?: FirestoreRateLimiter;
 
     /**
      * Zod schema for input validation (optional, skips validation if not provided)
@@ -105,6 +111,7 @@ export async function withSecurityChecks<TInput, TOutput>(
     const {
         functionName,
         rateLimiter,
+        ipRateLimiter,
         validationSchema,
         requireAppCheck = true,
         recaptchaAction,
@@ -126,25 +133,72 @@ export async function withSecurityChecks<TInput, TOutput>(
 
     const userId = request.auth.uid;
 
-    // 2. Check rate limit (if rate limiter provided)
+    // 2. Check user-based rate limit (if rate limiter provided)
     if (rateLimiter) {
         try {
             await rateLimiter.consume(userId, functionName);
         } catch (rateLimitError) {
-            const errorMessage = rateLimitError instanceof Error
+            // Log detailed error server-side for debugging
+            const internalMessage = rateLimitError instanceof Error
                 ? rateLimitError.message
                 : "Rate limit exceeded";
 
             logSecurityEvent(
                 "RATE_LIMIT_EXCEEDED",
                 functionName,
-                errorMessage,
+                internalMessage,
                 { userId }
             );
+
+            // Return generic message to client (prevent information leakage)
             throw new HttpsError(
                 "resource-exhausted",
-                errorMessage
+                "Too many requests. Please try again later."
             );
+        }
+    }
+
+    // 2.5. CANON-0036: Check IP-based rate limit (secondary defense against account cycling)
+    // NOTE: IP from X-Forwarded-For can be spoofed in some deployments. This is a secondary
+    // defense layer - primary protection is per-user rate limiting above.
+    //
+    // SECURITY LOG POLICY: IP addresses are logged to GCP Cloud Logging for security analysis
+    // (rate limit abuse detection, incident response). These logs are:
+    // - Stored in GCP Cloud Logging (restricted access, not user-facing)
+    // - Subject to retention policy (90 days)
+    // - NOT sent to Sentry (captureToSentry: false) to prevent IP leakage to third parties
+    // IP logging is necessary for effective rate limit enforcement and abuse detection.
+    if (ipRateLimiter) {
+        // Get client IP from Cloud Functions request
+        // request.rawRequest.ip is the recommended approach (set by Cloud Functions)
+        const clientIp = request.rawRequest?.ip;
+
+        if (clientIp) {
+            try {
+                await ipRateLimiter.consumeByIp(clientIp, functionName);
+            } catch (rateLimitError) {
+                // Log detailed error server-side for debugging
+                const internalMessage = rateLimitError instanceof Error
+                    ? rateLimitError.message
+                    : "Rate limit exceeded";
+
+                logSecurityEvent(
+                    "RATE_LIMIT_EXCEEDED",
+                    functionName,
+                    `IP-based rate limit: ${internalMessage}`,
+                    {
+                        userId,
+                        metadata: { clientIp },
+                        captureToSentry: false // Don't send raw IP addresses to third-party services
+                    }
+                );
+
+                // Return generic message to client (prevent information leakage)
+                throw new HttpsError(
+                    "resource-exhausted",
+                    "Too many requests. Please try again later."
+                );
+            }
         }
     }
 
@@ -163,24 +217,50 @@ export async function withSecurityChecks<TInput, TOutput>(
     }
 
     // 3.5. Verify reCAPTCHA token (if action specified)
+    // CANON-0008/CANON-0035: Fail-closed enforcement - reject missing tokens unless
+    // explicitly bypassed in dev/test environments
     if (recaptchaAction) {
         const dataWithToken = request.data as { recaptchaToken?: string };
         const token = dataWithToken.recaptchaToken;
 
-        // Make reCAPTCHA optional - log but don't block when missing
-        // This allows app to work on corporate networks that block Google reCAPTCHA
+        // Check for explicit bypass (Firebase emulator only)
+        // SECURITY: Bypass only allowed when BOTH conditions are true:
+        // 1. RECAPTCHA_BYPASS=true is explicitly set
+        // 2. Running in Firebase emulator (FUNCTIONS_EMULATOR=true)
+        // This is more restrictive than "not production" to prevent bypass in staging environments
+        const isEmulator = process.env.FUNCTIONS_EMULATOR === 'true';
+        const bypassRequested = process.env.RECAPTCHA_BYPASS === 'true';
+        const allowBypass = bypassRequested && isEmulator;
+
         if (!token || token.trim() === '') {
-            logSecurityEvent(
-                "RECAPTCHA_MISSING_TOKEN",
-                functionName,
-                "Request processed without reCAPTCHA token (may indicate network blocking)",
-                {
-                    userId,
-                    severity: "WARNING",
-                    metadata: { action: recaptchaAction }
-                }
-            );
-            // Continue without reCAPTCHA protection - rely on other security layers
+            if (allowBypass) {
+                // Emulator bypass - log but don't block
+                logSecurityEvent(
+                    "RECAPTCHA_BYPASSED",
+                    functionName,
+                    "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - emulator only",
+                    {
+                        userId,
+                        severity: "WARNING",
+                        metadata: { action: recaptchaAction, isEmulator }
+                    }
+                );
+            } else {
+                // Production: Fail-closed - reject missing tokens
+                logSecurityEvent(
+                    "RECAPTCHA_MISSING_TOKEN",
+                    functionName,
+                    "Request rejected: reCAPTCHA token required",
+                    {
+                        userId,
+                        metadata: { action: recaptchaAction }
+                    }
+                );
+                throw new HttpsError(
+                    "failed-precondition",
+                    "Security verification required. Please refresh the page and try again."
+                );
+            }
         } else {
             // Verify token if present
             await verifyRecaptchaToken(token, recaptchaAction, userId);

@@ -8,6 +8,7 @@ import BookmarkRibbon from "./bookmark-ribbon"
 import StickyNote from "./sticky-note"
 import PlaceholderPage from "./pages/placeholder-page"
 import { useAuth } from "@/components/providers/auth-provider"
+import { logger } from "@/lib/logger"
 import { Shield, AlertTriangle } from "lucide-react"
 
 
@@ -266,7 +267,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
                         await signOut(auth)
                         onClose() // Close the book
                       } catch (error) {
-                        console.error("Sign out failed:", error)
+                        logger.error("Sign out failed", { error })
                         // Import toast dynamically to avoid issues
                         const { toast } = await import("sonner")
                         toast.error("Failed to sign out. Please try again.")

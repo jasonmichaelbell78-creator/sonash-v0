@@ -24,6 +24,7 @@
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "lessons:surface": "node scripts/surface-lessons-learned.js",
+    "consolidation:check": "node scripts/check-consolidation-status.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "deps:circular": "madge --circular --extensions ts,tsx,js,jsx lib/ components/ app/",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22.19.2",
     "@types/react": "^19",
@@ -93,6 +95,7 @@
     "tw-animate-css": "1.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0",
+    "undici": "^7.18.2",
     "unified": "^11.0.5"
   }
 }

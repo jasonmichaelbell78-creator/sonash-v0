@@ -93,6 +93,9 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Prototype pollution | Use `new Map()` or `Object.create(null)` for untrusted keys | `__proto__` can pollute Object.prototype |
 | Secure error logging | Never log raw input content; log line numbers and char counts | Input may contain secrets or PII |
 | Fail-fast validation | Abort on parse errors to prevent silent data loss | Malformed data shouldn't be silently dropped |
+| Entity escaping order | Escape `&` FIRST, then `<`, `>`, quotes | `&lt;` becomes `&amp;lt;` if ampersand escaped last |
+| SSRF allowlist | Explicit hostname allowlist + protocol enforcement (HTTPS only) | Environment variables alone insufficient |
+| External request timeout | Use `AbortController` with explicit timeout on all fetch/HTTP calls | Network calls can hang indefinitely |
 
 ---
 
@@ -144,6 +147,8 @@ This document contains detailed code patterns and anti-patterns learned from AI 
 | Dead code after throw | Code after realpathSync success is unreachable | realpathSync throws on missing files |
 | SSR-safe browser APIs | Guard with `typeof window !== 'undefined'` | Prevent SSR crashes |
 | Cognitive complexity | Keep functions under 15; extract helpers | SonarQube S3776 threshold |
+| lstatSync for symlinks | Use `lstatSync` to detect symlinks without following | `statSync` follows symlinks, misses escapes |
+| NaN-safe numeric sorting | `Number(a) - Number(b)` with `\|\| 0` fallback | NaN in sort comparator causes undefined order |
 
 ---
 
@@ -244,6 +249,8 @@ When a violation is flagged, reference this document for the pattern details and
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6 | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns. |
+| 1.5 | 2026-01-11 | Added prototype pollution, secure logging, fail-fast patterns from Reviews #117-120 |
 | 1.4 | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General) |
 | 1.3 | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 - Added Security Audit category (6 patterns) |
 | 1.2 | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews |

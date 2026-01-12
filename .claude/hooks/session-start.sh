@@ -255,6 +255,25 @@ else
 fi
 
 echo ""
+
+# Check consolidation status (alerts if reviews need consolidation or log needs archiving)
+echo "🔍 Checking consolidation status..."
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+OUTPUT=$(node "$REPO_ROOT/scripts/check-consolidation-status.js" 2>&1)
+EXIT_CODE=$?
+if [ "$EXIT_CODE" -eq 0 ]; then
+  echo "$OUTPUT"
+elif [ "$EXIT_CODE" -eq 1 ]; then
+  echo "$OUTPUT"
+  echo "   ⚠️ Consolidation or archiving action needed - see output above"
+  WARNINGS=$((WARNINGS + 1))
+else # exit code >= 2
+  echo "   ❌ Consolidation checker failed (exit $EXIT_CODE):"
+  echo "$OUTPUT" | sed 's/^/     /'
+  WARNINGS=$((WARNINGS + 1))
+fi
+
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ "$WARNINGS" -eq 0 ]; then
   echo "✅ SessionStart hook completed successfully!"

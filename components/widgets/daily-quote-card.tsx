@@ -1,40 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Quote as QuoteIcon, Sparkles } from "lucide-react"
-import { QuotesService, Quote } from "@/lib/db/quotes"
+import { useDailyQuote } from "@/hooks/use-daily-quote"
 
 /**
  * Daily Quote Card - displays a rotating recovery quote
  * Changes daily based on the current date
+ *
+ * CANON-0023: Uses shared useDailyQuote hook for consolidated fetch logic
  */
 export default function DailyQuoteCard() {
-    const [quote, setQuote] = useState<Quote | null>(null)
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        async function fetchQuote() {
-            try {
-                const allQuotes = await QuotesService.getAllQuotes()
-
-                if (allQuotes.length === 0) {
-                    setLoading(false)
-                    return
-                }
-
-                // Get quote for today (handles scheduled dates and rotation)
-                const todayQuote = QuotesService.getQuoteForToday(allQuotes)
-                setQuote(todayQuote)
-            } catch (error) {
-                console.error("Error fetching daily quote:", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchQuote()
-    }, [])
+    const { quote, loading } = useDailyQuote()
 
     if (loading) {
         return (

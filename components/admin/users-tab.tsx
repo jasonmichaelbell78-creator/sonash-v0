@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { getFunctions, httpsCallable } from "firebase/functions"
+import { logger, maskIdentifier } from "@/lib/logger"
 import { Search, Users, Mail, Calendar, Activity, Edit2, Ban, CheckCircle, X, Save, AlertCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -85,7 +86,11 @@ export function UsersTab() {
         setError("No users found matching your search")
       }
     } catch (err) {
-      console.error("Search failed:", err)
+      // CANON-0076: Log error type only - don't expose raw error objects or user queries (PII risk)
+      logger.error("Admin user search failed", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        errorCode: (err as { code?: string })?.code,
+      })
       setError(err instanceof Error ? err.message : "Search failed")
     } finally {
       setSearching(false)
@@ -108,7 +113,10 @@ export function UsersTab() {
       setAdminNotes(result.data.profile.adminNotes || "")
       setEditingNotes(false)
     } catch (err) {
-      console.error("Failed to load user detail:", err)
+      logger.error("Failed to load user detail", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(uid),
+      })
       setError(err instanceof Error ? err.message : "Failed to load user detail")
     } finally {
       setLoadingDetail(false)
@@ -137,7 +145,10 @@ export function UsersTab() {
       })
       setEditingNotes(false)
     } catch (err) {
-      console.error("Failed to save notes:", err)
+      logger.error("Failed to save notes", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+      })
       setError(err instanceof Error ? err.message : "Failed to save notes")
     } finally {
       setSaving(false)
@@ -183,7 +194,11 @@ export function UsersTab() {
         user.uid === selectedUser.profile.uid ? { ...user, disabled: newDisabledState } : user
       ))
     } catch (err) {
-      console.error("Failed to toggle user status:", err)
+      logger.error("Failed to toggle user status", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+        newDisabledState,
+      })
       setError(err instanceof Error ? err.message : "Failed to update user status")
     } finally {
       setSaving(false)

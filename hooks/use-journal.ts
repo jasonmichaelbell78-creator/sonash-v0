@@ -35,11 +35,14 @@ import {
     limit
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { db, auth } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { JournalEntry, JournalEntryType } from '@/types/journal';
 import { QUERY_LIMITS } from '@/lib/constants';
 import { retryCloudFunction } from '@/lib/utils/retry';
 import { getRecaptchaToken } from '@/lib/recaptcha';
+import { handleCloudFunctionError } from '@/lib/utils/callable-errors';
+import { useAuthCore } from '@/components/providers/auth-context';
+import { logger } from '@/lib/logger';
 
 // Helper to check for "Today" and "Yesterday"
 export const getRelativeDateLabel = (dateString: string) => {
@@ -167,84 +170,94 @@ export function generateTags(type: JournalEntryType, data: Record<string, unknow
  */
 export function useJournal() {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [journalLoading, setJournalLoading] = useState(true);
     const [groupedEntries, setGroupedEntries] = useState<Record<string, JournalEntry[]>>({});
 
+    // CANON-0044/CANON-0026: Consume user from AuthContext instead of creating
+    // redundant onAuthStateChanged listener. This eliminates memory leak potential
+    // and reduces unnecessary re-renders.
+    const { user, loading: authLoading } = useAuthCore();
+
     useEffect(() => {
-        // Note: auth.currentUser might be null on initial render depending on auth state speed.
-        // In a real app we might want to listen to onAuthStateChanged, but for now we follow the pattern.
-        // If this runs before auth is ready, it might return early.
-        // Ideally we rely on an AuthContext, but direct access is what was requested.
-        const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-            if (!user) {
-                setLoading(false);
-                setEntries([]);
-                setGroupedEntries({});
-                return;
-            }
+        // Wait for auth to resolve before setting up Firestore listener
+        if (authLoading) {
+            return;
+        }
 
-            // QUERY: Get entries for this user, ordered by newest first
-            // Note: Using simple query without where clause to avoid composite index requirement
-            // Client-side will filter out soft-deleted entries
-            // PERFORMANCE: Limit to 100 entries initially to prevent unbounded fetches
-            const q = query(
-                collection(db, `users/${user.uid}/journal`),
-                orderBy('createdAt', 'desc'),
-                limit(QUERY_LIMITS.JOURNAL_MAX)
-            );
+        if (!user) {
+            setJournalLoading(false);
+            setEntries([]);
+            setGroupedEntries({});
+            return;
+        }
 
-            // REAL-TIME LISTENER
-            const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-                const fetchedEntries: JournalEntry[] = [];
+        // Reset loading state when starting/restarting subscription for new user
+        // This prevents showing stale data during user change
+        setJournalLoading(true);
 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    // Filter out soft-deleted entries client-side
-                    if (data.isSoftDeleted) return;
+        // QUERY: Get entries for this user, ordered by newest first
+        // Note: Using simple query without where clause to avoid composite index requirement
+        // Client-side will filter out soft-deleted entries
+        // PERFORMANCE: Limit to 100 entries initially to prevent unbounded fetches
+        const q = query(
+            collection(db, `users/${user.uid}/journal`),
+            orderBy('createdAt', 'desc'),
+            limit(QUERY_LIMITS.JOURNAL_MAX)
+        );
 
-                    // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
-                    // All entries should have valid Firestore Timestamps from Cloud Functions
-                    if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
-                        console.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
-                            hasCreatedAt: !!data.createdAt,
-                            hasUpdatedAt: !!data.updatedAt,
-                            createdAtHasToMillis: !!data.createdAt?.toMillis,
-                            updatedAtHasToMillis: !!data.updatedAt?.toMillis
-                        });
-                        return;
-                    }
+        // REAL-TIME LISTENER
+        const unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+            const fetchedEntries: JournalEntry[] = [];
 
-                    fetchedEntries.push({
-                        id: doc.id,
-                        ...data,
-                        // Convert Firestore Timestamp to millis for consistent client-side typing
-                        createdAt: data.createdAt.toMillis(),
-                        updatedAt: data.updatedAt.toMillis()
-                    } as JournalEntry);
-                });
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                // Filter out soft-deleted entries client-side
+                if (data.isSoftDeleted) return;
 
-                setEntries(fetchedEntries);
+                // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
+                // All entries should have valid Firestore Timestamps from Cloud Functions
+                if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
+                    logger.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
+                        hasCreatedAt: !!data.createdAt,
+                        hasUpdatedAt: !!data.updatedAt,
+                        createdAtHasToMillis: !!data.createdAt?.toMillis,
+                        updatedAtHasToMillis: !!data.updatedAt?.toMillis
+                    });
+                    return;
+                }
 
-                // GROUPING LOGIC (The "Index" for your notebook)
-                const groups: Record<string, JournalEntry[]> = {};
-                fetchedEntries.forEach((entry) => {
-                    const label = getRelativeDateLabel(entry.dateLabel);
-                    if (!groups[label]) groups[label] = [];
-                    groups[label].push(entry);
-                });
-
-                setGroupedEntries(groups);
-                setLoading(false);
-            }, (error) => {
-                console.error("Error fetching journal entries:", error);
-                setLoading(false);
+                fetchedEntries.push({
+                    id: doc.id,
+                    ...data,
+                    // Convert Firestore Timestamp to millis for consistent client-side typing
+                    createdAt: data.createdAt.toMillis(),
+                    updatedAt: data.updatedAt.toMillis()
+                } as JournalEntry);
             });
 
-            return () => unsubscribeSnapshot();
+            setEntries(fetchedEntries);
+
+            // GROUPING LOGIC (The "Index" for your notebook)
+            const groups: Record<string, JournalEntry[]> = {};
+            fetchedEntries.forEach((entry) => {
+                const label = getRelativeDateLabel(entry.dateLabel);
+                if (!groups[label]) groups[label] = [];
+                groups[label].push(entry);
+            });
+
+            setGroupedEntries(groups);
+            setJournalLoading(false);
+        }, (error) => {
+            // CANON-0076: Log error type only - don't expose raw error objects (PII/security risk)
+            logger.error("Error fetching journal entries", {
+                errorType: error instanceof Error ? error.constructor.name : typeof error,
+                errorCode: (error as { code?: string })?.code,
+            });
+            setJournalLoading(false);
         });
 
-        return () => unsubscribeAuth();
-    }, []);
+        return () => unsubscribeSnapshot();
+    }, [user, authLoading]);
 
     // ACTION: Tuck Away (Save) a new entry with metadata
     // Memoized to prevent infinite re-renders when used in component useCallback deps
@@ -254,7 +267,7 @@ export function useJournal() {
         isPrivate: boolean = true
     ): Promise<{ success: boolean; error?: string }> => {
         try {
-            const user = auth.currentUser;
+            // Use user from AuthContext (already validated above)
             if (!user) {
                 return {
                     success: false,
@@ -303,32 +316,19 @@ export function useJournal() {
 
             return { success: true };
         } catch (error: unknown) {
-            // Handle rate limiting and App Check errors with user-friendly messages
-            let errorMessage = 'Failed to save entry. Please try again.';
-
-            if (error && typeof error === 'object' && 'code' in error) {
-                const code = (error as { code: string }).code;
-                if (code === 'functions/resource-exhausted') {
-                    errorMessage = 'Too many requests. Please wait a moment and try again.';
-                } else if (code === 'functions/failed-precondition') {
-                    errorMessage = 'Security verification failed. Please refresh the page.';
-                }
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-
-            return {
-                success: false,
-                error: errorMessage
-            };
+            // Use consolidated error handling utility (CANON-0006)
+            return handleCloudFunctionError(error, {
+                operation: 'save journal entry',
+                defaultMessage: 'Failed to save entry. Please try again.',
+            });
         }
-    }, []);
+    }, [user]);
 
     // ACTION: Crumple Page (Soft Delete)
     // Memoized to prevent infinite re-renders
     const crumplePage = useCallback(async (entryId: string): Promise<{ success: boolean; error?: string }> => {
         try {
-            const user = auth.currentUser;
+            // Use user from AuthContext (already validated above)
             if (!user) {
                 return {
                     success: false,
@@ -356,28 +356,19 @@ export function useJournal() {
 
             return { success: true };
         } catch (error: unknown) {
-            // Handle rate limiting and App Check errors with user-friendly messages
-            let errorMessage = 'Failed to delete entry. Please try again.';
-
-            if (error && typeof error === 'object' && 'code' in error) {
-                const code = (error as { code: string }).code;
-                if (code === 'functions/resource-exhausted') {
-                    errorMessage = 'Too many requests. Please wait a moment and try again.';
-                } else if (code === 'functions/failed-precondition') {
-                    errorMessage = 'Security verification failed. Please refresh the page.';
-                } else if (code === 'functions/not-found') {
-                    errorMessage = 'Entry not found or already deleted.';
-                }
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-
-            return {
-                success: false,
-                error: errorMessage
-            };
+            // Use consolidated error handling utility (CANON-0006)
+            return handleCloudFunctionError(error, {
+                operation: 'delete journal entry',
+                customMessages: {
+                    'functions/not-found': 'Entry not found or already deleted.',
+                },
+                defaultMessage: 'Failed to delete entry. Please try again.',
+            });
         }
-    }, []);
+    }, [user]);
+
+    // Combine auth loading state with journal loading state for consumers
+    const loading = authLoading || journalLoading;
 
     return {
         entries,        // Raw list

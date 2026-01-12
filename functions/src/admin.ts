@@ -9,6 +9,7 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import * as admin from "firebase-admin";
 import { z } from "zod";
 import { logSecurityEvent } from "./security-logger";
+import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 import {
     meetingSchema,
     soberLivingSchema,
@@ -17,6 +18,16 @@ import {
     type SoberLivingData,
     type QuoteData
 } from "./schemas";
+
+/**
+ * CANON-0015: Rate limiter for admin operations
+ * More permissive than user endpoints (30 req/60s) but still protected
+ * Prevents compromised admin accounts from mass operations
+ */
+const adminRateLimiter = new FirestoreRateLimiter({
+    points: 30,    // Max 30 requests
+    duration: 60,  // Per 60 seconds
+});
 
 interface SaveMeetingRequest {
     meeting: MeetingData;
@@ -43,13 +54,14 @@ interface DeleteQuoteRequest {
 }
 
 /**
- * Helper: Verify user has admin claim
+ * Helper: Verify user has admin claim and apply rate limiting
+ * CANON-0015: Admin endpoints now have rate limiting protection
  */
-function requireAdmin(request: CallableRequest) {
+async function requireAdmin(request: CallableRequest, operationName: string = "admin_operation") {
     if (!request.auth) {
         logSecurityEvent(
             "AUTH_FAILURE",
-            "admin_operation",
+            operationName,
             "Unauthenticated admin request attempted"
         );
         throw new HttpsError("unauthenticated", "Authentication required");
@@ -58,12 +70,40 @@ function requireAdmin(request: CallableRequest) {
     if (request.auth.token.admin !== true) {
         logSecurityEvent(
             "AUTHORIZATION_FAILURE",
-            "admin_operation",
+            operationName,
             "Non-admin user attempted admin operation",
             { userId: request.auth.uid }
         );
         throw new HttpsError("permission-denied", "Admin privileges required");
     }
+
+    // CANON-0015: Apply rate limiting to admin operations
+    try {
+        await adminRateLimiter.consume(request.auth.uid, operationName);
+    } catch (rateLimitError) {
+        // Log detailed error server-side for debugging
+        const internalMessage = rateLimitError instanceof Error
+            ? rateLimitError.message
+            : "Rate limit exceeded";
+
+        logSecurityEvent(
+            "RATE_LIMIT_EXCEEDED",
+            operationName,
+            internalMessage,
+            { userId: request.auth.uid }
+        );
+
+        // Return generic message to client (prevent information leakage)
+        throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
+    }
+
+    // Log successful admin authentication for audit trail
+    logSecurityEvent(
+        "ADMIN_ACTION",
+        operationName,
+        "Admin authentication and rate limit check passed",
+        { userId: request.auth.uid, severity: "INFO" }
+    );
 }
 
 function sanitizeSentryTitle(title: string) {
@@ -87,7 +127,7 @@ function sanitizeSentryTitle(title: string) {
  */
 export const adminSaveMeeting = onCall<SaveMeetingRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminSaveMeeting');
 
         // Validate input
         let validated;
@@ -142,7 +182,7 @@ export const adminSaveMeeting = onCall<SaveMeetingRequest>(
  */
 export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminDeleteMeeting');
 
         const { meetingId } = request.data;
 
@@ -181,7 +221,7 @@ export const adminDeleteMeeting = onCall<DeleteMeetingRequest>(
  */
 export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminSaveSoberLiving');
 
         // Validate input
         let validated;
@@ -235,7 +275,7 @@ export const adminSaveSoberLiving = onCall<SaveSoberLivingRequest>(
  */
 export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminDeleteSoberLiving');
 
         const { homeId } = request.data;
 
@@ -274,7 +314,7 @@ export const adminDeleteSoberLiving = onCall<DeleteSoberLivingRequest>(
  */
 export const adminSaveQuote = onCall<SaveQuoteRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminSaveQuote');
 
         // Validate input
         let validated;
@@ -328,7 +368,7 @@ export const adminSaveQuote = onCall<SaveQuoteRequest>(
  */
 export const adminDeleteQuote = onCall<DeleteQuoteRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminDeleteQuote');
 
         const { quoteId } = request.data;
 
@@ -368,7 +408,7 @@ export const adminDeleteQuote = onCall<DeleteQuoteRequest>(
  */
 export const adminHealthCheck = onCall(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminHealthCheck');
 
         const health = {
             firestore: false,
@@ -424,7 +464,7 @@ export const adminHealthCheck = onCall(
  */
 export const adminGetDashboardStats = onCall(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminGetDashboardStats');
 
         try {
             const now = new Date();
@@ -544,7 +584,7 @@ interface SearchUsersRequest {
 
 export const adminSearchUsers = onCall<SearchUsersRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminSearchUsers');
 
         const { query, limit = 20 } = request.data;
 
@@ -668,7 +708,7 @@ interface GetUserDetailRequest {
 
 export const adminGetUserDetail = onCall<GetUserDetailRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminGetUserDetail');
 
         const { uid, activityLimit = 30 } = request.data;
 
@@ -801,7 +841,7 @@ interface UpdateUserRequest {
 
 export const adminUpdateUser = onCall<UpdateUserRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminUpdateUser');
 
         const { uid, updates } = request.data;
 
@@ -863,7 +903,7 @@ interface DisableUserRequest {
 
 export const adminDisableUser = onCall<DisableUserRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminDisableUser');
 
         const { uid, disabled, reason } = request.data;
 
@@ -926,7 +966,7 @@ interface TriggerJobRequest {
 
 export const adminTriggerJob = onCall<TriggerJobRequest>(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminTriggerJob');
 
         const { jobId } = request.data;
 
@@ -998,7 +1038,7 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(
  */
 export const adminGetJobsStatus = onCall(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminGetJobsStatus');
 
         try {
             const db = admin.firestore();
@@ -1067,7 +1107,7 @@ interface SentryIssueSummary {
 
 export const adminGetSentryErrorSummary = onCall(
     async (request) => {
-        requireAdmin(request);
+        await requireAdmin(request, 'adminGetSentryErrorSummary');
 
         logSecurityEvent(
             "ADMIN_ACTION",

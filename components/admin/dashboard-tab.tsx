@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getFunctions, httpsCallable } from "firebase/functions"
+import { logger } from "@/lib/logger"
 import { CheckCircle2, XCircle, Users, Activity, Clock, AlertCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -69,7 +70,7 @@ export function DashboardTab() {
       setHealth(healthResult.data)
       setStats(statsResult.data)
     } catch (err) {
-      console.error("Failed to load dashboard:", err)
+      logger.error("Failed to load dashboard", { error: err })
       setError(err instanceof Error ? err.message : "Failed to load dashboard")
     } finally {
       setLoading(false)

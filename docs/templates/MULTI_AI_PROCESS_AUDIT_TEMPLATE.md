@@ -1,8 +1,8 @@
 # [Project Name] Multi-AI Process & Automation Audit Plan
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Created:** 2026-01-05
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-11
 **Status:** PENDING | IN_PROGRESS | COMPLETE
 **Overall Completion:** 0%
 
@@ -298,6 +298,59 @@ VERIFICATION COMMANDS (if available):
 
 Mark each check: ISSUE | OK | N/A
 List specific maintainability or testing gaps.
+
+Category 3b: Script Trigger Coverage (NEW - Session #48)
+CHECKS:
+[ ] All scripts have npm run commands (discoverability)
+[ ] Critical scripts have automatic triggers (session-start, pre-commit, CI)
+[ ] Validation scripts run when relevant files change
+[ ] Scripts that should run together are chained properly
+[ ] Manual-only scripts are documented as intentionally manual
+[ ] No orphan scripts (created but never integrated)
+
+ANALYSIS:
+- List all scripts in scripts/ directory
+- Cross-reference with package.json scripts section
+- Check session-start.sh for script invocations
+- Check pre-commit/pre-push hooks for script invocations
+- Check CI workflows for script invocations
+- Identify scripts with NO automatic trigger
+
+AUDIT COMMAND:
+```bash
+# Requires bash (uses shopt + arrays)
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "This audit command requires bash; re-run with: bash -lc '<command>'" >&2
+  exit 2
+fi
+
+# List scripts without npm commands (use full path for reliable matching)
+shopt -s nullglob  # Prevent literal glob if no matches
+script_files=(scripts/*.js scripts/*.sh)
+if [ ${#script_files[@]} -eq 0 ]; then
+  echo "No scripts found under scripts/ (expected scripts/*.js or scripts/*.sh)"
+else
+  for f in "${script_files[@]}"; do
+    grep -q "$f" package.json || echo "NO NPM: $f"
+  done
+fi
+
+# Check session-start triggers
+grep -E "node scripts/|npm run" .claude/hooks/session-start.sh
+
+# Check CI triggers
+grep -E "node scripts/|npm run" .github/workflows/*.yml
+```
+
+TRIGGER CATEGORIES:
+- Session Start: Pattern checks, consolidation, lessons surfacing
+- Pre-commit: Lint, format, patterns, tests
+- Pre-push: Tests, deps check, type check
+- CI: All of above + doc checks, CANON validation
+- Manual: Archive, deploy, one-time operations
+
+Mark each check: ISSUE | OK | N/A
+List scripts without appropriate automatic triggers.
 
 Category 4: Pattern Checker Completeness
 CHECKS:
@@ -656,6 +709,7 @@ When using this template:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3 | 2026-01-11 | Session #48: Added Category 3b "Script Trigger Coverage" - checks for orphan scripts, missing npm commands, and automatic trigger gaps | Claude |
 | 1.2 | 2026-01-06 | Review #68: Updated document header to 1.1; Added HUMAN_SUMMARY content description | Claude |
 | 1.1 | 2026-01-06 | Review #67: Aligned category enum (Documentation → Workflow Docs) to match AGGREGATOR | Claude |
 | 1.0 | 2026-01-05 | Initial template creation - Process & Automation audit category added to multi-AI review framework | Claude |

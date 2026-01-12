@@ -702,7 +702,7 @@ When using this template:
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** - Canonical JSONL schema for all review templates
 - **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** - Master index and trigger tracking
 - **[CODE_REVIEW_PLAN_2026_Q1.md](./CODE_REVIEW_PLAN_2026_Q1.md)** - General code review template
-- **[AI_WORKFLOW.md](../../AI_WORKFLOW.md)** - AI development workflow documentation
+- **[AI_WORKFLOW.md](../../../AI_WORKFLOW.md)** - AI development workflow documentation
 - **GitHub Workflows** - CI/CD workflow files (`.github/workflows/`)
 
 ---

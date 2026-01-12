@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react"
+import { logger } from "@/lib/logger"
 
 interface UseScrollToSectionOptions {
   /** Whether to trigger the scroll */
@@ -55,7 +56,7 @@ export function useScrollToSection({
           hasScrolledRef.current = true
         }
       } catch (error) {
-        console.warn(`Could not scroll to ${target.type}: ${target.value}`, error)
+        logger.warn(`Could not scroll to ${target.type}: ${target.value}`, { error })
       }
     }, delay)
 

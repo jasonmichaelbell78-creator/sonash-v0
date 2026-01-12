@@ -6,6 +6,7 @@ import { X, Save } from "lucide-react"
 import { VoiceTextArea } from "@/components/ui/voice-text-area"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useJournal } from "@/hooks/use-journal"
+import { logger } from "@/lib/logger"
 import { toast } from "sonner"
 
 interface JournalModalProps {
@@ -47,11 +48,11 @@ export default function JournalModal({ onClose }: JournalModalProps) {
                 toast.success("Entry saved to History")
                 onClose()
             } else {
-                console.error("Failed to save entry:", result.error)
+                logger.error("Failed to save entry", { error: result.error })
                 toast.error(result.error || "Failed to save entry")
             }
         } catch (error) {
-            console.error("Failed to save entry", error)
+            logger.error("Failed to save entry", { error })
             toast.error("Failed to save entry")
         } finally {
             setIsSaving(false)

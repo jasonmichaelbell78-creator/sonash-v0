@@ -33,12 +33,53 @@ export class FirestoreRateLimiter {
     }
 
     /**
-     * Check and consume a rate limit point
+     * Check and consume a rate limit point by user ID
      * @throws Error if rate limit exceeded
      */
     async consume(userId: string, operation: string = "default"): Promise<void> {
+        return this.consumeByKey(`user_${userId}`, operation);
+    }
+
+    /**
+     * Check and consume a rate limit point by IP address
+     * CANON-0036: Secondary rate limiter keyed by IP to prevent account cycling attacks
+     * @throws Error if rate limit exceeded
+     */
+    async consumeByIp(ipAddress: string, operation: string = "default"): Promise<void> {
+        // Normalize IP address:
+        // - Remove brackets from IPv6 (e.g., [::1] -> ::1)
+        // - For IPv4 with port (e.g., 192.168.1.1:8080), remove the port
+        // - For IPv6, keep the full address (ports are outside brackets)
+        // SonarQube S5850: Explicitly group regex alternatives with anchors
+        let normalizedIp = ipAddress.replaceAll(/(^\[)|(\]$)/g, ''); // Remove IPv6 brackets
+
+        // Port extraction logic for IPv4 addresses only:
+        // IPv4 with port looks like: 192.168.1.1:8080
+        // IPv6 looks like: 2001:0db8:85a3::8a2e:0370:7334
+        // IPv4-mapped IPv6 looks like: ::ffff:192.168.1.1
+        const lastColonIndex = normalizedIp.lastIndexOf(':');
+        if (lastColonIndex > -1) {
+            const ipCandidate = normalizedIp.substring(0, lastColonIndex);
+            // Only strip port for pure IPv4 addresses (contains dots, no colons in IP part)
+            // This correctly handles:
+            // - IPv4 with port (e.g., "1.2.3.4:8080") -> "1.2.3.4"
+            // - IPv6 (e.g., "::1") -> unchanged
+            // - IPv4-mapped IPv6 (e.g., "::ffff:1.2.3.4") -> unchanged
+            if (ipCandidate.includes('.') && !ipCandidate.includes(':')) {
+                normalizedIp = ipCandidate;
+            }
+        }
+
+        return this.consumeByKey(`ip_${normalizedIp || ipAddress}`, operation);
+    }
+
+    /**
+     * Internal: Check and consume by arbitrary key
+     * @throws Error if rate limit exceeded
+     */
+    private async consumeByKey(key: string, operation: string = "default"): Promise<void> {
         const db = admin.firestore();
-        const docId = `${userId}_${operation}`;
+        const docId = `${key}_${operation}`;
         const docRef = db.collection(this.collectionName).doc(docId);
 
         const now = Date.now();
