@@ -941,7 +941,7 @@ This ensures each category is thoroughly processed before moving on, preventing 
 ## Step 4B: Remediation Sprint
 
 **Status:** IN_PROGRESS
-**Completion:** ~29% (6/21 PRs from PR_PLAN.json)
+**Completion:** ~57% (12/21 PRs from PR_PLAN.json)
 **Estimated Effort:** 8-16 hours (depends on CANON finding count)
 **Dependencies:** Step 4
 **Risk Level:** Medium
@@ -967,7 +967,21 @@ Executed PRs following PR_PLAN.json prioritization:
   - CANON-0002, CANON-0034
   - Risk mitigated: No active users (test data only)
 
-**Remaining:** 15 PRs (PR7-PR21 per PR_PLAN.json)
+**Session #53-54 (2026-01-12):**
+- [x] **PR7**: Extract Cloud Function error handling utility - Commit 2e78f88
+  - CANON-0006, CANON-0066, CANON-0087
+- [x] **PR8**: Replace console logging with structured logger - Commit 572e390
+  - CANON-0003, CANON-0042, CANON-0058
+- [x] **PR9**: Consolidate DailyQuoteCard with useDailyQuote hook - Commit 879d01e
+  - CANON-0023, CANON-0051, CANON-0073
+- [x] **PR10**: Extract time-of-day rotation utilities - Commit 667bef9
+  - CANON-0017, CANON-0065
+- [x] **PR11**: Create callSecureFunction wrapper with auto reCAPTCHA - Commit 961c39a
+  - CANON-0076, CANON-0078
+- [x] **PR12**: Create typed Firestore collection helpers - Commit 44592fe
+  - CANON-0077, CANON-0080
+
+**Remaining:** 9 PRs (PR13-PR21 per PR_PLAN.json)
 
 ### Objectives
 
@@ -996,12 +1010,12 @@ PR_PLAN.json Structure (21 PRs from Tier-2 Output):
 │   ├── PR5: CI quality gates blocking ✅ DONE
 │   └── PR6: step-1-worksheet schema ✅ DONE
 ├── Code Quality Refactoring (6 PRs)
-│   ├── PR7: Error handling utility
-│   ├── PR8: Structured logging
-│   ├── PR9: DailyQuoteCard consolidation
-│   ├── PR10: Time-of-day utilities
-│   ├── PR11: callSecureFunction wrapper
-│   └── PR12: Typed Firestore helpers
+│   ├── PR7: Error handling utility ✅ DONE
+│   ├── PR8: Structured logging ✅ DONE
+│   ├── PR9: DailyQuoteCard consolidation ✅ DONE
+│   ├── PR10: Time-of-day utilities ✅ DONE
+│   ├── PR11: callSecureFunction wrapper ✅ DONE
+│   └── PR12: Typed Firestore helpers ✅ DONE
 ├── Performance (3 PRs)
 │   ├── PR13: SSR for landing page
 │   ├── PR14: Reduce use client directives
@@ -1022,6 +1036,27 @@ Execute PRs in order. Each PR:
 3. Runs validation (lint, test, patterns:check)
 4. Commits with CANON-ID references
 5. Merges or creates PR for review
+6. **MANDATORY: Update documentation** (see below)
+
+### Documentation Update Requirement (MANDATORY)
+
+**After completing ANY PR or group of PRs**, you MUST update:
+
+1. **This document (INTEGRATED_IMPROVEMENT_PLAN.md)**:
+   - Mark completed PRs with `[x]` and session number
+   - Update completion percentage in Step 4B header
+   - Add entry to Progress Log with commit hashes
+
+2. **SESSION_CONTEXT.md**:
+   - Update "Quick Status" table with new PR count
+   - Update "Next Session Goals" if priorities changed
+   - Update session counter if not already done
+
+3. **Commit the doc updates** in the same session - do not defer to next session
+
+**Why this matters**: Sessions #53-54 completed PR7-PR12 but failed to update docs, causing Session #55 to report wrong status. This wastes time and creates confusion.
+
+**Enforcement**: Session-begin now checks commits against docs and flags discrepancies.
 
 ### Tasks
 
@@ -1045,17 +1080,17 @@ Execute PRs in order. Each PR:
   - CANON-0004, CANON-0039, CANON-0067
 
 #### Code Quality Refactoring PRs (6 items)
-- [ ] **PR7**: Extract Cloud Function error handling utility (E1, low risk)
+- [x] **PR7**: Extract Cloud Function error handling utility (E1, low risk) ✅ Session #53
   - CANON-0006, CANON-0066, CANON-0087
-- [ ] **PR8**: Replace console logging with structured logger (E1, low risk)
+- [x] **PR8**: Replace console logging with structured logger (E1, low risk) ✅ Session #53
   - CANON-0003, CANON-0042, CANON-0058
-- [ ] **PR9**: Consolidate DailyQuoteCard and extract hook (E1, low risk)
+- [x] **PR9**: Consolidate DailyQuoteCard and extract hook (E1, low risk) ✅ Session #53
   - CANON-0023, CANON-0051, CANON-0073
-- [ ] **PR10**: Extract time-of-day rotation utilities (E1, low risk)
+- [x] **PR10**: Extract time-of-day rotation utilities (E1, low risk) ✅ Session #53
   - CANON-0017, CANON-0065
-- [ ] **PR11**: Create callSecureFunction wrapper with auto reCAPTCHA (E1, medium risk)
+- [x] **PR11**: Create callSecureFunction wrapper with auto reCAPTCHA (E1, medium risk) ✅ Session #54
   - CANON-0076, CANON-0078
-- [ ] **PR12**: Create typed Firestore collection helpers (E2, low risk)
+- [x] **PR12**: Create typed Firestore collection helpers (E2, low risk) ✅ Session #54
   - CANON-0077, CANON-0080
 
 #### Performance PRs (3 items)
