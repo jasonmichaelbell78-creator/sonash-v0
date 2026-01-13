@@ -67,13 +67,20 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (5 Categories):**
+**Focus Areas (6 Categories):**
 
 1. Code Hygiene (unused imports, dead code, console.logs)
 2. Types & Correctness (any types, type safety, null checks)
 3. Framework Best Practices (React patterns, Next.js conventions)
 4. Testing Coverage (untested functions, missing edge cases)
 5. Security Surface (input validation, auth checks)
+6. AI-Generated Code Failure Modes:
+   - "Happy-path only" logic, missing edge cases and error handling
+   - Tests that exist but don't assert meaningful behavior
+   - Hallucinated dependencies/APIs that don't exist
+   - Copy/paste anti-patterns (similar code blocks that should be abstracted)
+   - Inconsistent architecture patterns across files
+   - Overly complex functions (deep nesting, >50 lines)
 
 **For each category:**
 
@@ -83,12 +90,20 @@ If outdated, note discrepancies but proceed with current values.
 4. Estimate effort: E0 (trivial) | E1 (hours) | E2 (day) | E3 (major)
 5. **Assign confidence level** (see Evidence Requirements below)
 
+**AI-Code Specific Checks:**
+
+- Functions with only happy-path logic (no try/catch, no null checks)
+- Test files with `expect(true).toBe(true)` or trivial assertions
+- Import statements for packages not in package.json
+- Multiple similar code blocks (>10 lines duplicated)
+- Functions with >3 levels of nesting
+
 **Scope:**
 
 - Include: `app/`, `components/`, `lib/`, `hooks/`, `types/`
 - Exclude: `node_modules/`, `.next/`, `docs/`
 - Conditional: `tests/` excluded for code hygiene, but included when analyzing
-  Testing Coverage (category 4)
+  Testing Coverage (category 4) and AI-Generated Code (category 6)
 
 ---
 
@@ -201,7 +216,7 @@ Each line (UPDATED SCHEMA with confidence and verification):
 ```json
 {
   "id": "CODE-001",
-  "category": "Hygiene|Types|Framework|Testing|Security",
+  "category": "Hygiene|Types|Framework|Testing|Security|AICode",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": "HIGH|MEDIUM|LOW",

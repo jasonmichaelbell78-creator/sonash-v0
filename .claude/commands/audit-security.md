@@ -78,14 +78,41 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (6 Categories):**
+**Focus Areas (12 Categories):**
 
-1. Authentication & Authorization (auth checks, role validation)
-2. Input Validation (sanitization, injection prevention)
-3. Data Protection (encryption, PII handling, secrets)
-4. Firebase/Firestore Security (rules, Cloud Functions)
-5. Dependency Security (npm audit, outdated packages)
+1. Authentication & Authorization (auth checks, role validation, IDOR, privilege escalation)
+2. Input Validation & Injection Prevention:
+   - SQL/NoSQL injection, command injection
+   - Template injection, eval/Function(), new Function()
+   - Unsafe deserialization, prototype pollution
+3. Data Protection (encryption, PII handling, secrets, overly verbose errors)
+4. Firebase/Firestore Security (rules, Cloud Functions, rate limiting, replay protection)
+5. Dependency Security & Supply Chain:
+   - npm audit, outdated packages
+   - Unpinned versions, risky postinstall scripts
+   - Unused dependencies with known vulnerabilities
 6. OWASP Top 10 Coverage
+7. Hosting & Headers Security:
+   - CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+   - COOP, COEP, Referrer-Policy, Permissions-Policy
+8. Next.js/Framework-Specific:
+   - Server/client boundary leaks (secrets in client bundles)
+   - API route / middleware auth gates
+   - Static export vs server rendering assumptions
+9. File Handling Security:
+   - Insecure file upload, path traversal
+   - MIME type validation, file size limits
+10. Crypto & Randomness:
+    - Weak randomness (Math.random for security), broken hashing
+    - Unsafe JWT/session handling, homegrown crypto
+11. Product/UX Security Risks:
+    - Misleading "security UI" (toggles without server enforcement)
+    - Dangerous defaults not clearly communicated
+    - Admin-only flows accessible via client routes without backend checks
+12. AI-Generated Code & Agent Security:
+    - Prompt-injection surfaces in scripts/configs
+    - Agent config files with unsafe patterns
+    - Suspicious strings/comments that could manipulate AI agents
 
 **For each category:**
 
@@ -98,17 +125,28 @@ If outdated, note discrepancies but proceed with current values.
 
 **Security-Sensitive Files to Check:**
 
-- `firestore.rules`
+- `firestore.rules`, `storage.rules`
 - `functions/src/**/*.ts`
-- `lib/firebase*.ts`
-- `lib/auth*.ts`
-- `middleware.ts`
+- `lib/firebase*.ts`, `lib/auth*.ts`
+- `middleware.ts`, `next.config.mjs`
+- `firebase.json` (hosting headers, rewrites)
 - `.env*` files (environment variables)
+- `package.json`, `package-lock.json` (supply chain)
+- `.claude/` configs (agent security)
 - Any file with "security", "auth", "token", "secret", "credential" in name
+
+**Additional Checks for Vibe-Coded Apps:**
+
+- Search for `eval(`, `new Function(`, `Function(` - dynamic code execution
+- Search for `dangerouslySetInnerHTML` - XSS vectors
+- Search for `NEXT_PUBLIC_` env vars - ensure no secrets leaked
+- Search for `process.env` in client components - boundary leaks
+- Search for `postinstall`, `preinstall` in package.json - supply chain
+- Search for suspicious patterns in `.claude/` that could be prompt injection
 
 **Scope:**
 
-- Include: `app/`, `components/`, `lib/`, `functions/`, `firestore.rules`
+- Include: `app/`, `components/`, `lib/`, `functions/`, `firestore.rules`, `firebase.json`, `.claude/`
 - Exclude: `node_modules/`, `.next/`, `docs/`, `tests/`
 
 ---
@@ -222,7 +260,7 @@ Each line (UPDATED SCHEMA with confidence and verification):
 ```json
 {
   "id": "SEC-001",
-  "category": "Auth|Input|Data|Firebase|Deps|OWASP",
+  "category": "Auth|Input|Data|Firebase|Deps|OWASP|Headers|Framework|FileHandling|Crypto|ProductRisk|AgentSecurity",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": "HIGH|MEDIUM|LOW",
