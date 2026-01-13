@@ -30,15 +30,20 @@ const ALLOWED_FEATURE_FLAGS = new Set([
   "NEXT_PUBLIC_ENABLE_MORE",
 ]);
 
+// Static map with explicit env var references for Next.js client bundling
+// (dynamic process.env[key] won't be inlined on client side)
+const FEATURE_FLAG_VALUES: Record<string, string | undefined> = {
+  NEXT_PUBLIC_ENABLE_WORK: process.env.NEXT_PUBLIC_ENABLE_WORK,
+  NEXT_PUBLIC_ENABLE_MORE: process.env.NEXT_PUBLIC_ENABLE_MORE,
+};
+
 export function featureFlagEnabled(featureId: string): boolean {
   // Security: Only allow checking known feature flags
   if (!ALLOWED_FEATURE_FLAGS.has(featureId)) {
     return false;
   }
 
-  // Works identically on server and client
-  // Server: reads from process.env at runtime
-  // Client: Next.js replaces NEXT_PUBLIC_* at build time
-  const value = process.env[featureId];
+  // Use static env references so Next.js can inline on the client bundle
+  const value = FEATURE_FLAG_VALUES[featureId];
   return value === "true" || value === "1";
 }
