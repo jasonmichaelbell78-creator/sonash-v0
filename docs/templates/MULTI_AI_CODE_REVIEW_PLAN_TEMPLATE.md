@@ -360,8 +360,7 @@ Return 3 sections in this exact order:
 
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category": "Hygiene/Duplication|Types/Correctness|Next/React
-Boundaries|Security|Testing|AICode|Debugging", "title": "short, specific", "fingerprint":
+Schema: { "category": "Hygiene|Types|Framework|Security|Testing|AICode|Debugging", "title": "short, specific", "fingerprint":
 "<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
 "path2"], "symbols": ["SymbolA", "SymbolB"], "duplication_cluster": {

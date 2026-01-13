@@ -397,7 +397,7 @@ REQUIRED CHECKS:
 
 VERIFICATION COMMANDS:
 - grep -n -A 20 "\"headers\"" firebase.json
-- grep -E -rn "Content-Security-Policy|X-Frame-Options" --include="*.ts" --include="*.json"
+- grep -E -rn "Content-Security-Policy|X-Frame-Options" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json"
 - Review next.config.mjs for security headers
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
@@ -413,10 +413,10 @@ REQUIRED CHECKS:
 [ ] No sensitive data in client-side bundles
 
 VERIFICATION COMMANDS:
-- grep -rn "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY\|NEXT_PUBLIC_.*PASSWORD" --include="*.ts" --include="*.tsx"
+- grep -E -rn "NEXT_PUBLIC_.*(SECRET|KEY|PASSWORD)" --include="*.ts" --include="*.tsx"
 - grep -l -r '"use client"' app/ components/ --include="*.tsx" | while IFS= read -r f; do grep -l 'process\.env' "$f"; done 2>/dev/null (secrets in client components)
 - Review middleware.ts for auth checks
-- grep -rn "getServerSideProps\|getStaticProps" --include="*.tsx"
+- grep -E -rn "getServerSideProps|getStaticProps" --include="*.tsx"
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
@@ -538,9 +538,7 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category": "Rate Limiting|Input Validation|Secrets
-Management|Authentication|Firebase Security|OWASP|Headers|Framework|File
-Handling|Crypto|AI Agent Security", "title": "short, specific vulnerability", "fingerprint":
+Schema: { "category": "RateLimiting|InputValidation|SecretsManagement|Authentication|Firebase|OWASP|Headers|Framework|FileHandling|Crypto|AgentSecurity", "title": "short, specific vulnerability", "fingerprint":
 "<category>::<primary_file>::<vulnerability_type>", "severity": "S0|S1|S2|S3",
 "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1", "path2"],
 "vulnerability_details": { "description": "what's wrong", "exploitation": "how
