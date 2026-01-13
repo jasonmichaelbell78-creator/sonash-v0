@@ -1,6 +1,7 @@
 # Engineering Productivity Audit Analysis
 
-**Created:** 2026-01-13 **Purpose:** Analysis of engineering productivity audit findings and prompt evaluation
+**Created:** 2026-01-13 **Purpose:** Analysis of engineering productivity audit
+findings and prompt evaluation
 
 ---
 
@@ -8,20 +9,20 @@
 
 ### EFF Items vs Existing Roadmap/Plan Tracking
 
-| EFF ID | Issue | Status | Notes |
-|--------|-------|--------|-------|
-| EFF-001 | Add `npm run dev:offline` script | **NOT TRACKED** | Add to ROADMAP.md M1.5 or M2 |
-| EFF-002 | Create `docs/DEV_WORKFLOW.md` | **PARTIALLY COVERED** | INTEGRATED_IMPROVEMENT_PLAN Step 2 addressed doc standardization but not this specific consolidation |
-| EFF-003 | Add `scripts/doctor.js` | **NOT TRACKED** | New item - add to ROADMAP.md M2 |
-| EFF-004 | Integrate logger with Sentry | **PARTIALLY TRACKED** | ROADMAP.md M1.6 Phase 4 covers Sentry integration, but logger.ts TODO is not explicitly called out |
-| EFF-005 | Cache npm ci in CI | **NOT TRACKED** | CI improvements mentioned but not this specific optimization |
-| EFF-006 | Add correlation IDs to logger | **NOT TRACKED** | Add to ROADMAP.md M2 (observability) |
-| EFF-007 | Add network status to logs | **NOT TRACKED** | Add to ROADMAP.md M2 (observability) |
-| EFF-008 | Create smoke test script | **NOT TRACKED** | Add to ROADMAP.md M2 (tooling) |
-| EFF-009 | Add bug report template | **NOT TRACKED** | Add to ROADMAP.md M2 (process) |
-| EFF-010 | Implement offline queue | **CRITICAL - PARTIALLY TRACKED** | BOT-001 in JSON identifies this as top bottleneck, but not explicitly in ROADMAP.md |
-| EFF-011 | Add offline tests | **NOT TRACKED** | Add to ROADMAP.md M2 (testing) |
-| EFF-012 | Split large Cloud Functions files | **TRACKED** | ROADMAP.md M2 mentions splitting god objects |
+| EFF ID  | Issue                             | Status                           | Notes                                                                                                |
+| ------- | --------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| EFF-001 | Add `npm run dev:offline` script  | **NOT TRACKED**                  | Add to ROADMAP.md M1.5 or M2                                                                         |
+| EFF-002 | Create `docs/DEV_WORKFLOW.md`     | **PARTIALLY COVERED**            | INTEGRATED_IMPROVEMENT_PLAN Step 2 addressed doc standardization but not this specific consolidation |
+| EFF-003 | Add `scripts/doctor.js`           | **NOT TRACKED**                  | New item - add to ROADMAP.md M2                                                                      |
+| EFF-004 | Integrate logger with Sentry      | **PARTIALLY TRACKED**            | ROADMAP.md M1.6 Phase 4 covers Sentry integration, but logger.ts TODO is not explicitly called out   |
+| EFF-005 | Cache npm ci in CI                | **NOT TRACKED**                  | CI improvements mentioned but not this specific optimization                                         |
+| EFF-006 | Add correlation IDs to logger     | **NOT TRACKED**                  | Add to ROADMAP.md M2 (observability)                                                                 |
+| EFF-007 | Add network status to logs        | **NOT TRACKED**                  | Add to ROADMAP.md M2 (observability)                                                                 |
+| EFF-008 | Create smoke test script          | **NOT TRACKED**                  | Add to ROADMAP.md M2 (tooling)                                                                       |
+| EFF-009 | Add bug report template           | **NOT TRACKED**                  | Add to ROADMAP.md M2 (process)                                                                       |
+| EFF-010 | Implement offline queue           | **CRITICAL - PARTIALLY TRACKED** | BOT-001 in JSON identifies this as top bottleneck, but not explicitly in ROADMAP.md                  |
+| EFF-011 | Add offline tests                 | **NOT TRACKED**                  | Add to ROADMAP.md M2 (testing)                                                                       |
+| EFF-012 | Split large Cloud Functions files | **TRACKED**                      | ROADMAP.md M2 mentions splitting god objects                                                         |
 
 ### Summary: Items to Add to ROADMAP.md
 
@@ -51,18 +52,19 @@
 
 The engineering productivity audit prompt covers **6 main areas**:
 
-| Area | Focus | Current Coverage in Templates |
-|------|-------|------------------------------|
-| **A) Day-to-Day Process & Repo Hygiene** | Golden path, scripts, hooks, CI, docs | **PARTIAL** - Process audit covers CI/hooks but not "golden path" framing |
-| **B) Debugging & Observability** | Error handling, logging, Sentry, repro paths | **PARTIAL** - Code review touches error handling, no dedicated debugging audit |
-| **C) App Performance & Maintenance** | Repeated logic, bundle bloat, god objects | **COVERED** - Performance + Refactoring audits |
-| **D) Data & Offline Support** | Offline state, sync strategy, failure modes | **NOT COVERED** - No dedicated offline audit |
-| **E) Tooling/Scripts/Hooks** | Package manager, scripts, CI tasks, config | **COVERED** - Process audit |
-| **F) AI-Generated Bloat Patterns** | Verbose helpers, copy/paste, over-parameterization | **PARTIAL** - Code review has AI-Code Failure Modes category |
+| Area                                     | Focus                                              | Current Coverage in Templates                                                  |
+| ---------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **A) Day-to-Day Process & Repo Hygiene** | Golden path, scripts, hooks, CI, docs              | **PARTIAL** - Process audit covers CI/hooks but not "golden path" framing      |
+| **B) Debugging & Observability**         | Error handling, logging, Sentry, repro paths       | **PARTIAL** - Code review touches error handling, no dedicated debugging audit |
+| **C) App Performance & Maintenance**     | Repeated logic, bundle bloat, god objects          | **COVERED** - Performance + Refactoring audits                                 |
+| **D) Data & Offline Support**            | Offline state, sync strategy, failure modes        | **NOT COVERED** - No dedicated offline audit                                   |
+| **E) Tooling/Scripts/Hooks**             | Package manager, scripts, CI tasks, config         | **COVERED** - Process audit                                                    |
+| **F) AI-Generated Bloat Patterns**       | Verbose helpers, copy/paste, over-parameterization | **PARTIAL** - Code review has AI-Code Failure Modes category                   |
 
 ### Unique Elements of Engineering Productivity Audit
 
-1. **"Golden Path" Framework**: Explicit focus on creating a minimal-friction developer workflow
+1. **"Golden Path" Framework**: Explicit focus on creating a minimal-friction
+   developer workflow
    - One command to setup, dev, test, deploy, rollback
    - This framing is NOT in existing templates
 
@@ -86,7 +88,8 @@ The engineering productivity audit prompt covers **6 main areas**:
    - Confidence score
    - More structured than existing audit outputs
 
-5. **Developer Experience (DX) Focus**: Emphasizes friction reduction, not just code quality
+5. **Developer Experience (DX) Focus**: Emphasizes friction reduction, not just
+   code quality
 
 ---
 
@@ -95,11 +98,13 @@ The engineering productivity audit prompt covers **6 main areas**:
 ### Option A: Create NEW "Engineering Productivity" Audit Type
 
 **Pros:**
+
 - Distinct framing (DX + workflow vs code quality)
 - Unified view of golden path, debugging, offline support
 - Matches the scope of the prompt exactly
 
 **Cons:**
+
 - Overlap with existing Process, Performance, Code Review audits
 - Additional maintenance burden (7th audit type)
 
@@ -107,16 +112,20 @@ The engineering productivity audit prompt covers **6 main areas**:
 
 Add the unique elements to existing templates:
 
-1. **Process Audit** → Add "Golden Path" section and "Developer Experience" category
+1. **Process Audit** → Add "Golden Path" section and "Developer Experience"
+   category
 2. **Code Review** → Add "Debugging Workflow" category
-3. **Performance Audit** → Add "Offline Support" category (or create dedicated Offline audit)
+3. **Performance Audit** → Add "Offline Support" category (or create dedicated
+   Offline audit)
 4. **Security Audit** → Already has extended coverage for vibe-coded apps
 
 **Pros:**
+
 - No new audit type to maintain
 - Integrates well with existing 6-category framework
 
 **Cons:**
+
 - Unique framing may be lost
 - ROI tracking format not carried over
 
@@ -163,7 +172,8 @@ Add these items under M1.5 or M2:
 ```markdown
 ### Engineering Productivity Quick Wins (from 2026-01-13 Audit)
 
-- [ ] **EFF-001**: Add `npm run dev:offline` script (concurrently + firebase emulators)
+- [ ] **EFF-001**: Add `npm run dev:offline` script (concurrently + firebase
+      emulators)
 - [ ] **EFF-003**: Create `scripts/doctor.js` for environment validation
 - [ ] **EFF-005**: Add npm ci caching to CI workflow
 ```
@@ -184,23 +194,29 @@ Add these items under M1.5 or M2:
 
 ### For Single-Session Audits
 
-Consider whether `/audit-productivity` deserves its own skill, or if the existing audit commands with enhanced categories are sufficient.
+Consider whether `/audit-productivity` deserves its own skill, or if the
+existing audit commands with enhanced categories are sufficient.
 
 ---
 
 ## Conclusion
 
-The engineering productivity audit prompt covers areas that are **partially addressed** by existing audit templates but with a **distinct framing**:
+The engineering productivity audit prompt covers areas that are **partially
+addressed** by existing audit templates but with a **distinct framing**:
 
 1. **Already covered well**: CI/CD, scripts, hooks, performance, code quality
 2. **Partially covered**: Error handling, AI-code patterns
-3. **Not covered**: Golden path validation, dedicated offline audit, debugging workflow assessment, DX friction analysis
+3. **Not covered**: Golden path validation, dedicated offline audit, debugging
+   workflow assessment, DX friction analysis
 
-**Recommendation**: Enhance existing templates (Option B) rather than creating a 7th audit type, but add the unique elements (golden path, debugging ergonomics, offline support) as new categories.
+**Recommendation**: Enhance existing templates (Option B) rather than creating a
+7th audit type, but add the unique elements (golden path, debugging ergonomics,
+offline support) as new categories.
 
 ---
 
 **Related Documents:**
+
 - [Engineering Productivity Audit Report](single-session/engineering-productivity/audit-2026-01-13.md)
 - [Engineering Productivity Audit JSON](SoNash%20Engineering%20Productivity%20Audit%20Report.json)
 - [Single-Session Audit README](single-session/README.md)

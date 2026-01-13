@@ -4,7 +4,13 @@
   "auditor": "claude-opus-4-5",
   "branch": "claude/security-simplification-audit-2D1nZ",
   "stack_confirmed": {
-    "frontend": ["Next.js 16.1.1", "React 19.2.3", "TypeScript 5.9.3", "Tailwind CSS 4", "shadcn/ui"],
+    "frontend": [
+      "Next.js 16.1.1",
+      "React 19.2.3",
+      "TypeScript 5.9.3",
+      "Tailwind CSS 4",
+      "shadcn/ui"
+    ],
     "backend": ["Firebase Cloud Functions v7.0.0", "Node.js 24", "firebase-admin 13.6.0"],
     "hosting": ["Firebase Hosting (static export)"],
     "data": ["Cloud Firestore", "Firebase Authentication"],

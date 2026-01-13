@@ -62,10 +62,10 @@ This document tracks:
 
 ### Security Audits (`/audit-security`)
 
-| Date       | Session       | Commits Covered | Files Covered | Findings                                                                       | Reset Threshold |
-| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------ | --------------- |
-| 2026-01-13 | Single-Claude | Full codebase   | All TS/TSX    | 11 (2 HIGH, 4 MEDIUM, 2 LOW, 3 INFO) - [audit-2026-01-13.md](./audits/single-session/security/audit-2026-01-13.md) | ⚠️ (single)      |
-| 2026-01-07 | Multi-AI      | Full codebase   | All TS/TSX    | 10 (CANON-SECURITY.jsonl)                                                      | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                                           | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ | --------------- |
+| 2026-01-13 | Single-Claude | Full codebase   | All TS/TSX    | 11 (2 HIGH, 4 MEDIUM, 2 LOW, 3 INFO) - [audit-2026-01-13.md](./audits/single-session/security/audit-2026-01-13.md) | ⚠️ (single)     |
+| 2026-01-07 | Multi-AI      | Full codebase   | All TS/TSX    | 10 (CANON-SECURITY.jsonl)                                                                                          | ✅              |
 
 ### Performance Audits (`/audit-performance`)
 

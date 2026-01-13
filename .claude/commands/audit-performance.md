@@ -274,7 +274,7 @@ Full markdown report with all findings, baselines, and optimization plan.
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. Ask: "Would you like me to fix any of these issues now? (Quick wins
+6. Ask: "Would you like me to fix any of these issues now? (Quick wins
    recommended first)"
 
 ---

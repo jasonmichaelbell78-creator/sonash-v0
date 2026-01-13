@@ -289,7 +289,7 @@ Full markdown report with all findings, baselines, and fix plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. Ask: "Would you like me to fix any of these documentation issues now?"
+6. Ask: "Would you like me to fix any of these documentation issues now?"
 
 ---
 

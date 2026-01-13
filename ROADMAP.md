@@ -223,19 +223,23 @@ Planned | 🟣 Research
 
 #### Engineering Productivity Quick Wins (from 2026-01-13 Audit)
 
-> **Source:** [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
+> **Source:**
+> [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
 
 9. **EFF-001: Add `npm run dev:offline` Script** (S effort, High ROI)
    - [ ] Install `concurrently` as dev dependency
-   - [ ] Add `"dev:offline": "concurrently \"firebase emulators:start\" \"npm run dev\""`
+   - [ ] Add
+         `"dev:offline": "concurrently \"firebase emulators:start\" \"npm run dev\""`
    - [ ] Enables single-command offline development
    - **Verification:** `npm run dev:offline` starts both emulators and Next.js
 
-10. **EFF-003: Add `scripts/doctor.js` Environment Validator** (S effort, High ROI)
+10. **EFF-003: Add `scripts/doctor.js` Environment Validator** (S effort, High
+    ROI)
     - [ ] Create script to check Node version, npm, Firebase CLI, `.env.local`
     - [ ] Add `npm run doctor` to package.json
     - [ ] Include helpful fix hints in error messages
-    - **Verification:** `npm run doctor` passes on working setup, fails clearly on broken
+    - **Verification:** `npm run doctor` passes on working setup, fails clearly
+      on broken
 
 11. **EFF-005: Cache npm ci in CI Workflow** (S effort, Medium ROI)
     - [ ] Add npm cache to `.github/workflows/ci.yml`
@@ -616,7 +620,8 @@ These pre-existing issues were identified during PR review CI:
 
 ### Engineering Productivity - Observability & Offline (from 2026-01-13 Audit)
 
-> **Source:** [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
+> **Source:**
+> [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
 > **Priority:** P1 for EFF-010 (CRITICAL), P2 for others
 
 #### Observability Improvements
@@ -652,7 +657,8 @@ These pre-existing issues were identified during PR review CI:
     - [ ] Sync on reconnect with batch writes
     - [ ] Conflict resolution strategy
     - [ ] UI indicators for pending/synced/failed
-  - **Verification:** Go offline, make entry, verify pending state, go online, verify sync
+  - **Verification:** Go offline, make entry, verify pending state, go online,
+    verify sync
 
 - ⏳ **EFF-011: Add Offline Tests** (L effort)
   - Mock network status in tests
@@ -699,8 +705,9 @@ These pre-existing issues were identified during PR review CI:
 
 ### SonarCloud Issue Backlog (Step 4C Triage - 2026-01-13)
 
-> **IMPORTANT**: Before production deployment, re-run SonarCloud scan and address
-> ACCEPT-RISK items. See [SONARCLOUD_TRIAGE.md](docs/SONARCLOUD_TRIAGE.md) for details.
+> **IMPORTANT**: Before production deployment, re-run SonarCloud scan and
+> address ACCEPT-RISK items. See
+> [SONARCLOUD_TRIAGE.md](docs/SONARCLOUD_TRIAGE.md) for details.
 
 #### ACCEPT-RISK Items (23 total) - Requires Production Re-evaluation
 

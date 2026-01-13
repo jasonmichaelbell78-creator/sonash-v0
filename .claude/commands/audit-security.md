@@ -80,13 +80,15 @@ If outdated, note discrepancies but proceed with current values.
 
 **Focus Areas (12 Categories):**
 
-1. Authentication & Authorization (auth checks, role validation, IDOR, privilege escalation)
+1. Authentication & Authorization (auth checks, role validation, IDOR, privilege
+   escalation)
 2. Input Validation & Injection Prevention:
    - SQL/NoSQL injection, command injection
    - Template injection, eval/Function(), new Function()
    - Unsafe deserialization, prototype pollution
 3. Data Protection (encryption, PII handling, secrets, overly verbose errors)
-4. Firebase/Firestore Security (rules, Cloud Functions, rate limiting, replay protection)
+4. Firebase/Firestore Security (rules, Cloud Functions, rate limiting, replay
+   protection)
 5. Dependency Security & Supply Chain:
    - npm audit, outdated packages
    - Unpinned versions, risky postinstall scripts
@@ -146,7 +148,8 @@ If outdated, note discrepancies but proceed with current values.
 
 **Scope:**
 
-- Include: `app/`, `components/`, `lib/`, `functions/`, `firestore.rules`, `firebase.json`, `.claude/`
+- Include: `app/`, `components/`, `lib/`, `functions/`, `firestore.rules`,
+  `firebase.json`, `.claude/`
 - Exclude: `node_modules/`, `.next/`, `docs/`, `tests/`
 
 ---
@@ -327,9 +330,9 @@ Full markdown report with all findings, baselines, and remediation plan.
    - Findings: Total count (e.g., "1 S0, 2 S1, 3 S2")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate
+6. If S0/S1 findings: "⚠️ Critical security issues found. Recommend immediate
    remediation."
-6. Ask: "Would you like me to fix any of these issues now?"
+7. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 

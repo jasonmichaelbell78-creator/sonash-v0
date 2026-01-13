@@ -440,16 +440,16 @@ npm audit fix
 
 ### Code Quality Commands
 
-| Command                  | Purpose               | Notes                      |
-| ------------------------ | --------------------- | -------------------------- |
-| `npm run lint`           | ESLint check          | Must pass (0 errors)       |
-| `npm run format`         | Prettier auto-format  | Formats all files          |
-| `npm run format:check`   | Prettier check        | For CI (no changes)        |
-| `npm run deps:circular`  | Check circular deps   | Uses madge                 |
-| `npm run deps:unused`    | Find unused exports   | Uses knip                  |
-| `npm test`               | Run all tests         | 116 tests (1 skipped)      |
-| `npm run test:coverage`  | Test with coverage    | Uses c8                    |
-| `npm run validate:canon` | Validate CANON files  | Checks audit output schema |
+| Command                  | Purpose              | Notes                      |
+| ------------------------ | -------------------- | -------------------------- |
+| `npm run lint`           | ESLint check         | Must pass (0 errors)       |
+| `npm run format`         | Prettier auto-format | Formats all files          |
+| `npm run format:check`   | Prettier check       | For CI (no changes)        |
+| `npm run deps:circular`  | Check circular deps  | Uses madge                 |
+| `npm run deps:unused`    | Find unused exports  | Uses knip                  |
+| `npm test`               | Run all tests        | 116 tests (1 skipped)      |
+| `npm run test:coverage`  | Test with coverage   | Uses c8                    |
+| `npm run validate:canon` | Validate CANON files | Checks audit output schema |
 
 ### Prettier (Code Formatting)
 
@@ -548,13 +548,13 @@ TypeScript rules)
 
 **Pre-push hook (`.husky/pre-push`) runs:**
 
-| Step               | Command                       | Blocking?         |
-| ------------------ | ----------------------------- | ----------------- |
-| Tests              | `npm test`                    | YES - blocks push |
-| Circular deps      | `npm run deps:circular`       | YES - blocks push |
-| Pattern compliance | `npm run patterns:check`      | YES - blocks push |
-| Type check         | `npx tsc --noEmit`            | YES - blocks push |
-| Security audit     | `npm audit --audit-level=high`| NO - warning only |
+| Step               | Command                        | Blocking?         |
+| ------------------ | ------------------------------ | ----------------- |
+| Tests              | `npm test`                     | YES - blocks push |
+| Circular deps      | `npm run deps:circular`        | YES - blocks push |
+| Pattern compliance | `npm run patterns:check`       | YES - blocks push |
+| Type check         | `npx tsc --noEmit`             | YES - blocks push |
+| Security audit     | `npm audit --audit-level=high` | NO - warning only |
 
 > **Security Audit**: Checks for high/critical vulnerabilities in dependencies.
 > Non-blocking warning - reports issues but doesn't prevent push.

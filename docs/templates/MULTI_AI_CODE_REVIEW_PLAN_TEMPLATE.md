@@ -257,10 +257,13 @@ Category 5: Testing
 Category 6: AI-Generated Code Failure Modes
 
 - "Happy-path only" logic (no try/catch, no null checks, no error handling)
-- Tests that exist but don't assert meaningful behavior (expect(true).toBe(true))
+- Tests that exist but don't assert meaningful behavior
+  (expect(true).toBe(true))
 - Hallucinated dependencies/APIs (imports for packages not in package.json)
-- Copy/paste anti-patterns (similar code blocks >10 lines that should be abstracted)
-- Inconsistent architecture patterns across files (different approaches to same problem)
+- Copy/paste anti-patterns (similar code blocks >10 lines that should be
+  abstracted)
+- Inconsistent architecture patterns across files (different approaches to same
+  problem)
 - Overly complex functions (>3 levels of nesting, >50 lines)
 - Missing edge case handling (only handles success scenarios)
 - Placeholder/TODO comments that were never implemented
@@ -271,6 +274,7 @@ Category 7: Debugging Ergonomics (NEW - 2026-01-13)
 Purpose: Assess how easy it is to debug issues in production and development.
 
 CHECKS:
+
 - Error handling consistency (try/catch patterns, error boundaries)
 - Logging with context (structured logs, not just console.log)
 - Correlation IDs for request tracing (frontend ↔ backend)
@@ -282,6 +286,7 @@ CHECKS:
 - Development debugging aids (verbose mode, debug flags)
 
 PATTERNS TO FIND:
+
 - Swallowed errors (catch {} with no logging or re-throw)
 - Missing correlation IDs (no way to trace request across services)
 - Console.log spam without structure or log levels
@@ -292,19 +297,27 @@ PATTERNS TO FIND:
 - Network status not captured when errors occur
 
 VERIFICATION COMMANDS (if run_commands=yes):
-- grep -E -rn "catch([[:space:]]*\([^)]*\))?[[:space:]]*\{[[:space:]]*([/][/*].*)?[[:space:]]*\}" --include="*.ts" --include="*.tsx" | head -20 (empty/comment-only catches)
-- grep -rn "console\.log" --include="*.ts" --include="*.tsx" | wc -l (console.log count)
-- grep -rn "Sentry\." --include="*.ts" --include="*.tsx" | head -10 (Sentry usage)
-- grep -E -rn "correlationId|correlation_id|requestId" --include="*.ts" --include="*.tsx" | head -10
+
+- grep -E -rn
+  "catch([[:space:]]_\([^)]_\))?[[:space:]]_\{[[:space:]]_([/][/*]._)?[[:space:]]_\}"
+  --include="_.ts" --include="_.tsx" | head -20 (empty/comment-only catches)
+- grep -rn "console\.log" --include="_.ts" --include="_.tsx" | wc -l
+  (console.log count)
+- grep -rn "Sentry\." --include="_.ts" --include="_.tsx" | head -10 (Sentry
+  usage)
+- grep -E -rn "correlationId|correlation*id|requestId" --include="*.ts"
+  --include="\_.tsx" | head -10
 
 DEBUGGING WORKFLOW ASSESSMENT:
+
 - Time from error report to root cause identification
 - Are breadcrumbs/context sufficient in error reports?
 - Can offline errors be reproduced and traced?
 
 VERIFICATION COMMANDS (if run_commands=yes):
-- grep -E -rn "TODO|FIXME|HACK" --include="*.ts" --include="*.tsx" | head -20
-- grep -E -rn "expect\(true\)|expect\(1\)" tests/ --include="*.test.ts"
+
+- grep -E -rn "TODO|FIXME|HACK" --include="_.ts" --include="_.tsx" | head -20
+- grep -E -rn "expect\(true\)|expect\(1\)" tests/ --include="\*.test.ts"
 - Find functions >50 lines: use AST analysis or manual review
 - Check package.json imports match actual dependencies
 
@@ -360,9 +373,14 @@ Return 3 sections in this exact order:
 
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-**NOTE (MANDATORY):** Use ONLY the schema tokens for `category`. Legacy names map: Hygiene/Duplication → Hygiene, Types/Correctness → Types, Next/React Boundaries → Framework, AI-Generated Code Failure Modes → AICode, Debugging Ergonomics → Debugging.
+**NOTE (MANDATORY):** Use ONLY the schema tokens for `category`. Legacy names
+map: Hygiene/Duplication → Hygiene, Types/Correctness → Types, Next/React
+Boundaries → Framework, AI-Generated Code Failure Modes → AICode, Debugging
+Ergonomics → Debugging.
 
-Schema: { "category": "Hygiene|Types|Framework|Security|Testing|AICode|Debugging", "title": "short, specific", "fingerprint":
+Schema: { "category":
+"Hygiene|Types|Framework|Security|Testing|AICode|Debugging", "title": "short,
+specific", "fingerprint":
 "<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
 "path2"], "symbols": ["SymbolA", "SymbolB"], "duplication_cluster": {
@@ -751,12 +769,12 @@ When using this template:
 
 ## 📝 Version History
 
-| Version | Date       | Changes                                                                                                                                                                                                                                   | Author |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 1.3     | 2026-01-13 | Added Category 7: Debugging Ergonomics (correlation IDs, structured logging, Sentry integration, error context, repro path quality). From Engineering Productivity audit recommendations.                                                 | Claude |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                     | Author |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.3     | 2026-01-13 | Added Category 7: Debugging Ergonomics (correlation IDs, structured logging, Sentry integration, error context, repro path quality). From Engineering Productivity audit recommendations.                                                                                                   | Claude |
 | 1.2     | 2026-01-13 | Added Category 6: AI-Generated Code Failure Modes (happy-path only logic, trivial test assertions, hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture, overly complex functions). Aligns with single-session audit-code.md updates for vibe-coded app coverage. | Claude |
-| 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
-| 1.0     | 2026-01-01 | Initial template creation                                                                                                                                                                                                                 | Claude |
+| 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro)                                                   | Claude |
+| 1.0     | 2026-01-01 | Initial template creation                                                                                                                                                                                                                                                                   | Claude |
 
 ---
 

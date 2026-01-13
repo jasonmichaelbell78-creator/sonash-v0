@@ -25,10 +25,7 @@ export function cn(...inputs: ClassValue[]) {
 
 // Allowlist of valid feature flags to prevent env var oracle attacks
 // (probing arbitrary env vars via dynamic lookup)
-const ALLOWED_FEATURE_FLAGS = new Set([
-  "NEXT_PUBLIC_ENABLE_WORK",
-  "NEXT_PUBLIC_ENABLE_MORE",
-]);
+const ALLOWED_FEATURE_FLAGS = new Set(["NEXT_PUBLIC_ENABLE_WORK", "NEXT_PUBLIC_ENABLE_MORE"]);
 
 // Static map with explicit env var references for Next.js client bundling
 // (dynamic process.env[key] won't be inlined on client side)

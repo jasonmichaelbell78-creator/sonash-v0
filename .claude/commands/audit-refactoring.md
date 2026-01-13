@@ -291,7 +291,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. Ask: "Would you like me to tackle any of these refactoring tasks now?
+6. Ask: "Would you like me to tackle any of these refactoring tasks now?
    (Recommend starting with batch fixes)"
 
 ---
