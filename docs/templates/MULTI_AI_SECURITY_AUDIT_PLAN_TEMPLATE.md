@@ -538,7 +538,7 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category": "RateLimiting|InputValidation|SecretsManagement|Authentication|Firebase|OWASP|Headers|Framework|FileHandling|Crypto|AgentSecurity", "title": "short, specific vulnerability", "fingerprint":
+Schema: { "category": "RateLimiting|InputValidation|SecretsManagement|Authentication|Firebase|OWASP|Headers|Framework|FileHandling|Crypto|ProductUXRisk|AgentSecurity", "title": "short, specific vulnerability", "fingerprint":
 "<category>::<primary_file>::<vulnerability_type>", "severity": "S0|S1|S2|S3",
 "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1", "path2"],
 "vulnerability_details": { "description": "what's wrong", "exploitation": "how

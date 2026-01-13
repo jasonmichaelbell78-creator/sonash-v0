@@ -96,6 +96,10 @@ If outdated, note discrepancies but proceed with current values.
 4. Estimate effort: E0 (trivial) | E1 (hours) | E2 (day) | E3 (major)
 5. **Assign confidence level** (see Evidence Requirements below)
 
+**Category Token Requirement (MANDATORY):**
+- In JSONL output, `category` MUST be one of: `Hygiene|Types|Framework|Testing|Security|AICode|Debugging`
+- Do NOT include spaces, parentheses, or descriptive suffixes (e.g., output `AICode`, not `AICode (AI-Generated Code Failure Modes)`)
+
 **AI-Code Specific Checks:**
 
 - Functions with only happy-path logic (no try/catch, no null checks)

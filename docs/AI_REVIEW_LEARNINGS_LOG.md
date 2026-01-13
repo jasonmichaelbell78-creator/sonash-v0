@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 6.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-13
+**Document Version:** 6.3 **Created:** 2026-01-02 **Last Updated:** 2026-01-13
 
 ## Purpose
 
@@ -481,7 +481,7 @@ archive.
 | 2   | grep alternation missing -E flag             | 🟢 Low     | Portability   | Added -E flag for NEXT_PUBLIC pattern            |
 | 3   | Offline greps missing -E flag                | 🟢 Low     | Portability   | Added -E flag for IndexedDB and status patterns  |
 | 4   | Header verification missing file types       | 🟢 Low     | Coverage      | Added .tsx, .js, .mjs to includes                |
-| 5   | Code review schema inconsistent              | 🟢 Low     | Consistency   | Normalized to Hygiene|Types|Framework|... format |
+| 5   | Code review schema inconsistent              | 🟢 Low     | Consistency   | Normalized to `Hygiene\|Types\|Framework\|...` format |
 
 **Key Learnings:**
 

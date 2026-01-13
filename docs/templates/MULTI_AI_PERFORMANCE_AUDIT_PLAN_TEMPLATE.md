@@ -416,8 +416,8 @@ PATTERNS TO FIND:
 
 VERIFICATION COMMANDS (if available):
 - grep -rn "navigator.onLine" --include="*.ts" --include="*.tsx"
-- grep -E -rn "IndexedDB|localStorage" --include="*.ts" --include="*.tsx"
-- grep -E -rn "pending|synced|failed" --include="*.ts" --include="*.tsx"
+- grep -E -rn "\b(indexedDB|IDBDatabase|IDBObjectStore|localStorage|AsyncStorage)\b" --include="*.ts" --include="*.tsx"
+- grep -E -rn "(status|syncStatus|queueStatus|offlineStatus).*['\"]?(pending|synced|failed)['\"]?" --include="*.ts" --include="*.tsx"
 - Look for retry logic or queue implementations
 
 OFFLINE TEST RECIPE:

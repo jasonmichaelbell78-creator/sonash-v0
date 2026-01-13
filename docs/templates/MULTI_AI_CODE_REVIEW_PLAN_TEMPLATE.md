@@ -360,6 +360,8 @@ Return 3 sections in this exact order:
 
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
+**NOTE (MANDATORY):** Use ONLY the schema tokens for `category`. Legacy names map: Hygiene/Duplication → Hygiene, Types/Correctness → Types, Next/React Boundaries → Framework, AI-Generated Code Failure Modes → AICode, Debugging Ergonomics → Debugging.
+
 Schema: { "category": "Hygiene|Types|Framework|Security|Testing|AICode|Debugging", "title": "short, specific", "fingerprint":
 "<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
