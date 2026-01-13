@@ -357,27 +357,383 @@ Compliance: 80% average
 
 ---
 
-### Tasks 5.13-5.18: Automation Wiring
+### Task 5.13: Wire Session-Start Automation Scripts
 
 **What was done:**
-- Task 5.13: Session-start automation (lessons:surface, docs:sync-check)
-- Task 5.14: npm audit in pre-push (non-blocking)
-- Task 5.15: Sentry integration in logger
-- Task 5.16: Code coverage in CI
-- Task 5.17: Prettier check blocking
-- Task 5.18: Analyzed automation consolidation (kept intentional design)
+- Added `lessons:surface` to session-start.sh hook
+- Added `docs:sync-check --quick` to session-start.sh hook
+- Added learning entry reminder to pre-commit hook
+- Total overhead: ~2-5 seconds per session start
 
 **Why it was done:**
-- Automation gaps existed between detection and enforcement
-- Error tracking needed production integration
-- CI checks were non-blocking when they should block
+- Lessons learned from previous reviews weren't being surfaced at session start
+- Document synchronization issues weren't caught until much later
+- When addressing PR feedback, developers forgot to add learning entries
 
 **What it fixes/helps:**
-- Surfaces relevant lessons at session start
-- Catches security vulnerabilities early
-- Production errors tracked in Sentry
-- Code coverage visibility
-- Enforced formatting consistency
+- **Problem**: Developers kept making same mistakes across sessions
+  - **Solution**: `lessons:surface` reminds of relevant past lessons at session start
+- **Problem**: Template-instance documents drifted out of sync
+  - **Solution**: `docs:sync-check` catches drift early before it compounds
+- **Problem**: PR feedback wasn't being captured in learning log
+  - **Solution**: Pre-commit reminder when many files changed
+
+**Implementation Details:**
+```bash
+# In session-start.sh:
+node scripts/log-session-activity.js --event=session_start 2>/dev/null || true
+
+# Surface relevant lessons
+if node "$REPO_ROOT/scripts/surface-lessons-learned.js" --quiet 2>/dev/null; then
+  echo "   Lessons surface check skipped (script may be missing)"
+fi
+
+# Check document sync
+sync_output=$(npm run docs:sync-check --quick 2>&1)
+if echo "$sync_output" | grep -q "out of sync"; then
+  echo "   Some documents may be out of sync - run: npm run docs:sync-check"
+fi
+```
+
+**Decision Flow:**
+```
+Session Start
+     |
+     v
++------------------------+
+| Log session_start      |
+| event to JSONL         |
++------------------------+
+     |
+     v
++------------------------+
+| Run lessons:surface    |
+| (~1-2 seconds)         |
++------------------------+
+     |
+     +-- Lessons found? --> Display relevant lessons
+     |
+     v
++------------------------+
+| Run docs:sync-check    |
+| (~1-3 seconds)         |
++------------------------+
+     |
+     +-- Drift detected? --> WARNING: Documents out of sync
+     |
+     v
+Continue with session
+```
+
+---
+
+### Task 5.14: Add npm Audit to Pre-Push Hook
+
+**What was done:**
+- Added `npm audit --audit-level=high` to `.husky/pre-push`
+- Configured as non-blocking warning (doesn't prevent push)
+- Added graceful handling for network/registry errors
+- Overhead: ~3-8 seconds per push
+
+**Why it was done:**
+- Security vulnerabilities in dependencies weren't checked before pushing
+- npm audit existed but wasn't integrated into workflow
+- Developers had to manually remember to run audits
+
+**What it fixes/helps:**
+- **Problem**: High/critical CVEs in dependencies could be pushed
+  - **Solution**: Automatic warning on every push
+- **Problem**: Network errors could block legitimate pushes
+  - **Solution**: Graceful error handling (warn but don't block)
+- **Problem**: Audit results weren't visible unless explicitly run
+  - **Solution**: Always visible in push output
+
+**Implementation Details:**
+```bash
+# In pre-push hook:
+audit_output=$(npm audit --audit-level=high 2>&1)
+audit_exit=$?
+if [ $audit_exit -ne 0 ]; then
+  # Check if it's a real vulnerability (exit code 1) vs network error
+  if echo "$audit_output" | grep -q "vulnerabilities"; then
+    echo "  WARNING: Security vulnerabilities found (not blocking)"
+    echo "$audit_output" | grep -E "high|critical|vulnerabilities" | head -5
+  else
+    echo "  WARNING: npm audit check skipped (network or registry issue)"
+  fi
+else
+  echo "  No high/critical vulnerabilities"
+fi
+```
+
+**Decision Flow:**
+```
+git push
+     |
+     v
++------------------------+
+| npm audit              |
+| --audit-level=high     |
++------------------------+
+     |
+     +-- Exit 0 --> "No vulnerabilities" --> Continue
+     |
+     +-- Exit != 0
+           |
+           +-- Contains "vulnerabilities"?
+           |         |
+           |         +-- YES --> WARNING (show summary)
+           |         |
+           |         +-- NO --> "Network/registry issue"
+           |
+           v
+       Continue (non-blocking)
+```
+
+---
+
+### Task 5.15: Integrate Sentry into Logger
+
+**What was done:**
+- Imported Sentry in `lib/logger.ts`
+- Added `Sentry.captureMessage()` call in production error paths
+- Configured to use existing PII redaction before sending
+- Removed TODO comment as integration is complete
+
+**Why it was done:**
+- Production errors were only visible in console logs
+- No centralized error tracking or alerting
+- Debugging production issues required log file access
+
+**What it fixes/helps:**
+- **Problem**: Production errors invisible unless checking logs
+  - **Solution**: Errors automatically sent to Sentry dashboard
+- **Problem**: No error trending or alerting
+  - **Solution**: Sentry provides dashboards, alerts, and trending
+- **Problem**: PII could leak in error context
+  - **Solution**: Uses existing sanitization before Sentry capture
+
+**Implementation Details:**
+```typescript
+// In lib/logger.ts:
+import * as Sentry from "@sentry/nextjs";
+
+// In error logging function:
+if (process.env.NODE_ENV === 'production') {
+  // Send to Sentry with sanitized context
+  Sentry.captureMessage(message, {
+    level: 'error',
+    extra: sanitizedContext  // Uses existing PII redaction
+  });
+}
+```
+
+**Integration Flow:**
+```
+Error occurs in production
+          |
+          v
++-----------------------------+
+| Logger.error() called       |
++-----------------------------+
+          |
+          v
++-----------------------------+
+| Sanitize context            |
+| (remove PII, secrets)       |
++-----------------------------+
+          |
+          v
++-----------------------------+
+| console.error() for logs    |
++-----------------------------+
+          |
+          v
++-----------------------------+
+| Sentry.captureMessage()     |
+| with sanitized context      |
++-----------------------------+
+          |
+          v
+Sentry dashboard shows error
+with full context
+```
+
+---
+
+### Task 5.16: Add Code Coverage to CI
+
+**What was done:**
+- Changed CI workflow to run `npm run test:coverage` instead of `npm test`
+- Added coverage report upload as artifact (14-day retention)
+- Coverage HTML report available as downloadable artifact
+
+**Why it was done:**
+- No visibility into code coverage on PRs
+- Coverage trends weren't tracked
+- Developers couldn't easily see what code was untested
+
+**What it fixes/helps:**
+- **Problem**: PR authors didn't know their coverage impact
+  - **Solution**: Coverage report generated on every CI run
+- **Problem**: Coverage data wasn't preserved
+  - **Solution**: HTML report saved as downloadable artifact
+- **Problem**: Manual coverage runs were inconsistent
+  - **Solution**: Automatic coverage on every push
+
+**Deferred Items (require external service setup):**
+- Coverage threshold enforcement (needs baseline measurement)
+- Coverage badge for README (needs codecov/coveralls)
+
+**Implementation Details:**
+```yaml
+# In .github/workflows/ci.yml:
+- name: Run tests with coverage
+  run: npm run test:coverage
+
+- name: Upload coverage report
+  uses: actions/upload-artifact@v4
+  with:
+    name: coverage-report
+    path: coverage/
+    retention-days: 14
+```
+
+**CI Flow:**
+```
+PR Push/Main Push
+        |
+        v
++------------------------+
+| npm run test:coverage  |
+| (generates coverage/)  |
++------------------------+
+        |
+        v
++------------------------+
+| Upload artifact        |
+| coverage-report        |
+| (14 day retention)     |
++------------------------+
+        |
+        v
++------------------------+
+| View in GitHub Actions |
+| > Artifacts section    |
++------------------------+
+```
+
+---
+
+### Task 5.17: Remove CI Continue-on-Error Flags (Make Prettier Blocking)
+
+**What was done:**
+- Ran `npm run format` to fix all formatting issues codebase-wide
+- Removed `continue-on-error: true` from Prettier check (now blocks CI)
+- Updated knip check comment (1 CSS import - acceptable baseline)
+- Updated docs:check comment (templates have expected issues)
+- Fixed pre-commit hook shell syntax issue (grep -c edge case)
+
+**Why it was done:**
+- Prettier check was non-blocking, allowing inconsistent formatting
+- Format issues accumulated silently
+- CI "passing" didn't mean code was properly formatted
+
+**What it fixes/helps:**
+- **Problem**: Code merged with inconsistent formatting
+  - **Solution**: Prettier now blocks CI until fixed
+- **Problem**: Large formatting debt built up
+  - **Solution**: Full codebase format applied (commit 044d678)
+- **Problem**: Developers didn't see format issues until too late
+  - **Solution**: CI fails immediately on format problems
+
+**What remained non-blocking (intentional):**
+- `deps:unused` (knip): 1 CSS import baseline (leaflet.markercluster)
+- `patterns:check-all`: Baseline exists, provides visibility
+- `docs:check`: Template/stub files have expected validation errors
+
+**Implementation Details:**
+```yaml
+# Before (non-blocking):
+- name: Check code formatting (Prettier)
+  continue-on-error: true
+  run: npm run format:check
+
+# After (blocking):
+- name: Check code formatting (Prettier)
+  # Now blocking - initial format applied 2026-01-13
+  run: npm run format:check
+```
+
+**CI Decision Flow:**
+```
+CI Run
+  |
+  v
++------------------------+
+| npm run format:check   |
++------------------------+
+  |
+  +-- Pass --> Continue with other checks
+  |
+  +-- Fail --> CI FAILS immediately
+              Developer must run:
+              npm run format
+```
+
+---
+
+### Task 5.18: Consolidate Redundant Automation Checks
+
+**What was done:**
+- Analyzed all automation hooks and their purposes
+- Determined current structure is intentional, not redundant
+- Documented analysis findings
+- Deferred TRIGGERS.md update to separate task
+
+**Why it was done:**
+- Concern that similar checks in multiple places caused duplication
+- Performance concern about running same checks twice
+- Need to understand if consolidation would improve or harm workflow
+
+**Analysis Results:**
+
+**1. Pattern compliance in session-start vs pre-commit:**
+```
+session-start (alerts):           pre-commit (blocks):
++------------------------+        +------------------------+
+| Early visibility       |        | Enforcement            |
+| Shows existing issues  |        | Prevents new violations|
+| ~2s at session start   |        | ~1s per commit         |
++------------------------+        +------------------------+
+         |                                  |
+         v                                  v
+   Different purposes              Both valuable
+   NOT redundant                   Keep both
+```
+
+**2. check-write-requirements.sh vs check-edit-requirements.sh:**
+```
+check-write-requirements.sh:      check-edit-requirements.sh:
++------------------------+        +------------------------+
+| Priority order:        |        | Priority order:        |
+| 1. file_path           |        | 1. old_string          |
+| 2. content             |        | 2. new_string          |
++------------------------+        +------------------------+
+| Keywords checked:      |        | Keywords checked:      |
+| - Write-specific       |        | - Edit-specific        |
++------------------------+        +------------------------+
+         |                                  |
+         v                                  v
+   Intentionally different         Both work correctly
+   Merging would risk bugs         Keep separate
+```
+
+**Decision: Keep Current Structure**
+- No performance issue observed
+- Each check serves distinct purpose
+- Risk of merging outweighs benefit
+- Deferred: Update TRIGGERS.md with full automation landscape
 
 ---
 
