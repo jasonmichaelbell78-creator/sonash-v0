@@ -129,8 +129,8 @@ const ANTI_PATTERNS = [
     // -g/--global: global installs don't modify project lockfile
     // --save/--save-dev/-D/-S: intentional dependency additions
     // --legacy-peer-deps: explicit peer dep handling
-    // --prefer-offline: fallback install when lockfile missing (session-start.sh)
-    exclude: /--legacy-peer-deps|--save|--save-dev|-[gDS]\b|--global|--prefer-offline/,
+    // Note: --prefer-offline fallback is covered by pathExclude for session-start files
+    exclude: /--legacy-peer-deps|--save|--save-dev|-[gDS]\b|--global/,
     // session-start.sh mentions "npm install" in comments and as documented fallback
     // when package-lock.json is missing - this is intentional behavior
     pathExclude: /session-start\.(?:sh|js)$/,

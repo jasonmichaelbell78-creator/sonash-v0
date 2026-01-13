@@ -475,14 +475,14 @@ items (Critical: 1, Major: 6, Minor: 8+)
 
 **Issues Fixed:**
 
-| #   | Issue                                  | Severity | Category       | Fix                                                    |
-| --- | -------------------------------------- | -------- | -------------- | ------------------------------------------------------ |
-| 1   | Command injection via SKIP_REASON      | Critical | Security       | Use execFileSync instead of execSync with shell        |
-| 2   | getStagedFiles returns [] on failure   | Major    | Fail-Open Risk | Return null on failure, block push (fail-closed)       |
-| 3   | Unsafe error.message access (6 files)  | Major    | Crash Risk     | Use `err instanceof Error ? err.message : String(err)` |
-| 4   | readFileSync without try/catch (4)     | Major    | Race Condition | Wrap in try/catch after existsSync checks              |
-| 5   | Unlisted dependency import             | Major    | Build Failure  | Added leaflet.markercluster to package.json            |
-| 6   | logEvent returns null but logs success | Minor    | Silent Failure | Check return value before success message              |
+| #   | Issue                                  | Severity | Category       | Fix                                                     |
+| --- | -------------------------------------- | -------- | -------------- | ------------------------------------------------------- |
+| 1   | Command injection via SKIP_REASON      | Critical | Security       | Use execFileSync instead of execSync with shell         |
+| 2   | getStagedFiles returns [] on failure   | Major    | Fail-Open Risk | Return null on failure, block push (fail-closed)        |
+| 3   | Unsafe error.message access (6 files)  | Major    | Crash Risk     | Use `err instanceof Error ? err.message : String(err)`  |
+| 4   | readFileSync without try/catch (4)     | Major    | Race Condition | Wrap in try/catch after existsSync checks               |
+| 5   | Unlisted dependency import             | Major    | Build Failure  | Added leaflet.markercluster to package.json             |
+| 6   | logEvent returns null but logs success | Minor    | Silent Failure | Check return value before success message               |
 | 7   | Pattern checker false positives        | Minor    | CI             | Add verified files to pathExclude in pattern compliance |
 
 **Key Learnings:**
@@ -495,7 +495,8 @@ items (Critical: 1, Major: 6, Minor: 8+)
   conditions, permissions
 - Error objects in JS are not guaranteed - non-Error values can be thrown
 - CSS imports from transitive dependencies need explicit package.json entries
-- Pattern compliance false positives: add verified files to pathExclude with audit comments
+- Pattern compliance false positives: add verified files to pathExclude with
+  audit comments
 
 ---
 

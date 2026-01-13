@@ -21,7 +21,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 
 // Configuration
 const TRIGGERS = {
@@ -61,37 +61,49 @@ const TRIGGERS = {
 
 // Get staged files for push
 // Returns null on complete failure (fail-closed for security)
+// Uses spawnSync with shell:false to prevent command injection
 function getStagedFiles() {
-  try {
-    // Use git merge-base for reliable branch divergence detection
-    // This finds the common ancestor between HEAD and origin/main
-    const mergeBase = execSync("git merge-base HEAD origin/main 2>/dev/null", {
-      encoding: "utf-8",
-    }).trim();
+  // Try git merge-base for reliable branch divergence detection
+  const mergeBaseResult = spawnSync("git", ["merge-base", "HEAD", "origin/main"], {
+    encoding: "utf-8",
+    timeout: 5000,
+  });
 
-    const output = execSync(`git diff --name-only ${mergeBase}..HEAD`, {
+  if (mergeBaseResult.status === 0 && mergeBaseResult.stdout) {
+    const mergeBase = mergeBaseResult.stdout.trim();
+    const diffResult = spawnSync("git", ["diff", "--name-only", `${mergeBase}..HEAD`], {
       encoding: "utf-8",
+      timeout: 5000,
     });
-    return output.split("\n").filter((f) => f.trim());
-  } catch {
-    // Fallback 1: try simple diff against origin/main
-    try {
-      const output = execSync("git diff --name-only origin/main..HEAD 2>/dev/null", {
-        encoding: "utf-8",
-      });
-      return output.split("\n").filter((f) => f.trim());
-    } catch {
-      // Fallback 2: get files in last commit
-      try {
-        const output = execSync("git diff --name-only HEAD~1", { encoding: "utf-8" });
-        return output.split("\n").filter((f) => f.trim());
-      } catch {
-        // Fail-closed: return null to signal complete failure
-        // This prevents silently bypassing security checks
-        return null;
-      }
+
+    if (diffResult.status === 0) {
+      return diffResult.stdout.split("\n").filter((f) => f.trim());
     }
   }
+
+  // Fallback 1: try simple diff against origin/main
+  const fallback1 = spawnSync("git", ["diff", "--name-only", "origin/main..HEAD"], {
+    encoding: "utf-8",
+    timeout: 5000,
+  });
+
+  if (fallback1.status === 0) {
+    return fallback1.stdout.split("\n").filter((f) => f.trim());
+  }
+
+  // Fallback 2: get files in last commit
+  const fallback2 = spawnSync("git", ["diff", "--name-only", "HEAD~1"], {
+    encoding: "utf-8",
+    timeout: 5000,
+  });
+
+  if (fallback2.status === 0) {
+    return fallback2.stdout.split("\n").filter((f) => f.trim());
+  }
+
+  // Fail-closed: return null to signal complete failure
+  // This prevents silently bypassing security checks
+  return null;
 }
 
 // Check security trigger
@@ -147,7 +159,12 @@ function checkConsolidationTrigger() {
 
   try {
     // Run consolidation check and parse output
-    const output = execSync("npm run consolidation:check 2>&1", { encoding: "utf-8" });
+    // Timeout prevents hook from hanging on slow commands
+    const output = execSync("npm run consolidation:check 2>&1", {
+      encoding: "utf-8",
+      timeout: 30000,
+      maxBuffer: 1024 * 1024,
+    });
 
     // Look for "X reviews until next consolidation"
     const match = output.match(/(\d+) reviews? until next consolidation/);
