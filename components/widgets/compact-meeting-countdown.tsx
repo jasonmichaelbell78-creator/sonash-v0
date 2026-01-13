@@ -155,7 +155,7 @@ export default function CompactMeetingCountdown() {
               const distToMeeting = calculateDistance(userLocation, meeting.coordinates);
               const distToNearest = calculateDistance(userLocation, nearest.coordinates);
               return distToMeeting < distToNearest ? meeting : nearest;
-            });
+            }, nearbyMeetings[0]);
           }
         }
 
@@ -184,7 +184,7 @@ export default function CompactMeetingCountdown() {
                   const distToMeeting = calculateDistance(userLocation, meeting.coordinates);
                   const distToNearest = calculateDistance(userLocation, nearest.coordinates);
                   return distToMeeting < distToNearest ? meeting : nearest;
-                });
+                }, nearbyTomorrow[0]);
               }
             }
 

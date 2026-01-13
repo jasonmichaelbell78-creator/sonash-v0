@@ -220,7 +220,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #146
 
 ### When to Consolidate
@@ -461,6 +461,46 @@ Access archives only for historical investigation of specific patterns.
 
 Reviews #101-136 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #138: PR #243 Step 4C Qodo Compliance Review (2026-01-13)
+
+**Source:** Qodo Compliance (2 rounds)
+**PR/Branch:** PR #243 / claude/cherry-pick-phase-4b-fAyRp
+**Suggestions:** 7 items (Critical: 0, Major: 1, Minor: 3, Trivial: 0, Rejected: 3)
+
+**Context:** Post-commit review of Step 4C SonarCloud Issue Triage changes.
+
+**Issues Fixed:**
+
+| #   | Issue                                      | Severity   | Category | Fix                                           |
+| --- | ------------------------------------------ | ---------- | -------- | --------------------------------------------- |
+| 1   | Env var oracle: dynamic process.env lookup | 🟡 Minor   | Security | Added ALLOWED_FEATURE_FLAGS allowlist         |
+| 2   | Test files in SonarCloud issue analysis    | 🟡 Minor   | Config   | Use sonar.tests instead of exclusions         |
+| 3   | Next.js client bundling broken             | 🔴 Major   | Bug      | Static FEATURE_FLAG_VALUES map with explicit refs |
+| 4   | Better SonarCloud test identification      | 🟡 Minor   | Config   | Added sonar.test.inclusions                   |
+
+**Rejected Items:**
+
+| #   | Issue                 | Reason                                                             |
+| --- | --------------------- | ------------------------------------------------------------------ |
+| 5   | No ticket provided    | Administrative - not code-related                                  |
+| 6   | Codebase context      | Configuration - not code-related                                   |
+| 7   | sort() vs reduce()    | Reviewer confirms reduce is correct; O(n) better than O(n log n)   |
+
+**Patterns Identified:**
+
+1. **Feature flag allowlist** (Minor - Defensive)
+   - Root cause: `process.env[featureId]` with dynamic key could probe env vars
+   - Prevention: Allowlist valid feature flag names, reject unknown keys
+
+2. **Next.js env var client bundling** (Major - Bug fix)
+   - Root cause: Dynamic `process.env[key]` is NOT inlined by Next.js on client
+   - Prevention: Use static map with explicit `process.env.NEXT_PUBLIC_*` references
+   - Pattern: For client-side env access, always use explicit string literals
+
+**Resolution:** Fixed 4 items, rejected 3 (2 administrative, 1 false positive)
 
 ---
 

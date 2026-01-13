@@ -160,8 +160,10 @@ export default function AllMeetingsPage() {
   }, [meetings, fellowshipFilter, neighborhoodFilter, sortBy, userLocation]);
 
   const availableNeighborhoods = useMemo(() => {
-    const neighborhoods = new Set(meetings.map((m) => m.neighborhood).filter(Boolean));
-    return Array.from(neighborhoods).sort();
+    const neighborhoods = new Set(
+      meetings.map((m) => m.neighborhood).filter((n): n is string => Boolean(n))
+    );
+    return Array.from(neighborhoods).sort((a, b) => a.localeCompare(b));
   }, [meetings]);
 
   const getMeetingDistance = (meeting: Meeting) => {

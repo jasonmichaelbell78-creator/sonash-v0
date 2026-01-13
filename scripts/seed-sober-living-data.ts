@@ -135,7 +135,7 @@ export const INITIAL_SOBER_LIVING_HOMES: SoberLivingHome[] = [
     gender: "Men",
     address: "Nashville, TN",
     phone: "(615) 319-5579",
-    website: "http://myfathershousenashville.org/",
+    website: "https://myfathershousenashville.org/",
     neighborhood: "Nashville",
   },
   {
@@ -207,7 +207,7 @@ export const INITIAL_SOBER_LIVING_HOMES: SoberLivingHome[] = [
     gender: "Men",
     address: "Nashville, TN",
     phone: "(615) 669-2373",
-    website: "http://steppingstonesrecoveryhomes.org/",
+    website: "https://steppingstonesrecoveryhomes.org/",
     neighborhood: "Nashville",
   },
   {

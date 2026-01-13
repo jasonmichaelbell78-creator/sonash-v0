@@ -302,8 +302,8 @@ export default function ResourcesPage() {
     // Use all items from ACTIVE type to populate the list
     const sourceData = resourceType === "meetings" ? meetings : soberHomes;
     const unique = Array.from(new Set(sourceData.map((item) => item.neighborhood)))
-      .filter(Boolean)
-      .sort();
+      .filter((n): n is string => Boolean(n))
+      .sort((a, b) => a.localeCompare(b));
     return unique;
   }, [meetings, soberHomes, resourceType]);
 

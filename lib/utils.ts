@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
  * Feature Flag System
  *
  * Checks if a feature is enabled via environment variables.
+ * Uses an allowlist to prevent env var oracle attacks.
  *
  * Usage:
  * - Set NEXT_PUBLIC_ENABLE_[FEATURE_NAME]=true in .env.local
@@ -21,18 +22,28 @@ export function cn(...inputs: ClassValue[]) {
  * @param featureId - Environment variable name (e.g., 'NEXT_PUBLIC_ENABLE_WORK')
  * @returns true if enabled, false otherwise
  */
-export function featureFlagEnabled(featureId: string): boolean {
-  // In development, check environment variable
-  // In production, default to false unless explicitly enabled
 
-  if (typeof window === "undefined") {
-    // Server-side: Check process.env
-    const value = process.env[featureId];
-    return value === "true" || value === "1";
-  } else {
-    // Client-side: Check process.env (bundled at build time by Next.js)
-    // Next.js replaces process.env.NEXT_PUBLIC_* at build time
-    const value = process.env[featureId];
-    return value === "true" || value === "1";
+// Allowlist of valid feature flags to prevent env var oracle attacks
+// (probing arbitrary env vars via dynamic lookup)
+const ALLOWED_FEATURE_FLAGS = new Set([
+  "NEXT_PUBLIC_ENABLE_WORK",
+  "NEXT_PUBLIC_ENABLE_MORE",
+]);
+
+// Static map with explicit env var references for Next.js client bundling
+// (dynamic process.env[key] won't be inlined on client side)
+const FEATURE_FLAG_VALUES: Record<string, string | undefined> = {
+  NEXT_PUBLIC_ENABLE_WORK: process.env.NEXT_PUBLIC_ENABLE_WORK,
+  NEXT_PUBLIC_ENABLE_MORE: process.env.NEXT_PUBLIC_ENABLE_MORE,
+};
+
+export function featureFlagEnabled(featureId: string): boolean {
+  // Security: Only allow checking known feature flags
+  if (!ALLOWED_FEATURE_FLAGS.has(featureId)) {
+    return false;
   }
+
+  // Use static env references so Next.js can inline on the client bundle
+  const value = FEATURE_FLAG_VALUES[featureId];
+  return value === "true" || value === "1";
 }

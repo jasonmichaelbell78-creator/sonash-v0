@@ -590,6 +590,55 @@ These pre-existing issues were identified during PR review CI:
   - **Priority:** LOW - consistency improvement, custom auth logic works
     correctly
 
+### SonarCloud Issue Backlog (Step 4C Triage - 2026-01-13)
+
+> **IMPORTANT**: Before production deployment, re-run SonarCloud scan and address
+> ACCEPT-RISK items. See [SONARCLOUD_TRIAGE.md](docs/SONARCLOUD_TRIAGE.md) for details.
+
+#### ACCEPT-RISK Items (23 total) - Requires Production Re-evaluation
+
+- ⏳ **Command Injection in Dev Scripts** (S4721) - 7 items
+  - `scripts/ai-review.js:222,227` - execSync with controlled inputs
+  - `scripts/check-pattern-compliance.js:447`
+  - `scripts/check-review-needed.js:234`
+  - `scripts/phase-complete-check.js:437`
+  - `scripts/retry-failures.ts:113`
+  - **Rationale**: Internal dev scripts, not deployed to production
+  - **Action**: Review before any script deployment to production
+
+- ⏳ **PATH Variable in Dev Scripts** (S4036) - 14 items
+  - Various scripts and test files
+  - **Rationale**: Controlled development environment
+  - **Action**: Review if scripts become part of CI/CD
+
+- ⏳ **Secrets in GitHub Actions Run Block** (S7636) - 1 item
+  - `.github/workflows/deploy-firebase.yml:58`
+  - **Rationale**: Firebase deploy workflow, acceptable pattern
+  - **Action**: Consider using GitHub environment secrets
+
+#### FIX-LATER Items (41+ total)
+
+- ⏳ **ReDoS Regex Patterns** (S5852) - ~32 items
+  - Various scripts with potentially vulnerable regex
+  - **Fix**: Rewrite regex patterns to avoid backtracking
+  - **Priority**: LOW - Scripts have bounded input, low exploitation risk
+
+- ⏳ **GitHub Actions SHA Pinning** (S7637) - 2 items
+  - `.github/workflows/auto-label-review-tier.yml:29`
+  - `.github/workflows/docs-lint.yml:36`
+  - **Fix**: Pin actions to full SHA instead of version tag
+  - **Priority**: LOW - Best practice, not critical
+
+- ⏳ **Accessibility: onClick without Keyboard** (S1082) - 6 items
+  - Various components with click handlers missing keyboard support
+  - **Fix**: Add onKeyDown handlers or use semantic buttons
+  - **Priority**: LOW - Batch fix in accessibility sprint
+
+- ⏳ **Regex Precedence in Seed Script** (S5850) - 1 item
+  - `scripts/seed-meetings.ts:79`
+  - **Fix**: Group regex parts for explicit precedence
+  - **Priority**: LOW - Seed script, not production
+
 **Trigger:** Only pursue if M3+ blocked by technical limitations or if scaling
 reveals performance issues
 
