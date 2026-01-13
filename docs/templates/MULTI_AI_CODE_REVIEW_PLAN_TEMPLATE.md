@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Code Review Plan
 
-**Document Version:** 1.0 **Created:** YYYY-MM-DD **Last Updated:** YYYY-MM-DD
+**Document Version:** 1.2 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -23,6 +23,7 @@ quality review on [Project Name]. Use this template when:
 3. Next/React Boundaries (or framework-specific patterns)
 4. Security
 5. Testing
+6. AI-Generated Code Failure Modes (vibe-coded app anti-patterns)
 
 **Expected Output:** Ranked list of canonical findings with PR implementation
 plan.
@@ -191,6 +192,7 @@ FOCUS AREAS (use ONLY these categories)
 3. Next/React Boundaries
 4. Security
 5. Testing
+6. AI-Generated Code Failure Modes
 ```
 
 ### Part 3: Review Phases
@@ -250,6 +252,24 @@ Category 5: Testing
 - Weak test coverage areas
 - Security-critical code without tests
 
+Category 6: AI-Generated Code Failure Modes
+
+- "Happy-path only" logic (no try/catch, no null checks, no error handling)
+- Tests that exist but don't assert meaningful behavior (expect(true).toBe(true))
+- Hallucinated dependencies/APIs (imports for packages not in package.json)
+- Copy/paste anti-patterns (similar code blocks >10 lines that should be abstracted)
+- Inconsistent architecture patterns across files (different approaches to same problem)
+- Overly complex functions (>3 levels of nesting, >50 lines)
+- Missing edge case handling (only handles success scenarios)
+- Placeholder/TODO comments that were never implemented
+- Unreachable code or dead branches
+
+VERIFICATION COMMANDS (if run_commands=yes):
+- grep -rn "TODO\|FIXME\|HACK" --include="*.ts" --include="*.tsx" | head -20
+- grep -rn "expect(true)\|expect(1)" tests/ --include="*.test.ts"
+- Find functions >50 lines: use AST analysis or manual review
+- Check package.json imports match actual dependencies
+
 As you work:
 
 - Quote specific code snippets with file paths
@@ -303,7 +323,7 @@ Return 3 sections in this exact order:
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
 Schema: { "category": "Hygiene/Duplication|Types/Correctness|Next/React
-Boundaries|Security|Testing", "title": "short, specific", "fingerprint":
+Boundaries|Security|Testing|AI-Code Failure Modes", "title": "short, specific", "fingerprint":
 "<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
 "path2"], "symbols": ["SymbolA", "SymbolB"], "duplication_cluster": {
@@ -694,6 +714,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                   | Author |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.2     | 2026-01-13 | Added Category 6: AI-Generated Code Failure Modes (happy-path only logic, trivial test assertions, hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture, overly complex functions). Aligns with single-session audit-code.md updates for vibe-coded app coverage. | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
 | 1.0     | 2026-01-01 | Initial template creation                                                                                                                                                                                                                 | Claude |
 
