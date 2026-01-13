@@ -34,8 +34,11 @@ fi
 echo "🚀 SessionStart Hook for sonash-v0"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# Get repository root for CWD-safe script execution
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+
 # Log session start for activity tracking
-node scripts/log-session-activity.js --event=session_start 2>/dev/null || true
+node "$REPO_ROOT/scripts/log-session-activity.js" --event=session_start 2>/dev/null || true
 
 # Track warnings for accurate completion message
 WARNINGS=0

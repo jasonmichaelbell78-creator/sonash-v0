@@ -54,15 +54,16 @@ function parseArgs() {
     } else if (arg === "--clear") {
       args.clear = true;
     } else if (arg.startsWith("--event=")) {
-      args.event = arg.split("=")[1];
+      // Use slice(1).join("=") to handle values containing "="
+      args.event = arg.split("=").slice(1).join("=");
     } else if (arg.startsWith("--file=")) {
-      args.file = arg.split("=")[1];
+      args.file = arg.split("=").slice(1).join("=");
     } else if (arg.startsWith("--skill=")) {
-      args.skill = arg.split("=")[1];
+      args.skill = arg.split("=").slice(1).join("=");
     } else if (arg.startsWith("--hash=")) {
-      args.hash = arg.split("=")[1];
+      args.hash = arg.split("=").slice(1).join("=");
     } else if (arg.startsWith("--message=")) {
-      args.message = arg.split("=").slice(1).join("="); // Handle = in message
+      args.message = arg.split("=").slice(1).join("=");
     }
   }
 
@@ -71,25 +72,36 @@ function parseArgs() {
 
 // Log an event to the JSONL file
 function logEvent(eventData) {
-  ensureLogDir();
+  try {
+    ensureLogDir();
+  } catch (err) {
+    console.error(`Warning: Could not create log directory: ${err.message}`);
+    return null;
+  }
 
   const entry = {
     timestamp: new Date().toISOString(),
     ...eventData,
   };
 
-  // Check log size and rotate if needed
-  if (fs.existsSync(LOG_FILE)) {
-    const stats = fs.statSync(LOG_FILE);
-    if (stats.size > MAX_LOG_SIZE) {
-      const backupFile = LOG_FILE.replace(".jsonl", `-${Date.now()}.jsonl`);
-      fs.renameSync(LOG_FILE, backupFile);
-      console.log(`Log rotated to ${path.basename(backupFile)}`);
+  try {
+    // Check log size and rotate if needed
+    if (fs.existsSync(LOG_FILE)) {
+      const stats = fs.statSync(LOG_FILE);
+      if (stats.size > MAX_LOG_SIZE) {
+        const backupFile = LOG_FILE.replace(".jsonl", `-${Date.now()}.jsonl`);
+        fs.renameSync(LOG_FILE, backupFile);
+        console.log(`Log rotated to ${path.basename(backupFile)}`);
+      }
     }
-  }
 
-  fs.appendFileSync(LOG_FILE, JSON.stringify(entry) + "\n");
-  return entry;
+    fs.appendFileSync(LOG_FILE, JSON.stringify(entry) + "\n");
+    return entry;
+  } catch (err) {
+    // Non-fatal: log write failure should not crash scripts/hooks
+    console.error(`Warning: Could not write to activity log: ${err.message}`);
+    return null;
+  }
 }
 
 // Read all events from log
@@ -289,7 +301,9 @@ function main() {
   }
 
   const logged = logEvent(eventData);
-  console.log(`Logged: ${args.event}${args.file ? ` (${args.file})` : ""}${args.skill ? ` (${args.skill})` : ""}`);
+  console.log(
+    `Logged: ${args.event}${args.file ? ` (${args.file})` : ""}${args.skill ? ` (${args.skill})` : ""}`
+  );
 }
 
 main();

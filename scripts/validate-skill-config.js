@@ -39,15 +39,17 @@ const DEPRECATED_PATTERNS = [
   { pattern: /\[PLACEHOLDER\]/gi, message: "Placeholder text not replaced" },
 ];
 
-// Parse YAML frontmatter
+// Parse YAML frontmatter (supports both LF and CRLF line endings)
 function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  // Handle both Unix (LF) and Windows (CRLF) line endings
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
 
   const yaml = match[1];
   const frontmatter = {};
 
-  for (const line of yaml.split("\n")) {
+  // Split on \r?\n to handle both line ending styles
+  for (const line of yaml.split(/\r?\n/)) {
     const colonIndex = line.indexOf(":");
     if (colonIndex > 0) {
       const key = line.slice(0, colonIndex).trim();
@@ -64,7 +66,10 @@ function extractFileReferences(content) {
   const references = [];
 
   // Match markdown links: [text](path)
-  const linkRegex = /\[([^\]]*)\]\(([^)]+)\)/g;
+  // Using bounded quantifiers to prevent ReDoS:
+  // - Link text: max 500 chars (reasonable for any link text)
+  // - Link href: max 1000 chars (reasonable for any file path)
+  const linkRegex = /\[([^\]]{0,500})\]\(([^)]{0,1000})\)/g;
   let match;
   while ((match = linkRegex.exec(content)) !== null) {
     const href = match[2];
@@ -230,7 +235,9 @@ function main() {
   }
 
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log(`Summary: ${totalErrors} error(s), ${totalWarnings} warning(s) in ${results.length}/${files.length} file(s)`);
+  console.log(
+    `Summary: ${totalErrors} error(s), ${totalWarnings} warning(s) in ${results.length}/${files.length} file(s)`
+  );
 
   if (totalErrors > 0) {
     console.log("\n❌ Validation failed. Fix errors before committing.");

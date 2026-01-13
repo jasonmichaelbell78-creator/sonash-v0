@@ -38,7 +38,8 @@ const TRIGGERS = {
       /api-key/i,
       /jwt/i,
       /oauth/i,
-      /session/i,
+      // Note: /session/i removed - too broad (matches session-start.sh, SESSION_CONTEXT.md, etc.)
+      // Session-related security concerns are covered by /auth/i and /token/i
       /encrypt/i,
       /crypto/i,
     ],
@@ -61,18 +62,31 @@ const TRIGGERS = {
 // Get staged files for push
 function getStagedFiles() {
   try {
-    // Get files changed between HEAD and origin/main (or origin/HEAD)
-    const output = execSync("git diff --name-only HEAD origin/main 2>/dev/null || git diff --name-only HEAD~1", {
+    // Use git merge-base for reliable branch divergence detection
+    // This finds the common ancestor between HEAD and origin/main
+    const mergeBase = execSync("git merge-base HEAD origin/main 2>/dev/null", {
+      encoding: "utf-8",
+    }).trim();
+
+    const output = execSync(`git diff --name-only ${mergeBase}..HEAD`, {
       encoding: "utf-8",
     });
     return output.split("\n").filter((f) => f.trim());
   } catch {
-    // Fallback: get files in last commit
+    // Fallback 1: try simple diff against origin/main
     try {
-      const output = execSync("git diff --name-only HEAD~1", { encoding: "utf-8" });
+      const output = execSync("git diff --name-only origin/main..HEAD 2>/dev/null", {
+        encoding: "utf-8",
+      });
       return output.split("\n").filter((f) => f.trim());
     } catch {
-      return [];
+      // Fallback 2: get files in last commit
+      try {
+        const output = execSync("git diff --name-only HEAD~1", { encoding: "utf-8" });
+        return output.split("\n").filter((f) => f.trim());
+      } catch {
+        return [];
+      }
     }
   }
 }
@@ -187,6 +201,30 @@ function checkSkillValidationTrigger(files) {
 function main() {
   const args = process.argv.slice(2);
   const blockingOnly = args.includes("--blocking-only");
+
+  // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
+  if (process.env.SKIP_TRIGGERS === "1") {
+    console.log("⚠️  SKIP_TRIGGERS=1 detected - skipping trigger checks");
+    console.log("   (Override logged for audit trail)\n");
+
+    // Log the override for accountability
+    try {
+      const { execSync } = require("child_process");
+      const reason = process.env.SKIP_REASON || "";
+      execSync(
+        `node scripts/log-override.js --check=triggers --reason="${reason.replace(/"/g, '\\"')}"`,
+        {
+          encoding: "utf-8",
+          stdio: "inherit",
+        }
+      );
+    } catch {
+      // Non-fatal - continue even if logging fails
+      console.log("   (Note: Override logging failed, but continuing)\n");
+    }
+
+    process.exit(0);
+  }
 
   console.log("🔍 Checking event-based triggers...\n");
 

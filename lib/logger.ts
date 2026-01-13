@@ -106,10 +106,16 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
     });
 
     // Send to Sentry with sanitized context
-    Sentry.captureMessage(message, {
-      level: "error",
-      extra: sanitizeContext(context),
-    });
+    // Wrapped in try/catch to prevent Sentry failures from crashing the application
+    try {
+      Sentry.captureMessage(message, {
+        level: "error",
+        extra: sanitizeContext(context),
+      });
+    } catch {
+      // Non-fatal: Sentry logging failure should not crash the app
+      // The error is already logged to console above
+    }
   }
 };
 

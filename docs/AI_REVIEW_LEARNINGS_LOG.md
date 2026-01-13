@@ -462,8 +462,46 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-141 are actively maintained below. Older reviews are in the
+Reviews #101-142 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #142: Phase 5 Cherry-Pick Security Hardening (2026-01-13)
+
+**Source:** Qodo PR Suggestions + SonarCloud Security Hotspots **PR/Branch:**
+claude/cherry-pick-security-phase-5-nGkAt **Suggestions:** 12 items (Critical:
+1, Major: 4, Minor: 6, Trivial: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                  | Severity   | Category        | Fix                                                       |
+| --- | -------------------------------------- | ---------- | --------------- | --------------------------------------------------------- |
+| 1   | SKIP_TRIGGERS override not implemented | Critical   | Functionality   | Added SKIP_TRIGGERS env check at start of check-triggers  |
+| 2   | Sentry logging could crash app         | Major      | Error Handling  | Wrapped Sentry.captureMessage in try/catch                |
+| 3   | Log write failures could crash scripts | Major      | Error Handling  | Added try/catch to appendFileSync in log-session-activity |
+| 4   | Override log write failures unhandled  | Major      | Error Handling  | Added try/catch to appendFileSync in log-override         |
+| 5   | getStagedFiles fallback unreliable     | Minor      | Git Workflow    | Added git merge-base for better branch detection          |
+| 6   | Arg parsing breaks on = in values      | Minor      | CLI             | Used slice(1).join("=") for --check= argument             |
+| 7   | Unbounded regex (ReDoS risk)           | Minor      | Security        | Added bounded quantifiers to link regex                   |
+| 8   | Hook path not CWD-safe                 | Minor      | Portability     | Added REPO_ROOT to log-session-activity path              |
+| 9   | CRLF frontmatter not supported         | Minor      | Portability     | Changed regex to handle \r\n line endings                 |
+| 10  | Reason string not sanitized            | Minor      | Security        | Added truncation and control char stripping               |
+| 11  | /session/i pattern too broad           | Trivial    | False Positives | Removed from security trigger patterns                    |
+| 12  | Prettier formatting issues             | Auto-fixed | Code Style      | Ran npm run format                                        |
+
+**Key Learnings:**
+
+- Environment variable overrides must be checked at script start, before any
+  blocking logic
+- External service calls (Sentry) should never crash the application - wrap in
+  try/catch
+- All file system operations in hooks/scripts need graceful error handling
+- Use `git merge-base` for reliable branch divergence detection
+- Regex patterns with unbounded quantifiers are ReDoS vectors - use `{0,N}`
+  limits
+- Sanitize and truncate user-provided log inputs to prevent log injection
+- Security keyword patterns need careful tuning to avoid false positives
 
 ---
 

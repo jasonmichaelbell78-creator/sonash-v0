@@ -36,6 +36,26 @@ function ensureLogDir() {
   }
 }
 
+// Sanitize and truncate input to prevent log injection
+function sanitizeInput(value, maxLength = 500) {
+  if (!value) return value;
+  // Remove control characters except newlines (\n=10), tabs (\t=9), and carriage return (\r=13)
+  // Using character code filtering instead of regex to avoid no-control-regex lint error
+  let sanitized = "";
+  for (let i = 0; i < value.length && i < maxLength * 2; i++) {
+    const code = value.charCodeAt(i);
+    // Allow printable ASCII (32-126), tab (9), newline (10), carriage return (13)
+    if ((code >= 32 && code <= 126) || code === 9 || code === 10 || code === 13) {
+      sanitized += value[i];
+    }
+  }
+  // Truncate to prevent log bloat
+  if (sanitized.length > maxLength) {
+    return sanitized.slice(0, maxLength) + "...[truncated]";
+  }
+  return sanitized;
+}
+
 // Parse command line arguments
 function parseArgs() {
   const args = {
@@ -51,7 +71,8 @@ function parseArgs() {
     } else if (arg === "--clear") {
       args.clear = true;
     } else if (arg.startsWith("--check=")) {
-      args.check = arg.split("=")[1];
+      // Use slice(1).join("=") to handle values containing "="
+      args.check = arg.split("=").slice(1).join("=");
     } else if (arg.startsWith("--reason=")) {
       args.reason = arg.split("=").slice(1).join("=");
     }
@@ -62,12 +83,21 @@ function parseArgs() {
     args.reason = process.env.SKIP_REASON;
   }
 
+  // Sanitize inputs
+  if (args.check) args.check = sanitizeInput(args.check, 100);
+  if (args.reason) args.reason = sanitizeInput(args.reason, 500);
+
   return args;
 }
 
 // Log an override
 function logOverride(check, reason) {
-  ensureLogDir();
+  try {
+    ensureLogDir();
+  } catch (err) {
+    console.error(`Warning: Could not create log directory: ${err.message}`);
+    return null;
+  }
 
   const entry = {
     timestamp: new Date().toISOString(),
@@ -78,18 +108,24 @@ function logOverride(check, reason) {
     git_branch: getGitBranch(),
   };
 
-  // Check log size and rotate if needed
-  if (fs.existsSync(OVERRIDE_LOG)) {
-    const stats = fs.statSync(OVERRIDE_LOG);
-    if (stats.size > MAX_LOG_SIZE) {
-      const backupFile = OVERRIDE_LOG.replace(".jsonl", `-${Date.now()}.jsonl`);
-      fs.renameSync(OVERRIDE_LOG, backupFile);
-      console.log(`Override log rotated to ${path.basename(backupFile)}`);
+  try {
+    // Check log size and rotate if needed
+    if (fs.existsSync(OVERRIDE_LOG)) {
+      const stats = fs.statSync(OVERRIDE_LOG);
+      if (stats.size > MAX_LOG_SIZE) {
+        const backupFile = OVERRIDE_LOG.replace(".jsonl", `-${Date.now()}.jsonl`);
+        fs.renameSync(OVERRIDE_LOG, backupFile);
+        console.log(`Override log rotated to ${path.basename(backupFile)}`);
+      }
     }
-  }
 
-  fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
-  return entry;
+    fs.appendFileSync(OVERRIDE_LOG, JSON.stringify(entry) + "\n");
+    return entry;
+  } catch (err) {
+    // Non-fatal: log write failure should not crash scripts/hooks
+    console.error(`Warning: Could not write to override log: ${err.message}`);
+    return null;
+  }
 }
 
 // Get current git branch
@@ -181,12 +217,12 @@ function main() {
   }
 
   if (!args.check) {
-    console.log("Usage: node log-override.js --check=<type> --reason=\"<reason>\"");
+    console.log('Usage: node log-override.js --check=<type> --reason="<reason>"');
     console.log("");
     console.log("Check types: triggers, patterns, tests, lint");
     console.log("");
     console.log("Or use environment variable:");
-    console.log("  SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push");
+    console.log('  SKIP_REASON="reason" SKIP_TRIGGERS=1 git push');
     console.log("");
     console.log("Other commands:");
     console.log("  --list   Show recent overrides");
