@@ -50,9 +50,20 @@ if ! npm test > "$TEST_TMPFILE" 2>&1; then
 fi
 echo "  ✅ Tests passed"
 
-# 5. Learning entry reminder (non-blocking, ~0.5s)
-# Reminds to capture learnings when it looks like PR feedback was addressed
+# 5. CANON schema validation (non-blocking warning, ~1s)
+# Validates CANON files when audit output is staged
 STAGED_FILES=$(git diff --cached --name-only 2>/dev/null || echo "")
+if echo "$STAGED_FILES" | grep -q "docs/reviews/.*\.jsonl"; then
+  echo "  ▶ Validating CANON schema..."
+  if npm run validate:canon > /dev/null 2>&1; then
+    echo "  ✅ CANON validation passed"
+  else
+    echo "  ⚠️ CANON validation issues found (not blocking - run: npm run validate:canon)"
+  fi
+fi
+
+# 6. Learning entry reminder (non-blocking, ~0.5s)
+# Reminds to capture learnings when it looks like PR feedback was addressed
 LEARNINGS_LOG="docs/AI_REVIEW_LEARNINGS_LOG.md"
 
 # Check if learnings log is being updated

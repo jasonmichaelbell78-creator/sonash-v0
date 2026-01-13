@@ -314,7 +314,12 @@ Full markdown report with all findings, baselines, and remediation plan.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/security/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Update AUDIT_TRACKER.md** - Add entry to "Security Audits" table:
+4. **Validate CANON schema** (if audit updates CANON files):
+   ```bash
+   npm run validate:canon
+   ```
+   Ensure all CANON files pass validation before committing.
+5. **Update AUDIT_TRACKER.md** - Add entry to "Security Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last security audit

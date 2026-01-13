@@ -274,7 +274,12 @@ Full markdown report with all findings, baselines, and fix plan.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/documentation/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Update AUDIT_TRACKER.md** - Add entry to "Documentation Audits" table:
+4. **Validate CANON schema** (if audit updates CANON files):
+   ```bash
+   npm run validate:canon
+   ```
+   Ensure all CANON files pass validation before committing.
+5. **Update AUDIT_TRACKER.md** - Add entry to "Documentation Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last documentation audit

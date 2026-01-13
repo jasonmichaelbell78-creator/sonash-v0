@@ -440,15 +440,16 @@ npm audit fix
 
 ### Code Quality Commands
 
-| Command                 | Purpose              | Notes                 |
-| ----------------------- | -------------------- | --------------------- |
-| `npm run lint`          | ESLint check         | Must pass (0 errors)  |
-| `npm run format`        | Prettier auto-format | Formats all files     |
-| `npm run format:check`  | Prettier check       | For CI (no changes)   |
-| `npm run deps:circular` | Check circular deps  | Uses madge            |
-| `npm run deps:unused`   | Find unused exports  | Uses knip             |
-| `npm test`              | Run all tests        | 116 tests (1 skipped) |
-| `npm run test:coverage` | Test with coverage   | Uses c8               |
+| Command                  | Purpose               | Notes                      |
+| ------------------------ | --------------------- | -------------------------- |
+| `npm run lint`           | ESLint check          | Must pass (0 errors)       |
+| `npm run format`         | Prettier auto-format  | Formats all files          |
+| `npm run format:check`   | Prettier check        | For CI (no changes)        |
+| `npm run deps:circular`  | Check circular deps   | Uses madge                 |
+| `npm run deps:unused`    | Find unused exports   | Uses knip                  |
+| `npm test`               | Run all tests         | 116 tests (1 skipped)      |
+| `npm run test:coverage`  | Test with coverage    | Uses c8                    |
+| `npm run validate:canon` | Validate CANON files  | Checks audit output schema |
 
 ### Prettier (Code Formatting)
 
@@ -535,8 +536,12 @@ TypeScript rules)
 | Prettier           | `npm run format:check`   | NO - warning only   |
 | Pattern compliance | `npm run patterns:check` | YES - blocks commit |
 | Tests              | `npm test`               | YES - blocks commit |
+| CANON validation   | `npm run validate:canon` | NO - warning only   |
 | Learning reminder  | (checks staged files)    | NO - reminder only  |
 
+> **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
+> staged. Validates schema compliance for audit output files.
+>
 > **Learning Entry Reminder**: If 5+ files are staged or template/hook changes
 > are detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md`
 > when addressing PR feedback.

@@ -39,7 +39,7 @@ supersedes fragmented planning documents into a single linear execution path.
 | Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~ |
 | Step 4B | Remediation Sprint                          | **COMPLETE**    | 100%       | ~~Step 4~~ |
 | Step 4C | SonarCloud Issue Triage                     | **COMPLETE**    | 100%       | ~~Step 4B~~|
-| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~10%       | ~~Step 4C~~|
+| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~28%       | ~~Step 4C~~|
 | Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5     |
 | Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6     |
 
@@ -1456,7 +1456,7 @@ Document decisions in a triage table:
 
 ## Step 5: Review Policy Expansion
 
-**Status:** IN PROGRESS **Completion:** ~10% **Estimated Effort:** 12-16 hours (6-9h
+**Status:** IN PROGRESS **Completion:** ~28% (5/18 tasks) **Estimated Effort:** 12-16 hours (6-9h
 original + 2h for Tasks 5.10-5.12 + 4-5h for Tasks 5.13-5.18) **Dependencies:** Step 4C **Risk Level:** Low
 **Started:** 2026-01-13
 
@@ -1572,29 +1572,26 @@ for full design. *(Archived 2026-01-13)*
     - Terminology consistency
     - Orphaned document identification
 
-- [ ] **Task 5.10**: Add `npm run validate:canon` script (0.5 hours) - _from
-      Task 4.3.7_
-  - Add script entry to package.json pointing to
+- [x] **Task 5.10**: Add `npm run validate:canon` script (DONE - 2026-01-13)
+  - [x] Add script entry to package.json pointing to
     `scripts/validate-canon-schema.js`
-  - Verify script runs correctly on existing CANON files
-  - Document usage in DEVELOPMENT.md
+  - [x] Verify script runs correctly on existing CANON files
+  - [x] Document usage in DEVELOPMENT.md
 
-- [ ] **Task 5.11**: Update single-session audit templates with validation (1
-      hour) - _from Task 4.3.7_
-  - Update `.claude/commands/audit-code.md` with `npm run validate:canon`
+- [x] **Task 5.11**: Update single-session audit templates with validation (DONE - 2026-01-13)
+  - [x] Update `.claude/commands/audit-code.md` with `npm run validate:canon`
     requirement
-  - Update `.claude/commands/audit-security.md` with validation requirement
-  - Update `.claude/commands/audit-performance.md` with validation requirement
-  - Update `.claude/commands/audit-refactoring.md` with validation requirement
-  - Update `.claude/commands/audit-documentation.md` with validation requirement
-  - Update `.claude/commands/audit-process.md` with validation requirement
-  - Add validation step to output checklist in each template
+  - [x] Update `.claude/commands/audit-security.md` with validation requirement
+  - [x] Update `.claude/commands/audit-performance.md` with validation requirement
+  - [x] Update `.claude/commands/audit-refactoring.md` with validation requirement
+  - [x] Update `.claude/commands/audit-documentation.md` with validation requirement
+  - [x] Update `.claude/commands/audit-process.md` with validation requirement
+  - [x] Add validation step to output checklist in each template
 
-- [ ] **Task 5.12**: Add CANON schema validation to pre-commit (0.5 hours) -
-      _from Task 4.3.7_
-  - Update `.husky/pre-commit` to run validation on `docs/reviews/**/*.jsonl`
-  - Only run if JSONL files are staged
-  - Non-blocking initially (warning only)
+- [x] **Task 5.12**: Add CANON schema validation to pre-commit (DONE - 2026-01-13)
+  - [x] Update `.husky/pre-commit` to run validation on `docs/reviews/**/*.jsonl`
+  - [x] Only run if JSONL files are staged
+  - [x] Non-blocking initially (warning only)
 
 - [x] **Task 5.13**: Wire session-start automation scripts (DONE - 2026-01-13)
   - [x] Add `lessons:surface` to session-start.sh (~1-2s overhead)
@@ -1646,10 +1643,10 @@ for full design. *(Archived 2026-01-13)*
       expansion
 - [x] Documentation content review integrated into recurring audit framework
       (Task 4.2.5)
-- [ ] `npm run validate:canon` script added to package.json (Task 5.10)
-- [ ] Single-session audit templates updated with validation requirement (Task
+- [x] `npm run validate:canon` script added to package.json (Task 5.10)
+- [x] Single-session audit templates updated with validation requirement (Task
       5.11)
-- [ ] CANON schema validation integrated into pre-commit (Task 5.12)
+- [x] CANON schema validation integrated into pre-commit (Task 5.12)
 - [x] Session-start runs lessons:surface and docs:sync-check (Task 5.13)
 - [x] Pre-commit includes learning entry reminder (Task 5.13)
 - [ ] npm audit runs on pre-push (Task 5.14)
