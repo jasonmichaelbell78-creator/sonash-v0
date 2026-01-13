@@ -34,6 +34,9 @@ fi
 echo "🚀 SessionStart Hook for sonash-v0"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# Log session start for activity tracking
+node scripts/log-session-activity.js --event=session_start 2>/dev/null || true
+
 # Track warnings for accurate completion message
 WARNINGS=0
 

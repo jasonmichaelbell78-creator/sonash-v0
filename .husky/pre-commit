@@ -62,7 +62,19 @@ if echo "$STAGED_FILES" | grep -q "docs/reviews/.*\.jsonl"; then
   fi
 fi
 
-# 6. Learning entry reminder (non-blocking, ~0.5s)
+# 6. Skill configuration validation (non-blocking, when skill files modified)
+if echo "$STAGED_FILES" | grep -q "\.claude/commands/.*\.md"; then
+  echo "  ▶ Validating skill configurations..."
+  skills_output=$(npm run skills:validate 2>&1)
+  if echo "$skills_output" | grep -q "❌ ERROR"; then
+    echo "  ⚠️ Skill validation issues found (not blocking - run: npm run skills:validate)"
+    printf '%s\n' "$skills_output" | grep -E "^📄|^   ❌" | head -10
+  else
+    echo "  ✅ Skill validation passed"
+  fi
+fi
+
+# 7. Learning entry reminder (non-blocking, ~0.5s)
 # Reminds to capture learnings when it looks like PR feedback was addressed
 LEARNINGS_LOG="docs/AI_REVIEW_LEARNINGS_LOG.md"
 

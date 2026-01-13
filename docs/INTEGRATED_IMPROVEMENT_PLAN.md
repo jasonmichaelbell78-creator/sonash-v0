@@ -39,7 +39,7 @@ supersedes fragmented planning documents into a single linear execution path.
 | Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~  |
 | Step 4B | Remediation Sprint                          | **COMPLETE**    | 100%       | ~~Step 4~~  |
 | Step 4C | SonarCloud Issue Triage                     | **COMPLETE**    | 100%       | ~~Step 4B~~ |
-| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~56%       | ~~Step 4C~~ |
+| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~94%       | ~~Step 4C~~ |
 | Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5      |
 | Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6      |
 
@@ -1458,7 +1458,7 @@ Document decisions in a triage table:
 
 ## Step 5: Review Policy Expansion
 
-**Status:** IN PROGRESS **Completion:** ~56% (10/18 tasks) **Estimated Effort:**
+**Status:** IN PROGRESS **Completion:** ~94% (17/18 tasks) **Estimated Effort:**
 12-16 hours (6-9h original + 2h for Tasks 5.10-5.12 + 4-5h for Tasks 5.13-5.18)
 **Dependencies:** Step 4C **Risk Level:** Low **Started:** 2026-01-13
 
@@ -1503,47 +1503,56 @@ for full design. _(Archived 2026-01-13)_
 
 ### Tasks
 
-- [ ] **Task 5.1**: Create session activity logging infrastructure (1 hour)
-  - Create `scripts/log-session-activity.js`
-  - Log: file writes, skill invocations, commits, session start/end
-  - Output to `.claude/session-activity.jsonl`
-  - Integrate with session-start hook
+- [x] **Task 5.1**: Create session activity logging infrastructure (DONE - 2026-01-13)
+  - [x] Created `scripts/log-session-activity.js`
+  - [x] Logs: file writes, skill invocations, commits, session start/end
+  - [x] Output to `.claude/session-activity.jsonl`
+  - [x] Added `npm run session:log` and `npm run session:summary` scripts
+  - [x] Integrated session_start logging into session-start.sh hook
 
-- [ ] **Task 5.2**: Create event-based trigger checker (1.5 hours)
-  - Create `scripts/check-triggers.js`
-  - Implement triggers: security_audit, consolidation, skill_validation
-  - Integrate with pre-push hook
-  - Blocking triggers prevent push, warning triggers inform
+- [x] **Task 5.2**: Create event-based trigger checker (DONE - 2026-01-13)
+  - [x] Created `scripts/check-triggers.js`
+  - [x] Implemented triggers: security_audit (blocking), consolidation (warning), skill_validation (warning)
+  - [x] Integrated with pre-push hook
+  - [x] Added `npm run triggers:check` script
+  - [x] Added SKIP_TRIGGERS=1 override with audit logging
+  - [x] Refined security trigger to exclude docs/scripts/hooks (app code only)
 
-- [ ] **Task 5.3**: Create skill/agent configuration validator (1 hour)
-  - Create `scripts/validate-skill-config.js`
-  - Validate SKILL.md structure (required sections)
-  - Check file references exist
-  - Check for deprecated patterns
-  - Integrate with pre-commit hook
+- [x] **Task 5.3**: Create skill/agent configuration validator (DONE - 2026-01-13)
+  - [x] Created `scripts/validate-skill-config.js`
+  - [x] Validates YAML frontmatter, title, required sections for audit commands
+  - [x] Checks file references exist (skips glob/regex patterns)
+  - [x] Detects deprecated patterns (TODO/FIXME/PLACEHOLDER)
+  - [x] Added `npm run skills:validate` script
+  - [x] Integrated with pre-commit hook (non-blocking)
 
-- [ ] **Task 5.4**: Create skill usage verifier (1 hour)
-  - Create `scripts/verify-skill-usage.js`
-  - Define rules: code-reviewer after writing, systematic-debugging after bug
-    fix
-  - Check session activity against rules
-  - Integrate with session-end
+- [x] **Task 5.4**: Create skill usage verifier (DONE - 2026-01-13)
+  - [x] Created `scripts/verify-skill-usage.js`
+  - [x] Defined rules: code-reviewer (warning), security-auditor (blocking), test-engineer (suggestion)
+  - [x] Checks session activity log against rules
+  - [x] Added `npm run skills:verify-usage` script
+  - [x] Supports --strict and --quiet modes for different contexts
 
-- [ ] **Task 5.5**: Create override logging system (0.5 hours)
-  - Create `.claude/override-log.jsonl` format
-  - Add override mechanism to blocking scripts
-  - Environment variable: `SKIP_REASON="reason" npm run check`
+- [x] **Task 5.5**: Create override logging system (DONE - 2026-01-13)
+  - [x] Created `scripts/log-override.js`
+  - [x] Logs to `.claude/override-log.jsonl`
+  - [x] Added `npm run override:log` and `npm run override:list` scripts
+  - [x] Updated pre-push to use override logger with SKIP_REASON env var
+  - [x] Records timestamp, check type, reason, user, git branch
 
-- [ ] **Task 5.6**: Create SKILL_AGENT_POLICY.md (1 hour)
-  - Document skill/agent creation requirements
-  - Document expected usage patterns
-  - Document override policy
-  - Add examples
+- [x] **Task 5.6**: Create SKILL_AGENT_POLICY.md (DONE - 2026-01-13)
+  - [x] Created `docs/agent_docs/SKILL_AGENT_POLICY.md`
+  - [x] Documented skill/agent creation requirements
+  - [x] Documented expected usage patterns with severity levels
+  - [x] Documented override policy with examples
+  - [x] Included hooks integration and metrics sections
 
-- [ ] **Task 5.7**: Update session-end command (0.5 hours)
-  - Add skill usage verification step
-  - Add override review prompt
-  - Integrate with trigger checking
+- [x] **Task 5.7**: Update session-end command (DONE - 2026-01-13)
+  - [x] Added Section 6 "Automated Verification" with all script commands
+  - [x] Integrated `npm run skills:verify-usage` for skill usage verification
+  - [x] Integrated `npm run override:list` for override review
+  - [x] Integrated `npm run triggers:check` for trigger checking
+  - [x] Renumbered subsequent sections (7-9)
 
 - [ ] **Task 5.8**: PR Review Process Improvements (2-3 hours)
   - Reference:
@@ -1643,13 +1652,13 @@ for full design. _(Archived 2026-01-13)_
 
 ### Acceptance Criteria
 
-- [ ] Session activity logging operational
-- [ ] Event-based triggers replace time-based
-- [ ] Skill/agent configs validated on change
-- [ ] Skill usage verified at session end
-- [ ] Override mechanism with logging
-- [ ] SKILL_AGENT_POLICY.md created
-- [ ] Pre-commit/pre-push hooks updated
+- [x] Session activity logging operational (Task 5.1)
+- [x] Event-based triggers replace time-based (Task 5.2)
+- [x] Skill/agent configs validated on change (Task 5.3)
+- [x] Skill usage verified at session end (Task 5.4)
+- [x] Override mechanism with logging (Task 5.5)
+- [x] SKILL_AGENT_POLICY.md created (Task 5.6)
+- [x] Pre-commit/pre-push hooks updated (Tasks 5.2, 5.3, 5.5)
 - [ ] PR review noise reduced via tool configuration and false positives
       expansion
 - [x] Documentation content review integrated into recurring audit framework
