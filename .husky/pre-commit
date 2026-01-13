@@ -71,11 +71,13 @@ if echo "$STAGED_FILES" | grep -q "$LEARNINGS_LOG"; then
   echo "  ✅ Learning entry detected"
 else
   # Count staged files - if many files changed, might be addressing review
-  STAGED_COUNT=$(echo "$STAGED_FILES" | grep -c . || echo "0")
+  STAGED_COUNT=$(echo "$STAGED_FILES" | grep -c . 2>/dev/null || printf "0")
+  STAGED_COUNT=${STAGED_COUNT:-0}
   # Check for template/doc changes that often accompany reviews
-  TEMPLATE_CHANGES=$(echo "$STAGED_FILES" | grep -c "templates\|\.claude/commands\|\.claude/hooks" || echo "0")
+  TEMPLATE_CHANGES=$(echo "$STAGED_FILES" | grep -c -E "templates|\.claude/commands|\.claude/hooks" 2>/dev/null || printf "0")
+  TEMPLATE_CHANGES=${TEMPLATE_CHANGES:-0}
 
-  if [ "$STAGED_COUNT" -gt 5 ] || [ "$TEMPLATE_CHANGES" -gt 0 ]; then
+  if [ "$STAGED_COUNT" -gt 5 ] 2>/dev/null || [ "$TEMPLATE_CHANGES" -gt 0 ] 2>/dev/null; then
     echo "  💡 Reminder: If addressing PR feedback, add Review #N to $LEARNINGS_LOG"
   fi
 fi

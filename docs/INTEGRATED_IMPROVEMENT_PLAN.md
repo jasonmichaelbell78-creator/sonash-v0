@@ -39,7 +39,7 @@ supersedes fragmented planning documents into a single linear execution path.
 | Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~ |
 | Step 4B | Remediation Sprint                          | **COMPLETE**    | 100%       | ~~Step 4~~ |
 | Step 4C | SonarCloud Issue Triage                     | **COMPLETE**    | 100%       | ~~Step 4B~~|
-| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~39%       | ~~Step 4C~~|
+| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~44%       | ~~Step 4C~~|
 | Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5     |
 | Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6     |
 
@@ -1456,7 +1456,7 @@ Document decisions in a triage table:
 
 ## Step 5: Review Policy Expansion
 
-**Status:** IN PROGRESS **Completion:** ~39% (7/18 tasks) **Estimated Effort:** 12-16 hours (6-9h
+**Status:** IN PROGRESS **Completion:** ~44% (8/18 tasks) **Estimated Effort:** 12-16 hours (6-9h
 original + 2h for Tasks 5.10-5.12 + 4-5h for Tasks 5.13-5.18) **Dependencies:** Step 4C **Risk Level:** Low
 **Started:** 2026-01-13
 
@@ -1611,11 +1611,11 @@ for full design. *(Archived 2026-01-13)*
   - [x] Sanitized context passed to Sentry (uses existing redaction)
   - **Verification:** Production errors will appear in Sentry dashboard
 
-- [ ] **Task 5.16**: Add code coverage to CI (1 hour)
-  - Wire `npm run test:coverage` into `.github/workflows/ci.yml`
-  - Add coverage threshold check (fail if drops below baseline)
-  - Generate coverage badge for README
-  - **Verification:** CI fails if coverage drops >5%
+- [x] **Task 5.16**: Add code coverage to CI (DONE - 2026-01-13)
+  - [x] Wire `npm run test:coverage` into `.github/workflows/ci.yml`
+  - [x] Upload coverage report as artifact (14-day retention)
+  - [ ] _Deferred:_ Coverage threshold check (needs baseline measurement)
+  - [ ] _Deferred:_ Coverage badge for README (needs codecov/coveralls setup)
 
 - [ ] **Task 5.17**: Remove CI continue-on-error flags (0.5 hours)
   - Remove `continue-on-error: true` from Prettier check (ci.yml:33)
@@ -1651,7 +1651,7 @@ for full design. *(Archived 2026-01-13)*
 - [x] Pre-commit includes learning entry reminder (Task 5.13)
 - [x] npm audit runs on pre-push (Task 5.14)
 - [x] Sentry integrated with logger (Task 5.15)
-- [ ] Code coverage reported in CI (Task 5.16)
+- [x] Code coverage reported in CI (Task 5.16)
 - [ ] CI continue-on-error flags removed (Task 5.17)
 - [ ] Redundant automation checks consolidated (Task 5.18)
 
