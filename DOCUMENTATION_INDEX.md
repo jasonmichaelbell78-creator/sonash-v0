@@ -142,9 +142,9 @@ _AI agent reference docs_
 
 _Audit plans and findings_
 
-| Document                                                                               | Description                                                     | References | Last Modified |
-| -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Multi-AI Reviews Directory](docs/reviews/README.md)                                   | -                                                               | ↓0 ↑1      | 2026-01-08    |
+| Document                                                                                       | Description                                                     | References | Last Modified |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [Multi-AI Reviews Directory](docs/reviews/README.md)                                           | -                                                               | ↓0 ↑1      | 2026-01-08    |
 | [SoNash Multi-AI Code Review Plan - 2026 Q1](docs/reviews/2026-Q1/CODE_REVIEW_PLAN_2026_Q1.md) | This document serves as the **execution plan** for running a... | ↓0 ↑4      | 2026-01-08    |
 
 ### Skills (Tier 3)

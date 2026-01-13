@@ -15,10 +15,13 @@ const SCRIPT_PATH = path.resolve(PROJECT_ROOT, "scripts/check-docs-light.js");
  * Helper to extract JSON from script output (handles header lines)
  */
 function extractJSON(output: string): unknown {
-  // Use non-greedy match to avoid ReDoS on malformed input
-  const jsonMatch = output.match(/\{[\s\S]*?\}/);
-  if (!jsonMatch) throw new Error("No JSON found in output");
-  return JSON.parse(jsonMatch[0]);
+  // Use indexOf/lastIndexOf for deterministic JSON extraction (handles nested objects)
+  const start = output.indexOf("{");
+  const end = output.lastIndexOf("}");
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error("No JSON found in output");
+  }
+  return JSON.parse(output.slice(start, end + 1));
 }
 
 /**
@@ -64,15 +67,19 @@ describe("check-docs-light.js", () => {
       const result = runScript(["README.md", "--json"]);
 
       // The script outputs a header line before JSON, so extract just the JSON part
-      // Use non-greedy match to avoid ReDoS on malformed input
-      const jsonMatch = result.stdout.match(/\{[\s\S]*?\}/);
-      assert.ok(jsonMatch, "Output should contain JSON object");
+      // Use indexOf/lastIndexOf for deterministic extraction (handles nested objects)
+      const start = result.stdout.indexOf("{");
+      const end = result.stdout.lastIndexOf("}");
+      assert.ok(start !== -1 && end !== -1 && end > start, "Output should contain JSON object");
 
       try {
-        const parsed = JSON.parse(jsonMatch[0]);
+        const parsed = JSON.parse(result.stdout.slice(start, end + 1));
         assert.ok(parsed.results, "JSON output should have results array");
         assert.ok(typeof parsed.totalErrors === "number", "JSON output should have totalErrors");
-        assert.ok(typeof parsed.totalWarnings === "number", "JSON output should have totalWarnings");
+        assert.ok(
+          typeof parsed.totalWarnings === "number",
+          "JSON output should have totalWarnings"
+        );
       } catch {
         assert.fail("Output should be valid JSON");
       }
@@ -84,7 +91,8 @@ describe("check-docs-light.js", () => {
       // Should not show warning emoji in errors-only mode
       // (unless there are actual errors which also show warnings)
       assert.ok(
-        !result.stdout.includes("FILES WITH WARNINGS:") || result.stdout.includes("FILES WITH ERRORS:"),
+        !result.stdout.includes("FILES WITH WARNINGS:") ||
+          result.stdout.includes("FILES WITH ERRORS:"),
         "Should not show warnings section separately in errors-only mode"
       );
     });
@@ -152,7 +160,9 @@ This is a test document.
       const result = runScript(["nonexistent-file.md"]);
 
       assert.ok(
-        result.stdout.includes("not found") || result.stderr.includes("not found") || result.stdout.includes("0 file"),
+        result.stdout.includes("not found") ||
+          result.stderr.includes("not found") ||
+          result.stdout.includes("0 file"),
         "Should handle missing files gracefully"
       );
     });
@@ -163,7 +173,9 @@ This is a test document.
       // README.md and ROADMAP.md are Tier 1 canonical
       const result = runScript(["README.md", "--json"]);
 
-      const parsed = extractJSON(result.stdout) as { results: Array<{ file: string; tier: number }> };
+      const parsed = extractJSON(result.stdout) as {
+        results: Array<{ file: string; tier: number }>;
+      };
       const readmeResult = parsed.results.find((r) => r.file.includes("README.md"));
 
       assert.ok(readmeResult, "Should have result for README.md");
@@ -187,7 +199,10 @@ Just some content without proper sections.
         const result = runScript([testFile, "--json"]);
         const parsed = extractJSON(result.stdout) as { totalErrors: number; totalWarnings: number };
 
-        assert.ok(parsed.totalErrors > 0 || parsed.totalWarnings > 0, "Should flag missing sections");
+        assert.ok(
+          parsed.totalErrors > 0 || parsed.totalWarnings > 0,
+          "Should flag missing sections"
+        );
       } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });
       }
@@ -218,10 +233,7 @@ See [broken link](./nonexistent.md) for details.
         const parsed = extractJSON(result.stdout) as { totalErrors: number };
 
         // Should flag broken link
-        assert.ok(
-          parsed.totalErrors > 0,
-          "Should flag broken internal link"
-        );
+        assert.ok(parsed.totalErrors > 0, "Should flag broken internal link");
       } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });
       }
@@ -254,10 +266,7 @@ Old document.
         const parsed = extractJSON(result.stdout) as { totalWarnings: number };
 
         // Should warn about stale date
-        assert.ok(
-          parsed.totalWarnings > 0,
-          "Should warn about stale document"
-        );
+        assert.ok(parsed.totalWarnings > 0, "Should warn about stale document");
       } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });
       }
@@ -274,7 +283,9 @@ Old document.
       }
 
       const result = runScript(["ARCHITECTURE.md", "--json"]);
-      const parsed = extractJSON(result.stdout) as { results: Array<{ file: string; tier: number }> };
+      const parsed = extractJSON(result.stdout) as {
+        results: Array<{ file: string; tier: number }>;
+      };
       const archResult = parsed.results.find((r) => r.file.includes("ARCHITECTURE.md"));
 
       if (archResult) {
@@ -291,7 +302,9 @@ Old document.
           const result = runScript([`docs/${files[0]}`, "--json"]);
 
           try {
-            const parsed = extractJSON(result.stdout) as { results: Array<{ file: string; tier: number }> };
+            const parsed = extractJSON(result.stdout) as {
+              results: Array<{ file: string; tier: number }>;
+            };
 
             // docs/ files should be Tier 2 or higher
             assert.ok(
@@ -322,9 +335,9 @@ Old document.
       // Should show files passing or with issues
       assert.ok(
         result.stdout.includes("passing") ||
-        result.stdout.includes("errors") ||
-        result.stdout.includes("warnings") ||
-        result.stdout.includes("checked"),
+          result.stdout.includes("errors") ||
+          result.stdout.includes("warnings") ||
+          result.stdout.includes("checked"),
         "Should categorize files by status"
       );
     });

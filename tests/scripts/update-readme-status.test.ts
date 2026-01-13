@@ -43,10 +43,7 @@ describe("update-readme-status.js", () => {
     test("--dry-run flag prevents file modifications", () => {
       const result = runScript(["--dry-run"]);
 
-      assert.ok(
-        result.stdout.includes("DRY RUN"),
-        "Should indicate dry run mode"
-      );
+      assert.ok(result.stdout.includes("DRY RUN"), "Should indicate dry run mode");
       // Should complete successfully without writing
       assert.equal(result.exitCode, 0, "Should exit with 0 in dry run mode");
     });
@@ -54,10 +51,7 @@ describe("update-readme-status.js", () => {
     test("--verbose flag shows detailed logging", () => {
       const result = runScript(["--dry-run", "--verbose"]);
 
-      assert.ok(
-        result.stdout.includes("[VERBOSE]"),
-        "Should show verbose output"
-      );
+      assert.ok(result.stdout.includes("[VERBOSE]"), "Should show verbose output");
     });
   });
 
@@ -87,7 +81,9 @@ describe("update-readme-status.js", () => {
 
       // Should show progress information
       assert.ok(
-        result.stdout.includes("progress") || result.stdout.includes("Progress") || result.stdout.includes("%"),
+        result.stdout.includes("progress") ||
+          result.stdout.includes("Progress") ||
+          result.stdout.includes("%"),
         "Should show overall progress"
       );
     });
@@ -99,7 +95,9 @@ describe("update-readme-status.js", () => {
 
       // In dry run, should indicate what would be written
       assert.ok(
-        result.stdout.includes("Would write") || result.stdout.includes("updated") || result.stdout.includes("up to date"),
+        result.stdout.includes("Would write") ||
+          result.stdout.includes("updated") ||
+          result.stdout.includes("up to date"),
         "Should indicate status section would be generated"
       );
     });
@@ -137,10 +135,7 @@ describe("update-readme-status.js", () => {
       const homeDir = process.env.HOME || "/home";
       const rawHomeExposed = output.includes(homeDir) && !output.includes("[HOME]");
 
-      assert.ok(
-        !rawHomeExposed,
-        "Should not expose raw home directory paths"
-      );
+      assert.ok(!rawHomeExposed, "Should not expose raw home directory paths");
     });
   });
 

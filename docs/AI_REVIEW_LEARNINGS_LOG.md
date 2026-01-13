@@ -20,8 +20,8 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 6.0     | 2026-01-12 | ARCHIVE #3: Reviews #61-100 → REVIEWS_61-100.md (1740 lines removed, 3170→1430 lines). Active reviews now #101-136. Session #58. |
-| 5.9     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 → CODE_PATTERNS.md v1.7 (16 new patterns: 6 Security, 4 JS/TS, 5 CI/Automation, 1 GitHub Actions). Counter reset. Session #57. |
+| 6.0     | 2026-01-12 | ARCHIVE #3: Reviews #61-100 → REVIEWS_61-100.md (1740 lines removed, 3170→1430 lines). Active reviews now #101-136. Session #58.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 5.9     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 → CODE_PATTERNS.md v1.7 (16 new patterns: 6 Security, 4 JS/TS, 5 CI/Automation, 1 GitHub Actions). Counter reset. Session #57.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 5.8     | 2026-01-12 | Review #136: PR CI Feedback Round 3 (SonarQube + Qodo + CI) - 14 items. Fixed: 7 MAJOR security (admin.ts PII logging sanitized - log queryLength/queryType instead of raw query, leaky error message in adminTriggerJob, Firestore auto-ID instead of Date.now() for collision resistance, id field placement after spread, HttpsError preservation in migrateAnonymousUserData, meetings.ts batch delete chunking for 500-doc limit, use-journal.ts sanitization order - script/style before tags), 3 MAJOR quality (Array.isArray guards in generateSearchableText, unused deps added to knip ignore), 4 MINOR (GLOBAL_EXCLUDE added to pattern checker for dev utility scripts with pre-existing debt). New pattern: Chunk batch operations under Firestore 500-op limit. Session #55. |
 | 5.7     | 2026-01-12 | Review #135: PR Cherry-Pick CI Feedback Round 2 (Qodo + CI) - 10 items. Fixed: 6 MAJOR (Prettier formatting 518 files, dependency issues - removed @modelcontextprotocol/sdk + undici, added globals + postcss-load-config, duplicate exports in error-boundary.tsx, pattern compliance pathExclude for meta-detection, matchesWord() wildcard support for ".?" patterns), 4 MINOR (coderabbit exit code opt-in via CODERABBIT_EXIT_ON_FINDINGS env var, pattern-check.js cross-platform path handling using path.sep). Pre-existing issues documented in ROADMAP.md. Session #55.                                                                                                                                                                                                         |
 | 5.6     | 2026-01-12 | Review #134: PR Cherry-Pick CI Feedback (Qodo + CI) - 12 items. Fixed: 7 MAJOR (session-start.js path containment security bug using path.relative(), add rel === "" checks to 5 hook files, escape regex in analyze-user-request.js), 5 MINOR (detect sensitive paths in coderabbit-review.js, cap file sizes, exit non-zero on findings, trim input, secure logging). Verified 4 false positives from pattern checker (readFileSync already in try/catch). New pattern: Include rel === "" in all path.relative() containment checks. Session #55.                                                                                                                                                                                                                                       |
@@ -132,13 +132,13 @@ improvements made.
 
 This log uses a tiered structure to optimize context consumption:
 
-| Tier   | Content                                           | When to Read                  | Size        |
-| ------ | ------------------------------------------------- | ----------------------------- | ----------- |
-| **1**  | [claude.md](../claude.md)                         | Always (in AI context)        | ~115 lines  |
-| **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md) | When investigating violations | ~190 lines  |
-| **2**  | Quick Index (below)                               | Pattern lookup                | ~50 lines   |
-| **3**  | Active Reviews (#101-136)                         | Deep investigation            | ~1000 lines |
-| **4**  | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-60](./archive/REVIEWS_42-60.md), [#61-100](./archive/REVIEWS_61-100.md)) | Historical research | ~4400 lines |
+| Tier   | Content                                                                                                                    | When to Read                  | Size        |
+| ------ | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ----------- |
+| **1**  | [claude.md](../claude.md)                                                                                                  | Always (in AI context)        | ~115 lines  |
+| **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                          | When investigating violations | ~190 lines  |
+| **2**  | Quick Index (below)                                                                                                        | Pattern lookup                | ~50 lines   |
+| **3**  | Active Reviews (#101-136)                                                                                                  | Deep investigation            | ~1000 lines |
+| **4**  | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-60](./archive/REVIEWS_42-60.md), [#61-100](./archive/REVIEWS_61-100.md)) | Historical research           | ~4400 lines |
 
 **Read Tier 3 only when:**
 
@@ -459,38 +459,40 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-136 are actively maintained below. Older reviews are in the archive.
+Reviews #101-136 are actively maintained below. Older reviews are in the
+archive.
 
 ---
 
 #### Review #137: PR #243 SonarQube Security Hotspots & Qodo Suggestions (2026-01-13)
 
 **Source:** Mixed - SonarQube Security Hotspots + Qodo PR Code Suggestions
-**PR/Branch:** PR #243 / claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 12 items
-(Critical: 0, Major: 0, Minor: 3, Trivial: 2, Rejected: 5) - 5 fixed
+**PR/Branch:** PR #243 / claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 12
+items (Critical: 0, Major: 0, Minor: 3, Trivial: 2, Rejected: 5) - 5 fixed
 
-**Context:** Post-merge review of Step 4B Remediation Sprint PR. SonarQube flagged
-4 Security Hotspots (2 ReDoS, 2 PATH variable) and Qodo suggested 8 code improvements.
+**Context:** Post-merge review of Step 4B Remediation Sprint PR. SonarQube
+flagged 4 Security Hotspots (2 ReDoS, 2 PATH variable) and Qodo suggested 8 code
+improvements.
 
 **Issues Fixed:**
 
-| #   | Issue                                      | Severity   | Category     | Fix                                           |
-| --- | ------------------------------------------ | ---------- | ------------ | --------------------------------------------- |
-| 1   | ReDoS: greedy regex in extractJSON         | 🟡 Minor   | Security/DoS | Changed `/\{[\s\S]*\}/` to `/\{[\s\S]*?\}/`   |
-| 2   | ReDoS: greedy regex in test assertion      | 🟡 Minor   | Security/DoS | Same non-greedy fix                           |
-| 3   | Empty catch block silently ignores errors  | 🟡 Minor   | Test Quality | Added explicit skip with console.log message  |
-| 4   | Null reasons could be added to array       | ⚪ Trivial | Robustness   | Added `newReason ?` guard                     |
-| 5   | Missing maxBuffer in spawnSync             | ⚪ Trivial | Robustness   | Added `maxBuffer: 10 * 1024 * 1024`           |
+| #   | Issue                                     | Severity   | Category     | Fix                                          |
+| --- | ----------------------------------------- | ---------- | ------------ | -------------------------------------------- |
+| 1   | ReDoS: greedy regex in extractJSON        | 🟡 Minor   | Security/DoS | Changed `/\{[\s\S]*\}/` to `/\{[\s\S]*?\}/`  |
+| 2   | ReDoS: greedy regex in test assertion     | 🟡 Minor   | Security/DoS | Same non-greedy fix                          |
+| 3   | Empty catch block silently ignores errors | 🟡 Minor   | Test Quality | Added explicit skip with console.log message |
+| 4   | Null reasons could be added to array      | ⚪ Trivial | Robustness   | Added `newReason ?` guard                    |
+| 5   | Missing maxBuffer in spawnSync            | ⚪ Trivial | Robustness   | Added `maxBuffer: 10 * 1024 * 1024`          |
 
 **Rejected Items:**
 
-| #   | Issue                             | Reason                                              |
-| --- | --------------------------------- | --------------------------------------------------- |
-| 6-7 | PATH variable in test spawnSync   | Test context with controlled environment - Safe     |
-| 8   | Missing "use client" directive    | Already exists on line 1 - False positive           |
-| 9   | Non-portable command in docs      | Historical archive documentation, not active code   |
-| 10  | realRel === "" check removal      | Intentional design - skip project root directory    |
-| 11  | Greedy regex in archived docs     | Historical archive documentation, not active code   |
+| #   | Issue                           | Reason                                            |
+| --- | ------------------------------- | ------------------------------------------------- |
+| 6-7 | PATH variable in test spawnSync | Test context with controlled environment - Safe   |
+| 8   | Missing "use client" directive  | Already exists on line 1 - False positive         |
+| 9   | Non-portable command in docs    | Historical archive documentation, not active code |
+| 10  | realRel === "" check removal    | Intentional design - skip project root directory  |
+| 11  | Greedy regex in archived docs   | Historical archive documentation, not active code |
 
 **Patterns Identified:**
 
@@ -1482,4 +1484,3 @@ Multi-pass analysis (3 passes) to ensure complete coverage.
 | 24-40 | MINOR    | Missing JSDoc documentation         | check-review-needed.js         | Added 17 complete JSDoc blocks                      |
 
 ---
-

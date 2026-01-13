@@ -122,7 +122,10 @@ export default function MeetingMap({ meetings, userLocation }: MeetingMapProps) 
           showCoverageOnHover={false}
         >
           {validMeetings.map((meeting) => (
-            <Marker key={meeting.id} position={[meeting.coordinates!.lat, meeting.coordinates!.lng]}>
+            <Marker
+              key={meeting.id}
+              position={[meeting.coordinates!.lat, meeting.coordinates!.lng]}
+            >
               <Popup>
                 <div className="p-1 min-w-[200px]">
                   <h3 className="font-bold text-gray-900 mb-1">{meeting.name}</h3>

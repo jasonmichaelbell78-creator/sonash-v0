@@ -94,8 +94,8 @@ This document tracks:
 
 ## Multi-AI Audit Log
 
-| Date       | Categories    | Models Used                                                          | Total Findings                                  | Aggregated To                                                             |
-| ---------- | ------------- | -------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------- |
+| Date       | Categories    | Models Used                                                          | Total Findings                                  | Aggregated To                                                            |
+| ---------- | ------------- | -------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------ |
 | 2026-01-10 | Process       | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-PROCESS.jsonl](./reviews/2026-Q1/canonical/CANON-PROCESS.jsonl)   |
 | 2026-01-10 | Documentation | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 14 canonical                                    | [CANON-DOCS.jsonl](./reviews/2026-Q1/canonical/CANON-DOCS.jsonl)         |
 | 2026-01-10 | Refactoring   | Copilot, Claude Sonnet 4.5, Codex, Claude Code Opus 4.5, ChatGPT 5.2 | 27 canonical                                    | [CANON-REFACTOR.jsonl](./reviews/2026-Q1/canonical/CANON-REFACTOR.jsonl) |
