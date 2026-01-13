@@ -1192,6 +1192,86 @@ _Building on the basic HALT check feature from M1.5_
 
 ## 🛠️ Process & Tooling Improvements
 
+### Development Dashboard (Planned - Near-term)
+
+**Status:** 📋 Planned **Priority:** P1 (Development Tooling) **Added:**
+2026-01-13 (Session #64)
+
+**Purpose:** Unified dev dashboard for monitoring session activity, error
+tracing, and development metrics. Not for production - strictly development
+tooling.
+
+**Proposed Features:**
+
+1. **Session Activity Monitor**
+
+   - Visualize JSONL session logs (`.claude/session-activity.jsonl`)
+   - Show event timeline (file edits, skill invocations, commits)
+   - Detect sessions without explicit end markers
+   - Aggregate metrics (files changed, skills used, session duration)
+
+2. **Error & Tracing Viewer**
+
+   - Display Sentry-like local error aggregation
+   - Show console.error logs with context
+   - Link errors to relevant file/line
+   - Filter by severity, date, component
+
+3. **Override Audit Trail**
+
+   - Visualize override logs (`.claude/override-log.jsonl`)
+   - Show frequency, reasons, patterns
+   - Flag unusual override patterns
+
+4. **Document Sync Status**
+   - Visual status of template-instance relationships
+   - Placeholder detection results
+   - Cross-document dependency alerts
+
+**Implementation Notes:**
+
+- Simple local web UI (Next.js page under /dev or standalone)
+- Read-only access to JSONL logs
+- No production impact
+- Could be separate tool or integrated admin panel
+
+**Discussion:** Brainstorm in future session. Low effort MVP could be a CLI
+summary command; full dashboard is larger scope.
+
+---
+
+### Cross-Document Dependency Map (Planned - Near-term)
+
+**Status:** 📋 Planned **Priority:** P1 **Added:** 2026-01-13 (Session #64)
+
+**Gap Identified:** Current `DOCUMENT_DEPENDENCIES.md` only covers
+template-instance sync (audit plans). It does NOT cover:
+
+- "When I change Document A, what other documents might need updating?"
+- Cross-references between core documents
+- Cascading update requirements
+
+**Proposed Enhancement to DOCUMENT_DEPENDENCIES.md:**
+
+Add new section: "Cross-Document Update Triggers"
+
+| When This Changes                | Check These Documents                        |
+| -------------------------------- | -------------------------------------------- |
+| `SESSION_CONTEXT.md` status      | `INTEGRATED_IMPROVEMENT_PLAN.md`             |
+| `INTEGRATED_IMPROVEMENT_PLAN.md` | `SESSION_CONTEXT.md`, `ROADMAP.md`           |
+| `ROADMAP.md` milestones          | `SESSION_CONTEXT.md` priorities              |
+| New npm script added             | `DEVELOPMENT.md` (scripts section)           |
+| New hook added                   | `DEVELOPMENT.md` (hooks section)             |
+| Phase/Step completed             | `INTEGRATED_IMPROVEMENT_PLAN.md`, `ROADMAP.md` |
+| New policy document              | `claude.md` or relevant policy index         |
+| PR review fixes applied          | `AI_REVIEW_LEARNINGS_LOG.md`                 |
+| New skill/command added          | `.claude/settings.json`, relevant policy     |
+
+**Implementation:** Expand `DOCUMENT_DEPENDENCIES.md` with this table and
+integrate into session-end checklist.
+
+---
+
 ### Document Dependency Automation (Future Enhancement)
 
 **Current State (Session #35 - 2026-01-08):**
