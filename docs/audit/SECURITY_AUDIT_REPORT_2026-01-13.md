@@ -1,0 +1,543 @@
+# Security + Simplification Audit Report
+
+**Repository:** [sonash-v0](https://github.com/jasonmichaelbell78-creator/sonash-v0)
+**Audit Date:** 2026-01-13
+**Auditor:** Claude Opus 4.5
+**Branch:** `claude/security-simplification-audit-2D1nZ`
+
+---
+
+## Executive Summary
+
+### Overall Assessment: **GOOD** with targeted improvements needed
+
+The SoNash Recovery Notebook demonstrates **strong security fundamentals** with a defense-in-depth architecture including Firebase Cloud Functions, Zod validation, rate limiting, reCAPTCHA Enterprise, and comprehensive audit logging. The codebase shows evidence of deliberate security design decisions with proper documentation.
+
+### Top 5 Risks
+
+| # | Risk | Severity | Quick Fix? |
+|---|------|----------|------------|
+| 1 | App Check disabled on all Cloud Functions | HIGH | Yes |
+| 2 | Missing security headers (CSP, HSTS, X-Frame-Options) | HIGH | Yes |
+| 3 | No storage.rules file (Firebase Storage unprotected) | MEDIUM | Yes |
+| 4 | Hardcoded reCAPTCHA fallback key | MEDIUM | Yes |
+| 5 | reCAPTCHA optional for migration function | MEDIUM | Yes |
+
+### Quick Wins (< 1 hour each)
+
+1. **Add security headers to firebase.json** - Immediate protection against clickjacking, MIME sniffing
+2. **Create storage.rules with deny-all** - Lock down unused Firebase Storage
+3. **Remove hardcoded reCAPTCHA key** - Fail-fast on missing configuration
+4. **Wrap debug console.log in NODE_ENV check** - Prevent data exposure in production
+
+### Stop-Ship Items
+
+**None identified.** All findings are remediable and the existing security layers provide adequate protection during remediation.
+
+---
+
+## Confirmed Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 16.1.1, React 19.2.3, TypeScript 5.9.3, Tailwind CSS 4, shadcn/ui |
+| **Backend** | Firebase Cloud Functions v7.0.0, Node.js 24, firebase-admin 13.6.0 |
+| **Hosting** | Firebase Hosting (static export) |
+| **Data** | Cloud Firestore, Firebase Authentication |
+| **Security** | Zod 4.2.1, reCAPTCHA Enterprise, Firestore-based rate limiting |
+| **Monitoring** | Sentry 10.30.0 (frontend + backend) |
+
+---
+
+## Findings Summary
+
+| ID | Severity | Type | Category | Location | Description |
+|----|----------|------|----------|----------|-------------|
+| SEC-001 | HIGH | Security | FunctionsAuth | `functions/src/index.ts:84` | App Check disabled on Cloud Functions |
+| SEC-002 | HIGH | Security | Headers | `firebase.json:6-37` | Missing security headers |
+| SEC-003 | MEDIUM | Security | Secrets | `functions/src/recaptcha-verify.ts:66` | Hardcoded reCAPTCHA key fallback |
+| SEC-004 | MEDIUM | Security | FunctionsAuth | `functions/src/index.ts:514-527` | reCAPTCHA optional for migration |
+| SEC-005 | MEDIUM | Security | RulesPolicy | `storage.rules` (missing) | No Firebase Storage rules |
+| SEC-006 | MEDIUM | Security | DataExposure | `lib/firestore-service.ts:229` | Debug logging in production |
+| SEC-007 | LOW | Security | Other | `lib/firebase.ts:57-90` | Client App Check commented out |
+| REF-001 | LOW | Refactor | Complexity | `components/admin/users-tab.tsx` | Large component (567 lines) |
+| REF-002 | LOW | Refactor | Complexity | `components/admin/admin-crud-table.tsx` | Large component (394 lines) |
+| REF-003 | INFO | Refactor | Duplication | `functions/src/schemas.ts` | Schema duplication client/server |
+| PROD-001 | INFO | Product | ProductUXRisk | `lib/db/users.ts:103-134` | User profile bypasses Cloud Functions |
+
+**Totals:** 0 Critical, 2 High, 4 Medium, 2 Low, 3 Info
+
+---
+
+## Detailed Findings
+
+### SEC-001: App Check Disabled on Cloud Functions
+
+**Severity:** HIGH | **Category:** FunctionsAuth
+**CWE:** CWE-862 | **OWASP:** A01:2021 Broken Access Control
+
+**Location:** `functions/src/index.ts:84, 170, 269, 363, 506`
+
+**Problem:**
+Firebase App Check is disabled (`requireAppCheck: false`) on all user-facing Cloud Functions. This removes the bot protection layer that verifies requests originate from the legitimate app client.
+
+**Current Code:**
+```typescript
+// functions/src/index.ts:84
+{
+  functionName: "saveDailyLog",
+  rateLimiter: saveDailyLogLimiter,
+  validationSchema: dailyLogSchema,
+  requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
+  recaptchaAction: "save_daily_log",
+}
+```
+
+**Impact:**
+Attackers can call Cloud Functions directly via the Firebase SDK or REST API without proving they're using the legitimate app. Combined with anonymous authentication, this enables:
+- Automated abuse and spam at scale
+- Credential stuffing attacks
+- Data scraping operations
+
+**Recommended Fix:**
+```typescript
+requireAppCheck: true,
+```
+
+**Additional Steps:**
+1. Uncomment App Check initialization in `lib/firebase.ts:61-90`
+2. Verify the reCAPTCHA throttle period has passed
+3. Test in development with App Check debug token
+
+**Verification:**
+```bash
+grep -n "requireAppCheck" functions/src/index.ts
+```
+
+---
+
+### SEC-002: Missing Security Headers
+
+**Severity:** HIGH | **Category:** Headers
+**CWE:** CWE-693, CWE-1021 | **OWASP:** A05:2021 Security Misconfiguration
+
+**Location:** `firebase.json:6-37`
+
+**Problem:**
+Critical security headers are missing from the Firebase Hosting configuration:
+- `Content-Security-Policy` (CSP)
+- `X-Frame-Options`
+- `X-Content-Type-Options`
+- `Strict-Transport-Security` (HSTS)
+- `Referrer-Policy`
+- `Permissions-Policy`
+
+**Current Code:**
+```json
+"headers": [
+  {
+    "source": "**/*.@(html)",
+    "headers": [
+      { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+      { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
+    ]
+  }
+]
+```
+
+**Impact:**
+- **X-Frame-Options missing:** Clickjacking attacks possible
+- **X-Content-Type-Options missing:** MIME-sniffing attacks
+- **HSTS missing:** Protocol downgrade attacks
+- **CSP missing:** Increased XSS risk
+- **Referrer-Policy missing:** Referrer information leakage
+
+**Recommended Fix:**
+```json
+{
+  "source": "**/*.@(html)",
+  "headers": [
+    { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+    { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" },
+    { "key": "X-Frame-Options", "value": "DENY" },
+    { "key": "X-Content-Type-Options", "value": "nosniff" },
+    { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
+    { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+    { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=()" }
+  ]
+}
+```
+
+**Note:** Add CSP last after testing other headers. Start with CSP in report-only mode.
+
+---
+
+### SEC-003: Hardcoded reCAPTCHA Key Fallback
+
+**Severity:** MEDIUM | **Category:** Secrets
+**CWE:** CWE-798 | **OWASP:** A02:2021 Cryptographic Failures
+
+**Location:** `functions/src/recaptcha-verify.ts:66`
+
+**Current Code:**
+```typescript
+const siteKey = process.env.RECAPTCHA_SITE_KEY || "6LdeazosAAAAAMDNCh1hTUDKh_UeS6xWY1-85B2O";
+```
+
+**Problem:**
+Hardcoded fallback key makes rotation difficult and could cause environment confusion.
+
+**Recommended Fix:**
+```typescript
+const siteKey = process.env.RECAPTCHA_SITE_KEY;
+
+if (!siteKey) {
+  logSecurityEvent(
+    "RECAPTCHA_CONFIG_ERROR",
+    "verifyRecaptchaToken",
+    "Missing RECAPTCHA_SITE_KEY environment variable",
+    { userId, captureToSentry: true }
+  );
+  throw new HttpsError("failed-precondition", "reCAPTCHA verification is not configured");
+}
+```
+
+---
+
+### SEC-004: reCAPTCHA Optional for Migration
+
+**Severity:** MEDIUM | **Category:** FunctionsAuth
+**CWE:** CWE-307 | **OWASP:** A07:2021 Identification and Authentication Failures
+
+**Location:** `functions/src/index.ts:514-527`
+
+**Current Code:**
+```typescript
+const token = data.recaptchaToken;
+if (!token || token.trim() === "") {
+  logSecurityEvent(
+    "RECAPTCHA_MISSING_TOKEN",
+    "migrateAnonymousUserData",
+    "Migration processed without reCAPTCHA token (may indicate network blocking)",
+    { userId, severity: "WARNING", metadata: { action: "migrate_user_data" } }
+  );
+  // Continue without reCAPTCHA protection - rely on other security layers
+}
+```
+
+**Problem:**
+Migration function allows bypass of reCAPTCHA verification, weakening defense-in-depth for a sensitive operation.
+
+**Recommended Fix:**
+```typescript
+if (!token || token.trim() === "") {
+  logSecurityEvent("RECAPTCHA_MISSING_TOKEN", "migrateAnonymousUserData",
+    "Migration rejected: reCAPTCHA token required", { userId });
+  throw new HttpsError(
+    "failed-precondition",
+    "Security verification required. Please refresh the page and try again."
+  );
+}
+```
+
+---
+
+### SEC-005: No Firebase Storage Rules
+
+**Severity:** MEDIUM | **Category:** RulesPolicy
+**CWE:** CWE-862 | **OWASP:** A01:2021 Broken Access Control
+
+**Location:** `storage.rules` (file does not exist)
+
+**Problem:**
+No Firebase Storage security rules file exists. If Storage is enabled, default rules may allow public access.
+
+**Recommended Fix:**
+Create `storage.rules` in project root:
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Deny all access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+```
+
+---
+
+### SEC-006: Debug Logging in Production
+
+**Severity:** MEDIUM | **Category:** DataExposure
+**CWE:** CWE-532 | **OWASP:** A09:2021 Security Logging and Monitoring Failures
+
+**Location:** `lib/firestore-service.ts:229`
+
+**Current Code:**
+```typescript
+console.log("📤 Sending to Cloud Function:", JSON.stringify(sanitizedPayload, null, 2));
+```
+
+**Recommended Fix:**
+```typescript
+if (process.env.NODE_ENV === "development") {
+  console.log("📤 Sending to Cloud Function:", JSON.stringify(sanitizedPayload, null, 2));
+}
+```
+
+---
+
+## Firestore Rules Analysis
+
+**File:** `firestore.rules` (143 lines)
+
+### Strengths
+
+1. **User scoping enforced:** All user data paths use `isOwner(userId)` check
+2. **Write blocking:** User subcollections (journal, daily_logs, inventoryEntries) block direct writes (`allow create, update: if false`)
+3. **Cloud Functions required:** Writes must go through Cloud Functions which enforce rate limiting, validation, and reCAPTCHA
+4. **Admin claim verification:** Admin collections use `isAdmin()` helper checking `request.auth.token.admin == true`
+5. **Rate limit collection protected:** `rate_limits` collection is locked to Admin SDK only
+
+### Coverage
+
+| Collection | Read | Write | Notes |
+|------------|------|-------|-------|
+| `/users/{userId}` | Owner | Owner | User profile |
+| `/users/{userId}/journal/*` | Owner | Cloud Functions | Blocked direct writes |
+| `/users/{userId}/daily_logs/*` | Owner | Cloud Functions | Blocked direct writes |
+| `/users/{userId}/inventoryEntries/*` | Owner | Cloud Functions | Blocked direct writes |
+| `/meetings/*` | Public | Cloud Functions | Public finder feature |
+| `/sober_living/*` | Public | Cloud Functions | Public finder feature |
+| `/daily_quotes/*` | Public | Admin | Admin claim required |
+| `/glossary/*` | Public | Admin | Admin claim required |
+| `/slogans/*` | Public | Admin | Admin claim required |
+| `/quick_links/*` | Public | Admin | Admin claim required |
+| `/prayers/*` | Public | Admin | Admin claim required |
+| `/rate_limits/*` | None | None | Admin SDK only |
+
+### Intentional Public Access
+
+The following collections have intentional public read access for the app's finder/discovery features:
+- `meetings` - Recovery meeting finder
+- `sober_living` - Sober living home finder
+- `daily_quotes`, `glossary`, `slogans`, `quick_links`, `prayers` - Public recovery content
+
+---
+
+## Dependency Review
+
+### Frontend Dependencies (package.json)
+
+| Package | Version | Status |
+|---------|---------|--------|
+| firebase | ^12.6.0 | Latest |
+| @sentry/nextjs | ^10.30.0 | Latest |
+| next | ^16.1.1 | Latest |
+| react | 19.2.3 | Latest |
+| zod | ^4.2.1 | Latest |
+
+### Functions Dependencies (functions/package.json)
+
+| Package | Version | Status |
+|---------|---------|--------|
+| firebase-admin | ^13.6.0 | Latest |
+| firebase-functions | ^7.0.0 | Latest |
+| @sentry/node | ^10.30.0 | Latest |
+| google-auth-library | ^9.15.0 | Latest |
+| zod | ^4.2.1 | Latest |
+
+### Supply Chain Assessment
+
+- **No risky dependencies identified**
+- **No postinstall/preinstall scripts** (good)
+- **Husky prepare script** properly guarded with fallback
+- **eslint-plugin-security** included for linting (good)
+- All versions use caret (^) - allows minor updates
+
+### Recommendations
+
+1. Run `npm audit` regularly
+2. Consider enabling Dependabot or Snyk for continuous monitoring
+3. Consider exact versions for critical security packages
+
+---
+
+## Product/UX Risk Assessment
+
+### PROD-001: User Profile Bypasses Cloud Functions
+
+**Location:** `lib/db/users.ts:103-134`
+
+**Observation:**
+User profile creation and updates use direct Firestore writes rather than Cloud Functions. This means:
+- No rate limiting on profile operations
+- No reCAPTCHA verification
+- No server-side Zod validation beyond Firestore rules
+
+**Mitigating Factors:**
+- Firestore rules enforce `isOwner(userId)` check
+- User can only modify their own profile
+- Profile data is less sensitive than journal entries
+
+**Recommendation:**
+Consider moving to Cloud Functions for consistency, but current implementation provides adequate protection.
+
+### Other UX Considerations
+
+1. **Anonymous user data migration** - Properly implemented with security checks
+2. **Admin mobile blocking** - Good practice for admin panel security
+3. **Error messages** - Properly sanitized to avoid information leakage
+
+---
+
+## Simplification Opportunities
+
+### REF-001: Decompose users-tab.tsx (567 lines)
+
+**Goal:** Split into focused sub-components
+
+**Proposed Structure:**
+```
+components/admin/users/
+├── UserSearchPanel.tsx
+├── UserDetailCard.tsx
+├── UserActivityTimeline.tsx
+├── AdminNotesEditor.tsx
+└── useUserSearch.ts (custom hook)
+```
+
+**Expected LOC reduction:** ~150 lines
+**Risk:** Low
+
+### REF-002: Extract schema package
+
+**Goal:** Share Zod schemas between frontend and functions
+
+**Proposed Structure:**
+```
+packages/
+└── shared-schemas/
+    ├── package.json
+    ├── src/
+    │   ├── daily-log.ts
+    │   ├── journal-entry.ts
+    │   └── index.ts
+    └── tsconfig.json
+```
+
+**Benefits:**
+- Single source of truth for validation
+- Automatic type sharing
+- Reduced maintenance burden
+
+**Risk:** Medium (requires monorepo setup)
+
+---
+
+## Verification Commands
+
+```bash
+# Security audits
+npm audit --audit-level=moderate
+cd functions && npm audit --audit-level=moderate
+
+# Lint checks
+npm run lint
+cd functions && npm run lint
+
+# Build verification
+npm run build
+cd functions && npm run build
+
+# Test suite
+npm test
+
+# Check App Check status
+grep -c "requireAppCheck.*false" functions/src/index.ts
+
+# Check storage rules
+ls -la storage.rules 2>/dev/null || echo "storage.rules NOT FOUND"
+
+# Check for console.log in production code
+grep -r "console\.log" lib/ --include="*.ts" | grep -v "NODE_ENV"
+```
+
+---
+
+## Security Strengths Noted
+
+The codebase demonstrates several security best practices:
+
+1. **Defense-in-Depth Architecture**
+   - Multiple security layers: Auth + Rate Limiting + reCAPTCHA + Zod + Firestore Rules
+
+2. **Firestore Rate Limiter**
+   - Persists across cold starts using Firestore
+   - Per-user AND per-IP rate limiting (CANON-0036)
+   - Fail-closed behavior on errors
+
+3. **Audit Logging**
+   - SHA-256 hashed user IDs
+   - PII redaction in logs
+   - Sentry integration for error monitoring
+
+4. **Server-Side Security**
+   - Cloud Functions enforce all security checks
+   - Server timestamps prevent clock manipulation
+   - Authorization checks verify UID ownership
+
+5. **Client-Side Validation**
+   - Clear security warnings in code comments
+   - Path traversal prevention
+   - User scope validation
+
+---
+
+## Appendix: Files Examined
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `firestore.rules` | 143 | Security rules |
+| `firebase.json` | 57 | Hosting config |
+| `functions/src/index.ts` | 788 | Cloud Functions |
+| `functions/src/admin.ts` | 1204 | Admin functions |
+| `functions/src/security-wrapper.ts` | 291 | Security middleware |
+| `functions/src/recaptcha-verify.ts` | 235 | reCAPTCHA verification |
+| `functions/src/firestore-rate-limiter.ts` | 230 | Rate limiting |
+| `functions/src/schemas.ts` | 127 | Zod schemas |
+| `lib/firebase.ts` | 164 | Firebase client init |
+| `lib/security/firestore-validation.ts` | 138 | Client validation |
+| `lib/db/users.ts` | 169 | User profile CRUD |
+| `lib/logger.ts` | 123 | Logging utility |
+| `package.json` | 103 | Frontend dependencies |
+| `functions/package.json` | 33 | Functions dependencies |
+| `next.config.mjs` | 22 | Next.js config |
+
+---
+
+## Confidence Notes
+
+| Finding | Confidence | Notes |
+|---------|------------|-------|
+| SEC-001 (App Check) | HIGH | Verified in code, documented as temporary |
+| SEC-002 (Headers) | HIGH | Direct file inspection |
+| SEC-003 (reCAPTCHA key) | HIGH | Hardcoded value visible in code |
+| SEC-004 (Migration bypass) | MEDIUM | May be intentional for network blocking cases |
+| SEC-005 (Storage rules) | HIGH | File confirmed missing via ls command |
+| REF-001/002 (Complexity) | MEDIUM | Subjective assessment |
+
+---
+
+## Unverifiable Areas
+
+1. **Firebase console configuration** - Cannot verify App Check is actually enabled in Firebase project
+2. **Environment variables** - Cannot verify `RECAPTCHA_SITE_KEY` is set in production
+3. **Deployed security headers** - Would require live site testing with curl/Lighthouse
+4. **Admin claim setup** - Cannot verify admin claims are properly set via Firebase Admin SDK
+
+---
+
+*Report generated by Claude Opus 4.5 security audit on 2026-01-13*

@@ -1,0 +1,367 @@
+{
+  "repo": "https://github.com/jasonmichaelbell78-creator/sonash-v0",
+  "audit_date": "2026-01-13",
+  "auditor": "claude-opus-4-5",
+  "branch": "claude/security-simplification-audit-2D1nZ",
+  "stack_confirmed": {
+    "frontend": ["Next.js 16.1.1", "React 19.2.3", "TypeScript 5.9.3", "Tailwind CSS 4", "shadcn/ui"],
+    "backend": ["Firebase Cloud Functions v7.0.0", "Node.js 24", "firebase-admin 13.6.0"],
+    "hosting": ["Firebase Hosting (static export)"],
+    "data": ["Cloud Firestore", "Firebase Authentication"],
+    "tooling": ["Sentry 10.30.0", "Zod 4.2.1", "ESLint 9.39.2", "Husky", "SonarCloud"]
+  },
+  "assumptions": [
+    "App Check is intentionally disabled temporarily due to throttle (documented in code comments)",
+    "Public reads on meetings, sober_living, etc. are intentional for public finder features",
+    "Firebase Storage is not actively used (no storage.rules file exists)",
+    "Admin custom claim (token.admin) is properly set via Firebase Admin SDK",
+    "reCAPTCHA Enterprise is configured in GCP project"
+  ],
+  "stop_ship": [],
+  "summary": {
+    "critical": 0,
+    "high": 2,
+    "medium": 4,
+    "low": 2,
+    "info": 3,
+    "total": 11
+  },
+  "findings": [
+    {
+      "id": "SEC-001",
+      "type": "security",
+      "severity": "high",
+      "category": "FunctionsAuth",
+      "cwe": ["CWE-862"],
+      "owasp": ["A01:2021 Broken Access Control"],
+      "location": {
+        "path": "functions/src/index.ts",
+        "start_line": 84,
+        "end_line": 84
+      },
+      "snippet": "      requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear",
+      "problem": "Firebase App Check is disabled on all Cloud Functions (saveDailyLog, saveJournalEntry, softDeleteJournalEntry, saveInventoryEntry, migrateAnonymousUserData). This removes the bot protection layer that verifies requests come from the legitimate app client.",
+      "impact": "Attackers can call Cloud Functions directly without proving they're using the legitimate app. Combined with anonymous auth, this enables automated abuse, credential stuffing, and data scraping at scale.",
+      "recommendation": "Re-enable App Check once the throttle period clears. Ensure lib/firebase.ts also initializes App Check on the client. Consider adding a scheduled reminder or monitoring alert for when this can be re-enabled.",
+      "patch_unified_diff": "--- a/functions/src/index.ts\n+++ b/functions/src/index.ts\n@@ -81,7 +81,7 @@ export const saveDailyLog = onCall<DailyLogData>(async (request) =>\n     {\n       functionName: \"saveDailyLog\",\n       rateLimiter: saveDailyLogLimiter,\n       validationSchema: dailyLogSchema,\n-      requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear\n+      requireAppCheck: true,\n       recaptchaAction: \"save_daily_log\",\n     },",
+      "alt_fix_snippet": "requireAppCheck: true,",
+      "tests_to_add": [
+        "functions/tests/security-wrapper.test.ts: Test that requests without valid App Check token are rejected with 'failed-precondition' error"
+      ],
+      "effort": "S",
+      "confidence": "high",
+      "notes_for_fixer_ai": "This change appears 5 times in index.ts (lines 84, 170, 269, 363). Also need to uncomment App Check initialization in lib/firebase.ts lines 61-90. Verify the reCAPTCHA throttle period has passed before deploying."
+    },
+    {
+      "id": "SEC-002",
+      "type": "security",
+      "severity": "high",
+      "category": "Headers",
+      "cwe": ["CWE-693", "CWE-1021"],
+      "owasp": ["A05:2021 Security Misconfiguration"],
+      "location": {
+        "path": "firebase.json",
+        "start_line": 6,
+        "end_line": 37
+      },
+      "snippet": "    \"headers\": [\n      {\n        \"source\": \"**/*.@(html)\",\n        \"headers\": [\n          {\n            \"key\": \"Cache-Control\",\n            \"value\": \"no-cache, no-store, must-revalidate\"\n          },\n          {\n            \"key\": \"Cross-Origin-Opener-Policy\",\n            \"value\": \"same-origin-allow-popups\"\n          }\n        ]\n      },",
+      "problem": "Missing critical security headers: Content-Security-Policy (CSP), X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security (HSTS), Referrer-Policy, Permissions-Policy.",
+      "impact": "Without these headers: clickjacking attacks possible (X-Frame-Options), MIME-sniffing attacks (X-Content-Type-Options), protocol downgrade attacks (HSTS), XSS risk increased (CSP), referrer leakage (Referrer-Policy).",
+      "recommendation": "Add comprehensive security headers to firebase.json hosting configuration. Start with permissive CSP and tighten iteratively.",
+      "patch_unified_diff": "--- a/firebase.json\n+++ b/firebase.json\n@@ -6,13 +6,37 @@\n     \"headers\": [\n       {\n         \"source\": \"**/*.@(html)\",\n         \"headers\": [\n           {\n             \"key\": \"Cache-Control\",\n             \"value\": \"no-cache, no-store, must-revalidate\"\n           },\n           {\n             \"key\": \"Cross-Origin-Opener-Policy\",\n             \"value\": \"same-origin-allow-popups\"\n+          },\n+          {\n+            \"key\": \"X-Frame-Options\",\n+            \"value\": \"DENY\"\n+          },\n+          {\n+            \"key\": \"X-Content-Type-Options\",\n+            \"value\": \"nosniff\"\n+          },\n+          {\n+            \"key\": \"Strict-Transport-Security\",\n+            \"value\": \"max-age=31536000; includeSubDomains\"\n+          },\n+          {\n+            \"key\": \"Referrer-Policy\",\n+            \"value\": \"strict-origin-when-cross-origin\"\n+          },\n+          {\n+            \"key\": \"Permissions-Policy\",\n+            \"value\": \"geolocation=(self), camera=(), microphone=()\"\n           }\n         ]\n       },",
+      "tests_to_add": [
+        "scripts/check-security-headers.js: Fetch deployed site and verify all security headers are present"
+      ],
+      "effort": "S",
+      "confidence": "high",
+      "notes_for_fixer_ai": "CSP should be added last after testing that it doesn't break existing functionality. Start without CSP, deploy, verify, then add CSP in report-only mode first. Geolocation permission is needed for the meetings finder feature."
+    },
+    {
+      "id": "SEC-003",
+      "type": "security",
+      "severity": "medium",
+      "category": "Secrets",
+      "cwe": ["CWE-798"],
+      "owasp": ["A02:2021 Cryptographic Failures"],
+      "location": {
+        "path": "functions/src/recaptcha-verify.ts",
+        "start_line": 66,
+        "end_line": 66
+      },
+      "snippet": "  const siteKey = process.env.RECAPTCHA_SITE_KEY || \"6LdeazosAAAAAMDNCh1hTUDKh_UeS6xWY1-85B2O\";",
+      "problem": "Hardcoded reCAPTCHA site key as fallback. While site keys are semi-public, this pattern makes key rotation difficult and creates confusion between environments.",
+      "impact": "If the key needs to be rotated (compromise, quota issues), code must be redeployed. Fallback could cause production to use wrong key if env var is missing.",
+      "recommendation": "Remove hardcoded fallback. Fail early with clear error if RECAPTCHA_SITE_KEY is not set. This ensures proper configuration before deployment.",
+      "patch_unified_diff": "--- a/functions/src/recaptcha-verify.ts\n+++ b/functions/src/recaptcha-verify.ts\n@@ -63,7 +63,12 @@ export async function verifyRecaptchaToken(\n   // Get project ID and site key from environment\n   const projectId = process.env.GCLOUD_PROJECT;\n   // Firebase Functions config is accessed via functions.config() or process.env\n-  // When using firebase functions:config:set recaptcha.site_key=\"...\", it becomes RECAPTCHA_SITE_KEY\n-  const siteKey = process.env.RECAPTCHA_SITE_KEY || \"6LdeazosAAAAAMDNCh1hTUDKh_UeS6xWY1-85B2O\";\n+  const siteKey = process.env.RECAPTCHA_SITE_KEY;\n \n-  if (!projectId || !siteKey) {\n+  if (!projectId) {\n+    logSecurityEvent(\n+      \"RECAPTCHA_CONFIG_ERROR\",\n+      \"verifyRecaptchaToken\",\n+      \"Missing GCLOUD_PROJECT environment variable\",\n+      { userId, captureToSentry: true }\n+    );\n+    throw new HttpsError(\"failed-precondition\", \"reCAPTCHA verification is not configured\");\n+  }\n+\n+  if (!siteKey) {\n     logSecurityEvent(\n       \"RECAPTCHA_CONFIG_ERROR\",\n       \"verifyRecaptchaToken\",\n-      \"reCAPTCHA Enterprise not configured\",\n+      \"Missing RECAPTCHA_SITE_KEY environment variable\",\n       { userId, captureToSentry: true }\n     );\n     throw new HttpsError(\"failed-precondition\", \"reCAPTCHA verification is not configured\");\n   }",
+      "tests_to_add": [
+        "functions/tests/recaptcha-verify.test.ts: Test that missing RECAPTCHA_SITE_KEY throws failed-precondition error"
+      ],
+      "effort": "S",
+      "confidence": "high",
+      "notes_for_fixer_ai": "Ensure RECAPTCHA_SITE_KEY is set in Firebase Functions config before deploying: firebase functions:config:set recaptcha.site_key=\"YOUR_KEY\""
+    },
+    {
+      "id": "SEC-004",
+      "type": "security",
+      "severity": "medium",
+      "category": "FunctionsAuth",
+      "cwe": ["CWE-307"],
+      "owasp": ["A07:2021 Identification and Authentication Failures"],
+      "location": {
+        "path": "functions/src/index.ts",
+        "start_line": 514,
+        "end_line": 527
+      },
+      "snippet": "  // Verify reCAPTCHA token (manual verification)\n  // Make reCAPTCHA optional - log but don't block when missing\n  const token = data.recaptchaToken;\n  if (!token || token.trim() === \"\") {\n    logSecurityEvent(\n      \"RECAPTCHA_MISSING_TOKEN\",\n      \"migrateAnonymousUserData\",\n      \"Migration processed without reCAPTCHA token (may indicate network blocking)\",\n      {\n        userId,\n        severity: \"WARNING\",\n        metadata: { action: \"migrate_user_data\" },\n      }\n    );\n    // Continue without reCAPTCHA protection - rely on other security layers",
+      "problem": "The migrateAnonymousUserData function makes reCAPTCHA verification optional, allowing migration to proceed without bot protection when token is missing.",
+      "impact": "Attackers could automate account migration attempts. While other security layers exist (auth, rate limiting), this weakens defense-in-depth for a sensitive operation that moves data between accounts.",
+      "recommendation": "Make reCAPTCHA required for migration, matching the pattern used in other functions via withSecurityChecks. If network blocking is a concern, add a fallback verification method.",
+      "patch_unified_diff": "--- a/functions/src/index.ts\n+++ b/functions/src/index.ts\n@@ -511,18 +511,21 @@ export const migrateAnonymousUserData = onCall<MigrationData>(async (request) =>\n \n   // Verify reCAPTCHA token (manual verification)\n-  // Make reCAPTCHA optional - log but don't block when missing\n   const token = data.recaptchaToken;\n   if (!token || token.trim() === \"\") {\n     logSecurityEvent(\n       \"RECAPTCHA_MISSING_TOKEN\",\n       \"migrateAnonymousUserData\",\n-      \"Migration processed without reCAPTCHA token (may indicate network blocking)\",\n+      \"Migration rejected: reCAPTCHA token required\",\n       {\n         userId,\n-        severity: \"WARNING\",\n         metadata: { action: \"migrate_user_data\" },\n       }\n     );\n-    // Continue without reCAPTCHA protection - rely on other security layers\n+    throw new HttpsError(\n+      \"failed-precondition\",\n+      \"Security verification required. Please refresh the page and try again.\"\n+    );\n   } else {\n     await verifyRecaptchaToken(token, \"migrate_user_data\", userId);\n   }",
+      "tests_to_add": [
+        "functions/tests/migration.test.ts: Test that migration without reCAPTCHA token returns failed-precondition error"
+      ],
+      "effort": "S",
+      "confidence": "medium",
+      "notes_for_fixer_ai": "Consider whether network blocking (China, corporate firewalls) is a real concern for your users. If so, consider alternative verification like email confirmation for migration."
+    },
+    {
+      "id": "SEC-005",
+      "type": "security",
+      "severity": "medium",
+      "category": "RulesPolicy",
+      "cwe": ["CWE-862"],
+      "owasp": ["A01:2021 Broken Access Control"],
+      "location": {
+        "path": "storage.rules",
+        "start_line": 0,
+        "end_line": 0
+      },
+      "snippet": "// File does not exist",
+      "problem": "No Firebase Storage security rules file exists. If Firebase Storage is enabled for this project, default rules may allow public read/write access.",
+      "impact": "Without explicit rules, Firebase Storage could be misconfigured to allow unauthorized file uploads, storage abuse, or data exfiltration.",
+      "recommendation": "Create storage.rules with deny-all default rules. If storage is not used, explicitly lock it down. If storage will be used in future, implement proper user-scoped rules.",
+      "alt_fix_snippet": "rules_version = '2';\nservice firebase.storage {\n  match /b/{bucket}/o {\n    // Deny all access by default\n    // Add specific rules when storage features are implemented\n    match /{allPaths=**} {\n      allow read, write: if false;\n    }\n  }\n}",
+      "tests_to_add": [
+        "Manual: Attempt to upload file to Firebase Storage via REST API - should return permission denied"
+      ],
+      "effort": "S",
+      "confidence": "high",
+      "notes_for_fixer_ai": "Create storage.rules file in project root. Update firebase.json to include storage rules reference if not already present."
+    },
+    {
+      "id": "SEC-006",
+      "type": "security",
+      "severity": "medium",
+      "category": "DataExposure",
+      "cwe": ["CWE-532"],
+      "owasp": ["A09:2021 Security Logging and Monitoring Failures"],
+      "location": {
+        "path": "lib/firestore-service.ts",
+        "start_line": 229,
+        "end_line": 229
+      },
+      "snippet": "          console.log(\"📤 Sending to Cloud Function:\", JSON.stringify(sanitizedPayload, null, 2));",
+      "problem": "Debug logging of payload data in production code. Even though marked as 'sanitized', this could expose sensitive user data in browser console logs.",
+      "impact": "Sensitive data could be visible in browser developer tools, potentially captured by browser extensions or shoulder surfers.",
+      "recommendation": "Wrap debug logging in NODE_ENV check or remove entirely. Use the existing logger utility which has environment-aware logging.",
+      "patch_unified_diff": "--- a/lib/firestore-service.ts\n+++ b/lib/firestore-service.ts\n@@ -226,7 +226,9 @@ export async function callCloudFunction<T, R>(\n         sanitizedPayload.recaptchaToken = \"[REDACTED]\";\n       }\n \n-      console.log(\"📤 Sending to Cloud Function:\", JSON.stringify(sanitizedPayload, null, 2));\n+      if (process.env.NODE_ENV === \"development\") {\n+        console.log(\"📤 Sending to Cloud Function:\", JSON.stringify(sanitizedPayload, null, 2));\n+      }\n     }\n",
+      "tests_to_add": [],
+      "effort": "S",
+      "confidence": "high",
+      "notes_for_fixer_ai": "Check if there are other console.log statements in production paths. Consider using the logger utility consistently across the codebase."
+    },
+    {
+      "id": "SEC-007",
+      "type": "security",
+      "severity": "low",
+      "category": "Other",
+      "cwe": ["CWE-1188"],
+      "owasp": [],
+      "location": {
+        "path": "lib/firebase.ts",
+        "start_line": 57,
+        "end_line": 90
+      },
+      "snippet": "  // TEMPORARILY DISABLED: App Check is disabled due to 24-hour throttle\n  // Will re-enable after throttle clears (Dec 31, ~01:02 UTC)\n  // Initialize App Check for security\n  // SECURITY: App Check prevents unauthorized access to Cloud Functions\n  /* try {\n    const recaptchaSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY",
+      "problem": "Client-side App Check initialization is commented out. This matches the server-side disabled state but should be re-enabled together.",
+      "impact": "When SEC-001 is fixed, this must also be uncommented or App Check tokens won't be sent from the client.",
+      "recommendation": "Track this as a paired change with SEC-001. Create a task or issue to re-enable both client and server App Check together.",
+      "tests_to_add": [
+        "Integration test: Verify App Check token is included in Cloud Function requests after re-enabling"
+      ],
+      "effort": "S",
+      "confidence": "high",
+      "notes_for_fixer_ai": "This is a companion fix to SEC-001. Both must be enabled together. The comment mentions Dec 31 throttle - verify current date before re-enabling."
+    },
+    {
+      "id": "REF-001",
+      "type": "refactor",
+      "severity": "low",
+      "category": "Complexity",
+      "cwe": [],
+      "owasp": [],
+      "location": {
+        "path": "components/admin/users-tab.tsx",
+        "start_line": 1,
+        "end_line": 567
+      },
+      "snippet": "// File is 567 lines - complex admin component handling user search, detail view, notes editing",
+      "problem": "Large monolithic component (567 lines) handling multiple concerns: user search, detail view, notes editing, activity timeline. High cognitive complexity makes maintenance difficult.",
+      "impact": "Increased bug risk, harder to test individual features, slower development velocity for admin features.",
+      "recommendation": "Extract into smaller components: UserSearchPanel, UserDetailCard, UserActivityTimeline, AdminNotesEditor. Create custom hooks for data fetching logic.",
+      "tests_to_add": [],
+      "effort": "M",
+      "confidence": "high",
+      "notes_for_fixer_ai": "This is a refactoring task, not a security fix. Lower priority than security findings. Consider doing this as part of a dedicated refactoring sprint."
+    },
+    {
+      "id": "REF-002",
+      "type": "refactor",
+      "severity": "low",
+      "category": "Complexity",
+      "cwe": [],
+      "owasp": [],
+      "location": {
+        "path": "components/admin/admin-crud-table.tsx",
+        "start_line": 1,
+        "end_line": 394
+      },
+      "snippet": "// File is 394 lines - generic CRUD table component with inline editing",
+      "problem": "Large component with complex generic typing and inline editing logic. Could benefit from composition pattern.",
+      "impact": "Maintenance burden, potential for subtle bugs in generic type handling.",
+      "recommendation": "Consider extracting EditableCell, TableHeader, TablePagination as separate components. Simplify generic constraints if possible.",
+      "tests_to_add": [],
+      "effort": "M",
+      "confidence": "medium",
+      "notes_for_fixer_ai": "Lower priority refactoring task. The component works correctly but could be more maintainable."
+    },
+    {
+      "id": "REF-003",
+      "type": "refactor",
+      "severity": "info",
+      "category": "Duplication",
+      "cwe": [],
+      "owasp": [],
+      "location": {
+        "path": "functions/src/schemas.ts",
+        "start_line": 1,
+        "end_line": 127
+      },
+      "snippet": "// Server-side Zod schemas for validation\n// Similar patterns exist in lib/db/users.ts for client-side",
+      "problem": "Zod schemas are defined separately in functions/src/schemas.ts (server) and lib/db/users.ts (client). Some schemas could be shared to ensure consistency.",
+      "impact": "Risk of validation drift between client and server. Maintenance burden of updating schemas in multiple places.",
+      "recommendation": "Create a shared package (e.g., packages/schemas) that can be imported by both frontend and functions. Use TypeScript project references or npm workspace.",
+      "tests_to_add": [],
+      "effort": "L",
+      "confidence": "medium",
+      "notes_for_fixer_ai": "This is an architectural improvement. Requires monorepo setup or package extraction. Consider for future refactoring."
+    },
+    {
+      "id": "PROD-001",
+      "type": "product_risk",
+      "severity": "info",
+      "category": "ProductUXRisk",
+      "cwe": [],
+      "owasp": [],
+      "location": {
+        "path": "lib/db/users.ts",
+        "start_line": 103,
+        "end_line": 134
+      },
+      "snippet": "export async function createUserProfile(\n  uid: string,\n  email: string | null,\n  nickname?: string\n): Promise<UserProfile> {\n  const newUserData: UserProfileWrite = {\n    uid,\n    email,\n    nickname: nickname || email?.split(\"@\")[0] || \"Friend\",",
+      "problem": "User profile creation uses client-side Firestore write. While protected by Firestore rules (allow read, write: if isOwner(userId)), this bypasses the Cloud Function security layers (rate limiting, reCAPTCHA).",
+      "impact": "User profile operations don't have the same security controls as journal/daily_log operations. However, risk is mitigated by Firestore rules limiting access to owner only.",
+      "recommendation": "For consistency, consider moving user profile creation to a Cloud Function with the standard security wrapper. Lower priority as current Firestore rules provide adequate protection.",
+      "tests_to_add": [],
+      "effort": "M",
+      "confidence": "medium",
+      "notes_for_fixer_ai": "This is a defense-in-depth improvement, not a critical security fix. The current Firestore rules (isOwner check) provide basic protection."
+    }
+  ],
+  "refactor_plan": [
+    {
+      "id": "REFPLAN-001",
+      "location": {
+        "path": "components/admin/",
+        "start_line": 0,
+        "end_line": 0
+      },
+      "goal": "Decompose large admin components into focused sub-components",
+      "steps": [
+        "Extract UserSearchPanel from users-tab.tsx",
+        "Extract UserDetailCard with props for profile data",
+        "Create useUserSearch and useUserDetail custom hooks",
+        "Extract AdminNotesEditor as reusable component",
+        "Update users-tab.tsx to compose these components"
+      ],
+      "expected_loc_delta": -150,
+      "risk": "low"
+    },
+    {
+      "id": "REFPLAN-002",
+      "location": {
+        "path": "packages/shared-schemas/",
+        "start_line": 0,
+        "end_line": 0
+      },
+      "goal": "Create shared Zod schema package for client/server consistency",
+      "steps": [
+        "Set up npm workspace or package structure",
+        "Move common schemas to shared package",
+        "Update functions/src/schemas.ts to import from shared",
+        "Update lib/db/users.ts to import from shared",
+        "Add build step to compile shared package"
+      ],
+      "expected_loc_delta": -50,
+      "risk": "medium"
+    }
+  ],
+  "dependency_review": {
+    "risky_dependencies": [],
+    "scripts_risks": [
+      "No postinstall or preinstall scripts detected - good",
+      "Husky prepare script is properly guarded with || echo fallback"
+    ],
+    "lockfile_notes": [
+      "All dependencies use caret (^) versioning - allows minor version updates",
+      "Consider using exact versions for critical security packages",
+      "firebase, firebase-admin, @sentry/nextjs are up to date as of audit date"
+    ],
+    "security_notes": [
+      "No known vulnerabilities in direct dependencies (run npm audit to verify)",
+      "eslint-plugin-security is included - good for catching security issues in linting",
+      "Node.js 24 runtime is specified - latest LTS"
+    ]
+  },
+  "verification_plan": {
+    "commands": [
+      "npm audit --audit-level=moderate",
+      "npm run lint",
+      "npm run test",
+      "npm run build",
+      "cd functions && npm audit --audit-level=moderate",
+      "cd functions && npm run lint",
+      "cd functions && npm run build",
+      "grep -c 'requireAppCheck.*false' functions/src/index.ts",
+      "ls -la storage.rules 2>/dev/null || echo 'storage.rules NOT FOUND'"
+    ],
+    "security_tooling": [
+      "Run 'npm audit' to check for known vulnerabilities",
+      "Consider adding Snyk or Dependabot for continuous dependency scanning",
+      "Use 'firebase deploy --only firestore:rules' with --dry-run to validate rules syntax",
+      "Run Lighthouse security audit on deployed site",
+      "Use OWASP ZAP for dynamic security testing of the deployed application"
+    ]
+  },
+  "security_strengths": [
+    "Defense-in-depth architecture: Auth + Rate limiting + reCAPTCHA + Zod validation",
+    "Firestore rules properly block direct writes, forcing Cloud Functions for sensitive operations",
+    "Firestore-based rate limiting survives cold starts and horizontal scaling",
+    "Audit logging with SHA-256 hashed user IDs and PII redaction",
+    "Fail-closed security: Rate limiter denies on error rather than allowing",
+    "Server-side timestamps prevent client clock manipulation",
+    "Authorization checks verify UID ownership on all operations",
+    "Security logger with Sentry integration for monitoring",
+    "Client-side validation provides defense-in-depth with clear security warnings"
+  ]
+}
