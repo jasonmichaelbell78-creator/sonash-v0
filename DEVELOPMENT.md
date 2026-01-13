@@ -548,12 +548,16 @@ TypeScript rules)
 
 **Pre-push hook (`.husky/pre-push`) runs:**
 
-| Step               | Command                  | Blocking?         |
-| ------------------ | ------------------------ | ----------------- |
-| Tests              | `npm test`               | YES - blocks push |
-| Circular deps      | `npm run deps:circular`  | YES - blocks push |
-| Pattern compliance | `npm run patterns:check` | YES - blocks push |
-| Type check         | `npx tsc --noEmit`       | YES - blocks push |
+| Step               | Command                       | Blocking?         |
+| ------------------ | ----------------------------- | ----------------- |
+| Tests              | `npm test`                    | YES - blocks push |
+| Circular deps      | `npm run deps:circular`       | YES - blocks push |
+| Pattern compliance | `npm run patterns:check`      | YES - blocks push |
+| Type check         | `npx tsc --noEmit`            | YES - blocks push |
+| Security audit     | `npm audit --audit-level=high`| NO - warning only |
+
+> **Security Audit**: Checks for high/critical vulnerabilities in dependencies.
+> Non-blocking warning - reports issues but doesn't prevent push.
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 

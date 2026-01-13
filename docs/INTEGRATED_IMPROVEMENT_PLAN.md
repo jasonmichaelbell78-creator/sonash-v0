@@ -39,7 +39,7 @@ supersedes fragmented planning documents into a single linear execution path.
 | Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~ |
 | Step 4B | Remediation Sprint                          | **COMPLETE**    | 100%       | ~~Step 4~~ |
 | Step 4C | SonarCloud Issue Triage                     | **COMPLETE**    | 100%       | ~~Step 4B~~|
-| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~28%       | ~~Step 4C~~|
+| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~39%       | ~~Step 4C~~|
 | Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5     |
 | Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6     |
 
@@ -1456,7 +1456,7 @@ Document decisions in a triage table:
 
 ## Step 5: Review Policy Expansion
 
-**Status:** IN PROGRESS **Completion:** ~28% (5/18 tasks) **Estimated Effort:** 12-16 hours (6-9h
+**Status:** IN PROGRESS **Completion:** ~39% (7/18 tasks) **Estimated Effort:** 12-16 hours (6-9h
 original + 2h for Tasks 5.10-5.12 + 4-5h for Tasks 5.13-5.18) **Dependencies:** Step 4C **Risk Level:** Low
 **Started:** 2026-01-13
 
@@ -1599,17 +1599,17 @@ for full design. *(Archived 2026-01-13)*
   - [x] Add learning entry reminder to pre-commit (~0.5s overhead)
   - **Source:** Process Automation Gap Analysis (Session #60)
 
-- [ ] **Task 5.14**: Add npm audit to pre-push hook (0.5 hours)
-  - Add `npm audit --audit-level=high` to `.husky/pre-push`
-  - Non-blocking warning initially, blocking after baseline established
-  - ~3-8s overhead per push
-  - **Verification:** Push with vulnerable dep triggers warning
+- [x] **Task 5.14**: Add npm audit to pre-push hook (DONE - 2026-01-13)
+  - [x] Add `npm audit --audit-level=high` to `.husky/pre-push`
+  - [x] Non-blocking warning initially
+  - [x] ~3-8s overhead per push
+  - [x] Document in DEVELOPMENT.md pre-push table
 
-- [ ] **Task 5.15**: Integrate Sentry into logger (0.5 hours)
-  - Remove TODO from `lib/logger.ts:107`
-  - Add `Sentry.captureException()` in error paths
-  - Add correlation ID context to Sentry events
-  - **Verification:** Production errors appear in Sentry dashboard
+- [x] **Task 5.15**: Integrate Sentry into logger (DONE - 2026-01-13)
+  - [x] Removed TODO from `lib/logger.ts`
+  - [x] Added `Sentry.captureMessage()` in production error paths
+  - [x] Sanitized context passed to Sentry (uses existing redaction)
+  - **Verification:** Production errors will appear in Sentry dashboard
 
 - [ ] **Task 5.16**: Add code coverage to CI (1 hour)
   - Wire `npm run test:coverage` into `.github/workflows/ci.yml`
@@ -1649,8 +1649,8 @@ for full design. *(Archived 2026-01-13)*
 - [x] CANON schema validation integrated into pre-commit (Task 5.12)
 - [x] Session-start runs lessons:surface and docs:sync-check (Task 5.13)
 - [x] Pre-commit includes learning entry reminder (Task 5.13)
-- [ ] npm audit runs on pre-push (Task 5.14)
-- [ ] Sentry integrated with logger (Task 5.15)
+- [x] npm audit runs on pre-push (Task 5.14)
+- [x] Sentry integrated with logger (Task 5.15)
 - [ ] Code coverage reported in CI (Task 5.16)
 - [ ] CI continue-on-error flags removed (Task 5.17)
 - [ ] Redundant automation checks consolidated (Task 5.18)

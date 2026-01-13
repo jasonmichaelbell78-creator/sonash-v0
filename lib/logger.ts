@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs";
+
 export type LogContext = Record<string, unknown>;
 
 type LogLevel = "info" | "warn" | "error";
@@ -95,18 +97,19 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
     }
   }
 
-  // In production, only log errors to console (and could send to external service)
+  // In production, log errors to console and send to Sentry
   if (isProduction && level === "error") {
     console.error({
       level: payload.level,
       message: payload.message,
       timestamp: payload.timestamp,
-      // Don't log full context in production console, but you could send it to Sentry/LogRocket
     });
 
-    // TODO: Send to external logging service
-    // Example: Sentry.captureMessage(message, { level, extra: context })
-    // Example: LogRocket.error(message, context)
+    // Send to Sentry with sanitized context
+    Sentry.captureMessage(message, {
+      level: "error",
+      extra: sanitizeContext(context),
+    });
   }
 };
 
