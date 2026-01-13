@@ -1,3 +1,7 @@
+---
+description: PR Code Review Processor
+---
+
 # PR Code Review Processor
 
 You are about to process AI code review feedback. This is a **standardized,
