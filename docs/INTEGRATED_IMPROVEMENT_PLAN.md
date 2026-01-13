@@ -1476,8 +1476,8 @@ Brainstorming session (Session #21) identified gaps in review coverage:
 - Detection exists but correction is missing
 
 See:
-[REVIEW_POLICY_EXPANSION_DRAFT.md](./brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md)
-for full design.
+[REVIEW_POLICY_EXPANSION_DRAFT.md](./archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md)
+for full design. *(Archived 2026-01-13)*
 
 ### Design Principles
 
@@ -1544,7 +1544,7 @@ for full design.
 
 - [ ] **Task 5.8**: PR Review Process Improvements (2-3 hours)
   - Reference:
-    [PR_REVIEW_IMPROVEMENT_OPTIONS.md](./brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md)
+    [PR_REVIEW_IMPROVEMENT_OPTIONS.md](./archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md) *(Archived 2026-01-13)*
   - Implement Phase 2 options:
     - Add ESLint security plugin locally (Option A2)
     - Create tool-specific configurations for CodeRabbit/Qodo (Option B3)

@@ -1,8 +1,8 @@
-# Fetch PR Feedback
-
-description: Fetch AI code review feedback from GitHub PR
-
 ---
+description: Fetch PR Feedback
+---
+
+# Fetch PR Feedback
 
 ## Instructions
 

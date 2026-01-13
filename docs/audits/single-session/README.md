@@ -1,6 +1,6 @@
 # Single-Session Audit Results
 
-**Created:** 2026-01-08 **Updated:** 2026-01-08 **Purpose:** Store results from
+**Created:** 2026-01-08 **Updated:** 2026-01-13 **Purpose:** Store results from
 single-session (single-AI) audits
 
 ---
@@ -26,14 +26,49 @@ single-session/
 
 ## Available Commands
 
-| Command                | Description              | Focus Areas                                                   |
-| ---------------------- | ------------------------ | ------------------------------------------------------------- |
-| `/audit-code`          | Code review audit        | Hygiene, Types, Framework, Testing, Security                  |
-| `/audit-security`      | Security audit           | Auth, Input Validation, Data, Firebase, Deps, OWASP           |
-| `/audit-performance`   | Performance audit        | Bundle, Rendering, Data Fetch, Memory, Web Vitals             |
-| `/audit-refactoring`   | Refactoring audit        | God Objects, Duplication, Complexity, Architecture, Tech Debt |
-| `/audit-documentation` | Documentation audit      | Links, Stale Content, Coverage, Tier, Frontmatter, Sync       |
-| `/audit-process`       | Process/Automation audit | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers             |
+| Command                | Description              | Focus Areas                                                                                              |
+| ---------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `/audit-code`          | Code review audit        | Hygiene, Types, Framework, Testing, Security, **AI-Code Failure Modes**, **Debugging Ergonomics**        |
+| `/audit-security`      | Security audit           | Auth, Injection, Data, Firebase, Deps, OWASP, **Headers, Framework, Crypto, Agent Security**             |
+| `/audit-performance`   | Performance audit        | Bundle, Rendering, Data Fetch, Memory, Web Vitals, **Offline Support**                                   |
+| `/audit-refactoring`   | Refactoring audit        | God Objects, Duplication, Complexity, Architecture, Tech Debt                                            |
+| `/audit-documentation` | Documentation audit      | Links, Stale Content, Coverage, Tier, Frontmatter, Sync                                                  |
+| `/audit-process`       | Process/Automation audit | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers, **Golden Path & DX**                                  |
+
+### Engineering Productivity Audit Additions (2026-01-13)
+
+Based on the Engineering Productivity audit analysis, three new categories were added:
+
+**Code Review (`/audit-code`) - Debugging Ergonomics:**
+- Correlation IDs for request tracing
+- Structured logging (not just console.log)
+- Sentry integration completeness
+- Error context and stack traces
+- Repro path quality assessment
+
+**Performance (`/audit-performance`) - Offline Support:**
+- Offline state detection
+- Sync queue implementation
+- Pending/synced/failed UI indicators
+- Conflict resolution strategy
+- Failure mode documentation
+
+**Process (`/audit-process`) - Golden Path & Developer Experience:**
+- Single-command workflows (setup, dev, offline, test, deploy, verify, rollback)
+- Doctor/diagnostic scripts
+- DX friction assessment
+- Onboarding friction evaluation
+
+### Security Audit Extended Coverage (2026-01-13)
+
+The security audit now includes additional categories for vibe-coded apps:
+
+- **Hosting Headers**: CSP, HSTS, X-Frame-Options, COOP, COEP
+- **Framework-Specific**: Next.js server/client boundary leaks, API route auth
+- **File Handling**: Insecure uploads, path traversal
+- **Crypto**: Weak randomness, broken hashing, homegrown crypto
+- **Product/UX Risks**: Security UI without backend enforcement
+- **AI Agent Security**: Prompt injection in configs, agent manipulation surfaces
 
 ## Output Format
 

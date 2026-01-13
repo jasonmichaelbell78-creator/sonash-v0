@@ -7,6 +7,23 @@ deprecated files from the SoNash project.
 
 ## 🗂️ Archive Organization
 
+### January 13, 2026 - Deprecated Documents
+
+**Location:** `/docs/archive/2026-jan-deprecated/`
+
+**Purpose:** Archive of outdated, superseded, or completed draft documents
+
+**Archived Documents:**
+
+- **ANTIGRAVITY_GUIDE.md** - Guide for Google's Antigravity/Gemini IDE (not applicable to Claude Code)
+- **PR_REVIEW_PROMPT_TEMPLATE.md** - Superseded by `/pr-review` slash command and `pr-review-processor` skill
+- **brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md** - Draft options document, decisions made
+- **brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md** - Draft integrated into REVIEW_POLICY_ARCHITECTURE.md
+
+**Details:** See [2026-jan-deprecated/ARCHIVE_NOTE.md](./2026-jan-deprecated/ARCHIVE_NOTE.md)
+
+---
+
 ### December 22, 2025 - Phase 1 Prompt v1.3 Update
 
 **Archived Document:**

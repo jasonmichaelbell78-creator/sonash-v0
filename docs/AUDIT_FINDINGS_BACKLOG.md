@@ -1,7 +1,7 @@
 # Audit Findings Backlog
 
-**Document Version**: 3.2 **Created**: 2025-12-30 **Last Updated**: 2026-01-11
-**Status**: ACTIVE **Total Items**: 7 (7-10 hours estimated effort)
+**Document Version**: 3.3 **Created**: 2025-12-30 **Last Updated**: 2026-01-13
+**Status**: ACTIVE **Total Items**: 9 (8-11 hours estimated effort)
 
 ---
 
@@ -377,18 +377,94 @@ discover and use.
 
 ---
 
+### [Security] Missing Security Headers
+
+**CANON-ID**: CANON-0107 (Single-session security audit 2026-01-13) **Severity**: S1
+**Effort**: E0 (< 30 min) **Source**: Single-session security audit 2026-01-13
+**Status**: PENDING
+
+**Description**: Critical security headers are missing from Firebase Hosting
+configuration: Content-Security-Policy (CSP), X-Frame-Options, X-Content-Type-Options,
+Strict-Transport-Security (HSTS), Referrer-Policy, Permissions-Policy.
+
+**CWE**: CWE-693, CWE-1021 **OWASP**: A05:2021 Security Misconfiguration
+
+**Files affected**:
+
+- `firebase.json:6-37`
+
+**Implementation notes**:
+
+1. Add security headers to firebase.json hosting configuration
+2. Start with X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy, Permissions-Policy
+3. Add CSP last in report-only mode, then tighten after testing
+
+**Acceptance criteria**:
+
+- [ ] X-Frame-Options: DENY added
+- [ ] X-Content-Type-Options: nosniff added
+- [ ] Strict-Transport-Security with max-age=31536000 added
+- [ ] Referrer-Policy: strict-origin-when-cross-origin added
+- [ ] Permissions-Policy configured appropriately
+- [ ] All headers verified via curl or Lighthouse on deployed site
+
+---
+
+### [Security] No Firebase Storage Rules
+
+**CANON-ID**: CANON-0108 (Single-session security audit 2026-01-13) **Severity**: S2
+**Effort**: E0 (< 30 min) **Source**: Single-session security audit 2026-01-13
+**Status**: PENDING
+
+**Description**: No Firebase Storage security rules file exists. If Firebase Storage
+is enabled for this project, default rules may allow public read/write access.
+
+**CWE**: CWE-862 **OWASP**: A01:2021 Broken Access Control
+
+**Files affected**:
+
+- `storage.rules` (file does not exist - needs creation)
+
+**Implementation notes**:
+
+1. Create `storage.rules` in project root with deny-all default
+2. Update `firebase.json` to include storage rules reference if not present
+3. Deploy rules via `firebase deploy --only storage`
+
+**Recommended content**:
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Deny all access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+```
+
+**Acceptance criteria**:
+
+- [ ] storage.rules file created with deny-all rules
+- [ ] firebase.json references storage.rules
+- [ ] Attempt to upload file to Firebase Storage returns permission denied
+
+---
+
 ## Backlog Statistics
 
 | Category      | Count | Effort |
 | ------------- | ----- | ------ |
 | Code Quality  | 1     | E1     |
-| Security      | 0     | -      |
+| Security      | 2     | E0     |
 | Performance   | 0     | -      |
 | Refactoring   | 0     | -      |
 | Documentation | 2     | E3     |
 | Process       | 4     | E2     |
 
-**Total items**: 7 **Total estimated effort**: 7-10 hours
+**Total items**: 9 **Total estimated effort**: 8-11 hours
 
 ---
 
@@ -418,6 +494,7 @@ _(Items completed during Step 4B remediation move here)_
 
 | Version | Date       | Changes                                                                                                            | Author           |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| 3.3     | 2026-01-13 | Added CANON-0107 (security headers) and CANON-0108 (storage.rules) from single-session security audit              | Claude           |
 | 3.0     | 2026-01-05 | Renamed from POST_PHASE_8_BACKLOG.md; updated for Step 4 audit framework; aligned categories with 6-category audit | Claude           |
 | 2.0     | 2026-01-02 | Standardized structure per Phase 4 migration                                                                       | Claude           |
 | 1.0     | 2025-12-30 | Initial backlog document                                                                                           | Development Team |
