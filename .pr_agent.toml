@@ -1,0 +1,92 @@
+# Qodo (PR-Agent) Configuration
+# See: https://qodo-merge-docs.qodo.ai/tools/review/
+# Purpose: Reduce false positives and tailor reviews to project patterns
+
+[config]
+# Use the repo's own AI knowledge files for context
+# This helps Qodo understand project-specific patterns
+publish_output = true
+verbosity_level = 2
+
+[pr_reviewer]
+# Reduce noise by requiring higher confidence
+require_score_review = true
+require_tests_review = true
+require_estimate_effort_to_review = false
+
+# Focus areas (ordered by priority)
+extra_instructions = """
+Project context:
+- 100% AI-coded Next.js 15 + Firebase application
+- Uses App Router with Server/Client Components
+- Firebase Auth, Firestore, Cloud Functions backend
+- Pattern compliance enforced via scripts/check-pattern-compliance.js
+
+Known false positives to SKIP (documented in docs/audits/FALSE_POSITIVES.jsonl):
+- firebase-admin auth usage in server contexts (FP-001)
+- process.env in Server Components/API routes (FP-002)
+- dangerouslySetInnerHTML with sanitization (FP-003)
+- ESLint disables with explanatory comments (FP-004)
+- any-to-unknown type casting (FP-005)
+- Console statements in Cloud Functions (FP-007)
+- ESLint security rules already audited: detect-object-injection, detect-non-literal-fs-filename, detect-unsafe-regex (FP-011 to FP-015)
+
+Focus ON:
+- Real security issues not caught by ESLint security plugin
+- Logic errors and edge cases
+- React 19 / Next.js 15 best practices
+- TypeScript type safety improvements
+- Performance issues in components
+
+Skip flagging:
+- Documentation TODOs (tracked in TECHNICAL_DEBT.md)
+- Bundle size warnings under thresholds
+- Test file patterns (password mocks, etc.)
+"""
+
+# Files to ignore in review
+[pr_reviewer.ignore]
+files = [
+    "*.md",                      # Documentation handled separately
+    "docs/**",                   # Documentation folder
+    "*.jsonl",                   # Data files
+    ".claude/**",                # Claude configuration
+    "scripts/migrations/**",     # Historical migration scripts
+    "*.test.ts",                 # Test files reviewed by test-engineer
+    "*.test.tsx",
+    "*.spec.ts",
+    "*.spec.tsx",
+]
+
+[pr_code_suggestions]
+# Code suggestion settings
+num_code_suggestions = 4
+demand_code_suggestions_self_review = true
+summarize = true
+
+extra_instructions = """
+When suggesting improvements:
+- Prefer existing project patterns from lib/, hooks/, and components/
+- Follow React 19 conventions (use() hook, Server Components by default)
+- Suggest TypeScript strict mode improvements where safe
+- Avoid suggesting changes to intentionally simple code
+- Reference docs/agent_docs/CODE_PATTERNS.md for anti-patterns
+"""
+
+[pr_description]
+# Auto-generate PR descriptions
+publish_labels = true
+publish_description_as_comment = false
+use_bullet_points = true
+
+[github_action]
+# GitHub Action specific settings
+auto_review = true
+auto_describe = true
+auto_improve = false  # Disable auto-improve to reduce noise
+
+[custom_labels]
+# Custom labels for PR classification
+"security" = ["auth", "token", "credential", "password", "jwt", "session"]
+"performance" = ["bundle", "lazy", "memo", "cache", "optimize"]
+"breaking" = ["BREAKING", "migration", "schema"]
