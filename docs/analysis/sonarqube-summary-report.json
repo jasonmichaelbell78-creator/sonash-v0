@@ -1,0 +1,71 @@
+{
+  "projectInformation": {
+    "projectKey": "jasonmichaelbell78-creator_sonash-v0",
+    "projectName": "sonash-v0",
+    "organization": "jasonmichaelbell78-creator",
+    "exportDate": "2026-01-13T01:17:06.339Z"
+  },
+  "totals": {
+    "allIssues": 921,
+    "reliabilityIssues": 261,
+    "maintainabilityIssues": 822,
+    "securityIssues": 0,
+    "securityHotspots": 77
+  },
+  "issuesBySeverity": {
+    "blocker": 0,
+    "critical": 60,
+    "major": 245,
+    "minor": 609,
+    "info": 7
+  },
+  "issuesByType": {
+    "bug": 14,
+    "codeSmell": 907,
+    "vulnerability": 0,
+    "securityHotspot": 0
+  },
+  "securityHotspotsByProbability": {
+    "high": 11,
+    "medium": 46,
+    "low": 20
+  },
+  "topFiles": {
+    "scripts/generate-documentation-index.js": 119,
+    "scripts/suggest-pattern-automation.js": 31,
+    "scripts/phase-complete-check.js": 30,
+    ".claude/hooks/session-start.sh": 27,
+    "hooks/use-journal.ts": 25,
+    "scripts/check-pattern-compliance.js": 25,
+    "scripts/check-docs-light.js": 21,
+    "components/admin/meetings-tab.tsx": 19,
+    "components/notebook/pages/resources-page.tsx": 18,
+    "scripts/update-readme-status.js": 16
+  },
+  "filesGenerated": [
+    "sonarqube-all-issues-complete.json (2.09 MB) - All issues and hotspots in one file",
+    "sonarqube-reliability-issues.json (397.99 KB) - 261 reliability issues",
+    "sonarqube-maintainability-issues.json (1543.73 KB) - 822 maintainability issues",
+    "sonarqube-security-hotspots.json (58.36 KB) - 77 security hotspots"
+  ],
+  "dataFields": {
+    "perIssue": [
+      "key - Unique issue identifier",
+      "rule - Rule that triggered the issue",
+      "severity - Issue severity (BLOCKER, CRITICAL, MAJOR, MINOR, INFO)",
+      "component - File path where issue is located",
+      "line - Line number",
+      "textRange - Exact position (startLine, endLine, startOffset, endOffset)",
+      "message - Description of the issue",
+      "type - Issue type (BUG, CODE_SMELL, VULNERABILITY)",
+      "impacts - Software quality impacts",
+      "effort/debt - Estimated time to fix",
+      "tags - Issue tags",
+      "status - Current status",
+      "creationDate - When issue was first detected",
+      "updateDate - Last update time",
+      "author - Code author",
+      "cleanCodeAttribute - Clean code attributes"
+    ]
+  }
+}

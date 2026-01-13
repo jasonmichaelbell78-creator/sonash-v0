@@ -1,0 +1,117 @@
+{
+  "title": "SonarQube Issues Export - Complete Dataset",
+  "exportDate": "2026-01-13T01:17:56.652Z",
+  "projectInfo": {
+    "projectKey": "jasonmichaelbell78-creator_sonash-v0",
+    "projectName": "sonash-v0",
+    "organization": "jasonmichaelbell78-creator",
+    "sonarCloudUrl": "https://sonarcloud.io/summary/overall?id=jasonmichaelbell78-creator_sonash-v0&branch=main"
+  },
+  "summary": {
+    "totalIssues": 921,
+    "breakdown": {
+      "reliability": 261,
+      "maintainability": 822,
+      "security": 0,
+      "securityHotspots": 77
+    },
+    "bySeverity": {
+      "critical": 60,
+      "major": 245,
+      "minor": 609,
+      "info": 7
+    },
+    "byType": {
+      "bugs": 14,
+      "codeSmells": 907,
+      "vulnerabilities": 0
+    }
+  },
+  "filesGenerated": [
+    {
+      "filename": "sonarqube-all-issues-complete.json",
+      "size": "2.09 MB",
+      "description": "Complete export with all 921 issues and 77 security hotspots",
+      "contents": "All issues categorized by type (reliability/maintainability/security) plus all security hotspots"
+    },
+    {
+      "filename": "sonarqube-reliability-issues.json",
+      "size": "397.99 KB",
+      "description": "261 reliability issues (bugs and reliability concerns)",
+      "contents": "Issues that affect system reliability and stability"
+    },
+    {
+      "filename": "sonarqube-maintainability-issues.json",
+      "size": "1.54 MB",
+      "description": "822 maintainability issues (code smells)",
+      "contents": "Issues that affect code maintainability, readability, and technical debt"
+    },
+    {
+      "filename": "sonarqube-security-hotspots.json",
+      "size": "58.36 KB",
+      "description": "77 security hotspots requiring review",
+      "contents": "Security-sensitive code that needs manual review (11 high, 46 medium, 20 low probability)"
+    },
+    {
+      "filename": "sonarqube-issues-by-file.json",
+      "size": "2.27 MB",
+      "description": "All issues organized by file (174 files)",
+      "contents": "Same issues as complete export but grouped by file for easier navigation"
+    },
+    {
+      "filename": "sonarqube-summary-report.json",
+      "size": "Small",
+      "description": "Statistical summary and metadata",
+      "contents": "Overview statistics, top files with issues, data field descriptions"
+    }
+  ],
+  "dataFieldsIncluded": {
+    "commonFields": [
+      "key: Unique identifier for the issue",
+      "rule: SonarQube rule that triggered (e.g., typescript:S7772)",
+      "severity: CRITICAL, MAJOR, MINOR, INFO",
+      "component: Full file path",
+      "line: Line number where issue occurs",
+      "textRange: Exact position {startLine, endLine, startOffset, endOffset}",
+      "message: Human-readable description",
+      "status: OPEN, CONFIRMED, REOPENED, etc.",
+      "type: BUG, CODE_SMELL, VULNERABILITY",
+      "impacts: Software quality impacts (reliability/maintainability/security)",
+      "effort/debt: Estimated time to fix",
+      "tags: Categorization tags",
+      "author: Code author email",
+      "creationDate: When first detected",
+      "updateDate: Last modification",
+      "cleanCodeAttribute: Clean code principles affected"
+    ],
+    "hotspotSpecific": [
+      "securityCategory: Type of security concern (auth, injection, etc.)",
+      "vulnerabilityProbability: HIGH, MEDIUM, LOW",
+      "ruleKey: Security rule identifier"
+    ]
+  },
+  "topFilesWithIssues": {
+    "scripts/generate-documentation-index.js": 119,
+    "scripts/suggest-pattern-automation.js": 31,
+    "scripts/phase-complete-check.js": 30,
+    ".claude/hooks/session-start.sh": 27,
+    "hooks/use-journal.ts": 25,
+    "scripts/check-pattern-compliance.js": 25
+  },
+  "usageNotes": [
+    "All files are in JSON format and can be opened in any text editor or IDE",
+    "For large files, use a tool that can handle multi-MB JSON files",
+    "The textRange field gives you exact character positions to locate issues in source code",
+    "Issues with multiple impacts will appear in multiple categories",
+    "Security hotspots require manual review - they are not confirmed vulnerabilities",
+    "The \"by file\" organization makes it easy to work through issues file by file",
+    "Use the rule field to look up detailed rule documentation on SonarCloud"
+  ],
+  "nextSteps": [
+    "Review critical and major issues first",
+    "Check security hotspots (especially HIGH probability ones)",
+    "Use file paths and line numbers to locate issues in your codebase",
+    "Reference rule IDs on sonarcloud.io for detailed remediation guidance",
+    "Track progress by marking issues as resolved in SonarQube"
+  ]
+}
