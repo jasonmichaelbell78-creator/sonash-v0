@@ -430,9 +430,9 @@ REQUIRED CHECKS:
 [ ] No user-controlled file paths in fs operations
 
 VERIFICATION COMMANDS:
-- grep -rn "upload\|multer\|formidable" --include="*.ts"
+- grep -E -rn "upload|multer|formidable" --include="*.ts" --include="*.tsx"
 - grep -rn "\.\./" --include="*.ts" (check for path traversal vectors)
-- grep -rn "fs\.\|readFile\|writeFile" --include="*.ts"
+- grep -E -rn "fs\.|readFile|writeFile" --include="*.ts" --include="*.tsx"
 - Review storage.rules for Firebase Storage security
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
@@ -448,9 +448,9 @@ REQUIRED CHECKS:
 
 VERIFICATION COMMANDS:
 - grep -rn "Math\.random" --include="*.ts" --include="*.tsx"
-- grep -rn "md5\|sha1" --include="*.ts" (check context)
-- grep -rn "crypto\.\|randomUUID\|getRandomValues" --include="*.ts"
-- grep -rn "jwt\|jsonwebtoken" --include="*.ts"
+- grep -E -rn "md5|sha1" --include="*.ts" --include="*.tsx" (check context)
+- grep -E -rn "crypto\.|randomUUID|getRandomValues" --include="*.ts" --include="*.tsx"
+- grep -E -rn "jwt|jsonwebtoken" --include="*.ts" --include="*.tsx"
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 

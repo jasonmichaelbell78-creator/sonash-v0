@@ -303,8 +303,8 @@ DEBUGGING WORKFLOW ASSESSMENT:
 - Can offline errors be reproduced and traced?
 
 VERIFICATION COMMANDS (if run_commands=yes):
-- grep -rn "TODO\|FIXME\|HACK" --include="*.ts" --include="*.tsx" | head -20
-- grep -rn "expect(true)\|expect(1)" tests/ --include="*.test.ts"
+- grep -E -rn "TODO|FIXME|HACK" --include="*.ts" --include="*.tsx" | head -20
+- grep -E -rn "expect\(true\)|expect\(1\)" tests/ --include="*.test.ts"
 - Find functions >50 lines: use AST analysis or manual review
 - Check package.json imports match actual dependencies
 

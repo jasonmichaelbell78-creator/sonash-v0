@@ -416,7 +416,7 @@ PATTERNS TO FIND:
 
 VERIFICATION COMMANDS (if available):
 - grep -rn "navigator.onLine" --include="*.ts" --include="*.tsx"
-- grep -E -rn "\b(indexedDB|IDBDatabase|IDBObjectStore|localStorage|AsyncStorage)\b" --include="*.ts" --include="*.tsx"
+- grep -E -rn "(^|[^[:alnum:]_])(indexedDB|IDBDatabase|IDBObjectStore|localStorage|AsyncStorage)([^[:alnum:]_]|$)" --include="*.ts" --include="*.tsx"
 - grep -E -rn "(status|syncStatus|queueStatus|offlineStatus).*['\"]?(pending|synced|failed)['\"]?" --include="*.ts" --include="*.tsx"
 - Look for retry logic or queue implementations
 
