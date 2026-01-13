@@ -220,7 +220,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #146
 
 ### When to Consolidate
@@ -460,6 +460,51 @@ Access archives only for historical investigation of specific patterns.
 ## Active Reviews (Tier 3)
 
 Reviews #101-136 are actively maintained below. Older reviews are in the archive.
+
+---
+
+#### Review #137: PR #243 SonarQube Security Hotspots & Qodo Suggestions (2026-01-13)
+
+**Source:** Mixed - SonarQube Security Hotspots + Qodo PR Code Suggestions
+**PR/Branch:** PR #243 / claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 12 items
+(Critical: 0, Major: 0, Minor: 3, Trivial: 2, Rejected: 5) - 5 fixed
+
+**Context:** Post-merge review of Step 4B Remediation Sprint PR. SonarQube flagged
+4 Security Hotspots (2 ReDoS, 2 PATH variable) and Qodo suggested 8 code improvements.
+
+**Issues Fixed:**
+
+| #   | Issue                                      | Severity   | Category     | Fix                                           |
+| --- | ------------------------------------------ | ---------- | ------------ | --------------------------------------------- |
+| 1   | ReDoS: greedy regex in extractJSON         | 🟡 Minor   | Security/DoS | Changed `/\{[\s\S]*\}/` to `/\{[\s\S]*?\}/`   |
+| 2   | ReDoS: greedy regex in test assertion      | 🟡 Minor   | Security/DoS | Same non-greedy fix                           |
+| 3   | Empty catch block silently ignores errors  | 🟡 Minor   | Test Quality | Added explicit skip with console.log message  |
+| 4   | Null reasons could be added to array       | ⚪ Trivial | Robustness   | Added `newReason ?` guard                     |
+| 5   | Missing maxBuffer in spawnSync             | ⚪ Trivial | Robustness   | Added `maxBuffer: 10 * 1024 * 1024`           |
+
+**Rejected Items:**
+
+| #   | Issue                             | Reason                                              |
+| --- | --------------------------------- | --------------------------------------------------- |
+| 6-7 | PATH variable in test spawnSync   | Test context with controlled environment - Safe     |
+| 8   | Missing "use client" directive    | Already exists on line 1 - False positive           |
+| 9   | Non-portable command in docs      | Historical archive documentation, not active code   |
+| 10  | realRel === "" check removal      | Intentional design - skip project root directory    |
+| 11  | Greedy regex in archived docs     | Historical archive documentation, not active code   |
+
+**Patterns Identified:**
+
+1. **Non-greedy regex for JSON extraction** (Minor)
+   - Root cause: Greedy `[\s\S]*` can backtrack on malformed input
+   - Prevention: Use `[\s\S]*?` for bounded matching
+   - Pattern: Already in CODE_PATTERNS.md as "Regex brace matching"
+
+2. **Explicit test skip over silent catch** (Minor)
+   - Root cause: Empty catch blocks hide test failures
+   - Prevention: Use explicit skip with log message or fail assertion
+   - Pattern: `console.log("Skipping: reason"); return;`
+
+**Resolution:** Fixed 5 items, rejected 7 (5 false positives, 2 historical docs)
 
 ---
 

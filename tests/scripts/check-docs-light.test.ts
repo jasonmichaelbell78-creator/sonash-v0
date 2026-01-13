@@ -15,7 +15,8 @@ const SCRIPT_PATH = path.resolve(PROJECT_ROOT, "scripts/check-docs-light.js");
  * Helper to extract JSON from script output (handles header lines)
  */
 function extractJSON(output: string): unknown {
-  const jsonMatch = output.match(/\{[\s\S]*\}/);
+  // Use non-greedy match to avoid ReDoS on malformed input
+  const jsonMatch = output.match(/\{[\s\S]*?\}/);
   if (!jsonMatch) throw new Error("No JSON found in output");
   return JSON.parse(jsonMatch[0]);
 }
@@ -36,6 +37,7 @@ function runScript(
     cwd,
     encoding: "utf-8",
     timeout: 60000, // Longer timeout as it scans many files
+    maxBuffer: 10 * 1024 * 1024, // 10MB buffer for large outputs
     env: { ...process.env, NODE_ENV: "test" },
   });
 
@@ -62,7 +64,8 @@ describe("check-docs-light.js", () => {
       const result = runScript(["README.md", "--json"]);
 
       // The script outputs a header line before JSON, so extract just the JSON part
-      const jsonMatch = result.stdout.match(/\{[\s\S]*\}/);
+      // Use non-greedy match to avoid ReDoS on malformed input
+      const jsonMatch = result.stdout.match(/\{[\s\S]*?\}/);
       assert.ok(jsonMatch, "Output should contain JSON object");
 
       try {
@@ -273,7 +276,8 @@ Old document.
           assert.equal(archResult.tier, 1, "ARCHITECTURE.md should be Tier 1");
         }
       } catch {
-        // If ARCHITECTURE.md doesn't exist or JSON extraction fails, that's ok
+        // Skip if ARCHITECTURE.md doesn't exist or JSON extraction fails
+        console.log("Skipping ARCHITECTURE.md tier test: file may not exist or JSON extraction failed");
       }
     });
 

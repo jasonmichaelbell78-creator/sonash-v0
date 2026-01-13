@@ -340,9 +340,9 @@ function processFileContent(file, realResolvedFile) {
  */
 function updateTierTracking(currentTier, currentReasons, newTier, newReason) {
   if (newTier > currentTier) {
-    return { tier: newTier, reasons: [newReason] };
+    return { tier: newTier, reasons: newReason ? [newReason] : [] };
   }
-  if (newTier === currentTier) {
+  if (newTier === currentTier && newReason) {
     return { tier: currentTier, reasons: [...currentReasons, newReason] };
   }
   return { tier: currentTier, reasons: currentReasons };

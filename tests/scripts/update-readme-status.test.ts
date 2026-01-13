@@ -27,6 +27,7 @@ function runScript(
     cwd,
     encoding: "utf-8",
     timeout: 30000,
+    maxBuffer: 10 * 1024 * 1024, // 10MB buffer for large outputs
     env: { ...process.env, NODE_ENV: "test" },
   });
 
