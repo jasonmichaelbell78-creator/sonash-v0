@@ -1,6 +1,6 @@
 # Claude Hooks Documentation
 
-**Last Updated:** 2026-01-08 **Configuration:** `.claude/settings.json`
+**Last Updated:** 2026-01-13 **Configuration:** `.claude/settings.json`
 
 ---
 
@@ -38,18 +38,22 @@ contextual guidance.
 
 **What it does:**
 
-1. Install npm dependencies (root and functions)
+1. Install npm dependencies (root and functions) - uses lockfile hash caching
 2. Build Firebase Functions
 3. Compile test files
 4. Run pattern compliance check
-5. Display session checklist
+5. Check consolidation status (reviews/archiving thresholds)
+6. Surface relevant past learnings from AI_REVIEW_LEARNINGS_LOG.md
+7. Check document sync status (template instances)
+8. Display session checklist
 
-**Timing:** ~10-15 seconds
+**Timing:** ~10-20 seconds (5-10s if dependencies cached)
 
 **Conditions:**
 
 - Only runs if `CLAUDE_CODE_REMOTE=true` (web sessions)
 - Skips on local CLI (dependencies already exist)
+- Uses lockfile hash caching to skip npm install if unchanged
 
 ### check-mcp-servers.sh
 

@@ -273,6 +273,38 @@ else # exit code >= 2
   WARNINGS=$((WARNINGS + 1))
 fi
 
+# =============================================================================
+# Surface Relevant Past Learnings (~1-2s)
+# =============================================================================
+# Surfaces past AI review learnings relevant to current session context
+echo "🔍 Checking for relevant past learnings..."
+if node "$REPO_ROOT/scripts/surface-lessons-learned.js" --quiet 2>/dev/null; then
+  echo "   ✓ Lessons check complete"
+else
+  # Non-blocking - just note if it fails
+  echo "   ⚠️ Lessons surface check skipped (script may be missing)"
+  WARNINGS=$((WARNINGS + 1))
+fi
+
+echo ""
+
+# =============================================================================
+# Document Sync Check (~1-3s)
+# =============================================================================
+# Validates that template instances are in sync with their templates
+echo "🔍 Checking document sync status..."
+if node "$REPO_ROOT/scripts/check-document-sync.js" --quick 2>/dev/null; then
+  echo "   ✓ Documents are in sync"
+else
+  DOC_SYNC_EXIT=$?
+  if [ "$DOC_SYNC_EXIT" -eq 1 ]; then
+    echo "   ⚠️ Some documents may be out of sync - run: npm run docs:sync-check"
+    WARNINGS=$((WARNINGS + 1))
+  else
+    echo "   ⚠️ Document sync check skipped (script may be missing)"
+  fi
+fi
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ "$WARNINGS" -eq 0 ]; then

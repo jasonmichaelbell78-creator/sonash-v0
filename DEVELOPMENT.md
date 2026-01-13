@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.1 **Last Updated:** 2026-01-04 **Status:** ACTIVE
+**Document Version:** 2.2 **Last Updated:** 2026-01-13 **Status:** ACTIVE
 
 ---
 
@@ -529,11 +529,17 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step     | Command                | Blocking?           |
-| -------- | ---------------------- | ------------------- |
-| ESLint   | `npm run lint`         | YES - blocks commit |
-| Prettier | `npm run format:check` | NO - warning only   |
-| Tests    | `npm test`             | YES - blocks commit |
+| Step               | Command                  | Blocking?           |
+| ------------------ | ------------------------ | ------------------- |
+| ESLint             | `npm run lint`           | YES - blocks commit |
+| Prettier           | `npm run format:check`   | NO - warning only   |
+| Pattern compliance | `npm run patterns:check` | YES - blocks commit |
+| Tests              | `npm test`               | YES - blocks commit |
+| Learning reminder  | (checks staged files)    | NO - reminder only  |
+
+> **Learning Entry Reminder**: If 5+ files are staged or template/hook changes
+> are detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md`
+> when addressing PR feedback.
 
 **Pre-push hook (`.husky/pre-push`) runs:**
 
@@ -940,8 +946,9 @@ When maintaining this document:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                 |
-| ------- | ---------- | ------------------------------------------------------- |
-| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip) |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration            |
-| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources        |
+| Version | Date       | Changes                                                                     |
+| ------- | ---------- | --------------------------------------------------------------------------- |
+| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder) |
+| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                     |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                |
+| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                            |

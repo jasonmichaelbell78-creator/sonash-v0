@@ -1,6 +1,6 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.2 **Last Updated:** 2026-01-13 **Status:** ACTIVE
+**Document Version:** 2.3 **Last Updated:** 2026-01-13 **Status:** ACTIVE
 **Overall Completion:** ~35%
 
 ---
@@ -242,6 +242,46 @@ Planned | 🟣 Research
     - [ ] Or merge jobs to run npm ci once
     - [ ] Saves ~60s per CI run
     - **Verification:** CI time decreases by ~60s
+
+#### Process Automation Quick Wins (from 2026-01-13 Gap Analysis)
+
+> **Source:** Process Automation Gap Analysis (Session #60)
+
+12. **AUTO-001: Wire Session-Start Scripts** (S effort, High ROI) ✅ DONE
+    - [x] Add `lessons:surface` to session-start.sh
+    - [x] Add `docs:sync-check --quick` to session-start.sh
+    - [x] Add learning entry reminder to pre-commit hook
+    - **Verification:** Session start shows lessons and doc sync status
+
+13. **AUTO-002: Add npm audit to Pre-Push** (S effort, High ROI)
+    - [ ] Add `npm audit --audit-level=high` to `.husky/pre-push`
+    - [ ] Non-blocking warning initially
+    - [ ] ~3-8s overhead per push
+    - **Verification:** Push with vulnerable dep shows warning
+
+14. **AUTO-003: Integrate Sentry with Logger** (S effort, High ROI)
+    - [ ] Remove TODO from `lib/logger.ts:107`
+    - [ ] Wire `Sentry.captureException()` in error paths
+    - [ ] Add correlation ID context
+    - **Verification:** Production errors appear in Sentry
+
+15. **AUTO-004: Add Code Coverage to CI** (M effort, Medium ROI)
+    - [ ] Wire `npm run test:coverage` into CI
+    - [ ] Add coverage threshold check
+    - [ ] Generate coverage badge
+    - **Verification:** CI fails if coverage drops >5%
+
+16. **AUTO-005: Remove CI continue-on-error Flags** (S effort, Medium ROI)
+    - [ ] Fix Prettier baseline (run `npm run format`)
+    - [ ] Fix knip baseline (7 unused deps)
+    - [ ] Remove all `continue-on-error: true` flags
+    - **Verification:** CI blocks on formatting/linting issues
+
+17. **AUTO-006: Consolidate Redundant Checks** (M effort, Low ROI)
+    - [ ] Remove pattern compliance from session-start.sh
+    - [ ] Merge write/edit requirement hooks
+    - [ ] Document in TRIGGERS.md
+    - **Verification:** Session start is ~2-3s faster
 
 ---
 

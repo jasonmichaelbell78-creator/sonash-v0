@@ -1,6 +1,6 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-08 **Document Version**: 1.8 **Purpose**: Master
+**Last Updated**: 2026-01-13 **Document Version**: 1.9 **Purpose**: Master
 navigation and workflow guide for AI assistants **When to Use**: Start of EVERY
 session
 
@@ -34,6 +34,18 @@ Recovery Notebook project. It provides:
 
 ### Session Startup Checklist
 
+> **Automated Checks (via session-start.sh hook):**
+>
+> When running Claude Code on the web, the session-start hook automatically:
+>
+> - ✅ Installs dependencies and builds functions
+> - ✅ Runs pattern compliance check
+> - ✅ Checks consolidation status (reviews/archiving)
+> - ✅ Surfaces relevant past learnings from AI_REVIEW_LEARNINGS_LOG.md
+> - ✅ Checks document sync status (template instances)
+>
+> These run before you start - review their output for warnings.
+
 ```
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
@@ -55,7 +67,7 @@ Recovery Notebook project. It provides:
 ☐ 9. Begin work following documented procedures
 ```
 
-**Time**: 5-10 minutes
+**Time**: 5-10 minutes (automated checks add ~5-10 seconds)
 
 > **CRITICAL**: Step 2 is NOT optional. All code must comply with the 4
 > mandatory security standards (rate limiting, input validation, secrets
@@ -775,6 +787,7 @@ Use this template when completing any phase/milestone:
 
 | Version | Date       | Changes                                                                                                                                                                                              | Author      |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.9     | 2026-01-13 | Documented automated session-start checks (lessons:surface, docs:sync-check, pattern compliance, consolidation status); added time estimate for automated checks                                      | Claude      |
 | 1.8     | 2026-01-08 | Added AUDIT_TRACKER.md to hierarchy (step 4); added .claude/HOOKS.md and SLASH_COMMANDS.md references; updated startup checklist for per-category audit tracking                                     | Claude      |
 | 1.7     | 2026-01-03 | Added database-architect, debugger to PRE-TASK; split documentation triggers in POST-TASK; aligned with claude.md                                                                                    | Claude      |
 | 1.6     | 2026-01-03 | Added PRE-TASK and POST-TASK mandatory checklists for agent/skill usage; strengthened enforcement language                                                                                           | Claude      |

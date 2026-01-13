@@ -31,20 +31,20 @@ supersedes fragmented planning documents into a single linear execution path.
 
 ## Status Dashboard
 
-| Step    | Title                                       | Status       | Completion | Blocking   |
-| ------- | ------------------------------------------- | ------------ | ---------- | ---------- |
-| Step 1  | Quick Wins & Cleanup                        | **COMPLETE** | 100%       | None       |
-| Step 2  | Documentation Standardization Completion    | **COMPLETE** | 100%       | ~~Step 1~~ |
-| Step 3  | Developer Tooling Setup                     | **COMPLETE** | 100%       | ~~Step 2~~ |
-| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE** | 100%       | ~~Step 3~~ |
-| Step 4B | Remediation Sprint                          | **COMPLETE** | 100%       | ~~Step 4~~ |
-| Step 4C | SonarCloud Issue Triage                     | **PENDING**  | 0%         | Step 4B    |
-| Step 5  | Review Policy Expansion                     | **PENDING**  | 0%         | Step 4C    |
-| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**  | 0%         | Step 5     |
-| Step 7  | Verification & Feature Resumption           | **PENDING**  | 0%         | Step 6     |
+| Step    | Title                                       | Status          | Completion | Blocking   |
+| ------- | ------------------------------------------- | --------------- | ---------- | ---------- |
+| Step 1  | Quick Wins & Cleanup                        | **COMPLETE**    | 100%       | None       |
+| Step 2  | Documentation Standardization Completion    | **COMPLETE**    | 100%       | ~~Step 1~~ |
+| Step 3  | Developer Tooling Setup                     | **COMPLETE**    | 100%       | ~~Step 2~~ |
+| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~ |
+| Step 4B | Remediation Sprint                          | **COMPLETE**    | 100%       | ~~Step 4~~ |
+| Step 4C | SonarCloud Issue Triage                     | **COMPLETE**    | 100%       | ~~Step 4B~~|
+| Step 5  | Review Policy Expansion                     | **IN PROGRESS** | ~10%       | ~~Step 4C~~|
+| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5     |
+| Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6     |
 
-**Overall Progress:** 5/9 steps complete (~70%) **Effort Tracking:** ~17-25
-hours actual (Steps 1-4B) + ~13-20 hours remaining (4C: 2-4h, 5: 8-11h, 6: 2-3h,
+**Overall Progress:** 6/9 steps complete (~75%) **Effort Tracking:** ~19-29
+hours actual (Steps 1-4C) + ~15-22 hours remaining (5: 12-16h, 6: 2-3h,
 7: 1-2h) **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -1456,8 +1456,9 @@ Document decisions in a triage table:
 
 ## Step 5: Review Policy Expansion
 
-**Status:** PENDING **Completion:** 0% **Estimated Effort:** 8-11 hours (6-9h
-original + 2h for Tasks 5.10-5.12) **Dependencies:** Step 4C **Risk Level:** Low
+**Status:** IN PROGRESS **Completion:** ~10% **Estimated Effort:** 12-16 hours (6-9h
+original + 2h for Tasks 5.10-5.12 + 4-5h for Tasks 5.13-5.18) **Dependencies:** Step 4C **Risk Level:** Low
+**Started:** 2026-01-13
 
 ### Objectives
 
@@ -1595,6 +1596,43 @@ for full design. *(Archived 2026-01-13)*
   - Only run if JSONL files are staged
   - Non-blocking initially (warning only)
 
+- [x] **Task 5.13**: Wire session-start automation scripts (DONE - 2026-01-13)
+  - [x] Add `lessons:surface` to session-start.sh (~1-2s overhead)
+  - [x] Add `docs:sync-check --quick` to session-start.sh (~1-3s overhead)
+  - [x] Add learning entry reminder to pre-commit (~0.5s overhead)
+  - **Source:** Process Automation Gap Analysis (Session #60)
+
+- [ ] **Task 5.14**: Add npm audit to pre-push hook (0.5 hours)
+  - Add `npm audit --audit-level=high` to `.husky/pre-push`
+  - Non-blocking warning initially, blocking after baseline established
+  - ~3-8s overhead per push
+  - **Verification:** Push with vulnerable dep triggers warning
+
+- [ ] **Task 5.15**: Integrate Sentry into logger (0.5 hours)
+  - Remove TODO from `lib/logger.ts:107`
+  - Add `Sentry.captureException()` in error paths
+  - Add correlation ID context to Sentry events
+  - **Verification:** Production errors appear in Sentry dashboard
+
+- [ ] **Task 5.16**: Add code coverage to CI (1 hour)
+  - Wire `npm run test:coverage` into `.github/workflows/ci.yml`
+  - Add coverage threshold check (fail if drops below baseline)
+  - Generate coverage badge for README
+  - **Verification:** CI fails if coverage drops >5%
+
+- [ ] **Task 5.17**: Remove CI continue-on-error flags (0.5 hours)
+  - Remove `continue-on-error: true` from Prettier check (ci.yml:33)
+  - Remove `continue-on-error: true` from knip check (ci.yml:43)
+  - Remove `continue-on-error: true` from docs check (ci.yml:86)
+  - **Prerequisites:** Fix underlying issues first (run format, fix deps)
+  - **Verification:** CI blocks on formatting/linting issues
+
+- [ ] **Task 5.18**: Consolidate redundant automation checks (1 hour)
+  - Remove pattern compliance from session-start.sh (already in pre-commit)
+  - Merge check-write-requirements.sh and check-edit-requirements.sh
+  - Document consolidated hooks in TRIGGERS.md
+  - **Verification:** Session start is ~2-3s faster
+
 ### Acceptance Criteria
 
 - [ ] Session activity logging operational
@@ -1612,6 +1650,13 @@ for full design. *(Archived 2026-01-13)*
 - [ ] Single-session audit templates updated with validation requirement (Task
       5.11)
 - [ ] CANON schema validation integrated into pre-commit (Task 5.12)
+- [x] Session-start runs lessons:surface and docs:sync-check (Task 5.13)
+- [x] Pre-commit includes learning entry reminder (Task 5.13)
+- [ ] npm audit runs on pre-push (Task 5.14)
+- [ ] Sentry integrated with logger (Task 5.15)
+- [ ] Code coverage reported in CI (Task 5.16)
+- [ ] CI continue-on-error flags removed (Task 5.17)
+- [ ] Redundant automation checks consolidated (Task 5.18)
 
 ---
 
