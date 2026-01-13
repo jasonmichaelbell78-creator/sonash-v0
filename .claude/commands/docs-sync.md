@@ -1,3 +1,7 @@
+---
+description: Document Sync Check
+---
+
 # Document Sync Check
 
 Run the automated document template-instance synchronization validator.
