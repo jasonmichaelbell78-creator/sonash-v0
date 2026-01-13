@@ -1,6 +1,6 @@
 # Audit Tracker
 
-**Document Version:** 1.3 **Created:** 2026-01-08 **Last Updated:** 2026-01-11
+**Document Version:** 1.4 **Created:** 2026-01-08 **Last Updated:** 2026-01-13
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
@@ -62,9 +62,10 @@ This document tracks:
 
 ### Security Audits (`/audit-security`)
 
-| Date       | Session  | Commits Covered | Files Covered | Findings                  | Reset Threshold |
-| ---------- | -------- | --------------- | ------------- | ------------------------- | --------------- |
-| 2026-01-07 | Multi-AI | Full codebase   | All TS/TSX    | 10 (CANON-SECURITY.jsonl) | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                                                       | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | ------------------------------------------------------------------------------ | --------------- |
+| 2026-01-13 | Single-Claude | Full codebase   | All TS/TSX    | 11 (2 HIGH, 4 MEDIUM, 2 LOW, 3 INFO) - [audit-2026-01-13.md](./audits/single-session/security/audit-2026-01-13.md) | ⚠️ (single)      |
+| 2026-01-07 | Multi-AI      | Full codebase   | All TS/TSX    | 10 (CANON-SECURITY.jsonl)                                                      | ✅              |
 
 ### Performance Audits (`/audit-performance`)
 
@@ -156,6 +157,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                            |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.4     | 2026-01-13 | Added single-session security audit (2026-01-13); moved files from docs/audit/ to docs/audits/single-session/security/                             |
 | 1.3     | 2026-01-11 | Added Refactoring/Documentation/Process audits (all 6 categories now complete); 118 total canonical findings                                       |
 | 1.2     | 2026-01-10 | Updated thresholds with completion dates for Code/Security/Performance audits; clarified raw vs canonical findings terminology; updated audit logs |
 | 1.1     | 2026-01-08 | Added Performance multi-AI audit results (28 findings from 5 models)                                                                               |
