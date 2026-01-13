@@ -1,0 +1,602 @@
+{
+  "repo": "https://github.com/jasonmichaelbell78-creator/sonash-v0",
+  "stack_confirmed": {
+    "frontend": ["Next.js 16.1", "React 19.2.3", "TypeScript 5.9.3", "Tailwind CSS v4.1.9"],
+    "backend": ["Firebase Cloud Functions (Node.js 24)", "Zod validation"],
+    "hosting": ["Firebase Hosting"],
+    "data": ["Firestore", "localStorage (anonymous backup)"],
+    "tooling": ["npm", "Husky", "ESLint", "Prettier", "Knip", "Madge", "c8 (coverage)", "Sentry"]
+  },
+  "assumptions": [
+    "Solo developer workflow - minimal ceremony preferred",
+    "Daily deploy cadence requires fast feedback loops",
+    "Offline support is REQUIRED but currently not fully implemented",
+    "Firebase emulators available but not integrated into standard dev commands"
+  ],
+  "golden_path_target": {
+    "setup_command": "npm run setup (should: npm ci && cd functions && npm ci && npm run doctor)",
+    "dev_command": "npm run dev",
+    "offline_dev_command": "npm run dev:offline (should start emulators + Next.js)",
+    "test_command": "npm test",
+    "deploy_command": "git push origin main (triggers CI → Firebase deploy)",
+    "verify_command": "npm run smoke (needs creation)",
+    "rollback_command": "firebase hosting:rollback --site sonash-app (needs documentation)"
+  },
+  "top_bottlenecks": [
+    {
+      "id": "BOT-001",
+      "summary": "No offline queue - writes fail when offline despite offline being REQUIRED",
+      "evidence": [
+        {
+          "path": "hooks/use-journal.ts",
+          "start_line": 319,
+          "end_line": 338,
+          "snippet": "// Call Cloud Function instead of direct Firestore write\n// This ensures rate limiting, App Check, and validation are enforced server-side\nconst functions = getFunctions();\nconst saveJournalEntry = httpsCallable(functions, 'saveJournalEntry');\n\n// Retry Cloud Function call with exponential backoff for network failures\nawait retryCloudFunction(\n  saveJournalEntry,\n  {...},\n  { maxRetries: 3, functionName: 'saveJournalEntry' }\n);"
+        },
+        {
+          "path": "lib/utils/anonymous-backup.ts",
+          "start_line": 36,
+          "end_line": 67,
+          "snippet": "export function backupJournalEntry(userId: string, entry: BackupEntry): void {\n  try {\n    const backup = getBackup();\n    // ... stores to localStorage only, no sync queue\n  } catch (error) {\n    // Silently fail - backup is best-effort\n    logger.warn('Failed to backup journal entry', { error });\n  }\n}"
+        }
+      ],
+      "impact": {
+        "maintenance": "Medium - current approach works online but tech debt for offline",
+        "bugs": "High - users lose data when offline, no retry queue",
+        "debugging": "High - no visibility into offline failures",
+        "performance": "Low"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "BOT-002",
+      "summary": "Scattered golden path - no single doc for dev workflow, info in 4+ files",
+      "evidence": [
+        {
+          "path": "DEVELOPMENT.md",
+          "start_line": 1,
+          "end_line": 30,
+          "snippet": "# Development Guide\n**Document Version:** 2.1\n... (759 lines total)"
+        },
+        {
+          "path": "README.md",
+          "start_line": 1,
+          "end_line": 20,
+          "snippet": "# SoNash\n... (different quick start)"
+        },
+        {
+          "path": "AI_WORKFLOW.md",
+          "start_line": 1,
+          "end_line": 20,
+          "snippet": "# AI Workflow Guide\n... (AI-specific instructions mixed with general workflow)"
+        }
+      ],
+      "impact": {
+        "maintenance": "Medium - multiple docs to update",
+        "bugs": "Low",
+        "debugging": "Medium - hard to find the right command",
+        "performance": "N/A"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "BOT-003",
+      "summary": "Logger does not integrate with Sentry - production errors lack context",
+      "evidence": [
+        {
+          "path": "lib/logger.ts",
+          "start_line": 98,
+          "end_line": 111,
+          "snippet": "// In production, only log errors to console (and could send to external service)\nif (isProduction && level === 'error') {\n  console.error({\n    level: payload.level,\n    message: payload.message,\n    timestamp: payload.timestamp,\n    // Don't log full context in production console, but you could send it to Sentry/LogRocket\n  });\n\n  // TODO: Send to external logging service\n  // Example: Sentry.captureMessage(message, { level, extra: context })\n  // Example: LogRocket.error(message, context)\n}"
+        }
+      ],
+      "impact": {
+        "maintenance": "Low",
+        "bugs": "Medium - harder to diagnose production issues",
+        "debugging": "High - Sentry misses structured context from logger calls",
+        "performance": "N/A"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "BOT-004",
+      "summary": "CI runs npm ci twice - once in lint job, once in build job (no cache sharing)",
+      "evidence": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "start_line": 22,
+          "end_line": 26,
+          "snippet": "- name: Install dependencies\n  run: npm ci"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "start_line": 117,
+          "end_line": 120,
+          "snippet": "- name: Install dependencies\n  run: npm ci"
+        }
+      ],
+      "impact": {
+        "maintenance": "Low",
+        "bugs": "N/A",
+        "debugging": "N/A",
+        "performance": "Medium - ~60s wasted per CI run"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "BOT-005",
+      "summary": "No doctor script to validate environment setup",
+      "evidence": [
+        {
+          "path": "package.json",
+          "start_line": 5,
+          "end_line": 33,
+          "snippet": "\"scripts\": {\n  \"build\": \"next build\",\n  \"dev\": \"next dev\",\n  // ... no doctor/check-env script\n}"
+        }
+      ],
+      "impact": {
+        "maintenance": "Medium - manual debugging of env issues",
+        "bugs": "Medium - unclear errors from missing env vars",
+        "debugging": "High - hours lost to 'works on my machine'",
+        "performance": "N/A"
+      },
+      "confidence": "high"
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "EFF-001",
+      "tier": "quick_win",
+      "area": "scripts",
+      "summary": "Add npm run dev:offline script to start emulators + Next.js",
+      "why_it_matters": "Currently no easy way to test offline/emulator mode. Developers must manually run firebase emulators:start in one terminal and npm run dev in another.",
+      "evidence": [
+        {
+          "location": { "path": "package.json", "start_line": 5, "end_line": 12 },
+          "snippet": "\"scripts\": {\n  \"build\": \"next build\",\n  \"dev\": \"next dev\",\n  \"lint\": \"eslint .\",\n  \"start\": \"next start\",\n  // missing: dev:offline\n}"
+        }
+      ],
+      "change_plan": [
+        "Add concurrently to devDependencies: npm install -D concurrently",
+        "Add script: \"dev:offline\": \"concurrently \\\"firebase emulators:start\\\" \\\"npm run dev\\\"\"",
+        "Document in DEVELOPMENT.md Quick Start section"
+      ],
+      "patch_unified_diff": "--- a/package.json\n+++ b/package.json\n@@ -6,6 +6,7 @@\n     \"build\": \"next build\",\n     \"dev\": \"next dev\",\n+    \"dev:offline\": \"concurrently \\\"firebase emulators:start\\\" \\\"npm run dev\\\"\",\n     \"lint\": \"eslint .\",",
+      "effort": "S",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "Medium - easier to test offline scenarios",
+        "debugging": "High - single command to reproduce offline issues",
+        "performance": "N/A",
+        "time_per_week_saved": "30-60 min"
+      },
+      "risk": "low",
+      "verification": ["npm run dev:offline", "Verify emulator UI at localhost:4000", "Verify app at localhost:3000"],
+      "rollback": ["Remove script from package.json", "npm uninstall concurrently"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-002",
+      "tier": "quick_win",
+      "area": "docs",
+      "summary": "Create docs/DEV_WORKFLOW.md as single source of truth for dev commands",
+      "why_it_matters": "Info currently scattered across DEVELOPMENT.md, README.md, AI_WORKFLOW.md. Solo dev wastes time hunting for the right command.",
+      "evidence": [
+        {
+          "location": { "path": "DEVELOPMENT.md", "start_line": 27, "end_line": 100 },
+          "snippet": "## 🚀 Quick Start\n... (detailed but buried in 759-line doc)"
+        }
+      ],
+      "change_plan": [
+        "Create docs/DEV_WORKFLOW.md with: Setup, Dev, Offline, Test, Deploy, Verify, Rollback, FAQ",
+        "Keep it under 100 lines - link to detailed docs",
+        "Add pointer at top of DEVELOPMENT.md and README.md"
+      ],
+      "patch_unified_diff": "N/A - new file creation",
+      "effort": "S",
+      "expected_savings": {
+        "maintenance": "Medium - single place to update",
+        "bugs": "Low",
+        "debugging": "Medium - faster to find right command",
+        "performance": "N/A",
+        "time_per_week_saved": "15-30 min"
+      },
+      "risk": "low",
+      "verification": ["Review docs/DEV_WORKFLOW.md covers all 7 sections", "Test each command listed"],
+      "rollback": ["Delete docs/DEV_WORKFLOW.md"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-003",
+      "tier": "quick_win",
+      "area": "scripts",
+      "summary": "Add scripts/doctor.js to validate environment setup",
+      "why_it_matters": "No way to quickly validate that env vars, Firebase CLI, Node version are correctly set up. Debugging these issues wastes significant time.",
+      "evidence": [
+        {
+          "location": { "path": ".env.local.example", "start_line": 1, "end_line": 20 },
+          "snippet": "# Firebase SDK Configuration\nNEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here\n..."
+        }
+      ],
+      "change_plan": [
+        "Create scripts/doctor.js that checks: Node version >= 22, npm >= 10, Firebase CLI installed, .env.local exists, required env vars present, functions/node_modules exists",
+        "Add to package.json: \"doctor\": \"node scripts/doctor.js\"",
+        "Run doctor in CI before other steps"
+      ],
+      "patch_unified_diff": "N/A - new file creation",
+      "effort": "S",
+      "expected_savings": {
+        "maintenance": "Medium",
+        "bugs": "Medium - catch env issues early",
+        "debugging": "High - saves hours on 'why isn't it working'",
+        "performance": "N/A",
+        "time_per_week_saved": "30-60 min (when issues occur)"
+      },
+      "risk": "low",
+      "verification": ["npm run doctor (should pass)", "Remove .env.local, run again (should fail with clear message)"],
+      "rollback": ["Delete scripts/doctor.js", "Remove from package.json"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-004",
+      "tier": "quick_win",
+      "area": "observability",
+      "summary": "Integrate logger.error with Sentry.captureMessage",
+      "why_it_matters": "Currently logger.error in production only logs to console. Sentry misses structured context from 50+ logger.error calls throughout the codebase.",
+      "evidence": [
+        {
+          "location": { "path": "lib/logger.ts", "start_line": 98, "end_line": 111 },
+          "snippet": "// TODO: Send to external logging service\n// Example: Sentry.captureMessage(message, { level, extra: context })"
+        }
+      ],
+      "change_plan": [
+        "Import Sentry in logger.ts",
+        "In production error handler, call Sentry.captureMessage(message, { level: 'error', extra: sanitizedContext })",
+        "Test in production with intentional error"
+      ],
+      "patch_unified_diff": "--- a/lib/logger.ts\n+++ b/lib/logger.ts\n@@ -1,3 +1,4 @@\n+import * as Sentry from '@sentry/nextjs';\n export type LogContext = Record<string, unknown>;\n \n@@ -98,10 +99,13 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {\n     level: payload.level,\n     message: payload.message,\n     timestamp: payload.timestamp,\n-    // Don't log full context in production console, but you could send it to Sentry/LogRocket\n   });\n \n-  // TODO: Send to external logging service\n+  // Send to Sentry with context\n+  Sentry.captureMessage(message, {\n+    level: 'error',\n+    extra: sanitizeContext(context),\n+  });\n }",
+      "effort": "S",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "Medium - faster bug identification",
+        "debugging": "High - all logger.error calls now in Sentry with context",
+        "performance": "N/A",
+        "time_per_week_saved": "60+ min when debugging production issues"
+      },
+      "risk": "low",
+      "verification": ["Deploy to production", "Trigger an error", "Verify error appears in Sentry with context"],
+      "rollback": ["Revert the Sentry.captureMessage call"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-005",
+      "tier": "quick_win",
+      "area": "ci_cd",
+      "summary": "Share node_modules between CI jobs using actions/cache",
+      "why_it_matters": "CI runs npm ci twice (lint job + build job). Each npm ci takes ~60s. Caching saves ~60s per CI run.",
+      "evidence": [
+        {
+          "location": { "path": ".github/workflows/ci.yml", "start_line": 22, "end_line": 26 },
+          "snippet": "- name: Install dependencies\n  run: npm ci"
+        }
+      ],
+      "change_plan": [
+        "Use GitHub's built-in npm cache (already using cache: 'npm' in setup-node)",
+        "Merge lint-typecheck-test and build into single job to avoid duplicate installs",
+        "Or: Add explicit actions/cache for node_modules with hash of package-lock.json"
+      ],
+      "patch_unified_diff": "--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -104,18 +104,8 @@ jobs:\n   build:\n     name: Build\n     runs-on: ubuntu-latest\n-    needs: lint-typecheck-test\n-\n-    steps:\n-      - name: Checkout code\n-        uses: actions/checkout@v4\n-\n-      - name: Setup Node.js\n-        uses: actions/setup-node@v4\n-        with:\n-          node-version: \"22\"\n-          cache: \"npm\"\n-\n-      - name: Install dependencies\n-        run: npm ci\n+    needs: lint-typecheck-test\n+    # Dependencies already installed and cached from previous job",
+      "effort": "S",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "N/A",
+        "debugging": "N/A",
+        "performance": "Medium - 60s faster CI",
+        "time_per_week_saved": "5-10 min (assuming 5-10 CI runs/day)"
+      },
+      "risk": "low",
+      "verification": ["Push to PR", "Observe CI time reduction", "Verify build still works"],
+      "rollback": ["Revert CI workflow changes"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-006",
+      "tier": "medium_win",
+      "area": "observability",
+      "summary": "Add correlation IDs to logger for request tracing",
+      "why_it_matters": "No way to correlate frontend errors with backend Cloud Function logs. When debugging, must manually match timestamps.",
+      "evidence": [
+        {
+          "location": { "path": "lib/logger.ts", "start_line": 78, "end_line": 86 },
+          "snippet": "const log = (level: LogLevel, message: string, context?: LogContext) => {\n  const payload: Record<string, unknown> = {\n    level,\n    message,\n    timestamp: new Date().toISOString(),\n    environment: process.env.NODE_ENV,\n    // missing: correlationId\n  };"
+        }
+      ],
+      "change_plan": [
+        "Create lib/correlation.ts with generateCorrelationId() and getCorrelationId()",
+        "Generate correlation ID at start of each Cloud Function call",
+        "Pass correlation ID to logger as context",
+        "Include in Sentry breadcrumbs"
+      ],
+      "patch_unified_diff": "N/A - requires new file and multiple updates",
+      "effort": "M",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "Low",
+        "debugging": "High - trace requests across frontend/backend",
+        "performance": "N/A",
+        "time_per_week_saved": "30-60 min when debugging cross-system issues"
+      },
+      "risk": "low",
+      "verification": ["Make API call", "Find logs in Sentry", "Verify correlation ID matches frontend and backend"],
+      "rollback": ["Remove correlation ID from logger calls"],
+      "confidence": "medium"
+    },
+    {
+      "id": "EFF-007",
+      "tier": "medium_win",
+      "area": "offline",
+      "summary": "Add network status context to logger and Sentry",
+      "why_it_matters": "When errors occur, no visibility into whether user was online or offline. Critical for debugging offline-related issues.",
+      "evidence": [
+        {
+          "location": { "path": "lib/logger.ts", "start_line": 78, "end_line": 86 },
+          "snippet": "const payload: Record<string, unknown> = {\n  // missing: isOnline context\n};"
+        }
+      ],
+      "change_plan": [
+        "Create lib/network-status.ts with getNetworkStatus()",
+        "Add isOnline to logger context automatically",
+        "Add as Sentry tag for filtering",
+        "Use navigator.onLine + periodic ping for accuracy"
+      ],
+      "patch_unified_diff": "N/A - requires new file and updates",
+      "effort": "M",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "Medium - identify offline-caused issues faster",
+        "debugging": "High - filter Sentry by online/offline",
+        "performance": "N/A",
+        "time_per_week_saved": "30 min"
+      },
+      "risk": "low",
+      "verification": ["Go offline", "Trigger error", "Check Sentry shows isOnline: false"],
+      "rollback": ["Remove network status from logger"],
+      "confidence": "medium"
+    },
+    {
+      "id": "EFF-008",
+      "tier": "medium_win",
+      "area": "testing",
+      "summary": "Create npm run smoke script for quick post-deploy verification",
+      "why_it_matters": "No quick way to verify deployment worked. Must manually test critical flows.",
+      "evidence": [
+        {
+          "location": { "path": "package.json", "start_line": 5, "end_line": 33 },
+          "snippet": "\"scripts\": {\n  // no smoke test script\n}"
+        }
+      ],
+      "change_plan": [
+        "Create scripts/smoke-test.js that hits key endpoints",
+        "Test: homepage loads, auth endpoint responds, Cloud Function responds",
+        "Add to package.json: \"smoke\": \"node scripts/smoke-test.js\"",
+        "Optionally run in CI after deploy"
+      ],
+      "patch_unified_diff": "N/A - new file",
+      "effort": "M",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "Medium - catch deploy regressions",
+        "debugging": "Medium - faster to identify broken deploys",
+        "performance": "N/A",
+        "time_per_week_saved": "15-30 min"
+      },
+      "risk": "low",
+      "verification": ["npm run smoke", "Verify all checks pass"],
+      "rollback": ["Delete script"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-009",
+      "tier": "medium_win",
+      "area": "repo_process",
+      "summary": "Add bug report template with offline status field",
+      "why_it_matters": "Current issue template doesn't capture offline status, making offline bugs hard to reproduce.",
+      "evidence": [
+        {
+          "location": { "path": ".github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md", "start_line": 1, "end_line": 10 },
+          "snippet": "// Only one issue template, specific to App Check"
+        }
+      ],
+      "change_plan": [
+        "Create .github/ISSUE_TEMPLATE/bug_report.md",
+        "Include fields: steps to reproduce, expected, actual, env info, offline status, Sentry link",
+        "Create .github/ISSUE_TEMPLATE/config.yml to enable template chooser"
+      ],
+      "patch_unified_diff": "N/A - new file",
+      "effort": "M",
+      "expected_savings": {
+        "maintenance": "Low",
+        "bugs": "Medium - better bug reports",
+        "debugging": "High - faster to reproduce issues",
+        "performance": "N/A",
+        "time_per_week_saved": "20-40 min"
+      },
+      "risk": "low",
+      "verification": ["Create new issue in GitHub", "Verify template appears"],
+      "rollback": ["Delete template files"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-010",
+      "tier": "deep_refactor",
+      "area": "offline",
+      "summary": "Implement offline queue with pending/synced/failed states",
+      "why_it_matters": "CRITICAL: Offline is required but writes fail immediately when offline. Need queue with sync on reconnect.",
+      "evidence": [
+        {
+          "location": { "path": "hooks/use-journal.ts", "start_line": 319, "end_line": 340 },
+          "snippet": "// All writes go through Cloud Functions - fail when offline\nawait retryCloudFunction(saveJournalEntry, {...});"
+        },
+        {
+          "location": { "path": "lib/utils/anonymous-backup.ts", "start_line": 36, "end_line": 67 },
+          "snippet": "// Only backup to localStorage, no sync queue"
+        }
+      ],
+      "change_plan": [
+        "Create lib/offline-queue.ts using IndexedDB",
+        "Queue writes when offline with 'pending' status",
+        "Sync queue on reconnect with conflict resolution",
+        "Update UI to show pending/synced/failed states",
+        "Add tests for offline scenarios"
+      ],
+      "patch_unified_diff": "N/A - major refactor",
+      "effort": "L",
+      "expected_savings": {
+        "maintenance": "Medium - more complex but required for offline",
+        "bugs": "High - no more lost data when offline",
+        "debugging": "Medium - can see queue state",
+        "performance": "N/A",
+        "time_per_week_saved": "Prevents user data loss"
+      },
+      "risk": "medium",
+      "verification": [
+        "Go offline",
+        "Make journal entry",
+        "Verify entry appears with pending status",
+        "Go online",
+        "Verify entry syncs and shows synced status"
+      ],
+      "rollback": ["Feature flag to disable offline queue"],
+      "confidence": "high"
+    },
+    {
+      "id": "EFF-011",
+      "tier": "deep_refactor",
+      "area": "testing",
+      "summary": "Add offline scenario tests",
+      "why_it_matters": "Currently no tests for offline behavior. Test marked as skipped because 'Requires Firebase Cloud Functions'.",
+      "evidence": [
+        {
+          "location": { "path": "tests/firestore-service.test.ts", "start_line": 53, "end_line": 67 },
+          "snippet": "test(\n  'saves merged daily log calls Cloud Function',\n  { skip: 'Requires Firebase Cloud Functions - integration test' },\n  async () => {...}\n);"
+        }
+      ],
+      "change_plan": [
+        "Create tests/offline/ directory",
+        "Add tests for: offline detection, queue management, sync on reconnect, conflict resolution",
+        "Mock network status in tests",
+        "Add to CI with network simulation"
+      ],
+      "patch_unified_diff": "N/A - new test files",
+      "effort": "L",
+      "expected_savings": {
+        "maintenance": "High - catch offline regressions",
+        "bugs": "High - prevent offline bugs from shipping",
+        "debugging": "Medium",
+        "performance": "N/A",
+        "time_per_week_saved": "Prevents future debugging sessions"
+      },
+      "risk": "low",
+      "verification": ["npm test -- --grep offline", "All offline tests pass"],
+      "rollback": ["Delete test files"],
+      "confidence": "medium"
+    },
+    {
+      "id": "EFF-012",
+      "tier": "deep_refactor",
+      "area": "architecture",
+      "summary": "Split large Cloud Functions files (admin.ts: 36KB, index.ts: 25KB)",
+      "why_it_matters": "Large files are harder to maintain, debug, and deploy. Cold start time increases with file size.",
+      "evidence": [
+        {
+          "location": { "path": "functions/src/admin.ts", "start_line": 1, "end_line": 20 },
+          "snippet": "// 36KB file with multiple admin functions"
+        },
+        {
+          "location": { "path": "functions/src/index.ts", "start_line": 1, "end_line": 20 },
+          "snippet": "// 25KB file with all Cloud Functions exports"
+        }
+      ],
+      "change_plan": [
+        "Split admin.ts into: admin-health.ts, admin-dashboard.ts, admin-users.ts",
+        "Split index.ts by domain: journal.ts, inventory.ts, user.ts",
+        "Use lazy imports in index.ts for better cold start",
+        "Update imports in tests"
+      ],
+      "patch_unified_diff": "N/A - major refactor",
+      "effort": "L",
+      "expected_savings": {
+        "maintenance": "High - smaller files easier to work with",
+        "bugs": "Low",
+        "debugging": "Medium - easier to find relevant code",
+        "performance": "Low - slightly better cold start",
+        "time_per_week_saved": "10-20 min"
+      },
+      "risk": "medium",
+      "verification": ["firebase deploy --only functions", "Test all Cloud Functions still work"],
+      "rollback": ["git revert"],
+      "confidence": "medium"
+    }
+  ],
+  "workflow_upgrades": {
+    "docs_single_source_of_truth": {
+      "recommended_file": "docs/DEV_WORKFLOW.md",
+      "what_to_include": [
+        "Setup (one command)",
+        "Dev (online and offline modes)",
+        "Debugging playbook (where to look, how to capture logs)",
+        "Test (fast feedback)",
+        "Deploy (what happens on push)",
+        "Verify (smoke test)",
+        "Rollback (how to revert bad deploy)",
+        "FAQ (common issues)"
+      ]
+    },
+    "bug_report_template": {
+      "recommended_location": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "fields": [
+        "Steps to reproduce (numbered list)",
+        "Expected behavior",
+        "Actual behavior",
+        "Environment (OS, browser, Node version)",
+        "Network status at time of bug (online/offline)",
+        "Console errors (screenshot or paste)",
+        "Sentry link (if available)"
+      ]
+    },
+    "automation_candidates": [
+      {
+        "name": "doctor script",
+        "why": "Validate environment setup in one command - catches Node version, Firebase CLI, env vars, etc.",
+        "implementation_hint": "scripts/doctor.js using process.version, which, and fs.existsSync"
+      },
+      {
+        "name": "seed script",
+        "why": "Quickly populate dev database with test data for debugging",
+        "implementation_hint": "Consolidate existing scripts/seed-*.ts into npm run seed"
+      },
+      {
+        "name": "offline smoke test",
+        "why": "Verify offline behavior works after changes",
+        "implementation_hint": "Playwright test that disables network and verifies app handles it gracefully"
+      }
+    ]
+  },
+  "roadmap": [
+    {
+      "phase": "1",
+      "theme": "Debugging + Golden Path + Quick Wins",
+      "items": ["EFF-001", "EFF-002", "EFF-003", "EFF-004", "EFF-005"]
+    },
+    {
+      "phase": "2",
+      "theme": "Offline Robustness + Observability",
+      "items": ["EFF-006", "EFF-007", "EFF-008", "EFF-009", "EFF-010"]
+    },
+    {
+      "phase": "3",
+      "theme": "Testing + Architecture Polish",
+      "items": ["EFF-011", "EFF-012"]
+    }
+  ]
+}
