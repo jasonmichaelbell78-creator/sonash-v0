@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
  * Feature Flag System
  *
  * Checks if a feature is enabled via environment variables.
+ * Uses an allowlist to prevent env var oracle attacks.
  *
  * Usage:
  * - Set NEXT_PUBLIC_ENABLE_[FEATURE_NAME]=true in .env.local
@@ -21,9 +22,19 @@ export function cn(...inputs: ClassValue[]) {
  * @param featureId - Environment variable name (e.g., 'NEXT_PUBLIC_ENABLE_WORK')
  * @returns true if enabled, false otherwise
  */
+
+// Allowlist of valid feature flags to prevent env var oracle attacks
+// (probing arbitrary env vars via dynamic lookup)
+const ALLOWED_FEATURE_FLAGS = new Set([
+  "NEXT_PUBLIC_ENABLE_WORK",
+  "NEXT_PUBLIC_ENABLE_MORE",
+]);
+
 export function featureFlagEnabled(featureId: string): boolean {
-  // In development, check environment variable
-  // In production, default to false unless explicitly enabled
+  // Security: Only allow checking known feature flags
+  if (!ALLOWED_FEATURE_FLAGS.has(featureId)) {
+    return false;
+  }
 
   // Works identically on server and client
   // Server: reads from process.env at runtime
