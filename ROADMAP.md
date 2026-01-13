@@ -1,6 +1,6 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.1 **Last Updated:** 2026-01-10 **Status:** ACTIVE
+**Document Version:** 2.2 **Last Updated:** 2026-01-13 **Status:** ACTIVE
 **Overall Completion:** ~35%
 
 ---
@@ -220,6 +220,28 @@ Planned | 🟣 Research
 8. **Disguised App Icon + Name** (5 SP)
    - Privacy layer for device sharing
    - "Journal" or neutral branding
+
+#### Engineering Productivity Quick Wins (from 2026-01-13 Audit)
+
+> **Source:** [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
+
+9. **EFF-001: Add `npm run dev:offline` Script** (S effort, High ROI)
+   - [ ] Install `concurrently` as dev dependency
+   - [ ] Add `"dev:offline": "concurrently \"firebase emulators:start\" \"npm run dev\""`
+   - [ ] Enables single-command offline development
+   - **Verification:** `npm run dev:offline` starts both emulators and Next.js
+
+10. **EFF-003: Add `scripts/doctor.js` Environment Validator** (S effort, High ROI)
+    - [ ] Create script to check Node version, npm, Firebase CLI, `.env.local`
+    - [ ] Add `npm run doctor` to package.json
+    - [ ] Include helpful fix hints in error messages
+    - **Verification:** `npm run doctor` passes on working setup, fails clearly on broken
+
+11. **EFF-005: Cache npm ci in CI Workflow** (S effort, Medium ROI)
+    - [ ] Add npm cache to `.github/workflows/ci.yml`
+    - [ ] Or merge jobs to run npm ci once
+    - [ ] Saves ~60s per CI run
+    - **Verification:** CI time decreases by ~60s
 
 ---
 
@@ -551,6 +573,51 @@ These pre-existing issues were identified during PR review CI:
   - **Priority:** P4 - Low priority (dev tools, rarely run)
   - **Effort:** 4-6 hours (fix all 79 violations incrementally)
   - **Approach:** Fix during related maintenance work, not dedicated sprint
+
+### Engineering Productivity - Observability & Offline (from 2026-01-13 Audit)
+
+> **Source:** [Engineering Productivity Audit](docs/audits/single-session/engineering-productivity/audit-2026-01-13.md)
+> **Priority:** P1 for EFF-010 (CRITICAL), P2 for others
+
+#### Observability Improvements
+
+- ⏳ **EFF-006: Add Correlation IDs to Logger** (M effort)
+  - Generate unique correlation ID per request
+  - Pass through all log calls (frontend + backend)
+  - Enables tracing requests across services
+  - **Verification:** Make request, find same ID in frontend and backend logs
+
+- ⏳ **EFF-007: Add Network Status to Logs** (M effort)
+  - Add `isOnline` to logger context and Sentry tags
+  - Track offline state when errors occur
+  - **Verification:** Go offline, trigger error, see `isOnline: false` in Sentry
+
+- ⏳ **EFF-008: Create Smoke Test Script** (M effort)
+  - Create `npm run smoke` that hits homepage, auth endpoint, Cloud Function
+  - Quick deployment verification (~30s)
+  - **Verification:** `npm run smoke` passes on healthy deployment
+
+- ⏳ **EFF-009: Add Bug Report GitHub Template** (M effort)
+  - Create `.github/ISSUE_TEMPLATE/bug_report.md`
+  - Fields: steps to repro, expected, actual, env, offline status, Sentry link
+  - **Verification:** New issue shows template with all fields
+
+#### Offline Support (CRITICAL)
+
+- ⏳ **EFF-010: Implement Offline Queue** (L effort, **CRITICAL**)
+  - **Issue:** `hooks/use-journal.ts:319-340` - all writes require network
+  - **Impact:** Offline is REQUIRED but writes fail, causing data loss
+  - **Fix:**
+    - [ ] IndexedDB queue with pending/synced/failed states
+    - [ ] Sync on reconnect with batch writes
+    - [ ] Conflict resolution strategy
+    - [ ] UI indicators for pending/synced/failed
+  - **Verification:** Go offline, make entry, verify pending state, go online, verify sync
+
+- ⏳ **EFF-011: Add Offline Tests** (L effort)
+  - Mock network status in tests
+  - Test queue behavior, sync on reconnect
+  - **Verification:** `npm test -- --grep offline` all pass
 
 ### Potential Architecture Work
 
@@ -1206,6 +1273,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                          |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                          |
 | 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram |
 | 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                     |
 | 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                           |

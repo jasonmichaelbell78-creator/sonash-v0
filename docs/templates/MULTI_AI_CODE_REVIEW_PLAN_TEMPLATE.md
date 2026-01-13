@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Code Review Plan
 
-**Document Version:** 1.2 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
+**Document Version:** 1.3 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -24,6 +24,7 @@ quality review on [Project Name]. Use this template when:
 4. Security
 5. Testing
 6. AI-Generated Code Failure Modes (vibe-coded app anti-patterns)
+7. Debugging Ergonomics (NEW - 2026-01-13)
 
 **Expected Output:** Ranked list of canonical findings with PR implementation
 plan.
@@ -193,6 +194,7 @@ FOCUS AREAS (use ONLY these categories)
 4. Security
 5. Testing
 6. AI-Generated Code Failure Modes
+7. Debugging Ergonomics
 ```
 
 ### Part 3: Review Phases
@@ -264,6 +266,42 @@ Category 6: AI-Generated Code Failure Modes
 - Placeholder/TODO comments that were never implemented
 - Unreachable code or dead branches
 
+Category 7: Debugging Ergonomics (NEW - 2026-01-13)
+
+Purpose: Assess how easy it is to debug issues in production and development.
+
+CHECKS:
+- Error handling consistency (try/catch patterns, error boundaries)
+- Logging with context (structured logs, not just console.log)
+- Correlation IDs for request tracing (frontend ↔ backend)
+- Sentry/error tracking integration completeness
+- Error messages include actionable fix hints
+- Network status awareness in error logging (online/offline state)
+- Repro path quality (can bugs be reproduced with minimal steps?)
+- Stack traces preserved vs swallowed
+- Development debugging aids (verbose mode, debug flags)
+
+PATTERNS TO FIND:
+- Swallowed errors (catch {} with no logging or re-throw)
+- Missing correlation IDs (no way to trace request across services)
+- Console.log spam without structure or log levels
+- Errors without context (just error.message, no stack/metadata)
+- Sentry integration gaps (events missing breadcrumbs, tags, or context)
+- Missing error boundaries in critical UI sections
+- No way to enable verbose/debug logging in production
+- Network status not captured when errors occur
+
+VERIFICATION COMMANDS (if run_commands=yes):
+- grep -rn "catch\s*{" --include="*.ts" --include="*.tsx" | head -20 (empty catches)
+- grep -rn "console\.log" --include="*.ts" --include="*.tsx" | wc -l (console.log count)
+- grep -rn "Sentry\." --include="*.ts" --include="*.tsx" | head -10 (Sentry usage)
+- grep -rn "correlationId\|correlation_id\|requestId" --include="*.ts" | head -10
+
+DEBUGGING WORKFLOW ASSESSMENT:
+- Time from error report to root cause identification
+- Are breadcrumbs/context sufficient in error reports?
+- Can offline errors be reproduced and traced?
+
 VERIFICATION COMMANDS (if run_commands=yes):
 - grep -rn "TODO\|FIXME\|HACK" --include="*.ts" --include="*.tsx" | head -20
 - grep -rn "expect(true)\|expect(1)" tests/ --include="*.test.ts"
@@ -323,7 +361,7 @@ Return 3 sections in this exact order:
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
 Schema: { "category": "Hygiene/Duplication|Types/Correctness|Next/React
-Boundaries|Security|Testing|AI-Code Failure Modes", "title": "short, specific", "fingerprint":
+Boundaries|Security|Testing|AI-Code Failure Modes|Debugging Ergonomics", "title": "short, specific", "fingerprint":
 "<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
 "path2"], "symbols": ["SymbolA", "SymbolB"], "duplication_cluster": {
@@ -714,6 +752,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                   | Author |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.3     | 2026-01-13 | Added Category 7: Debugging Ergonomics (correlation IDs, structured logging, Sentry integration, error context, repro path quality). From Engineering Productivity audit recommendations.                                                 | Claude |
 | 1.2     | 2026-01-13 | Added Category 6: AI-Generated Code Failure Modes (happy-path only logic, trivial test assertions, hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture, overly complex functions). Aligns with single-session audit-code.md updates for vibe-coded app coverage. | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro) | Claude |
 | 1.0     | 2026-01-01 | Initial template creation                                                                                                                                                                                                                 | Claude |

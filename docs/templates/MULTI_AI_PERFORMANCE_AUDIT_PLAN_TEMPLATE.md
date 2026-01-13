@@ -1,6 +1,6 @@
 # [Project Name] Multi-AI Performance Audit Plan
 
-**Document Version:** 1.0 **Created:** YYYY-MM-DD **Last Updated:** YYYY-MM-DD
+**Document Version:** 1.2 **Created:** YYYY-MM-DD **Last Updated:** 2026-01-13
 **Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0%
 
 ---
@@ -17,13 +17,14 @@ performance-focused audit on [Project Name]. Use this template when:
 - After adding significant new features
 - Quarterly performance review
 
-**Review Focus Areas (5 Categories):**
+**Review Focus Areas (6 Categories):**
 
 1. Bundle Size & Loading
 2. Rendering Performance
 3. Data Fetching & Caching
 4. Memory Management
 5. Core Web Vitals
+6. Offline Support (NEW - 2026-01-13)
 
 **Expected Output:** Performance findings with optimization plan, baseline
 metrics, and improvement targets.
@@ -244,13 +245,14 @@ A performance finding is CONFIRMED only if it includes:
 
 If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 
-FOCUS AREAS (use ONLY these 5 categories)
+FOCUS AREAS (use ONLY these 6 categories)
 
 1. Bundle Size & Loading
 2. Rendering Performance
 3. Data Fetching & Caching
 4. Memory Management
 5. Core Web Vitals
+6. Offline Support
 ```
 
 ### Part 3: Performance Audit Phases
@@ -378,6 +380,61 @@ VERIFICATION COMMANDS (if available):
 
 - npx lighthouse [url] --output=json
 - npm run build && npm run start (test production)
+
+Mark each check: ISSUE | OK | N/A Quote specific evidence.
+
+Category 6: Offline Support (NEW - 2026-01-13)
+
+Purpose: Assess offline capability, sync strategy, and failure handling.
+
+CHECKS:
+[ ] Offline state detection (navigator.onLine + ping checks)
+[ ] LocalStorage/IndexedDB used for offline data
+[ ] Sync queue for offline writes
+[ ] Pending/synced/failed state indicators in UI
+[ ] Conflict resolution strategy defined
+[ ] Retry logic for failed syncs
+[ ] Graceful degradation when offline
+[ ] Service worker configuration (if PWA)
+[ ] Cache invalidation strategy
+[ ] Offline tests exist and pass
+
+ANALYSIS:
+- Check for navigator.onLine usage
+- Look for IndexedDB or localStorage persistence
+- Identify write operations that fail when offline
+- Check for sync queue implementations
+- Review error handling for network failures
+
+PATTERNS TO FIND:
+- Writes that fail silently when offline (data loss)
+- Missing offline queue (no retry mechanism)
+- No UI indication of pending/synced/failed state
+- Race conditions on reconnect (duplicate writes)
+- Stale cache issues (data never refreshed)
+- Network-dependent operations without fallback
+
+VERIFICATION COMMANDS (if available):
+- grep -rn "navigator.onLine" --include="*.ts" --include="*.tsx"
+- grep -rn "IndexedDB\|localStorage" --include="*.ts" --include="*.tsx"
+- grep -rn "pending\|synced\|failed" --include="*.ts" --include="*.tsx"
+- Look for retry logic or queue implementations
+
+OFFLINE TEST RECIPE:
+1. Start app normally
+2. Create a data entry (journal, check-in, etc.)
+3. Open DevTools → Network → check "Offline"
+4. Create another data entry
+5. Check: Does UI show pending state? Or error?
+6. Uncheck "Offline"
+7. Verify: Does pending data sync automatically?
+8. Check for duplicates or data loss
+
+FAILURE MODES TO DOCUMENT:
+- What happens when write fails due to offline?
+- What happens when app goes offline mid-write?
+- What happens on reconnect? (auto-sync? manual?)
+- How are conflicts resolved? (last-write-wins? merge?)
 
 Mark each check: ISSUE | OK | N/A Quote specific evidence.
 
@@ -633,6 +690,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                | Author   |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 1.2     | 2026-01-13 | Added Category 6: Offline Support (offline state detection, sync queue, pending/synced/failed states, conflict resolution, failure modes). From Engineering Productivity audit recommendations.                                                                        | Claude   |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references (claude.md, AI_REVIEW_LEARNINGS_LOG.md, patterns:check, deps tools, SonarQube manifest); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added path adaptation notes | Claude   |
 | 1.0     | YYYY-MM-DD | Initial template creation                                                                                                                                                                                                                                              | [Author] |
 

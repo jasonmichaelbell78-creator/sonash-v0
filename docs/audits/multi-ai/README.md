@@ -3,6 +3,9 @@
 **Created:** 2026-01-08 **Updated:** 2026-01-13 **Purpose:** Store results from
 multi-AI consensus audits
 
+> **Note (2026-01-13):** Templates updated with Engineering Productivity audit
+> recommendations. See "Extended Coverage" section for new categories.
+
 ---
 
 ## Overview
@@ -46,9 +49,19 @@ Multi-AI templates now include additional categories for vibe-coded apps:
 - Crypto: Weak randomness, broken hashing, homegrown crypto
 - AI Agent Security: Prompt injection in configs, agent manipulation surfaces
 
-**Code Review (6 categories):**
+**Code Review (7 categories):**
 - AI-Generated Code Failure Modes: Happy-path only logic, trivial test assertions,
   hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture
+- Debugging Ergonomics: Correlation IDs, structured logging, Sentry integration,
+  error context, repro path quality
+
+**Performance Audit (6 categories):**
+- Offline Support: Offline state detection, sync queue, pending/synced/failed
+  states, conflict resolution, failure mode documentation
+
+**Process Audit (7 categories):**
+- Golden Path & DX: Single-command workflows (setup, dev, offline, test, deploy,
+  verify, rollback), doctor scripts, DX friction assessment
 
 ## Output Format
 
