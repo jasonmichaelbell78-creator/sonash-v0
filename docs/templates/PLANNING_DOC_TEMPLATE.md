@@ -22,7 +22,7 @@ for [feature/initiative name].
 
 **Related To**:
 
-- [Milestone/Phase] in [ROADMAP.md](../ROADMAP.md)
+- [Milestone/Phase] in [ROADMAP.md](../../ROADMAP.md)
 - [Related feature plans]
 
 ---
@@ -356,7 +356,7 @@ This plan is complete when all of the following are true:
 
 **Planning**:
 
-- [ROADMAP.md](../ROADMAP.md) - Overall product roadmap
+- [ROADMAP.md](../../ROADMAP.md) - Overall product roadmap
 - [Related plan 1] - [Connection]
 
 **Implementation**:

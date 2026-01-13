@@ -1,7 +1,10 @@
-"use client";
-
 import Image from "next/image";
 
+/**
+ * Sobriety chip milestone display - pure presentational component.
+ *
+ * @see CANON-0046: Removed unnecessary "use client" directive
+ */
 interface SobrietyChipProps {
   cleanDays: number;
 }

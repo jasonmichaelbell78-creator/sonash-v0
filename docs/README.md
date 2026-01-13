@@ -131,7 +131,7 @@ code reviews and audits:
 
 | Document                  | Purpose                            | Location                              |
 | ------------------------- | ---------------------------------- | ------------------------------------- |
-| **CODE_PATTERNS.md**      | Anti-patterns and best practices   | `docs/CODE_PATTERNS.md`               |
+| **CODE_PATTERNS.md**      | Anti-patterns and best practices   | `docs/agent_docs/CODE_PATTERNS.md`    |
 | **sonarqube-manifest.md** | SonarQube static analysis baseline | `docs/analysis/sonarqube-manifest.md` |
 
 ### Architecture Decision Records

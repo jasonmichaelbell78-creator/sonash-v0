@@ -110,19 +110,19 @@ critical patterns that apply to every session.
 
 ## GitHub Actions
 
-| Pattern              | Rule                                                        | Why                                           |
-| -------------------- | ----------------------------------------------------------- | --------------------------------------------- |
-| Supply chain pinning | Pin third-party actions to full SHA: `action@SHA # vX.Y.Z`  | Tag retargeting attacks (CVE-2025-30066)      |
-| JS template literals | `process.env.VAR` NOT `${{ }}`                              | Injection risk                                |
-| Command failure      | Use exit codes, not output parsing                          | Reliable detection                            |
-| File list separator  | `separator: "\n"` with `while IFS= read -r`                 | Proper iteration                              |
-| Separate stderr      | `cmd 2>err.log`                                             | Keep JSON parseable                           |
-| if conditions        | Explicit `${{ }}`                                           | YAML parser issues                            |
-| Retry loops          | Track success explicitly                                    | Don't assume loop exit = success              |
-| Output comparison    | `== '4'` not `== 4`                                         | Outputs are strings                           |
-| Label auto-creation  | Check getLabel, create on 404                               | Fresh repos/forks                             |
-| Event-specific       | `context.payload.action === 'opened'`                       | Avoid spam on synchronize                     |
-| API error tolerance  | Catch 404/422 on removeLabel                                | Label may be gone                             |
+| Pattern              | Rule                                                       | Why                                      |
+| -------------------- | ---------------------------------------------------------- | ---------------------------------------- |
+| Supply chain pinning | Pin third-party actions to full SHA: `action@SHA # vX.Y.Z` | Tag retargeting attacks (CVE-2025-30066) |
+| JS template literals | `process.env.VAR` NOT `${{ }}`                             | Injection risk                           |
+| Command failure      | Use exit codes, not output parsing                         | Reliable detection                       |
+| File list separator  | `separator: "\n"` with `while IFS= read -r`                | Proper iteration                         |
+| Separate stderr      | `cmd 2>err.log`                                            | Keep JSON parseable                      |
+| if conditions        | Explicit `${{ }}`                                          | YAML parser issues                       |
+| Retry loops          | Track success explicitly                                   | Don't assume loop exit = success         |
+| Output comparison    | `== '4'` not `== 4`                                        | Outputs are strings                      |
+| Label auto-creation  | Check getLabel, create on 404                              | Fresh repos/forks                        |
+| Event-specific       | `context.payload.action === 'opened'`                      | Avoid spam on synchronize                |
+| API error tolerance  | Catch 404/422 on removeLabel                               | Label may be gone                        |
 
 ---
 
@@ -268,16 +268,16 @@ fix guidance.
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                                                   |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1.7     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 - Added 15 patterns (6 Security: IPv6, PII, bypass, fail-closed, batch, filtering; 4 JS/TS: path.relative, Error.cause, globalThis, Array.isArray; 5 CI: arg separator, quote args, project validation, cross-platform, exit code; 1 GitHub Actions: supply chain) |
-| 1.6     | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns. |
-| 1.5     | 2026-01-11 | Added prototype pollution, secure logging, fail-fast patterns from Reviews #117-120                                                                                                       |
-| 1.4     | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General)                                                                  |
-| 1.3     | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 - Added Security Audit category (6 patterns)                                                                                                             |
-| 1.2     | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews                                                            |
-| 1.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns)                                                                                                             |
-| 1.0     | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews)                                                                                                                |
+| 1.6     | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns.                                                                                                              |
+| 1.5     | 2026-01-11 | Added prototype pollution, secure logging, fail-fast patterns from Reviews #117-120                                                                                                                                                                                                                    |
+| 1.4     | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General)                                                                                                                                                                               |
+| 1.3     | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 - Added Security Audit category (6 patterns)                                                                                                                                                                                                                          |
+| 1.2     | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews                                                                                                                                                                         |
+| 1.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns)                                                                                                                                                                                                                          |
+| 1.0     | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews)                                                                                                                                                                                                                             |
 
 ---
 

@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { Meeting } from "@/lib/db/meetings";
 
 // Fix Leaflet default icon not found
@@ -113,30 +116,40 @@ export default function MeetingMap({ meetings, userLocation }: MeetingMapProps) 
           </Circle>
         )}
 
-        {/* Meeting Markers */}
-        {validMeetings.map((meeting) => (
-          <Marker key={meeting.id} position={[meeting.coordinates!.lat, meeting.coordinates!.lng]}>
-            <Popup>
-              <div className="p-1 min-w-[200px]">
-                <h3 className="font-bold text-gray-900 mb-1">{meeting.name}</h3>
-                <div className="text-xs text-gray-600 mb-2">
-                  <p>
-                    {meeting.day} • {meeting.time}
-                  </p>
-                  <p>{meeting.address}</p>
+        {/* Meeting Markers with Clustering */}
+        <MarkerClusterGroup
+          chunkedLoading
+          maxClusterRadius={50}
+          spiderfyOnMaxZoom={true}
+          showCoverageOnHover={false}
+        >
+          {validMeetings.map((meeting) => (
+            <Marker
+              key={meeting.id}
+              position={[meeting.coordinates!.lat, meeting.coordinates!.lng]}
+            >
+              <Popup>
+                <div className="p-1 min-w-[200px]">
+                  <h3 className="font-bold text-gray-900 mb-1">{meeting.name}</h3>
+                  <div className="text-xs text-gray-600 mb-2">
+                    <p>
+                      {meeting.day} • {meeting.time}
+                    </p>
+                    <p>{meeting.address}</p>
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${meeting.coordinates!.lat},${meeting.coordinates!.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center bg-blue-500 text-white text-xs py-1.5 rounded hover:bg-blue-600 transition-colors"
+                  >
+                    Get Directions
+                  </a>
                 </div>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${meeting.coordinates!.lat},${meeting.coordinates!.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center bg-blue-500 text-white text-xs py-1.5 rounded hover:bg-blue-600 transition-colors"
-                >
-                  Get Directions
-                </a>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+              </Popup>
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
     </div>
   );

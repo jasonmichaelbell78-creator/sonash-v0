@@ -322,7 +322,7 @@ resubscription storm
 
 - **[PERFORMANCE_AUDIT_PLAN_2026_Q1.md](./PERFORMANCE_AUDIT_PLAN_2026_Q1.md)** -
   Audit execution plan and prompts
-- **[../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)** -
+- **[MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md](../../templates/MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md)** -
   Template used
 - **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** -
   Overall review coordination

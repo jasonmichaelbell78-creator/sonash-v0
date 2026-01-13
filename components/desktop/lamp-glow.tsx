@@ -1,5 +1,9 @@
-"use client";
-
+/**
+ * Lamp glow effect - pure presentational component.
+ * Renders static gradient overlays for ambient lighting effect.
+ *
+ * @see CANON-0046: Removed unnecessary "use client" directive
+ */
 export default function LampGlow() {
   return (
     <>

@@ -1,7 +1,10 @@
-"use client";
-
 import Image from "next/image";
 
+/**
+ * Cell phone decorative element - pure presentational component.
+ *
+ * @see CANON-0046: Removed unnecessary "use client" directive
+ */
 export default function CellPhone() {
   return (
     <div
