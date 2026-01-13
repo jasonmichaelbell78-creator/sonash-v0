@@ -260,7 +260,7 @@ Each line (UPDATED SCHEMA with confidence and verification):
 ```json
 {
   "id": "SEC-001",
-  "category": "Auth|Input|Data|Firebase|Deps|OWASP|Headers|Framework|FileHandling|Crypto|ProductRisk|AgentSecurity",
+  "category": "Auth|Input|Data|Firebase|Deps|OWASP|Headers|Framework|FileHandling|Crypto|ProductUXRisk|AgentSecurity",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": "HIGH|MEDIUM|LOW",

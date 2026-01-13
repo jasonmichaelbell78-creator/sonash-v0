@@ -396,8 +396,8 @@ REQUIRED CHECKS:
 [ ] Permissions-Policy restricts sensitive APIs
 
 VERIFICATION COMMANDS:
-- cat firebase.json | grep -A 20 "headers"
-- grep -rn "Content-Security-Policy\|X-Frame-Options" --include="*.ts" --include="*.json"
+- grep -n -A 20 "\"headers\"" firebase.json
+- grep -E -rn "Content-Security-Policy|X-Frame-Options" --include="*.ts" --include="*.json"
 - Review next.config.mjs for security headers
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
@@ -414,7 +414,7 @@ REQUIRED CHECKS:
 
 VERIFICATION COMMANDS:
 - grep -rn "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY\|NEXT_PUBLIC_.*PASSWORD" --include="*.ts" --include="*.tsx"
-- grep -l -r '"use client"' app/ components/ --include="*.tsx" | xargs grep -l 'process\.env' 2>/dev/null (secrets in client components)
+- grep -l -r '"use client"' app/ components/ --include="*.tsx" | while IFS= read -r f; do grep -l 'process\.env' "$f"; done 2>/dev/null (secrets in client components)
 - Review middleware.ts for auth checks
 - grep -rn "getServerSideProps\|getStaticProps" --include="*.tsx"
 

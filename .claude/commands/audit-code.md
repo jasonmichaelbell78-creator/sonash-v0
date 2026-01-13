@@ -74,14 +74,14 @@ If outdated, note discrepancies but proceed with current values.
 3. Framework Best Practices (React patterns, Next.js conventions)
 4. Testing Coverage (untested functions, missing edge cases)
 5. Security Surface (input validation, auth checks)
-6. AI-Generated Code Failure Modes:
+6. AICode (AI-Generated Code Failure Modes):
    - "Happy-path only" logic, missing edge cases and error handling
    - Tests that exist but don't assert meaningful behavior
    - Hallucinated dependencies/APIs that don't exist
    - Copy/paste anti-patterns (similar code blocks that should be abstracted)
    - Inconsistent architecture patterns across files
    - Overly complex functions (deep nesting, >50 lines)
-7. Debugging Ergonomics (NEW - 2026-01-13):
+7. Debugging (Debugging Ergonomics) (NEW - 2026-01-13):
    - Correlation IDs / request tracing (frontend to backend)
    - Structured logging with context (not just console.log)
    - Sentry/error tracking integration completeness

@@ -292,10 +292,10 @@ PATTERNS TO FIND:
 - Network status not captured when errors occur
 
 VERIFICATION COMMANDS (if run_commands=yes):
-- grep -E -rn "catch\s*\(\w*\)\s*\{\s*(\/\/.*)?\s*\}" --include="*.ts" --include="*.tsx" | head -20 (empty catches)
+- grep -E -rn "catch([[:space:]]*\([^)]*\))?[[:space:]]*\{[[:space:]]*([/][/*].*)?[[:space:]]*\}" --include="*.ts" --include="*.tsx" | head -20 (empty/comment-only catches)
 - grep -rn "console\.log" --include="*.ts" --include="*.tsx" | wc -l (console.log count)
 - grep -rn "Sentry\." --include="*.ts" --include="*.tsx" | head -10 (Sentry usage)
-- grep -rn "correlationId\|correlation_id\|requestId" --include="*.ts" | head -10
+- grep -E -rn "correlationId|correlation_id|requestId" --include="*.ts" --include="*.tsx" | head -10
 
 DEBUGGING WORKFLOW ASSESSMENT:
 - Time from error report to root cause identification
@@ -361,7 +361,7 @@ Return 3 sections in this exact order:
 1. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
 Schema: { "category": "Hygiene/Duplication|Types/Correctness|Next/React
-Boundaries|Security|Testing|AI-Code Failure Modes|Debugging Ergonomics", "title": "short, specific", "fingerprint":
+Boundaries|Security|Testing|AICode|Debugging", "title": "short, specific", "fingerprint":
 "<category>::<primary_file>::<primary_symbol>::<problem_slug>", "severity":
 "S0|S1|S2|S3", "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1",
 "path2"], "symbols": ["SymbolA", "SymbolB"], "duplication_cluster": {
