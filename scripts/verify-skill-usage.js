@@ -107,7 +107,9 @@ function verifySkillUsage(events) {
   const results = [];
 
   // Get skills that were invoked
-  const invokedSkills = new Set(events.filter((e) => e.event === "skill_invoke" && e.skill).map((e) => e.skill.toLowerCase()));
+  const invokedSkills = new Set(
+    events.filter((e) => e.event === "skill_invoke" && e.skill).map((e) => e.skill.toLowerCase())
+  );
 
   // Check each rule
   for (const rule of USAGE_RULES) {
@@ -193,7 +195,9 @@ function main() {
     }
 
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log(`Summary: ${blocking.length} required, ${warnings.length} recommended, ${suggestions.length} suggested\n`);
+    console.log(
+      `Summary: ${blocking.length} required, ${warnings.length} recommended, ${suggestions.length} suggested\n`
+    );
   }
 
   // Exit code depends on mode and severity

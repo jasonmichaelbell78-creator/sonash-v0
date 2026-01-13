@@ -31,21 +31,21 @@ supersedes fragmented planning documents into a single linear execution path.
 
 ## Status Dashboard
 
-| Step    | Title                                       | Status          | Completion | Blocking    |
-| ------- | ------------------------------------------- | --------------- | ---------- | ----------- |
-| Step 1  | Quick Wins & Cleanup                        | **COMPLETE**    | 100%       | None        |
-| Step 2  | Documentation Standardization Completion    | **COMPLETE**    | 100%       | ~~Step 1~~  |
-| Step 3  | Developer Tooling Setup                     | **COMPLETE**    | 100%       | ~~Step 2~~  |
-| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE**    | 100%       | ~~Step 3~~  |
-| Step 4B | Remediation Sprint                          | **COMPLETE**    | 100%       | ~~Step 4~~  |
-| Step 4C | SonarCloud Issue Triage                     | **COMPLETE**    | 100%       | ~~Step 4B~~ |
-| Step 5  | Review Policy Expansion                     | **COMPLETE**    | 100%       | ~~Step 4C~~ |
-| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5      |
-| Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6      |
+| Step    | Title                                       | Status       | Completion | Blocking    |
+| ------- | ------------------------------------------- | ------------ | ---------- | ----------- |
+| Step 1  | Quick Wins & Cleanup                        | **COMPLETE** | 100%       | None        |
+| Step 2  | Documentation Standardization Completion    | **COMPLETE** | 100%       | ~~Step 1~~  |
+| Step 3  | Developer Tooling Setup                     | **COMPLETE** | 100%       | ~~Step 2~~  |
+| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE** | 100%       | ~~Step 3~~  |
+| Step 4B | Remediation Sprint                          | **COMPLETE** | 100%       | ~~Step 4~~  |
+| Step 4C | SonarCloud Issue Triage                     | **COMPLETE** | 100%       | ~~Step 4B~~ |
+| Step 5  | Review Policy Expansion                     | **COMPLETE** | 100%       | ~~Step 4C~~ |
+| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**  | 0%         | Step 5      |
+| Step 7  | Verification & Feature Resumption           | **PENDING**  | 0%         | Step 6      |
 
 **Overall Progress:** 7/9 steps complete (~85%) **Effort Tracking:** ~31-45
-hours actual (Steps 1-5) + ~3-5 hours remaining (6: 2-3h, 7: 1-2h)
-**Target Completion:** TBD (no costly deadlines - solo project)
+hours actual (Steps 1-5) + ~3-5 hours remaining (6: 2-3h, 7: 1-2h) **Target
+Completion:** TBD (no costly deadlines - solo project)
 
 ---
 
@@ -1503,7 +1503,8 @@ for full design. _(Archived 2026-01-13)_
 
 ### Tasks
 
-- [x] **Task 5.1**: Create session activity logging infrastructure (DONE - 2026-01-13)
+- [x] **Task 5.1**: Create session activity logging infrastructure (DONE -
+      2026-01-13)
   - [x] Created `scripts/log-session-activity.js`
   - [x] Logs: file writes, skill invocations, commits, session start/end
   - [x] Output to `.claude/session-activity.jsonl`
@@ -1512,13 +1513,15 @@ for full design. _(Archived 2026-01-13)_
 
 - [x] **Task 5.2**: Create event-based trigger checker (DONE - 2026-01-13)
   - [x] Created `scripts/check-triggers.js`
-  - [x] Implemented triggers: security_audit (blocking), consolidation (warning), skill_validation (warning)
+  - [x] Implemented triggers: security_audit (blocking), consolidation
+        (warning), skill_validation (warning)
   - [x] Integrated with pre-push hook
   - [x] Added `npm run triggers:check` script
   - [x] Added SKIP_TRIGGERS=1 override with audit logging
   - [x] Refined security trigger to exclude docs/scripts/hooks (app code only)
 
-- [x] **Task 5.3**: Create skill/agent configuration validator (DONE - 2026-01-13)
+- [x] **Task 5.3**: Create skill/agent configuration validator (DONE -
+      2026-01-13)
   - [x] Created `scripts/validate-skill-config.js`
   - [x] Validates YAML frontmatter, title, required sections for audit commands
   - [x] Checks file references exist (skips glob/regex patterns)
@@ -1528,7 +1531,8 @@ for full design. _(Archived 2026-01-13)_
 
 - [x] **Task 5.4**: Create skill usage verifier (DONE - 2026-01-13)
   - [x] Created `scripts/verify-skill-usage.js`
-  - [x] Defined rules: code-reviewer (warning), security-auditor (blocking), test-engineer (suggestion)
+  - [x] Defined rules: code-reviewer (warning), security-auditor (blocking),
+        test-engineer (suggestion)
   - [x] Checks session activity log against rules
   - [x] Added `npm run skills:verify-usage` script
   - [x] Supports --strict and --quiet modes for different contexts
@@ -1643,12 +1647,16 @@ for full design. _(Archived 2026-01-13)_
   - [x] Updated docs:check comment (templates have expected issues)
   - **Note:** knip and docs:check remain non-blocking (acceptable baselines)
 
-- [x] **Task 5.18**: Consolidate redundant automation checks (ANALYZED - 2026-01-13)
+- [x] **Task 5.18**: Consolidate redundant automation checks (ANALYZED -
+      2026-01-13)
   - **Analysis Result:** Current structure is intentional, not redundant:
-    - Pattern compliance in session-start: Early visibility (different from pre-commit blocking)
-    - check-write vs check-edit: Have intentional differences (priority order, keywords)
+    - Pattern compliance in session-start: Early visibility (different from
+      pre-commit blocking)
+    - check-write vs check-edit: Have intentional differences (priority order,
+      keywords)
   - [x] Analyzed all automation hooks and their purposes
-  - [ ] _Deferred:_ Update TRIGGERS.md with full automation landscape (documentation task)
+  - [ ] _Deferred:_ Update TRIGGERS.md with full automation landscape
+        (documentation task)
   - **Decision:** Keep current working structure - no performance issue observed
 
 ### Acceptance Criteria

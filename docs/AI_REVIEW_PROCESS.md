@@ -454,18 +454,19 @@ above is required._
 
 ### Active Tools
 
-| Tool           | Purpose                  | Configuration              | Status     |
-| -------------- | ------------------------ | -------------------------- | ---------- |
-| **Qodo**       | AI PR review/suggestions | `.pr_agent.toml`           | **Primary**|
-| **SonarCloud** | Static analysis/metrics  | `sonar-project.properties` | **Primary**|
-| **ESLint**     | Local linting/security   | `eslint.config.mjs`        | Active     |
-| ~~CodeRabbit~~ | ~~AI PR review~~         | ~~.coderabbit.yaml~~       | Deprecated |
+| Tool           | Purpose                  | Configuration              | Status      |
+| -------------- | ------------------------ | -------------------------- | ----------- |
+| **Qodo**       | AI PR review/suggestions | `.pr_agent.toml`           | **Primary** |
+| **SonarCloud** | Static analysis/metrics  | `sonar-project.properties` | **Primary** |
+| **ESLint**     | Local linting/security   | `eslint.config.mjs`        | Active      |
+| ~~CodeRabbit~~ | ~~AI PR review~~         | ~~.coderabbit.yaml~~       | Deprecated  |
 
 ### Qodo (PR-Agent) Configuration
 
 Configuration file: `.pr_agent.toml`
 
 **Key features:**
+
 - Custom prompts with project context and known false positives
 - File ignore patterns (docs, tests, Claude config)
 - Focus on real security issues, logic errors, React/Next.js patterns
@@ -476,19 +477,21 @@ Configuration file: `.pr_agent.toml`
 Configuration file: `sonar-project.properties`
 
 **Rule-specific exclusions:**
+
 - Console statements in Cloud Functions (typescript:S106)
 - Environment variables in API routes (typescript:S5765)
 - Mock passwords in test files (typescript:S2068)
 - Path operations in dev scripts (typescript:S4790)
 
-**Current baseline (2026-01-13):** 778 issues
-**Quality gate:** No new critical/blocker issues
+**Current baseline (2026-01-13):** 778 issues **Quality gate:** No new
+critical/blocker issues
 
 ### False Positives Database
 
 File: `docs/audits/FALSE_POSITIVES.jsonl` (20+ patterns)
 
 Add new patterns:
+
 ```bash
 node scripts/add-false-positive.js \
   --pattern "regex" \

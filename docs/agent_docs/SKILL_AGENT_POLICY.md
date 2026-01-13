@@ -1,7 +1,6 @@
 # Skill and Agent Usage Policy
 
-**Last Updated:** 2026-01-13
-**Status:** Active
+**Last Updated:** 2026-01-13 **Status:** Active
 
 ## Purpose
 
@@ -53,14 +52,14 @@ Skills are automatically validated by `npm run skills:validate` which checks:
 
 ### When to Use Each Skill/Agent
 
-| Activity                       | Required Skill/Agent     | Severity  |
-| ------------------------------ | ------------------------ | --------- |
-| Modifying auth/security code   | `security-auditor`       | Blocking  |
-| Writing/modifying code files   | `code-reviewer`          | Warning   |
-| Adding/modifying test files    | `test-engineer`          | Suggested |
-| Bug investigation              | `systematic-debugging`   | Warning   |
-| Starting a work session        | `/session-begin`         | Required  |
-| Ending a work session          | `/session-end`           | Required  |
+| Activity                     | Required Skill/Agent   | Severity  |
+| ---------------------------- | ---------------------- | --------- |
+| Modifying auth/security code | `security-auditor`     | Blocking  |
+| Writing/modifying code files | `code-reviewer`        | Warning   |
+| Adding/modifying test files  | `test-engineer`        | Suggested |
+| Bug investigation            | `systematic-debugging` | Warning   |
+| Starting a work session      | `/session-begin`       | Required  |
+| Ending a work session        | `/session-end`         | Required  |
 
 ### Skill Usage Verification
 
@@ -97,11 +96,11 @@ npm run session:summary
 The trigger checker (`npm run triggers:check`) monitors for conditions requiring
 action:
 
-| Trigger              | Condition                                | Severity  | Action                        |
-| -------------------- | ---------------------------------------- | --------- | ----------------------------- |
-| `security_audit`     | Security-sensitive code files modified   | Blocking  | Run security-auditor          |
-| `consolidation`      | Within 2 reviews of consolidation limit  | Warning   | Check consolidation status    |
-| `skill_validation`   | Skill/command files modified             | Warning   | Validate skill structure      |
+| Trigger            | Condition                               | Severity | Action                     |
+| ------------------ | --------------------------------------- | -------- | -------------------------- |
+| `security_audit`   | Security-sensitive code files modified  | Blocking | Run security-auditor       |
+| `consolidation`    | Within 2 reviews of consolidation limit | Warning  | Check consolidation status |
+| `skill_validation` | Skill/command files modified            | Warning  | Validate skill structure   |
 
 ### Pre-Push Integration
 
@@ -174,26 +173,26 @@ Periodic review of override logs is recommended to:
 
 ### Pre-Commit Hooks
 
-| Check                  | Blocking | Condition                    |
-| ---------------------- | -------- | ---------------------------- |
-| ESLint                 | Yes      | Always                       |
-| Prettier               | No       | Always (warning only)        |
-| Pattern compliance     | Yes      | Always                       |
-| Tests                  | Yes      | Always                       |
-| CANON validation       | No       | When JSONL files staged      |
-| Skill validation       | No       | When skill files staged      |
-| Learning entry reminder| No       | When many files changed      |
+| Check                   | Blocking | Condition               |
+| ----------------------- | -------- | ----------------------- |
+| ESLint                  | Yes      | Always                  |
+| Prettier                | No       | Always (warning only)   |
+| Pattern compliance      | Yes      | Always                  |
+| Tests                   | Yes      | Always                  |
+| CANON validation        | No       | When JSONL files staged |
+| Skill validation        | No       | When skill files staged |
+| Learning entry reminder | No       | When many files changed |
 
 ### Pre-Push Hooks
 
-| Check                  | Blocking | Override                     |
-| ---------------------- | -------- | ---------------------------- |
-| Tests                  | Yes      | None                         |
-| Circular dependencies  | Yes      | None                         |
-| Pattern compliance     | Yes      | None                         |
-| Type check             | Yes      | None                         |
-| npm audit              | No       | N/A (warning only)           |
-| Event triggers         | Varies   | `SKIP_TRIGGERS=1`            |
+| Check                 | Blocking | Override           |
+| --------------------- | -------- | ------------------ |
+| Tests                 | Yes      | None               |
+| Circular dependencies | Yes      | None               |
+| Pattern compliance    | Yes      | None               |
+| Type check            | Yes      | None               |
+| npm audit             | No       | N/A (warning only) |
+| Event triggers        | Varies   | `SKIP_TRIGGERS=1`  |
 
 ---
 
