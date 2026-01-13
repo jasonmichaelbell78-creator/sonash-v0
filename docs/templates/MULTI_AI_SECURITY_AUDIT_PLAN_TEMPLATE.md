@@ -414,7 +414,7 @@ REQUIRED CHECKS:
 
 VERIFICATION COMMANDS:
 - grep -rn "NEXT_PUBLIC_.*SECRET\|NEXT_PUBLIC_.*KEY\|NEXT_PUBLIC_.*PASSWORD" --include="*.ts" --include="*.tsx"
-- grep -rn "process\.env" app/ components/ --include="*.tsx" | grep -v "use server"
+- grep -l -r '"use client"' app/ components/ --include="*.tsx" | xargs grep -l 'process\.env' 2>/dev/null (secrets in client components)
 - Review middleware.ts for auth checks
 - grep -rn "getServerSideProps\|getStaticProps" --include="*.tsx"
 

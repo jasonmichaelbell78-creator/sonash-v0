@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 6.0 **Created:** 2026-01-02 **Last Updated:** 2026-01-12
+**Document Version:** 6.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-13
 
 ## Purpose
 
@@ -20,6 +20,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6.1     | 2026-01-13 | Review #139: PR Review Processing - 11 items (2 MAJOR: missing YAML frontmatter in slash commands, 8 MINOR: documentation lint fixes, grep pattern improvements, Debugging Ergonomics category added to audit-code). New patterns: Commands need YAML frontmatter, Tier-2 docs need Purpose/Version History sections.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 6.0     | 2026-01-12 | ARCHIVE #3: Reviews #61-100 → REVIEWS_61-100.md (1740 lines removed, 3170→1430 lines). Active reviews now #101-136. Session #58.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 5.9     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 → CODE_PATTERNS.md v1.7 (16 new patterns: 6 Security, 4 JS/TS, 5 CI/Automation, 1 GitHub Actions). Counter reset. Session #57.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 5.8     | 2026-01-12 | Review #136: PR CI Feedback Round 3 (SonarQube + Qodo + CI) - 14 items. Fixed: 7 MAJOR security (admin.ts PII logging sanitized - log queryLength/queryType instead of raw query, leaky error message in adminTriggerJob, Firestore auto-ID instead of Date.now() for collision resistance, id field placement after spread, HttpsError preservation in migrateAnonymousUserData, meetings.ts batch delete chunking for 500-doc limit, use-journal.ts sanitization order - script/style before tags), 3 MAJOR quality (Array.isArray guards in generateSearchableText, unused deps added to knip ignore), 4 MINOR (GLOBAL_EXCLUDE added to pattern checker for dev utility scripts with pre-existing debt). New pattern: Chunk batch operations under Firestore 500-op limit. Session #55. |
@@ -459,8 +460,54 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-136 are actively maintained below. Older reviews are in the
+Reviews #101-139 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #139: PR Cherry-Pick Security Audit CI Fixes (2026-01-13)
+
+**Source:** Qodo Compliance + CI Feedback
+**PR/Branch:** PR / claude/cherry-pick-security-audit-CqGum
+**Suggestions:** 11 items (Critical: 0, Major: 2, Minor: 8, Trivial: 1)
+
+**Patterns Identified:**
+
+1. [Missing YAML frontmatter in slash commands]: Commands without `---\ndescription: ...\n---` frontmatter aren't recognized
+   - Root cause: Some commands were created without proper frontmatter structure
+   - Prevention: Always add frontmatter when creating new commands
+
+2. [Documentation lint requirements for audit files]: Tier-2 docs require Purpose and Version History sections
+   - Root cause: Audit reports were missing standard sections
+   - Prevention: Include Purpose, Version History, and Last Updated in all audit documents
+
+**Resolution:**
+
+- Fixed: 11 items
+- Deferred: 0
+- Rejected: 0
+
+**Issues Fixed:**
+
+| #   | Issue                                        | Severity   | Category      | Fix                                              |
+| --- | -------------------------------------------- | ---------- | ------------- | ------------------------------------------------ |
+| 1   | pr-review.md missing YAML frontmatter        | 🔴 Major   | Configuration | Added `---\ndescription: ...\n---` frontmatter   |
+| 2   | docs-sync.md missing YAML frontmatter        | 🔴 Major   | Configuration | Added proper frontmatter                         |
+| 3   | fetch-pr-feedback.md malformed frontmatter   | 🟡 Minor   | Configuration | Fixed frontmatter structure                      |
+| 4   | audit-2026-01-13.md missing Purpose section  | 🟡 Minor   | Documentation | Added Purpose section                            |
+| 5   | audit-2026-01-13.md missing Version History  | 🟡 Minor   | Documentation | Added Version History table                      |
+| 6   | audit-2026-01-13.md missing Last Updated     | 🟡 Minor   | Documentation | Added Last Updated metadata                      |
+| 7   | audit-code.md missing Debugging Ergonomics   | 🟡 Minor   | Consistency   | Added Category 7 with 5 debugging checks         |
+| 8   | Grep pattern for client-side secrets         | 🟡 Minor   | Security      | Improved to find "use client" files first        |
+| 9   | Grep pattern for empty catches               | 🟡 Minor   | Code Quality  | Improved regex to detect empty/comment-only      |
+| 10  | Category enum in audit-code.md               | 🟡 Minor   | Consistency   | Added Debugging to schema                        |
+| 11  | Description alignment in READMEs             | 🟢 Trivial | Documentation | Already aligned from previous session            |
+
+**Key Learnings:**
+
+- All `.claude/commands/*.md` files MUST have YAML frontmatter with a description field
+- The frontmatter must be at the very start of the file: `---\ndescription: Description\n---`
+- Audit documents should follow Tier-2 requirements including Purpose and Version History sections
 
 ---
 

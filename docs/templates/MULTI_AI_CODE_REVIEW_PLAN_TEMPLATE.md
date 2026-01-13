@@ -292,7 +292,7 @@ PATTERNS TO FIND:
 - Network status not captured when errors occur
 
 VERIFICATION COMMANDS (if run_commands=yes):
-- grep -rn "catch\s*{" --include="*.ts" --include="*.tsx" | head -20 (empty catches)
+- grep -E -rn "catch\s*\(\w*\)\s*\{\s*(\/\/.*)?\s*\}" --include="*.ts" --include="*.tsx" | head -20 (empty catches)
 - grep -rn "console\.log" --include="*.ts" --include="*.tsx" | wc -l (console.log count)
 - grep -rn "Sentry\." --include="*.ts" --include="*.tsx" | head -10 (Sentry usage)
 - grep -rn "correlationId\|correlation_id\|requestId" --include="*.ts" | head -10

@@ -67,7 +67,7 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (6 Categories):**
+**Focus Areas (7 Categories):**
 
 1. Code Hygiene (unused imports, dead code, console.logs)
 2. Types & Correctness (any types, type safety, null checks)
@@ -81,6 +81,12 @@ If outdated, note discrepancies but proceed with current values.
    - Copy/paste anti-patterns (similar code blocks that should be abstracted)
    - Inconsistent architecture patterns across files
    - Overly complex functions (deep nesting, >50 lines)
+7. Debugging Ergonomics (NEW - 2026-01-13):
+   - Correlation IDs / request tracing (frontend to backend)
+   - Structured logging with context (not just console.log)
+   - Sentry/error tracking integration completeness
+   - Error messages include actionable fix hints
+   - Offline/network status captured in error context
 
 **For each category:**
 
@@ -216,7 +222,7 @@ Each line (UPDATED SCHEMA with confidence and verification):
 ```json
 {
   "id": "CODE-001",
-  "category": "Hygiene|Types|Framework|Testing|Security|AICode",
+  "category": "Hygiene|Types|Framework|Testing|Security|AICode|Debugging",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": "HIGH|MEDIUM|LOW",
