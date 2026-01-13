@@ -1,7 +1,7 @@
 # Integrated Improvement Plan
 
-**Document Version:** 3.7 **Created:** 2026-01-03 **Last Updated:** 2026-01-13
-**Status:** ACTIVE **Overall Completion:** ~70% (Steps 1-4B COMPLETE; Step 4C
+**Document Version:** 3.8 **Created:** 2026-01-03 **Last Updated:** 2026-01-13
+**Status:** ACTIVE **Overall Completion:** ~85% (Steps 1-5 COMPLETE; Step 6
 PENDING)
 
 ---
@@ -43,8 +43,8 @@ supersedes fragmented planning documents into a single linear execution path.
 | Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**     | 0%         | Step 5      |
 | Step 7  | Verification & Feature Resumption           | **PENDING**     | 0%         | Step 6      |
 
-**Overall Progress:** 7/9 steps complete (~85%) **Effort Tracking:** ~19-29
-hours actual (Steps 1-4C) + ~15-22 hours remaining (5: 12-16h, 6: 2-3h, 7: 1-2h)
+**Overall Progress:** 7/9 steps complete (~85%) **Effort Tracking:** ~31-45
+hours actual (Steps 1-5) + ~3-5 hours remaining (6: 2-3h, 7: 1-2h)
 **Target Completion:** TBD (no costly deadlines - solo project)
 
 ---
@@ -98,8 +98,8 @@ flowchart LR
     style S4b fill:#90EE90
     style S4c fill:#90EE90
     style S4B fill:#90EE90
-    style S4C fill:#FFE4B5
-    style S5 fill:#FFE4B5
+    style S4C fill:#90EE90
+    style S5 fill:#90EE90
     style S6 fill:#FFE4B5
     style S7 fill:#FFE4B5
     style FR fill:#ADD8E6
