@@ -25,14 +25,9 @@ export function featureFlagEnabled(featureId: string): boolean {
   // In development, check environment variable
   // In production, default to false unless explicitly enabled
 
-  if (typeof window === "undefined") {
-    // Server-side: Check process.env
-    const value = process.env[featureId];
-    return value === "true" || value === "1";
-  } else {
-    // Client-side: Check process.env (bundled at build time by Next.js)
-    // Next.js replaces process.env.NEXT_PUBLIC_* at build time
-    const value = process.env[featureId];
-    return value === "true" || value === "1";
-  }
+  // Works identically on server and client
+  // Server: reads from process.env at runtime
+  // Client: Next.js replaces NEXT_PUBLIC_* at build time
+  const value = process.env[featureId];
+  return value === "true" || value === "1";
 }
