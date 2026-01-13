@@ -95,7 +95,8 @@ function logOverride(check, reason) {
   try {
     ensureLogDir();
   } catch (err) {
-    console.error(`Warning: Could not create log directory: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not create log directory: ${errMsg}`);
     return null;
   }
 
@@ -123,7 +124,8 @@ function logOverride(check, reason) {
     return entry;
   } catch (err) {
     // Non-fatal: log write failure should not crash scripts/hooks
-    console.error(`Warning: Could not write to override log: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not write to override log: ${errMsg}`);
     return null;
   }
 }
@@ -145,7 +147,16 @@ function listOverrides() {
     return;
   }
 
-  const content = fs.readFileSync(OVERRIDE_LOG, "utf-8");
+  // Wrap in try/catch - existsSync doesn't guarantee read success
+  let content;
+  try {
+    content = fs.readFileSync(OVERRIDE_LOG, "utf-8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not read override log: ${errMsg}`);
+    return;
+  }
+
   const entries = content
     .split("\n")
     .filter((line) => line.trim())

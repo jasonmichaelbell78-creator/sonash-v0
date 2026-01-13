@@ -60,6 +60,7 @@ const TRIGGERS = {
 };
 
 // Get staged files for push
+// Returns null on complete failure (fail-closed for security)
 function getStagedFiles() {
   try {
     // Use git merge-base for reliable branch divergence detection
@@ -85,7 +86,9 @@ function getStagedFiles() {
         const output = execSync("git diff --name-only HEAD~1", { encoding: "utf-8" });
         return output.split("\n").filter((f) => f.trim());
       } catch {
-        return [];
+        // Fail-closed: return null to signal complete failure
+        // This prevents silently bypassing security checks
+        return null;
       }
     }
   }
@@ -208,16 +211,14 @@ function main() {
     console.log("   (Override logged for audit trail)\n");
 
     // Log the override for accountability
+    // Using execFileSync to prevent command injection from SKIP_REASON
     try {
-      const { execSync } = require("child_process");
+      const { execFileSync } = require("child_process");
       const reason = process.env.SKIP_REASON || "";
-      execSync(
-        `node scripts/log-override.js --check=triggers --reason="${reason.replace(/"/g, '\\"')}"`,
-        {
-          encoding: "utf-8",
-          stdio: "inherit",
-        }
-      );
+      execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
+        encoding: "utf-8",
+        stdio: "inherit",
+      });
     } catch {
       // Non-fatal - continue even if logging fails
       console.log("   (Note: Override logging failed, but continuing)\n");
@@ -229,6 +230,15 @@ function main() {
   console.log("🔍 Checking event-based triggers...\n");
 
   const files = getStagedFiles();
+
+  // Fail-closed: if we can't determine changed files, block the push
+  if (files === null) {
+    console.log("❌ ERROR: Could not determine changed files (git commands failed)");
+    console.log("   This blocks push to prevent bypassing security checks.");
+    console.log("   Use SKIP_TRIGGERS=1 to override if this is expected.\n");
+    process.exit(1);
+  }
+
   if (files.length === 0) {
     console.log("   No files to check.\n");
     process.exit(0);

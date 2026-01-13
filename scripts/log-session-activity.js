@@ -75,7 +75,8 @@ function logEvent(eventData) {
   try {
     ensureLogDir();
   } catch (err) {
-    console.error(`Warning: Could not create log directory: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not create log directory: ${errMsg}`);
     return null;
   }
 
@@ -99,7 +100,8 @@ function logEvent(eventData) {
     return entry;
   } catch (err) {
     // Non-fatal: log write failure should not crash scripts/hooks
-    console.error(`Warning: Could not write to activity log: ${err.message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not write to activity log: ${errMsg}`);
     return null;
   }
 }
@@ -110,7 +112,16 @@ function readEvents() {
     return [];
   }
 
-  const content = fs.readFileSync(LOG_FILE, "utf-8");
+  // Wrap in try/catch - existsSync doesn't guarantee read success
+  let content;
+  try {
+    content = fs.readFileSync(LOG_FILE, "utf-8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not read activity log: ${errMsg}`);
+    return [];
+  }
+
   return content
     .split("\n")
     .filter((line) => line.trim())

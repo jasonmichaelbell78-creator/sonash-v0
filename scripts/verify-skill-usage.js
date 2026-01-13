@@ -71,7 +71,16 @@ function readSessionLog() {
     return [];
   }
 
-  const content = fs.readFileSync(SESSION_LOG, "utf-8");
+  // Wrap in try/catch - existsSync doesn't guarantee read success
+  let content;
+  try {
+    content = fs.readFileSync(SESSION_LOG, "utf-8");
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Could not read session log: ${errMsg}`);
+    return [];
+  }
+
   return content
     .split("\n")
     .filter((line) => line.trim())

@@ -462,8 +462,38 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-142 are actively maintained below. Older reviews are in the
+Reviews #101-143 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #143: CI Pattern Compliance and Command Injection Fix (2026-01-13)
+
+**Source:** Qodo PR Compliance + SonarCloud + Pattern Compliance CI
+**PR/Branch:** claude/cherry-pick-security-phase-5-nGkAt **Suggestions:** 20+
+items (Critical: 1, Major: 6, Minor: 8+)
+
+**Issues Fixed:**
+
+| #   | Issue                                  | Severity | Category       | Fix                                                    |
+| --- | -------------------------------------- | -------- | -------------- | ------------------------------------------------------ |
+| 1   | Command injection via SKIP_REASON      | Critical | Security       | Use execFileSync instead of execSync with shell        |
+| 2   | getStagedFiles returns [] on failure   | Major    | Fail-Open Risk | Return null on failure, block push (fail-closed)       |
+| 3   | Unsafe error.message access (6 files)  | Major    | Crash Risk     | Use `err instanceof Error ? err.message : String(err)` |
+| 4   | readFileSync without try/catch (4)     | Major    | Race Condition | Wrap in try/catch after existsSync checks              |
+| 5   | Unlisted dependency import             | Major    | Build Failure  | Added leaflet.markercluster to package.json            |
+| 6   | logEvent returns null but logs success | Minor    | Silent Failure | Check return value before success message              |
+
+**Key Learnings:**
+
+- Shell interpolation with env vars is command injection - use execFileSync with
+  args array
+- When security checks can't determine state, fail-closed (block) not fail-open
+  (allow)
+- `existsSync()` does NOT guarantee `readFileSync()` will succeed - race
+  conditions, permissions
+- Error objects in JS are not guaranteed - non-Error values can be thrown
+- CSS imports from transitive dependencies need explicit package.json entries
 
 ---
 

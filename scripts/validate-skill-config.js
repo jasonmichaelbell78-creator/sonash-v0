@@ -104,7 +104,8 @@ function validateSkillFile(filePath) {
   try {
     content = fs.readFileSync(filePath, "utf-8");
   } catch (err) {
-    return { errors: [`Cannot read file: ${err.message}`], warnings: [] };
+    const errMsg = err instanceof Error ? err.message : String(err);
+    return { errors: [`Cannot read file: ${errMsg}`], warnings: [] };
   }
 
   const filename = path.basename(filePath);

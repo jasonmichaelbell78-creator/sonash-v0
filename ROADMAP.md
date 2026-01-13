@@ -1204,21 +1204,18 @@ tooling.
 **Proposed Features:**
 
 1. **Session Activity Monitor**
-
    - Visualize JSONL session logs (`.claude/session-activity.jsonl`)
    - Show event timeline (file edits, skill invocations, commits)
    - Detect sessions without explicit end markers
    - Aggregate metrics (files changed, skills used, session duration)
 
 2. **Error & Tracing Viewer**
-
    - Display Sentry-like local error aggregation
    - Show console.error logs with context
    - Link errors to relevant file/line
    - Filter by severity, date, component
 
 3. **Override Audit Trail**
-
    - Visualize override logs (`.claude/override-log.jsonl`)
    - Show frequency, reasons, patterns
    - Flag unusual override patterns
@@ -1255,17 +1252,17 @@ template-instance sync (audit plans). It does NOT cover:
 
 Add new section: "Cross-Document Update Triggers"
 
-| When This Changes                | Check These Documents                        |
-| -------------------------------- | -------------------------------------------- |
-| `SESSION_CONTEXT.md` status      | `INTEGRATED_IMPROVEMENT_PLAN.md`             |
-| `INTEGRATED_IMPROVEMENT_PLAN.md` | `SESSION_CONTEXT.md`, `ROADMAP.md`           |
-| `ROADMAP.md` milestones          | `SESSION_CONTEXT.md` priorities              |
-| New npm script added             | `DEVELOPMENT.md` (scripts section)           |
-| New hook added                   | `DEVELOPMENT.md` (hooks section)             |
+| When This Changes                | Check These Documents                          |
+| -------------------------------- | ---------------------------------------------- |
+| `SESSION_CONTEXT.md` status      | `INTEGRATED_IMPROVEMENT_PLAN.md`               |
+| `INTEGRATED_IMPROVEMENT_PLAN.md` | `SESSION_CONTEXT.md`, `ROADMAP.md`             |
+| `ROADMAP.md` milestones          | `SESSION_CONTEXT.md` priorities                |
+| New npm script added             | `DEVELOPMENT.md` (scripts section)             |
+| New hook added                   | `DEVELOPMENT.md` (hooks section)               |
 | Phase/Step completed             | `INTEGRATED_IMPROVEMENT_PLAN.md`, `ROADMAP.md` |
-| New policy document              | `claude.md` or relevant policy index         |
-| PR review fixes applied          | `AI_REVIEW_LEARNINGS_LOG.md`                 |
-| New skill/command added          | `.claude/settings.json`, relevant policy     |
+| New policy document              | `claude.md` or relevant policy index           |
+| PR review fixes applied          | `AI_REVIEW_LEARNINGS_LOG.md`                   |
+| New skill/command added          | `.claude/settings.json`, relevant policy       |
 
 **Implementation:** Expand `DOCUMENT_DEPENDENCIES.md` with this table and
 integrate into session-end checklist.
