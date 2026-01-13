@@ -266,18 +266,19 @@ Old document.
 
   describe("tier detection", () => {
     test("identifies ARCHITECTURE.md as Tier 1", () => {
+      // Skip if file doesn't exist rather than catching all errors
+      const archPath = path.join(PROJECT_ROOT, "ARCHITECTURE.md");
+      if (!fs.existsSync(archPath)) {
+        console.log("Skipping ARCHITECTURE.md tier test: file does not exist");
+        return;
+      }
+
       const result = runScript(["ARCHITECTURE.md", "--json"]);
+      const parsed = extractJSON(result.stdout) as { results: Array<{ file: string; tier: number }> };
+      const archResult = parsed.results.find((r) => r.file.includes("ARCHITECTURE.md"));
 
-      try {
-        const parsed = extractJSON(result.stdout) as { results: Array<{ file: string; tier: number }> };
-        const archResult = parsed.results.find((r) => r.file.includes("ARCHITECTURE.md"));
-
-        if (archResult) {
-          assert.equal(archResult.tier, 1, "ARCHITECTURE.md should be Tier 1");
-        }
-      } catch {
-        // Skip if ARCHITECTURE.md doesn't exist or JSON extraction fails
-        console.log("Skipping ARCHITECTURE.md tier test: file may not exist or JSON extraction failed");
+      if (archResult) {
+        assert.equal(archResult.tier, 1, "ARCHITECTURE.md should be Tier 1");
       }
     });
 
