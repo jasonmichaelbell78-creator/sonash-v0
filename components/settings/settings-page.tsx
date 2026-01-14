@@ -112,13 +112,21 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
     }
 
     // Check if clean date/time is being changed or cleared - require confirmation
+    // Compute from profile directly to avoid race conditions with stale state
     const hadCleanStart = Boolean(profile.cleanStart);
     const hasCleanDateNow = Boolean(cleanDate);
 
+    const profileCleanDate = profile.cleanStart
+      ? formatLocalDate(profile.cleanStart.toDate())
+      : null;
+    const profileCleanTime = profile.cleanStart
+      ? formatLocalTime(profile.cleanStart.toDate())
+      : "08:00";
+
     const cleanDateChanged =
-      hadCleanStart && originalCleanDate !== null && cleanDate !== originalCleanDate;
-    const cleanTimeChanged = hadCleanStart && cleanTime !== originalCleanTime;
-    const cleanDateCleared = hadCleanStart && originalCleanDate !== null && !cleanDate;
+      hadCleanStart && profileCleanDate !== null && cleanDate !== profileCleanDate;
+    const cleanTimeChanged = hadCleanStart && cleanTime !== profileCleanTime;
+    const cleanDateCleared = hadCleanStart && profileCleanDate !== null && !cleanDate;
     const isCleanDateBeingSetFirstTime = !hadCleanStart && hasCleanDateNow;
 
     const needsCleanDateConfirm =
@@ -205,27 +213,51 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
         cleanStartTimestamp = Timestamp.fromDate(dateObj);
       }
 
-      // Preserve existing preferences and update only changed fields
-      // Only include cleanStart if it was actually modified to prevent unintended overwrites
-      await updateUserProfile(user.uid, {
-        nickname: nickname.trim(),
-        ...(cleanStartTimestamp !== undefined ? { cleanStart: cleanStartTimestamp } : {}),
-        preferences: {
+      // Build patch object with only fields that actually changed
+      const nicknameChanged = nickname.trim() !== (profile.nickname || "");
+      const preferencesChanged =
+        largeText !== (profile.preferences?.largeText || false) ||
+        simpleLanguage !== (profile.preferences?.simpleLanguage || false);
+
+      const patch: {
+        nickname?: string;
+        cleanStart?: Timestamp | null;
+        preferences?: typeof profile.preferences;
+      } = {};
+
+      if (nicknameChanged) {
+        patch.nickname = nickname.trim();
+      }
+
+      if (cleanStartTimestamp !== undefined) {
+        patch.cleanStart = cleanStartTimestamp;
+      }
+
+      if (preferencesChanged) {
+        patch.preferences = {
           ...(profile.preferences ?? {}),
           largeText,
           simpleLanguage,
-        },
-      });
+        };
+      }
+
+      // Only call updateUserProfile if there are actual changes
+      if (Object.keys(patch).length > 0) {
+        await updateUserProfile(user.uid, patch);
+      }
+
+      // Build fieldsUpdated array dynamically based on actual changes
+      const fieldsUpdated: string[] = [];
+      if (nicknameChanged) fieldsUpdated.push("nickname");
+      if (cleanStartTimestamp !== undefined) fieldsUpdated.push("cleanStart");
+      if (preferencesChanged) fieldsUpdated.push("preferences");
 
       // Audit logging for profile update (non-sensitive data only)
       logger.info("Profile settings updated", {
         action: "profile_update",
         userId: user.uid,
-        fieldsUpdated: [
-          "nickname",
-          ...(cleanStartTimestamp !== undefined ? ["cleanStart"] : []),
-          "preferences",
-        ],
+        outcome: "success",
+        fieldsUpdated,
         cleanDateChanged: shouldUpdateCleanDate,
       });
 
@@ -234,11 +266,19 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       toast.success("Settings saved successfully");
       setHasChanges(false);
     } catch (error) {
-      // Sanitize error logging - don't log raw error object
+      // Sanitize error logging - include context but not raw error object
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       logger.error("Failed to save settings", {
+        action: "profile_update",
+        userId: user.uid,
+        outcome: "failure",
         errorType: error instanceof Error ? error.name : "UnknownError",
-        errorMessage: errorMessage.slice(0, 100), // Truncate to prevent PII leakage
+        // Redact potential PII from error message
+        errorCategory: errorMessage.includes("permission")
+          ? "permission_denied"
+          : errorMessage.includes("network")
+            ? "network_error"
+            : "unknown",
       });
       toast.error("Failed to save settings. Please try again.");
     } finally {
@@ -386,7 +426,12 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   id="cleanDate"
                   type="date"
                   value={cleanDate}
-                  onChange={(e) => setCleanDate(e.target.value)}
+                  onChange={(e) => {
+                    const nextDate = e.target.value;
+                    setCleanDate(nextDate);
+                    // Reset time to default when date is cleared for consistent state
+                    if (!nextDate) setCleanTime("08:00");
+                  }}
                   max={formatLocalDate(new Date())}
                   className="w-full px-3 py-2 rounded-lg border border-[var(--journal-line)]/50 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-[var(--journal-text)]"
                 />
@@ -404,7 +449,8 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   type="time"
                   value={cleanTime}
                   onChange={(e) => setCleanTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-[var(--journal-line)]/50 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-[var(--journal-text)]"
+                  disabled={!cleanDate}
+                  className="w-full px-3 py-2 rounded-lg border border-[var(--journal-line)]/50 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-[var(--journal-text)] disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
