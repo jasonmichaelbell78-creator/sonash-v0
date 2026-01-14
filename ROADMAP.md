@@ -1312,22 +1312,8 @@ summary command; full dashboard is larger scope.
 **Trigger Matrix Location:**
 [DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers](docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
 
-**Triggers Covered:**
-
-| When This Changes                | Check These Documents                              |
-| -------------------------------- | -------------------------------------------------- |
-| `SESSION_CONTEXT.md` status      | `INTEGRATED_IMPROVEMENT_PLAN.md`                   |
-| `INTEGRATED_IMPROVEMENT_PLAN.md` | `SESSION_CONTEXT.md`, `ROADMAP.md`                 |
-| `ROADMAP.md` milestones          | `SESSION_CONTEXT.md` priorities                    |
-| New npm script added             | `DEVELOPMENT.md` (scripts section)                 |
-| New hook added                   | `DEVELOPMENT.md` (hooks section)                   |
-| Phase/Step completed             | `INTEGRATED_IMPROVEMENT_PLAN.md`, `ROADMAP.md`     |
-| New policy document              | `claude.md` or relevant policy index               |
-| PR review fixes applied          | `AI_REVIEW_LEARNINGS_LOG.md`                       |
-| New skill/command added          | `.claude/settings.json`, relevant policy           |
-| Security-related changes         | `docs/SECURITY.md`, `GLOBAL_SECURITY_STANDARDS.md` |
-| Firebase config changes          | `docs/FIREBASE_CHANGE_POLICY.md`                   |
-| Test coverage changes            | `SESSION_CONTEXT.md` (Test Status line)            |
+> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (2026-01-14). See the
+> canonical trigger matrix in DOCUMENT_DEPENDENCIES.md for current triggers.
 
 ---
 
