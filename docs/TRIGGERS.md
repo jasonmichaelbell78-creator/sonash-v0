@@ -114,14 +114,15 @@ TRIGGER: git commit
 
 Warns when you modify documents that have known dependencies:
 
-| Modified File                          | Check These                    |
-| -------------------------------------- | ------------------------------ |
-| SESSION_CONTEXT.md                     | INTEGRATED_IMPROVEMENT_PLAN.md |
-| INTEGRATED_IMPROVEMENT_PLAN.md         | SESSION_CONTEXT.md             |
-| ROADMAP.md                             | SESSION_CONTEXT.md             |
-| package.json                           | DEVELOPMENT.md                 |
-| .husky/_ or .claude/hooks/_            | docs/TRIGGERS.md               |
-| .claude/commands/_ or .claude/skills/_ | COMMAND_REFERENCE.md           |
+| Modified File                          | Check These                        |
+| -------------------------------------- | ---------------------------------- |
+| ROADMAP.md                             | SESSION_CONTEXT.md                 |
+| package.json (scripts section changed) | DEVELOPMENT.md                     |
+| .husky/_ or .claude/hooks/_            | docs/TRIGGERS.md, DEVELOPMENT.md   |
+| .claude/commands/_ or .claude/skills/_ | COMMAND_REFERENCE.md               |
+
+> **Note:** SESSION_CONTEXT ↔ INTEGRATED_IMPROVEMENT_PLAN checks removed (plan
+> archived 2026-01-14). See Review #144.
 
 See:
 [DOCUMENT_DEPENDENCIES.md](./DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
