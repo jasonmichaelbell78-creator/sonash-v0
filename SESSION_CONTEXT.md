@@ -51,7 +51,7 @@ Unified roadmap covering:
 
 | Item                                      | Status         | Progress           |
 | ----------------------------------------- | -------------- | ------------------ |
-| **Integrated Improvement Plan**           | 🔄 ACTIVE      | 85% (7/9 steps)    |
+| **Integrated Improvement Plan**           | 🔄 ACTIVE      | 95% (8/9 steps)    |
 | Step 1: Quick Wins & Cleanup              | ✅ COMPLETE    | 100%               |
 | Step 2: Doc Standardization Completion    | ✅ COMPLETE    | 100%               |
 | Step 3: Developer Tooling Setup           | ✅ COMPLETE    | 100%               |
@@ -59,7 +59,7 @@ Unified roadmap covering:
 | Step 4B: Remediation Sprint               | ✅ COMPLETE    | 100% (19/19 PRs)   |
 | Step 4C: SonarCloud Issue Triage          | ✅ COMPLETE    | 100%               |
 | Step 5: Review Policy Expansion           | ✅ COMPLETE    | 100% (18/18 tasks) |
-| Step 6: ROADMAP.md Integration            | 🔄 IN PROGRESS | ~80% (5/6 tasks)   |
+| Step 6: ROADMAP.md Integration            | ✅ COMPLETE    | 100% (6/6 tasks)   |
 | Step 7: Verification & Feature Resumption | ⏸️ PENDING     | 0%                 |
 | M1.5 - Quick Wins                         | ⏸️ BLOCKED     | On hold            |
 | M1.6 - Admin Panel + UX                   | ⏸️ BLOCKED     | On hold            |
