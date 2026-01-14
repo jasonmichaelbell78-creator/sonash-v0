@@ -78,24 +78,12 @@ fi
 # Warns when documents are modified that have known dependencies on other docs
 # See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
 check_cross_doc_deps() {
-  local deps_found=0
-  local deps_msg=""
+  # Note: Using simple variable assignment (not 'local') for POSIX /bin/sh compatibility (Review #144)
+  deps_found=0
+  deps_msg=""
 
-  # SESSION_CONTEXT.md -> INTEGRATED_IMPROVEMENT_PLAN.md
-  if echo "$STAGED_FILES" | grep -q "SESSION_CONTEXT.md"; then
-    if ! echo "$STAGED_FILES" | grep -q "INTEGRATED_IMPROVEMENT_PLAN.md"; then
-      deps_msg="${deps_msg}   📎 SESSION_CONTEXT.md changed → check INTEGRATED_IMPROVEMENT_PLAN.md\n"
-      deps_found=1
-    fi
-  fi
-
-  # INTEGRATED_IMPROVEMENT_PLAN.md -> SESSION_CONTEXT.md, ROADMAP.md
-  if echo "$STAGED_FILES" | grep -q "INTEGRATED_IMPROVEMENT_PLAN.md"; then
-    if ! echo "$STAGED_FILES" | grep -q "SESSION_CONTEXT.md"; then
-      deps_msg="${deps_msg}   📎 INTEGRATED_IMPROVEMENT_PLAN.md changed → check SESSION_CONTEXT.md\n"
-      deps_found=1
-    fi
-  fi
+  # Note: SESSION_CONTEXT <-> INTEGRATED_IMPROVEMENT_PLAN checks removed
+  # The plan is now archived (2026-01-14) and no longer actively updated (Review #144)
 
   # ROADMAP.md -> SESSION_CONTEXT.md
   if echo "$STAGED_FILES" | grep -q "ROADMAP.md"; then
@@ -106,17 +94,20 @@ check_cross_doc_deps() {
   fi
 
   # New npm scripts in package.json -> DEVELOPMENT.md
+  # Only triggers if the 'scripts' section appears to have changed (Review #144)
   if echo "$STAGED_FILES" | grep -q "package.json"; then
-    if ! echo "$STAGED_FILES" | grep -q "DEVELOPMENT.md"; then
-      deps_msg="${deps_msg}   📎 package.json changed → check DEVELOPMENT.md scripts section\n"
-      deps_found=1
+    if git diff --staged --unified=0 package.json 2>/dev/null | grep -qE '^\+.*"scripts"|^\-.*"scripts"'; then
+      if ! echo "$STAGED_FILES" | grep -q "DEVELOPMENT.md"; then
+        deps_msg="${deps_msg}   📎 package.json scripts changed → check DEVELOPMENT.md scripts section\n"
+        deps_found=1
+      fi
     fi
   fi
 
-  # New hooks -> DEVELOPMENT.md, TRIGGERS.md
+  # New hooks -> DEVELOPMENT.md, TRIGGERS.md (Review #144: added DEVELOPMENT.md)
   if echo "$STAGED_FILES" | grep -qE "\.husky/|\.claude/hooks/"; then
-    if ! echo "$STAGED_FILES" | grep -q "TRIGGERS.md"; then
-      deps_msg="${deps_msg}   📎 Hook files changed → check docs/TRIGGERS.md\n"
+    if ! echo "$STAGED_FILES" | grep -qE "TRIGGERS.md|DEVELOPMENT.md"; then
+      deps_msg="${deps_msg}   📎 Hook files changed → check docs/TRIGGERS.md, DEVELOPMENT.md\n"
       deps_found=1
     fi
   fi

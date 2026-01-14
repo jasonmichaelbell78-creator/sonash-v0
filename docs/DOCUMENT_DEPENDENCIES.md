@@ -294,20 +294,21 @@ changes in one document affect the accuracy of another.
 
 ### Update Trigger Matrix
 
-| When This Changes                         | Check These Documents                                            | Reason                                            |
-| ----------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------- |
-| `SESSION_CONTEXT.md` status/goals         | `INTEGRATED_IMPROVEMENT_PLAN.md`                                 | Status tracking must stay synchronized            |
-| `INTEGRATED_IMPROVEMENT_PLAN.md` progress | `SESSION_CONTEXT.md`, `ROADMAP.md`                               | Both reference plan progress                      |
-| `ROADMAP.md` milestones/priorities        | `SESSION_CONTEXT.md` priorities section                          | Session context reflects current roadmap focus    |
-| New npm script added                      | `DEVELOPMENT.md` (scripts section)                               | All scripts should be documented                  |
-| New hook added                            | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`             | Hook documentation must be complete               |
-| Phase/Step completed                      | `INTEGRATED_IMPROVEMENT_PLAN.md`, `ROADMAP.md`, `ROADMAP_LOG.md` | Multiple docs track completion status             |
-| New policy document created               | `claude.md` or relevant policy index                             | Policy references need updating                   |
-| PR review fixes applied                   | `AI_REVIEW_LEARNINGS_LOG.md`                                     | Lessons learned must be captured                  |
-| New skill/command added                   | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md`          | Skill registry and reference must be complete     |
-| Security-related changes                  | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md`          | Security documentation must reflect current state |
-| Firebase config changes                   | `docs/FIREBASE_CHANGE_POLICY.md`                                 | Policy requires documenting all Firebase changes  |
-| Test coverage changes                     | `SESSION_CONTEXT.md` (Test Status line)                          | Keep test counts current                          |
+> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (2026-01-14) to
+> `docs/archive/completed-plans/`. Related triggers removed (Review #144).
+
+| When This Changes                  | Check These Documents                                   | Reason                                            |
+| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------------- |
+| `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus    |
+| New npm script added               | `DEVELOPMENT.md` (scripts section)                      | All scripts should be documented                  |
+| New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`    | Hook documentation must be complete               |
+| Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                          | Multiple docs track completion status             |
+| New policy document created        | `claude.md` or relevant policy index                    | Policy references need updating                   |
+| PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                            | Lessons learned must be captured                  |
+| New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md` | Skill registry and reference must be complete     |
+| Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state |
+| Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                        | Policy requires documenting all Firebase changes  |
+| Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                 | Keep test counts current                          |
 
 ### Usage
 

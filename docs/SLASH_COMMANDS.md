@@ -1093,20 +1093,20 @@ args: file - Path to document to archive
 
 Searching: scripts/, .github/, docs/, _.md, _.js, _.ts, _.yml
 
-| File                                    | Line          | Reference Type |
-| --------------------------------------- | ------------- | -------------- |
-| scripts/validate-phase-completion.js:12 | Direct import | BLOCKING       |
-| .github/workflows/validate-plan.yml:8   | Trigger path  | BLOCKING       |
+| File                                                            | Line          | Reference Type |
+| --------------------------------------------------------------- | ------------- | -------------- |
+| scripts/validate-phase-completion.js:12                         | Direct import | BLOCKING       |
+| .github/workflows/validate-plan.yml:8                           | Trigger path  | BLOCKING       |
 | docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md:852 | Markdown link | UPDATE         |
-| SESSION_CONTEXT.md:45                   | Mention       | UPDATE         |
+| SESSION_CONTEXT.md:45                                           | Mention       | UPDATE         |
 
 **BLOCKING references:** 2 **References to update:** 2
 
 ## Step 2: Suggest Replacements
 
-| Current                                      | Suggested Replacement                                 |
-| -------------------------------------------- | ----------------------------------------------------- |
-| `docs/DOCUMENTATION_STANDARDIZATION_PLAN.md` | `docs/archive/DOCUMENTATION_STANDARDIZATION_PLAN.md`  |
+| Current                                      | Suggested Replacement                                                         |
+| -------------------------------------------- | ----------------------------------------------------------------------------- |
+| `docs/DOCUMENTATION_STANDARDIZATION_PLAN.md` | `docs/archive/DOCUMENTATION_STANDARDIZATION_PLAN.md`                          |
 | OR                                           | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` (if superseded) |
 
 ## Step 3: Preview Changes

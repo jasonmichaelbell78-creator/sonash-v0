@@ -103,14 +103,14 @@ code reviews and audits:
 
 ### Tier 3: Specialized Guides
 
-| Document                           | Purpose                                           | Location                              |
-| ---------------------------------- | ------------------------------------------------- | ------------------------------------- |
-| **SERVER_SIDE_SECURITY.md**        | Cloud Functions security patterns                 | `docs/SERVER_SIDE_SECURITY.md`        |
-| **GLOBAL_SECURITY_STANDARDS.md**   | Mandatory security standards for all code         | `docs/GLOBAL_SECURITY_STANDARDS.md`   |
-| **FIREBASE_CHANGE_POLICY.md**      | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`      |
-| **INCIDENT_RESPONSE.md**           | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`           |
+| Document                           | Purpose                                           | Location                                                      |
+| ---------------------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
+| **SERVER_SIDE_SECURITY.md**        | Cloud Functions security patterns                 | `docs/SERVER_SIDE_SECURITY.md`                                |
+| **GLOBAL_SECURITY_STANDARDS.md**   | Mandatory security standards for all code         | `docs/GLOBAL_SECURITY_STANDARDS.md`                           |
+| **FIREBASE_CHANGE_POLICY.md**      | Firebase security review requirements             | `docs/FIREBASE_CHANGE_POLICY.md`                              |
+| **INCIDENT_RESPONSE.md**           | Security incident response procedures             | `docs/INCIDENT_RESPONSE.md`                                   |
 | **INTEGRATED_IMPROVEMENT_PLAN.md** | Phased improvement plan (Step 4 in progress)      | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` |
-| **AI_REVIEW_LEARNINGS_LOG.md**     | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`     |
+| **AI_REVIEW_LEARNINGS_LOG.md**     | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                             |
 
 ---
 

@@ -56,23 +56,24 @@ recovery practices.
 
 ## 📊 Milestones Overview
 
-| Milestone                       | Status         | Progress         | Target    | Priority   |
-| ------------------------------- | -------------- | ---------------- | --------- | ---------- |
-| **M0 - Baseline**               | ✅ Complete    | 100%             | Q4 2025   | Foundation |
-| **M1 - Foundation**             | ✅ Complete    | 100%             | Q1 2026   | P0         |
-| **Integrated Improvement Plan** | ✅ Complete    | 100% (9/9 steps) | Q1 2026   | DONE       |
-| **M1.5 - Quick Wins**           | 🔄 Ready       | ~50%             | Q1 2026   | P0         |
-| **M1.6 - Admin Panel + UX**     | 🔄 Ready       | ~75%             | Q1 2026   | P1         |
-| **M2 - Architecture**           | ⏸️ Optional    | 0%               | As needed | P2         |
-| **M3 - Meetings**               | 📋 Planned     | 0%               | Q2 2026   | P1         |
-| **M4 - Expansion**              | 📋 Planned     | 0%               | Q2 2026   | P1         |
-| **M5 - Inventories**            | 📋 Planned     | 0%               | Q3 2026   | P1         |
-| **M6 - Prayers**                | 📋 Planned     | 0%               | Q3 2026   | P2         |
-| **M7 - Fellowship**             | 📋 Planned     | 0%               | Q4 2026   | P1         |
-| **M8 - Speakers**               | 📋 Planned     | 0%               | Q4 2026   | P2         |
-| **M10 - Monetization**          | 🔬 Research    | 0%               | 2027      | P2         |
+| Milestone                       | Status      | Progress         | Target    | Priority   |
+| ------------------------------- | ----------- | ---------------- | --------- | ---------- |
+| **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation |
+| **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         |
+| **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       |
+| **M1.5 - Quick Wins**           | 🔄 Ready    | ~50%             | Q1 2026   | P0         |
+| **M1.6 - Admin Panel + UX**     | 🔄 Ready    | ~75%             | Q1 2026   | P1         |
+| **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         |
+| **M3 - Meetings**               | 📋 Planned  | 0%               | Q2 2026   | P1         |
+| **M4 - Expansion**              | 📋 Planned  | 0%               | Q2 2026   | P1         |
+| **M5 - Inventories**            | 📋 Planned  | 0%               | Q3 2026   | P1         |
+| **M6 - Prayers**                | 📋 Planned  | 0%               | Q3 2026   | P2         |
+| **M7 - Fellowship**             | 📋 Planned  | 0%               | Q4 2026   | P1         |
+| **M8 - Speakers**               | 📋 Planned  | 0%               | Q4 2026   | P2         |
+| **M10 - Monetization**          | 🔬 Research | 0%               | 2027      | P2         |
 
-**Overall Progress:** ~40% (Improvement Plan complete, feature work ready to resume)
+**Overall Progress:** ~40% (Improvement Plan complete, feature work ready to
+resume)
 
 > **Archive:** For completed M0 and M1 milestones, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md)
@@ -523,8 +524,8 @@ management
 ### Developer Tooling (Added 2026-01-14 - Step 6.1)
 
 > **Source:**
-> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) Step 3 +
-> Step 5 items migrated here.
+> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
+> Step 3 + Step 5 items migrated here.
 
 **Active Tooling (Enforced):**
 
