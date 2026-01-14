@@ -75,12 +75,17 @@ const USAGE_RULES = [
         const resolved = path.isAbsolute(e.file)
           ? path.normalize(e.file)
           : path.resolve(REPO_ROOT, e.file);
-        let normalizedFile = path.relative(REPO_ROOT, resolved).replace(/\\/g, "/");
-        // Strip leading ./ or ../ segments that could bypass exclusions
-        normalizedFile = normalizedFile.replace(/^(\.\/)+/, "").replace(/^(\.\.\/)+/, "");
+        const normalizedFile = path.relative(REPO_ROOT, resolved).replace(/\\/g, "/");
+
+        // If the resolved path is outside the repo, ignore it (prevents exclusion bypass)
+        if (normalizedFile.startsWith("..")) return false;
+
+        // Strip benign leading "./" segments only
+        const cleanedFile = normalizedFile.replace(/^(\.\/)+/, "");
+
         // Skip excluded paths
-        if (excludePaths.some((p) => p.test(normalizedFile))) return false;
-        return securityKeywords.test(normalizedFile);
+        if (excludePaths.some((p) => p.test(cleanedFile))) return false;
+        return securityKeywords.test(cleanedFile);
       });
     },
     description: "Security-sensitive files were modified",

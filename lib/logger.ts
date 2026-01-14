@@ -78,20 +78,22 @@ const sanitizeContext = (context?: LogContext) => {
 };
 
 /**
- * Sanitize a message string before external logging (e.g., Sentry)
+ * Sanitize a message string before external logging (e.g., Sentry, production console)
  * Redacts potential secrets/PII that may appear in error messages
  */
 const sanitizeMessage = (message: string): string => {
-  // Split into words and redact any that look like sensitive IDs
-  return message
+  // Strip control characters to prevent log injection
+  // eslint-disable-next-line no-control-regex
+  const cleaned = message.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+
+  // Split into words and fully redact any that look like sensitive IDs
+  const redacted = cleaned
     .split(/(\s+)/)
-    .map((part) => {
-      if (looksLikeSensitiveId(part)) {
-        return `${part.slice(0, 4)}…[REDACTED]`;
-      }
-      return part;
-    })
+    .map((part) => (looksLikeSensitiveId(part) ? "[REDACTED]" : part))
     .join("");
+
+  // Cap size to avoid oversized log payloads
+  return redacted.length > 2000 ? `${redacted.slice(0, 2000)}...[truncated]` : redacted;
 };
 
 const log = (level: LogLevel, message: string, context?: LogContext) => {
@@ -116,16 +118,18 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
 
   // In production, log errors to console and send to Sentry
   if (isProduction && level === "error") {
+    // Sanitize message for production console to prevent secrets/PII exposure
+    const sanitizedMsg = sanitizeMessage(message);
     console.error({
       level: payload.level,
-      message: payload.message,
+      message: sanitizedMsg,
       timestamp: payload.timestamp,
     });
 
     // Send to Sentry with sanitized message and context
     // Wrapped in try/catch to prevent Sentry failures from crashing the application
     try {
-      Sentry.captureMessage(sanitizeMessage(message), {
+      Sentry.captureMessage(sanitizedMsg, {
         level: "error",
         // Guard optional context - only include extra if context exists
         ...(context ? { extra: sanitizeContext(context) } : {}),

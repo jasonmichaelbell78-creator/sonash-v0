@@ -82,19 +82,24 @@ function sanitizeForLog(value) {
 
 /**
  * Sanitize an event data object for logging
- * Sanitizes ALL string values to prevent accidental secret leakage
+ * Recursively sanitizes ALL string values (including nested objects/arrays)
+ * to prevent accidental secret leakage
  */
 function sanitizeEventData(eventData) {
-  const sanitized = {};
-  for (const [key, value] of Object.entries(eventData)) {
-    // Sanitize ALL string fields to prevent accidental secret leakage
-    if (typeof value === "string") {
-      sanitized[key] = sanitizeForLog(value);
-    } else {
-      sanitized[key] = value;
+  const sanitizeAny = (value) => {
+    if (typeof value === "string") return sanitizeForLog(value);
+    if (Array.isArray(value)) return value.map(sanitizeAny);
+    if (value && typeof value === "object") {
+      const out = {};
+      for (const [k, v] of Object.entries(value)) {
+        out[k] = sanitizeAny(v);
+      }
+      return out;
     }
-  }
-  return sanitized;
+    return value;
+  };
+
+  return sanitizeAny(eventData);
 }
 
 // Ensure .claude directory exists
@@ -281,9 +286,18 @@ function generateSummary() {
   if (summary.sessionStart) {
     const start = new Date(summary.sessionStart);
     const end = summary.sessionEnd ? new Date(summary.sessionEnd) : new Date();
-    const durationMs = Math.max(0, end - start);
-    const minutes = Math.floor(durationMs / 60000);
-    summary.duration = `${minutes} minutes`;
+
+    const startMs = start.getTime();
+    const endMs = end.getTime();
+
+    // Handle invalid timestamps gracefully
+    if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
+      summary.duration = "unknown";
+    } else {
+      const durationMs = Math.max(0, endMs - startMs);
+      const minutes = Math.floor(durationMs / 60000);
+      summary.duration = `${minutes} minutes`;
+    }
   }
 
   // Output summary

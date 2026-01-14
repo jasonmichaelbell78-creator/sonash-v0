@@ -61,32 +61,49 @@ const TRIGGERS = {
 // Returns null on complete failure (fail-closed for security)
 // Uses spawnSync with shell:false to prevent command injection
 function getStagedFiles() {
-  // Try git merge-base for reliable branch divergence detection
-  const mergeBaseResult = spawnSync("git", ["merge-base", "HEAD", "origin/main"], {
-    encoding: "utf-8",
-    timeout: 5000,
-  });
+  // Dynamically resolve base branch (origin/main, main, or master)
+  const baseCandidates = ["origin/main", "main", "master"];
+  let baseRef = null;
 
-  if (mergeBaseResult.status === 0 && mergeBaseResult.stdout) {
-    const mergeBase = mergeBaseResult.stdout.trim();
-    const diffResult = spawnSync("git", ["diff", "--name-only", `${mergeBase}..HEAD`], {
+  for (const candidate of baseCandidates) {
+    const verify = spawnSync("git", ["rev-parse", "--verify", candidate], {
+      encoding: "utf-8",
+      timeout: 3000,
+    });
+    if (verify.status === 0) {
+      baseRef = candidate;
+      break;
+    }
+  }
+
+  if (baseRef) {
+    // Try git merge-base for reliable branch divergence detection
+    const mergeBaseResult = spawnSync("git", ["merge-base", "HEAD", baseRef], {
       encoding: "utf-8",
       timeout: 5000,
     });
 
-    if (diffResult.status === 0) {
-      return diffResult.stdout.split("\n").filter((f) => f.trim());
+    if (mergeBaseResult.status === 0 && mergeBaseResult.stdout) {
+      const mergeBase = mergeBaseResult.stdout.trim();
+      const diffResult = spawnSync("git", ["diff", "--name-only", `${mergeBase}..HEAD`], {
+        encoding: "utf-8",
+        timeout: 5000,
+      });
+
+      if (diffResult.status === 0) {
+        return diffResult.stdout.split("\n").filter((f) => f.trim());
+      }
     }
-  }
 
-  // Fallback 1: try simple diff against origin/main
-  const fallback1 = spawnSync("git", ["diff", "--name-only", "origin/main..HEAD"], {
-    encoding: "utf-8",
-    timeout: 5000,
-  });
+    // Fallback 1: try simple diff against base ref
+    const fallback1 = spawnSync("git", ["diff", "--name-only", `${baseRef}..HEAD`], {
+      encoding: "utf-8",
+      timeout: 5000,
+    });
 
-  if (fallback1.status === 0) {
-    return fallback1.stdout.split("\n").filter((f) => f.trim());
+    if (fallback1.status === 0) {
+      return fallback1.stdout.split("\n").filter((f) => f.trim());
+    }
   }
 
   // Fallback 2: get files in last commit
