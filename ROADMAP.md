@@ -61,9 +61,9 @@ recovery practices.
 | ------------------------------- | -------------- | ---------------- | --------- | ---------- |
 | **M0 - Baseline**               | ✅ Complete    | 100%             | Q4 2025   | Foundation |
 | **M1 - Foundation**             | ✅ Complete    | 100%             | Q1 2026   | P0         |
-| **Integrated Improvement Plan** | 🔄 In Progress | ~95% (8/9 steps) | Q1 2026   | P0 BLOCKER |
-| **M1.5 - Quick Wins**           | ⏸️ BLOCKED     | ~50%             | Q1 2026   | P0         |
-| **M1.6 - Admin Panel + UX**     | ⏸️ BLOCKED     | ~75%             | Q1 2026   | P1         |
+| **Integrated Improvement Plan** | ✅ Complete    | 100% (9/9 steps) | Q1 2026   | DONE       |
+| **M1.5 - Quick Wins**           | 🔄 Ready       | ~50%             | Q1 2026   | P0         |
+| **M1.6 - Admin Panel + UX**     | 🔄 Ready       | ~75%             | Q1 2026   | P1         |
 | **M2 - Architecture**           | ⏸️ Optional    | 0%               | As needed | P2         |
 | **M3 - Meetings**               | 📋 Planned     | 0%               | Q2 2026   | P1         |
 | **M4 - Expansion**              | 📋 Planned     | 0%               | Q2 2026   | P1         |
@@ -73,7 +73,7 @@ recovery practices.
 | **M8 - Speakers**               | 📋 Planned     | 0%               | Q4 2026   | P2         |
 | **M10 - Monetization**          | 🔬 Research    | 0%               | 2027      | P2         |
 
-**Overall Progress:** ~35%
+**Overall Progress:** ~40% (Improvement Plan complete, feature work ready to resume)
 
 > **Archive:** For completed M0 and M1 milestones, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md)
@@ -85,10 +85,10 @@ flowchart TD
     subgraph Completed["✅ Completed"]
         M0[M0 - Baseline]
         M1[M1 - Foundation]
+        DOC[Integrated Improvement Plan]
     end
 
-    subgraph Active["🔄 Active/Blocked"]
-        DOC[Integrated Improvement Plan\nP0 BLOCKER]
+    subgraph Active["🔄 Active"]
         M15[M1.5 - Quick Wins]
         M16[M1.6 - Admin Panel]
     end
