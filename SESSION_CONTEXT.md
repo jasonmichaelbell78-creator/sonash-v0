@@ -6,6 +6,19 @@ SESSION** (read this first!)
 
 ---
 
+## 🔄 Quick Recovery
+
+> **Use `/checkpoint` to update this section. Update before risky operations.**
+
+**Last Checkpoint**: Not set
+**Branch**: `claude/general-dev-session-A1az1`
+**Working On**: Session setup - creating checkpoint system
+**Files Modified**: `.claude/commands/checkpoint.md`, `SESSION_CONTEXT.md`
+**Next Step**: Address context size monitoring question
+**Uncommitted Work**: yes
+
+---
+
 ## 📋 Purpose
 
 This document provides **essential session context** for quick startup. It's
