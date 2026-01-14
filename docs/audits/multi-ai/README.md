@@ -29,20 +29,21 @@ multi-ai/
 
 ## Available Templates
 
-| Template                                    | Description           | Focus Areas                                                                          |
-| ------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------ |
-| `MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`     | Code review audit     | Hygiene, Types, Framework, Security, Testing, **AI-Code Failure Modes**              |
-| `MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`  | Security audit        | Auth, Injection, Secrets, Firebase, Deps, OWASP, **Headers, Framework, Crypto, Agent** |
-| `MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md` | Performance audit   | Bundle, Rendering, Data Fetch, Memory, Web Vitals                                    |
-| `MULTI_AI_REFACTOR_AUDIT_PROMPT.md`         | Refactoring audit     | God Objects, Duplication, Complexity, Architecture, Tech Debt                        |
-| `MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md`  | Documentation audit   | Links, Stale Content, Coverage, Tier, Frontmatter, Sync                              |
-| `MULTI_AI_PROCESS_AUDIT_TEMPLATE.md`        | Process audit         | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers                                    |
+| Template                                      | Description         | Focus Areas                                                                            |
+| --------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------- |
+| `MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md`       | Code review audit   | Hygiene, Types, Framework, Security, Testing, **AI-Code Failure Modes**                |
+| `MULTI_AI_SECURITY_AUDIT_PLAN_TEMPLATE.md`    | Security audit      | Auth, Injection, Secrets, Firebase, Deps, OWASP, **Headers, Framework, Crypto, Agent** |
+| `MULTI_AI_PERFORMANCE_AUDIT_PLAN_TEMPLATE.md` | Performance audit   | Bundle, Rendering, Data Fetch, Memory, Web Vitals                                      |
+| `MULTI_AI_REFACTOR_AUDIT_PROMPT.md`           | Refactoring audit   | God Objects, Duplication, Complexity, Architecture, Tech Debt                          |
+| `MULTI_AI_DOCUMENTATION_AUDIT_TEMPLATE.md`    | Documentation audit | Links, Stale Content, Coverage, Tier, Frontmatter, Sync                                |
+| `MULTI_AI_PROCESS_AUDIT_TEMPLATE.md`          | Process audit       | CI/CD, Git Hooks, Claude Hooks, Scripts, Triggers                                      |
 
 ### Extended Coverage (2026-01-13)
 
 Multi-AI templates now include additional categories for vibe-coded apps:
 
 **Security Audit (12 categories):**
+
 - Hosting Headers: CSP, HSTS, X-Frame-Options, COOP, COEP
 - Framework-Specific: Next.js server/client boundary leaks, API route auth
 - File Handling: Insecure uploads, path traversal
@@ -50,16 +51,20 @@ Multi-AI templates now include additional categories for vibe-coded apps:
 - AI Agent Security: Prompt injection in configs, agent manipulation surfaces
 
 **Code Review (7 categories):**
-- AI-Generated Code Failure Modes: Happy-path only logic, trivial test assertions,
-  hallucinated dependencies, copy/paste anti-patterns, inconsistent architecture
+
+- AI-Generated Code Failure Modes: Happy-path only logic, trivial test
+  assertions, hallucinated dependencies, copy/paste anti-patterns, inconsistent
+  architecture
 - Debugging Ergonomics: Correlation IDs, structured logging, Sentry integration,
   error context, repro path quality
 
 **Performance Audit (6 categories):**
+
 - Offline Support: Offline state detection, sync queue, pending/synced/failed
   states, conflict resolution, failure mode documentation
 
 **Process Audit (7 categories):**
+
 - Golden Path & DX: Single-command workflows (setup, dev, offline, test, deploy,
   verify, rollback), doctor scripts, DX friction assessment
 
@@ -70,7 +75,8 @@ Each multi-AI audit produces multiple files:
 1. **Plan Document**: `[AUDIT]_PLAN_[YYYY]_Q[X].md` - Execution plan and context
 2. **Model Outputs**: `[model-name]_findings.jsonl` - Per-model findings
 3. **Aggregated Findings**: `DEDUPED_FINDINGS.jsonl` - Deduplicated consensus
-4. **Canonical Document**: `[AUDIT]_[YYYY]_Q[X].md` - Final human-readable report
+4. **Canonical Document**: `[AUDIT]_[YYYY]_Q[X].md` - Final human-readable
+   report
 
 ### JSONL Schema (Aggregated)
 
@@ -106,12 +112,12 @@ Multi-AI audits use consensus scoring to validate findings:
 
 ### Consensus Score (0-5)
 
-| Points | Criteria                                    |
-| ------ | ------------------------------------------- |
-| +2     | >=2 models confirmed the finding            |
-| +1     | >=3 total models mentioned it               |
-| +1     | Any model provided tool-confirmed evidence  |
-| +1     | Evidence overlap between models             |
+| Points | Criteria                                   |
+| ------ | ------------------------------------------ |
+| +2     | >=2 models confirmed the finding           |
+| +1     | >=3 total models mentioned it              |
+| +1     | Any model provided tool-confirmed evidence |
+| +1     | Evidence overlap between models            |
 
 ### Confidence Adjustments
 
@@ -201,7 +207,7 @@ specific category.
 - **[MULTI_AI_REVIEW_COORDINATOR.md](../../templates/MULTI_AI_REVIEW_COORDINATOR.md)** -
   Master index and trigger tracking
 - **[AUDIT_TRACKER.md](../../AUDIT_TRACKER.md)** - Threshold and audit history
-- **[../single-session/README.md](../single-session/README.md)** - Single-session
-  audit documentation
-- **[AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)** - Historical
-  patterns and learnings
+- **[../single-session/README.md](../single-session/README.md)** -
+  Single-session audit documentation
+- **[AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)** -
+  Historical patterns and learnings

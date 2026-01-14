@@ -171,7 +171,11 @@
         "time_per_week_saved": "30-60 min"
       },
       "risk": "low",
-      "verification": ["npm run dev:offline", "Verify emulator UI at localhost:4000", "Verify app at localhost:3000"],
+      "verification": [
+        "npm run dev:offline",
+        "Verify emulator UI at localhost:4000",
+        "Verify app at localhost:3000"
+      ],
       "rollback": ["Remove script from package.json", "npm uninstall concurrently"],
       "confidence": "high"
     },
@@ -202,7 +206,10 @@
         "time_per_week_saved": "15-30 min"
       },
       "risk": "low",
-      "verification": ["Review docs/DEV_WORKFLOW.md covers all 7 sections", "Test each command listed"],
+      "verification": [
+        "Review docs/DEV_WORKFLOW.md covers all 7 sections",
+        "Test each command listed"
+      ],
       "rollback": ["Delete docs/DEV_WORKFLOW.md"],
       "confidence": "high"
     },
@@ -233,7 +240,10 @@
         "time_per_week_saved": "30-60 min (when issues occur)"
       },
       "risk": "low",
-      "verification": ["npm run doctor (should pass)", "Remove .env.local, run again (should fail with clear message)"],
+      "verification": [
+        "npm run doctor (should pass)",
+        "Remove .env.local, run again (should fail with clear message)"
+      ],
       "rollback": ["Delete scripts/doctor.js", "Remove from package.json"],
       "confidence": "high"
     },
@@ -264,7 +274,11 @@
         "time_per_week_saved": "60+ min when debugging production issues"
       },
       "risk": "low",
-      "verification": ["Deploy to production", "Trigger an error", "Verify error appears in Sentry with context"],
+      "verification": [
+        "Deploy to production",
+        "Trigger an error",
+        "Verify error appears in Sentry with context"
+      ],
       "rollback": ["Revert the Sentry.captureMessage call"],
       "confidence": "high"
     },
@@ -327,7 +341,11 @@
         "time_per_week_saved": "30-60 min when debugging cross-system issues"
       },
       "risk": "low",
-      "verification": ["Make API call", "Find logs in Sentry", "Verify correlation ID matches frontend and backend"],
+      "verification": [
+        "Make API call",
+        "Find logs in Sentry",
+        "Verify correlation ID matches frontend and backend"
+      ],
       "rollback": ["Remove correlation ID from logger calls"],
       "confidence": "medium"
     },
@@ -403,7 +421,11 @@
       "why_it_matters": "Current issue template doesn't capture offline status, making offline bugs hard to reproduce.",
       "evidence": [
         {
-          "location": { "path": ".github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md", "start_line": 1, "end_line": 10 },
+          "location": {
+            "path": ".github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md",
+            "start_line": 1,
+            "end_line": 10
+          },
           "snippet": "// Only one issue template, specific to App Check"
         }
       ],
@@ -477,7 +499,11 @@
       "why_it_matters": "Currently no tests for offline behavior. Test marked as skipped because 'Requires Firebase Cloud Functions'.",
       "evidence": [
         {
-          "location": { "path": "tests/firestore-service.test.ts", "start_line": 53, "end_line": 67 },
+          "location": {
+            "path": "tests/firestore-service.test.ts",
+            "start_line": 53,
+            "end_line": 67
+          },
           "snippet": "test(\n  'saves merged daily log calls Cloud Function',\n  { skip: 'Requires Firebase Cloud Functions - integration test' },\n  async () => {...}\n);"
         }
       ],

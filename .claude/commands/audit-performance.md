@@ -261,7 +261,12 @@ Full markdown report with all findings, baselines, and optimization plan.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/performance/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Update AUDIT_TRACKER.md** - Add entry to "Performance Audits" table:
+4. **Validate CANON schema** (if audit updates CANON files):
+   ```bash
+   npm run validate:canon
+   ```
+   Ensure all CANON files pass validation before committing.
+5. **Update AUDIT_TRACKER.md** - Add entry to "Performance Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last performance audit
@@ -269,7 +274,7 @@ Full markdown report with all findings, baselines, and optimization plan.
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. Ask: "Would you like me to fix any of these issues now? (Quick wins
+6. Ask: "Would you like me to fix any of these issues now? (Quick wins
    recommended first)"
 
 ---

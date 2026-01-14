@@ -379,13 +379,14 @@ discover and use.
 
 ### [Security] Missing Security Headers
 
-**CANON-ID**: CANON-0107 (Single-session security audit 2026-01-13) **Severity**: S1
-**Effort**: E0 (< 30 min) **Source**: Single-session security audit 2026-01-13
-**Status**: PENDING
+**CANON-ID**: CANON-0107 (Single-session security audit 2026-01-13)
+**Severity**: S1 **Effort**: E0 (< 30 min) **Source**: Single-session security
+audit 2026-01-13 **Status**: PENDING
 
 **Description**: Critical security headers are missing from Firebase Hosting
-configuration: Content-Security-Policy (CSP), X-Frame-Options, X-Content-Type-Options,
-Strict-Transport-Security (HSTS), Referrer-Policy, Permissions-Policy.
+configuration: Content-Security-Policy (CSP), X-Frame-Options,
+X-Content-Type-Options, Strict-Transport-Security (HSTS), Referrer-Policy,
+Permissions-Policy.
 
 **CWE**: CWE-693, CWE-1021 **OWASP**: A05:2021 Security Misconfiguration
 
@@ -396,7 +397,8 @@ Strict-Transport-Security (HSTS), Referrer-Policy, Permissions-Policy.
 **Implementation notes**:
 
 1. Add security headers to firebase.json hosting configuration
-2. Start with X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy, Permissions-Policy
+2. Start with X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy,
+   Permissions-Policy
 3. Add CSP last in report-only mode, then tighten after testing
 
 **Acceptance criteria**:
@@ -412,12 +414,13 @@ Strict-Transport-Security (HSTS), Referrer-Policy, Permissions-Policy.
 
 ### [Security] No Firebase Storage Rules
 
-**CANON-ID**: CANON-0108 (Single-session security audit 2026-01-13) **Severity**: S2
-**Effort**: E0 (< 30 min) **Source**: Single-session security audit 2026-01-13
-**Status**: PENDING
+**CANON-ID**: CANON-0108 (Single-session security audit 2026-01-13)
+**Severity**: S2 **Effort**: E0 (< 30 min) **Source**: Single-session security
+audit 2026-01-13 **Status**: PENDING
 
-**Description**: No Firebase Storage security rules file exists. If Firebase Storage
-is enabled for this project, default rules may allow public read/write access.
+**Description**: No Firebase Storage security rules file exists. If Firebase
+Storage is enabled for this project, default rules may allow public read/write
+access.
 
 **CWE**: CWE-862 **OWASP**: A01:2021 Broken Access Control
 

@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs";
+
 export type LogContext = Record<string, unknown>;
 
 type LogLevel = "info" | "warn" | "error";
@@ -75,6 +77,25 @@ const sanitizeContext = (context?: LogContext) => {
   }, {});
 };
 
+/**
+ * Sanitize a message string before external logging (e.g., Sentry, production console)
+ * Redacts potential secrets/PII that may appear in error messages
+ */
+const sanitizeMessage = (message: string): string => {
+  // Strip control characters to prevent log injection
+  // eslint-disable-next-line no-control-regex
+  const cleaned = message.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+
+  // Split into words and fully redact any that look like sensitive IDs
+  const redacted = cleaned
+    .split(/(\s+)/)
+    .map((part) => (looksLikeSensitiveId(part) ? "[REDACTED]" : part))
+    .join("");
+
+  // Cap size to avoid oversized log payloads
+  return redacted.length > 2000 ? `${redacted.slice(0, 2000)}...[truncated]` : redacted;
+};
+
 const log = (level: LogLevel, message: string, context?: LogContext) => {
   const payload: Record<string, unknown> = {
     level,
@@ -95,18 +116,28 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
     }
   }
 
-  // In production, only log errors to console (and could send to external service)
+  // In production, log errors to console and send to Sentry
   if (isProduction && level === "error") {
+    // Sanitize message for production console to prevent secrets/PII exposure
+    const sanitizedMsg = sanitizeMessage(message);
     console.error({
       level: payload.level,
-      message: payload.message,
+      message: sanitizedMsg,
       timestamp: payload.timestamp,
-      // Don't log full context in production console, but you could send it to Sentry/LogRocket
     });
 
-    // TODO: Send to external logging service
-    // Example: Sentry.captureMessage(message, { level, extra: context })
-    // Example: LogRocket.error(message, context)
+    // Send to Sentry with sanitized message and context
+    // Wrapped in try/catch to prevent Sentry failures from crashing the application
+    try {
+      Sentry.captureMessage(sanitizedMsg, {
+        level: "error",
+        // Guard optional context - only include extra if context exists
+        ...(context ? { extra: sanitizeContext(context) } : {}),
+      });
+    } catch {
+      // Non-fatal: Sentry logging failure should not crash the app
+      // The error is already logged to console above
+    }
   }
 };
 

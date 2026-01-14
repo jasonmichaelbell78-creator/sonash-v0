@@ -20,9 +20,9 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 6.3     | 2026-01-13 | Review #141: PR Review Processing Round 3 - 5 items (1 MEDIUM: schema category token normalization, 4 LOW: grep -E portability, header verification coverage). New patterns: Schema category enums should be single CamelCase tokens without spaces, always use grep -E for alternation patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| 6.2     | 2026-01-13 | Review #140: PR Review Processing Round 2 - 7 items (1 MEDIUM: grep xargs hang fix, 6 LOW: category enum alignment, improved grep patterns for empty catches and correlation IDs, grep portability fixes). New patterns: Use while read instead of xargs, align category names with schema enums.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| 6.1     | 2026-01-13 | Review #139: PR Review Processing - 11 items (2 MAJOR: missing YAML frontmatter in slash commands, 8 MINOR: documentation lint fixes, grep pattern improvements, Debugging Ergonomics category added to audit-code). New patterns: Commands need YAML frontmatter, Tier-2 docs need Purpose/Version History sections.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 6.3     | 2026-01-13 | Review #141: PR Review Processing Round 3 - 5 items (1 MEDIUM: schema category token normalization, 4 LOW: grep -E portability, header verification coverage). New patterns: Schema category enums should be single CamelCase tokens without spaces, always use grep -E for alternation patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 6.2     | 2026-01-13 | Review #140: PR Review Processing Round 2 - 7 items (1 MEDIUM: grep xargs hang fix, 6 LOW: category enum alignment, improved grep patterns for empty catches and correlation IDs, grep portability fixes). New patterns: Use while read instead of xargs, align category names with schema enums.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 6.1     | 2026-01-13 | Review #139: PR Review Processing - 11 items (2 MAJOR: missing YAML frontmatter in slash commands, 8 MINOR: documentation lint fixes, grep pattern improvements, Debugging Ergonomics category added to audit-code). New patterns: Commands need YAML frontmatter, Tier-2 docs need Purpose/Version History sections.                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 6.0     | 2026-01-12 | ARCHIVE #3: Reviews #61-100 → REVIEWS_61-100.md (1740 lines removed, 3170→1430 lines). Active reviews now #101-136. Session #58.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 5.9     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 → CODE_PATTERNS.md v1.7 (16 new patterns: 6 Security, 4 JS/TS, 5 CI/Automation, 1 GitHub Actions). Counter reset. Session #57.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 5.8     | 2026-01-12 | Review #136: PR CI Feedback Round 3 (SonarQube + Qodo + CI) - 14 items. Fixed: 7 MAJOR security (admin.ts PII logging sanitized - log queryLength/queryType instead of raw query, leaky error message in adminTriggerJob, Firestore auto-ID instead of Date.now() for collision resistance, id field placement after spread, HttpsError preservation in migrateAnonymousUserData, meetings.ts batch delete chunking for 500-doc limit, use-journal.ts sanitization order - script/style before tags), 3 MAJOR quality (Array.isArray guards in generateSearchableText, unused deps added to knip ignore), 4 MINOR (GLOBAL_EXCLUDE added to pattern checker for dev utility scripts with pre-existing debt). New pattern: Chunk batch operations under Firestore 500-op limit. Session #55. |
@@ -462,26 +462,97 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-141 are actively maintained below. Older reviews are in the
+Reviews #101-143 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #143: CI Pattern Compliance and Command Injection Fix (2026-01-13)
+
+**Source:** Qodo PR Compliance + SonarCloud + Pattern Compliance CI
+**PR/Branch:** claude/cherry-pick-security-phase-5-nGkAt **Suggestions:** 20+
+items (Critical: 1, Major: 6, Minor: 8+)
+
+**Issues Fixed:**
+
+| #   | Issue                                  | Severity | Category       | Fix                                                     |
+| --- | -------------------------------------- | -------- | -------------- | ------------------------------------------------------- |
+| 1   | Command injection via SKIP_REASON      | Critical | Security       | Use execFileSync instead of execSync with shell         |
+| 2   | getStagedFiles returns [] on failure   | Major    | Fail-Open Risk | Return null on failure, block push (fail-closed)        |
+| 3   | Unsafe error.message access (6 files)  | Major    | Crash Risk     | Use `err instanceof Error ? err.message : String(err)`  |
+| 4   | readFileSync without try/catch (4)     | Major    | Race Condition | Wrap in try/catch after existsSync checks               |
+| 5   | Unlisted dependency import             | Major    | Build Failure  | Added leaflet.markercluster to package.json             |
+| 6   | logEvent returns null but logs success | Minor    | Silent Failure | Check return value before success message               |
+| 7   | Pattern checker false positives        | Minor    | CI             | Add verified files to pathExclude in pattern compliance |
+
+**Key Learnings:**
+
+- Shell interpolation with env vars is command injection - use execFileSync with
+  args array
+- When security checks can't determine state, fail-closed (block) not fail-open
+  (allow)
+- `existsSync()` does NOT guarantee `readFileSync()` will succeed - race
+  conditions, permissions
+- Error objects in JS are not guaranteed - non-Error values can be thrown
+- CSS imports from transitive dependencies need explicit package.json entries
+- Pattern compliance false positives: add verified files to pathExclude with
+  audit comments
+
+---
+
+#### Review #142: Phase 5 Cherry-Pick Security Hardening (2026-01-13)
+
+**Source:** Qodo PR Suggestions + SonarCloud Security Hotspots **PR/Branch:**
+claude/cherry-pick-security-phase-5-nGkAt **Suggestions:** 12 items (Critical:
+1, Major: 4, Minor: 6, Trivial: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                  | Severity   | Category        | Fix                                                       |
+| --- | -------------------------------------- | ---------- | --------------- | --------------------------------------------------------- |
+| 1   | SKIP_TRIGGERS override not implemented | Critical   | Functionality   | Added SKIP_TRIGGERS env check at start of check-triggers  |
+| 2   | Sentry logging could crash app         | Major      | Error Handling  | Wrapped Sentry.captureMessage in try/catch                |
+| 3   | Log write failures could crash scripts | Major      | Error Handling  | Added try/catch to appendFileSync in log-session-activity |
+| 4   | Override log write failures unhandled  | Major      | Error Handling  | Added try/catch to appendFileSync in log-override         |
+| 5   | getStagedFiles fallback unreliable     | Minor      | Git Workflow    | Added git merge-base for better branch detection          |
+| 6   | Arg parsing breaks on = in values      | Minor      | CLI             | Used slice(1).join("=") for --check= argument             |
+| 7   | Unbounded regex (ReDoS risk)           | Minor      | Security        | Added bounded quantifiers to link regex                   |
+| 8   | Hook path not CWD-safe                 | Minor      | Portability     | Added REPO_ROOT to log-session-activity path              |
+| 9   | CRLF frontmatter not supported         | Minor      | Portability     | Changed regex to handle \r\n line endings                 |
+| 10  | Reason string not sanitized            | Minor      | Security        | Added truncation and control char stripping               |
+| 11  | /session/i pattern too broad           | Trivial    | False Positives | Removed from security trigger patterns                    |
+| 12  | Prettier formatting issues             | Auto-fixed | Code Style      | Ran npm run format                                        |
+
+**Key Learnings:**
+
+- Environment variable overrides must be checked at script start, before any
+  blocking logic
+- External service calls (Sentry) should never crash the application - wrap in
+  try/catch
+- All file system operations in hooks/scripts need graceful error handling
+- Use `git merge-base` for reliable branch divergence detection
+- Regex patterns with unbounded quantifiers are ReDoS vectors - use `{0,N}`
+  limits
+- Sanitize and truncate user-provided log inputs to prevent log injection
+- Security keyword patterns need careful tuning to avoid false positives
 
 ---
 
 #### Review #141: PR Review Processing Round 3 (2026-01-13)
 
-**Source:** Qodo PR Suggestions
-**PR/Branch:** PR / claude/cherry-pick-security-audit-CqGum
-**Suggestions:** 5 items (Medium: 1, Low: 4)
+**Source:** Qodo PR Suggestions **PR/Branch:** PR /
+claude/cherry-pick-security-audit-CqGum **Suggestions:** 5 items (Medium: 1,
+Low: 4)
 
 **Issues Fixed:**
 
-| #   | Issue                                        | Severity   | Category      | Fix                                              |
-| --- | -------------------------------------------- | ---------- | ------------- | ------------------------------------------------ |
-| 1   | Schema category tokens have spaces           | 🟡 Medium  | Consistency   | Normalized to CamelCase tokens (e.g., RateLimiting) |
-| 2   | grep alternation missing -E flag             | 🟢 Low     | Portability   | Added -E flag for NEXT_PUBLIC pattern            |
-| 3   | Offline greps missing -E flag                | 🟢 Low     | Portability   | Added -E flag for IndexedDB and status patterns  |
-| 4   | Header verification missing file types       | 🟢 Low     | Coverage      | Added .tsx, .js, .mjs to includes                |
-| 5   | Code review schema inconsistent              | 🟢 Low     | Consistency   | Normalized to `Hygiene\|Types\|Framework\|...` format |
+| #   | Issue                                  | Severity  | Category    | Fix                                                   |
+| --- | -------------------------------------- | --------- | ----------- | ----------------------------------------------------- |
+| 1   | Schema category tokens have spaces     | 🟡 Medium | Consistency | Normalized to CamelCase tokens (e.g., RateLimiting)   |
+| 2   | grep alternation missing -E flag       | 🟢 Low    | Portability | Added -E flag for NEXT_PUBLIC pattern                 |
+| 3   | Offline greps missing -E flag          | 🟢 Low    | Portability | Added -E flag for IndexedDB and status patterns       |
+| 4   | Header verification missing file types | 🟢 Low    | Coverage    | Added .tsx, .js, .mjs to includes                     |
+| 5   | Code review schema inconsistent        | 🟢 Low    | Consistency | Normalized to `Hygiene\|Types\|Framework\|...` format |
 
 **Key Learnings:**
 
@@ -493,21 +564,21 @@ archive.
 
 #### Review #140: PR Review Processing Round 2 (2026-01-13)
 
-**Source:** Qodo PR Suggestions
-**PR/Branch:** PR / claude/cherry-pick-security-audit-CqGum
-**Suggestions:** 7 items (Medium: 1, Low: 6)
+**Source:** Qodo PR Suggestions **PR/Branch:** PR /
+claude/cherry-pick-security-audit-CqGum **Suggestions:** 7 items (Medium: 1,
+Low: 6)
 
 **Issues Fixed:**
 
-| #   | Issue                                        | Severity   | Category      | Fix                                              |
-| --- | -------------------------------------------- | ---------- | ------------- | ------------------------------------------------ |
-| 1   | grep xargs can hang on empty results         | 🟡 Medium  | Shell         | Use `while IFS= read -r f` instead of `xargs`    |
-| 2   | Empty catch regex too narrow                 | 🟢 Low     | Code Quality  | Use `[[:space:]]` POSIX class for portability    |
-| 3   | AICode category name vs schema mismatch      | 🟢 Low     | Consistency   | Renamed to `AICode (AI-Generated Code...)` form  |
-| 4   | Debugging category name vs schema mismatch   | 🟢 Low     | Consistency   | Renamed to `Debugging (Debugging Ergonomics)`    |
-| 5   | Correlation ID grep missing .tsx             | 🟢 Low     | Coverage      | Added `--include="*.tsx"` and `-E` flag          |
-| 6   | Security template grep portability           | 🟢 Low     | Shell         | Replaced `cat \| grep` with direct `grep`        |
-| 7   | ProductRisk vs ProductUXRisk enum            | 🟢 Low     | Consistency   | Changed to ProductUXRisk in audit-security.md    |
+| #   | Issue                                      | Severity  | Category     | Fix                                             |
+| --- | ------------------------------------------ | --------- | ------------ | ----------------------------------------------- |
+| 1   | grep xargs can hang on empty results       | 🟡 Medium | Shell        | Use `while IFS= read -r f` instead of `xargs`   |
+| 2   | Empty catch regex too narrow               | 🟢 Low    | Code Quality | Use `[[:space:]]` POSIX class for portability   |
+| 3   | AICode category name vs schema mismatch    | 🟢 Low    | Consistency  | Renamed to `AICode (AI-Generated Code...)` form |
+| 4   | Debugging category name vs schema mismatch | 🟢 Low    | Consistency  | Renamed to `Debugging (Debugging Ergonomics)`   |
+| 5   | Correlation ID grep missing .tsx           | 🟢 Low    | Coverage     | Added `--include="*.tsx"` and `-E` flag         |
+| 6   | Security template grep portability         | 🟢 Low    | Shell        | Replaced `cat \| grep` with direct `grep`       |
+| 7   | ProductRisk vs ProductUXRisk enum          | 🟢 Low    | Consistency  | Changed to ProductUXRisk in audit-security.md   |
 
 **Key Learnings:**
 
@@ -520,19 +591,22 @@ archive.
 
 #### Review #139: PR Cherry-Pick Security Audit CI Fixes (2026-01-13)
 
-**Source:** Qodo Compliance + CI Feedback
-**PR/Branch:** PR / claude/cherry-pick-security-audit-CqGum
-**Suggestions:** 11 items (Critical: 0, Major: 2, Minor: 8, Trivial: 1)
+**Source:** Qodo Compliance + CI Feedback **PR/Branch:** PR /
+claude/cherry-pick-security-audit-CqGum **Suggestions:** 11 items (Critical: 0,
+Major: 2, Minor: 8, Trivial: 1)
 
 **Patterns Identified:**
 
-1. [Missing YAML frontmatter in slash commands]: Commands without `---\ndescription: ...\n---` frontmatter aren't recognized
+1. [Missing YAML frontmatter in slash commands]: Commands without
+   `---\ndescription: ...\n---` frontmatter aren't recognized
    - Root cause: Some commands were created without proper frontmatter structure
    - Prevention: Always add frontmatter when creating new commands
 
-2. [Documentation lint requirements for audit files]: Tier-2 docs require Purpose and Version History sections
+2. [Documentation lint requirements for audit files]: Tier-2 docs require
+   Purpose and Version History sections
    - Root cause: Audit reports were missing standard sections
-   - Prevention: Include Purpose, Version History, and Last Updated in all audit documents
+   - Prevention: Include Purpose, Version History, and Last Updated in all audit
+     documents
 
 **Resolution:**
 
@@ -542,52 +616,55 @@ archive.
 
 **Issues Fixed:**
 
-| #   | Issue                                        | Severity   | Category      | Fix                                              |
-| --- | -------------------------------------------- | ---------- | ------------- | ------------------------------------------------ |
-| 1   | pr-review.md missing YAML frontmatter        | 🔴 Major   | Configuration | Added `---\ndescription: ...\n---` frontmatter   |
-| 2   | docs-sync.md missing YAML frontmatter        | 🔴 Major   | Configuration | Added proper frontmatter                         |
-| 3   | fetch-pr-feedback.md malformed frontmatter   | 🟡 Minor   | Configuration | Fixed frontmatter structure                      |
-| 4   | audit-2026-01-13.md missing Purpose section  | 🟡 Minor   | Documentation | Added Purpose section                            |
-| 5   | audit-2026-01-13.md missing Version History  | 🟡 Minor   | Documentation | Added Version History table                      |
-| 6   | audit-2026-01-13.md missing Last Updated     | 🟡 Minor   | Documentation | Added Last Updated metadata                      |
-| 7   | audit-code.md missing Debugging Ergonomics   | 🟡 Minor   | Consistency   | Added Category 7 with 5 debugging checks         |
-| 8   | Grep pattern for client-side secrets         | 🟡 Minor   | Security      | Improved to find "use client" files first        |
-| 9   | Grep pattern for empty catches               | 🟡 Minor   | Code Quality  | Improved regex to detect empty/comment-only      |
-| 10  | Category enum in audit-code.md               | 🟡 Minor   | Consistency   | Added Debugging to schema                        |
-| 11  | Description alignment in READMEs             | 🟢 Trivial | Documentation | Already aligned from previous session            |
+| #   | Issue                                       | Severity   | Category      | Fix                                            |
+| --- | ------------------------------------------- | ---------- | ------------- | ---------------------------------------------- |
+| 1   | pr-review.md missing YAML frontmatter       | 🔴 Major   | Configuration | Added `---\ndescription: ...\n---` frontmatter |
+| 2   | docs-sync.md missing YAML frontmatter       | 🔴 Major   | Configuration | Added proper frontmatter                       |
+| 3   | fetch-pr-feedback.md malformed frontmatter  | 🟡 Minor   | Configuration | Fixed frontmatter structure                    |
+| 4   | audit-2026-01-13.md missing Purpose section | 🟡 Minor   | Documentation | Added Purpose section                          |
+| 5   | audit-2026-01-13.md missing Version History | 🟡 Minor   | Documentation | Added Version History table                    |
+| 6   | audit-2026-01-13.md missing Last Updated    | 🟡 Minor   | Documentation | Added Last Updated metadata                    |
+| 7   | audit-code.md missing Debugging Ergonomics  | 🟡 Minor   | Consistency   | Added Category 7 with 5 debugging checks       |
+| 8   | Grep pattern for client-side secrets        | 🟡 Minor   | Security      | Improved to find "use client" files first      |
+| 9   | Grep pattern for empty catches              | 🟡 Minor   | Code Quality  | Improved regex to detect empty/comment-only    |
+| 10  | Category enum in audit-code.md              | 🟡 Minor   | Consistency   | Added Debugging to schema                      |
+| 11  | Description alignment in READMEs            | 🟢 Trivial | Documentation | Already aligned from previous session          |
 
 **Key Learnings:**
 
-- All `.claude/commands/*.md` files MUST have YAML frontmatter with a description field
-- The frontmatter must be at the very start of the file: `---\ndescription: Description\n---`
-- Audit documents should follow Tier-2 requirements including Purpose and Version History sections
+- All `.claude/commands/*.md` files MUST have YAML frontmatter with a
+  description field
+- The frontmatter must be at the very start of the file:
+  `---\ndescription: Description\n---`
+- Audit documents should follow Tier-2 requirements including Purpose and
+  Version History sections
 
 ---
 
 #### Review #138: PR #243 Step 4C Qodo Compliance Review (2026-01-13)
 
-**Source:** Qodo Compliance (2 rounds)
-**PR/Branch:** PR #243 / claude/cherry-pick-phase-4b-fAyRp
-**Suggestions:** 7 items (Critical: 0, Major: 1, Minor: 3, Trivial: 0, Rejected: 3)
+**Source:** Qodo Compliance (2 rounds) **PR/Branch:** PR #243 /
+claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 7 items (Critical: 0, Major:
+1, Minor: 3, Trivial: 0, Rejected: 3)
 
 **Context:** Post-commit review of Step 4C SonarCloud Issue Triage changes.
 
 **Issues Fixed:**
 
-| #   | Issue                                      | Severity   | Category | Fix                                           |
-| --- | ------------------------------------------ | ---------- | -------- | --------------------------------------------- |
-| 1   | Env var oracle: dynamic process.env lookup | 🟡 Minor   | Security | Added ALLOWED_FEATURE_FLAGS allowlist         |
-| 2   | Test files in SonarCloud issue analysis    | 🟡 Minor   | Config   | Use sonar.tests instead of exclusions         |
-| 3   | Next.js client bundling broken             | 🔴 Major   | Bug      | Static FEATURE_FLAG_VALUES map with explicit refs |
-| 4   | Better SonarCloud test identification      | 🟡 Minor   | Config   | Added sonar.test.inclusions                   |
+| #   | Issue                                      | Severity | Category | Fix                                               |
+| --- | ------------------------------------------ | -------- | -------- | ------------------------------------------------- |
+| 1   | Env var oracle: dynamic process.env lookup | 🟡 Minor | Security | Added ALLOWED_FEATURE_FLAGS allowlist             |
+| 2   | Test files in SonarCloud issue analysis    | 🟡 Minor | Config   | Use sonar.tests instead of exclusions             |
+| 3   | Next.js client bundling broken             | 🔴 Major | Bug      | Static FEATURE_FLAG_VALUES map with explicit refs |
+| 4   | Better SonarCloud test identification      | 🟡 Minor | Config   | Added sonar.test.inclusions                       |
 
 **Rejected Items:**
 
-| #   | Issue                 | Reason                                                             |
-| --- | --------------------- | ------------------------------------------------------------------ |
-| 5   | No ticket provided    | Administrative - not code-related                                  |
-| 6   | Codebase context      | Configuration - not code-related                                   |
-| 7   | sort() vs reduce()    | Reviewer confirms reduce is correct; O(n) better than O(n log n)   |
+| #   | Issue              | Reason                                                           |
+| --- | ------------------ | ---------------------------------------------------------------- |
+| 5   | No ticket provided | Administrative - not code-related                                |
+| 6   | Codebase context   | Configuration - not code-related                                 |
+| 7   | sort() vs reduce() | Reviewer confirms reduce is correct; O(n) better than O(n log n) |
 
 **Patterns Identified:**
 
@@ -597,7 +674,8 @@ archive.
 
 2. **Next.js env var client bundling** (Major - Bug fix)
    - Root cause: Dynamic `process.env[key]` is NOT inlined by Next.js on client
-   - Prevention: Use static map with explicit `process.env.NEXT_PUBLIC_*` references
+   - Prevention: Use static map with explicit `process.env.NEXT_PUBLIC_*`
+     references
    - Pattern: For client-side env access, always use explicit string literals
 
 **Resolution:** Fixed 4 items, rejected 3 (2 administrative, 1 false positive)

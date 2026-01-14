@@ -74,12 +74,43 @@ VERIFICATION CHECKLIST:
 └─ Did you commit descriptive messages explaining WHY changes were made?
 ```
 
-## 6. Agent/Skill/MCP/Hook/Script Audit (MANDATORY)
+## 6. Automated Verification (RUN BEFORE MANUAL AUDIT)
+
+Execute these automated checks to verify session compliance:
+
+```bash
+# 1. Verify expected skills were used based on activity
+npm run skills:verify-usage
+
+# 2. Check if any triggers are pending
+npm run triggers:check
+
+# 3. Review any overrides used this session
+npm run override:list
+
+# 4. View session activity summary
+npm run session:summary
+```
+
+**Interpreting Results:**
+
+- **Skills verification failures** indicate skills that should have been used
+  but weren't. Either use the skill now, or document why it was skipped.
+- **Pending triggers** should be resolved before push. If already resolved,
+  document the resolution.
+- **Override history** should be reviewed - ensure reasons were provided and are
+  legitimate.
+- **Session summary** shows what was done this session for documentation
+  purposes.
+
+---
+
+## 7. Agent/Skill/MCP/Hook/Script Audit (MANDATORY)
 
 **Complete this audit for every session. If gaps found, document why or fix
 before ending.**
 
-### 6.1 Session Start Scripts
+### 7.1 Session Start Scripts
 
 | Script                    | Required | Ran? | If No, Why? |
 | ------------------------- | -------- | ---- | ----------- |
@@ -87,7 +118,7 @@ before ending.**
 | `npm run review:check`    | ✅       | [ ]  |             |
 | `npm run lessons:surface` | ✅       | [ ]  |             |
 
-### 6.2 Agent Usage (based on work performed)
+### 7.2 Agent Usage (based on work performed)
 
 | Condition                    | Agent            | Should Invoke? | Did Invoke? | If No, Why? |
 | ---------------------------- | ---------------- | -------------- | ----------- | ----------- |
@@ -97,7 +128,7 @@ before ending.**
 | Complex codebase exploration | Explore          | [ ]            | [ ]         |             |
 | Multi-step planning needed   | Plan             | [ ]            | [ ]         |             |
 
-### 6.3 Skill Usage
+### 7.3 Skill Usage
 
 | Condition             | Skill                | Should Invoke? | Did Invoke? | If No, Why? |
 | --------------------- | -------------------- | -------------- | ----------- | ----------- |
@@ -105,13 +136,13 @@ before ending.**
 | UI/frontend work      | frontend-design      | [ ]            | [ ]         |             |
 | Code review requested | code-reviewer        | [ ]            | [ ]         |             |
 
-### 6.4 MCP Servers
+### 7.4 MCP Servers
 
 | Server                        | Available | Used? | Purpose if Used |
 | ----------------------------- | --------- | ----- | --------------- |
 | (list from SessionStart hook) |           | [ ]   |                 |
 
-### 6.5 Hooks Executed
+### 7.5 Hooks Executed
 
 | Hook             | Should Trigger | Did Trigger? | Passed? |
 | ---------------- | -------------- | ------------ | ------- |
@@ -120,7 +151,7 @@ before ending.**
 | Pre-commit       | On commit      | [ ]          | [ ]     |
 | Pre-push         | On push        | [ ]          | [ ]     |
 
-### 6.6 Audit Result
+### 7.6 Audit Result
 
 **Overall Result:** [ ] PASS [ ] FAIL
 
@@ -138,7 +169,7 @@ explanation)
 (describe what was invoked/run to address gaps, or next steps)
 ```
 
-## 7. Key Learnings to Remember
+## 8. Key Learnings to Remember
 
 Today's session reinforced these patterns:
 
@@ -161,7 +192,7 @@ Today's session reinforced these patterns:
 - Push without verifying CI impact
 - Edit files without reading them first
 
-## 8. Commit Summary
+## 9. Commit Summary
 
 Provide a summary of all commits made this session:
 

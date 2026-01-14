@@ -276,7 +276,12 @@ Full markdown report with all findings, baselines, and refactoring plan.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/refactoring/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Update AUDIT_TRACKER.md** - Add entry to "Refactoring Audits" table:
+4. **Validate CANON schema** (if audit updates CANON files):
+   ```bash
+   npm run validate:canon
+   ```
+   Ensure all CANON files pass validation before committing.
+5. **Update AUDIT_TRACKER.md** - Add entry to "Refactoring Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last refactoring audit
@@ -286,7 +291,7 @@ Full markdown report with all findings, baselines, and refactoring plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. Ask: "Would you like me to tackle any of these refactoring tasks now?
+6. Ask: "Would you like me to tackle any of these refactoring tasks now?
    (Recommend starting with batch fixes)"
 
 ---

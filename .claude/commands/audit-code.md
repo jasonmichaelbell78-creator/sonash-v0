@@ -97,8 +97,11 @@ If outdated, note discrepancies but proceed with current values.
 5. **Assign confidence level** (see Evidence Requirements below)
 
 **Category Token Requirement (MANDATORY):**
-- In JSONL output, `category` MUST be one of: `Hygiene|Types|Framework|Testing|Security|AICode|Debugging`
-- Do NOT include spaces, parentheses, or descriptive suffixes (e.g., output `AICode`, not `AICode (AI-Generated Code Failure Modes)`)
+
+- In JSONL output, `category` MUST be one of:
+  `Hygiene|Types|Framework|Testing|Security|AICode|Debugging`
+- Do NOT include spaces, parentheses, or descriptive suffixes (e.g., output
+  `AICode`, not `AICode (AI-Generated Code Failure Modes)`)
 
 **AI-Code Specific Checks:**
 
@@ -278,7 +281,12 @@ Full markdown report with all findings, baselines, and recommendations.
 1. Display summary to user
 2. Confirm files saved to `docs/audits/single-session/code/`
 3. Run `node scripts/validate-audit.js` on the JSONL file
-4. **Update AUDIT_TRACKER.md** - Add entry to "Code Audits" table:
+4. **Validate CANON schema** (if audit updates CANON files):
+   ```bash
+   npm run validate:canon
+   ```
+   Ensure all CANON files pass validation before committing.
+5. **Update AUDIT_TRACKER.md** - Add entry to "Code Audits" table:
    - Date: Today's date
    - Session: Current session number from SESSION_CONTEXT.md
    - Commits Covered: Number of commits since last code audit
@@ -286,7 +294,7 @@ Full markdown report with all findings, baselines, and recommendations.
    - Findings: Total count (e.g., "3 S1, 5 S2, 2 S3")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-5. Ask: "Would you like me to fix any of these issues now?"
+6. Ask: "Would you like me to fix any of these issues now?"
 
 ---
 

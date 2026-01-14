@@ -129,7 +129,11 @@ const ANTI_PATTERNS = [
     // -g/--global: global installs don't modify project lockfile
     // --save/--save-dev/-D/-S: intentional dependency additions
     // --legacy-peer-deps: explicit peer dep handling
+    // Note: --prefer-offline fallback is covered by pathExclude for session-start files
     exclude: /--legacy-peer-deps|--save|--save-dev|-[gDS]\b|--global/,
+    // session-start.sh mentions "npm install" in comments and as documented fallback
+    // when package-lock.json is missing - this is intentional behavior
+    pathExclude: /session-start\.(?:sh|js)$/,
   },
 
   // JavaScript/TypeScript patterns
@@ -370,9 +374,14 @@ const ANTI_PATTERNS = [
     // 2026-01-12 audit (Review #134):
     // - check-mcp-servers.js: readFileSync at L60 IS in try/catch (L58-106)
     // - session-start.js: computeHash() L72 in try/catch L70-76, needsRootInstall() L88 in try/catch L83-92, needsFunctionsInstall() L105 in try/catch L99-110
+    // 2026-01-13 audit (Review #143):
+    // - log-override.js: readFileSync at L153 IS in try/catch (L152-158)
+    // - log-session-activity.js: readFileSync at L118 IS in try/catch (L117-123)
+    // - validate-skill-config.js: readFileSync at L105 IS in try/catch (L104-109)
+    // - verify-skill-usage.js: readFileSync at L77 IS in try/catch (L76-82)
     // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage)\.js$/,
   },
   {
     id: "auto-mode-slice-truncation",

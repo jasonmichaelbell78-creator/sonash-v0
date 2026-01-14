@@ -422,20 +422,17 @@ VERIFICATION:
 Mark each check: ISSUE | OK | N/A List specific documentation gaps or
 inaccuracies.
 
-Category 7: Golden Path & Developer Experience (NEW - 2026-01-13)
-CHECKS:
-[ ] Single command for initial setup (npm run setup or equivalent)
-[ ] Single command for local dev (npm run dev)
-[ ] Single command for offline dev with emulators (npm run dev:offline)
-[ ] Single command to run tests (npm test)
-[ ] Single command to deploy (or CI handles)
-[ ] Single command to verify deployment (npm run smoke)
-[ ] Rollback procedure documented and tested
-[ ] Doctor/diagnostic script for environment validation
-[ ] Minimal context switching in daily workflow
-[ ] Clear "what to run when" documentation
+Category 7: Golden Path & Developer Experience (NEW - 2026-01-13) CHECKS: [ ]
+Single command for initial setup (npm run setup or equivalent) [ ] Single
+command for local dev (npm run dev) [ ] Single command for offline dev with
+emulators (npm run dev:offline) [ ] Single command to run tests (npm test) [ ]
+Single command to deploy (or CI handles) [ ] Single command to verify deployment
+(npm run smoke) [ ] Rollback procedure documented and tested [ ]
+Doctor/diagnostic script for environment validation [ ] Minimal context
+switching in daily workflow [ ] Clear "what to run when" documentation
 
 ANALYSIS:
+
 - Map actual commands needed for each workflow step
 - Identify missing "one-command" scripts
 - Check for doctor/diagnostic scripts
@@ -443,6 +440,7 @@ ANALYSIS:
 - Review onboarding friction for new developers
 
 PATTERNS TO FIND:
+
 - Multi-step setup requiring manual coordination
 - Missing dev:offline command for emulator-based development
 - No environment validation script (doctor)
@@ -451,12 +449,14 @@ PATTERNS TO FIND:
 - Scattered workflow information across multiple docs
 
 VERIFICATION:
+
 - npm run (list all available scripts)
 - Check package.json for setup, dev, dev:offline, doctor, smoke scripts
 - Test each "one command" workflow step
 - Verify documentation matches actual commands
 
 DX FRICTION ASSESSMENT:
+
 - Time to first productive code change (target: < 15 minutes)
 - Commands needed for daily dev loop (target: 2-3 commands)
 - Mental model clarity (can someone follow without asking questions?)

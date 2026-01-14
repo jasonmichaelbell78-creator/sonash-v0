@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.1 **Last Updated:** 2026-01-04 **Status:** ACTIVE
+**Document Version:** 2.2 **Last Updated:** 2026-01-13 **Status:** ACTIVE
 
 ---
 
@@ -440,15 +440,16 @@ npm audit fix
 
 ### Code Quality Commands
 
-| Command                 | Purpose              | Notes                 |
-| ----------------------- | -------------------- | --------------------- |
-| `npm run lint`          | ESLint check         | Must pass (0 errors)  |
-| `npm run format`        | Prettier auto-format | Formats all files     |
-| `npm run format:check`  | Prettier check       | For CI (no changes)   |
-| `npm run deps:circular` | Check circular deps  | Uses madge            |
-| `npm run deps:unused`   | Find unused exports  | Uses knip             |
-| `npm test`              | Run all tests        | 116 tests (1 skipped) |
-| `npm run test:coverage` | Test with coverage   | Uses c8               |
+| Command                  | Purpose              | Notes                      |
+| ------------------------ | -------------------- | -------------------------- |
+| `npm run lint`           | ESLint check         | Must pass (0 errors)       |
+| `npm run format`         | Prettier auto-format | Formats all files          |
+| `npm run format:check`   | Prettier check       | For CI (no changes)        |
+| `npm run deps:circular`  | Check circular deps  | Uses madge                 |
+| `npm run deps:unused`    | Find unused exports  | Uses knip                  |
+| `npm test`               | Run all tests        | 116 tests (1 skipped)      |
+| `npm run test:coverage`  | Test with coverage   | Uses c8                    |
+| `npm run validate:canon` | Validate CANON files | Checks audit output schema |
 
 ### Prettier (Code Formatting)
 
@@ -529,20 +530,34 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step     | Command                | Blocking?           |
-| -------- | ---------------------- | ------------------- |
-| ESLint   | `npm run lint`         | YES - blocks commit |
-| Prettier | `npm run format:check` | NO - warning only   |
-| Tests    | `npm test`             | YES - blocks commit |
+| Step               | Command                  | Blocking?           |
+| ------------------ | ------------------------ | ------------------- |
+| ESLint             | `npm run lint`           | YES - blocks commit |
+| Prettier           | `npm run format:check`   | NO - warning only   |
+| Pattern compliance | `npm run patterns:check` | YES - blocks commit |
+| Tests              | `npm test`               | YES - blocks commit |
+| CANON validation   | `npm run validate:canon` | NO - warning only   |
+| Learning reminder  | (checks staged files)    | NO - reminder only  |
+
+> **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
+> staged. Validates schema compliance for audit output files.
+>
+> **Learning Entry Reminder**: If 5+ files are staged or template/hook changes
+> are detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md`
+> when addressing PR feedback.
 
 **Pre-push hook (`.husky/pre-push`) runs:**
 
-| Step               | Command                  | Blocking?         |
-| ------------------ | ------------------------ | ----------------- |
-| Tests              | `npm test`               | YES - blocks push |
-| Circular deps      | `npm run deps:circular`  | YES - blocks push |
-| Pattern compliance | `npm run patterns:check` | YES - blocks push |
-| Type check         | `npx tsc --noEmit`       | YES - blocks push |
+| Step               | Command                        | Blocking?         |
+| ------------------ | ------------------------------ | ----------------- |
+| Tests              | `npm test`                     | YES - blocks push |
+| Circular deps      | `npm run deps:circular`        | YES - blocks push |
+| Pattern compliance | `npm run patterns:check`       | YES - blocks push |
+| Type check         | `npx tsc --noEmit`             | YES - blocks push |
+| Security audit     | `npm audit --audit-level=high` | NO - warning only |
+
+> **Security Audit**: Checks for high/critical vulnerabilities in dependencies.
+> Non-blocking warning - reports issues but doesn't prevent push.
 
 **⚠️ Never bypass:** See Git Workflow section for policy.
 
@@ -940,8 +955,9 @@ When maintaining this document:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                 |
-| ------- | ---------- | ------------------------------------------------------- |
-| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip) |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration            |
-| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources        |
+| Version | Date       | Changes                                                                     |
+| ------- | ---------- | --------------------------------------------------------------------------- |
+| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder) |
+| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                     |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                |
+| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                            |

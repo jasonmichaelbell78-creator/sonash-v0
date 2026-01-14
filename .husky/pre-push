@@ -53,5 +53,48 @@ if ! npx tsc --noEmit > /dev/null 2>&1; then
 fi
 echo "  ✅ Type check passed"
 
+# 5. Security audit (non-blocking warning, ~3-8s)
+# Checks for high/critical vulnerabilities in dependencies
+echo "  ▶ Running security audit..."
+audit_output=$(npm audit --audit-level=high 2>&1)
+audit_exit=$?
+if [ $audit_exit -ne 0 ]; then
+  # Check if it's a real vulnerability (exit code 1) vs network error
+  if echo "$audit_output" | grep -q "vulnerabilities"; then
+    echo "  ⚠️ Security vulnerabilities found (not blocking - run: npm audit)"
+    echo "$audit_output" | grep -E "high|critical|vulnerabilities" | head -5
+  else
+    echo "  ⚠️ npm audit check skipped (network or registry issue)"
+  fi
+else
+  echo "  ✅ No high/critical vulnerabilities"
+fi
+
+# 6. Event-based trigger checker (blocking for security, warning for others)
+# Checks: security_audit (files with auth/token/etc.), consolidation, skill_validation
+echo "  ▶ Checking event-based triggers..."
+if [ "${SKIP_TRIGGERS:-}" = "1" ]; then
+  echo "  ⚠️ Triggers skipped (SKIP_TRIGGERS=1)"
+  # Log the override for audit trail with reason
+  node scripts/log-override.js --check=triggers --reason="${SKIP_REASON:-No reason provided}" 2>/dev/null || true
+else
+  triggers_output=$(npm run triggers:check 2>&1)
+  triggers_exit=$?
+  if [ $triggers_exit -eq 1 ]; then
+    echo "  ❌ Blocking trigger(s) activated"
+    printf '%s\n' "$triggers_output" | grep -E "^🚫|^❌|^   Action:|^   Files:" | head -20
+    echo ""
+    echo "  Complete required actions or use: SKIP_TRIGGERS=1 git push"
+    exit 1
+  elif [ $triggers_exit -eq 0 ]; then
+    # Show warnings but don't block
+    if echo "$triggers_output" | grep -q "⚠️"; then
+      printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
+    else
+      echo "  ✅ No blocking triggers"
+    fi
+  fi
+fi
+
 echo ""
 echo "✅ All pre-push checks passed - push allowed"

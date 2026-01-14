@@ -23,11 +23,13 @@ security-focused audit on [Project Name]. Use this template when:
 **Review Focus Areas (12 Mandatory Categories):**
 
 1. Rate Limiting & Throttling
-2. Input Validation & Sanitization (including template injection, eval/Function, unsafe deserialization)
+2. Input Validation & Sanitization (including template injection, eval/Function,
+   unsafe deserialization)
 3. API Keys & Secrets Management
 4. Authentication & Authorization
 5. Firebase Security (Rules, App Check, Functions, replay protection)
-6. Dependency Security & Supply Chain (including unpinned versions, risky postinstall)
+6. Dependency Security & Supply Chain (including unpinned versions, risky
+   postinstall)
 7. OWASP Top 10 Compliance
 8. Hosting & Headers Security (CSP, HSTS, X-Frame-Options, COOP, COEP)
 9. Framework-Specific Security (Next.js boundary leaks, API route auth)
@@ -384,89 +386,85 @@ A10 - SSRF: [ ] URL inputs validated [ ] Allowlists for external requests
 
 Mark each: PASS | FAIL | PARTIAL | N/A
 
-Category 8: Hosting & Headers Security
-REQUIRED CHECKS:
-[ ] Content-Security-Policy (CSP) header configured
-[ ] Strict-Transport-Security (HSTS) enabled
-[ ] X-Frame-Options set (DENY or SAMEORIGIN)
-[ ] X-Content-Type-Options: nosniff
-[ ] Cross-Origin-Opener-Policy (COOP) configured
-[ ] Cross-Origin-Embedder-Policy (COEP) configured
-[ ] Referrer-Policy configured
-[ ] Permissions-Policy restricts sensitive APIs
+Category 8: Hosting & Headers Security REQUIRED CHECKS: [ ]
+Content-Security-Policy (CSP) header configured [ ] Strict-Transport-Security
+(HSTS) enabled [ ] X-Frame-Options set (DENY or SAMEORIGIN) [ ]
+X-Content-Type-Options: nosniff [ ] Cross-Origin-Opener-Policy (COOP) configured
+[ ] Cross-Origin-Embedder-Policy (COEP) configured [ ] Referrer-Policy
+configured [ ] Permissions-Policy restricts sensitive APIs
 
 VERIFICATION COMMANDS:
+
 - grep -n -A 20 "\"headers\"" firebase.json
-- grep -E -rn "Content-Security-Policy|X-Frame-Options" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json"
+- grep -E -rn "Content-Security-Policy|X-Frame-Options" --include="_.ts"
+  --include="_.tsx" --include="_.js" --include="_.mjs" --include="\*.json"
 - Review next.config.mjs for security headers
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
-Category 9: Framework-Specific Security (Next.js)
-REQUIRED CHECKS:
-[ ] No secrets in NEXT_PUBLIC_ environment variables
-[ ] Server/client boundary properly enforced
-[ ] No process.env access in client components
-[ ] API routes have proper authentication gates
-[ ] Middleware validates auth before protected routes
-[ ] Static vs server rendering assumptions are correct
-[ ] No sensitive data in client-side bundles
+Category 9: Framework-Specific Security (Next.js) REQUIRED CHECKS: [ ] No
+secrets in NEXT*PUBLIC* environment variables [ ] Server/client boundary
+properly enforced [ ] No process.env access in client components [ ] API routes
+have proper authentication gates [ ] Middleware validates auth before protected
+routes [ ] Static vs server rendering assumptions are correct [ ] No sensitive
+data in client-side bundles
 
 VERIFICATION COMMANDS:
-- grep -E -rn "NEXT_PUBLIC_.*(SECRET|KEY|PASSWORD)" --include="*.ts" --include="*.tsx"
-- grep -l -r '"use client"' app/ components/ --include="*.tsx" | while IFS= read -r f; do grep -l 'process\.env' "$f"; done 2>/dev/null (secrets in client components)
+
+- grep -E -rn "NEXT*PUBLIC*._(SECRET|KEY|PASSWORD)" --include="_.ts"
+  --include="\*.tsx"
+- grep -l -r '"use client"' app/ components/ --include="\*.tsx" | while IFS=
+  read -r f; do grep -l 'process\.env' "$f"; done 2>/dev/null (secrets in client
+  components)
 - Review middleware.ts for auth checks
-- grep -E -rn "getServerSideProps|getStaticProps" --include="*.tsx"
+- grep -E -rn "getServerSideProps|getStaticProps" --include="\*.tsx"
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
-Category 10: File Handling Security
-REQUIRED CHECKS:
-[ ] File uploads validate MIME type server-side
-[ ] File size limits enforced
-[ ] Path traversal prevented (no ../ in file paths)
-[ ] Uploaded files stored outside webroot or with random names
-[ ] File download endpoints validate user authorization
-[ ] No user-controlled file paths in fs operations
+Category 10: File Handling Security REQUIRED CHECKS: [ ] File uploads validate
+MIME type server-side [ ] File size limits enforced [ ] Path traversal prevented
+(no ../ in file paths) [ ] Uploaded files stored outside webroot or with random
+names [ ] File download endpoints validate user authorization [ ] No
+user-controlled file paths in fs operations
 
 VERIFICATION COMMANDS:
-- grep -E -rn "upload|multer|formidable" --include="*.ts" --include="*.tsx"
-- grep -rn "\.\./" --include="*.ts" (check for path traversal vectors)
-- grep -E -rn "fs\.|readFile|writeFile" --include="*.ts" --include="*.tsx"
+
+- grep -E -rn "upload|multer|formidable" --include="_.ts" --include="_.tsx"
+- grep -rn "\.\./" --include="\*.ts" (check for path traversal vectors)
+- grep -E -rn "fs\.|readFile|writeFile" --include="_.ts" --include="_.tsx"
 - Review storage.rules for Firebase Storage security
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
-Category 11: Crypto & Randomness
-REQUIRED CHECKS:
-[ ] No Math.random() for security-sensitive operations
-[ ] Using crypto.randomUUID() or crypto.getRandomValues() for tokens
-[ ] No weak hashing (MD5, SHA1) for passwords or sensitive data
-[ ] No homegrown crypto implementations
-[ ] JWT tokens properly validated (signature, expiry, issuer)
-[ ] Session tokens have sufficient entropy
+Category 11: Crypto & Randomness REQUIRED CHECKS: [ ] No Math.random() for
+security-sensitive operations [ ] Using crypto.randomUUID() or
+crypto.getRandomValues() for tokens [ ] No weak hashing (MD5, SHA1) for
+passwords or sensitive data [ ] No homegrown crypto implementations [ ] JWT
+tokens properly validated (signature, expiry, issuer) [ ] Session tokens have
+sufficient entropy
 
 VERIFICATION COMMANDS:
-- grep -rn "Math\.random" --include="*.ts" --include="*.tsx"
-- grep -E -rn "md5|sha1" --include="*.ts" --include="*.tsx" (check context)
-- grep -E -rn "crypto\.|randomUUID|getRandomValues" --include="*.ts" --include="*.tsx"
-- grep -E -rn "jwt|jsonwebtoken" --include="*.ts" --include="*.tsx"
+
+- grep -rn "Math\.random" --include="_.ts" --include="_.tsx"
+- grep -E -rn "md5|sha1" --include="_.ts" --include="_.tsx" (check context)
+- grep -E -rn "crypto\.|randomUUID|getRandomValues" --include="_.ts"
+  --include="_.tsx"
+- grep -E -rn "jwt|jsonwebtoken" --include="_.ts" --include="_.tsx"
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
-Category 12: AI Agent Security
-REQUIRED CHECKS:
-[ ] No prompt injection vectors in .claude/ configuration files
-[ ] Agent config files don't contain executable patterns
-[ ] No suspicious strings that could manipulate AI behavior
-[ ] Hook scripts validate inputs before execution
-[ ] No user-controlled data flows into agent prompts without sanitization
+Category 12: AI Agent Security REQUIRED CHECKS: [ ] No prompt injection vectors
+in .claude/ configuration files [ ] Agent config files don't contain executable
+patterns [ ] No suspicious strings that could manipulate AI behavior [ ] Hook
+scripts validate inputs before execution [ ] No user-controlled data flows into
+agent prompts without sanitization
 
 VERIFICATION COMMANDS:
+
 - cat .claude/settings.json (review for suspicious patterns)
-- grep -rn "eval\|exec\|spawn" .claude/ --include="*.md" --include="*.json"
+- grep -rn "eval\|exec\|spawn" .claude/ --include="_.md" --include="_.json"
 - Review .claude/commands/ for injection surfaces
-- grep -rn "{{.*}}\|<.*>" .claude/ (template injection patterns)
+- grep -rn "{{.*}}\|<.\*>" .claude/ (template injection patterns)
 
 Mark each check: PASS | FAIL | PARTIAL | N/A
 
@@ -538,7 +536,9 @@ Return 4 sections in this exact order:
 
 2. FINDINGS_JSONL (one JSON object per line, each must be valid JSON)
 
-Schema: { "category": "RateLimiting|InputValidation|SecretsManagement|Authentication|Firebase|OWASP|Headers|Framework|FileHandling|Crypto|ProductUXRisk|AgentSecurity", "title": "short, specific vulnerability", "fingerprint":
+Schema: { "category":
+"RateLimiting|InputValidation|SecretsManagement|Authentication|Firebase|OWASP|Headers|Framework|FileHandling|Crypto|ProductUXRisk|AgentSecurity",
+"title": "short, specific vulnerability", "fingerprint":
 "<category>::<primary_file>::<vulnerability_type>", "severity": "S0|S1|S2|S3",
 "effort": "E0|E1|E2|E3", "confidence": 0-100, "files": ["path1", "path2"],
 "vulnerability_details": { "description": "what's wrong", "exploitation": "how
@@ -748,7 +748,7 @@ When using this template:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                  | Author |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 1.4     | 2026-01-13 | Expanded from 7 to 12 categories: Added Hosting & Headers Security (CSP, HSTS, COOP, COEP), Framework-Specific Security (Next.js boundary leaks), File Handling Security, Crypto & Randomness, AI Agent Security. Aligns with single-session audit-security.md updates for vibe-coded app coverage.     | Claude |
+| 1.4     | 2026-01-13 | Expanded from 7 to 12 categories: Added Hosting & Headers Security (CSP, HSTS, COOP, COEP), Framework-Specific Security (Next.js boundary leaks), File Handling Security, Crypto & Randomness, AI Agent Security. Aligns with single-session audit-security.md updates for vibe-coded app coverage.      | Claude |
 | 1.3     | 2026-01-06 | Review #68: Replaced --binary-files=without-match with portable -I flag; Updated document header to 1.2                                                                                                                                                                                                  | Claude |
 | 1.2     | 2026-01-06 | Review #67: Added -E flag for extended regex; Made grep --exclude-dir portable (repeated flags vs brace expansion)                                                                                                                                                                                       | Claude |
 | 1.1     | 2026-01-05 | Added PRE-REVIEW CONTEXT section with tooling references; Added Category 6: Dependency Security & Supply Chain (npm audit, license compliance, supply chain risk); Updated AI models to current versions (Opus 4.5, Sonnet 4.5, GPT-5-Codex, Gemini 3 Pro); Added reference to FIREBASE_CHANGE_POLICY.md | Claude |

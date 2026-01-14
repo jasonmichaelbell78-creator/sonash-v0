@@ -387,19 +387,15 @@ Category 6: Offline Support (NEW - 2026-01-13)
 
 Purpose: Assess offline capability, sync strategy, and failure handling.
 
-CHECKS:
-[ ] Offline state detection (navigator.onLine + ping checks)
-[ ] LocalStorage/IndexedDB used for offline data
-[ ] Sync queue for offline writes
-[ ] Pending/synced/failed state indicators in UI
-[ ] Conflict resolution strategy defined
-[ ] Retry logic for failed syncs
-[ ] Graceful degradation when offline
-[ ] Service worker configuration (if PWA)
-[ ] Cache invalidation strategy
-[ ] Offline tests exist and pass
+CHECKS: [ ] Offline state detection (navigator.onLine + ping checks) [ ]
+LocalStorage/IndexedDB used for offline data [ ] Sync queue for offline writes [
+] Pending/synced/failed state indicators in UI [ ] Conflict resolution strategy
+defined [ ] Retry logic for failed syncs [ ] Graceful degradation when offline [
+] Service worker configuration (if PWA) [ ] Cache invalidation strategy [ ]
+Offline tests exist and pass
 
 ANALYSIS:
+
 - Check for navigator.onLine usage
 - Look for IndexedDB or localStorage persistence
 - Identify write operations that fail when offline
@@ -407,6 +403,7 @@ ANALYSIS:
 - Review error handling for network failures
 
 PATTERNS TO FIND:
+
 - Writes that fail silently when offline (data loss)
 - Missing offline queue (no retry mechanism)
 - No UI indication of pending/synced/failed state
@@ -415,12 +412,18 @@ PATTERNS TO FIND:
 - Network-dependent operations without fallback
 
 VERIFICATION COMMANDS (if available):
-- grep -rn "navigator.onLine" --include="*.ts" --include="*.tsx"
-- grep -E -rn "(^|[^[:alnum:]_])(indexedDB|IDBDatabase|IDBObjectStore|localStorage|AsyncStorage)([^[:alnum:]_]|$)" --include="*.ts" --include="*.tsx"
-- grep -E -rn "(status|syncStatus|queueStatus|offlineStatus).*['\"]?(pending|synced|failed)['\"]?" --include="*.ts" --include="*.tsx"
+
+- grep -rn "navigator.onLine" --include="_.ts" --include="_.tsx"
+- grep -E -rn
+  "(^|[^[:alnum:]_])(indexedDB|IDBDatabase|IDBObjectStore|localStorage|AsyncStorage)([^[:alnum:]_]|$)"
+  --include="_.ts" --include="_.tsx"
+- grep -E -rn
+  "(status|syncStatus|queueStatus|offlineStatus)._['\"]?(pending|synced|failed)['\"]?"
+  --include="_.ts" --include="\*.tsx"
 - Look for retry logic or queue implementations
 
 OFFLINE TEST RECIPE:
+
 1. Start app normally
 2. Create a data entry (journal, check-in, etc.)
 3. Open DevTools → Network → check "Offline"
@@ -431,6 +434,7 @@ OFFLINE TEST RECIPE:
 8. Check for duplicates or data loss
 
 FAILURE MODES TO DOCUMENT:
+
 - What happens when write fails due to offline?
 - What happens when app goes offline mid-write?
 - What happens on reconnect? (auto-sync? manual?)

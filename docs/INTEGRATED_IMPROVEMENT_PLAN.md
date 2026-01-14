@@ -1,7 +1,7 @@
 # Integrated Improvement Plan
 
-**Document Version:** 3.7 **Created:** 2026-01-03 **Last Updated:** 2026-01-13
-**Status:** ACTIVE **Overall Completion:** ~70% (Steps 1-4B COMPLETE; Step 4C
+**Document Version:** 3.8 **Created:** 2026-01-03 **Last Updated:** 2026-01-13
+**Status:** ACTIVE **Overall Completion:** ~85% (Steps 1-5 COMPLETE; Step 6
 PENDING)
 
 ---
@@ -31,21 +31,21 @@ supersedes fragmented planning documents into a single linear execution path.
 
 ## Status Dashboard
 
-| Step    | Title                                       | Status       | Completion | Blocking   |
-| ------- | ------------------------------------------- | ------------ | ---------- | ---------- |
-| Step 1  | Quick Wins & Cleanup                        | **COMPLETE** | 100%       | None       |
-| Step 2  | Documentation Standardization Completion    | **COMPLETE** | 100%       | ~~Step 1~~ |
-| Step 3  | Developer Tooling Setup                     | **COMPLETE** | 100%       | ~~Step 2~~ |
-| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE** | 100%       | ~~Step 3~~ |
-| Step 4B | Remediation Sprint                          | **COMPLETE** | 100%       | ~~Step 4~~ |
-| Step 4C | SonarCloud Issue Triage                     | **PENDING**  | 0%         | Step 4B    |
-| Step 5  | Review Policy Expansion                     | **PENDING**  | 0%         | Step 4C    |
-| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**  | 0%         | Step 5     |
-| Step 7  | Verification & Feature Resumption           | **PENDING**  | 0%         | Step 6     |
+| Step    | Title                                       | Status       | Completion | Blocking    |
+| ------- | ------------------------------------------- | ------------ | ---------- | ----------- |
+| Step 1  | Quick Wins & Cleanup                        | **COMPLETE** | 100%       | None        |
+| Step 2  | Documentation Standardization Completion    | **COMPLETE** | 100%       | ~~Step 1~~  |
+| Step 3  | Developer Tooling Setup                     | **COMPLETE** | 100%       | ~~Step 2~~  |
+| Step 4  | Multi-AI Delta Review & Comprehensive Audit | **COMPLETE** | 100%       | ~~Step 3~~  |
+| Step 4B | Remediation Sprint                          | **COMPLETE** | 100%       | ~~Step 4~~  |
+| Step 4C | SonarCloud Issue Triage                     | **COMPLETE** | 100%       | ~~Step 4B~~ |
+| Step 5  | Review Policy Expansion                     | **COMPLETE** | 100%       | ~~Step 4C~~ |
+| Step 6  | ROADMAP.md Integration & Doc Updates        | **PENDING**  | 0%         | Step 5      |
+| Step 7  | Verification & Feature Resumption           | **PENDING**  | 0%         | Step 6      |
 
-**Overall Progress:** 5/9 steps complete (~70%) **Effort Tracking:** ~17-25
-hours actual (Steps 1-4B) + ~13-20 hours remaining (4C: 2-4h, 5: 8-11h, 6: 2-3h,
-7: 1-2h) **Target Completion:** TBD (no costly deadlines - solo project)
+**Overall Progress:** 7/9 steps complete (~85%) **Effort Tracking:** ~31-45
+hours actual (Steps 1-5) + ~3-5 hours remaining (6: 2-3h, 7: 1-2h) **Target
+Completion:** TBD (no costly deadlines - solo project)
 
 ---
 
@@ -98,8 +98,8 @@ flowchart LR
     style S4b fill:#90EE90
     style S4c fill:#90EE90
     style S4B fill:#90EE90
-    style S4C fill:#FFE4B5
-    style S5 fill:#FFE4B5
+    style S4C fill:#90EE90
+    style S5 fill:#90EE90
     style S6 fill:#FFE4B5
     style S7 fill:#FFE4B5
     style FR fill:#ADD8E6
@@ -1351,7 +1351,8 @@ Deferred items MUST be:
 ## Step 4C: SonarCloud Issue Triage
 
 **Status:** COMPLETE **Completion:** 100% **Estimated Effort:** 2-4 hours
-**Dependencies:** Step 4B **Risk Level:** Low **Started:** 2026-01-13 **Completed:** 2026-01-13
+**Dependencies:** Step 4B **Risk Level:** Low **Started:** 2026-01-13
+**Completed:** 2026-01-13
 
 ### Objectives
 
@@ -1413,7 +1414,8 @@ Document decisions in a triage table:
 **Note:** These items were moved from Step 4B to consolidate all SonarQube work.
 
 - [x] **PR-BATCH-AUTO**: Apply SonarQube auto-fixes (E1, low risk)
-  - CANON-0088, CANON-0089 (ESLint ran - security warnings require manual review)
+  - CANON-0088, CANON-0089 (ESLint ran - security warnings require manual
+    review)
 - [x] **PR-BATCH-MANUAL**: Address remaining SonarQube issues (E2, medium risk)
   - CANON-0083 (Deferred to M2 per triage)
 
@@ -1456,8 +1458,9 @@ Document decisions in a triage table:
 
 ## Step 5: Review Policy Expansion
 
-**Status:** PENDING **Completion:** 0% **Estimated Effort:** 8-11 hours (6-9h
-original + 2h for Tasks 5.10-5.12) **Dependencies:** Step 4C **Risk Level:** Low
+**Status:** COMPLETE **Completion:** 100% (18/18 tasks) **Estimated Effort:**
+12-16 hours (6-9h original + 2h for Tasks 5.10-5.12 + 4-5h for Tasks 5.13-5.18)
+**Dependencies:** Step 4C **Risk Level:** Low **Started:** 2026-01-13
 
 ### Objectives
 
@@ -1477,7 +1480,7 @@ Brainstorming session (Session #21) identified gaps in review coverage:
 
 See:
 [REVIEW_POLICY_EXPANSION_DRAFT.md](./archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md)
-for full design. *(Archived 2026-01-13)*
+for full design. _(Archived 2026-01-13)_
 
 ### Design Principles
 
@@ -1500,58 +1503,73 @@ for full design. *(Archived 2026-01-13)*
 
 ### Tasks
 
-- [ ] **Task 5.1**: Create session activity logging infrastructure (1 hour)
-  - Create `scripts/log-session-activity.js`
-  - Log: file writes, skill invocations, commits, session start/end
-  - Output to `.claude/session-activity.jsonl`
-  - Integrate with session-start hook
+- [x] **Task 5.1**: Create session activity logging infrastructure (DONE -
+      2026-01-13)
+  - [x] Created `scripts/log-session-activity.js`
+  - [x] Logs: file writes, skill invocations, commits, session start/end
+  - [x] Output to `.claude/session-activity.jsonl`
+  - [x] Added `npm run session:log` and `npm run session:summary` scripts
+  - [x] Integrated session_start logging into session-start.sh hook
 
-- [ ] **Task 5.2**: Create event-based trigger checker (1.5 hours)
-  - Create `scripts/check-triggers.js`
-  - Implement triggers: security_audit, consolidation, skill_validation
-  - Integrate with pre-push hook
-  - Blocking triggers prevent push, warning triggers inform
+- [x] **Task 5.2**: Create event-based trigger checker (DONE - 2026-01-13)
+  - [x] Created `scripts/check-triggers.js`
+  - [x] Implemented triggers: security_audit (blocking), consolidation
+        (warning), skill_validation (warning)
+  - [x] Integrated with pre-push hook
+  - [x] Added `npm run triggers:check` script
+  - [x] Added SKIP_TRIGGERS=1 override with audit logging
+  - [x] Refined security trigger to exclude docs/scripts/hooks (app code only)
 
-- [ ] **Task 5.3**: Create skill/agent configuration validator (1 hour)
-  - Create `scripts/validate-skill-config.js`
-  - Validate SKILL.md structure (required sections)
-  - Check file references exist
-  - Check for deprecated patterns
-  - Integrate with pre-commit hook
+- [x] **Task 5.3**: Create skill/agent configuration validator (DONE -
+      2026-01-13)
+  - [x] Created `scripts/validate-skill-config.js`
+  - [x] Validates YAML frontmatter, title, required sections for audit commands
+  - [x] Checks file references exist (skips glob/regex patterns)
+  - [x] Detects deprecated patterns (TODO/FIXME/PLACEHOLDER)
+  - [x] Added `npm run skills:validate` script
+  - [x] Integrated with pre-commit hook (non-blocking)
 
-- [ ] **Task 5.4**: Create skill usage verifier (1 hour)
-  - Create `scripts/verify-skill-usage.js`
-  - Define rules: code-reviewer after writing, systematic-debugging after bug
-    fix
-  - Check session activity against rules
-  - Integrate with session-end
+- [x] **Task 5.4**: Create skill usage verifier (DONE - 2026-01-13)
+  - [x] Created `scripts/verify-skill-usage.js`
+  - [x] Defined rules: code-reviewer (warning), security-auditor (blocking),
+        test-engineer (suggestion)
+  - [x] Checks session activity log against rules
+  - [x] Added `npm run skills:verify-usage` script
+  - [x] Supports --strict and --quiet modes for different contexts
 
-- [ ] **Task 5.5**: Create override logging system (0.5 hours)
-  - Create `.claude/override-log.jsonl` format
-  - Add override mechanism to blocking scripts
-  - Environment variable: `SKIP_REASON="reason" npm run check`
+- [x] **Task 5.5**: Create override logging system (DONE - 2026-01-13)
+  - [x] Created `scripts/log-override.js`
+  - [x] Logs to `.claude/override-log.jsonl`
+  - [x] Added `npm run override:log` and `npm run override:list` scripts
+  - [x] Updated pre-push to use override logger with SKIP_REASON env var
+  - [x] Records timestamp, check type, reason, user, git branch
 
-- [ ] **Task 5.6**: Create SKILL_AGENT_POLICY.md (1 hour)
-  - Document skill/agent creation requirements
-  - Document expected usage patterns
-  - Document override policy
-  - Add examples
+- [x] **Task 5.6**: Create SKILL_AGENT_POLICY.md (DONE - 2026-01-13)
+  - [x] Created `docs/agent_docs/SKILL_AGENT_POLICY.md`
+  - [x] Documented skill/agent creation requirements
+  - [x] Documented expected usage patterns with severity levels
+  - [x] Documented override policy with examples
+  - [x] Included hooks integration and metrics sections
 
-- [ ] **Task 5.7**: Update session-end command (0.5 hours)
-  - Add skill usage verification step
-  - Add override review prompt
-  - Integrate with trigger checking
+- [x] **Task 5.7**: Update session-end command (DONE - 2026-01-13)
+  - [x] Added Section 6 "Automated Verification" with all script commands
+  - [x] Integrated `npm run skills:verify-usage` for skill usage verification
+  - [x] Integrated `npm run override:list` for override review
+  - [x] Integrated `npm run triggers:check` for trigger checking
+  - [x] Renumbered subsequent sections (7-9)
 
-- [ ] **Task 5.8**: PR Review Process Improvements (2-3 hours)
-  - Reference:
-    [PR_REVIEW_IMPROVEMENT_OPTIONS.md](./archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md) *(Archived 2026-01-13)*
-  - Implement Phase 2 options:
-    - Add ESLint security plugin locally (Option A2)
-    - Create tool-specific configurations for CodeRabbit/Qodo (Option B3)
-    - Add 10+ false positives from recent review patterns (Option C2)
-  - Configure `.coderabbit.yaml` and `.pr_agent.toml`
-  - Update FALSE_POSITIVES.jsonl with recurring patterns
-  - Document chosen approach in AI_REVIEW_PROCESS.md
+- [x] **Task 5.8**: PR Review Process Improvements (DONE - 2026-01-13)
+  - **Scope Change:** Adapted for Qodo + SonarCloud (CodeRabbit deprecated)
+  - [x] Created `.pr_agent.toml` for Qodo with:
+    - Project context and known false positives in extra_instructions
+    - File ignore patterns (docs, tests, Claude config)
+    - Focus areas: security, logic errors, React/Next.js patterns
+  - [x] Enhanced `sonar-project.properties` with:
+    - Rule-specific exclusions (typescript:S106, S5765, S2068, S4790)
+    - Duplication exclusions for generated/config files
+    - Quality gate documentation
+  - [x] Updated AI_REVIEW_PROCESS.md with Tool Configuration section
+  - [x] FALSE_POSITIVES.jsonl already has 20+ patterns (maintained)
 
 - [x] **Task 5.9**: Documentation Content Review ~~(1.5 hours)~~ **INTEGRATED**
   - **Status:** Merged into Task 4.2.5 (Documentation Audit) as "Category 6:
@@ -1571,47 +1589,99 @@ for full design. *(Archived 2026-01-13)*
     - Terminology consistency
     - Orphaned document identification
 
-- [ ] **Task 5.10**: Add `npm run validate:canon` script (0.5 hours) - _from
-      Task 4.3.7_
-  - Add script entry to package.json pointing to
-    `scripts/validate-canon-schema.js`
-  - Verify script runs correctly on existing CANON files
-  - Document usage in DEVELOPMENT.md
+- [x] **Task 5.10**: Add `npm run validate:canon` script (DONE - 2026-01-13)
+  - [x] Add script entry to package.json pointing to
+        `scripts/validate-canon-schema.js`
+  - [x] Verify script runs correctly on existing CANON files
+  - [x] Document usage in DEVELOPMENT.md
 
-- [ ] **Task 5.11**: Update single-session audit templates with validation (1
-      hour) - _from Task 4.3.7_
-  - Update `.claude/commands/audit-code.md` with `npm run validate:canon`
-    requirement
-  - Update `.claude/commands/audit-security.md` with validation requirement
-  - Update `.claude/commands/audit-performance.md` with validation requirement
-  - Update `.claude/commands/audit-refactoring.md` with validation requirement
-  - Update `.claude/commands/audit-documentation.md` with validation requirement
-  - Update `.claude/commands/audit-process.md` with validation requirement
-  - Add validation step to output checklist in each template
+- [x] **Task 5.11**: Update single-session audit templates with validation
+      (DONE - 2026-01-13)
+  - [x] Update `.claude/commands/audit-code.md` with `npm run validate:canon`
+        requirement
+  - [x] Update `.claude/commands/audit-security.md` with validation requirement
+  - [x] Update `.claude/commands/audit-performance.md` with validation
+        requirement
+  - [x] Update `.claude/commands/audit-refactoring.md` with validation
+        requirement
+  - [x] Update `.claude/commands/audit-documentation.md` with validation
+        requirement
+  - [x] Update `.claude/commands/audit-process.md` with validation requirement
+  - [x] Add validation step to output checklist in each template
 
-- [ ] **Task 5.12**: Add CANON schema validation to pre-commit (0.5 hours) -
-      _from Task 4.3.7_
-  - Update `.husky/pre-commit` to run validation on `docs/reviews/**/*.jsonl`
-  - Only run if JSONL files are staged
-  - Non-blocking initially (warning only)
+- [x] **Task 5.12**: Add CANON schema validation to pre-commit (DONE -
+      2026-01-13)
+  - [x] Update `.husky/pre-commit` to run validation on
+        `docs/reviews/**/*.jsonl`
+  - [x] Only run if JSONL files are staged
+  - [x] Non-blocking initially (warning only)
+
+- [x] **Task 5.13**: Wire session-start automation scripts (DONE - 2026-01-13)
+  - [x] Add `lessons:surface` to session-start.sh (~1-2s overhead)
+  - [x] Add `docs:sync-check --quick` to session-start.sh (~1-3s overhead)
+  - [x] Add learning entry reminder to pre-commit (~0.5s overhead)
+  - **Source:** Process Automation Gap Analysis (Session #60)
+
+- [x] **Task 5.14**: Add npm audit to pre-push hook (DONE - 2026-01-13)
+  - [x] Add `npm audit --audit-level=high` to `.husky/pre-push`
+  - [x] Non-blocking warning initially
+  - [x] ~3-8s overhead per push
+  - [x] Document in DEVELOPMENT.md pre-push table
+
+- [x] **Task 5.15**: Integrate Sentry into logger (DONE - 2026-01-13)
+  - [x] Removed TODO from `lib/logger.ts`
+  - [x] Added `Sentry.captureMessage()` in production error paths
+  - [x] Sanitized context passed to Sentry (uses existing redaction)
+  - **Verification:** Production errors will appear in Sentry dashboard
+
+- [x] **Task 5.16**: Add code coverage to CI (DONE - 2026-01-13)
+  - [x] Wire `npm run test:coverage` into `.github/workflows/ci.yml`
+  - [x] Upload coverage report as artifact (14-day retention)
+  - [ ] _Deferred:_ Coverage threshold check (needs baseline measurement)
+  - [ ] _Deferred:_ Coverage badge for README (needs codecov/coveralls setup)
+
+- [x] **Task 5.17**: Remove CI continue-on-error flags (DONE - 2026-01-13)
+  - [x] Ran `npm run format` to fix all formatting issues
+  - [x] Removed `continue-on-error` from Prettier check (now blocking)
+  - [x] Updated knip comment (1 CSS import - acceptable warning)
+  - [x] Updated docs:check comment (templates have expected issues)
+  - **Note:** knip and docs:check remain non-blocking (acceptable baselines)
+
+- [x] **Task 5.18**: Consolidate redundant automation checks (ANALYZED -
+      2026-01-13)
+  - **Analysis Result:** Current structure is intentional, not redundant:
+    - Pattern compliance in session-start: Early visibility (different from
+      pre-commit blocking)
+    - check-write vs check-edit: Have intentional differences (priority order,
+      keywords)
+  - [x] Analyzed all automation hooks and their purposes
+  - [ ] _Deferred:_ Update TRIGGERS.md with full automation landscape
+        (documentation task)
+  - **Decision:** Keep current working structure - no performance issue observed
 
 ### Acceptance Criteria
 
-- [ ] Session activity logging operational
-- [ ] Event-based triggers replace time-based
-- [ ] Skill/agent configs validated on change
-- [ ] Skill usage verified at session end
-- [ ] Override mechanism with logging
-- [ ] SKILL_AGENT_POLICY.md created
-- [ ] Pre-commit/pre-push hooks updated
-- [ ] PR review noise reduced via tool configuration and false positives
-      expansion
+- [x] Session activity logging operational (Task 5.1)
+- [x] Event-based triggers replace time-based (Task 5.2)
+- [x] Skill/agent configs validated on change (Task 5.3)
+- [x] Skill usage verified at session end (Task 5.4)
+- [x] Override mechanism with logging (Task 5.5)
+- [x] SKILL_AGENT_POLICY.md created (Task 5.6)
+- [x] Pre-commit/pre-push hooks updated (Tasks 5.2, 5.3, 5.5)
+- [x] PR review noise reduced via Qodo/SonarCloud configuration (Task 5.8)
 - [x] Documentation content review integrated into recurring audit framework
       (Task 4.2.5)
-- [ ] `npm run validate:canon` script added to package.json (Task 5.10)
-- [ ] Single-session audit templates updated with validation requirement (Task
+- [x] `npm run validate:canon` script added to package.json (Task 5.10)
+- [x] Single-session audit templates updated with validation requirement (Task
       5.11)
-- [ ] CANON schema validation integrated into pre-commit (Task 5.12)
+- [x] CANON schema validation integrated into pre-commit (Task 5.12)
+- [x] Session-start runs lessons:surface and docs:sync-check (Task 5.13)
+- [x] Pre-commit includes learning entry reminder (Task 5.13)
+- [x] npm audit runs on pre-push (Task 5.14)
+- [x] Sentry integrated with logger (Task 5.15)
+- [x] Code coverage reported in CI (Task 5.16)
+- [x] CI continue-on-error flags removed (Task 5.17 - Prettier now blocking)
+- [x] Redundant automation checks analyzed (Task 5.18 - kept intentional design)
 
 ---
 
