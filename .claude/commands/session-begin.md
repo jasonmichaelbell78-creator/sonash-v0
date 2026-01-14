@@ -96,7 +96,7 @@ the "Consolidation Trigger" section:
 ## 3. Documentation & Planning Awareness
 
 - [ ] Check
-      [INTEGRATED_IMPROVEMENT_PLAN.md](../../docs/INTEGRATED_IMPROVEMENT_PLAN.md)
+      [INTEGRATED_IMPROVEMENT_PLAN.md](../../docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
       for current step
 - [ ] Note: Archive files in `docs/archive/` are excluded from linting
 - [ ] Completed plans are archived to `docs/archive/completed-plans/`

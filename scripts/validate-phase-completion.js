@@ -21,7 +21,13 @@ import { sanitizeError } from "./lib/sanitize-error.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, "..");
-const PLAN_PATH = join(ROOT, "docs", "INTEGRATED_IMPROVEMENT_PLAN.md");
+const PLAN_PATH = join(
+  ROOT,
+  "docs",
+  "archive",
+  "completed-plans",
+  "INTEGRATED_IMPROVEMENT_PLAN.md"
+);
 
 function main() {
   console.log("🔍 Validating Phase Completion...\n");

@@ -24,7 +24,8 @@
  * Trade-off: Slightly slower feedback (requires network round-trip), but
  * Cloud Functions are fast (<500ms) and return clear error messages.
  *
- * See: docs/EIGHT_PHASE_REFACTOR_PLAN.md (CANON-0043 section)
+ * See: docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md (CANON-0043 section)
+ * Related: docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md
  */
 import { useState, useEffect, useCallback } from "react";
 import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";

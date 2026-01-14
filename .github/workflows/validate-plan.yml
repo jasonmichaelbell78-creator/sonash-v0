@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "docs/INTEGRATED_IMPROVEMENT_PLAN.md"
+      - "docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md"
 
 jobs:
   validate-phase-completion:

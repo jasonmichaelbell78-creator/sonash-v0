@@ -1,8 +1,9 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.0 **Created:** 2026-01-08
-**Last Updated:** 2026-01-08 **Status:** ACTIVE **Purpose:** Track
-template-instance relationships and synchronization requirements
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.2 **Created:** 2026-01-08
+**Last Updated:** 2026-01-14 **Status:** ACTIVE **Purpose:** Track
+template-instance relationships, cross-document dependencies, and
+synchronization requirements
 
 ---
 
@@ -282,6 +283,49 @@ updating
 
 ---
 
+## Cross-Document Update Triggers
+
+**Purpose:** When editing core documents, this table helps identify OTHER
+documents that may need updating as a result.
+
+**Gap This Addresses:** Template-instance sync (above) covers structural
+inheritance. This section covers **content-level cascading updates** where
+changes in one document affect the accuracy of another.
+
+### Update Trigger Matrix
+
+> **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (2026-01-14) to
+> `docs/archive/completed-plans/`. Related triggers removed (Review #144).
+
+| When This Changes                  | Check These Documents                                   | Reason                                            |
+| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------------- |
+| `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus    |
+| New npm script added               | `DEVELOPMENT.md` (scripts section)                      | All scripts should be documented                  |
+| New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`    | Hook documentation must be complete               |
+| Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                          | Multiple docs track completion status             |
+| New policy document created        | `claude.md` or relevant policy index                    | Policy references need updating                   |
+| PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                            | Lessons learned must be captured                  |
+| New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md` | Skill registry and reference must be complete     |
+| Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state |
+| Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                        | Policy requires documenting all Firebase changes  |
+| Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                 | Keep test counts current                          |
+
+### Usage
+
+**During editing:** Before committing changes to any document in the left
+column, check the corresponding documents in the right column.
+
+**At session end:** Run through this table for any documents you modified during
+the session.
+
+**Integration:**
+
+- Pre-commit hook automatically warns when dependencies are detected
+  (non-blocking)
+- `/session-end` command includes cross-doc check in its checklist
+
+---
+
 ## Archived Instances
 
 Instances that have been archived to `docs/archive/` and no longer require sync:
@@ -327,6 +371,8 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                         | Author      |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.2     | 2026-01-14 | Added pre-commit hook automation for cross-document dependency warnings.                                                                        | Claude Code |
+| 1.1     | 2026-01-14 | Added "Cross-Document Update Triggers" section with 12-row trigger matrix for content-level cascading updates between core documents.           | Claude Code |
 | 1.0     | 2026-01-08 | Initial creation. Documented 6 audit plan template-instance relationships, 5 core doc templates, sync protocols, common issues from Review #89. | Claude Code |
 
 ---

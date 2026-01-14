@@ -190,7 +190,7 @@ Most existing files show minimal change; new issues in
 2. Focus multi-AI review on CRITICAL complexity files first
 3. Batch MINOR issues with automated tooling (ESLint --fix, codemod)
 4. Cross-reference with existing improvement plan in
-   `docs/INTEGRATED_IMPROVEMENT_PLAN.md`
+   `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md`
 5. New scripts are audit tooling - complexity is acceptable if readable
 6. **393 issues have null file** - these are likely from files not in repo
    (gitignored)

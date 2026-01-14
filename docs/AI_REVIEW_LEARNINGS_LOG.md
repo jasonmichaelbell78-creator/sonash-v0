@@ -462,8 +462,40 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-143 are actively maintained below. Older reviews are in the
+Reviews #101-144 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #144: Step 6-7 PR CI Fixes (2026-01-14)
+
+**Source:** CI Failures + Qodo PR Suggestions **PR/Branch:**
+claude/step6-roadmap-integration-nGkAt **Suggestions:** 8 items (Critical: 1,
+Major: 2, Minor: 4, Deferred: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                       | Severity | Category      | Fix                                                    |
+| --- | ------------------------------------------- | -------- | ------------- | ------------------------------------------------------ |
+| 1   | validate-phase-completion.js ENOENT         | Critical | CI Blocker    | Update path to archived INTEGRATED_IMPROVEMENT_PLAN.md |
+| 2   | Prettier formatting (7 files)               | Major    | CI Blocker    | Run `npm run format`                                   |
+| 3   | POSIX `local` keyword in pre-commit         | Major    | Portability   | Remove `local` for `/bin/sh` compatibility             |
+| 4   | Obsolete INTEGRATED_IMPROVEMENT_PLAN checks | Minor    | Maintenance   | Remove archived file checks from pre-commit            |
+| 5   | Broken relative link in session-end.md      | Minor    | Documentation | Fix path `../docs/` → `../../docs/`                    |
+| 6   | package.json check too broad                | Minor    | UX (noise)    | Refine to only scripts section changes                 |
+| 7   | Hook warning missing DEVELOPMENT.md         | Minor    | Consistency   | Add DEVELOPMENT.md to hook change warning              |
+
+**Deferred:**
+
+- Parse dependency rules from DOCUMENT_DEPENDENCIES.md (architectural - tracked)
+
+**Key Learnings:**
+
+- When archiving files, update ALL scripts that reference them
+  (validate-phase-completion.js)
+- Shell scripts in pre-commit hooks may run with `/bin/sh`, avoid bash-only
+  syntax
+- Cross-document dependency checks should be updated when archiving source docs
 
 ---
 

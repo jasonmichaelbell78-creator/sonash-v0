@@ -78,48 +78,68 @@ repository. This document serves as:
 
 ### Description
 
-Runs lint-staged to check only staged files before allowing commits. Prevents
-committing code that fails linting or type-checking.
+Comprehensive pre-commit validation that runs multiple checks before allowing
+commits. Blocks on critical failures, warns on advisory issues.
+
+### Checks Performed
+
+| #   | Check                  | Blocking | Purpose                                           |
+| --- | ---------------------- | -------- | ------------------------------------------------- |
+| 1   | ESLint                 | ✅ Yes   | Code quality and errors                           |
+| 2   | Prettier               | ⚠️ No    | Code formatting (warns only)                      |
+| 3   | Pattern Compliance     | ✅ Yes   | Anti-pattern detection                            |
+| 4   | Tests                  | ✅ Yes   | Unit test validation                              |
+| 5   | CANON Schema           | ⚠️ No    | Audit file validation (when JSONL staged)         |
+| 6   | Skill Validation       | ⚠️ No    | Command/skill structure (when skill files staged) |
+| 7   | Cross-Doc Dependencies | ⚠️ No    | Warns about related docs to check                 |
+| 8   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                        |
 
 ### Function
 
 ```
 TRIGGER: git commit
-  → EXECUTE: npx lint-staged
-    → RUN: ESLint on staged .ts/.tsx/.js/.jsx files
-    → RUN: Prettier check on staged files
-  → IF pass: Allow commit
-  → IF fail: Block commit with error message
+  → CHECK 1: npm run lint (BLOCKING)
+  → CHECK 2: npm run format:check (warning)
+  → CHECK 3: npm run patterns:check (BLOCKING)
+  → CHECK 4: npm test (BLOCKING)
+  → CHECK 5: npm run validate:canon (if JSONL staged)
+  → CHECK 6: npm run skills:validate (if skill files staged)
+  → CHECK 7: check_cross_doc_deps() (warns about doc dependencies)
+  → CHECK 8: Learning entry reminder (if many files changed)
+  → IF all blocking checks pass: Allow commit
+  → IF any blocking check fails: Block commit with error
 ```
 
-### Process Map
+### Cross-Document Dependencies (Check 7)
 
-```
-Developer runs `git commit`
-        ↓
-    [Husky intercepts]
-        ↓
-    [lint-staged runs]
-        ↓
-   ┌────┴────┐
-   ↓         ↓
- PASS      FAIL
-   ↓         ↓
-Commit    Show errors
-proceeds  Block commit
-```
+Warns when you modify documents that have known dependencies:
+
+| Modified File                          | Check These                      |
+| -------------------------------------- | -------------------------------- |
+| ROADMAP.md                             | SESSION_CONTEXT.md               |
+| package.json (scripts section changed) | DEVELOPMENT.md                   |
+| .husky/_ or .claude/hooks/_            | docs/TRIGGERS.md, DEVELOPMENT.md |
+| .claude/commands/_ or .claude/skills/_ | COMMAND_REFERENCE.md             |
+
+> **Note:** SESSION_CONTEXT ↔ INTEGRATED_IMPROVEMENT_PLAN checks removed (plan
+> archived 2026-01-14). See Review #144.
+
+See:
+[DOCUMENT_DEPENDENCIES.md](./DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
 
 ### Verification
 
 ```bash
-# Test the hook manually
-npx lint-staged
-
 # Check hook is installed
 cat .husky/pre-commit
 
 # Verify husky is set up
 npm run prepare
+
+# Run individual checks manually
+npm run lint
+npm run patterns:check
+npm test
 ```
 
 ### Compliance Status

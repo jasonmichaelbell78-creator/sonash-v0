@@ -25,10 +25,10 @@ Current architecture is **production-ready** with:
 - ✅ Journal system consolidated
 - ⏳ Optional Sentry integration (pending)
 
-> **📋 Note:** Architecture improvements and refactoring are being validated via
-> the [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)
-> Delta Review process. Developer tooling (Prettier, madge, knip) will be added
-> in Step 3 of that plan.
+> **✅ Note:** Architecture improvements have been validated via the
+> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
+> (COMPLETE). Developer tooling (Prettier, madge, knip) is now active. Validated
+> refactor items are tracked in ROADMAP.md M2.
 
 ---
 
