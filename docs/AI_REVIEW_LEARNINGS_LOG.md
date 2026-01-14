@@ -1781,3 +1781,49 @@ Multi-pass analysis (3 passes) to ensure complete coverage.
 | 24-40 | MINOR    | Missing JSDoc documentation         | check-review-needed.js         | Added 17 complete JSDoc blocks                      |
 
 ---
+
+## Review #146 - Settings Page PR Feedback
+
+**Date:** 2026-01-14
+**Source:** Qodo PR Review
+**Trigger:** PR feedback on Settings page implementation
+**Category:** MINOR (all suggestions)
+
+**Items Received:** 3
+
+1. **Scroll Containment Missing** (Minor - Qodo)
+   - Root cause: Nested scrollable content can chain scroll to parent elements
+   - Fix: Added `overscroll-contain` class to journal-layout.tsx content wrapper
+   - Pattern: Always add `overscroll-contain` to nested scrollable containers
+
+2. **Whitespace in Nickname Not Trimmed** (Minor - Qodo)
+   - Root cause: Zod schema accepted whitespace-only nicknames
+   - Fix: Added `.trim()` to nickname schema in users.ts
+   - Pattern: Use Zod's `.trim()` for user-input strings to normalize whitespace
+
+3. **Truthy Check Instead of Strict Null** (Minor - Qodo)
+   - Root cause: `!profile.cleanStart && cleanDate` relies on falsy coercion
+   - Fix: Changed to `profile.cleanStart === null && cleanDate !== ""`
+   - Pattern: Use strict equality for null checks on nullable fields
+
+**Key Learnings:**
+
+- **Scroll Containment**: `overscroll-contain` prevents scroll chaining in nested containers
+- **Input Normalization**: Zod's `.trim()` handles whitespace at validation layer
+- **Type Safety**: Strict null checks are more explicit than truthy/falsy checks
+
+**Resolution:**
+
+- Fixed: 3 items (all MINOR)
+- Deferred: None
+- Rejected: None
+
+**Fixes Applied:**
+
+| # | Severity | Issue                    | File(s)              | Fix                                        |
+|---|----------|--------------------------|----------------------|--------------------------------------------|
+| 1 | MINOR    | Missing overscroll-contain | journal-layout.tsx:77 | Added `overscroll-contain` class         |
+| 2 | MINOR    | Whitespace not trimmed   | users.ts:61          | Added `.trim()` to Zod schema            |
+| 3 | MINOR    | Truthy instead of strict | settings-page.tsx:156 | Changed to strict null comparison        |
+
+---
