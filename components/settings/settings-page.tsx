@@ -111,10 +111,11 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       return;
     }
 
-    // Check if clean date is being changed - require confirmation
+    // Check if clean date is being changed or cleared - require confirmation
     const cleanDateChanged = originalCleanDate && cleanDate !== originalCleanDate;
     const cleanTimeChanged = originalCleanTime && cleanTime !== originalCleanTime;
-    if ((cleanDateChanged || cleanTimeChanged) && !showCleanDateConfirm) {
+    const cleanDateCleared = originalCleanDate && !cleanDate;
+    if ((cleanDateChanged || cleanTimeChanged || cleanDateCleared) && !showCleanDateConfirm) {
       setShowCleanDateConfirm(true);
       return;
     }
@@ -183,7 +184,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
 
       // Preserve existing preferences and update only changed fields
       await updateUserProfile(user.uid, {
-        nickname: nickname.trim() || (profile.nickname ?? ""),
+        nickname: nickname.trim(),
         cleanStart: cleanStartTimestamp,
         preferences: {
           ...(profile.preferences ?? {}),
