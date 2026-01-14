@@ -525,8 +525,8 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   largeText ? "bg-amber-500" : "bg-gray-300"
                 }`}
               >
-                <span
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+              <span
+                  className={`absolute left-0 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
                     largeText ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
@@ -551,8 +551,8 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   simpleLanguage ? "bg-amber-500" : "bg-gray-300"
                 }`}
               >
-                <span
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+              <span
+                  className={`absolute left-0 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
                     simpleLanguage ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
