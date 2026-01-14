@@ -1,23 +1,23 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, User, Calendar, Settings2, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Timestamp } from "firebase/firestore";
 import { JournalLayout } from "@/components/journal/journal-layout";
-import { useAuth } from "@/components/providers/auth-provider";
+import { useAuthCore } from "@/components/providers/auth-provider";
 import { useProfile } from "@/components/providers/profile-context";
 import { updateUserProfile } from "@/lib/db/users";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 
 interface SettingsPageProps {
-  onClose?: () => void;
+  readonly onClose?: () => void;
 }
 
-export default function SettingsPage({ onClose }: SettingsPageProps) {
-  const { user } = useAuth();
+export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
+  const { user } = useAuthCore();
   const { profile } = useProfile();
 
   // Form state
@@ -32,6 +32,22 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
   const [hasChanges, setHasChanges] = useState(false);
   const [showCleanDateConfirm, setShowCleanDateConfirm] = useState(false);
   const [originalCleanDate, setOriginalCleanDate] = useState<string | null>(null);
+  const [originalCleanTime, setOriginalCleanTime] = useState<string>("08:00");
+
+  // Helper to format date as YYYY-MM-DD in local timezone (avoids UTC conversion issues)
+  const formatLocalDate = useCallback((date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }, []);
+
+  // Helper to format time as HH:MM in local timezone
+  const formatLocalTime = useCallback((date: Date): string => {
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }, []);
 
   // Initialize form with profile data
   useEffect(() => {
@@ -42,18 +58,15 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
       if (profile.cleanStart) {
         const date = profile.cleanStart.toDate();
-        setCleanDate(date.toISOString().split("T")[0]);
-        setCleanTime(
-          date.toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          })
-        );
-        setOriginalCleanDate(date.toISOString().split("T")[0]);
+        const localDateStr = formatLocalDate(date);
+        const localTimeStr = formatLocalTime(date);
+        setCleanDate(localDateStr);
+        setCleanTime(localTimeStr);
+        setOriginalCleanDate(localDateStr);
+        setOriginalCleanTime(localTimeStr);
       }
     }
-  }, [profile]);
+  }, [profile, formatLocalDate, formatLocalTime]);
 
   // Track changes
   useEffect(() => {
@@ -63,22 +76,34 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
     const largeTextChanged = largeText !== (profile.preferences?.largeText || false);
     const simpleLanguageChanged = simpleLanguage !== (profile.preferences?.simpleLanguage || false);
 
-    let cleanDateChanged = false;
+    let cleanDateTimeChanged = false;
     if (profile.cleanStart) {
-      const profileDate = profile.cleanStart.toDate().toISOString().split("T")[0];
-      cleanDateChanged = cleanDate !== profileDate;
+      const date = profile.cleanStart.toDate();
+      const profileDate = formatLocalDate(date);
+      const profileTime = formatLocalTime(date);
+      cleanDateTimeChanged = cleanDate !== profileDate || cleanTime !== profileTime;
     } else {
-      cleanDateChanged = cleanDate !== "";
+      cleanDateTimeChanged = cleanDate !== "" || cleanTime !== "08:00";
     }
 
-    setHasChanges(nicknameChanged || largeTextChanged || simpleLanguageChanged || cleanDateChanged);
-  }, [nickname, cleanDate, cleanTime, largeText, simpleLanguage, profile]);
+    setHasChanges(nicknameChanged || largeTextChanged || simpleLanguageChanged || cleanDateTimeChanged);
+  }, [nickname, cleanDate, cleanTime, largeText, simpleLanguage, profile, formatLocalDate, formatLocalTime]);
 
   const handleSave = async () => {
-    if (!user || !profile) return;
+    // Provide feedback for missing requirements instead of silent return
+    if (!user) {
+      toast.error("You must be signed in to save settings.");
+      return;
+    }
+    if (!profile) {
+      toast.error("Profile not loaded. Please try again.");
+      return;
+    }
 
     // Check if clean date is being changed - require confirmation
-    if (originalCleanDate && cleanDate !== originalCleanDate && !showCleanDateConfirm) {
+    const cleanDateChanged = originalCleanDate && cleanDate !== originalCleanDate;
+    const cleanTimeChanged = originalCleanTime && cleanTime !== originalCleanTime;
+    if ((cleanDateChanged || cleanTimeChanged) && !showCleanDateConfirm) {
       setShowCleanDateConfirm(true);
       return;
     }
@@ -87,30 +112,77 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
     setShowCleanDateConfirm(false);
 
     try {
-      // Build clean date timestamp
+      // Build clean date timestamp with validation
       let cleanStartTimestamp: Timestamp | null = null;
       if (cleanDate) {
-        const [year, month, day] = cleanDate.split("-").map(Number);
-        const [hours, minutes] = cleanTime.split(":").map(Number);
+        const dateParts = cleanDate.split("-").map(Number);
+        const timeParts = cleanTime.split(":").map(Number);
+
+        // Validate parsed values to prevent NaN
+        if (dateParts.length !== 3 || timeParts.length !== 2) {
+          toast.error("Invalid date or time format.");
+          setIsSaving(false);
+          return;
+        }
+
+        const [year, month, day] = dateParts;
+        const [hours, minutes] = timeParts;
+
+        if (
+          Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day) ||
+          Number.isNaN(hours) || Number.isNaN(minutes) ||
+          year < 1900 || year > 2100 ||
+          month < 1 || month > 12 ||
+          day < 1 || day > 31 ||
+          hours < 0 || hours > 23 ||
+          minutes < 0 || minutes > 59
+        ) {
+          toast.error("Invalid date or time values.");
+          setIsSaving(false);
+          return;
+        }
+
         const dateObj = new Date(year, month - 1, day, hours, minutes);
+
+        // Verify the date is valid (e.g., not Feb 31)
+        if (Number.isNaN(dateObj.getTime())) {
+          toast.error("Invalid date.");
+          setIsSaving(false);
+          return;
+        }
+
         cleanStartTimestamp = Timestamp.fromDate(dateObj);
       }
 
+      // Preserve existing preferences and update only changed fields
       await updateUserProfile(user.uid, {
         nickname: nickname.trim() || profile.nickname,
         cleanStart: cleanStartTimestamp,
         preferences: {
-          theme: "blue",
+          ...profile.preferences,
           largeText,
           simpleLanguage,
         },
       });
 
+      // Audit logging for profile update (non-sensitive data only)
+      logger.info("Profile settings updated", {
+        action: "profile_update",
+        fieldsUpdated: ["nickname", "cleanStart", "preferences"],
+        cleanDateChanged: cleanDateChanged || false,
+      });
+
       setOriginalCleanDate(cleanDate);
+      setOriginalCleanTime(cleanTime);
       toast.success("Settings saved successfully");
       setHasChanges(false);
     } catch (error) {
-      logger.error("Failed to save settings", { error });
+      // Sanitize error logging - don't log raw error object
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      logger.error("Failed to save settings", {
+        errorType: error instanceof Error ? error.name : "UnknownError",
+        errorMessage: errorMessage.slice(0, 100), // Truncate to prevent PII leakage
+      });
       toast.error("Failed to save settings. Please try again.");
     } finally {
       setIsSaving(false);
@@ -220,10 +292,16 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
             {/* Email (read-only) */}
             {profile.email && (
               <div>
-                <label className="block text-sm font-medium text-[var(--journal-text)] mb-1">
+                <span
+                  id="email-label"
+                  className="block text-sm font-medium text-[var(--journal-text)] mb-1"
+                >
                   Email
-                </label>
-                <p className="px-3 py-2 rounded-lg bg-gray-100 text-[var(--journal-text)]/70">
+                </span>
+                <p
+                  aria-labelledby="email-label"
+                  className="px-3 py-2 rounded-lg bg-gray-100 text-[var(--journal-text)]/70"
+                >
                   {profile.email}
                 </p>
               </div>
@@ -316,48 +394,56 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
           <div className="bg-white/50 rounded-lg p-4 space-y-4 border border-[var(--journal-line)]/30">
             {/* Large Text */}
-            <label className="flex items-center justify-between cursor-pointer">
-              <div>
+            <div className="flex items-center justify-between">
+              <div id="large-text-label">
                 <p className="font-medium text-[var(--journal-text)]">Large Text</p>
                 <p className="text-sm text-[var(--journal-text)]/60">
                   Increase text size throughout the app
                 </p>
               </div>
-              <div
-                className={`relative w-12 h-6 rounded-full transition-colors ${
+              <button
+                type="button"
+                role="switch"
+                aria-checked={largeText}
+                aria-labelledby="large-text-label"
+                onClick={() => setLargeText(!largeText)}
+                className={`relative w-12 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
                   largeText ? "bg-amber-500" : "bg-gray-300"
                 }`}
-                onClick={() => setLargeText(!largeText)}
               >
-                <div
+                <span
                   className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
                     largeText ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
-              </div>
-            </label>
+              </button>
+            </div>
 
             {/* Simple Language */}
-            <label className="flex items-center justify-between cursor-pointer">
-              <div>
+            <div className="flex items-center justify-between">
+              <div id="simple-language-label">
                 <p className="font-medium text-[var(--journal-text)]">Simple Language</p>
                 <p className="text-sm text-[var(--journal-text)]/60">
                   Use simpler words and shorter sentences
                 </p>
               </div>
-              <div
-                className={`relative w-12 h-6 rounded-full transition-colors ${
+              <button
+                type="button"
+                role="switch"
+                aria-checked={simpleLanguage}
+                aria-labelledby="simple-language-label"
+                onClick={() => setSimpleLanguage(!simpleLanguage)}
+                className={`relative w-12 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
                   simpleLanguage ? "bg-amber-500" : "bg-gray-300"
                 }`}
-                onClick={() => setSimpleLanguage(!simpleLanguage)}
               >
-                <div
+                <span
                   className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
                     simpleLanguage ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
-              </div>
-            </label>
+              </button>
+            </div>
           </div>
         </section>
       </main>
