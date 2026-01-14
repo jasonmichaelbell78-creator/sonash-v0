@@ -6,6 +6,7 @@ import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { logger } from "@/lib/logger";
 import { shouldShowLinkPrompt } from "@/lib/auth/account-linking";
+import { setSentryUser } from "@/lib/sentry.client";
 
 /**
  * AuthContext - Core authentication state
@@ -86,6 +87,9 @@ export function AuthProvider({ children, onUserChange }: AuthProviderProps) {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       onUserChange?.(currentUser);
+
+      // Update Sentry user context (hashed ID, no PII)
+      setSentryUser(currentUser?.uid ?? null);
 
       if (!currentUser) {
         setLoading(true);
