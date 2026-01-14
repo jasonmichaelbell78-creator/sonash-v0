@@ -36,9 +36,22 @@ function ensureLogDir() {
   }
 }
 
-// Sanitize and truncate input to prevent log injection
+// Patterns that look like secrets - redact these from logs
+const SECRET_PATTERNS = [
+  // API keys, tokens (long alphanumeric strings 20+ chars)
+  /\b[A-Za-z0-9_-]{20,}\b/g,
+  // Bearer tokens
+  /bearer\s+[A-Za-z0-9._-]+/gi,
+  // Basic auth
+  /basic\s+[A-Za-z0-9+/=]+/gi,
+  // Key=value patterns with sensitive names
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
+];
+
+// Sanitize and truncate input to prevent log injection and secret leakage
 function sanitizeInput(value, maxLength = 500) {
   if (!value) return value;
+
   // Remove control characters except newlines (\n=10), tabs (\t=9), and carriage return (\r=13)
   // Using character code filtering instead of regex to avoid no-control-regex lint error
   let sanitized = "";
@@ -49,6 +62,12 @@ function sanitizeInput(value, maxLength = 500) {
       sanitized += value[i];
     }
   }
+
+  // Redact patterns that look like secrets
+  for (const pattern of SECRET_PATTERNS) {
+    sanitized = sanitized.replace(pattern, "[REDACTED]");
+  }
+
   // Truncate to prevent log bloat
   if (sanitized.length > maxLength) {
     return sanitized.slice(0, maxLength) + "...[truncated]";

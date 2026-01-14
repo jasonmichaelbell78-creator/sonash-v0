@@ -159,17 +159,19 @@ function checkConsolidationTrigger() {
 
   try {
     // Run consolidation check and parse output
-    // Timeout prevents hook from hanging on slow commands
-    const output = execSync("npm run consolidation:check 2>&1", {
+    // Use spawnSync to avoid shell injection, combine stdout/stderr programmatically
+    const result = spawnSync("npm", ["run", "consolidation:check"], {
       encoding: "utf-8",
       timeout: 30000,
       maxBuffer: 1024 * 1024,
     });
 
+    const output = `${result.stdout || ""}${result.stderr || ""}`;
+
     // Look for "X reviews until next consolidation"
     const match = output.match(/(\d+) reviews? until next consolidation/);
     if (match) {
-      const remaining = parseInt(match[1], 10);
+      const remaining = Number.parseInt(match[1], 10);
       if (remaining <= trigger.threshold) {
         return {
           triggered: true,
@@ -183,8 +185,10 @@ function checkConsolidationTrigger() {
     }
 
     return { triggered: false, name: "consolidation" };
-  } catch {
-    // If check fails, don't block
+  } catch (err) {
+    // Log error for debugging but don't block push
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`   ⚠️  Consolidation check failed: ${errMsg}`);
     return { triggered: false, name: "consolidation" };
   }
 }
