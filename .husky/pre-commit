@@ -74,7 +74,71 @@ if echo "$STAGED_FILES" | grep -q "\.claude/commands/.*\.md"; then
   fi
 fi
 
-# 7. Learning entry reminder (non-blocking, ~0.5s)
+# 7. Cross-document dependency check (non-blocking warning)
+# Warns when documents are modified that have known dependencies on other docs
+# See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
+check_cross_doc_deps() {
+  local deps_found=0
+  local deps_msg=""
+
+  # SESSION_CONTEXT.md -> INTEGRATED_IMPROVEMENT_PLAN.md
+  if echo "$STAGED_FILES" | grep -q "SESSION_CONTEXT.md"; then
+    if ! echo "$STAGED_FILES" | grep -q "INTEGRATED_IMPROVEMENT_PLAN.md"; then
+      deps_msg="${deps_msg}   📎 SESSION_CONTEXT.md changed → check INTEGRATED_IMPROVEMENT_PLAN.md\n"
+      deps_found=1
+    fi
+  fi
+
+  # INTEGRATED_IMPROVEMENT_PLAN.md -> SESSION_CONTEXT.md, ROADMAP.md
+  if echo "$STAGED_FILES" | grep -q "INTEGRATED_IMPROVEMENT_PLAN.md"; then
+    if ! echo "$STAGED_FILES" | grep -q "SESSION_CONTEXT.md"; then
+      deps_msg="${deps_msg}   📎 INTEGRATED_IMPROVEMENT_PLAN.md changed → check SESSION_CONTEXT.md\n"
+      deps_found=1
+    fi
+  fi
+
+  # ROADMAP.md -> SESSION_CONTEXT.md
+  if echo "$STAGED_FILES" | grep -q "ROADMAP.md"; then
+    if ! echo "$STAGED_FILES" | grep -q "SESSION_CONTEXT.md"; then
+      deps_msg="${deps_msg}   📎 ROADMAP.md changed → check SESSION_CONTEXT.md priorities\n"
+      deps_found=1
+    fi
+  fi
+
+  # New npm scripts in package.json -> DEVELOPMENT.md
+  if echo "$STAGED_FILES" | grep -q "package.json"; then
+    if ! echo "$STAGED_FILES" | grep -q "DEVELOPMENT.md"; then
+      deps_msg="${deps_msg}   📎 package.json changed → check DEVELOPMENT.md scripts section\n"
+      deps_found=1
+    fi
+  fi
+
+  # New hooks -> DEVELOPMENT.md, TRIGGERS.md
+  if echo "$STAGED_FILES" | grep -qE "\.husky/|\.claude/hooks/"; then
+    if ! echo "$STAGED_FILES" | grep -q "TRIGGERS.md"; then
+      deps_msg="${deps_msg}   📎 Hook files changed → check docs/TRIGGERS.md\n"
+      deps_found=1
+    fi
+  fi
+
+  # New skill/command -> COMMAND_REFERENCE.md
+  if echo "$STAGED_FILES" | grep -qE "\.claude/commands/|\.claude/skills/"; then
+    if ! echo "$STAGED_FILES" | grep -q "COMMAND_REFERENCE.md"; then
+      deps_msg="${deps_msg}   📎 Skill/command changed → check .claude/COMMAND_REFERENCE.md\n"
+      deps_found=1
+    fi
+  fi
+
+  if [ "$deps_found" -eq 1 ]; then
+    echo "  ⚠️  Cross-document dependencies detected (not blocking):"
+    printf '%b' "$deps_msg"
+    echo "  📖 See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers"
+  fi
+}
+
+check_cross_doc_deps
+
+# 8. Learning entry reminder (non-blocking, ~0.5s)
 # Reminds to capture learnings when it looks like PR feedback was addressed
 LEARNINGS_LOG="docs/AI_REVIEW_LEARNINGS_LOG.md"
 

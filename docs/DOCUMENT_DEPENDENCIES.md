@@ -1,6 +1,6 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.1 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.2 **Created:** 2026-01-08
 **Last Updated:** 2026-01-14 **Status:** ACTIVE **Purpose:** Track
 template-instance relationships, cross-document dependencies, and
 synchronization requirements
@@ -317,8 +317,11 @@ column, check the corresponding documents in the right column.
 **At session end:** Run through this table for any documents you modified during
 the session.
 
-**Integration:** This table is referenced by the `/session-end` command
-checklist.
+**Integration:**
+
+- Pre-commit hook automatically warns when dependencies are detected
+  (non-blocking)
+- `/session-end` command includes cross-doc check in its checklist
 
 ---
 
@@ -367,6 +370,7 @@ When reviewing documentation PRs:
 
 | Version | Date       | Changes                                                                                                                                         | Author      |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1.2     | 2026-01-14 | Added pre-commit hook automation for cross-document dependency warnings.                                                                        | Claude Code |
 | 1.1     | 2026-01-14 | Added "Cross-Document Update Triggers" section with 12-row trigger matrix for content-level cascading updates between core documents.           | Claude Code |
 | 1.0     | 2026-01-08 | Initial creation. Documented 6 audit plan template-instance relationships, 5 core doc templates, sync protocols, common issues from Review #89. | Claude Code |
 
