@@ -44,9 +44,23 @@ const USAGE_RULES = [
   {
     name: "security-auditor",
     trigger: (events) => {
-      const securityKeywords = /auth|token|credential|secret|password|jwt|session/i;
+      // Aligned with check-triggers.js security_audit patterns
+      const securityKeywords = /auth|token|credential|secret|password|jwt|oauth|encrypt|crypto/i;
+      // Exclude infrastructure paths (docs, configs, scripts) - same as check-triggers.js
+      const excludePaths = [
+        /^docs\//i,
+        /^\.claude\//i,
+        /^scripts\//i,
+        /^\.husky\//i,
+        /node_modules\//i,
+      ];
       const fileEvents = events.filter((e) => e.event === "file_write" || e.event === "file_edit");
-      return fileEvents.some((e) => e.file && securityKeywords.test(e.file));
+      return fileEvents.some((e) => {
+        if (!e.file) return false;
+        // Skip excluded paths
+        if (excludePaths.some((p) => p.test(e.file))) return false;
+        return securityKeywords.test(e.file);
+      });
     },
     description: "Security-sensitive files were modified",
     recommendation: "Run security-auditor agent before committing",

@@ -110,7 +110,8 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
     try {
       Sentry.captureMessage(message, {
         level: "error",
-        extra: sanitizeContext(context),
+        // Guard optional context - only include extra if context exists
+        ...(context ? { extra: sanitizeContext(context) } : {}),
       });
     } catch {
       // Non-fatal: Sentry logging failure should not crash the app

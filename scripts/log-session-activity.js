@@ -80,8 +80,11 @@ function logEvent(eventData) {
     return null;
   }
 
+  // Build entry with user identifier and outcome for audit trail compliance
   const entry = {
     timestamp: new Date().toISOString(),
+    user: process.env.USER || process.env.USERNAME || "unknown",
+    outcome: "success", // Will be overridden if eventData includes outcome
     ...eventData,
   };
 
@@ -311,7 +314,7 @@ function main() {
       break;
   }
 
-  const logged = logEvent(eventData);
+  logEvent(eventData);
   console.log(
     `Logged: ${args.event}${args.file ? ` (${args.file})` : ""}${args.skill ? ` (${args.skill})` : ""}`
   );

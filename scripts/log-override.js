@@ -37,9 +37,10 @@ function ensureLogDir() {
 }
 
 // Patterns that look like secrets - redact these from logs
+// Refined to reduce false positives (e.g., SHA hashes, file paths)
 const SECRET_PATTERNS = [
-  // API keys, tokens (long alphanumeric strings 20+ chars)
-  /\b[A-Za-z0-9_-]{20,}\b/g,
+  // Likely secret tokens: 24+ chars, must contain both letters and digits (reduces SHA/word false positives)
+  /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
   // Bearer tokens
   /bearer\s+[A-Za-z0-9._-]+/gi,
   // Basic auth
@@ -260,7 +261,7 @@ function main() {
     process.exit(1);
   }
 
-  const entry = logOverride(args.check, args.reason);
+  logOverride(args.check, args.reason);
   console.log(`Override logged: ${args.check}`);
   if (!args.reason) {
     console.log("⚠️  Warning: No reason provided. Consider using --reason or SKIP_REASON env var.");

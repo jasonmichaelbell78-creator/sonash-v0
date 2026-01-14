@@ -19,9 +19,7 @@
  *   2 - Script error
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execSync, spawnSync } = require("child_process");
+const { spawnSync } = require("child_process");
 
 // Configuration
 const TRIGGERS = {
@@ -166,7 +164,16 @@ function checkConsolidationTrigger() {
       maxBuffer: 1024 * 1024,
     });
 
-    const output = `${result.stdout || ""}${result.stderr || ""}`;
+    // Handle spawnSync failure states
+    if (result.error || result.signal || result.status !== 0) {
+      const errMsg =
+        result.error?.message ||
+        `exit=${result.status}${result.signal ? ` signal=${result.signal}` : ""}`;
+      console.error(`   ⚠️  Consolidation check failed: ${errMsg}`);
+      return { triggered: false, name: "consolidation" };
+    }
+
+    const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 
     // Look for "X reviews until next consolidation"
     const match = output.match(/(\d+) reviews? until next consolidation/);
