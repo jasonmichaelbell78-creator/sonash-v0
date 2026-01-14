@@ -49,22 +49,22 @@ Unified roadmap covering:
 
 ## 📊 Quick Status
 
-| Item                                      | Status      | Progress           |
-| ----------------------------------------- | ----------- | ------------------ |
-| **Integrated Improvement Plan**           | 🔄 ACTIVE   | 85% (7/9 steps)    |
-| Step 1: Quick Wins & Cleanup              | ✅ COMPLETE | 100%               |
-| Step 2: Doc Standardization Completion    | ✅ COMPLETE | 100%               |
-| Step 3: Developer Tooling Setup           | ✅ COMPLETE | 100%               |
-| Step 4: Multi-AI Audit (4.1+4.2+4.3)      | ✅ COMPLETE | 100%               |
-| Step 4B: Remediation Sprint               | ✅ COMPLETE | 100% (19/19 PRs)   |
-| Step 4C: SonarCloud Issue Triage          | ✅ COMPLETE | 100%               |
-| Step 5: Review Policy Expansion           | ✅ COMPLETE | 100% (18/18 tasks) |
-| Step 6: ROADMAP.md Integration            | ⏸️ PENDING  | 0%                 |
-| Step 7: Verification & Feature Resumption | ⏸️ PENDING  | 0%                 |
-| M1.5 - Quick Wins                         | ⏸️ BLOCKED  | On hold            |
-| M1.6 - Admin Panel + UX                   | ⏸️ BLOCKED  | On hold            |
+| Item                                      | Status         | Progress           |
+| ----------------------------------------- | -------------- | ------------------ |
+| **Integrated Improvement Plan**           | 🔄 ACTIVE      | 85% (7/9 steps)    |
+| Step 1: Quick Wins & Cleanup              | ✅ COMPLETE    | 100%               |
+| Step 2: Doc Standardization Completion    | ✅ COMPLETE    | 100%               |
+| Step 3: Developer Tooling Setup           | ✅ COMPLETE    | 100%               |
+| Step 4: Multi-AI Audit (4.1+4.2+4.3)      | ✅ COMPLETE    | 100%               |
+| Step 4B: Remediation Sprint               | ✅ COMPLETE    | 100% (19/19 PRs)   |
+| Step 4C: SonarCloud Issue Triage          | ✅ COMPLETE    | 100%               |
+| Step 5: Review Policy Expansion           | ✅ COMPLETE    | 100% (18/18 tasks) |
+| Step 6: ROADMAP.md Integration            | 🔄 IN PROGRESS | ~80% (5/6 tasks)   |
+| Step 7: Verification & Feature Resumption | ⏸️ PENDING     | 0%                 |
+| M1.5 - Quick Wins                         | ⏸️ BLOCKED     | On hold            |
+| M1.6 - Admin Panel + UX                   | ⏸️ BLOCKED     | On hold            |
 
-**Current Branch**: `main` (Step 5 PR merged; Step 6 starting)
+**Current Branch**: `claude/step6-roadmap-integration-nGkAt`
 
 **Test Status**: 100% pass rate (211/212 tests passing, 1 skipped)
 

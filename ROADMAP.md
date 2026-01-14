@@ -57,21 +57,21 @@ recovery practices.
 
 ## 📊 Milestones Overview
 
-| Milestone                       | Status         | Progress           | Target    | Priority   |
-| ------------------------------- | -------------- | ------------------ | --------- | ---------- |
-| **M0 - Baseline**               | ✅ Complete    | 100%               | Q4 2025   | Foundation |
-| **M1 - Foundation**             | ✅ Complete    | 100%               | Q1 2026   | P0         |
-| **Integrated Improvement Plan** | 🔄 In Progress | ~44% (3.5/8 steps) | Q1 2026   | P0 BLOCKER |
-| **M1.5 - Quick Wins**           | ⏸️ BLOCKED     | ~50%               | Q1 2026   | P0         |
-| **M1.6 - Admin Panel + UX**     | ⏸️ BLOCKED     | ~75%               | Q1 2026   | P1         |
-| **M2 - Architecture**           | ⏸️ Optional    | 0%                 | As needed | P2         |
-| **M3 - Meetings**               | 📋 Planned     | 0%                 | Q2 2026   | P1         |
-| **M4 - Expansion**              | 📋 Planned     | 0%                 | Q2 2026   | P1         |
-| **M5 - Inventories**            | 📋 Planned     | 0%                 | Q3 2026   | P1         |
-| **M6 - Prayers**                | 📋 Planned     | 0%                 | Q3 2026   | P2         |
-| **M7 - Fellowship**             | 📋 Planned     | 0%                 | Q4 2026   | P1         |
-| **M8 - Speakers**               | 📋 Planned     | 0%                 | Q4 2026   | P2         |
-| **M10 - Monetization**          | 🔬 Research    | 0%                 | 2027      | P2         |
+| Milestone                       | Status         | Progress         | Target    | Priority   |
+| ------------------------------- | -------------- | ---------------- | --------- | ---------- |
+| **M0 - Baseline**               | ✅ Complete    | 100%             | Q4 2025   | Foundation |
+| **M1 - Foundation**             | ✅ Complete    | 100%             | Q1 2026   | P0         |
+| **Integrated Improvement Plan** | 🔄 In Progress | ~88% (6/7 steps) | Q1 2026   | P0 BLOCKER |
+| **M1.5 - Quick Wins**           | ⏸️ BLOCKED     | ~50%             | Q1 2026   | P0         |
+| **M1.6 - Admin Panel + UX**     | ⏸️ BLOCKED     | ~75%             | Q1 2026   | P1         |
+| **M2 - Architecture**           | ⏸️ Optional    | 0%               | As needed | P2         |
+| **M3 - Meetings**               | 📋 Planned     | 0%               | Q2 2026   | P1         |
+| **M4 - Expansion**              | 📋 Planned     | 0%               | Q2 2026   | P1         |
+| **M5 - Inventories**            | 📋 Planned     | 0%               | Q3 2026   | P1         |
+| **M6 - Prayers**                | 📋 Planned     | 0%               | Q3 2026   | P2         |
+| **M7 - Fellowship**             | 📋 Planned     | 0%               | Q4 2026   | P1         |
+| **M8 - Speakers**               | 📋 Planned     | 0%               | Q4 2026   | P2         |
+| **M10 - Monetization**          | 🔬 Research    | 0%               | 2027      | P2         |
 
 **Overall Progress:** ~35%
 
@@ -521,6 +521,46 @@ management
   - Incident timeline extractor (auto-export GCP logs to incident report format)
   - Admin panel UI for blocklist management
 
+### Developer Tooling (Added 2026-01-14 - Step 6.1)
+
+> **Source:**
+> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Step 3 +
+> Step 5 items migrated here.
+
+**Active Tooling (Enforced):**
+
+- ✅ **Prettier** - Code formatting (`npm run format`, `npm run format:check`)
+  - Configured in `.prettierrc`
+  - Pre-commit hook runs format check (non-blocking warning)
+  - 518+ files formatted as of 2026-01-12
+- ✅ **ESLint** - Code linting (`npm run lint`)
+  - Configured in `eslint.config.mjs`
+  - Pre-commit hook blocks on errors
+- ✅ **madge** - Circular dependency detection (`npm run deps:circular`)
+  - Pre-push hook validates no circular deps
+  - Baseline: 0 circular dependencies
+- ✅ **Pattern Compliance** - Anti-pattern detection (`npm run patterns:check`)
+  - Script: `scripts/check-pattern-compliance.js`
+  - Pre-commit hook blocks on violations
+  - 100+ patterns from 140+ code reviews
+- ✅ **Delta Review Process** - AI-assisted PR reviews
+  - CodeRabbit + Qodo integration
+  - Learning capture in `AI_REVIEW_LEARNINGS_LOG.md`
+  - Pattern consolidation every 10 reviews
+
+**Planned Tooling (Future):**
+
+- ⏳ **knip** - Unused export detection (`npm run deps:unused`)
+  - Currently: baseline documented, not blocking
+  - Future: Add to CI with allow-list
+- ⏳ **ESLint Import Boundary Rules**
+  - Prerequisite: Feature folder refactoring (below)
+  - Enforce import restrictions between feature domains
+- ⏳ **Automated Metrics Dashboard**
+  - Session activity visualization
+  - Error tracing viewer
+  - See: [ROADMAP.md Process & Tooling section](#-process--tooling-improvements)
+
 **From M1 - Code Quality & Automation:**
 
 - ⏳ CI/CD pipeline setup (GitHub Actions or similar)
@@ -542,24 +582,21 @@ management
   - ⏳ **Admin Panel Monitoring:** See
     [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md)
   - **Files:** See commits `b6fe5e9`, `9e83e86`, `a818bea`, `b402f41`, `16b5deb`
-- ❌ **Firebase App Check** (Dec 30, 2025)
+- ❌ **Firebase App Check** (Dec 30, 2025) - **DEDUP-0001**
   - **Status:** DISABLED in all Cloud Functions (`requireAppCheck: false`)
   - **Reason:** Hit 403 throttle errors (24-hour limit), implemented manual
     reCAPTCHA as workaround
   - **Impact:** Security posture weakened - App Check provides bot protection at
     Firebase SDK level
-  - **Next Steps:** Decide strategy (tracked in
-    [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Step
-    4, Task 4.4)
-    - Option A: Re-enable App Check + keep optional reCAPTCHA (defense in depth)
-    - Option B: Wait for throttle to clear, then re-enable App Check only
-    - Option C: Accept weaker security posture (reCAPTCHA optional, no App
-      Check)
+  - **Re-enablement Plan:**
+    [APP_CHECK_REENABLE_PLAN.md](docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md)
+    - Prerequisites: DEDUP-0003 (reCAPTCHA fail-closed), DEDUP-0004 (rate
+      limiting)
+    - Steps: Client init → Server enforcement → Testing
   - **Reference:**
     [RECAPTCHA_REMOVAL_GUIDE.md](./docs/RECAPTCHA_REMOVAL_GUIDE.md) for
     removal/implementation guides
-- **Priority:** P0 - CRITICAL security decision needed (App Check should be
-  re-enabled)
+- **Priority:** P0 - CRITICAL security item (re-enable after prerequisites)
 
 **Data Quality & Operations:**
 
@@ -664,6 +701,30 @@ These pre-existing issues were identified during PR review CI:
   - Mock network status in tests
   - Test queue behavior, sync on reconnect
   - **Verification:** `npm test -- --grep offline` all pass
+
+### Validated Refactor Backlog (from Step 4.3 Audit - 2026-01-14)
+
+> **Full Backlog:**
+> [REFACTOR_BACKLOG.md](docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md)
+> (97 validated items, prioritized by severity/effort)
+
+**S0 Critical Items:**
+
+| ID         | Title                                  | Effort | PR  |
+| ---------- | -------------------------------------- | ------ | --- |
+| DEDUP-0001 | Re-enable App Check (see above)        | E2     | -   |
+| DEDUP-0002 | Close legacy journalEntries write path | E2     | PR2 |
+| DEDUP-0011 | Fix useJournal memory leak             | E1     | PR1 |
+
+**S1 High Priority (Top 5):**
+
+| ID         | Title                               | Effort | PR   |
+| ---------- | ----------------------------------- | ------ | ---- |
+| DEDUP-0003 | Make reCAPTCHA fail-closed          | E1     | PR3  |
+| DEDUP-0004 | Complete rate limiting (IP + admin) | E2     | PR4  |
+| DEDUP-0005 | Replace console.\* with logger      | E1     | PR8  |
+| DEDUP-0012 | Enable SSR for landing page         | E2     | PR13 |
+| CANON-0072 | Split TodayPage god component       | E3     | -    |
 
 ### Potential Architecture Work
 
