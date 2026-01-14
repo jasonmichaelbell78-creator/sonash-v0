@@ -58,7 +58,7 @@ const TimestampSchema = z.custom<Timestamp>((val) => {
 
 const PartialUserProfileUpdateSchema = z.object({
   email: z.string().email().nullable().optional(),
-  nickname: z.string().min(1).max(50).optional(),
+  nickname: z.string().max(50).optional(), // Allow empty string to clear nickname
   cleanStart: TimestampSchema.nullable().optional(),
   preferences: z
     .object({
