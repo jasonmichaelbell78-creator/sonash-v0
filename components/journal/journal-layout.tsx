@@ -11,7 +11,7 @@ export function JournalLayout({ children }: JournalLayoutProps) {
     <div className="relative min-h-screen w-full bg-[#111] flex items-center justify-center p-4 md:p-8">
       {/* Notebook Container */}
       <div
-        className="relative w-full max-w-4xl min-h-[85vh] flex rounded-r-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-4xl h-[85vh] flex rounded-r-2xl shadow-2xl overflow-hidden"
         style={{
           backgroundColor: "var(--journal-paper)",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
