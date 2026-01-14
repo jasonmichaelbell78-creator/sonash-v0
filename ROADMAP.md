@@ -1237,35 +1237,36 @@ summary command; full dashboard is larger scope.
 
 ---
 
-### Cross-Document Dependency Map (Planned - Near-term)
+### Cross-Document Dependency Map
 
-**Status:** 📋 Planned **Priority:** P1 **Added:** 2026-01-13 (Session #64)
+**Status:** ✅ COMPLETE **Priority:** P1 **Added:** 2026-01-13 **Completed:**
+2026-01-14 (Session #64)
 
-**Gap Identified:** Current `DOCUMENT_DEPENDENCIES.md` only covers
-template-instance sync (audit plans). It does NOT cover:
+**What Was Done:**
 
-- "When I change Document A, what other documents might need updating?"
-- Cross-references between core documents
-- Cascading update requirements
+1. ✅ Added "Cross-Document Update Triggers" section to
+   `DOCUMENT_DEPENDENCIES.md` (v1.1) with 12-row trigger matrix
+2. ✅ Integrated into `/session-end` command checklist (Section 3)
 
-**Proposed Enhancement to DOCUMENT_DEPENDENCIES.md:**
+**Trigger Matrix Location:**
+[DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers](docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
 
-Add new section: "Cross-Document Update Triggers"
+**Triggers Covered:**
 
-| When This Changes                | Check These Documents                          |
-| -------------------------------- | ---------------------------------------------- |
-| `SESSION_CONTEXT.md` status      | `INTEGRATED_IMPROVEMENT_PLAN.md`               |
-| `INTEGRATED_IMPROVEMENT_PLAN.md` | `SESSION_CONTEXT.md`, `ROADMAP.md`             |
-| `ROADMAP.md` milestones          | `SESSION_CONTEXT.md` priorities                |
-| New npm script added             | `DEVELOPMENT.md` (scripts section)             |
-| New hook added                   | `DEVELOPMENT.md` (hooks section)               |
-| Phase/Step completed             | `INTEGRATED_IMPROVEMENT_PLAN.md`, `ROADMAP.md` |
-| New policy document              | `claude.md` or relevant policy index           |
-| PR review fixes applied          | `AI_REVIEW_LEARNINGS_LOG.md`                   |
-| New skill/command added          | `.claude/settings.json`, relevant policy       |
-
-**Implementation:** Expand `DOCUMENT_DEPENDENCIES.md` with this table and
-integrate into session-end checklist.
+| When This Changes                | Check These Documents                              |
+| -------------------------------- | -------------------------------------------------- |
+| `SESSION_CONTEXT.md` status      | `INTEGRATED_IMPROVEMENT_PLAN.md`                   |
+| `INTEGRATED_IMPROVEMENT_PLAN.md` | `SESSION_CONTEXT.md`, `ROADMAP.md`                 |
+| `ROADMAP.md` milestones          | `SESSION_CONTEXT.md` priorities                    |
+| New npm script added             | `DEVELOPMENT.md` (scripts section)                 |
+| New hook added                   | `DEVELOPMENT.md` (hooks section)                   |
+| Phase/Step completed             | `INTEGRATED_IMPROVEMENT_PLAN.md`, `ROADMAP.md`     |
+| New policy document              | `claude.md` or relevant policy index               |
+| PR review fixes applied          | `AI_REVIEW_LEARNINGS_LOG.md`                       |
+| New skill/command added          | `.claude/settings.json`, relevant policy           |
+| Security-related changes         | `docs/SECURITY.md`, `GLOBAL_SECURITY_STANDARDS.md` |
+| Firebase config changes          | `docs/FIREBASE_CHANGE_POLICY.md`                   |
+| Test coverage changes            | `SESSION_CONTEXT.md` (Test Status line)            |
 
 ---
 

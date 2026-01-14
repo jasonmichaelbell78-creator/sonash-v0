@@ -36,6 +36,9 @@ If you modified any of these, verify they still work:
       (`docs/INTEGRATED_IMPROVEMENT_PLAN.md`) with step progress
 - [ ] Log any significant learnings in AI_REVIEW_LEARNINGS_LOG.md
 - [ ] Archive completed/cancelled plans to `docs/archive/completed-plans/`
+- [ ] **Cross-document check**: Review docs modified this session against
+      [DOCUMENT_DEPENDENCIES.md](../docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
+      trigger matrix - update any dependent documents
 
 ## 4. Learning Consolidation (IMPORTANT)
 
