@@ -1,9 +1,13 @@
 # Lighthouse Integration Plan
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Created:** 2026-01-14 (Session #66)
-**Status:** PLANNING
-**Priority:** P1 (M1.5), P2 (M2)
+**Updated:** 2026-01-14
+**Status:** ACTIVE (Part of Operational Visibility Sprint)
+**Priority:** P0 (Sprint Track B)
+
+> **Parent Sprint:** [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md)
+> **Sprint Tasks:** B2 (PERF-001), B3 (PERF-002), B4 (PERF-003), B5 (Dashboard Tab)
 
 ---
 
@@ -16,6 +20,7 @@ This document defines the implementation plan for integrating Google Lighthouse 
 - **Scope:** All pages
 - **Strictness:** Warnings only (non-blocking)
 - **PWA:** Future goal, baseline tracking now
+- **Remote Access:** Dev Dashboard will be remote-accessible via Firestore backend
 
 ---
 
@@ -667,9 +672,10 @@ Run Lighthouse and document:
 
 ## Related Documents
 
-- [ROADMAP.md](../ROADMAP.md) - M1.5 PERF-001/002, M2 PERF-003-006
+- [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md) - Parent sprint (Track B tasks)
+- [ROADMAP.md](../ROADMAP.md) - Active Sprint section, PERF-001 through PERF-006
 - [EFF-010: Offline Queue](../ROADMAP.md#offline-support-critical) - PWA prerequisite
-- Development Dashboard (planned) - Score visualization
+- Development Dashboard - Sprint Track B deliverable
 
 ---
 
@@ -677,4 +683,5 @@ Run Lighthouse and document:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-01-14 | Linked to Operational Visibility Sprint, updated priority to P0 |
 | 1.0 | 2026-01-14 | Initial plan created (Session #66) |
