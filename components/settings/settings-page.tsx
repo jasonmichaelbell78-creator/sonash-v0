@@ -153,7 +153,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       // Case 2: User is changing existing date
       // Case 3: User is changing time on existing date
       // Case 4: User is clearing their date
-      const normalizedCleanDate = cleanDate.trim();
+      const normalizedCleanDate = (cleanDate ?? "").trim();
       const hasExistingCleanStart = profile.cleanStart != null; // handles null + undefined
       const isSettingFirstTime = !hasExistingCleanStart && normalizedCleanDate !== "";
       const shouldUpdateCleanDate =
