@@ -111,11 +111,20 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       return;
     }
 
-    // Check if clean date is being changed or cleared - require confirmation
-    const cleanDateChanged = originalCleanDate && cleanDate !== originalCleanDate;
-    const cleanTimeChanged = originalCleanTime && cleanTime !== originalCleanTime;
-    const cleanDateCleared = originalCleanDate && !cleanDate;
-    if ((cleanDateChanged || cleanTimeChanged || cleanDateCleared) && !showCleanDateConfirm) {
+    // Check if clean date/time is being changed or cleared - require confirmation
+    const hadCleanStart = Boolean(profile.cleanStart);
+    const hasCleanDateNow = Boolean(cleanDate);
+
+    const cleanDateChanged =
+      hadCleanStart && originalCleanDate !== null && cleanDate !== originalCleanDate;
+    const cleanTimeChanged = hadCleanStart && cleanTime !== originalCleanTime;
+    const cleanDateCleared = hadCleanStart && originalCleanDate !== null && !cleanDate;
+    const isCleanDateBeingSetFirstTime = !hadCleanStart && hasCleanDateNow;
+
+    const needsCleanDateConfirm =
+      cleanDateChanged || cleanTimeChanged || cleanDateCleared || isCleanDateBeingSetFirstTime;
+
+    if (needsCleanDateConfirm && !showCleanDateConfirm) {
       setShowCleanDateConfirm(true);
       return;
     }
@@ -124,9 +133,16 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
     setShowCleanDateConfirm(false);
 
     try {
-      // Build clean date timestamp with validation
-      let cleanStartTimestamp: Timestamp | null = null;
-      if (cleanDate) {
+      // Build clean date timestamp with validation (only if user changed it)
+      // Use undefined to indicate "no change" vs null for "clear the value"
+      let cleanStartTimestamp: Timestamp | null | undefined = undefined;
+      const shouldUpdateCleanDate =
+        cleanDateChanged || cleanTimeChanged || cleanDateCleared || isCleanDateBeingSetFirstTime;
+
+      if (shouldUpdateCleanDate && !cleanDate) {
+        // User is clearing their clean date
+        cleanStartTimestamp = null;
+      } else if (shouldUpdateCleanDate && cleanDate) {
         const dateParts = cleanDate.split("-").map(Number);
         const timeParts = cleanTime.split(":").map(Number);
 
@@ -179,13 +195,21 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
           return;
         }
 
+        // Server-side validation: Prevent future dates (defense in depth beyond UI max attribute)
+        if (dateObj.getTime() > Date.now()) {
+          toast.error("Clean date cannot be in the future.");
+          setIsSaving(false);
+          return;
+        }
+
         cleanStartTimestamp = Timestamp.fromDate(dateObj);
       }
 
       // Preserve existing preferences and update only changed fields
+      // Only include cleanStart if it was actually modified to prevent unintended overwrites
       await updateUserProfile(user.uid, {
         nickname: nickname.trim(),
-        cleanStart: cleanStartTimestamp,
+        ...(cleanStartTimestamp !== undefined ? { cleanStart: cleanStartTimestamp } : {}),
         preferences: {
           ...(profile.preferences ?? {}),
           largeText,
@@ -196,8 +220,13 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       // Audit logging for profile update (non-sensitive data only)
       logger.info("Profile settings updated", {
         action: "profile_update",
-        fieldsUpdated: ["nickname", "cleanStart", "preferences"],
-        cleanDateChanged: cleanDateChanged || false,
+        userId: user.uid,
+        fieldsUpdated: [
+          "nickname",
+          ...(cleanStartTimestamp !== undefined ? ["cleanStart"] : []),
+          "preferences",
+        ],
+        cleanDateChanged: shouldUpdateCleanDate,
       });
 
       setOriginalCleanDate(cleanDate);
