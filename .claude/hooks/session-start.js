@@ -20,10 +20,9 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-// Only run in Claude Code on the web (remote environments)
-if (process.env.CLAUDE_CODE_REMOTE !== "true") {
-  process.exit(0);
-}
+// Detect environment (remote/local)
+const isRemote = process.env.CLAUDE_CODE_REMOTE === "true";
+const envType = isRemote ? "remote" : "local";
 
 // Validate project directory before chdir
 const baseDir = path.resolve(process.cwd());
@@ -41,7 +40,7 @@ process.chdir(projectDir);
 
 let warnings = 0;
 
-console.log("🚀 SessionStart Hook for sonash-v0");
+console.log(`🚀 SessionStart Hook for sonash-v0 (${envType})`);
 console.log("━".repeat(66));
 
 // Log environment (secure: excludes PWD to avoid exposing sensitive paths)
