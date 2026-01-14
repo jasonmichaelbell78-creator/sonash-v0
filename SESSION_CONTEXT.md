@@ -34,7 +34,7 @@ productive work.
 
 **✅ BLOCKER RESOLVED**: Feature development can now resume!
 
-**See**: [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) -
+**See**: [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
 All 9 steps complete:
 
 - Steps 1-3: Foundation (Quick Wins, Doc Standardization, Developer Tooling)
@@ -377,7 +377,7 @@ All systems operational.
 
 **Before starting work**, familiarize yourself with:
 
-1. **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)** -
+1. **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)** -
    Current unified roadmap (START HERE)
 2. **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - How to navigate documentation
 3. **[ROADMAP.md](./ROADMAP.md)** - Overall project priorities

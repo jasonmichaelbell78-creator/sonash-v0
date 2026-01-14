@@ -20,10 +20,10 @@ project:
 
 ## 📖 Documentation Index
 
-### ⚠️ Current Initiative (Blocker)
+### ✅ Completed Initiative
 
-- **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md)** -
-  Unified improvement roadmap (blocks feature work)
+- **[INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)** -
+  Unified improvement roadmap (COMPLETE - archived)
 
 ### Core Documents (Tier 1)
 

@@ -17,13 +17,12 @@ This is the **CANONICAL** product roadmap for SoNash. This document serves as:
 
 > **Note:** Completed items are archived in [ROADMAP_LOG.md](./ROADMAP_LOG.md)
 >
-> **⚠️ BLOCKER:** Integrated improvement initiative is active. See
-> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) for the
-> unified roadmap covering documentation standardization, tooling setup, and
-> architecture refactoring validation.
+> **✅ BLOCKER RESOLVED:** Integrated improvement initiative is complete! See
+> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
+> for the archived plan. Feature development on M1.5 and M1.6 can now resume.
 >
-> **Architecture Refactoring:** Pending Delta Review validation (Step 4 of
-> Integrated Improvement Plan). Original plan archived:
+> **Architecture Refactoring:** Delta Review validation complete (Step 4).
+> Validated items tracked in M2 below. Original plan archived:
 > [EIGHT_PHASE_REFACTOR_PLAN.md](./docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)
 
 ---
@@ -524,7 +523,7 @@ management
 ### Developer Tooling (Added 2026-01-14 - Step 6.1)
 
 > **Source:**
-> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) Step 3 +
+> [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) Step 3 +
 > Step 5 items migrated here.
 
 **Active Tooling (Enforced):**

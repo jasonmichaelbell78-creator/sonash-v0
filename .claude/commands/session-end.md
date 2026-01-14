@@ -33,7 +33,7 @@ If you modified any of these, verify they still work:
   - Any new blockers discovered
   - Next steps for future sessions
 - [ ] If applicable, update INTEGRATED_IMPROVEMENT_PLAN.md
-      (`docs/INTEGRATED_IMPROVEMENT_PLAN.md`) with step progress
+      (`docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md`) with step progress
 - [ ] Log any significant learnings in AI_REVIEW_LEARNINGS_LOG.md
 - [ ] Archive completed/cancelled plans to `docs/archive/completed-plans/`
 - [ ] **Cross-document check**: Review docs modified this session against

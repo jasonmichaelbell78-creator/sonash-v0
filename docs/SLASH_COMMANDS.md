@@ -1097,7 +1097,7 @@ Searching: scripts/, .github/, docs/, _.md, _.js, _.ts, _.yml
 | --------------------------------------- | ------------- | -------------- |
 | scripts/validate-phase-completion.js:12 | Direct import | BLOCKING       |
 | .github/workflows/validate-plan.yml:8   | Trigger path  | BLOCKING       |
-| docs/INTEGRATED_IMPROVEMENT_PLAN.md:852 | Markdown link | UPDATE         |
+| docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md:852 | Markdown link | UPDATE         |
 | SESSION_CONTEXT.md:45                   | Mention       | UPDATE         |
 
 **BLOCKING references:** 2 **References to update:** 2
@@ -1107,7 +1107,7 @@ Searching: scripts/, .github/, docs/, _.md, _.js, _.ts, _.yml
 | Current                                      | Suggested Replacement                                 |
 | -------------------------------------------- | ----------------------------------------------------- |
 | `docs/DOCUMENTATION_STANDARDIZATION_PLAN.md` | `docs/archive/DOCUMENTATION_STANDARDIZATION_PLAN.md`  |
-| OR                                           | `docs/INTEGRATED_IMPROVEMENT_PLAN.md` (if superseded) |
+| OR                                           | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md` (if superseded) |
 
 ## Step 3: Preview Changes
 

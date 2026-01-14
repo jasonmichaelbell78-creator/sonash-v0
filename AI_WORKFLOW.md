@@ -62,7 +62,7 @@ Recovery Notebook project. It provides:
      - Note any MCP servers configured
      - If task matches a capability, USE IT (not optional)
 ☐ 6. Check ROADMAP.md (verify milestone priorities)
-☐ 7. Check active blockers (INTEGRATED_IMPROVEMENT_PLAN.md - current blocker)
+☐ 7. Check active blockers (none currently - see ROADMAP.md)
 ☐ 8. Consult specific planning docs as needed
 ☐ 9. Begin work following documented procedures
 ```
@@ -127,8 +127,8 @@ Recovery Notebook project. It provides:
 **As Needed** (Reference When Relevant):
 
 6. **Planning Documents** (when working on specific features):
-   - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/INTEGRATED_IMPROVEMENT_PLAN.md) -
-     **CURRENT BLOCKER** - Unified improvement roadmap
+   - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+     ✅ **COMPLETE** - Unified improvement roadmap (archived)
    - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
    - Archived plans: `docs/archive/completed-plans/`
