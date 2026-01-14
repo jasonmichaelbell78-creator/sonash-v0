@@ -77,8 +77,15 @@ const USAGE_RULES = [
           : path.resolve(REPO_ROOT, e.file);
         const normalizedFile = path.relative(REPO_ROOT, resolved).replace(/\\/g, "/");
 
-        // If the resolved path is outside the repo, ignore it (prevents exclusion bypass)
-        if (normalizedFile.startsWith("..")) return false;
+        // If the resolved path is outside the repo or invalid, ignore it (prevents exclusion bypass)
+        // Using regex to properly handle edge cases like "..hidden.md" and empty strings
+        if (
+          normalizedFile === "" ||
+          /^\.\.(?:[/\\]|$)/.test(normalizedFile) ||
+          path.isAbsolute(normalizedFile)
+        ) {
+          return false;
+        }
 
         // Strip benign leading "./" segments only
         const cleanedFile = normalizedFile.replace(/^(\.\/)+/, "");
