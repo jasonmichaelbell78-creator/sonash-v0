@@ -86,8 +86,19 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       cleanDateTimeChanged = cleanDate !== "" || cleanTime !== "08:00";
     }
 
-    setHasChanges(nicknameChanged || largeTextChanged || simpleLanguageChanged || cleanDateTimeChanged);
-  }, [nickname, cleanDate, cleanTime, largeText, simpleLanguage, profile, formatLocalDate, formatLocalTime]);
+    setHasChanges(
+      nicknameChanged || largeTextChanged || simpleLanguageChanged || cleanDateTimeChanged
+    );
+  }, [
+    nickname,
+    cleanDate,
+    cleanTime,
+    largeText,
+    simpleLanguage,
+    profile,
+    formatLocalDate,
+    formatLocalTime,
+  ]);
 
   const handleSave = async () => {
     // Provide feedback for missing requirements instead of silent return
@@ -129,13 +140,21 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
         const [hours, minutes] = timeParts;
 
         if (
-          Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day) ||
-          Number.isNaN(hours) || Number.isNaN(minutes) ||
-          year < 1900 || year > 2100 ||
-          month < 1 || month > 12 ||
-          day < 1 || day > 31 ||
-          hours < 0 || hours > 23 ||
-          minutes < 0 || minutes > 59
+          Number.isNaN(year) ||
+          Number.isNaN(month) ||
+          Number.isNaN(day) ||
+          Number.isNaN(hours) ||
+          Number.isNaN(minutes) ||
+          year < 1900 ||
+          year > 2100 ||
+          month < 1 ||
+          month > 12 ||
+          day < 1 ||
+          day > 31 ||
+          hours < 0 ||
+          hours > 23 ||
+          minutes < 0 ||
+          minutes > 59
         ) {
           toast.error("Invalid date or time values.");
           setIsSaving(false);
@@ -144,8 +163,16 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
 
         const dateObj = new Date(year, month - 1, day, hours, minutes);
 
-        // Verify the date is valid (e.g., not Feb 31)
-        if (Number.isNaN(dateObj.getTime())) {
+        // Verify the date is valid and wasn't normalized (e.g., Feb 31 → Mar 3)
+        // JS normalizes invalid dates silently, so we check that components match
+        if (
+          Number.isNaN(dateObj.getTime()) ||
+          dateObj.getFullYear() !== year ||
+          dateObj.getMonth() !== month - 1 ||
+          dateObj.getDate() !== day ||
+          dateObj.getHours() !== hours ||
+          dateObj.getMinutes() !== minutes
+        ) {
           toast.error("Invalid date.");
           setIsSaving(false);
           return;
@@ -156,10 +183,10 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
 
       // Preserve existing preferences and update only changed fields
       await updateUserProfile(user.uid, {
-        nickname: nickname.trim() || profile.nickname,
+        nickname: nickname.trim() || (profile.nickname ?? ""),
         cleanStart: cleanStartTimestamp,
         preferences: {
-          ...profile.preferences,
+          ...(profile.preferences ?? {}),
           largeText,
           simpleLanguage,
         },
@@ -248,11 +275,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
         >
-          {isSaving ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
+          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {isSaving ? "Saving..." : "Save"}
         </button>
       </header>
@@ -334,7 +357,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   type="date"
                   value={cleanDate}
                   onChange={(e) => setCleanDate(e.target.value)}
-                  max={new Date().toISOString().split("T")[0]}
+                  max={formatLocalDate(new Date())}
                   className="w-full px-3 py-2 rounded-lg border border-[var(--journal-line)]/50 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-[var(--journal-text)]"
                 />
               </div>
@@ -363,8 +386,8 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   Are you sure you want to change your clean date?
                 </p>
                 <p className="text-amber-700 text-sm mb-3">
-                  This will reset your sobriety counter. If you&apos;ve relapsed, that&apos;s okay
-                  - what matters is that you&apos;re here now.
+                  This will reset your sobriety counter. If you&apos;ve relapsed, that&apos;s okay -
+                  what matters is that you&apos;re here now.
                 </p>
                 <div className="flex gap-3">
                   <button

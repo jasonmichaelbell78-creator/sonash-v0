@@ -20,7 +20,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 6.4     | 2026-01-14 | Review #145: Settings Page Accessibility & Security - 14 items (5 MAJOR: toggle accessibility, date validation, preference preservation, timezone bug, form labels; 9 MINOR: useAuth deprecated, props readonly, silent return, error logging, audit logging, change detection). New patterns: Accessible toggle (button+role=switch), local date formatting, preference spread.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 6.4     | 2026-01-14 | Review #145: Settings Page Accessibility & Security - 14 items (5 MAJOR: toggle accessibility, date validation, preference preservation, timezone bug, form labels; 9 MINOR: useAuth deprecated, props readonly, silent return, error logging, audit logging, change detection). New patterns: Accessible toggle (button+role=switch), local date formatting, preference spread.                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 6.3     | 2026-01-13 | Review #141: PR Review Processing Round 3 - 5 items (1 MEDIUM: schema category token normalization, 4 LOW: grep -E portability, header verification coverage). New patterns: Schema category enums should be single CamelCase tokens without spaces, always use grep -E for alternation patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 6.2     | 2026-01-13 | Review #140: PR Review Processing Round 2 - 7 items (1 MEDIUM: grep xargs hang fix, 6 LOW: category enum alignment, improved grep patterns for empty catches and correlation IDs, grep portability fixes). New patterns: Use while read instead of xargs, align category names with schema enums.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 6.1     | 2026-01-13 | Review #139: PR Review Processing - 11 items (2 MAJOR: missing YAML frontmatter in slash commands, 8 MINOR: documentation lint fixes, grep pattern improvements, Debugging Ergonomics category added to audit-code). New patterns: Commands need YAML frontmatter, Tier-2 docs need Purpose/Version History sections.                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -470,40 +470,47 @@ archive.
 
 #### Review #145: Settings Page Accessibility & Security (2026-01-14)
 
-**Source:** SonarCloud + Qodo PR Compliance + Qodo PR Suggestions
-**PR/Branch:** claude/general-dev-session-A1az1
-**Suggestions:** 14 items (Major: 5, Minor: 9)
+**Source:** SonarCloud + Qodo PR Compliance + Qodo PR Suggestions **PR/Branch:**
+claude/general-dev-session-A1az1 **Suggestions:** 14 items (Major: 5, Minor: 9)
 
 **Issues Fixed:**
 
-| # | Issue | Severity | Category | Fix |
-|---|-------|----------|----------|-----|
-| 1 | Toggle switches missing keyboard support | Major | Accessibility | Convert div→button with role="switch", aria-checked |
-| 2 | Missing input validation for date/time | Major | Security | Add NaN checks, range validation before Timestamp creation |
-| 3 | Preference data loss (theme overwritten) | Major | Bug | Spread profile.preferences before updating |
-| 4 | Timezone bug in date display | Major | Bug | Use local date extraction instead of toISOString() |
-| 5 | Form labels not associated with controls | Major | Accessibility | Add htmlFor/id, aria-labelledby |
-| 6 | useAuth deprecated warning | Minor | Maintainability | Replace with useAuthCore() |
-| 7 | Props not marked read-only | Minor | TypeScript | Add readonly modifier to interface |
-| 8 | Silent early return in handleSave | Minor | UX | Add toast error for missing user/profile |
-| 9 | Raw error logging | Minor | Security | Sanitize error, log type/truncated message only |
-| 10 | Missing audit logging | Minor | Compliance | Add logger.info for profile updates |
-| 11 | cleanTime changes not detected | Minor | Bug | Include time in change detection |
-| 12-14 | Form label accessibility (3 instances) | Minor | Accessibility | Add id/aria-labelledby to email, toggle labels |
+| #     | Issue                                    | Severity | Category        | Fix                                                        |
+| ----- | ---------------------------------------- | -------- | --------------- | ---------------------------------------------------------- |
+| 1     | Toggle switches missing keyboard support | Major    | Accessibility   | Convert div→button with role="switch", aria-checked        |
+| 2     | Missing input validation for date/time   | Major    | Security        | Add NaN checks, range validation before Timestamp creation |
+| 3     | Preference data loss (theme overwritten) | Major    | Bug             | Spread profile.preferences before updating                 |
+| 4     | Timezone bug in date display             | Major    | Bug             | Use local date extraction instead of toISOString()         |
+| 5     | Form labels not associated with controls | Major    | Accessibility   | Add htmlFor/id, aria-labelledby                            |
+| 6     | useAuth deprecated warning               | Minor    | Maintainability | Replace with useAuthCore()                                 |
+| 7     | Props not marked read-only               | Minor    | TypeScript      | Add readonly modifier to interface                         |
+| 8     | Silent early return in handleSave        | Minor    | UX              | Add toast error for missing user/profile                   |
+| 9     | Raw error logging                        | Minor    | Security        | Sanitize error, log type/truncated message only            |
+| 10    | Missing audit logging                    | Minor    | Compliance      | Add logger.info for profile updates                        |
+| 11    | cleanTime changes not detected           | Minor    | Bug             | Include time in change detection                           |
+| 12-14 | Form label accessibility (3 instances)   | Minor    | Accessibility   | Add id/aria-labelledby to email, toggle labels             |
 
 **Patterns Identified:**
 
-1. **Accessible Toggle Pattern**: Custom toggle switches need button element with role="switch" and aria-checked
-2. **Local Date Formatting**: Use getFullYear/getMonth/getDate for local dates, not toISOString()
-3. **Preference Preservation**: Always spread existing preferences before updating fields
+1. **Accessible Toggle Pattern**: Custom toggle switches need button element
+   with role="switch" and aria-checked
+2. **Local Date Formatting**: Use getFullYear/getMonth/getDate for local dates,
+   not toISOString()
+3. **Preference Preservation**: Always spread existing preferences before
+   updating fields
 
 **Key Learnings:**
 
-- Custom interactive elements (toggles) must use native button or add role + keyboard support
-- toISOString() converts to UTC which can shift dates - use local date extraction
-- When updating nested objects (preferences), spread existing values to preserve unmodified fields
-- Input validation must happen before Firestore writes - NaN checks, range validation
-- Audit logging should capture action type and changed fields, not sensitive values
+- Custom interactive elements (toggles) must use native button or add role +
+  keyboard support
+- toISOString() converts to UTC which can shift dates - use local date
+  extraction
+- When updating nested objects (preferences), spread existing values to preserve
+  unmodified fields
+- Input validation must happen before Firestore writes - NaN checks, range
+  validation
+- Audit logging should capture action type and changed fields, not sensitive
+  values
 
 ---
 

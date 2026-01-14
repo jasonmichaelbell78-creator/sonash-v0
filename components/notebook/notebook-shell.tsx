@@ -263,9 +263,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
                 }}
                 className="w-full text-left p-3 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
               >
-                <p className="font-handlee text-amber-800 font-medium">
-                  Manage Profile →
-                </p>
+                <p className="font-handlee text-amber-800 font-medium">Manage Profile →</p>
                 <p className="font-body text-amber-700/70 text-sm">
                   Edit nickname, clean date, and preferences
                 </p>
