@@ -147,8 +147,17 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       // Build clean date timestamp with validation (only if user changed it)
       // Use undefined to indicate "no change" vs null for "clear the value"
       let cleanStartTimestamp: Timestamp | null | undefined = undefined;
+
+      // Determine if we need to update clean start
+      // Case 1: User is setting date for the first time (no existing date, has new date)
+      // Case 2: User is changing existing date
+      // Case 3: User is changing time on existing date
+      // Case 4: User is clearing their date
+      const normalizedCleanDate = (cleanDate ?? "").trim();
+      const hasExistingCleanStart = profile.cleanStart != null; // handles null + undefined
+      const isSettingFirstTime = !hasExistingCleanStart && normalizedCleanDate !== "";
       const shouldUpdateCleanDate =
-        cleanDateChanged || cleanTimeChanged || cleanDateCleared || isCleanDateBeingSetFirstTime;
+        cleanDateChanged || cleanTimeChanged || cleanDateCleared || isSettingFirstTime;
 
       if (shouldUpdateCleanDate && !cleanDate) {
         // User is clearing their clean date
