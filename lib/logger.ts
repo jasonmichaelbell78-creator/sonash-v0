@@ -77,6 +77,23 @@ const sanitizeContext = (context?: LogContext) => {
   }, {});
 };
 
+/**
+ * Sanitize a message string before external logging (e.g., Sentry)
+ * Redacts potential secrets/PII that may appear in error messages
+ */
+const sanitizeMessage = (message: string): string => {
+  // Split into words and redact any that look like sensitive IDs
+  return message
+    .split(/(\s+)/)
+    .map((part) => {
+      if (looksLikeSensitiveId(part)) {
+        return `${part.slice(0, 4)}…[REDACTED]`;
+      }
+      return part;
+    })
+    .join("");
+};
+
 const log = (level: LogLevel, message: string, context?: LogContext) => {
   const payload: Record<string, unknown> = {
     level,
@@ -105,10 +122,10 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
       timestamp: payload.timestamp,
     });
 
-    // Send to Sentry with sanitized context
+    // Send to Sentry with sanitized message and context
     // Wrapped in try/catch to prevent Sentry failures from crashing the application
     try {
-      Sentry.captureMessage(message, {
+      Sentry.captureMessage(sanitizeMessage(message), {
         level: "error",
         // Guard optional context - only include extra if context exists
         ...(context ? { extra: sanitizeContext(context) } : {}),

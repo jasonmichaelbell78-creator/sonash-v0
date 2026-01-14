@@ -23,9 +23,22 @@
 
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
+
+// Get repository root for consistent log location
+function getRepoRoot() {
+  const result = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf-8",
+    timeout: 3000,
+  });
+  if (result.status === 0 && result.stdout) {
+    return result.stdout.trim();
+  }
+  return process.cwd();
+}
 
 // Configuration
-const OVERRIDE_LOG = path.join(process.cwd(), ".claude", "override-log.jsonl");
+const OVERRIDE_LOG = path.join(getRepoRoot(), ".claude", "override-log.jsonl");
 const MAX_LOG_SIZE = 50 * 1024; // 50KB - rotate if larger
 
 // Ensure directory exists

@@ -24,9 +24,23 @@
 
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
+
+// Get repository root for consistent log location
+function getRepoRoot() {
+  const result = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf-8",
+    timeout: 3000,
+  });
+  if (result.status === 0 && result.stdout) {
+    return result.stdout.trim();
+  }
+  return process.cwd();
+}
 
 // Configuration
-const SESSION_LOG = path.join(process.cwd(), ".claude", "session-activity.jsonl");
+const REPO_ROOT = getRepoRoot();
+const SESSION_LOG = path.join(REPO_ROOT, ".claude", "session-activity.jsonl");
 
 // Skill usage rules
 const USAGE_RULES = [
@@ -57,10 +71,13 @@ const USAGE_RULES = [
       const fileEvents = events.filter((e) => e.event === "file_write" || e.event === "file_edit");
       return fileEvents.some((e) => {
         if (!e.file) return false;
-        // Normalize path to be relative with forward slashes for cross-platform consistency
-        const normalizedFile = path
-          .relative(process.cwd(), path.resolve(e.file))
-          .replace(/\\/g, "/");
+        // Normalize path: resolve absolute, make relative to repo root, use forward slashes
+        const resolved = path.isAbsolute(e.file)
+          ? path.normalize(e.file)
+          : path.resolve(REPO_ROOT, e.file);
+        let normalizedFile = path.relative(REPO_ROOT, resolved).replace(/\\/g, "/");
+        // Strip leading ./ or ../ segments that could bypass exclusions
+        normalizedFile = normalizedFile.replace(/^(\.\/)+/, "").replace(/^(\.\.\/)+/, "");
         // Skip excluded paths
         if (excludePaths.some((p) => p.test(normalizedFile))) return false;
         return securityKeywords.test(normalizedFile);

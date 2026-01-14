@@ -56,13 +56,16 @@ const SECRET_PATTERNS = [
 
 /**
  * Sanitize a string value for logging
- * - Truncates to MAX_FIELD_LENGTH
+ * - Strips control characters to prevent log injection
  * - Redacts potential secrets
+ * - Truncates to MAX_FIELD_LENGTH
  */
 function sanitizeForLog(value) {
   if (typeof value !== "string") return value;
 
-  let sanitized = value;
+  // Strip control characters (keep tab \x09, newline \x0A, carriage return \x0D)
+  // eslint-disable-next-line no-control-regex
+  let sanitized = value.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
 
   // Redact potential secrets
   for (const pattern of SECRET_PATTERNS) {
@@ -79,12 +82,13 @@ function sanitizeForLog(value) {
 
 /**
  * Sanitize an event data object for logging
+ * Sanitizes ALL string values to prevent accidental secret leakage
  */
 function sanitizeEventData(eventData) {
   const sanitized = {};
   for (const [key, value] of Object.entries(eventData)) {
-    // Sanitize user-controlled string fields
-    if (typeof value === "string" && ["message", "file", "skill", "hash"].includes(key)) {
+    // Sanitize ALL string fields to prevent accidental secret leakage
+    if (typeof value === "string") {
       sanitized[key] = sanitizeForLog(value);
     } else {
       sanitized[key] = value;
@@ -237,6 +241,7 @@ function generateSummary() {
 
   const summary = {
     sessionStart: null,
+    sessionEnd: null,
     filesModified: new Set(),
     skillsInvoked: {},
     commits: [],
@@ -247,6 +252,9 @@ function generateSummary() {
     switch (event.event) {
       case "session_start":
         summary.sessionStart = event.timestamp;
+        break;
+      case "session_end":
+        summary.sessionEnd = event.timestamp;
         break;
       case "file_write":
       case "file_edit":
@@ -269,11 +277,11 @@ function generateSummary() {
     }
   }
 
-  // Calculate duration if session is active
+  // Calculate duration (use sessionEnd if present, otherwise current time)
   if (summary.sessionStart) {
     const start = new Date(summary.sessionStart);
-    const now = new Date();
-    const durationMs = now - start;
+    const end = summary.sessionEnd ? new Date(summary.sessionEnd) : new Date();
+    const durationMs = Math.max(0, end - start);
     const minutes = Math.floor(durationMs / 60000);
     summary.duration = `${minutes} minutes`;
   }
@@ -284,7 +292,10 @@ function generateSummary() {
 
   if (summary.sessionStart) {
     console.log(`\n⏱️  Session Started: ${summary.sessionStart}`);
-    console.log(`   Duration: ${summary.duration}`);
+    if (summary.sessionEnd) {
+      console.log(`   Session Ended: ${summary.sessionEnd}`);
+    }
+    console.log(`   Duration: ${summary.duration}${summary.sessionEnd ? "" : " (active)"}`);
   }
 
   console.log(`\n📁 Files Modified: ${summary.filesModified.size}`);
