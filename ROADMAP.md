@@ -1,6 +1,6 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.3 **Last Updated:** 2026-01-13 **Status:** ACTIVE
+**Document Version:** 2.4 **Last Updated:** 2026-01-14 **Status:** ACTIVE
 **Overall Completion:** ~35%
 
 ---
@@ -286,6 +286,27 @@ Planned | 🟣 Research
     - [ ] Merge write/edit requirement hooks
     - [ ] Document in TRIGGERS.md
     - **Verification:** Session start is ~2-3s faster
+
+#### Lighthouse Performance Tracking (from 2026-01-14 Planning)
+
+> **Source:** Lighthouse integration planning session (Session #66)
+> **Goal:** Track performance across all pages with non-blocking CI integration
+
+18. **PERF-001: Add Lighthouse CLI Script** (S effort, High ROI)
+    - [ ] Install `lighthouse` as dev dependency
+    - [ ] Create `scripts/lighthouse-audit.js` for multi-page auditing
+    - [ ] Add `npm run lighthouse` to package.json
+    - [ ] Output JSON/HTML reports to `.lighthouse/` (gitignored)
+    - [ ] Audit all routes: `/`, `/today`, `/journal`, `/growth`, `/more`, `/admin`, `/login`
+    - **Verification:** `npm run lighthouse` generates reports for all routes
+
+19. **PERF-002: Add Lighthouse to CI (Non-blocking)** (M effort, High ROI)
+    - [ ] Add Lighthouse CI job to `.github/workflows/ci.yml`
+    - [ ] Run against preview deployment or localhost with `start-server-and-test`
+    - [ ] Upload HTML reports as artifacts
+    - [ ] `continue-on-error: true` (warnings only, non-blocking)
+    - [ ] Add score summary to PR comment (optional)
+    - **Verification:** PR shows Lighthouse scores in CI summary/artifacts
 
 ---
 
@@ -701,6 +722,38 @@ These pre-existing issues were identified during PR review CI:
   - Mock network status in tests
   - Test queue behavior, sync on reconnect
   - **Verification:** `npm test -- --grep offline` all pass
+
+#### Lighthouse Performance Monitoring (from 2026-01-14 Planning)
+
+> **Source:** Lighthouse integration planning session (Session #66)
+> **Prerequisite:** PERF-001/PERF-002 from M1.5 complete
+> **Spec:** [LIGHTHOUSE_INTEGRATION_PLAN.md](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)
+
+- ⏳ **PERF-003: Historical Score Tracking** (M effort)
+  - Store Lighthouse scores in Firestore or flat files (`.lighthouse/history.json`)
+  - Track trends over time (daily/weekly snapshots from CI)
+  - Alert on significant regressions (>10 point drop in any category)
+  - **Verification:** Historical data shows score trends over 7+ days
+
+- ⏳ **PERF-004: Performance Budgets** (S effort)
+  - Define budgets: LCP < 2.5s, FID < 100ms, CLS < 0.1, Performance > 80
+  - Integrate with Lighthouse CI assertions (`lighthouserc.js`)
+  - Warn on budget violations (non-blocking initially)
+  - **Verification:** Budget violation shows warning in CI
+
+- ⏳ **PERF-005: Development Dashboard Integration** (L effort)
+  - Display Lighthouse scores in Development Dashboard
+  - Per-page breakdown (landing, today, journal, growth, more, admin)
+  - Historical trend visualization (chart.js or similar)
+  - Links to full HTML reports
+  - **Verification:** Dashboard shows latest scores and trend graph
+
+- ⏳ **PERF-006: PWA Audit Baseline** (S effort)
+  - Document current PWA score and gaps
+  - Create remediation plan for installability
+  - Track PWA-specific metrics (service worker, manifest, offline)
+  - Ties to EFF-010 (Offline Queue) as prerequisite for good PWA score
+  - **Verification:** PWA score documented with gap analysis
 
 ### Validated Refactor Backlog (from Step 4.3 Audit - 2026-01-14)
 
@@ -1445,6 +1498,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                          |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md |
 | 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                          |
 | 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram |
 | 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                     |
