@@ -308,11 +308,17 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
         )}
       </AnimatePresence>
 
-      {/* Settings Page (Full Screen) */}
+      {/* Settings Page (Full Screen Modal) */}
       <AnimatePresence>
         {showSettingsPage && (
           <motion.div
             className="fixed inset-0 z-50 bg-[#111]"
+            role="dialog"
+            aria-modal="true"
+            tabIndex={-1}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setShowSettingsPage(false);
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

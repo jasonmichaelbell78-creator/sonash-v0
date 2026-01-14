@@ -101,6 +101,9 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
   ]);
 
   const handleSave = async () => {
+    // Prevent concurrent save operations from rapid clicks
+    if (isSaving) return;
+
     // Provide feedback for missing requirements instead of silent return
     if (!user) {
       toast.error("You must be signed in to save settings.");
@@ -258,7 +261,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
         userId: user.uid,
         outcome: "success",
         fieldsUpdated,
-        cleanDateChanged: shouldUpdateCleanDate,
+        cleanStartUpdated: shouldUpdateCleanDate,
       });
 
       setOriginalCleanDate(cleanDate);
@@ -429,8 +432,11 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                   onChange={(e) => {
                     const nextDate = e.target.value;
                     setCleanDate(nextDate);
-                    // Reset time to default when date is cleared for consistent state
-                    if (!nextDate) setCleanTime("08:00");
+                    // Reset time and clear stale confirmation when date is cleared
+                    if (!nextDate) {
+                      setCleanTime("08:00");
+                      setShowCleanDateConfirm(false);
+                    }
                   }}
                   max={formatLocalDate(new Date())}
                   className="w-full px-3 py-2 rounded-lg border border-[var(--journal-line)]/50 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-[var(--journal-text)]"
@@ -505,7 +511,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                 role="switch"
                 aria-checked={largeText}
                 aria-labelledby="large-text-label"
-                onClick={() => setLargeText(!largeText)}
+                onClick={() => setLargeText((v) => !v)}
                 className={`relative w-12 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
                   largeText ? "bg-amber-500" : "bg-gray-300"
                 }`}
@@ -531,7 +537,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
                 role="switch"
                 aria-checked={simpleLanguage}
                 aria-labelledby="simple-language-label"
-                onClick={() => setSimpleLanguage(!simpleLanguage)}
+                onClick={() => setSimpleLanguage((v) => !v)}
                 className={`relative w-12 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
                   simpleLanguage ? "bg-amber-500" : "bg-gray-300"
                 }`}
