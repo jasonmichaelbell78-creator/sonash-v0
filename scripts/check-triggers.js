@@ -99,6 +99,16 @@ function getStagedFiles() {
     return fallback2.stdout.split("\n").filter((f) => f.trim());
   }
 
+  // Fallback 3: staged changes only (works on initial commits / shallow clones)
+  const fallback3 = spawnSync("git", ["diff", "--name-only", "--cached"], {
+    encoding: "utf-8",
+    timeout: 5000,
+  });
+
+  if (fallback3.status === 0) {
+    return fallback3.stdout.split("\n").filter((f) => f.trim());
+  }
+
   // Fail-closed: return null to signal complete failure
   // This prevents silently bypassing security checks
   return null;

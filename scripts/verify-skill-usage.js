@@ -57,9 +57,13 @@ const USAGE_RULES = [
       const fileEvents = events.filter((e) => e.event === "file_write" || e.event === "file_edit");
       return fileEvents.some((e) => {
         if (!e.file) return false;
+        // Normalize path to be relative with forward slashes for cross-platform consistency
+        const normalizedFile = path
+          .relative(process.cwd(), path.resolve(e.file))
+          .replace(/\\/g, "/");
         // Skip excluded paths
-        if (excludePaths.some((p) => p.test(e.file))) return false;
-        return securityKeywords.test(e.file);
+        if (excludePaths.some((p) => p.test(normalizedFile))) return false;
+        return securityKeywords.test(normalizedFile);
       });
     },
     description: "Security-sensitive files were modified",

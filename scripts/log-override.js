@@ -153,8 +153,16 @@ function logOverride(check, reason) {
 // Get current git branch
 function getGitBranch() {
   try {
-    const { execSync } = require("child_process");
-    return execSync("git rev-parse --abbrev-ref HEAD", { encoding: "utf-8" }).trim();
+    const { spawnSync } = require("child_process");
+    const result = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+      encoding: "utf-8",
+      timeout: 3000,
+    });
+
+    if (result.status === 0 && result.stdout) {
+      return result.stdout.trim();
+    }
+    return "unknown";
   } catch {
     return "unknown";
   }
@@ -261,7 +269,11 @@ function main() {
     process.exit(1);
   }
 
-  logOverride(args.check, args.reason);
+  const entry = logOverride(args.check, args.reason);
+  if (!entry) {
+    console.error("❌ ERROR: Failed to write override audit log.");
+    process.exit(2);
+  }
   console.log(`Override logged: ${args.check}`);
   if (!args.reason) {
     console.log("⚠️  Warning: No reason provided. Consider using --reason or SKIP_REASON env var.");

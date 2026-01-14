@@ -23,10 +23,75 @@
 
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
+
+// Get repository root for consistent log location
+function getRepoRoot() {
+  const result = spawnSync("git", ["rev-parse", "--show-toplevel"], {
+    encoding: "utf-8",
+    timeout: 3000,
+  });
+  if (result.status === 0 && result.stdout) {
+    return result.stdout.trim();
+  }
+  return process.cwd();
+}
 
 // Configuration
-const LOG_FILE = path.join(process.cwd(), ".claude", "session-activity.jsonl");
+const LOG_FILE = path.join(getRepoRoot(), ".claude", "session-activity.jsonl");
 const MAX_LOG_SIZE = 100 * 1024; // 100KB - rotate if larger
+const MAX_FIELD_LENGTH = 200; // Truncate long fields
+
+// Secret patterns to redact from log entries
+const SECRET_PATTERNS = [
+  // Tokens with 24+ chars containing both letters and digits
+  /\b(?=[A-Za-z0-9_-]{24,}\b)(?=[A-Za-z0-9_-]*[A-Za-z])(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]+\b/g,
+  // Bearer tokens
+  /bearer\s+[A-Za-z0-9._-]+/gi,
+  // Basic auth
+  /basic\s+[A-Za-z0-9+/=]+/gi,
+  // Key=value patterns with sensitive names
+  /(?:api[_-]?key|token|secret|password|auth|credential)[=:]\s*\S+/gi,
+];
+
+/**
+ * Sanitize a string value for logging
+ * - Truncates to MAX_FIELD_LENGTH
+ * - Redacts potential secrets
+ */
+function sanitizeForLog(value) {
+  if (typeof value !== "string") return value;
+
+  let sanitized = value;
+
+  // Redact potential secrets
+  for (const pattern of SECRET_PATTERNS) {
+    sanitized = sanitized.replace(pattern, "[REDACTED]");
+  }
+
+  // Truncate long values
+  if (sanitized.length > MAX_FIELD_LENGTH) {
+    sanitized = sanitized.slice(0, MAX_FIELD_LENGTH) + "...[truncated]";
+  }
+
+  return sanitized;
+}
+
+/**
+ * Sanitize an event data object for logging
+ */
+function sanitizeEventData(eventData) {
+  const sanitized = {};
+  for (const [key, value] of Object.entries(eventData)) {
+    // Sanitize user-controlled string fields
+    if (typeof value === "string" && ["message", "file", "skill", "hash"].includes(key)) {
+      sanitized[key] = sanitizeForLog(value);
+    } else {
+      sanitized[key] = value;
+    }
+  }
+  return sanitized;
+}
 
 // Ensure .claude directory exists
 function ensureLogDir() {
@@ -80,12 +145,15 @@ function logEvent(eventData) {
     return null;
   }
 
+  // Sanitize user-controlled fields before logging
+  const sanitizedData = sanitizeEventData(eventData);
+
   // Build entry with user identifier and outcome for audit trail compliance
   const entry = {
     timestamp: new Date().toISOString(),
     user: process.env.USER || process.env.USERNAME || "unknown",
     outcome: "success", // Will be overridden if eventData includes outcome
-    ...eventData,
+    ...sanitizedData,
   };
 
   try {
@@ -314,7 +382,11 @@ function main() {
       break;
   }
 
-  logEvent(eventData);
+  const entry = logEvent(eventData);
+  if (!entry) {
+    console.error("❌ ERROR: Failed to write session activity log.");
+    process.exit(2);
+  }
   console.log(
     `Logged: ${args.event}${args.file ? ` (${args.file})` : ""}${args.skill ? ` (${args.skill})` : ""}`
   );
