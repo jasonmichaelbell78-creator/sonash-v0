@@ -19,8 +19,13 @@ import {
   type NotebookModuleId,
 } from "./roadmap-modules";
 
-// Lazy load the modal
+// Lazy load modals
 const AccountLinkModal = dynamic(() => import("@/components/auth/account-link-modal"), {
+  loading: () => null,
+  ssr: false,
+});
+
+const SettingsPage = dynamic(() => import("@/components/settings/settings-page"), {
   loading: () => null,
   ssr: false,
 });
@@ -42,6 +47,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
   const [activeTab, setActiveTab] = useState<NotebookModuleId>("today");
   const [showSettings, setShowSettings] = useState(false);
   const [showAccountLink, setShowAccountLink] = useState(false);
+  const [showSettingsPage, setShowSettingsPage] = useState(false);
   const [direction, setDirection] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -249,9 +255,21 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
                 </div>
               )}
 
-              <p className="font-body text-amber-900/40">Nickname & privacy (coming soon)</p>
-              <p className="font-body text-amber-900/40">Home screen & favorites (coming soon)</p>
-              <p className="font-body text-amber-900/40">Language & text size (coming soon)</p>
+              {/* Manage Profile Link */}
+              <button
+                onClick={() => {
+                  setShowSettings(false);
+                  setShowSettingsPage(true);
+                }}
+                className="w-full text-left p-3 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+              >
+                <p className="font-handlee text-amber-800 font-medium">
+                  Manage Profile →
+                </p>
+                <p className="font-body text-amber-700/70 text-sm">
+                  Edit nickname, clean date, and preferences
+                </p>
+              </button>
 
               <div className="pt-4 border-t border-amber-900/10">
                 <button
@@ -289,6 +307,21 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
             onClose={() => setShowAccountLink(false)}
             onSuccess={() => setShowAccountLink(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Settings Page (Full Screen) */}
+      <AnimatePresence>
+        {showSettingsPage && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-[#111]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <SettingsPage onClose={() => setShowSettingsPage(false)} />
+          </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
