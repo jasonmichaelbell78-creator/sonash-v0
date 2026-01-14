@@ -74,7 +74,7 @@ export function JournalLayout({ children }: JournalLayoutProps) {
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none z-10" />
 
           {/* Content */}
-          <div className="relative z-10 flex-1 min-h-0 p-6 md:p-10 font-body text-[var(--journal-text)] overflow-y-auto overscroll-contain">
+          <div className="relative z-10 flex-1 min-h-0 p-6 md:p-10 font-body text-[var(--journal-text)] overflow-y-auto overflow-x-hidden overscroll-contain">
             {children}
           </div>
         </div>

@@ -1784,10 +1784,8 @@ Multi-pass analysis (3 passes) to ensure complete coverage.
 
 ## Review #146 - Settings Page PR Feedback
 
-**Date:** 2026-01-14
-**Source:** Qodo PR Review
-**Trigger:** PR feedback on Settings page implementation
-**Category:** MINOR (all suggestions)
+**Date:** 2026-01-14 **Source:** Qodo PR Review **Trigger:** PR feedback on
+Settings page implementation **Category:** MINOR (all suggestions)
 
 **Items Received:** 3
 
@@ -1808,8 +1806,10 @@ Multi-pass analysis (3 passes) to ensure complete coverage.
 
 **Key Learnings:**
 
-- **Scroll Containment**: `overscroll-contain` prevents scroll chaining in nested containers
-- **Input Normalization**: Zod's `.trim()` handles whitespace at validation layer
+- **Scroll Containment**: `overscroll-contain` prevents scroll chaining in
+  nested containers
+- **Input Normalization**: Zod's `.trim()` handles whitespace at validation
+  layer
 - **Type Safety**: Strict null checks are more explicit than truthy/falsy checks
 
 **Resolution:**
@@ -1820,10 +1820,10 @@ Multi-pass analysis (3 passes) to ensure complete coverage.
 
 **Fixes Applied:**
 
-| # | Severity | Issue                    | File(s)              | Fix                                        |
-|---|----------|--------------------------|----------------------|--------------------------------------------|
-| 1 | MINOR    | Missing overscroll-contain | journal-layout.tsx:77 | Added `overscroll-contain` class         |
-| 2 | MINOR    | Whitespace not trimmed   | users.ts:61          | Added `.trim()` to Zod schema            |
-| 3 | MINOR    | Truthy instead of strict | settings-page.tsx:156 | Changed to strict null comparison        |
+| #   | Severity | Issue                      | File(s)               | Fix                               |
+| --- | -------- | -------------------------- | --------------------- | --------------------------------- |
+| 1   | MINOR    | Missing overscroll-contain | journal-layout.tsx:77 | Added `overscroll-contain` class  |
+| 2   | MINOR    | Whitespace not trimmed     | users.ts:61           | Added `.trim()` to Zod schema     |
+| 3   | MINOR    | Truthy instead of strict   | settings-page.tsx:156 | Changed to strict null comparison |
 
 ---
