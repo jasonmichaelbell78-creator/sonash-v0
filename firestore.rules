@@ -131,9 +131,18 @@ service cloud.firestore {
 
 
     // ============================================
+    // DEV DASHBOARD COLLECTIONS (Admin only)
+    // ============================================
+
+    // Dev dashboard data - Lighthouse audits, metrics, etc.
+    match /dev/{document=**} {
+      allow read, write: if isAdmin(); // Only users with admin custom claim
+    }
+
+    // ============================================
     // INTERNAL COLLECTIONS (Cloud Functions only)
     // ============================================
-    
+
     // Rate Limits - Used by Cloud Functions for rate limiting
     match /rate_limits/{docId} {
       allow read, write: if false; // Only Cloud Functions (Admin SDK)

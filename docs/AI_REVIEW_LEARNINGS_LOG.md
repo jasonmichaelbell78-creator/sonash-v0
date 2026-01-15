@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 6.4 **Created:** 2026-01-02 **Last Updated:** 2026-01-14
+**Document Version:** 6.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-15
 
 ## Purpose
 
@@ -20,6 +20,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6.5     | 2026-01-15 | Review #147: CI Blocker Fixes + Firebase Error Handling - 7 items (1 CRITICAL: logger.debug TS2339; 3 MAJOR: ROADMAP date format, Firestore dev/\* rules, Firebase error specificity; 3 MINOR: token refresh, network errors, errorCode logging). New patterns: prettier-ignore for linter conflicts, explicit admin rules for dev collections, getIdTokenResult(true) for fresh claims.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 6.4     | 2026-01-14 | Review #145: Settings Page Accessibility & Security - 14 items (5 MAJOR: toggle accessibility, date validation, preference preservation, timezone bug, form labels; 9 MINOR: useAuth deprecated, props readonly, silent return, error logging, audit logging, change detection). New patterns: Accessible toggle (button+role=switch), local date formatting, preference spread.                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 6.3     | 2026-01-13 | Review #141: PR Review Processing Round 3 - 5 items (1 MEDIUM: schema category token normalization, 4 LOW: grep -E portability, header verification coverage). New patterns: Schema category enums should be single CamelCase tokens without spaces, always use grep -E for alternation patterns.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 6.2     | 2026-01-13 | Review #140: PR Review Processing Round 2 - 7 items (1 MEDIUM: grep xargs hang fix, 6 LOW: category enum alignment, improved grep patterns for empty catches and correlation IDs, grep portability fixes). New patterns: Use while read instead of xargs, align category names with schema enums.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -224,8 +225,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #146
+**Reviews since last consolidation:** 4 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #147
 
 ### When to Consolidate
 
@@ -556,6 +557,41 @@ items (Major: 7, Minor: 8, Trivial: 2, Deferred: 1)
 - --no-sandbox in local dev scripts is acceptable, not a CI security risk
 - Non-sensitive config (org names, project names) should use env vars, not GCP
   Secret Manager
+
+---
+
+#### Review #147: CI Blocker Fixes + Firebase Error Handling (2026-01-15)
+
+**Source:** CI Failures + Qodo Compliance + PR Suggestions **PR/Branch:**
+claude/lighthouse-integration-planning-YdBkz **Suggestions:** 7 items (Critical:
+1, Major: 3, Minor: 3)
+
+**Issues Fixed:**
+
+| #   | Issue                                      | Severity | Category   | Fix                                             |
+| --- | ------------------------------------------ | -------- | ---------- | ----------------------------------------------- |
+| 1   | logger.debug doesn't exist (TS2339)        | Critical | CI Blocker | Changed to logger.info                          |
+| 2   | ROADMAP.md date format (Prettier reverted) | Major    | CI Blocker | Added prettier-ignore comments                  |
+| 3   | Firestore dev/\* rules missing             | Major    | Security   | Added admin-only rules for dev/{document=\*\*}  |
+| 4   | Firebase error handling not specific       | Major    | UX         | Show permission-denied vs network errors        |
+| 5   | Stale admin claims not detected            | Minor    | Auth       | Force token refresh with getIdTokenResult(true) |
+| 6   | Generic error messages for network issues  | Minor    | UX         | Show specific "Network error" message           |
+| 7   | Swallowed Firebase errors                  | Minor    | Debugging  | Include errorCode in logs                       |
+
+**Patterns Identified:**
+
+1. **Prettier can override linter requirements**: Use prettier-ignore comments
+   when formatters conflict with linters
+2. **Firestore implicit deny needs explicit rules**: Add explicit admin-only
+   rules for dev collections for clarity
+3. **Force token refresh for admin checks**: `getIdTokenResult(true)` catches
+   recent claim changes
+
+**Key Learnings:**
+
+- The logger module only has info/warn/error methods - no debug level
+- Firestore denies access by default but explicit rules improve auditability
+- Show specific error types (permission-denied, network) for better UX
 
 ---
 

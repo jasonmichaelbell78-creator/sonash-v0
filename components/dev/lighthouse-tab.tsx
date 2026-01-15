@@ -89,11 +89,25 @@ export function LighthouseTab() {
           setLatestRun(doc.data() as LighthouseRun);
         }
       } catch (err) {
-        // If collection doesn't exist yet, that's okay - but log it properly
+        // Handle different Firebase error types appropriately
+        const errorCode = (err as { code?: string })?.code;
         const errorType = err instanceof Error ? err.name : "UnknownError";
-        logger.debug("Lighthouse data fetch failed", { errorType, context: "lighthouse-tab" });
-        // Only set error for unexpected failures, not missing collection
-        if (errorType !== "FirebaseError") {
+        logger.info("Lighthouse data fetch failed", {
+          errorType,
+          errorCode,
+          context: "lighthouse-tab",
+        });
+
+        // Show specific error messages based on error type
+        if (errorCode === "permission-denied") {
+          setError("Access denied - admin privileges required");
+        } else if (errorCode === "unavailable" || errorCode === "failed-precondition") {
+          // Collection doesn't exist yet or index issue - not an error
+          setLatestRun(null);
+        } else if (errorType === "FirebaseError") {
+          // Other Firebase errors (e.g., network) - silent fail to null state
+          setLatestRun(null);
+        } else {
           setError("Failed to load Lighthouse data");
         }
         setLatestRun(null);

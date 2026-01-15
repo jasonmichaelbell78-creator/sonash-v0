@@ -1,6 +1,10 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.5 **Last Updated:** 2026-01-15 **Status:** ACTIVE
+<!-- prettier-ignore-start -->
+**Document Version:** 2.5
+**Last Updated:** 2026-01-15
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
 **Overall Completion:** ~35%
 
 ---

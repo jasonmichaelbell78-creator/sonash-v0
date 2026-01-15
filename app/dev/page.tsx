@@ -53,14 +53,20 @@ export default function DevPage() {
       }
 
       // Verify admin claim (same as admin panel - devs are admins)
+      // Force refresh to catch recent claim changes
       try {
-        const tokenResult = await firebaseUser.getIdTokenResult();
+        const tokenResult = await firebaseUser.getIdTokenResult(true);
         setUser(firebaseUser);
         setState(tokenResult.claims.admin === true ? "authenticated" : "not-admin");
       } catch (err) {
+        const errorCode = (err as { code?: string })?.code;
         const errorType = err instanceof Error ? err.name : "UnknownError";
-        logger.error("Error verifying admin claim for dev dashboard", { errorType });
-        setError("Failed to verify privileges");
+        logger.error("Error verifying admin claim for dev dashboard", { errorType, errorCode });
+        setError(
+          errorCode === "network-request-failed"
+            ? "Network error - please check your connection"
+            : "Failed to verify privileges"
+        );
         setState("login");
       }
     });
