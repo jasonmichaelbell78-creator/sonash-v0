@@ -131,7 +131,7 @@ export function LighthouseTab() {
             <ul className="text-sm text-gray-400 space-y-1">
               <li>✅ Dev Dashboard created</li>
               <li>✅ Lighthouse tab UI ready</li>
-              <li>⏳ PERF-001: Lighthouse script (next task)</li>
+              <li>✅ PERF-001: Lighthouse script</li>
               <li>⏳ PERF-002: CI integration</li>
               <li>⏳ PERF-003: Firestore history storage</li>
             </ul>
