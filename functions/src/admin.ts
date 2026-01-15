@@ -1136,32 +1136,7 @@ export const adminGetSentryErrorSummary = onCall(
   };
 
   try {
-    const statsUrl = new URL(`https://sentry.io/api/0/organizations/${org}/events-stats/`);
-    statsUrl.searchParams.set("project", project);
-    statsUrl.searchParams.set("interval", "1h");
-    statsUrl.searchParams.set("statsPeriod", "48h");
-
-    const statsResponse = await fetch(statsUrl.toString(), { headers });
-    if (!statsResponse.ok) {
-      throw new Error(`Sentry stats API failed: ${statsResponse.status}`);
-    }
-
-    const statsPayload = await statsResponse.json();
-    const statsData: Array<[number, number | number[]]> = Array.isArray(statsPayload?.data)
-      ? statsPayload.data
-      : [];
-    const buckets = statsData.map((entry) => {
-      const rawValue = entry[1];
-      if (Array.isArray(rawValue)) {
-        return Number(rawValue[0] ?? 0);
-      }
-      return Number(rawValue ?? 0);
-    });
-    const last24h = buckets.slice(-24).reduce((sum, value) => sum + value, 0);
-    const prev24h = buckets.slice(-48, -24).reduce((sum, value) => sum + value, 0);
-    const trendPct =
-      prev24h === 0 ? (last24h === 0 ? 0 : 100) : ((last24h - prev24h) / prev24h) * 100;
-
+    // Fetch issues from project - this endpoint works with project slug
     const issuesUrl = new URL(`https://sentry.io/api/0/projects/${org}/${project}/issues/`);
     issuesUrl.searchParams.set("limit", "20");
     issuesUrl.searchParams.set("sort", "freq");
@@ -1194,11 +1169,14 @@ export const adminGetSentryErrorSummary = onCall(
       permalink: issue.permalink || `https://sentry.io/organizations/${org}/issues/`,
     }));
 
+    // Calculate stats from issues (sum of event counts)
+    const totalEvents24h = issues.reduce((sum, issue) => sum + issue.count, 0);
+
     return {
       summary: {
-        totalEvents24h: last24h,
-        totalEventsPrev24h: prev24h,
-        trendPct: Number(trendPct.toFixed(1)),
+        totalEvents24h,
+        totalEventsPrev24h: 0, // Not available without events-stats API
+        trendPct: 0, // Not available without events-stats API
         issueCount: issues.length,
       },
       issues,
