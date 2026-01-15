@@ -21,8 +21,14 @@ let didInit = false;
 export function SentryInitializer() {
   useEffect(() => {
     if (didInit) return;
-    didInit = true;
-    initSentryClient();
+
+    try {
+      initSentryClient();
+      didInit = true;
+    } catch {
+      // Allow retry on next mount if initialization fails
+      didInit = false;
+    }
   }, []);
 
   return null;

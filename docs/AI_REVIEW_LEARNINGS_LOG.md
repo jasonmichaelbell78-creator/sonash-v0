@@ -226,8 +226,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #149
+**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #150
 
 ### When to Consolidate
 
@@ -668,6 +668,43 @@ Minor: 4)
 - Pattern compliance CI can flag safe code if regex doesn't understand context
 - React Strict Mode runs effects twice in dev - guard initialization with flags
 - Firestore Partial<T> + validation is safer than direct type assertion
+
+---
+
+#### Review #150: Deployment Safety & Async Cleanup (2026-01-15)
+
+**Source:** PR Code Suggestions (Qodo) **PR/Branch:**
+claude/lighthouse-integration-planning-YdBkz **Suggestions:** 7 items (Major: 2,
+Minor: 5)
+
+**Issues Fixed:**
+
+| #   | Issue                               | Severity | Category   | Fix                                         |
+| --- | ----------------------------------- | -------- | ---------- | ------------------------------------------- |
+| 1   | process.env fails in deployed funcs | Major    | Deployment | Use defineString for SENTRY_ORG/PROJECT     |
+| 2   | Missing Lighthouse category crashes | Major    | Robustness | Safe scoreFor() helper with optional chain  |
+| 3   | Firestore index errors hidden       | Minor    | UX         | Show specific error for failed-precondition |
+| 4   | Sentry init failure permanent       | Minor    | Resilience | Allow retry with try/catch on didInit       |
+| 5   | Auth useEffect unmount race         | Minor    | React      | Add isCancelled flag with cleanup           |
+| 6   | Lighthouse useEffect unmount race   | Minor    | React      | Add isCancelled flag with cleanup           |
+| 7   | (robust Firestore validation)       | Minor    | Safety     | Already done in #149, refined error message |
+
+**Patterns Identified:**
+
+1. **defineString for deployment safety**: process.env doesn't work in deployed
+   Cloud Functions - use defineString for non-secret config
+2. **Async cleanup pattern**: Use `let isCancelled = false` in useEffect with
+   cleanup function to prevent state updates after unmount
+3. **Optional chaining for external data**: Lighthouse categories can be absent
+   - use `?.` chain with fallback to 0
+
+**Key Learnings:**
+
+- Firebase Functions don't have access to .env files in production - only
+  defineSecret and defineString work reliably
+- React Strict Mode double-invokes effects - but isCancelled pattern handles
+  both Strict Mode and normal unmount
+- Firestore failed-precondition usually means missing index, not missing data
 
 ---
 

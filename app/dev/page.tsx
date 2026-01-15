@@ -36,16 +36,22 @@ export default function DevPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isCancelled = false;
+
     // Check for mobile after mount (run once)
     const isMobile =
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
     if (isMobile) {
       setState("mobile");
-      return; // Don't set up auth listener on mobile
+      return () => {
+        isCancelled = true;
+      };
     }
 
     // Listen for auth state (single subscription on mount)
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (isCancelled) return;
+
       if (!firebaseUser || firebaseUser.isAnonymous) {
         setState("login");
         setUser(null);
@@ -56,9 +62,13 @@ export default function DevPage() {
       // Force refresh to catch recent claim changes
       try {
         const tokenResult = await firebaseUser.getIdTokenResult(true);
+        if (isCancelled) return;
+
         setUser(firebaseUser);
         setState(tokenResult.claims.admin === true ? "authenticated" : "not-admin");
       } catch (err) {
+        if (isCancelled) return;
+
         const errorCode = (err as { code?: string })?.code;
         const errorType = err instanceof Error ? err.name : "UnknownError";
         logger.error("Error verifying admin claim for dev dashboard", { errorType, errorCode });
@@ -72,7 +82,10 @@ export default function DevPage() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      isCancelled = true;
+      unsubscribe();
+    };
   }, []); // Empty deps - run once on mount
 
   const handleLogin = async () => {

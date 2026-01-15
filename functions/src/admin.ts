@@ -6,7 +6,7 @@
  */
 
 import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
-import { defineSecret } from "firebase-functions/params";
+import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
 import { logSecurityEvent } from "./security-logger";
@@ -15,10 +15,13 @@ import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 /**
  * SEC-001: Firebase Secrets for Sentry Integration
  * API token is stored in GCP Secret Manager (sensitive)
- * Org/Project are loaded from functions/.env (non-sensitive)
+ * Org/Project are loaded via defineString for deployment safety
  * Set token via: firebase functions:secrets:set SENTRY_API_TOKEN
+ * Set org/project in functions/.env.local or via Firebase console
  */
 const sentryApiToken = defineSecret("SENTRY_API_TOKEN");
+const sentryOrg = defineString("SENTRY_ORG");
+const sentryProject = defineString("SENTRY_PROJECT");
 import {
   meetingSchema,
   soberLivingSchema,
@@ -1116,10 +1119,10 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
     { userId: request.auth?.uid, severity: "INFO" }
   );
 
-  // SEC-001: Access token via .value(), org/project from env vars
+  // SEC-001: Access all config via .value() for deployment safety
   const token = sentryApiToken.value();
-  const org = process.env.SENTRY_ORG;
-  const project = process.env.SENTRY_PROJECT;
+  const org = sentryOrg.value();
+  const project = sentryProject.value();
 
   if (!token || !org || !project) {
     throw new HttpsError("failed-precondition", "Sentry integration is not configured");

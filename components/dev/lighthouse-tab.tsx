@@ -76,11 +76,15 @@ export function LighthouseTab() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isCancelled = false;
+
     async function fetchLatestRun() {
       try {
         const historyRef = collection(db, "dev", "lighthouse", "history");
         const q = query(historyRef, orderBy("timestamp", "desc"), limit(1));
         const snapshot = await getDocs(q);
+
+        if (isCancelled) return;
 
         if (snapshot.empty) {
           setLatestRun(null);
@@ -98,6 +102,8 @@ export function LighthouseTab() {
           setLatestRun(data as LighthouseRun);
         }
       } catch (err) {
+        if (isCancelled) return;
+
         const errorCode = (err as { code?: string })?.code;
         const errorType = err instanceof Error ? err.name : "UnknownError";
         logger.info("Lighthouse data fetch failed", {
@@ -120,8 +126,9 @@ export function LighthouseTab() {
           return;
         }
 
-        // Collection doesn't exist yet or index issue - treat as "no data yet"
+        // Index missing / query requires precondition (often a Firestore index)
         if (errorCode === "failed-precondition") {
+          setError("Firestore index required - check required indexes for Lighthouse history");
           setLatestRun(null);
           return;
         }
@@ -130,11 +137,15 @@ export function LighthouseTab() {
         setError("Failed to load Lighthouse data");
         setLatestRun(null);
       } finally {
-        setLoading(false);
+        if (!isCancelled) setLoading(false);
       }
     }
 
     fetchLatestRun();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   if (loading) {

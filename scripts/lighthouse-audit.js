@@ -96,13 +96,18 @@ async function auditPage(route, chromePort, options = {}) {
   try {
     const result = await runLighthouse(url, config, chromePort);
 
-    // Extract scores
+    // Extract scores (some categories like PWA can be absent depending on context)
+    const scoreFor = (categoryKey) => {
+      const score = result?.lhr?.categories?.[categoryKey]?.score;
+      return typeof score === "number" ? Math.round(score * 100) : 0;
+    };
+
     const scores = {
-      performance: Math.round(result.lhr.categories.performance.score * 100),
-      accessibility: Math.round(result.lhr.categories.accessibility.score * 100),
-      bestPractices: Math.round(result.lhr.categories["best-practices"].score * 100),
-      seo: Math.round(result.lhr.categories.seo.score * 100),
-      pwa: Math.round(result.lhr.categories.pwa.score * 100),
+      performance: scoreFor("performance"),
+      accessibility: scoreFor("accessibility"),
+      bestPractices: scoreFor("best-practices"),
+      seo: scoreFor("seo"),
+      pwa: scoreFor("pwa"),
     };
 
     // Save reports
