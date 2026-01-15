@@ -234,8 +234,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #150
+**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #151
 
 ### When to Consolidate
 
@@ -713,6 +713,51 @@ Minor: 5)
 - React Strict Mode double-invokes effects - but isCancelled pattern handles
   both Strict Mode and normal unmount
 - Firestore failed-precondition usually means missing index, not missing data
+
+---
+
+#### Review #151: ErrorsTab Expandable Details PR Feedback (2026-01-15)
+
+**Source:** CI Feedback + Qodo PR Compliance + PR Code Suggestions
+**PR/Branch:** claude/new-session-UhAVn **Suggestions:** 9 items (Critical: 1,
+Major: 2, Minor: 5, Deferred: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                | Severity | Category      | Fix                                                  |
+| --- | ------------------------------------ | -------- | ------------- | ---------------------------------------------------- |
+| 1   | Prettier formatting errors-tab.tsx   | Critical | CI Blocker    | Run `npm run format`                                 |
+| 2   | Untrusted link injection (permalink) | Major    | Security      | Validate URL protocol (https:// allowlist)           |
+| 3   | Invalid date crash in formatting     | Major    | Robustness    | Validate dates with isNaN check before format        |
+| 4   | Interactive tr should use button     | Minor    | Accessibility | Move click handler to button inside first cell       |
+| 5   | Missing noopener in rel attribute    | Minor    | Security      | Add noopener to rel="noopener noreferrer"            |
+| 6   | findErrorKnowledge called per render | Minor    | Performance   | Memoize issues with knowledge using useMemo          |
+| 7   | Redundant date formatting calls      | Minor    | Performance   | Calculate firstSeen/lastSeen once at component start |
+| 8   | getSeverityColor not exhaustive      | Minor    | Type Safety   | Add exhaustive check pattern                         |
+
+**Deferred:**
+
+- Move knowledge base to Firestore (architectural change - tracked for separate
+  PR)
+
+**Patterns Identified:**
+
+1. **URL Protocol Validation**: External URLs (from APIs like Sentry) must be
+   validated before rendering in anchor tags - use allowlist pattern
+   (https://sentry.io only)
+2. **Date Validation Before Formatting**: Always check `!isNaN(date.getTime())`
+   before passing to date-fns formatDistanceToNow
+3. **Memoize Derived Render Data**: When mapping arrays to add derived data, use
+   useMemo to prevent recalculation on every render
+
+**Key Learnings:**
+
+- Sentry permalinks should only ever be https://sentry.io URLs, but defensive
+  validation prevents injection if API is compromised
+- Interactive table rows cause accessibility issues - use semantic button
+  elements
+- rel="noreferrer" already implies noopener in modern browsers, but explicit
+  noopener is defensive best practice
 
 ---
 
