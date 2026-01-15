@@ -1109,7 +1109,9 @@ interface SentryIssueSummary {
   permalink: string;
 }
 
-export const adminGetSentryErrorSummary = onCall(async (request) => {
+export const adminGetSentryErrorSummary = onCall(
+  { secrets: [sentryApiToken] },
+  async (request) => {
   await requireAdmin(request, "adminGetSentryErrorSummary");
 
   logSecurityEvent(
