@@ -11,6 +11,26 @@ This document contains aggregated refactoring audit findings from multiple AI
 models. It identifies code quality issues, technical debt, and architectural
 improvements with severity ratings and effort estimates.
 
+---
+
+## Quick Start
+
+1. Review refactoring findings
+2. Check effort estimates
+3. Prioritize by impact
+
+---
+
+## AI Instructions
+
+When implementing refactoring:
+
+- Follow effort estimates
+- Test thoroughly after changes
+- Update finding status
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                              |

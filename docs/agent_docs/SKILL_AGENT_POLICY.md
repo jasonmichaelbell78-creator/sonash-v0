@@ -8,6 +8,19 @@ This document defines the policy for creating, using, and overriding skills and
 agents in the SoNash development workflow. It ensures consistent quality gates
 and creates an audit trail for accountability.
 
+## Quick Start
+
+1. Check available skills: `ls .claude/commands/`
+2. Validate skills: `npm run skills:validate`
+3. Override when needed: Document in session audit
+
+## AI Instructions
+
+When working with skills:
+- Always use appropriate skill for the task type (see Decision Tree)
+- Run `npm run skills:validate` before committing new skills
+- Document any skill overrides with rationale
+
 ---
 
 ## 1. Skill/Command File Requirements

@@ -12,6 +12,20 @@ This document provides a human-readable summary of Tier-2 cross-category
 aggregation, consolidating findings from all 6 Multi-AI audits into a unified
 prioritized backlog.
 
+## Quick Start
+
+1. Review executive summary
+2. Check key findings and decisions
+3. Note action items
+
+## AI Instructions
+
+When using human summary:
+
+- Reference for quick context
+- Check detailed docs for implementation
+- Update summary after major changes
+
 ## Version History
 
 | Version | Date       | Changes                               |

@@ -30,6 +30,14 @@ Recovery Notebook project. It provides:
 
 ---
 
+## Quick Start
+
+1. Start each session with `/session-begin`
+2. Follow the Decision Tree for task approach
+3. End sessions with `/session-end`
+
+---
+
 ## 🎯 Quick Reference
 
 ### Session Startup Checklist

@@ -11,6 +11,20 @@ This document provides a complete inventory of project documentation, organized
 by tier and category. Use this index to locate specific documentation and
 understand the documentation structure.
 
+## Quick Start
+
+1. Navigate to relevant document category
+2. Check tier level for priority
+3. Follow document-specific guidelines
+
+## AI Instructions
+
+When working with documentation:
+
+- Check tier level before making changes
+- Follow category-specific standards
+- Update README when adding new documents
+
 ---
 
 ## Table of Contents

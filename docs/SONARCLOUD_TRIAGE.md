@@ -17,6 +17,19 @@ during Step 4C of the Integrated Improvement Plan. Each issue is categorized as:
 
 **Scope:** Security hotspots, bugs, and code smells from SonarCloud scan.
 
+## Quick Start
+
+1. Check the [Summary](#summary) for issue counts by category
+2. Review [HIGH Security Hotspots](#high-security-hotspots-11-total) for critical items
+3. Use decision categories to filter: FIX-NOW, FALSE-POS, ACCEPT-RISK, FIX-LATER
+
+## AI Instructions
+
+When triaging SonarCloud issues:
+- Classify each issue into one of four categories
+- Document rationale for ACCEPT-RISK decisions
+- Update this file when issues are fixed or reclassified
+
 ---
 
 ## Summary

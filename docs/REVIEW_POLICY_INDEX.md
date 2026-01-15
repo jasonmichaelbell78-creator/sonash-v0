@@ -19,6 +19,20 @@ with Claude Code as the primary development interface.
 - Escalate only when needed
 - Continuous process improvement
 
+## Quick Start
+
+1. Review policy architecture overview
+2. Navigate to specific policy documents as needed
+3. Check quick reference for common scenarios
+
+## AI Instructions
+
+When working with review policies:
+
+- Follow the policy hierarchy: Index → Architecture → Specific docs
+- Reference Visual Guide for decision trees
+- Update this index when adding new policy documents
+
 ---
 
 ## Documentation Structure

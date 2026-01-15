@@ -11,6 +11,20 @@ This document captures process improvements implemented after analyzing the
 Multi-AI Audit Retrospective, including schema validation, quick reference
 cards, and validation commands.
 
+## Quick Start
+
+1. Review improvement recommendations
+2. Check implementation priority
+3. Follow improvement steps
+
+## AI Instructions
+
+When implementing process improvements:
+
+- Start with highest impact items
+- Document changes made
+- Verify improvements with metrics
+
 ## Version History
 
 | Version | Date       | Changes                               |

@@ -11,6 +11,20 @@ performed by Claude Code. It provides the folder structure, available commands,
 output formats, and quality checks for lightweight interim audits between larger
 multi-AI reviews.
 
+## Quick Start
+
+1. Navigate to relevant audit category
+2. Check most recent audit date
+3. Review findings and status
+
+## AI Instructions
+
+When running single-session audits:
+
+- Use appropriate audit template
+- Document all findings systematically
+- Archive completed audits properly
+
 ---
 
 ## Overview

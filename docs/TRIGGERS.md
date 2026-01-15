@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
 **Project**: SoNash Recovery Notebook **Document Version**: 1.3 **Created**:
-2026-01-02 **Last Updated**: 2026-01-02 **Status**: ACTIVE
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-02
 
 ---
 
@@ -18,6 +18,14 @@ repository. This document serves as:
 
 **⚠️ CRITICAL**: This document covers automated (CI/CD, hooks) AND manual
 (documentation directives) triggers. Both require compliance.
+
+---
+
+## Quick Start
+
+1. Check trigger inventory for your automation
+2. Verify trigger conditions and actions
+3. Test trigger behavior before deployment
 
 ---
 

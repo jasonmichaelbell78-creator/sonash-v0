@@ -31,6 +31,14 @@ recommendations, and coverage gaps.
 
 ---
 
+## Quick Start
+
+1. Review process audit scope
+2. Check areas to evaluate
+3. Follow audit methodology
+
+---
+
 ## Status Dashboard
 
 | Step   | Description                             | Status  | Completion |

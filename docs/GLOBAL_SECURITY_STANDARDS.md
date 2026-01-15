@@ -21,6 +21,19 @@ be followed during:
 **No code should be merged that violates these standards without an approved
 exception.**
 
+## Quick Start
+
+1. Review mandatory security requirements
+2. Check implementation status for your component
+3. Follow security checklist before deployment
+
+## AI Instructions
+
+When implementing security:
+- All requirements in this doc are MANDATORY
+- Never bypass security measures without documented approval
+- Report security concerns immediately
+
 ---
 
 ## Quick Reference (TL;DR)

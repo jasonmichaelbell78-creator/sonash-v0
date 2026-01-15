@@ -10,6 +10,14 @@ One-page quick reference for Multi-AI audits. Distilled from the 400+ line
 MULTI_AI_AGGREGATOR_TEMPLATE.md to provide essential schema, format rules, and
 validation commands at a glance.
 
+## AI Instructions
+
+When using CANON references:
+
+- Follow ID format exactly (CANON-NNNN)
+- Use correct category prefixes
+- Keep reference updated with new categories
+
 ## Version History
 
 | Version | Date       | Changes                     |

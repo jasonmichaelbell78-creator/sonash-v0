@@ -1,7 +1,7 @@
 # Operational Visibility Sprint
 
 **Document Version:** 1.0 **Created:** 2026-01-14 **Status:** ACTIVE
-**Priority:** P0 - Immediate Focus
+**Priority:** P0 - Immediate Focus **Last Updated:** 2026-01-15
 
 ---
 
@@ -14,6 +14,22 @@ tooling (Dev Dashboard).
 
 **Sprint Goal:** Get Admin Panel Phases 4-5 and Development Dashboard MVP
 operational ASAP.
+
+---
+
+## Quick Start
+
+1. Review sprint goals and priorities
+2. Check task status and blockers
+3. Follow implementation order
+
+## AI Instructions
+
+When working on operational visibility:
+
+- Prioritize P0 items first
+- Update task status after each change
+- Document blockers immediately
 
 ---
 

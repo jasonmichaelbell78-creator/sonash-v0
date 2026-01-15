@@ -11,6 +11,20 @@ This document contains canonical findings from a multi-AI code review analyzing
 code quality, duplication, type safety, and testing coverage across the SoNash
 codebase.
 
+## Quick Start
+
+1. Review severity breakdown
+2. Check findings by category
+3. Prioritize Critical/High items
+
+## AI Instructions
+
+When addressing code review findings:
+
+- Start with S0/S1 items
+- Verify fixes don't introduce regressions
+- Update finding status after resolution
+
 ## Version History
 
 | Version | Date       | Changes                        |

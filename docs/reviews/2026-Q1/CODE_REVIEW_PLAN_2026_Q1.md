@@ -20,6 +20,20 @@ Plan.
 **Expected Output:** Ranked list of canonical findings (`CANON-CODE.jsonl`) with
 PR implementation plan.
 
+## Quick Start
+
+1. Review the audit scope and objectives
+2. Check the execution timeline
+3. Follow the review methodology steps
+
+## AI Instructions
+
+When executing code reviews:
+
+- Follow the defined methodology exactly
+- Document all findings with CANON IDs
+- Update progress tracking during execution
+
 ---
 
 ## Status Dashboard

@@ -27,6 +27,20 @@ application routes.
 - **Remote Access:** Dev Dashboard will be remote-accessible via Firestore
   backend
 
+## Quick Start
+
+1. Review current Lighthouse CI status
+2. Check implementation phase progress
+3. Follow setup instructions for local testing
+
+## AI Instructions
+
+When working with Lighthouse:
+
+- Run Lighthouse locally before CI validation
+- Update metrics baselines after improvements
+- Document performance regressions immediately
+
 ---
 
 ## Phase 1: Local Lighthouse Script (PERF-001)

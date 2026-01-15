@@ -1,7 +1,7 @@
 # Multi-AI Audit Results
 
-**Created:** 2026-01-08 **Updated:** 2026-01-13 **Purpose:** Store results from
-multi-AI consensus audits
+**Created:** 2026-01-08 **Purpose:** Store results from multi-AI consensus audits
+**Last Updated:** 2026-01-13
 
 > **Note (2026-01-13):** Templates updated with Engineering Productivity audit
 > recommendations. See "Extended Coverage" section for new categories.
@@ -13,6 +13,14 @@ multi-AI consensus audits
 This folder contains audit results from multi-AI consensus reviews. These are
 comprehensive audits performed by 4-6 AI models working together, designed to
 provide high-confidence findings through cross-validation and consensus scoring.
+
+## AI Instructions
+
+When running multi-AI audits:
+
+- Use templates from docs/templates/
+- Document with 4-6 AI models
+- Store results in appropriate category folder
 
 ## Folder Structure
 

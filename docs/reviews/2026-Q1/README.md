@@ -11,6 +11,14 @@ It contains six complete audit plans with SoNash-specific context, instructions
 for running audits across multiple AI models, and the aggregation process for
 generating canonical findings.
 
+## AI Instructions
+
+When working with Q1 reviews:
+
+- Check category folders for specific audits
+- Use appropriate plan templates
+- Document findings systematically
+
 ---
 
 ## Overview

@@ -18,6 +18,12 @@ purpose]. This document serves as:
 
 **⚠️ CRITICAL**: [Any critical warnings or requirements for using this document]
 
+## Quick Start
+
+1. Copy template for new canonical document
+2. Fill in all required sections
+3. Validate structure before committing
+
 ---
 
 ## 📋 HOW TO USE THIS DOCUMENT

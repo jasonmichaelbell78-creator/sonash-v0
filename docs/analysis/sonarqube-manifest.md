@@ -2,12 +2,27 @@
 
 > Generated: 2026-01-11 | Source: sonarqube-issues-2026-01-11.json (941 issues)
 > Previous: sonarqube-issues.json (778 issues, 2026-01-05)
+> **Last Updated:** 2026-01-15
 
 ## Purpose
 
 This manifest provides a condensed view of SonarQube findings to inform the
 Phase 4 Multi-AI Review. The full JSON data is preserved in
 `sonarqube-issues-2026-01-11.json` for detailed analysis.
+
+## Quick Start
+
+1. Review the issue breakdown by category
+2. Check accepted risks and rationale
+3. Track deferred items in ROADMAP
+
+## AI Instructions
+
+When working with SonarCloud issues:
+
+- Reference this manifest for baseline
+- Update when issues are resolved
+- Document new accepted risks with rationale
 
 ## Summary
 

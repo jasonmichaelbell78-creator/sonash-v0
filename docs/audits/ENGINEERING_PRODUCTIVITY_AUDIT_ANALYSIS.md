@@ -16,6 +16,20 @@ evaluates how they map to existing roadmap items. It provides:
 **Scope:** Single-session engineering productivity audit results from
 2026-01-13.
 
+## Quick Start
+
+1. Review the Executive Summary for key findings
+2. Check efficiency recommendations by priority
+3. Track implementation progress in the backlog
+
+## AI Instructions
+
+When analyzing engineering productivity:
+
+- Focus on high-ROI simplifications first
+- Document efficiency gains when implementing changes
+- Update this analysis when completing recommendations
+
 ---
 
 ## Part 1: Audit Findings Cross-Reference

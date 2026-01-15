@@ -11,6 +11,14 @@ significant technical decisions for the SoNash project. ADRs preserve the
 context and rationale behind architectural choices, enabling future developers
 to understand why decisions were made.
 
+## AI Instructions
+
+When creating ADRs:
+
+- Use TEMPLATE.md as base
+- Number sequentially (ADR-NNN)
+- Update this index after adding new ADRs
+
 ---
 
 ## What is an ADR?

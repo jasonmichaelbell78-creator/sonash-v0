@@ -35,6 +35,20 @@ touchpoints.
 - Data (Firestore rules, schemas)
 - Security (auth flows, API keys)
 
+## Quick Start
+
+1. Understand the policy structure and hierarchy
+2. Identify which policies apply to your task
+3. Follow the enforcement mechanisms specified
+
+## AI Instructions
+
+When implementing review policies:
+
+- Understand the full architecture before making changes
+- Ensure changes align with policy hierarchy
+- Update related documents when modifying architecture
+
 ---
 
 ## Table of Contents

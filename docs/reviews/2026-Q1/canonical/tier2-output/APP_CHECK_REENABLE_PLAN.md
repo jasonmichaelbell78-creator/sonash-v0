@@ -12,6 +12,20 @@ This document provides a structured plan for re-enabling Firebase App Check
 after the platform issue is resolved, including prerequisites, testing steps,
 and rollback procedures.
 
+## Quick Start
+
+1. Review implementation requirements
+2. Check prerequisites status
+3. Follow implementation steps
+
+## AI Instructions
+
+When implementing App Check:
+
+- Complete all prerequisites first
+- Test in staging before production
+- Update status after implementation
+
 ## Version History
 
 | Version | Date       | Changes                            |

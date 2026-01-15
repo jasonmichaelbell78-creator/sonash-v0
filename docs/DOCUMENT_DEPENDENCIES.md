@@ -24,6 +24,20 @@ maintain consistency.
 **Related**: [DOCUMENTATION_STANDARDS.md](./DOCUMENTATION_STANDARDS.md) -
 Quality protocols for documentation
 
+## Quick Start
+
+1. Check dependency matrix for your document
+2. Verify all referenced documents exist
+3. Update this file when adding new dependencies
+
+## AI Instructions
+
+When managing document dependencies:
+
+- Track all template-instance relationships
+- Update synchronization status after changes
+- Verify cross-references remain valid
+
 ---
 
 ## Template → Instance Relationships

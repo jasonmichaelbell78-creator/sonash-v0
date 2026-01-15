@@ -19,6 +19,19 @@ This document tracks:
 - Single-session audit: Resets that CATEGORY's threshold only
 - Multi-AI audit: Resets ALL thresholds for that category
 
+## Quick Start
+
+1. Check current audit status in the tracker table
+2. Review findings for your audit category
+3. Update tracker when completing audit items
+
+## AI Instructions
+
+When tracking audits:
+- Update status immediately after changes
+- Document all findings with CANON IDs
+- Keep tracker synchronized with actual progress
+
 ---
 
 ## Current Thresholds

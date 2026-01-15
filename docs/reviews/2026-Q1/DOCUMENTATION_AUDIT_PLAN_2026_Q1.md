@@ -30,6 +30,14 @@ analysis, and quality metrics.
 
 ---
 
+## Quick Start
+
+1. Review audit scope and objectives
+2. Check execution methodology
+3. Follow the audit process
+
+---
+
 ## Status Dashboard
 
 | Step   | Description                                   | Status  | Completion |

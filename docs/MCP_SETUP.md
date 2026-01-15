@@ -13,6 +13,13 @@ access to external services like Firebase, SonarCloud, and file systems.
 **Scope:** Configuration of MCP servers for local development. **Audience:**
 Developers setting up their local environment.
 
+## AI Instructions
+
+When configuring MCP servers:
+- Follow the Quick Start steps in order
+- Ensure environment variables are set before testing
+- Verify server connections with `mcp__<server>__` tool calls
+
 ---
 
 ## Quick Start

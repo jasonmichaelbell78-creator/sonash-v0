@@ -11,6 +11,20 @@ for Step 6 ROADMAP.md integration
 This document contains the refreshed refactor backlog derived from Tier-2
 aggregation, organized by category and prioritized for ROADMAP.md integration.
 
+## Quick Start
+
+1. Review refactoring items
+2. Check priority and effort estimates
+3. Select items for current sprint
+
+## AI Instructions
+
+When working on refactoring:
+
+- Follow priority order
+- Update status after completion
+- Document any scope changes
+
 ## Version History
 
 | Version | Date       | Changes                      |

@@ -20,6 +20,20 @@ integrations **Output:** Canonical findings
 **Prioritized remediation plan:** Included in this report (see "Remediation
 Priority Order" below)
 
+## Quick Start
+
+1. Review security findings
+2. Check severity ratings
+3. Follow remediation steps
+
+## AI Instructions
+
+When addressing security findings:
+
+- Never skip Critical items
+- Document all security changes
+- Re-audit after major fixes
+
 ---
 
 ## Executive Summary

@@ -10,6 +10,14 @@ This directory stores active and completed multi-AI review documents. It serves
 as the central location for code reviews, security audits, performance audits,
 and refactoring plans executed using multi-AI consensus methodology.
 
+## AI Instructions
+
+When working with reviews:
+
+- Check appropriate year/quarter folder
+- Use correct plan/findings templates
+- Document systematically
+
 ---
 
 ## Usage

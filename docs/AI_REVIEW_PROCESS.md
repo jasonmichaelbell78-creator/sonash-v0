@@ -20,6 +20,14 @@ tool-agnostic and applies to all AI review systems.
 
 ---
 
+## Quick Start
+
+1. Identify review trigger (PR, milestone, threshold)
+2. Follow multi-AI review process
+3. Document findings with CANON IDs
+
+---
+
 ## 🎯 Process Overview
 
 ```

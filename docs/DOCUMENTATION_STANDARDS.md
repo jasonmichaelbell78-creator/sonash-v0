@@ -25,6 +25,19 @@ docs must follow these standards.
 **⚠️ CRITICAL**: All documentation MUST conform to these standards.
 Non-compliant docs will be flagged during reviews.
 
+## Quick Start
+
+1. Use appropriate template from `docs/templates/`
+2. Include required sections for document tier
+3. Run `npm run docs:check` before committing
+
+## AI Instructions
+
+When creating documentation:
+- Select correct template for document type
+- Include all required sections for the tier level
+- Validate with docs:check before committing
+
 ---
 
 ## 🗂️ 5-Tier Documentation System
