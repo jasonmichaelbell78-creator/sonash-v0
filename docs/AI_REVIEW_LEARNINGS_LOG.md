@@ -236,8 +236,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 10 **Consolidation threshold:** 10 reviews
-**Status:** ⚠️ CONSOLIDATION DUE **Next consolidation due:** After Review #153
+**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #163
 
 ### When to Consolidate
 
@@ -258,6 +258,36 @@ Consolidation is needed when:
 6. Note consolidation in version history
 
 ### Last Consolidation
+
+- **Date:** 2026-01-15 (Session #67)
+- **Reviews consolidated:** #144-#153 (10 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.8:**
+  - **React/Frontend (11 patterns, NEW SECTION):**
+    - Accessible toggle switches (button + role=switch)
+    - Local date extraction (getFullYear not toISOString)
+    - Preference spread on update
+    - useEffect state dependency issues
+    - Firestore Timestamp handling (.toDate())
+    - Module-level init flags (Strict Mode)
+    - Async cleanup pattern (isCancelled)
+    - useMemo for derived data
+    - Null guards at render boundary
+    - finally for state cleanup
+    - Error user-facing messages (generic)
+  - **Security (12 patterns):**
+    - URL protocol allowlist
+    - Regex length limits (ReDoS prevention)
+    - Email regex RFC 5321 ({1,64}@{1,253}.{2,63})
+    - Large input guards
+    - Sanitizer whitespace handling
+    - Nullable utility types
+    - Firebase defineString (not process.env)
+    - Prettier-linter conflict resolution
+    - Force token refresh (getIdTokenResult)
+    - Dev data client-only Firestore rules
+
+<details>
+<summary>Previous Consolidation (#11)</summary>
 
 - **Date:** 2026-01-12 (Session #57)
 - **Reviews consolidated:** #121-#136 (16 reviews)
@@ -282,6 +312,8 @@ Consolidation is needed when:
     - Exit code best practice (process.exitCode)
   - **GitHub Actions (1 pattern):**
     - Supply chain pinning (SHA over tag)
+
+</details>
 
 <details>
 <summary>Previous Consolidation (#10)</summary>

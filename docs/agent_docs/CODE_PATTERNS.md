@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.7 **Source:** Distilled from 136 AI code reviews **Last
+**Document Version:** 1.8 **Source:** Distilled from 153 AI code reviews **Last
 Updated:** 2026-01-15
 
 ---
@@ -42,6 +42,7 @@ When working with code patterns:
 - [Git](#git)
 - [Documentation](#documentation)
 - [Security Audit (Canonical Findings)](#security-audit-canonical-findings)
+- [React/Frontend](#reactfrontend)
 - [General](#general)
 
 ---
@@ -119,6 +120,16 @@ When working with code patterns:
 | Production fail-closed   | Security features (reCAPTCHA) fail-closed in production             | Degraded security should fail, not bypass           |
 | Firestore batch chunking | Chunk batch operations under 500-op limit                           | Firestore batch write limit                         |
 | Sensitive file filtering | Filter sensitive paths before passing to external tools             | Don't expose secrets to code review tools           |
+| URL protocol allowlist   | Validate external URLs against explicit protocol+host allowlist     | Prevents javascript:/data: injection from APIs      |
+| Regex length limits      | Use `{1,64}` not `+` for bounded user input                         | Prevents ReDoS catastrophic backtracking            |
+| Email regex RFC 5321     | `{1,64}@{1,253}\.[A-Z]{2,63}` with all three bounds                 | Local max 64, domain max 253, TLD max 63            |
+| Large input guards       | Reject inputs exceeding size threshold before processing            | Prevents DoS/UI freeze on crafted payloads          |
+| Sanitizer whitespace     | `input?.trim()` before empty check; trim before processing          | Whitespace-only strings can bypass validation       |
+| Nullable utility types   | Accept `string \| null \| undefined` for optional data handlers     | Explicit API contract for edge cases                |
+| Firebase defineString    | Use `defineString()` not `process.env` in Cloud Functions           | process.env doesn't work in deployed functions      |
+| Prettier-linter conflict | Use `// prettier-ignore` when formatters conflict with linters      | Prevents CI ping-pong between tools                 |
+| Force token refresh      | `getIdTokenResult(true)` when checking fresh admin claims           | Cached tokens miss recent claim changes             |
+| Dev data client-only     | Dev dashboards: Firestore rules `write: if false` for clients       | Writes should only come from Admin SDK/CI           |
 
 ---
 
@@ -251,6 +262,24 @@ When working with code patterns:
 
 ---
 
+## React/Frontend
+
+| Pattern                        | Rule                                                                 | Why                                              |
+| ------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------ |
+| Accessible toggle switches     | Use `<button role="switch" aria-checked>` not `<div onClick>`        | Keyboard support, screen readers                 |
+| Local date extraction          | Use `getFullYear()/getMonth()/getDate()` not `toISOString()`         | toISOString() converts to UTC, shifts dates      |
+| Preference spread on update    | `{ ...existing.preferences, [field]: value }` not direct assign      | Prevents losing unmodified fields                |
+| useEffect state dependency     | Avoid state vars in deps that trigger re-subscriptions               | Creates multiple subscriptions                   |
+| Firestore Timestamp handling   | Check for `.toDate()` method on timestamp fields                     | Data may be Timestamp object or string           |
+| Module-level init flags        | `let didInit = false` outside component for side effects             | Prevents double-init in React Strict Mode        |
+| Async cleanup pattern          | `let isCancelled = false` with `return () => { isCancelled = true }` | Prevents state updates after unmount             |
+| useMemo for derived data       | Memoize arrays mapped with derived fields                            | Prevents recalculation every render              |
+| Null guards at render boundary | Check `if (!user) return null` even if state "guarantees" it         | Defense in depth for edge cases                  |
+| finally for state cleanup      | Use `finally { setLoading(false) }` not duplicate in try/catch       | Consistent cleanup regardless of success/failure |
+| Error user-facing messages     | Generic messages to user; log errorCode only                         | Firebase errors can leak implementation details  |
+
+---
+
 ## General
 
 | Pattern                    | Rule                                                         | Why                              |
@@ -282,16 +311,17 @@ fix guidance.
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                                                                                                                                                                |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1.7     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 - Added 15 patterns (6 Security: IPv6, PII, bypass, fail-closed, batch, filtering; 4 JS/TS: path.relative, Error.cause, globalThis, Array.isArray; 5 CI: arg separator, quote args, project validation, cross-platform, exit code; 1 GitHub Actions: supply chain) |
-| 1.6     | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns.                                                                                                              |
-| 1.5     | 2026-01-11 | Added prototype pollution, secure logging, fail-fast patterns from Reviews #117-120                                                                                                                                                                                                                    |
-| 1.4     | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General)                                                                                                                                                                               |
-| 1.3     | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 - Added Security Audit category (6 patterns)                                                                                                                                                                                                                          |
-| 1.2     | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews                                                                                                                                                                         |
-| 1.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns)                                                                                                                                                                                                                          |
-| 1.0     | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews)                                                                                                                                                                                                                             |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.8     | 2026-01-15 | CONSOLIDATION #12: Reviews #144-153 - Added 23 patterns (11 React/Frontend NEW: accessible toggles, local dates, preference spread, useEffect deps, Timestamp handling, init flags, async cleanup, useMemo, null guards, finally cleanup, error messages; 12 Security: URL allowlist, regex limits, RFC email, large input guards, whitespace, nullable types, defineString, prettier-ignore, token refresh, client-only dev data) |
+| 1.7     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 - Added 15 patterns (6 Security: IPv6, PII, bypass, fail-closed, batch, filtering; 4 JS/TS: path.relative, Error.cause, globalThis, Array.isArray; 5 CI: arg separator, quote args, project validation, cross-platform, exit code; 1 GitHub Actions: supply chain)                                                                                                                             |
+| 1.6     | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns.                                                                                                                                                                                                                                          |
+| 1.5     | 2026-01-11 | Added prototype pollution, secure logging, fail-fast patterns from Reviews #117-120                                                                                                                                                                                                                                                                                                                                                |
+| 1.4     | 2026-01-09 | CONSOLIDATION #9: Reviews #98-108 - Added 18 patterns (6 JS/TS, 4 Security, 3 CI/Automation, 3 Documentation, 2 General)                                                                                                                                                                                                                                                                                                           |
+| 1.3     | 2026-01-07 | CONSOLIDATION #8: Reviews #83-97 - Added Security Audit category (6 patterns)                                                                                                                                                                                                                                                                                                                                                      |
+| 1.2     | 2026-01-07 | CONSOLIDATION #7: Reviews #73-82 - Added 9 patterns (3 Bash/Shell, 6 Documentation) from Multi-AI Audit and Doc Linter reviews                                                                                                                                                                                                                                                                                                     |
+| 1.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 - Added Documentation category (10 patterns)                                                                                                                                                                                                                                                                                                                                                      |
+| 1.0     | 2026-01-05 | Initial extraction from claude.md Section 4 (90+ patterns from 60 reviews)                                                                                                                                                                                                                                                                                                                                                         |
 
 ---
 
