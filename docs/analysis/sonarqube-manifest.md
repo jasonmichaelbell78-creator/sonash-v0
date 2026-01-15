@@ -194,3 +194,12 @@ Most existing files show minimal change; new issues in
 5. New scripts are audit tooling - complexity is acceptable if readable
 6. **393 issues have null file** - these are likely from files not in repo
    (gitignored)
+
+---
+
+## Version History
+
+| Version | Date       | Changes                       |
+| ------- | ---------- | ----------------------------- |
+| 1.0     | 2026-01-11 | Initial manifest generation   |
+| 1.1     | 2026-01-15 | Added Version History section |

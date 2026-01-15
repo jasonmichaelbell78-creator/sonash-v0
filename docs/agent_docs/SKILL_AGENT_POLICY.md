@@ -1,6 +1,6 @@
 # Skill and Agent Usage Policy
 
-**Last Updated:** 2026-01-13 **Status:** Active
+**Status:** Active **Last Updated:** 2026-01-15
 
 ## Purpose
 
@@ -293,7 +293,16 @@ High override counts for specific checks may indicate:
 ## Related Documentation
 
 - [CODE_PATTERNS.md](./CODE_PATTERNS.md) - Anti-patterns to avoid
-- [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Session workflow guidelines
-- [DEVELOPMENT.md](../DEVELOPMENT.md) - Development setup and hooks
+- [AI_WORKFLOW.md](../../AI_WORKFLOW.md) - Session workflow guidelines
+- [DEVELOPMENT.md](../../DEVELOPMENT.md) - Development setup and hooks
 - [FALSE_POSITIVES.jsonl](../audits/FALSE_POSITIVES.jsonl) - Known false
   positives
+
+---
+
+## Version History
+
+| Version | Date       | Changes                       |
+| ------- | ---------- | ----------------------------- |
+| 1.0     | 2026-01-13 | Initial policy documentation  |
+| 1.1     | 2026-01-15 | Added Version History section |

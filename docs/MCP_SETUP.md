@@ -1,9 +1,17 @@
 # MCP Server Setup Guide
 
-**Last Updated:** 2026-01-14
+**Document Version:** 1.0 **Last Updated:** 2026-01-15
+
+---
+
+## Purpose
 
 This guide explains how to configure MCP (Model Context Protocol) servers for
-the SoNash project.
+the SoNash project. MCP servers extend Claude Code's capabilities by providing
+access to external services like Firebase, SonarCloud, and file systems.
+
+**Scope:** Configuration of MCP servers for local development. **Audience:**
+Developers setting up their local environment.
 
 ---
 
@@ -152,3 +160,11 @@ source ~/.bashrc
 
 - [Firebase MCP Docs](https://firebase.google.com/docs/ai-assistance/mcp-server)
 - [MCP Protocol Spec](https://modelcontextprotocol.io/)
+
+---
+
+## Version History
+
+| Version | Date       | Changes               |
+| ------- | ---------- | --------------------- |
+| 1.0     | 2026-01-15 | Initial documentation |

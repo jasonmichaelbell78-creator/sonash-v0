@@ -1050,7 +1050,7 @@ With Phase 5 complete, the remaining steps are:
 
 ## References
 
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../../INTEGRATED_IMPROVEMENT_PLAN.md) -
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
   Master plan
 - [SKILL_AGENT_POLICY.md](../../agent_docs/SKILL_AGENT_POLICY.md) - Policy
   documentation

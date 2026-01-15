@@ -1,6 +1,6 @@
 # reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide
 
-**Last Updated:** 2026-01-03 **Document Tier:** 2 (Active Reference) **Status:**
+**Document Tier:** 2 (Active Reference) **Last Updated:** 2026-01-15 **Status:**
 Deferred - App Check blocking critical functionality **Target:** Future
 implementation after M1-M3 stabilization
 
@@ -79,7 +79,7 @@ ready.
 
 #### 1.2 Remove Environment Variables
 
-**File:** [`.env.local`](../.env.local)
+**File:** `.env.local` (in project root)
 
 Delete these lines:
 

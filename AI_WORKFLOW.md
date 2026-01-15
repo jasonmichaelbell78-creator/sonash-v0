@@ -1,6 +1,6 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-13 **Document Version**: 1.9 **Purpose**: Master
+**Document Version**: 1.9 **Last Updated**: 2026-01-15 **Purpose**: Master
 navigation and workflow guide for AI assistants **When to Use**: Start of EVERY
 session
 
@@ -143,8 +143,8 @@ Recovery Notebook project. It provides:
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-   - [docs/SLASH_COMMANDS_REFERENCE.md](./docs/SLASH_COMMANDS_REFERENCE.md) - Slash commands
-     reference (including audit commands)
+   - [docs/SLASH_COMMANDS_REFERENCE.md](./docs/SLASH_COMMANDS_REFERENCE.md) -
+     Slash commands reference (including audit commands)
    - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md)
      (archived - historical reference only)
 

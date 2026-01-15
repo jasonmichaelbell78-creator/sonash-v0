@@ -931,8 +931,8 @@ production.
   plan
 - [INTEGRATED_IMPROVEMENT_PLAN.md](../../../../docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
   Parent plan (Step 4.2)
-- [sonarqube-manifest.md](../../../../docs/analysis/sonarqube-manifest.md) -
-  Static analysis baseline
+- [sonarqube-manifest.md](../../../analysis/sonarqube-manifest.md) - Static
+  analysis baseline
 - [MULTI_AI_AGGREGATOR_TEMPLATE.md](../../../../docs/templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) -
   Aggregation methodology
 

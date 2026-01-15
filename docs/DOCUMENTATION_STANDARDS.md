@@ -285,7 +285,7 @@ description] **When to Use**: [Trigger/scenario]
 
 ### Internal Links
 
-**Format**: `[Link Text](<relative-path-to-file.md>)`
+**Format**: `[Link Text](relative-path-to-file.md)`
 
 **Best Practices**:
 
@@ -303,12 +303,12 @@ See [ARCHITECTURE.md](../ARCHITECTURE.md) for system design. See the
 
 ### External Links
 
-**Format**: `[Link Text](<https://full-url.com>)`
+**Format**: `[Link Text](https://full-url.com)`
 
 **Best Practices**:
 
 - ✅ Include link purpose:
-  `[Firebase Auth Docs](<https://firebase.google.com>) - User management`
+  `[Firebase Auth Docs](https://firebase.google.com) - User management`
 - ✅ Use official documentation when available
 - ✅ Check links periodically for rot
 
@@ -633,11 +633,11 @@ institutional memory.
 Before committing:
 
 1. List all Markdown references (all formats):
-   - Inline links: `[text](<path>)` and `[text](#anchor)`
+   - Inline links: `[text](path)` and `[text](#anchor)`
    - Reference-style links: `[text][id]` and definitions like
-     `[id]: <path-or-url>`
-   - Images: `![alt](<path>)`
-   - Autolinks: `<https://...>`
+     `[id]: path-or-url`
+   - Images: `![alt](path)`
+   - Autolinks: `https://...`
 2. For each **internal path**:
    - Verify the target file exists in the repository
    - If linking to a section, verify the `#anchor` exists in the target file

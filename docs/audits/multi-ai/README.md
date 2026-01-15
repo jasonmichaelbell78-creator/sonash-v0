@@ -204,10 +204,20 @@ specific category.
 
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
   Canonical JSONL schema
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../../templates/MULTI_AI_REVIEW_COORDINATOR.md)** -
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** -
   Master index and trigger tracking
 - **[AUDIT_TRACKER.md](../../AUDIT_TRACKER.md)** - Threshold and audit history
 - **[../single-session/README.md](../single-session/README.md)** -
   Single-session audit documentation
 - **[AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)** -
   Historical patterns and learnings
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                         |
+| ------- | ---------- | ----------------------------------------------- |
+| 1.0     | 2026-01-08 | Initial multi-AI audit documentation            |
+| 1.1     | 2026-01-13 | Added Extended Coverage with engineering audits |
+| 1.2     | 2026-01-15 | Added Version History section                   |

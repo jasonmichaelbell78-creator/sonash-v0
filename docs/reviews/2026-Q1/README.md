@@ -204,7 +204,7 @@ docs/reviews/2026-Q1/
 
 ## 🔗 Related Documents
 
-- **[INTEGRATED_IMPROVEMENT_PLAN.md](../../INTEGRATED_IMPROVEMENT_PLAN.md)** -
+- **[INTEGRATED_IMPROVEMENT_PLAN.md](../../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)** -
   Step 4.2 context
 - **[MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md)** -
   Aggregation prompt

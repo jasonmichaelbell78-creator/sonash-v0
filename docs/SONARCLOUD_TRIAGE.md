@@ -1,7 +1,23 @@
 # SonarCloud Issue Triage
 
-**Created**: 2026-01-13 (Step 4C) **Export Date**: 2026-01-13T01:17:06Z **Total
-Issues**: 921
+**Created**: 2026-01-13 **Last Updated**: 2026-01-15 **Export Date**:
+2026-01-13T01:17:06Z **Total Issues**: 921
+
+---
+
+## Purpose
+
+This document records the triage decisions for 921 SonarCloud issues identified
+during Step 4C of the Integrated Improvement Plan. Each issue is categorized as:
+
+- **FIX-NOW**: Critical issues fixed immediately
+- **FALSE-POS**: False positives excluded from future scans
+- **ACCEPT-RISK**: Accepted risks with documented rationale
+- **FIX-LATER**: Deferred to M2 milestone
+
+**Scope:** Security hotspots, bugs, and code smells from SonarCloud scan.
+
+---
 
 ## Summary
 
@@ -105,5 +121,14 @@ See `sonar-project.properties` for configured exclusions:
 
 - [SonarCloud Export Data](./analysis/) - Raw issue data
 - [ROADMAP.md](../ROADMAP.md) - M2 backlog items
-- [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) - Step 4C
-  tracking
+- [INTEGRATED_IMPROVEMENT_PLAN.md](./archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+  Step 4C tracking
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                      |
+| ------- | ---------- | -------------------------------------------- |
+| 1.0     | 2026-01-13 | Initial triage from Step 4C                  |
+| 1.1     | 2026-01-15 | Added Purpose section, documentation cleanup |
