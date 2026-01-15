@@ -3,7 +3,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
-import { AlertTriangle, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
+import {
+  findErrorKnowledge,
+  getSeverityColor,
+  getSeverityLabel,
+  type ErrorKnowledge,
+} from "@/lib/error-knowledge-base";
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Info,
+  Lightbulb,
+  RefreshCw,
+  TrendingDown,
+  TrendingUp,
+  Wrench,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface SentryIssueSummary {
@@ -38,11 +56,187 @@ function redactSensitive(text: string) {
   return redactedTokens;
 }
 
+function getStatusBadge(status: string | null) {
+  switch (status) {
+    case "resolved":
+      return (
+        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+          Resolved
+        </span>
+      );
+    case "ignored":
+      return (
+        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+          Ignored
+        </span>
+      );
+    case "unresolved":
+    default:
+      return (
+        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+          Active
+        </span>
+      );
+  }
+}
+
+interface ErrorRowProps {
+  issue: SentryIssueSummary;
+  isExpanded: boolean;
+  onToggle: () => void;
+  knowledge: ErrorKnowledge;
+}
+
+function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
+  const sanitizedTitle = redactSensitive(issue.title);
+
+  return (
+    <>
+      <tr
+        className="cursor-pointer hover:bg-amber-50 transition-colors"
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+        aria-expanded={isExpanded}
+      >
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-2">
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4 text-amber-600 flex-shrink-0" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-amber-600 flex-shrink-0" />
+            )}
+            <div>
+              <div className="font-medium text-amber-900">{sanitizedTitle}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-amber-600">{issue.shortId}</span>
+                <span
+                  className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium border ${getSeverityColor(knowledge.severity)}`}
+                >
+                  {knowledge.component}
+                </span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-amber-900 font-medium">{issue.count.toLocaleString()}</td>
+        <td className="px-6 py-4 text-amber-700">
+          {issue.lastSeen
+            ? formatDistanceToNow(new Date(issue.lastSeen), { addSuffix: true })
+            : "Unknown"}
+        </td>
+        <td className="px-6 py-4 text-amber-700">
+          {issue.firstSeen
+            ? formatDistanceToNow(new Date(issue.firstSeen), { addSuffix: true })
+            : "Unknown"}
+        </td>
+        <td className="px-6 py-4">{getStatusBadge(issue.status)}</td>
+        <td className="px-6 py-4">
+          <a
+            href={issue.permalink}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-amber-700 hover:text-amber-900 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ExternalLink className="h-3 w-3" />
+            Sentry
+          </a>
+        </td>
+      </tr>
+      {isExpanded && (
+        <tr className="bg-amber-50/50">
+          <td colSpan={6} className="px-6 py-4">
+            <div className="space-y-4 pl-6">
+              {/* Description */}
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-amber-900 mb-1">What this means</h4>
+                  <p className="text-sm text-amber-700">{knowledge.description}</p>
+                </div>
+              </div>
+
+              {/* Severity */}
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                <div>
+                  <span className="text-sm font-semibold text-amber-900">User Impact: </span>
+                  <span
+                    className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium border ${getSeverityColor(knowledge.severity)}`}
+                  >
+                    {getSeverityLabel(knowledge.severity)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Possible Causes */}
+              <div className="flex items-start gap-3">
+                <Lightbulb className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-amber-900 mb-2">Possible causes</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {knowledge.possibleCauses.map((cause, idx) => (
+                      <li key={idx} className="text-sm text-amber-700">
+                        {cause}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Remediations */}
+              <div className="flex items-start gap-3">
+                <Wrench className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-amber-900 mb-2">
+                    Suggested remediations
+                  </h4>
+                  <ol className="list-decimal list-inside space-y-1">
+                    {knowledge.remediations.map((step, idx) => (
+                      <li key={idx} className="text-sm text-amber-700">
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              {/* Timestamps */}
+              <div className="flex items-center gap-3 pt-2 border-t border-amber-200">
+                <Clock className="h-4 w-4 text-amber-500" />
+                <div className="text-xs text-amber-600">
+                  First seen:{" "}
+                  {issue.firstSeen
+                    ? formatDistanceToNow(new Date(issue.firstSeen), { addSuffix: true })
+                    : "Unknown"}{" "}
+                  | Last seen:{" "}
+                  {issue.lastSeen
+                    ? formatDistanceToNow(new Date(issue.lastSeen), { addSuffix: true })
+                    : "Unknown"}{" "}
+                  | Total occurrences: {issue.count.toLocaleString()}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
 export function ErrorsTab() {
   const [summary, setSummary] = useState<SentryErrorSummaryResponse["summary"] | null>(null);
   const [issues, setIssues] = useState<SentryIssueSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const trendDirection = useMemo(() => {
     if (!summary) return null;
@@ -50,6 +244,26 @@ export function ErrorsTab() {
     if (summary.trendPct < 0) return "down";
     return "flat";
   }, [summary]);
+
+  const toggleRow = (shortId: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(shortId)) {
+        next.delete(shortId);
+      } else {
+        next.add(shortId);
+      }
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    setExpandedRows(new Set(issues.map((i) => i.shortId)));
+  };
+
+  const collapseAll = () => {
+    setExpandedRows(new Set());
+  };
 
   const refresh = async () => {
     setLoading(true);
@@ -83,7 +297,9 @@ export function ErrorsTab() {
           <AlertTriangle className="w-6 h-6 text-amber-600" />
           <div>
             <h2 className="text-lg font-semibold text-amber-900">Errors</h2>
-            <p className="text-sm text-amber-700">Sanitized Sentry error overview</p>
+            <p className="text-sm text-amber-700">
+              Sanitized Sentry error overview with remediation guidance
+            </p>
           </div>
         </div>
         <button
@@ -137,8 +353,30 @@ export function ErrorsTab() {
           </div>
 
           <div className="rounded-lg border border-amber-100 bg-white">
-            <div className="border-b border-amber-100 px-6 py-4">
-              <h3 className="text-sm font-semibold text-amber-900">Recent errors</h3>
+            <div className="flex items-center justify-between border-b border-amber-100 px-6 py-4">
+              <div>
+                <h3 className="text-sm font-semibold text-amber-900">Recent errors</h3>
+                <p className="text-xs text-amber-600 mt-0.5">
+                  Click any row to see details, causes, and remediation steps
+                </p>
+              </div>
+              {issues.length > 0 && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={expandAll}
+                    className="text-xs text-amber-700 hover:text-amber-900 hover:underline"
+                  >
+                    Expand all
+                  </button>
+                  <span className="text-amber-300">|</span>
+                  <button
+                    onClick={collapseAll}
+                    className="text-xs text-amber-700 hover:text-amber-900 hover:underline"
+                  >
+                    Collapse all
+                  </button>
+                </div>
+              )}
             </div>
             {issues.length === 0 ? (
               <div className="p-6 text-sm text-amber-700">No recent errors reported.</div>
@@ -150,42 +388,43 @@ export function ErrorsTab() {
                       <th className="px-6 py-3 font-medium">Error</th>
                       <th className="px-6 py-3 font-medium">Count</th>
                       <th className="px-6 py-3 font-medium">Last seen</th>
-                      <th className="px-6 py-3 font-medium">Level</th>
+                      <th className="px-6 py-3 font-medium">First seen</th>
+                      <th className="px-6 py-3 font-medium">Status</th>
                       <th className="px-6 py-3 font-medium">Link</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-amber-100">
                     {issues.map((issue) => (
-                      <tr key={issue.shortId}>
-                        <td className="px-6 py-4">
-                          <div className="font-medium text-amber-900">
-                            {redactSensitive(issue.title)}
-                          </div>
-                          <div className="text-xs text-amber-600">{issue.shortId}</div>
-                        </td>
-                        <td className="px-6 py-4 text-amber-900">{issue.count.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-amber-700">
-                          {issue.lastSeen
-                            ? formatDistanceToNow(new Date(issue.lastSeen), { addSuffix: true })
-                            : "Unknown"}
-                        </td>
-                        <td className="px-6 py-4 text-amber-700">{issue.level || "unknown"}</td>
-                        <td className="px-6 py-4">
-                          <a
-                            href={issue.permalink}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-amber-700 hover:text-amber-900 hover:underline"
-                          >
-                            View in Sentry
-                          </a>
-                        </td>
-                      </tr>
+                      <ErrorRow
+                        key={issue.shortId}
+                        issue={issue}
+                        isExpanded={expandedRows.has(issue.shortId)}
+                        onToggle={() => toggleRow(issue.shortId)}
+                        knowledge={findErrorKnowledge(issue.title)}
+                      />
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
+          </div>
+
+          {/* Help section */}
+          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                  About Error Monitoring
+                </h4>
+                <p className="text-sm text-blue-700">
+                  This dashboard shows errors captured by Sentry. Click any error row to see a
+                  description of the issue, possible causes, and suggested remediation steps. For
+                  full stack traces and detailed debugging, click &quot;Sentry&quot; to view in the
+                  Sentry console.
+                </p>
+              </div>
+            </div>
           </div>
         </>
       ) : (
