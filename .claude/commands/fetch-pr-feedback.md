@@ -160,7 +160,7 @@ When updating this command, also update:
 
 | Document                           | What to Update                               | Why                            |
 | ---------------------------------- | -------------------------------------------- | ------------------------------ |
-| `docs/SLASH_COMMANDS.md`           | `/fetch-pr-feedback` section, workflow steps | Documentation of this command  |
+| `docs/SLASH_COMMANDS_REFERENCE.md`           | `/fetch-pr-feedback` section, workflow steps | Documentation of this command  |
 | `.claude/commands/pr-review.md`    | Referenced steps (if protocol changes)       | This command invokes pr-review |
 | `.mcp.json`                        | SonarCloud MCP server config                 | MCP integration for SonarQube  |
 | `scripts/mcp/sonarcloud-server.js` | MCP tool implementations                     | SonarCloud API integration     |

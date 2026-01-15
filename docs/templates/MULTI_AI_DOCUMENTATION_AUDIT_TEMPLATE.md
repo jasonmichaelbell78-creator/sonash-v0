@@ -632,7 +632,7 @@ When updating this document, also update:
 | Document                                                   | What to Update                                 | Why                                           |
 | ---------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------- |
 | `.claude/commands/audit-documentation.md`                  | Category list, checklist items                 | Single-session audit version of this template |
-| `docs/SLASH_COMMANDS.md`                                   | `/audit-documentation` section, category count | Documentation of the audit command            |
+| `docs/SLASH_COMMANDS_REFERENCE.md`                                   | `/audit-documentation` section, category count | Documentation of the audit command            |
 | `docs/reviews/2026-Q1/DOCUMENTATION_AUDIT_PLAN_2026_Q1.md` | Categories, checklist structure                | Instance derived from this template           |
 
 **Why this matters:** Category additions (like Category 6: Content Quality) must

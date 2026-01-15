@@ -143,7 +143,7 @@ Recovery Notebook project. It provides:
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-   - [docs/SLASH_COMMANDS.md](./docs/SLASH_COMMANDS.md) - Slash commands
+   - [docs/SLASH_COMMANDS_REFERENCE.md](./docs/SLASH_COMMANDS_REFERENCE.md) - Slash commands
      reference (including audit commands)
    - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md)
      (archived - historical reference only)
