@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 6.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-15
+**Document Version:** 6.9 **Created:** 2026-01-02 **Last Updated:** 2026-01-15
 
 ## Purpose
 
@@ -28,6 +28,9 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6.9     | 2026-01-15 | Review #154: Admin Error Utils Security Hardening - 5 items (5 MINOR: URL credential/port rejection, JWT token redaction, phone regex separator requirement, boundary test fix). New patterns: URL credential injection prevention, JWT base64url detection, phone regex precision.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 6.8     | 2026-01-15 | Review #153: Admin Error Utils Follow-up - 6 items (1 CRITICAL: CI blocker transient, 5 MINOR: TLD regex bound {2,63}, large input guard 50K chars, nullable types on all 3 functions with tests). New patterns: TLD max 63 chars per RFC, guard against large payloads, explicit nullable types for robustness.                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 6.7     | 2026-01-15 | Review #152: Admin Error Utils PR Feedback - 7 items (1 CRITICAL: CI blocker already resolved, 1 MAJOR: email regex ReDoS fix with RFC 5321 length limits, 1 MINOR: trim whitespace dates, 2 TRIVIAL: code cleanup, 2 REJECTED: SonarCloud false positives on security tests). New patterns: Regex ReDoS prevention with length limits, security test false positives in SonarCloud.                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 6.6     | 2026-01-15 | Review #148: Dev Dashboard Security Hardening - 8 items fixed (3 MAJOR: Prettier blank line, raw error exposure, client write-only; 5 MINOR: network errors, stale state, null guard, safe error extraction, non-nullable prop). New patterns: Never expose raw Firebase errors, dev data client read-only, defensive null guards.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 6.5     | 2026-01-15 | Review #147: CI Blocker Fixes + Firebase Error Handling - 7 items (1 CRITICAL: logger.debug TS2339; 3 MAJOR: ROADMAP date format, Firestore dev/\* rules, Firebase error specificity; 3 MINOR: token refresh, network errors, errorCode logging). New patterns: prettier-ignore for linter conflicts, explicit admin rules for dev collections, getIdTokenResult(true) for fresh claims.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 6.4     | 2026-01-14 | Review #145: Settings Page Accessibility & Security - 14 items (5 MAJOR: toggle accessibility, date validation, preference preservation, timezone bug, form labels; 9 MINOR: useAuth deprecated, props readonly, silent return, error logging, audit logging, change detection). New patterns: Accessible toggle (button+role=switch), local date formatting, preference spread.                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -234,8 +237,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #151
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #163
 
 ### When to Consolidate
 
@@ -256,6 +259,36 @@ Consolidation is needed when:
 6. Note consolidation in version history
 
 ### Last Consolidation
+
+- **Date:** 2026-01-15 (Session #67)
+- **Reviews consolidated:** #144-#153 (10 reviews)
+- **Patterns added to CODE_PATTERNS.md v1.8:**
+  - **React/Frontend (11 patterns, NEW SECTION):**
+    - Accessible toggle switches (button + role=switch)
+    - Local date extraction (getFullYear not toISOString)
+    - Preference spread on update
+    - useEffect state dependency issues
+    - Firestore Timestamp handling (.toDate())
+    - Module-level init flags (Strict Mode)
+    - Async cleanup pattern (isCancelled)
+    - useMemo for derived data
+    - Null guards at render boundary
+    - finally for state cleanup
+    - Error user-facing messages (generic)
+  - **Security (12 patterns):**
+    - URL protocol allowlist
+    - Regex length limits (ReDoS prevention)
+    - Email regex RFC 5321 ({1,64}@{1,253}.{2,63})
+    - Large input guards
+    - Sanitizer whitespace handling
+    - Nullable utility types
+    - Firebase defineString (not process.env)
+    - Prettier-linter conflict resolution
+    - Force token refresh (getIdTokenResult)
+    - Dev data client-only Firestore rules
+
+<details>
+<summary>Previous Consolidation (#11)</summary>
 
 - **Date:** 2026-01-12 (Session #57)
 - **Reviews consolidated:** #121-#136 (16 reviews)
@@ -280,6 +313,8 @@ Consolidation is needed when:
     - Exit code best practice (process.exitCode)
   - **GitHub Actions (1 pattern):**
     - Supply chain pinning (SHA over tag)
+
+</details>
 
 <details>
 <summary>Previous Consolidation (#10)</summary>
@@ -758,6 +793,116 @@ Major: 2, Minor: 5, Deferred: 1)
   elements
 - rel="noreferrer" already implies noopener in modern browsers, but explicit
   noopener is defensive best practice
+
+---
+
+#### Review #152: Admin Error Utils PR Feedback (2026-01-15)
+
+**Source:** SonarCloud Security Hotspots + Qodo PR Code Suggestions + CI
+Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
+(Critical: 1, Major: 1, Minor: 1, Trivial: 2, Rejected: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                            | Severity | Category       | Fix                                                    |
+| --- | -------------------------------- | -------- | -------------- | ------------------------------------------------------ |
+| 1   | README.md Prettier formatting    | Critical | CI Blocker     | Already fixed (transient CI issue)                     |
+| 2   | Email regex ReDoS vulnerability  | Major    | Security (DoS) | Add length limits `{1,64}@{1,253}` per RFC 5321        |
+| 3   | Whitespace-only date not handled | Minor    | Robustness     | Add `dateString?.trim()` check and trim before parsing |
+| 4   | Redundant `if (!url)` check      | Trivial  | Code Quality   | Remove - try/catch handles null/empty URLs             |
+
+**Rejected:**
+
+- [2] javascript: protocol in test - **FALSE POSITIVE** - Test validates
+  security function correctly blocks javascript: URLs
+- [3] http:// in test - **FALSE POSITIVE** - Test validates security function
+  correctly blocks non-https URLs
+
+**Patterns Identified:**
+
+1. **Regex ReDoS Prevention**: Use explicit length limits `{1,N}` instead of
+   unbounded `+` quantifiers to prevent catastrophic backtracking
+2. **Security Test False Positives**: SonarCloud flags security-related string
+   literals in tests that are actually validating security - review before
+   acting
+3. **Whitespace Validation**: Always trim and check for empty after trim for
+   user input that could contain whitespace-only values
+
+**Key Learnings:**
+
+- Email regex per RFC 5321: local-part max 64 chars, domain max 253 chars
+- SonarCloud security hotspots in test files often flag the test inputs, not
+  actual vulnerabilities
+- `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #154: Admin Error Utils Security Hardening (2026-01-15)
+
+**Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
+claude/new-session-UhAVn **Suggestions:** 5 items (Minor: 5)
+
+**Issues Fixed:**
+
+| #   | Issue                                  | Severity | Category | Fix                                                     |
+| --- | -------------------------------------- | -------- | -------- | ------------------------------------------------------- |
+| 1   | URLs with embedded credentials allowed | Minor    | Security | Reject URLs with username/password via URL.username     |
+| 2   | URLs with explicit ports allowed       | Minor    | Security | Reject URLs with non-standard ports via URL.port        |
+| 3   | JWT tokens not redacted                | Minor    | Security | Add JWT regex: 3 base64url segments with dots           |
+| 4   | Phone regex matches plain 10 digits    | Minor    | Quality  | Require at least one separator (reduce false positives) |
+| 5   | 50K boundary test matched hex regex    | Minor    | Testing  | Use 'x' instead of 'a' to avoid hex token false match   |
+
+**Patterns Identified:**
+
+1. **URL Credential Rejection**: Always check URL.username, URL.password, and
+   URL.port to prevent credential injection and port-based bypass
+2. **JWT Token Detection**: JWT format is `base64url.base64url.base64url` - use
+   `[A-Za-z0-9_-]{10,200}` segments
+3. **Phone Regex Precision**: Require separators (`-`, `.`, ` `) to avoid
+   matching arbitrary numeric IDs
+
+**Key Learnings:**
+
+- URL API provides parsed username/password/port - check all three for security
+- JWT tokens use base64url encoding (alphanumeric + hyphen + underscore)
+- Test data should avoid matching production patterns (use 'x' not 'a' for
+  non-hex test strings)
+
+---
+
+#### Review #153: Admin Error Utils Follow-up (2026-01-15)
+
+**Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
+claude/new-session-UhAVn **Suggestions:** 6 items (Critical: 1, Minor: 5)
+
+**Issues Fixed:**
+
+| #   | Issue                                | Severity | Category    | Fix                                           |
+| --- | ------------------------------------ | -------- | ----------- | --------------------------------------------- |
+| 1   | README.md Prettier formatting        | Critical | CI Blocker  | Transient issue - already clean locally       |
+| 2   | TLD regex no upper bound             | Minor    | Security    | Add `{2,63}` upper bound per RFC              |
+| 3   | Large inputs could freeze UI         | Minor    | Performance | Add 50K char guard returning `[redacted]`     |
+| 4   | redactSensitive accepts only string  | Minor    | Robustness  | Accept `string \| null \| undefined`          |
+| 5   | safeFormatDate accepts only string   | Minor    | Robustness  | Accept `string \| null \| undefined`          |
+| 6   | isValidSentryUrl accepts only string | Minor    | Robustness  | Accept `string \| null \| undefined` + trim() |
+
+**Patterns Identified:**
+
+1. **TLD Length Limit**: Per RFC 1035, TLDs are max 63 chars - use `{2,63}` not
+   `{2,}`
+2. **Large Input Guards**: Sanitization functions processing user input should
+   have size limits to prevent DoS/UI freezes
+3. **Nullable Type Signatures**: Functions that handle optional data should
+   explicitly accept null/undefined in their type signatures for clarity
+
+**Key Learnings:**
+
+- Full email regex RFC compliance: local `{1,64}` + domain `{1,253}` + TLD
+  `{2,63}`
+- Large payload protection prevents both performance issues and ensures
+  consistent [redacted] output
+- Explicit nullable types make API contracts clearer even when implementation
+  handles nulls implicitly
 
 ---
 
