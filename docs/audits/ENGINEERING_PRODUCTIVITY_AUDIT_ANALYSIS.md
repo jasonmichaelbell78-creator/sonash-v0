@@ -231,7 +231,7 @@ offline support) as new categories.
 **Related Documents:**
 
 - [Engineering Productivity Audit Report](single-session/engineering-productivity/audit-2026-01-13.md)
-- [Engineering Productivity Audit JSON](SoNash%20Engineering%20Productivity%20Audit%20Report.json)
+- Engineering Productivity Audit JSON: `SoNash Engineering Productivity Audit Report.json` (in this directory)
 - [Single-Session Audit README](single-session/README.md)
 - [Multi-AI Audit README](multi-ai/README.md)
 

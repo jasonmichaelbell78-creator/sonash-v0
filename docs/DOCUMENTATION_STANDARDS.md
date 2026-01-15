@@ -285,7 +285,7 @@ description] **When to Use**: [Trigger/scenario]
 
 ### Internal Links
 
-**Format**: `[Link Text](relative-path-to-file.md)`
+**Format**: `[Link Text]` followed by `(relative-path-to-file.md)`
 
 **Best Practices**:
 
@@ -633,10 +633,10 @@ institutional memory.
 Before committing:
 
 1. List all Markdown references (all formats):
-   - Inline links: `[text](path)` and `[text](#anchor)`
+   - Inline links: `[text]` + `(path)` and `[text]` + `(#anchor)`
    - Reference-style links: `[text][id]` and definitions like
      `[id]: path-or-url`
-   - Images: `![alt](path)`
+   - Images: `![alt]` + `(path)`
    - Autolinks: `https://...`
 2. For each **internal path**:
    - Verify the target file exists in the repository

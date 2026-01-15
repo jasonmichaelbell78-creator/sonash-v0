@@ -254,8 +254,8 @@ recommended section matching: /ai instructions/i")
 (1 hour) **Source**: Session #48 analysis **Status**: PENDING
 
 **Description**: The docs:check linter reports false positive "broken links" for
-instructional placeholder text like `[text](path)` in templates. This creates
-noise in the validation output.
+instructional placeholder text like `[text]` + `(path)` in templates. This
+creates noise in the validation output.
 
 **Files affected**: `scripts/check-docs-light.js`
 

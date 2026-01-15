@@ -5,6 +5,20 @@ Claude AI (Session #5)
 
 ---
 
+## Purpose
+
+This Architecture Decision Record documents the decision to create a single
+Integrated Improvement Plan consolidating multiple separate improvement
+initiatives into a unified execution path.
+
+## Version History
+
+| Version | Date       | Changes                   |
+| ------- | ---------- | ------------------------- |
+| 1.0     | 2026-01-03 | Initial ADR created       |
+
+---
+
 ## Context
 
 After a comprehensive staff-engineer audit comparing current progress against

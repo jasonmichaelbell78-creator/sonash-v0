@@ -6,6 +6,19 @@ for Step 6 ROADMAP.md integration
 
 ---
 
+## Purpose
+
+This document contains the refreshed refactor backlog derived from Tier-2
+aggregation, organized by category and prioritized for ROADMAP.md integration.
+
+## Version History
+
+| Version | Date       | Changes                      |
+| ------- | ---------- | ---------------------------- |
+| 1.0     | 2026-01-11 | Initial backlog from Tier-2  |
+
+---
+
 ## Backlog Structure
 
 Items are grouped by category and prioritized by:

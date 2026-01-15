@@ -2,6 +2,19 @@
 
 **Date:** YYYY-MM-DD **Status:** Proposed | Accepted | Deprecated | Superseded
 by [ADR-XXX] **Decision Makers:** [List of people/roles involved]
+**Last Updated:** YYYY-MM-DD
+
+---
+
+## Purpose
+
+[Briefly describe the purpose of this ADR - what decision does it document?]
+
+## Version History
+
+| Version | Date       | Changes             |
+| ------- | ---------- | ------------------- |
+| 1.0     | YYYY-MM-DD | Initial ADR created |
 
 ---
 

@@ -229,7 +229,7 @@ moved/deleted files [ ] Anchor links are valid [ ] No circular reference chains
 
 ANALYSIS:
 
-- Extract all markdown links: [text](path)
+- Extract all markdown links using `[text]` + `(path)` syntax
 - Verify each target file exists
 - Check relative vs absolute path correctness
 - Identify broken links
@@ -363,7 +363,7 @@ PATTERNS TO FIND:
 
 VERIFICATION COMMANDS (if available):
 
-- Build link graph: grep -rn "\[._\](._)" --include="\*.md" | extract targets
+- Build link graph: use grep to find markdown link patterns, then extract targets
 - Find duplicates: Compare doc sections for similarity
 - Check terminology: grep for key terms and verify consistent usage
 
@@ -463,7 +463,7 @@ DOCUMENTATION VERIFICATION (run if run_commands=yes)
 
 1. Link Extraction:
 
-- grep -rn "\[._\](._)" --include="\*.md" | head -50
+- Use grep to extract markdown link patterns from .md files, pipe to head -50
 
 2. Broken Link Detection:
 

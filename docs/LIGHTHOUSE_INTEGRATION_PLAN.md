@@ -434,7 +434,7 @@ jobs:
               }
             }
 
-            comment += '\n📊 [View full reports](../actions/runs/' + context.runId + ')';
+            comment += '\n📊 View full reports: ../actions/runs/' + context.runId;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,

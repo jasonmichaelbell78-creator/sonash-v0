@@ -1,7 +1,20 @@
 # CANON Quick Reference Card
 
-**Version:** 1.0 | **Created:** 2026-01-11 | **Purpose:** 1-page reference for
-Multi-AI audits
+**Version:** 1.0 | **Created:** 2026-01-11 | **Last Updated:** 2026-01-11
+
+---
+
+## Purpose
+
+One-page quick reference for Multi-AI audits. Distilled from the 400+ line
+MULTI_AI_AGGREGATOR_TEMPLATE.md to provide essential schema, format rules, and
+validation commands at a glance.
+
+## Version History
+
+| Version | Date       | Changes                     |
+| ------- | ---------- | --------------------------- |
+| 1.0     | 2026-01-11 | Initial quick reference     |
 
 ---
 

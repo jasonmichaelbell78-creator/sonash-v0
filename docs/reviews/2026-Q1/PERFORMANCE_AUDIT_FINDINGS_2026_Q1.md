@@ -5,6 +5,20 @@ Updated:** 2026-01-09
 
 ---
 
+## Purpose
+
+This document aggregates performance audit findings from multiple AI models
+analyzing the SoNash codebase. It provides consolidated metrics, canonical
+findings, and prioritized recommendations for performance optimization.
+
+## Version History
+
+| Version | Date       | Changes                              |
+| ------- | ---------- | ------------------------------------ |
+| 1.0     | 2026-01-09 | Initial multi-AI aggregated findings |
+
+---
+
 ## Audit Metadata
 
 | Field                  | Value                                                                  |

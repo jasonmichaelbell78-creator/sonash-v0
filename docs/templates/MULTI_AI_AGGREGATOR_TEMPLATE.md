@@ -1,7 +1,21 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.3 **Last Updated:** 2026-01-05 **Purpose:** Aggregation
-prompt for merging multiple AI audit outputs into canonical findings
+**Document Version:** 2.3 **Last Updated:** 2026-01-05
+
+---
+
+## Purpose
+
+Aggregation prompt template for merging multiple AI audit outputs into canonical
+findings. Supports both Tier-1 (per-category) and Tier-2 (cross-category)
+aggregation modes.
+
+## Version History
+
+| Version | Date       | Changes                      |
+| ------- | ---------- | ---------------------------- |
+| 2.3     | 2026-01-05 | Current version              |
+| 1.0     | 2026-01-03 | Initial aggregator template  |
 
 ---
 

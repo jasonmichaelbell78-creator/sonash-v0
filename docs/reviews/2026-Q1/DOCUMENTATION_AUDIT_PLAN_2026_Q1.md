@@ -276,7 +276,7 @@ moved/deleted files [ ] Anchor links are valid [ ] No circular reference chains
 
 ANALYSIS:
 
-- Extract all markdown links: [text](path)
+- Extract all markdown links using `[text]` + `(path)` syntax
 - Verify each target file exists
 - Check relative vs absolute path correctness
 - Identify broken links
