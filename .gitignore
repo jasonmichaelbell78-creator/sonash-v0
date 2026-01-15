@@ -70,3 +70,6 @@ serviceAccountKey.json
 # Claude Code session runtime data (per-session, not tracked)
 .claude/session-activity*.jsonl
 .claude/override-log*.jsonl
+
+# Lighthouse audit reports (generated, not tracked)
+.lighthouse/

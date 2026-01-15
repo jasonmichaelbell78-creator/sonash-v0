@@ -1,6 +1,11 @@
 # SoNash Product Roadmap
 
-**Document Version:** 2.3 **Last Updated:** 2026-01-13 **Status:** ACTIVE
+<!-- prettier-ignore-start -->
+**Document Version:** 2.5
+**Last Updated:** 2026-01-15
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
 **Overall Completion:** ~35%
 
 ---
@@ -61,8 +66,9 @@ recovery practices.
 | **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation |
 | **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         |
 | **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       |
-| **M1.5 - Quick Wins**           | 🔄 Ready    | ~50%             | Q1 2026   | P0         |
-| **M1.6 - Admin Panel + UX**     | 🔄 Ready    | ~75%             | Q1 2026   | P1         |
+| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~10%             | Q1 2026   | **P0**     |
+| **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Q1 2026   | P1         |
+| **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Q1 2026   | P1         |
 | **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         |
 | **M3 - Meetings**               | 📋 Planned  | 0%               | Q2 2026   | P1         |
 | **M4 - Expansion**              | 📋 Planned  | 0%               | Q2 2026   | P1         |
@@ -88,7 +94,11 @@ flowchart TD
         DOC[Integrated Improvement Plan]
     end
 
-    subgraph Active["🔄 Active"]
+    subgraph Active["🚀 ACTIVE SPRINT"]
+        OVS[Operational Visibility\nAdmin + Dev Dashboard]
+    end
+
+    subgraph Paused["⏸️ Paused"]
         M15[M1.5 - Quick Wins]
         M16[M1.6 - Admin Panel]
     end
@@ -109,8 +119,9 @@ flowchart TD
 
     M0 --> M1
     M1 --> DOC
-    DOC --> M15
-    DOC --> M16
+    DOC --> OVS
+    OVS --> M15
+    OVS --> M16
     M15 --> M3
     M16 --> M3
     M2 -.-> M3
@@ -123,9 +134,10 @@ flowchart TD
 
     style M0 fill:#90EE90
     style M1 fill:#90EE90
-    style DOC fill:#FFD700
-    style M15 fill:#FFA07A
-    style M16 fill:#FFA07A
+    style DOC fill:#90EE90
+    style OVS fill:#FF6B6B
+    style M15 fill:#D3D3D3
+    style M16 fill:#D3D3D3
     style M2 fill:#D3D3D3
     style M3 fill:#ADD8E6
     style M4 fill:#ADD8E6
@@ -138,6 +150,72 @@ flowchart TD
 
 **Legend:** 🟢 Complete | 🟡 In Progress/Blocker | 🟠 Blocked | ⚪ Optional | 🔵
 Planned | 🟣 Research
+
+---
+
+## 🚀 ACTIVE SPRINT: Operational Visibility (P0)
+
+> **Spec:**
+> [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
+> **Goal:** Full operational visibility via Admin Panel + Development Dashboard
+> **Status:** 🔄 In Progress | **Started:** 2026-01-14
+
+This sprint consolidates Admin Panel Phases 4-5 and Development Dashboard
+creation.
+
+### Sprint Tracks (Parallel)
+
+| Track       | Focus                           | Status         | Target   |
+| ----------- | ------------------------------- | -------------- | -------- |
+| **Track A** | Admin Panel (Sentry + GCP Logs) | 🔄 In Progress | Week 1-2 |
+| **Track B** | Dev Dashboard MVP               | 🔄 In Progress | Week 1-3 |
+
+### Week 1 Priorities (Current)
+
+**Track A - Admin Panel:**
+
+- [ ] **A1:** Wire Sentry client in `app/layout.tsx` (1hr)
+- [ ] **A2:** Configure Sentry Cloud Function env vars (1hr)
+- [ ] **A3:** Verify Admin Errors Tab displays real data (30min)
+
+**Track B - Dev Dashboard:**
+
+- [ ] **B1:** Create `/dev` route with auth gate (2hr)
+- [ ] **B2:** PERF-001 - Lighthouse audit script (2hr)
+
+### Week 2-3 Priorities
+
+**Track A:**
+
+- [ ] **A4:** Build Admin Logs Tab with GCP deep links (3-4hr)
+
+**Track B:**
+
+- [ ] **B3:** PERF-002 - Lighthouse CI integration (2hr)
+- [ ] **B4:** PERF-003 - Firestore history storage (2hr)
+- [ ] **B5:** Lighthouse Dashboard Tab (3hr)
+- [ ] **B6-B9:** Error, Session, Docs, Override tabs (6hr total)
+
+### Blockers
+
+| Blocker                  | Status      | Resolution                              |
+| ------------------------ | ----------- | --------------------------------------- |
+| Sentry not initialized   | ❌ Blocking | A1 task                                 |
+| Sentry env vars missing  | ❌ Blocking | A2 task (need your Sentry project info) |
+| /dev route doesn't exist | ❌ Blocking | B1 task                                 |
+
+### Quick Reference: Environment Variables Needed
+
+```bash
+# Sentry (Cloud Functions) - you need to provide these
+firebase functions:config:set sentry.api_token="YOUR_TOKEN"
+firebase functions:config:set sentry.org="YOUR_ORG"
+firebase functions:config:set sentry.project="YOUR_PROJECT"
+
+# Sentry (Client - .env.local)
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@sentry.io/xxx
+NEXT_PUBLIC_SENTRY_ENABLED=true
+```
 
 ---
 
@@ -286,6 +364,29 @@ Planned | 🟣 Research
     - [ ] Merge write/edit requirement hooks
     - [ ] Document in TRIGGERS.md
     - **Verification:** Session start is ~2-3s faster
+
+#### Lighthouse Performance Tracking (from 2026-01-14 Planning)
+
+> **Source:** Lighthouse integration planning session (Session #66) **Goal:**
+> Track performance across all pages with non-blocking CI integration
+
+18. **PERF-001: Add Lighthouse CLI Script** (S effort, High ROI)
+    - [ ] Install `lighthouse` as dev dependency
+    - [ ] Create `scripts/lighthouse-audit.js` for multi-page auditing
+    - [ ] Add `npm run lighthouse` to package.json
+    - [ ] Output JSON/HTML reports to `.lighthouse/` (gitignored)
+    - [ ] Audit all routes: `/`, `/today`, `/journal`, `/growth`, `/more`,
+          `/admin`, `/login`
+    - **Verification:** `npm run lighthouse` generates reports for all routes
+
+19. **PERF-002: Add Lighthouse to CI (Non-blocking)** (M effort, High ROI)
+    - [ ] Add Lighthouse CI job to `.github/workflows/ci.yml`
+    - [ ] Run against preview deployment or localhost with
+          `start-server-and-test`
+    - [ ] Upload HTML reports as artifacts
+    - [ ] `continue-on-error: true` (warnings only, non-blocking)
+    - [ ] Add score summary to PR comment (optional)
+    - **Verification:** PR shows Lighthouse scores in CI summary/artifacts
 
 ---
 
@@ -701,6 +802,39 @@ These pre-existing issues were identified during PR review CI:
   - Mock network status in tests
   - Test queue behavior, sync on reconnect
   - **Verification:** `npm test -- --grep offline` all pass
+
+#### Lighthouse Performance Monitoring (from 2026-01-14 Planning)
+
+> **Source:** Lighthouse integration planning session (Session #66)
+> **Prerequisite:** PERF-001/PERF-002 from M1.5 complete **Spec:**
+> [LIGHTHOUSE_INTEGRATION_PLAN.md](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)
+
+- ⏳ **PERF-003: Historical Score Tracking** (M effort)
+  - Store Lighthouse scores in Firestore or flat files
+    (`.lighthouse/history.json`)
+  - Track trends over time (daily/weekly snapshots from CI)
+  - Alert on significant regressions (>10 point drop in any category)
+  - **Verification:** Historical data shows score trends over 7+ days
+
+- ⏳ **PERF-004: Performance Budgets** (S effort)
+  - Define budgets: LCP < 2.5s, FID < 100ms, CLS < 0.1, Performance > 80
+  - Integrate with Lighthouse CI assertions (`lighthouserc.js`)
+  - Warn on budget violations (non-blocking initially)
+  - **Verification:** Budget violation shows warning in CI
+
+- ⏳ **PERF-005: Development Dashboard Integration** (L effort)
+  - Display Lighthouse scores in Development Dashboard
+  - Per-page breakdown (landing, today, journal, growth, more, admin)
+  - Historical trend visualization (chart.js or similar)
+  - Links to full HTML reports
+  - **Verification:** Dashboard shows latest scores and trend graph
+
+- ⏳ **PERF-006: PWA Audit Baseline** (S effort)
+  - Document current PWA score and gaps
+  - Create remediation plan for installability
+  - Track PWA-specific metrics (service worker, manifest, offline)
+  - Ties to EFF-010 (Offline Queue) as prerequisite for good PWA score
+  - **Verification:** PWA score documented with gap analysis
 
 ### Validated Refactor Backlog (from Step 4.3 Audit - 2026-01-14)
 
@@ -1383,12 +1517,6 @@ summary command; full dashboard is larger scope.
 - **[SESSION_CONTEXT.md](./SESSION_CONTEXT.md)** - Current sprint focus and
   status
 - **[ROADMAP_LOG.md](./ROADMAP_LOG.md)** - Archive of completed roadmap items
-- **[SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](./docs/archive/SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md)** -
-  Consolidated 6-AI code review report
-- **[SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](./docs/archive/SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md)** -
-  Admin panel enhancement specification (M1.6)
-- **[SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](./docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md)** -
-  Phase 1 implementation prompt
 
 ### Detailed Documentation (in /docs)
 
@@ -1404,8 +1532,6 @@ summary command; full dashboard is larger scope.
   and multi-phase fixes
 - **[SERVER_SIDE_SECURITY.md](./docs/SERVER_SIDE_SECURITY.md)** - Cloud
   Functions security patterns
-- **[ANTIGRAVITY_GUIDE.md](./docs/ANTIGRAVITY_GUIDE.md)** - AI agent
-  collaboration guide
 - **[LIBRARY_ANALYSIS.md](./docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)** -
   Dependency documentation (192k+ code snippets)
 
@@ -1443,17 +1569,19 @@ When working on roadmap items:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                                                                          |
-| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                          |
-| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                     |
-| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                           |
-| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                         |
-| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                            |
-| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                          |
-| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                   |
-| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                     |
+| Version | Date       | Changes                                                                                                                            |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones         |
+| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md |
+| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                            |
+| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram   |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                       |
+| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                             |
+| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                           |
+| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                              |
+| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                            |
+| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                     |
+| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                       |
 
 **Historical Notes:**
 
