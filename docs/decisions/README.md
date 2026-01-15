@@ -1,6 +1,15 @@
 # Architecture Decision Records (ADRs)
 
-**Purpose:** Document significant technical decisions for the SoNash project.
+**Created:** 2026-01-03 **Updated:** 2026-01-15
+
+---
+
+## Purpose
+
+This directory contains Architecture Decision Records (ADRs) that document
+significant technical decisions for the SoNash project. ADRs preserve the
+context and rationale behind architectural choices, enabling future developers
+to understand why decisions were made.
 
 ---
 
@@ -55,3 +64,11 @@ ADR files follow the pattern: `ADR-NNN-short-descriptive-title.md`
 
 - [Michael Nygard's ADR format](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
 - [ADR GitHub Organization](https://adr.github.io/)
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                  |
+| ------- | ---------- | ---------------------------------------- |
+| 1.0     | 2026-01-03 | Initial ADR directory with ADR-001       |

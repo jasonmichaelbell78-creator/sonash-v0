@@ -353,7 +353,7 @@ After collecting all outputs, run aggregation using
   Source template
 - [MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) -
   Aggregation prompt
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
   Parent plan (Step 4.2)
 - [sonarqube-manifest.md](../../analysis/sonarqube-manifest.md) - Baseline
   static analysis

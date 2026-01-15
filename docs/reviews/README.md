@@ -1,6 +1,16 @@
 # Multi-AI Reviews Directory
 
-**Purpose**: Store active and completed multi-AI review documents.
+**Created:** 2026-01-06 **Updated:** 2026-01-15
+
+---
+
+## Purpose
+
+This directory stores active and completed multi-AI review documents. It serves
+as the central location for code reviews, security audits, performance audits,
+and refactoring plans executed using multi-AI consensus methodology.
+
+---
 
 ## Usage
 
@@ -40,3 +50,11 @@ After 90 days, completed reviews may be moved to `docs/archive/reviews/`.
 
 **See**: [MULTI_AI_REVIEW_COORDINATOR.md](../MULTI_AI_REVIEW_COORDINATOR.md) for
 review coordination.
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                  |
+| ------- | ---------- | ---------------------------------------- |
+| 1.0     | 2026-01-06 | Initial multi-AI reviews directory setup |

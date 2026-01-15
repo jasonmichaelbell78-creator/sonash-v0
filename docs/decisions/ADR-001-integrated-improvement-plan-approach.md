@@ -110,7 +110,7 @@ plan, or integrate existing work into a unified path?
 
 ## Related Documents
 
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md) - The plan
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) - The plan
   created by this decision
 - [DOCUMENTATION_STANDARDIZATION_PLAN.md](../archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) -
   Original doc plan (archived)
