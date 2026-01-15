@@ -84,17 +84,32 @@ export default function DevPage() {
       // Use generic error message to avoid leaking Firebase internals
       const errorCode = (err as { code?: string })?.code;
       logger.error("Dev dashboard login failed", { errorCode });
+
+      // Provide specific feedback for common issues
       setError(
         errorCode === "auth/popup-closed-by-user"
           ? "Login cancelled"
-          : "Login failed - please try again"
+          : errorCode === "auth/popup-blocked"
+            ? "Popup blocked - please allow popups and try again"
+            : errorCode === "auth/network-request-failed"
+              ? "Network error - please check your connection"
+              : "Login failed - please try again"
       );
     }
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
-    setState("login");
+    try {
+      setError(null);
+      await signOut(auth);
+    } catch (err) {
+      const errorCode = (err as { code?: string })?.code;
+      logger.error("Dev dashboard logout failed", { errorCode });
+      setError("Sign out failed - please try again");
+    } finally {
+      setUser(null);
+      setState("login");
+    }
   };
 
   // Mobile block

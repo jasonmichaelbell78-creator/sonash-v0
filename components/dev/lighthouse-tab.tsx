@@ -86,7 +86,16 @@ export function LighthouseTab() {
           setLatestRun(null);
         } else {
           const doc = snapshot.docs[0];
-          setLatestRun(doc.data() as LighthouseRun);
+          const data = doc.data() as Partial<LighthouseRun>;
+
+          // Validate required fields before setting state
+          if (!data.timestamp || !Array.isArray(data.results)) {
+            setError("Invalid Lighthouse data format");
+            setLatestRun(null);
+            return;
+          }
+
+          setLatestRun(data as LighthouseRun);
         }
       } catch (err) {
         const errorCode = (err as { code?: string })?.code;

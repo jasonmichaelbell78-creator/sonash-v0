@@ -226,8 +226,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #148
+**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #149
 
 ### When to Consolidate
 
@@ -635,6 +635,39 @@ claude/lighthouse-integration-planning-YdBkz **Suggestions:** 11 items (Major:
 - Prettier may want blank lines after prettier-ignore-end comments
 - Dev dashboards should be read-only for clients - CI writes the data
 - Error handling should distinguish popup-closed-by-user from real failures
+
+---
+
+#### Review #149: Robustness & Error Handling Improvements (2026-01-15)
+
+**Source:** CI Feedback + PR Suggestions **PR/Branch:**
+claude/lighthouse-integration-planning-YdBkz **Suggestions:** 5 items (Major: 1,
+Minor: 4)
+
+**Issues Fixed:**
+
+| #   | Issue                               | Severity | Category    | Fix                                         |
+| --- | ----------------------------------- | -------- | ----------- | ------------------------------------------- |
+| 1   | Pattern check: unsafe error.message | Major    | CI (false+) | Already fixed in #148 - CI cache issue      |
+| 2   | Malformed Firestore data crash      | Minor    | Robustness  | Runtime validation for timestamp/results    |
+| 3   | Sentry double init in Strict Mode   | Minor    | React       | Module-level didInit flag                   |
+| 4   | handleLogout no error handling      | Minor    | UX          | try/catch/finally with setUser(null)        |
+| 5   | Login errors not specific           | Minor    | UX          | Added popup-blocked, network error messages |
+
+**Patterns Identified:**
+
+1. **React Strict Mode double-invoke**: Use module-level flags to prevent double
+   initialization of side effects
+2. **Runtime data validation**: Always validate Firestore data structure before
+   use, even with TypeScript
+3. **Consistent state cleanup**: Use finally blocks to ensure state cleanup
+   regardless of success/failure
+
+**Key Learnings:**
+
+- Pattern compliance CI can flag safe code if regex doesn't understand context
+- React Strict Mode runs effects twice in dev - guard initialization with flags
+- Firestore Partial<T> + validation is safer than direct type assertion
 
 ---
 

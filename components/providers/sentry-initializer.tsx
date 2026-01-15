@@ -14,8 +14,14 @@ import { initSentryClient } from "@/lib/sentry.client";
  * - Privacy-preserving (no PII captured)
  * - Environment-aware (tags dev vs production)
  */
+
+// Module-level flag to prevent double initialization in React Strict Mode
+let didInit = false;
+
 export function SentryInitializer() {
   useEffect(() => {
+    if (didInit) return;
+    didInit = true;
     initSentryClient();
   }, []);
 
