@@ -9,6 +9,7 @@ import {
   getSeverityLabel,
   type ErrorKnowledge,
 } from "@/lib/error-knowledge-base";
+import { redactSensitive, safeFormatDate, isValidSentryUrl } from "@/lib/utils/admin-error-utils";
 import {
   AlertTriangle,
   ChevronDown,
@@ -22,7 +23,6 @@ import {
   TrendingUp,
   Wrench,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
 interface SentryIssueSummary {
   title: string;
@@ -44,40 +44,6 @@ interface SentryErrorSummaryResponse {
   };
   issues: SentryIssueSummary[];
   generatedAt: string;
-}
-
-function redactSensitive(text: string) {
-  const redactedEmail = text.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]");
-  const redactedPhone = redactedEmail.replace(
-    /\b(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
-    "[redacted-phone]"
-  );
-  const redactedTokens = redactedPhone.replace(/\b[a-f0-9]{32,}\b/gi, "[redacted-token]");
-  return redactedTokens;
-}
-
-/**
- * Safely format a date string to relative time.
- * Returns "Unknown" if the date is null, empty, or invalid.
- */
-function safeFormatDate(dateString: string | null): string {
-  if (!dateString) return "Unknown";
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return "Unknown";
-  return formatDistanceToNow(date, { addSuffix: true });
-}
-
-/**
- * Validate that a URL is safe to render as a link.
- * Only allows https://sentry.io URLs to prevent injection attacks.
- */
-function isValidSentryUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === "https:" && parsed.hostname.endsWith("sentry.io");
-  } catch {
-    return false;
-  }
 }
 
 function getStatusBadge(status: string | null) {
