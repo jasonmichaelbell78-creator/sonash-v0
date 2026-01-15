@@ -332,9 +332,10 @@ export function getSeverityColor(severity: ErrorKnowledge["severity"]): string {
       return "text-amber-700 bg-amber-50 border-amber-200";
     case "low":
       return "text-green-700 bg-green-50 border-green-200";
-    default:
-      return "text-gray-700 bg-gray-50 border-gray-200";
   }
+  // Exhaustive check - TypeScript will error if a new severity is added but not handled
+  const _exhaustiveCheck: never = severity;
+  return _exhaustiveCheck;
 }
 
 /**
@@ -350,7 +351,8 @@ export function getSeverityLabel(severity: ErrorKnowledge["severity"]): string {
       return "Medium Impact";
     case "low":
       return "Low Impact";
-    default:
-      return "Unknown";
   }
+  // Exhaustive check - TypeScript will error if a new severity is added but not handled
+  const _exhaustiveCheck: never = severity;
+  return _exhaustiveCheck;
 }

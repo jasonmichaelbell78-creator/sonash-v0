@@ -56,6 +56,30 @@ function redactSensitive(text: string) {
   return redactedTokens;
 }
 
+/**
+ * Safely format a date string to relative time.
+ * Returns "Unknown" if the date is null, empty, or invalid.
+ */
+function safeFormatDate(dateString: string | null): string {
+  if (!dateString) return "Unknown";
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return "Unknown";
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
+/**
+ * Validate that a URL is safe to render as a link.
+ * Only allows https://sentry.io URLs to prevent injection attacks.
+ */
+function isValidSentryUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" && parsed.hostname.endsWith("sentry.io");
+  } catch {
+    return false;
+  }
+}
+
 function getStatusBadge(status: string | null) {
   switch (status) {
     case "resolved":
@@ -90,64 +114,62 @@ interface ErrorRowProps {
 function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
   const sanitizedTitle = redactSensitive(issue.title);
 
+  // Calculate dates once at component start (performance optimization)
+  const firstSeenFormatted = safeFormatDate(issue.firstSeen);
+  const lastSeenFormatted = safeFormatDate(issue.lastSeen);
+
+  // Validate permalink URL for security
+  const safePermalink = isValidSentryUrl(issue.permalink) ? issue.permalink : null;
+
   return (
     <>
-      <tr
-        className="cursor-pointer hover:bg-amber-50 transition-colors"
-        onClick={onToggle}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onToggle();
-          }
-        }}
-        aria-expanded={isExpanded}
-      >
+      <tr className="hover:bg-amber-50 transition-colors">
         <td className="px-6 py-4">
-          <div className="flex items-center gap-2">
-            {isExpanded ? (
-              <ChevronDown className="h-4 w-4 text-amber-600 flex-shrink-0" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-amber-600 flex-shrink-0" />
-            )}
-            <div>
-              <div className="font-medium text-amber-900">{sanitizedTitle}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-amber-600">{issue.shortId}</span>
-                <span
-                  className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium border ${getSeverityColor(knowledge.severity)}`}
-                >
-                  {knowledge.component}
-                </span>
+          <button
+            type="button"
+            className="w-full text-left"
+            onClick={onToggle}
+            aria-expanded={isExpanded}
+          >
+            <div className="flex items-center gap-2">
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4 text-amber-600 flex-shrink-0" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-amber-600 flex-shrink-0" />
+              )}
+              <div>
+                <div className="font-medium text-amber-900">{sanitizedTitle}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-amber-600">{issue.shortId}</span>
+                  <span
+                    className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium border ${getSeverityColor(knowledge.severity)}`}
+                  >
+                    {knowledge.component}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </button>
         </td>
         <td className="px-6 py-4 text-amber-900 font-medium">{issue.count.toLocaleString()}</td>
-        <td className="px-6 py-4 text-amber-700">
-          {issue.lastSeen
-            ? formatDistanceToNow(new Date(issue.lastSeen), { addSuffix: true })
-            : "Unknown"}
-        </td>
-        <td className="px-6 py-4 text-amber-700">
-          {issue.firstSeen
-            ? formatDistanceToNow(new Date(issue.firstSeen), { addSuffix: true })
-            : "Unknown"}
-        </td>
+        <td className="px-6 py-4 text-amber-700">{lastSeenFormatted}</td>
+        <td className="px-6 py-4 text-amber-700">{firstSeenFormatted}</td>
         <td className="px-6 py-4">{getStatusBadge(issue.status)}</td>
         <td className="px-6 py-4">
-          <a
-            href={issue.permalink}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 text-amber-700 hover:text-amber-900 hover:underline"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ExternalLink className="h-3 w-3" />
-            Sentry
-          </a>
+          {safePermalink ? (
+            <a
+              href={safePermalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-amber-700 hover:text-amber-900 hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="h-3 w-3" />
+              Sentry
+            </a>
+          ) : (
+            <span className="text-amber-400 text-xs">Link unavailable</span>
+          )}
         </td>
       </tr>
       {isExpanded && (
@@ -212,15 +234,8 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
               <div className="flex items-center gap-3 pt-2 border-t border-amber-200">
                 <Clock className="h-4 w-4 text-amber-500" />
                 <div className="text-xs text-amber-600">
-                  First seen:{" "}
-                  {issue.firstSeen
-                    ? formatDistanceToNow(new Date(issue.firstSeen), { addSuffix: true })
-                    : "Unknown"}{" "}
-                  | Last seen:{" "}
-                  {issue.lastSeen
-                    ? formatDistanceToNow(new Date(issue.lastSeen), { addSuffix: true })
-                    : "Unknown"}{" "}
-                  | Total occurrences: {issue.count.toLocaleString()}
+                  First seen: {firstSeenFormatted} | Last seen: {lastSeenFormatted} | Total
+                  occurrences: {issue.count.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -244,6 +259,16 @@ export function ErrorsTab() {
     if (summary.trendPct < 0) return "down";
     return "flat";
   }, [summary]);
+
+  // Memoize issues with knowledge to prevent findErrorKnowledge from being called on every render
+  const issuesWithKnowledge = useMemo(
+    () =>
+      issues.map((issue) => ({
+        ...issue,
+        knowledge: findErrorKnowledge(issue.title),
+      })),
+    [issues]
+  );
 
   const toggleRow = (shortId: string) => {
     setExpandedRows((prev) => {
@@ -394,13 +419,13 @@ export function ErrorsTab() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-amber-100">
-                    {issues.map((issue) => (
+                    {issuesWithKnowledge.map((issue) => (
                       <ErrorRow
                         key={issue.shortId}
                         issue={issue}
                         isExpanded={expandedRows.has(issue.shortId)}
                         onToggle={() => toggleRow(issue.shortId)}
-                        knowledge={findErrorKnowledge(issue.title)}
+                        knowledge={issue.knowledge}
                       />
                     ))}
                   </tbody>
@@ -414,9 +439,7 @@ export function ErrorsTab() {
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-semibold text-blue-900 mb-1">
-                  About Error Monitoring
-                </h4>
+                <h4 className="text-sm font-semibold text-blue-900 mb-1">About Error Monitoring</h4>
                 <p className="text-sm text-blue-700">
                   This dashboard shows errors captured by Sentry. Click any error row to see a
                   description of the issue, possible causes, and suggested remediation steps. For

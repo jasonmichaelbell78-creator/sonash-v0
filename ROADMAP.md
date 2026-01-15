@@ -196,6 +196,17 @@ creation.
 - [ ] **B5:** Lighthouse Dashboard Tab (3hr)
 - [ ] **B6-B9:** Error, Session, Docs, Override tabs (6hr total)
 
+### Future Enhancements (Deferred from PR Reviews)
+
+| ID         | Enhancement                            | Source      | Priority |
+| ---------- | -------------------------------------- | ----------- | -------- |
+| ADMIN-FE-1 | Move error knowledge base to Firestore | Review #151 | P2       |
+
+> **ADMIN-FE-1:** The error knowledge base (`lib/error-knowledge-base.ts`) is
+> currently hardcoded. Moving it to Firestore would allow dynamic updates
+> without code deploys. Architectural change - implement after core admin
+> features complete.
+
 ### Blockers
 
 | Blocker                  | Status      | Resolution                              |
