@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.2 **Last Updated:** 2026-01-13 **Status:** ACTIVE
+**Document Version:** 2.2 **Status:** ACTIVE **Last Updated:** 2026-01-13
 
 ---
 

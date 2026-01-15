@@ -2,7 +2,7 @@
 
 _A privacy-first digital recovery journal for the recovery community_
 
-**Document Version:** 2.1 **Last Updated:** 2026-01-03 **Status:** ACTIVE
+**Document Version:** 2.1 **Status:** ACTIVE **Last Updated:** 2026-01-03
 
 ---
 

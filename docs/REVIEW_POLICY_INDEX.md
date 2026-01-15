@@ -1,7 +1,7 @@
 # Review Policy Index
 
-**Last Updated:** 2026-01-04 **Status:** Active **Purpose:** Central directory
-for all review policy documentation
+**Status:** Active **Purpose:** Central directory for all review policy
+documentation **Last Updated:** 2026-01-04
 
 ---
 

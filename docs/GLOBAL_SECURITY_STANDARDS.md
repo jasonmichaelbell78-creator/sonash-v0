@@ -1,8 +1,8 @@
 # Global Security Standards
 
 **Document Type:** FOUNDATION (Tier 2) **Version:** 1.0 **Created:** 2026-01-01
-**Last Updated:** 2026-01-01 **Status:** ACTIVE **Authority:** MANDATORY for all
-code changes
+**Status:** ACTIVE **Authority:** MANDATORY for all code changes
+**Last Updated:** 2026-01-01
 
 ---
 

@@ -1,8 +1,8 @@
 # [Project Name] Multi-AI Refactoring Plan
 
-**Document Version:** 1.0 **Created:** YYYY-MM-DD **Last Updated:** YYYY-MM-DD
-**Status:** PENDING | IN_PROGRESS | COMPLETE **Overall Completion:** 0/X phases
-complete (0%)
+**Document Version:** 1.0 **Created:** YYYY-MM-DD **Status:** PENDING |
+IN_PROGRESS | COMPLETE **Overall Completion:** 0/X phases complete (0%)
+**Last Updated:** YYYY-MM-DD
 
 ---
 

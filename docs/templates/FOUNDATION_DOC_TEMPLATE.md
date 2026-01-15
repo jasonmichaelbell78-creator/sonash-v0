@@ -1,7 +1,7 @@
 # [Document Title]
 
-**Last Updated**: YYYY-MM-DD **Document Version**: X.Y **Status**: Active |
-Under Review | Deprecated **Applies To**: [Version/Release/All]
+**Document Version**: X.Y **Status**: Active | Under Review | Deprecated
+**Applies To**: [Version/Release/All] **Last Updated**: YYYY-MM-DD
 
 ---
 

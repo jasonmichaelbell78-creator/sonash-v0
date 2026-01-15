@@ -1,8 +1,8 @@
 # [Feature/Initiative Name] Plan
 
-**Document Version**: 1.0 **Created**: YYYY-MM-DD **Last Updated**: YYYY-MM-DD
-**Status**: PLANNING | IN_PROGRESS | COMPLETE | ON_HOLD | CANCELLED **Overall
-Completion**: X% (Y/Z tasks complete) **Target Completion**: YYYY-MM-DD
+**Document Version**: 1.0 **Created**: YYYY-MM-DD **Status**: PLANNING |
+IN_PROGRESS | COMPLETE | ON_HOLD | CANCELLED **Overall Completion**: X% (Y/Z
+tasks complete) **Target Completion**: YYYY-MM-DD **Last Updated**: YYYY-MM-DD
 
 ---
 
