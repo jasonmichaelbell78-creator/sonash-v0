@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.7 **Source:** Distilled from 136 AI code reviews
-**Last Updated:** 2026-01-15
+**Document Version:** 1.7 **Source:** Distilled from 136 AI code reviews **Last
+Updated:** 2026-01-15
 
 ---
 
@@ -24,6 +24,7 @@ critical patterns that apply to every session.
 ## AI Instructions
 
 When working with code patterns:
+
 - Run patterns:check before committing
 - Add new patterns here when identified in reviews
 - Keep claude.md Section 4 in sync

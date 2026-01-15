@@ -1,7 +1,7 @@
 # Multi-AI Audit Results
 
-**Created:** 2026-01-08 **Purpose:** Store results from multi-AI consensus audits
-**Last Updated:** 2026-01-13
+**Created:** 2026-01-08 **Purpose:** Store results from multi-AI consensus
+audits **Last Updated:** 2026-01-13
 
 > **Note (2026-01-13):** Templates updated with Engineering Productivity audit
 > recommendations. See "Extended Coverage" section for new categories.

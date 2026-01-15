@@ -28,6 +28,7 @@ This document tracks:
 ## AI Instructions
 
 When tracking audits:
+
 - Update status immediately after changes
 - Document all findings with CANON IDs
 - Keep tracker synchronized with actual progress

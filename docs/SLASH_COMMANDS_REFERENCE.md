@@ -20,14 +20,17 @@ compliance relevance.
 ## Quick Start
 
 1. Use `/help` to see all available commands
-2. Check [Current Custom Commands](#2-current-custom-commands) for project workflows
+2. Check [Current Custom Commands](#2-current-custom-commands) for project
+   workflows
 3. Run `/session-begin` at the start of each session
 
 ## AI Instructions
 
 When implementing or using slash commands:
+
 - Always check if a command exists before implementing new functionality
-- Follow the naming convention: `verb-noun` (e.g., `session-begin`, `code-review`)
+- Follow the naming convention: `verb-noun` (e.g., `session-begin`,
+  `code-review`)
 - Document new commands in this reference file
 
 ---

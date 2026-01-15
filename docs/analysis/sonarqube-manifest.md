@@ -1,8 +1,8 @@
 # SonarQube Issues Manifest for Phase 4 Multi-AI Review
 
 > Generated: 2026-01-11 | Source: sonarqube-issues-2026-01-11.json (941 issues)
-> Previous: sonarqube-issues.json (778 issues, 2026-01-05)
-> **Last Updated:** 2026-01-15
+> Previous: sonarqube-issues.json (778 issues, 2026-01-05) **Last Updated:**
+> 2026-01-15
 
 ## Purpose
 

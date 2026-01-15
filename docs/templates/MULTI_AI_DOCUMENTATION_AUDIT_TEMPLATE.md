@@ -363,7 +363,8 @@ PATTERNS TO FIND:
 
 VERIFICATION COMMANDS (if available):
 
-- Build link graph: use grep to find markdown link patterns, then extract targets
+- Build link graph: use grep to find markdown link patterns, then extract
+  targets
 - Find duplicates: Compare doc sections for similarity
 - Check terminology: grep for key terms and verify consistent usage
 

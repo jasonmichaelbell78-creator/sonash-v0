@@ -1,7 +1,7 @@
 # Sentry Integration Guide for SoNash Admin Panel
 
-**Document Tier:** 2 (Active Reference) **Status:** Active
-**Last Updated:** 2026-01-03
+**Document Tier:** 2 (Active Reference) **Status:** Active **Last Updated:**
+2026-01-03
 
 ---
 

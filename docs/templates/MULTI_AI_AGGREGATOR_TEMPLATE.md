@@ -12,10 +12,10 @@ aggregation modes.
 
 ## Version History
 
-| Version | Date       | Changes                      |
-| ------- | ---------- | ---------------------------- |
-| 2.3     | 2026-01-05 | Current version              |
-| 1.0     | 2026-01-03 | Initial aggregator template  |
+| Version | Date       | Changes                     |
+| ------- | ---------- | --------------------------- |
+| 2.3     | 2026-01-05 | Current version             |
+| 1.0     | 2026-01-03 | Initial aggregator template |
 
 ---
 

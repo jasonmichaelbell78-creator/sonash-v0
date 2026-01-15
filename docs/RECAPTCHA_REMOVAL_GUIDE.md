@@ -1,7 +1,7 @@
 # reCAPTCHA & App Check - Complete Removal and Fresh Setup Guide
 
-**Document Tier:** 2 (Active Reference) **Status:** Deferred - App Check blocking
-critical functionality **Target:** Future implementation after M1-M3
+**Document Tier:** 2 (Active Reference) **Status:** Deferred - App Check
+blocking critical functionality **Target:** Future implementation after M1-M3
 stabilization **Last Updated:** 2026-01-15
 
 ---

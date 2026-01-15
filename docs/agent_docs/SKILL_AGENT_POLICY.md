@@ -17,6 +17,7 @@ and creates an audit trail for accountability.
 ## AI Instructions
 
 When working with skills:
+
 - Always use appropriate skill for the task type (see Decision Tree)
 - Run `npm run skills:validate` before committing new skills
 - Document any skill overrides with rationale

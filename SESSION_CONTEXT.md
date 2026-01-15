@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.7 **Purpose**: Quick session-to-session handoff
-**When to Use**: **START OF EVERY SESSION** (read this first!)
-**Last Updated**: 2026-01-15 (Session #66)
+**Document Version**: 3.7 **Purpose**: Quick session-to-session handoff **When
+to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
+2026-01-15 (Session #66)
 
 ---
 

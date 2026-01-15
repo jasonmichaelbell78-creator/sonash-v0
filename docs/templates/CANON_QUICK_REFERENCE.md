@@ -20,9 +20,9 @@ When using CANON references:
 
 ## Version History
 
-| Version | Date       | Changes                     |
-| ------- | ---------- | --------------------------- |
-| 1.0     | 2026-01-11 | Initial quick reference     |
+| Version | Date       | Changes                 |
+| ------- | ---------- | ----------------------- |
+| 1.0     | 2026-01-11 | Initial quick reference |
 
 ---
 

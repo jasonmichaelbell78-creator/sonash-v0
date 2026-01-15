@@ -1,8 +1,8 @@
 # AI Workflow Guide
 
-**Document Version**: 1.9 **Purpose**: Master navigation and workflow guide
-for AI assistants **When to Use**: Start of EVERY session
-**Last Updated**: 2026-01-15
+**Document Version**: 1.9 **Purpose**: Master navigation and workflow guide for
+AI assistants **When to Use**: Start of EVERY session **Last Updated**:
+2026-01-15
 
 ---
 

@@ -77,6 +77,6 @@ ADR files follow the pattern: `ADR-NNN-short-descriptive-title.md`
 
 ## Version History
 
-| Version | Date       | Changes                                  |
-| ------- | ---------- | ---------------------------------------- |
-| 1.0     | 2026-01-03 | Initial ADR directory with ADR-001       |
+| Version | Date       | Changes                            |
+| ------- | ---------- | ---------------------------------- |
+| 1.0     | 2026-01-03 | Initial ADR directory with ADR-001 |

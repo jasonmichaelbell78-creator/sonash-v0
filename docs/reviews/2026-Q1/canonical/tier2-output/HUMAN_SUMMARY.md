@@ -28,8 +28,8 @@ When using human summary:
 
 ## Version History
 
-| Version | Date       | Changes                               |
-| ------- | ---------- | ------------------------------------- |
+| Version | Date       | Changes                                |
+| ------- | ---------- | -------------------------------------- |
 | 1.0     | 2026-01-11 | Initial cross-category summary created |
 
 ---

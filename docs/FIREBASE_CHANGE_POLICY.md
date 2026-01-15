@@ -29,6 +29,7 @@ undergo appropriate review before deployment.
 ## AI Instructions
 
 When modifying Firebase:
+
 - Classify all changes before implementation
 - Never make Critical changes without explicit approval
 - Document all changes in the change log

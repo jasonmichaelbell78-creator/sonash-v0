@@ -27,9 +27,9 @@ When working on refactoring:
 
 ## Version History
 
-| Version | Date       | Changes                      |
-| ------- | ---------- | ---------------------------- |
-| 1.0     | 2026-01-11 | Initial backlog from Tier-2  |
+| Version | Date       | Changes                     |
+| ------- | ---------- | --------------------------- |
+| 1.0     | 2026-01-11 | Initial backlog from Tier-2 |
 
 ---
 

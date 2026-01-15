@@ -1,8 +1,8 @@
 # ADR-NNN: [Short Title]
 
 **Date:** YYYY-MM-DD **Status:** Proposed | Accepted | Deprecated | Superseded
-by [ADR-XXX] **Decision Makers:** [List of people/roles involved]
-**Last Updated:** YYYY-MM-DD
+by [ADR-XXX] **Decision Makers:** [List of people/roles involved] **Last
+Updated:** YYYY-MM-DD
 
 ---
 

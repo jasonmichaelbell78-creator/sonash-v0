@@ -306,7 +306,7 @@ node scripts/add-false-positive.js --interactive
 
 ## Version History
 
-| Version | Date       | Changes                                              |
-| ------- | ---------- | ---------------------------------------------------- |
-| 1.1     | 2026-01-13 | Added engineering productivity audit categories      |
-| 1.0     | 2026-01-08 | Initial single-session audit documentation           |
+| Version | Date       | Changes                                         |
+| ------- | ---------- | ----------------------------------------------- |
+| 1.1     | 2026-01-13 | Added engineering productivity audit categories |
+| 1.0     | 2026-01-08 | Initial single-session audit documentation      |

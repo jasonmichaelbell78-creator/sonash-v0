@@ -34,6 +34,7 @@ Non-compliant docs will be flagged during reviews.
 ## AI Instructions
 
 When creating documentation:
+
 - Select correct template for document type
 - Include all required sections for the tier level
 - Validate with docs:check before committing

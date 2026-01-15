@@ -252,6 +252,6 @@ docs/reviews/2026-Q1/
 
 ## Version History
 
-| Version | Date       | Changes                                         |
-| ------- | ---------- | ----------------------------------------------- |
-| 1.0     | 2026-01-06 | Initial Q1 audit execution guide with 6 plans   |
+| Version | Date       | Changes                                       |
+| ------- | ---------- | --------------------------------------------- |
+| 1.0     | 2026-01-06 | Initial Q1 audit execution guide with 6 plans |

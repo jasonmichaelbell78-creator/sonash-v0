@@ -27,9 +27,9 @@ When referencing this ADR:
 
 ## Version History
 
-| Version | Date       | Changes                   |
-| ------- | ---------- | ------------------------- |
-| 1.0     | 2026-01-03 | Initial ADR created       |
+| Version | Date       | Changes             |
+| ------- | ---------- | ------------------- |
+| 1.0     | 2026-01-03 | Initial ADR created |
 
 ---
 
@@ -138,8 +138,8 @@ plan, or integrate existing work into a unified path?
 
 ## Related Documents
 
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) - The plan
-  created by this decision
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+  The plan created by this decision
 - [DOCUMENTATION_STANDARDIZATION_PLAN.md](../archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) -
   Original doc plan (archived)
 - [EIGHT_PHASE_REFACTOR_PLAN.md](../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) -
