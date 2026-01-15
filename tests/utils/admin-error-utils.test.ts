@@ -67,6 +67,19 @@ describe("admin-error-utils", () => {
       assert.equal(redactSensitive(""), "");
     });
 
+    test("handles null input", () => {
+      assert.equal(redactSensitive(null), "");
+    });
+
+    test("handles undefined input", () => {
+      assert.equal(redactSensitive(undefined), "");
+    });
+
+    test("returns [redacted] for very large inputs (>50K chars)", () => {
+      const largeInput = "a".repeat(60_000);
+      assert.equal(redactSensitive(largeInput), "[redacted]");
+    });
+
     test("handles text with no sensitive data", () => {
       const input = "Failed to load dashboard data";
       assert.equal(redactSensitive(input), input);
@@ -84,6 +97,10 @@ describe("admin-error-utils", () => {
   describe("safeFormatDate", () => {
     test("returns 'Unknown' for null", () => {
       assert.equal(safeFormatDate(null), "Unknown");
+    });
+
+    test("returns 'Unknown' for undefined", () => {
+      assert.equal(safeFormatDate(undefined), "Unknown");
     });
 
     test("returns 'Unknown' for empty string", () => {
@@ -160,6 +177,19 @@ describe("admin-error-utils", () => {
 
     test("returns false for empty string", () => {
       assert.equal(isValidSentryUrl(""), false);
+    });
+
+    test("returns false for null", () => {
+      assert.equal(isValidSentryUrl(null), false);
+    });
+
+    test("returns false for undefined", () => {
+      assert.equal(isValidSentryUrl(undefined), false);
+    });
+
+    test("returns false for whitespace-only string", () => {
+      assert.equal(isValidSentryUrl("   "), false);
+      assert.equal(isValidSentryUrl("\t\n"), false);
     });
 
     test("returns false for malformed URLs", () => {
