@@ -21,16 +21,15 @@ const path = require("path");
 const BASE_URL = process.env.LIGHTHOUSE_BASE_URL || "http://localhost:3000";
 const OUTPUT_DIR = path.join(process.cwd(), ".lighthouse");
 
-// Routes to audit (all application pages)
+// Routes to audit (public application pages only)
+// Note: Auth-protected routes (/admin, /dev) excluded - they require login
 const ROUTES = [
   { path: "/", name: "landing" },
   { path: "/today", name: "today" },
   { path: "/journal", name: "journal" },
   { path: "/growth", name: "growth" },
   { path: "/more", name: "more" },
-  { path: "/admin", name: "admin" },
   { path: "/login", name: "login" },
-  { path: "/dev", name: "dev" },
 ];
 
 // Lighthouse configuration (mobile by default)

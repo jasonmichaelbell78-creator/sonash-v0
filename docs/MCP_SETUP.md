@@ -2,7 +2,8 @@
 
 **Last Updated:** 2026-01-14
 
-This guide explains how to configure MCP (Model Context Protocol) servers for the SoNash project.
+This guide explains how to configure MCP (Model Context Protocol) servers for
+the SoNash project.
 
 ---
 
@@ -17,7 +18,8 @@ This guide explains how to configure MCP (Model Context Protocol) servers for th
 
 ## Environment Variables
 
-MCP servers that require secrets should get them from environment variables, NOT from `.mcp.json`.
+MCP servers that require secrets should get them from environment variables, NOT
+from `.mcp.json`.
 
 ### Setting Environment Variables
 
@@ -48,6 +50,7 @@ firebase login
 ```
 
 **Capabilities:**
+
 - Firestore queries and management
 - Cloud Functions deployment
 - Firebase Auth operations
@@ -91,11 +94,11 @@ export GITHUB_PERSONAL_ACCESS_TOKEN="ghp_xxx"
 
 ### What's Safe to Commit
 
-| Value | Safe to Commit? |
-|-------|----------------|
-| Server commands/args | ✅ Yes |
-| Public URLs | ✅ Yes |
-| API tokens/keys | ❌ No - use env vars |
+| Value                 | Safe to Commit?      |
+| --------------------- | -------------------- |
+| Server commands/args  | ✅ Yes               |
+| Public URLs           | ✅ Yes               |
+| API tokens/keys       | ❌ No - use env vars |
 | Service account paths | ❌ No - use CLI auth |
 
 ---
@@ -132,16 +135,16 @@ source ~/.bashrc
 
 ## Available MCP Servers
 
-| Server | Purpose | Auth Method |
-|--------|---------|-------------|
-| `firebase` | Firebase/GCP operations | CLI login |
-| `ccusage` | Usage tracking | None |
-| `sonarcloud` | Code quality | Env var |
-| `filesystem` | File operations | None |
-| `puppeteer` | Browser automation | None |
-| `playwright` | Browser testing | None |
-| `context7` | Context management | Env var |
-| `nextjs-devtools` | Next.js tools | None |
+| Server            | Purpose                 | Auth Method |
+| ----------------- | ----------------------- | ----------- |
+| `firebase`        | Firebase/GCP operations | CLI login   |
+| `ccusage`         | Usage tracking          | None        |
+| `sonarcloud`      | Code quality            | Env var     |
+| `filesystem`      | File operations         | None        |
+| `puppeteer`       | Browser automation      | None        |
+| `playwright`      | Browser testing         | None        |
+| `context7`        | Context management      | Env var     |
+| `nextjs-devtools` | Next.js tools           | None        |
 
 ---
 

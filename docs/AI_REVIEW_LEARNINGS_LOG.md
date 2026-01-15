@@ -514,6 +514,51 @@ claude/general-dev-session-A1az1 **Suggestions:** 14 items (Major: 5, Minor: 9)
 
 ---
 
+#### Review #146: Operational Visibility Sprint PR Feedback (2026-01-15)
+
+**Source:** Documentation Lint + Qodo Compliance + CI + PR Suggestions
+**PR/Branch:** claude/lighthouse-integration-planning-YdBkz **Suggestions:** 21
+items (Major: 7, Minor: 8, Trivial: 2, Deferred: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                                        | Severity | Category      | Fix                                          |
+| --- | -------------------------------------------- | -------- | ------------- | -------------------------------------------- |
+| 1   | ROADMAP.md 4 broken archive links            | Major    | Documentation | Remove non-existent archive file references  |
+| 2   | ROADMAP.md invalid date format               | Major    | Documentation | Split header to separate lines               |
+| 3   | lighthouse-tab.tsx setError unused           | Major    | Code Quality  | Use setError in catch, structured logging    |
+| 4   | app/dev/page.tsx repeated auth subscriptions | Major    | React         | Remove state from useEffect deps             |
+| 5   | lighthouse-tab.tsx failed audit crash        | Major    | Robustness    | Guard result.success before accessing scores |
+| 6   | admin.ts SENTRY_ORG/PROJECT as secrets       | Major    | Configuration | Use process.env for non-sensitive config     |
+| 7   | lighthouse-tab.tsx Firestore timestamp       | Minor    | Type Safety   | Handle Timestamp.toDate() vs string          |
+| 8   | lighthouse-audit.js includes /dev route      | Minor    | Dev Tool      | Remove auth-protected route from audits      |
+| 9   | 8 files need Prettier formatting             | Trivial  | CI            | Run npm run format                           |
+| 10  | ANTIGRAVITY_GUIDE.md broken link             | Major    | Documentation | Remove non-existent file reference           |
+
+**Deferred:**
+
+- Separate dev dashboard as distinct app (architectural - valid but out of scope
+  for this PR)
+
+**Patterns Identified:**
+
+1. **useEffect dependency on state causes re-subscriptions**: When auth listener
+   depends on local state, it can create multiple subscriptions
+2. **Firestore timestamps need type handling**: Data from Firestore may be
+   Timestamp objects requiring .toDate() conversion
+3. **Auth-protected routes fail Lighthouse audits**: Exclude routes that require
+   login from audit scripts
+
+**Key Learnings:**
+
+- Client-side DSNs (like Sentry) are acceptable to commit as they're public by
+  design
+- --no-sandbox in local dev scripts is acceptable, not a CI security risk
+- Non-sensitive config (org names, project names) should use env vars, not GCP
+  Secret Manager
+
+---
+
 #### Review #144: Step 6-7 PR CI Fixes (2026-01-14)
 
 **Source:** CI Failures + Qodo PR Suggestions **PR/Branch:**

@@ -1,34 +1,37 @@
 # Lighthouse Integration Plan
 
-**Document Version:** 1.1
-**Created:** 2026-01-14 (Session #66)
-**Updated:** 2026-01-14
-**Status:** ACTIVE (Part of Operational Visibility Sprint)
+**Document Version:** 1.1 **Created:** 2026-01-14 (Session #66) **Updated:**
+2026-01-14 **Status:** ACTIVE (Part of Operational Visibility Sprint)
 **Priority:** P0 (Sprint Track B)
 
-> **Parent Sprint:** [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md)
-> **Sprint Tasks:** B2 (PERF-001), B3 (PERF-002), B4 (PERF-003), B5 (Dashboard Tab)
+> **Parent Sprint:**
+> [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md)
+> **Sprint Tasks:** B2 (PERF-001), B3 (PERF-002), B4 (PERF-003), B5 (Dashboard
+> Tab)
 
 ---
 
 ## Overview
 
-This document defines the implementation plan for integrating Google Lighthouse into the SoNash development and CI/CD workflow. The goal is to track performance, accessibility, best practices, SEO, and PWA readiness across all application routes.
+This document defines the implementation plan for integrating Google Lighthouse
+into the SoNash development and CI/CD workflow. The goal is to track
+performance, accessibility, best practices, SEO, and PWA readiness across all
+application routes.
 
 **Key Decisions:**
+
 - **Focus:** Tracking/monitoring (not blocking PRs initially)
 - **Scope:** All pages
 - **Strictness:** Warnings only (non-blocking)
 - **PWA:** Future goal, baseline tracking now
-- **Remote Access:** Dev Dashboard will be remote-accessible via Firestore backend
+- **Remote Access:** Dev Dashboard will be remote-accessible via Firestore
+  backend
 
 ---
 
 ## Phase 1: Local Lighthouse Script (PERF-001)
 
-**Milestone:** M1.5 - Quick Wins
-**Effort:** S (1-2 hours)
-**Priority:** P1
+**Milestone:** M1.5 - Quick Wins **Effort:** S (1-2 hours) **Priority:** P1
 
 ### Implementation
 
@@ -38,7 +41,8 @@ This document defines the implementation plan for integrating Google Lighthouse 
 npm install --save-dev lighthouse puppeteer
 ```
 
-**Why Puppeteer?** Lighthouse can use Puppeteer for headless Chrome, which is more reliable than the default Chrome launcher in CI environments.
+**Why Puppeteer?** Lighthouse can use Puppeteer for headless Chrome, which is
+more reliable than the default Chrome launcher in CI environments.
 
 #### 1.2 Create Audit Script
 
@@ -56,32 +60,38 @@ npm install --save-dev lighthouse puppeteer
  *   npm run lighthouse -- --json    # Output JSON only
  */
 
-const lighthouse = require('lighthouse');
-const chromeLauncher = require('chrome-launcher');
-const fs = require('fs');
-const path = require('path');
+const lighthouse = require("lighthouse");
+const chromeLauncher = require("chrome-launcher");
+const fs = require("fs");
+const path = require("path");
 
 // Configuration
-const BASE_URL = process.env.LIGHTHOUSE_BASE_URL || 'http://localhost:3000';
-const OUTPUT_DIR = path.join(process.cwd(), '.lighthouse');
+const BASE_URL = process.env.LIGHTHOUSE_BASE_URL || "http://localhost:3000";
+const OUTPUT_DIR = path.join(process.cwd(), ".lighthouse");
 
 // Routes to audit (all application pages)
 const ROUTES = [
-  { path: '/', name: 'landing' },
-  { path: '/today', name: 'today' },
-  { path: '/journal', name: 'journal' },
-  { path: '/growth', name: 'growth' },
-  { path: '/more', name: 'more' },
-  { path: '/admin', name: 'admin' },
-  { path: '/login', name: 'login' },
+  { path: "/", name: "landing" },
+  { path: "/today", name: "today" },
+  { path: "/journal", name: "journal" },
+  { path: "/growth", name: "growth" },
+  { path: "/more", name: "more" },
+  { path: "/admin", name: "admin" },
+  { path: "/login", name: "login" },
 ];
 
 // Lighthouse configuration
 const LIGHTHOUSE_CONFIG = {
-  extends: 'lighthouse:default',
+  extends: "lighthouse:default",
   settings: {
-    onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'],
-    formFactor: 'mobile',
+    onlyCategories: [
+      "performance",
+      "accessibility",
+      "best-practices",
+      "seo",
+      "pwa",
+    ],
+    formFactor: "mobile",
     throttling: {
       // Simulated slow 4G connection
       rttMs: 150,
@@ -102,7 +112,7 @@ const DESKTOP_CONFIG = {
   ...LIGHTHOUSE_CONFIG,
   settings: {
     ...LIGHTHOUSE_CONFIG.settings,
-    formFactor: 'desktop',
+    formFactor: "desktop",
     throttling: {
       rttMs: 40,
       throughputKbps: 10240,
@@ -118,11 +128,15 @@ const DESKTOP_CONFIG = {
 };
 
 async function runLighthouse(url, config, chrome) {
-  const result = await lighthouse(url, {
-    port: chrome.port,
-    output: ['json', 'html'],
-    logLevel: 'error',
-  }, config);
+  const result = await lighthouse(
+    url,
+    {
+      port: chrome.port,
+      output: ["json", "html"],
+      logLevel: "error",
+    },
+    config
+  );
 
   return result;
 }
@@ -139,15 +153,19 @@ async function auditPage(route, chrome, options = {}) {
     // Extract scores
     const scores = {
       performance: Math.round(result.lhr.categories.performance.score * 100),
-      accessibility: Math.round(result.lhr.categories.accessibility.score * 100),
-      bestPractices: Math.round(result.lhr.categories['best-practices'].score * 100),
+      accessibility: Math.round(
+        result.lhr.categories.accessibility.score * 100
+      ),
+      bestPractices: Math.round(
+        result.lhr.categories["best-practices"].score * 100
+      ),
       seo: Math.round(result.lhr.categories.seo.score * 100),
       pwa: Math.round(result.lhr.categories.pwa.score * 100),
     };
 
     // Save reports
-    const timestamp = new Date().toISOString().split('T')[0];
-    const device = options.desktop ? 'desktop' : 'mobile';
+    const timestamp = new Date().toISOString().split("T")[0];
+    const device = options.desktop ? "desktop" : "mobile";
     const baseName = `${route.name}-${device}-${timestamp}`;
 
     fs.writeFileSync(
@@ -170,9 +188,9 @@ async function auditPage(route, chrome, options = {}) {
 async function main() {
   // Parse arguments
   const args = process.argv.slice(2);
-  const singleUrl = args.find(arg => arg.startsWith('--url='))?.split('=')[1];
-  const jsonOnly = args.includes('--json');
-  const desktop = args.includes('--desktop');
+  const singleUrl = args.find((arg) => arg.startsWith("--url="))?.split("=")[1];
+  const jsonOnly = args.includes("--json");
+  const desktop = args.includes("--desktop");
 
   // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)) {
@@ -181,7 +199,7 @@ async function main() {
 
   // Filter routes if single URL specified
   const routesToAudit = singleUrl
-    ? ROUTES.filter(r => r.path === singleUrl)
+    ? ROUTES.filter((r) => r.path === singleUrl)
     : ROUTES;
 
   if (routesToAudit.length === 0) {
@@ -189,16 +207,16 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('Lighthouse Performance Audit');
-  console.log('============================');
+  console.log("Lighthouse Performance Audit");
+  console.log("============================");
   console.log(`Base URL: ${BASE_URL}`);
-  console.log(`Device: ${desktop ? 'Desktop' : 'Mobile'}`);
+  console.log(`Device: ${desktop ? "Desktop" : "Mobile"}`);
   console.log(`Routes: ${routesToAudit.length}`);
-  console.log('');
+  console.log("");
 
   // Launch Chrome
   const chrome = await chromeLauncher.launch({
-    chromeFlags: ['--headless', '--disable-gpu', '--no-sandbox'],
+    chromeFlags: ["--headless", "--disable-gpu", "--no-sandbox"],
   });
 
   try {
@@ -210,16 +228,16 @@ async function main() {
     }
 
     // Summary
-    console.log('');
-    console.log('Results Summary');
-    console.log('---------------');
+    console.log("");
+    console.log("Results Summary");
+    console.log("---------------");
 
     if (jsonOnly) {
       console.log(JSON.stringify(results, null, 2));
     } else {
-      console.log('');
-      console.log('Page           | Perf | A11y | Best | SEO  | PWA');
-      console.log('---------------|------|------|------|------|-----');
+      console.log("");
+      console.log("Page           | Perf | A11y | Best | SEO  | PWA");
+      console.log("---------------|------|------|------|------|-----");
 
       for (const result of results) {
         if (result.success) {
@@ -232,32 +250,38 @@ async function main() {
         }
       }
 
-      console.log('');
+      console.log("");
       console.log(`Reports saved to: ${OUTPUT_DIR}/`);
     }
 
     // Save summary JSON
-    const summaryPath = path.join(OUTPUT_DIR, 'summary.json');
-    fs.writeFileSync(summaryPath, JSON.stringify({
-      timestamp: new Date().toISOString(),
-      baseUrl: BASE_URL,
-      device: desktop ? 'desktop' : 'mobile',
-      results,
-    }, null, 2));
+    const summaryPath = path.join(OUTPUT_DIR, "summary.json");
+    fs.writeFileSync(
+      summaryPath,
+      JSON.stringify(
+        {
+          timestamp: new Date().toISOString(),
+          baseUrl: BASE_URL,
+          device: desktop ? "desktop" : "mobile",
+          results,
+        },
+        null,
+        2
+      )
+    );
 
     // Exit with error if any audits failed
-    const failures = results.filter(r => !r.success);
+    const failures = results.filter((r) => !r.success);
     if (failures.length > 0) {
       process.exit(1);
     }
-
   } finally {
     await chrome.kill();
   }
 }
 
-main().catch(error => {
-  console.error('Fatal error:', error);
+main().catch((error) => {
+  console.error("Fatal error:", error);
   process.exit(1);
 });
 ```
@@ -311,9 +335,7 @@ npm run lighthouse
 
 ## Phase 2: CI Integration (PERF-002)
 
-**Milestone:** M1.5 - Quick Wins
-**Effort:** M (2-3 hours)
-**Priority:** P1
+**Milestone:** M1.5 - Quick Wins **Effort:** M (2-3 hours) **Priority:** P1
 
 ### Implementation
 
@@ -362,8 +384,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -372,7 +394,8 @@ jobs:
         run: npm run build
         env:
           # Add any required env vars for build
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_API_KEY:
+            ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           # ... other env vars
 
       - name: Run Lighthouse audit
@@ -432,16 +455,15 @@ jobs:
 
 ## Phase 3: Historical Tracking (PERF-003)
 
-**Milestone:** M2 - Architecture
-**Effort:** M (3-4 hours)
-**Priority:** P2
+**Milestone:** M2 - Architecture **Effort:** M (3-4 hours) **Priority:** P2
 **Prerequisite:** PERF-001, PERF-002 complete
 
 ### Implementation
 
 #### 3.1 History Storage Schema
 
-**File:** `.lighthouse/history.json` (gitignored, but could be stored in Firestore for persistence)
+**File:** `.lighthouse/history.json` (gitignored, but could be stored in
+Firestore for persistence)
 
 ```json
 {
@@ -486,7 +508,7 @@ function detectRegressions(current, previous) {
   const regressions = [];
 
   for (const route of current.results) {
-    const prevRoute = previous.results.find(r => r.route === route.route);
+    const prevRoute = previous.results.find((r) => r.route === route.route);
     if (!prevRoute) continue;
 
     for (const [category, score] of Object.entries(route.scores)) {
@@ -513,9 +535,7 @@ function detectRegressions(current, previous) {
 
 ## Phase 4: Performance Budgets (PERF-004)
 
-**Milestone:** M2 - Architecture
-**Effort:** S (1-2 hours)
-**Priority:** P2
+**Milestone:** M2 - Architecture **Effort:** S (1-2 hours) **Priority:** P2
 **Prerequisite:** PERF-002 complete
 
 ### Implementation
@@ -529,31 +549,31 @@ module.exports = {
   ci: {
     collect: {
       url: [
-        'http://localhost:3000/',
-        'http://localhost:3000/today',
-        'http://localhost:3000/journal',
-        'http://localhost:3000/growth',
-        'http://localhost:3000/more',
-        'http://localhost:3000/login',
+        "http://localhost:3000/",
+        "http://localhost:3000/today",
+        "http://localhost:3000/journal",
+        "http://localhost:3000/growth",
+        "http://localhost:3000/more",
+        "http://localhost:3000/login",
       ],
       numberOfRuns: 3, // Run 3 times for more stable results
     },
     assert: {
       assertions: {
         // Core Web Vitals
-        'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }],
-        'first-input-delay': ['warn', { maxNumericValue: 100 }],
-        'cumulative-layout-shift': ['warn', { maxNumericValue: 0.1 }],
+        "largest-contentful-paint": ["warn", { maxNumericValue: 2500 }],
+        "first-input-delay": ["warn", { maxNumericValue: 100 }],
+        "cumulative-layout-shift": ["warn", { maxNumericValue: 0.1 }],
 
         // Category scores
-        'categories:performance': ['warn', { minScore: 0.8 }],
-        'categories:accessibility': ['warn', { minScore: 0.9 }],
-        'categories:best-practices': ['warn', { minScore: 0.9 }],
-        'categories:seo': ['warn', { minScore: 0.8 }],
+        "categories:performance": ["warn", { minScore: 0.8 }],
+        "categories:accessibility": ["warn", { minScore: 0.9 }],
+        "categories:best-practices": ["warn", { minScore: 0.9 }],
+        "categories:seo": ["warn", { minScore: 0.8 }],
       },
     },
     upload: {
-      target: 'temporary-public-storage', // Free Lighthouse CI storage
+      target: "temporary-public-storage", // Free Lighthouse CI storage
     },
   },
 };
@@ -577,20 +597,20 @@ npm install --save-dev @lhci/cli
 
 ## Phase 5: Dashboard Integration (PERF-005)
 
-**Milestone:** M2 - Architecture
-**Effort:** L (6-8 hours)
-**Priority:** P3
+**Milestone:** M2 - Architecture **Effort:** L (6-8 hours) **Priority:** P3
 **Prerequisite:** Development Dashboard exists, PERF-003 complete
 
 ### Implementation
 
-This phase integrates Lighthouse scores into the Development Dashboard (not the production Admin Panel).
+This phase integrates Lighthouse scores into the Development Dashboard (not the
+production Admin Panel).
 
 #### 5.1 Dashboard Component
 
 **File:** `components/dev/lighthouse-dashboard.tsx` (or standalone page)
 
 Features:
+
 - Current scores for all routes (table view)
 - Historical trend chart (line chart per category)
 - Score comparison (current vs previous run)
@@ -599,15 +619,14 @@ Features:
 
 #### 5.2 Data Source
 
-Read from `.lighthouse/history.json` or Firestore collection `dev/lighthouse/history`.
+Read from `.lighthouse/history.json` or Firestore collection
+`dev/lighthouse/history`.
 
 ---
 
 ## Phase 6: PWA Baseline (PERF-006)
 
-**Milestone:** M2 - Architecture
-**Effort:** S (1-2 hours)
-**Priority:** P2
+**Milestone:** M2 - Architecture **Effort:** S (1-2 hours) **Priority:** P2
 **Prerequisite:** PERF-001 complete
 
 ### Implementation
@@ -615,19 +634,20 @@ Read from `.lighthouse/history.json` or Firestore collection `dev/lighthouse/his
 #### 6.1 Document Current PWA Score
 
 Run Lighthouse and document:
+
 - Current PWA score (expected: ~30-40 without service worker)
 - Missing PWA requirements
 - Gap analysis
 
 #### 6.2 PWA Checklist
 
-| Requirement | Status | Blocking? |
-|-------------|--------|-----------|
-| HTTPS | Yes (in production) | No |
-| Service Worker | No | Yes |
-| Web App Manifest | Partial | Yes |
-| Offline Support | No | Yes (EFF-010) |
-| Installability | No | Yes |
+| Requirement      | Status              | Blocking?     |
+| ---------------- | ------------------- | ------------- |
+| HTTPS            | Yes (in production) | No            |
+| Service Worker   | No                  | Yes           |
+| Web App Manifest | Partial             | Yes           |
+| Offline Support  | No                  | Yes (EFF-010) |
+| Installability   | No                  | Yes           |
 
 #### 6.3 Remediation Plan
 
@@ -640,21 +660,22 @@ Run Lighthouse and document:
 
 ## Pages to Audit
 
-| Route | Page | Priority | Notes |
-|-------|------|----------|-------|
-| `/` | Landing page | P0 | First impression, SEO critical |
-| `/today` | Today page | P0 | Daily use, performance critical |
-| `/journal` | Journal page | P1 | Heavy data, list rendering |
-| `/growth` | Growth page | P1 | Maps, external resources |
-| `/more` | More/Settings | P2 | Lower traffic |
-| `/admin` | Admin panel | P2 | Internal use only |
-| `/login` | Auth pages | P1 | Onboarding critical |
+| Route      | Page          | Priority | Notes                           |
+| ---------- | ------------- | -------- | ------------------------------- |
+| `/`        | Landing page  | P0       | First impression, SEO critical  |
+| `/today`   | Today page    | P0       | Daily use, performance critical |
+| `/journal` | Journal page  | P1       | Heavy data, list rendering      |
+| `/growth`  | Growth page   | P1       | Maps, external resources        |
+| `/more`    | More/Settings | P2       | Lower traffic                   |
+| `/admin`   | Admin panel   | P2       | Internal use only               |
+| `/login`   | Auth pages    | P1       | Onboarding critical             |
 
 ---
 
 ## Success Criteria
 
 ### Phase 1-2 (M1.5)
+
 - [ ] `npm run lighthouse` runs successfully
 - [ ] All 7 routes audited
 - [ ] HTML/JSON reports generated
@@ -662,6 +683,7 @@ Run Lighthouse and document:
 - [ ] Artifacts uploaded to GitHub
 
 ### Phase 3-6 (M2)
+
 - [ ] Historical data tracked over 7+ days
 - [ ] Regressions detected and alerted
 - [ ] Performance budgets defined
@@ -672,16 +694,18 @@ Run Lighthouse and document:
 
 ## Related Documents
 
-- [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md) - Parent sprint (Track B tasks)
+- [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md) -
+  Parent sprint (Track B tasks)
 - [ROADMAP.md](../ROADMAP.md) - Active Sprint section, PERF-001 through PERF-006
-- [EFF-010: Offline Queue](../ROADMAP.md#offline-support-critical) - PWA prerequisite
+- [EFF-010: Offline Queue](../ROADMAP.md#offline-support-critical) - PWA
+  prerequisite
 - Development Dashboard - Sprint Track B deliverable
 
 ---
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.1 | 2026-01-14 | Linked to Operational Visibility Sprint, updated priority to P0 |
-| 1.0 | 2026-01-14 | Initial plan created (Session #66) |
+| Version | Date       | Changes                                                         |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.1     | 2026-01-14 | Linked to Operational Visibility Sprint, updated priority to P0 |
+| 1.0     | 2026-01-14 | Initial plan created (Session #66)                              |

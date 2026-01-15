@@ -11,8 +11,9 @@
  */
 
 import { useState, useEffect } from "react";
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { logger } from "@/lib/logger";
 
 interface LighthouseScore {
   performance: number;
@@ -30,11 +31,20 @@ interface LighthouseResult {
 }
 
 interface LighthouseRun {
-  timestamp: string;
+  timestamp: string | Timestamp;
   commit?: string;
   branch?: string;
   device: string;
   results: LighthouseResult[];
+}
+
+// Helper to safely convert Firestore timestamp or string to Date
+function toDate(value: string | Timestamp): Date {
+  if (typeof value === "string") {
+    return new Date(value);
+  }
+  // Firestore Timestamp
+  return value.toDate();
 }
 
 // Score color based on value
@@ -79,8 +89,13 @@ export function LighthouseTab() {
           setLatestRun(doc.data() as LighthouseRun);
         }
       } catch (err) {
-        // If collection doesn't exist yet, that's okay
-        console.log("No Lighthouse data yet:", err);
+        // If collection doesn't exist yet, that's okay - but log it properly
+        const errorType = err instanceof Error ? err.name : "UnknownError";
+        logger.debug("Lighthouse data fetch failed", { errorType, context: "lighthouse-tab" });
+        // Only set error for unexpected failures, not missing collection
+        if (errorType !== "FirebaseError") {
+          setError("Failed to load Lighthouse data");
+        }
         setLatestRun(null);
       } finally {
         setLoading(false);
@@ -140,9 +155,7 @@ export function LighthouseTab() {
 
         {/* Sample data preview */}
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 border-dashed opacity-60">
-          <h3 className="text-lg font-semibold mb-4 text-gray-500">
-            Preview: What you will see
-          </h3>
+          <h3 className="text-lg font-semibold mb-4 text-gray-500">Preview: What you will see</h3>
           <SampleScoreTable />
         </div>
       </div>
@@ -157,7 +170,7 @@ export function LighthouseTab() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Latest Lighthouse Audit</h2>
           <div className="text-sm text-gray-400">
-            {new Date(latestRun.timestamp).toLocaleString()}
+            {toDate(latestRun.timestamp).toLocaleString()}
             {latestRun.commit && (
               <span className="ml-2 font-mono text-xs bg-gray-700 px-2 py-0.5 rounded">
                 {latestRun.commit.substring(0, 7)}
@@ -186,21 +199,29 @@ export function LighthouseTab() {
                     <div className="font-medium">{result.route}</div>
                     <div className="text-xs text-gray-500">{result.url}</div>
                   </td>
-                  <td className="py-3 px-4">
-                    <ScoreBadge score={result.scores.performance} label="Perf" />
-                  </td>
-                  <td className="py-3 px-4">
-                    <ScoreBadge score={result.scores.accessibility} label="A11y" />
-                  </td>
-                  <td className="py-3 px-4">
-                    <ScoreBadge score={result.scores.bestPractices} label="Best" />
-                  </td>
-                  <td className="py-3 px-4">
-                    <ScoreBadge score={result.scores.seo} label="SEO" />
-                  </td>
-                  <td className="py-3 px-4">
-                    <ScoreBadge score={result.scores.pwa} label="PWA" />
-                  </td>
+                  {result.success && result.scores ? (
+                    <>
+                      <td className="py-3 px-4">
+                        <ScoreBadge score={result.scores.performance} label="Perf" />
+                      </td>
+                      <td className="py-3 px-4">
+                        <ScoreBadge score={result.scores.accessibility} label="A11y" />
+                      </td>
+                      <td className="py-3 px-4">
+                        <ScoreBadge score={result.scores.bestPractices} label="Best" />
+                      </td>
+                      <td className="py-3 px-4">
+                        <ScoreBadge score={result.scores.seo} label="SEO" />
+                      </td>
+                      <td className="py-3 px-4">
+                        <ScoreBadge score={result.scores.pwa} label="PWA" />
+                      </td>
+                    </>
+                  ) : (
+                    <td className="py-3 px-4 text-red-400 text-sm" colSpan={5}>
+                      Audit failed
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -244,21 +265,11 @@ function SampleScoreTable() {
           {sampleData.map((row) => (
             <tr key={row.route} className="border-b border-gray-700/30">
               <td className="py-2 pr-4">{row.route}</td>
-              <td className={`py-2 px-2 text-center ${getScoreColor(row.perf)}`}>
-                {row.perf}
-              </td>
-              <td className={`py-2 px-2 text-center ${getScoreColor(row.a11y)}`}>
-                {row.a11y}
-              </td>
-              <td className={`py-2 px-2 text-center ${getScoreColor(row.best)}`}>
-                {row.best}
-              </td>
-              <td className={`py-2 px-2 text-center ${getScoreColor(row.seo)}`}>
-                {row.seo}
-              </td>
-              <td className={`py-2 px-2 text-center ${getScoreColor(row.pwa)}`}>
-                {row.pwa}
-              </td>
+              <td className={`py-2 px-2 text-center ${getScoreColor(row.perf)}`}>{row.perf}</td>
+              <td className={`py-2 px-2 text-center ${getScoreColor(row.a11y)}`}>{row.a11y}</td>
+              <td className={`py-2 px-2 text-center ${getScoreColor(row.best)}`}>{row.best}</td>
+              <td className={`py-2 px-2 text-center ${getScoreColor(row.seo)}`}>{row.seo}</td>
+              <td className={`py-2 px-2 text-center ${getScoreColor(row.pwa)}`}>{row.pwa}</td>
             </tr>
           ))}
         </tbody>

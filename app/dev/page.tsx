@@ -36,19 +36,15 @@ export default function DevPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for mobile after mount
-    if (state === "loading") {
-      const isMobile =
-        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
-      if (isMobile) {
-        setState("mobile");
-        return;
-      }
+    // Check for mobile after mount (run once)
+    const isMobile =
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+    if (isMobile) {
+      setState("mobile");
+      return; // Don't set up auth listener on mobile
     }
 
-    if (state === "mobile") return;
-
-    // Listen for auth state
+    // Listen for auth state (single subscription on mount)
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser || firebaseUser.isAnonymous) {
         setState("login");
@@ -59,22 +55,18 @@ export default function DevPage() {
       // Verify admin claim (same as admin panel - devs are admins)
       try {
         const tokenResult = await firebaseUser.getIdTokenResult();
-        if (tokenResult.claims.admin === true) {
-          setUser(firebaseUser);
-          setState("authenticated");
-        } else {
-          setUser(firebaseUser);
-          setState("not-admin");
-        }
+        setUser(firebaseUser);
+        setState(tokenResult.claims.admin === true ? "authenticated" : "not-admin");
       } catch (err) {
-        logger.error("Error verifying admin claim for dev dashboard", { error: err });
+        const errorType = err instanceof Error ? err.name : "UnknownError";
+        logger.error("Error verifying admin claim for dev dashboard", { errorType });
         setError("Failed to verify privileges");
         setState("login");
       }
     });
 
     return () => unsubscribe();
-  }, [state]);
+  }, []); // Empty deps - run once on mount
 
   const handleLogin = async () => {
     try {

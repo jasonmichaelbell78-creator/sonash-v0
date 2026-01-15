@@ -32,22 +32,14 @@ export function DevDashboard({ user, onLogout }: DevDashboardProps) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🛠️</span>
             <h1 className="text-xl font-semibold">Dev Dashboard</h1>
-            <span className="text-xs bg-green-600 px-2 py-0.5 rounded-full">
-              Remote
-            </span>
+            <span className="text-xs bg-green-600 px-2 py-0.5 rounded-full">Remote</span>
           </div>
           <div className="flex items-center gap-4">
-            <a
-              href="/admin"
-              className="text-gray-400 hover:text-white text-sm"
-            >
+            <a href="/admin" className="text-gray-400 hover:text-white text-sm">
               Admin Panel →
             </a>
             <span className="text-gray-400">{user?.email}</span>
-            <button
-              onClick={onLogout}
-              className="text-gray-400 hover:text-white text-sm"
-            >
+            <button onClick={onLogout} className="text-gray-400 hover:text-white text-sm">
               Sign out
             </button>
           </div>

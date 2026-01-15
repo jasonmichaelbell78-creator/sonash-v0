@@ -1,31 +1,33 @@
 # Operational Visibility Sprint
 
-**Document Version:** 1.0
-**Created:** 2026-01-14
-**Status:** ACTIVE
+**Document Version:** 1.0 **Created:** 2026-01-14 **Status:** ACTIVE
 **Priority:** P0 - Immediate Focus
 
 ---
 
 ## Overview
 
-This sprint consolidates Admin Panel completion (Phases 4-5) and Development Dashboard creation into a single focused effort. The goal is full operational visibility across both production monitoring (Admin Panel) and development tooling (Dev Dashboard).
+This sprint consolidates Admin Panel completion (Phases 4-5) and Development
+Dashboard creation into a single focused effort. The goal is full operational
+visibility across both production monitoring (Admin Panel) and development
+tooling (Dev Dashboard).
 
-**Sprint Goal:** Get Admin Panel Phases 4-5 and Development Dashboard MVP operational ASAP.
+**Sprint Goal:** Get Admin Panel Phases 4-5 and Development Dashboard MVP
+operational ASAP.
 
 ---
 
 ## Current State Assessment
 
-| Component | Status | Effort to Complete |
-|-----------|--------|-------------------|
-| Sentry SDK | Installed, NOT initialized | 1 hour |
-| Admin Errors Tab | UI exists, needs env vars | Config only |
-| Admin Logs Tab | Not built | 3-4 hours |
-| Dev Dashboard | Does not exist | 6-8 hours |
-| Lighthouse CI | Not built | 3-4 hours |
-| Security Logging | Complete (25 event types) | Done |
-| reCAPTCHA | Complete (fail-closed) | Done |
+| Component        | Status                     | Effort to Complete |
+| ---------------- | -------------------------- | ------------------ |
+| Sentry SDK       | Installed, NOT initialized | 1 hour             |
+| Admin Errors Tab | UI exists, needs env vars  | Config only        |
+| Admin Logs Tab   | Not built                  | 3-4 hours          |
+| Dev Dashboard    | Does not exist             | 6-8 hours          |
+| Lighthouse CI    | Not built                  | 3-4 hours          |
+| Security Logging | Complete (25 event types)  | Done               |
+| reCAPTCHA        | Complete (fail-closed)     | Done               |
 
 ---
 
@@ -192,13 +194,14 @@ flowchart TD
 
 ### Week 1 (Parallel)
 
-| Session | Track A | Track B |
-|---------|---------|---------|
-| **Day 1** | A1: Wire Sentry (1hr) | B1: /dev Route (2hr) |
-| **Day 1** | A2: Configure Cloud Fn (1hr) | B2: Lighthouse Script (2hr) |
-| **Day 2** | A3: Verify Errors Tab (30min) | Continue B2 if needed |
+| Session   | Track A                       | Track B                     |
+| --------- | ----------------------------- | --------------------------- |
+| **Day 1** | A1: Wire Sentry (1hr)         | B1: /dev Route (2hr)        |
+| **Day 1** | A2: Configure Cloud Fn (1hr)  | B2: Lighthouse Script (2hr) |
+| **Day 2** | A3: Verify Errors Tab (30min) | Continue B2 if needed       |
 
 **Week 1 Deliverables:**
+
 - [ ] Sentry capturing production errors
 - [ ] Admin Errors Tab showing real data
 - [ ] `/dev` route accessible
@@ -206,26 +209,28 @@ flowchart TD
 
 ### Week 2 (Parallel)
 
-| Session | Track A | Track B |
-|---------|---------|---------|
-| **Day 1** | A4: Logs Tab (3-4hr) | B3: Lighthouse CI (2hr) |
-| **Day 2** | Continue A4 | B4: Firestore History (2hr) |
-| **Day 3** | - | B5: Lighthouse Tab (3hr) |
+| Session   | Track A              | Track B                     |
+| --------- | -------------------- | --------------------------- |
+| **Day 1** | A4: Logs Tab (3-4hr) | B3: Lighthouse CI (2hr)     |
+| **Day 2** | Continue A4          | B4: Firestore History (2hr) |
+| **Day 3** | -                    | B5: Lighthouse Tab (3hr)    |
 
 **Week 2 Deliverables:**
+
 - [ ] Admin Logs Tab with GCP deep links
 - [ ] Lighthouse CI running on PRs
 - [ ] Dev Dashboard showing Lighthouse scores
 
 ### Week 3 (Parallel)
 
-| Session | Track B |
-|---------|---------|
-| **Day 1** | B6: Error Tracing Tab (2hr) |
-| **Day 2** | B7: Session Activity Tab (2hr) |
+| Session   | Track B                                                   |
+| --------- | --------------------------------------------------------- |
+| **Day 1** | B6: Error Tracing Tab (2hr)                               |
+| **Day 2** | B7: Session Activity Tab (2hr)                            |
 | **Day 3** | B8: Document Sync Tab (1hr), B9: Override Audit Tab (1hr) |
 
 **Week 3 Deliverables:**
+
 - [ ] Full Dev Dashboard MVP with all 5 tabs
 
 ---
@@ -240,7 +245,7 @@ flowchart TD
 const isAdmin = tokenResult.claims.admin === true;
 
 // Or Option B: Allowlist specific emails (if different from admin)
-const DEV_ALLOWLIST = ['your-email@domain.com'];
+const DEV_ALLOWLIST = ["your-email@domain.com"];
 const isDeveloper = DEV_ALLOWLIST.includes(user.email);
 ```
 
@@ -264,6 +269,7 @@ const isDeveloper = DEV_ALLOWLIST.includes(user.email);
 ### Environment Variables Needed
 
 **For Sentry (Cloud Functions):**
+
 ```bash
 firebase functions:config:set sentry.api_token="YOUR_TOKEN"
 firebase functions:config:set sentry.org="YOUR_ORG"
@@ -271,6 +277,7 @@ firebase functions:config:set sentry.project="YOUR_PROJECT"
 ```
 
 **For Sentry (Client - .env.local):**
+
 ```bash
 NEXT_PUBLIC_SENTRY_DSN=https://xxx@sentry.io/xxx
 NEXT_PUBLIC_SENTRY_ENABLED=true
@@ -281,12 +288,14 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 ## Success Criteria
 
 ### Admin Panel (Phases 4-5) Complete When:
+
 - [ ] Production errors appear in Admin Errors Tab
 - [ ] Error trends (24hr comparison) display correctly
 - [ ] Logs Tab shows recent security events
 - [ ] GCP deep links work
 
 ### Dev Dashboard MVP Complete When:
+
 - [ ] `/dev` route accessible (admin auth)
 - [ ] Lighthouse scores display for all 7 pages
 - [ ] Historical trends visible (after 3+ CI runs)
@@ -300,11 +309,13 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 ## Files to Create
 
 ### Track A (Admin Panel)
+
 ```
 components/admin/logs-tab.tsx          # NEW - GCP logs viewer
 ```
 
 ### Track B (Dev Dashboard)
+
 ```
 app/dev/page.tsx                       # NEW - Dev dashboard route
 app/dev/layout.tsx                     # NEW - Auth-gated layout
@@ -320,6 +331,7 @@ scripts/lighthouse-audit.js            # NEW - Lighthouse script
 ```
 
 ### Files to Modify
+
 ```
 app/layout.tsx                         # Add initSentryClient() call
 lib/auth-context.tsx                   # Add setSentryUser() call
@@ -333,25 +345,27 @@ firestore.rules                        # Add /dev collection rules
 
 ## Risk Mitigation
 
-| Risk | Mitigation |
-|------|-----------|
-| Sentry API rate limits | Cache responses, 5-min TTL |
-| GCP API complexity | Use deep links, not API |
-| Lighthouse CI slow | Run only on PR, not every commit |
-| Firestore costs | Dev collection small, minimal reads |
+| Risk                   | Mitigation                          |
+| ---------------------- | ----------------------------------- |
+| Sentry API rate limits | Cache responses, 5-min TTL          |
+| GCP API complexity     | Use deep links, not API             |
+| Lighthouse CI slow     | Run only on PR, not every commit    |
+| Firestore costs        | Dev collection small, minimal reads |
 
 ---
 
 ## Related Documents
 
-- [LIGHTHOUSE_INTEGRATION_PLAN.md](./LIGHTHOUSE_INTEGRATION_PLAN.md) - Detailed Lighthouse spec
-- [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) - Phase 4-5 details
+- [LIGHTHOUSE_INTEGRATION_PLAN.md](./LIGHTHOUSE_INTEGRATION_PLAN.md) - Detailed
+  Lighthouse spec
+- [ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md](./ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) -
+  Phase 4-5 details
 - [ROADMAP.md](../ROADMAP.md) - Overall product roadmap
 
 ---
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-14 | Initial sprint plan created |
+| Version | Date       | Changes                     |
+| ------- | ---------- | --------------------------- |
+| 1.0     | 2026-01-14 | Initial sprint plan created |
