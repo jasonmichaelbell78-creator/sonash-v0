@@ -42,7 +42,23 @@ if [ $patterns_exit -ne 0 ]; then
 fi
 echo "  ✅ Pattern compliance passed"
 
-# 4. Type check
+# 4. Security pattern check (staged files only, blocking for CRITICAL/HIGH)
+echo "  ▶ Running security pattern check..."
+security_output=$(node scripts/security-check.js --blocking 2>&1)
+security_exit=$?
+if [ $security_exit -ne 0 ]; then
+  echo "  ❌ Security pattern violations found"
+  printf '%s\n' "$security_output" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
+  echo ""
+  echo "  Fix security issues before pushing. Run: npm run security:check"
+  exit 1
+elif echo "$security_output" | grep -q "MEDIUM\|LOW"; then
+  echo "  ⚠️ Security warnings (not blocking) - run: npm run security:check"
+else
+  echo "  ✅ Security check passed"
+fi
+
+# 5. Type check
 echo "  ▶ Running type check..."
 if ! npx tsc --noEmit > /dev/null 2>&1; then
   echo "  ❌ Type check failed"
@@ -53,7 +69,7 @@ if ! npx tsc --noEmit > /dev/null 2>&1; then
 fi
 echo "  ✅ Type check passed"
 
-# 5. Security audit (non-blocking warning, ~3-8s)
+# 6. Security audit (non-blocking warning, ~3-8s)
 # Checks for high/critical vulnerabilities in dependencies
 echo "  ▶ Running security audit..."
 audit_output=$(npm audit --audit-level=high 2>&1)
@@ -70,7 +86,7 @@ else
   echo "  ✅ No high/critical vulnerabilities"
 fi
 
-# 6. Event-based trigger checker (blocking for security, warning for others)
+# 7. Event-based trigger checker (blocking for security, warning for others)
 # Checks: security_audit (files with auth/token/etc.), consolidation, skill_validation
 echo "  ▶ Checking event-based triggers..."
 if [ "${SKIP_TRIGGERS:-}" = "1" ]; then

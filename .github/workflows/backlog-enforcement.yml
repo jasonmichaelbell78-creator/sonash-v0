@@ -1,0 +1,134 @@
+name: Backlog Enforcement
+
+on:
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Run weekly on Monday at 9 AM UTC to catch aging issues
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  backlog-health:
+    name: Check Backlog Health
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Check backlog health
+        id: backlog
+        run: |
+          # Run backlog check and capture output
+          set +e
+          output=$(node scripts/check-backlog-health.js 2>&1)
+          exit_code=$?
+          set -e
+
+          echo "$output"
+          echo ""
+
+          # Parse results for summary
+          total=$(echo "$output" | grep -oP "Total active items: \K\d+" || echo "0")
+          s0=$(echo "$output" | grep -oP "S0 \(Critical\): \K\d+" || echo "0")
+          s1=$(echo "$output" | grep -oP "S1 \(Major\):\s+\K\d+" || echo "0")
+
+          echo "total=$total" >> $GITHUB_OUTPUT
+          echo "s0=$s0" >> $GITHUB_OUTPUT
+          echo "s1=$s1" >> $GITHUB_OUTPUT
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+
+          # S0 items are never allowed in backlog
+          if [ "$s0" -gt 0 ]; then
+            echo "::error::Critical (S0) items found in backlog - these must be addressed immediately"
+            exit 1
+          fi
+
+          # Fail if total exceeds threshold (25 items)
+          if [ "$total" -gt 25 ]; then
+            echo "::error::Backlog has $total items (threshold: 25) - triage and address items"
+            exit 1
+          fi
+
+          exit $exit_code
+
+      - name: Comment on PR (if warnings)
+        if: github.event_name == 'pull_request' && steps.backlog.outputs.exit_code != '0'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const total = '${{ steps.backlog.outputs.total }}';
+            const s1 = '${{ steps.backlog.outputs.s1 }}';
+
+            const body = `## ⚠️ Backlog Health Warning
+
+            The audit findings backlog needs attention:
+            - **Total items**: ${total}
+            - **S1 (Major) items**: ${s1}
+
+            Please review [AUDIT_FINDINGS_BACKLOG.md](../blob/main/docs/AUDIT_FINDINGS_BACKLOG.md) and consider addressing aging items.
+
+            Run \`npm run backlog:check\` locally for details.`;
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+  security-patterns:
+    name: Check Security Patterns
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0  # Need full history for changed files
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Get changed files
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Get files changed in PR
+            changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(js|ts|tsx)$' || true)
+          else
+            # For non-PR runs, check all files
+            changed="--all"
+          fi
+          echo "files=$changed" >> $GITHUB_OUTPUT
+
+      - name: Run security pattern check
+        run: |
+          if [ "${{ steps.changed.outputs.files }}" = "--all" ]; then
+            node scripts/security-check.js --all --blocking
+          elif [ -n "${{ steps.changed.outputs.files }}" ]; then
+            # Check each changed file
+            echo "${{ steps.changed.outputs.files }}" | while read -r file; do
+              if [ -f "$file" ]; then
+                node scripts/security-check.js --file "$file" --blocking
+              fi
+            done
+          else
+            echo "No JS/TS files changed"
+          fi

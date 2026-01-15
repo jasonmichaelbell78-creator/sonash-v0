@@ -234,6 +234,31 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 **Goal:** High-impact, low-effort features that improve user experience
 
+### 🚨 Clear Audit Backlog (Do First)
+
+> **Prerequisite:** Complete before starting new feature work. See
+> [AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md)
+
+**Current backlog:** 9 items (8-11 hours estimated)
+
+| ID         | Category      | Severity | Effort | Description                      |
+| ---------- | ------------- | -------- | ------ | -------------------------------- |
+| CANON-0107 | Security      | S1       | E0     | Missing security headers         |
+| CANON-0108 | Security      | S2       | E0     | No Firebase Storage rules        |
+| CANON-0103 | Process       | S2       | E1     | Fix docs:check false positives   |
+| CANON-0104 | Process       | S2       | E0     | Add scripts to session start     |
+| CANON-0105 | Process       | S2       | E1     | Add CANON validation to CI       |
+| CANON-0106 | Process       | S3       | E0     | Add npm commands for scripts     |
+| LEGACY-001 | Code Quality  | S3       | E1     | Retrofit SSR-safe localStorage   |
+| CANON-0101 | Documentation | S3       | E2     | Missing Quick Start sections     |
+| CANON-0102 | Documentation | S3       | E1     | Missing AI Instructions sections |
+
+**Acceptance criteria:**
+
+- [ ] All S1 items resolved
+- [ ] All S2 items resolved or deferred with justification
+- [ ] `npm run backlog:check` returns healthy status
+
 ### In Progress
 
 - 🔄 Settings page UI
