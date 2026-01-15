@@ -1592,14 +1592,14 @@ options:
 
 Output example
 
-```
+````
 
 ## Examples
 
 ### Example 1: Basic Usage
 ```bash
 /command-name --option1=value1
-```
+````
 
 ### Example 2: Advanced Usage
 
@@ -1623,7 +1623,7 @@ Common errors and solutions:
 
 - [Link to related documentation]
 
-```
+````
 
 ---
 
@@ -1655,7 +1655,7 @@ Commands can build upon existing audit commands:
 ```bash
 # Create command file
 touch .claude/commands/{category}/{command-name}.md
-```
+````
 
 **2. Update Settings**
 
