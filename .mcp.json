@@ -4,6 +4,10 @@
       "command": "bunx",
       "args": ["@ccusage/mcp@latest"]
     },
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
+    },
     "sonarcloud": {
       "command": "node",
       "args": ["scripts/mcp/sonarcloud-server.js"],
@@ -28,7 +32,7 @@
       "command": "npx",
       "args": ["-y", "@context7/mcp@latest"],
       "env": {
-        "CONTEXT7_API_KEY": "ctx7sk-4e50369b-3f53-4fb0-8221-e74ef3a5d628"
+        "CONTEXT7_API_KEY": ""
       }
     },
     "nextjs-devtools": {

@@ -6,10 +6,20 @@
  */
 
 import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
 import { logSecurityEvent } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
+
+/**
+ * SEC-001: Firebase Secrets for Sentry Integration
+ * These are stored in GCP Secret Manager and accessed at runtime
+ * Set via: firebase functions:secrets:set SENTRY_API_TOKEN
+ */
+const sentryApiToken = defineSecret("SENTRY_API_TOKEN");
+const sentryOrg = defineSecret("SENTRY_ORG");
+const sentryProject = defineSecret("SENTRY_PROJECT");
 import {
   meetingSchema,
   soberLivingSchema,
@@ -1097,32 +1107,35 @@ interface SentryIssueSummary {
   permalink: string;
 }
 
-export const adminGetSentryErrorSummary = onCall(async (request) => {
-  await requireAdmin(request, "adminGetSentryErrorSummary");
+export const adminGetSentryErrorSummary = onCall(
+  { secrets: [sentryApiToken, sentryOrg, sentryProject] },
+  async (request) => {
+    await requireAdmin(request, "adminGetSentryErrorSummary");
 
-  logSecurityEvent(
-    "ADMIN_ACTION",
-    "adminGetSentryErrorSummary",
-    "Admin requested Sentry error summary",
-    { userId: request.auth?.uid, severity: "INFO" }
-  );
+    logSecurityEvent(
+      "ADMIN_ACTION",
+      "adminGetSentryErrorSummary",
+      "Admin requested Sentry error summary",
+      { userId: request.auth?.uid, severity: "INFO" }
+    );
 
-  const sentryToken = process.env.SENTRY_API_TOKEN;
-  const sentryOrg = process.env.SENTRY_ORG;
-  const sentryProject = process.env.SENTRY_PROJECT;
+    // SEC-001: Access secrets via .value() at runtime
+    const token = sentryApiToken.value();
+    const org = sentryOrg.value();
+    const project = sentryProject.value();
 
-  if (!sentryToken || !sentryOrg || !sentryProject) {
-    throw new HttpsError("failed-precondition", "Sentry integration is not configured");
-  }
+    if (!token || !org || !project) {
+      throw new HttpsError("failed-precondition", "Sentry integration is not configured");
+    }
 
-  const headers = {
-    Authorization: `Bearer ${sentryToken}`,
-    "Content-Type": "application/json",
-  };
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
 
-  try {
-    const statsUrl = new URL(`https://sentry.io/api/0/organizations/${sentryOrg}/events-stats/`);
-    statsUrl.searchParams.set("project", sentryProject);
+    try {
+      const statsUrl = new URL(`https://sentry.io/api/0/organizations/${org}/events-stats/`);
+      statsUrl.searchParams.set("project", project);
     statsUrl.searchParams.set("interval", "1h");
     statsUrl.searchParams.set("statsPeriod", "48h");
 
@@ -1148,7 +1161,7 @@ export const adminGetSentryErrorSummary = onCall(async (request) => {
       prev24h === 0 ? (last24h === 0 ? 0 : 100) : ((last24h - prev24h) / prev24h) * 100;
 
     const issuesUrl = new URL(
-      `https://sentry.io/api/0/projects/${sentryOrg}/${sentryProject}/issues/`
+      `https://sentry.io/api/0/projects/${org}/${project}/issues/`
     );
     issuesUrl.searchParams.set("limit", "20");
     issuesUrl.searchParams.set("sort", "freq");
@@ -1178,7 +1191,7 @@ export const adminGetSentryErrorSummary = onCall(async (request) => {
       shortId: issue.shortId || "N/A",
       level: issue.level || null,
       status: issue.status || null,
-      permalink: issue.permalink || `https://sentry.io/organizations/${sentryOrg}/issues/`,
+      permalink: issue.permalink || `https://sentry.io/organizations/${org}/issues/`,
     }));
 
     return {
