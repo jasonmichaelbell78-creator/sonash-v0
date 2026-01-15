@@ -448,7 +448,7 @@ jobs:
               }
             }
 
-            comment += '\n📊 View full reports: ../actions/runs/' + context.runId;
+            comment += '\n📊 [View full reports](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + ')';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
