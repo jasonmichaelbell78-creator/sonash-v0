@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6.7     | 2026-01-15 | Review #152: Admin Error Utils PR Feedback - 7 items (1 CRITICAL: CI blocker already resolved, 1 MAJOR: email regex ReDoS fix with RFC 5321 length limits, 1 MINOR: trim whitespace dates, 2 TRIVIAL: code cleanup, 2 REJECTED: SonarCloud false positives on security tests). New patterns: Regex ReDoS prevention with length limits, security test false positives in SonarCloud.                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 6.6     | 2026-01-15 | Review #148: Dev Dashboard Security Hardening - 8 items fixed (3 MAJOR: Prettier blank line, raw error exposure, client write-only; 5 MINOR: network errors, stale state, null guard, safe error extraction, non-nullable prop). New patterns: Never expose raw Firebase errors, dev data client read-only, defensive null guards.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 6.5     | 2026-01-15 | Review #147: CI Blocker Fixes + Firebase Error Handling - 7 items (1 CRITICAL: logger.debug TS2339; 3 MAJOR: ROADMAP date format, Firestore dev/\* rules, Firebase error specificity; 3 MINOR: token refresh, network errors, errorCode logging). New patterns: prettier-ignore for linter conflicts, explicit admin rules for dev collections, getIdTokenResult(true) for fresh claims.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 6.4     | 2026-01-14 | Review #145: Settings Page Accessibility & Security - 14 items (5 MAJOR: toggle accessibility, date validation, preference preservation, timezone bug, form labels; 9 MINOR: useAuth deprecated, props readonly, silent return, error logging, audit logging, change detection). New patterns: Accessible toggle (button+role=switch), local date formatting, preference spread.                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -234,8 +235,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #151
+**Reviews since last consolidation:** 9 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #152
 
 ### When to Consolidate
 
@@ -758,6 +759,47 @@ Major: 2, Minor: 5, Deferred: 1)
   elements
 - rel="noreferrer" already implies noopener in modern browsers, but explicit
   noopener is defensive best practice
+
+---
+
+#### Review #152: Admin Error Utils PR Feedback (2026-01-15)
+
+**Source:** SonarCloud Security Hotspots + Qodo PR Code Suggestions + CI
+Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
+(Critical: 1, Major: 1, Minor: 1, Trivial: 2, Rejected: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                            | Severity | Category       | Fix                                                    |
+| --- | -------------------------------- | -------- | -------------- | ------------------------------------------------------ |
+| 1   | README.md Prettier formatting    | Critical | CI Blocker     | Already fixed (transient CI issue)                     |
+| 2   | Email regex ReDoS vulnerability  | Major    | Security (DoS) | Add length limits `{1,64}@{1,253}` per RFC 5321        |
+| 3   | Whitespace-only date not handled | Minor    | Robustness     | Add `dateString?.trim()` check and trim before parsing |
+| 4   | Redundant `if (!url)` check      | Trivial  | Code Quality   | Remove - try/catch handles null/empty URLs             |
+
+**Rejected:**
+
+- [2] javascript: protocol in test - **FALSE POSITIVE** - Test validates
+  security function correctly blocks javascript: URLs
+- [3] http:// in test - **FALSE POSITIVE** - Test validates security function
+  correctly blocks non-https URLs
+
+**Patterns Identified:**
+
+1. **Regex ReDoS Prevention**: Use explicit length limits `{1,N}` instead of
+   unbounded `+` quantifiers to prevent catastrophic backtracking
+2. **Security Test False Positives**: SonarCloud flags security-related string
+   literals in tests that are actually validating security - review before
+   acting
+3. **Whitespace Validation**: Always trim and check for empty after trim for
+   user input that could contain whitespace-only values
+
+**Key Learnings:**
+
+- Email regex per RFC 5321: local-part max 64 chars, domain max 253 chars
+- SonarCloud security hotspots in test files often flag the test inputs, not
+  actual vulnerabilities
+- `new URL("")` throws - explicit early return is optional but adds clarity
 
 ---
 

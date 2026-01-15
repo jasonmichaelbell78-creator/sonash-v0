@@ -90,6 +90,11 @@ describe("admin-error-utils", () => {
       assert.equal(safeFormatDate(""), "Unknown");
     });
 
+    test("returns 'Unknown' for whitespace-only string", () => {
+      assert.equal(safeFormatDate("   "), "Unknown");
+      assert.equal(safeFormatDate("\t\n"), "Unknown");
+    });
+
     test("returns 'Unknown' for invalid date string", () => {
       assert.equal(safeFormatDate("not-a-date"), "Unknown");
       assert.equal(safeFormatDate("invalid"), "Unknown");
