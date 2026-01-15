@@ -1,8 +1,8 @@
 # Lighthouse Integration Plan
 
-**Document Version:** 1.1 **Created:** 2026-01-14 (Session #66) **Updated:**
-2026-01-14 **Status:** ACTIVE (Part of Operational Visibility Sprint)
-**Priority:** P0 (Sprint Track B)
+**Document Version:** 1.1 **Created:** 2026-01-14 **Last Updated:** 2026-01-15
+**Status:** ACTIVE (Part of Operational Visibility Sprint) **Priority:** P0
+(Sprint Track B)
 
 > **Parent Sprint:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](./OPERATIONAL_VISIBILITY_SPRINT.md)
@@ -26,6 +26,20 @@ application routes.
 - **PWA:** Future goal, baseline tracking now
 - **Remote Access:** Dev Dashboard will be remote-accessible via Firestore
   backend
+
+## Quick Start
+
+1. Review current Lighthouse CI status
+2. Check implementation phase progress
+3. Follow setup instructions for local testing
+
+## AI Instructions
+
+When working with Lighthouse:
+
+- Run Lighthouse locally before CI validation
+- Update metrics baselines after improvements
+- Document performance regressions immediately
 
 ---
 
@@ -434,7 +448,7 @@ jobs:
               }
             }
 
-            comment += '\n📊 [View full reports](../actions/runs/' + context.runId + ')';
+            comment += '\n📊 [View full reports](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + ')';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,

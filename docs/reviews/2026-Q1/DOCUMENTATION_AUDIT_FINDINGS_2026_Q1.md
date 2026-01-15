@@ -1,7 +1,7 @@
 # Documentation Audit Findings - 2026 Q1
 
 **Document Version:** 1.0 **Audit Date:** 2026-01-11 **Session:** #46
-**Status:** AGGREGATED
+**Status:** AGGREGATED **Last Updated:** 2026-01-15
 
 ---
 
@@ -10,6 +10,20 @@
 Multi-AI documentation audit completed with **5 AI models** producing **37 total
 findings** (before deduplication). After Tier-1 aggregation: **14 canonical
 findings** in `CANON-DOCS.jsonl`.
+
+## Quick Start
+
+1. Review the findings summary table
+2. Check documentation issues by severity
+3. Follow remediation recommendations
+
+## AI Instructions
+
+When addressing documentation issues:
+
+- Fix Critical tier documents first
+- Validate fixes with docs:check
+- Update finding status after resolution
 
 ### Audit Participants
 

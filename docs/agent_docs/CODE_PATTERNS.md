@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.7 **Last Updated:** 2026-01-12 **Source:** Distilled
-from 136 AI code reviews
+**Document Version:** 1.7 **Source:** Distilled from 136 AI code reviews **Last
+Updated:** 2026-01-15
 
 ---
 
@@ -14,6 +14,20 @@ pattern exists.
 
 **Quick Reference**: See [claude.md](../../claude.md) Section 4 for the 5
 critical patterns that apply to every session.
+
+## Quick Start
+
+1. Check patterns before writing code: `npm run patterns:check`
+2. Reference this doc when investigating pattern violations
+3. See claude.md Section 4 for quick summary
+
+## AI Instructions
+
+When working with code patterns:
+
+- Run patterns:check before committing
+- Add new patterns here when identified in reviews
+- Keep claude.md Section 4 in sync
 
 ---
 

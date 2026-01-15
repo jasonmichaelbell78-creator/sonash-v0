@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-**Document Version:** 2.0 **Last Updated:** 2026-01-02 **Status:** ACTIVE
+**Document Version:** 2.0 **Status:** ACTIVE **Last Updated:** 2026-01-02
 
 ---
 

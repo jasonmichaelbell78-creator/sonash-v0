@@ -6,6 +6,34 @@ deduplication)
 
 ---
 
+## Purpose
+
+This document categorizes canonical findings by their current status (DONE,
+STILL_VALID, STALE, NEW) after cross-referencing with the
+EIGHT_PHASE_REFACTOR_PLAN to avoid duplicate work.
+
+## Quick Start
+
+1. Review canonical ID categories
+2. Check categorization rules
+3. Use for finding classification
+
+## AI Instructions
+
+When categorizing findings:
+
+- Follow category definitions exactly
+- Use consistent CANON ID format
+- Update this reference for new categories
+
+## Version History
+
+| Version | Date       | Changes                         |
+| ------- | ---------- | ------------------------------- |
+| 1.0     | 2026-01-11 | Initial categorization complete |
+
+---
+
 ## Categorization Legend
 
 | Status          | Description                                                             |

@@ -22,6 +22,14 @@ leads to incomplete work, regressions, and scope creep.
 
 ---
 
+## Quick Start
+
+1. Review pre-PR checklist items
+2. Run all required checks
+3. Follow commit and push procedures
+
+---
+
 ## 📋 The Complete PR Workflow
 
 ```

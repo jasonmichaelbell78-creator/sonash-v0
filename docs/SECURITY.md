@@ -1,6 +1,6 @@
 # Security & Privacy Guide
 
-**Document Version:** 2.2 **Last Updated:** 2026-01-05 **Status:** ACTIVE
+**Document Version:** 2.2 **Status:** ACTIVE **Last Updated:** 2026-01-05
 
 ---
 
@@ -22,6 +22,14 @@ practices for the SoNash recovery app.
   security patterns
 - [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md) - Mandatory
   standards for all code
+
+---
+
+## Quick Start
+
+1. Review data classification guidelines
+2. Check security layer requirements
+3. Follow implementation checklist
 
 ---
 

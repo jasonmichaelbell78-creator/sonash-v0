@@ -1,7 +1,7 @@
 # SoNash Roadmap Log
 
-**Document Version:** 2.0 **Last Updated:** 2026-01-02 **Status:** ACTIVE
-(append-only archive)
+**Document Version:** 2.0 **Status:** ACTIVE (append-only archive) **Last
+Updated:** 2026-01-02
 
 ---
 

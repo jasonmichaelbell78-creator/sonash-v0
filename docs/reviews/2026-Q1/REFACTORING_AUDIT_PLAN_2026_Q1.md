@@ -30,6 +30,12 @@ code quality issues, use MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 **Expected Output:** Phased PR plan with canonical findings, similar to
 EIGHT_PHASE_REFACTOR_PLAN.md.
 
+## Quick Start
+
+1. Review audit scope and objectives
+2. Check refactoring areas to evaluate
+3. Follow execution methodology
+
 ---
 
 ## Status Dashboard

@@ -1,9 +1,8 @@
 # [Document Title]
 
 **Project**: SoNash Recovery Notebook **Document Version**: 1.0 **Created**:
-[Creation Date] **Last Updated**: [Last Update Date] **Status**: [ACTIVE |
-COMPLETE | ARCHIVED | DEPRECATED] **Overall Completion**: X/Y items complete
-(Z%)
+[Creation Date] **Status**: [ACTIVE | COMPLETE | ARCHIVED | DEPRECATED]
+**Overall Completion**: X/Y items complete (Z%) **Last Updated**: YYYY-MM-DD
 
 ---
 
@@ -18,6 +17,12 @@ purpose]. This document serves as:
 4. **[Additional purposes as needed]**
 
 **⚠️ CRITICAL**: [Any critical warnings or requirements for using this document]
+
+## Quick Start
+
+1. Copy template for new canonical document
+2. Fill in all required sections
+3. Validate structure before committing
 
 ---
 

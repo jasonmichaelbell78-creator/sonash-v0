@@ -5,6 +5,24 @@
 
 ---
 
+## Quick Start
+
+1. Review findings summary
+2. Check severity and priority
+3. Follow remediation recommendations
+
+---
+
+## AI Instructions
+
+When addressing process findings:
+
+- Start with highest impact items
+- Document process improvements
+- Update finding status after resolution
+
+---
+
 ## Executive Summary
 
 Multi-AI process/automation audit completed with **5 AI models** producing **38

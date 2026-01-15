@@ -20,6 +20,20 @@ Firebase infrastructure, including:
 **Objective:** Prevent security regressions and ensure all Firebase changes
 undergo appropriate review before deployment.
 
+## Quick Start
+
+1. Read change classification guidelines
+2. Identify your change category (Critical/Standard/Cosmetic)
+3. Follow the approval workflow for your category
+
+## AI Instructions
+
+When modifying Firebase:
+
+- Classify all changes before implementation
+- Never make Critical changes without explicit approval
+- Document all changes in the change log
+
 ---
 
 ## Scope

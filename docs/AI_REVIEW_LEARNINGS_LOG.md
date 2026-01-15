@@ -16,6 +16,14 @@ improvements made.
 
 ---
 
+## Quick Start
+
+1. Check recent reviews for relevant patterns
+2. Review consolidation status
+3. Add new learnings using Review #XX format
+
+---
+
 ## Version History
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |

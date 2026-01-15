@@ -5,6 +5,34 @@ Updated:** 2026-01-09
 
 ---
 
+## Purpose
+
+This document aggregates performance audit findings from multiple AI models
+analyzing the SoNash codebase. It provides consolidated metrics, canonical
+findings, and prioritized recommendations for performance optimization.
+
+## Quick Start
+
+1. Review the severity breakdown table
+2. Check specific findings by category
+3. Prioritize Critical (S0) and High (S1) items
+
+## AI Instructions
+
+When addressing performance findings:
+
+- Start with highest severity items
+- Verify performance improvements with metrics
+- Update finding status after resolution
+
+## Version History
+
+| Version | Date       | Changes                              |
+| ------- | ---------- | ------------------------------------ |
+| 1.0     | 2026-01-09 | Initial multi-AI aggregated findings |
+
+---
+
 ## Audit Metadata
 
 | Field                  | Value                                                                  |

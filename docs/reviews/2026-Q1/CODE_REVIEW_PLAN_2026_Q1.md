@@ -20,6 +20,20 @@ Plan.
 **Expected Output:** Ranked list of canonical findings (`CANON-CODE.jsonl`) with
 PR implementation plan.
 
+## Quick Start
+
+1. Review the audit scope and objectives
+2. Check the execution timeline
+3. Follow the review methodology steps
+
+## AI Instructions
+
+When executing code reviews:
+
+- Follow the defined methodology exactly
+- Document all findings with CANON IDs
+- Update progress tracking during execution
+
 ---
 
 ## Status Dashboard
@@ -349,14 +363,14 @@ After collecting all outputs, run aggregation using
 
 ## Related Documents
 
-- [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](../templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) -
+- [MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md](../../templates/MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md) -
   Source template
-- [MULTI_AI_AGGREGATOR_TEMPLATE.md](../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) -
+- [MULTI_AI_AGGREGATOR_TEMPLATE.md](../../templates/MULTI_AI_AGGREGATOR_TEMPLATE.md) -
   Aggregation prompt
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md) - Parent
-  plan (Step 4.2)
-- [sonarqube-manifest.md](../analysis/sonarqube-manifest.md) - Baseline static
-  analysis
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+  Parent plan (Step 4.2)
+- [sonarqube-manifest.md](../../analysis/sonarqube-manifest.md) - Baseline
+  static analysis
 
 ---
 

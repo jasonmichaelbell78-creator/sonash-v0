@@ -18,6 +18,14 @@ the SoNash project. It contains:
 This is a **Tier 4 document** - always loaded in AI context to prevent repeated
 violations and ensure consistency across sessions.
 
+## AI Instructions
+
+This is the primary context file for Claude Code sessions:
+
+- Read this file at session start
+- Follow all patterns in Section 4
+- Reference linked docs for detailed procedures
+
 ---
 
 ## 1. Stack Versions (Bleeding Edge)

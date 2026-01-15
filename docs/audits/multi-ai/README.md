@@ -1,7 +1,7 @@
 # Multi-AI Audit Results
 
-**Created:** 2026-01-08 **Updated:** 2026-01-13 **Purpose:** Store results from
-multi-AI consensus audits
+**Created:** 2026-01-08 **Purpose:** Store results from multi-AI consensus
+audits **Last Updated:** 2026-01-13
 
 > **Note (2026-01-13):** Templates updated with Engineering Productivity audit
 > recommendations. See "Extended Coverage" section for new categories.
@@ -13,6 +13,14 @@ multi-AI consensus audits
 This folder contains audit results from multi-AI consensus reviews. These are
 comprehensive audits performed by 4-6 AI models working together, designed to
 provide high-confidence findings through cross-validation and consensus scoring.
+
+## AI Instructions
+
+When running multi-AI audits:
+
+- Use templates from docs/templates/
+- Document with 4-6 AI models
+- Store results in appropriate category folder
 
 ## Folder Structure
 
@@ -204,10 +212,20 @@ specific category.
 
 - **[JSONL_SCHEMA_STANDARD.md](../../templates/JSONL_SCHEMA_STANDARD.md)** -
   Canonical JSONL schema
-- **[MULTI_AI_REVIEW_COORDINATOR.md](../../templates/MULTI_AI_REVIEW_COORDINATOR.md)** -
+- **[MULTI_AI_REVIEW_COORDINATOR.md](../../MULTI_AI_REVIEW_COORDINATOR.md)** -
   Master index and trigger tracking
 - **[AUDIT_TRACKER.md](../../AUDIT_TRACKER.md)** - Threshold and audit history
 - **[../single-session/README.md](../single-session/README.md)** -
   Single-session audit documentation
 - **[AI_REVIEW_LEARNINGS_LOG.md](../../AI_REVIEW_LEARNINGS_LOG.md)** -
   Historical patterns and learnings
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                         |
+| ------- | ---------- | ----------------------------------------------- |
+| 1.0     | 2026-01-08 | Initial multi-AI audit documentation            |
+| 1.1     | 2026-01-13 | Added Extended Coverage with engineering audits |
+| 1.2     | 2026-01-15 | Added Version History section                   |

@@ -1,7 +1,34 @@
 # ADR-NNN: [Short Title]
 
 **Date:** YYYY-MM-DD **Status:** Proposed | Accepted | Deprecated | Superseded
-by [ADR-XXX] **Decision Makers:** [List of people/roles involved]
+by [ADR-XXX] **Decision Makers:** [List of people/roles involved] **Last
+Updated:** YYYY-MM-DD
+
+---
+
+## Purpose
+
+[Briefly describe the purpose of this ADR - what decision does it document?]
+
+## Quick Start
+
+1. Copy this template to create new ADR
+2. Replace placeholders with actual content
+3. Submit for review before acceptance
+
+## AI Instructions
+
+When creating ADRs:
+
+- Keep all template sections
+- Fill in all placeholder text
+- Follow naming convention (ADR-NNN)
+
+## Version History
+
+| Version | Date       | Changes             |
+| ------- | ---------- | ------------------- |
+| 1.0     | YYYY-MM-DD | Initial ADR created |
 
 ---
 
