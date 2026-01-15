@@ -17,7 +17,7 @@ import { DevTabs, DevTabId } from "./dev-tabs";
 import { LighthouseTab } from "./lighthouse-tab";
 
 interface DevDashboardProps {
-  user: User | null;
+  user: User;
   onLogout: () => void;
 }
 

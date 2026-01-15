@@ -136,7 +136,8 @@ service cloud.firestore {
 
     // Dev dashboard data - Lighthouse audits, metrics, etc.
     match /dev/{document=**} {
-      allow read, write: if isAdmin(); // Only users with admin custom claim
+      allow read: if isAdmin(); // Only users with admin custom claim
+      allow write: if false; // Writes must come from Admin SDK (Cloud Functions/CI)
     }
 
     // ============================================

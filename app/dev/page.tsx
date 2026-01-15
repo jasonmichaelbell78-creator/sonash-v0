@@ -67,6 +67,7 @@ export default function DevPage() {
             ? "Network error - please check your connection"
             : "Failed to verify privileges"
         );
+        setUser(null);
         setState("login");
       }
     });
@@ -80,7 +81,14 @@ export default function DevPage() {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      // Use generic error message to avoid leaking Firebase internals
+      const errorCode = (err as { code?: string })?.code;
+      logger.error("Dev dashboard login failed", { errorCode });
+      setError(
+        errorCode === "auth/popup-closed-by-user"
+          ? "Login cancelled"
+          : "Login failed - please try again"
+      );
     }
   };
 
@@ -176,5 +184,13 @@ export default function DevPage() {
   }
 
   // Authenticated developer
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
   return <DevDashboard user={user} onLogout={handleLogout} />;
 }

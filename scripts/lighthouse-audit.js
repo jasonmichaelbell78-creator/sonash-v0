@@ -119,8 +119,12 @@ async function auditPage(route, chromePort, options = {}) {
 
     return { route: route.name, url, scores, success: true };
   } catch (error) {
-    console.error(`  Error auditing ${route.name}: ${error.message}`);
-    return { route: route.name, url, error: error.message, success: false };
+    const message =
+      error && typeof error === "object" && "message" in error
+        ? String(error.message)
+        : String(error);
+    console.error(`  Error auditing ${route.name}: ${message}`);
+    return { route: route.name, url, error: message, success: false };
   }
 }
 
