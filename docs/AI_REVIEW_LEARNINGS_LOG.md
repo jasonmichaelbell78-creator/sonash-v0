@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 6.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-15
+**Document Version:** 6.9 **Created:** 2026-01-02 **Last Updated:** 2026-01-15
 
 ## Purpose
 
@@ -28,7 +28,8 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 6.8     | 2026-01-15 | Review #153: Admin Error Utils Follow-up - 6 items (1 CRITICAL: CI blocker transient, 5 MINOR: TLD regex bound {2,63}, large input guard 50K chars, nullable types on all 3 functions with tests). New patterns: TLD max 63 chars per RFC, guard against large payloads, explicit nullable types for robustness. **CONSOLIDATION DUE** (10 reviews since last).                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 6.9     | 2026-01-15 | Review #154: Admin Error Utils Security Hardening - 5 items (5 MINOR: URL credential/port rejection, JWT token redaction, phone regex separator requirement, boundary test fix). New patterns: URL credential injection prevention, JWT base64url detection, phone regex precision.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 6.8     | 2026-01-15 | Review #153: Admin Error Utils Follow-up - 6 items (1 CRITICAL: CI blocker transient, 5 MINOR: TLD regex bound {2,63}, large input guard 50K chars, nullable types on all 3 functions with tests). New patterns: TLD max 63 chars per RFC, guard against large payloads, explicit nullable types for robustness.                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 6.7     | 2026-01-15 | Review #152: Admin Error Utils PR Feedback - 7 items (1 CRITICAL: CI blocker already resolved, 1 MAJOR: email regex ReDoS fix with RFC 5321 length limits, 1 MINOR: trim whitespace dates, 2 TRIVIAL: code cleanup, 2 REJECTED: SonarCloud false positives on security tests). New patterns: Regex ReDoS prevention with length limits, security test false positives in SonarCloud.                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 6.6     | 2026-01-15 | Review #148: Dev Dashboard Security Hardening - 8 items fixed (3 MAJOR: Prettier blank line, raw error exposure, client write-only; 5 MINOR: network errors, stale state, null guard, safe error extraction, non-nullable prop). New patterns: Never expose raw Firebase errors, dev data client read-only, defensive null guards.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 6.5     | 2026-01-15 | Review #147: CI Blocker Fixes + Firebase Error Handling - 7 items (1 CRITICAL: logger.debug TS2339; 3 MAJOR: ROADMAP date format, Firestore dev/\* rules, Firebase error specificity; 3 MINOR: token refresh, network errors, errorCode logging). New patterns: prettier-ignore for linter conflicts, explicit admin rules for dev collections, getIdTokenResult(true) for fresh claims.                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -236,7 +237,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 0 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #163
 
 ### When to Consolidate
@@ -833,6 +834,39 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #154: Admin Error Utils Security Hardening (2026-01-15)
+
+**Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
+claude/new-session-UhAVn **Suggestions:** 5 items (Minor: 5)
+
+**Issues Fixed:**
+
+| #   | Issue                                  | Severity | Category | Fix                                                     |
+| --- | -------------------------------------- | -------- | -------- | ------------------------------------------------------- |
+| 1   | URLs with embedded credentials allowed | Minor    | Security | Reject URLs with username/password via URL.username     |
+| 2   | URLs with explicit ports allowed       | Minor    | Security | Reject URLs with non-standard ports via URL.port        |
+| 3   | JWT tokens not redacted                | Minor    | Security | Add JWT regex: 3 base64url segments with dots           |
+| 4   | Phone regex matches plain 10 digits    | Minor    | Quality  | Require at least one separator (reduce false positives) |
+| 5   | 50K boundary test matched hex regex    | Minor    | Testing  | Use 'x' instead of 'a' to avoid hex token false match   |
+
+**Patterns Identified:**
+
+1. **URL Credential Rejection**: Always check URL.username, URL.password, and
+   URL.port to prevent credential injection and port-based bypass
+2. **JWT Token Detection**: JWT format is `base64url.base64url.base64url` - use
+   `[A-Za-z0-9_-]{10,200}` segments
+3. **Phone Regex Precision**: Require separators (`-`, `.`, ` `) to avoid
+   matching arbitrary numeric IDs
+
+**Key Learnings:**
+
+- URL API provides parsed username/password/port - check all three for security
+- JWT tokens use base64url encoding (alphanumeric + hyphen + underscore)
+- Test data should avoid matching production patterns (use 'x' not 'a' for
+  non-hex test strings)
 
 ---
 

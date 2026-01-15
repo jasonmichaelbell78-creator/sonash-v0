@@ -5,7 +5,7 @@ const MAX_REDACT_LENGTH = 50_000;
 
 /**
  * Redact sensitive information from error messages.
- * Removes emails, phone numbers, and tokens to prevent PII exposure.
+ * Removes emails, phone numbers, tokens (hex and JWT), to prevent PII exposure.
  */
 export function redactSensitive(text: string | null | undefined): string {
   // Handle null/undefined inputs
@@ -15,7 +15,13 @@ export function redactSensitive(text: string | null | undefined): string {
   if (input.length > MAX_REDACT_LENGTH) return "[redacted]";
 
   // Order matters: redact tokens first (before phone regex matches digits inside them)
-  const redactedTokens = input.replace(/\b[a-f0-9]{32,}\b/gi, "[redacted-token]");
+  // Hex tokens (API keys, session IDs)
+  const redactedHexTokens = input.replace(/\b[a-f0-9]{32,}\b/gi, "[redacted-token]");
+  // JWT-like tokens (base64url segments: eyJ...eyJ...abc...)
+  const redactedTokens = redactedHexTokens.replace(
+    /\b[A-Za-z0-9_-]{10,200}\.[A-Za-z0-9_-]{10,200}\.[A-Za-z0-9_-]{10,200}\b/g,
+    "[redacted-token]"
+  );
   // Email regex with length limits to prevent ReDoS (catastrophic backtracking)
   // Local part: max 64 chars, Domain: max 253 chars, TLD: max 63 chars per RFC 5321
   const redactedEmail = redactedTokens.replace(
@@ -23,9 +29,9 @@ export function redactSensitive(text: string | null | undefined): string {
     "[redacted-email]"
   );
   // Phone regex: handles formats like (555) 123-4567, 555-123-4567, +1 555 123 4567
-  // Note: Removed \b word boundaries since they don't work with parentheses
+  // Requires at least one separator to reduce false positives on arbitrary 10-digit numbers
   const redactedPhone = redactedEmail.replace(
-    /(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}/g,
+    /(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]+)\d{3}[-.\s]?\d{4}/g,
     "[redacted-phone]"
   );
   return redactedPhone;
@@ -47,6 +53,7 @@ export function safeFormatDate(dateString: string | null | undefined): string {
  * Validate that a URL is safe to render as a link.
  * Only allows https://sentry.io URLs to prevent injection attacks.
  * Must be exactly sentry.io or a subdomain like app.sentry.io
+ * Rejects URLs with credentials or explicit ports for security.
  */
 export function isValidSentryUrl(url: string | null | undefined): boolean {
   const candidate = url?.trim();
@@ -54,6 +61,8 @@ export function isValidSentryUrl(url: string | null | undefined): boolean {
 
   try {
     const parsed = new URL(candidate);
+    // Reject URLs with embedded credentials or explicit ports
+    if (parsed.username || parsed.password || parsed.port) return false;
     // Must be exactly "sentry.io" or end with ".sentry.io" (subdomain)
     return (
       parsed.protocol === "https:" &&

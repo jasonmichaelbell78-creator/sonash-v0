@@ -75,9 +75,32 @@ describe("admin-error-utils", () => {
       assert.equal(redactSensitive(undefined), "");
     });
 
-    test("returns [redacted] for very large inputs (>50K chars)", () => {
-      const largeInput = "a".repeat(60_000);
-      assert.equal(redactSensitive(largeInput), "[redacted]");
+    test("processes input at exactly 50K char limit", () => {
+      // Use 'x' instead of 'a' to avoid matching hex token regex
+      const atLimit = "x".repeat(50_000);
+      assert.equal(redactSensitive(atLimit), atLimit);
+    });
+
+    test("returns [redacted] for input over 50K chars", () => {
+      // Use 'x' instead of 'a' to avoid matching hex token regex
+      const overLimit = "x".repeat(50_001);
+      assert.equal(redactSensitive(overLimit), "[redacted]");
+    });
+
+    test("redacts JWT-like tokens", () => {
+      // JWT format: header.payload.signature (base64url)
+      const jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature1234567890";
+      const input = `Bearer ${jwt}`;
+      const result = redactSensitive(input);
+      assert.ok(result.includes("[redacted-token]"));
+      assert.ok(!result.includes("eyJhbGciOiJIUzI1NiJ9"));
+    });
+
+    test("does not match arbitrary 10-digit numbers (phone false positive reduction)", () => {
+      // Plain 10 digits without separators should NOT be redacted
+      const input = "Reference: 1234567890";
+      const result = redactSensitive(input);
+      assert.equal(result, input); // Should NOT be redacted
     });
 
     test("handles text with no sensitive data", () => {
@@ -207,6 +230,18 @@ describe("admin-error-utils", () => {
 
     test("handles URL with hash fragment", () => {
       assert.ok(isValidSentryUrl("https://sentry.io/issues/123#details"));
+    });
+
+    test("returns false for URL with embedded username", () => {
+      assert.equal(isValidSentryUrl("https://user@sentry.io/issues/123"), false);
+    });
+
+    test("returns false for URL with embedded credentials", () => {
+      assert.equal(isValidSentryUrl("https://user:pass@sentry.io/issues/123"), false);
+    });
+
+    test("returns false for URL with explicit port", () => {
+      assert.equal(isValidSentryUrl("https://sentry.io:8080/issues/123"), false);
     });
   });
 });
