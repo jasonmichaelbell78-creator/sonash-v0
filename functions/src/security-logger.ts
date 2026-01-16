@@ -150,19 +150,56 @@ export function logSecurityEvent(
 }
 
 /**
+ * Redact sensitive keys from metadata before persisting to Firestore
+ * Prevents PII/secrets from being stored in the security_logs collection
+ */
+function redactSensitiveMetadata(
+  metadata?: Record<string, unknown>
+): Record<string, unknown> | undefined {
+  if (!metadata) return undefined;
+
+  const sensitiveKeys = ["token", "authorization", "password", "secret", "cookie", "apikey"];
+
+  return Object.fromEntries(
+    Object.entries(metadata).map(([key, value]) => {
+      const keyLower = key.toLowerCase();
+
+      // Redact sensitive keys
+      if (sensitiveKeys.some((sensitive) => keyLower.includes(sensitive))) {
+        return [key, "[REDACTED]"];
+      }
+
+      // Truncate very large string values (>2000 chars)
+      if (typeof value === "string" && value.length > 2000) {
+        return [key, `${value.slice(0, 2000)}…[truncated]`];
+      }
+
+      return [key, value];
+    })
+  );
+}
+
+/**
  * Store security event in Firestore for admin panel access
  * Non-blocking - errors are caught and logged without affecting the main flow
  */
 async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
   try {
     const db = admin.firestore();
-    await db.collection("security_logs").add({
+
+    // Redact sensitive metadata before storing
+    const redactedEvent = {
       ...event,
+      metadata: redactSensitiveMetadata(event.metadata),
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days TTL
-    });
-  } catch {
-    // Silently fail - logging to console is already done in the catch block above
+    };
+
+    await db.collection("security_logs").add(redactedEvent);
+  } catch (err) {
+    // Log to console to make the error visible for debugging,
+    // but don't re-trigger the security logger to avoid loops.
+    console.error("Failed to store security event in Firestore:", err);
   }
 }
 

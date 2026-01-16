@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7.7     | 2026-01-16 | Review #162: Track A Admin Panel PR Feedback - 22 items (1 CRITICAL: CI blocker README formatting; 8 MAJOR: error swallowing, PII in logs, claims bug, orphan detection, N+1 queries; 11 MINOR: UX improvements; 2 DEFERRED to roadmap). New patterns: Metadata redaction, preserve custom claims, collectionGroup queries, batch auth lookups.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 7.6     | 2026-01-16 | Review #161: lint-staged PR Feedback - 3 items (2 MAJOR: supply-chain risk with npx, hidden stderr errors; 1 MINOR: README/ROADMAP Prettier formatting). New patterns: Use `npx --no-install` for security, expose hook error output for debugging.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 7.5     | 2026-01-16 | Review #160: PR #265 Qodo Suggestions - 2 items (2 MINOR: scope getConsolidationStatus to section for robustness, normalize paths for cross-platform matching). New patterns: Scope document section parsing to prevent accidental matches elsewhere, normalize backslashes + lowercase for Windows compatibility.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 7.4     | 2026-01-16 | Review #159: PR #265 CI Round 3 - 6 items (1 MAJOR: false positive readFileSync:413 - add to pathExclude; 5 MINOR: remove unused path import, unused \_error→\_, stdout/stderr logging for debugging, quiet mode output suppression, TTY-aware colors). New patterns: Update pathExclude for verified try/catch files.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -841,6 +842,65 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #162: Track A Admin Panel PR Feedback (2026-01-16)
+
+**Source:** Qodo PR Compliance + PR Code Suggestions + CI Feedback
+**PR/Branch:** claude/complete-track-a-jZCcz **Suggestions:** 22 items
+(Critical: 1, Major: 8, Minor: 11, Deferred: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                                     | Severity | Category    | Fix                                                     |
+| --- | ----------------------------------------- | -------- | ----------- | ------------------------------------------------------- |
+| 1   | README.md Prettier formatting             | Critical | CI Blocker  | Run Prettier on README.md                               |
+| 2   | storeLogInFirestore swallows errors       | Major    | Debugging   | Log errors to console.error                             |
+| 3   | PII in logs (userId/targetUid)            | Major    | Security    | Redact sensitive metadata before storing in Firestore   |
+| 4   | Admin claims wipes existing claims        | Major    | Bug         | Preserve existing claims when setting admin privilege   |
+| 5   | cleanupOrphanedStorageFiles brittle URL   | Major    | Data Safety | Use file.name path comparison + fallback URL substring  |
+| 6   | cleanupOldSessions N+1 query              | Major    | Performance | Use collectionGroup query instead of per-user iteration |
+| 7   | adminListUsers N+1 auth lookups           | Major    | Performance | Batch getUsers() call instead of sequential             |
+| 8   | cleanupOldRateLimits deletes only 1 batch | Major    | Bug         | Loop until all expired documents deleted                |
+| 9   | Raw error surfaced to UI (err.message)    | Minor    | Security    | Use generic error message in UI                         |
+| 10  | Pagination missing tie-breaker            | Minor    | Reliability | Add documentId() as secondary sort                      |
+| 11  | JSON.stringify can crash on circular refs | Minor    | Robustness  | Add safe serialization with error handling              |
+| 12  | generateUsageAnalytics sequential queries | Minor    | Performance | Use Promise.all for parallel execution                  |
+| 13  | adminGetLogs duplicated query building    | Minor    | Code Style  | Refactor to conditional where clause                    |
+| 14  | Expanded rows not reset on filter change  | Minor    | UX          | Add useEffect to clear expanded rows                    |
+| 15  | Privilege dropdown empty during load      | Minor    | UX          | Add loading state to dropdown                           |
+| 16  | Refresh button enabled during load        | Minor    | UX          | Disable button while loading                            |
+
+**Deferred to Roadmap:**
+
+| #   | Issue                             | Reason                                     |
+| --- | --------------------------------- | ------------------------------------------ |
+| D1  | Query GCP Cloud Logging directly  | Major architecture change, add to backlog  |
+| D2  | Sensitive log persistence warning | Architectural concern, document in roadmap |
+
+**Patterns Identified:**
+
+1. **Metadata Redaction**: Always redact sensitive keys (token, password,
+   secret, cookie, authorization) before persisting logs to Firestore
+2. **Preserve Custom Claims**: When modifying Firebase Auth custom claims,
+   spread existing claims and only modify the target claim
+3. **Collection Group Queries**: For operations across user subcollections, use
+   collectionGroup() instead of iterating users
+4. **Batch Auth Operations**: Use admin.auth().getUsers() for batched user
+   lookups instead of sequential getUser() calls
+5. **Complete Cleanup Loops**: Cleanup jobs must loop until no more documents
+   match, not just process one batch
+
+**Key Learnings:**
+
+- Firebase custom claims are replaced entirely by setCustomUserClaims - always
+  preserve existing claims with spread operator
+- Storage file orphan detection using publicUrl() is brittle - prefer file.name
+  path matching with fallback
+- N+1 patterns in Cloud Functions can cause timeouts at scale - batch where
+  possible
+- CI formatting checks run after local hooks - ensure consistent formatting
 
 ---
 

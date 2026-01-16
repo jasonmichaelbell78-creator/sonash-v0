@@ -148,7 +148,8 @@ export function UsersTab() {
         logger.error("Failed to load users", {
           errorType: err instanceof Error ? err.constructor.name : typeof err,
         });
-        setError(err instanceof Error ? err.message : "Failed to load users");
+        // Use generic error message to avoid exposing internal details
+        setError("Failed to load users. Please try again.");
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -779,14 +780,18 @@ export function UsersTab() {
                   <select
                     value={selectedPrivilege}
                     onChange={(e) => setSelectedPrivilege(e.target.value)}
-                    disabled={savingPrivilege}
-                    className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    disabled={savingPrivilege || privilegeTypes.length === 0}
+                    className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {privilegeTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.name} - {type.description}
-                      </option>
-                    ))}
+                    {privilegeTypes.length === 0 ? (
+                      <option>Loading privilege types…</option>
+                    ) : (
+                      privilegeTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.name} - {type.description}
+                        </option>
+                      ))
+                    )}
                   </select>
                   <button
                     onClick={handleSavePrivilege}

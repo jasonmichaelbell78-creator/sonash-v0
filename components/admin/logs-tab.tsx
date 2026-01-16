@@ -133,6 +133,33 @@ function formatTimestamp(timestamp: string): string {
   }
 }
 
+// Safe JSON serialization for metadata that handles circular refs and non-serializable values
+function safeStringify(obj: unknown): string {
+  try {
+    const seen = new WeakSet<object>();
+    return JSON.stringify(
+      obj,
+      (_key, value) => {
+        // Handle BigInt
+        if (typeof value === "bigint") return value.toString();
+        // Handle circular references
+        if (value && typeof value === "object") {
+          if (seen.has(value)) return "[Circular]";
+          seen.add(value);
+        }
+        // Handle Error objects
+        if (value instanceof Error) {
+          return { name: value.name, message: value.message, stack: value.stack };
+        }
+        return value;
+      },
+      2
+    );
+  } catch {
+    return "[Unserializable metadata]";
+  }
+}
+
 interface LogRowProps {
   log: LogEntry;
   isExpanded: boolean;
@@ -184,7 +211,7 @@ function LogRow({ log, isExpanded, onToggle }: LogRowProps) {
                 <div>
                   <span className="text-xs font-medium text-amber-700 uppercase">Metadata</span>
                   <pre className="text-xs text-amber-800 bg-amber-100 rounded p-2 mt-1 overflow-x-auto">
-                    {JSON.stringify(log.metadata, null, 2)}
+                    {safeStringify(log.metadata)}
                   </pre>
                 </div>
               )}
@@ -220,6 +247,11 @@ export function LogsTab() {
     if (severityFilter === "all") return logs;
     return logs.filter((log) => log.severity === severityFilter);
   }, [logs, severityFilter]);
+
+  // Reset expanded rows when filter changes to prevent stale expanded state
+  useEffect(() => {
+    setExpandedRows(new Set());
+  }, [severityFilter]);
 
   const refresh = async () => {
     setLoading(true);
@@ -267,7 +299,8 @@ export function LogsTab() {
         </div>
         <button
           onClick={refresh}
-          className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50"
+          disabled={loading}
+          className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Refresh

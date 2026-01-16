@@ -115,37 +115,37 @@ export const scheduledCleanupRateLimits = onSchedule(
  * A10: Cleanup Old Sessions
  * Removes expired session documents (>30 days old)
  * Schedule: Daily at 4 AM CT (10 AM UTC)
+ * Uses collectionGroup query for efficient cross-user cleanup
  */
 export async function cleanupOldSessions(): Promise<{ deleted: number }> {
   const db = admin.firestore();
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgoTimestamp = admin.firestore.Timestamp.fromDate(thirtyDaysAgo);
 
   let deleted = 0;
+  let hasMore = true;
 
-  // Query for old user sessions/activity documents
-  // This targets any session-like subcollections
-  const usersSnapshot = await db.collection("users").select().get();
-
-  for (const userDoc of usersSnapshot.docs) {
-    // Clean up old daily_logs entries (older than 30 days from lastActivity)
+  // Use collectionGroup query to find all old daily_logs across all users
+  // This avoids the N+1 pattern of iterating through each user
+  while (hasMore) {
     const oldLogsQuery = db
-      .collection(`users/${userDoc.id}/daily_logs`)
-      .where("updatedAt", "<", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
-      .limit(100);
+      .collectionGroup("daily_logs")
+      .where("updatedAt", "<", thirtyDaysAgoTimestamp)
+      .limit(500); // Process in batches of 500
 
-    const oldLogs = await oldLogsQuery.get();
+    const snapshot = await oldLogsQuery.get();
+
+    if (snapshot.empty) {
+      hasMore = false;
+      continue;
+    }
+
     const batch = db.batch();
-    let batchCount = 0;
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
 
-    for (const doc of oldLogs.docs) {
-      batch.delete(doc.ref);
-      batchCount++;
-    }
-
-    if (batchCount > 0) {
-      await batch.commit();
-      deleted += batchCount;
-    }
+    deleted += snapshot.size;
+    hasMore = snapshot.size === 500; // Continue if we processed a full batch
   }
 
   logSecurityEvent("JOB_SUCCESS", "cleanupOldSessions", `Cleaned up ${deleted} old session docs`, {
@@ -173,6 +173,7 @@ export const scheduledCleanupOldSessions = onSchedule(
  * A11: Cleanup Orphaned Storage Files
  * Removes Storage files not referenced by Firestore documents
  * Schedule: Weekly on Sundays at 2 AM CT (8 AM UTC)
+ * Uses stable file.name path matching with URL substring fallback
  */
 export async function cleanupOrphanedStorageFiles(): Promise<{
   checked: number;
@@ -207,14 +208,36 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
         continue;
       }
 
-      // Check if file is referenced in any journal entries
-      const journalRef = db
-        .collection(`users/${userId}/journal`)
-        .where("data.imageUrl", "==", file.publicUrl());
+      // Check if file is referenced - prefer stable storage path reference
+      // First try matching by imagePath (if stored), then fall back to URL substring
+      let isReferenced = false;
 
-      const journalDocs = await journalRef.get();
-      if (journalDocs.empty) {
-        // File is orphaned, check age before deleting
+      // Method 1: Check for exact path match (most reliable)
+      const journalByPathRef = db
+        .collection(`users/${userId}/journal`)
+        .where("data.imagePath", "==", file.name)
+        .limit(1);
+
+      const byPathSnap = await journalByPathRef.get();
+      isReferenced = !byPathSnap.empty;
+
+      // Method 2: Fallback - check if URL contains the file name (less reliable but catches older entries)
+      if (!isReferenced) {
+        const journalByUrlRef = db
+          .collection(`users/${userId}/journal`)
+          .where("data.imageUrl", "!=", null)
+          .limit(100);
+        const urlSnap = await journalByUrlRef.get();
+
+        // Check if any URL contains our file path
+        isReferenced = urlSnap.docs.some((d) => {
+          const url = d.get("data.imageUrl");
+          return typeof url === "string" && url.includes(file.name);
+        });
+      }
+
+      if (!isReferenced) {
+        // File is orphaned, check age before deleting (safety buffer)
         const metadata = await file.getMetadata();
         const timeCreated = metadata[0].timeCreated;
         if (!timeCreated) continue;
@@ -265,6 +288,7 @@ export const scheduledCleanupOrphanedStorageFiles = onSchedule(
  * A12: Generate Usage Analytics
  * Aggregates daily stats: active users, API calls, errors
  * Schedule: Daily at 1 AM CT (7 AM UTC)
+ * Uses Promise.all for parallel query execution
  */
 export async function generateUsageAnalytics(): Promise<{
   date: string;
@@ -277,43 +301,38 @@ export async function generateUsageAnalytics(): Promise<{
   const now = new Date();
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const dateId = yesterday.toISOString().split("T")[0]; // YYYY-MM-DD
+  const yesterdayTimestamp = admin.firestore.Timestamp.fromDate(yesterday);
 
-  // Count active users (users with lastActive in last 24 hours)
-  const activeUsersQuery = await db
-    .collection("users")
-    .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(yesterday))
-    .count()
-    .get();
+  // Run all count queries in parallel for better performance
+  const [activeUsersQuery, newUsersQuery, journalEntriesQuery, checkInsQuery] = await Promise.all([
+    // Count active users (users with lastActive in last 24 hours)
+    db.collection("users").where("lastActive", ">=", yesterdayTimestamp).count().get(),
+
+    // Count new users (created in last 24 hours)
+    db.collection("users").where("createdAt", ">=", yesterdayTimestamp).count().get(),
+
+    // Count journal entries created (estimated from security logs)
+    db
+      .collection("security_logs")
+      .where("type", "==", "SAVE_SUCCESS")
+      .where("functionName", "==", "saveJournalEntry")
+      .where("timestamp", ">=", yesterdayTimestamp)
+      .count()
+      .get(),
+
+    // Count check-ins
+    db
+      .collection("security_logs")
+      .where("type", "==", "SAVE_SUCCESS")
+      .where("functionName", "==", "saveDailyLog")
+      .where("timestamp", ">=", yesterdayTimestamp)
+      .count()
+      .get(),
+  ]);
+
   const activeUsers = activeUsersQuery.data().count;
-
-  // Count new users (created in last 24 hours)
-  const newUsersQuery = await db
-    .collection("users")
-    .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(yesterday))
-    .count()
-    .get();
   const newUsers = newUsersQuery.data().count;
-
-  // Count journal entries created
-  // Note: This requires iterating through users which can be expensive
-  // For now, we'll estimate from security logs
-  const securityLogsQuery = await db
-    .collection("security_logs")
-    .where("type", "==", "SAVE_SUCCESS")
-    .where("functionName", "==", "saveJournalEntry")
-    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(yesterday))
-    .count()
-    .get();
-  const journalEntries = securityLogsQuery.data().count;
-
-  // Count check-ins
-  const checkInsQuery = await db
-    .collection("security_logs")
-    .where("type", "==", "SAVE_SUCCESS")
-    .where("functionName", "==", "saveDailyLog")
-    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(yesterday))
-    .count()
-    .get();
+  const journalEntries = journalEntriesQuery.data().count;
   const checkIns = checkInsQuery.data().count;
 
   // Store analytics
@@ -539,26 +558,33 @@ export const scheduledHealthCheckNotifications = onSchedule(
 /**
  * Cleanup Old Rate Limits
  * Reimplemented here to avoid circular dependency
+ * Loops until all expired documents are deleted
  */
 async function cleanupOldRateLimits(): Promise<{ deleted: number }> {
   const db = admin.firestore();
-  const now = new Date();
+  const now = admin.firestore.Timestamp.fromDate(new Date());
+
   let deleted = 0;
+  let hasMore = true;
 
-  const expiredQuery = db
-    .collection("rate_limits")
-    .where("expiresAt", "<", admin.firestore.Timestamp.fromDate(now))
-    .limit(500);
+  while (hasMore) {
+    const snapshot = await db
+      .collection("rate_limits")
+      .where("expiresAt", "<", now)
+      .limit(500)
+      .get();
 
-  const snapshot = await expiredQuery.get();
-
-  if (!snapshot.empty) {
-    const batch = db.batch();
-    for (const doc of snapshot.docs) {
-      batch.delete(doc.ref);
+    if (snapshot.empty) {
+      hasMore = false;
+      break;
     }
+
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
     await batch.commit();
-    deleted = snapshot.docs.length;
+
+    deleted += snapshot.size;
+    hasMore = snapshot.size === 500; // Continue if we got a full batch
   }
 
   return { deleted };
