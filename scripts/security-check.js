@@ -17,7 +17,7 @@
  *   node scripts/security-check.js --blocking     # Exit non-zero on violations
  */
 
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, lstatSync, realpathSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { join, dirname, extname, relative, resolve, isAbsolute, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -141,19 +141,28 @@ function getFilesToCheck(args) {
   if (fileIndex !== -1 && args[fileIndex + 1]) {
     const input = args[fileIndex + 1];
 
-    // Resolve path relative to project root for security
-    const abs = resolve(PROJECT_ROOT, input);
-    const rel = relative(PROJECT_ROOT, abs);
+    // Resolve path relative to project root for security (including symlink escapes)
+    const rootReal = resolve(PROJECT_ROOT);
+    const abs = resolve(rootReal, input);
 
-    // Path traversal protection: reject paths outside project
-    // Check for ".." prefix with separator, ".." alone, or absolute path in relative result
-    if (rel.startsWith(".." + sep) || rel === ".." || isAbsolute(rel)) {
+    // Try to resolve symlinks if file exists
+    let absReal = abs;
+    try {
+      absReal = realpathSync(abs);
+    } catch {
+      // If the file doesn't exist, keep the resolved path and let the not-found logic handle it
+    }
+
+    const rel = relative(rootReal, absReal);
+
+    // Path traversal protection: reject paths outside project (incl. symlinks pointing out)
+    if (rel.startsWith(".." + sep) || rel === "..") {
       console.error(`Refusing to scan outside project: ${input}`);
       return [];
     }
 
-    if (existsSync(abs)) {
-      return [abs];
+    if (existsSync(absReal)) {
+      return [absReal];
     }
     console.error(`File not found: ${input}`);
     return [];
@@ -207,9 +216,14 @@ function getAllSourceFiles(dir, files = []) {
 
     let stat;
     try {
-      stat = statSync(fullPath);
+      stat = lstatSync(fullPath);
     } catch {
       // Skip files we can't stat (broken symlinks, etc.)
+      continue;
+    }
+
+    // Skip symlinks to avoid escaping project boundaries or cycles
+    if (stat.isSymbolicLink()) {
       continue;
     }
 
