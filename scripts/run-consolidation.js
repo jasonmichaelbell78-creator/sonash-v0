@@ -46,15 +46,16 @@ const applyChanges = args.includes("--apply") || autoMode;
 const verbose = args.includes("--verbose");
 const quiet = args.includes("--quiet") || autoMode;
 
-// Colors for terminal output
+// Colors for terminal output (TTY-aware - Review #159)
+const useColors = process.stdout.isTTY;
 const colors = {
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  blue: "\x1b[34m",
-  cyan: "\x1b[36m",
-  reset: "\x1b[0m",
-  bold: "\x1b[1m",
+  red: useColors ? "\x1b[31m" : "",
+  green: useColors ? "\x1b[32m" : "",
+  yellow: useColors ? "\x1b[33m" : "",
+  blue: useColors ? "\x1b[34m" : "",
+  cyan: useColors ? "\x1b[36m" : "",
+  reset: useColors ? "\x1b[0m" : "",
+  bold: useColors ? "\x1b[1m" : "",
 };
 
 function log(message, color = "") {
@@ -459,11 +460,13 @@ function main() {
     const categories = categorizePatterns(patterns);
     const { report, recurringPatterns } = generateReport(reviews, patterns, categories);
 
-    // Print report
-    console.log(report);
+    // Print report (respect quiet mode - Review #159)
+    if (!quiet || verbose) {
+      console.log(report);
+    }
 
-    // Generate suggestions
-    if (recurringPatterns.length > 0) {
+    // Generate suggestions (respect quiet mode - Review #159)
+    if (recurringPatterns.length > 0 && (!quiet || verbose)) {
       console.log(generatePatternSuggestions(recurringPatterns, categories));
     }
 

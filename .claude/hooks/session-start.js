@@ -239,7 +239,11 @@ try {
     warnings++;
   } else if (exitCode === 1) {
     // Exit code 1 indicates "consolidation needed but not applied" (unexpected for --auto)
-    // Surface the message but don't count as warning to reduce noise (Review #158)
+    // Surface stdout/stderr to aid debugging (Review #159)
+    const stdout = (error.stdout || "").toString().trim();
+    const stderr = (error.stderr || "").toString().trim();
+    if (stdout) console.log(stdout);
+    if (stderr) console.log(stderr);
     console.log("   ⚠️ Auto-consolidation returned exit code 1 (unexpected for --auto)");
   }
 }

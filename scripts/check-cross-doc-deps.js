@@ -22,7 +22,6 @@
  */
 
 const { execFileSync } = require("child_process");
-const path = require("path");
 
 // Parse arguments
 const args = process.argv.slice(2);
@@ -108,7 +107,7 @@ function getStagedFiles() {
       .trim()
       .split("\n")
       .filter((f) => f.length > 0);
-  } catch (_error) {
+  } catch {
     log("Error: Could not get staged files from git", colors.red);
     process.exit(2);
   }

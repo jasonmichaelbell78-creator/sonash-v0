@@ -379,9 +379,11 @@ const ANTI_PATTERNS = [
     // - log-session-activity.js: readFileSync at L118 IS in try/catch (L117-123)
     // - validate-skill-config.js: readFileSync at L105 IS in try/catch (L104-109)
     // - verify-skill-usage.js: readFileSync at L77 IS in try/catch (L76-82)
+    // 2026-01-16 audit (Review #159):
+    // - run-consolidation.js: readFileSync at L413 IS in try/catch (L412-419)
     // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation)\.js$/,
   },
   {
     id: "auto-mode-slice-truncation",
