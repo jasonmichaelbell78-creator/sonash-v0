@@ -138,35 +138,46 @@ function checkDiffPattern(file, pattern) {
 /**
  * Check if any staged file matches a trigger pattern
  * Improved path matching to prevent false positives (Review #158)
+ * Normalized for cross-platform reliability (Review #160)
  */
 function matchesTrigger(stagedFiles, trigger) {
   const isDirTrigger = trigger.endsWith("/");
   const isBareName = !trigger.includes("/");
+  // Normalize trigger: backslash→forward, lowercase (Review #160)
+  const normTrigger = trigger.replace(/\\/g, "/").toLowerCase();
 
   return stagedFiles.some((file) => {
+    // Normalize file path for cross-platform matching (Review #160)
+    const normFile = file.replace(/\\/g, "/").toLowerCase();
+
     // Handle directory triggers (ending with /)
     if (isDirTrigger) {
-      return file.startsWith(trigger);
+      return normFile.startsWith(normTrigger);
     }
     // Exact match first
-    if (file === trigger) return true;
+    if (normFile === normTrigger) return true;
     // For bare names (no path separator), match at end of path
-    return isBareName && file.endsWith(`/${trigger}`);
+    return isBareName && normFile.endsWith(`/${normTrigger}`);
   });
 }
 
 /**
  * Check if dependent file is staged
  * Improved path matching to prevent false positives (Review #158)
+ * Normalized for cross-platform reliability (Review #160)
  */
 function isDependentStaged(stagedFiles, dependent) {
   const isBareName = !dependent.includes("/");
+  // Normalize dependent: backslash→forward, lowercase (Review #160)
+  const normDependent = dependent.replace(/\\/g, "/").toLowerCase();
 
   return stagedFiles.some((file) => {
+    // Normalize file path for cross-platform matching (Review #160)
+    const normFile = file.replace(/\\/g, "/").toLowerCase();
     // Exact match first
-    if (file === dependent) return true;
+    if (normFile === normDependent) return true;
     // For bare names, match at end of path
-    return isBareName && file.endsWith(`/${dependent}`);
+    return isBareName && normFile.endsWith(`/${normDependent}`);
   });
 }
 

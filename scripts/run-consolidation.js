@@ -79,10 +79,22 @@ function escapeRegex(str) {
 
 /**
  * Extract consolidation status from the log
+ * Scoped to "Consolidation Trigger" section for robustness (Review #160)
  */
 function getConsolidationStatus(content) {
+  // Scope parsing to Consolidation Trigger section only (Review #160)
+  const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
+  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
+
+  if (sectionStart === -1) {
+    throw new Error("Could not locate 'Consolidation Trigger' section in log file.");
+  }
+
+  const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
+  const section = content.slice(sectionStart, endIndex);
+
   // Validate critical pattern match exists (Review #157)
-  const counterMatch = content.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
+  const counterMatch = section.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
   if (!counterMatch) {
     throw new Error(
       "Could not find 'Reviews since last consolidation' counter in log file. Check document format."
@@ -90,10 +102,10 @@ function getConsolidationStatus(content) {
   }
   const reviewCount = parseInt(counterMatch[1], 10) || 0;
 
-  const lastConsolidationMatch = content.match(/\*\*Date:\*\*\s+([^\n]+)/);
+  const lastConsolidationMatch = section.match(/\*\*Date:\*\*\s+([^\n]+)/);
   const lastConsolidation = lastConsolidationMatch ? lastConsolidationMatch[1].trim() : "Unknown";
 
-  const nextReviewMatch = content.match(/After Review #(\d+)/);
+  const nextReviewMatch = section.match(/After Review #(\d+)/);
   const lastReviewNum = nextReviewMatch
     ? parseInt(nextReviewMatch[1], 10) - CONSOLIDATION_THRESHOLD
     : 0;
