@@ -19,7 +19,7 @@
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { join, dirname, extname, relative } from "node:path";
+import { join, dirname, extname, relative, resolve, isAbsolute, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -140,12 +140,14 @@ function getFilesToCheck(args) {
   const fileIndex = args.indexOf("--file");
   if (fileIndex !== -1 && args[fileIndex + 1]) {
     const input = args[fileIndex + 1];
+
     // Resolve path relative to project root for security
-    const abs = join(PROJECT_ROOT, input);
+    const abs = resolve(PROJECT_ROOT, input);
     const rel = relative(PROJECT_ROOT, abs);
 
     // Path traversal protection: reject paths outside project
-    if (rel.startsWith("..") || rel === "..") {
+    // Check for ".." prefix with separator, ".." alone, or absolute path in relative result
+    if (rel.startsWith(".." + sep) || rel === ".." || isAbsolute(rel)) {
       console.error(`Refusing to scan outside project: ${input}`);
       return [];
     }

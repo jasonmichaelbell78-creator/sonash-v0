@@ -57,8 +57,12 @@ else
 
   while IFS= read -r file; do
     [ -z "$file" ] && continue
+
+    set +e
     out=$(node scripts/security-check.js --file "$file" --blocking 2>&1)
     code=$?
+    set -e
+
     security_output="${security_output}"$'\n'"${out}"
     if [ $code -ne 0 ]; then
       security_exit=$code
