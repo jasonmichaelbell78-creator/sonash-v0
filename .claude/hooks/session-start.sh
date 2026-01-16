@@ -262,22 +262,23 @@ fi
 
 echo ""
 
-# Check consolidation status (alerts if reviews need consolidation or log needs archiving)
-echo "🔍 Checking consolidation status..."
+# Auto-consolidation (runs automatically when threshold reached - Session #69)
+echo "🔍 Running auto-consolidation check..."
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-OUTPUT=$(node "$REPO_ROOT/scripts/check-consolidation-status.js" 2>&1)
+OUTPUT=$(node "$REPO_ROOT/scripts/run-consolidation.js" --auto 2>&1)
 EXIT_CODE=$?
 if [ "$EXIT_CODE" -eq 0 ]; then
-  echo "$OUTPUT"
-elif [ "$EXIT_CODE" -eq 1 ]; then
-  echo "$OUTPUT"
-  echo "   ⚠️ Consolidation or archiving action needed - see output above"
-  WARNINGS=$((WARNINGS + 1))
-else # exit code >= 2
-  echo "   ❌ Consolidation checker failed (exit $EXIT_CODE):"
+  if [ -n "$OUTPUT" ]; then
+    echo "$OUTPUT"
+  else
+    echo "   ✓ No consolidation needed"
+  fi
+elif [ "$EXIT_CODE" -ge 2 ]; then
+  echo "   ❌ Auto-consolidation failed (exit $EXIT_CODE):"
   echo "$OUTPUT" | sed 's/^/     /'
   WARNINGS=$((WARNINGS + 1))
 fi
+# Exit code 1 means dry-run mode (shouldn't happen with --auto), treat as success
 
 # =============================================================================
 # Surface Relevant Past Learnings (~1-2s)

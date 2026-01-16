@@ -41,29 +41,67 @@ If you modified any of these, verify they still work:
       [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
       trigger matrix - update any dependent documents
 
-## 4. Learning Consolidation (IMPORTANT)
+### 3.1 Roadmap Sync Check (MANDATORY for Feature Work)
 
-Check if consolidation is due and perform it so patterns are in claude.md for
-next session:
+> **Session #69 Guardrail:** Prevents roadmap staleness by ensuring feature work
+> is reflected in ROADMAP.md.
 
-1. **Check consolidation trigger** in AI_REVIEW_LEARNINGS_LOG.md:
-   - Find "Reviews since last consolidation" counter
-   - If >= 10, consolidation is needed
+If you implemented features, completed tasks, or made significant progress this
+session:
 
-2. **If consolidation needed:**
-   - Review all entries since last consolidation
-   - Identify patterns appearing 3+ times across reviews
-   - Add critical patterns to claude.md Section 4 (top 5 only); full patterns go
-     to docs/agent_docs/CODE_PATTERNS.md
-   - **Run `npm run patterns:suggest`** to find automatable patterns
-   - Add suggested patterns to check-pattern-compliance.js (with human review)
-   - Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md
-   - Note consolidation in version history
+- [ ] **Verify ROADMAP.md reflects current status**
+  - Check Active Sprint tasks - mark completed items with `[x]`
+  - Check M1.6/M2 phase tasks - update status indicators
+  - Update sprint progress percentage if significant work done
+- [ ] **No new features without roadmap entry**
+  - If you added a new feature not in ROADMAP.md, add it now
+  - If you completed a planned feature, mark it done
 
-3. **Why this matters:**
-   - claude.md is loaded at session START
-   - Patterns consolidated NOW will be in context for NEXT session
-   - This is how the AI "learns" from previous sessions
+**Quick Check:**
+
+```bash
+# See what code was changed this session
+git diff --name-only HEAD~5
+
+# If you see new components/features, verify they're in ROADMAP.md
+```
+
+**Why This Matters:**
+
+- Roadmap drift causes planning confusion
+- Future sessions won't know what's already implemented
+- Session #69 found Sentry was 90% done but roadmap showed "Planned"
+
+## 4. Learning Consolidation (AUTOMATIC - Session #69)
+
+Consolidation now runs **automatically** during SessionStart when the threshold
+is reached (10+ reviews). No manual action required.
+
+**What happens automatically:**
+
+- When threshold is reached, `npm run consolidation:run --auto` runs
+- Counter is reset in AI_REVIEW_LEARNINGS_LOG.md
+- Patterns are analyzed and counted
+
+**Manual follow-up (optional, if you want to persist patterns):**
+
+```bash
+npm run consolidation:check   # Check current status
+npm run consolidation:run     # Preview what was consolidated
+npm run patterns:suggest      # Find automatable patterns
+```
+
+If you want to manually add patterns to documentation:
+
+- Add critical patterns to claude.md Section 4 (top 5 only)
+- Add full patterns to docs/agent_docs/CODE_PATTERNS.md
+- Add suggested patterns to check-pattern-compliance.js
+
+**Why this matters:**
+
+- claude.md is loaded at session START
+- Patterns in claude.md will be in context for NEXT session
+- This is how the AI "learns" from previous sessions
 
 ## 5. Code Review Completeness Audit
 

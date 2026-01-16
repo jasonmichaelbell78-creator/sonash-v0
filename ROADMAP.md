@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.5
-**Last Updated:** 2026-01-15
+**Document Version:** 2.6
+**Last Updated:** 2026-01-16
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -66,7 +66,7 @@ recovery practices.
 | **M0 - Baseline**               | ✅ Complete | 100%             | Q4 2025   | Foundation |
 | **M1 - Foundation**             | ✅ Complete | 100%             | Q1 2026   | P0         |
 | **Integrated Improvement Plan** | ✅ Complete | 100% (9/9 steps) | Q1 2026   | DONE       |
-| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~10%             | Q1 2026   | **P0**     |
+| **🚀 Operational Visibility**   | 🔄 ACTIVE   | ~25%             | Q1 2026   | **P0**     |
 | **M1.5 - Quick Wins**           | ⏸️ Paused   | ~50%             | Q1 2026   | P1         |
 | **M1.6 - Admin Panel + UX**     | ⏸️ Paused   | ~75%             | Q1 2026   | P1         |
 | **M2 - Architecture**           | ⏸️ Optional | 0%               | As needed | P2         |
@@ -158,7 +158,7 @@ Planned | 🟣 Research
 > **Spec:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > **Goal:** Full operational visibility via Admin Panel + Development Dashboard
-> **Status:** 🔄 In Progress | **Started:** 2026-01-14
+> **Status:** 🔄 In Progress | **Started:** 2026-01-14 | **Updated:** 2026-01-16
 
 This sprint consolidates Admin Panel Phases 4-5 and Development Dashboard
 creation.
@@ -169,32 +169,81 @@ creation.
 | ----------- | ------------------------------- | -------------- | -------- |
 | **Track A** | Admin Panel (Sentry + GCP Logs) | 🔄 In Progress | Week 1-2 |
 | **Track B** | Dev Dashboard MVP               | 🔄 In Progress | Week 1-3 |
+| **Track C** | UI/UX Improvements              | 📋 Planned     | Week 2-3 |
 
-### Week 1 Priorities (Current)
+### Track A - Admin Panel
 
-**Track A - Admin Panel:**
+#### Sentry Integration (Phase 4) - ~90% Complete
 
-- [ ] **A1:** Wire Sentry client in `app/layout.tsx` (1hr)
-- [ ] **A2:** Configure Sentry Cloud Function env vars (1hr)
-- [ ] **A3:** Verify Admin Errors Tab displays real data (30min)
+- [x] **A1:** Wire Sentry client in `app/layout.tsx` ✅ DONE
+  - `setSentryUser()` called in `auth-context.tsx:92`
+- [x] **A2:** Configure Sentry Cloud Function env vars ✅ DONE
+  - Verify: Check Firebase Functions config is set
+- [x] **A3:** Admin Errors Tab displays real data ✅ DONE
+  - `errors-tab.tsx` fully built (427 lines)
+- [ ] **A3.1:** Add user correlation to Errors Tab (2hr)
+  - Enhance `adminGetSentryErrorSummary` to fetch affected users
+  - Display user info in error rows
+- [ ] **A4:** Build Admin Logs Tab with GCP deep links (3-4hr) - **MOVED INTO
+      SPRINT**
 
-**Track B - Dev Dashboard:**
+#### Admin Panel Fixes (New - Session #69)
+
+- [ ] **A5:** Fix Dashboard Tab - Debug `adminGetDashboardStats` error (1-2hr)
+  - Cloud Functions exist but return "Failed to get dashboard stats"
+  - Verify deployment, check Cloud Function logs
+- [ ] **A6:** Users Tab - Initial population with pagination (2-3hr)
+  - Load paginated user list (20/page) on tab open
+  - Add sorting: alphabetical (default), by recent signup, by last active
+- [ ] **A7:** Stacked Tabs UI - Replace horizontal scroll (1-2hr)
+  - Convert to 2-row stacked layout for better scalability
+
+#### User Privileges System (New - Session #69)
+
+- [ ] **A8:** Create user privilege types infrastructure (3-4hr)
+  - Define privilege tiers (admin, premium, free, custom)
+  - Store in Firestore `/system/privileges` or user claims
+  - Admin UI to create/modify privilege types
+- [ ] **A9:** Grant privileges in Admin Users screen (2hr)
+  - Add privilege selector to user detail drawer
+  - Support manual assignment (automation later)
+
+### Track B - Dev Dashboard
+
+#### Core Setup
 
 - [ ] **B1:** Create `/dev` route with auth gate (2hr)
-- [ ] **B2:** PERF-001 - Lighthouse audit script (2hr)
+- [ ] **B2:** PERF-001 - Lighthouse audit script (2hr) - **PRIORITIZED**
 
-### Week 2-3 Priorities
+#### Dev Dashboard Tabs (Reordered by Priority)
 
-**Track A:**
+- [ ] **B3:** Lighthouse Dashboard Tab (3hr) - **PRIORITIZED**
+- [ ] **B4:** Doc Sync Tab (1hr) - **PRIORITIZED**
+  - Visual status of template-instance relationships
+  - Run `docs:sync-check` and display results
+- [ ] **B5:** Testing Integration Tab (4-6hr)
+  - Test coverage metrics (% by file/component)
+  - CI test history (last N runs, pass/fail trends)
+  - Optional: Live test runner UI
+- [ ] **B6:** Audit Threshold Monitoring (2hr)
+  - Surface `npm run review:check` metrics
+  - Show "Days since last audit" per category
+  - Alert when any category is triggered
+- [ ] **B7:** PERF-002 - Lighthouse CI integration (2hr)
+- [ ] **B8:** PERF-003 - Firestore history storage (2hr)
+- [ ] **B9-B11:** Error, Session, Override tabs (4hr total)
 
-- [ ] **A4:** Build Admin Logs Tab with GCP deep links (3-4hr)
+### Track C - UI/UX & Analytics (Late Sprint)
 
-**Track B:**
-
-- [ ] **B3:** PERF-002 - Lighthouse CI integration (2hr)
-- [ ] **B4:** PERF-003 - Firestore history storage (2hr)
-- [ ] **B5:** Lighthouse Dashboard Tab (3hr)
-- [ ] **B6-B9:** Error, Session, Docs, Override tabs (6hr total)
+- [ ] **C1:** User Analytics Tab - Admin Panel (3-4hr)
+  - DAU/WAU/MAU trends
+  - Retention cohort analysis
+  - Feature usage metrics
+  - Consider PostHog integration (free tier: 5k replays + 1M events)
+- [ ] **C2:** Monitoring Consolidation (4-6hr)
+  - Unify error formats across frontend/backend/logs
+  - Add correlation IDs to logger (`EFF-006`)
+  - Enables end-to-end request tracing
 
 ### Future Enhancements (Deferred from PR Reviews)
 
@@ -209,11 +258,12 @@ creation.
 
 ### Blockers
 
-| Blocker                  | Status      | Resolution                              |
-| ------------------------ | ----------- | --------------------------------------- |
-| Sentry not initialized   | ❌ Blocking | A1 task                                 |
-| Sentry env vars missing  | ❌ Blocking | A2 task (need your Sentry project info) |
-| /dev route doesn't exist | ❌ Blocking | B1 task                                 |
+| Blocker                  | Status      | Resolution            |
+| ------------------------ | ----------- | --------------------- |
+| Sentry not initialized   | ✅ Resolved | A1 complete           |
+| Sentry env vars missing  | ⚠️ Verify   | Check Firebase config |
+| /dev route doesn't exist | ❌ Blocking | B1 task               |
+| Dashboard stats failing  | ❌ Blocking | A5 task               |
 
 ### Quick Reference: Environment Variables Needed
 
@@ -227,6 +277,16 @@ firebase functions:config:set sentry.project="YOUR_PROJECT"
 NEXT_PUBLIC_SENTRY_DSN=https://xxx@sentry.io/xxx
 NEXT_PUBLIC_SENTRY_ENABLED=true
 ```
+
+### Additional Monitoring Integrations (Evaluated Session #69)
+
+| Tool                  | Recommendation     | Cost                             | Notes                     |
+| --------------------- | ------------------ | -------------------------------- | ------------------------- |
+| Sentry Session Replay | ✅ Enable          | $0 (50/mo free)                  | Already integrated        |
+| PostHog               | ✅ Consider for C1 | $0 (5k replays + 1M events free) | All-in-one analytics      |
+| LogRocket             | ❌ Skip            | $99/mo+                          | Too expensive             |
+| Datadog RUM           | ❌ Skip            | $1.50/1k sessions                | Overkill for this stage   |
+| Firebase Crashlytics  | ⏳ Later           | $0                               | Only if native mobile app |
 
 ---
 
@@ -462,35 +522,106 @@ experience for Today page
 > Enhancement, see
 > [ROADMAP_LOG.md](./ROADMAP_LOG.md#m16---admin-panel--today-page-enhancement)
 
-### Phase 4: Error Tracking - Sentry Integration (📋 Planned)
+### Phase 4: Error Tracking - Sentry Integration (✅ ~90% Complete)
 
-**Priority:** High | **Effort:** Low-Medium | **Value:** High
+**Priority:** High | **Effort:** Low-Medium | **Value:** High | **Status:**
+Moved to Active Sprint
 
 **Approach:** Hybrid summary + deep links via Cloud Function (token never
 exposed to client)
 
-- [ ] `adminGetSentryErrorSummary` Cloud Function (server-side API call)
-- [ ] Error summary card on Dashboard (count + trend)
-- [ ] Errors tab with recent errors in plain English
-- [ ] Deep links to Sentry for each error
-- [ ] User ID correlation (link to user detail if available)
+- [x] `adminGetSentryErrorSummary` Cloud Function (server-side API call) ✅
+- [x] Error summary card on Dashboard (count + trend) ✅
+- [x] Errors tab with recent errors in plain English ✅
+- [x] Deep links to Sentry for each error ✅
+- [ ] User ID correlation (link to user detail if available) - **In Sprint
+      A3.1**
 
 **Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`,
 `SENTRY_ORG`, `SENTRY_PROJECT`
 
-### Phase 5: System Logs - GCP Integration (📋 Planned)
+> **Note:** Phase 4 tasks moved to Active Sprint Track A. See Sprint section for
+> remaining work (A3.1: User correlation).
 
-**Priority:** Medium | **Effort:** Low | **Value:** Medium
+### Phase 5: System Logs - GCP Integration (🔄 In Sprint)
+
+**Priority:** High | **Effort:** Low | **Value:** Medium | **Status:** Moved to
+Active Sprint
 
 **Approach:** Recent events + deep links (don't rebuild GCP logging UI)
 
-- [ ] Recent security events display (from existing `logSecurityEvent()`)
+- [ ] Recent security events display (from existing `logSecurityEvent()`) -
+      **Sprint A4**
 - [ ] Deep link to GCP Cloud Logging Console (pre-filtered)
 - [ ] Verify log retention configured (90+ days)
 - [ ] Optional: Log sink for long-term archival
 
 **Note:** Security/audit logs remain in GCP Cloud Logging (immutable, compliant)
 — no Firestore `admin_logs` collection.
+
+> **Note:** Phase 5 moved into Active Sprint per Session #69 planning. See
+> Sprint Track A task A4.
+
+### Phase 5.5: Local Recovery Resources Directory (📋 Planned - MOVED UP)
+
+> **Session #69 Update:** Moved from Phase 7 to Phase 5.5 since data already
+> exists in `data/local-resources.ts`. Lower implementation effort.
+
+**Priority:** Medium-High | **Effort:** Medium (5-8 SP) | **Value:** High —
+critical local resource access
+
+**Approach:** Display verified Nashville recovery resources with admin
+management
+
+**Context:**
+
+- 60+ verified local resources already aggregated in `data/local-resources.ts`
+  (Dec 28, 2025)
+- 8 categories: Clinical (Detox, Residential, Outpatient, Harm Reduction) +
+  Community (Recovery Centers, Essentials, Jobs/Legal, Wellness)
+- All resources have addresses, phone numbers, websites, services, and GPS
+  coordinates
+
+**User-Facing Features:**
+
+- [ ] Display local resources in Growth tab (below Sober Living Finder)
+- [ ] Category filtering (8 predefined categories)
+- [ ] Search/filter by resource name or services
+- [ ] Map view with "Nearby" feature using GPS coordinates
+- [ ] Resource detail cards (address, phone, website, services)
+- [ ] "Call" and "Get Directions" quick actions
+- [ ] Sort by distance (if location permission granted)
+
+**Admin Panel Features:**
+
+- [ ] Resources tab in Admin Panel (similar to Meetings/Sober Living)
+- [ ] CRUD operations for local resources
+- [ ] Category management
+- [ ] Active/inactive toggle for resources
+- [ ] Bulk import from `data/local-resources.ts` (one-time migration)
+- [ ] GPS coordinate validation
+- [ ] Phone/website format validation
+
+**Technical Implementation:**
+
+- **New Collection:** `/local_resources/{resourceId}` in Firestore
+- **New Service:** `lib/db/local-resources.ts` (similar to `meetings.ts`,
+  `sober-living.ts`)
+- **New Component:** `components/notebook/pages/local-resources-section.tsx` (in
+  Growth tab)
+- **New Admin Component:** `components/admin/local-resources-tab.tsx`
+- **Map Integration:** Reuse existing `MeetingMap` component with LocalResource
+  type support
+- **Firestore Rules:** Admin-write, user-read for
+  `/local_resources/{resourceId}`
+
+**Effort Estimate:** 9-12 hours (6-8 SP)
+
+**Dependencies:**
+
+- ✅ Data already aggregated (`data/local-resources.ts`)
+- ✅ Map component already exists (reuse `MeetingMap`)
+- ✅ Admin panel framework already exists
 
 ### Phase 6: Customizable Quick Actions (📋 Planned)
 
@@ -544,102 +675,15 @@ experience
 - Analytics on most-used actions
 - Suggested actions based on usage patterns
 
-### Phase 7: Local Recovery Resources Directory (📋 Planned)
+### Admin Panel Future Enhancements (Session #69)
 
-**Priority:** Medium-High | **Effort:** Medium (5-8 SP) | **Value:** High —
-critical local resource access
+| Enhancement          | Priority | Effort | Description                                                    |
+| -------------------- | -------- | ------ | -------------------------------------------------------------- |
+| **Batch Operations** | P2       | M      | Multi-select users for bulk actions (disable, tag, export)     |
+| **Dark Mode**        | P2       | S      | Admin panel theme toggle                                       |
+| **Role-Based Views** | P3 (M7+) | L      | Different tab visibility by admin role (Content vs Operations) |
 
-**Approach:** Display verified Nashville recovery resources with admin
-management
-
-**Context:**
-
-- 60+ verified local resources already aggregated in `data/local-resources.ts`
-  (Dec 28, 2025)
-- 8 categories: Clinical (Detox, Residential, Outpatient, Harm Reduction) +
-  Community (Recovery Centers, Essentials, Jobs/Legal, Wellness)
-- All resources have addresses, phone numbers, websites, services, and GPS
-  coordinates
-
-**User-Facing Features:**
-
-- [ ] Display local resources in Growth tab (below Sober Living Finder)
-- [ ] Category filtering (8 predefined categories)
-- [ ] Search/filter by resource name or services
-- [ ] Map view with "Nearby" feature using GPS coordinates
-- [ ] Resource detail cards (address, phone, website, services)
-- [ ] "Call" and "Get Directions" quick actions
-- [ ] Sort by distance (if location permission granted)
-
-**Admin Panel Features:**
-
-- [ ] Resources tab in Admin Panel (similar to Meetings/Sober Living)
-- [ ] CRUD operations for local resources
-- [ ] Category management
-- [ ] Active/inactive toggle for resources
-- [ ] Bulk import from `data/local-resources.ts` (one-time migration)
-- [ ] GPS coordinate validation
-- [ ] Phone/website format validation
-
-**Technical Implementation:**
-
-- **New Collection:** `/local_resources/{resourceId}` in Firestore
-- **New Service:** `lib/db/local-resources.ts` (similar to `meetings.ts`,
-  `sober-living.ts`)
-- **New Component:** `components/notebook/pages/local-resources-section.tsx` (in
-  Growth tab)
-- **New Admin Component:** `components/admin/local-resources-tab.tsx`
-- **Map Integration:** Reuse existing `MeetingMap` component with LocalResource
-  type support
-- **Firestore Rules:** Admin-write, user-read for
-  `/local_resources/{resourceId}`
-
-**Data Migration:**
-
-- [ ] Cloud Function or script to seed Firestore from `data/local-resources.ts`
-- [ ] Preserve existing data structure (categories, locationType, coordinates)
-- [ ] Add `createdAt`, `updatedAt`, `active` fields
-
-**Files to Create:**
-
-1. `lib/db/local-resources.ts` - Service layer (CRUD operations)
-2. `components/growth/local-resources-card.tsx` - Resource display card
-3. `components/growth/local-resources-list.tsx` - Filterable list view
-4. `components/growth/local-resources-map.tsx` - Map view with markers
-5. `components/admin/local-resources-tab.tsx` - Admin CRUD interface
-6. `scripts/seed-local-resources.ts` - One-time data migration
-7. Update `firestore.rules` - Add rules for `/local_resources` collection
-8. Update `firestore.indexes.json` - Add indexes for category, city filtering
-
-**Files to Modify:**
-
-1. `components/notebook/pages/growth-page.tsx` - Add local resources section
-2. `components/admin/admin-panel.tsx` - Add Resources tab
-3. `components/maps/meeting-map.tsx` - Extend to support LocalResource type (or
-   create separate component)
-
-**Effort Estimate:**
-
-- Service layer + Firestore setup: 2 hours
-- User-facing UI (list + map + filters): 3-4 hours
-- Admin panel CRUD: 2-3 hours
-- Data migration script: 1 hour
-- Testing + polish: 1-2 hours
-- **Total: 9-12 hours (6-8 SP)**
-
-**Dependencies:**
-
-- ✅ Data already aggregated (`data/local-resources.ts`)
-- ✅ Map component already exists (reuse `MeetingMap`)
-- ✅ Admin panel framework already exists
-- ⚠️ Should wait until PR1 complete (Firestore rules changes)
-
-**Why This Matters:**
-
-- Provides critical access to treatment, housing, food, legal services
-- Fills gap between meetings (fellowship) and clinical care
-- High user value for newly sober individuals navigating Nashville recovery
-  ecosystem
+> **Note:** Phase 7 (Local Recovery Resources) moved to Phase 5.5. See above.
 
 ### Success Metrics
 
@@ -720,6 +764,38 @@ management
   - Session activity visualization
   - Error tracing viewer
   - See: [ROADMAP.md Process & Tooling section](#-process--tooling-improvements)
+
+**Dependency Maintenance (Q2 2026 - Session #69):**
+
+> **Reminder:** Review and plan migration for major version upgrades. Research
+> done in Session #69 - see commit history for breaking change analysis.
+
+| Package                  | Current | Target | Breaking Changes                      |
+| ------------------------ | ------- | ------ | ------------------------------------- |
+| `recharts`               | 2.15.4  | 3.x    | API renames, state access changes     |
+| `tailwind-merge`         | 2.6.0   | 3.x    | **Requires Tailwind v4 first**        |
+| `react-resizable-panels` | 2.1.9   | 4.x    | Complete API rename (Group/Separator) |
+| `lucide-react`           | 0.454.0 | 0.562+ | Icon renames may break imports        |
+
+**License Review:** Add LICENSE file to project (currently UNLICENSED)
+
+### Dev Dashboard Future Enhancements (Session #69)
+
+> **Note:** These are future additions to the Dev Dashboard after core tabs are
+> complete. See Active Sprint Track B for current priorities.
+
+| Enhancement                  | Priority | Effort | Description                                                 |
+| ---------------------------- | -------- | ------ | ----------------------------------------------------------- |
+| **Bundle Size Analysis Tab** | P1       | M      | Visualize bundle sizes, track trends over time              |
+| **CI/CD Pipeline Status**    | P1       | S      | Show recent builds, pass/fail trends, deploy status         |
+| **Deployment History**       | P1       | S      | Recent deploys with rollback links                          |
+| **Test Coverage Dashboard**  | P2       | M      | Show coverage by file/component                             |
+| **Dependency Security Tab**  | P2       | S      | Surface `npm audit` results, vulnerability alerts           |
+| **API Latency Metrics**      | P2       | M      | Track Cloud Function response times                         |
+| **Database Stats**           | P2       | S      | Firestore read/write counts, storage usage                  |
+| **Health Check Endpoint**    | P1       | S      | `/api/health` returning system status for uptime monitoring |
+| **Feature Flags Management** | P2       | M      | Enable/disable features without deploy                      |
+| **Cost Monitoring**          | P2       | M      | GCP/Firebase costs visualization                            |
 
 **From M1 - Code Quality & Automation:**
 
@@ -1369,6 +1445,21 @@ _Building on the basic HALT check feature from M1.5_
 - Saved searches
 - Search suggestions
 
+### Mobile Responsiveness (Session #69 - Added)
+
+> **Note:** Implement alongside other web enhancements. Different approach from
+> current mobile-first design.
+
+- [ ] Admin Panel mobile-friendly layout
+  - Critical metrics visible without horizontal scroll
+  - Touch-friendly error investigation
+  - Quick action buttons for common responses
+- [ ] On-call admin scenarios support
+  - Emergency actions from mobile device
+  - Simplified dashboard view for small screens
+
+**Priority:** P2 | **Effort:** M | **Milestone:** Near web enhancement work
+
 ---
 
 ## 🎨 Feature Decisions (Quick Reference)
@@ -1628,19 +1719,20 @@ When working on roadmap items:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                                                                            |
-| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones         |
-| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md |
-| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                            |
-| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram   |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                       |
-| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                             |
-| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                           |
-| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                              |
-| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                            |
-| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                     |
-| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                       |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.6     | 2026-01-16 | Session #69: Major sprint update - corrected stale Sentry status (A1-A3 done); moved Phase 5 into sprint; moved Local Resources to Phase 5.5; added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark mode); added Dev Dashboard enhancements; added User Analytics Tab; added monitoring integrations evaluation (PostHog recommended); added mobile responsiveness |
+| 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones                                                                                                                                                                                                                                                                  |
+| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md                                                                                                                                                                                                                                                          |
+| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                                                                                                                                                                                                                                                                                     |
+| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram                                                                                                                                                                                                                                                            |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                                                                                                                                                                                                                                                                                |
+| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                                                                                                                                                                                                                                                                                      |
+| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                                                                                                                                                                                                                                                                                    |
+| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                                                                                                                                                                                                                                                                                       |
+| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                                                                                                                                                                                                                                                                                     |
+| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                                                                                                                                                                                                                                                                              |
+| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                                                                                                                                                                                                                                                                                |
 
 **Historical Notes:**
 
