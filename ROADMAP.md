@@ -208,6 +208,29 @@ creation.
   - Add privilege selector to user detail drawer
   - Support manual assignment (automation later)
 
+#### Background Jobs Expansion (New - Session #70)
+
+- [ ] **A10:** Cleanup Old Sessions job (2hr)
+  - Remove expired session documents (>30 days old)
+  - Schedule: Daily at 4 AM CT
+  - Target collection: `/sessions/{sessionId}` or similar auth records
+- [ ] **A11:** Cleanup Orphaned Storage Files job (3hr)
+  - Remove Storage files not referenced by Firestore documents
+  - Schedule: Weekly on Sundays at 2 AM CT
+  - Cross-reference storage bucket with document references
+- [ ] **A12:** Generate Usage Analytics job (2hr)
+  - Aggregate daily stats: active users, API calls, errors
+  - Schedule: Daily at 1 AM CT
+  - Store in `analytics_daily` collection for dashboard
+- [ ] **A13:** Prune Security Events job (2hr)
+  - Archive/delete security audit logs >90 days old
+  - Schedule: Weekly on Sundays at 3 AM CT
+  - Maintain compliance with data retention policies
+- [ ] **A14:** Health Check Notifications job (2hr)
+  - System health monitoring: Firebase quotas, error rates
+  - Schedule: Every 6 hours
+  - Alert admins via email/Slack on issues detected
+
 ### Track B - Dev Dashboard
 
 #### Core Setup
@@ -724,6 +747,15 @@ experience
     `disable-function.sh`, `deploy-lockdown-rules.sh`)
   - Incident timeline extractor (auto-export GCP logs to incident report format)
   - Admin panel UI for blocklist management
+
+**Deferred Background Jobs:**
+
+- ⏳ **Refresh Cache/Indexes** - Rebuild denormalized data and search indexes
+  - Schedule: Daily at 5 AM CT
+  - Priority: P3 - implement when caching layer exists
+- ⏳ **Database Backup Verification** - Verify Firebase backup integrity
+  - Schedule: Weekly on Saturdays at 1 AM CT
+  - Priority: P3 - implement when backup strategy formalized
 
 ### Developer Tooling (Added 2026-01-14 - Step 6.1)
 
@@ -1721,6 +1753,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.7     | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to Track A - cleanup sessions, orphaned files, usage analytics, prune security events, health checks; added Deferred Background Jobs to M2 (refresh cache, backup verification)                                                                                                                                                     |
 | 2.6     | 2026-01-16 | Session #69: Major sprint update - corrected stale Sentry status (A1-A3 done); moved Phase 5 into sprint; moved Local Resources to Phase 5.5; added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark mode); added Dev Dashboard enhancements; added User Analytics Tab; added monitoring integrations evaluation (PostHog recommended); added mobile responsiveness |
 | 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones                                                                                                                                                                                                                                                                  |
 | 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md                                                                                                                                                                                                                                                          |
