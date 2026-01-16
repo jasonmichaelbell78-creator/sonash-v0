@@ -240,6 +240,28 @@ try {
 }
 
 console.log("");
+
+// Backlog health check
+console.log("🔍 Checking backlog health...");
+try {
+  const output = execSync("node scripts/check-backlog-health.js", {
+    encoding: "utf8",
+    timeout: 30000,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  console.log(output.trim());
+} catch (error) {
+  const exitCode = error.status || 1;
+  if (exitCode === 1) {
+    console.log(error.stdout || "");
+    console.log("   ⚠️ Backlog needs attention - see output above");
+  } else {
+    console.log(`   ❌ Backlog checker failed (exit ${exitCode})`);
+  }
+  warnings++;
+}
+
+console.log("");
 console.log("━".repeat(66));
 if (warnings === 0) {
   console.log("✅ SessionStart hook completed successfully!");
