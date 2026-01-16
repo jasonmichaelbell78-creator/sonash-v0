@@ -782,7 +782,19 @@ export {
   adminTriggerJob,
   adminGetJobsStatus,
   adminGetSentryErrorSummary,
+  adminGetLogs,
+  adminGetPrivilegeTypes,
+  adminSavePrivilegeType,
+  adminDeletePrivilegeType,
+  adminSetUserPrivilege,
 } from "./admin";
 
 // Export scheduled jobs
-export { scheduledCleanupRateLimits } from "./jobs";
+export {
+  scheduledCleanupRateLimits,
+  scheduledCleanupOldSessions,
+  scheduledCleanupOrphanedStorageFiles,
+  scheduledGenerateUsageAnalytics,
+  scheduledPruneSecurityEvents,
+  scheduledHealthCheckNotifications,
+} from "./jobs";

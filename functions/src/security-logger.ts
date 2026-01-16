@@ -3,10 +3,12 @@
  *
  * Logs security-related events in structured JSON format for GCP Cloud Logging.
  * Events are searchable via GCP Logs Explorer.
+ * Also stores events in Firestore for the admin panel logs tab.
  */
 
 import * as Sentry from "@sentry/node";
 import { createHash } from "crypto";
+import * as admin from "firebase-admin";
 
 // Security event types
 export type SecurityEventType =
@@ -88,6 +90,7 @@ export function logSecurityEvent(
     severity?: Severity;
     metadata?: Record<string, unknown>;
     captureToSentry?: boolean;
+    storeInFirestore?: boolean; // Force store INFO events in Firestore
   }
 ): void {
   const severity = options?.severity ?? getSeverityForType(type);
@@ -134,6 +137,32 @@ export function logSecurityEvent(
         userIdHash: options?.userId ? hashUserId(options.userId) : undefined,
       },
     });
+  }
+
+  // Store in Firestore for admin panel logs tab (non-blocking)
+  // Only store WARNING and ERROR events to avoid excessive writes
+  if (severity !== "INFO" || options?.storeInFirestore) {
+    storeLogInFirestore(event).catch((err) => {
+      // Don't log errors about logging to prevent infinite loops
+      console.error("Failed to store security event in Firestore:", err);
+    });
+  }
+}
+
+/**
+ * Store security event in Firestore for admin panel access
+ * Non-blocking - errors are caught and logged without affecting the main flow
+ */
+async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
+  try {
+    const db = admin.firestore();
+    await db.collection("security_logs").add({
+      ...event,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days TTL
+    });
+  } catch {
+    // Silently fail - logging to console is already done in the catch block above
   }
 }
 
