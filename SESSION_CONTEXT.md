@@ -11,8 +11,8 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-01-16 **Branch**: `claude/roadmap-analysis-6LQlO` **Working
-On**: Major roadmap update complete **Files Modified**:
-`ROADMAP.md`, `.claude/commands/session-end.md` **Next
+On**: Cross-doc blocking check + dependency updates **Files Modified**:
+`scripts/check-cross-doc-deps.js`, `.husky/pre-commit`, `ROADMAP.md`, `package.json` **Next
 Step**: Execute sprint tasks (Dashboard fix, Users pagination, Sentry user correlation) **Uncommitted Work**: no
 
 ---
@@ -54,6 +54,9 @@ productive work.
 - Added Dev Dashboard enhancements (10 future tabs)
 - Evaluated monitoring integrations (PostHog recommended at $0)
 - Added Roadmap Sync guardrail to session-end.md
+- **NEW**: Cross-doc dependency check now BLOCKING (scripts/check-cross-doc-deps.js)
+- **NEW**: Safe dependency updates applied (@hookform/resolvers v5, sonner v2)
+- **NEW**: Dependency maintenance reminder added for Q2 2026 (recharts, tailwind-merge, etc.)
 
 **Sprint Priorities**:
 - Track A: Fix Dashboard Tab (A5), Users pagination (A6), Sentry user correlation (A3.1)

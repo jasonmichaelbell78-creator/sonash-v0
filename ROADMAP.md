@@ -764,6 +764,20 @@ experience
   - Error tracing viewer
   - See: [ROADMAP.md Process & Tooling section](#-process--tooling-improvements)
 
+**Dependency Maintenance (Q2 2026 - Session #69):**
+
+> **Reminder:** Review and plan migration for major version upgrades. Research done
+> in Session #69 - see commit history for breaking change analysis.
+
+| Package | Current | Target | Breaking Changes |
+| ------- | ------- | ------ | ---------------- |
+| `recharts` | 2.15.4 | 3.x | API renames, state access changes |
+| `tailwind-merge` | 2.6.0 | 3.x | **Requires Tailwind v4 first** |
+| `react-resizable-panels` | 2.1.9 | 4.x | Complete API rename (Group/Separator) |
+| `lucide-react` | 0.454.0 | 0.562+ | Icon renames may break imports |
+
+**License Review:** Add LICENSE file to project (currently UNLICENSED)
+
 ### Dev Dashboard Future Enhancements (Session #69)
 
 > **Note:** These are future additions to the Dev Dashboard after core tabs are
