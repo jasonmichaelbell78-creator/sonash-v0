@@ -1101,6 +1101,7 @@ export const adminGetJobsStatus = onCall(async (request) => {
 interface SentryIssueSummary {
   title: string;
   count: number;
+  userCount: number;
   lastSeen: string | null;
   firstSeen: string | null;
   shortId: string;
@@ -1148,6 +1149,7 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
     const issuesPayload: Array<{
       title?: string;
       count?: string;
+      userCount?: number;
       lastSeen?: string;
       firstSeen?: string;
       shortId?: string;
@@ -1159,6 +1161,7 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
     const issues: SentryIssueSummary[] = issuesPayload.map((issue) => ({
       title: sanitizeSentryTitle(issue.title || "Unknown error"),
       count: Number(issue.count || 0),
+      userCount: issue.userCount || 0,
       lastSeen: issue.lastSeen || null,
       firstSeen: issue.firstSeen || null,
       shortId: issue.shortId || "N/A",
