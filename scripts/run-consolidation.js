@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global __dirname */
 /**
  * run-consolidation.js
  *
@@ -24,17 +25,15 @@
  * Created: Session #69 (2026-01-16)
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Use CommonJS for consistency with other scripts in scripts/ (Review #158)
+const { existsSync, readFileSync, writeFileSync } = require("node:fs");
+const { join } = require("node:path");
 
 // File paths
 const LOG_FILE = join(__dirname, "..", "docs", "AI_REVIEW_LEARNINGS_LOG.md");
-const PATTERNS_FILE = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
-const CLAUDE_MD = join(__dirname, "..", "claude.md");
+// Reserved for future automatic updates (currently manual)
+const _PATTERNS_FILE = join(__dirname, "..", "docs", "agent_docs", "CODE_PATTERNS.md");
+const _CLAUDE_MD = join(__dirname, "..", "claude.md");
 
 // Configuration
 const CONSOLIDATION_THRESHOLD = 10;
@@ -67,6 +66,14 @@ function logVerbose(message) {
   if (verbose) {
     log(`  [verbose] ${message}`, colors.cyan);
   }
+}
+
+/**
+ * Escape special regex characters in a string (Review #158)
+ * Prevents ReDoS and unexpected behavior when building dynamic RegExp
+ */
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -202,7 +209,11 @@ function extractPatterns(reviews) {
             entry.reviews.push(review.number);
           }
           // Extract context around pattern mention
-          const contextMatch = review.description.match(new RegExp(`.{0,50}${match}.{0,50}`, "i"));
+          // Escape special characters in match to prevent regex errors (Review #158)
+          const escapedMatch = escapeRegex(match);
+          const contextMatch = review.description.match(
+            new RegExp(`.{0,50}${escapedMatch}.{0,50}`, "i")
+          );
           if (contextMatch && !entry.examples.includes(contextMatch[0])) {
             entry.examples.push(contextMatch[0].trim());
           }
@@ -316,29 +327,43 @@ function generateReport(reviews, patterns, categories) {
  * Update the consolidation counter in the log file
  */
 function updateConsolidationCounter(content, newCount, nextReview) {
+  // Scope replacements to "Consolidation Trigger" section only (Review #158)
+  // This prevents accidental modifications to other parts of the document
+  const sectionStart = content.indexOf("## 🔔 Consolidation Trigger");
+  const sectionEnd = content.indexOf("\n## ", sectionStart + 1);
+
+  if (sectionStart === -1) {
+    throw new Error("Could not locate 'Consolidation Trigger' section in log file.");
+  }
+
+  // Extract the section (or rest of file if no next section)
+  const endIndex = sectionEnd === -1 ? content.length : sectionEnd;
+  let section = content.slice(sectionStart, endIndex);
+
   // Update "Reviews since last consolidation" counter
-  let updated = content.replace(
+  section = section.replace(
     /\*\*Reviews since last consolidation:\*\*\s+\d+/,
     `**Reviews since last consolidation:** ${newCount}`
   );
 
   // Update "Next consolidation due" text
-  updated = updated.replace(
+  section = section.replace(
     /\*\*Next consolidation due:\*\*\s+After Review #\d+/,
     `**Next consolidation due:** After Review #${nextReview}`
   );
 
   // Update status
-  updated = updated.replace(
+  section = section.replace(
     /\*\*Status:\*\*\s+[^\n]+/,
     `**Status:** ✅ Current **Next consolidation due:** After Review #${nextReview}`
   );
 
   // Update last consolidation date
   const today = new Date().toISOString().split("T")[0];
-  updated = updated.replace(/\*\*Date:\*\*\s+[^\n]+/, `**Date:** ${today} (Session #69+)`);
+  section = section.replace(/\*\*Date:\*\*\s+[^\n]+/, `**Date:** ${today} (Session #69+)`);
 
-  return updated;
+  // Reconstruct the full content
+  return content.slice(0, sectionStart) + section + content.slice(endIndex);
 }
 
 /**
@@ -360,7 +385,7 @@ function generatePatternSuggestions(recurringPatterns, categories) {
     suggestions += "| ------- | ---- | --- |\n";
 
     for (const p of significant) {
-      const example = p.examples[0] || "See review for details";
+      // Example available at p.examples[0] for future use
       suggestions += `| ${p.pattern} | (add rule) | Reviews #${p.reviews.join(", ")} |\n`;
     }
   }
@@ -382,8 +407,16 @@ function main() {
       return;
     }
 
-    // Read log content
-    const content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+    // Read log content with explicit try/catch for race conditions (Review #158)
+    let content;
+    try {
+      content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+    } catch (readError) {
+      const message = readError instanceof Error ? readError.message : String(readError);
+      log(`❌ Failed to read AI_REVIEW_LEARNINGS_LOG.md: ${message}`, colors.red);
+      process.exitCode = 2;
+      return;
+    }
 
     // Get consolidation status
     const status = getConsolidationStatus(content);

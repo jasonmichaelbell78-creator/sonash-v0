@@ -238,9 +238,9 @@ try {
     console.log(`   ❌ Auto-consolidation failed (exit ${exitCode})`);
     warnings++;
   } else if (exitCode === 1) {
-    // Exit code 1 means dry-run mode - shouldn't happen with --auto (Review #157)
-    console.log("   ⚠️ Auto-consolidation returned unexpected exit code 1 (dry-run mode?)");
-    warnings++;
+    // Exit code 1 indicates "consolidation needed but not applied" (unexpected for --auto)
+    // Surface the message but don't count as warning to reduce noise (Review #158)
+    console.log("   ⚠️ Auto-consolidation returned exit code 1 (unexpected for --auto)");
   }
 }
 

@@ -120,14 +120,17 @@ function getStagedFiles() {
 function checkDiffPattern(file, pattern) {
   try {
     // Use execFileSync with args array to prevent command injection (SEC-001, SEC-010)
-    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", file], {
+    // Use -- separator to prevent option injection from filenames starting with - (Review #158)
+    const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", file], {
       encoding: "utf-8",
     });
     return pattern.test(diff);
   } catch (error) {
     // Log unexpected errors for debugging (Review #157)
+    // Safe error message extraction (Review #158)
     if (verbose) {
-      logVerbose(`Failed to check diff pattern for ${file}: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      logVerbose(`Failed to check diff pattern for ${file}: ${message}`);
     }
     return false;
   }
@@ -135,25 +138,36 @@ function checkDiffPattern(file, pattern) {
 
 /**
  * Check if any staged file matches a trigger pattern
+ * Improved path matching to prevent false positives (Review #158)
  */
 function matchesTrigger(stagedFiles, trigger) {
+  const isDirTrigger = trigger.endsWith("/");
+  const isBareName = !trigger.includes("/");
+
   return stagedFiles.some((file) => {
     // Handle directory triggers (ending with /)
-    if (trigger.endsWith("/")) {
+    if (isDirTrigger) {
       return file.startsWith(trigger);
     }
-    // Handle exact file matches - use path.basename for precise matching (Review #157)
-    return file === trigger || path.basename(file) === trigger;
+    // Exact match first
+    if (file === trigger) return true;
+    // For bare names (no path separator), match at end of path
+    return isBareName && file.endsWith(`/${trigger}`);
   });
 }
 
 /**
  * Check if dependent file is staged
+ * Improved path matching to prevent false positives (Review #158)
  */
 function isDependentStaged(stagedFiles, dependent) {
+  const isBareName = !dependent.includes("/");
+
   return stagedFiles.some((file) => {
-    // Use path.basename for precise matching (Review #157)
-    return file === dependent || path.basename(file) === path.basename(dependent);
+    // Exact match first
+    if (file === dependent) return true;
+    // For bare names, match at end of path
+    return isBareName && file.endsWith(`/${dependent}`);
   });
 }
 
@@ -278,6 +292,8 @@ try {
   const exitCode = checkDependencies();
   process.exit(exitCode);
 } catch (error) {
-  log(`Error: ${error.message}`, colors.red);
+  // Safe error message extraction (Review #158)
+  const message = error instanceof Error ? error.message : String(error);
+  log(`Error: ${message}`, colors.red);
   process.exit(2);
 }
