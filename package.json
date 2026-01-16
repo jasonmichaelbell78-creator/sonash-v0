@@ -46,6 +46,9 @@
     "deps:unused": "knip",
     "prepare": "husky || echo 'Husky not available, skipping git hooks setup'"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
+  },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
     "@emotion/is-prop-valid": "^1.4.0",
@@ -104,6 +107,7 @@
     "husky": "^9.1.7",
     "knip": "^5.79.0",
     "lighthouse": "^13.0.1",
+    "lint-staged": "^16.2.7",
     "madge": "^8.0.0",
     "postcss": "^8.5",
     "postcss-load-config": "^6.0.1",
