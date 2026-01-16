@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ArrowUpDown,
   Loader2,
+  Shield,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -46,6 +47,7 @@ interface UserProfile {
   lastActive: string | null;
   adminNotes: string | null;
   isAdmin: boolean;
+  privilegeType?: string;
 }
 
 interface ActivityItem {
@@ -69,6 +71,14 @@ interface UserDetail {
     totalInventory: number;
   };
   recentActivity: ActivityItem[];
+}
+
+interface PrivilegeType {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  isDefault?: boolean;
 }
 
 export function UsersTab() {
@@ -96,6 +106,11 @@ export function UsersTab() {
   const [editingNotes, setEditingNotes] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Privilege state
+  const [privilegeTypes, setPrivilegeTypes] = useState<PrivilegeType[]>([]);
+  const [selectedPrivilege, setSelectedPrivilege] = useState<string>("");
+  const [savingPrivilege, setSavingPrivilege] = useState(false);
 
   // Load users on mount and when sort changes
   const loadUsers = useCallback(
@@ -146,6 +161,26 @@ export function UsersTab() {
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
+
+  // Load privilege types on mount
+  useEffect(() => {
+    async function loadPrivilegeTypes() {
+      try {
+        const functions = getFunctions();
+        const getPrivilegesFn = httpsCallable<void, { types: PrivilegeType[] }>(
+          functions,
+          "adminGetPrivilegeTypes"
+        );
+        const result = await getPrivilegesFn();
+        setPrivilegeTypes(result.data.types);
+      } catch (err) {
+        logger.error("Failed to load privilege types", {
+          errorType: err instanceof Error ? err.constructor.name : typeof err,
+        });
+      }
+    }
+    loadPrivilegeTypes();
+  }, []);
 
   // Handle sort change
   const handleSortChange = (field: SortField) => {
@@ -222,6 +257,7 @@ export function UsersTab() {
       setSelectedUser(result.data);
       setAdminNotes(result.data.profile.adminNotes || "");
       setEditingNotes(false);
+      setSelectedPrivilege(result.data.profile.privilegeType || "free");
     } catch (err) {
       logger.error("Failed to load user detail", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
@@ -314,6 +350,59 @@ export function UsersTab() {
       setError(err instanceof Error ? err.message : "Failed to update user status");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSavePrivilege() {
+    if (!selectedUser || !selectedPrivilege) return;
+
+    // Don't save if privilege hasn't changed
+    if (selectedPrivilege === (selectedUser.profile.privilegeType || "free")) return;
+
+    const confirmMessage =
+      selectedPrivilege === "admin"
+        ? "Are you sure you want to grant admin privileges to this user? They will have full access to the admin panel."
+        : `Are you sure you want to change this user's privilege to ${selectedPrivilege}?`;
+
+    if (!confirm(confirmMessage)) {
+      setSelectedPrivilege(selectedUser.profile.privilegeType || "free");
+      return;
+    }
+
+    setSavingPrivilege(true);
+    setError(null);
+
+    try {
+      const functions = getFunctions();
+      const setPrivilegeFn = httpsCallable<
+        { uid: string; privilegeTypeId: string },
+        { success: boolean; message: string }
+      >(functions, "adminSetUserPrivilege");
+
+      await setPrivilegeFn({
+        uid: selectedUser.profile.uid,
+        privilegeTypeId: selectedPrivilege,
+      });
+
+      // Update local state
+      setSelectedUser({
+        ...selectedUser,
+        profile: {
+          ...selectedUser.profile,
+          privilegeType: selectedPrivilege,
+          isAdmin: selectedPrivilege === "admin",
+        },
+      });
+    } catch (err) {
+      logger.error("Failed to update user privilege", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+      });
+      setError(err instanceof Error ? err.message : "Failed to update user privilege");
+      // Revert selection on error
+      setSelectedPrivilege(selectedUser.profile.privilegeType || "free");
+    } finally {
+      setSavingPrivilege(false);
     }
   }
 
@@ -676,6 +765,53 @@ export function UsersTab() {
                 ) : (
                   <p className="text-sm text-amber-700 whitespace-pre-wrap">
                     {selectedUser.profile.adminNotes || "No notes"}
+                  </p>
+                )}
+              </div>
+
+              {/* User Privilege */}
+              <div className="bg-white border border-amber-100 rounded-lg p-4">
+                <h4 className="font-medium text-amber-900 mb-3 flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  User Privilege
+                </h4>
+                <div className="flex items-center gap-3">
+                  <select
+                    value={selectedPrivilege}
+                    onChange={(e) => setSelectedPrivilege(e.target.value)}
+                    disabled={savingPrivilege}
+                    className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  >
+                    {privilegeTypes.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.name} - {type.description}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleSavePrivilege}
+                    disabled={
+                      savingPrivilege ||
+                      selectedPrivilege === (selectedUser.profile.privilegeType || "free")
+                    }
+                    className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {savingPrivilege ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Save
+                      </>
+                    )}
+                  </button>
+                </div>
+                {selectedUser.profile.isAdmin && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    This user has admin access to the admin panel.
                   </p>
                 )}
               </div>

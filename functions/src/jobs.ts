@@ -2,12 +2,19 @@
  * Background Jobs System
  *
  * Provides job wrapper for status tracking and scheduled job definitions
+ *
+ * Jobs:
+ * - cleanupOldRateLimits: Daily cleanup of expired rate limit documents
+ * - cleanupOldSessions: Daily cleanup of old session documents (>30 days)
+ * - cleanupOrphanedStorageFiles: Weekly cleanup of unreferenced storage files
+ * - generateUsageAnalytics: Daily aggregation of usage statistics
+ * - pruneSecurityEvents: Weekly archival of old security logs (>90 days)
+ * - healthCheckNotifications: Periodic system health monitoring (every 6 hours)
  */
 
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logSecurityEvent } from "./security-logger";
-import { cleanupOldRateLimits as cleanupRateLimitsCore } from "./firestore-rate-limiter";
 
 /**
  * Job wrapper for status tracking
@@ -99,7 +106,460 @@ export const scheduledCleanupRateLimits = onSchedule(
   },
   async () => {
     await runJob("cleanupOldRateLimits", "Cleanup Rate Limits", async () => {
-      await cleanupRateLimitsCore();
+      await cleanupOldRateLimits();
     });
   }
 );
+
+/**
+ * A10: Cleanup Old Sessions
+ * Removes expired session documents (>30 days old)
+ * Schedule: Daily at 4 AM CT (10 AM UTC)
+ */
+export async function cleanupOldSessions(): Promise<{ deleted: number }> {
+  const db = admin.firestore();
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  let deleted = 0;
+
+  // Query for old user sessions/activity documents
+  // This targets any session-like subcollections
+  const usersSnapshot = await db.collection("users").select().get();
+
+  for (const userDoc of usersSnapshot.docs) {
+    // Clean up old daily_logs entries (older than 30 days from lastActivity)
+    const oldLogsQuery = db
+      .collection(`users/${userDoc.id}/daily_logs`)
+      .where("updatedAt", "<", admin.firestore.Timestamp.fromDate(thirtyDaysAgo))
+      .limit(100);
+
+    const oldLogs = await oldLogsQuery.get();
+    const batch = db.batch();
+    let batchCount = 0;
+
+    for (const doc of oldLogs.docs) {
+      batch.delete(doc.ref);
+      batchCount++;
+    }
+
+    if (batchCount > 0) {
+      await batch.commit();
+      deleted += batchCount;
+    }
+  }
+
+  logSecurityEvent("JOB_SUCCESS", "cleanupOldSessions", `Cleaned up ${deleted} old session docs`, {
+    severity: "INFO",
+    metadata: { deleted },
+  });
+
+  return { deleted };
+}
+
+export const scheduledCleanupOldSessions = onSchedule(
+  {
+    schedule: "0 10 * * *", // 10 AM UTC = 4 AM CT
+    timeZone: "UTC",
+    retryCount: 3,
+  },
+  async () => {
+    await runJob("cleanupOldSessions", "Cleanup Old Sessions", async () => {
+      await cleanupOldSessions();
+    });
+  }
+);
+
+/**
+ * A11: Cleanup Orphaned Storage Files
+ * Removes Storage files not referenced by Firestore documents
+ * Schedule: Weekly on Sundays at 2 AM CT (8 AM UTC)
+ */
+export async function cleanupOrphanedStorageFiles(): Promise<{
+  checked: number;
+  deleted: number;
+}> {
+  const storage = admin.storage();
+  const db = admin.firestore();
+  const bucket = storage.bucket();
+
+  let checked = 0;
+  let deleted = 0;
+
+  try {
+    // Get all files in user-uploads directory
+    const [files] = await bucket.getFiles({ prefix: "user-uploads/" });
+
+    for (const file of files) {
+      checked++;
+
+      // Extract userId from file path (user-uploads/{userId}/...)
+      const pathParts = file.name.split("/");
+      if (pathParts.length < 2) continue;
+
+      const userId = pathParts[1];
+
+      // Check if user exists
+      const userDoc = await db.collection("users").doc(userId).get();
+      if (!userDoc.exists) {
+        // User doesn't exist, delete the file
+        await file.delete();
+        deleted++;
+        continue;
+      }
+
+      // Check if file is referenced in any journal entries
+      const journalRef = db
+        .collection(`users/${userId}/journal`)
+        .where("data.imageUrl", "==", file.publicUrl());
+
+      const journalDocs = await journalRef.get();
+      if (journalDocs.empty) {
+        // File is orphaned, check age before deleting
+        const metadata = await file.getMetadata();
+        const timeCreated = metadata[0].timeCreated;
+        if (!timeCreated) continue;
+
+        const createTime = new Date(timeCreated);
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        if (createTime < sevenDaysAgo) {
+          await file.delete();
+          deleted++;
+        }
+      }
+    }
+
+    logSecurityEvent(
+      "JOB_SUCCESS",
+      "cleanupOrphanedStorageFiles",
+      `Checked ${checked} files, deleted ${deleted} orphaned`,
+      { severity: "INFO", metadata: { checked, deleted } }
+    );
+  } catch (error) {
+    logSecurityEvent(
+      "JOB_FAILURE",
+      "cleanupOrphanedStorageFiles",
+      `Error cleaning storage: ${error}`,
+      { severity: "ERROR", metadata: { error: String(error) }, captureToSentry: true }
+    );
+    throw error;
+  }
+
+  return { checked, deleted };
+}
+
+export const scheduledCleanupOrphanedStorageFiles = onSchedule(
+  {
+    schedule: "0 8 * * 0", // 8 AM UTC on Sundays = 2 AM CT
+    timeZone: "UTC",
+    retryCount: 2,
+  },
+  async () => {
+    await runJob("cleanupOrphanedStorageFiles", "Cleanup Orphaned Storage Files", async () => {
+      await cleanupOrphanedStorageFiles();
+    });
+  }
+);
+
+/**
+ * A12: Generate Usage Analytics
+ * Aggregates daily stats: active users, API calls, errors
+ * Schedule: Daily at 1 AM CT (7 AM UTC)
+ */
+export async function generateUsageAnalytics(): Promise<{
+  date: string;
+  activeUsers: number;
+  newUsers: number;
+  journalEntries: number;
+  checkIns: number;
+}> {
+  const db = admin.firestore();
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const dateId = yesterday.toISOString().split("T")[0]; // YYYY-MM-DD
+
+  // Count active users (users with lastActive in last 24 hours)
+  const activeUsersQuery = await db
+    .collection("users")
+    .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(yesterday))
+    .count()
+    .get();
+  const activeUsers = activeUsersQuery.data().count;
+
+  // Count new users (created in last 24 hours)
+  const newUsersQuery = await db
+    .collection("users")
+    .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(yesterday))
+    .count()
+    .get();
+  const newUsers = newUsersQuery.data().count;
+
+  // Count journal entries created
+  // Note: This requires iterating through users which can be expensive
+  // For now, we'll estimate from security logs
+  const securityLogsQuery = await db
+    .collection("security_logs")
+    .where("type", "==", "SAVE_SUCCESS")
+    .where("functionName", "==", "saveJournalEntry")
+    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(yesterday))
+    .count()
+    .get();
+  const journalEntries = securityLogsQuery.data().count;
+
+  // Count check-ins
+  const checkInsQuery = await db
+    .collection("security_logs")
+    .where("type", "==", "SAVE_SUCCESS")
+    .where("functionName", "==", "saveDailyLog")
+    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(yesterday))
+    .count()
+    .get();
+  const checkIns = checkInsQuery.data().count;
+
+  // Store analytics
+  await db.collection("analytics_daily").doc(dateId).set({
+    date: dateId,
+    activeUsers,
+    newUsers,
+    journalEntries,
+    checkIns,
+    generatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  logSecurityEvent("JOB_SUCCESS", "generateUsageAnalytics", `Generated analytics for ${dateId}`, {
+    severity: "INFO",
+    metadata: { dateId, activeUsers, newUsers, journalEntries, checkIns },
+  });
+
+  return { date: dateId, activeUsers, newUsers, journalEntries, checkIns };
+}
+
+export const scheduledGenerateUsageAnalytics = onSchedule(
+  {
+    schedule: "0 7 * * *", // 7 AM UTC = 1 AM CT
+    timeZone: "UTC",
+    retryCount: 3,
+  },
+  async () => {
+    await runJob("generateUsageAnalytics", "Generate Usage Analytics", async () => {
+      await generateUsageAnalytics();
+    });
+  }
+);
+
+/**
+ * A13: Prune Security Events
+ * Archives/deletes security audit logs older than 90 days
+ * Schedule: Weekly on Sundays at 3 AM CT (9 AM UTC)
+ */
+export async function pruneSecurityEvents(): Promise<{ deleted: number }> {
+  const db = admin.firestore();
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+  let deleted = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const oldLogsQuery = db
+      .collection("security_logs")
+      .where("timestamp", "<", admin.firestore.Timestamp.fromDate(ninetyDaysAgo))
+      .limit(500);
+
+    const snapshot = await oldLogsQuery.get();
+
+    if (snapshot.empty) {
+      hasMore = false;
+      break;
+    }
+
+    const batch = db.batch();
+    for (const doc of snapshot.docs) {
+      batch.delete(doc.ref);
+    }
+    await batch.commit();
+    deleted += snapshot.docs.length;
+
+    // Continue if we got a full batch
+    hasMore = snapshot.docs.length === 500;
+  }
+
+  logSecurityEvent(
+    "JOB_SUCCESS",
+    "pruneSecurityEvents",
+    `Pruned ${deleted} security events older than 90 days`,
+    { severity: "INFO", metadata: { deleted } }
+  );
+
+  return { deleted };
+}
+
+export const scheduledPruneSecurityEvents = onSchedule(
+  {
+    schedule: "0 9 * * 0", // 9 AM UTC on Sundays = 3 AM CT
+    timeZone: "UTC",
+    retryCount: 2,
+  },
+  async () => {
+    await runJob("pruneSecurityEvents", "Prune Security Events", async () => {
+      await pruneSecurityEvents();
+    });
+  }
+);
+
+/**
+ * A14: Health Check Notifications
+ * Monitors system health: Firebase quotas, error rates, job status
+ * Schedule: Every 6 hours
+ */
+export async function healthCheckNotifications(): Promise<{
+  status: "healthy" | "warning" | "critical";
+  checks: Record<string, { status: string; message: string }>;
+}> {
+  const db = admin.firestore();
+  const checks: Record<string, { status: string; message: string }> = {};
+  let overallStatus: "healthy" | "warning" | "critical" = "healthy";
+
+  // Check 1: Error rate in last 6 hours
+  const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+  const errorCountQuery = await db
+    .collection("security_logs")
+    .where("severity", "==", "ERROR")
+    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sixHoursAgo))
+    .count()
+    .get();
+  const errorCount = errorCountQuery.data().count;
+
+  if (errorCount > 100) {
+    checks["errorRate"] = {
+      status: "critical",
+      message: `High error rate: ${errorCount} errors in last 6 hours`,
+    };
+    overallStatus = "critical";
+  } else if (errorCount > 20) {
+    checks["errorRate"] = {
+      status: "warning",
+      message: `Elevated error rate: ${errorCount} errors in last 6 hours`,
+    };
+    if (overallStatus === "healthy") overallStatus = "warning";
+  } else {
+    checks["errorRate"] = {
+      status: "healthy",
+      message: `Error rate normal: ${errorCount} errors in last 6 hours`,
+    };
+  }
+
+  // Check 2: Failed jobs in last 24 hours
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const failedJobsQuery = await db
+    .collection("admin_jobs")
+    .where("lastRunStatus", "==", "failed")
+    .where("lastRun", ">=", admin.firestore.Timestamp.fromDate(oneDayAgo))
+    .get();
+
+  if (failedJobsQuery.docs.length > 0) {
+    const failedJobNames = failedJobsQuery.docs.map((d) => d.data().name || d.id).join(", ");
+    checks["jobStatus"] = {
+      status: "warning",
+      message: `Failed jobs in last 24h: ${failedJobNames}`,
+    };
+    if (overallStatus === "healthy") overallStatus = "warning";
+  } else {
+    checks["jobStatus"] = {
+      status: "healthy",
+      message: "All jobs running successfully",
+    };
+  }
+
+  // Check 3: User activity (ensure users are active)
+  const activeUsersQuery = await db
+    .collection("users")
+    .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(sixHoursAgo))
+    .count()
+    .get();
+  const activeUserCount = activeUsersQuery.data().count;
+
+  checks["userActivity"] = {
+    status: "healthy",
+    message: `${activeUserCount} active users in last 6 hours`,
+  };
+
+  // Check 4: Database connectivity
+  try {
+    await db.collection("_health").doc("check").set({
+      lastCheck: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    checks["firestore"] = {
+      status: "healthy",
+      message: "Firestore connection healthy",
+    };
+  } catch {
+    checks["firestore"] = {
+      status: "critical",
+      message: "Firestore connection failed",
+    };
+    overallStatus = "critical";
+  }
+
+  // Store health check result
+  await db.collection("system").doc("health").set({
+    lastCheck: admin.firestore.FieldValue.serverTimestamp(),
+    status: overallStatus,
+    checks,
+  });
+
+  // Log result
+  const severityMap = { healthy: "INFO", warning: "WARNING", critical: "ERROR" } as const;
+  logSecurityEvent(
+    overallStatus === "critical" ? "JOB_FAILURE" : "JOB_SUCCESS",
+    "healthCheckNotifications",
+    `Health check completed: ${overallStatus}`,
+    {
+      severity: severityMap[overallStatus],
+      metadata: { status: overallStatus, checks },
+      captureToSentry: overallStatus === "critical",
+    }
+  );
+
+  return { status: overallStatus, checks };
+}
+
+export const scheduledHealthCheckNotifications = onSchedule(
+  {
+    schedule: "0 */6 * * *", // Every 6 hours
+    timeZone: "UTC",
+    retryCount: 3,
+  },
+  async () => {
+    await runJob("healthCheckNotifications", "Health Check Notifications", async () => {
+      await healthCheckNotifications();
+    });
+  }
+);
+
+/**
+ * Cleanup Old Rate Limits
+ * Reimplemented here to avoid circular dependency
+ */
+async function cleanupOldRateLimits(): Promise<{ deleted: number }> {
+  const db = admin.firestore();
+  const now = new Date();
+  let deleted = 0;
+
+  const expiredQuery = db
+    .collection("rate_limits")
+    .where("expiresAt", "<", admin.firestore.Timestamp.fromDate(now))
+    .limit(500);
+
+  const snapshot = await expiredQuery.get();
+
+  if (!snapshot.empty) {
+    const batch = db.batch();
+    for (const doc of snapshot.docs) {
+      batch.delete(doc.ref);
+    }
+    await batch.commit();
+    deleted = snapshot.docs.length;
+  }
+
+  return { deleted };
+}

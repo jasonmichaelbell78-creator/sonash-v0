@@ -11,6 +11,7 @@ import PrayersTab from "./prayers-tab";
 import { UsersTab } from "./users-tab";
 import { JobsTab } from "./jobs-tab";
 import { ErrorsTab } from "./errors-tab";
+import { LogsTab } from "./logs-tab";
 import {
   LayoutDashboard,
   Home,
@@ -22,6 +23,7 @@ import {
   Heart,
   Clock,
   AlertTriangle,
+  FileText,
 } from "lucide-react";
 
 interface AdminTabsProps {
@@ -36,6 +38,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
     { id: "users", label: "Users", icon: Users },
     { id: "jobs", label: "Jobs", icon: Clock },
     { id: "errors", label: "Errors", icon: AlertTriangle },
+    { id: "logs", label: "Logs", icon: FileText },
   ];
 
   // Content tabs - content management
@@ -102,6 +105,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
         {activeTab === "users" && <UsersTab />}
         {activeTab === "jobs" && <JobsTab />}
         {activeTab === "errors" && <ErrorsTab />}
+        {activeTab === "logs" && <LogsTab />}
         {activeTab === "meetings" && <MeetingsTab />}
         {activeTab === "sober-living" && <SoberLivingTab />}
         {activeTab === "quotes" && <QuotesTab />}
