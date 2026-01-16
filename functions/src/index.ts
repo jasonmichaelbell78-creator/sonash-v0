@@ -775,6 +775,7 @@ export {
   adminHealthCheck,
   adminGetDashboardStats,
   adminSearchUsers,
+  adminListUsers,
   adminGetUserDetail,
   adminUpdateUser,
   adminDisableUser,
