@@ -42,20 +42,42 @@ if [ $patterns_exit -ne 0 ]; then
 fi
 echo "  ✅ Pattern compliance passed"
 
-# 4. Security pattern check (staged files only, blocking for CRITICAL/HIGH)
+# 4. Security pattern check (files being pushed, blocking for CRITICAL/HIGH)
 echo "  ▶ Running security pattern check..."
-security_output=$(node scripts/security-check.js --blocking 2>&1)
-security_exit=$?
-if [ $security_exit -ne 0 ]; then
-  echo "  ❌ Security pattern violations found"
-  printf '%s\n' "$security_output" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
-  echo ""
-  echo "  Fix security issues before pushing. Run: npm run security:check"
-  exit 1
-elif echo "$security_output" | grep -q "MEDIUM\|LOW"; then
-  echo "  ⚠️ Security warnings (not blocking) - run: npm run security:check"
+set +e
+changed_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|ts|tsx|json)$')
+diff_exit=$?
+set -e
+
+if [ $diff_exit -ne 0 ] || [ -z "${changed_files:-}" ]; then
+  echo "  ⚠️ No upstream or no JS/TS/JSON changes detected; skipping targeted security scan"
 else
-  echo "  ✅ Security check passed"
+  security_exit=0
+  security_output=""
+
+  while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    out=$(node scripts/security-check.js --file "$file" --blocking 2>&1)
+    code=$?
+    security_output="${security_output}"$'\n'"${out}"
+    if [ $code -ne 0 ]; then
+      security_exit=$code
+    fi
+  done <<EOF
+$changed_files
+EOF
+
+  if [ $security_exit -ne 0 ]; then
+    echo "  ❌ Security pattern violations found"
+    printf '%s\n' "$security_output" | grep -E "CRITICAL|HIGH|🛑|file:" | head -15
+    echo ""
+    echo "  Fix security issues before pushing. Run: npm run security:check"
+    exit 1
+  elif echo "$security_output" | grep -q "MEDIUM\|LOW"; then
+    echo "  ⚠️ Security warnings (not blocking) - run: npm run security:check"
+  else
+    echo "  ✅ Security check passed"
+  fi
 fi
 
 # 5. Type check

@@ -121,7 +121,17 @@ function main() {
 
     // Parse items (only from active backlog section, before Completed/Rejected)
     const completedIndex = content.indexOf("## Completed Items");
-    const activeContent = completedIndex !== -1 ? content.slice(0, completedIndex) : content;
+    const rejectedIndex = content.indexOf("## Rejected Items");
+
+    // Cut at whichever section appears first (or -1 if neither exists)
+    const cutIndex =
+      completedIndex === -1
+        ? rejectedIndex
+        : rejectedIndex === -1
+          ? completedIndex
+          : Math.min(completedIndex, rejectedIndex);
+
+    const activeContent = cutIndex !== -1 ? content.slice(0, cutIndex) : content;
     const items = parseBacklogItems(activeContent);
 
     // Categorize by severity

@@ -43,7 +43,12 @@ const SECURITY_PATTERNS = [
     severity: "CRITICAL",
     message: "Avoid eval() - use safer alternatives",
     fileTypes: [".js", ".ts", ".tsx"],
-    exclude: [/eslint/, /config/, /security-check\.js$/, /check-pattern-compliance\.js$/],
+    exclude: [
+      /eslint/,
+      /config/,
+      /(?:^|[\\/])security-check\.js$/,
+      /(?:^|[\\/])check-pattern-compliance\.js$/,
+    ],
   },
   {
     id: "SEC-003",
@@ -134,11 +139,21 @@ function getFilesToCheck(args) {
   // Check specific file
   const fileIndex = args.indexOf("--file");
   if (fileIndex !== -1 && args[fileIndex + 1]) {
-    const filePath = args[fileIndex + 1];
-    if (existsSync(filePath)) {
-      return [filePath];
+    const input = args[fileIndex + 1];
+    // Resolve path relative to project root for security
+    const abs = join(PROJECT_ROOT, input);
+    const rel = relative(PROJECT_ROOT, abs);
+
+    // Path traversal protection: reject paths outside project
+    if (rel.startsWith("..") || rel === "..") {
+      console.error(`Refusing to scan outside project: ${input}`);
+      return [];
     }
-    console.error(`File not found: ${filePath}`);
+
+    if (existsSync(abs)) {
+      return [abs];
+    }
+    console.error(`File not found: ${input}`);
     return [];
   }
 

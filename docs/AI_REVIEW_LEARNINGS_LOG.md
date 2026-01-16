@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 7.0 **Created:** 2026-01-02 **Last Updated:** 2026-01-16
+**Document Version:** 7.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-16
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7.1     | 2026-01-16 | Review #156: Security Hardening & Pre-Push Fix - 4 items (2 MAJOR: pre-push scans pushed commits not staged, --file path traversal protection; 2 MINOR: backlog excludes Rejected Items, cross-platform regex). New patterns: Pre-push vs pre-commit file selection, path traversal in CLI args, cross-platform regex.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 7.0     | 2026-01-16 | Review #155: Security Check Self-Detection & CI Fix - 4 items (2 MAJOR: security-check.js/check-pattern-compliance.js SEC-002 self-exclusion; 2 MINOR: CI workflow boolean flag for --all detection, session-start.js execSync timeout/maxBuffer). New patterns: Self-referential exclusion for security scanners, multiline output comparison in GitHub Actions.                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 6.9     | 2026-01-15 | Review #154: Admin Error Utils Security Hardening - 5 items (5 MINOR: URL credential/port rejection, JWT token redaction, phone regex separator requirement, boundary test fix). New patterns: URL credential injection prevention, JWT base64url detection, phone regex precision.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 6.8     | 2026-01-15 | Review #153: Admin Error Utils Follow-up - 6 items (1 CRITICAL: CI blocker transient, 5 MINOR: TLD regex bound {2,63}, large input guard 50K chars, nullable types on all 3 functions with tests). New patterns: TLD max 63 chars per RFC, guard against large payloads, explicit nullable types for robustness.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -238,7 +239,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 3 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #163
 
 ### When to Consolidate
@@ -509,7 +510,7 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-155 are actively maintained below. Older reviews are in the
+Reviews #101-156 are actively maintained below. Older reviews are in the
 archive.
 
 ---
@@ -835,6 +836,39 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #156: Security Hardening & Pre-Push Fix (2026-01-16)
+
+**Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
+claude/new-session-UhAVn **Suggestions:** 4 items (Major: 2, Minor: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                                       | Severity | Category | Fix                                                             |
+| --- | ------------------------------------------- | -------- | -------- | --------------------------------------------------------------- | ---------------------------------------------------- |
+| 1   | pre-push scanned staged files not pushed    | Major    | Logic    | Use `git diff @{u}...HEAD` to scan files being pushed           |
+| 2   | --file path traversal vulnerability         | Major    | Security | Add path.relative() containment check before scanning           |
+| 3   | check-backlog-health.js misses Rejected sec | Minor    | Logic    | Add cutIndex logic to exclude both Completed and Rejected Items |
+| 4   | SEC-002 exclusions not cross-platform       | Minor    | Compat   | Use `(?:^                                                       | [\\/])` pattern for path-separator agnostic matching |
+
+**Patterns Identified:**
+
+1. **Pre-push vs Pre-commit File Selection**: Pre-commit hooks check staged
+   files; pre-push hooks should check commits being pushed (`@{u}...HEAD`)
+2. **Path Traversal in CLI Args**: User-provided paths must be resolved relative
+   to project root and validated with path.relative() containment check
+3. **Cross-platform Regex**: Use `[\\/]` to match both / and \ path separators
+
+**Key Learnings:**
+
+- `@{u}` refers to the upstream tracking branch - use `@{u}...HEAD` to get
+  commits that will be pushed
+- CLI tools accepting file paths need path traversal protection even for
+  internal tools - defense in depth principle
+- Windows uses backslash, POSIX uses forward slash - regex patterns matching
+  file paths should account for both
 
 ---
 
