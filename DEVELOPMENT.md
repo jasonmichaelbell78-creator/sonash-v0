@@ -534,16 +534,16 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step               | Command                   | Blocking?           |
-| ------------------ | ------------------------- | ------------------- |
-| ESLint             | `npm run lint`            | YES - blocks commit |
-| lint-staged        | `npx lint-staged`         | YES - auto-formats  |
-| Pattern compliance | `npm run patterns:check`  | YES - blocks commit |
-| Tests              | `npm test`                | YES - blocks commit |
-| CANON validation   | `npm run validate:canon`  | NO - warning only   |
-| Skill validation   | `npm run skills:validate` | NO - warning only   |
-| Cross-doc deps     | `npm run crossdoc:check`  | YES - blocks commit |
-| Learning reminder  | (checks staged files)     | NO - reminder only  |
+| Step               | Command                        | Blocking?           |
+| ------------------ | ------------------------------ | ------------------- |
+| ESLint             | `npm run lint`                 | YES - blocks commit |
+| lint-staged        | `npx --no-install lint-staged` | YES - auto-formats  |
+| Pattern compliance | `npm run patterns:check`       | YES - blocks commit |
+| Tests              | `npm test`                     | YES - blocks commit |
+| CANON validation   | `npm run validate:canon`       | NO - warning only   |
+| Skill validation   | `npm run skills:validate`      | NO - warning only   |
+| Cross-doc deps     | `npm run crossdoc:check`       | YES - blocks commit |
+| Learning reminder  | (checks staged files)          | NO - reminder only  |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.

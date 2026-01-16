@@ -107,7 +107,7 @@ commits. Blocks on critical failures, warns on advisory issues.
 ```
 TRIGGER: git commit
   → CHECK 1: npm run lint (BLOCKING)
-  → CHECK 2: npx lint-staged (BLOCKING - auto-formats staged files)
+  → CHECK 2: npx --no-install lint-staged (BLOCKING - auto-formats staged files)
   → CHECK 3: npm run patterns:check (BLOCKING)
   → CHECK 4: npm test (BLOCKING)
   → CHECK 5: npm run validate:canon (if JSONL staged)

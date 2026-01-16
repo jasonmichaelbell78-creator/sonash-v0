@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7.6     | 2026-01-16 | Review #161: lint-staged PR Feedback - 3 items (2 MAJOR: supply-chain risk with npx, hidden stderr errors; 1 MINOR: README/ROADMAP Prettier formatting). New patterns: Use `npx --no-install` for security, expose hook error output for debugging.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 7.5     | 2026-01-16 | Review #160: PR #265 Qodo Suggestions - 2 items (2 MINOR: scope getConsolidationStatus to section for robustness, normalize paths for cross-platform matching). New patterns: Scope document section parsing to prevent accidental matches elsewhere, normalize backslashes + lowercase for Windows compatibility.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 7.4     | 2026-01-16 | Review #159: PR #265 CI Round 3 - 6 items (1 MAJOR: false positive readFileSync:413 - add to pathExclude; 5 MINOR: remove unused path import, unused \_error→\_, stdout/stderr logging for debugging, quiet mode output suppression, TTY-aware colors). New patterns: Update pathExclude for verified try/catch files.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 7.3     | 2026-01-16 | Review #158: PR #265 CI Round 2 - 8 items (3 MAJOR: unsafe error.message at check-cross-doc-deps.js:280, readFileSync without try/catch at run-consolidation.js:386, git option injection missing -- separator; 5 MINOR: escape regex in dynamic RegExp, ESM→CommonJS consistency, scope updateConsolidationCounter to section, path matching improvements, session-start warnings counter). 2 REJECTED: audit context + unstructured logs are intentional CLI design. New patterns: Always use -- before paths in git commands, escape user input in RegExp constructors.                                                                                                                                                                                                                 |
@@ -840,6 +841,36 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #161: lint-staged PR Feedback (2026-01-16)
+
+**Source:** Qodo PR Compliance + CI Feedback **PR/Branch:**
+claude/roadmap-analysis-6LQlO **Suggestions:** 3 items (Major: 2, Minor: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                              | Severity | Category | Fix                                                  |
+| --- | ---------------------------------- | -------- | -------- | ---------------------------------------------------- |
+| 1   | Supply-chain risk with npx         | Major    | Security | Use `npx --no-install lint-staged` to prevent fetch  |
+| 2   | Hidden stderr errors (2>/dev/null) | Major    | Debug    | Remove stderr suppression, improve conditional logic |
+| 3   | README/ROADMAP Prettier formatting | Minor    | Format   | Run `npm run format` on documentation files          |
+
+**Patterns Identified:**
+
+1. **Supply-chain Security with npx**: Use `npx --no-install <package>` to
+   ensure only the locally installed version runs, preventing remote code fetch
+2. **Hook Error Visibility**: Never suppress stderr in git hooks - errors need
+   to be visible for debugging failed commits
+
+**Key Learnings:**
+
+- `npx` can fetch packages from npm if not found locally - use `--no-install`
+  flag for security
+- Suppressing stderr (`2>/dev/null`) in hooks hides actionable failure context
+- CI checks formatting after local hooks - ensure lint-staged formats before
+  push
 
 ---
 

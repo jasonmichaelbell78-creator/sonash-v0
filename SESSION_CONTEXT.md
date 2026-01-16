@@ -57,6 +57,8 @@ productive work.
 - **NEW**: Deferred Background Jobs added to M2 Architecture
   - Refresh Cache/Indexes (P3)
   - Database Backup Verification (P3)
+- **FIX**: lint-staged supply-chain security (`npx --no-install`) and error
+  visibility (Review #161)
 
 **Session #69 Update** - Roadmap v2.6:
 
