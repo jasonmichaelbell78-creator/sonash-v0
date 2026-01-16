@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger, maskIdentifier } from "@/lib/logger";
 import {
@@ -15,6 +15,9 @@ import {
   X,
   Save,
   AlertCircle,
+  ChevronDown,
+  ArrowUpDown,
+  Loader2,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -26,6 +29,9 @@ interface UserSearchResult {
   lastActive: string | null;
   createdAt: string | null;
 }
+
+type SortField = "createdAt" | "lastActive" | "nickname";
+type SortOrder = "asc" | "desc";
 
 interface UserProfile {
   uid: string;
@@ -66,9 +72,22 @@ interface UserDetail {
 }
 
 export function UsersTab() {
+  // List/pagination state
+  const [users, setUsers] = useState<UserSearchResult[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+
+  // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
   const [searching, setSearching] = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+
+  // Detail drawer state
   const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,10 +97,79 @@ export function UsersTab() {
   const [adminNotes, setAdminNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Load users on mount and when sort changes
+  const loadUsers = useCallback(
+    async (cursor?: string | null) => {
+      const isLoadingMore = !!cursor;
+      if (isLoadingMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const functions = getFunctions();
+        const listFn = httpsCallable<
+          { limit?: number; startAfterUid?: string; sortBy?: SortField; sortOrder?: SortOrder },
+          { users: UserSearchResult[]; hasMore: boolean; nextCursor: string | null }
+        >(functions, "adminListUsers");
+
+        const result = await listFn({
+          limit: 20,
+          startAfterUid: cursor || undefined,
+          sortBy,
+          sortOrder,
+        });
+
+        if (isLoadingMore) {
+          setUsers((prev) => [...prev, ...result.data.users]);
+        } else {
+          setUsers(result.data.users);
+        }
+        setHasMore(result.data.hasMore);
+        setNextCursor(result.data.nextCursor);
+      } catch (err) {
+        logger.error("Failed to load users", {
+          errorType: err instanceof Error ? err.constructor.name : typeof err,
+        });
+        setError(err instanceof Error ? err.message : "Failed to load users");
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [sortBy, sortOrder]
+  );
+
+  // Load users on mount
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  // Handle sort change
+  const handleSortChange = (field: SortField) => {
+    if (field === sortBy) {
+      // Toggle order if same field
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setSortOrder("desc");
+    }
+    setNextCursor(null);
+    setUsers([]);
+  };
+
   async function handleSearch() {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      // Clear search and return to list view
+      setIsSearchMode(false);
+      setSearchResults([]);
+      return;
+    }
 
     setSearching(true);
+    setIsSearchMode(true);
     setError(null);
 
     try {
@@ -108,6 +196,16 @@ export function UsersTab() {
       setSearching(false);
     }
   }
+
+  function clearSearch() {
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearchMode(false);
+    setError(null);
+  }
+
+  // Determine which users to display
+  const displayUsers = isSearchMode ? searchResults : users;
 
   async function loadUserDetail(uid: string) {
     setLoadingDetail(true);
@@ -237,11 +335,19 @@ export function UsersTab() {
           </div>
           <button
             onClick={handleSearch}
-            disabled={searching || !searchQuery.trim()}
+            disabled={searching}
             className="px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {searching ? "Searching..." : "Search"}
           </button>
+          {isSearchMode && (
+            <button
+              onClick={clearSearch}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
         {error && (
@@ -252,8 +358,80 @@ export function UsersTab() {
         )}
       </div>
 
-      {/* Search Results */}
-      {searchResults.length > 0 && (
+      {/* Sort Controls (only show when not in search mode) */}
+      {!isSearchMode && (
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-amber-700">Sort by:</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleSortChange("createdAt")}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                sortBy === "createdAt"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              Joined
+              {sortBy === "createdAt" && (
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+            <button
+              onClick={() => handleSortChange("lastActive")}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                sortBy === "lastActive"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+              }`}
+            >
+              <Activity className="w-4 h-4" />
+              Last Active
+              {sortBy === "lastActive" && (
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+            <button
+              onClick={() => handleSortChange("nickname")}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                sortBy === "nickname"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+              }`}
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              Name
+              {sortBy === "nickname" && (
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+          <span className="ml-2 text-amber-700">Loading users...</span>
+        </div>
+      )}
+
+      {/* Search Mode Indicator */}
+      {isSearchMode && searchResults.length > 0 && (
+        <div className="text-sm text-amber-700">
+          Found {searchResults.length} user(s) matching &ldquo;{searchQuery}&rdquo;
+        </div>
+      )}
+
+      {/* User List */}
+      {!loading && displayUsers.length > 0 && (
         <div className="bg-white rounded-lg border border-amber-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -274,7 +452,7 @@ export function UsersTab() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-amber-50">
-                {searchResults.map((user) => (
+                {displayUsers.map((user) => (
                   <tr
                     key={user.uid}
                     onClick={() => loadUserDetail(user.uid)}
@@ -318,6 +496,39 @@ export function UsersTab() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination - Load More */}
+          {!isSearchMode && hasMore && (
+            <div className="p-4 border-t border-amber-100 flex justify-center">
+              <button
+                onClick={() => loadUsers(nextCursor)}
+                disabled={loadingMore}
+                className="flex items-center gap-2 px-6 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 disabled:opacity-50"
+              >
+                {loadingMore ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Load More
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && displayUsers.length === 0 && !error && (
+        <div className="bg-white rounded-lg border border-amber-100 p-12 text-center">
+          <Users className="w-12 h-12 text-amber-300 mx-auto mb-4" />
+          <p className="text-amber-700">
+            {isSearchMode ? "No users found matching your search" : "No users found"}
+          </p>
         </div>
       )}
 

@@ -30,11 +30,16 @@ interface AdminTabsProps {
 }
 
 export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
-  const tabs = [
+  // System tabs - admin operations
+  const systemTabs = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "users", label: "Users", icon: Users },
     { id: "jobs", label: "Jobs", icon: Clock },
     { id: "errors", label: "Errors", icon: AlertTriangle },
+  ];
+
+  // Content tabs - content management
+  const contentTabs = [
     { id: "meetings", label: "Meetings", icon: Home },
     { id: "sober-living", label: "Sober Living", icon: Home },
     { id: "quotes", label: "Daily Quotes", icon: Quote },
@@ -44,28 +49,51 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
     { id: "glossary", label: "Glossary", icon: Book },
   ];
 
+  const TabButton = ({
+    tab,
+  }: {
+    tab: { id: string; label: string; icon: React.ComponentType<{ className?: string }> };
+  }) => {
+    const Icon = tab.icon;
+    return (
+      <button
+        onClick={() => setActiveTab(tab.id)}
+        className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap
+          ${
+            activeTab === tab.id
+              ? "bg-amber-500 text-white shadow-sm"
+              : "text-amber-900/70 hover:text-amber-900 hover:bg-amber-100"
+          }`}
+      >
+        <Icon className="w-4 h-4" />
+        <span className="hidden sm:inline">{tab.label}</span>
+      </button>
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-amber-200/60 pb-1 overflow-x-auto">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap
-                ${
-                  activeTab === tab.id
-                    ? "bg-[#fdfbf7] text-amber-900 border border-amber-200 border-b-transparent -mb-[1px] relative z-10"
-                    : "text-amber-900/50 hover:text-amber-800 hover:bg-amber-100/50"
-                }`}
-            >
-              <Icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          );
-        })}
+      {/* Tab Navigation - Stacked 2-row layout */}
+      <div className="space-y-3 bg-amber-50/50 rounded-lg p-3 border border-amber-200/60">
+        {/* Row 1: System Tabs */}
+        <div className="flex flex-wrap gap-2">
+          <span className="text-xs font-medium text-amber-600 uppercase tracking-wide self-center mr-2">
+            System
+          </span>
+          {systemTabs.map((tab) => (
+            <TabButton key={tab.id} tab={tab} />
+          ))}
+        </div>
+
+        {/* Row 2: Content Tabs */}
+        <div className="flex flex-wrap gap-2 border-t border-amber-200/60 pt-3">
+          <span className="text-xs font-medium text-amber-600 uppercase tracking-wide self-center mr-2">
+            Content
+          </span>
+          {contentTabs.map((tab) => (
+            <TabButton key={tab.id} tab={tab} />
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}

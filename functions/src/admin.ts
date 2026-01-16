@@ -1190,3 +1190,122 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
     throw new HttpsError("internal", "Failed to fetch Sentry error summary");
   }
 });
+
+/**
+ * Admin: List Users with Pagination
+ * Returns a paginated list of users for the Users tab
+ * Supports sorting by: createdAt (default), lastActive, nickname
+ */
+interface ListUsersRequest {
+  limit?: number;
+  startAfterUid?: string;
+  sortBy?: "createdAt" | "lastActive" | "nickname";
+  sortOrder?: "asc" | "desc";
+}
+
+interface ListUsersResponse {
+  users: Array<{
+    uid: string;
+    email: string | null;
+    nickname: string;
+    disabled: boolean;
+    lastActive: string | null;
+    createdAt: string | null;
+  }>;
+  hasMore: boolean;
+  nextCursor: string | null;
+}
+
+export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
+  await requireAdmin(request, "adminListUsers");
+
+  const {
+    limit: rawLimit = 20,
+    startAfterUid,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = request.data || {};
+
+  // SECURITY: Validate and clamp limit
+  const MAX_LIMIT = 50;
+  const MIN_LIMIT = 1;
+  const limit =
+    typeof rawLimit === "number" && Number.isFinite(rawLimit)
+      ? Math.min(Math.max(Math.floor(rawLimit), MIN_LIMIT), MAX_LIMIT)
+      : 20;
+
+  // Validate sortBy to prevent injection
+  const allowedSortFields = ["createdAt", "lastActive", "nickname"];
+  const safeSortBy = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+  const safeSortOrder = sortOrder === "asc" ? "asc" : "desc";
+
+  logSecurityEvent("ADMIN_ACTION", "adminListUsers", "Admin listed users", {
+    userId: request.auth?.uid,
+    metadata: { limit, sortBy: safeSortBy, sortOrder: safeSortOrder, hasCursor: !!startAfterUid },
+  });
+
+  try {
+    const db = admin.firestore();
+
+    // Build query
+    let query = db
+      .collection("users")
+      .orderBy(safeSortBy, safeSortOrder)
+      .limit(limit + 1); // Fetch one extra to check if there's more
+
+    // Add cursor if provided
+    if (startAfterUid) {
+      const cursorDoc = await db.collection("users").doc(startAfterUid).get();
+      if (cursorDoc.exists) {
+        query = query.startAfter(cursorDoc);
+      }
+    }
+
+    const snapshot = await query.get();
+
+    // Check if there are more results
+    const hasMore = snapshot.docs.length > limit;
+    const docs = hasMore ? snapshot.docs.slice(0, limit) : snapshot.docs;
+
+    // Build user list with auth data
+    const users: ListUsersResponse["users"] = [];
+
+    for (const doc of docs) {
+      const userData = doc.data();
+      try {
+        const authUser = await admin.auth().getUser(doc.id);
+        users.push({
+          uid: doc.id,
+          email: authUser.email || null,
+          nickname: userData.nickname || "Anonymous",
+          disabled: authUser.disabled || false,
+          lastActive: userData.lastActive?.toDate().toISOString() || null,
+          createdAt: userData.createdAt?.toDate().toISOString() || null,
+        });
+      } catch {
+        // Auth user not found - still include from Firestore data
+        users.push({
+          uid: doc.id,
+          email: null,
+          nickname: userData.nickname || "Anonymous",
+          disabled: false,
+          lastActive: userData.lastActive?.toDate().toISOString() || null,
+          createdAt: userData.createdAt?.toDate().toISOString() || null,
+        });
+      }
+    }
+
+    return {
+      users,
+      hasMore,
+      nextCursor: hasMore && docs.length > 0 ? docs[docs.length - 1].id : null,
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Failed to list users", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to list users");
+  }
+});
