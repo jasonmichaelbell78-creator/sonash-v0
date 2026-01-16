@@ -43,7 +43,7 @@ const SECURITY_PATTERNS = [
     severity: "CRITICAL",
     message: "Avoid eval() - use safer alternatives",
     fileTypes: [".js", ".ts", ".tsx"],
-    exclude: [/eslint/, /config/],
+    exclude: [/eslint/, /config/, /security-check\.js$/, /check-pattern-compliance\.js$/],
   },
   {
     id: "SEC-003",

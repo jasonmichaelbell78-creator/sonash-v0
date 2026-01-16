@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 6.9 **Created:** 2026-01-02 **Last Updated:** 2026-01-15
+**Document Version:** 7.0 **Created:** 2026-01-02 **Last Updated:** 2026-01-16
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7.0     | 2026-01-16 | Review #155: Security Check Self-Detection & CI Fix - 4 items (2 MAJOR: security-check.js/check-pattern-compliance.js SEC-002 self-exclusion; 2 MINOR: CI workflow boolean flag for --all detection, session-start.js execSync timeout/maxBuffer). New patterns: Self-referential exclusion for security scanners, multiline output comparison in GitHub Actions.                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 6.9     | 2026-01-15 | Review #154: Admin Error Utils Security Hardening - 5 items (5 MINOR: URL credential/port rejection, JWT token redaction, phone regex separator requirement, boundary test fix). New patterns: URL credential injection prevention, JWT base64url detection, phone regex precision.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 6.8     | 2026-01-15 | Review #153: Admin Error Utils Follow-up - 6 items (1 CRITICAL: CI blocker transient, 5 MINOR: TLD regex bound {2,63}, large input guard 50K chars, nullable types on all 3 functions with tests). New patterns: TLD max 63 chars per RFC, guard against large payloads, explicit nullable types for robustness.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 6.7     | 2026-01-15 | Review #152: Admin Error Utils PR Feedback - 7 items (1 CRITICAL: CI blocker already resolved, 1 MAJOR: email regex ReDoS fix with RFC 5321 length limits, 1 MINOR: trim whitespace dates, 2 TRIVIAL: code cleanup, 2 REJECTED: SonarCloud false positives on security tests). New patterns: Regex ReDoS prevention with length limits, security test false positives in SonarCloud.                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -237,7 +238,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 1 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 2 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #163
 
 ### When to Consolidate
@@ -508,7 +509,7 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-145 are actively maintained below. Older reviews are in the
+Reviews #101-155 are actively maintained below. Older reviews are in the
 archive.
 
 ---
@@ -834,6 +835,38 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #155: Security Check Self-Detection & CI Fix (2026-01-16)
+
+**Source:** Qodo PR Code Suggestions + CI Feedback **PR/Branch:**
+claude/new-session-UhAVn **Suggestions:** 4 items (Major: 2, Minor: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                                     | Severity | Category   | Fix                                                      |
+| --- | ----------------------------------------- | -------- | ---------- | -------------------------------------------------------- |
+| 1   | security-check.js flags itself (SEC-002)  | Major    | False Pos  | Add `/security-check\.js$/` to SEC-002 exclude           |
+| 2   | check-pattern-compliance.js flags itself  | Major    | False Pos  | Add `/check-pattern-compliance\.js$/` to SEC-002 exclude |
+| 3   | CI workflow --all flag detection broken   | Minor    | CI         | Use boolean `check_all` output instead of string compare |
+| 4   | session-start.js execSync missing options | Minor    | Robustness | Add timeout/maxBuffer to backlog health check            |
+
+**Patterns Identified:**
+
+1. **Self-Referential Exclusion**: Security scanners that define patterns in
+   message strings may match their own source code - exclude the scanner itself
+2. **Multiline Output Comparison**: GitHub Actions outputs containing newlines
+   cannot be reliably compared with string equality - use separate boolean flags
+
+**Key Learnings:**
+
+- Regex patterns like `/\beval\s*\(/` will match message strings containing
+  "eval()" examples - scanner scripts need self-exclusion
+- GitHub Actions `${{ steps.x.outputs.y }}` for multiline values returns all
+  lines - use dedicated boolean outputs for conditional logic
+- execSync without timeout/maxBuffer can hang on large outputs or slow
+  processes - always specify both options for robustness
 
 ---
 

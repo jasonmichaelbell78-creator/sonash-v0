@@ -112,9 +112,11 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             # Get files changed in PR
             changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(js|ts|tsx)$' || true)
+            echo "check_all=false" >> "$GITHUB_OUTPUT"
           else
             # For non-PR runs, check all files
-            changed="--all"
+            changed=""
+            echo "check_all=true" >> "$GITHUB_OUTPUT"
           fi
           # Use heredoc format for multiline output
           {
@@ -125,7 +127,7 @@ jobs:
 
       - name: Run security pattern check
         run: |
-          if [ "${{ steps.changed.outputs.files }}" = "--all" ]; then
+          if [ "${{ steps.changed.outputs.check_all }}" = "true" ]; then
             node scripts/security-check.js --all --blocking
           elif [ -n "${{ steps.changed.outputs.files }}" ]; then
             # Check each changed file
