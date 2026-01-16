@@ -1292,17 +1292,16 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
   try {
     const db = admin.firestore();
 
-    // Build query for security_logs collection
-    let query = db.collection("security_logs").orderBy("timestamp", "desc").limit(limit);
+    // Build query for security_logs collection - conditionally add severity filter
+    let query: admin.firestore.Query = db.collection("security_logs");
 
-    // Add severity filter if provided
+    // Add severity filter if provided (validated against allowed values)
     if (severity && ["ERROR", "WARNING", "INFO"].includes(severity)) {
-      query = db
-        .collection("security_logs")
-        .where("severity", "==", severity)
-        .orderBy("timestamp", "desc")
-        .limit(limit);
+      query = query.where("severity", "==", severity);
     }
+
+    // Apply ordering and limit
+    query = query.orderBy("timestamp", "desc").limit(limit);
 
     const snapshot = await query.get();
 
@@ -1600,15 +1599,18 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       privilegeUpdatedBy: request.auth?.uid,
     });
 
-    // If setting to admin, also update custom claims
+    // Update custom claims - IMPORTANT: preserve existing claims
+    const authUser = await admin.auth().getUser(uid);
+    const currentClaims = authUser.customClaims || {};
+
     if (privilegeTypeId === "admin") {
-      await admin.auth().setCustomUserClaims(uid, { admin: true });
-    } else {
-      // Remove admin claim if changing from admin to something else
-      const currentClaims = (await admin.auth().getUser(uid)).customClaims || {};
-      if (currentClaims.admin) {
-        await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: false });
-      }
+      // Preserve existing claims and add admin: true
+      await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
+    } else if (currentClaims.admin) {
+      // Remove admin claim entirely by destructuring it out, preserving other claims
+      const { admin: _adminClaim, ...restClaims } = currentClaims;
+      void _adminClaim; // Mark as intentionally unused
+      await admin.auth().setCustomUserClaims(uid, restClaims);
     }
 
     return { success: true, message: `User privilege set to ${privilegeTypeId}` };
@@ -1654,17 +1656,19 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
   try {
     const db = admin.firestore();
 
-    // Build query
+    // Build query with deterministic tie-breaker for stable pagination
     let query = db
       .collection("users")
       .orderBy(safeSortBy, safeSortOrder)
+      .orderBy(admin.firestore.FieldPath.documentId(), safeSortOrder)
       .limit(limit + 1); // Fetch one extra to check if there's more
 
-    // Add cursor if provided
+    // Add cursor if provided - use both sort field value and document ID
     if (startAfterUid) {
       const cursorDoc = await db.collection("users").doc(startAfterUid).get();
       if (cursorDoc.exists) {
-        query = query.startAfter(cursorDoc);
+        const cursorData = cursorDoc.data() || {};
+        query = query.startAfter(cursorData[safeSortBy] ?? null, cursorDoc.id);
       }
     }
 
@@ -1674,33 +1678,34 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
     const hasMore = snapshot.docs.length > limit;
     const docs = hasMore ? snapshot.docs.slice(0, limit) : snapshot.docs;
 
-    // Build user list with auth data
-    const users: ListUsersResponse["users"] = [];
+    // Batch fetch auth users instead of N+1 pattern
+    const uids = docs.map((d) => d.id);
+    const authByUid = new Map<string, admin.auth.UserRecord>();
 
-    for (const doc of docs) {
-      const userData = doc.data();
+    if (uids.length > 0) {
       try {
-        const authUser = await admin.auth().getUser(doc.id);
-        users.push({
-          uid: doc.id,
-          email: authUser.email || null,
-          nickname: userData.nickname || "Anonymous",
-          disabled: authUser.disabled || false,
-          lastActive: userData.lastActive?.toDate().toISOString() || null,
-          createdAt: userData.createdAt?.toDate().toISOString() || null,
-        });
+        const authResult = await admin.auth().getUsers(uids.map((uid) => ({ uid })));
+        authResult.users.forEach((u) => authByUid.set(u.uid, u));
       } catch {
-        // Auth user not found - still include from Firestore data
-        users.push({
-          uid: doc.id,
-          email: null,
-          nickname: userData.nickname || "Anonymous",
-          disabled: false,
-          lastActive: userData.lastActive?.toDate().toISOString() || null,
-          createdAt: userData.createdAt?.toDate().toISOString() || null,
-        });
+        // If batch fetch fails, we'll fall back to Firestore-only data below
+        console.error("Batch auth fetch failed, using Firestore-only data");
       }
     }
+
+    // Build user list with batched auth data
+    const users: ListUsersResponse["users"] = docs.map((doc) => {
+      const userData = doc.data();
+      const authUser = authByUid.get(doc.id);
+
+      return {
+        uid: doc.id,
+        email: authUser?.email || null,
+        nickname: userData.nickname || "Anonymous",
+        disabled: authUser?.disabled || false,
+        lastActive: userData.lastActive?.toDate().toISOString() || null,
+        createdAt: userData.createdAt?.toDate().toISOString() || null,
+      };
+    });
 
     return {
       users,
