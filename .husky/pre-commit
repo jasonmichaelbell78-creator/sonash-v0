@@ -83,6 +83,7 @@ if ! node scripts/check-cross-doc-deps.js; then
   echo "  ❌ Cross-document dependency check failed"
   echo ""
   echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
+  echo "  Override (use sparingly): SKIP_CROSS_DOC_CHECK=1 git commit ..."
   exit 1
 fi
 echo "  ✅ Cross-document dependencies satisfied"

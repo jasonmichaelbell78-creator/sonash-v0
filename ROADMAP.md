@@ -258,12 +258,12 @@ creation.
 
 ### Blockers
 
-| Blocker                  | Status       | Resolution          |
-| ------------------------ | ------------ | ------------------- |
-| Sentry not initialized   | ✅ Resolved  | A1 complete         |
-| Sentry env vars missing  | ⚠️ Verify    | Check Firebase config |
-| /dev route doesn't exist | ❌ Blocking  | B1 task             |
-| Dashboard stats failing  | ❌ Blocking  | A5 task             |
+| Blocker                  | Status      | Resolution            |
+| ------------------------ | ----------- | --------------------- |
+| Sentry not initialized   | ✅ Resolved | A1 complete           |
+| Sentry env vars missing  | ⚠️ Verify   | Check Firebase config |
+| /dev route doesn't exist | ❌ Blocking | B1 task               |
+| Dashboard stats failing  | ❌ Blocking | A5 task               |
 
 ### Quick Reference: Environment Variables Needed
 
@@ -280,13 +280,13 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 ### Additional Monitoring Integrations (Evaluated Session #69)
 
-| Tool | Recommendation | Cost | Notes |
-| ---- | -------------- | ---- | ----- |
-| Sentry Session Replay | ✅ Enable | $0 (50/mo free) | Already integrated |
-| PostHog | ✅ Consider for C1 | $0 (5k replays + 1M events free) | All-in-one analytics |
-| LogRocket | ❌ Skip | $99/mo+ | Too expensive |
-| Datadog RUM | ❌ Skip | $1.50/1k sessions | Overkill for this stage |
-| Firebase Crashlytics | ⏳ Later | $0 | Only if native mobile app |
+| Tool                  | Recommendation     | Cost                             | Notes                     |
+| --------------------- | ------------------ | -------------------------------- | ------------------------- |
+| Sentry Session Replay | ✅ Enable          | $0 (50/mo free)                  | Already integrated        |
+| PostHog               | ✅ Consider for C1 | $0 (5k replays + 1M events free) | All-in-one analytics      |
+| LogRocket             | ❌ Skip            | $99/mo+                          | Too expensive             |
+| Datadog RUM           | ❌ Skip            | $1.50/1k sessions                | Overkill for this stage   |
+| Firebase Crashlytics  | ⏳ Later           | $0                               | Only if native mobile app |
 
 ---
 
@@ -534,7 +534,8 @@ exposed to client)
 - [x] Error summary card on Dashboard (count + trend) ✅
 - [x] Errors tab with recent errors in plain English ✅
 - [x] Deep links to Sentry for each error ✅
-- [ ] User ID correlation (link to user detail if available) - **In Sprint A3.1**
+- [ ] User ID correlation (link to user detail if available) - **In Sprint
+      A3.1**
 
 **Environment Variables (Cloud Functions only):** `SENTRY_API_TOKEN`,
 `SENTRY_ORG`, `SENTRY_PROJECT`
@@ -676,11 +677,11 @@ experience
 
 ### Admin Panel Future Enhancements (Session #69)
 
-| Enhancement | Priority | Effort | Description |
-| ----------- | -------- | ------ | ----------- |
-| **Batch Operations** | P2 | M | Multi-select users for bulk actions (disable, tag, export) |
-| **Dark Mode** | P2 | S | Admin panel theme toggle |
-| **Role-Based Views** | P3 (M7+) | L | Different tab visibility by admin role (Content vs Operations) |
+| Enhancement          | Priority | Effort | Description                                                    |
+| -------------------- | -------- | ------ | -------------------------------------------------------------- |
+| **Batch Operations** | P2       | M      | Multi-select users for bulk actions (disable, tag, export)     |
+| **Dark Mode**        | P2       | S      | Admin panel theme toggle                                       |
+| **Role-Based Views** | P3 (M7+) | L      | Different tab visibility by admin role (Content vs Operations) |
 
 > **Note:** Phase 7 (Local Recovery Resources) moved to Phase 5.5. See above.
 
@@ -766,15 +767,15 @@ experience
 
 **Dependency Maintenance (Q2 2026 - Session #69):**
 
-> **Reminder:** Review and plan migration for major version upgrades. Research done
-> in Session #69 - see commit history for breaking change analysis.
+> **Reminder:** Review and plan migration for major version upgrades. Research
+> done in Session #69 - see commit history for breaking change analysis.
 
-| Package | Current | Target | Breaking Changes |
-| ------- | ------- | ------ | ---------------- |
-| `recharts` | 2.15.4 | 3.x | API renames, state access changes |
-| `tailwind-merge` | 2.6.0 | 3.x | **Requires Tailwind v4 first** |
-| `react-resizable-panels` | 2.1.9 | 4.x | Complete API rename (Group/Separator) |
-| `lucide-react` | 0.454.0 | 0.562+ | Icon renames may break imports |
+| Package                  | Current | Target | Breaking Changes                      |
+| ------------------------ | ------- | ------ | ------------------------------------- |
+| `recharts`               | 2.15.4  | 3.x    | API renames, state access changes     |
+| `tailwind-merge`         | 2.6.0   | 3.x    | **Requires Tailwind v4 first**        |
+| `react-resizable-panels` | 2.1.9   | 4.x    | Complete API rename (Group/Separator) |
+| `lucide-react`           | 0.454.0 | 0.562+ | Icon renames may break imports        |
 
 **License Review:** Add LICENSE file to project (currently UNLICENSED)
 
@@ -783,18 +784,18 @@ experience
 > **Note:** These are future additions to the Dev Dashboard after core tabs are
 > complete. See Active Sprint Track B for current priorities.
 
-| Enhancement | Priority | Effort | Description |
-| ----------- | -------- | ------ | ----------- |
-| **Bundle Size Analysis Tab** | P1 | M | Visualize bundle sizes, track trends over time |
-| **CI/CD Pipeline Status** | P1 | S | Show recent builds, pass/fail trends, deploy status |
-| **Deployment History** | P1 | S | Recent deploys with rollback links |
-| **Test Coverage Dashboard** | P2 | M | Show coverage by file/component |
-| **Dependency Security Tab** | P2 | S | Surface `npm audit` results, vulnerability alerts |
-| **API Latency Metrics** | P2 | M | Track Cloud Function response times |
-| **Database Stats** | P2 | S | Firestore read/write counts, storage usage |
-| **Health Check Endpoint** | P1 | S | `/api/health` returning system status for uptime monitoring |
-| **Feature Flags Management** | P2 | M | Enable/disable features without deploy |
-| **Cost Monitoring** | P2 | M | GCP/Firebase costs visualization |
+| Enhancement                  | Priority | Effort | Description                                                 |
+| ---------------------------- | -------- | ------ | ----------------------------------------------------------- |
+| **Bundle Size Analysis Tab** | P1       | M      | Visualize bundle sizes, track trends over time              |
+| **CI/CD Pipeline Status**    | P1       | S      | Show recent builds, pass/fail trends, deploy status         |
+| **Deployment History**       | P1       | S      | Recent deploys with rollback links                          |
+| **Test Coverage Dashboard**  | P2       | M      | Show coverage by file/component                             |
+| **Dependency Security Tab**  | P2       | S      | Surface `npm audit` results, vulnerability alerts           |
+| **API Latency Metrics**      | P2       | M      | Track Cloud Function response times                         |
+| **Database Stats**           | P2       | S      | Firestore read/write counts, storage usage                  |
+| **Health Check Endpoint**    | P1       | S      | `/api/health` returning system status for uptime monitoring |
+| **Feature Flags Management** | P2       | M      | Enable/disable features without deploy                      |
+| **Cost Monitoring**          | P2       | M      | GCP/Firebase costs visualization                            |
 
 **From M1 - Code Quality & Automation:**
 
@@ -1718,20 +1719,20 @@ When working on roadmap items:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                                                                            |
-| ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2.6     | 2026-01-16 | Session #69: Major sprint update - corrected stale Sentry status (A1-A3 done); moved Phase 5 into sprint; moved Local Resources to Phase 5.5; added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark mode); added Dev Dashboard enhancements; added User Analytics Tab; added monitoring integrations evaluation (PostHog recommended); added mobile responsiveness |
-| 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones         |
-| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md |
-| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                            |
-| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram   |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                       |
-| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                             |
-| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                           |
-| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                              |
-| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                            |
-| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                     |
-| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                       |
+| 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones                                                                                                                                                                                                                                                                  |
+| 2.4     | 2026-01-14 | Added Lighthouse Performance Tracking items (PERF-001 to PERF-006) to M1.5 and M2 sections; created LIGHTHOUSE_INTEGRATION_PLAN.md                                                                                                                                                                                                                                                          |
+| 2.2     | 2026-01-13 | Added Engineering Productivity audit items (EFF-001 to EFF-011) to M1.5 and M2 sections                                                                                                                                                                                                                                                                                                     |
+| 2.1     | 2026-01-10 | Updated "Doc Standardization" to "Integrated Improvement Plan" with current progress (44%, 3.5/8 steps); updated mermaid diagram                                                                                                                                                                                                                                                            |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                                                                                                                                                                                                                                                                                |
+| 1.5     | 2025-12-28 | Created ROADMAP_LOG.md, archived M0/M1                                                                                                                                                                                                                                                                                                                                                      |
+| 1.4     | 2025-12-23 | M1.6 Phases 1-3 complete                                                                                                                                                                                                                                                                                                                                                                    |
+| 1.3     | 2025-12-22 | Admin panel spec v1.2                                                                                                                                                                                                                                                                                                                                                                       |
+| 1.2     | 2025-12-19 | Consolidated from multiple roadmap docs                                                                                                                                                                                                                                                                                                                                                     |
+| 1.1     | 2025-12-18 | M1 security hardening complete                                                                                                                                                                                                                                                                                                                                                              |
+| 1.0     | 2025-12-17 | Initial consolidated roadmap                                                                                                                                                                                                                                                                                                                                                                |
 
 **Historical Notes:**
 

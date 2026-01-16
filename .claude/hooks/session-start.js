@@ -237,8 +237,11 @@ try {
   if (exitCode >= 2) {
     console.log(`   ❌ Auto-consolidation failed (exit ${exitCode})`);
     warnings++;
+  } else if (exitCode === 1) {
+    // Exit code 1 means dry-run mode - shouldn't happen with --auto (Review #157)
+    console.log("   ⚠️ Auto-consolidation returned unexpected exit code 1 (dry-run mode?)");
+    warnings++;
   }
-  // Exit code 1 means dry-run mode (shouldn't happen with --auto), treat as success
 }
 
 console.log("");

@@ -21,7 +21,7 @@
  * Created: Session #69 (2026-01-16)
  */
 
-const { execSync, execFileSync } = require("child_process");
+const { execFileSync } = require("child_process");
 const path = require("path");
 
 // Parse arguments
@@ -29,15 +29,16 @@ const args = process.argv.slice(2);
 const verbose = args.includes("--verbose");
 const dryRun = args.includes("--dry-run");
 
-// Colors for terminal output
+// TTY-aware colors (Review #157 - avoid raw escape codes in non-TTY output)
+const useColors = process.stdout.isTTY;
 const colors = {
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  blue: "\x1b[34m",
-  cyan: "\x1b[36m",
-  reset: "\x1b[0m",
-  bold: "\x1b[1m",
+  red: useColors ? "\x1b[31m" : "",
+  green: useColors ? "\x1b[32m" : "",
+  yellow: useColors ? "\x1b[33m" : "",
+  blue: useColors ? "\x1b[34m" : "",
+  cyan: useColors ? "\x1b[36m" : "",
+  reset: useColors ? "\x1b[0m" : "",
+  bold: useColors ? "\x1b[1m" : "",
 };
 
 function log(message, color = "") {
@@ -99,14 +100,15 @@ const dependencyRules = [
  */
 function getStagedFiles() {
   try {
-    const output = execSync("git diff --cached --name-only", {
+    // Use execFileSync with args array for security consistency (Review #157)
+    const output = execFileSync("git", ["diff", "--cached", "--name-only"], {
       encoding: "utf-8",
     });
     return output
       .trim()
       .split("\n")
       .filter((f) => f.length > 0);
-  } catch (error) {
+  } catch (_error) {
     log("Error: Could not get staged files from git", colors.red);
     process.exit(2);
   }
@@ -122,7 +124,11 @@ function checkDiffPattern(file, pattern) {
       encoding: "utf-8",
     });
     return pattern.test(diff);
-  } catch {
+  } catch (error) {
+    // Log unexpected errors for debugging (Review #157)
+    if (verbose) {
+      logVerbose(`Failed to check diff pattern for ${file}: ${error.message}`);
+    }
     return false;
   }
 }
@@ -136,8 +142,8 @@ function matchesTrigger(stagedFiles, trigger) {
     if (trigger.endsWith("/")) {
       return file.startsWith(trigger);
     }
-    // Handle exact file matches (may be in any directory)
-    return file === trigger || file.endsWith(`/${trigger}`);
+    // Handle exact file matches - use path.basename for precise matching (Review #157)
+    return file === trigger || path.basename(file) === trigger;
   });
 }
 
@@ -146,7 +152,8 @@ function matchesTrigger(stagedFiles, trigger) {
  */
 function isDependentStaged(stagedFiles, dependent) {
   return stagedFiles.some((file) => {
-    return file === dependent || file.endsWith(`/${dependent}`);
+    // Use path.basename for precise matching (Review #157)
+    return file === dependent || path.basename(file) === path.basename(dependent);
   });
 }
 
@@ -186,9 +193,7 @@ function checkDependencies() {
         (f) => f === rule.trigger || f.endsWith(`/${rule.trigger}`)
       );
       if (triggerFile && !checkDiffPattern(triggerFile, rule.diffPattern)) {
-        logVerbose(
-          `Rule skipped (diff pattern not found): ${rule.trigger}`
-        );
+        logVerbose(`Rule skipped (diff pattern not found): ${rule.trigger}`);
         continue;
       }
     }
@@ -225,7 +230,9 @@ function checkDependencies() {
     log("", colors.reset);
 
     issues.forEach((issue) => {
-      log(`   ${colors.yellow}${issue.trigger}${colors.reset} changed but ${colors.cyan}${issue.dependent}${colors.reset} is not staged`);
+      log(
+        `   ${colors.yellow}${issue.trigger}${colors.reset} changed but ${colors.cyan}${issue.dependent}${colors.reset} is not staged`
+      );
       log(`   └─ Reason: ${issue.reason}`, colors.reset);
       log("");
     });
@@ -247,7 +254,9 @@ function checkDependencies() {
     log("");
 
     if (dryRun) {
-      log(`${colors.yellow}[DRY RUN] Would block commit with ${issues.length} issue(s)${colors.reset}`);
+      log(
+        `${colors.yellow}[DRY RUN] Would block commit with ${issues.length} issue(s)${colors.reset}`
+      );
       return 0;
     }
 

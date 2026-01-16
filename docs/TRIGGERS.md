@@ -120,8 +120,8 @@ TRIGGER: git commit
 
 ### Cross-Document Dependencies (Check 7) - BLOCKING
 
-**Changed to blocking in Session #69.** Prevents commit if dependent documents are
-not staged together. Override with `SKIP_CROSS_DOC_CHECK=1 git commit ...`
+**Changed to blocking in Session #69.** Prevents commit if dependent documents
+are not staged together. Override with `SKIP_CROSS_DOC_CHECK=1 git commit ...`
 
 Blocks when you modify documents that have known dependencies:
 
@@ -971,13 +971,13 @@ sufficient coverage. Revisit if doc drift becomes a problem._
 
 ## 🗓️ VERSION HISTORY
 
-| Version | Date       | Changes                                             | Author |
-| ------- | ---------- | --------------------------------------------------- | ------ |
+| Version | Date       | Changes                                               | Author |
+| ------- | ---------- | ----------------------------------------------------- | ------ |
 | 1.4     | 2026-01-16 | Cross-doc dependency check now BLOCKING (Session #69) | Claude |
-| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting              | Claude |
-| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
-| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow            | Claude |
-| 1.0     | 2026-01-02 | Initial document created                            | Claude |
+| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting                | Claude |
+| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy   | Claude |
+| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow              | Claude |
+| 1.0     | 2026-01-02 | Initial document created                              | Claude |
 
 ---
 

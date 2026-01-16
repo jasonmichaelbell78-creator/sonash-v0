@@ -73,14 +73,22 @@ function logVerbose(message) {
  * Extract consolidation status from the log
  */
 function getConsolidationStatus(content) {
+  // Validate critical pattern match exists (Review #157)
   const counterMatch = content.match(/\*\*Reviews since last consolidation:\*\*\s+(\d+)/);
-  const reviewCount = counterMatch ? parseInt(counterMatch[1], 10) || 0 : 0;
+  if (!counterMatch) {
+    throw new Error(
+      "Could not find 'Reviews since last consolidation' counter in log file. Check document format."
+    );
+  }
+  const reviewCount = parseInt(counterMatch[1], 10) || 0;
 
   const lastConsolidationMatch = content.match(/\*\*Date:\*\*\s+([^\n]+)/);
   const lastConsolidation = lastConsolidationMatch ? lastConsolidationMatch[1].trim() : "Unknown";
 
   const nextReviewMatch = content.match(/After Review #(\d+)/);
-  const lastReviewNum = nextReviewMatch ? parseInt(nextReviewMatch[1], 10) - CONSOLIDATION_THRESHOLD : 0;
+  const lastReviewNum = nextReviewMatch
+    ? parseInt(nextReviewMatch[1], 10) - CONSOLIDATION_THRESHOLD
+    : 0;
 
   return { reviewCount, lastConsolidation, lastReviewNum };
 }
@@ -93,7 +101,9 @@ function extractRecentReviews(content, lastReviewNum) {
 
   // Match review entries in version history
   // Format: | X.X | YYYY-MM-DD | Review #NNN: Description |
-  const versionRegex = /\|\s*[\d.]+\s*\|\s*[\d-]+\s*\|\s*Review #(\d+):\s*([^|]+)/g;
+  // Use bounded quantifiers to prevent ReDoS (Review #157)
+  const versionRegex =
+    /\|\s{0,5}\d+\.\d+\s{0,5}\|\s{0,5}\d{4}-\d{2}-\d{2}\s{0,5}\|\s{0,5}Review #(\d{1,4}):\s{0,5}([^|]{1,500})/g;
   let match;
 
   while ((match = versionRegex.exec(content)) !== null) {
@@ -229,18 +239,20 @@ function extractPatterns(reviews) {
  */
 function categorizePatterns(patterns) {
   const categories = {
-    "Security": [],
+    Security: [],
     "JavaScript/TypeScript": [],
     "Bash/Shell": [],
     "CI/Automation": [],
-    "Documentation": [],
-    "General": [],
+    Documentation: [],
+    General: [],
   };
 
   for (const [, data] of patterns) {
     const pattern = data.pattern.toLowerCase();
 
-    if (/security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype pollution/.test(pattern)) {
+    if (
+      /security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype pollution/.test(pattern)
+    ) {
       categories["Security"].push(data);
     } else if (/typescript|eslint|type|nullable/.test(pattern)) {
       categories["JavaScript/TypeScript"].push(data);
@@ -263,7 +275,7 @@ function categorizePatterns(patterns) {
  */
 function generateReport(reviews, patterns, categories) {
   const recurringPatterns = Array.from(patterns.values())
-    .filter(p => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern)
+    .filter((p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern)
     .sort((a, b) => b.count - a.count);
 
   let report = "";
@@ -289,7 +301,9 @@ function generateReport(reviews, patterns, categories) {
 
   report += `\n${colors.bold}Patterns by category:${colors.reset}\n`;
   for (const [category, items] of Object.entries(categories)) {
-    const significant = items.filter(p => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern);
+    const significant = items.filter(
+      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
+    );
     if (significant.length > 0) {
       report += `  ${category}: ${significant.length} pattern(s)\n`;
     }
@@ -322,10 +336,7 @@ function updateConsolidationCounter(content, newCount, nextReview) {
 
   // Update last consolidation date
   const today = new Date().toISOString().split("T")[0];
-  updated = updated.replace(
-    /\*\*Date:\*\*\s+[^\n]+/,
-    `**Date:** ${today} (Session #69+)`
-  );
+  updated = updated.replace(/\*\*Date:\*\*\s+[^\n]+/, `**Date:** ${today} (Session #69+)`);
 
   return updated;
 }
@@ -339,7 +350,9 @@ function generatePatternSuggestions(recurringPatterns, categories) {
   suggestions += "─".repeat(50) + "\n";
 
   for (const [category, items] of Object.entries(categories)) {
-    const significant = items.filter(p => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern);
+    const significant = items.filter(
+      (p) => p.count >= MIN_PATTERN_OCCURRENCES || p.isExplicitPattern
+    );
     if (significant.length === 0) continue;
 
     suggestions += `\n## ${category}\n\n`;
@@ -387,7 +400,10 @@ function main() {
         process.exitCode = 0;
         return;
       }
-      log(`✅ No consolidation needed (${CONSOLIDATION_THRESHOLD - status.reviewCount} reviews until next)`, colors.green);
+      log(
+        `✅ No consolidation needed (${CONSOLIDATION_THRESHOLD - status.reviewCount} reviews until next)`,
+        colors.green
+      );
       process.exitCode = 0;
       return;
     }
@@ -423,7 +439,7 @@ function main() {
       log(`\n${colors.bold}Applying consolidation...${colors.reset}`, colors.green);
 
       // Calculate next review number
-      const maxReviewNum = Math.max(...reviews.map(r => r.number));
+      const maxReviewNum = Math.max(...reviews.map((r) => r.number));
       const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
 
       // Update log file
@@ -434,7 +450,9 @@ function main() {
 
       // In auto mode, output a brief summary (always shown)
       if (autoMode) {
-        console.log(`   ✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`);
+        console.log(
+          `   ✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`
+        );
       } else {
         log("");
         log(`${colors.bold}📋 Manual steps required:${colors.reset}`);
@@ -449,12 +467,13 @@ function main() {
       process.exitCode = 0;
     } else {
       log("");
-      log(`${colors.yellow}Dry run complete. Use --apply to reset counter and begin consolidation.${colors.reset}`);
+      log(
+        `${colors.yellow}Dry run complete. Use --apply to reset counter and begin consolidation.${colors.reset}`
+      );
       log(`  npm run consolidation:run -- --apply`);
       log("");
       process.exitCode = 1;
     }
-
   } catch (err) {
     log(`❌ Error: ${err instanceof Error ? err.message : String(err)}`, colors.red);
     if (verbose && err instanceof Error) {
