@@ -94,7 +94,7 @@ commits. Blocks on critical failures, warns on advisory issues.
 | #   | Check                  | Blocking | Purpose                                           |
 | --- | ---------------------- | -------- | ------------------------------------------------- |
 | 1   | ESLint                 | ✅ Yes   | Code quality and errors                           |
-| 2   | Prettier               | ⚠️ No    | Code formatting (warns only)                      |
+| 2   | lint-staged (Prettier) | ✅ Yes   | Auto-formats staged files (Session #70)           |
 | 3   | Pattern Compliance     | ✅ Yes   | Anti-pattern detection                            |
 | 4   | Tests                  | ✅ Yes   | Unit test validation                              |
 | 5   | CANON Schema           | ⚠️ No    | Audit file validation (when JSONL staged)         |
@@ -107,7 +107,7 @@ commits. Blocks on critical failures, warns on advisory issues.
 ```
 TRIGGER: git commit
   → CHECK 1: npm run lint (BLOCKING)
-  → CHECK 2: npm run format:check (warning)
+  → CHECK 2: npx --no-install lint-staged (BLOCKING - auto-formats staged files)
   → CHECK 3: npm run patterns:check (BLOCKING)
   → CHECK 4: npm test (BLOCKING)
   → CHECK 5: npm run validate:canon (if JSONL staged)

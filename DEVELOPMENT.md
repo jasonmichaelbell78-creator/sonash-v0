@@ -534,16 +534,16 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step               | Command                   | Blocking?           |
-| ------------------ | ------------------------- | ------------------- |
-| ESLint             | `npm run lint`            | YES - blocks commit |
-| Prettier           | `npm run format:check`    | NO - warning only   |
-| Pattern compliance | `npm run patterns:check`  | YES - blocks commit |
-| Tests              | `npm test`                | YES - blocks commit |
-| CANON validation   | `npm run validate:canon`  | NO - warning only   |
-| Skill validation   | `npm run skills:validate` | NO - warning only   |
-| Cross-doc deps     | `npm run crossdoc:check`  | YES - blocks commit |
-| Learning reminder  | (checks staged files)     | NO - reminder only  |
+| Step               | Command                        | Blocking?           |
+| ------------------ | ------------------------------ | ------------------- |
+| ESLint             | `npm run lint`                 | YES - blocks commit |
+| lint-staged        | `npx --no-install lint-staged` | YES - auto-formats  |
+| Pattern compliance | `npm run patterns:check`       | YES - blocks commit |
+| Tests              | `npm test`                     | YES - blocks commit |
+| CANON validation   | `npm run validate:canon`       | NO - warning only   |
+| Skill validation   | `npm run skills:validate`      | NO - warning only   |
+| Cross-doc deps     | `npm run crossdoc:check`       | YES - blocks commit |
+| Learning reminder  | (checks staged files)          | NO - reminder only  |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.
@@ -961,9 +961,10 @@ When maintaining this document:
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                     |
-| ------- | ---------- | --------------------------------------------------------------------------- |
-| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder) |
-| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                     |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                |
-| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                            |
+| Version | Date       | Changes                                                                      |
+| ------- | ---------- | ---------------------------------------------------------------------------- |
+| 2.3     | 2026-01-16 | Updated pre-commit hook: lint-staged auto-formats staged files (Session #70) |
+| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder)  |
+| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                      |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                 |
+| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                             |

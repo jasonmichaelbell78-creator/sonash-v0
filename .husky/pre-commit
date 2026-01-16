@@ -15,15 +15,15 @@ if ! npm run lint > /dev/null 2>&1; then
 fi
 echo "  ✅ ESLint passed (0 errors)"
 
-# 2. Check code formatting (Prettier)
-# NOTE: Currently set to WARN (not block) until initial codebase formatting is applied
-# TODO: Change to blocking after running 'npm run format' on the codebase
-echo "  ▶ Checking code formatting..."
-if ! npm run format:check > /dev/null 2>&1; then
-  echo "  ⚠️  Formatting issues found (not blocking - run: npm run format)"
-else
-  echo "  ✅ Code formatting passed"
+# 2. Auto-format staged files with lint-staged (Prettier)
+# Automatically formats staged files - no manual intervention needed
+# Uses --no-install to prevent supply-chain attacks from remote package fetch
+echo "  ▶ Running lint-staged (auto-format)..."
+if ! npx --no-install lint-staged; then
+  echo "  ❌ Lint-staged failed"
+  exit 1
 fi
+echo "  ✅ Lint-staged passed (files formatted)"
 
 # 3. Run pattern compliance check (catches issues before PR review tools)
 echo "  ▶ Running pattern compliance..."
