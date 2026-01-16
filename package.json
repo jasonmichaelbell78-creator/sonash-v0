@@ -30,6 +30,7 @@
     "override:log": "node scripts/log-override.js",
     "override:list": "node scripts/log-override.js --list",
     "triggers:check": "node scripts/check-triggers.js",
+    "crossdoc:check": "node scripts/check-cross-doc-deps.js",
     "skills:validate": "node scripts/validate-skill-config.js",
     "skills:verify-usage": "node scripts/verify-skill-usage.js",
     "validate:canon": "node scripts/validate-canon-schema.js",

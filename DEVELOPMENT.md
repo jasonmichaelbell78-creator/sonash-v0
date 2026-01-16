@@ -450,6 +450,7 @@ npm audit fix
 | `npm test`               | Run all tests        | 116 tests (1 skipped)      |
 | `npm run test:coverage`  | Test with coverage   | Uses c8                    |
 | `npm run validate:canon` | Validate CANON files | Checks audit output schema |
+| `npm run crossdoc:check` | Cross-doc deps       | Blocks if deps missing     |
 
 ### Prettier (Code Formatting)
 
@@ -530,14 +531,16 @@ TypeScript rules)
 
 **Pre-commit hook (`.husky/pre-commit`) runs:**
 
-| Step               | Command                  | Blocking?           |
-| ------------------ | ------------------------ | ------------------- |
-| ESLint             | `npm run lint`           | YES - blocks commit |
-| Prettier           | `npm run format:check`   | NO - warning only   |
-| Pattern compliance | `npm run patterns:check` | YES - blocks commit |
-| Tests              | `npm test`               | YES - blocks commit |
-| CANON validation   | `npm run validate:canon` | NO - warning only   |
-| Learning reminder  | (checks staged files)    | NO - reminder only  |
+| Step               | Command                    | Blocking?           |
+| ------------------ | -------------------------- | ------------------- |
+| ESLint             | `npm run lint`             | YES - blocks commit |
+| Prettier           | `npm run format:check`     | NO - warning only   |
+| Pattern compliance | `npm run patterns:check`   | YES - blocks commit |
+| Tests              | `npm test`                 | YES - blocks commit |
+| CANON validation   | `npm run validate:canon`   | NO - warning only   |
+| Skill validation   | `npm run skills:validate`  | NO - warning only   |
+| Cross-doc deps     | `npm run crossdoc:check`   | YES - blocks commit |
+| Learning reminder  | (checks staged files)      | NO - reminder only  |
 
 > **CANON Validation**: Only runs when `.jsonl` files in `docs/reviews/` are
 > staged. Validates schema compliance for audit output files.
