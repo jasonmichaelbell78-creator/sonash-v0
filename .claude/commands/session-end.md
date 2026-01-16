@@ -77,19 +77,27 @@ git diff --name-only HEAD~5
 Check if consolidation is due and perform it so patterns are in claude.md for
 next session:
 
-1. **Check consolidation trigger** in AI_REVIEW_LEARNINGS_LOG.md:
-   - Find "Reviews since last consolidation" counter
-   - If >= 10, consolidation is needed
+1. **Check consolidation trigger:**
 
-2. **If consolidation needed:**
-   - Review all entries since last consolidation
-   - Identify patterns appearing 3+ times across reviews
-   - Add critical patterns to claude.md Section 4 (top 5 only); full patterns go
-     to docs/agent_docs/CODE_PATTERNS.md
+   ```bash
+   npm run consolidation:check    # Check if consolidation is needed
+   npm run consolidation:run      # Preview what will be consolidated
+   ```
+
+2. **If consolidation needed (10+ reviews since last):**
+
+   ```bash
+   npm run consolidation:run -- --apply   # Reset counter, generate suggestions
+   ```
+
+   Then manually:
+
+   - Review suggested patterns in terminal output
+   - Add critical patterns to claude.md Section 4 (top 5 only)
+   - Add full patterns to docs/agent_docs/CODE_PATTERNS.md
    - **Run `npm run patterns:suggest`** to find automatable patterns
    - Add suggested patterns to check-pattern-compliance.js (with human review)
-   - Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md
-   - Note consolidation in version history
+   - Commit: `chore: consolidate Reviews #X-#Y patterns`
 
 3. **Why this matters:**
    - claude.md is loaded at session START

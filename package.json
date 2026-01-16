@@ -25,6 +25,7 @@
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",
     "lessons:surface": "node scripts/surface-lessons-learned.js",
     "consolidation:check": "node scripts/check-consolidation-status.js",
+    "consolidation:run": "node scripts/run-consolidation.js",
     "session:log": "node scripts/log-session-activity.js",
     "session:summary": "node scripts/log-session-activity.js --summary",
     "override:log": "node scripts/log-override.js",
