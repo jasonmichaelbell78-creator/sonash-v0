@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.9 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.10 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-01-16 (Session #69)
+2026-01-16 (Session #70)
 
 ---
 
@@ -30,7 +30,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 69 (since Jan 1, 2026)
+**Current Session Count**: 70 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions
@@ -46,7 +46,19 @@ productive work.
 
 **See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0)
 
-**Session #69 Major Update** - Roadmap v2.6:
+**Session #70 Update** - Roadmap v2.7:
+
+- **NEW**: Background Jobs Expansion added to Track A (A10-A14)
+  - A10: Cleanup Old Sessions (daily)
+  - A11: Cleanup Orphaned Storage Files (weekly)
+  - A12: Generate Usage Analytics (daily)
+  - A13: Prune Security Events (weekly)
+  - A14: Health Check Notifications (every 6 hours)
+- **NEW**: Deferred Background Jobs added to M2 Architecture
+  - Refresh Cache/Indexes (P3)
+  - Database Backup Verification (P3)
+
+**Session #69 Update** - Roadmap v2.6:
 
 - Corrected stale Sentry status (A1-A3 were done, roadmap showed Planned)
 - Added Sprint Track C for UI/UX & Analytics
@@ -55,18 +67,12 @@ productive work.
 - Added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark
   mode)
 - Added Dev Dashboard enhancements (10 future tabs)
-- Evaluated monitoring integrations (PostHog recommended at $0)
-- Added Roadmap Sync guardrail to session-end.md
-- **NEW**: Cross-doc dependency check now BLOCKING
-  (scripts/check-cross-doc-deps.js)
-- **NEW**: Safe dependency updates applied (@hookform/resolvers v5, sonner v2)
-- **NEW**: Dependency maintenance reminder added for Q2 2026 (recharts,
-  tailwind-merge, etc.)
+- Cross-doc dependency check now BLOCKING (scripts/check-cross-doc-deps.js)
 
 **Sprint Priorities**:
 
 - Track A: Fix Dashboard Tab (A5), Users pagination (A6), Sentry user
-  correlation (A3.1)
+  correlation (A3.1), **Background Jobs (A10-A14)**
 - Track B: Lighthouse (B2-B3), Doc Sync Tab (B4), Testing Integration (B5)
 - Track C: User Analytics (C1), Monitoring Consolidation (C2)
 
@@ -535,6 +541,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                                                                                                        | Author      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 3.10    | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to ROADMAP Track A; Added Deferred Background Jobs to M2; Updated sprint priorities                     | Claude      |
 | 3.8     | 2026-01-16 | Session #68: PR Reviews #155-156 (security scanner hardening - symlink protection, path traversal, pre-push fix); AI_REVIEW_LEARNINGS_LOG v7.1; 5 commits      | Claude      |
 | 3.6     | 2026-01-14 | Session #65: **INTEGRATED IMPROVEMENT PLAN COMPLETE** (100%, 9/9 steps); Step 7 verification passed; M1.5/M1.6 unblocked; Feature development ready to resume  | Claude      |
 | 3.4     | 2026-01-13 | Session #63: Step 5 COMPLETE (18/18 tasks); Cherry-picked 9 commits; 6 new scripts; SKILL_AGENT_POLICY.md; Qodo config; 85% overall (7/9 steps)                | Claude      |
