@@ -125,10 +125,10 @@ function main() {
     const items = parseBacklogItems(activeContent);
 
     // Categorize by severity
-    const s0Items = items.filter(i => i.severity === "S0");
-    const s1Items = items.filter(i => i.severity === "S1");
-    const s2Items = items.filter(i => i.severity === "S2");
-    const s3Items = items.filter(i => i.severity === "S3");
+    const s0Items = items.filter((i) => i.severity === "S0");
+    const s1Items = items.filter((i) => i.severity === "S1");
+    const s2Items = items.filter((i) => i.severity === "S2");
+    const s3Items = items.filter((i) => i.severity === "S3");
 
     if (!isQuiet) {
       console.log("📊 Backlog Health Check");
@@ -150,7 +150,7 @@ function main() {
 
     // Check for S0 items (should never be in backlog)
     if (s0Items.length > 0) {
-      const msg = `S0 (Critical) items in backlog: ${s0Items.map(i => i.canonId).join(", ")}`;
+      const msg = `S0 (Critical) items in backlog: ${s0Items.map((i) => i.canonId).join(", ")}`;
       blockers.push(msg);
       exitCode = 1;
     }
@@ -186,13 +186,13 @@ function main() {
     if (!isQuiet) {
       if (blockers.length > 0) {
         console.log("🛑 BLOCKERS (must address before push):");
-        blockers.forEach(b => console.log(`   - ${b}`));
+        blockers.forEach((b) => console.log(`   - ${b}`));
         console.log("");
       }
 
       if (warnings.length > 0) {
         console.log("⚠️  WARNINGS:");
-        warnings.forEach(w => console.log(`   - ${w}`));
+        warnings.forEach((w) => console.log(`   - ${w}`));
         console.log("");
       }
 
@@ -213,7 +213,6 @@ function main() {
     } else {
       process.exitCode = exitCode;
     }
-
   } catch (err) {
     if (!isQuiet) {
       console.error(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);

@@ -162,9 +162,9 @@ function getStagedFiles() {
     });
     return output
       .split("\n")
-      .filter(f => f.trim())
-      .map(f => join(PROJECT_ROOT, f))
-      .filter(f => existsSync(f));
+      .filter((f) => f.trim())
+      .map((f) => join(PROJECT_ROOT, f))
+      .filter((f) => existsSync(f));
   } catch {
     return [];
   }
@@ -174,15 +174,28 @@ function getStagedFiles() {
  * Get all source files recursively
  */
 function getAllSourceFiles(dir, files = []) {
-  const entries = readdirSync(dir);
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    // Skip directories we can't read (permissions, etc.)
+    return files;
+  }
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
     // Skip ignored paths
-    if (SKIP_PATTERNS.some(p => p.test(fullPath))) continue;
+    if (SKIP_PATTERNS.some((p) => p.test(fullPath))) continue;
 
-    const stat = statSync(fullPath);
+    let stat;
+    try {
+      stat = statSync(fullPath);
+    } catch {
+      // Skip files we can't stat (broken symlinks, etc.)
+      continue;
+    }
+
     if (stat.isDirectory()) {
       getAllSourceFiles(fullPath, files);
     } else if ([".js", ".ts", ".tsx", ".json"].includes(extname(entry))) {
@@ -216,7 +229,7 @@ function checkFile(filePath) {
     if (pattern.pathFilter && !pattern.pathFilter.test(relativePath)) continue;
 
     // Check exclude patterns
-    if (pattern.exclude && pattern.exclude.some(e => e.test(relativePath))) continue;
+    if (pattern.exclude && pattern.exclude.some((e) => e.test(relativePath))) continue;
 
     // Reset regex state
     pattern.pattern.lastIndex = 0;
@@ -285,10 +298,10 @@ function main() {
     }
 
     // Group by severity
-    const critical = allViolations.filter(v => v.severity === "CRITICAL");
-    const high = allViolations.filter(v => v.severity === "HIGH");
-    const medium = allViolations.filter(v => v.severity === "MEDIUM");
-    const low = allViolations.filter(v => v.severity === "LOW");
+    const critical = allViolations.filter((v) => v.severity === "CRITICAL");
+    const high = allViolations.filter((v) => v.severity === "HIGH");
+    const medium = allViolations.filter((v) => v.severity === "MEDIUM");
+    const low = allViolations.filter((v) => v.severity === "LOW");
 
     if (!isQuiet) {
       if (allViolations.length === 0) {
@@ -336,7 +349,6 @@ function main() {
     } else {
       process.exitCode = 0; // Non-blocking by default
     }
-
   } catch (err) {
     if (!isQuiet) {
       console.error(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);

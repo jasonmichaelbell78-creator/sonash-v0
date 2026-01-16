@@ -259,6 +259,29 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 - [ ] All S2 items resolved or deferred with justification
 - [ ] `npm run backlog:check` returns healthy status
 
+### 🔬 Research: SAST Tool Integration (After Backlog)
+
+> **Source:** Qodo PR Review #155 suggestion - replace custom regex-based
+> security scanner with dedicated SAST tool
+
+**Task:** Research and implement Semgrep or similar SAST tool integration
+
+**Why:**
+
+- Current `security-check.js` uses 10 hand-written regex patterns
+- Dedicated SAST tools have 1000s of community-vetted rules
+- Better detection: semantic analysis vs. text matching
+- Catches data flow issues regex can't detect
+
+**Research deliverables:**
+
+- [ ] Compare options: Semgrep, CodeQL, ESLint security plugins
+- [ ] Evaluate: speed, false positive rate, rule coverage, CI integration
+- [ ] Prototype: Add Semgrep to CI (non-blocking initially)
+- [ ] Decision: Keep custom script + SAST, or replace entirely
+
+**Effort:** E1 (research) + E2 (implementation)
+
 ### In Progress
 
 - 🔄 Settings page UI
