@@ -41,6 +41,37 @@ If you modified any of these, verify they still work:
       [DOCUMENT_DEPENDENCIES.md](../../docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers)
       trigger matrix - update any dependent documents
 
+### 3.1 Roadmap Sync Check (MANDATORY for Feature Work)
+
+> **Session #69 Guardrail:** Prevents roadmap staleness by ensuring feature work
+> is reflected in ROADMAP.md.
+
+If you implemented features, completed tasks, or made significant progress this
+session:
+
+- [ ] **Verify ROADMAP.md reflects current status**
+  - Check Active Sprint tasks - mark completed items with `[x]`
+  - Check M1.6/M2 phase tasks - update status indicators
+  - Update sprint progress percentage if significant work done
+- [ ] **No new features without roadmap entry**
+  - If you added a new feature not in ROADMAP.md, add it now
+  - If you completed a planned feature, mark it done
+
+**Quick Check:**
+
+```bash
+# See what code was changed this session
+git diff --name-only HEAD~5
+
+# If you see new components/features, verify they're in ROADMAP.md
+```
+
+**Why This Matters:**
+
+- Roadmap drift causes planning confusion
+- Future sessions won't know what's already implemented
+- Session #69 found Sentry was 90% done but roadmap showed "Planned"
+
 ## 4. Learning Consolidation (IMPORTANT)
 
 Check if consolidation is due and perform it so patterns are in claude.md for
