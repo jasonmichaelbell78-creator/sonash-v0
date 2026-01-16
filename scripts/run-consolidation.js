@@ -13,6 +13,7 @@
  * Usage:
  *   npm run consolidation:run              # Preview consolidation (dry run)
  *   npm run consolidation:run -- --apply   # Apply consolidation (update files)
+ *   npm run consolidation:run -- --auto    # Auto-apply if needed (quiet, for hooks)
  *   npm run consolidation:run -- --verbose # Show detailed analysis
  *
  * Exit codes:
@@ -41,8 +42,10 @@ const MIN_PATTERN_OCCURRENCES = 3;
 
 // Parse arguments
 const args = process.argv.slice(2);
-const applyChanges = args.includes("--apply");
+const autoMode = args.includes("--auto");
+const applyChanges = args.includes("--apply") || autoMode;
 const verbose = args.includes("--verbose");
+const quiet = args.includes("--quiet") || autoMode;
 
 // Colors for terminal output
 const colors = {
@@ -56,6 +59,7 @@ const colors = {
 };
 
 function log(message, color = "") {
+  if (quiet) return;
   console.log(color ? `${color}${message}${colors.reset}` : message);
 }
 
@@ -378,6 +382,11 @@ function main() {
 
     // Check if consolidation is needed
     if (status.reviewCount < CONSOLIDATION_THRESHOLD) {
+      if (autoMode) {
+        // Silent exit in auto mode when no consolidation needed
+        process.exitCode = 0;
+        return;
+      }
       log(`✅ No consolidation needed (${CONSOLIDATION_THRESHOLD - status.reviewCount} reviews until next)`, colors.green);
       process.exitCode = 0;
       return;
@@ -423,14 +432,19 @@ function main() {
       log(`  ✅ Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md`, colors.green);
       log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
 
-      log("");
-      log(`${colors.bold}📋 Manual steps required:${colors.reset}`);
-      log("  1. Review the suggested patterns above");
-      log("  2. Add relevant patterns to docs/agent_docs/CODE_PATTERNS.md");
-      log("  3. Add critical patterns (top 5) to claude.md Section 4");
-      log("  4. Run: npm run patterns:suggest (for automatable patterns)");
-      log("  5. Commit with message: 'chore: consolidate Reviews #X-#Y patterns'");
-      log("");
+      // In auto mode, output a brief summary (always shown)
+      if (autoMode) {
+        console.log(`   ✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`);
+      } else {
+        log("");
+        log(`${colors.bold}📋 Manual steps required:${colors.reset}`);
+        log("  1. Review the suggested patterns above");
+        log("  2. Add relevant patterns to docs/agent_docs/CODE_PATTERNS.md");
+        log("  3. Add critical patterns (top 5) to claude.md Section 4");
+        log("  4. Run: npm run patterns:suggest (for automatable patterns)");
+        log("  5. Commit with message: 'chore: consolidate Reviews #X-#Y patterns'");
+        log("");
+      }
 
       process.exitCode = 0;
     } else {

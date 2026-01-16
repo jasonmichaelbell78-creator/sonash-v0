@@ -223,20 +223,22 @@ try {
 
 console.log("");
 
-// Consolidation status check
-console.log("🔍 Checking consolidation status...");
+// Auto-consolidation (runs automatically when threshold reached - Session #69)
+console.log("🔍 Running auto-consolidation check...");
 try {
-  const output = execSync("node scripts/check-consolidation-status.js", { encoding: "utf8" });
-  console.log(output.trim());
+  const output = execSync("node scripts/run-consolidation.js --auto", { encoding: "utf8" });
+  if (output.trim()) {
+    console.log(output.trim());
+  } else {
+    console.log("   ✓ No consolidation needed");
+  }
 } catch (error) {
   const exitCode = error.status || 1;
-  if (exitCode === 1) {
-    console.log(error.stdout || "");
-    console.log("   ⚠️ Consolidation or archiving action needed - see output above");
-  } else {
-    console.log(`   ❌ Consolidation checker failed (exit ${exitCode})`);
+  if (exitCode >= 2) {
+    console.log(`   ❌ Auto-consolidation failed (exit ${exitCode})`);
+    warnings++;
   }
-  warnings++;
+  // Exit code 1 means dry-run mode (shouldn't happen with --auto), treat as success
 }
 
 console.log("");

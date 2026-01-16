@@ -453,6 +453,7 @@ npm audit fix
 | `npm run crossdoc:check` | Cross-doc deps       | Blocks if deps missing     |
 | `npm run consolidation:check` | Check consolidation status | Warns if 10+ reviews pending |
 | `npm run consolidation:run` | Run consolidation | Extract patterns to CODE_PATTERNS.md |
+| `npm run consolidation:run -- --auto` | Auto-consolidation | Runs silently, used by SessionStart hook |
 
 ### Prettier (Code Formatting)
 
