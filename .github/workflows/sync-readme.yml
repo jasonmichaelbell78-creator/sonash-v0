@@ -37,7 +37,7 @@ jobs:
         run: node scripts/update-readme-status.js
 
       - name: Format README with Prettier
-        run: npx prettier --write README.md
+        run: npx --no-install prettier --write README.md
 
       - name: Check for changes
         id: changes

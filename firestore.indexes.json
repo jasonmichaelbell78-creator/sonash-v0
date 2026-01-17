@@ -1,6 +1,16 @@
 {
   "indexes": [
     {
+      "collectionGroup": "daily_logs",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "updatedAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "journal",
       "queryScope": "COLLECTION",
       "fields": [
