@@ -273,11 +273,25 @@ creation.
 | ID         | Enhancement                            | Source      | Priority |
 | ---------- | -------------------------------------- | ----------- | -------- |
 | ADMIN-FE-1 | Move error knowledge base to Firestore | Review #151 | P2       |
+| ADMIN-FE-2 | Query GCP Cloud Logging API directly   | Review #162 | P2       |
+| SEC-LOG-1  | Sensitive log persistence review       | Review #162 | P2       |
 
 > **ADMIN-FE-1:** The error knowledge base (`lib/error-knowledge-base.ts`) is
 > currently hardcoded. Moving it to Firestore would allow dynamic updates
 > without code deploys. Architectural change - implement after core admin
 > features complete.
+>
+> **ADMIN-FE-2:** Instead of duplicating logs into Firestore, the adminGetLogs
+> function could query the GCP Cloud Logging API directly. This would eliminate
+> data redundancy, reduce Firestore costs, and remove the need for the log
+> pruning job. Major architecture change requiring `@google-cloud/logging`
+> dependency.
+>
+> **SEC-LOG-1:** Security events are persisted to `security_logs` Firestore
+> collection. While metadata is now redacted (Review #162), a broader review of
+> what data should be logged vs. only sent to GCP Cloud Logging is warranted.
+> Consider implementing a tiered logging strategy where only aggregated/summary
+> data is stored in Firestore.
 
 ### Blockers
 

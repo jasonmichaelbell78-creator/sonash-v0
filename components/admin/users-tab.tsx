@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger, maskIdentifier } from "@/lib/logger";
 import {
@@ -15,6 +15,10 @@ import {
   X,
   Save,
   AlertCircle,
+  ChevronDown,
+  ArrowUpDown,
+  Loader2,
+  Shield,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -26,6 +30,9 @@ interface UserSearchResult {
   lastActive: string | null;
   createdAt: string | null;
 }
+
+type SortField = "createdAt" | "lastActive" | "nickname";
+type SortOrder = "asc" | "desc";
 
 interface UserProfile {
   uid: string;
@@ -40,6 +47,7 @@ interface UserProfile {
   lastActive: string | null;
   adminNotes: string | null;
   isAdmin: boolean;
+  privilegeType?: string;
 }
 
 interface ActivityItem {
@@ -65,10 +73,31 @@ interface UserDetail {
   recentActivity: ActivityItem[];
 }
 
+interface PrivilegeType {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  isDefault?: boolean;
+}
+
 export function UsersTab() {
+  // List/pagination state
+  const [users, setUsers] = useState<UserSearchResult[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+
+  // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
   const [searching, setSearching] = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+
+  // Detail drawer state
   const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,10 +107,105 @@ export function UsersTab() {
   const [adminNotes, setAdminNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Privilege state
+  const [privilegeTypes, setPrivilegeTypes] = useState<PrivilegeType[]>([]);
+  const [selectedPrivilege, setSelectedPrivilege] = useState<string>("");
+  const [savingPrivilege, setSavingPrivilege] = useState(false);
+
+  // Load users on mount and when sort changes
+  const loadUsers = useCallback(
+    async (cursor?: string | null) => {
+      const isLoadingMore = !!cursor;
+      if (isLoadingMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const functions = getFunctions();
+        const listFn = httpsCallable<
+          { limit?: number; startAfterUid?: string; sortBy?: SortField; sortOrder?: SortOrder },
+          { users: UserSearchResult[]; hasMore: boolean; nextCursor: string | null }
+        >(functions, "adminListUsers");
+
+        const result = await listFn({
+          limit: 20,
+          startAfterUid: cursor || undefined,
+          sortBy,
+          sortOrder,
+        });
+
+        if (isLoadingMore) {
+          setUsers((prev) => [...prev, ...result.data.users]);
+        } else {
+          setUsers(result.data.users);
+        }
+        setHasMore(result.data.hasMore);
+        setNextCursor(result.data.nextCursor);
+      } catch (err) {
+        logger.error("Failed to load users", {
+          errorType: err instanceof Error ? err.constructor.name : typeof err,
+        });
+        // Use generic error message to avoid exposing internal details
+        setError("Failed to load users. Please try again.");
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [sortBy, sortOrder]
+  );
+
+  // Load users on mount
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  // Load privilege types on mount
+  useEffect(() => {
+    async function loadPrivilegeTypes() {
+      try {
+        const functions = getFunctions();
+        const getPrivilegesFn = httpsCallable<void, { types: PrivilegeType[] }>(
+          functions,
+          "adminGetPrivilegeTypes"
+        );
+        const result = await getPrivilegesFn();
+        setPrivilegeTypes(result.data.types);
+      } catch (err) {
+        logger.error("Failed to load privilege types", {
+          errorType: err instanceof Error ? err.constructor.name : typeof err,
+        });
+      }
+    }
+    loadPrivilegeTypes();
+  }, []);
+
+  // Handle sort change
+  const handleSortChange = (field: SortField) => {
+    if (field === sortBy) {
+      // Toggle order if same field
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setSortOrder("desc");
+    }
+    setNextCursor(null);
+    setUsers([]);
+  };
+
   async function handleSearch() {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      // Clear search and return to list view
+      setIsSearchMode(false);
+      setSearchResults([]);
+      return;
+    }
 
     setSearching(true);
+    setIsSearchMode(true);
     setError(null);
 
     try {
@@ -103,11 +227,22 @@ export function UsersTab() {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         errorCode: (err as { code?: string })?.code,
       });
-      setError(err instanceof Error ? err.message : "Search failed");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Search failed. Please try again.");
     } finally {
       setSearching(false);
     }
   }
+
+  function clearSearch() {
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearchMode(false);
+    setError(null);
+  }
+
+  // Determine which users to display
+  const displayUsers = isSearchMode ? searchResults : users;
 
   async function loadUserDetail(uid: string) {
     setLoadingDetail(true);
@@ -124,12 +259,14 @@ export function UsersTab() {
       setSelectedUser(result.data);
       setAdminNotes(result.data.profile.adminNotes || "");
       setEditingNotes(false);
+      setSelectedPrivilege(result.data.profile.privilegeType || "free");
     } catch (err) {
       logger.error("Failed to load user detail", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(uid),
       });
-      setError(err instanceof Error ? err.message : "Failed to load user detail");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to load user details. Please try again.");
     } finally {
       setLoadingDetail(false);
     }
@@ -161,7 +298,8 @@ export function UsersTab() {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(selectedUser.profile.uid),
       });
-      setError(err instanceof Error ? err.message : "Failed to save notes");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to save notes. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -213,9 +351,64 @@ export function UsersTab() {
         userId: maskIdentifier(selectedUser.profile.uid),
         newDisabledState,
       });
-      setError(err instanceof Error ? err.message : "Failed to update user status");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to update user status. Please try again.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSavePrivilege() {
+    if (!selectedUser || !selectedPrivilege) return;
+
+    // Don't save if privilege hasn't changed
+    if (selectedPrivilege === (selectedUser.profile.privilegeType || "free")) return;
+
+    const confirmMessage =
+      selectedPrivilege === "admin"
+        ? "Are you sure you want to grant admin privileges to this user? They will have full access to the admin panel."
+        : `Are you sure you want to change this user's privilege to ${selectedPrivilege}?`;
+
+    if (!confirm(confirmMessage)) {
+      setSelectedPrivilege(selectedUser.profile.privilegeType || "free");
+      return;
+    }
+
+    setSavingPrivilege(true);
+    setError(null);
+
+    try {
+      const functions = getFunctions();
+      const setPrivilegeFn = httpsCallable<
+        { uid: string; privilegeTypeId: string },
+        { success: boolean; message: string }
+      >(functions, "adminSetUserPrivilege");
+
+      await setPrivilegeFn({
+        uid: selectedUser.profile.uid,
+        privilegeTypeId: selectedPrivilege,
+      });
+
+      // Update local state
+      setSelectedUser({
+        ...selectedUser,
+        profile: {
+          ...selectedUser.profile,
+          privilegeType: selectedPrivilege,
+          isAdmin: selectedPrivilege === "admin",
+        },
+      });
+    } catch (err) {
+      logger.error("Failed to update user privilege", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+      });
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to update user privilege. Please try again.");
+      // Revert selection on error
+      setSelectedPrivilege(selectedUser.profile.privilegeType || "free");
+    } finally {
+      setSavingPrivilege(false);
     }
   }
 
@@ -237,11 +430,19 @@ export function UsersTab() {
           </div>
           <button
             onClick={handleSearch}
-            disabled={searching || !searchQuery.trim()}
+            disabled={searching}
             className="px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {searching ? "Searching..." : "Search"}
           </button>
+          {isSearchMode && (
+            <button
+              onClick={clearSearch}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
         {error && (
@@ -252,8 +453,80 @@ export function UsersTab() {
         )}
       </div>
 
-      {/* Search Results */}
-      {searchResults.length > 0 && (
+      {/* Sort Controls (only show when not in search mode) */}
+      {!isSearchMode && (
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-amber-700">Sort by:</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleSortChange("createdAt")}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                sortBy === "createdAt"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              Joined
+              {sortBy === "createdAt" && (
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+            <button
+              onClick={() => handleSortChange("lastActive")}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                sortBy === "lastActive"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+              }`}
+            >
+              <Activity className="w-4 h-4" />
+              Last Active
+              {sortBy === "lastActive" && (
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+            <button
+              onClick={() => handleSortChange("nickname")}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                sortBy === "nickname"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+              }`}
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              Name
+              {sortBy === "nickname" && (
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+          <span className="ml-2 text-amber-700">Loading users...</span>
+        </div>
+      )}
+
+      {/* Search Mode Indicator */}
+      {isSearchMode && searchResults.length > 0 && (
+        <div className="text-sm text-amber-700">
+          Found {searchResults.length} user(s) matching &ldquo;{searchQuery}&rdquo;
+        </div>
+      )}
+
+      {/* User List */}
+      {!loading && displayUsers.length > 0 && (
         <div className="bg-white rounded-lg border border-amber-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -274,7 +547,7 @@ export function UsersTab() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-amber-50">
-                {searchResults.map((user) => (
+                {displayUsers.map((user) => (
                   <tr
                     key={user.uid}
                     onClick={() => loadUserDetail(user.uid)}
@@ -318,6 +591,39 @@ export function UsersTab() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination - Load More */}
+          {!isSearchMode && hasMore && (
+            <div className="p-4 border-t border-amber-100 flex justify-center">
+              <button
+                onClick={() => loadUsers(nextCursor)}
+                disabled={loadingMore}
+                className="flex items-center gap-2 px-6 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 disabled:opacity-50"
+              >
+                {loadingMore ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Load More
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && displayUsers.length === 0 && !error && (
+        <div className="bg-white rounded-lg border border-amber-100 p-12 text-center">
+          <Users className="w-12 h-12 text-amber-300 mx-auto mb-4" />
+          <p className="text-amber-700">
+            {isSearchMode ? "No users found matching your search" : "No users found"}
+          </p>
         </div>
       )}
 
@@ -465,6 +771,57 @@ export function UsersTab() {
                 ) : (
                   <p className="text-sm text-amber-700 whitespace-pre-wrap">
                     {selectedUser.profile.adminNotes || "No notes"}
+                  </p>
+                )}
+              </div>
+
+              {/* User Privilege */}
+              <div className="bg-white border border-amber-100 rounded-lg p-4">
+                <h4 className="font-medium text-amber-900 mb-3 flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  User Privilege
+                </h4>
+                <div className="flex items-center gap-3">
+                  <select
+                    value={selectedPrivilege}
+                    onChange={(e) => setSelectedPrivilege(e.target.value)}
+                    disabled={savingPrivilege || privilegeTypes.length === 0}
+                    className="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {privilegeTypes.length === 0 ? (
+                      <option>Loading privilege types…</option>
+                    ) : (
+                      privilegeTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.name} - {type.description}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                  <button
+                    onClick={handleSavePrivilege}
+                    disabled={
+                      savingPrivilege ||
+                      selectedPrivilege === (selectedUser.profile.privilegeType || "free")
+                    }
+                    className="px-4 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {savingPrivilege ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Save
+                      </>
+                    )}
+                  </button>
+                </div>
+                {selectedUser.profile.isAdmin && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    This user has admin access to the admin panel.
                   </p>
                 )}
               </div>

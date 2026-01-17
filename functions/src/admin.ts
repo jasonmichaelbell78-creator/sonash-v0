@@ -9,7 +9,7 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
-import { logSecurityEvent } from "./security-logger";
+import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
 /**
@@ -30,6 +30,34 @@ import {
   type SoberLivingData,
   type QuoteData,
 } from "./schemas";
+
+/**
+ * Convert non-serializable values to JSON-safe format
+ * ROBUSTNESS: Firestore Timestamps, Dates, etc. need conversion for callable responses
+ */
+function toJsonSafe(value: unknown): unknown {
+  if (value === null || value === undefined) return value;
+
+  // Firestore Timestamp-like objects
+  if (typeof value === "object" && value && "toDate" in (value as Record<string, unknown>)) {
+    const maybeToDate = (value as { toDate?: () => Date }).toDate;
+    if (typeof maybeToDate === "function") {
+      return maybeToDate.call(value).toISOString();
+    }
+  }
+
+  if (value instanceof Date) return value.toISOString();
+
+  if (Array.isArray(value)) return value.map(toJsonSafe);
+
+  if (typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, toJsonSafe(v)])
+    );
+  }
+
+  return value;
+}
 
 /**
  * CANON-0015: Rate limiter for admin operations
@@ -738,10 +766,10 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
     throw new HttpsError("invalid-argument", "User ID is required");
   }
 
-  // SECURITY: Don't log target UID in message - use metadata only
+  // SECURITY: Hash target UID to prevent PII exposure in logs
   logSecurityEvent("ADMIN_ACTION", "adminGetUserDetail", "Admin viewed user detail", {
     userId: request.auth?.uid,
-    metadata: { targetUid: uid },
+    metadata: { targetUidHash: hashUserId(uid) },
   });
 
   try {
@@ -826,6 +854,7 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
         lastActive: userData.lastActive?.toDate().toISOString() || null,
         adminNotes: userData.adminNotes || null,
         isAdmin: userData.isAdmin || false,
+        privilegeType: userData.privilegeType || "free",
       },
       stats: {
         totalJournalEntries: journalSnapshot.size,
@@ -839,7 +868,7 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
 
     logSecurityEvent("ADMIN_ERROR", "adminGetUserDetail", "Failed to get user detail", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get user detail");
@@ -875,7 +904,7 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
   // Log only field names being updated for audit trail
   logSecurityEvent("ADMIN_ACTION", "adminUpdateUser", "Admin updated user", {
     userId: request.auth?.uid,
-    metadata: { targetUid: uid, updatedFields: Object.keys(updates) },
+    metadata: { targetUidHash: hashUserId(uid), updatedFields: Object.keys(updates) },
   });
 
   try {
@@ -900,7 +929,7 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminUpdateUser", "Failed to update user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user");
@@ -927,14 +956,14 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
   }
 
   // SECURITY: Don't log reason field - it may contain PII or sensitive details
-  // Log only sanitized metadata for audit trail
+  // Log only sanitized metadata for audit trail (hash targetUid)
   logSecurityEvent(
     "ADMIN_ACTION",
     "adminDisableUser",
     `Admin ${disabled ? "disabled" : "enabled"} user`,
     {
       userId: request.auth?.uid,
-      metadata: { targetUid: uid, disabled, hasReason: !!reason },
+      metadata: { targetUidHash: hashUserId(uid), disabled, hasReason: !!reason },
       severity: "WARNING",
     }
   );
@@ -967,7 +996,7 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDisableUser", "Failed to disable/enable user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user status");
@@ -998,8 +1027,15 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
   });
 
   try {
-    // Import job runner dynamically to avoid circular dependencies
-    const { runJob } = await import("./jobs.js");
+    // Import job runner and job functions dynamically to avoid circular dependencies
+    const {
+      runJob,
+      cleanupOldSessions,
+      cleanupOrphanedStorageFiles,
+      generateUsageAnalytics,
+      pruneSecurityEvents,
+      healthCheckNotifications,
+    } = await import("./jobs.js");
     const { cleanupOldRateLimits } = await import("./firestore-rate-limiter.js");
 
     // Map job IDs to their implementations
@@ -1008,6 +1044,36 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
         name: "Cleanup Rate Limits",
         fn: async () => {
           await cleanupOldRateLimits();
+        },
+      },
+      cleanupOldSessions: {
+        name: "Cleanup Old Sessions",
+        fn: async () => {
+          await cleanupOldSessions();
+        },
+      },
+      cleanupOrphanedStorageFiles: {
+        name: "Cleanup Orphaned Storage Files",
+        fn: async () => {
+          await cleanupOrphanedStorageFiles();
+        },
+      },
+      generateUsageAnalytics: {
+        name: "Generate Usage Analytics",
+        fn: async () => {
+          await generateUsageAnalytics();
+        },
+      },
+      pruneSecurityEvents: {
+        name: "Prune Security Events",
+        fn: async () => {
+          await pruneSecurityEvents();
+        },
+      },
+      healthCheckNotifications: {
+        name: "Health Check Notifications",
+        fn: async () => {
+          await healthCheckNotifications();
         },
       },
     };
@@ -1101,6 +1167,7 @@ export const adminGetJobsStatus = onCall(async (request) => {
 interface SentryIssueSummary {
   title: string;
   count: number;
+  userCount: number;
   lastSeen: string | null;
   firstSeen: string | null;
   shortId: string;
@@ -1148,6 +1215,7 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
     const issuesPayload: Array<{
       title?: string;
       count?: string;
+      userCount?: number;
       lastSeen?: string;
       firstSeen?: string;
       shortId?: string;
@@ -1159,6 +1227,7 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
     const issues: SentryIssueSummary[] = issuesPayload.map((issue) => ({
       title: sanitizeSentryTitle(issue.title || "Unknown error"),
       count: Number(issue.count || 0),
+      userCount: issue.userCount || 0,
       lastSeen: issue.lastSeen || null,
       firstSeen: issue.firstSeen || null,
       shortId: issue.shortId || "N/A",
@@ -1188,5 +1257,710 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
       { userId: request.auth?.uid, metadata: { error: String(error) }, captureToSentry: true }
     );
     throw new HttpsError("internal", "Failed to fetch Sentry error summary");
+  }
+});
+
+/**
+ * Admin: List Users with Pagination
+ * Returns a paginated list of users for the Users tab
+ * Supports sorting by: createdAt (default), lastActive, nickname
+ */
+interface ListUsersRequest {
+  limit?: number;
+  startAfterUid?: string;
+  sortBy?: "createdAt" | "lastActive" | "nickname";
+  sortOrder?: "asc" | "desc";
+}
+
+interface ListUsersResponse {
+  users: Array<{
+    uid: string;
+    email: string | null;
+    nickname: string;
+    disabled: boolean;
+    lastActive: string | null;
+    createdAt: string | null;
+  }>;
+  hasMore: boolean;
+  nextCursor: string | null;
+}
+
+/**
+ * Admin: Get System Logs
+ * Returns recent security events and GCP Cloud Logging deep links
+ */
+interface GetLogsRequest {
+  limit?: number;
+  severity?: "ERROR" | "WARNING" | "INFO";
+}
+
+interface LogEntry {
+  id: string;
+  type: string;
+  severity: "INFO" | "WARNING" | "ERROR";
+  functionName: string;
+  message: string;
+  timestamp: string;
+  metadata?: Record<string, unknown>;
+}
+
+export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
+  await requireAdmin(request, "adminGetLogs");
+
+  const { limit: rawLimit = 50, severity } = request.data || {};
+
+  // SECURITY: Validate and clamp limit
+  const MAX_LIMIT = 100;
+  const MIN_LIMIT = 1;
+  const limit =
+    typeof rawLimit === "number" && Number.isFinite(rawLimit)
+      ? Math.min(Math.max(Math.floor(rawLimit), MIN_LIMIT), MAX_LIMIT)
+      : 50;
+
+  try {
+    const db = admin.firestore();
+
+    // Build query for security_logs collection - conditionally add severity filter
+    let query: admin.firestore.Query = db.collection("security_logs");
+
+    // Add severity filter if provided (validated against allowed values)
+    if (severity && ["ERROR", "WARNING", "INFO"].includes(severity)) {
+      query = query.where("severity", "==", severity);
+    }
+
+    // Apply ordering and limit
+    query = query.orderBy("timestamp", "desc").limit(limit);
+
+    const snapshot = await query.get();
+
+    const logs: LogEntry[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      // ROBUSTNESS: Validate metadata is a plain object before redaction
+      // Prevents type violations in API response if metadata is corrupt
+      const rawMetadata = data.metadata;
+      // ROBUSTNESS: Convert Timestamps to ISO strings, then redact sensitive keys
+      // Double-check output remains an object after transformation
+      const safeMetadata = (() => {
+        if (!rawMetadata || typeof rawMetadata !== "object" || Array.isArray(rawMetadata)) {
+          return undefined;
+        }
+        const converted = toJsonSafe(
+          redactSensitiveMetadata(rawMetadata as Record<string, unknown>)
+        );
+        // Verify toJsonSafe didn't return non-object (edge case protection)
+        return converted && typeof converted === "object" && !Array.isArray(converted)
+          ? (converted as Record<string, unknown>)
+          : undefined;
+      })();
+
+      // ROBUSTNESS: Clamp severity to allowed values
+      const rawSeverity = data.severity;
+      const safeSeverity: "INFO" | "WARNING" | "ERROR" =
+        rawSeverity === "ERROR" || rawSeverity === "WARNING" || rawSeverity === "INFO"
+          ? rawSeverity
+          : "INFO";
+
+      return {
+        id: doc.id,
+        type: data.type || "UNKNOWN",
+        severity: safeSeverity,
+        functionName: data.functionName || "unknown",
+        message: data.message || "",
+        timestamp: data.timestamp?.toDate().toISOString() || new Date().toISOString(),
+        // SECURITY: Defense-in-depth - redact metadata even though write-time redaction exists
+        // Protects against bugs in write-time redaction and legacy data
+        metadata: safeMetadata,
+      };
+    });
+
+    // Generate GCP Cloud Logging deep links
+    // Format: https://console.cloud.google.com/logs/query;query=QUERY;project=PROJECT_ID
+    const projectId = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || "sonash-app";
+    const baseUrl = `https://console.cloud.google.com/logs/query`;
+
+    // URL-encode query strings for GCP Logs Explorer
+    const encodeQuery = (query: string) => encodeURIComponent(query);
+
+    // Time range: last 24 hours
+    const timeRange = "timestamp>=-PT24H";
+
+    const gcpLinks = {
+      allLogs: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" ${timeRange}`)};project=${projectId}`,
+      errors: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" severity=ERROR ${timeRange}`)};project=${projectId}`,
+      warnings: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" severity>=WARNING ${timeRange}`)};project=${projectId}`,
+      security: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type:* ${timeRange}`)};project=${projectId}`,
+      auth: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"AUTH|AUTHORIZATION" ${timeRange}`)};project=${projectId}`,
+      admin: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"ADMIN" ${timeRange}`)};project=${projectId}`,
+    };
+
+    // AUDIT: Log successful access to security logs for compliance traceability
+    logSecurityEvent("ADMIN_ACTION", "adminGetLogs", "Admin viewed security logs", {
+      userId: request.auth?.uid,
+      metadata: { logsCount: logs.length, severity: severity || "all" },
+      storeInFirestore: true, // Store INFO events for audit trail
+    });
+
+    return {
+      logs,
+      gcpLinks,
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetLogs", "Failed to get logs", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get logs");
+  }
+});
+
+/**
+ * Admin: Get Privilege Types
+ * Returns all available privilege types for the system
+ * ALWAYS includes built-in types (free, premium, admin) merged with custom types
+ */
+// Built-in privilege types that are always guaranteed to exist
+const BUILT_IN_PRIVILEGE_TYPES = [
+  {
+    id: "free",
+    name: "Free",
+    description: "Standard free tier with basic features",
+    features: ["daily_check_in", "basic_journal", "meetings_view"],
+    isDefault: true,
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    description: "Full access to all features",
+    features: [
+      "daily_check_in",
+      "unlimited_journal",
+      "meetings_view",
+      "inventory_tracking",
+      "export_data",
+      "priority_support",
+    ],
+    isDefault: false,
+  },
+  {
+    id: "admin",
+    name: "Admin",
+    description: "Full system access including admin panel",
+    features: ["*"],
+    isDefault: false,
+  },
+] as const;
+
+export const adminGetPrivilegeTypes = onCall(async (request) => {
+  await requireAdmin(request, "adminGetPrivilegeTypes");
+
+  try {
+    const db = admin.firestore();
+    const privilegesDoc = await db.collection("system").doc("privileges").get();
+
+    if (!privilegesDoc.exists) {
+      // Return default privilege types if not configured
+      return { types: [...BUILT_IN_PRIVILEGE_TYPES] };
+    }
+
+    const data = privilegesDoc.data();
+    const storedTypes = Array.isArray(data?.types) ? data.types : [];
+
+    // ROBUSTNESS: Validate and sanitize custom types from Firestore
+    // Filters out malformed entries and ensures consistent shape
+    const customTypes: PrivilegeType[] = storedTypes
+      .filter(
+        (t: unknown): t is PrivilegeType =>
+          !!t &&
+          typeof t === "object" &&
+          "id" in t &&
+          typeof (t as PrivilegeType).id === "string" &&
+          !!(t as PrivilegeType).id &&
+          !["free", "premium", "admin"].includes((t as PrivilegeType).id) &&
+          "name" in t &&
+          typeof (t as PrivilegeType).name === "string" &&
+          Array.isArray((t as PrivilegeType).features)
+      )
+      .map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: typeof t.description === "string" ? t.description : "",
+        features: t.features.filter((f) => typeof f === "string"),
+        isDefault: !!t.isDefault,
+      }));
+
+    // Merge built-in and custom types, ensure only one default
+    const merged = [...BUILT_IN_PRIVILEGE_TYPES, ...customTypes];
+    const defaultId = merged.find((t) => t.isDefault)?.id ?? "free";
+
+    return { types: normalizePrivilegeDefaults(merged, defaultId) };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetPrivilegeTypes", "Failed to get privilege types", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get privilege types");
+  }
+});
+
+/**
+ * Admin: Save Privilege Type
+ * Creates or updates a privilege type
+ */
+interface SavePrivilegeTypeRequest {
+  privilegeType: {
+    id: string;
+    name: string;
+    description: string;
+    features: string[];
+    isDefault?: boolean;
+  };
+}
+
+// Schema validation for privilege type inputs
+const privilegeTypeSchema = z.object({
+  id: z
+    .string()
+    .min(1, "ID is required")
+    .max(50, "ID must be 50 characters or less")
+    .regex(/^[a-z0-9_-]+$/, "ID must be lowercase alphanumeric with hyphens/underscores"),
+  name: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less"),
+  description: z.string().max(500, "Description must be 500 characters or less").default(""),
+  features: z.array(z.string().max(100)).max(50, "Maximum 50 features allowed").default([]),
+  isDefault: z.boolean().optional(),
+});
+
+// Privilege type structure
+interface PrivilegeType {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  isDefault?: boolean;
+}
+
+/**
+ * Normalize privilege type defaults - ensures only one type is marked as default
+ * @param types - Array of privilege types
+ * @param newDefaultId - ID of the new default type (if setting a default)
+ * @returns Normalized array with only one default
+ */
+function normalizePrivilegeDefaults(
+  types: PrivilegeType[],
+  newDefaultId?: string
+): PrivilegeType[] {
+  if (!newDefaultId) return types;
+  return types.map((t) => ({
+    ...t,
+    isDefault: t.id === newDefaultId,
+  }));
+}
+
+export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (request) => {
+  await requireAdmin(request, "adminSavePrivilegeType");
+
+  const { privilegeType } = request.data;
+
+  if (!privilegeType || !privilegeType.id || !privilegeType.name) {
+    throw new HttpsError("invalid-argument", "Privilege type ID and name are required");
+  }
+
+  // SECURITY: Validate privilege type with schema
+  const parseResult = privilegeTypeSchema.safeParse(privilegeType);
+  if (!parseResult.success) {
+    const errorMessages = parseResult.error.issues.map((issue) => issue.message).join(", ");
+    throw new HttpsError("invalid-argument", `Invalid privilege type: ${errorMessages}`);
+  }
+  const validatedType = parseResult.data;
+
+  // SECURITY: Prevent modifying any built-in types
+  if (["admin", "free", "premium"].includes(validatedType.id)) {
+    throw new HttpsError("permission-denied", "Cannot modify built-in privilege types");
+  }
+
+  logSecurityEvent("ADMIN_ACTION", "adminSavePrivilegeType", "Admin saved privilege type", {
+    userId: request.auth?.uid,
+    metadata: { privilegeTypeId: validatedType.id },
+    severity: "INFO",
+    storeInFirestore: true,
+  });
+
+  try {
+    const db = admin.firestore();
+    const privilegesRef = db.collection("system").doc("privileges");
+
+    // CONCURRENCY: Use transaction to prevent race conditions
+    await db.runTransaction(async (transaction) => {
+      const privilegesDoc = await transaction.get(privilegesRef);
+
+      let types: Array<{
+        id: string;
+        name: string;
+        description: string;
+        features: string[];
+        isDefault?: boolean;
+      }> = [];
+
+      if (privilegesDoc.exists) {
+        const stored = privilegesDoc.data()?.types;
+        // ROBUSTNESS: Validate that types field is actually an array to prevent runtime errors
+        types = Array.isArray(stored) ? stored : [];
+      }
+
+      // Find and update existing type or add new one
+      const existingIndex = types.findIndex((t) => t.id === validatedType.id);
+      if (existingIndex >= 0) {
+        types[existingIndex] = validatedType;
+      } else {
+        types.push(validatedType);
+      }
+
+      // Normalize defaults - ensures only one type is marked as default
+      if (validatedType.isDefault) {
+        types = normalizePrivilegeDefaults(types, validatedType.id);
+      }
+
+      transaction.set(privilegesRef, {
+        types,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    return { success: true, id: validatedType.id };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminSavePrivilegeType", "Failed to save privilege type", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to save privilege type");
+  }
+});
+
+/**
+ * Admin: Delete Privilege Type
+ * Deletes a custom privilege type
+ */
+interface DeletePrivilegeTypeRequest {
+  privilegeTypeId: string;
+}
+
+export const adminDeletePrivilegeType = onCall<DeletePrivilegeTypeRequest>(async (request) => {
+  await requireAdmin(request, "adminDeletePrivilegeType");
+
+  const { privilegeTypeId } = request.data;
+
+  if (!privilegeTypeId) {
+    throw new HttpsError("invalid-argument", "Privilege type ID is required");
+  }
+
+  // Prevent deleting built-in types
+  if (["admin", "premium", "free"].includes(privilegeTypeId)) {
+    throw new HttpsError("permission-denied", "Cannot delete built-in privilege types");
+  }
+
+  logSecurityEvent("ADMIN_ACTION", "adminDeletePrivilegeType", "Admin deleted privilege type", {
+    userId: request.auth?.uid,
+    metadata: { privilegeTypeId },
+    severity: "WARNING",
+    storeInFirestore: true,
+  });
+
+  try {
+    const db = admin.firestore();
+    const privilegesRef = db.collection("system").doc("privileges");
+    const privilegesDoc = await privilegesRef.get();
+
+    if (!privilegesDoc.exists) {
+      throw new HttpsError("not-found", "Privilege types not configured");
+    }
+
+    // SAFETY: Block deletion if any users still have this privilege type assigned
+    const usersWithPrivilege = await db
+      .collection("users")
+      .where("privilegeType", "==", privilegeTypeId)
+      .limit(1)
+      .get();
+
+    if (!usersWithPrivilege.empty) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Cannot delete privilege type while it is assigned to users"
+      );
+    }
+
+    // ROBUSTNESS: Use Array.isArray guard for corrupt data protection
+    const storedTypes = privilegesDoc.data()?.types;
+    let types = Array.isArray(storedTypes) ? storedTypes : [];
+    types = types.filter(
+      (t: { id: string; name: string; description: string; features: string[] }) =>
+        t.id !== privilegeTypeId
+    );
+
+    await privilegesRef.update({ types, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    logSecurityEvent("ADMIN_ERROR", "adminDeletePrivilegeType", "Failed to delete privilege type", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to delete privilege type");
+  }
+});
+
+/**
+ * Admin: Set User Privilege
+ * Assigns a privilege type to a user
+ */
+interface SetUserPrivilegeRequest {
+  uid: string;
+  privilegeTypeId: string;
+}
+
+export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (request) => {
+  await requireAdmin(request, "adminSetUserPrivilege");
+
+  const { uid, privilegeTypeId } = request.data;
+
+  if (!uid || !privilegeTypeId) {
+    throw new HttpsError("invalid-argument", "User ID and privilege type ID are required");
+  }
+
+  // SECURITY: Hash targetUid to prevent PII exposure in logs
+  logSecurityEvent("ADMIN_ACTION", "adminSetUserPrivilege", "Admin set user privilege", {
+    userId: request.auth?.uid,
+    metadata: { targetUidHash: hashUserId(uid), privilegeTypeId },
+    severity: "INFO",
+    storeInFirestore: true,
+  });
+
+  try {
+    const db = admin.firestore();
+
+    // Verify privilege type exists
+    const privilegesDoc = await db.collection("system").doc("privileges").get();
+    const storedTypes = privilegesDoc.data()?.types;
+    // ROBUSTNESS: Guard against malformed Firestore data
+    const types = Array.isArray(storedTypes) ? storedTypes : [];
+    const privilegeType = types.find(
+      (t: { id: string; name: string; description: string; features: string[] }) =>
+        t.id === privilegeTypeId
+    );
+
+    // Allow setting to default types even if not in DB
+    if (!privilegeType && !["admin", "premium", "free"].includes(privilegeTypeId)) {
+      throw new HttpsError("not-found", "Privilege type not found");
+    }
+
+    // SECURITY: Asymmetric fail-safe order for privilege changes
+    // - GRANT admin: Firestore first, then claims (prevents dangling admin if Firestore fails)
+    // - REVOKE admin: Claims first, then Firestore (fail-closed: user loses access immediately)
+    const authUser = await admin.auth().getUser(uid);
+    const currentClaims = authUser.customClaims || {};
+
+    // ATOMICITY: Store previous privilege for accurate rollback (not hardcoded "free")
+    const userRef = db.collection("users").doc(uid);
+    const userSnap = await userRef.get();
+    // ROBUSTNESS: Validate prevPrivilegeType is a string to prevent writing corrupt data on rollback
+    const rawPrevPrivilegeType = userSnap.exists
+      ? (userSnap.data() as Record<string, unknown> | undefined)?.privilegeType
+      : undefined;
+    const prevPrivilegeType =
+      typeof rawPrevPrivilegeType === "string" && rawPrevPrivilegeType
+        ? rawPrevPrivilegeType
+        : "free";
+
+    if (privilegeTypeId === "admin") {
+      // GRANTING admin: Write Firestore FIRST, then set claims
+      // If Firestore fails, user won't get admin claims (fail-safe)
+      // ROBUSTNESS: Use set() with merge to handle case where user doc doesn't exist
+      await userRef.set(
+        {
+          privilegeType: privilegeTypeId,
+          privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          privilegeUpdatedBy: request.auth?.uid,
+        },
+        { merge: true }
+      );
+
+      try {
+        await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
+      } catch (claimsError) {
+        // ATOMICITY: Roll back to ACTUAL previous privilege, not hardcoded "free"
+        await userRef.set(
+          {
+            privilegeType: prevPrivilegeType,
+            privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            privilegeUpdatedBy: request.auth?.uid,
+          },
+          { merge: true }
+        );
+        throw claimsError;
+      }
+    } else {
+      // REVOKING admin (or setting non-admin): Remove claim FIRST, then Firestore
+      // If Firestore fails, user already lost admin access (fail-closed)
+      if (currentClaims.admin) {
+        await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
+      }
+      // ROBUSTNESS: Use set() with merge to handle case where user doc doesn't exist
+      await userRef.set(
+        {
+          privilegeType: privilegeTypeId,
+          privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          privilegeUpdatedBy: request.auth?.uid,
+        },
+        { merge: true }
+      );
+    }
+
+    return { success: true, message: `User privilege set to ${privilegeTypeId}` };
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    logSecurityEvent("ADMIN_ERROR", "adminSetUserPrivilege", "Failed to set user privilege", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to set user privilege");
+  }
+});
+
+export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
+  await requireAdmin(request, "adminListUsers");
+
+  const {
+    limit: rawLimit = 20,
+    startAfterUid,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = request.data || {};
+
+  // SECURITY: Validate and clamp limit
+  const MAX_LIMIT = 50;
+  const MIN_LIMIT = 1;
+  const limit =
+    typeof rawLimit === "number" && Number.isFinite(rawLimit)
+      ? Math.min(Math.max(Math.floor(rawLimit), MIN_LIMIT), MAX_LIMIT)
+      : 20;
+
+  // Validate sortBy to prevent injection
+  const allowedSortFields = ["createdAt", "lastActive", "nickname"];
+  const safeSortBy = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+  const safeSortOrder = sortOrder === "asc" ? "asc" : "desc";
+
+  logSecurityEvent("ADMIN_ACTION", "adminListUsers", "Admin listed users", {
+    userId: request.auth?.uid,
+    metadata: { limit, sortBy: safeSortBy, sortOrder: safeSortOrder, hasCursor: !!startAfterUid },
+  });
+
+  try {
+    const db = admin.firestore();
+
+    // Build query with deterministic tie-breaker for stable pagination
+    let query = db
+      .collection("users")
+      .orderBy(safeSortBy, safeSortOrder)
+      .orderBy(admin.firestore.FieldPath.documentId(), safeSortOrder)
+      .limit(limit + 1); // Fetch one extra to check if there's more
+
+    // STABILITY: Use value-based cursor for robust pagination
+    // Provides explicit values for all orderBy clauses to prevent cursor errors
+    // when the sort field is missing or null on the cursor document
+    if (startAfterUid) {
+      const cursorDoc = await db.collection("users").doc(startAfterUid).get();
+      if (cursorDoc.exists) {
+        const cursorData = cursorDoc.data() as Record<string, unknown> | undefined;
+        const rawValue = cursorData?.[safeSortBy] as unknown;
+
+        // ROBUSTNESS: Use sentinel timestamps for timestamp fields when null/malformed
+        // Prevents Firestore cursor type mismatch errors that cause startAfter() to throw
+        const isTimestampField = safeSortBy === "createdAt" || safeSortBy === "lastActive";
+        let sortValue: unknown;
+
+        if (isTimestampField) {
+          // Validate rawValue is a Firestore Timestamp or Date before using
+          if (rawValue instanceof admin.firestore.Timestamp) {
+            sortValue = rawValue;
+          } else if (rawValue instanceof Date) {
+            sortValue = admin.firestore.Timestamp.fromDate(rawValue);
+          } else {
+            // Use sentinel timestamp: min for asc, max for desc
+            sortValue =
+              safeSortOrder === "asc"
+                ? admin.firestore.Timestamp.fromMillis(0)
+                : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
+          }
+        } else if (typeof rawValue === "string") {
+          // For nickname field, only use if it's a string
+          sortValue = rawValue;
+        } else {
+          // ROBUSTNESS: Use string sentinels for nickname field (prevents cursor type mismatch)
+          sortValue = safeSortOrder === "asc" ? "" : "\uf8ff";
+        }
+
+        // Provide explicit values for both orderBy clauses (sortField + docId)
+        query = query.startAfter(sortValue, cursorDoc.id);
+      }
+    }
+
+    const snapshot = await query.get();
+
+    // Check if there are more results
+    const hasMore = snapshot.docs.length > limit;
+    const docs = hasMore ? snapshot.docs.slice(0, limit) : snapshot.docs;
+
+    // Batch fetch auth users instead of N+1 pattern
+    const uids = docs.map((d) => d.id);
+    const authByUid = new Map<string, admin.auth.UserRecord>();
+
+    if (uids.length > 0) {
+      try {
+        const authResult = await admin.auth().getUsers(uids.map((uid) => ({ uid })));
+        authResult.users.forEach((u) => authByUid.set(u.uid, u));
+      } catch (authError) {
+        // SECURITY: Propagate auth errors instead of returning partial data
+        // Returning incomplete data could be misleading and hide issues
+        logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Batch auth fetch failed", {
+          userId: request.auth?.uid,
+          metadata: { error: String(authError), uidsCount: uids.length },
+          captureToSentry: true,
+        });
+        throw new HttpsError("internal", "Failed to fetch user authentication details");
+      }
+    }
+
+    // Build user list with batched auth data
+    const users: ListUsersResponse["users"] = docs.map((doc) => {
+      const userData = doc.data();
+      const authUser = authByUid.get(doc.id);
+
+      return {
+        uid: doc.id,
+        email: authUser?.email || null,
+        nickname: userData.nickname || "Anonymous",
+        disabled: authUser?.disabled || false,
+        lastActive: userData.lastActive?.toDate().toISOString() || null,
+        createdAt: userData.createdAt?.toDate().toISOString() || null,
+      };
+    });
+
+    return {
+      users,
+      hasMore,
+      nextCursor: hasMore && docs.length > 0 ? docs[docs.length - 1].id : null,
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Failed to list users", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to list users");
   }
 });

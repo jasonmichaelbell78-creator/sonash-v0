@@ -21,12 +21,14 @@ import {
   RefreshCw,
   TrendingDown,
   TrendingUp,
+  Users,
   Wrench,
 } from "lucide-react";
 
 interface SentryIssueSummary {
   title: string;
   count: number;
+  userCount?: number | null; // Optional - Sentry may not always provide this
   lastSeen: string | null;
   firstSeen: string | null;
   shortId: string;
@@ -118,6 +120,17 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
           </button>
         </td>
         <td className="px-6 py-4 text-amber-900 font-medium">{issue.count.toLocaleString()}</td>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-1.5 text-amber-700">
+            <Users className="h-3.5 w-3.5" />
+            <span>
+              {/* ROBUSTNESS: Use Number.isFinite to prevent NaN from rendering in UI */}
+              {Number.isFinite(issue.userCount)
+                ? Math.max(0, issue.userCount as number).toLocaleString()
+                : "N/A"}
+            </span>
+          </div>
+        </td>
         <td className="px-6 py-4 text-amber-700">{lastSeenFormatted}</td>
         <td className="px-6 py-4 text-amber-700">{firstSeenFormatted}</td>
         <td className="px-6 py-4">{getStatusBadge(issue.status)}</td>
@@ -140,7 +153,7 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
       </tr>
       {isExpanded && (
         <tr className="bg-amber-50/50">
-          <td colSpan={6} className="px-6 py-4">
+          <td colSpan={7} className="px-6 py-4">
             <div className="space-y-4 pl-6">
               {/* Description */}
               <div className="flex items-start gap-3">
@@ -196,12 +209,27 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
                 </div>
               </div>
 
-              {/* Timestamps */}
-              <div className="flex items-center gap-3 pt-2 border-t border-amber-200">
-                <Clock className="h-4 w-4 text-amber-500" />
-                <div className="text-xs text-amber-600">
-                  First seen: {firstSeenFormatted} | Last seen: {lastSeenFormatted} | Total
-                  occurrences: {issue.count.toLocaleString()}
+              {/* Stats summary */}
+              <div className="flex items-center gap-6 pt-2 border-t border-amber-200">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600">
+                    First: {firstSeenFormatted} | Last: {lastSeenFormatted}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600">
+                    {issue.count.toLocaleString()} events
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600">
+                    {typeof issue.userCount === "number"
+                      ? `${issue.userCount.toLocaleString()} users affected`
+                      : "N/A users"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -314,7 +342,7 @@ export function ErrorsTab() {
         </div>
       ) : summary ? (
         <>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <div className="rounded-lg border border-amber-100 bg-white p-4">
               <p className="text-sm text-amber-700">Events (last 24h)</p>
               <p className="text-2xl font-semibold text-amber-900">
@@ -323,6 +351,16 @@ export function ErrorsTab() {
               <p className="text-xs text-amber-600">
                 Prev 24h: {summary.totalEventsPrev24h.toLocaleString()}
               </p>
+            </div>
+            <div className="rounded-lg border border-amber-100 bg-white p-4">
+              <p className="text-sm text-amber-700">Users affected</p>
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-amber-600" />
+                <p className="text-2xl font-semibold text-amber-900">
+                  {issues.reduce((sum, i) => sum + (i.userCount ?? 0), 0).toLocaleString()}
+                </p>
+              </div>
+              <p className="text-xs text-amber-600">Sum across issues (may double-count)</p>
             </div>
             <div className="rounded-lg border border-amber-100 bg-white p-4">
               <p className="text-sm text-amber-700">Trend vs prior 24h</p>
@@ -378,6 +416,7 @@ export function ErrorsTab() {
                     <tr>
                       <th className="px-6 py-3 font-medium">Error</th>
                       <th className="px-6 py-3 font-medium">Count</th>
+                      <th className="px-6 py-3 font-medium">Users</th>
                       <th className="px-6 py-3 font-medium">Last seen</th>
                       <th className="px-6 py-3 font-medium">First seen</th>
                       <th className="px-6 py-3 font-medium">Status</th>
