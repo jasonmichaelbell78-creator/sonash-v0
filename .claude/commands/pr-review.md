@@ -8,6 +8,40 @@ You are about to process AI code review feedback. This is a **standardized,
 thorough review protocol** that ensures every issue is caught, addressed, and
 documented.
 
+## Core Principles
+
+1. **Fix Everything** - Including trivial items
+2. **Learning First** - Create log entry before fixes
+3. **Multi-Pass Verification** - Never miss an issue
+4. **Agent Augmentation** - Invoke specialists when needed
+5. **Full Documentation** - Every decision tracked
+
+## Protocol Overview
+
+```
+INPUT (Raw Review)
+    ↓
+STEP 0: CONTEXT (Load tiered docs)
+    ↓
+STEP 1: PARSE (Multi-pass extraction + validate claims)
+    ↓
+STEP 2: CATEGORIZE (Critical/Major/Minor/Trivial)
+    ↓
+STEP 3: PLAN (TodoWrite - learning entry FIRST)
+    ↓
+STEP 4: AGENTS (Invoke specialists per issue type)
+    ↓
+STEP 5: FIX (Priority order, verify each)
+    ↓
+STEP 6: DOCUMENT (Deferred/rejected decisions)
+    ↓
+STEP 7: LEARNING (Complete entry - MANDATORY)
+    ↓
+STEP 8: SUMMARY (Final verification status)
+    ↓
+STEP 9: COMMIT (Following project conventions)
+```
+
 ---
 
 ## STEP 0: CONTEXT LOADING (Tiered Access)
@@ -381,6 +415,52 @@ Create commit(s) following project conventions:
 6. **ALWAYS invoke specialized agents** - When issue matches their domain
 7. **NEVER silently ignore** - Document all decisions
 8. **MONITOR document health** - Archive when all criteria in Step 7.5 are met
+
+## Anti-Patterns to Avoid
+
+- ❌ Skipping trivial items ("not worth fixing")
+- ❌ Deferring minor items without strong justification
+- ❌ Editing files without reading first
+- ❌ Forgetting learning entry
+- ❌ Not using TodoWrite for tracking
+- ❌ Not invoking specialist agents when applicable
+- ❌ Single-pass parsing of large reviews (500+ lines)
+- ❌ Trusting AI claims about "missing data" without git verification
+
+---
+
+## Quick Reference
+
+### Commands to Run
+
+```bash
+# Get next review number
+grep -c "#### Review #" docs/AI_REVIEW_LEARNINGS_LOG.md
+
+# After fixes
+npm run lint
+npm run test
+npm run patterns:check
+```
+
+### Files to Update
+
+1. All files mentioned in review (fixes)
+2. `docs/AI_REVIEW_LEARNINGS_LOG.md` (learning entry - MANDATORY)
+3. Update consolidation counter if reviews since last > 10
+
+### Agents Available
+
+| Agent                  | Use For                          |
+| ---------------------- | -------------------------------- |
+| `security-auditor`     | Security vulnerabilities         |
+| `test-engineer`        | Test coverage gaps               |
+| `performance-engineer` | Performance issues               |
+| `technical-writer`     | Documentation issues             |
+| `debugger`             | Complex debugging                |
+| `backend-architect`    | Architecture concerns (backend)  |
+| `frontend-developer`   | Architecture concerns (frontend) |
+| `code-reviewer`        | General code quality             |
 
 ---
 
