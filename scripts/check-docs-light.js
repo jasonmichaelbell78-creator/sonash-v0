@@ -131,7 +131,8 @@ function determineTier(filePath, _content) {
  * @returns {string} - Content with normalized LF line endings
  */
 function normalizeLineEndings(content) {
-  return content.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  // S7781: Use replaceAll() for regex with global flag
+  return content.replaceAll(/\r\n/g, "\n").replaceAll(/\r/g, "\n");
 }
 
 /**

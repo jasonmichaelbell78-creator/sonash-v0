@@ -132,9 +132,11 @@ function parseJsonlFile(filePath) {
   for (let i = 0; i < lines.length; i++) {
     try {
       items.push(JSON.parse(lines[i]));
-    } catch (_e) {
-      // _e intentionally unused - we log line number context instead
-      console.warn(`Warning: Invalid JSON at line ${i + 1} in ${filePath}`);
+    } catch (error_) {
+      // S2486: Exception handled by logging and continuing to next line
+      // We intentionally skip invalid JSON lines rather than failing the entire parse
+      const errType = error_ instanceof SyntaxError ? "SyntaxError" : "Error";
+      console.warn(`Warning: ${errType} parsing JSON at line ${i + 1} in ${filePath}`);
     }
   }
 
@@ -172,17 +174,21 @@ function parseMarkdownBacklog(filePath) {
       currentSeverity = "S" + line.match(/^### S(\d) /)[1];
     }
 
-    // Match table rows - bounded whitespace to prevent ReDoS (S5852)
-    const rowMatch = line.match(
-      /\| {0,10}(DEDUP-\d+|CANON-\d+|LEGACY-\d+) {0,10}\| {0,10}([^|]+) {0,10}\| {0,10}(E\d) {0,10}\| {0,10}([^|]*) {0,10}\| {0,10}([^|]*) {0,10}\|/
-    );
-    if (rowMatch) {
+    // Match table rows using simpler two-step parsing (S5843 complexity reduction)
+    // Step 1: Quick check if line contains a valid ID pattern
+    const idMatch = line.match(/(?:DEDUP|CANON|LEGACY)-\d+/);
+    if (!idMatch || !line.startsWith("|")) continue;
+
+    // Step 2: Split by | and extract fields (simpler than complex single regex)
+    const parts = line.split("|").map((p) => p.trim());
+    // Expected: ['', 'ID', 'Title', 'Effort', 'Deps', 'PR', '']
+    if (parts.length >= 6 && /^E\d$/.test(parts[3])) {
       items.push({
-        id: rowMatch[1].trim(),
-        title: rowMatch[2].trim(),
-        effort: rowMatch[3].trim(),
-        deps: rowMatch[4].trim(),
-        pr: rowMatch[5].trim(),
+        id: parts[1],
+        title: parts[2],
+        effort: parts[3],
+        deps: parts[4],
+        pr: parts[5],
         category: currentCategory,
         severity: currentSeverity,
         source: "backlog",
@@ -363,8 +369,9 @@ function levenshteinDistance(str1, str2) {
  */
 function similarityScore(str1, str2) {
   if (!str1 || !str2) return 0;
-  const normalized1 = str1.toLowerCase().replace(/[^a-z0-9\s]/g, "");
-  const normalized2 = str2.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+  // S7781: Use replaceAll() for regex with global flag
+  const normalized1 = str1.toLowerCase().replaceAll(/[^a-z0-9\s]/g, "");
+  const normalized2 = str2.toLowerCase().replaceAll(/[^a-z0-9\s]/g, "");
 
   const maxLen = Math.max(normalized1.length, normalized2.length);
   if (maxLen === 0) return 100;
