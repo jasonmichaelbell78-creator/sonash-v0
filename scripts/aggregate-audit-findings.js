@@ -132,7 +132,8 @@ function parseJsonlFile(filePath) {
   for (let i = 0; i < lines.length; i++) {
     try {
       items.push(JSON.parse(lines[i]));
-    } catch (e) {
+    } catch (_e) {
+      // _e intentionally unused - we log line number context instead
       console.warn(`Warning: Invalid JSON at line ${i + 1} in ${filePath}`);
     }
   }
@@ -154,9 +155,7 @@ function parseMarkdownBacklog(filePath) {
 
   // Extract items from markdown tables
   // Pattern: | ID | Title | Effort | Deps | PR |
-  const tableRowPattern =
-    /\|\s*(DEDUP-\d+|CANON-\d+|LEGACY-\d+)\s*\|\s*([^|]+)\s*\|\s*(E\d)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/g;
-  let match;
+  // Note: Using bounded whitespace ` {0,10}` instead of `\s*` to prevent ReDoS (S5852)
 
   // Track which category we're in
   let currentCategory = "unknown";
@@ -173,9 +172,9 @@ function parseMarkdownBacklog(filePath) {
       currentSeverity = "S" + line.match(/^### S(\d) /)[1];
     }
 
-    // Match table rows
+    // Match table rows - bounded whitespace to prevent ReDoS (S5852)
     const rowMatch = line.match(
-      /\|\s*(DEDUP-\d+|CANON-\d+|LEGACY-\d+)\s*\|\s*([^|]+)\s*\|\s*(E\d)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/
+      /\| {0,10}(DEDUP-\d+|CANON-\d+|LEGACY-\d+) {0,10}\| {0,10}([^|]+) {0,10}\| {0,10}(E\d) {0,10}\| {0,10}([^|]*) {0,10}\| {0,10}([^|]*) {0,10}\|/
     );
     if (rowMatch) {
       items.push({
@@ -207,8 +206,9 @@ function parseAuditFindingsBacklog(filePath) {
   const items = [];
 
   // Find items by ### headers with [Category] pattern
+  // Using bounded match `.{0,500}?` instead of `[^]*?` to prevent ReDoS (S5852)
   const itemPattern =
-    /### \[([^\]]+)\] ([^\n]+)\n\n\*\*CANON-ID\*\*: (CANON-\d+|LEGACY-\d+)[^]*?\*\*Severity\*\*: (S\d)[^]*?\*\*Effort\*\*: (E\d)/g;
+    /### \[([^\]]+)\] ([^\n]+)\n\n\*\*CANON-ID\*\*: (CANON-\d+|LEGACY-\d+)[\s\S]{0,500}?\*\*Severity\*\*: (S\d)[\s\S]{0,500}?\*\*Effort\*\*: (E\d)/g;
   let match;
 
   while ((match = itemPattern.exec(content)) !== null) {
@@ -326,22 +326,28 @@ function normalizeBacklog(item) {
   };
 }
 
+// Maximum string length for Levenshtein to prevent O(n²) DoS
+const MAX_LEVENSHTEIN_LENGTH = 500;
+
 /**
  * Calculate Levenshtein distance for fuzzy matching
+ * Truncates strings > MAX_LEVENSHTEIN_LENGTH to prevent DoS
  */
 function levenshteinDistance(str1, str2) {
-  const m = str1.length;
-  const n = str2.length;
-  const dp = Array(m + 1)
-    .fill(null)
-    .map(() => Array(n + 1).fill(0));
+  // Truncate long strings to prevent O(n²) DoS
+  const s1 = str1.length > MAX_LEVENSHTEIN_LENGTH ? str1.slice(0, MAX_LEVENSHTEIN_LENGTH) : str1;
+  const s2 = str2.length > MAX_LEVENSHTEIN_LENGTH ? str2.slice(0, MAX_LEVENSHTEIN_LENGTH) : str2;
+
+  const m = s1.length;
+  const n = s2.length;
+  const dp = new Array(m + 1).fill(null).map(() => new Array(n + 1).fill(0));
 
   for (let i = 0; i <= m; i++) dp[i][0] = i;
   for (let j = 0; j <= n; j++) dp[0][j] = j;
 
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
-      if (str1[i - 1] === str2[j - 1]) {
+      if (s1[i - 1] === s2[j - 1]) {
         dp[i][j] = dp[i - 1][j - 1];
       } else {
         dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
@@ -368,56 +374,69 @@ function similarityScore(str1, str2) {
 }
 
 /**
+ * Check for explicit DEDUP->CANON dependency between findings
+ * (Extracted to reduce cognitive complexity)
+ */
+function checkDedupCanonDependency(canonFinding, dedupFinding) {
+  if (!canonFinding.original_id?.startsWith("CANON-")) return null;
+  if (!dedupFinding.original_id?.startsWith("DEDUP-")) return null;
+  if (!dedupFinding.dependencies?.includes(canonFinding.original_id)) return null;
+  return "explicit DEDUP->CANON dependency";
+}
+
+/**
+ * Check file + title similarity merge criteria
+ * (Extracted to reduce cognitive complexity)
+ */
+function checkFileTitleSimilarity(finding1, finding2) {
+  if (!finding1.file || !finding2.file) return null;
+  if (finding1.file !== finding2.file) return null;
+  const titleSimilarity = similarityScore(finding1.title, finding2.title);
+  if (titleSimilarity < 80) return null;
+  return `same file + similar title (${titleSimilarity}%)`;
+}
+
+/**
+ * Check category + title similarity merge criteria
+ * (Extracted to reduce cognitive complexity)
+ */
+function checkCategoryTitleSimilarity(finding1, finding2) {
+  if (finding1.category !== finding2.category) return null;
+  const titleSimilarity = similarityScore(finding1.title, finding2.title);
+  if (titleSimilarity < 90) return null;
+  return `same category + very similar title (${titleSimilarity}%)`;
+}
+
+/**
  * Check if two findings should be merged
  */
 function shouldMerge(finding1, finding2, dedupLog) {
   const reasons = [];
 
-  // Check explicit cross-references
-  const crossRef1 = finding1.cross_ref || finding1.original_id;
-  const crossRef2 = finding2.cross_ref || finding2.original_id;
-
-  // Match CANON-* to DEDUP-* mappings
-  if (finding1.original_id?.startsWith("CANON-") && finding2.original_id?.startsWith("DEDUP-")) {
-    // Check if DEDUP references the CANON
-    if (finding2.dependencies?.includes(finding1.original_id)) {
-      reasons.push("explicit DEDUP->CANON dependency");
-    }
-  }
-  if (finding2.original_id?.startsWith("CANON-") && finding1.original_id?.startsWith("DEDUP-")) {
-    if (finding1.dependencies?.includes(finding2.original_id)) {
-      reasons.push("explicit DEDUP->CANON dependency");
-    }
-  }
+  // Check explicit cross-references (both directions)
+  const canonDep1 = checkDedupCanonDependency(finding1, finding2);
+  const canonDep2 = checkDedupCanonDependency(finding2, finding1);
+  if (canonDep1) reasons.push(canonDep1);
+  if (canonDep2) reasons.push(canonDep2);
 
   // Same file + similar symbol/title
-  if (finding1.file && finding2.file && finding1.file === finding2.file) {
-    const titleSimilarity = similarityScore(finding1.title, finding2.title);
-    if (titleSimilarity >= 80) {
-      reasons.push(`same file + similar title (${titleSimilarity}%)`);
-    }
-  }
+  const fileTitleMatch = checkFileTitleSimilarity(finding1, finding2);
+  if (fileTitleMatch) reasons.push(fileTitleMatch);
 
   // Same category + very similar title
-  if (finding1.category === finding2.category) {
-    const titleSimilarity = similarityScore(finding1.title, finding2.title);
-    if (titleSimilarity >= 90) {
-      reasons.push(`same category + very similar title (${titleSimilarity}%)`);
-    }
-  }
+  const categoryTitleMatch = checkCategoryTitleSimilarity(finding1, finding2);
+  if (categoryTitleMatch) reasons.push(categoryTitleMatch);
 
-  if (reasons.length > 0) {
-    dedupLog.push({
-      action: "merge",
-      finding1_id: finding1.original_id,
-      finding2_id: finding2.original_id,
-      reasons,
-      timestamp: new Date().toISOString(),
-    });
-    return true;
-  }
+  if (reasons.length === 0) return false;
 
-  return false;
+  dedupLog.push({
+    action: "merge",
+    finding1_id: finding1.original_id,
+    finding2_id: finding2.original_id,
+    reasons,
+    timestamp: new Date().toISOString(),
+  });
+  return true;
 }
 
 /**
@@ -467,24 +486,10 @@ function determinePrBucket(finding) {
 }
 
 /**
- * Main aggregation function
+ * Parse all single-session audit files
+ * (Extracted to reduce cognitive complexity)
  */
-function aggregate() {
-  console.log("=== Master Issue Aggregation ===\n");
-
-  const allFindings = [];
-  const stats = {
-    singleSession: 0,
-    canon: 0,
-    backlog: 0,
-    auditBacklog: 0,
-    total: 0,
-  };
-
-  // Phase 1: Parse all sources
-  console.log("Phase 1: Parsing all sources...");
-
-  // Parse single-session audits
+function parseSingleSessionAudits(allFindings, stats) {
   const singleSessionCategories = [
     "code",
     "security",
@@ -505,8 +510,13 @@ function aggregate() {
       stats.singleSession++;
     }
   }
+}
 
-  // Parse CANON files
+/**
+ * Parse all CANON JSONL files
+ * (Extracted to reduce cognitive complexity)
+ */
+function parseCanonFiles(allFindings, stats) {
   const canonFiles = [
     "CANON-CODE.jsonl",
     "CANON-SECURITY.jsonl",
@@ -526,39 +536,13 @@ function aggregate() {
       stats.canon++;
     }
   }
+}
 
-  // Parse REFACTOR_BACKLOG.md
-  const backlogItems = parseMarkdownBacklog(CONFIG.refactorBacklog);
-  console.log(`  - REFACTOR_BACKLOG.md: ${backlogItems.length} items`);
-  for (const item of backlogItems) {
-    allFindings.push(normalizeBacklog(item));
-    stats.backlog++;
-  }
-
-  // Parse AUDIT_FINDINGS_BACKLOG.md
-  const auditBacklogItems = parseAuditFindingsBacklog(CONFIG.auditBacklog);
-  console.log(`  - AUDIT_FINDINGS_BACKLOG.md: ${auditBacklogItems.length} items`);
-  for (const item of auditBacklogItems) {
-    allFindings.push(normalizeBacklog(item));
-    stats.auditBacklog++;
-  }
-
-  stats.total = allFindings.length;
-  console.log(`\nTotal raw findings: ${stats.total}`);
-
-  // Write raw findings
-  const rawFindingsPath = path.join(CONFIG.outputDir, "raw-findings.jsonl");
-  fs.writeFileSync(rawFindingsPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
-  console.log(`  Wrote: ${rawFindingsPath}`);
-
-  // Phase 2: Already normalized during parsing
-  console.log("\nPhase 2: Schema normalization complete (done during parsing)");
-  const normalizedPath = path.join(CONFIG.outputDir, "normalized-findings.jsonl");
-  fs.writeFileSync(normalizedPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
-  console.log(`  Wrote: ${normalizedPath}`);
-
-  // Phase 3: Deduplication
-  console.log("\nPhase 3: Deduplicating findings...");
+/**
+ * Deduplicate findings using merge logic
+ * (Extracted to reduce cognitive complexity)
+ */
+function deduplicateFindings(allFindings) {
   const dedupLog = [];
   const uniqueFindings = [];
   const processed = new Set();
@@ -581,6 +565,101 @@ function aggregate() {
     processed.add(i);
   }
 
+  return { uniqueFindings, dedupLog };
+}
+
+/**
+ * Print final summary statistics
+ * (Extracted to reduce cognitive complexity)
+ */
+function printSummary(stats, masterList, severityCounts, bucketCounts) {
+  console.log("\n=== Aggregation Complete ===");
+  console.log(`\nSource Summary:`);
+  console.log(`  Single-session audits: ${stats.singleSession}`);
+  console.log(`  CANON files: ${stats.canon}`);
+  console.log(`  REFACTOR_BACKLOG: ${stats.backlog}`);
+  console.log(`  AUDIT_FINDINGS_BACKLOG: ${stats.auditBacklog}`);
+  console.log(`  Total raw: ${stats.total}`);
+  console.log(`  After dedup: ${masterList.length}`);
+
+  console.log(`\nSeverity Distribution:`);
+  console.log(`  S0 Critical: ${severityCounts.S0}`);
+  console.log(`  S1 High: ${severityCounts.S1}`);
+  console.log(`  S2 Medium: ${severityCounts.S2}`);
+  console.log(`  S3 Low: ${severityCounts.S3}`);
+
+  console.log(`\nPR Bucket Summary:`);
+  for (const [bucket, count] of Object.entries(bucketCounts).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${bucket}: ${count}`);
+  }
+
+  // Quick wins (E0/E1 + S1/S2)
+  const quickWins = masterList.filter(
+    (m) => ["E0", "E1"].includes(m.effort) && ["S1", "S2"].includes(m.severity)
+  );
+  console.log(`\nQuick Wins (E0/E1 + S1/S2): ${quickWins.length}`);
+}
+
+/**
+ * Main aggregation function
+ */
+function aggregate() {
+  console.log("=== Master Issue Aggregation ===\n");
+
+  const allFindings = [];
+  const stats = {
+    singleSession: 0,
+    canon: 0,
+    backlog: 0,
+    auditBacklog: 0,
+    total: 0,
+  };
+
+  // Phase 1: Parse all sources
+  console.log("Phase 1: Parsing all sources...");
+
+  parseSingleSessionAudits(allFindings, stats);
+  parseCanonFiles(allFindings, stats);
+
+  // Parse REFACTOR_BACKLOG.md
+  const backlogItems = parseMarkdownBacklog(CONFIG.refactorBacklog);
+  console.log(`  - REFACTOR_BACKLOG.md: ${backlogItems.length} items`);
+  for (const item of backlogItems) {
+    allFindings.push(normalizeBacklog(item));
+    stats.backlog++;
+  }
+
+  // Parse AUDIT_FINDINGS_BACKLOG.md
+  const auditBacklogItems = parseAuditFindingsBacklog(CONFIG.auditBacklog);
+  console.log(`  - AUDIT_FINDINGS_BACKLOG.md: ${auditBacklogItems.length} items`);
+  for (const item of auditBacklogItems) {
+    allFindings.push(normalizeBacklog(item));
+    stats.auditBacklog++;
+  }
+
+  stats.total = allFindings.length;
+  console.log(`\nTotal raw findings: ${stats.total}`);
+
+  // Ensure output directory exists before writing files
+  if (!fs.existsSync(CONFIG.outputDir)) {
+    fs.mkdirSync(CONFIG.outputDir, { recursive: true });
+    console.log(`  Created output directory: ${CONFIG.outputDir}`);
+  }
+
+  // Write raw findings
+  const rawFindingsPath = path.join(CONFIG.outputDir, "raw-findings.jsonl");
+  fs.writeFileSync(rawFindingsPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
+  console.log(`  Wrote: ${rawFindingsPath}`);
+
+  // Phase 2: Already normalized during parsing
+  console.log("\nPhase 2: Schema normalization complete (done during parsing)");
+  const normalizedPath = path.join(CONFIG.outputDir, "normalized-findings.jsonl");
+  fs.writeFileSync(normalizedPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
+  console.log(`  Wrote: ${normalizedPath}`);
+
+  // Phase 3: Deduplication
+  console.log("\nPhase 3: Deduplicating findings...");
+  const { uniqueFindings, dedupLog } = deduplicateFindings(allFindings);
   console.log(
     `  Deduplicated: ${stats.total} -> ${uniqueFindings.length} (${Math.round((1 - uniqueFindings.length / stats.total) * 100)}% reduction)`
   );
@@ -663,31 +742,7 @@ function aggregate() {
   console.log(`  Wrote: ${implPlanPath}`);
 
   // Print summary
-  console.log("\n=== Aggregation Complete ===");
-  console.log(`\nSource Summary:`);
-  console.log(`  Single-session audits: ${stats.singleSession}`);
-  console.log(`  CANON files: ${stats.canon}`);
-  console.log(`  REFACTOR_BACKLOG: ${stats.backlog}`);
-  console.log(`  AUDIT_FINDINGS_BACKLOG: ${stats.auditBacklog}`);
-  console.log(`  Total raw: ${stats.total}`);
-  console.log(`  After dedup: ${masterList.length}`);
-
-  console.log(`\nSeverity Distribution:`);
-  console.log(`  S0 Critical: ${severityCounts.S0}`);
-  console.log(`  S1 High: ${severityCounts.S1}`);
-  console.log(`  S2 Medium: ${severityCounts.S2}`);
-  console.log(`  S3 Low: ${severityCounts.S3}`);
-
-  console.log(`\nPR Bucket Summary:`);
-  for (const [bucket, count] of Object.entries(bucketCounts).sort((a, b) => b[1] - a[1])) {
-    console.log(`  ${bucket}: ${count}`);
-  }
-
-  // Quick wins (E0/E1 + S1/S2)
-  const quickWins = masterList.filter(
-    (m) => ["E0", "E1"].includes(m.effort) && ["S1", "S2"].includes(m.severity)
-  );
-  console.log(`\nQuick Wins (E0/E1 + S1/S2): ${quickWins.length}`);
+  printSummary(stats, masterList, severityCounts, bucketCounts);
 
   return { masterList, stats, severityCounts, categoryCounts, bucketCounts };
 }
@@ -975,6 +1030,12 @@ Based on severity, effort, and dependencies:
 try {
   aggregate();
 } catch (error) {
-  console.error("Aggregation failed:", error);
+  // Sanitize error output - log type and truncated message only, no stack trace
+  const errorType = error instanceof Error ? error.constructor.name : "Error";
+  const errorMsg =
+    error instanceof Error
+      ? error.message.slice(0, 200) // Truncate to prevent sensitive data leakage
+      : String(error).slice(0, 200);
+  console.error(`Aggregation failed [${errorType}]: ${errorMsg}`);
   process.exit(1);
 }
