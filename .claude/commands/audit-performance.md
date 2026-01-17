@@ -61,13 +61,20 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (5 Categories):**
+**Focus Areas (6 Categories):**
 
 1. Bundle Size & Loading (large deps, code splitting, dynamic imports)
 2. Rendering Performance (re-renders, memoization, virtualization)
 3. Data Fetching & Caching (query optimization, caching strategy)
 4. Memory Management (effect cleanup, subscription leaks)
 5. Core Web Vitals (LCP, INP, CLS optimization)
+6. Offline Support (NEW - 2026-01-17):
+   - Offline state storage (localStorage, IndexedDB, cache API)
+   - Sync strategy (optimistic updates, conflict resolution)
+   - Failure mode handling (network errors, retry logic)
+   - Offline-first data patterns (queue writes, batch sync)
+   - Service worker caching strategy
+   - Offline testability (can app function without network?)
 
 **For each category:**
 
@@ -207,7 +214,7 @@ Each line (UPDATED SCHEMA with confidence and verification):
 ```json
 {
   "id": "PERF-001",
-  "category": "Bundle|Rendering|DataFetch|Memory|WebVitals",
+  "category": "Bundle|Rendering|DataFetch|Memory|WebVitals|Offline",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": "HIGH|MEDIUM|LOW",
