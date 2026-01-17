@@ -231,6 +231,8 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
           if (pathParts.length < 2) continue;
 
           const userId = pathParts[1];
+          // SECURITY: Validate userId is a non-empty string to prevent malformed path issues
+          if (!userId || typeof userId !== "string") continue;
 
           // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
           if (!existingUserIds.has(userId)) {

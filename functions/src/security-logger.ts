@@ -201,7 +201,9 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 export function redactSensitiveMetadata(
   metadata?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
-  if (!metadata || !isPlainObject(metadata)) return undefined;
+  if (!metadata) return undefined;
+  // Preserve non-plain objects (Date, Timestamp, etc.) as-is
+  if (!isPlainObject(metadata)) return metadata;
 
   return Object.fromEntries(
     Object.entries(metadata).map(([key, value]) => {
@@ -254,7 +256,9 @@ async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
   } catch (err) {
     // Log to console to make the error visible for debugging,
     // but don't re-trigger the security logger to avoid loops.
-    console.error("Failed to store security event in Firestore:", err);
+    // SECURITY: Sanitize error - only log type, not full object (may contain sensitive details)
+    const errorType = err instanceof Error ? err.name : "UnknownError";
+    console.error(`Failed to store security event in Firestore: ${errorType}`);
   }
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { DashboardTab } from "./dashboard-tab";
 import { MeetingsTab } from "./meetings-tab";
 import { SoberLivingTab } from "./sober-living-tab";
@@ -58,7 +59,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
     tab: {
       id: string;
       label: string;
-      icon: (props: { className?: string }) => JSX.Element;
+      icon: React.ComponentType<{ className?: string }>;
     };
   }) => {
     const Icon = tab.icon;

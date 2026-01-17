@@ -1451,6 +1451,32 @@ const privilegeTypeSchema = z.object({
   isDefault: z.boolean().optional(),
 });
 
+// Privilege type structure
+interface PrivilegeType {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  isDefault?: boolean;
+}
+
+/**
+ * Normalize privilege type defaults - ensures only one type is marked as default
+ * @param types - Array of privilege types
+ * @param newDefaultId - ID of the new default type (if setting a default)
+ * @returns Normalized array with only one default
+ */
+function normalizePrivilegeDefaults(
+  types: PrivilegeType[],
+  newDefaultId?: string
+): PrivilegeType[] {
+  if (!newDefaultId) return types;
+  return types.map((t) => ({
+    ...t,
+    isDefault: t.id === newDefaultId,
+  }));
+}
+
 export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (request) => {
   await requireAdmin(request, "adminSavePrivilegeType");
 
@@ -1510,12 +1536,9 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
         types.push(validatedType);
       }
 
-      // If this is set as default, unset all others
+      // Normalize defaults - ensures only one type is marked as default
       if (validatedType.isDefault) {
-        types = types.map((t) => ({
-          ...t,
-          isDefault: t.id === validatedType.id,
-        }));
+        types = normalizePrivilegeDefaults(types, validatedType.id);
       }
 
       transaction.set(privilegesRef, {
@@ -1635,14 +1658,8 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       throw new HttpsError("not-found", "Privilege type not found");
     }
 
-    // Update user document
-    await db.collection("users").doc(uid).update({
-      privilegeType: privilegeTypeId,
-      privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      privilegeUpdatedBy: request.auth?.uid,
-    });
-
-    // Update custom claims - IMPORTANT: preserve existing claims
+    // SECURITY: Update custom claims FIRST - prevents privilege escalation if Firestore fails
+    // If Firestore update fails after claims, we fail safely (no dangling admin claims)
     const authUser = await admin.auth().getUser(uid);
     const currentClaims = authUser.customClaims || {};
 
@@ -1654,6 +1671,13 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       // This preserves other claims while properly removing the admin claim
       await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
     }
+
+    // Update user document AFTER claims are set
+    await db.collection("users").doc(uid).update({
+      privilegeType: privilegeTypeId,
+      privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      privilegeUpdatedBy: request.auth?.uid,
+    });
 
     return { success: true, message: `User privilege set to ${privilegeTypeId}` };
   } catch (error) {

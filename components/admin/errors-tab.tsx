@@ -123,7 +123,7 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
         <td className="px-6 py-4">
           <div className="flex items-center gap-1.5 text-amber-700">
             <Users className="h-3.5 w-3.5" />
-            <span>{issue.userCount.toLocaleString()}</span>
+            <span>{(issue.userCount ?? 0).toLocaleString()}</span>
           </div>
         </td>
         <td className="px-6 py-4 text-amber-700">{lastSeenFormatted}</td>
@@ -221,7 +221,7 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-amber-500" />
                   <span className="text-xs text-amber-600">
-                    {issue.userCount.toLocaleString()} users affected
+                    {(issue.userCount ?? 0).toLocaleString()} users affected
                   </span>
                 </div>
               </div>
@@ -350,7 +350,7 @@ export function ErrorsTab() {
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-amber-600" />
                 <p className="text-2xl font-semibold text-amber-900">
-                  {issues.reduce((sum, i) => sum + i.userCount, 0).toLocaleString()}
+                  {issues.reduce((sum, i) => sum + (i.userCount ?? 0), 0).toLocaleString()}
                 </p>
               </div>
               <p className="text-xs text-amber-600">Unique users with errors (24h)</p>
