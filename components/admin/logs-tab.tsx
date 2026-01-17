@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
 import {
@@ -253,7 +253,8 @@ export function LogsTab() {
     setExpandedRows(new Set());
   }, [severityFilter]);
 
-  const refresh = async () => {
+  // ROBUSTNESS: Accept isActive function to guard against state updates on unmounted component
+  const refresh = useCallback(async (isActive: () => boolean = () => true) => {
     setLoading(true);
     setError(null);
 
@@ -261,20 +262,33 @@ export function LogsTab() {
       const functions = getFunctions();
       const getLogs = httpsCallable<void, LogsResponse>(functions, "adminGetLogs");
       const result = await getLogs();
+
+      // Guard: Don't update state if component unmounted during fetch
+      if (!isActive()) return;
+
       setLogs(result.data.logs);
       setGcpLinks(result.data.gcpLinks);
     } catch (err) {
       logger.error("Failed to fetch logs", { error: err });
+      // Guard: Don't update state if component unmounted during fetch
+      if (!isActive()) return;
       // SECURITY: Don't expose raw error messages to UI
       setError("Failed to fetch logs. Please try again.");
-    } finally {
+    }
+    // Set loading false outside try/catch/finally to avoid unsafe return in finally
+    // Guard: Don't update state if component unmounted during fetch
+    if (isActive()) {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    refresh();
-  }, []);
+    let active = true;
+    void refresh(() => active);
+    return () => {
+      active = false;
+    };
+  }, [refresh]);
 
   // Count by severity
   const counts = useMemo(() => {
@@ -284,6 +298,24 @@ export function LogsTab() {
       info: logs.filter((l) => l.severity === "INFO").length,
     };
   }, [logs]);
+
+  // SECURITY: Validate GCP URLs to prevent open redirect/phishing if backend is compromised
+  const isSafeGcpUrl = useCallback((raw: string): boolean => {
+    try {
+      const url = new URL(raw);
+      return url.protocol === "https:" && url.hostname === "console.cloud.google.com";
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Filter gcpLinks to only include validated URLs
+  const safeGcpLinks = useMemo(() => {
+    if (!gcpLinks) return null;
+    const entries = Object.entries(gcpLinks).filter(([, url]) => isSafeGcpUrl(url));
+    if (entries.length === 0) return null;
+    return Object.fromEntries(entries) as LogsResponse["gcpLinks"];
+  }, [gcpLinks, isSafeGcpUrl]);
 
   return (
     <div className="space-y-6">
@@ -299,7 +331,7 @@ export function LogsTab() {
           </div>
         </div>
         <button
-          onClick={refresh}
+          onClick={() => void refresh()}
           disabled={loading}
           className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -314,68 +346,80 @@ export function LogsTab() {
         </div>
       )}
 
-      {/* GCP Deep Links */}
-      {gcpLinks && (
+      {/* GCP Deep Links - SECURITY: Uses validated safeGcpLinks to prevent open redirect */}
+      {safeGcpLinks && (
         <div className="rounded-lg border border-amber-100 bg-white p-4">
           <div className="flex items-center gap-2 mb-3">
             <ExternalLink className="h-4 w-4 text-amber-600" />
             <h3 className="text-sm font-semibold text-amber-900">GCP Cloud Logging Quick Links</h3>
           </div>
           <div className="flex flex-wrap gap-2">
-            <a
-              href={gcpLinks.allLogs}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              <FileText className="h-3.5 w-3.5" />
-              All Logs
-            </a>
-            <a
-              href={gcpLinks.errors}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
-            >
-              <AlertCircle className="h-3.5 w-3.5" />
-              Errors Only
-            </a>
-            <a
-              href={gcpLinks.warnings}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors"
-            >
-              <AlertTriangle className="h-3.5 w-3.5" />
-              Warnings
-            </a>
-            <a
-              href={gcpLinks.security}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 hover:bg-purple-100 transition-colors"
-            >
-              <Shield className="h-3.5 w-3.5" />
-              Security Events
-            </a>
-            <a
-              href={gcpLinks.auth}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
-            >
-              <Shield className="h-3.5 w-3.5" />
-              Auth Events
-            </a>
-            <a
-              href={gcpLinks.admin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-medium text-teal-700 hover:bg-teal-100 transition-colors"
-            >
-              <Clock className="h-3.5 w-3.5" />
-              Admin Actions
-            </a>
+            {safeGcpLinks.allLogs && (
+              <a
+                href={safeGcpLinks.allLogs}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <FileText className="h-3.5 w-3.5" />
+                All Logs
+              </a>
+            )}
+            {safeGcpLinks.errors && (
+              <a
+                href={safeGcpLinks.errors}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
+              >
+                <AlertCircle className="h-3.5 w-3.5" />
+                Errors Only
+              </a>
+            )}
+            {safeGcpLinks.warnings && (
+              <a
+                href={safeGcpLinks.warnings}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+              >
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Warnings
+              </a>
+            )}
+            {safeGcpLinks.security && (
+              <a
+                href={safeGcpLinks.security}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 hover:bg-purple-100 transition-colors"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                Security Events
+              </a>
+            )}
+            {safeGcpLinks.auth && (
+              <a
+                href={safeGcpLinks.auth}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                Auth Events
+              </a>
+            )}
+            {safeGcpLinks.admin && (
+              <a
+                href={safeGcpLinks.admin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-medium text-teal-700 hover:bg-teal-100 transition-colors"
+              >
+                <Clock className="h-3.5 w-3.5" />
+                Admin Actions
+              </a>
+            )}
           </div>
           <p className="text-xs text-amber-600 mt-3">
             Click any link to open GCP Cloud Logging with pre-filtered queries

@@ -116,72 +116,105 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
         </div>
       </div>
 
-      {/* Tab Content - with proper ARIA tabpanel linkage */}
+      {/* Tab Content - ARIA compliant: all panels rendered, visibility controlled via hidden attribute */}
+      {/* This ensures aria-controls on tab buttons always point to existing elements */}
       <div className="min-h-[400px]">
-        {activeTab === "dashboard" && (
-          <div role="tabpanel" id="admin-panel-dashboard" aria-labelledby="admin-tab-dashboard">
-            <DashboardTab />
-          </div>
-        )}
-        {activeTab === "users" && (
-          <div role="tabpanel" id="admin-panel-users" aria-labelledby="admin-tab-users">
-            <UsersTab />
-          </div>
-        )}
-        {activeTab === "jobs" && (
-          <div role="tabpanel" id="admin-panel-jobs" aria-labelledby="admin-tab-jobs">
-            <JobsTab />
-          </div>
-        )}
-        {activeTab === "errors" && (
-          <div role="tabpanel" id="admin-panel-errors" aria-labelledby="admin-tab-errors">
-            <ErrorsTab />
-          </div>
-        )}
-        {activeTab === "logs" && (
-          <div role="tabpanel" id="admin-panel-logs" aria-labelledby="admin-tab-logs">
-            <LogsTab />
-          </div>
-        )}
-        {activeTab === "meetings" && (
-          <div role="tabpanel" id="admin-panel-meetings" aria-labelledby="admin-tab-meetings">
-            <MeetingsTab />
-          </div>
-        )}
-        {activeTab === "sober-living" && (
-          <div
-            role="tabpanel"
-            id="admin-panel-sober-living"
-            aria-labelledby="admin-tab-sober-living"
-          >
-            <SoberLivingTab />
-          </div>
-        )}
-        {activeTab === "quotes" && (
-          <div role="tabpanel" id="admin-panel-quotes" aria-labelledby="admin-tab-quotes">
-            <QuotesTab />
-          </div>
-        )}
-        {activeTab === "slogans" && (
-          <div role="tabpanel" id="admin-panel-slogans" aria-labelledby="admin-tab-slogans">
-            <SlogansTab />
-          </div>
-        )}
-        {activeTab === "links" && (
-          <div role="tabpanel" id="admin-panel-links" aria-labelledby="admin-tab-links">
-            <LinksTab />
-          </div>
-        )}
-        {activeTab === "prayers" && (
-          <div role="tabpanel" id="admin-panel-prayers" aria-labelledby="admin-tab-prayers">
-            <PrayersTab />
-          </div>
-        )}
-        {activeTab === "glossary" && (
-          <div role="tabpanel" id="admin-panel-glossary" aria-labelledby="admin-tab-glossary">
-            <GlossaryTab />
-          </div>
-        )}
+        <div
+          role="tabpanel"
+          id="admin-panel-dashboard"
+          aria-labelledby="admin-tab-dashboard"
+          hidden={activeTab !== "dashboard"}
+        >
+          <DashboardTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-users"
+          aria-labelledby="admin-tab-users"
+          hidden={activeTab !== "users"}
+        >
+          <UsersTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-jobs"
+          aria-labelledby="admin-tab-jobs"
+          hidden={activeTab !== "jobs"}
+        >
+          <JobsTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-errors"
+          aria-labelledby="admin-tab-errors"
+          hidden={activeTab !== "errors"}
+        >
+          <ErrorsTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-logs"
+          aria-labelledby="admin-tab-logs"
+          hidden={activeTab !== "logs"}
+        >
+          <LogsTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-meetings"
+          aria-labelledby="admin-tab-meetings"
+          hidden={activeTab !== "meetings"}
+        >
+          <MeetingsTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-sober-living"
+          aria-labelledby="admin-tab-sober-living"
+          hidden={activeTab !== "sober-living"}
+        >
+          <SoberLivingTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-quotes"
+          aria-labelledby="admin-tab-quotes"
+          hidden={activeTab !== "quotes"}
+        >
+          <QuotesTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-slogans"
+          aria-labelledby="admin-tab-slogans"
+          hidden={activeTab !== "slogans"}
+        >
+          <SlogansTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-links"
+          aria-labelledby="admin-tab-links"
+          hidden={activeTab !== "links"}
+        >
+          <LinksTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-prayers"
+          aria-labelledby="admin-tab-prayers"
+          hidden={activeTab !== "prayers"}
+        >
+          <PrayersTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-glossary"
+          aria-labelledby="admin-tab-glossary"
+          hidden={activeTab !== "glossary"}
+        >
+          <GlossaryTab />
+        </div>
       </div>
     </div>
   );

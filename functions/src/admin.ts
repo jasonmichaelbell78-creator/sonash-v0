@@ -1393,6 +1393,13 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
       admin: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"ADMIN" ${timeRange}`)};project=${projectId}`,
     };
 
+    // AUDIT: Log successful access to security logs for compliance traceability
+    logSecurityEvent("ADMIN_ACTION", "adminGetLogs", "Admin viewed security logs", {
+      userId: request.auth?.uid,
+      metadata: { logsCount: logs.length, severity: severity || "all" },
+      storeInFirestore: true, // Store INFO events for audit trail
+    });
+
     return {
       logs,
       gcpLinks,
@@ -1759,29 +1766,40 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
     // ATOMICITY: Store previous privilege for accurate rollback (not hardcoded "free")
     const userRef = db.collection("users").doc(uid);
     const userSnap = await userRef.get();
+    // ROBUSTNESS: Validate prevPrivilegeType is a string to prevent writing corrupt data on rollback
+    const rawPrevPrivilegeType = userSnap.exists
+      ? (userSnap.data() as Record<string, unknown> | undefined)?.privilegeType
+      : undefined;
     const prevPrivilegeType =
-      (userSnap.exists
-        ? (userSnap.data() as Record<string, unknown> | undefined)?.privilegeType
-        : undefined) ?? "free";
+      typeof rawPrevPrivilegeType === "string" && rawPrevPrivilegeType
+        ? rawPrevPrivilegeType
+        : "free";
 
     if (privilegeTypeId === "admin") {
       // GRANTING admin: Write Firestore FIRST, then set claims
       // If Firestore fails, user won't get admin claims (fail-safe)
-      await userRef.update({
-        privilegeType: privilegeTypeId,
-        privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        privilegeUpdatedBy: request.auth?.uid,
-      });
+      // ROBUSTNESS: Use set() with merge to handle case where user doc doesn't exist
+      await userRef.set(
+        {
+          privilegeType: privilegeTypeId,
+          privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          privilegeUpdatedBy: request.auth?.uid,
+        },
+        { merge: true }
+      );
 
       try {
         await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
       } catch (claimsError) {
         // ATOMICITY: Roll back to ACTUAL previous privilege, not hardcoded "free"
-        await userRef.update({
-          privilegeType: prevPrivilegeType,
-          privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          privilegeUpdatedBy: request.auth?.uid,
-        });
+        await userRef.set(
+          {
+            privilegeType: prevPrivilegeType,
+            privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            privilegeUpdatedBy: request.auth?.uid,
+          },
+          { merge: true }
+        );
         throw claimsError;
       }
     } else {
@@ -1790,11 +1808,15 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       if (currentClaims.admin) {
         await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
       }
-      await userRef.update({
-        privilegeType: privilegeTypeId,
-        privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        privilegeUpdatedBy: request.auth?.uid,
-      });
+      // ROBUSTNESS: Use set() with merge to handle case where user doc doesn't exist
+      await userRef.set(
+        {
+          privilegeType: privilegeTypeId,
+          privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          privilegeUpdatedBy: request.auth?.uid,
+        },
+        { merge: true }
+      );
     }
 
     return { success: true, message: `User privilege set to ${privilegeTypeId}` };
@@ -1856,19 +1878,27 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
         const cursorData = cursorDoc.data() as Record<string, unknown> | undefined;
         const rawValue = cursorData?.[safeSortBy] as unknown;
 
-        // ROBUSTNESS: Use sentinel timestamps for timestamp fields when null
-        // Prevents Firestore cursor type mismatch errors
+        // ROBUSTNESS: Use sentinel timestamps for timestamp fields when null/malformed
+        // Prevents Firestore cursor type mismatch errors that cause startAfter() to throw
         const isTimestampField = safeSortBy === "createdAt" || safeSortBy === "lastActive";
         let sortValue: unknown;
 
-        if (rawValue !== undefined && rawValue !== null) {
+        if (isTimestampField) {
+          // Validate rawValue is a Firestore Timestamp or Date before using
+          if (rawValue instanceof admin.firestore.Timestamp) {
+            sortValue = rawValue;
+          } else if (rawValue instanceof Date) {
+            sortValue = admin.firestore.Timestamp.fromDate(rawValue);
+          } else {
+            // Use sentinel timestamp: min for asc, max for desc
+            sortValue =
+              safeSortOrder === "asc"
+                ? admin.firestore.Timestamp.fromMillis(0)
+                : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
+          }
+        } else if (typeof rawValue === "string") {
+          // For nickname field, only use if it's a string
           sortValue = rawValue;
-        } else if (isTimestampField) {
-          // Use sentinel timestamp: min for asc, max for desc
-          sortValue =
-            safeSortOrder === "asc"
-              ? admin.firestore.Timestamp.fromMillis(0)
-              : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
         } else {
           // ROBUSTNESS: Use string sentinels for nickname field (prevents cursor type mismatch)
           sortValue = safeSortOrder === "asc" ? "" : "\uf8ff";

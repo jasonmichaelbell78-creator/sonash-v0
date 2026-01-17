@@ -124,7 +124,10 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
           <div className="flex items-center gap-1.5 text-amber-700">
             <Users className="h-3.5 w-3.5" />
             <span>
-              {typeof issue.userCount === "number" ? issue.userCount.toLocaleString() : "N/A"}
+              {/* ROBUSTNESS: Use Number.isFinite to prevent NaN from rendering in UI */}
+              {Number.isFinite(issue.userCount)
+                ? Math.max(0, issue.userCount as number).toLocaleString()
+                : "N/A"}
             </span>
           </div>
         </td>

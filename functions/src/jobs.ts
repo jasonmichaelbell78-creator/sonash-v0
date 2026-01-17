@@ -273,8 +273,16 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
           // RESILIENCE: Log per-file errors but continue processing other files
           errors++;
           // SECURITY: Don't log file.name (contains userId) - log error type and count only
+          // COMPLIANCE: Use structured JSON format for consistent log parsing/monitoring
           const errorType = fileError instanceof Error ? fileError.name : "UnknownError";
-          console.error(`Storage cleanup error [${errorType}] - Total errors: ${errors}`);
+          const structuredLog = {
+            severity: "WARNING",
+            message: "Storage cleanup per-file error",
+            error: { type: errorType },
+            stats: { totalErrors: errors },
+            timestamp: new Date().toISOString(),
+          };
+          console.error(JSON.stringify(structuredLog));
         }
       }
 

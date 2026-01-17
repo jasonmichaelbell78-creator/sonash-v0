@@ -207,8 +207,18 @@ export function redactSensitiveMetadata(
   metadata?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
   if (!metadata) return undefined;
-  // Preserve non-plain objects (Date, Timestamp, etc.) as-is
-  if (!isPlainObject(metadata)) return metadata;
+  // SECURITY: Non-plain objects (Error, class instances, custom prototypes) may contain
+  // sensitive data in their properties. Convert to safe string representation to prevent
+  // accidental PII/secret exposure while still providing some debugging context.
+  if (!isPlainObject(metadata)) {
+    // For Error-like objects, extract only safe properties
+    if (metadata instanceof Error) {
+      return { errorType: metadata.name, errorMessage: "[REDACTED]" };
+    }
+    // For other non-plain objects (Timestamp, Date, class instances), just indicate type
+    const constructorName = metadata.constructor?.name || "UnknownType";
+    return { nonPlainObjectType: constructorName, value: "[NON_PLAIN_OBJECT]" };
+  }
 
   return Object.fromEntries(
     Object.entries(metadata).map(([key, value]) => {
