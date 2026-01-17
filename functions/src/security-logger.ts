@@ -203,10 +203,8 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * SECURITY: Recursively scans nested objects and arrays
  * EXPORTED: Also used for defense-in-depth redaction on read (adminGetLogs)
  */
-export function redactSensitiveMetadata(
-  metadata?: Record<string, unknown>
-): Record<string, unknown> | undefined {
-  if (!metadata) return undefined;
+export function redactSensitiveMetadata(metadata?: unknown): Record<string, unknown> | undefined {
+  if (metadata === undefined || metadata === null) return undefined;
   // SECURITY: Non-plain objects (Error, class instances, custom prototypes) may contain
   // sensitive data in their properties. Convert to safe string representation to prevent
   // accidental PII/secret exposure while still providing some debugging context.
@@ -216,8 +214,13 @@ export function redactSensitiveMetadata(
       return { errorType: metadata.name, errorMessage: "[REDACTED]" };
     }
     // For other non-plain objects (Timestamp, Date, class instances), just indicate type
-    const constructorName = metadata.constructor?.name || "UnknownType";
-    return { nonPlainObjectType: constructorName, value: "[NON_PLAIN_OBJECT]" };
+    if (typeof metadata === "object" && metadata !== null) {
+      const constructorName =
+        (metadata as { constructor?: { name?: string } }).constructor?.name || "UnknownType";
+      return { nonPlainObjectType: constructorName, value: "[NON_PLAIN_OBJECT]" };
+    }
+    // For primitives passed as metadata, convert to safe representation
+    return { primitiveType: typeof metadata, value: "[NON_OBJECT]" };
   }
 
   return Object.fromEntries(

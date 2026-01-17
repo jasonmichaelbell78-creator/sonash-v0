@@ -23,6 +23,7 @@ export default [
       "src/dataconnect-generated/**",
       "functions/lib/**",
       "*.config.mjs",
+      ".claude/hooks/backup/**",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules
     ],
   },
