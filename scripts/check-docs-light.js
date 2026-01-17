@@ -26,7 +26,7 @@
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from "fs";
-import { join, dirname, basename, relative, extname } from "path";
+import { join, dirname, basename, relative, extname, isAbsolute } from "path";
 import { fileURLToPath } from "url";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
@@ -125,13 +125,23 @@ function determineTier(filePath, _content) {
 }
 
 /**
+ * Normalize line endings to LF (Unix style)
+ * Fixes Windows CRLF files that break regex patterns with $ anchor
+ * @param {string} content - Content with potentially mixed line endings
+ * @returns {string} - Content with normalized LF line endings
+ */
+function normalizeLineEndings(content) {
+  return content.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+}
+
+/**
  * Extract all headings from markdown content
  * @param {string} content - Markdown content
  * @returns {Array<{level: number, text: string, line: number}>}
  */
 function extractHeadings(content) {
   const headings = [];
-  const lines = content.split("\n");
+  const lines = normalizeLineEndings(content).split("\n");
 
   for (let i = 0; i < lines.length; i++) {
     const match = lines[i].match(/^(#{1,6})\s+(.+)$/);
@@ -226,7 +236,7 @@ function parseDate(dateStr) {
  */
 function extractLinks(content) {
   const links = [];
-  const lines = content.split("\n");
+  const lines = normalizeLineEndings(content).split("\n");
 
   for (let i = 0; i < lines.length; i++) {
     // Match [text](target) links
@@ -520,7 +530,8 @@ function main() {
   if (fileArgs.length > 0) {
     // Check specific files
     for (const file of fileArgs) {
-      const fullPath = file.startsWith("/") ? file : join(ROOT, file);
+      // Use path.isAbsolute() for cross-platform support (Windows C:\ and Unix /)
+      const fullPath = isAbsolute(file) ? file : join(ROOT, file);
       if (existsSync(fullPath)) {
         filesToCheck.push(fullPath);
       } else {
