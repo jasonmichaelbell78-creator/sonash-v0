@@ -1030,7 +1030,7 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
     // Import job runner and job functions dynamically to avoid circular dependencies
     const {
       runJob,
-      cleanupOldSessions,
+      cleanupOldDailyLogs,
       cleanupOrphanedStorageFiles,
       generateUsageAnalytics,
       pruneSecurityEvents,
@@ -1049,7 +1049,7 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
       cleanupOldDailyLogs: {
         name: "Cleanup Old Sessions",
         fn: async () => {
-          await cleanupOldSessions(); // cleanupOldSessions is an alias for cleanupOldDailyLogs
+          await cleanupOldDailyLogs();
         },
       },
       cleanupOrphanedStorageFiles: {
