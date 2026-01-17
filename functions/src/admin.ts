@@ -1047,7 +1047,14 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
         },
       },
       cleanupOldDailyLogs: {
-        name: "Cleanup Old Sessions",
+        name: "Cleanup Old Daily Logs",
+        fn: async () => {
+          await cleanupOldDailyLogs();
+        },
+      },
+      // Backward-compat alias for old job ID
+      cleanupOldSessions: {
+        name: "Cleanup Old Daily Logs",
         fn: async () => {
           await cleanupOldDailyLogs();
         },
@@ -1142,7 +1149,7 @@ export const adminGetJobsStatus = onCall(async (request) => {
       },
       {
         id: "cleanupOldDailyLogs",
-        name: "Cleanup Old Sessions",
+        name: "Cleanup Old Daily Logs",
         schedule: "Daily at 4 AM CT",
         description: "Removes old daily check-in documents older than 30 days (A10)",
       },
