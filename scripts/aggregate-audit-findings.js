@@ -18,16 +18,27 @@
  * - IMPLEMENTATION_PLAN.md
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
+import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync } from "node:fs";
+import { join, resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-// Configuration
+// ES module equivalent of __dirname (ESLint config expects this pattern)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Resolve paths relative to repo root (Qodo Review #175)
+const REPO_ROOT = resolve(__dirname, "..");
+
+// Configuration - all paths relative to REPO_ROOT for cwd independence
 const CONFIG = {
-  outputDir: "docs/aggregation",
-  singleSessionDir: "docs/audits/single-session",
-  canonDir: "docs/reviews/2026-Q1/canonical",
-  refactorBacklog: "docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md",
-  auditBacklog: "docs/AUDIT_FINDINGS_BACKLOG.md",
+  outputDir: join(REPO_ROOT, "docs/aggregation"),
+  singleSessionDir: join(REPO_ROOT, "docs/audits/single-session"),
+  canonDir: join(REPO_ROOT, "docs/reviews/2026-Q1/canonical"),
+  refactorBacklog: join(
+    REPO_ROOT,
+    "docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md"
+  ),
+  auditBacklog: join(REPO_ROOT, "docs/AUDIT_FINDINGS_BACKLOG.md"),
 };
 
 // Severity and effort weights for priority calculation
@@ -117,15 +128,33 @@ const PR_BUCKET_MAP = {
 };
 
 /**
- * Parse a JSONL file
+ * Escape a string for safe inclusion in markdown table cells (Qodo Review #175 - markdown injection)
+ * Prevents pipe characters from breaking table structure and newlines from corrupting format
+ */
+function safeCell(value) {
+  if (value === undefined || value === null) return "";
+  return String(value).replace(/\|/g, "\\|").replace(/\n/g, " ").replace(/\r/g, "");
+}
+
+/**
+ * Parse a JSONL file with robust error handling (Qodo Review #175)
  */
 function parseJsonlFile(filePath) {
-  if (!fs.existsSync(filePath)) {
+  if (!existsSync(filePath)) {
     console.warn(`Warning: File not found: ${filePath}`);
     return [];
   }
 
-  const content = fs.readFileSync(filePath, "utf-8");
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch (readError) {
+    // Race condition, permission, or encoding error after existsSync
+    const errType = readError instanceof Error ? readError.constructor.name : "Error";
+    console.warn(`Warning: ${errType} reading file ${filePath}`);
+    return [];
+  }
+
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
 
@@ -144,15 +173,23 @@ function parseJsonlFile(filePath) {
 }
 
 /**
- * Parse markdown backlog to extract items
+ * Parse markdown backlog to extract items with robust error handling (Qodo Review #175)
  */
 function parseMarkdownBacklog(filePath) {
-  if (!fs.existsSync(filePath)) {
+  if (!existsSync(filePath)) {
     console.warn(`Warning: File not found: ${filePath}`);
     return [];
   }
 
-  const content = fs.readFileSync(filePath, "utf-8");
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch (readError) {
+    const errType = readError instanceof Error ? readError.constructor.name : "Error";
+    console.warn(`Warning: ${errType} reading file ${filePath}`);
+    return [];
+  }
+
   const items = [];
 
   // Extract items from markdown tables
@@ -201,15 +238,23 @@ function parseMarkdownBacklog(filePath) {
 
 /**
  * Parse AUDIT_FINDINGS_BACKLOG.md for individual items
- * Uses section-based parsing to avoid missing items with long content (Qodo Review #173)
+ * Uses section-based parsing to avoid missing items with long content (Qodo Review #173, #175)
  */
 function parseAuditFindingsBacklog(filePath) {
-  if (!fs.existsSync(filePath)) {
+  if (!existsSync(filePath)) {
     console.warn(`Warning: File not found: ${filePath}`);
     return [];
   }
 
-  const content = fs.readFileSync(filePath, "utf-8");
+  let content;
+  try {
+    content = readFileSync(filePath, "utf-8");
+  } catch (readError) {
+    const errType = readError instanceof Error ? readError.constructor.name : "Error";
+    console.warn(`Warning: ${errType} reading file ${filePath}`);
+    return [];
+  }
+
   const items = [];
 
   // Section-based parsing: split by ### headers first, then parse each section
@@ -256,9 +301,26 @@ function normalizeConfidence(value) {
 
 /**
  * Normalize a single-session audit finding to master schema
+ * ID prefix takes precedence for category (SEC-* → security, PERF-* → performance, etc.)
+ * Fixes category mismatch like SEC-010 with category "Framework" → should be "security" (Qodo Review #175)
  */
 function normalizeSingleSession(item, sourceCategory, date) {
-  const normalizedCategory = CATEGORY_MAP[item.category] || CATEGORY_MAP[sourceCategory] || "code";
+  // ID prefix mapping takes precedence over item.category (e.g., SEC-010 with "Framework" category → security)
+  const idPrefixCategory = item.id?.startsWith("SEC-")
+    ? "security"
+    : item.id?.startsWith("PERF-")
+      ? "performance"
+      : item.id?.startsWith("CODE-")
+        ? "code"
+        : item.id?.startsWith("PROC-")
+          ? "process"
+          : item.id?.startsWith("REF-")
+            ? "refactoring"
+            : item.id?.startsWith("DOC-")
+              ? "documentation"
+              : null;
+  const normalizedCategory =
+    idPrefixCategory || CATEGORY_MAP[item.category] || CATEGORY_MAP[sourceCategory] || "code";
 
   return {
     original_id: item.id,
@@ -497,11 +559,13 @@ function mergeFindings(finding1, finding2) {
 }
 
 /**
- * Normalize ROI to uppercase for consistent lookup (Qodo Review #174)
+ * Normalize ROI to uppercase for consistent lookup (Qodo Review #174, #175)
+ * Treats blank/whitespace-only values as undefined
  */
 function normalizeRoi(value) {
   if (value === undefined || value === null) return undefined;
-  return String(value).trim().toUpperCase();
+  const normalized = String(value).trim().toUpperCase();
+  return normalized ? normalized : undefined;
 }
 
 /**
@@ -547,7 +611,7 @@ function parseSingleSessionAudits(allFindings, stats) {
   ];
 
   for (const category of singleSessionCategories) {
-    const filePath = path.join(CONFIG.singleSessionDir, category, "audit-2026-01-17.jsonl");
+    const filePath = join(CONFIG.singleSessionDir, category, "audit-2026-01-17.jsonl");
     const items = parseJsonlFile(filePath);
     console.log(`  - ${category}: ${items.length} items`);
 
@@ -573,7 +637,7 @@ function parseCanonFiles(allFindings, stats) {
   ];
 
   for (const canonFile of canonFiles) {
-    const filePath = path.join(CONFIG.canonDir, canonFile);
+    const filePath = join(CONFIG.canonDir, canonFile);
     const items = parseJsonlFile(filePath);
     console.log(`  - ${canonFile}: ${items.length} items`);
 
@@ -623,6 +687,14 @@ function deduplicateFindings(allFindings) {
       if (f.original_id) {
         idToIndex.set(f.original_id, i);
       }
+      // Also index merged_from IDs for stable dependency lookups (Qodo Review #175)
+      if (f.merged_from?.length) {
+        for (const mergedId of f.merged_from) {
+          if (mergedId && !idToIndex.has(mergedId)) {
+            idToIndex.set(mergedId, i);
+          }
+        }
+      }
     }
 
     // Process merges directly from buckets (avoid materializing candidatePairs Set)
@@ -650,7 +722,15 @@ function deduplicateFindings(allFindings) {
     }
 
     // Same-category pairs (for title similarity matching)
-    for (const indices of categoryIndex.values()) {
+    // Cap bucket size to prevent O(n²) blowup with large categories (Qodo Review #175)
+    const MAX_CATEGORY_BUCKET = 250;
+    for (const [category, indices] of categoryIndex.entries()) {
+      if (indices.length > MAX_CATEGORY_BUCKET) {
+        console.warn(
+          `Warning: Skipping category '${category}' bucket (${indices.length} items > ${MAX_CATEGORY_BUCKET} cap)`
+        );
+        continue;
+      }
       for (let a = 0; a < indices.length; a++) {
         for (let b = a + 1; b < indices.length; b++) {
           tryMergePair(indices[a], indices[b]);
@@ -759,20 +839,20 @@ function aggregate() {
   console.log(`\nTotal raw findings: ${stats.total}`);
 
   // Ensure output directory exists before writing files
-  if (!fs.existsSync(CONFIG.outputDir)) {
-    fs.mkdirSync(CONFIG.outputDir, { recursive: true });
+  if (!existsSync(CONFIG.outputDir)) {
+    mkdirSync(CONFIG.outputDir, { recursive: true });
     console.log(`  Created output directory: ${CONFIG.outputDir}`);
   }
 
   // Write raw findings
-  const rawFindingsPath = path.join(CONFIG.outputDir, "raw-findings.jsonl");
-  fs.writeFileSync(rawFindingsPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
+  const rawFindingsPath = join(CONFIG.outputDir, "raw-findings.jsonl");
+  writeFileSync(rawFindingsPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
   console.log(`  Wrote: ${rawFindingsPath}`);
 
   // Phase 2: Already normalized during parsing
   console.log("\nPhase 2: Schema normalization complete (done during parsing)");
-  const normalizedPath = path.join(CONFIG.outputDir, "normalized-findings.jsonl");
-  fs.writeFileSync(normalizedPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
+  const normalizedPath = join(CONFIG.outputDir, "normalized-findings.jsonl");
+  writeFileSync(normalizedPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
   console.log(`  Wrote: ${normalizedPath}`);
 
   // Phase 3: Deduplication
@@ -783,13 +863,13 @@ function aggregate() {
   );
 
   // Write dedup log
-  const dedupLogPath = path.join(CONFIG.outputDir, "dedup-log.jsonl");
-  fs.writeFileSync(dedupLogPath, dedupLog.map((l) => JSON.stringify(l)).join("\n"));
+  const dedupLogPath = join(CONFIG.outputDir, "dedup-log.jsonl");
+  writeFileSync(dedupLogPath, dedupLog.map((l) => JSON.stringify(l)).join("\n"));
   console.log(`  Wrote: ${dedupLogPath} (${dedupLog.length} merge decisions)`);
 
   // Write unique findings
-  const uniquePath = path.join(CONFIG.outputDir, "unique-findings.jsonl");
-  fs.writeFileSync(uniquePath, uniqueFindings.map((f) => JSON.stringify(f)).join("\n"));
+  const uniquePath = join(CONFIG.outputDir, "unique-findings.jsonl");
+  writeFileSync(uniquePath, uniqueFindings.map((f) => JSON.stringify(f)).join("\n"));
   console.log(`  Wrote: ${uniquePath}`);
 
   // Phase 4: Prioritize and categorize
@@ -823,8 +903,8 @@ function aggregate() {
   masterList.sort((a, b) => b.priority_score - a.priority_score);
 
   // Write master list
-  const masterListPath = path.join(CONFIG.outputDir, "MASTER_ISSUE_LIST.jsonl");
-  fs.writeFileSync(masterListPath, masterList.map((m) => JSON.stringify(m)).join("\n"));
+  const masterListPath = join(CONFIG.outputDir, "MASTER_ISSUE_LIST.jsonl");
+  writeFileSync(masterListPath, masterList.map((m) => JSON.stringify(m)).join("\n"));
   console.log(`  Wrote: ${masterListPath}`);
 
   // Phase 5: Generate reports
@@ -849,14 +929,14 @@ function aggregate() {
     bucketCounts,
     stats
   );
-  const masterMdPath = path.join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md");
-  fs.writeFileSync(masterMdPath, masterMd);
+  const masterMdPath = join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md");
+  writeFileSync(masterMdPath, masterMd);
   console.log(`  Wrote: ${masterMdPath}`);
 
   // Generate IMPLEMENTATION_PLAN.md
   const implPlan = generateImplementationPlan(masterList, bucketCounts);
-  const implPlanPath = path.join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md");
-  fs.writeFileSync(implPlanPath, implPlan);
+  const implPlanPath = join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md");
+  writeFileSync(implPlanPath, implPlan);
   console.log(`  Wrote: ${implPlanPath}`);
 
   // Print summary
@@ -894,7 +974,7 @@ function generateMasterIssueMd(masterList, severityCounts, categoryCounts, bucke
 |----------|-------|
 ${Object.entries(categoryCounts)
   .sort((a, b) => b[1] - a[1])
-  .map(([cat, count]) => `| ${cat} | ${count} |`)
+  .map(([cat, count]) => `| ${safeCell(cat)} | ${count} |`)
   .join("\n")}
 
 ### By PR Bucket
@@ -903,7 +983,7 @@ ${Object.entries(categoryCounts)
 |-----------|-------|
 ${Object.entries(bucketCounts)
   .sort((a, b) => b[1] - a[1])
-  .map(([bucket, count]) => `| ${bucket} | ${count} |`)
+  .map(([bucket, count]) => `| ${safeCell(bucket)} | ${count} |`)
   .join("\n")}
 
 ---
@@ -963,7 +1043,7 @@ ${masterList
   .slice(0, 40)
   .map(
     (m) =>
-      `| ${m.master_id} | ${m.title.substring(0, 50)}${m.title.length > 50 ? "..." : ""} | ${m.severity} | ${m.effort} | ${m.category} | ${m.pr_bucket} |`
+      `| ${safeCell(m.master_id)} | ${safeCell(m.title?.substring(0, 50))}${m.title?.length > 50 ? "..." : ""} | ${safeCell(m.severity)} | ${safeCell(m.effort)} | ${safeCell(m.category)} | ${safeCell(m.pr_bucket)} |`
   )
   .join("\n")}
 
@@ -977,7 +1057,7 @@ ${masterList
   .slice(0, 100)
   .map(
     (m, i) =>
-      `| ${i + 1} | ${m.master_id} | ${m.title.substring(0, 40)}${m.title.length > 40 ? "..." : ""} | ${m.severity} | ${m.effort} | ${m.priority_score} | ${m.category} |`
+      `| ${i + 1} | ${safeCell(m.master_id)} | ${safeCell(m.title?.substring(0, 40))}${m.title?.length > 40 ? "..." : ""} | ${safeCell(m.severity)} | ${safeCell(m.effort)} | ${safeCell(m.priority_score)} | ${safeCell(m.category)} |`
   )
   .join("\n")}
 
@@ -1036,7 +1116,7 @@ ${Object.entries(buckets)
     const s1 = items.filter((i) => i.severity === "S1").length;
     const s2 = items.filter((i) => i.severity === "S2").length;
     const s3 = items.filter((i) => i.severity === "S3").length;
-    return `| ${bucket} | ${items.length} | ${s0} | ${s1} | ${s2} | ${s3} |`;
+    return `| ${safeCell(bucket)} | ${items.length} | ${s0} | ${s1} | ${s2} | ${s3} |`;
   })
   .join("\n")}
 

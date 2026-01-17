@@ -13,8 +13,8 @@ implementation.
 
 | Bucket                   | Items | S0  | S1  | S2  | S3  |
 | ------------------------ | ----- | --- | --- | --- | --- |
-| code-quality             | 93    | 0   | 20  | 46  | 27  |
-| security-hardening       | 38    | 3   | 15  | 15  | 5   |
+| code-quality             | 92    | 0   | 20  | 46  | 26  |
+| security-hardening       | 39    | 3   | 15  | 15  | 6   |
 | performance-optimization | 31    | 1   | 7   | 20  | 3   |
 | process-automation       | 24    | 1   | 3   | 9   | 11  |
 | documentation-sync       | 24    | 0   | 4   | 12  | 8   |
@@ -551,7 +551,6 @@ implementation.
 - [ ] **MASTER-0008**: @ts-expect-error suppression for type mismatch (E0)
 - [ ] **MASTER-0009**: TODO comment for unimplemented feature (E0)
 - [ ] **MASTER-0010**: TODO comment for user preferences feature (E0)
-- [ ] **MASTER-0024**: process.env.NODE_ENV checks for debug info (E0)
 - [ ] **MASTER-0065**: CloudFunctionError interface defined twice in same file
       (E0)
 - [ ] **MASTER-0066**: 2 tracked TODO markers in codebase (E0)
@@ -583,6 +582,7 @@ implementation.
 - [ ] **MASTER-0018**: SonarCloud: Potentially hard-coded password pattern (E0)
 - [ ] **MASTER-0021**: Math.random for visual effects (E0)
 - [ ] **MASTER-0023**: Secrets expanded in run block (E0)
+- [ ] **MASTER-0024**: process.env.NODE_ENV checks for debug info (E0)
 - [ ] **MASTER-0025**: Agent config files present (E0)
 - [ ] **MASTER-0119**: App Check disabled on Functions and client init disabled
       (tracked as risk-accepted hardening item) (E1)

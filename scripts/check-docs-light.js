@@ -533,6 +533,12 @@ function main() {
     for (const file of fileArgs) {
       // Use path.isAbsolute() for cross-platform support (Windows C:\ and Unix /)
       const fullPath = isAbsolute(file) ? file : join(ROOT, file);
+      // Path traversal check: ensure resolved path stays within ROOT (Qodo Review #175)
+      const rel = relative(ROOT, fullPath);
+      if (/^\.\.(?:[\\/]|$)/.test(rel)) {
+        console.error(`Error: Path traversal blocked: ${file}`);
+        continue;
+      }
       if (existsSync(fullPath)) {
         filesToCheck.push(fullPath);
       } else {

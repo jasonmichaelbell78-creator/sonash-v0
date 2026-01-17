@@ -21,9 +21,9 @@ findings)
 
 | Category      | Count |
 | ------------- | ----- |
-| code          | 130   |
+| code          | 129   |
 | refactoring   | 40    |
-| security      | 35    |
+| security      | 36    |
 | performance   | 31    |
 | process       | 24    |
 | documentation | 24    |
@@ -34,8 +34,8 @@ findings)
 
 | PR Bucket                | Count |
 | ------------------------ | ----- |
-| code-quality             | 93    |
-| security-hardening       | 38    |
+| code-quality             | 92    |
+| security-hardening       | 39    |
 | performance-optimization | 31    |
 | process-automation       | 24    |
 | documentation-sync       | 24    |
@@ -517,7 +517,7 @@ _...and 45 more S1 items_
 | 18   | MASTER-0021 | Math.random for visual effects               | S3  | E0     | 100   | security      |
 | 19   | MASTER-0022 | GitHub Actions using version tags instea...  | S2  | E1     | 100   | process       |
 | 20   | MASTER-0023 | Secrets expanded in run block                | S3  | E0     | 100   | security      |
-| 21   | MASTER-0024 | process.env.NODE_ENV checks for debug in...  | S3  | E0     | 100   | code          |
+| 21   | MASTER-0024 | process.env.NODE_ENV checks for debug in...  | S3  | E0     | 100   | security      |
 | 22   | MASTER-0025 | Agent config files present                   | S3  | E0     | 100   | security      |
 | 23   | MASTER-0026 | 16 broken anchor links detected by docs:...  | S1  | E1     | 100   | documentation |
 | 24   | MASTER-0027 | 20 placeholder issues across 5 template ...  | S1  | E1     | 100   | documentation |
@@ -605,7 +605,7 @@ _...and 191 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 ## Notes
 
 - Priority scores range from 0-100
-- Score formula: (severity*weight * 25) + (effort*inverse * 15) +
+- Score formula: (severity_weight _ 25) + (effort_inverse _ 15) +
   (roi_multiplier \* 10) + persistence_boost
 - Items found in multiple sources get +10 persistence boost
 - See IMPLEMENTATION_PLAN.md for grouped execution plan
