@@ -1,9 +1,9 @@
 # Document Dependencies
 
-**Document Type:** REFERENCE (Tier 4) **Version:** 1.2 **Created:** 2026-01-08
+**Document Type:** REFERENCE (Tier 4) **Version:** 1.3 **Created:** 2026-01-08
 **Status:** ACTIVE **Purpose:** Track template-instance relationships,
 cross-document dependencies, and synchronization requirements **Last Updated:**
-2026-01-14
+2026-01-17
 
 ---
 
@@ -311,13 +311,16 @@ changes in one document affect the accuracy of another.
 > **Note:** INTEGRATED_IMPROVEMENT_PLAN.md is now archived (2026-01-14) to
 > `docs/archive/completed-plans/`. Related triggers removed (Review #144).
 
-| When This Changes                  | Check These Documents                                   | Reason                                            |
-| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------------- |
-| `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus    |
-| New npm script added               | `DEVELOPMENT.md` (scripts section)                      | All scripts should be documented                  |
-| New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`    | Hook documentation must be complete               |
-| Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                          | Multiple docs track completion status             |
-| New policy document created        | `claude.md` or relevant policy index                    | Policy references need updating                   |
+| When This Changes                  | Check These Documents                                   | Reason                                            | Enforced |
+| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------------- | -------- |
+| `ROADMAP.md` milestones/priorities | `SESSION_CONTEXT.md` priorities section                 | Session context reflects current roadmap focus    | ✅ BLOCK |
+| New npm script added               | `DEVELOPMENT.md` (scripts section)                      | All scripts should be documented                  | ✅ BLOCK |
+| New hook added                     | `DEVELOPMENT.md` (hooks section), `docs/TRIGGERS.md`    | Hook documentation must be complete               | ✅ BLOCK |
+| `app/admin/` files changed         | `ROADMAP.md` (Track A status)                           | Admin Panel changes must update roadmap           | ✅ BLOCK |
+| `functions/src/admin*` changed     | `ROADMAP.md` (Track A status)                           | Admin backend changes must update roadmap         | ✅ BLOCK |
+| `app/(protected)/dashboard/`       | `ROADMAP.md` (sprint status)                            | Dashboard changes must update roadmap             | ✅ BLOCK |
+| Milestone/Feature completed        | `ROADMAP.md`, `ROADMAP_LOG.md`                          | Multiple docs track completion status             | Manual   |
+| New policy document created        | `claude.md` or relevant policy index                    | Policy references need updating                   | Manual   |
 | PR review fixes applied            | `AI_REVIEW_LEARNINGS_LOG.md`                            | Lessons learned must be captured                  |
 | New skill/command added            | `.claude/settings.json`, `.claude/COMMAND_REFERENCE.md` | Skill registry and reference must be complete     |
 | Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state |
@@ -383,11 +386,12 @@ When reviewing documentation PRs:
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                         | Author      |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| 1.2     | 2026-01-14 | Added pre-commit hook automation for cross-document dependency warnings.                                                                        | Claude Code |
-| 1.1     | 2026-01-14 | Added "Cross-Document Update Triggers" section with 12-row trigger matrix for content-level cascading updates between core documents.           | Claude Code |
-| 1.0     | 2026-01-08 | Initial creation. Documented 6 audit plan template-instance relationships, 5 core doc templates, sync protocols, common issues from Review #89. | Claude Code |
+| Version | Date       | Changes                                                                                                                                          | Author      |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| 1.3     | 2026-01-17 | Added BLOCKING rules for feature file → ROADMAP.md: app/admin/, functions/src/admin\*, app/(protected)/dashboard/ now require ROADMAP.md update. | Claude Code |
+| 1.2     | 2026-01-14 | Added pre-commit hook automation for cross-document dependency warnings.                                                                         | Claude Code |
+| 1.1     | 2026-01-14 | Added "Cross-Document Update Triggers" section with 12-row trigger matrix for content-level cascading updates between core documents.            | Claude Code |
+| 1.0     | 2026-01-08 | Initial creation. Documented 6 audit plan template-instance relationships, 5 core doc templates, sync protocols, common issues from Review #89.  | Claude Code |
 
 ---
 
