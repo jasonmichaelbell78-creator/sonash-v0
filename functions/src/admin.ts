@@ -32,6 +32,34 @@ import {
 } from "./schemas";
 
 /**
+ * Convert non-serializable values to JSON-safe format
+ * ROBUSTNESS: Firestore Timestamps, Dates, etc. need conversion for callable responses
+ */
+function toJsonSafe(value: unknown): unknown {
+  if (value === null || value === undefined) return value;
+
+  // Firestore Timestamp-like objects
+  if (typeof value === "object" && value && "toDate" in (value as Record<string, unknown>)) {
+    const maybeToDate = (value as { toDate?: () => Date }).toDate;
+    if (typeof maybeToDate === "function") {
+      return maybeToDate.call(value).toISOString();
+    }
+  }
+
+  if (value instanceof Date) return value.toISOString();
+
+  if (Array.isArray(value)) return value.map(toJsonSafe);
+
+  if (typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, toJsonSafe(v)])
+    );
+  }
+
+  return value;
+}
+
+/**
  * CANON-0015: Rate limiter for admin operations
  * More permissive than user endpoints (30 req/60s) but still protected
  * Prevents compromised admin accounts from mass operations
@@ -1310,9 +1338,13 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
       // ROBUSTNESS: Validate metadata is a plain object before redaction
       // Prevents type violations in API response if metadata is corrupt
       const rawMetadata = data.metadata;
+      // ROBUSTNESS: Convert Timestamps to ISO strings, then redact sensitive keys
       const safeMetadata =
         rawMetadata && typeof rawMetadata === "object" && !Array.isArray(rawMetadata)
-          ? redactSensitiveMetadata(rawMetadata as Record<string, unknown>)
+          ? (toJsonSafe(redactSensitiveMetadata(rawMetadata as Record<string, unknown>)) as Record<
+              string,
+              unknown
+            >)
           : undefined;
 
       return {
@@ -1692,7 +1724,9 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
 
     // Verify privilege type exists
     const privilegesDoc = await db.collection("system").doc("privileges").get();
-    const types = privilegesDoc.data()?.types || [];
+    const storedTypes = privilegesDoc.data()?.types;
+    // ROBUSTNESS: Guard against malformed Firestore data
+    const types = Array.isArray(storedTypes) ? storedTypes : [];
     const privilegeType = types.find(
       (t: { id: string; name: string; description: string; features: string[] }) =>
         t.id === privilegeTypeId
@@ -1717,7 +1751,18 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
         privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
         privilegeUpdatedBy: request.auth?.uid,
       });
-      await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
+
+      try {
+        await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
+      } catch (claimsError) {
+        // ATOMICITY: Roll back Firestore to avoid "admin in DB but not in claims"
+        await db.collection("users").doc(uid).update({
+          privilegeType: "free",
+          privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          privilegeUpdatedBy: request.auth?.uid,
+        });
+        throw claimsError;
+      }
     } else {
       // REVOKING admin (or setting non-admin): Remove claim FIRST, then Firestore
       // If Firestore fails, user already lost admin access (fail-closed)
@@ -1788,7 +1833,25 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       const cursorDoc = await db.collection("users").doc(startAfterUid).get();
       if (cursorDoc.exists) {
         const cursorData = cursorDoc.data() as Record<string, unknown> | undefined;
-        const sortValue = (cursorData?.[safeSortBy] as unknown) ?? null;
+        const rawValue = cursorData?.[safeSortBy] as unknown;
+
+        // ROBUSTNESS: Use sentinel timestamps for timestamp fields when null
+        // Prevents Firestore cursor type mismatch errors
+        const isTimestampField = safeSortBy === "createdAt" || safeSortBy === "lastActive";
+        let sortValue: unknown;
+
+        if (rawValue !== undefined && rawValue !== null) {
+          sortValue = rawValue;
+        } else if (isTimestampField) {
+          // Use sentinel timestamp: min for asc, max for desc
+          sortValue =
+            safeSortOrder === "asc"
+              ? admin.firestore.Timestamp.fromMillis(0)
+              : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
+        } else {
+          sortValue = null;
+        }
+
         // Provide explicit values for both orderBy clauses (sortField + docId)
         query = query.startAfter(sortValue, cursorDoc.id);
       }

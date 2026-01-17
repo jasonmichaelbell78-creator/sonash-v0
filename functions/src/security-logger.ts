@@ -171,6 +171,7 @@ const SENSITIVE_KEYS = [
   "session",
   "refresh",
   "access",
+  "error", // SECURITY: String(error) can contain sensitive stack traces, internal paths, PII
 ];
 
 /**
@@ -238,6 +239,32 @@ const MAX_MESSAGE_LEN = 2000;
 const MAX_FUNCTION_LEN = 200;
 
 /**
+ * Redact common PII patterns from message strings before persisting
+ * SECURITY: Prevents accidental PII exposure via log messages
+ * Patterns: emails, phone numbers, IPs, file paths with usernames
+ */
+function redactPiiFromMessage(message: string): string {
+  if (!message || typeof message !== "string") return message;
+
+  return (
+    message
+      // Email addresses
+      .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, "[EMAIL]")
+      // Phone numbers (various formats)
+      .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[PHONE]")
+      // IPv4 addresses (except localhost/private ranges for debugging)
+      .replace(
+        /\b(?!127\.0\.0\.1|10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
+        "[IP]"
+      )
+      // File paths with usernames (Windows/Unix)
+      .replace(/(?:\/home\/|\/Users\/|C:\\Users\\)[^\s\\/]+/gi, "[USER_PATH]")
+      // JWT tokens (3 base64 segments)
+      .replace(/eyJ[\w-]+\.eyJ[\w-]+\.[\w-]+/g, "[JWT]")
+  );
+}
+
+/**
  * Store security event in Firestore for admin panel access
  * Non-blocking - errors are caught and logged without affecting the main flow
  */
@@ -254,11 +281,15 @@ async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
           ? event.functionName.slice(0, MAX_FUNCTION_LEN)
           : event.functionName,
       // ROBUSTNESS: Truncate message to prevent exceeding 1MB document limit
+      // SECURITY: Redact PII patterns from message before storing
       message:
         typeof event.message === "string"
-          ? event.message.length > MAX_MESSAGE_LEN
-            ? `${event.message.slice(0, MAX_MESSAGE_LEN)}…[truncated]`
-            : event.message
+          ? (() => {
+              const redacted = redactPiiFromMessage(event.message);
+              return redacted.length > MAX_MESSAGE_LEN
+                ? `${redacted.slice(0, MAX_MESSAGE_LEN)}…[truncated]`
+                : redacted;
+            })()
           : event.message,
       metadata: redactSensitiveMetadata(event.metadata),
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
