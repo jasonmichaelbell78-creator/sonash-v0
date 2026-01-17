@@ -51,7 +51,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add README.md
-          git commit -m "docs: Auto-sync README status from ROADMAP.md"
+          git commit --no-verify -m "docs: Auto-sync README status from ROADMAP.md" || echo "No README changes to commit"
 
           # Avoid non-fast-forward failures when multiple runs queue up
           git fetch origin main
