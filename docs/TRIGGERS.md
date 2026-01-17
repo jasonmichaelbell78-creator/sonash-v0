@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
 **Project**: SoNash Recovery Notebook **Document Version**: 1.3 **Created**:
-2026-01-02 **Last Updated**: 2026-01-02 **Status**: ACTIVE
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-02
 
 ---
 
@@ -18,6 +18,14 @@ repository. This document serves as:
 
 **⚠️ CRITICAL**: This document covers automated (CI/CD, hooks) AND manual
 (documentation directives) triggers. Both require compliance.
+
+---
+
+## Quick Start
+
+1. Check trigger inventory for your automation
+2. Verify trigger conditions and actions
+3. Test trigger behavior before deployment
 
 ---
 
@@ -86,12 +94,12 @@ commits. Blocks on critical failures, warns on advisory issues.
 | #   | Check                  | Blocking | Purpose                                           |
 | --- | ---------------------- | -------- | ------------------------------------------------- |
 | 1   | ESLint                 | ✅ Yes   | Code quality and errors                           |
-| 2   | Prettier               | ⚠️ No    | Code formatting (warns only)                      |
+| 2   | lint-staged (Prettier) | ✅ Yes   | Auto-formats staged files (Session #70)           |
 | 3   | Pattern Compliance     | ✅ Yes   | Anti-pattern detection                            |
 | 4   | Tests                  | ✅ Yes   | Unit test validation                              |
 | 5   | CANON Schema           | ⚠️ No    | Audit file validation (when JSONL staged)         |
 | 6   | Skill Validation       | ⚠️ No    | Command/skill structure (when skill files staged) |
-| 7   | Cross-Doc Dependencies | ⚠️ No    | Warns about related docs to check                 |
+| 7   | Cross-Doc Dependencies | ✅ Yes   | Blocks if dependent docs not staged (Session #69) |
 | 8   | Learning Reminder      | ⚠️ No    | Reminds to log PR feedback                        |
 
 ### Function
@@ -99,20 +107,23 @@ commits. Blocks on critical failures, warns on advisory issues.
 ```
 TRIGGER: git commit
   → CHECK 1: npm run lint (BLOCKING)
-  → CHECK 2: npm run format:check (warning)
+  → CHECK 2: npx --no-install lint-staged (BLOCKING - auto-formats staged files)
   → CHECK 3: npm run patterns:check (BLOCKING)
   → CHECK 4: npm test (BLOCKING)
   → CHECK 5: npm run validate:canon (if JSONL staged)
   → CHECK 6: npm run skills:validate (if skill files staged)
-  → CHECK 7: check_cross_doc_deps() (warns about doc dependencies)
+  → CHECK 7: npm run crossdoc:check (BLOCKING - Session #69)
   → CHECK 8: Learning entry reminder (if many files changed)
   → IF all blocking checks pass: Allow commit
   → IF any blocking check fails: Block commit with error
 ```
 
-### Cross-Document Dependencies (Check 7)
+### Cross-Document Dependencies (Check 7) - BLOCKING
 
-Warns when you modify documents that have known dependencies:
+**Changed to blocking in Session #69.** Prevents commit if dependent documents
+are not staged together. Override with `SKIP_CROSS_DOC_CHECK=1 git commit ...`
+
+Blocks when you modify documents that have known dependencies:
 
 | Modified File                          | Check These                      |
 | -------------------------------------- | -------------------------------- |
@@ -960,12 +971,13 @@ sufficient coverage. Revisit if doc drift becomes a problem._
 
 ## 🗓️ VERSION HISTORY
 
-| Version | Date       | Changes                                             | Author |
-| ------- | ---------- | --------------------------------------------------- | ------ |
-| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting              | Claude |
-| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy | Claude |
-| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow            | Claude |
-| 1.0     | 2026-01-02 | Initial document created                            | Claude |
+| Version | Date       | Changes                                               | Author |
+| ------- | ---------- | ----------------------------------------------------- | ------ |
+| 1.4     | 2026-01-16 | Cross-doc dependency check now BLOCKING (Session #69) | Claude |
+| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting                | Claude |
+| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy   | Claude |
+| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow              | Claude |
+| 1.0     | 2026-01-02 | Initial document created                              | Claude |
 
 ---
 

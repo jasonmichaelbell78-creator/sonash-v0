@@ -1,49 +1,65 @@
 {
+  "_comment": "MCP Server Configuration - Copy to .mcp.json and configure",
+  "_secrets_note": "NEVER commit secrets! Set empty strings here, provide via environment variables",
+  "_setup_guide": "See docs/MCP_SETUP.md for detailed setup instructions",
+
   "mcpServers": {
     "ccusage": {
+      "_description": "Claude Code usage tracking - no config needed",
       "command": "bunx",
       "args": ["@ccusage/mcp@latest"]
     },
+    "firebase": {
+      "_description": "Firebase CLI MCP - uses 'firebase login' auth, no secrets needed",
+      "_setup": "Run 'firebase login' first, then this MCP uses that token",
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
+    },
     "sonarcloud": {
+      "_description": "SonarCloud code quality - requires SONAR_TOKEN env var",
+      "_setup": "Set SONAR_TOKEN in your shell: export SONAR_TOKEN=your-token",
       "command": "node",
       "args": ["scripts/mcp/sonarcloud-server.js"],
       "env": {
-        "SONAR_TOKEN": "your-sonarcloud-token-here",
+        "SONAR_TOKEN": "",
         "SONAR_URL": "https://sonarcloud.io"
       }
     },
     "github": {
+      "_description": "GitHub API access - requires GITHUB_PERSONAL_ACCESS_TOKEN env var",
+      "_setup": "Set in shell: export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your-github-pat-here"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
       }
     },
     "filesystem": {
+      "_description": "Local filesystem access - update path to your project",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/sonash-v0"]
     },
     "puppeteer": {
+      "_description": "Browser automation - no config needed",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
     },
     "playwright": {
+      "_description": "Browser testing - no config needed",
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
     },
-    "firebase": {
+    "context7": {
+      "_description": "Context management - requires CONTEXT7_API_KEY env var",
+      "_setup": "Set in shell: export CONTEXT7_API_KEY=ctx7sk-xxx",
       "command": "npx",
-      "args": ["-y", "@anthropic/firebase-mcp"],
+      "args": ["-y", "@context7/mcp@latest"],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/your/firebase-service-account.json",
-        "FIREBASE_PROJECT_ID": "your-firebase-project-id"
+        "CONTEXT7_API_KEY": ""
       }
     },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
-    },
     "nextjs-devtools": {
+      "_description": "Next.js dev tools - configure dev server URL",
       "command": "npx",
       "args": ["-y", "@anthropic/nextjs-devtools-mcp"],
       "env": {

@@ -1,8 +1,8 @@
 # AI Workflow Guide
 
-**Last Updated**: 2026-01-13 **Document Version**: 1.9 **Purpose**: Master
-navigation and workflow guide for AI assistants **When to Use**: Start of EVERY
-session
+**Document Version**: 1.9 **Purpose**: Master navigation and workflow guide for
+AI assistants **When to Use**: Start of EVERY session **Last Updated**:
+2026-01-15
 
 ---
 
@@ -27,6 +27,14 @@ Recovery Notebook project. It provides:
 - Unsure which documentation to reference
 - Need to understand project workflow
 - Planning documentation updates
+
+---
+
+## Quick Start
+
+1. Start each session with `/session-begin`
+2. Follow the Decision Tree for task approach
+3. End sessions with `/session-end`
 
 ---
 
@@ -143,8 +151,8 @@ Recovery Notebook project. It provides:
 8. **Reference Documents** (when following workflows):
    - [PR_WORKFLOW_CHECKLIST.md](./docs/PR_WORKFLOW_CHECKLIST.md)
    - [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)
-   - [docs/SLASH_COMMANDS.md](./docs/SLASH_COMMANDS.md) - Slash commands
-     reference (including audit commands)
+   - [docs/SLASH_COMMANDS_REFERENCE.md](./docs/SLASH_COMMANDS_REFERENCE.md) -
+     Slash commands reference (including audit commands)
    - [IMPLEMENTATION_PROMPTS.md](./docs/archive/IMPLEMENTATION_PROMPTS.md)
      (archived - historical reference only)
 

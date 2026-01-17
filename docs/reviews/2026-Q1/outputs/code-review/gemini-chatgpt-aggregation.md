@@ -16,6 +16,20 @@ results from Gemini and ChatGPT. It includes:
 
 This is a generated output file from the multi-AI review coordinator.
 
+## Quick Start
+
+1. Review aggregated findings
+2. Check consensus scores
+3. Prioritize high-consensus items
+
+## AI Instructions
+
+When using aggregated findings:
+
+- Higher consensus = higher confidence
+- Cross-reference with source outputs
+- Update status when resolved
+
 ---
 
 ## Version History

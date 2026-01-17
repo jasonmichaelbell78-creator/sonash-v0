@@ -1,7 +1,7 @@
 # How to [Accomplish Task]
 
-**Last Updated**: YYYY-MM-DD **Difficulty**: Beginner | Intermediate | Advanced
-**Estimated Time**: X minutes **Prerequisites**: [What you need to know/have]
+**Difficulty**: Beginner | Intermediate | Advanced **Estimated Time**: X minutes
+**Prerequisites**: [What you need to know/have] **Last Updated**: YYYY-MM-DD
 
 ---
 

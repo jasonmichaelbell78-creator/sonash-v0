@@ -1,6 +1,6 @@
 # Multi-AI Refactor Audit Prompt Template
 
-**Last Updated:** 2026-01-05 **Document Tier:** 3 (Template) **Status:** Active
+**Document Tier:** 3 (Template) **Status:** Active **Last Updated:** 2026-01-05
 
 ---
 

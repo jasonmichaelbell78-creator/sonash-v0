@@ -15,15 +15,15 @@ if ! npm run lint > /dev/null 2>&1; then
 fi
 echo "  ✅ ESLint passed (0 errors)"
 
-# 2. Check code formatting (Prettier)
-# NOTE: Currently set to WARN (not block) until initial codebase formatting is applied
-# TODO: Change to blocking after running 'npm run format' on the codebase
-echo "  ▶ Checking code formatting..."
-if ! npm run format:check > /dev/null 2>&1; then
-  echo "  ⚠️  Formatting issues found (not blocking - run: npm run format)"
-else
-  echo "  ✅ Code formatting passed"
+# 2. Auto-format staged files with lint-staged (Prettier)
+# Automatically formats staged files - no manual intervention needed
+# Uses --no-install to prevent supply-chain attacks from remote package fetch
+echo "  ▶ Running lint-staged (auto-format)..."
+if ! npx --no-install lint-staged; then
+  echo "  ❌ Lint-staged failed"
+  exit 1
 fi
+echo "  ✅ Lint-staged passed (files formatted)"
 
 # 3. Run pattern compliance check (catches issues before PR review tools)
 echo "  ▶ Running pattern compliance..."
@@ -74,60 +74,19 @@ if echo "$STAGED_FILES" | grep -q "\.claude/commands/.*\.md"; then
   fi
 fi
 
-# 7. Cross-document dependency check (non-blocking warning)
-# Warns when documents are modified that have known dependencies on other docs
+# 7. Cross-document dependency check (BLOCKING - Session #69)
+# Blocks commit when documents are modified that have known dependencies on other docs
+# Override with: SKIP_CROSS_DOC_CHECK=1 git commit ...
 # See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers
-check_cross_doc_deps() {
-  # Note: Using simple variable assignment (not 'local') for POSIX /bin/sh compatibility (Review #144)
-  deps_found=0
-  deps_msg=""
-
-  # Note: SESSION_CONTEXT <-> INTEGRATED_IMPROVEMENT_PLAN checks removed
-  # The plan is now archived (2026-01-14) and no longer actively updated (Review #144)
-
-  # ROADMAP.md -> SESSION_CONTEXT.md
-  if echo "$STAGED_FILES" | grep -q "ROADMAP.md"; then
-    if ! echo "$STAGED_FILES" | grep -q "SESSION_CONTEXT.md"; then
-      deps_msg="${deps_msg}   📎 ROADMAP.md changed → check SESSION_CONTEXT.md priorities\n"
-      deps_found=1
-    fi
-  fi
-
-  # New npm scripts in package.json -> DEVELOPMENT.md
-  # Only triggers if the 'scripts' section appears to have changed (Review #144)
-  if echo "$STAGED_FILES" | grep -q "package.json"; then
-    if git diff --staged --unified=0 package.json 2>/dev/null | grep -qE '^\+.*"scripts"|^\-.*"scripts"'; then
-      if ! echo "$STAGED_FILES" | grep -q "DEVELOPMENT.md"; then
-        deps_msg="${deps_msg}   📎 package.json scripts changed → check DEVELOPMENT.md scripts section\n"
-        deps_found=1
-      fi
-    fi
-  fi
-
-  # New hooks -> DEVELOPMENT.md, TRIGGERS.md (Review #144: added DEVELOPMENT.md)
-  if echo "$STAGED_FILES" | grep -qE "\.husky/|\.claude/hooks/"; then
-    if ! echo "$STAGED_FILES" | grep -qE "TRIGGERS.md|DEVELOPMENT.md"; then
-      deps_msg="${deps_msg}   📎 Hook files changed → check docs/TRIGGERS.md, DEVELOPMENT.md\n"
-      deps_found=1
-    fi
-  fi
-
-  # New skill/command -> COMMAND_REFERENCE.md
-  if echo "$STAGED_FILES" | grep -qE "\.claude/commands/|\.claude/skills/"; then
-    if ! echo "$STAGED_FILES" | grep -q "COMMAND_REFERENCE.md"; then
-      deps_msg="${deps_msg}   📎 Skill/command changed → check .claude/COMMAND_REFERENCE.md\n"
-      deps_found=1
-    fi
-  fi
-
-  if [ "$deps_found" -eq 1 ]; then
-    echo "  ⚠️  Cross-document dependencies detected (not blocking):"
-    printf '%b' "$deps_msg"
-    echo "  📖 See: docs/DOCUMENT_DEPENDENCIES.md#cross-document-update-triggers"
-  fi
-}
-
-check_cross_doc_deps
+echo "  ▶ Checking cross-document dependencies..."
+if ! node scripts/check-cross-doc-deps.js; then
+  echo "  ❌ Cross-document dependency check failed"
+  echo ""
+  echo "  Fix dependencies before committing. Run: npm run crossdoc:check"
+  echo "  Override (use sparingly): SKIP_CROSS_DOC_CHECK=1 git commit ..."
+  exit 1
+fi
+echo "  ✅ Cross-document dependencies satisfied"
 
 # 8. Learning entry reminder (non-blocking, ~0.5s)
 # Reminds to capture learnings when it looks like PR feedback was addressed

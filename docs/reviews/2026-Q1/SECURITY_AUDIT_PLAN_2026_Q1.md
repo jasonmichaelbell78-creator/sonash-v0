@@ -33,6 +33,12 @@ security-focused audit on SoNash. Use this template when:
 **Expected Output:** Security findings with remediation plan, compliance status
 for each mandatory standard.
 
+## Quick Start
+
+1. Review security audit scope
+2. Check areas to evaluate
+3. Follow security assessment methodology
+
 ---
 
 ## Status Dashboard

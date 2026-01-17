@@ -22,6 +22,14 @@ Starting any review process, checking if review is needed
 
 ---
 
+## Quick Start
+
+1. Select AI models for review
+2. Execute parallel reviews
+3. Aggregate findings using template
+
+---
+
 ## Quick Reference
 
 ### Review Types and Templates

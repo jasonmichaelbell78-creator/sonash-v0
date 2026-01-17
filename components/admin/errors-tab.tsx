@@ -3,12 +3,32 @@
 import { useEffect, useMemo, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
-import { AlertTriangle, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import {
+  findErrorKnowledge,
+  getSeverityColor,
+  getSeverityLabel,
+  type ErrorKnowledge,
+} from "@/lib/error-knowledge-base";
+import { redactSensitive, safeFormatDate, isValidSentryUrl } from "@/lib/utils/admin-error-utils";
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Info,
+  Lightbulb,
+  RefreshCw,
+  TrendingDown,
+  TrendingUp,
+  Users,
+  Wrench,
+} from "lucide-react";
 
 interface SentryIssueSummary {
   title: string;
   count: number;
+  userCount?: number | null; // Optional - Sentry may not always provide this
   lastSeen: string | null;
   firstSeen: string | null;
   shortId: string;
@@ -28,14 +48,196 @@ interface SentryErrorSummaryResponse {
   generatedAt: string;
 }
 
-function redactSensitive(text: string) {
-  const redactedEmail = text.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]");
-  const redactedPhone = redactedEmail.replace(
-    /\b(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
-    "[redacted-phone]"
+function getStatusBadge(status: string | null) {
+  switch (status) {
+    case "resolved":
+      return (
+        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+          Resolved
+        </span>
+      );
+    case "ignored":
+      return (
+        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+          Ignored
+        </span>
+      );
+    case "unresolved":
+    default:
+      return (
+        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+          Active
+        </span>
+      );
+  }
+}
+
+interface ErrorRowProps {
+  issue: SentryIssueSummary;
+  isExpanded: boolean;
+  onToggle: () => void;
+  knowledge: ErrorKnowledge;
+}
+
+function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
+  const sanitizedTitle = redactSensitive(issue.title);
+
+  // Calculate dates once at component start (performance optimization)
+  const firstSeenFormatted = safeFormatDate(issue.firstSeen);
+  const lastSeenFormatted = safeFormatDate(issue.lastSeen);
+
+  // Validate permalink URL for security
+  const safePermalink = isValidSentryUrl(issue.permalink) ? issue.permalink : null;
+
+  return (
+    <>
+      <tr className="hover:bg-amber-50 transition-colors">
+        <td className="px-6 py-4">
+          <button
+            type="button"
+            className="w-full text-left"
+            onClick={onToggle}
+            aria-expanded={isExpanded}
+          >
+            <div className="flex items-center gap-2">
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4 text-amber-600 flex-shrink-0" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-amber-600 flex-shrink-0" />
+              )}
+              <div>
+                <div className="font-medium text-amber-900">{sanitizedTitle}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-amber-600">{issue.shortId}</span>
+                  <span
+                    className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium border ${getSeverityColor(knowledge.severity)}`}
+                  >
+                    {knowledge.component}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </button>
+        </td>
+        <td className="px-6 py-4 text-amber-900 font-medium">{issue.count.toLocaleString()}</td>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-1.5 text-amber-700">
+            <Users className="h-3.5 w-3.5" />
+            <span>
+              {/* ROBUSTNESS: Use Number.isFinite to prevent NaN from rendering in UI */}
+              {Number.isFinite(issue.userCount)
+                ? Math.max(0, issue.userCount as number).toLocaleString()
+                : "N/A"}
+            </span>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-amber-700">{lastSeenFormatted}</td>
+        <td className="px-6 py-4 text-amber-700">{firstSeenFormatted}</td>
+        <td className="px-6 py-4">{getStatusBadge(issue.status)}</td>
+        <td className="px-6 py-4">
+          {safePermalink ? (
+            <a
+              href={safePermalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-amber-700 hover:text-amber-900 hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="h-3 w-3" />
+              Sentry
+            </a>
+          ) : (
+            <span className="text-amber-400 text-xs">Link unavailable</span>
+          )}
+        </td>
+      </tr>
+      {isExpanded && (
+        <tr className="bg-amber-50/50">
+          <td colSpan={7} className="px-6 py-4">
+            <div className="space-y-4 pl-6">
+              {/* Description */}
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-amber-900 mb-1">What this means</h4>
+                  <p className="text-sm text-amber-700">{knowledge.description}</p>
+                </div>
+              </div>
+
+              {/* Severity */}
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                <div>
+                  <span className="text-sm font-semibold text-amber-900">User Impact: </span>
+                  <span
+                    className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium border ${getSeverityColor(knowledge.severity)}`}
+                  >
+                    {getSeverityLabel(knowledge.severity)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Possible Causes */}
+              <div className="flex items-start gap-3">
+                <Lightbulb className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-amber-900 mb-2">Possible causes</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {knowledge.possibleCauses.map((cause, idx) => (
+                      <li key={idx} className="text-sm text-amber-700">
+                        {cause}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Remediations */}
+              <div className="flex items-start gap-3">
+                <Wrench className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-amber-900 mb-2">
+                    Suggested remediations
+                  </h4>
+                  <ol className="list-decimal list-inside space-y-1">
+                    {knowledge.remediations.map((step, idx) => (
+                      <li key={idx} className="text-sm text-amber-700">
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              {/* Stats summary */}
+              <div className="flex items-center gap-6 pt-2 border-t border-amber-200">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600">
+                    First: {firstSeenFormatted} | Last: {lastSeenFormatted}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600">
+                    {issue.count.toLocaleString()} events
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600">
+                    {typeof issue.userCount === "number"
+                      ? `${issue.userCount.toLocaleString()} users affected`
+                      : "N/A users"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
   );
-  const redactedTokens = redactedPhone.replace(/\b[a-f0-9]{32,}\b/gi, "[redacted-token]");
-  return redactedTokens;
 }
 
 export function ErrorsTab() {
@@ -43,6 +245,7 @@ export function ErrorsTab() {
   const [issues, setIssues] = useState<SentryIssueSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const trendDirection = useMemo(() => {
     if (!summary) return null;
@@ -50,6 +253,36 @@ export function ErrorsTab() {
     if (summary.trendPct < 0) return "down";
     return "flat";
   }, [summary]);
+
+  // Memoize issues with knowledge to prevent findErrorKnowledge from being called on every render
+  const issuesWithKnowledge = useMemo(
+    () =>
+      issues.map((issue) => ({
+        ...issue,
+        knowledge: findErrorKnowledge(issue.title),
+      })),
+    [issues]
+  );
+
+  const toggleRow = (shortId: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(shortId)) {
+        next.delete(shortId);
+      } else {
+        next.add(shortId);
+      }
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    setExpandedRows(new Set(issues.map((i) => i.shortId)));
+  };
+
+  const collapseAll = () => {
+    setExpandedRows(new Set());
+  };
 
   const refresh = async () => {
     setLoading(true);
@@ -83,7 +316,9 @@ export function ErrorsTab() {
           <AlertTriangle className="w-6 h-6 text-amber-600" />
           <div>
             <h2 className="text-lg font-semibold text-amber-900">Errors</h2>
-            <p className="text-sm text-amber-700">Sanitized Sentry error overview</p>
+            <p className="text-sm text-amber-700">
+              Sanitized Sentry error overview with remediation guidance
+            </p>
           </div>
         </div>
         <button
@@ -107,7 +342,7 @@ export function ErrorsTab() {
         </div>
       ) : summary ? (
         <>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <div className="rounded-lg border border-amber-100 bg-white p-4">
               <p className="text-sm text-amber-700">Events (last 24h)</p>
               <p className="text-2xl font-semibold text-amber-900">
@@ -116,6 +351,16 @@ export function ErrorsTab() {
               <p className="text-xs text-amber-600">
                 Prev 24h: {summary.totalEventsPrev24h.toLocaleString()}
               </p>
+            </div>
+            <div className="rounded-lg border border-amber-100 bg-white p-4">
+              <p className="text-sm text-amber-700">Users affected</p>
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-amber-600" />
+                <p className="text-2xl font-semibold text-amber-900">
+                  {issues.reduce((sum, i) => sum + (i.userCount ?? 0), 0).toLocaleString()}
+                </p>
+              </div>
+              <p className="text-xs text-amber-600">Sum across issues (may double-count)</p>
             </div>
             <div className="rounded-lg border border-amber-100 bg-white p-4">
               <p className="text-sm text-amber-700">Trend vs prior 24h</p>
@@ -137,8 +382,30 @@ export function ErrorsTab() {
           </div>
 
           <div className="rounded-lg border border-amber-100 bg-white">
-            <div className="border-b border-amber-100 px-6 py-4">
-              <h3 className="text-sm font-semibold text-amber-900">Recent errors</h3>
+            <div className="flex items-center justify-between border-b border-amber-100 px-6 py-4">
+              <div>
+                <h3 className="text-sm font-semibold text-amber-900">Recent errors</h3>
+                <p className="text-xs text-amber-600 mt-0.5">
+                  Click any row to see details, causes, and remediation steps
+                </p>
+              </div>
+              {issues.length > 0 && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={expandAll}
+                    className="text-xs text-amber-700 hover:text-amber-900 hover:underline"
+                  >
+                    Expand all
+                  </button>
+                  <span className="text-amber-300">|</span>
+                  <button
+                    onClick={collapseAll}
+                    className="text-xs text-amber-700 hover:text-amber-900 hover:underline"
+                  >
+                    Collapse all
+                  </button>
+                </div>
+              )}
             </div>
             {issues.length === 0 ? (
               <div className="p-6 text-sm text-amber-700">No recent errors reported.</div>
@@ -149,43 +416,43 @@ export function ErrorsTab() {
                     <tr>
                       <th className="px-6 py-3 font-medium">Error</th>
                       <th className="px-6 py-3 font-medium">Count</th>
+                      <th className="px-6 py-3 font-medium">Users</th>
                       <th className="px-6 py-3 font-medium">Last seen</th>
-                      <th className="px-6 py-3 font-medium">Level</th>
+                      <th className="px-6 py-3 font-medium">First seen</th>
+                      <th className="px-6 py-3 font-medium">Status</th>
                       <th className="px-6 py-3 font-medium">Link</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-amber-100">
-                    {issues.map((issue) => (
-                      <tr key={issue.shortId}>
-                        <td className="px-6 py-4">
-                          <div className="font-medium text-amber-900">
-                            {redactSensitive(issue.title)}
-                          </div>
-                          <div className="text-xs text-amber-600">{issue.shortId}</div>
-                        </td>
-                        <td className="px-6 py-4 text-amber-900">{issue.count.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-amber-700">
-                          {issue.lastSeen
-                            ? formatDistanceToNow(new Date(issue.lastSeen), { addSuffix: true })
-                            : "Unknown"}
-                        </td>
-                        <td className="px-6 py-4 text-amber-700">{issue.level || "unknown"}</td>
-                        <td className="px-6 py-4">
-                          <a
-                            href={issue.permalink}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-amber-700 hover:text-amber-900 hover:underline"
-                          >
-                            View in Sentry
-                          </a>
-                        </td>
-                      </tr>
+                    {issuesWithKnowledge.map((issue) => (
+                      <ErrorRow
+                        key={issue.shortId}
+                        issue={issue}
+                        isExpanded={expandedRows.has(issue.shortId)}
+                        onToggle={() => toggleRow(issue.shortId)}
+                        knowledge={issue.knowledge}
+                      />
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
+          </div>
+
+          {/* Help section */}
+          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-semibold text-blue-900 mb-1">About Error Monitoring</h4>
+                <p className="text-sm text-blue-700">
+                  This dashboard shows errors captured by Sentry. Click any error row to see a
+                  description of the issue, possible causes, and suggested remediation steps. For
+                  full stack traces and detailed debugging, click &quot;Sentry&quot; to view in the
+                  Sentry console.
+                </p>
+              </div>
+            </div>
           </div>
         </>
       ) : (

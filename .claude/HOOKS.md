@@ -209,4 +209,5 @@ echo "Hook result message"
 
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Session workflows
 - [DEVELOPMENT.md](../DEVELOPMENT.md) - Git hooks
-- [docs/SLASH_COMMANDS.md](../docs/SLASH_COMMANDS.md) - Slash commands
+- [docs/SLASH_COMMANDS_REFERENCE.md](../docs/SLASH_COMMANDS_REFERENCE.md) -
+  Slash commands

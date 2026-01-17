@@ -2,7 +2,7 @@
 
 _A privacy-first digital recovery journal for the recovery community_
 
-**Document Version:** 2.1 **Last Updated:** 2026-01-03 **Status:** ACTIVE
+**Document Version:** 2.1 **Status:** ACTIVE **Last Updated:** 2026-01-03
 
 ---
 
@@ -177,8 +177,8 @@ chip (WIP) │ └── ui/ # shadcn components └── public/ └── ima
 
 ## Project Status
 
-**Last Updated:** January 14, 2026 **Overall Progress:** ~40% **Current Focus:**
-Quick Wins + Admin Panel + UX
+**Last Updated:** January 17, 2026 **Overall Progress:** ~40% **Current Focus:**
+🚀 Operational Visibility
 
 ### Milestone Status
 
@@ -186,8 +186,9 @@ Quick Wins + Admin Panel + UX
 | --------------------------- | ----------- | -------- |
 | M1 - Foundation             | ✅ Complete | 100%     |
 | Integrated Improvement Plan | ✅ Complete | 100%     |
-| M1.5 - Quick Wins           | ⏸️ Ready    | 50%      |
-| M1.6 - Admin Panel + UX     | ⏸️ Ready    | 75%      |
+| 🚀 Operational Visibility   | ⏸️ ACTIVE   | 25%      |
+| M1.5 - Quick Wins           | ⏸️ Paused   | 50%      |
+| M1.6 - Admin Panel + UX     | ⏸️ Paused   | 75%      |
 | M2 - Architecture           | ⏸️ Optional | 0%       |
 | M3 - Meetings               | 📋 Planned  | 0%       |
 | M4 - Expansion              | 📋 Planned  | 0%       |
@@ -204,8 +205,7 @@ Quick Wins + Admin Panel + UX
 
 ### Current Sprint
 
-- 🔄 M1.5 - Quick Wins (50%)
-- 🔄 M1.6 - Admin Panel + UX (75%)
+- 🔄 🚀 Operational Visibility (25%)
 
 See **[ROADMAP.md](./ROADMAP.md)** for detailed milestone information.
 

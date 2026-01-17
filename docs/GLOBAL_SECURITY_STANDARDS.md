@@ -1,8 +1,8 @@
 # Global Security Standards
 
 **Document Type:** FOUNDATION (Tier 2) **Version:** 1.0 **Created:** 2026-01-01
-**Last Updated:** 2026-01-01 **Status:** ACTIVE **Authority:** MANDATORY for all
-code changes
+**Status:** ACTIVE **Authority:** MANDATORY for all code changes **Last
+Updated:** 2026-01-01
 
 ---
 
@@ -20,6 +20,20 @@ be followed during:
 
 **No code should be merged that violates these standards without an approved
 exception.**
+
+## Quick Start
+
+1. Review mandatory security requirements
+2. Check implementation status for your component
+3. Follow security checklist before deployment
+
+## AI Instructions
+
+When implementing security:
+
+- All requirements in this doc are MANDATORY
+- Never bypass security measures without documented approval
+- Report security concerns immediately
 
 ---
 

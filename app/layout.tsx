@@ -5,6 +5,7 @@ import Script from "next/script";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ErrorBoundary } from "@/components/providers/error-boundary";
 import { CelebrationProvider } from "@/components/celebrations/celebration-provider";
+import { SentryInitializer } from "@/components/providers/sentry-initializer";
 import "./globals.css";
 import { Toaster } from "sonner";
 
@@ -87,6 +88,7 @@ export default function RootLayout({
           src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY}`}
           strategy="lazyOnload"
         />
+        <SentryInitializer />
         <ErrorBoundary>
           <AuthProvider>
             <CelebrationProvider>

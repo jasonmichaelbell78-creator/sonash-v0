@@ -13,7 +13,8 @@
   [How to Use This Backlog](#how-to-use-this-backlog)
 - **Triage items**: Sort by severity (S1→S2→S3), estimate effort (E0-E3)
 - **Process workflow**: See
-  [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) Step 4B
+  [INTEGRATED_IMPROVEMENT_PLAN.md](./archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)
+  Step 4B
 - **Related docs**: [AI_REVIEW_PROCESS.md](./AI_REVIEW_PROCESS.md),
   [MULTI_AI_REVIEW_COORDINATOR.md](./MULTI_AI_REVIEW_COORDINATOR.md)
 
@@ -40,8 +41,8 @@ audits.
 
 **Related To**:
 
-- [INTEGRATED_IMPROVEMENT_PLAN.md](./INTEGRATED_IMPROVEMENT_PLAN.md) - Master
-  improvement roadmap
+- [INTEGRATED_IMPROVEMENT_PLAN.md](./archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+  Master improvement roadmap
 - [AI_REVIEW_LEARNINGS_LOG.md](./AI_REVIEW_LEARNINGS_LOG.md) - Review learnings
 - [MULTI_AI_REVIEW_COORDINATOR.md](./MULTI_AI_REVIEW_COORDINATOR.md) - Audit
   coordination
@@ -253,8 +254,8 @@ recommended section matching: /ai instructions/i")
 (1 hour) **Source**: Session #48 analysis **Status**: PENDING
 
 **Description**: The docs:check linter reports false positive "broken links" for
-instructional placeholder text like `[text](path)` in templates. This creates
-noise in the validation output.
+instructional placeholder text like `[text]` + `(path)` in templates. This
+creates noise in the validation output.
 
 **Files affected**: `scripts/check-docs-light.js`
 

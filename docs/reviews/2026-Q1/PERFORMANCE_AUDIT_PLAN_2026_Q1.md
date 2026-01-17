@@ -31,6 +31,14 @@ metrics, and improvement targets.
 
 ---
 
+## Quick Start
+
+1. Review audit scope and objectives
+2. Check performance metrics to measure
+3. Follow execution methodology
+
+---
+
 ## Status Dashboard
 
 | Step   | Description                                 | Status   | Completion |

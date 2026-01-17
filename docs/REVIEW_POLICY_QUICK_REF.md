@@ -16,6 +16,20 @@ This is a **one-page quick reference** for the SoNash review policy. Use it to:
 For full policy details, see
 [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md).
 
+## Quick Start
+
+1. Find your scenario in the reference table
+2. Follow the specified workflow
+3. See full policy docs for detailed procedures
+
+## AI Instructions
+
+When following review policies:
+
+- Use this doc for quick lookups during reviews
+- Escalate to full policy docs for edge cases
+- Report missing scenarios to update this reference
+
 ---
 
 ## 30-Second Decision Guide

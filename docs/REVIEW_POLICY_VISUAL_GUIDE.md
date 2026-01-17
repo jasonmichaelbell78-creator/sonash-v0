@@ -17,6 +17,20 @@ policy. Use it to:
 For full policy details, see
 [REVIEW_POLICY_ARCHITECTURE.md](./REVIEW_POLICY_ARCHITECTURE.md).
 
+## Quick Start
+
+1. Identify your situation in the decision trees
+2. Follow the flowchart path to determine action
+3. Reference linked docs for full procedures
+
+## AI Instructions
+
+When using visual guides:
+
+- Start at the top of relevant decision tree
+- Follow branches based on your specific situation
+- Use linked documentation for detailed steps
+
 ---
 
 ## Review Tier Pyramid

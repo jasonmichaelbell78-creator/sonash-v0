@@ -1,9 +1,9 @@
 # Review Policy Architecture
 
 **Document Type:** FOUNDATION (Tier 2) **Version:** 1.1 **Created:** 2026-01-04
-**Last Updated:** 2026-01-04 **Status:** UNDER IMPLEMENTATION (Phase 1 in
-progress) **Authority:** MANDATORY for all development activities after Phase 1
-completion
+**Status:** UNDER IMPLEMENTATION (Phase 1 in progress) **Authority:** MANDATORY
+for all development activities after Phase 1 completion **Last Updated:**
+2026-01-04
 
 > **Implementation Note:** This document describes the target review policy
 > architecture. Full enforcement begins after Phase 1 deliverables are complete
@@ -34,6 +34,20 @@ touchpoints.
 - Infrastructure (GitHub Actions, hooks, configs)
 - Data (Firestore rules, schemas)
 - Security (auth flows, API keys)
+
+## Quick Start
+
+1. Understand the policy structure and hierarchy
+2. Identify which policies apply to your task
+3. Follow the enforcement mechanisms specified
+
+## AI Instructions
+
+When implementing review policies:
+
+- Understand the full architecture before making changes
+- Ensure changes align with policy hierarchy
+- Update related documents when modifying architecture
 
 ---
 

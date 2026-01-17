@@ -1,7 +1,35 @@
 # ADR-001: Integrated Improvement Plan Approach
 
 **Date:** 2026-01-03 **Status:** Accepted **Decision Makers:** Project Owner,
-Claude AI (Session #5)
+Claude AI (Session #5) **Last Updated:** 2026-01-15
+
+---
+
+## Purpose
+
+This Architecture Decision Record documents the decision to create a single
+Integrated Improvement Plan consolidating multiple separate improvement
+initiatives into a unified execution path.
+
+## Quick Start
+
+1. Review the Context for background
+2. Check the Decision and rationale
+3. Note the Consequences for impact
+
+## AI Instructions
+
+When referencing this ADR:
+
+- This documents the IIP approach decision
+- Follow the decided methodology
+- Create new ADR if changing approach
+
+## Version History
+
+| Version | Date       | Changes             |
+| ------- | ---------- | ------------------- |
+| 1.0     | 2026-01-03 | Initial ADR created |
 
 ---
 
@@ -110,8 +138,8 @@ plan, or integrate existing work into a unified path?
 
 ## Related Documents
 
-- [INTEGRATED_IMPROVEMENT_PLAN.md](../INTEGRATED_IMPROVEMENT_PLAN.md) - The plan
-  created by this decision
+- [INTEGRATED_IMPROVEMENT_PLAN.md](../archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
+  The plan created by this decision
 - [DOCUMENTATION_STANDARDIZATION_PLAN.md](../archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md) -
   Original doc plan (archived)
 - [EIGHT_PHASE_REFACTOR_PLAN.md](../archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md) -
