@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Generated:** 2026-01-17 **Total Items:** 283 **PR Buckets:** 35
+**Generated:** 2026-01-17 **Total Items:** 292 **PR Buckets:** 35
 
 ---
 
@@ -13,7 +13,7 @@ implementation.
 
 | Bucket                   | Items | S0  | S1  | S2  | S3  |
 | ------------------------ | ----- | --- | --- | --- | --- |
-| code-quality             | 84    | 0   | 19  | 42  | 23  |
+| code-quality             | 93    | 0   | 20  | 46  | 27  |
 | security-hardening       | 38    | 3   | 15  | 15  | 5   |
 | performance-optimization | 31    | 1   | 7   | 20  | 3   |
 | process-automation       | 24    | 1   | 3   | 9   | 11  |
@@ -127,6 +127,7 @@ implementation.
 - [ ] **MASTER-0244**: Increase security file coverage (E2)
 - [ ] **MASTER-0277**: Add npm audit + CodeQL + Dependabot (E2)
 - [ ] **MASTER-0278**: Add gcloud setup to deploy workflow (E1)
+- [ ] **MASTER-0291**: Missing Security Headers (E0)
 
 ### security-hardening
 
@@ -325,6 +326,10 @@ implementation.
 - [ ] **MASTER-0279**: Move full tests to pre-push only (E1)
 - [ ] **MASTER-0280**: Pin firebase-tools version (E0)
 - [ ] **MASTER-0281**: Fix auto-label workflow if syntax (E0)
+- [ ] **MASTER-0287**: Fix docs:check False Positives (E1)
+- [ ] **MASTER-0288**: Add Missing Script Triggers to Session Start (E0)
+- [ ] **MASTER-0289**: Add CANON Validation to CI Pipeline (E1)
+- [ ] **MASTER-0292**: No Firebase Storage Rules (E0)
 - [ ] **MASTER-0239**: Decompose Step1WorksheetCard (E3)
 
 ### security-hardening
@@ -559,6 +564,7 @@ implementation.
 - [ ] **MASTER-0274**: Document fragile anchor links (E0)
 - [ ] **MASTER-0275**: Update Husky docs for patterns:check (E0)
 - [ ] **MASTER-0282**: Add explicit permissions block (E0)
+- [ ] **MASTER-0290**: Add npm Commands for Undocumented Scripts (E0)
 - [ ] **MASTER-0011**: Useless assignment to hasMore variable (E1)
 - [ ] **MASTER-0013**: Nested ternary operator (E1)
 - [ ] **MASTER-0014**: Nested template literals (6 occurrences) (E1)
@@ -566,9 +572,12 @@ implementation.
       ts-expect-error, eslint-disable) (E1)
 - [ ] **MASTER-0211**: Replace 'any' with proper types (E1)
 - [ ] **MASTER-0283**: Improve deploy secret handling (E1)
+- [ ] **MASTER-0284**: Retrofit SSR-Safe localStorage (E1)
+- [ ] **MASTER-0286**: Missing "AI Instructions" Sections (E1)
 - [ ] **MASTER-0073**: Error messages lack actionable fix hints - generic
       'Please try again' (E1)
 - [ ] **MASTER-0270**: Fix archive link rot (E2)
+- [ ] **MASTER-0285**: Missing "Quick Start" Sections (E2)
 
 ### security-hardening
 

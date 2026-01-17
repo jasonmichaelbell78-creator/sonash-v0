@@ -1,7 +1,7 @@
 # Master Issue List
 
 **Generated:** 2026-01-17 **Source:** Aggregated from single-session audits,
-CANON files, and backlogs **Total Items:** 283 (deduplicated from 292 raw
+CANON files, and backlogs **Total Items:** 292 (deduplicated from 301 raw
 findings)
 
 ---
@@ -13,15 +13,15 @@ findings)
 | Severity | Count | Description                      |
 | -------- | ----- | -------------------------------- |
 | S0       | 10    | Critical - implement immediately |
-| S1       | 75    | High - implement this sprint     |
-| S2       | 135   | Medium - implement next sprint   |
-| S3       | 63    | Low - backlog                    |
+| S1       | 76    | High - implement this sprint     |
+| S2       | 139   | Medium - implement next sprint   |
+| S3       | 67    | Low - backlog                    |
 
 ### By Category
 
 | Category      | Count |
 | ------------- | ----- |
-| code          | 122   |
+| code          | 131   |
 | refactoring   | 40    |
 | security      | 35    |
 | performance   | 31    |
@@ -34,7 +34,7 @@ findings)
 
 | PR Bucket                | Count |
 | ------------------------ | ----- |
-| code-quality             | 84    |
+| code-quality             | 93    |
 | security-hardening       | 38    |
 | performance-optimization | 31    |
 | process-automation       | 24    |
@@ -442,7 +442,7 @@ violations over time, then remove continue-on-error
 - **PR Bucket:** security-hardening
 - **Sources:** CANON-0016
 
-_...and 45 more S1 items_
+_...and 46 more S1 items_
 
 ---
 
@@ -598,7 +598,7 @@ _...and 45 more S1 items_
 | 99   | MASTER-0111 | reCAPTCHA token missing does not block r...  | S1  | E1     | 100   | security      |
 | 100  | MASTER-0112 | Rate limiting is incomplete (no IP throt...  | S1  | E2     | 100   | security      |
 
-_...and 183 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
+_...and 192 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 
 ---
 

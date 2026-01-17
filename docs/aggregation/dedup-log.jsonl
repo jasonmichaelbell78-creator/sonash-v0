@@ -1,9 +1,9 @@
-{"action":"merge","finding1_id":"CODE-002","finding2_id":"PERF-003","reasons":["same file + similar title (94%)"],"timestamp":"2026-01-17T16:35:02.211Z"}
-{"action":"merge","finding1_id":"SEC-008","finding2_id":"PROC-001","reasons":["same file + similar title (86%)"],"timestamp":"2026-01-17T16:35:02.240Z"}
-{"action":"merge","finding1_id":"REF-005","finding2_id":"CANON-0065","reasons":["same file + similar title (87%)"],"timestamp":"2026-01-17T16:35:02.268Z"}
-{"action":"merge","finding1_id":"REF-007","finding2_id":"CANON-0079","reasons":["same file + similar title (100%)","same category + very similar title (100%)"],"timestamp":"2026-01-17T16:35:02.271Z"}
-{"action":"merge","finding1_id":"REF-008","finding2_id":"CANON-0075","reasons":["same file + similar title (85%)"],"timestamp":"2026-01-17T16:35:02.273Z"}
-{"action":"merge","finding1_id":"REF-009","finding2_id":"CANON-0070","reasons":["same file + similar title (100%)","same category + very similar title (100%)"],"timestamp":"2026-01-17T16:35:02.274Z"}
-{"action":"merge","finding1_id":"REF-010","finding2_id":"CANON-0087","reasons":["same file + similar title (100%)","same category + very similar title (100%)"],"timestamp":"2026-01-17T16:35:02.276Z"}
-{"action":"merge","finding1_id":"CANON-0002","finding2_id":"CANON-0034","reasons":["same file + similar title (80%)"],"timestamp":"2026-01-17T16:35:02.288Z"}
-{"action":"merge","finding1_id":"CANON-0068","finding2_id":"DEDUP-0014","reasons":["explicit DEDUP->CANON dependency"],"timestamp":"2026-01-17T16:35:02.363Z"}
+{"action":"merge","finding1_id":"CODE-002","finding2_id":"PERF-003","reasons":["same file + similar title (94%)"],"timestamp":"2026-01-17T18:27:16.734Z"}
+{"action":"merge","finding1_id":"SEC-008","finding2_id":"PROC-001","reasons":["same file + similar title (86%)"],"timestamp":"2026-01-17T18:27:16.768Z"}
+{"action":"merge","finding1_id":"REF-005","finding2_id":"CANON-0065","reasons":["same file + similar title (87%)"],"timestamp":"2026-01-17T18:27:16.800Z"}
+{"action":"merge","finding1_id":"REF-007","finding2_id":"CANON-0079","reasons":["same file + similar title (100%)","same category + very similar title (100%)"],"timestamp":"2026-01-17T18:27:16.804Z"}
+{"action":"merge","finding1_id":"REF-008","finding2_id":"CANON-0075","reasons":["same file + similar title (85%)"],"timestamp":"2026-01-17T18:27:16.806Z"}
+{"action":"merge","finding1_id":"REF-009","finding2_id":"CANON-0070","reasons":["same file + similar title (100%)","same category + very similar title (100%)"],"timestamp":"2026-01-17T18:27:16.808Z"}
+{"action":"merge","finding1_id":"REF-010","finding2_id":"CANON-0087","reasons":["same file + similar title (100%)","same category + very similar title (100%)"],"timestamp":"2026-01-17T18:27:16.811Z"}
+{"action":"merge","finding1_id":"CANON-0002","finding2_id":"CANON-0034","reasons":["same file + similar title (80%)"],"timestamp":"2026-01-17T18:27:16.827Z"}
+{"action":"merge","finding1_id":"CANON-0068","finding2_id":"DEDUP-0014","reasons":["explicit DEDUP->CANON dependency"],"timestamp":"2026-01-17T18:27:16.925Z"}
