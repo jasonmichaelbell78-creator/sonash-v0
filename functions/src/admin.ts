@@ -1339,18 +1339,31 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
       // Prevents type violations in API response if metadata is corrupt
       const rawMetadata = data.metadata;
       // ROBUSTNESS: Convert Timestamps to ISO strings, then redact sensitive keys
-      const safeMetadata =
-        rawMetadata && typeof rawMetadata === "object" && !Array.isArray(rawMetadata)
-          ? (toJsonSafe(redactSensitiveMetadata(rawMetadata as Record<string, unknown>)) as Record<
-              string,
-              unknown
-            >)
+      // Double-check output remains an object after transformation
+      const safeMetadata = (() => {
+        if (!rawMetadata || typeof rawMetadata !== "object" || Array.isArray(rawMetadata)) {
+          return undefined;
+        }
+        const converted = toJsonSafe(
+          redactSensitiveMetadata(rawMetadata as Record<string, unknown>)
+        );
+        // Verify toJsonSafe didn't return non-object (edge case protection)
+        return converted && typeof converted === "object" && !Array.isArray(converted)
+          ? (converted as Record<string, unknown>)
           : undefined;
+      })();
+
+      // ROBUSTNESS: Clamp severity to allowed values
+      const rawSeverity = data.severity;
+      const safeSeverity: "INFO" | "WARNING" | "ERROR" =
+        rawSeverity === "ERROR" || rawSeverity === "WARNING" || rawSeverity === "INFO"
+          ? rawSeverity
+          : "INFO";
 
       return {
         id: doc.id,
         type: data.type || "UNKNOWN",
-        severity: data.severity || "INFO",
+        severity: safeSeverity,
         functionName: data.functionName || "unknown",
         message: data.message || "",
         timestamp: data.timestamp?.toDate().toISOString() || new Date().toISOString(),
@@ -1743,10 +1756,18 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
     const authUser = await admin.auth().getUser(uid);
     const currentClaims = authUser.customClaims || {};
 
+    // ATOMICITY: Store previous privilege for accurate rollback (not hardcoded "free")
+    const userRef = db.collection("users").doc(uid);
+    const userSnap = await userRef.get();
+    const prevPrivilegeType =
+      (userSnap.exists
+        ? (userSnap.data() as Record<string, unknown> | undefined)?.privilegeType
+        : undefined) ?? "free";
+
     if (privilegeTypeId === "admin") {
       // GRANTING admin: Write Firestore FIRST, then set claims
       // If Firestore fails, user won't get admin claims (fail-safe)
-      await db.collection("users").doc(uid).update({
+      await userRef.update({
         privilegeType: privilegeTypeId,
         privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
         privilegeUpdatedBy: request.auth?.uid,
@@ -1755,9 +1776,9 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       try {
         await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
       } catch (claimsError) {
-        // ATOMICITY: Roll back Firestore to avoid "admin in DB but not in claims"
-        await db.collection("users").doc(uid).update({
-          privilegeType: "free",
+        // ATOMICITY: Roll back to ACTUAL previous privilege, not hardcoded "free"
+        await userRef.update({
+          privilegeType: prevPrivilegeType,
           privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
           privilegeUpdatedBy: request.auth?.uid,
         });
@@ -1769,7 +1790,7 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       if (currentClaims.admin) {
         await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
       }
-      await db.collection("users").doc(uid).update({
+      await userRef.update({
         privilegeType: privilegeTypeId,
         privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
         privilegeUpdatedBy: request.auth?.uid,
@@ -1849,7 +1870,8 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
               ? admin.firestore.Timestamp.fromMillis(0)
               : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
         } else {
-          sortValue = null;
+          // ROBUSTNESS: Use string sentinels for nickname field (prevents cursor type mismatch)
+          sortValue = safeSortOrder === "asc" ? "" : "\uf8ff";
         }
 
         // Provide explicit values for both orderBy clauses (sortField + docId)

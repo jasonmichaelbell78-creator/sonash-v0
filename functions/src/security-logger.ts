@@ -95,13 +95,17 @@ export function logSecurityEvent(
 ): void {
   const severity = options?.severity ?? getSeverityForType(type);
 
+  // SECURITY: Redact metadata BEFORE logging to console/Sentry (not just Firestore)
+  // This prevents sensitive error strings from leaking to Cloud Logging
+  const redactedMetadata = redactSensitiveMetadata(options?.metadata);
+
   const event: SecurityEvent = {
     type,
     severity,
     userId: options?.userId ? hashUserId(options.userId) : undefined,
     functionName,
     message,
-    metadata: options?.metadata,
+    metadata: redactedMetadata, // Use redacted metadata in event
     timestamp: new Date().toISOString(),
   };
 
@@ -133,7 +137,7 @@ export function logSecurityEvent(
         functionName,
       },
       extra: {
-        ...options?.metadata,
+        ...redactedMetadata, // Use redacted metadata for Sentry too
         userIdHash: options?.userId ? hashUserId(options.userId) : undefined,
       },
     });
@@ -242,14 +246,20 @@ const MAX_FUNCTION_LEN = 200;
  * Redact common PII patterns from message strings before persisting
  * SECURITY: Prevents accidental PII exposure via log messages
  * Patterns: emails, phone numbers, IPs, file paths with usernames
+ * ROBUSTNESS: Uses bounded regex to prevent ReDoS attacks
  */
 function redactPiiFromMessage(message: string): string {
   if (!message || typeof message !== "string") return message;
 
+  // SECURITY: Cap input length to prevent ReDoS on large payloads
+  const MAX_LEN = 10000;
+  const input = message.length > MAX_LEN ? message.slice(0, MAX_LEN) : message;
+
   return (
-    message
-      // Email addresses
-      .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, "[EMAIL]")
+    input
+      // Email addresses (RFC 5321: local≤64, domain≤255, TLD≤63)
+      // SECURITY: Bounded quantifiers prevent ReDoS
+      .replace(/[\w.+-]{1,64}@[\w.-]{1,255}\.[a-z]{2,63}/gi, "[EMAIL]")
       // Phone numbers (various formats)
       .replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, "[PHONE]")
       // IPv4 addresses (except localhost/private ranges for debugging)

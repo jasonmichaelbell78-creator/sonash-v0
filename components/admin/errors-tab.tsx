@@ -123,7 +123,9 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
         <td className="px-6 py-4">
           <div className="flex items-center gap-1.5 text-amber-700">
             <Users className="h-3.5 w-3.5" />
-            <span>{issue.userCount != null ? issue.userCount.toLocaleString() : "N/A"}</span>
+            <span>
+              {typeof issue.userCount === "number" ? issue.userCount.toLocaleString() : "N/A"}
+            </span>
           </div>
         </td>
         <td className="px-6 py-4 text-amber-700">{lastSeenFormatted}</td>
@@ -221,7 +223,7 @@ function ErrorRow({ issue, isExpanded, onToggle, knowledge }: ErrorRowProps) {
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-amber-500" />
                   <span className="text-xs text-amber-600">
-                    {issue.userCount != null
+                    {typeof issue.userCount === "number"
                       ? `${issue.userCount.toLocaleString()} users affected`
                       : "N/A users"}
                   </span>
