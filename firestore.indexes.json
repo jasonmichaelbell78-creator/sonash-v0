@@ -104,7 +104,7 @@
     },
     {
       "collectionGroup": "security_logs",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "timestamp",
@@ -114,7 +114,7 @@
     },
     {
       "collectionGroup": "security_logs",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "severity",

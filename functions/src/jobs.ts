@@ -213,6 +213,7 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
 
     // SCALABILITY: Paginate storage listing to prevent OOM on large file sets
     let pageToken: string | undefined;
+    let prevPageToken: string | undefined;
 
     do {
       const [files, nextQuery] = await bucket.getFiles({
@@ -224,58 +225,61 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
       for (const file of files) {
         checked++;
 
-      try {
-        // Extract userId from file path (user-uploads/{userId}/...)
-        const pathParts = file.name.split("/");
-        if (pathParts.length < 2) continue;
+        try {
+          // Extract userId from file path (user-uploads/{userId}/...)
+          const pathParts = file.name.split("/");
+          if (pathParts.length < 2) continue;
 
-        const userId = pathParts[1];
+          const userId = pathParts[1];
 
-        // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
-        if (!existingUserIds.has(userId)) {
-          // User doesn't exist, delete the file
-          await file.delete();
-          deleted++;
-          continue;
-        }
-
-        // Check if file is referenced - use stable storage path reference ONLY
-        // SAFETY: Removed URL substring fallback to prevent accidental deletion
-        // Files without imagePath reference are treated as "unknown" (not deleted)
-        const journalByPathRef = db
-          .collection(`users/${userId}/journal`)
-          .where("data.imagePath", "==", file.name)
-          .limit(1);
-
-        const byPathSnap = await journalByPathRef.get();
-        const isReferenced = !byPathSnap.empty;
-
-        // SAFETY: If we can't conclusively determine the file is orphaned, skip it
-        // Legacy entries without imagePath will be preserved until migrated
-        if (!isReferenced) {
-          // File appears orphaned, check age before deleting (safety buffer)
-          const metadata = await file.getMetadata();
-          const timeCreated = metadata[0].timeCreated;
-          if (!timeCreated) continue;
-
-          const createTime = new Date(timeCreated);
-          const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-          if (createTime < sevenDaysAgo) {
+          // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
+          if (!existingUserIds.has(userId)) {
+            // User doesn't exist, delete the file
             await file.delete();
             deleted++;
+            continue;
           }
-        }
-      } catch (fileError) {
-        // RESILIENCE: Log per-file errors but continue processing other files
-        errors++;
-        // SECURITY: Don't log file.name (contains userId) - log error type and count only
-        const errorType = fileError instanceof Error ? fileError.name : "UnknownError";
-        console.error(`Storage cleanup error [${errorType}] - Total errors: ${errors}`);
-      }
-    }
 
+          // Check if file is referenced - use stable storage path reference ONLY
+          // SAFETY: Removed URL substring fallback to prevent accidental deletion
+          // Files without imagePath reference are treated as "unknown" (not deleted)
+          const journalByPathRef = db
+            .collection(`users/${userId}/journal`)
+            .where("data.imagePath", "==", file.name)
+            .limit(1);
+
+          const byPathSnap = await journalByPathRef.get();
+          const isReferenced = !byPathSnap.empty;
+
+          // SAFETY: If we can't conclusively determine the file is orphaned, skip it
+          // Legacy entries without imagePath will be preserved until migrated
+          if (!isReferenced) {
+            // File appears orphaned, check age before deleting (safety buffer)
+            const metadata = await file.getMetadata();
+            const timeCreated = metadata[0].timeCreated;
+            if (!timeCreated) continue;
+
+            const createTime = new Date(timeCreated);
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+            if (createTime < sevenDaysAgo) {
+              await file.delete();
+              deleted++;
+            }
+          }
+        } catch (fileError) {
+          // RESILIENCE: Log per-file errors but continue processing other files
+          errors++;
+          // SECURITY: Don't log file.name (contains userId) - log error type and count only
+          const errorType = fileError instanceof Error ? fileError.name : "UnknownError";
+          console.error(`Storage cleanup error [${errorType}] - Total errors: ${errors}`);
+        }
+      }
+
+      // SAFETY: Prevent infinite loop if pageToken doesn't change
+      prevPageToken = pageToken;
       pageToken = nextQuery?.pageToken;
+      if (pageToken && pageToken === prevPageToken) break;
     } while (pageToken);
 
     logSecurityEvent(

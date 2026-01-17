@@ -144,7 +144,9 @@ export function logSecurityEvent(
   if (severity !== "INFO" || options?.storeInFirestore) {
     storeLogInFirestore(event).catch((err) => {
       // Don't log errors about logging to prevent infinite loops
-      console.error("Failed to store security event in Firestore:", err);
+      // SECURITY: Sanitize error - only log type, not full object (may contain sensitive details)
+      const errorType = err instanceof Error ? err.name : "UnknownError";
+      console.error(`Failed to store security event in Firestore: ${errorType}`);
     });
   }
 }
@@ -180,6 +182,17 @@ function isSensitiveKey(key: string): boolean {
 }
 
 /**
+ * Check if a value is a plain object (not Date, Timestamp, etc.)
+ * Prevents corrupting special object types during redaction
+ */
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== "object") return false;
+  if (Array.isArray(value)) return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+/**
  * Redact sensitive keys from metadata before persisting to Firestore
  * Prevents PII/secrets from being stored in the security_logs collection
  * SECURITY: Recursively scans nested objects and arrays
@@ -188,29 +201,23 @@ function isSensitiveKey(key: string): boolean {
 export function redactSensitiveMetadata(
   metadata?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
-  if (!metadata) return undefined;
+  if (!metadata || !isPlainObject(metadata)) return undefined;
 
   return Object.fromEntries(
     Object.entries(metadata).map(([key, value]) => {
       // Redact sensitive keys at any level
-      if (isSensitiveKey(key)) {
-        return [key, "[REDACTED]"];
+      if (isSensitiveKey(key)) return [key, "[REDACTED]"];
+
+      // Recursively redact nested plain objects (not Date, Timestamp, etc.)
+      if (isPlainObject(value)) {
+        return [key, redactSensitiveMetadata(value)];
       }
 
-      // Recursively redact nested objects
-      if (value && typeof value === "object" && !Array.isArray(value)) {
-        return [key, redactSensitiveMetadata(value as Record<string, unknown>)];
-      }
-
-      // Recursively redact arrays containing objects
+      // Recursively redact arrays containing plain objects
       if (Array.isArray(value)) {
         return [
           key,
-          value.map((item) =>
-            item && typeof item === "object"
-              ? redactSensitiveMetadata(item as Record<string, unknown>)
-              : item
-          ),
+          value.map((item) => (isPlainObject(item) ? redactSensitiveMetadata(item) : item)),
         ];
       }
 

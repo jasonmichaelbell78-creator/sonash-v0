@@ -55,12 +55,19 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
   const TabButton = ({
     tab,
   }: {
-    tab: { id: string; label: string; icon: React.ComponentType<{ className?: string }> };
+    tab: {
+      id: string;
+      label: string;
+      icon: (props: { className?: string }) => JSX.Element;
+    };
   }) => {
     const Icon = tab.icon;
     return (
       <button
+        type="button"
         onClick={() => setActiveTab(tab.id)}
+        aria-pressed={activeTab === tab.id}
+        aria-label={tab.label}
         className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap
           ${
             activeTab === tab.id
