@@ -9,7 +9,7 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
-import { logSecurityEvent, hashUserId } from "./security-logger";
+import { logSecurityEvent, hashUserId, redactSensitiveMetadata } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
 /**
@@ -1314,7 +1314,9 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
         functionName: data.functionName || "unknown",
         message: data.message || "",
         timestamp: data.timestamp?.toDate().toISOString() || new Date().toISOString(),
-        metadata: data.metadata || undefined,
+        // SECURITY: Defense-in-depth - redact metadata even though write-time redaction exists
+        // Protects against bugs in write-time redaction and legacy data
+        metadata: redactSensitiveMetadata(data.metadata),
       };
     });
 
@@ -1495,7 +1497,9 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
       }> = [];
 
       if (privilegesDoc.exists) {
-        types = privilegesDoc.data()?.types || [];
+        const stored = privilegesDoc.data()?.types;
+        // ROBUSTNESS: Validate that types field is actually an array to prevent runtime errors
+        types = Array.isArray(stored) ? stored : [];
       }
 
       // Find and update existing type or add new one
@@ -1727,7 +1731,11 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       } catch (authError) {
         // SECURITY: Propagate auth errors instead of returning partial data
         // Returning incomplete data could be misleading and hide issues
-        console.error("Batch auth fetch failed:", authError);
+        logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Batch auth fetch failed", {
+          userId: request.auth?.uid,
+          metadata: { error: String(authError), uidsCount: uids.length },
+          captureToSentry: true,
+        });
         throw new HttpsError("internal", "Failed to fetch user authentication details");
       }
     }

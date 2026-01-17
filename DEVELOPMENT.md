@@ -361,6 +361,21 @@ firebase deploy --only firestore:rules
 firebase deploy --only firestore:indexes
 ```
 
+### Deploy Storage Rules
+
+**IMPORTANT**: Storage rules must enforce `user-uploads/{userId}/` prefix restrictions.
+The `cleanupOrphanedStorageFiles` job (A11) relies on these rules to prevent unauthorized file placement.
+
+```bash
+firebase deploy --only storage:rules
+```
+
+**Verification Checklist:**
+- Verify rules in Firebase Console > Storage > Rules
+- Test write to own prefix (should succeed)
+- Test write to other user's prefix (should fail)
+- Monitor Cloud Logging for `storage.googleapis.com/authz` events
+
 ### Deploy Hosting (if configured)
 
 ```bash

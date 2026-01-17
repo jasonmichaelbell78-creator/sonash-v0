@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 7.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-17
+**Document Version:** 7.9 **Created:** 2026-01-02 **Last Updated:** 2026-01-17
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7.9     | 2026-01-17 | Review #164: Track A Cherry-Pick PR Qodo Compliance - 10 items (1 CRITICAL: Firestore index queryScope; 3 MAJOR: PII in logs, storage pagination, metadata redaction on read; 3 MINOR: structured logging, array validation, Storage ACL docs; 3 REJECTED: risk-accepted Firestore logging, compliance-only items). New patterns: COLLECTION_GROUP for collection group queries, paginate bucket.getFiles(), redact metadata on read for defense-in-depth.                                                                                                                                                                                                                                                                                                                                      |
 | 7.8     | 2026-01-17 | Review #163: Track A PR Follow-up Compliance - 12 items (5 MAJOR: per-item error handling, transaction for privilege updates, auth error propagation, schema validation, raw error UI; 5 MINOR: rename cleanupOldDailyLogs, null for claims, listDocuments, built-in types guarantee, observability note; 2 TRIVIAL: storage ACL docs, message PII risk-accept). New patterns: Per-item error handling in jobs, Firestore transactions for updates, listDocuments() for ID-only queries.                                                                                                                                                                                                                                                                                                   |
 | 7.7     | 2026-01-16 | Review #162: Track A Admin Panel PR Feedback - 22 items (1 CRITICAL: CI blocker README formatting; 8 MAJOR: error swallowing, PII in logs, claims bug, orphan detection, N+1 queries; 11 MINOR: UX improvements; 2 DEFERRED to roadmap). New patterns: Metadata redaction, preserve custom claims, collectionGroup queries, batch auth lookups.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 7.6     | 2026-01-16 | Review #161: lint-staged PR Feedback - 3 items (2 MAJOR: supply-chain risk with npx, hidden stderr errors; 1 MINOR: README/ROADMAP Prettier formatting). New patterns: Use `npx --no-install` for security, expose hook error output for debugging.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -843,6 +844,69 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #164: Track A Cherry-Pick PR Qodo Compliance (2026-01-17)
+
+**Source:** Qodo Compliance + PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-track-a-6TRVG **Suggestions:** 10 items (Critical: 1, Major:
+3, Minor: 3, Rejected: 3)
+
+**Issues Fixed:**
+
+| #   | Issue                                              | Severity | Category       | Fix                                                 |
+| --- | -------------------------------------------------- | -------- | -------------- | --------------------------------------------------- |
+| 9   | Incorrect index queryScope (COLLECTION vs GROUP)   | Critical | Configuration  | Changed to COLLECTION_GROUP for security_logs       |
+| 5   | PII in console.error (userId in file.name)         | Major    | Security       | Log error count/type instead of full path           |
+| 6   | No pagination in bucket.getFiles()                 | Major    | Scalability    | Add pagination with maxResults:500, pageToken loop  |
+| 10  | No metadata redaction on read in adminGetLogs      | Major    | Security       | Add server-side redaction before sending to client  |
+| 7   | console.error instead of logSecurityEvent          | Minor    | Observability  | Use structured logging for consistency              |
+| 8   | No Array.isArray check for Firestore types field  | Minor    | Robustness     | Add validation to prevent runtime errors            |
+| 2   | Storage ACL documentation (already in code)        | Minor    | Documentation  | Document in deployment guide                        |
+
+**Rejected Items:**
+
+| #   | Issue                             | Reason                                                        |
+| --- | --------------------------------- | ------------------------------------------------------------- |
+| 1   | Firestore log exposure            | Risk-accepted: comprehensive metadata redaction implemented   |
+| 3   | No ticket provided                | Compliance check only, not actionable                         |
+| 4   | Codebase context not defined      | Compliance check only, not actionable                         |
+
+**Patterns Identified:**
+
+1. **Firestore Index Query Scope**: Collection group queries require `queryScope:
+   "COLLECTION_GROUP"` not `"COLLECTION"`
+   - Root cause: Configuration mismatch between index definition and query usage
+   - Prevention: Validate indexes match query patterns (collectionGroup queries
+     need COLLECTION_GROUP scope)
+
+2. **Storage Pagination for Scalability**: Always paginate `bucket.getFiles()`
+   to prevent OOM
+   - Root cause: Loading all files into memory can exhaust resources at scale
+   - Prevention: Use `maxResults` + `pageToken` pagination pattern, process in
+     batches
+
+3. **Defense-in-Depth Metadata Redaction**: Redact sensitive data both on write
+   AND read
+   - Root cause: Legacy data may bypass write-time redaction
+   - Prevention: Add read-time redaction as safety net for UI exposure
+
+**Resolution:**
+
+- Fixed: 7 items
+- Rejected: 3 items (with documented justification)
+
+**Key Learnings:**
+
+- Firestore collection group queries fail silently if index queryScope is wrong
+  - must be COLLECTION_GROUP
+- Pagination is essential for Storage operations - use maxResults:500 as
+  reasonable batch size
+- Defense-in-depth: redact sensitive metadata at multiple layers (write + read)
+  to protect against legacy data
+- Risk acceptance should be documented with implemented mitigations (e.g.,
+  Firestore logging with SENSITIVE_KEYS redaction)
 
 ---
 

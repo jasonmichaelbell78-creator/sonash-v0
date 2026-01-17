@@ -183,8 +183,9 @@ function isSensitiveKey(key: string): boolean {
  * Redact sensitive keys from metadata before persisting to Firestore
  * Prevents PII/secrets from being stored in the security_logs collection
  * SECURITY: Recursively scans nested objects and arrays
+ * EXPORTED: Also used for defense-in-depth redaction on read (adminGetLogs)
  */
-function redactSensitiveMetadata(
+export function redactSensitiveMetadata(
   metadata?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
   if (!metadata) return undefined;

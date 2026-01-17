@@ -211,11 +211,18 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     const userRefs = await db.collection("users").listDocuments();
     const existingUserIds = new Set(userRefs.map((ref) => ref.id));
 
-    // Get all files in user-uploads directory
-    const [files] = await bucket.getFiles({ prefix: "user-uploads/" });
+    // SCALABILITY: Paginate storage listing to prevent OOM on large file sets
+    let pageToken: string | undefined;
 
-    for (const file of files) {
-      checked++;
+    do {
+      const [files, nextQuery] = await bucket.getFiles({
+        prefix: "user-uploads/",
+        maxResults: 500,
+        pageToken,
+      });
+
+      for (const file of files) {
+        checked++;
 
       try {
         // Extract userId from file path (user-uploads/{userId}/...)
@@ -262,9 +269,14 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
       } catch (fileError) {
         // RESILIENCE: Log per-file errors but continue processing other files
         errors++;
-        console.error(`Error processing file ${file.name}:`, fileError);
+        // SECURITY: Don't log file.name (contains userId) - log error type and count only
+        const errorType = fileError instanceof Error ? fileError.name : "UnknownError";
+        console.error(`Storage cleanup error [${errorType}] - Total errors: ${errors}`);
       }
     }
+
+      pageToken = nextQuery?.pageToken;
+    } while (pageToken);
 
     logSecurityEvent(
       "JOB_SUCCESS",
