@@ -1,6 +1,6 @@
 # Audit Tracker
 
-**Document Version:** 1.7 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
+**Document Version:** 1.8 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
@@ -46,13 +46,13 @@ When tracking audits:
 | Performance   | 2026-01-17 (Single)   | 0             | 0           | 30 commits OR bundle change               |
 | Refactoring   | 2026-01-10 (Multi-AI) | 0             | 0           | 40 commits OR 3 complexity warnings       |
 | Documentation | 2026-01-10 (Multi-AI) | 0             | 0           | 20 doc files changed OR 30 commits        |
-| Process       | 2026-01-10 (Multi-AI) | 0             | 0           | Any CI/hook file changed OR 30 commits    |
+| Process       | 2026-01-17 (Single)   | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
 
 | Trigger Type            | Threshold          | Current | Status     |
 | ----------------------- | ------------------ | ------- | ---------- |
-| Single audits completed | 3 per category     | code:2, security:2, performance:2 | ⏳ Pending |
+| Single audits completed | 3 per category     | code:2, security:2, performance:2, process:1 | ⏳ Pending |
 | Total commits           | 100 commits        | —       | ⏳ Check   |
 | Time elapsed            | 14 days            | —       | ⏳ Check   |
 | Major milestone         | Any M1.5+ complete | —       | ⏳ Check   |
@@ -104,9 +104,10 @@ When tracking audits:
 
 ### Process Audits (`/audit-process`)
 
-| Date       | Session  | Commits Covered | Files Covered    | Findings                 | Reset Threshold |
-| ---------- | -------- | --------------- | ---------------- | ------------------------ | --------------- |
-| 2026-01-10 | Multi-AI | Full codebase   | CI/hooks/scripts | 14 (CANON-PROCESS.jsonl) | ✅              |
+| Date       | Session       | Commits Covered | Files Covered    | Findings                                                                                            | Reset Threshold |
+| ---------- | ------------- | --------------- | ---------------- | --------------------------------------------------------------------------------------------------- | --------------- |
+| 2026-01-17 | Single-Claude | N/A (first)     | 60+              | 10 (0 S1, 4 S2, 6 S3) - [audit-2026-01-17.md](./audits/single-session/process/audit-2026-01-17.md)  | ⚠️ (single)     |
+| 2026-01-10 | Multi-AI      | Full codebase   | CI/hooks/scripts | 14 (CANON-PROCESS.jsonl)                                                                            | ✅              |
 
 ---
 
@@ -174,6 +175,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                            |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.8     | 2026-01-17 | Added single-session process audit (2026-01-17): 10 findings (0 S1, 4 S2, 6 S3); 60+ process files; process:1 single audit now                    |
 | 1.7     | 2026-01-17 | Added single-session performance audit (2026-01-17): 12 findings (2 S1, 7 S2, 3 S3); 353 commits/248 files; performance:2 single audits now       |
 | 1.6     | 2026-01-17 | Added single-session security audit (2026-01-17): 11 findings (2 S1, 3 S2, 6 S3); 172 commits/16 security files; security:2 single audits now     |
 | 1.5     | 2026-01-17 | Added single-session code audit (2026-01-17): 14 findings (2 S1, 5 S2, 7 S3); 435 commits/221 files covered; code:2 single audits now             |
