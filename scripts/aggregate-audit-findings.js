@@ -497,12 +497,21 @@ function mergeFindings(finding1, finding2) {
 }
 
 /**
+ * Normalize ROI to uppercase for consistent lookup (Qodo Review #174)
+ */
+function normalizeRoi(value) {
+  if (value === undefined || value === null) return undefined;
+  return String(value).trim().toUpperCase();
+}
+
+/**
  * Calculate priority score for a finding
  */
 function calculatePriorityScore(finding) {
   const severityWeight = SEVERITY_WEIGHTS[finding.severity] || 1;
   const effortWeight = EFFORT_WEIGHTS[finding.effort] || 1;
-  const roiMultiplier = ROI_WEIGHTS[finding.roi] || ROI_WEIGHTS.MEDIUM;
+  const roiKey = normalizeRoi(finding.roi);
+  const roiMultiplier = ROI_WEIGHTS[roiKey] || ROI_WEIGHTS.MEDIUM;
 
   // Persistence boost if found in multiple sources
   const persistenceBoost = finding.sources?.length > 1 ? 10 : 0;
@@ -576,95 +585,105 @@ function parseCanonFiles(allFindings, stats) {
 }
 
 /**
- * Deduplicate findings using merge logic with pre-bucketing optimization (Qodo Review #173)
- * Pre-buckets by file and category to reduce O(n²) to O(n * bucket_size)
+ * Deduplicate findings using multi-pass merge with pre-bucketing (Qodo Review #173, #174)
+ * - Multi-pass iteration until fixpoint (no more merges possible)
+ * - Pre-buckets by file/category to reduce comparisons
+ * - Uses ID index for O(1) DEDUP->CANON dependency lookup
  */
 function deduplicateFindings(allFindings) {
   const dedupLog = [];
-  const processed = new Set();
+  let current = [...allFindings];
+  let didMerge = true;
+  let passCount = 0;
+  const MAX_PASSES = 10; // Safety limit to prevent infinite loops
 
-  // Pre-bucket by file path and category for efficient comparison
-  const fileIndex = new Map(); // file -> [indices]
-  const categoryIndex = new Map(); // category -> [indices]
+  while (didMerge && passCount < MAX_PASSES) {
+    didMerge = false;
+    passCount++;
+    const processed = new Set();
 
-  for (let i = 0; i < allFindings.length; i++) {
-    const f = allFindings[i];
-    if (f.file) {
-      if (!fileIndex.has(f.file)) fileIndex.set(f.file, []);
-      fileIndex.get(f.file).push(i);
-    }
-    if (f.category) {
-      if (!categoryIndex.has(f.category)) categoryIndex.set(f.category, []);
-      categoryIndex.get(f.category).push(i);
-    }
-  }
+    // Pre-bucket by file path and category for efficient comparison
+    const fileIndex = new Map(); // file -> [indices]
+    const categoryIndex = new Map(); // category -> [indices]
+    const idToIndex = new Map(); // original_id -> index (for O(1) dependency lookup)
 
-  // Build candidate pairs from buckets (much smaller than all n² pairs)
-  const candidatePairs = new Set();
-
-  // Same-file pairs
-  for (const indices of fileIndex.values()) {
-    for (let a = 0; a < indices.length; a++) {
-      for (let b = a + 1; b < indices.length; b++) {
-        const key =
-          indices[a] < indices[b] ? `${indices[a]},${indices[b]}` : `${indices[b]},${indices[a]}`;
-        candidatePairs.add(key);
+    for (let i = 0; i < current.length; i++) {
+      const f = current[i];
+      // Index by all files (including merged files array)
+      const files = f.files?.length ? f.files : f.file ? [f.file] : [];
+      for (const file of files) {
+        if (!file) continue;
+        if (!fileIndex.has(file)) fileIndex.set(file, []);
+        fileIndex.get(file).push(i);
+      }
+      if (f.category) {
+        if (!categoryIndex.has(f.category)) categoryIndex.set(f.category, []);
+        categoryIndex.get(f.category).push(i);
+      }
+      if (f.original_id) {
+        idToIndex.set(f.original_id, i);
       }
     }
-  }
 
-  // Same-category pairs (for title similarity matching)
-  for (const indices of categoryIndex.values()) {
-    for (let a = 0; a < indices.length; a++) {
-      for (let b = a + 1; b < indices.length; b++) {
-        const key =
-          indices[a] < indices[b] ? `${indices[a]},${indices[b]}` : `${indices[b]},${indices[a]}`;
-        candidatePairs.add(key);
+    // Process merges directly from buckets (avoid materializing candidatePairs Set)
+    const mergeGroups = new Map(); // canonical index -> merged finding
+
+    function tryMergePair(i, j) {
+      if (processed.has(i) || processed.has(j)) return;
+      const finding1 = mergeGroups.get(i) || current[i];
+      const finding2 = current[j];
+      if (shouldMerge(finding1, finding2, dedupLog)) {
+        const merged = mergeFindings(finding1, finding2);
+        mergeGroups.set(i, merged);
+        processed.add(j);
+        didMerge = true;
       }
     }
-  }
 
-  // Also check DEDUP->CANON dependencies (not covered by file/category buckets)
-  for (let i = 0; i < allFindings.length; i++) {
-    const f = allFindings[i];
-    if (f.original_id?.startsWith("DEDUP-") && f.dependencies?.length) {
-      for (let j = 0; j < allFindings.length; j++) {
-        if (i !== j && f.dependencies.includes(allFindings[j].original_id)) {
-          const key = i < j ? `${i},${j}` : `${j},${i}`;
-          candidatePairs.add(key);
+    // Same-file pairs
+    for (const indices of fileIndex.values()) {
+      for (let a = 0; a < indices.length; a++) {
+        for (let b = a + 1; b < indices.length; b++) {
+          tryMergePair(indices[a], indices[b]);
         }
       }
     }
-  }
 
-  // Process candidate pairs
-  const mergeGroups = new Map(); // canonical index -> merged finding
-
-  for (const pairKey of candidatePairs) {
-    const [iStr, jStr] = pairKey.split(",");
-    const i = parseInt(iStr, 10);
-    const j = parseInt(jStr, 10);
-
-    if (processed.has(i) || processed.has(j)) continue;
-
-    const finding1 = mergeGroups.get(i) || allFindings[i];
-    const finding2 = allFindings[j];
-
-    if (shouldMerge(finding1, finding2, dedupLog)) {
-      const merged = mergeFindings(finding1, finding2);
-      mergeGroups.set(i, merged);
-      processed.add(j);
+    // Same-category pairs (for title similarity matching)
+    for (const indices of categoryIndex.values()) {
+      for (let a = 0; a < indices.length; a++) {
+        for (let b = a + 1; b < indices.length; b++) {
+          tryMergePair(indices[a], indices[b]);
+        }
+      }
     }
+
+    // DEDUP->CANON dependencies using O(1) ID lookup
+    for (let i = 0; i < current.length; i++) {
+      const f = current[i];
+      if (f.original_id?.startsWith("DEDUP-") && f.dependencies?.length) {
+        for (const depId of f.dependencies) {
+          const j = idToIndex.get(depId);
+          if (j === undefined || i === j) continue;
+          tryMergePair(i, j);
+        }
+      }
+    }
+
+    // Collect results for next pass
+    const next = [];
+    for (let i = 0; i < current.length; i++) {
+      if (processed.has(i)) continue;
+      next.push(mergeGroups.get(i) || current[i]);
+    }
+    current = next;
   }
 
-  // Collect unique findings
-  const uniqueFindings = [];
-  for (let i = 0; i < allFindings.length; i++) {
-    if (processed.has(i)) continue;
-    uniqueFindings.push(mergeGroups.get(i) || allFindings[i]);
+  if (passCount >= MAX_PASSES) {
+    console.warn(`Warning: Deduplication hit max passes (${MAX_PASSES}), may not be at fixpoint`);
   }
 
-  return { uniqueFindings, dedupLog };
+  return { uniqueFindings: current, dedupLog };
 }
 
 /**

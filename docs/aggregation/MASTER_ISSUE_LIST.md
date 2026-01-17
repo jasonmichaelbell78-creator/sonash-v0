@@ -1,7 +1,7 @@
 # Master Issue List
 
 **Generated:** 2026-01-17 **Source:** Aggregated from single-session audits,
-CANON files, and backlogs **Total Items:** 292 (deduplicated from 301 raw
+CANON files, and backlogs **Total Items:** 291 (deduplicated from 301 raw
 findings)
 
 ---
@@ -13,7 +13,7 @@ findings)
 | Severity | Count | Description                      |
 | -------- | ----- | -------------------------------- |
 | S0       | 10    | Critical - implement immediately |
-| S1       | 76    | High - implement this sprint     |
+| S1       | 75    | High - implement this sprint     |
 | S2       | 139   | Medium - implement next sprint   |
 | S3       | 67    | Low - backlog                    |
 
@@ -22,7 +22,7 @@ findings)
 | Category      | Count |
 | ------------- | ----- |
 | code          | 130   |
-| refactoring   | 41    |
+| refactoring   | 40    |
 | security      | 35    |
 | performance   | 31    |
 | process       | 24    |
@@ -40,8 +40,8 @@ findings)
 | process-automation       | 24    |
 | documentation-sync       | 24    |
 | types-domain             | 10    |
-| tests-hardening          | 7     |
 | boundaries               | 6     |
+| tests-hardening          | 6     |
 | firebase-access          | 6     |
 | misc                     | 6     |
 | PR16                     | 6     |
@@ -135,7 +135,7 @@ difficult to test, maintain, debug.
 **Recommendation:** Extract nested conditionals into helper functions. Use early
 returns. Add test coverage before refactoring.
 
-### MASTER-0176: Multiple CI quality gates configured as non-blocking (continue-on-error: true)
+### MASTER-0175: Multiple CI quality gates configured as non-blocking (continue-on-error: true)
 
 - **Category:** process
 - **Effort:** E2
@@ -152,7 +152,7 @@ violations, and doc issues can accumulate and ship.
 tracking baseline; Add baseline trend reporting to CI logs; Burn down baseline
 violations over time, then remove continue-on-error
 
-### MASTER-0190: Re-enable App Check on Cloud Functions
+### MASTER-0189: Re-enable App Check on Cloud Functions
 
 - **Category:** security
 - **Effort:** E2
@@ -161,7 +161,7 @@ violations over time, then remove continue-on-error
 - **Files:** N/A
 - **Sources:** DEDUP-0001
 
-### MASTER-0191: Close legacy journalEntries write path
+### MASTER-0190: Close legacy journalEntries write path
 
 - **Category:** security
 - **Effort:** E2
@@ -170,7 +170,7 @@ violations over time, then remove continue-on-error
 - **Files:** N/A
 - **Sources:** DEDUP-0002
 
-### MASTER-0212: Fix useJournal memory leak
+### MASTER-0211: Fix useJournal memory leak
 
 - **Category:** code
 - **Effort:** E1
@@ -179,16 +179,17 @@ violations over time, then remove continue-on-error
 - **Files:** N/A
 - **Sources:** DEDUP-0011
 
-### MASTER-0245: Reduce 47 CRITICAL complexity functions
+### MASTER-0244: Reduce 47 CRITICAL complexity functions
 
 - **Category:** code
 - **Effort:** E3
 - **Priority Score:** 100
 - **PR Bucket:** PR18
-- **Files:** N/A
-- **Sources:** DEDUP-0014, CANON-0068
+- **Files:** scripts/assign-review-tier.js, scripts/phase-complete-check.js,
+  scripts/check-pattern-compliance.js
+- **Sources:** DEDUP-0014, CANON-0068, CANON-0068
 
-### MASTER-0276: Convert CI gates to blocking
+### MASTER-0275: Convert CI gates to blocking
 
 - **Category:** code
 - **Effort:** E2
@@ -441,7 +442,7 @@ violations over time, then remove continue-on-error
 - **PR Bucket:** security-hardening
 - **Sources:** CANON-0016
 
-_...and 46 more S1 items_
+_...and 45 more S1 items_
 
 ---
 
@@ -597,14 +598,14 @@ _...and 46 more S1 items_
 | 99   | MASTER-0111 | reCAPTCHA token missing does not block r...  | S1  | E1     | 100   | security      |
 | 100  | MASTER-0112 | Rate limiting is incomplete (no IP throt...  | S1  | E2     | 100   | security      |
 
-_...and 192 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
+_...and 191 more items (see MASTER_ISSUE_LIST.jsonl for full list)_
 
 ---
 
 ## Notes
 
 - Priority scores range from 0-100
-- Score formula: (severity_weight _ 25) + (effort_inverse _ 15) +
+- Score formula: (severity*weight * 25) + (effort*inverse * 15) +
   (roi_multiplier \* 10) + persistence_boost
 - Items found in multiple sources get +10 persistence boost
 - See IMPLEMENTATION_PLAN.md for grouped execution plan

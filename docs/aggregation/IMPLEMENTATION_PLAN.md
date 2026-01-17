@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Generated:** 2026-01-17 **Total Items:** 292 **PR Buckets:** 35
+**Generated:** 2026-01-17 **Total Items:** 291 **PR Buckets:** 35
 
 ---
 
@@ -19,8 +19,8 @@ implementation.
 | process-automation       | 24    | 1   | 3   | 9   | 11  |
 | documentation-sync       | 24    | 0   | 4   | 12  | 8   |
 | types-domain             | 10    | 0   | 2   | 6   | 2   |
-| tests-hardening          | 7     | 0   | 4   | 3   | 0   |
 | boundaries               | 6     | 0   | 2   | 2   | 2   |
+| tests-hardening          | 6     | 0   | 3   | 3   | 0   |
 | firebase-access          | 6     | 0   | 1   | 5   | 0   |
 | misc                     | 6     | 1   | 0   | 2   | 3   |
 | PR16                     | 6     | 0   | 2   | 4   | 0   |
@@ -72,28 +72,28 @@ implementation.
   - Effort: E3 | Bucket: misc
   - Sources: CANON-0064
 
-- [ ] **MASTER-0176**: Multiple CI quality gates configured as non-blocking
+- [ ] **MASTER-0175**: Multiple CI quality gates configured as non-blocking
       (continue-on-error: true)
   - Effort: E2 | Bucket: process-automation
   - Sources: CANON-0105
 
-- [ ] **MASTER-0190**: Re-enable App Check on Cloud Functions
+- [ ] **MASTER-0189**: Re-enable App Check on Cloud Functions
   - Effort: E2 | Bucket: security-hardening
   - Sources: DEDUP-0001
 
-- [ ] **MASTER-0191**: Close legacy journalEntries write path
+- [ ] **MASTER-0190**: Close legacy journalEntries write path
   - Effort: E2 | Bucket: PR2
   - Sources: DEDUP-0002
 
-- [ ] **MASTER-0212**: Fix useJournal memory leak
+- [ ] **MASTER-0211**: Fix useJournal memory leak
   - Effort: E1 | Bucket: PR1
   - Sources: DEDUP-0011
 
-- [ ] **MASTER-0245**: Reduce 47 CRITICAL complexity functions
+- [ ] **MASTER-0244**: Reduce 47 CRITICAL complexity functions
   - Effort: E3 | Bucket: PR18
-  - Sources: DEDUP-0014, CANON-0068
+  - Sources: DEDUP-0014, CANON-0068, CANON-0068
 
-- [ ] **MASTER-0276**: Convert CI gates to blocking
+- [ ] **MASTER-0275**: Convert CI gates to blocking
   - Effort: E2 | Bucket: PR5
   - Sources: DEDUP-0015
 
@@ -115,19 +115,19 @@ implementation.
       layer (E2)
 - [ ] **MASTER-0071**: No correlation IDs for request tracing (frontend to
       backend) (E2)
-- [ ] **MASTER-0214**: Remove deprecated saveNotebookJournalEntry (E2)
-- [ ] **MASTER-0215**: Separate domain/transport in useJournal (E2)
-- [ ] **MASTER-0221**: Split TodayPage god component (E3)
-- [ ] **MASTER-0222**: Explicit client providers wrapper (E1)
-- [ ] **MASTER-0227**: Implement image optimization (E2)
-- [ ] **MASTER-0228**: Fix TodayPage subscription bug (E0)
-- [ ] **MASTER-0229**: Lazy load notebook modules (E2)
-- [ ] **MASTER-0242**: Add Cloud Function security tests (E2)
-- [ ] **MASTER-0243**: Add Firestore rules emulator tests (E2)
-- [ ] **MASTER-0244**: Increase security file coverage (E2)
-- [ ] **MASTER-0277**: Add npm audit + CodeQL + Dependabot (E2)
-- [ ] **MASTER-0278**: Add gcloud setup to deploy workflow (E1)
-- [ ] **MASTER-0291**: Missing Security Headers (E0)
+- [ ] **MASTER-0213**: Remove deprecated saveNotebookJournalEntry (E2)
+- [ ] **MASTER-0214**: Separate domain/transport in useJournal (E2)
+- [ ] **MASTER-0220**: Split TodayPage god component (E3)
+- [ ] **MASTER-0221**: Explicit client providers wrapper (E1)
+- [ ] **MASTER-0226**: Implement image optimization (E2)
+- [ ] **MASTER-0227**: Fix TodayPage subscription bug (E0)
+- [ ] **MASTER-0228**: Lazy load notebook modules (E2)
+- [ ] **MASTER-0241**: Add Cloud Function security tests (E2)
+- [ ] **MASTER-0242**: Add Firestore rules emulator tests (E2)
+- [ ] **MASTER-0243**: Increase security file coverage (E2)
+- [ ] **MASTER-0276**: Add npm audit + CodeQL + Dependabot (E2)
+- [ ] **MASTER-0277**: Add gcloud setup to deploy workflow (E1)
+- [ ] **MASTER-0290**: Missing Security Headers (E0)
 
 ### security-hardening
 
@@ -151,28 +151,28 @@ implementation.
       continues) (E1)
 - [ ] **MASTER-0112**: Rate limiting is incomplete (no IP throttling, admin
       endpoints unthrottled, inconsistent 429-equivalent handling) (E2)
-- [ ] **MASTER-0144**: App Check temporarily disabled across all Cloud Functions
+- [ ] **MASTER-0143**: App Check temporarily disabled across all Cloud Functions
       (E1)
-- [ ] **MASTER-0195**: Restore client App Check init (E1)
-- [ ] **MASTER-0196**: Admin-claim rules defense-in-depth (E2)
-- [ ] **MASTER-0199**: Audit localStorage for sensitive data (E2)
+- [ ] **MASTER-0194**: Restore client App Check init (E1)
+- [ ] **MASTER-0195**: Admin-claim rules defense-in-depth (E2)
+- [ ] **MASTER-0198**: Audit localStorage for sensitive data (E2)
 
 ### process-automation
 
-- [ ] **MASTER-0177**: Automation scripts have critically low test coverage
+- [ ] **MASTER-0176**: Automation scripts have critically low test coverage
       (2-7% of ~31 scripts) (E2)
-- [ ] **MASTER-0178**: Missing security scanning in CI (npm audit, CodeQL,
+- [ ] **MASTER-0177**: Missing security scanning in CI (npm audit, CodeQL,
       Dependabot) (E2)
-- [ ] **MASTER-0179**: Deploy workflow calls gcloud without installing Google
+- [ ] **MASTER-0178**: Deploy workflow calls gcloud without installing Google
       Cloud SDK (E1)
 
 ### documentation-sync
 
 - [ ] **MASTER-0026**: 16 broken anchor links detected by docs:check (E1)
 - [ ] **MASTER-0027**: 20 placeholder issues across 5 template instances (E1)
-- [ ] **MASTER-0162**: Broken relative links in review/output docs (wrong ../
+- [ ] **MASTER-0161**: Broken relative links in review/output docs (wrong ../
       depth) (E1)
-- [ ] **MASTER-0163**: [X] placeholders remain in 2026-Q1 plan instances (E1)
+- [ ] **MASTER-0162**: [X] placeholders remain in 2026-Q1 plan instances (E1)
 
 ### performance-optimization
 
@@ -196,7 +196,7 @@ implementation.
       duplicate CloudFunctionError type definitions (E1)
 - [ ] **MASTER-0084**: Critical logic divergence in journal saving (deprecated
       FirestoreService path bypasses hook business logic) (E1)
-- [ ] **MASTER-0145**: useJournal mixes domain logic with transport
+- [ ] **MASTER-0144**: useJournal mixes domain logic with transport
       (httpsCallable + retry + recaptcha) (E2)
 
 ### offline-support
@@ -217,7 +217,7 @@ implementation.
 
 - [ ] **MASTER-0086**: Server layout composes client providers; boundary should
       be explicit (E1)
-- [ ] **MASTER-0146**: TodayPage is a god component mixing 4+ responsibilities
+- [ ] **MASTER-0145**: TodayPage is a god component mixing 4+ responsibilities
       (E3)
 
 ### tests-hardening
@@ -228,7 +228,6 @@ implementation.
       (E2)
 - [ ] **MASTER-0090**: Security-critical files have low test coverage
       (account-linking, firestore-service, recaptcha, users DB) (E2)
-- [ ] **MASTER-0143**: No test coverage for high-complexity scripts (E2)
 
 ### firebase-access
 
@@ -237,42 +236,42 @@ implementation.
 
 ### PR3
 
-- [ ] **MASTER-0192**: Make reCAPTCHA fail-closed (E1)
-- [ ] **MASTER-0197**: Verify reCAPTCHA coverage (E1)
+- [ ] **MASTER-0191**: Make reCAPTCHA fail-closed (E1)
+- [ ] **MASTER-0196**: Verify reCAPTCHA coverage (E1)
 
 ### PR4
 
-- [ ] **MASTER-0193**: Complete rate limiting (IP + admin) (E2)
-- [ ] **MASTER-0198**: Rate limit bypass mitigation (E2)
+- [ ] **MASTER-0192**: Complete rate limiting (IP + admin) (E2)
+- [ ] **MASTER-0197**: Rate limit bypass mitigation (E2)
 
 ### PR8
 
-- [ ] **MASTER-0194**: Replace console.\* with logger (E1)
+- [ ] **MASTER-0193**: Replace console.\* with logger (E1)
 
 ### PR6
 
-- [ ] **MASTER-0203**: Fix journal entry type mismatch (E0)
+- [ ] **MASTER-0202**: Fix journal entry type mismatch (E0)
 
 ### PR7
 
-- [ ] **MASTER-0213**: Extract error handling utility (E1)
+- [ ] **MASTER-0212**: Extract error handling utility (E1)
 
 ### PR13
 
-- [ ] **MASTER-0219**: Enable SSR for landing page (E2)
+- [ ] **MASTER-0218**: Enable SSR for landing page (E2)
 
 ### PR14
 
-- [ ] **MASTER-0220**: Reduce 'use client' directives (E2)
+- [ ] **MASTER-0219**: Reduce 'use client' directives (E2)
 
 ### PR17
 
-- [ ] **MASTER-0246**: Add script test coverage (CI) (E2)
+- [ ] **MASTER-0245**: Add script test coverage (CI) (E2)
 
 ### PR16
 
-- [ ] **MASTER-0261**: Fix broken relative links (E1)
-- [ ] **MASTER-0262**: Replace [X] placeholders (E1)
+- [ ] **MASTER-0260**: Fix broken relative links (E1)
+- [ ] **MASTER-0261**: Replace [X] placeholders (E1)
 
 ---
 
@@ -295,42 +294,42 @@ implementation.
       components (E2)
 - [ ] **MASTER-0072**: 8:1 ratio of console.log to structured logger calls (3111
       vs 394) (E2)
-- [ ] **MASTER-0204**: Add error.message null safety (E0)
-- [ ] **MASTER-0205**: Safe localStorage JSON.parse (E0)
-- [ ] **MASTER-0206**: Add .strict() to Zod schemas (E2)
-- [ ] **MASTER-0207**: Replace unsafe type assertions (E1)
-- [ ] **MASTER-0209**: Type httpsCallable generics (E1)
-- [ ] **MASTER-0218**: Extract useGrowthCardDialog hook (E2)
-- [ ] **MASTER-0223**: Route Firebase through service layer (E2)
-- [ ] **MASTER-0225**: Clarify FirestoreAdapter boundary (E2)
-- [ ] **MASTER-0226**: Audit inventory dual-write pattern (E2)
-- [ ] **MASTER-0230**: Complete Sentry integration (E1)
-- [ ] **MASTER-0231**: Add reduced-motion to animations (E1)
-- [ ] **MASTER-0232**: Add React.memo to list components (E1)
-- [ ] **MASTER-0233**: Optimize hero background image (E1)
-- [ ] **MASTER-0236**: Remove 7 unused dependencies (E0)
-- [ ] **MASTER-0237**: Add Firebase query indexes (E1)
-- [ ] **MASTER-0238**: Paginate admin CRUD table (E2)
-- [ ] **MASTER-0240**: Add loading.tsx files (E1)
-- [ ] **MASTER-0241**: Lazy load JournalHub forms (E2)
-- [ ] **MASTER-0247**: Unskip Cloud Function test (E2)
-- [ ] **MASTER-0248**: Add useJournal hook tests (E2)
-- [ ] **MASTER-0249**: Increase critical path coverage (E2)
-- [ ] **MASTER-0252**: Create CRUD factory (E2)
-- [ ] **MASTER-0253**: Centralize admin function wrappers (E1)
-- [ ] **MASTER-0254**: Extract safeReadFile/safeWriteFile (E1)
-- [ ] **MASTER-0255**: Consolidate searchable-text generation (E1)
-- [ ] **MASTER-0266**: Update DOCUMENT_DEPENDENCIES sync (E1)
-- [ ] **MASTER-0267**: Add PR_REVIEW_PROMPT metadata (E1)
-- [ ] **MASTER-0269**: Update DEVELOPMENT.md workflow docs (E1)
-- [ ] **MASTER-0279**: Move full tests to pre-push only (E1)
-- [ ] **MASTER-0280**: Pin firebase-tools version (E0)
-- [ ] **MASTER-0281**: Fix auto-label workflow if syntax (E0)
-- [ ] **MASTER-0287**: Fix docs:check False Positives (E1)
-- [ ] **MASTER-0288**: Add Missing Script Triggers to Session Start (E0)
-- [ ] **MASTER-0289**: Add CANON Validation to CI Pipeline (E1)
-- [ ] **MASTER-0292**: No Firebase Storage Rules (E0)
-- [ ] **MASTER-0239**: Decompose Step1WorksheetCard (E3)
+- [ ] **MASTER-0203**: Add error.message null safety (E0)
+- [ ] **MASTER-0204**: Safe localStorage JSON.parse (E0)
+- [ ] **MASTER-0205**: Add .strict() to Zod schemas (E2)
+- [ ] **MASTER-0206**: Replace unsafe type assertions (E1)
+- [ ] **MASTER-0208**: Type httpsCallable generics (E1)
+- [ ] **MASTER-0217**: Extract useGrowthCardDialog hook (E2)
+- [ ] **MASTER-0222**: Route Firebase through service layer (E2)
+- [ ] **MASTER-0224**: Clarify FirestoreAdapter boundary (E2)
+- [ ] **MASTER-0225**: Audit inventory dual-write pattern (E2)
+- [ ] **MASTER-0229**: Complete Sentry integration (E1)
+- [ ] **MASTER-0230**: Add reduced-motion to animations (E1)
+- [ ] **MASTER-0231**: Add React.memo to list components (E1)
+- [ ] **MASTER-0232**: Optimize hero background image (E1)
+- [ ] **MASTER-0235**: Remove 7 unused dependencies (E0)
+- [ ] **MASTER-0236**: Add Firebase query indexes (E1)
+- [ ] **MASTER-0237**: Paginate admin CRUD table (E2)
+- [ ] **MASTER-0239**: Add loading.tsx files (E1)
+- [ ] **MASTER-0240**: Lazy load JournalHub forms (E2)
+- [ ] **MASTER-0246**: Unskip Cloud Function test (E2)
+- [ ] **MASTER-0247**: Add useJournal hook tests (E2)
+- [ ] **MASTER-0248**: Increase critical path coverage (E2)
+- [ ] **MASTER-0251**: Create CRUD factory (E2)
+- [ ] **MASTER-0252**: Centralize admin function wrappers (E1)
+- [ ] **MASTER-0253**: Extract safeReadFile/safeWriteFile (E1)
+- [ ] **MASTER-0254**: Consolidate searchable-text generation (E1)
+- [ ] **MASTER-0265**: Update DOCUMENT_DEPENDENCIES sync (E1)
+- [ ] **MASTER-0266**: Add PR_REVIEW_PROMPT metadata (E1)
+- [ ] **MASTER-0268**: Update DEVELOPMENT.md workflow docs (E1)
+- [ ] **MASTER-0278**: Move full tests to pre-push only (E1)
+- [ ] **MASTER-0279**: Pin firebase-tools version (E0)
+- [ ] **MASTER-0280**: Fix auto-label workflow if syntax (E0)
+- [ ] **MASTER-0286**: Fix docs:check False Positives (E1)
+- [ ] **MASTER-0287**: Add Missing Script Triggers to Session Start (E0)
+- [ ] **MASTER-0288**: Add CANON Validation to CI Pipeline (E1)
+- [ ] **MASTER-0291**: No Firebase Storage Rules (E0)
+- [ ] **MASTER-0238**: Decompose Step1WorksheetCard (E3)
 
 ### security-hardening
 
@@ -351,14 +350,14 @@ implementation.
       without centralized schema/rate-limit protections (E1)
 - [ ] **MASTER-0118**: Console statements present; replace with structured
       logger and enforce no-console in production (E1)
-- [ ] **MASTER-0149**: reCAPTCHA token fetch/include pattern repeated 5x across
+- [ ] **MASTER-0148**: reCAPTCHA token fetch/include pattern repeated 5x across
       codebase (E1)
-- [ ] **MASTER-0151**: reCAPTCHA action strings duplicated as literals (no
+- [ ] **MASTER-0150**: reCAPTCHA action strings duplicated as literals (no
       shared constants) (E1)
-- [ ] **MASTER-0158**: Searchable-text generation duplicated with inconsistent
+- [ ] **MASTER-0157**: Searchable-text generation duplicated with inconsistent
       sanitization (E1)
-- [ ] **MASTER-0201**: Remove hardcoded reCAPTCHA fallback (E1)
-- [ ] **MASTER-0202**: Route admin writes through Functions (E1)
+- [ ] **MASTER-0200**: Remove hardcoded reCAPTCHA fallback (E1)
+- [ ] **MASTER-0201**: Route admin writes through Functions (E1)
 
 ### process-automation
 
@@ -369,14 +368,14 @@ implementation.
 - [ ] **MASTER-0054**: Artifact upload without retention policy (E1)
 - [ ] **MASTER-0055**: Git diff with @{u}...HEAD fails on new branches without
       upstream (E1)
-- [ ] **MASTER-0180**: DEVELOPMENT.md workflow triggers don't match actual
+- [ ] **MASTER-0179**: DEVELOPMENT.md workflow triggers don't match actual
       workflow YAML (E1)
-- [ ] **MASTER-0181**: Pre-commit hook runs full test suite causing slow commits
+- [ ] **MASTER-0180**: Pre-commit hook runs full test suite causing slow commits
       (~50s+) (E1)
-- [ ] **MASTER-0182**: Pattern checker reports 93+ violations but CI check is
+- [ ] **MASTER-0181**: Pattern checker reports 93+ violations but CI check is
       non-blocking (E2)
-- [ ] **MASTER-0183**: Firebase CLI version unpinned in deploy workflow (E0)
-- [ ] **MASTER-0184**: Auto-label workflow has invalid if: expression syntax
+- [ ] **MASTER-0182**: Firebase CLI version unpinned in deploy workflow (E0)
+- [ ] **MASTER-0183**: Auto-label workflow has invalid if: expression syntax
       (E0)
 
 ### documentation-sync
@@ -389,18 +388,18 @@ implementation.
       reports 20 issues (E1)
 - [ ] **MASTER-0032**: 15 recent commits touch docs but AUDIT_TRACKER shows only
       5 categories audited today (E1)
-- [ ] **MASTER-0164**: DOCUMENTATION_INDEX.md orphaned and missing required
+- [ ] **MASTER-0163**: DOCUMENTATION_INDEX.md orphaned and missing required
       sections (E1)
-- [ ] **MASTER-0165**: Tier 2 docs missing required metadata (Document Version,
+- [ ] **MASTER-0164**: Tier 2 docs missing required metadata (Document Version,
       Applies To) (E1)
-- [ ] **MASTER-0166**: Standards/templates contain live placeholder links and
+- [ ] **MASTER-0165**: Standards/templates contain live placeholder links and
       incorrect anchors (E0)
-- [ ] **MASTER-0167**: DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues
+- [ ] **MASTER-0166**: DOCUMENT_DEPENDENCIES.md claims SYNCED but has 30+ issues
       (E1)
-- [ ] **MASTER-0168**: PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and
+- [ ] **MASTER-0167**: PR_REVIEW_PROMPT_TEMPLATE lacks required metadata and
       version history (E1)
-- [ ] **MASTER-0169**: CODE_PATTERNS.md referenced with incorrect path (E0)
-- [ ] **MASTER-0170**: Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two
+- [ ] **MASTER-0168**: CODE_PATTERNS.md referenced with incorrect path (E0)
+- [ ] **MASTER-0169**: Duplicate CODE_REVIEW_PLAN_2026_Q1.md exists in two
       locations (E0)
 
 ### performance-optimization
@@ -466,7 +465,7 @@ implementation.
 
 - [ ] **MASTER-0103**: useJournal sets up its own auth listener instead of using
       shared auth context (E1)
-- [ ] **MASTER-0157**: FirestoreAdapter exists but is unused (realtime boundary
+- [ ] **MASTER-0156**: FirestoreAdapter exists but is unused (realtime boundary
       unclear) (E2)
 
 ### tests-hardening
@@ -474,7 +473,7 @@ implementation.
 - [ ] **MASTER-0104**: Cloud Function integration test is skipped in
       firestore-service test suite (E2)
 - [ ] **MASTER-0106**: No tests for useJournal hook (E2)
-- [ ] **MASTER-0148**: Critical paths have low test coverage (firestore-service
+- [ ] **MASTER-0147**: Critical paths have low test coverage (firestore-service
       35.6%, account-linking 17.29%) (E2)
 
 ### ui-primitives
@@ -483,64 +482,64 @@ implementation.
       slogans (E1)
 - [ ] **MASTER-0100**: Duplicated DailyQuoteCard component exists in multiple
       directories (2 confirmed; possible 3rd variant) (E1)
-- [ ] **MASTER-0147**: DailyQuoteCard component duplicated across 2-3 locations
+- [ ] **MASTER-0146**: DailyQuoteCard component duplicated across 2-3 locations
       (E1)
 
 ### firebase-access
 
 - [ ] **MASTER-0101**: Inconsistent Firebase Functions import pattern (static vs
       dynamic imports) (E1)
-- [ ] **MASTER-0150**: Firebase collection access scattered across 22+ files
+- [ ] **MASTER-0149**: Firebase collection access scattered across 22+ files
       without type safety (E2)
-- [ ] **MASTER-0152**: CRUD service patterns repeated across lib/db modules (E2)
-- [ ] **MASTER-0153**: Admin Cloud Function wiring duplicated across 5 admin
+- [ ] **MASTER-0151**: CRUD service patterns repeated across lib/db modules (E2)
+- [ ] **MASTER-0152**: Admin Cloud Function wiring duplicated across 5 admin
       tabs (E1)
-- [ ] **MASTER-0154**: Dual-write pattern to inventory AND journal collections
+- [ ] **MASTER-0153**: Dual-write pattern to inventory AND journal collections
       (E2)
 
 ### misc
 
-- [ ] **MASTER-0155**: Deprecated API usage (31 instances) + Nested ternaries
+- [ ] **MASTER-0154**: Deprecated API usage (31 instances) + Nested ternaries
       (41 instances) (E2)
-- [ ] **MASTER-0156**: safeReadFile/safeWriteFile utilities duplicated across 3
+- [ ] **MASTER-0155**: safeReadFile/safeWriteFile utilities duplicated across 3
       scripts (E1)
 
 ### PR-LINT-WARNINGS
 
-- [ ] **MASTER-0200**: Address ESLint security warnings (E2)
+- [ ] **MASTER-0199**: Address ESLint security warnings (E2)
 
 ### PR6
 
-- [ ] **MASTER-0208**: Single source for journal types (E2)
+- [ ] **MASTER-0207**: Single source for journal types (E2)
 
 ### PR11
 
-- [ ] **MASTER-0216**: Create callSecureFunction wrapper (E1)
-- [ ] **MASTER-0217**: Shared reCAPTCHA action constants (E1)
+- [ ] **MASTER-0215**: Create callSecureFunction wrapper (E1)
+- [ ] **MASTER-0216**: Shared reCAPTCHA action constants (E1)
 
 ### PR12
 
-- [ ] **MASTER-0224**: Create typed collection helpers (E2)
+- [ ] **MASTER-0223**: Create typed collection helpers (E2)
 
 ### PR15
 
-- [ ] **MASTER-0234**: Add virtualization to large lists (E2)
-- [ ] **MASTER-0235**: Add marker clustering to map (E2)
+- [ ] **MASTER-0233**: Add virtualization to large lists (E2)
+- [ ] **MASTER-0234**: Add marker clustering to map (E2)
 
 ### PR10
 
-- [ ] **MASTER-0250**: Extract time rotation utilities (E1)
+- [ ] **MASTER-0249**: Extract time rotation utilities (E1)
 
 ### PR9
 
-- [ ] **MASTER-0251**: Consolidate DailyQuoteCard (E1)
+- [ ] **MASTER-0250**: Consolidate DailyQuoteCard (E1)
 
 ### PR16
 
-- [ ] **MASTER-0263**: Add DOCUMENTATION_INDEX to README (E1)
-- [ ] **MASTER-0264**: Add Tier 2 required metadata (E1)
-- [ ] **MASTER-0265**: Fix standards placeholder links (E0)
-- [ ] **MASTER-0268**: Fix CODE_PATTERNS.md path references (E0)
+- [ ] **MASTER-0262**: Add DOCUMENTATION_INDEX to README (E1)
+- [ ] **MASTER-0263**: Add Tier 2 required metadata (E1)
+- [ ] **MASTER-0264**: Fix standards placeholder links (E0)
+- [ ] **MASTER-0267**: Fix CODE_PATTERNS.md path references (E0)
 
 ---
 
@@ -556,28 +555,28 @@ implementation.
 - [ ] **MASTER-0065**: CloudFunctionError interface defined twice in same file
       (E0)
 - [ ] **MASTER-0066**: 2 tracked TODO markers in codebase (E0)
-- [ ] **MASTER-0210**: Fix @ts-expect-error suppression (E0)
-- [ ] **MASTER-0260**: Extract parseTime helper (E0)
-- [ ] **MASTER-0271**: Replace template date placeholders (E0)
-- [ ] **MASTER-0272**: Move PR template to docs/templates/ (E0)
-- [ ] **MASTER-0273**: Update DEVELOPMENT.md test count (E0)
-- [ ] **MASTER-0274**: Document fragile anchor links (E0)
-- [ ] **MASTER-0275**: Update Husky docs for patterns:check (E0)
-- [ ] **MASTER-0282**: Add explicit permissions block (E0)
-- [ ] **MASTER-0290**: Add npm Commands for Undocumented Scripts (E0)
+- [ ] **MASTER-0209**: Fix @ts-expect-error suppression (E0)
+- [ ] **MASTER-0259**: Extract parseTime helper (E0)
+- [ ] **MASTER-0270**: Replace template date placeholders (E0)
+- [ ] **MASTER-0271**: Move PR template to docs/templates/ (E0)
+- [ ] **MASTER-0272**: Update DEVELOPMENT.md test count (E0)
+- [ ] **MASTER-0273**: Document fragile anchor links (E0)
+- [ ] **MASTER-0274**: Update Husky docs for patterns:check (E0)
+- [ ] **MASTER-0281**: Add explicit permissions block (E0)
+- [ ] **MASTER-0289**: Add npm Commands for Undocumented Scripts (E0)
 - [ ] **MASTER-0011**: Useless assignment to hasMore variable (E1)
 - [ ] **MASTER-0013**: Nested ternary operator (E1)
 - [ ] **MASTER-0014**: Nested template literals (6 occurrences) (E1)
 - [ ] **MASTER-0067**: 4 linter suppressions in codebase (ts-ignore,
       ts-expect-error, eslint-disable) (E1)
-- [ ] **MASTER-0211**: Replace 'any' with proper types (E1)
-- [ ] **MASTER-0283**: Improve deploy secret handling (E1)
-- [ ] **MASTER-0284**: Retrofit SSR-Safe localStorage (E1)
-- [ ] **MASTER-0286**: Missing "AI Instructions" Sections (E1)
+- [ ] **MASTER-0210**: Replace 'any' with proper types (E1)
+- [ ] **MASTER-0282**: Improve deploy secret handling (E1)
+- [ ] **MASTER-0283**: Retrofit SSR-Safe localStorage (E1)
+- [ ] **MASTER-0285**: Missing "AI Instructions" Sections (E1)
 - [ ] **MASTER-0073**: Error messages lack actionable fix hints - generic
       'Please try again' (E1)
-- [ ] **MASTER-0270**: Fix archive link rot (E2)
-- [ ] **MASTER-0285**: Missing "Quick Start" Sections (E2)
+- [ ] **MASTER-0269**: Fix archive link rot (E2)
+- [ ] **MASTER-0284**: Missing "Quick Start" Sections (E2)
 
 ### security-hardening
 
@@ -598,15 +597,15 @@ implementation.
 - [ ] **MASTER-0052**: TRIGGERS.md last updated 2026-01-02 but hooks updated
       since (E0)
 - [ ] **MASTER-0053**: All 12 slash commands have frontmatter descriptions (E0)
-- [ ] **MASTER-0185**: DEVELOPMENT.md Husky section missing pattern compliance
+- [ ] **MASTER-0184**: DEVELOPMENT.md Husky section missing pattern compliance
       step (E0)
-- [ ] **MASTER-0186**: CI workflow lacks explicit permissions block (security
+- [ ] **MASTER-0185**: CI workflow lacks explicit permissions block (security
       hardening) (E0)
-- [ ] **MASTER-0187**: Pattern checker produces false positives for controlled
+- [ ] **MASTER-0186**: Pattern checker produces false positives for controlled
       npm install fallbacks (E1)
-- [ ] **MASTER-0188**: Review trigger thresholds may cause alert fatigue for
+- [ ] **MASTER-0187**: Review trigger thresholds may cause alert fatigue for
       process changes (E1)
-- [ ] **MASTER-0189**: Deploy workflow secret handling may be brittle for
+- [ ] **MASTER-0188**: Deploy workflow secret handling may be brittle for
       multiline JSON (E1)
 
 ### documentation-sync
@@ -615,17 +614,17 @@ implementation.
       Version History (now archived) (E0)
 - [ ] **MASTER-0035**: DOCUMENTATION_INDEX.md orphaned - not referenced by any
       markdown file (E0)
-- [ ] **MASTER-0172**: Template date placeholders using literal YYYY-MM-DD
+- [ ] **MASTER-0171**: Template date placeholders using literal YYYY-MM-DD
       format (E0)
-- [ ] **MASTER-0173**: Template docs located outside docs/templates/ directory
+- [ ] **MASTER-0172**: Template docs located outside docs/templates/ directory
       (E0)
-- [ ] **MASTER-0174**: Test count mismatch between DEVELOPMENT.md and actual
+- [ ] **MASTER-0173**: Test count mismatch between DEVELOPMENT.md and actual
       test suite (E0)
-- [ ] **MASTER-0175**: ROADMAP anchor links may be fragile due to
+- [ ] **MASTER-0174**: ROADMAP anchor links may be fragile due to
       emoji/punctuation in headings (E0)
 - [ ] **MASTER-0033**: Archive docs contain significant link rot after moves
       (E2)
-- [ ] **MASTER-0171**: Archive docs contain significant link rot after
+- [ ] **MASTER-0170**: Archive docs contain significant link rot after
       archival/moves (E2)
 
 ### performance-optimization
@@ -660,24 +659,24 @@ implementation.
 
 ### misc
 
-- [ ] **MASTER-0159**: Batch fix opportunities: 200+ ESLint auto-fixable issues
+- [ ] **MASTER-0158**: Batch fix opportunities: 200+ ESLint auto-fixable issues
       (E0)
-- [ ] **MASTER-0161**: parseTime() meeting helper duplicated in two pages (E0)
-- [ ] **MASTER-0160**: Batch fix opportunities: 79 replaceAll() + 71 node:
+- [ ] **MASTER-0160**: parseTime() meeting helper duplicated in two pages (E0)
+- [ ] **MASTER-0159**: Batch fix opportunities: 79 replaceAll() + 71 node:
       prefix modernizations (E1)
 
 ### PR7
 
-- [ ] **MASTER-0257**: Remove duplicate CloudFunctionError (E0)
+- [ ] **MASTER-0256**: Remove duplicate CloudFunctionError (E0)
 
 ### PR-BATCH-AUTO
 
-- [ ] **MASTER-0258**: Run ESLint auto-fix (E0)
-- [ ] **MASTER-0259**: replaceAll + node: prefix batch (E1)
+- [ ] **MASTER-0257**: Run ESLint auto-fix (E0)
+- [ ] **MASTER-0258**: replaceAll + node: prefix batch (E1)
 
 ### PR-BATCH-MANUAL
 
-- [ ] **MASTER-0256**: Fix deprecated APIs + nested ternaries (E2)
+- [ ] **MASTER-0255**: Fix deprecated APIs + nested ternaries (E2)
 
 ---
 
@@ -698,30 +697,30 @@ Items with dependencies should be implemented in order:
 - MASTER-0105 depends on: CANON-0016
 - MASTER-0106 depends on: CANON-0006
 - MASTER-0141 depends on: CANON-0087
-- MASTER-0145 depends on: CANON-0076, CANON-0066
-- MASTER-0146 depends on: CANON-0075, CANON-0076
+- MASTER-0144 depends on: CANON-0076, CANON-0066
+- MASTER-0145 depends on: CANON-0075, CANON-0076
+- MASTER-0147 depends on: CANON-0066
 - MASTER-0148 depends on: CANON-0066
-- MASTER-0149 depends on: CANON-0066
-- MASTER-0152 depends on: CANON-0077
-- MASTER-0153 depends on: CANON-0076
-- MASTER-0157 depends on: CANON-0075
-- MASTER-0190 depends on: DEDUP-0003, DEDUP-0004
-- MASTER-0193 depends on: DEDUP-0003
-- MASTER-0195 depends on: DEDUP-0001
-- MASTER-0197 depends on: DEDUP-0003
-- MASTER-0198 depends on: DEDUP-0004
-- MASTER-0208 depends on: DEDUP-0006
-- MASTER-0214 depends on: DEDUP-0006
-- MASTER-0215 depends on: DEDUP-0011
-- MASTER-0216 depends on: DEDUP-0003
-- MASTER-0217 depends on: CANON-0076
-- MASTER-0220 depends on: DEDUP-0012
-- MASTER-0223 depends on: CANON-0077
-- MASTER-0225 depends on: CANON-0075
-- MASTER-0242 depends on: DEDUP-0001
-- MASTER-0245 depends on: CANON-0068
-- MASTER-0248 depends on: DEDUP-0011
-- MASTER-0252 depends on: CANON-0077
+- MASTER-0151 depends on: CANON-0077
+- MASTER-0152 depends on: CANON-0076
+- MASTER-0156 depends on: CANON-0075
+- MASTER-0189 depends on: DEDUP-0003, DEDUP-0004
+- MASTER-0192 depends on: DEDUP-0003
+- MASTER-0194 depends on: DEDUP-0001
+- MASTER-0196 depends on: DEDUP-0003
+- MASTER-0197 depends on: DEDUP-0004
+- MASTER-0207 depends on: DEDUP-0006
+- MASTER-0213 depends on: DEDUP-0006
+- MASTER-0214 depends on: DEDUP-0011
+- MASTER-0215 depends on: DEDUP-0003
+- MASTER-0216 depends on: CANON-0076
+- MASTER-0219 depends on: DEDUP-0012
+- MASTER-0222 depends on: CANON-0077
+- MASTER-0224 depends on: CANON-0075
+- MASTER-0241 depends on: DEDUP-0001
+- MASTER-0244 depends on: CANON-0068
+- MASTER-0247 depends on: DEDUP-0011
+- MASTER-0251 depends on: CANON-0077
 
 ---
 
