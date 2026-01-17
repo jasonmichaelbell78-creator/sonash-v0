@@ -1,6 +1,6 @@
 # Audit Tracker
 
-**Document Version:** 1.4 **Created:** 2026-01-08 **Last Updated:** 2026-01-13
+**Document Version:** 1.5 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
@@ -41,7 +41,7 @@ When tracking audits:
 
 | Category      | Last Audit            | Commits Since | Files Since | Trigger At                                |
 | ------------- | --------------------- | ------------- | ----------- | ----------------------------------------- |
-| Code          | 2026-01-06 (Multi-AI) | 0             | 0           | 25 commits OR 15 files                    |
+| Code          | 2026-01-17 (Single)   | 0             | 0           | 25 commits OR 15 files                    |
 | Security      | 2026-01-07 (Multi-AI) | 0             | 0           | Any security-sensitive file OR 20 commits |
 | Performance   | 2026-01-08 (Multi-AI) | 0             | 0           | 30 commits OR bundle change               |
 | Refactoring   | 2026-01-10 (Multi-AI) | 0             | 0           | 40 commits OR 3 complexity warnings       |
@@ -52,7 +52,7 @@ When tracking audits:
 
 | Trigger Type            | Threshold          | Current | Status     |
 | ----------------------- | ------------------ | ------- | ---------- |
-| Single audits completed | 3 per category     | 0       | ⏳ Pending |
+| Single audits completed | 3 per category     | code:2  | ⏳ Pending |
 | Total commits           | 100 commits        | —       | ⏳ Check   |
 | Time elapsed            | 14 days            | —       | ⏳ Check   |
 | Major milestone         | Any M1.5+ complete | —       | ⏳ Check   |
@@ -70,9 +70,10 @@ When tracking audits:
 
 ### Code Audits (`/audit-code`)
 
-| Date       | Session  | Commits Covered | Files Covered | Findings             | Reset Threshold |
-| ---------- | -------- | --------------- | ------------- | -------------------- | --------------- |
-| 2026-01-06 | Multi-AI | Full codebase   | All TS/TSX    | See CANON-CODE.jsonl | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings                                                                                              | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | ----------------------------------------------------------------------------------------------------- | --------------- |
+| 2026-01-17 | Single-Claude | 435             | 221           | 14 (2 S1, 5 S2, 7 S3) - [audit-2026-01-17.md](./audits/single-session/code/audit-2026-01-17.md)       | ⚠️ (single)     |
+| 2026-01-06 | Multi-AI      | Full codebase   | All TS/TSX    | See CANON-CODE.jsonl                                                                                  | ✅              |
 
 ### Security Audits (`/audit-security`)
 
@@ -171,6 +172,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                            |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.5     | 2026-01-17 | Added single-session code audit (2026-01-17): 14 findings (2 S1, 5 S2, 7 S3); 435 commits/221 files covered; code:2 single audits now             |
 | 1.4     | 2026-01-13 | Added single-session security audit (2026-01-13); moved files from docs/audit/ to docs/audits/single-session/security/                             |
 | 1.3     | 2026-01-11 | Added Refactoring/Documentation/Process audits (all 6 categories now complete); 118 total canonical findings                                       |
 | 1.2     | 2026-01-10 | Updated thresholds with completion dates for Code/Security/Performance audits; clarified raw vs canonical findings terminology; updated audit logs |
