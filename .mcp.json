@@ -18,7 +18,7 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/sonash-v0"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
     },
     "puppeteer": {
       "command": "npx",
