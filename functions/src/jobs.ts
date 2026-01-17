@@ -5,7 +5,7 @@
  *
  * Jobs:
  * - cleanupOldRateLimits: Daily cleanup of expired rate limit documents
- * - cleanupOldSessions: Daily cleanup of old session documents (>30 days)
+ * - cleanupOldDailyLogs: Daily cleanup of old daily check-in documents (>30 days)
  * - cleanupOrphanedStorageFiles: Weekly cleanup of unreferenced storage files
  * - generateUsageAnalytics: Daily aggregation of usage statistics
  * - pruneSecurityEvents: Weekly archival of old security logs (>90 days)
@@ -114,11 +114,10 @@ export const scheduledCleanupRateLimits = onSchedule(
 /**
  * A10: Cleanup Old Daily Check-in Logs
  * Removes old daily check-in documents (>30 days old) from users/{uid}/daily_logs
- * NOTE: Despite the name, this cleans up daily_logs (check-ins), not auth sessions
  * Schedule: Daily at 4 AM CT (10 AM UTC)
  * Uses collectionGroup query for efficient cross-user cleanup
  */
-export async function cleanupOldSessions(): Promise<{ deleted: number }> {
+export async function cleanupOldDailyLogs(): Promise<{ deleted: number }> {
   const db = admin.firestore();
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgoTimestamp = admin.firestore.Timestamp.fromDate(thirtyDaysAgo);
@@ -153,7 +152,7 @@ export async function cleanupOldSessions(): Promise<{ deleted: number }> {
 
   logSecurityEvent(
     "JOB_SUCCESS",
-    "cleanupOldSessions",
+    "cleanupOldDailyLogs",
     `Cleaned up ${deleted} old daily check-in docs`,
     {
       severity: "INFO",
@@ -164,29 +163,40 @@ export async function cleanupOldSessions(): Promise<{ deleted: number }> {
   return { deleted };
 }
 
-export const scheduledCleanupOldSessions = onSchedule(
+// Backward-compatible export alias for existing scheduled job references
+export const cleanupOldSessions = cleanupOldDailyLogs;
+
+export const scheduledCleanupOldDailyLogs = onSchedule(
   {
     schedule: "0 10 * * *", // 10 AM UTC = 4 AM CT
     timeZone: "UTC",
     retryCount: 3,
   },
   async () => {
-    await runJob("cleanupOldSessions", "Cleanup Old Sessions", async () => {
-      await cleanupOldSessions();
+    await runJob("cleanupOldDailyLogs", "Cleanup Old Daily Logs", async () => {
+      await cleanupOldDailyLogs();
     });
   }
 );
+
+// Backward-compatible export for existing admin triggers
+export const scheduledCleanupOldSessions = scheduledCleanupOldDailyLogs;
 
 /**
  * A11: Cleanup Orphaned Storage Files
  * Removes Storage files not referenced by Firestore documents
  * Schedule: Weekly on Sundays at 2 AM CT (8 AM UTC)
- * PERFORMANCE: Pre-fetches user IDs to avoid N+1 queries
+ * PERFORMANCE: Pre-fetches user IDs using listDocuments() (no document reads)
  * SAFETY: Only deletes files with exact path match (no URL substring fallback)
+ * RESILIENCE: Per-item error handling - single file failures don't abort the job
+ *
+ * SECURITY NOTE: This job assumes Storage rules enforce user-uploads/{userId}/ prefixes.
+ * Verify Storage ACLs restrict writes to user's own prefix before relying on this cleanup.
  */
 export async function cleanupOrphanedStorageFiles(): Promise<{
   checked: number;
   deleted: number;
+  errors: number;
 }> {
   const storage = admin.storage();
   const db = admin.firestore();
@@ -194,11 +204,12 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
 
   let checked = 0;
   let deleted = 0;
+  let errors = 0;
 
   try {
-    // PERFORMANCE: Pre-fetch all user IDs to avoid N+1 queries
-    const usersSnapshot = await db.collection("users").select().get();
-    const existingUserIds = new Set(usersSnapshot.docs.map((doc) => doc.id));
+    // PERFORMANCE: Use listDocuments() to get only IDs without reading document data
+    const userRefs = await db.collection("users").listDocuments();
+    const existingUserIds = new Set(userRefs.map((ref) => ref.id));
 
     // Get all files in user-uploads directory
     const [files] = await bucket.getFiles({ prefix: "user-uploads/" });
@@ -206,54 +217,60 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     for (const file of files) {
       checked++;
 
-      // Extract userId from file path (user-uploads/{userId}/...)
-      const pathParts = file.name.split("/");
-      if (pathParts.length < 2) continue;
+      try {
+        // Extract userId from file path (user-uploads/{userId}/...)
+        const pathParts = file.name.split("/");
+        if (pathParts.length < 2) continue;
 
-      const userId = pathParts[1];
+        const userId = pathParts[1];
 
-      // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
-      if (!existingUserIds.has(userId)) {
-        // User doesn't exist, delete the file
-        await file.delete();
-        deleted++;
-        continue;
-      }
-
-      // Check if file is referenced - use stable storage path reference ONLY
-      // SAFETY: Removed URL substring fallback to prevent accidental deletion
-      // Files without imagePath reference are treated as "unknown" (not deleted)
-      const journalByPathRef = db
-        .collection(`users/${userId}/journal`)
-        .where("data.imagePath", "==", file.name)
-        .limit(1);
-
-      const byPathSnap = await journalByPathRef.get();
-      const isReferenced = !byPathSnap.empty;
-
-      // SAFETY: If we can't conclusively determine the file is orphaned, skip it
-      // Legacy entries without imagePath will be preserved until migrated
-      if (!isReferenced) {
-        // File appears orphaned, check age before deleting (safety buffer)
-        const metadata = await file.getMetadata();
-        const timeCreated = metadata[0].timeCreated;
-        if (!timeCreated) continue;
-
-        const createTime = new Date(timeCreated);
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-        if (createTime < sevenDaysAgo) {
+        // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
+        if (!existingUserIds.has(userId)) {
+          // User doesn't exist, delete the file
           await file.delete();
           deleted++;
+          continue;
         }
+
+        // Check if file is referenced - use stable storage path reference ONLY
+        // SAFETY: Removed URL substring fallback to prevent accidental deletion
+        // Files without imagePath reference are treated as "unknown" (not deleted)
+        const journalByPathRef = db
+          .collection(`users/${userId}/journal`)
+          .where("data.imagePath", "==", file.name)
+          .limit(1);
+
+        const byPathSnap = await journalByPathRef.get();
+        const isReferenced = !byPathSnap.empty;
+
+        // SAFETY: If we can't conclusively determine the file is orphaned, skip it
+        // Legacy entries without imagePath will be preserved until migrated
+        if (!isReferenced) {
+          // File appears orphaned, check age before deleting (safety buffer)
+          const metadata = await file.getMetadata();
+          const timeCreated = metadata[0].timeCreated;
+          if (!timeCreated) continue;
+
+          const createTime = new Date(timeCreated);
+          const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+          if (createTime < sevenDaysAgo) {
+            await file.delete();
+            deleted++;
+          }
+        }
+      } catch (fileError) {
+        // RESILIENCE: Log per-file errors but continue processing other files
+        errors++;
+        console.error(`Error processing file ${file.name}:`, fileError);
       }
     }
 
     logSecurityEvent(
       "JOB_SUCCESS",
       "cleanupOrphanedStorageFiles",
-      `Checked ${checked} files, deleted ${deleted} orphaned`,
-      { severity: "INFO", metadata: { checked, deleted } }
+      `Checked ${checked} files, deleted ${deleted} orphaned, ${errors} errors`,
+      { severity: "INFO", metadata: { checked, deleted, errors } }
     );
   } catch (error) {
     logSecurityEvent(
@@ -265,7 +282,7 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
     throw error;
   }
 
-  return { checked, deleted };
+  return { checked, deleted, errors };
 }
 
 export const scheduledCleanupOrphanedStorageFiles = onSchedule(

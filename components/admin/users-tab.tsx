@@ -227,7 +227,8 @@ export function UsersTab() {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         errorCode: (err as { code?: string })?.code,
       });
-      setError(err instanceof Error ? err.message : "Search failed");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Search failed. Please try again.");
     } finally {
       setSearching(false);
     }
@@ -264,7 +265,8 @@ export function UsersTab() {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(uid),
       });
-      setError(err instanceof Error ? err.message : "Failed to load user detail");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to load user details. Please try again.");
     } finally {
       setLoadingDetail(false);
     }
@@ -296,7 +298,8 @@ export function UsersTab() {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(selectedUser.profile.uid),
       });
-      setError(err instanceof Error ? err.message : "Failed to save notes");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to save notes. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -348,7 +351,8 @@ export function UsersTab() {
         userId: maskIdentifier(selectedUser.profile.uid),
         newDisabledState,
       });
-      setError(err instanceof Error ? err.message : "Failed to update user status");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to update user status. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -399,7 +403,8 @@ export function UsersTab() {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
         userId: maskIdentifier(selectedUser.profile.uid),
       });
-      setError(err instanceof Error ? err.message : "Failed to update user privilege");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to update user privilege. Please try again.");
       // Revert selection on error
       setSelectedPrivilege(selectedUser.profile.privilegeType || "free");
     } finally {

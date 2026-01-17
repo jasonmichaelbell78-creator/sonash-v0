@@ -1356,7 +1356,40 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
 /**
  * Admin: Get Privilege Types
  * Returns all available privilege types for the system
+ * ALWAYS includes built-in types (free, premium, admin) merged with custom types
  */
+// Built-in privilege types that are always guaranteed to exist
+const BUILT_IN_PRIVILEGE_TYPES = [
+  {
+    id: "free",
+    name: "Free",
+    description: "Standard free tier with basic features",
+    features: ["daily_check_in", "basic_journal", "meetings_view"],
+    isDefault: true,
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    description: "Full access to all features",
+    features: [
+      "daily_check_in",
+      "unlimited_journal",
+      "meetings_view",
+      "inventory_tracking",
+      "export_data",
+      "priority_support",
+    ],
+    isDefault: false,
+  },
+  {
+    id: "admin",
+    name: "Admin",
+    description: "Full system access including admin panel",
+    features: ["*"],
+    isDefault: false,
+  },
+] as const;
+
 export const adminGetPrivilegeTypes = onCall(async (request) => {
   await requireAdmin(request, "adminGetPrivilegeTypes");
 
@@ -1366,42 +1399,19 @@ export const adminGetPrivilegeTypes = onCall(async (request) => {
 
     if (!privilegesDoc.exists) {
       // Return default privilege types if not configured
-      return {
-        types: [
-          {
-            id: "free",
-            name: "Free",
-            description: "Standard free tier with basic features",
-            features: ["daily_check_in", "basic_journal", "meetings_view"],
-            isDefault: true,
-          },
-          {
-            id: "premium",
-            name: "Premium",
-            description: "Full access to all features",
-            features: [
-              "daily_check_in",
-              "unlimited_journal",
-              "meetings_view",
-              "inventory_tracking",
-              "export_data",
-              "priority_support",
-            ],
-            isDefault: false,
-          },
-          {
-            id: "admin",
-            name: "Admin",
-            description: "Full system access including admin panel",
-            features: ["*"],
-            isDefault: false,
-          },
-        ],
-      };
+      return { types: [...BUILT_IN_PRIVILEGE_TYPES] };
     }
 
     const data = privilegesDoc.data();
-    return { types: data?.types || [] };
+    const storedTypes = Array.isArray(data?.types) ? data.types : [];
+
+    // ROBUSTNESS: Always include built-in types, merge with custom types
+    // This ensures the UI never gets an empty or corrupted privilege list
+    const customTypes = storedTypes.filter(
+      (t: { id?: string }) => t?.id && !["free", "premium", "admin"].includes(t.id)
+    );
+
+    return { types: [...BUILT_IN_PRIVILEGE_TYPES, ...customTypes] };
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetPrivilegeTypes", "Failed to get privilege types", {
       userId: request.auth?.uid,
@@ -1426,6 +1436,19 @@ interface SavePrivilegeTypeRequest {
   };
 }
 
+// Schema validation for privilege type inputs
+const privilegeTypeSchema = z.object({
+  id: z
+    .string()
+    .min(1, "ID is required")
+    .max(50, "ID must be 50 characters or less")
+    .regex(/^[a-z0-9_-]+$/, "ID must be lowercase alphanumeric with hyphens/underscores"),
+  name: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less"),
+  description: z.string().max(500, "Description must be 500 characters or less").default(""),
+  features: z.array(z.string().max(100)).max(50, "Maximum 50 features allowed").default([]),
+  isDefault: z.boolean().optional(),
+});
+
 export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (request) => {
   await requireAdmin(request, "adminSavePrivilegeType");
 
@@ -1435,14 +1458,22 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
     throw new HttpsError("invalid-argument", "Privilege type ID and name are required");
   }
 
+  // SECURITY: Validate privilege type with schema
+  const parseResult = privilegeTypeSchema.safeParse(privilegeType);
+  if (!parseResult.success) {
+    const errorMessages = parseResult.error.issues.map((issue) => issue.message).join(", ");
+    throw new HttpsError("invalid-argument", `Invalid privilege type: ${errorMessages}`);
+  }
+  const validatedType = parseResult.data;
+
   // SECURITY: Prevent modifying any built-in types
-  if (["admin", "free", "premium"].includes(privilegeType.id)) {
+  if (["admin", "free", "premium"].includes(validatedType.id)) {
     throw new HttpsError("permission-denied", "Cannot modify built-in privilege types");
   }
 
   logSecurityEvent("ADMIN_ACTION", "adminSavePrivilegeType", "Admin saved privilege type", {
     userId: request.auth?.uid,
-    metadata: { privilegeTypeId: privilegeType.id },
+    metadata: { privilegeTypeId: validatedType.id },
     severity: "INFO",
     storeInFirestore: true,
   });
@@ -1450,39 +1481,46 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
   try {
     const db = admin.firestore();
     const privilegesRef = db.collection("system").doc("privileges");
-    const privilegesDoc = await privilegesRef.get();
 
-    let types: Array<{
-      id: string;
-      name: string;
-      description: string;
-      features: string[];
-      isDefault?: boolean;
-    }> = [];
+    // CONCURRENCY: Use transaction to prevent race conditions
+    await db.runTransaction(async (transaction) => {
+      const privilegesDoc = await transaction.get(privilegesRef);
 
-    if (privilegesDoc.exists) {
-      types = privilegesDoc.data()?.types || [];
-    }
+      let types: Array<{
+        id: string;
+        name: string;
+        description: string;
+        features: string[];
+        isDefault?: boolean;
+      }> = [];
 
-    // Find and update existing type or add new one
-    const existingIndex = types.findIndex((t) => t.id === privilegeType.id);
-    if (existingIndex >= 0) {
-      types[existingIndex] = privilegeType;
-    } else {
-      types.push(privilegeType);
-    }
+      if (privilegesDoc.exists) {
+        types = privilegesDoc.data()?.types || [];
+      }
 
-    // If this is set as default, unset all others
-    if (privilegeType.isDefault) {
-      types = types.map((t) => ({
-        ...t,
-        isDefault: t.id === privilegeType.id,
-      }));
-    }
+      // Find and update existing type or add new one
+      const existingIndex = types.findIndex((t) => t.id === validatedType.id);
+      if (existingIndex >= 0) {
+        types[existingIndex] = validatedType;
+      } else {
+        types.push(validatedType);
+      }
 
-    await privilegesRef.set({ types, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+      // If this is set as default, unset all others
+      if (validatedType.isDefault) {
+        types = types.map((t) => ({
+          ...t,
+          isDefault: t.id === validatedType.id,
+        }));
+      }
 
-    return { success: true, id: privilegeType.id };
+      transaction.set(privilegesRef, {
+        types,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    return { success: true, id: validatedType.id };
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminSavePrivilegeType", "Failed to save privilege type", {
       userId: request.auth?.uid,
@@ -1608,10 +1646,9 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       // Preserve existing claims and add admin: true
       await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
     } else if (currentClaims.admin) {
-      // Remove admin claim entirely by destructuring it out, preserving other claims
-      const { admin: _adminClaim, ...restClaims } = currentClaims;
-      void _adminClaim; // Mark as intentionally unused
-      await admin.auth().setCustomUserClaims(uid, restClaims);
+      // Remove admin claim by setting to null (idiomatic Firebase approach)
+      // This preserves other claims while properly removing the admin claim
+      await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
     }
 
     return { success: true, message: `User privilege set to ${privilegeTypeId}` };
@@ -1687,9 +1724,11 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       try {
         const authResult = await admin.auth().getUsers(uids.map((uid) => ({ uid })));
         authResult.users.forEach((u) => authByUid.set(u.uid, u));
-      } catch {
-        // If batch fetch fails, we'll fall back to Firestore-only data below
-        console.error("Batch auth fetch failed, using Firestore-only data");
+      } catch (authError) {
+        // SECURITY: Propagate auth errors instead of returning partial data
+        // Returning incomplete data could be misleading and hide issues
+        console.error("Batch auth fetch failed:", authError);
+        throw new HttpsError("internal", "Failed to fetch user authentication details");
       }
     }
 

@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 7.1 **Created:** 2026-01-02 **Last Updated:** 2026-01-16
+**Document Version:** 7.2 **Created:** 2026-01-02 **Last Updated:** 2026-01-17
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7.8     | 2026-01-17 | Review #163: Track A PR Follow-up Compliance - 12 items (5 MAJOR: per-item error handling, transaction for privilege updates, auth error propagation, schema validation, raw error UI; 5 MINOR: rename cleanupOldDailyLogs, null for claims, listDocuments, built-in types guarantee, observability note; 2 TRIVIAL: storage ACL docs, message PII risk-accept). New patterns: Per-item error handling in jobs, Firestore transactions for updates, listDocuments() for ID-only queries.                                                                                                                                                                                                                                                                                                   |
 | 7.7     | 2026-01-16 | Review #162: Track A Admin Panel PR Feedback - 22 items (1 CRITICAL: CI blocker README formatting; 8 MAJOR: error swallowing, PII in logs, claims bug, orphan detection, N+1 queries; 11 MINOR: UX improvements; 2 DEFERRED to roadmap). New patterns: Metadata redaction, preserve custom claims, collectionGroup queries, batch auth lookups.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 7.6     | 2026-01-16 | Review #161: lint-staged PR Feedback - 3 items (2 MAJOR: supply-chain risk with npx, hidden stderr errors; 1 MINOR: README/ROADMAP Prettier formatting). New patterns: Use `npx --no-install` for security, expose hook error output for debugging.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 7.5     | 2026-01-16 | Review #160: PR #265 Qodo Suggestions - 2 items (2 MINOR: scope getConsolidationStatus to section for robustness, normalize paths for cross-platform matching). New patterns: Scope document section parsing to prevent accidental matches elsewhere, normalize backslashes + lowercase for Windows compatibility.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -245,8 +246,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 4 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #163
+**Reviews since last consolidation:** 5 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #168
 
 ### When to Consolidate
 
@@ -842,6 +843,54 @@ Feedback **PR/Branch:** claude/new-session-UhAVn **Suggestions:** 7 items
 - SonarCloud security hotspots in test files often flag the test inputs, not
   actual vulnerabilities
 - `new URL("")` throws - explicit early return is optional but adds clarity
+
+---
+
+#### Review #163: Track A PR Follow-up Compliance (2026-01-17)
+
+**Source:** Qodo PR Compliance + PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-track-a-6TRVG **Suggestions:** 12 items (Major: 5, Minor: 5,
+Trivial: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                                    | Severity | Category    | Fix                                                           |
+| --- | ---------------------------------------- | -------- | ----------- | ------------------------------------------------------------- |
+| 1   | Misleading job name (cleanupOldSessions) | Minor    | Naming      | Rename to cleanupOldDailyLogs with backward-compatible alias  |
+| 2   | Non-resilient orphan cleanup loop        | Major    | Robustness  | Add per-item try/catch, continue on errors                    |
+| 3   | Raw error to UI (users-tab.tsx)          | Major    | Security    | Replace err.message with generic user-facing messages         |
+| 4   | Weak privilege type validation           | Major    | Security    | Add Zod schema with length/pattern constraints                |
+| 5   | Race condition in privilege updates      | Major    | Concurrency | Wrap in Firestore transaction                                 |
+| 6   | Swallowed auth errors in adminListUsers  | Major    | Reliability | Propagate errors instead of returning partial data            |
+| 7   | Admin claim removal method               | Minor    | Best Prac.  | Use null instead of destructuring to remove claims            |
+| 8   | Inefficient user ID pre-fetch            | Minor    | Performance | Use listDocuments() instead of select().get()                 |
+| 9   | Privilege types can be empty             | Minor    | Robustness  | Always return BUILT_IN_PRIVILEGE_TYPES merged with custom     |
+| 10  | INFO events not persisted to Firestore   | Minor    | Observabil. | Note as design decision (documented, not changed)             |
+| 11  | Storage ACL verification note            | Trivial  | Security    | Add security note in cleanupOrphanedStorageFiles JSDoc        |
+| 12  | Firestore log message PII                | Trivial  | Security    | Note: messages come from code, not user input (risk accepted) |
+
+**Patterns Identified:**
+
+1. **Per-item Error Handling in Jobs**: Use try/catch around individual file
+   operations so one failure doesn't abort the entire job
+2. **Firestore Transactions for Multi-read-write**: When updating document based
+   on current state, use runTransaction() to prevent race conditions
+3. **Schema Validation for Admin APIs**: Use Zod to validate complex input
+   structures with length/pattern constraints
+4. **listDocuments() for ID-only Queries**: When only document IDs needed, use
+   listDocuments() instead of select().get() to avoid reading document data
+5. **Null to Remove Claims**: Set custom claim to null rather than destructuring
+   to remove it - more idiomatic Firebase approach
+6. **Error Propagation over Swallowing**: When auth batch fails, throw error
+   rather than return partial data that could be misleading
+
+**Key Learnings:**
+
+- Function names should reflect what they clean up, not the collection they
+  target (cleanupOldDailyLogs > cleanupOldSessions)
+- Per-item error handling makes jobs resilient to transient failures
+- Always validate admin API inputs with schemas, not just presence checks
+- Transactions prevent concurrent admin updates from corrupting data
 
 ---
 
