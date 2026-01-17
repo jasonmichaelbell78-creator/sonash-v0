@@ -100,7 +100,7 @@ const dependencyRules = [
     checkDiff: false,
   },
   {
-    trigger: "functions/src/admin/",
+    trigger: "functions/src/admin",
     dependents: ["ROADMAP.md"],
     reason: "Admin backend changes must update Track A status in ROADMAP.md",
     checkDiff: false,
