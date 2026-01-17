@@ -1,6 +1,6 @@
 # Audit Tracker
 
-**Document Version:** 1.9 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
+**Document Version:** 2.0 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
@@ -45,14 +45,14 @@ When tracking audits:
 | Security      | 2026-01-17 (Single)   | 0             | 0           | Any security-sensitive file OR 20 commits |
 | Performance   | 2026-01-17 (Single)   | 0             | 0           | 30 commits OR bundle change               |
 | Refactoring   | 2026-01-17 (Single)   | 0             | 0           | 40 commits OR 3 complexity warnings       |
-| Documentation | 2026-01-10 (Multi-AI) | 0             | 0           | 20 doc files changed OR 30 commits        |
+| Documentation | 2026-01-17 (Single)   | 0             | 0           | 20 doc files changed OR 30 commits        |
 | Process       | 2026-01-17 (Single)   | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 
 ### Multi-AI Audit Thresholds (Cross-Category)
 
 | Trigger Type            | Threshold          | Current | Status     |
 | ----------------------- | ------------------ | ------- | ---------- |
-| Single audits completed | 3 per category     | code:2, security:2, performance:2, refactoring:1, process:1 | ⏳ Pending |
+| Single audits completed | 3 per category     | code:2, security:2, performance:2, refactoring:1, documentation:1, process:1 | ⏳ Pending |
 | Total commits           | 100 commits        | —       | ⏳ Check   |
 | Time elapsed            | 14 days            | —       | ⏳ Check   |
 | Major milestone         | Any M1.5+ complete | —       | ⏳ Check   |
@@ -99,9 +99,10 @@ When tracking audits:
 
 ### Documentation Audits (`/audit-documentation`)
 
-| Date       | Session  | Commits Covered | Files Covered | Findings              | Reset Threshold |
-| ---------- | -------- | --------------- | ------------- | --------------------- | --------------- |
-| 2026-01-10 | Multi-AI | Full codebase   | All MD        | 14 (CANON-DOCS.jsonl) | ✅              |
+| Date       | Session       | Commits Covered | Files Covered | Findings              | Reset Threshold |
+| ---------- | ------------- | --------------- | ------------- | --------------------- | --------------- |
+| 2026-01-17 | Single-Claude | 295             | 157           | 10 (2 S1, 5 S2, 3 S3) - [audit-2026-01-17.md](./audits/single-session/documentation/audit-2026-01-17.md) | ⚠️ (single) |
+| 2026-01-10 | Multi-AI      | Full codebase   | All MD        | 14 (CANON-DOCS.jsonl) | ✅              |
 
 ### Process Audits (`/audit-process`)
 
@@ -176,6 +177,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                            |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.0     | 2026-01-17 | Added single-session documentation audit (2026-01-17): 10 findings (2 S1, 5 S2, 3 S3); 295 commits/157 files; documentation:1 single audit now; ALL 6 CATEGORIES COMPLETE |
 | 1.9     | 2026-01-17 | Added single-session refactoring audit (2026-01-17): 12 findings (4 S1, 5 S2, 3 S3); 295 commits/159 files; refactoring:1 single audit now         |
 | 1.8     | 2026-01-17 | Added single-session process audit (2026-01-17): 10 findings (0 S1, 4 S2, 6 S3); 60+ process files; process:1 single audit now                    |
 | 1.7     | 2026-01-17 | Added single-session performance audit (2026-01-17): 12 findings (2 S1, 7 S2, 3 S3); 353 commits/248 files; performance:2 single audits now       |
