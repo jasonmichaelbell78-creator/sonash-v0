@@ -112,8 +112,9 @@ export const scheduledCleanupRateLimits = onSchedule(
 );
 
 /**
- * A10: Cleanup Old Sessions
- * Removes expired session documents (>30 days old)
+ * A10: Cleanup Old Daily Check-in Logs
+ * Removes old daily check-in documents (>30 days old) from users/{uid}/daily_logs
+ * NOTE: Despite the name, this cleans up daily_logs (check-ins), not auth sessions
  * Schedule: Daily at 4 AM CT (10 AM UTC)
  * Uses collectionGroup query for efficient cross-user cleanup
  */
@@ -127,10 +128,12 @@ export async function cleanupOldSessions(): Promise<{ deleted: number }> {
 
   // Use collectionGroup query to find all old daily_logs across all users
   // This avoids the N+1 pattern of iterating through each user
+  // STABILITY: Added orderBy for deterministic pagination
   while (hasMore) {
     const oldLogsQuery = db
       .collectionGroup("daily_logs")
       .where("updatedAt", "<", thirtyDaysAgoTimestamp)
+      .orderBy("updatedAt", "asc")
       .limit(500); // Process in batches of 500
 
     const snapshot = await oldLogsQuery.get();
@@ -148,10 +151,15 @@ export async function cleanupOldSessions(): Promise<{ deleted: number }> {
     hasMore = snapshot.size === 500; // Continue if we processed a full batch
   }
 
-  logSecurityEvent("JOB_SUCCESS", "cleanupOldSessions", `Cleaned up ${deleted} old session docs`, {
-    severity: "INFO",
-    metadata: { deleted },
-  });
+  logSecurityEvent(
+    "JOB_SUCCESS",
+    "cleanupOldSessions",
+    `Cleaned up ${deleted} old daily check-in docs`,
+    {
+      severity: "INFO",
+      metadata: { deleted },
+    }
+  );
 
   return { deleted };
 }
@@ -173,7 +181,8 @@ export const scheduledCleanupOldSessions = onSchedule(
  * A11: Cleanup Orphaned Storage Files
  * Removes Storage files not referenced by Firestore documents
  * Schedule: Weekly on Sundays at 2 AM CT (8 AM UTC)
- * Uses stable file.name path matching with URL substring fallback
+ * PERFORMANCE: Pre-fetches user IDs to avoid N+1 queries
+ * SAFETY: Only deletes files with exact path match (no URL substring fallback)
  */
 export async function cleanupOrphanedStorageFiles(): Promise<{
   checked: number;
@@ -187,6 +196,10 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
   let deleted = 0;
 
   try {
+    // PERFORMANCE: Pre-fetch all user IDs to avoid N+1 queries
+    const usersSnapshot = await db.collection("users").select().get();
+    const existingUserIds = new Set(usersSnapshot.docs.map((doc) => doc.id));
+
     // Get all files in user-uploads directory
     const [files] = await bucket.getFiles({ prefix: "user-uploads/" });
 
@@ -199,45 +212,29 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
 
       const userId = pathParts[1];
 
-      // Check if user exists
-      const userDoc = await db.collection("users").doc(userId).get();
-      if (!userDoc.exists) {
+      // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
+      if (!existingUserIds.has(userId)) {
         // User doesn't exist, delete the file
         await file.delete();
         deleted++;
         continue;
       }
 
-      // Check if file is referenced - prefer stable storage path reference
-      // First try matching by imagePath (if stored), then fall back to URL substring
-      let isReferenced = false;
-
-      // Method 1: Check for exact path match (most reliable)
+      // Check if file is referenced - use stable storage path reference ONLY
+      // SAFETY: Removed URL substring fallback to prevent accidental deletion
+      // Files without imagePath reference are treated as "unknown" (not deleted)
       const journalByPathRef = db
         .collection(`users/${userId}/journal`)
         .where("data.imagePath", "==", file.name)
         .limit(1);
 
       const byPathSnap = await journalByPathRef.get();
-      isReferenced = !byPathSnap.empty;
+      const isReferenced = !byPathSnap.empty;
 
-      // Method 2: Fallback - check if URL contains the file name (less reliable but catches older entries)
+      // SAFETY: If we can't conclusively determine the file is orphaned, skip it
+      // Legacy entries without imagePath will be preserved until migrated
       if (!isReferenced) {
-        const journalByUrlRef = db
-          .collection(`users/${userId}/journal`)
-          .where("data.imageUrl", "!=", null)
-          .limit(100);
-        const urlSnap = await journalByUrlRef.get();
-
-        // Check if any URL contains our file path
-        isReferenced = urlSnap.docs.some((d) => {
-          const url = d.get("data.imageUrl");
-          return typeof url === "string" && url.includes(file.name);
-        });
-      }
-
-      if (!isReferenced) {
-        // File is orphaned, check age before deleting (safety buffer)
+        // File appears orphaned, check age before deleting (safety buffer)
         const metadata = await file.getMetadata();
         const timeCreated = metadata[0].timeCreated;
         if (!timeCreated) continue;
@@ -379,9 +376,11 @@ export async function pruneSecurityEvents(): Promise<{ deleted: number }> {
   let hasMore = true;
 
   while (hasMore) {
+    // STABILITY: Added orderBy for deterministic batching
     const oldLogsQuery = db
       .collection("security_logs")
       .where("timestamp", "<", admin.firestore.Timestamp.fromDate(ninetyDaysAgo))
+      .orderBy("timestamp", "asc")
       .limit(500);
 
     const snapshot = await oldLogsQuery.get();

@@ -65,7 +65,7 @@ interface SecurityEvent {
  * @param userId - The user ID to hash
  * @returns First 12 chars of SHA-256 hash (sufficient for uniqueness, ~68 bits of entropy)
  */
-function hashUserId(userId: string): string {
+export function hashUserId(userId: string): string {
   // Use SHA-256 for cryptographically secure, one-way hashing
   // Truncate to 12 chars for readability while maintaining collision resistance
   // (2^48 possible values = ~281 trillion combinations)
@@ -150,23 +150,67 @@ export function logSecurityEvent(
 }
 
 /**
+ * Sensitive keys that should be redacted from metadata
+ * Includes common PII and secret patterns
+ */
+const SENSITIVE_KEYS = [
+  "token",
+  "authorization",
+  "password",
+  "secret",
+  "cookie",
+  "apikey",
+  "email",
+  "phone",
+  "ssn",
+  "credit",
+  "card",
+  "bearer",
+  "session",
+  "refresh",
+  "access",
+];
+
+/**
+ * Check if a key name indicates sensitive data
+ */
+function isSensitiveKey(key: string): boolean {
+  const keyLower = key.toLowerCase();
+  return SENSITIVE_KEYS.some((sensitive) => keyLower.includes(sensitive));
+}
+
+/**
  * Redact sensitive keys from metadata before persisting to Firestore
  * Prevents PII/secrets from being stored in the security_logs collection
+ * SECURITY: Recursively scans nested objects and arrays
  */
 function redactSensitiveMetadata(
   metadata?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
   if (!metadata) return undefined;
 
-  const sensitiveKeys = ["token", "authorization", "password", "secret", "cookie", "apikey"];
-
   return Object.fromEntries(
     Object.entries(metadata).map(([key, value]) => {
-      const keyLower = key.toLowerCase();
-
-      // Redact sensitive keys
-      if (sensitiveKeys.some((sensitive) => keyLower.includes(sensitive))) {
+      // Redact sensitive keys at any level
+      if (isSensitiveKey(key)) {
         return [key, "[REDACTED]"];
+      }
+
+      // Recursively redact nested objects
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        return [key, redactSensitiveMetadata(value as Record<string, unknown>)];
+      }
+
+      // Recursively redact arrays containing objects
+      if (Array.isArray(value)) {
+        return [
+          key,
+          value.map((item) =>
+            item && typeof item === "object"
+              ? redactSensitiveMetadata(item as Record<string, unknown>)
+              : item
+          ),
+        ];
       }
 
       // Truncate very large string values (>2000 chars)
@@ -192,7 +236,10 @@ async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
       ...event,
       metadata: redactSensitiveMetadata(event.metadata),
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days TTL
+      // SECURITY: Use Firestore Timestamp for TTL policy compatibility
+      expiresAt: admin.firestore.Timestamp.fromDate(
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      ), // 30 days TTL
     };
 
     await db.collection("security_logs").add(redactedEvent);

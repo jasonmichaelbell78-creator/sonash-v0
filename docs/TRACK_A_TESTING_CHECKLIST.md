@@ -300,5 +300,5 @@ Jobs.
 - [ ] Performance within acceptable limits
 - [ ] Ready for production deployment
 
-**Tested by:** ******\_\_\_****** **Date:** ******\_\_\_****** **Approved by:**
-******\_\_\_******
+**Tested by:** **\*\***\_\_\_**\*\*** **Date:** **\*\***\_\_\_**\*\***
+**Approved by:** **\*\***\_\_\_**\*\***

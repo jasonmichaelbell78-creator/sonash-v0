@@ -147,9 +147,9 @@ function safeStringify(obj: unknown): string {
           if (seen.has(value)) return "[Circular]";
           seen.add(value);
         }
-        // Handle Error objects
+        // Handle Error objects - SECURITY: Don't expose stack traces in UI
         if (value instanceof Error) {
-          return { name: value.name, message: value.message, stack: value.stack };
+          return { name: value.name, message: value.message };
         }
         return value;
       },
@@ -265,7 +265,8 @@ export function LogsTab() {
       setGcpLinks(result.data.gcpLinks);
     } catch (err) {
       logger.error("Failed to fetch logs", { error: err });
-      setError(err instanceof Error ? err.message : "Failed to fetch logs");
+      // SECURITY: Don't expose raw error messages to UI
+      setError("Failed to fetch logs. Please try again.");
     } finally {
       setLoading(false);
     }

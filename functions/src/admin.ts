@@ -9,7 +9,7 @@ import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https
 import { defineSecret, defineString } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import { z } from "zod";
-import { logSecurityEvent } from "./security-logger";
+import { logSecurityEvent, hashUserId } from "./security-logger";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
 
 /**
@@ -738,10 +738,10 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
     throw new HttpsError("invalid-argument", "User ID is required");
   }
 
-  // SECURITY: Don't log target UID in message - use metadata only
+  // SECURITY: Hash target UID to prevent PII exposure in logs
   logSecurityEvent("ADMIN_ACTION", "adminGetUserDetail", "Admin viewed user detail", {
     userId: request.auth?.uid,
-    metadata: { targetUid: uid },
+    metadata: { targetUidHash: hashUserId(uid) },
   });
 
   try {
@@ -840,7 +840,7 @@ export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) =
 
     logSecurityEvent("ADMIN_ERROR", "adminGetUserDetail", "Failed to get user detail", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to get user detail");
@@ -876,7 +876,7 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
   // Log only field names being updated for audit trail
   logSecurityEvent("ADMIN_ACTION", "adminUpdateUser", "Admin updated user", {
     userId: request.auth?.uid,
-    metadata: { targetUid: uid, updatedFields: Object.keys(updates) },
+    metadata: { targetUidHash: hashUserId(uid), updatedFields: Object.keys(updates) },
   });
 
   try {
@@ -901,7 +901,7 @@ export const adminUpdateUser = onCall<UpdateUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminUpdateUser", "Failed to update user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user");
@@ -928,14 +928,14 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
   }
 
   // SECURITY: Don't log reason field - it may contain PII or sensitive details
-  // Log only sanitized metadata for audit trail
+  // Log only sanitized metadata for audit trail (hash targetUid)
   logSecurityEvent(
     "ADMIN_ACTION",
     "adminDisableUser",
     `Admin ${disabled ? "disabled" : "enabled"} user`,
     {
       userId: request.auth?.uid,
-      metadata: { targetUid: uid, disabled, hasReason: !!reason },
+      metadata: { targetUidHash: hashUserId(uid), disabled, hasReason: !!reason },
       severity: "WARNING",
     }
   );
@@ -968,7 +968,7 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminDisableUser", "Failed to disable/enable user", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to update user status");
@@ -1435,9 +1435,9 @@ export const adminSavePrivilegeType = onCall<SavePrivilegeTypeRequest>(async (re
     throw new HttpsError("invalid-argument", "Privilege type ID and name are required");
   }
 
-  // Prevent modifying built-in types
-  if (privilegeType.id === "admin") {
-    throw new HttpsError("permission-denied", "Cannot modify admin privilege type");
+  // SECURITY: Prevent modifying any built-in types
+  if (["admin", "free", "premium"].includes(privilegeType.id)) {
+    throw new HttpsError("permission-denied", "Cannot modify built-in privilege types");
   }
 
   logSecurityEvent("ADMIN_ACTION", "adminSavePrivilegeType", "Admin saved privilege type", {
@@ -1569,9 +1569,10 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
     throw new HttpsError("invalid-argument", "User ID and privilege type ID are required");
   }
 
+  // SECURITY: Hash targetUid to prevent PII exposure in logs
   logSecurityEvent("ADMIN_ACTION", "adminSetUserPrivilege", "Admin set user privilege", {
     userId: request.auth?.uid,
-    metadata: { targetUid: uid, privilegeTypeId },
+    metadata: { targetUidHash: hashUserId(uid), privilegeTypeId },
     severity: "INFO",
     storeInFirestore: true,
   });
@@ -1618,7 +1619,7 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
     if (error instanceof HttpsError) throw error;
     logSecurityEvent("ADMIN_ERROR", "adminSetUserPrivilege", "Failed to set user privilege", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), targetUid: uid },
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to set user privilege");
@@ -1663,12 +1664,12 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       .orderBy(admin.firestore.FieldPath.documentId(), safeSortOrder)
       .limit(limit + 1); // Fetch one extra to check if there's more
 
-    // Add cursor if provided - use both sort field value and document ID
+    // STABILITY: Use document snapshot for stable cursor-based pagination
+    // This is more robust than manually extracting field values
     if (startAfterUid) {
       const cursorDoc = await db.collection("users").doc(startAfterUid).get();
       if (cursorDoc.exists) {
-        const cursorData = cursorDoc.data() || {};
-        query = query.startAfter(cursorData[safeSortBy] ?? null, cursorDoc.id);
+        query = query.startAfter(cursorDoc);
       }
     }
 
