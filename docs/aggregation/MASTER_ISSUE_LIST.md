@@ -21,8 +21,8 @@ findings)
 
 | Category      | Count |
 | ------------- | ----- |
-| code          | 131   |
-| refactoring   | 40    |
+| code          | 130   |
+| refactoring   | 41    |
 | security      | 35    |
 | performance   | 31    |
 | process       | 24    |
@@ -40,8 +40,8 @@ findings)
 | process-automation       | 24    |
 | documentation-sync       | 24    |
 | types-domain             | 10    |
+| tests-hardening          | 7     |
 | boundaries               | 6     |
-| tests-hardening          | 6     |
 | firebase-access          | 6     |
 | misc                     | 6     |
 | PR16                     | 6     |
@@ -55,9 +55,7 @@ findings)
 | PR7                      | 2     |
 | PR11                     | 2     |
 | PR15                     | 2     |
-| PR17                     | 2     |
 | PR-BATCH-AUTO            | 2     |
-| PR18                     | 1     |
 | PR2                      | 1     |
 | PR8                      | 1     |
 | PR-LINT-WARNINGS         | 1     |
@@ -65,6 +63,8 @@ findings)
 | PR13                     | 1     |
 | PR14                     | 1     |
 | PR12                     | 1     |
+| PR18                     | 1     |
+| PR17                     | 1     |
 | PR10                     | 1     |
 | PR9                      | 1     |
 | PR5                      | 1     |
@@ -135,16 +135,6 @@ difficult to test, maintain, debug.
 **Recommendation:** Extract nested conditionals into helper functions. Use early
 returns. Add test coverage before refactoring.
 
-### MASTER-0143: Reduce 47 CRITICAL complexity functions
-
-- **Category:** code
-- **Effort:** E3
-- **Priority Score:** 100
-- **PR Bucket:** PR18
-- **Files:** scripts/assign-review-tier.js, scripts/phase-complete-check.js,
-  scripts/check-pattern-compliance.js
-- **Sources:** DEDUP-0014, CANON-0068
-
 ### MASTER-0176: Multiple CI quality gates configured as non-blocking (continue-on-error: true)
 
 - **Category:** process
@@ -188,6 +178,15 @@ violations over time, then remove continue-on-error
 - **PR Bucket:** PR1
 - **Files:** N/A
 - **Sources:** DEDUP-0011
+
+### MASTER-0245: Reduce 47 CRITICAL complexity functions
+
+- **Category:** code
+- **Effort:** E3
+- **Priority Score:** 100
+- **PR Bucket:** PR18
+- **Files:** N/A
+- **Sources:** DEDUP-0014, CANON-0068
 
 ### MASTER-0276: Convert CI gates to blocking
 

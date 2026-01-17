@@ -19,8 +19,8 @@ implementation.
 | process-automation       | 24    | 1   | 3   | 9   | 11  |
 | documentation-sync       | 24    | 0   | 4   | 12  | 8   |
 | types-domain             | 10    | 0   | 2   | 6   | 2   |
+| tests-hardening          | 7     | 0   | 4   | 3   | 0   |
 | boundaries               | 6     | 0   | 2   | 2   | 2   |
-| tests-hardening          | 6     | 0   | 3   | 3   | 0   |
 | firebase-access          | 6     | 0   | 1   | 5   | 0   |
 | misc                     | 6     | 1   | 0   | 2   | 3   |
 | PR16                     | 6     | 0   | 2   | 4   | 0   |
@@ -34,9 +34,7 @@ implementation.
 | PR7                      | 2     | 0   | 1   | 0   | 1   |
 | PR11                     | 2     | 0   | 0   | 2   | 0   |
 | PR15                     | 2     | 0   | 0   | 2   | 0   |
-| PR17                     | 2     | 0   | 2   | 0   | 0   |
 | PR-BATCH-AUTO            | 2     | 0   | 0   | 0   | 2   |
-| PR18                     | 1     | 1   | 0   | 0   | 0   |
 | PR2                      | 1     | 1   | 0   | 0   | 0   |
 | PR8                      | 1     | 0   | 1   | 0   | 0   |
 | PR-LINT-WARNINGS         | 1     | 0   | 0   | 1   | 0   |
@@ -44,6 +42,8 @@ implementation.
 | PR13                     | 1     | 0   | 1   | 0   | 0   |
 | PR14                     | 1     | 0   | 1   | 0   | 0   |
 | PR12                     | 1     | 0   | 0   | 1   | 0   |
+| PR18                     | 1     | 1   | 0   | 0   | 0   |
+| PR17                     | 1     | 0   | 1   | 0   | 0   |
 | PR10                     | 1     | 0   | 0   | 1   | 0   |
 | PR9                      | 1     | 0   | 0   | 1   | 0   |
 | PR5                      | 1     | 1   | 0   | 0   | 0   |
@@ -72,10 +72,6 @@ implementation.
   - Effort: E3 | Bucket: misc
   - Sources: CANON-0064
 
-- [ ] **MASTER-0143**: Reduce 47 CRITICAL complexity functions
-  - Effort: E3 | Bucket: PR18
-  - Sources: DEDUP-0014, CANON-0068
-
 - [ ] **MASTER-0176**: Multiple CI quality gates configured as non-blocking
       (continue-on-error: true)
   - Effort: E2 | Bucket: process-automation
@@ -92,6 +88,10 @@ implementation.
 - [ ] **MASTER-0212**: Fix useJournal memory leak
   - Effort: E1 | Bucket: PR1
   - Sources: DEDUP-0011
+
+- [ ] **MASTER-0245**: Reduce 47 CRITICAL complexity functions
+  - Effort: E3 | Bucket: PR18
+  - Sources: DEDUP-0014, CANON-0068
 
 - [ ] **MASTER-0276**: Convert CI gates to blocking
   - Effort: E2 | Bucket: PR5
@@ -228,6 +228,7 @@ implementation.
       (E2)
 - [ ] **MASTER-0090**: Security-critical files have low test coverage
       (account-linking, firestore-service, recaptcha, users DB) (E2)
+- [ ] **MASTER-0143**: No test coverage for high-complexity scripts (E2)
 
 ### firebase-access
 
@@ -266,7 +267,6 @@ implementation.
 
 ### PR17
 
-- [ ] **MASTER-0245**: Add tests for high-complexity scripts (E2)
 - [ ] **MASTER-0246**: Add script test coverage (CI) (E2)
 
 ### PR16
@@ -698,7 +698,6 @@ Items with dependencies should be implemented in order:
 - MASTER-0105 depends on: CANON-0016
 - MASTER-0106 depends on: CANON-0006
 - MASTER-0141 depends on: CANON-0087
-- MASTER-0143 depends on: CANON-0068
 - MASTER-0145 depends on: CANON-0076, CANON-0066
 - MASTER-0146 depends on: CANON-0075, CANON-0076
 - MASTER-0148 depends on: CANON-0066
@@ -720,6 +719,7 @@ Items with dependencies should be implemented in order:
 - MASTER-0223 depends on: CANON-0077
 - MASTER-0225 depends on: CANON-0075
 - MASTER-0242 depends on: DEDUP-0001
+- MASTER-0245 depends on: CANON-0068
 - MASTER-0248 depends on: DEDUP-0011
 - MASTER-0252 depends on: CANON-0077
 

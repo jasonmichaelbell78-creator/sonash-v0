@@ -201,6 +201,7 @@ function parseMarkdownBacklog(filePath) {
 
 /**
  * Parse AUDIT_FINDINGS_BACKLOG.md for individual items
+ * Uses section-based parsing to avoid missing items with long content (Qodo Review #173)
  */
 function parseAuditFindingsBacklog(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -211,24 +212,46 @@ function parseAuditFindingsBacklog(filePath) {
   const content = fs.readFileSync(filePath, "utf-8");
   const items = [];
 
-  // Find items by ### headers with [Category] pattern
-  // Using bounded match `.{0,500}?` instead of `[^]*?` to prevent ReDoS (S5852)
-  const itemPattern =
-    /### \[([^\]]+)\] ([^\n]+)\n\n\*\*CANON-ID\*\*: (CANON-\d+|LEGACY-\d+)[\s\S]{0,500}?\*\*Severity\*\*: (S\d)[\s\S]{0,500}?\*\*Effort\*\*: (E\d)/g;
-  let match;
+  // Section-based parsing: split by ### headers first, then parse each section
+  // This prevents missing items when content between fields exceeds bounded match limits
+  const sections = content.split(/(?=^### \[)/m);
 
-  while ((match = itemPattern.exec(content)) !== null) {
-    items.push({
-      id: match[3],
-      title: match[2].trim(),
-      category: match[1],
-      severity: match[4],
-      effort: match[5],
-      source: "audit-backlog",
-    });
+  for (const section of sections) {
+    // Match header: ### [Category] Title
+    const headerMatch = section.match(/^### \[([^\]]+)\] ([^\n]+)/);
+    if (!headerMatch) continue;
+
+    const category = headerMatch[1];
+    const title = headerMatch[2].trim();
+
+    // Extract fields from within this section (no length limit needed now)
+    const canonIdMatch = section.match(/\*\*CANON-ID\*\*:\s*(CANON-\d+|LEGACY-\d+)/);
+    const severityMatch = section.match(/\*\*Severity\*\*:\s*(S\d)/);
+    const effortMatch = section.match(/\*\*Effort\*\*:\s*(E\d)/);
+
+    // Only add if we have the required fields
+    if (canonIdMatch && severityMatch && effortMatch) {
+      items.push({
+        id: canonIdMatch[1],
+        title: title,
+        category: category,
+        severity: severityMatch[1],
+        effort: effortMatch[1],
+        source: "audit-backlog",
+      });
+    }
   }
 
   return items;
+}
+
+/**
+ * Normalize confidence to string format (Qodo Review #173)
+ */
+function normalizeConfidence(value) {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === "number") return value >= 0.9 ? "high" : value >= 0.7 ? "medium" : "low";
+  return String(value).toLowerCase();
 }
 
 /**
@@ -243,7 +266,7 @@ function normalizeSingleSession(item, sourceCategory, date) {
     category: normalizedCategory,
     severity: item.severity,
     effort: item.effort,
-    confidence: item.confidence,
+    confidence: normalizeConfidence(item.confidence),
     verified: item.verified,
     file: item.file,
     line: item.line,
@@ -280,7 +303,7 @@ function normalizeCanon(item, sourceFile) {
     category: normalizedCategory,
     severity: item.severity,
     effort: item.effort,
-    confidence: item.confidence || item.final_confidence,
+    confidence: normalizeConfidence(item.confidence || item.final_confidence),
     file: item.files ? item.files[0] : undefined,
     files: item.files,
     symbols: item.symbols,
@@ -448,12 +471,19 @@ function shouldMerge(finding1, finding2, dedupLog) {
 
 /**
  * Merge two findings, keeping the highest severity
+ * Preserves full merge ancestry when merging already-merged items (Qodo Review #173)
  */
 function mergeFindings(finding1, finding2) {
   const severityRank = { S0: 0, S1: 1, S2: 2, S3: 3 };
   const keepFirst = severityRank[finding1.severity] <= severityRank[finding2.severity];
   const primary = keepFirst ? finding1 : finding2;
   const secondary = keepFirst ? finding2 : finding1;
+
+  // Preserve full merge ancestry: flatten previous merged_from arrays
+  const mergedFrom = [
+    ...(primary.merged_from || [primary.original_id]),
+    ...(secondary.merged_from || [secondary.original_id]),
+  ].filter((id, idx, arr) => arr.indexOf(id) === idx); // dedupe
 
   return {
     ...primary,
@@ -462,7 +492,7 @@ function mergeFindings(finding1, finding2) {
       (v, i, a) => a.indexOf(v) === i
     ),
     files: [...new Set([...(primary.files || []), ...(secondary.files || [])])].filter(Boolean),
-    merged_from: [primary.original_id, secondary.original_id],
+    merged_from: mergedFrom,
   };
 }
 
@@ -546,30 +576,92 @@ function parseCanonFiles(allFindings, stats) {
 }
 
 /**
- * Deduplicate findings using merge logic
- * (Extracted to reduce cognitive complexity)
+ * Deduplicate findings using merge logic with pre-bucketing optimization (Qodo Review #173)
+ * Pre-buckets by file and category to reduce O(n²) to O(n * bucket_size)
  */
 function deduplicateFindings(allFindings) {
   const dedupLog = [];
-  const uniqueFindings = [];
   const processed = new Set();
 
+  // Pre-bucket by file path and category for efficient comparison
+  const fileIndex = new Map(); // file -> [indices]
+  const categoryIndex = new Map(); // category -> [indices]
+
   for (let i = 0; i < allFindings.length; i++) {
-    if (processed.has(i)) continue;
+    const f = allFindings[i];
+    if (f.file) {
+      if (!fileIndex.has(f.file)) fileIndex.set(f.file, []);
+      fileIndex.get(f.file).push(i);
+    }
+    if (f.category) {
+      if (!categoryIndex.has(f.category)) categoryIndex.set(f.category, []);
+      categoryIndex.get(f.category).push(i);
+    }
+  }
 
-    let current = allFindings[i];
+  // Build candidate pairs from buckets (much smaller than all n² pairs)
+  const candidatePairs = new Set();
 
-    for (let j = i + 1; j < allFindings.length; j++) {
-      if (processed.has(j)) continue;
-
-      if (shouldMerge(current, allFindings[j], dedupLog)) {
-        current = mergeFindings(current, allFindings[j]);
-        processed.add(j);
+  // Same-file pairs
+  for (const indices of fileIndex.values()) {
+    for (let a = 0; a < indices.length; a++) {
+      for (let b = a + 1; b < indices.length; b++) {
+        const key =
+          indices[a] < indices[b] ? `${indices[a]},${indices[b]}` : `${indices[b]},${indices[a]}`;
+        candidatePairs.add(key);
       }
     }
+  }
 
-    uniqueFindings.push(current);
-    processed.add(i);
+  // Same-category pairs (for title similarity matching)
+  for (const indices of categoryIndex.values()) {
+    for (let a = 0; a < indices.length; a++) {
+      for (let b = a + 1; b < indices.length; b++) {
+        const key =
+          indices[a] < indices[b] ? `${indices[a]},${indices[b]}` : `${indices[b]},${indices[a]}`;
+        candidatePairs.add(key);
+      }
+    }
+  }
+
+  // Also check DEDUP->CANON dependencies (not covered by file/category buckets)
+  for (let i = 0; i < allFindings.length; i++) {
+    const f = allFindings[i];
+    if (f.original_id?.startsWith("DEDUP-") && f.dependencies?.length) {
+      for (let j = 0; j < allFindings.length; j++) {
+        if (i !== j && f.dependencies.includes(allFindings[j].original_id)) {
+          const key = i < j ? `${i},${j}` : `${j},${i}`;
+          candidatePairs.add(key);
+        }
+      }
+    }
+  }
+
+  // Process candidate pairs
+  const mergeGroups = new Map(); // canonical index -> merged finding
+
+  for (const pairKey of candidatePairs) {
+    const [iStr, jStr] = pairKey.split(",");
+    const i = parseInt(iStr, 10);
+    const j = parseInt(jStr, 10);
+
+    if (processed.has(i) || processed.has(j)) continue;
+
+    const finding1 = mergeGroups.get(i) || allFindings[i];
+    const finding2 = allFindings[j];
+
+    if (shouldMerge(finding1, finding2, dedupLog)) {
+      const merged = mergeFindings(finding1, finding2);
+      mergeGroups.set(i, merged);
+      processed.add(j);
+    }
+  }
+
+  // Collect unique findings
+  const uniqueFindings = [];
+  for (let i = 0; i < allFindings.length; i++) {
+    if (processed.has(i)) continue;
+    uniqueFindings.push(mergeGroups.get(i) || allFindings[i]);
   }
 
   return { uniqueFindings, dedupLog };
