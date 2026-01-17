@@ -1420,8 +1420,18 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
  * Returns all available privilege types for the system
  * ALWAYS includes built-in types (free, premium, admin) merged with custom types
  */
+
+// Privilege type structure
+interface PrivilegeType {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  isDefault?: boolean;
+}
+
 // Built-in privilege types that are always guaranteed to exist
-const BUILT_IN_PRIVILEGE_TYPES = [
+const BUILT_IN_PRIVILEGE_TYPES: PrivilegeType[] = [
   {
     id: "free",
     name: "Free",
@@ -1450,7 +1460,7 @@ const BUILT_IN_PRIVILEGE_TYPES = [
     features: ["*"],
     isDefault: false,
   },
-] as const;
+];
 
 export const adminGetPrivilegeTypes = onCall(async (request) => {
   await requireAdmin(request, "adminGetPrivilegeTypes");
@@ -1531,15 +1541,6 @@ const privilegeTypeSchema = z.object({
   features: z.array(z.string().max(100)).max(50, "Maximum 50 features allowed").default([]),
   isDefault: z.boolean().optional(),
 });
-
-// Privilege type structure
-interface PrivilegeType {
-  id: string;
-  name: string;
-  description: string;
-  features: string[];
-  isDefault?: boolean;
-}
 
 /**
  * Normalize privilege type defaults - ensures only one type is marked as default
