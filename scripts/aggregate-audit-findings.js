@@ -120,6 +120,7 @@ const PR_BUCKET_MAP = {
   security: "security-hardening",
   performance: "performance-optimization",
   dx: "dx-improvements",
+  "engineering-productivity": "dx-improvements", // EFFP-* items (Qodo Review #176)
   offline: "offline-support",
   code: "code-quality",
   refactoring: "code-quality",
@@ -160,7 +161,8 @@ function parseJsonlFile(filePath) {
 
   for (let i = 0; i < lines.length; i++) {
     try {
-      items.push(JSON.parse(lines[i]));
+      // .trim() handles CRLF line endings on Windows (Qodo Review #176)
+      items.push(JSON.parse(lines[i].trim()));
     } catch (error_) {
       // S2486: Exception handled by logging and continuing to next line
       // We intentionally skip invalid JSON lines rather than failing the entire parse
@@ -216,20 +218,33 @@ function parseMarkdownBacklog(filePath) {
     const idMatch = line.match(/(?:DEDUP|CANON|LEGACY)-\d+/);
     if (!idMatch || !line.startsWith("|")) continue;
 
-    // Step 2: Split by | and extract fields (simpler than complex single regex)
+    // Step 2: Split by | and extract fields - handle pipe chars in title (Qodo Review #176)
+    // Use fixed positions from end for effort/deps/pr, join middle parts for title
     const parts = line.split("|").map((p) => p.trim());
-    // Expected: ['', 'ID', 'Title', 'Effort', 'Deps', 'PR', '']
-    if (parts.length >= 6 && /^E\d$/.test(parts[3])) {
-      items.push({
-        id: parts[1],
-        title: parts[2],
-        effort: parts[3],
-        deps: parts[4],
-        pr: parts[5],
-        category: currentCategory,
-        severity: currentSeverity,
-        source: "backlog",
-      });
+    // Expected: ['', 'ID', 'Title...', 'Effort', 'Deps', 'PR', '']
+    if (parts.length >= 6) {
+      const id = parts[1];
+      const effort = parts[parts.length - 4];
+      const deps = parts[parts.length - 3];
+      const pr = parts[parts.length - 2];
+      // Title may contain pipe chars - join middle parts
+      const title = parts
+        .slice(2, parts.length - 4)
+        .join(" | ")
+        .trim();
+
+      if (/^E\d$/.test(effort)) {
+        items.push({
+          id,
+          title,
+          effort,
+          deps,
+          pr,
+          category: currentCategory,
+          severity: currentSeverity,
+          source: "backlog",
+        });
+      }
     }
   }
 
@@ -306,6 +321,7 @@ function normalizeConfidence(value) {
  */
 function normalizeSingleSession(item, sourceCategory, date) {
   // ID prefix mapping takes precedence over item.category (e.g., SEC-010 with "Framework" category → security)
+  // EFFP-* maps to "engineering-productivity" not "dx" for consistency with source (Qodo Review #176)
   const idPrefixCategory = item.id?.startsWith("SEC-")
     ? "security"
     : item.id?.startsWith("PERF-")
@@ -318,7 +334,9 @@ function normalizeSingleSession(item, sourceCategory, date) {
             ? "refactoring"
             : item.id?.startsWith("DOC-")
               ? "documentation"
-              : null;
+              : item.id?.startsWith("EFFP-")
+                ? "engineering-productivity"
+                : null;
   const normalizedCategory =
     idPrefixCategory || CATEGORY_MAP[item.category] || CATEGORY_MAP[sourceCategory] || "code";
 
@@ -337,7 +355,8 @@ function normalizeSingleSession(item, sourceCategory, date) {
     evidence: item.evidence,
     cross_ref: item.cross_ref,
     owasp: item.owasp,
-    cwe: item.cwe,
+    // Omit empty optional fields like cwe (Qodo Review #176)
+    ...(item.cwe ? { cwe: item.cwe } : {}),
     metrics: item.metrics,
     affected_metric: item.affected_metric,
     estimated_improvement: item.estimated_improvement,
@@ -374,7 +393,8 @@ function normalizeCanon(item, sourceFile) {
       item.suggested_fix || item.optimization?.description || item.remediation?.steps?.join("; "),
     evidence: item.evidence,
     pr_bucket_suggestion: item.pr_bucket_suggestion || item.pr_bucket,
-    dependencies: item.dependencies,
+    // Filter out self-dependencies to prevent infinite loops (Qodo Review #176)
+    dependencies: item.dependencies?.filter((dep) => dep !== item.canonical_id) || [],
     status: item.status,
     consensus_score: item.consensus_score || item.consensus,
     models_agreeing: item.models_agreeing,

@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Generated:** 2026-01-17 **Total Items:** 291 **PR Buckets:** 35
+**Generated:** 2026-01-17 **Total Items:** 291 **PR Buckets:** 34
 
 ---
 
@@ -13,11 +13,12 @@ implementation.
 
 | Bucket                   | Items | S0  | S1  | S2  | S3  |
 | ------------------------ | ----- | --- | --- | --- | --- |
-| code-quality             | 92    | 0   | 20  | 46  | 26  |
+| code-quality             | 89    | 0   | 19  | 45  | 25  |
 | security-hardening       | 39    | 3   | 15  | 15  | 6   |
 | performance-optimization | 31    | 1   | 7   | 20  | 3   |
 | process-automation       | 24    | 1   | 3   | 9   | 11  |
 | documentation-sync       | 24    | 0   | 4   | 12  | 8   |
+| dx-improvements          | 10    | 0   | 3   | 4   | 3   |
 | types-domain             | 10    | 0   | 2   | 6   | 2   |
 | boundaries               | 6     | 0   | 2   | 2   | 2   |
 | tests-hardening          | 6     | 0   | 3   | 3   | 0   |
@@ -25,8 +26,6 @@ implementation.
 | misc                     | 6     | 1   | 0   | 2   | 3   |
 | PR16                     | 6     | 0   | 2   | 4   | 0   |
 | hooks-standardization    | 4     | 0   | 4   | 0   | 0   |
-| offline-support          | 4     | 0   | 2   | 1   | 1   |
-| dx-improvements          | 3     | 0   | 0   | 2   | 1   |
 | ui-primitives            | 3     | 0   | 0   | 3   | 0   |
 | PR3                      | 2     | 0   | 2   | 0   | 0   |
 | PR4                      | 2     | 0   | 2   | 0   | 0   |
@@ -113,8 +112,6 @@ implementation.
       slogans.ts (80+ lines) (E1)
 - [ ] **MASTER-0063**: Direct Firebase SDK usage in 22+ files bypasses service
       layer (E2)
-- [ ] **MASTER-0071**: No correlation IDs for request tracing (frontend to
-      backend) (E2)
 - [ ] **MASTER-0213**: Remove deprecated saveNotebookJournalEntry (E2)
 - [ ] **MASTER-0214**: Separate domain/transport in useJournal (E2)
 - [ ] **MASTER-0220**: Split TodayPage god component (E3)
@@ -199,8 +196,10 @@ implementation.
 - [ ] **MASTER-0144**: useJournal mixes domain logic with transport
       (httpsCallable + retry + recaptcha) (E2)
 
-### offline-support
+### dx-improvements
 
+- [ ] **MASTER-0071**: No correlation IDs for request tracing (frontend to
+      backend) (E2)
 - [ ] **MASTER-0074**: No offline write queue - data loss when user goes offline
       (E3)
 - [ ] **MASTER-0075**: No Firebase persistence enabled - Firestore cache not
@@ -292,8 +291,6 @@ implementation.
       (E1)
 - [ ] **MASTER-0062**: Growth card dialog/save pattern duplicated across 4
       components (E2)
-- [ ] **MASTER-0072**: 8:1 ratio of console.log to structured logger calls (3111
-      vs 394) (E2)
 - [ ] **MASTER-0203**: Add error.message null safety (E0)
 - [ ] **MASTER-0204**: Safe localStorage JSON.parse (E0)
 - [ ] **MASTER-0205**: Add .strict() to Zod schemas (E2)
@@ -441,9 +438,8 @@ implementation.
 - [ ] **MASTER-0068**: No npm run dev:offline script - requires 2 terminals for
       emulator dev (E0)
 - [ ] **MASTER-0069**: No scripts/doctor.js for environment validation (E1)
-
-### offline-support
-
+- [ ] **MASTER-0072**: 8:1 ratio of console.log to structured logger calls (3111
+      vs 394) (E2)
 - [ ] **MASTER-0076**: No service worker - no offline asset caching (E2)
 
 ### types-domain
@@ -572,8 +568,6 @@ implementation.
 - [ ] **MASTER-0282**: Improve deploy secret handling (E1)
 - [ ] **MASTER-0283**: Retrofit SSR-Safe localStorage (E1)
 - [ ] **MASTER-0285**: Missing "AI Instructions" Sections (E1)
-- [ ] **MASTER-0073**: Error messages lack actionable fix hints - generic
-      'Please try again' (E1)
 - [ ] **MASTER-0269**: Fix archive link rot (E2)
 - [ ] **MASTER-0284**: Missing "Quick Start" Sections (E2)
 
@@ -637,9 +631,8 @@ implementation.
 
 - [ ] **MASTER-0070**: Setup requires multiple commands - no single bootstrap
       (E0)
-
-### offline-support
-
+- [ ] **MASTER-0073**: Error messages lack actionable fix hints - generic
+      'Please try again' (E1)
 - [ ] **MASTER-0077**: OfflineIndicator is display-only - no sync status or
       retry mechanism (E1)
 
@@ -687,7 +680,6 @@ Items with dependencies should be implemented in order:
 - MASTER-0064 depends on: CANON-0067
 - MASTER-0078 depends on: CANON-0003
 - MASTER-0080 depends on: CANON-0023
-- MASTER-0084 depends on: CANON-0007
 - MASTER-0088 depends on: CANON-0001, CANON-0002
 - MASTER-0089 depends on: CANON-0002, CANON-0008
 - MASTER-0091 depends on: CANON-0004, CANON-0001
