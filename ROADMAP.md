@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.6
-**Last Updated:** 2026-01-16
+**Document Version:** 2.8
+**Last Updated:** 2026-01-17
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -733,6 +733,68 @@ experience
 
 ---
 
+## 📊 Technical Debt Backlog (Aggregated)
+
+> **Source:** [MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md)
+> **Last Aggregated:** 2026-01-17 | **Total Items:** 283 unique findings
+> **Integration:**
+> [ROADMAP_INTEGRATION.md](docs/aggregation/ROADMAP_INTEGRATION.md)
+
+### Overview
+
+All audit findings from single-session audits, CANON files, and backlogs have
+been aggregated into a master list for prioritized implementation.
+
+| Severity | Count | Description                          |
+| -------- | ----- | ------------------------------------ |
+| **S0**   | 10    | Critical - Immediate action required |
+| **S1**   | 75    | High - Current/next sprint           |
+| **S2**   | 135   | Medium - Backlog priority            |
+| **S3**   | 63    | Low - Nice to have                   |
+
+### S0 Critical Items (Immediate Action)
+
+| ID          | Title                                      | Effort | Milestone            |
+| ----------- | ------------------------------------------ | ------ | -------------------- |
+| MASTER-0078 | App Check disabled on Cloud Functions      | E2     | M2 - Security        |
+| MASTER-0079 | Legacy journalEntries direct write path    | E2     | M2 - Security        |
+| MASTER-0120 | useJournal memory leak                     | E1     | Op Visibility Sprint |
+| MASTER-0140 | 47 CRITICAL cognitive complexity functions | E3     | M2 - Code Quality    |
+| MASTER-0176 | CI quality gates non-blocking              | E1     | M1.5 - Quick Wins    |
+
+### Quick Wins by PR Bucket (E0/E1 + S1/S2)
+
+| PR Bucket                    | Count | Top Items                              |
+| ---------------------------- | ----- | -------------------------------------- |
+| **security-hardening**       | 38    | Headers, reCAPTCHA, App Check          |
+| **performance-optimization** | 31    | SSR, bundle size, memory leaks         |
+| **code-quality**             | 84    | Type safety, god objects, duplications |
+| **process-automation**       | 24    | CI gates, hooks, scripts               |
+| **documentation-sync**       | 24    | Link rot, placeholders, metadata       |
+
+### Implementation Phases
+
+| Phase | Focus                 | Items | Timeline  |
+| ----- | --------------------- | ----- | --------- |
+| 1     | Critical (S0 only)    | 10    | Week 1    |
+| 2     | Security + Quick Wins | 30    | Week 2    |
+| 3     | Performance + Code    | 60    | Weeks 3-4 |
+| 4     | Architecture          | 50    | Weeks 5-6 |
+| 5     | Remaining backlog     | 133   | Ongoing   |
+
+### Update Triggers
+
+**This section is updated when:**
+
+- Single-session audit completes → Run `npm run aggregate:audit-findings`
+- Multi-AI audit completes → Run `npm run aggregate:audit-findings`
+- Items are resolved → Mark status in MASTER_ISSUE_LIST.md
+
+**Full Details:** See
+[IMPLEMENTATION_PLAN.md](docs/aggregation/IMPLEMENTATION_PLAN.md)
+
+---
+
 ## 🏛️ M2 - Architecture Refactor (⏸️ Optional)
 
 **Goal:** Reduce technical debt only if friction prevents progress
@@ -800,6 +862,16 @@ experience
 
 **Planned Tooling (Future):**
 
+- ⏳ **Cross-Platform Testing** - Test scripts on Windows/Unix before merge
+  - **Issue:** Scripts developed on Unix fail on Windows (path separators, CRLF
+    line endings)
+  - **Patterns added:** CODE_PATTERNS.md Session #71 (isAbsolute, CRLF
+    normalization, path.sep)
+  - **Solution options:**
+    1. GitHub Actions matrix with `runs-on: [ubuntu-latest, windows-latest]`
+    2. WSL testing workflow for Unix developers
+    3. Script validation pre-commit hook checking for cross-platform patterns
+  - **Priority:** P2 - Add to CI when cross-platform issues become frequent
 - ⏳ **knip** - Unused export detection (`npm run deps:unused`)
   - Currently: baseline documented, not blocking
   - Future: Add to CI with allow-list
@@ -1767,6 +1839,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.8     | 2026-01-17 | Added Technical Debt Backlog section with 283 aggregated findings from all audits; created MASTER_ISSUE_LIST.md, IMPLEMENTATION_PLAN.md, ROADMAP_INTEGRATION.md; linked to `npm run aggregate:audit-findings`                                                                                                                                                                               |
 | 2.7     | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to Track A - cleanup sessions, orphaned files, usage analytics, prune security events, health checks; added Deferred Background Jobs to M2 (refresh cache, backup verification)                                                                                                                                                      |
 | 2.6     | 2026-01-16 | Session #69: Major sprint update - corrected stale Sentry status (A1-A3 done); moved Phase 5 into sprint; moved Local Resources to Phase 5.5; added Admin Panel enhancements (stacked tabs, user privileges, batch ops, dark mode); added Dev Dashboard enhancements; added User Analytics Tab; added monitoring integrations evaluation (PostHog recommended); added mobile responsiveness |
 | 2.5     | 2026-01-14 | Created Operational Visibility Sprint as active P0 focus; created OPERATIONAL_VISIBILITY_SPRINT.md; reorganized milestones                                                                                                                                                                                                                                                                  |

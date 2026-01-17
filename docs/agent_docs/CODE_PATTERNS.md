@@ -1,7 +1,7 @@
 # Code Review Patterns Reference
 
-**Document Version:** 1.8 **Source:** Distilled from 153 AI code reviews **Last
-Updated:** 2026-01-15
+**Document Version:** 1.9 **Source:** Distilled from 154 AI code reviews **Last
+Updated:** 2026-01-17
 
 ---
 
@@ -153,41 +153,44 @@ When working with code patterns:
 
 ## JavaScript/TypeScript
 
-| Pattern                  | Rule                                                       | Why                                           |
-| ------------------------ | ---------------------------------------------------------- | --------------------------------------------- | ------------------------- |
-| Error sanitization       | Use `scripts/lib/sanitize-error.js`                        | Strip sensitive paths                         |
-| Error first line         | `.split('\n')[0].replace(/\r$/, '')`                       | Handles CRLF                                  |
-| Control char strip       | `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`                      | Preserves \t\n\r                              |
-| OSC escape strip         | `/\x1B\][^\x07\x1B]\*(?:\x07                               | \x1B\\)/g`                                    | With ANSI CSI             |
-| File-derived content     | Strip control chars before console.log                     | Not just errors                               |
-| Safe error handling      | `error instanceof Error ? error.message : String(error)`   | Non-Error throws                              |
-| Robust non-Error         | `error && typeof error === 'object' && 'message' in error` | Full check                                    |
-| Cross-platform paths     | `path.relative()` not `startsWith()`                       | Path validation                               |
-| path.relative() trap     | `".."` returned without separator for `/a` → `/`           | Check `rel === '..'` too                      |
-| Normalize backslashes    | `.replace(/\\/g, '/')` before security checks              | Path traversal                                |
-| CRLF in regex            | `\r?\n` instead of `\n`                                    | Cross-platform                                |
-| Windows cross-drive      | Check for `/^[A-Za-z]:/` in relative output                | Absolute path returned                        |
-| Windows path sanitize    | `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`            | gi flag                                       |
-| Markdown links           | `.replace(/\\/g, '/')`                                     | Normalize backslashes                         |
-| lstatSync                | Wrap in try-catch                                          | Permission denied, broken symlinks            |
-| File reads               | Wrap ALL in try/catch                                      | existsSync race, permissions                  |
-| Main module detect       | Wrap in try-catch with fallback                            | Unusual paths throw                           |
-| maxBuffer                | `10 * 1024 * 1024` for execSync                            | Large output                                  |
-| Global flag for exec()   | `/g` REQUIRED in while loops                               | No /g = infinite loop                         |
-| Regex brace matching     | `[^}]` not `[\s\S]`                                        | Single-brace-level                            |
-| Path boundary anchor     | `(?:^                                                      | [\\/])` prefix                                | Prevent substring matches |
-| Falsy vs missing check   | `=== undefined \|\| === null` for numeric fields           | `!field` returns true for 0                   |
-| Node.js module prefix    | `node:fs`, `node:path`, `node:url`                         | SonarQube S6803 best practice                 |
-| Number.parseInt radix    | `Number.parseInt(str, 10)` not `parseInt(str)`             | Strings starting with 0 misinterpret          |
-| Dead code after throw    | Code after realpathSync success is unreachable             | realpathSync throws on missing files          |
-| SSR-safe browser APIs    | Guard with `typeof window !== 'undefined'`                 | Prevent SSR crashes                           |
-| Cognitive complexity     | Keep functions under 15; extract helpers                   | SonarQube S3776 threshold                     |
-| lstatSync for symlinks   | Use `lstatSync` to detect symlinks without following       | `statSync` follows symlinks, misses escapes   |
-| NaN-safe numeric sorting | `Number(a) - Number(b)` with `\|\| 0` fallback             | NaN in sort comparator causes undefined order |
-| path.relative() empty    | Include `rel === ''` in containment checks                 | Resolving `.` gives empty relative path       |
-| Error cause preservation | Use `new Error(msg, { cause: originalError })`             | Preserves error chain for debugging           |
-| globalThis over window   | Use `globalThis.window` for SSR-safe browser detection     | `window` throws in Node.js                    |
-| Array.isArray guards     | Check `Array.isArray()` before array operations            | External data may not match expected type     |
+| Pattern                   | Rule                                                       | Why                                            |
+| ------------------------- | ---------------------------------------------------------- | ---------------------------------------------- | ------------------------- |
+| Error sanitization        | Use `scripts/lib/sanitize-error.js`                        | Strip sensitive paths                          |
+| Error first line          | `.split('\n')[0].replace(/\r$/, '')`                       | Handles CRLF                                   |
+| Control char strip        | `/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`                      | Preserves \t\n\r                               |
+| OSC escape strip          | `/\x1B\][^\x07\x1B]\*(?:\x07                               | \x1B\\)/g`                                     | With ANSI CSI             |
+| File-derived content      | Strip control chars before console.log                     | Not just errors                                |
+| Safe error handling       | `error instanceof Error ? error.message : String(error)`   | Non-Error throws                               |
+| Robust non-Error          | `error && typeof error === 'object' && 'message' in error` | Full check                                     |
+| Cross-platform paths      | `path.relative()` not `startsWith()`                       | Path validation                                |
+| path.relative() trap      | `".."` returned without separator for `/a` → `/`           | Check `rel === '..'` too                       |
+| Normalize backslashes     | `.replace(/\\/g, '/')` before security checks              | Path traversal                                 |
+| CRLF in regex             | `\r?\n` instead of `\n`                                    | Cross-platform                                 |
+| Windows cross-drive       | Check for `/^[A-Za-z]:/` in relative output                | Absolute path returned                         |
+| Windows path sanitize     | `.replace(/[A-Z]:\\Users\\[^\\]+/gi, '[HOME]')`            | gi flag                                        |
+| Markdown links            | `.replace(/\\/g, '/')`                                     | Normalize backslashes                          |
+| lstatSync                 | Wrap in try-catch                                          | Permission denied, broken symlinks             |
+| File reads                | Wrap ALL in try/catch                                      | existsSync race, permissions                   |
+| Main module detect        | Wrap in try-catch with fallback                            | Unusual paths throw                            |
+| maxBuffer                 | `10 * 1024 * 1024` for execSync                            | Large output                                   |
+| Global flag for exec()    | `/g` REQUIRED in while loops                               | No /g = infinite loop                          |
+| Regex brace matching      | `[^}]` not `[\s\S]`                                        | Single-brace-level                             |
+| Path boundary anchor      | `(?:^                                                      | [\\/])` prefix                                 | Prevent substring matches |
+| Falsy vs missing check    | `=== undefined \|\| === null` for numeric fields           | `!field` returns true for 0                    |
+| Node.js module prefix     | `node:fs`, `node:path`, `node:url`                         | SonarQube S6803 best practice                  |
+| Number.parseInt radix     | `Number.parseInt(str, 10)` not `parseInt(str)`             | Strings starting with 0 misinterpret           |
+| Dead code after throw     | Code after realpathSync success is unreachable             | realpathSync throws on missing files           |
+| SSR-safe browser APIs     | Guard with `typeof window !== 'undefined'`                 | Prevent SSR crashes                            |
+| Cognitive complexity      | Keep functions under 15; extract helpers                   | SonarQube S3776 threshold                      |
+| lstatSync for symlinks    | Use `lstatSync` to detect symlinks without following       | `statSync` follows symlinks, misses escapes    |
+| NaN-safe numeric sorting  | `Number(a) - Number(b)` with `\|\| 0` fallback             | NaN in sort comparator causes undefined order  |
+| path.relative() empty     | Include `rel === ''` in containment checks                 | Resolving `.` gives empty relative path        |
+| Error cause preservation  | Use `new Error(msg, { cause: originalError })`             | Preserves error chain for debugging            |
+| globalThis over window    | Use `globalThis.window` for SSR-safe browser detection     | `window` throws in Node.js                     |
+| Array.isArray guards      | Check `Array.isArray()` before array operations            | External data may not match expected type      |
+| Cross-platform isAbsolute | Use `path.isAbsolute(file)` NOT `file.startsWith("/")`     | Windows paths are `C:\...` not `/...`          |
+| CRLF line normalization   | `content.replace(/\r\n/g, "\n").replace(/\r/g, "\n")`      | Windows files have CRLF, breaks regex with `$` |
+| Cross-platform path.sep   | Use `path.sep` or normalize with `.replace(/\\/g, "/")`    | Backslash on Windows, forward slash on Unix    |
 
 ---
 
@@ -313,6 +316,7 @@ fix guidance.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.9     | 2026-01-17 | Session #71: Added 3 cross-platform patterns (isAbsolute for path detection, CRLF line normalization, path.sep usage) learned from Windows test failures in check-docs-light.js                                                                                                                                                                                                                                                    |
 | 1.8     | 2026-01-15 | CONSOLIDATION #12: Reviews #144-153 - Added 23 patterns (11 React/Frontend NEW: accessible toggles, local dates, preference spread, useEffect deps, Timestamp handling, init flags, async cleanup, useMemo, null guards, finally cleanup, error messages; 12 Security: URL allowlist, regex limits, RFC email, large input guards, whitespace, nullable types, defineString, prettier-ignore, token refresh, client-only dev data) |
 | 1.7     | 2026-01-12 | CONSOLIDATION #11: Reviews #121-136 - Added 15 patterns (6 Security: IPv6, PII, bypass, fail-closed, batch, filtering; 4 JS/TS: path.relative, Error.cause, globalThis, Array.isArray; 5 CI: arg separator, quote args, project validation, cross-platform, exit code; 1 GitHub Actions: supply chain)                                                                                                                             |
 | 1.6     | 2026-01-11 | CONSOLIDATION #10: Reviews #109-120 - Added 5 patterns (3 Security: entity escaping, SSRF allowlist, timeouts; 2 JS/TS: lstatSync symlinks, NaN-safe sorting). Updated CANON ID patterns.                                                                                                                                                                                                                                          |

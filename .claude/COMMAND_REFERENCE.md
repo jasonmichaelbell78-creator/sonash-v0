@@ -292,14 +292,6 @@ Building MCP servers to integrate external APIs or services, whether in Python
 (FastMCP) or Node/TypeScript (MCP SDK) **Example:** Creating custom MCP server
 for API integration **Parameters:** None
 
-#### `pr-review-processor`
-
-**Description:** Comprehensive AI code review processor for CodeRabbit and Qodo
-feedback. Handles 50-3000+ line reviews with multi-pass verification, mandatory
-learning capture **When to use:** Processing any AI-generated code review
-feedback **Example:** After receiving CodeRabbit or Qodo review **Parameters:**
-None
-
 #### `requesting-code-review`
 
 **Description:** Use when completing tasks, implementing major features, or

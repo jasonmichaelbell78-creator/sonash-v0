@@ -59,7 +59,7 @@ If outdated, note discrepancies but proceed with current values.
 
 ## Audit Execution
 
-**Focus Areas (7 Categories):**
+**Focus Areas (8 Categories):**
 
 1. CI/CD Pipeline (workflow coverage, reliability, speed)
 2. Git Hooks (pre-commit, pre-push effectiveness)
@@ -69,6 +69,14 @@ If outdated, note discrepancies but proceed with current values.
    scripts)
 6. Trigger Thresholds (appropriateness, coverage)
 7. Process Documentation (accuracy, completeness)
+8. Golden Path & Developer Experience (NEW - 2026-01-17):
+   - Setup friction (one command to bootstrap environment)
+   - Dev workflow (one command to start development)
+   - Test workflow (one command to run full test suite)
+   - Deploy workflow (one command to deploy)
+   - Rollback workflow (one command to rollback)
+   - Common task discoverability (npm scripts documented, README actionable)
+   - Environment validation (`scripts/doctor.js` or equivalent)
 
 **For each category:**
 
@@ -214,7 +222,7 @@ Each line (UPDATED SCHEMA with confidence and verification):
 ```json
 {
   "id": "PROC-001",
-  "category": "CI|GitHooks|ClaudeHooks|Scripts|Triggers|ProcessDocs",
+  "category": "CI|GitHooks|ClaudeHooks|Scripts|Triggers|ProcessDocs|GoldenPath",
   "severity": "S0|S1|S2|S3",
   "effort": "E0|E1|E2|E3",
   "confidence": "HIGH|MEDIUM|LOW",
@@ -281,7 +289,14 @@ Full markdown report with all findings, baselines, and improvement plan.
    - Validation: PASSED or PASSED_WITH_EXCEPTIONS
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-6. Ask: "Would you like me to fix any of these process issues now?"
+6. **Update Technical Debt Backlog** - Re-aggregate all findings:
+   ```bash
+   npm run aggregate:audit-findings
+   ```
+   This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
+   Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
+   findings are properly categorized.
+7. Ask: "Would you like me to fix any of these process issues now?"
 
 ---
 
