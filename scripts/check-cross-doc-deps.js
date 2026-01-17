@@ -92,7 +92,7 @@ const dependencyRules = [
     reason: "Skill/command registry must be complete",
     checkDiff: false,
   },
-  // Feature file → ROADMAP.md rules (Session #XX - hard block on feature changes without roadmap update)
+  // Feature file → ROADMAP.md rules (Session #72 - hard block on feature changes without roadmap update)
   {
     trigger: "app/admin/",
     dependents: ["ROADMAP.md"],
@@ -100,7 +100,7 @@ const dependencyRules = [
     checkDiff: false,
   },
   {
-    trigger: "functions/src/admin",
+    trigger: "functions/src/admin/",
     dependents: ["ROADMAP.md"],
     reason: "Admin backend changes must update Track A status in ROADMAP.md",
     checkDiff: false,
