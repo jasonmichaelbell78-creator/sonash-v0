@@ -47,6 +47,38 @@
       ]
     },
     {
+      "collectionGroup": "admin_jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "lastRunStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastRun",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "security_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "functionName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "quick_links",
       "queryScope": "COLLECTION",
       "fields": [
