@@ -1,6 +1,6 @@
 # Audit Tracker
 
-**Document Version:** 1.6 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
+**Document Version:** 1.7 **Created:** 2026-01-08 **Last Updated:** 2026-01-17
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
@@ -43,7 +43,7 @@ When tracking audits:
 | ------------- | --------------------- | ------------- | ----------- | ----------------------------------------- |
 | Code          | 2026-01-17 (Single)   | 0             | 0           | 25 commits OR 15 files                    |
 | Security      | 2026-01-17 (Single)   | 0             | 0           | Any security-sensitive file OR 20 commits |
-| Performance   | 2026-01-08 (Multi-AI) | 0             | 0           | 30 commits OR bundle change               |
+| Performance   | 2026-01-17 (Single)   | 0             | 0           | 30 commits OR bundle change               |
 | Refactoring   | 2026-01-10 (Multi-AI) | 0             | 0           | 40 commits OR 3 complexity warnings       |
 | Documentation | 2026-01-10 (Multi-AI) | 0             | 0           | 20 doc files changed OR 30 commits        |
 | Process       | 2026-01-10 (Multi-AI) | 0             | 0           | Any CI/hook file changed OR 30 commits    |
@@ -52,7 +52,7 @@ When tracking audits:
 
 | Trigger Type            | Threshold          | Current | Status     |
 | ----------------------- | ------------------ | ------- | ---------- |
-| Single audits completed | 3 per category     | code:2, security:2 | ⏳ Pending |
+| Single audits completed | 3 per category     | code:2, security:2, performance:2 | ⏳ Pending |
 | Total commits           | 100 commits        | —       | ⏳ Check   |
 | Time elapsed            | 14 days            | —       | ⏳ Check   |
 | Major milestone         | Any M1.5+ complete | —       | ⏳ Check   |
@@ -87,6 +87,7 @@ When tracking audits:
 
 | Date       | Session        | Commits Covered | Files Covered | Findings              | Reset Threshold |
 | ---------- | -------------- | --------------- | ------------- | --------------------- | --------------- |
+| 2026-01-17 | Single-Claude  | 353             | 248           | 12 (2 S1, 7 S2, 3 S3) - [audit-2026-01-17.md](./audits/single-session/performance/audit-2026-01-17.md) | ⚠️ (single) |
 | 2026-01-08 | Multi-AI (#37) | Full codebase   | All TS/TSX    | 20 (CANON-PERF.jsonl) | ✅              |
 
 ### Refactoring Audits (`/audit-refactoring`)
@@ -173,6 +174,7 @@ deduplication/aggregation (e.g., 28 raw findings from 5 models).
 
 | Version | Date       | Changes                                                                                                                                            |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.7     | 2026-01-17 | Added single-session performance audit (2026-01-17): 12 findings (2 S1, 7 S2, 3 S3); 353 commits/248 files; performance:2 single audits now       |
 | 1.6     | 2026-01-17 | Added single-session security audit (2026-01-17): 11 findings (2 S1, 3 S2, 6 S3); 172 commits/16 security files; security:2 single audits now     |
 | 1.5     | 2026-01-17 | Added single-session code audit (2026-01-17): 14 findings (2 S1, 5 S2, 7 S3); 435 commits/221 files covered; code:2 single audits now             |
 | 1.4     | 2026-01-13 | Added single-session security audit (2026-01-13); moved files from docs/audit/ to docs/audits/single-session/security/                             |
