@@ -1046,10 +1046,10 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
           await cleanupOldRateLimits();
         },
       },
-      cleanupOldSessions: {
+      cleanupOldDailyLogs: {
         name: "Cleanup Old Sessions",
         fn: async () => {
-          await cleanupOldSessions();
+          await cleanupOldSessions(); // cleanupOldSessions is an alias for cleanupOldDailyLogs
         },
       },
       cleanupOrphanedStorageFiles: {
@@ -1132,12 +1132,43 @@ export const adminGetJobsStatus = onCall(async (request) => {
     });
 
     // Add any registered jobs that haven't run yet
+    // These must match the job IDs used in runJob() calls in jobs.ts
     const registeredJobs = [
       {
         id: "cleanupOldRateLimits",
         name: "Cleanup Rate Limits",
         schedule: "Daily at 3 AM CT",
         description: "Removes expired rate limit documents",
+      },
+      {
+        id: "cleanupOldDailyLogs",
+        name: "Cleanup Old Sessions",
+        schedule: "Daily at 4 AM CT",
+        description: "Removes old daily check-in documents older than 30 days (A10)",
+      },
+      {
+        id: "cleanupOrphanedStorageFiles",
+        name: "Cleanup Orphaned Storage",
+        schedule: "Sundays at 2 AM CT",
+        description: "Removes storage files for deleted users older than 7 days (A11)",
+      },
+      {
+        id: "generateUsageAnalytics",
+        name: "Generate Usage Analytics",
+        schedule: "Daily at 1 AM CT",
+        description: "Generates daily usage statistics for admin dashboard (A12)",
+      },
+      {
+        id: "pruneSecurityEvents",
+        name: "Prune Security Events",
+        schedule: "Sundays at 3 AM CT",
+        description: "Removes security log events older than 90 days (A13)",
+      },
+      {
+        id: "healthCheckNotifications",
+        name: "Health Check",
+        schedule: "Every 6 hours",
+        description: "Monitors system health and logs warnings/errors (A14)",
       },
     ];
 
