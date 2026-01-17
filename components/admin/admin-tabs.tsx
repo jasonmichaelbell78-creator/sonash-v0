@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import type React from "react";
 import { DashboardTab } from "./dashboard-tab";
 import { MeetingsTab } from "./meetings-tab";
 import { SoberLivingTab } from "./sober-living-tab";
@@ -63,15 +63,20 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
     };
   }) => {
     const Icon = tab.icon;
+    const selected = activeTab === tab.id;
     return (
       <button
         type="button"
         onClick={() => setActiveTab(tab.id)}
-        aria-pressed={activeTab === tab.id}
+        role="tab"
+        id={`admin-tab-${tab.id}`}
+        aria-selected={selected}
+        aria-controls={`admin-panel-${tab.id}`}
+        tabIndex={selected ? 0 : -1}
         aria-label={tab.label}
         className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap
           ${
-            activeTab === tab.id
+            selected
               ? "bg-amber-500 text-white shadow-sm"
               : "text-amber-900/70 hover:text-amber-900 hover:bg-amber-100"
           }`}
@@ -87,7 +92,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
       {/* Tab Navigation - Stacked 2-row layout */}
       <div className="space-y-3 bg-amber-50/50 rounded-lg p-3 border border-amber-200/60">
         {/* Row 1: System Tabs */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="System admin tabs">
           <span className="text-xs font-medium text-amber-600 uppercase tracking-wide self-center mr-2">
             System
           </span>
@@ -97,7 +102,11 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
         </div>
 
         {/* Row 2: Content Tabs */}
-        <div className="flex flex-wrap gap-2 border-t border-amber-200/60 pt-3">
+        <div
+          className="flex flex-wrap gap-2 border-t border-amber-200/60 pt-3"
+          role="tablist"
+          aria-label="Content admin tabs"
+        >
           <span className="text-xs font-medium text-amber-600 uppercase tracking-wide self-center mr-2">
             Content
           </span>

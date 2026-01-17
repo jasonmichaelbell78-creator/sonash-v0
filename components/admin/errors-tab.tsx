@@ -28,7 +28,7 @@ import {
 interface SentryIssueSummary {
   title: string;
   count: number;
-  userCount: number;
+  userCount?: number | null; // Optional - Sentry may not always provide this
   lastSeen: string | null;
   firstSeen: string | null;
   shortId: string;
@@ -353,7 +353,7 @@ export function ErrorsTab() {
                   {issues.reduce((sum, i) => sum + (i.userCount ?? 0), 0).toLocaleString()}
                 </p>
               </div>
-              <p className="text-xs text-amber-600">Unique users with errors (24h)</p>
+              <p className="text-xs text-amber-600">Sum across issues (may double-count)</p>
             </div>
             <div className="rounded-lg border border-amber-100 bg-white p-4">
               <p className="text-sm text-amber-700">Trend vs prior 24h</p>

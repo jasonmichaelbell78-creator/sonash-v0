@@ -233,6 +233,10 @@ export function redactSensitiveMetadata(
   );
 }
 
+// Maximum field lengths for Firestore log documents
+const MAX_MESSAGE_LEN = 2000;
+const MAX_FUNCTION_LEN = 200;
+
 /**
  * Store security event in Firestore for admin panel access
  * Non-blocking - errors are caught and logged without affecting the main flow
@@ -241,9 +245,21 @@ async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
   try {
     const db = admin.firestore();
 
-    // Redact sensitive metadata before storing
+    // Truncate and redact before storing to prevent exceeding document size limits
     const redactedEvent = {
       ...event,
+      // ROBUSTNESS: Truncate functionName to prevent oversized documents
+      functionName:
+        typeof event.functionName === "string"
+          ? event.functionName.slice(0, MAX_FUNCTION_LEN)
+          : event.functionName,
+      // ROBUSTNESS: Truncate message to prevent exceeding 1MB document limit
+      message:
+        typeof event.message === "string"
+          ? event.message.length > MAX_MESSAGE_LEN
+            ? `${event.message.slice(0, MAX_MESSAGE_LEN)}…[truncated]`
+            : event.message
+          : event.message,
       metadata: redactSensitiveMetadata(event.metadata),
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
       // SECURITY: Use Firestore Timestamp for TTL policy compatibility
@@ -257,8 +273,15 @@ async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
     // Log to console to make the error visible for debugging,
     // but don't re-trigger the security logger to avoid loops.
     // SECURITY: Sanitize error - only log type, not full object (may contain sensitive details)
+    // COMPLIANCE: Use structured JSON format for consistent log parsing
     const errorType = err instanceof Error ? err.name : "UnknownError";
-    console.error(`Failed to store security event in Firestore: ${errorType}`);
+    const structuredLog = {
+      severity: "ERROR",
+      message: "Failed to store security event in Firestore",
+      error: { type: errorType },
+      timestamp: new Date().toISOString(),
+    };
+    console.error(JSON.stringify(structuredLog));
   }
 }
 

@@ -1307,6 +1307,14 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
 
     const logs: LogEntry[] = snapshot.docs.map((doc) => {
       const data = doc.data();
+      // ROBUSTNESS: Validate metadata is a plain object before redaction
+      // Prevents type violations in API response if metadata is corrupt
+      const rawMetadata = data.metadata;
+      const safeMetadata =
+        rawMetadata && typeof rawMetadata === "object" && !Array.isArray(rawMetadata)
+          ? redactSensitiveMetadata(rawMetadata as Record<string, unknown>)
+          : undefined;
+
       return {
         id: doc.id,
         type: data.type || "UNKNOWN",
@@ -1316,7 +1324,7 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
         timestamp: data.timestamp?.toDate().toISOString() || new Date().toISOString(),
         // SECURITY: Defense-in-depth - redact metadata even though write-time redaction exists
         // Protects against bugs in write-time redaction and legacy data
-        metadata: redactSensitiveMetadata(data.metadata),
+        metadata: safeMetadata,
       };
     });
 
@@ -1407,13 +1415,34 @@ export const adminGetPrivilegeTypes = onCall(async (request) => {
     const data = privilegesDoc.data();
     const storedTypes = Array.isArray(data?.types) ? data.types : [];
 
-    // ROBUSTNESS: Always include built-in types, merge with custom types
-    // This ensures the UI never gets an empty or corrupted privilege list
-    const customTypes = storedTypes.filter(
-      (t: { id?: string }) => t?.id && !["free", "premium", "admin"].includes(t.id)
-    );
+    // ROBUSTNESS: Validate and sanitize custom types from Firestore
+    // Filters out malformed entries and ensures consistent shape
+    const customTypes: PrivilegeType[] = storedTypes
+      .filter(
+        (t: unknown): t is PrivilegeType =>
+          !!t &&
+          typeof t === "object" &&
+          "id" in t &&
+          typeof (t as PrivilegeType).id === "string" &&
+          !!(t as PrivilegeType).id &&
+          !["free", "premium", "admin"].includes((t as PrivilegeType).id) &&
+          "name" in t &&
+          typeof (t as PrivilegeType).name === "string" &&
+          Array.isArray((t as PrivilegeType).features)
+      )
+      .map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: typeof t.description === "string" ? t.description : "",
+        features: t.features.filter((f) => typeof f === "string"),
+        isDefault: !!t.isDefault,
+      }));
 
-    return { types: [...BUILT_IN_PRIVILEGE_TYPES, ...customTypes] };
+    // Merge built-in and custom types, ensure only one default
+    const merged = [...BUILT_IN_PRIVILEGE_TYPES, ...customTypes];
+    const defaultId = merged.find((t) => t.isDefault)?.id ?? "free";
+
+    return { types: normalizePrivilegeDefaults(merged, defaultId) };
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminGetPrivilegeTypes", "Failed to get privilege types", {
       userId: request.auth?.uid,
@@ -1596,7 +1625,23 @@ export const adminDeletePrivilegeType = onCall<DeletePrivilegeTypeRequest>(async
       throw new HttpsError("not-found", "Privilege types not configured");
     }
 
-    let types = privilegesDoc.data()?.types || [];
+    // SAFETY: Block deletion if any users still have this privilege type assigned
+    const usersWithPrivilege = await db
+      .collection("users")
+      .where("privilegeType", "==", privilegeTypeId)
+      .limit(1)
+      .get();
+
+    if (!usersWithPrivilege.empty) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Cannot delete privilege type while it is assigned to users"
+      );
+    }
+
+    // ROBUSTNESS: Use Array.isArray guard for corrupt data protection
+    const storedTypes = privilegesDoc.data()?.types;
+    let types = Array.isArray(storedTypes) ? storedTypes : [];
     types = types.filter(
       (t: { id: string; name: string; description: string; features: string[] }) =>
         t.id !== privilegeTypeId
@@ -1658,26 +1703,33 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
       throw new HttpsError("not-found", "Privilege type not found");
     }
 
-    // SECURITY: Update custom claims FIRST - prevents privilege escalation if Firestore fails
-    // If Firestore update fails after claims, we fail safely (no dangling admin claims)
+    // SECURITY: Asymmetric fail-safe order for privilege changes
+    // - GRANT admin: Firestore first, then claims (prevents dangling admin if Firestore fails)
+    // - REVOKE admin: Claims first, then Firestore (fail-closed: user loses access immediately)
     const authUser = await admin.auth().getUser(uid);
     const currentClaims = authUser.customClaims || {};
 
     if (privilegeTypeId === "admin") {
-      // Preserve existing claims and add admin: true
+      // GRANTING admin: Write Firestore FIRST, then set claims
+      // If Firestore fails, user won't get admin claims (fail-safe)
+      await db.collection("users").doc(uid).update({
+        privilegeType: privilegeTypeId,
+        privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        privilegeUpdatedBy: request.auth?.uid,
+      });
       await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: true });
-    } else if (currentClaims.admin) {
-      // Remove admin claim by setting to null (idiomatic Firebase approach)
-      // This preserves other claims while properly removing the admin claim
-      await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
+    } else {
+      // REVOKING admin (or setting non-admin): Remove claim FIRST, then Firestore
+      // If Firestore fails, user already lost admin access (fail-closed)
+      if (currentClaims.admin) {
+        await admin.auth().setCustomUserClaims(uid, { ...currentClaims, admin: null });
+      }
+      await db.collection("users").doc(uid).update({
+        privilegeType: privilegeTypeId,
+        privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        privilegeUpdatedBy: request.auth?.uid,
+      });
     }
-
-    // Update user document AFTER claims are set
-    await db.collection("users").doc(uid).update({
-      privilegeType: privilegeTypeId,
-      privilegeUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      privilegeUpdatedBy: request.auth?.uid,
-    });
 
     return { success: true, message: `User privilege set to ${privilegeTypeId}` };
   } catch (error) {
@@ -1729,12 +1781,16 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       .orderBy(admin.firestore.FieldPath.documentId(), safeSortOrder)
       .limit(limit + 1); // Fetch one extra to check if there's more
 
-    // STABILITY: Use document snapshot for stable cursor-based pagination
-    // This is more robust than manually extracting field values
+    // STABILITY: Use value-based cursor for robust pagination
+    // Provides explicit values for all orderBy clauses to prevent cursor errors
+    // when the sort field is missing or null on the cursor document
     if (startAfterUid) {
       const cursorDoc = await db.collection("users").doc(startAfterUid).get();
       if (cursorDoc.exists) {
-        query = query.startAfter(cursorDoc);
+        const cursorData = cursorDoc.data() as Record<string, unknown> | undefined;
+        const sortValue = (cursorData?.[safeSortBy] as unknown) ?? null;
+        // Provide explicit values for both orderBy clauses (sortField + docId)
+        query = query.startAfter(sortValue, cursorDoc.id);
       }
     }
 
