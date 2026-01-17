@@ -862,6 +862,16 @@ been aggregated into a master list for prioritized implementation.
 
 **Planned Tooling (Future):**
 
+- ⏳ **Cross-Platform Testing** - Test scripts on Windows/Unix before merge
+  - **Issue:** Scripts developed on Unix fail on Windows (path separators, CRLF
+    line endings)
+  - **Patterns added:** CODE_PATTERNS.md Session #71 (isAbsolute, CRLF
+    normalization, path.sep)
+  - **Solution options:**
+    1. GitHub Actions matrix with `runs-on: [ubuntu-latest, windows-latest]`
+    2. WSL testing workflow for Unix developers
+    3. Script validation pre-commit hook checking for cross-platform patterns
+  - **Priority:** P2 - Add to CI when cross-platform issues become frequent
 - ⏳ **knip** - Unused export detection (`npm run deps:unused`)
   - Currently: baseline documented, not blocking
   - Future: Add to CI with allow-list
