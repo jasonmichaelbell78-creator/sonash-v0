@@ -1,6 +1,6 @@
 # Multi-AI Audit Aggregator Template
 
-**Document Version:** 2.3 **Last Updated:** 2026-01-05
+**Document Version:** 2.4 **Last Updated:** 2026-01-17
 
 ---
 
@@ -12,10 +12,11 @@ aggregation modes.
 
 ## Version History
 
-| Version | Date       | Changes                     |
-| ------- | ---------- | --------------------------- |
-| 2.3     | 2026-01-05 | Current version             |
-| 1.0     | 2026-01-03 | Initial aggregator template |
+| Version | Date       | Changes                                                    |
+| ------- | ---------- | ---------------------------------------------------------- |
+| 2.4     | 2026-01-17 | Added Post-Aggregation Actions section with roadmap update |
+| 2.3     | 2026-01-05 | Added evidence rules and consensus scoring                 |
+| 1.0     | 2026-01-03 | Initial aggregator template                                |
 
 ---
 
@@ -493,10 +494,37 @@ Goal: small, reviewable PRs.
 
 ---
 
+## Post-Aggregation Actions
+
+After completing aggregation (either Tier-1 or Tier-2), perform these updates:
+
+1. **Update AUDIT_TRACKER.md** - Add entry to "Multi-AI Audit Log" table:
+   - Date: Today's date
+   - Categories: Categories included in this aggregation
+   - Models Used: List of AI models that contributed
+   - Total Findings: Canonical finding count
+   - Aggregated To: Path to output CANON file(s)
+
+2. **Update Technical Debt Backlog** - Re-aggregate all findings:
+
+   ```bash
+   npm run aggregate:audit-findings
+   ```
+
+   This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
+   Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
+   findings are properly categorized and prioritized.
+
+3. **Update Version History** - If template changes were needed during this
+   aggregation, update the Version History table at the bottom of this document.
+
+---
+
 ## Version History
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                   | Author   |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 2.4     | 2026-01-17 | Added Post-Aggregation Actions section with roadmap update instructions; linked to `npm run aggregate:audit-findings` for automatic MASTER_ISSUE_LIST.md and ROADMAP.md updates                                                                                                                                                                                           | Claude   |
 | 2.3     | 2026-01-06 | Review #68: Added empty files[] fallback to sorting; Varied bullet starters in output format section; Capitalized Markdown consistently                                                                                                                                                                                                                                   | Claude   |
 | 2.2     | 2026-01-06 | Review #67: Added deterministic tiebreaker (files[0]) to ID sorting; Clarified verification for non-file locators; Capitalized Markdown proper noun                                                                                                                                                                                                                       | Claude   |
 | 2.1     | 2026-01-05 | Review #66: Fixed model name (GPT-5-Codex), clarified evidence rules for docs/process findings, removed code fences from JSON output examples, fixed deterministic ID sort (removed fingerprint), renamed Process subcategory to Workflow Docs                                                                                                                            | Claude   |

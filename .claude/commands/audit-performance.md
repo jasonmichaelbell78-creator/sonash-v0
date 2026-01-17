@@ -281,7 +281,14 @@ Full markdown report with all findings, baselines, and optimization plan.
    - Findings: Total count (e.g., "2 S1, 4 S2, 3 S3")
    - Reset Threshold: YES (single-session audits reset that category's
      threshold)
-6. Ask: "Would you like me to fix any of these issues now? (Quick wins
+6. **Update Technical Debt Backlog** - Re-aggregate all findings:
+   ```bash
+   npm run aggregate:audit-findings
+   ```
+   This updates `docs/aggregation/MASTER_ISSUE_LIST.md` and the Technical Debt
+   Backlog section in `ROADMAP.md`. Review the updated counts and ensure new
+   findings are properly categorized.
+7. Ask: "Would you like me to fix any of these issues now? (Quick wins
    recommended first)"
 
 ---

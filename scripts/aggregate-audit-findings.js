@@ -1,0 +1,980 @@
+#!/usr/bin/env node
+/**
+ * Master Issue Aggregation Script
+ *
+ * Aggregates all audit findings from:
+ * - Single-session audits (7 categories)
+ * - CANON files (6 categories)
+ * - REFACTOR_BACKLOG.md
+ * - AUDIT_FINDINGS_BACKLOG.md
+ *
+ * Produces:
+ * - raw-findings.jsonl
+ * - normalized-findings.jsonl
+ * - dedup-log.jsonl
+ * - unique-findings.jsonl
+ * - MASTER_ISSUE_LIST.jsonl
+ * - MASTER_ISSUE_LIST.md
+ * - IMPLEMENTATION_PLAN.md
+ */
+
+const fs = require("node:fs");
+const path = require("node:path");
+
+// Configuration
+const CONFIG = {
+  outputDir: "docs/aggregation",
+  singleSessionDir: "docs/audits/single-session",
+  canonDir: "docs/reviews/2026-Q1/canonical",
+  refactorBacklog: "docs/reviews/2026-Q1/canonical/tier2-output/REFACTOR_BACKLOG.md",
+  auditBacklog: "docs/AUDIT_FINDINGS_BACKLOG.md",
+};
+
+// Severity and effort weights for priority calculation
+const SEVERITY_WEIGHTS = { S0: 4, S1: 3, S2: 2, S3: 1 };
+const EFFORT_WEIGHTS = { E0: 4, E1: 3, E2: 2, E3: 1 };
+const ROI_WEIGHTS = { HIGH: 3, CRITICAL: 4, MEDIUM: 2, LOW: 1 };
+
+// Category mapping
+const CATEGORY_MAP = {
+  code: "code",
+  security: "security",
+  performance: "performance",
+  process: "process",
+  refactoring: "refactoring",
+  documentation: "documentation",
+  "engineering-productivity": "dx",
+  offline: "offline",
+  Testing: "code",
+  Hygiene: "code",
+  Framework: "code",
+  Debugging: "code",
+  Types: "code",
+  Headers: "security",
+  Firebase: "security",
+  Crypto: "security",
+  Auth: "security",
+  Input: "security",
+  Deps: "security",
+  Data: "security",
+  AgentSecurity: "security",
+  SECURITY: "security",
+  Bundle: "performance",
+  Rendering: "performance",
+  Memory: "performance",
+  DataFetch: "performance",
+  WebVitals: "performance",
+  "Memory Management": "performance",
+  "Rendering Performance": "performance",
+  "Bundle Size & Loading": "performance",
+  "Core Web Vitals": "performance",
+  "Data Fetching & Caching": "performance",
+  "Observability & Monitoring": "performance",
+  CI: "process",
+  GitHooks: "process",
+  ClaudeHooks: "process",
+  Scripts: "process",
+  Triggers: "process",
+  ProcessDocs: "process",
+  "CI/CD": "process",
+  "Workflow Docs": "process",
+  Hooks: "process",
+  "Pattern Checker": "process",
+  GodObject: "refactoring",
+  Duplication: "refactoring",
+  Architecture: "refactoring",
+  TechDebt: "refactoring",
+  REFACTOR: "refactoring",
+  "Architecture/Boundaries": "refactoring",
+  "Security Hardening": "security",
+  "Hygiene/Duplication": "refactoring",
+  "Types/Correctness": "code",
+  "Next/React Boundaries": "refactoring",
+  Links: "documentation",
+  Sync: "documentation",
+  Frontmatter: "documentation",
+  Stale: "documentation",
+  Quality: "documentation",
+  Coverage: "documentation",
+  "Cross-Reference": "documentation",
+  "Coverage Gaps": "documentation",
+  "Tier Compliance": "documentation",
+  Staleness: "documentation",
+  GoldenPath: "dx",
+  Offline: "offline",
+};
+
+// PR bucket suggestions based on category
+const PR_BUCKET_MAP = {
+  security: "security-hardening",
+  performance: "performance-optimization",
+  dx: "dx-improvements",
+  offline: "offline-support",
+  code: "code-quality",
+  refactoring: "code-quality",
+  documentation: "documentation-sync",
+  process: "process-automation",
+};
+
+/**
+ * Parse a JSONL file
+ */
+function parseJsonlFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    console.warn(`Warning: File not found: ${filePath}`);
+    return [];
+  }
+
+  const content = fs.readFileSync(filePath, "utf-8");
+  const lines = content.split("\n").filter((line) => line.trim());
+  const items = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      items.push(JSON.parse(lines[i]));
+    } catch (e) {
+      console.warn(`Warning: Invalid JSON at line ${i + 1} in ${filePath}`);
+    }
+  }
+
+  return items;
+}
+
+/**
+ * Parse markdown backlog to extract items
+ */
+function parseMarkdownBacklog(filePath) {
+  if (!fs.existsSync(filePath)) {
+    console.warn(`Warning: File not found: ${filePath}`);
+    return [];
+  }
+
+  const content = fs.readFileSync(filePath, "utf-8");
+  const items = [];
+
+  // Extract items from markdown tables
+  // Pattern: | ID | Title | Effort | Deps | PR |
+  const tableRowPattern =
+    /\|\s*(DEDUP-\d+|CANON-\d+|LEGACY-\d+)\s*\|\s*([^|]+)\s*\|\s*(E\d)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/g;
+  let match;
+
+  // Track which category we're in
+  let currentCategory = "unknown";
+  let currentSeverity = "S2";
+
+  const lines = content.split("\n");
+  for (const line of lines) {
+    // Detect category headers
+    if (line.match(/^## Category: (.+)/)) {
+      currentCategory = line.match(/^## Category: (.+)/)[1].trim();
+    }
+    // Detect severity headers
+    if (line.match(/^### S(\d) /)) {
+      currentSeverity = "S" + line.match(/^### S(\d) /)[1];
+    }
+
+    // Match table rows
+    const rowMatch = line.match(
+      /\|\s*(DEDUP-\d+|CANON-\d+|LEGACY-\d+)\s*\|\s*([^|]+)\s*\|\s*(E\d)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/
+    );
+    if (rowMatch) {
+      items.push({
+        id: rowMatch[1].trim(),
+        title: rowMatch[2].trim(),
+        effort: rowMatch[3].trim(),
+        deps: rowMatch[4].trim(),
+        pr: rowMatch[5].trim(),
+        category: currentCategory,
+        severity: currentSeverity,
+        source: "backlog",
+      });
+    }
+  }
+
+  return items;
+}
+
+/**
+ * Parse AUDIT_FINDINGS_BACKLOG.md for individual items
+ */
+function parseAuditFindingsBacklog(filePath) {
+  if (!fs.existsSync(filePath)) {
+    console.warn(`Warning: File not found: ${filePath}`);
+    return [];
+  }
+
+  const content = fs.readFileSync(filePath, "utf-8");
+  const items = [];
+
+  // Find items by ### headers with [Category] pattern
+  const itemPattern =
+    /### \[([^\]]+)\] ([^\n]+)\n\n\*\*CANON-ID\*\*: (CANON-\d+|LEGACY-\d+)[^]*?\*\*Severity\*\*: (S\d)[^]*?\*\*Effort\*\*: (E\d)/g;
+  let match;
+
+  while ((match = itemPattern.exec(content)) !== null) {
+    items.push({
+      id: match[3],
+      title: match[2].trim(),
+      category: match[1],
+      severity: match[4],
+      effort: match[5],
+      source: "audit-backlog",
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Normalize a single-session audit finding to master schema
+ */
+function normalizeSingleSession(item, sourceCategory, date) {
+  const normalizedCategory = CATEGORY_MAP[item.category] || CATEGORY_MAP[sourceCategory] || "code";
+
+  return {
+    original_id: item.id,
+    title: item.title,
+    category: normalizedCategory,
+    severity: item.severity,
+    effort: item.effort,
+    confidence: item.confidence,
+    verified: item.verified,
+    file: item.file,
+    line: item.line,
+    description: item.description,
+    recommendation: item.recommendation,
+    evidence: item.evidence,
+    cross_ref: item.cross_ref,
+    owasp: item.owasp,
+    cwe: item.cwe,
+    metrics: item.metrics,
+    affected_metric: item.affected_metric,
+    estimated_improvement: item.estimated_improvement,
+    roi: item.roi,
+    sources: [
+      {
+        type: "single-session",
+        id: item.id,
+        date: date,
+        category: sourceCategory,
+      },
+    ],
+  };
+}
+
+/**
+ * Normalize a CANON finding to master schema
+ */
+function normalizeCanon(item, sourceFile) {
+  const normalizedCategory = CATEGORY_MAP[item.category] || "code";
+
+  return {
+    original_id: item.canonical_id,
+    title: item.title,
+    category: normalizedCategory,
+    severity: item.severity,
+    effort: item.effort,
+    confidence: item.confidence || item.final_confidence,
+    file: item.files ? item.files[0] : undefined,
+    files: item.files,
+    symbols: item.symbols,
+    description: item.why_it_matters || item.description || item.issue_details?.description,
+    recommendation:
+      item.suggested_fix || item.optimization?.description || item.remediation?.steps?.join("; "),
+    evidence: item.evidence,
+    pr_bucket_suggestion: item.pr_bucket_suggestion || item.pr_bucket,
+    dependencies: item.dependencies,
+    status: item.status,
+    consensus_score: item.consensus_score || item.consensus,
+    models_agreeing: item.models_agreeing,
+    sources: [
+      {
+        type: "canon",
+        id: item.canonical_id,
+        file: sourceFile,
+      },
+    ],
+  };
+}
+
+/**
+ * Normalize a backlog item to master schema
+ */
+function normalizeBacklog(item) {
+  const normalizedCategory = CATEGORY_MAP[item.category] || "code";
+
+  return {
+    original_id: item.id,
+    title: item.title,
+    category: normalizedCategory,
+    severity: item.severity,
+    effort: item.effort,
+    dependencies: item.deps
+      ? item.deps
+          .split(",")
+          .map((d) => d.trim())
+          .filter((d) => d && d !== "None")
+      : [],
+    pr_bucket_suggestion: item.pr,
+    sources: [
+      {
+        type: "backlog",
+        id: item.id,
+        source: item.source,
+      },
+    ],
+  };
+}
+
+/**
+ * Calculate Levenshtein distance for fuzzy matching
+ */
+function levenshteinDistance(str1, str2) {
+  const m = str1.length;
+  const n = str2.length;
+  const dp = Array(m + 1)
+    .fill(null)
+    .map(() => Array(n + 1).fill(0));
+
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (str1[i - 1] === str2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      }
+    }
+  }
+
+  return dp[m][n];
+}
+
+/**
+ * Calculate similarity score between two strings (0-100)
+ */
+function similarityScore(str1, str2) {
+  if (!str1 || !str2) return 0;
+  const normalized1 = str1.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+  const normalized2 = str2.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+
+  const maxLen = Math.max(normalized1.length, normalized2.length);
+  if (maxLen === 0) return 100;
+
+  const distance = levenshteinDistance(normalized1, normalized2);
+  return Math.round((1 - distance / maxLen) * 100);
+}
+
+/**
+ * Check if two findings should be merged
+ */
+function shouldMerge(finding1, finding2, dedupLog) {
+  const reasons = [];
+
+  // Check explicit cross-references
+  const crossRef1 = finding1.cross_ref || finding1.original_id;
+  const crossRef2 = finding2.cross_ref || finding2.original_id;
+
+  // Match CANON-* to DEDUP-* mappings
+  if (finding1.original_id?.startsWith("CANON-") && finding2.original_id?.startsWith("DEDUP-")) {
+    // Check if DEDUP references the CANON
+    if (finding2.dependencies?.includes(finding1.original_id)) {
+      reasons.push("explicit DEDUP->CANON dependency");
+    }
+  }
+  if (finding2.original_id?.startsWith("CANON-") && finding1.original_id?.startsWith("DEDUP-")) {
+    if (finding1.dependencies?.includes(finding2.original_id)) {
+      reasons.push("explicit DEDUP->CANON dependency");
+    }
+  }
+
+  // Same file + similar symbol/title
+  if (finding1.file && finding2.file && finding1.file === finding2.file) {
+    const titleSimilarity = similarityScore(finding1.title, finding2.title);
+    if (titleSimilarity >= 80) {
+      reasons.push(`same file + similar title (${titleSimilarity}%)`);
+    }
+  }
+
+  // Same category + very similar title
+  if (finding1.category === finding2.category) {
+    const titleSimilarity = similarityScore(finding1.title, finding2.title);
+    if (titleSimilarity >= 90) {
+      reasons.push(`same category + very similar title (${titleSimilarity}%)`);
+    }
+  }
+
+  if (reasons.length > 0) {
+    dedupLog.push({
+      action: "merge",
+      finding1_id: finding1.original_id,
+      finding2_id: finding2.original_id,
+      reasons,
+      timestamp: new Date().toISOString(),
+    });
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Merge two findings, keeping the highest severity
+ */
+function mergeFindings(finding1, finding2) {
+  const severityRank = { S0: 0, S1: 1, S2: 2, S3: 3 };
+  const keepFirst = severityRank[finding1.severity] <= severityRank[finding2.severity];
+  const primary = keepFirst ? finding1 : finding2;
+  const secondary = keepFirst ? finding2 : finding1;
+
+  return {
+    ...primary,
+    sources: [...(primary.sources || []), ...(secondary.sources || [])],
+    evidence: [...(primary.evidence || []), ...(secondary.evidence || [])].filter(
+      (v, i, a) => a.indexOf(v) === i
+    ),
+    files: [...new Set([...(primary.files || []), ...(secondary.files || [])])].filter(Boolean),
+    merged_from: [primary.original_id, secondary.original_id],
+  };
+}
+
+/**
+ * Calculate priority score for a finding
+ */
+function calculatePriorityScore(finding) {
+  const severityWeight = SEVERITY_WEIGHTS[finding.severity] || 1;
+  const effortWeight = EFFORT_WEIGHTS[finding.effort] || 1;
+  const roiMultiplier = ROI_WEIGHTS[finding.roi] || ROI_WEIGHTS.MEDIUM;
+
+  // Persistence boost if found in multiple sources
+  const persistenceBoost = finding.sources?.length > 1 ? 10 : 0;
+
+  const score = severityWeight * 25 + effortWeight * 15 + roiMultiplier * 10 + persistenceBoost;
+
+  return Math.min(100, score);
+}
+
+/**
+ * Determine PR bucket based on category and severity
+ */
+function determinePrBucket(finding) {
+  if (finding.pr_bucket_suggestion && finding.pr_bucket_suggestion !== "-") {
+    return finding.pr_bucket_suggestion;
+  }
+  return PR_BUCKET_MAP[finding.category] || "code-quality";
+}
+
+/**
+ * Main aggregation function
+ */
+function aggregate() {
+  console.log("=== Master Issue Aggregation ===\n");
+
+  const allFindings = [];
+  const stats = {
+    singleSession: 0,
+    canon: 0,
+    backlog: 0,
+    auditBacklog: 0,
+    total: 0,
+  };
+
+  // Phase 1: Parse all sources
+  console.log("Phase 1: Parsing all sources...");
+
+  // Parse single-session audits
+  const singleSessionCategories = [
+    "code",
+    "security",
+    "documentation",
+    "performance",
+    "process",
+    "refactoring",
+    "engineering-productivity",
+  ];
+
+  for (const category of singleSessionCategories) {
+    const filePath = path.join(CONFIG.singleSessionDir, category, "audit-2026-01-17.jsonl");
+    const items = parseJsonlFile(filePath);
+    console.log(`  - ${category}: ${items.length} items`);
+
+    for (const item of items) {
+      allFindings.push(normalizeSingleSession(item, category, "2026-01-17"));
+      stats.singleSession++;
+    }
+  }
+
+  // Parse CANON files
+  const canonFiles = [
+    "CANON-CODE.jsonl",
+    "CANON-SECURITY.jsonl",
+    "CANON-PERF.jsonl",
+    "CANON-REFACTOR.jsonl",
+    "CANON-DOCS.jsonl",
+    "CANON-PROCESS.jsonl",
+  ];
+
+  for (const canonFile of canonFiles) {
+    const filePath = path.join(CONFIG.canonDir, canonFile);
+    const items = parseJsonlFile(filePath);
+    console.log(`  - ${canonFile}: ${items.length} items`);
+
+    for (const item of items) {
+      allFindings.push(normalizeCanon(item, canonFile));
+      stats.canon++;
+    }
+  }
+
+  // Parse REFACTOR_BACKLOG.md
+  const backlogItems = parseMarkdownBacklog(CONFIG.refactorBacklog);
+  console.log(`  - REFACTOR_BACKLOG.md: ${backlogItems.length} items`);
+  for (const item of backlogItems) {
+    allFindings.push(normalizeBacklog(item));
+    stats.backlog++;
+  }
+
+  // Parse AUDIT_FINDINGS_BACKLOG.md
+  const auditBacklogItems = parseAuditFindingsBacklog(CONFIG.auditBacklog);
+  console.log(`  - AUDIT_FINDINGS_BACKLOG.md: ${auditBacklogItems.length} items`);
+  for (const item of auditBacklogItems) {
+    allFindings.push(normalizeBacklog(item));
+    stats.auditBacklog++;
+  }
+
+  stats.total = allFindings.length;
+  console.log(`\nTotal raw findings: ${stats.total}`);
+
+  // Write raw findings
+  const rawFindingsPath = path.join(CONFIG.outputDir, "raw-findings.jsonl");
+  fs.writeFileSync(rawFindingsPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
+  console.log(`  Wrote: ${rawFindingsPath}`);
+
+  // Phase 2: Already normalized during parsing
+  console.log("\nPhase 2: Schema normalization complete (done during parsing)");
+  const normalizedPath = path.join(CONFIG.outputDir, "normalized-findings.jsonl");
+  fs.writeFileSync(normalizedPath, allFindings.map((f) => JSON.stringify(f)).join("\n"));
+  console.log(`  Wrote: ${normalizedPath}`);
+
+  // Phase 3: Deduplication
+  console.log("\nPhase 3: Deduplicating findings...");
+  const dedupLog = [];
+  const uniqueFindings = [];
+  const processed = new Set();
+
+  for (let i = 0; i < allFindings.length; i++) {
+    if (processed.has(i)) continue;
+
+    let current = allFindings[i];
+
+    for (let j = i + 1; j < allFindings.length; j++) {
+      if (processed.has(j)) continue;
+
+      if (shouldMerge(current, allFindings[j], dedupLog)) {
+        current = mergeFindings(current, allFindings[j]);
+        processed.add(j);
+      }
+    }
+
+    uniqueFindings.push(current);
+    processed.add(i);
+  }
+
+  console.log(
+    `  Deduplicated: ${stats.total} -> ${uniqueFindings.length} (${Math.round((1 - uniqueFindings.length / stats.total) * 100)}% reduction)`
+  );
+
+  // Write dedup log
+  const dedupLogPath = path.join(CONFIG.outputDir, "dedup-log.jsonl");
+  fs.writeFileSync(dedupLogPath, dedupLog.map((l) => JSON.stringify(l)).join("\n"));
+  console.log(`  Wrote: ${dedupLogPath} (${dedupLog.length} merge decisions)`);
+
+  // Write unique findings
+  const uniquePath = path.join(CONFIG.outputDir, "unique-findings.jsonl");
+  fs.writeFileSync(uniquePath, uniqueFindings.map((f) => JSON.stringify(f)).join("\n"));
+  console.log(`  Wrote: ${uniquePath}`);
+
+  // Phase 4: Prioritize and categorize
+  console.log("\nPhase 4: Prioritizing and categorizing...");
+
+  let masterId = 1;
+  const masterList = uniqueFindings.map((finding) => {
+    const priorityScore = calculatePriorityScore(finding);
+    const prBucket = determinePrBucket(finding);
+
+    return {
+      master_id: `MASTER-${String(masterId++).padStart(4, "0")}`,
+      title: finding.title,
+      category: finding.category,
+      severity: finding.severity,
+      effort: finding.effort,
+      priority_score: priorityScore,
+      sources: finding.sources,
+      files: finding.files || (finding.file ? [finding.file] : []),
+      status: finding.status || "open",
+      description: finding.description,
+      recommendation: finding.recommendation,
+      dependencies: finding.dependencies || [],
+      pr_bucket: prBucket,
+      original_id: finding.original_id,
+      merged_from: finding.merged_from,
+    };
+  });
+
+  // Sort by priority score descending
+  masterList.sort((a, b) => b.priority_score - a.priority_score);
+
+  // Write master list
+  const masterListPath = path.join(CONFIG.outputDir, "MASTER_ISSUE_LIST.jsonl");
+  fs.writeFileSync(masterListPath, masterList.map((m) => JSON.stringify(m)).join("\n"));
+  console.log(`  Wrote: ${masterListPath}`);
+
+  // Phase 5: Generate reports
+  console.log("\nPhase 5: Generating markdown reports...");
+
+  // Generate summary statistics
+  const severityCounts = { S0: 0, S1: 0, S2: 0, S3: 0 };
+  const categoryCounts = {};
+  const bucketCounts = {};
+
+  for (const item of masterList) {
+    severityCounts[item.severity] = (severityCounts[item.severity] || 0) + 1;
+    categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
+    bucketCounts[item.pr_bucket] = (bucketCounts[item.pr_bucket] || 0) + 1;
+  }
+
+  // Generate MASTER_ISSUE_LIST.md
+  const masterMd = generateMasterIssueMd(
+    masterList,
+    severityCounts,
+    categoryCounts,
+    bucketCounts,
+    stats
+  );
+  const masterMdPath = path.join(CONFIG.outputDir, "MASTER_ISSUE_LIST.md");
+  fs.writeFileSync(masterMdPath, masterMd);
+  console.log(`  Wrote: ${masterMdPath}`);
+
+  // Generate IMPLEMENTATION_PLAN.md
+  const implPlan = generateImplementationPlan(masterList, bucketCounts);
+  const implPlanPath = path.join(CONFIG.outputDir, "IMPLEMENTATION_PLAN.md");
+  fs.writeFileSync(implPlanPath, implPlan);
+  console.log(`  Wrote: ${implPlanPath}`);
+
+  // Print summary
+  console.log("\n=== Aggregation Complete ===");
+  console.log(`\nSource Summary:`);
+  console.log(`  Single-session audits: ${stats.singleSession}`);
+  console.log(`  CANON files: ${stats.canon}`);
+  console.log(`  REFACTOR_BACKLOG: ${stats.backlog}`);
+  console.log(`  AUDIT_FINDINGS_BACKLOG: ${stats.auditBacklog}`);
+  console.log(`  Total raw: ${stats.total}`);
+  console.log(`  After dedup: ${masterList.length}`);
+
+  console.log(`\nSeverity Distribution:`);
+  console.log(`  S0 Critical: ${severityCounts.S0}`);
+  console.log(`  S1 High: ${severityCounts.S1}`);
+  console.log(`  S2 Medium: ${severityCounts.S2}`);
+  console.log(`  S3 Low: ${severityCounts.S3}`);
+
+  console.log(`\nPR Bucket Summary:`);
+  for (const [bucket, count] of Object.entries(bucketCounts).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${bucket}: ${count}`);
+  }
+
+  // Quick wins (E0/E1 + S1/S2)
+  const quickWins = masterList.filter(
+    (m) => ["E0", "E1"].includes(m.effort) && ["S1", "S2"].includes(m.severity)
+  );
+  console.log(`\nQuick Wins (E0/E1 + S1/S2): ${quickWins.length}`);
+
+  return { masterList, stats, severityCounts, categoryCounts, bucketCounts };
+}
+
+/**
+ * Generate MASTER_ISSUE_LIST.md
+ */
+function generateMasterIssueMd(masterList, severityCounts, categoryCounts, bucketCounts, stats) {
+  let md = `# Master Issue List
+
+**Generated:** ${new Date().toISOString().split("T")[0]}
+**Source:** Aggregated from single-session audits, CANON files, and backlogs
+**Total Items:** ${masterList.length} (deduplicated from ${stats.total} raw findings)
+
+---
+
+## Summary Statistics
+
+### By Severity
+
+| Severity | Count | Description |
+|----------|-------|-------------|
+| S0 | ${severityCounts.S0} | Critical - implement immediately |
+| S1 | ${severityCounts.S1} | High - implement this sprint |
+| S2 | ${severityCounts.S2} | Medium - implement next sprint |
+| S3 | ${severityCounts.S3} | Low - backlog |
+
+### By Category
+
+| Category | Count |
+|----------|-------|
+${Object.entries(categoryCounts)
+  .sort((a, b) => b[1] - a[1])
+  .map(([cat, count]) => `| ${cat} | ${count} |`)
+  .join("\n")}
+
+### By PR Bucket
+
+| PR Bucket | Count |
+|-----------|-------|
+${Object.entries(bucketCounts)
+  .sort((a, b) => b[1] - a[1])
+  .map(([bucket, count]) => `| ${bucket} | ${count} |`)
+  .join("\n")}
+
+---
+
+## Critical Items (S0)
+
+${masterList
+  .filter((m) => m.severity === "S0")
+  .map(
+    (m) => `
+### ${m.master_id}: ${m.title}
+
+- **Category:** ${m.category}
+- **Effort:** ${m.effort}
+- **Priority Score:** ${m.priority_score}
+- **PR Bucket:** ${m.pr_bucket}
+- **Files:** ${m.files?.join(", ") || "N/A"}
+- **Sources:** ${m.sources?.map((s) => s.id).join(", ")}
+
+${m.description || ""}
+
+${m.recommendation ? `**Recommendation:** ${m.recommendation}` : ""}
+`
+  )
+  .join("\n")}
+
+---
+
+## High Priority Items (S1)
+
+${masterList
+  .filter((m) => m.severity === "S1")
+  .slice(0, 30)
+  .map(
+    (m) => `
+### ${m.master_id}: ${m.title}
+
+- **Category:** ${m.category}
+- **Effort:** ${m.effort}
+- **Priority Score:** ${m.priority_score}
+- **PR Bucket:** ${m.pr_bucket}
+- **Sources:** ${m.sources?.map((s) => s.id).join(", ")}
+`
+  )
+  .join("\n")}
+
+${masterList.filter((m) => m.severity === "S1").length > 30 ? `\n_...and ${masterList.filter((m) => m.severity === "S1").length - 30} more S1 items_\n` : ""}
+
+---
+
+## Quick Wins (E0/E1 + S1/S2)
+
+| ID | Title | Severity | Effort | Category | PR Bucket |
+|----|-------|----------|--------|----------|-----------|
+${masterList
+  .filter((m) => ["E0", "E1"].includes(m.effort) && ["S1", "S2"].includes(m.severity))
+  .slice(0, 40)
+  .map(
+    (m) =>
+      `| ${m.master_id} | ${m.title.substring(0, 50)}${m.title.length > 50 ? "..." : ""} | ${m.severity} | ${m.effort} | ${m.category} | ${m.pr_bucket} |`
+  )
+  .join("\n")}
+
+---
+
+## Full List by Priority Score
+
+| Rank | ID | Title | Sev | Effort | Score | Category |
+|------|-----|-------|-----|--------|-------|----------|
+${masterList
+  .slice(0, 100)
+  .map(
+    (m, i) =>
+      `| ${i + 1} | ${m.master_id} | ${m.title.substring(0, 40)}${m.title.length > 40 ? "..." : ""} | ${m.severity} | ${m.effort} | ${m.priority_score} | ${m.category} |`
+  )
+  .join("\n")}
+
+${masterList.length > 100 ? `\n_...and ${masterList.length - 100} more items (see MASTER_ISSUE_LIST.jsonl for full list)_\n` : ""}
+
+---
+
+## Notes
+
+- Priority scores range from 0-100
+- Score formula: (severity_weight * 25) + (effort_inverse * 15) + (roi_multiplier * 10) + persistence_boost
+- Items found in multiple sources get +10 persistence boost
+- See IMPLEMENTATION_PLAN.md for grouped execution plan
+
+---
+
+**Document Version:** 1.0
+**Last Updated:** ${new Date().toISOString().split("T")[0]}
+`;
+
+  return md;
+}
+
+/**
+ * Generate IMPLEMENTATION_PLAN.md
+ */
+function generateImplementationPlan(masterList, bucketCounts) {
+  const buckets = {};
+  for (const item of masterList) {
+    if (!buckets[item.pr_bucket]) {
+      buckets[item.pr_bucket] = [];
+    }
+    buckets[item.pr_bucket].push(item);
+  }
+
+  let md = `# Implementation Plan
+
+**Generated:** ${new Date().toISOString().split("T")[0]}
+**Total Items:** ${masterList.length}
+**PR Buckets:** ${Object.keys(buckets).length}
+
+---
+
+## Overview
+
+This plan organizes the deduplicated findings into PR buckets for systematic implementation.
+
+### PR Bucket Summary
+
+| Bucket | Items | S0 | S1 | S2 | S3 |
+|--------|-------|-----|-----|-----|-----|
+${Object.entries(buckets)
+  .sort((a, b) => b[1].length - a[1].length)
+  .map(([bucket, items]) => {
+    const s0 = items.filter((i) => i.severity === "S0").length;
+    const s1 = items.filter((i) => i.severity === "S1").length;
+    const s2 = items.filter((i) => i.severity === "S2").length;
+    const s3 = items.filter((i) => i.severity === "S3").length;
+    return `| ${bucket} | ${items.length} | ${s0} | ${s1} | ${s2} | ${s3} |`;
+  })
+  .join("\n")}
+
+---
+
+## Phase 1: Critical (S0) - Immediate Action
+
+${masterList
+  .filter((m) => m.severity === "S0")
+  .map(
+    (m) => `
+- [ ] **${m.master_id}**: ${m.title}
+  - Effort: ${m.effort} | Bucket: ${m.pr_bucket}
+  - Sources: ${m.sources?.map((s) => s.id).join(", ")}
+`
+  )
+  .join("")}
+
+---
+
+## Phase 2: High Priority (S1) - This Sprint
+
+${Object.entries(buckets)
+  .filter(([_, items]) => items.some((i) => i.severity === "S1"))
+  .map(
+    ([bucket, items]) => `
+### ${bucket}
+
+${items
+  .filter((i) => i.severity === "S1")
+  .map((m) => `- [ ] **${m.master_id}**: ${m.title} (${m.effort})`)
+  .join("\n")}
+`
+  )
+  .join("\n")}
+
+---
+
+## Phase 3: Medium Priority (S2) - Next Sprint
+
+${Object.entries(buckets)
+  .filter(([_, items]) => items.some((i) => i.severity === "S2"))
+  .map(
+    ([bucket, items]) => `
+### ${bucket}
+
+${items
+  .filter((i) => i.severity === "S2")
+  .map((m) => `- [ ] **${m.master_id}**: ${m.title} (${m.effort})`)
+  .join("\n")}
+`
+  )
+  .join("\n")}
+
+---
+
+## Phase 4: Low Priority (S3) - Backlog
+
+${Object.entries(buckets)
+  .filter(([_, items]) => items.some((i) => i.severity === "S3"))
+  .map(
+    ([bucket, items]) => `
+### ${bucket}
+
+${items
+  .filter((i) => i.severity === "S3")
+  .map((m) => `- [ ] **${m.master_id}**: ${m.title} (${m.effort})`)
+  .join("\n")}
+`
+  )
+  .join("\n")}
+
+---
+
+## Dependency Chain
+
+Items with dependencies should be implemented in order:
+
+${
+  masterList
+    .filter((m) => m.dependencies?.length > 0)
+    .map((m) => `- ${m.master_id} depends on: ${m.dependencies.join(", ")}`)
+    .join("\n") || "_No explicit dependencies found_"
+}
+
+---
+
+## Suggested PR Sequence
+
+Based on severity, effort, and dependencies:
+
+1. **Security Hardening PR** - All S0/S1 security items
+2. **Performance Critical PR** - S0/S1 performance items
+3. **Quick Wins PR** - E0 items across all categories
+4. **Code Quality PR** - S2 code and refactoring items
+5. **Documentation Sync PR** - All documentation items
+6. **Process Automation PR** - CI/CD and process items
+
+---
+
+**Document Version:** 1.0
+**Last Updated:** ${new Date().toISOString().split("T")[0]}
+`;
+
+  return md;
+}
+
+// Run aggregation
+try {
+  aggregate();
+} catch (error) {
+  console.error("Aggregation failed:", error);
+  process.exit(1);
+}

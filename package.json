@@ -36,6 +36,7 @@
     "skills:verify-usage": "node scripts/verify-skill-usage.js",
     "validate:canon": "node scripts/validate-canon-schema.js",
     "backlog:check": "node scripts/check-backlog-health.js",
+    "aggregate:audit-findings": "node scripts/aggregate-audit-findings.js",
     "security:check": "node scripts/security-check.js",
     "security:check-all": "node scripts/security-check.js --all",
     "format": "prettier --write .",
