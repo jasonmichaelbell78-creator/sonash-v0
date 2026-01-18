@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "sonash-app"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }

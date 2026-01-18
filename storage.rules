@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules for SoNash
+// Provides secure access to user-specific files with proper authentication
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Default: deny all access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // User-specific files: only authenticated users can access their own files
+    match /users/{userId}/{allPaths=**} {
+      // Users can read/write their own files
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Admin cleanup operations (callable functions use Admin SDK, not these rules)
+    // The cleanupOrphanedStorageFiles function uses Admin SDK which bypasses rules
+  }
+}

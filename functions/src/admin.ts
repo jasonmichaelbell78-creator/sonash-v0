@@ -650,16 +650,22 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
       createdAt: string | null;
     }> = [];
 
-    const searchQuery = query.trim().toLowerCase();
+    const trimmedQuery = query.trim();
+    const searchQueryLower = trimmedQuery.toLowerCase();
     const db = admin.firestore();
 
-    // Search by UID (exact match)
-    if (searchQuery.length >= 20) {
+    // Prevent empty search from listing all users
+    if (!trimmedQuery) {
+      throw new HttpsError("invalid-argument", "Search query is required");
+    }
+
+    // Search by UID (exact match) - UIDs are case-sensitive
+    if (trimmedQuery.length >= 20) {
       try {
-        const userDoc = await db.collection("users").doc(query).get();
+        const userDoc = await db.collection("users").doc(trimmedQuery).get();
         if (userDoc.exists) {
           const userData = userDoc.data()!;
-          const authUser = await admin.auth().getUser(query);
+          const authUser = await admin.auth().getUser(trimmedQuery);
           results.push({
             uid: userDoc.id,
             email: authUser.email || null,
@@ -674,10 +680,10 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
       }
     }
 
-    // Search by email
-    if (searchQuery.includes("@")) {
+    // Search by email - Firebase Auth email lookup is case-insensitive
+    if (searchQueryLower.includes("@")) {
       try {
-        const authUser = await admin.auth().getUserByEmail(query);
+        const authUser = await admin.auth().getUserByEmail(trimmedQuery);
         const userDoc = await db.collection("users").doc(authUser.uid).get();
         const userData = userDoc.exists ? userDoc.data()! : {};
 
@@ -696,11 +702,41 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
       }
     }
 
-    // Search by nickname (partial match)
+    // Search by nickname - try both exact match and prefix match
+    // Note: Firestore doesn't support case-insensitive queries natively
+    // Users should search using the correct case (e.g., "John" not "john")
+
+    // First try exact match
+    const exactNicknameResults = await db
+      .collection("users")
+      .where("nickname", "==", trimmedQuery)
+      .limit(limit)
+      .get();
+
+    for (const doc of exactNicknameResults.docs) {
+      if (results.find((u) => u.uid === doc.id)) continue;
+
+      const userData = doc.data();
+      try {
+        const authUser = await admin.auth().getUser(doc.id);
+        results.push({
+          uid: doc.id,
+          email: authUser.email || null,
+          nickname: userData.nickname || "Anonymous",
+          disabled: authUser.disabled || false,
+          lastActive: userData.lastActive?.toDate().toISOString() || null,
+          createdAt: userData.createdAt?.toDate().toISOString() || null,
+        });
+      } catch {
+        // Auth user not found, skip
+      }
+    }
+
+    // Then try prefix match for additional results
     const nicknameResults = await db
       .collection("users")
-      .where("nickname", ">=", searchQuery)
-      .where("nickname", "<=", searchQuery + "\uf8ff")
+      .where("nickname", ">=", trimmedQuery)
+      .where("nickname", "<=", trimmedQuery + "\uf8ff")
       .limit(limit)
       .get();
 
@@ -2001,5 +2037,557 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to list users");
+  }
+});
+
+// ============================================================================
+// QUICK WIN FUNCTIONS - Admin Dashboard Enhancements
+// ============================================================================
+
+/**
+ * Admin: Send Password Reset Email
+ * Sends a password reset email to a user using Firebase Auth REST API
+ *
+ * Note: The Admin SDK's generatePasswordResetLink() only generates a link but doesn't
+ * send an email. We use the Firebase Auth REST API to actually send the email.
+ */
+interface SendPasswordResetRequest {
+  email: string;
+}
+
+// Web API Key for Firebase Auth REST API calls
+// Stored in GCP Secret Manager even though it's technically a "public" key
+// This prevents abuse via direct API calls if the repo is compromised
+// Set via: firebase functions:secrets:set AUTH_REST_API_KEY
+const authApiKey = defineSecret("AUTH_REST_API_KEY");
+
+export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
+  { secrets: [authApiKey] },
+  async (request) => {
+    await requireAdmin(request, "adminSendPasswordReset");
+
+    const { email } = request.data;
+
+    if (!email || !email.includes("@")) {
+      throw new HttpsError("invalid-argument", "Valid email is required");
+    }
+
+    // First verify the user exists using Admin SDK
+    try {
+      await admin.auth().getUserByEmail(email);
+    } catch (error) {
+      const errorCode = (error as { code?: string })?.code;
+      if (errorCode === "auth/user-not-found") {
+        throw new HttpsError("not-found", "No user found with this email address");
+      }
+      throw error;
+    }
+
+    try {
+      // Use Firebase Auth REST API to send password reset email
+      // This actually sends the email using Firebase's built-in email templates
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
+      let response: Response;
+      try {
+        response = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
+          {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              requestType: "PASSWORD_RESET",
+              email: email,
+            }),
+          }
+        );
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = (errorData as { error?: { message?: string } })?.error?.message;
+
+        // Handle specific Firebase Auth errors
+        if (errorMessage === "EMAIL_NOT_FOUND") {
+          throw new HttpsError("not-found", "No user found with this email address");
+        }
+
+        throw new Error(`Firebase Auth API error: ${errorMessage || response.status}`);
+      }
+
+      // Log success only after email was actually sent
+      logSecurityEvent(
+        "ADMIN_ACTION",
+        "adminSendPasswordReset",
+        "Admin sent password reset email",
+        {
+          userId: request.auth?.uid,
+          metadata: { targetEmailHash: hashUserId(email.trim().toLowerCase()) },
+          severity: "INFO",
+          storeInFirestore: true,
+        }
+      );
+
+      return {
+        success: true,
+        message: "Password reset email sent successfully",
+      };
+    } catch (error) {
+      // Don't log if it's already an HttpsError (already handled)
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+
+      // SECURITY: Sanitize error to avoid leaking API key from URL
+      // Only log error name/code, never full message which could contain secrets
+      const safeErrorInfo =
+        error instanceof Error
+          ? { name: error.name, code: (error as { code?: string }).code }
+          : { type: typeof error };
+      logSecurityEvent("ADMIN_ERROR", "adminSendPasswordReset", "Failed to send password reset", {
+        userId: request.auth?.uid,
+        metadata: { error: safeErrorInfo },
+        captureToSentry: true,
+      });
+      throw new HttpsError("internal", "Failed to send password reset email");
+    }
+  }
+);
+
+/**
+ * Admin: Get Storage Statistics
+ * Returns storage usage statistics
+ */
+export const adminGetStorageStats = onCall(async (request) => {
+  await requireAdmin(request, "adminGetStorageStats");
+
+  logSecurityEvent("ADMIN_ACTION", "adminGetStorageStats", "Admin requested storage stats", {
+    userId: request.auth?.uid,
+    severity: "INFO",
+  });
+
+  try {
+    const bucket = admin.storage().bucket();
+
+    // Get files with bounded pagination to prevent timeout/memory issues
+    // Safety cap at 10,000 files - adjust based on operational limits
+    const MAX_FILES = 10000;
+    const files: Array<{ name: string; metadata: { size?: string | number } }> = [];
+    let pageToken: string | undefined;
+
+    do {
+      const [page, , resp] = await bucket.getFiles({
+        autoPaginate: false,
+        maxResults: Math.min(1000, MAX_FILES - files.length),
+        pageToken,
+      });
+
+      files.push(...page);
+      pageToken = (resp as { nextPageToken?: string } | undefined)?.nextPageToken;
+
+      if (files.length >= MAX_FILES) break;
+    } while (pageToken);
+
+    const truncated = files.length >= MAX_FILES;
+
+    let totalSize = 0;
+    let fileCount = 0;
+    const userFiles: Record<string, { count: number; size: number }> = {};
+    const fileTypes: Record<string, { count: number; size: number }> = {};
+
+    for (const file of files) {
+      const metadata = file.metadata;
+      const parsedSize = parseInt(String(metadata.size || "0"), 10);
+      const size = Number.isNaN(parsedSize) ? 0 : parsedSize;
+      totalSize += size;
+      fileCount++;
+
+      // Extract user ID from path (users/{userId}/...)
+      const pathParts = file.name.split("/");
+      if (pathParts[0] === "users" && pathParts[1]) {
+        const userId = pathParts[1];
+        if (!userFiles[userId]) {
+          userFiles[userId] = { count: 0, size: 0 };
+        }
+        userFiles[userId].count++;
+        userFiles[userId].size += size;
+      }
+
+      // Track file types - handle files without extensions properly
+      const baseName = file.name.split("/").pop() ?? "";
+      const dotIndex = baseName.lastIndexOf(".");
+      const ext =
+        dotIndex > 0 && dotIndex < baseName.length - 1
+          ? baseName.slice(dotIndex + 1).toLowerCase()
+          : "unknown";
+      if (!fileTypes[ext]) {
+        fileTypes[ext] = { count: 0, size: 0 };
+      }
+      fileTypes[ext].count++;
+      fileTypes[ext].size += size;
+    }
+
+    // Find orphaned files (users who don't exist)
+    const db = admin.firestore();
+    const userIds = Object.keys(userFiles);
+    let orphanedCount = 0;
+    let orphanedSize = 0;
+
+    // Check users in batches of 10
+    for (let i = 0; i < userIds.length; i += 10) {
+      const batch = userIds.slice(i, i + 10);
+      const userDocs = await Promise.all(batch.map((uid) => db.collection("users").doc(uid).get()));
+
+      userDocs.forEach((doc, idx) => {
+        if (!doc.exists) {
+          const userId = batch[idx];
+          orphanedCount += userFiles[userId].count;
+          orphanedSize += userFiles[userId].size;
+        }
+      });
+    }
+
+    return {
+      totalSize,
+      totalSizeFormatted: formatBytes(totalSize),
+      fileCount,
+      userCount: Object.keys(userFiles).length,
+      orphanedFiles: {
+        count: orphanedCount,
+        size: orphanedSize,
+        sizeFormatted: formatBytes(orphanedSize),
+      },
+      fileTypes: Object.entries(fileTypes)
+        .map(([ext, data]) => ({
+          extension: ext,
+          count: data.count,
+          size: data.size,
+          sizeFormatted: formatBytes(data.size),
+        }))
+        .sort((a, b) => b.size - a.size)
+        .slice(0, 10),
+      truncated, // True if we hit the 10,000 file safety cap
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetStorageStats", "Failed to get storage stats", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get storage statistics");
+  }
+});
+
+/**
+ * Helper: Format bytes to human-readable string
+ */
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+}
+
+/**
+ * Admin: Get Rate Limit Status
+ * Returns current rate limit status for monitoring
+ */
+export const adminGetRateLimitStatus = onCall(async (request) => {
+  await requireAdmin(request, "adminGetRateLimitStatus");
+
+  logSecurityEvent("ADMIN_ACTION", "adminGetRateLimitStatus", "Admin requested rate limit status", {
+    userId: request.auth?.uid,
+    severity: "INFO",
+  });
+
+  try {
+    const db = admin.firestore();
+    const now = Date.now();
+
+    // Get recent rate limit documents
+    const rateLimitsSnapshot = await db
+      .collection("rate_limits")
+      .orderBy("updatedAt", "desc")
+      .limit(100)
+      .get();
+
+    const activeLimits: Array<{
+      key: string;
+      type: string;
+      points: number;
+      maxPoints: number;
+      resetAt: string;
+      isBlocked: boolean;
+    }> = [];
+
+    const expiredCount = { count: 0 };
+
+    for (const doc of rateLimitsSnapshot.docs) {
+      const data = doc.data();
+
+      // Robust timestamp normalization - handles Firestore Timestamp, number, string, Date
+      const resetAtRaw = data.resetAt;
+      const resetAtMs =
+        typeof resetAtRaw?.toMillis === "function"
+          ? resetAtRaw.toMillis()
+          : typeof resetAtRaw === "number"
+            ? resetAtRaw
+            : resetAtRaw instanceof Date
+              ? resetAtRaw.getTime()
+              : typeof resetAtRaw === "string"
+                ? Date.parse(resetAtRaw)
+                : NaN;
+
+      // Skip entries with invalid timestamps
+      if (!Number.isFinite(resetAtMs)) {
+        continue;
+      }
+
+      if (resetAtMs < now) {
+        expiredCount.count++;
+        continue;
+      }
+
+      // Parse the key to determine type
+      const keyParts = doc.id.split(":");
+      const type = keyParts[0] || "unknown";
+
+      // Create Date and validate it can be serialized
+      // Out-of-range timestamps can cause toISOString() to throw
+      const resetDate = new Date(resetAtMs);
+      if (Number.isNaN(resetDate.getTime())) {
+        continue;
+      }
+
+      activeLimits.push({
+        key: doc.id,
+        type,
+        points: data.points || 0,
+        maxPoints: data.maxPoints || 10,
+        resetAt: resetDate.toISOString(),
+        isBlocked: (data.points || 0) >= (data.maxPoints || 10),
+      });
+    }
+
+    // Sort by points descending (most rate-limited first)
+    activeLimits.sort((a, b) => b.points - a.points);
+
+    // Get counts by type
+    const byType: Record<string, { total: number; blocked: number }> = {};
+    for (const limit of activeLimits) {
+      if (!byType[limit.type]) {
+        byType[limit.type] = { total: 0, blocked: 0 };
+      }
+      byType[limit.type].total++;
+      if (limit.isBlocked) {
+        byType[limit.type].blocked++;
+      }
+    }
+
+    return {
+      activeLimits: activeLimits.slice(0, 50), // Return top 50
+      totalActive: activeLimits.length,
+      totalBlocked: activeLimits.filter((l) => l.isBlocked).length,
+      expiredPendingCleanup: expiredCount.count,
+      byType: Object.entries(byType).map(([type, data]) => ({
+        type,
+        ...data,
+      })),
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetRateLimitStatus", "Failed to get rate limit status", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get rate limit status");
+  }
+});
+
+/**
+ * Admin: Clear Rate Limit
+ * Manually clears rate limit for a specific key
+ */
+interface ClearRateLimitRequest {
+  key: string;
+}
+
+export const adminClearRateLimit = onCall<ClearRateLimitRequest>(async (request) => {
+  await requireAdmin(request, "adminClearRateLimit");
+
+  const { key } = request.data;
+
+  if (!key) {
+    throw new HttpsError("invalid-argument", "Rate limit key is required");
+  }
+
+  // SECURITY: Validate key format to prevent path traversal and DoS abuse
+  // Rate limit keys should be alphanumeric with colons/underscores/hyphens only
+  if (key.includes("/") || key.includes("\\")) {
+    throw new HttpsError("invalid-argument", "Invalid rate limit key format");
+  }
+  if (key.length > 256) {
+    throw new HttpsError("invalid-argument", "Invalid rate limit key format");
+  }
+  if (!/^[a-z0-9:_-]+$/i.test(key)) {
+    throw new HttpsError("invalid-argument", "Invalid rate limit key format");
+  }
+
+  // Hash key for logging to avoid exposing potential PII (user IDs, IPs, emails)
+  const hashedKey = hashUserId(key);
+
+  logSecurityEvent("ADMIN_ACTION", "adminClearRateLimit", "Admin cleared rate limit", {
+    userId: request.auth?.uid,
+    metadata: { rateLimitKeyHash: hashedKey },
+    severity: "WARNING",
+    storeInFirestore: true,
+  });
+
+  try {
+    const db = admin.firestore();
+    await db.collection("rate_limits").doc(key).delete();
+
+    return { success: true, message: "Rate limit cleared successfully" };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminClearRateLimit", "Failed to clear rate limit", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), rateLimitKeyHash: hashedKey },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to clear rate limit");
+  }
+});
+
+/**
+ * Admin: Get Collection Statistics
+ * Returns document counts and estimated sizes for all collections
+ */
+export const adminGetCollectionStats = onCall(async (request) => {
+  await requireAdmin(request, "adminGetCollectionStats");
+
+  logSecurityEvent("ADMIN_ACTION", "adminGetCollectionStats", "Admin requested collection stats", {
+    userId: request.auth?.uid,
+    severity: "INFO",
+  });
+
+  try {
+    const db = admin.firestore();
+
+    // Collections to analyze
+    const collections = [
+      { name: "users", isUserData: true },
+      { name: "meetings", isUserData: false },
+      { name: "sober_living", isUserData: false },
+      { name: "daily_quotes", isUserData: false },
+      { name: "recovery_glossary", isUserData: false },
+      { name: "slogans", isUserData: false },
+      { name: "quick_links", isUserData: false },
+      { name: "prayers", isUserData: false },
+      { name: "rate_limits", isUserData: false },
+      { name: "admin_jobs", isUserData: false },
+      { name: "security_logs", isUserData: false },
+      { name: "system", isUserData: false },
+    ];
+
+    const stats: Array<{
+      collection: string;
+      count: number;
+      hasSubcollections?: boolean;
+      subcollectionEstimate?: number;
+    }> = [];
+
+    for (const col of collections) {
+      try {
+        // Use count() for efficient counting (Firestore aggregation)
+        const countSnapshot = await db.collection(col.name).count().get();
+        const count = countSnapshot.data().count;
+
+        const colStat: {
+          collection: string;
+          count: number;
+          hasSubcollections?: boolean;
+          subcollectionEstimate?: number;
+        } = {
+          collection: col.name,
+          count: count,
+        };
+
+        // For users collection, estimate subcollection counts
+        if (col.name === "users" && count > 0) {
+          // Sample a few users to estimate subcollection sizes
+          const sampleUsers = await db.collection("users").limit(5).get();
+          const subcollectionCounts: Record<string, number[]> = {
+            journal: [],
+            daily_logs: [],
+            inventoryEntries: [],
+          };
+
+          for (const userDoc of sampleUsers.docs) {
+            for (const subCol of Object.keys(subcollectionCounts)) {
+              try {
+                const subCount = await db.collection(`users/${userDoc.id}/${subCol}`).count().get();
+                subcollectionCounts[subCol].push(subCount.data().count);
+              } catch {
+                // Subcollection might not exist for this user
+              }
+            }
+          }
+
+          // Calculate averages and estimate totals
+          const subcollections = Object.entries(subcollectionCounts)
+            .filter(([, counts]) => counts.length > 0)
+            .map(([, counts]) => {
+              const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
+              return Math.round(avg * count);
+            });
+
+          if (subcollections.length > 0) {
+            colStat.hasSubcollections = true;
+            colStat.subcollectionEstimate = subcollections.reduce((a, b) => a + b, 0);
+          }
+        }
+
+        stats.push(colStat);
+      } catch {
+        // Collection might not exist
+        stats.push({
+          collection: col.name,
+          count: 0,
+        });
+      }
+    }
+
+    // Calculate totals
+    const totalDocuments = stats.reduce((sum, s) => sum + s.count, 0);
+    const totalSubcollectionDocs = stats
+      .filter((s) => s.hasSubcollections)
+      .reduce((sum, s) => sum + (s.subcollectionEstimate || 0), 0);
+
+    return {
+      collections: stats,
+      totals: {
+        collections: stats.length,
+        documents: totalDocuments,
+        estimatedSubcollectionDocuments: totalSubcollectionDocs,
+        estimatedTotal: totalDocuments + totalSubcollectionDocs,
+      },
+      generatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    logSecurityEvent("ADMIN_ERROR", "adminGetCollectionStats", "Failed to get collection stats", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to get collection statistics");
   }
 });

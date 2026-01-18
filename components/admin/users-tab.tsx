@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger, maskIdentifier } from "@/lib/logger";
 import {
@@ -19,6 +19,7 @@ import {
   ArrowUpDown,
   Loader2,
   Shield,
+  KeyRound,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -111,6 +112,31 @@ export function UsersTab() {
   const [privilegeTypes, setPrivilegeTypes] = useState<PrivilegeType[]>([]);
   const [selectedPrivilege, setSelectedPrivilege] = useState<string>("");
   const [savingPrivilege, setSavingPrivilege] = useState(false);
+
+  // Password reset state
+  const [sendingPasswordReset, setSendingPasswordReset] = useState(false);
+  const [passwordResetSent, setPasswordResetSent] = useState(false);
+  const passwordResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup password reset timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (passwordResetTimeoutRef.current) {
+        clearTimeout(passwordResetTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Reset password reset UI when switching users (prevents stale timeout updates)
+  useEffect(() => {
+    setPasswordResetSent(false);
+    setSendingPasswordReset(false);
+
+    if (passwordResetTimeoutRef.current) {
+      clearTimeout(passwordResetTimeoutRef.current);
+      passwordResetTimeoutRef.current = null;
+    }
+  }, [selectedUser?.profile.uid]);
 
   // Load users on mount and when sort changes
   const loadUsers = useCallback(
@@ -240,6 +266,15 @@ export function UsersTab() {
     setIsSearchMode(false);
     setError(null);
   }
+
+  // Auto-clear search mode when search field is emptied
+  useEffect(() => {
+    if (searchQuery === "" && isSearchMode) {
+      setSearchResults([]);
+      setIsSearchMode(false);
+      setError(null);
+    }
+  }, [searchQuery, isSearchMode]);
 
   // Determine which users to display
   const displayUsers = isSearchMode ? searchResults : users;
@@ -409,6 +444,51 @@ export function UsersTab() {
       setSelectedPrivilege(selectedUser.profile.privilegeType || "free");
     } finally {
       setSavingPrivilege(false);
+    }
+  }
+
+  async function handleSendPasswordReset() {
+    if (!selectedUser?.profile.email) {
+      setError("Cannot send password reset - user has no email address");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to send a password reset email to ${selectedUser.profile.email}?`
+      )
+    ) {
+      return;
+    }
+
+    setSendingPasswordReset(true);
+    setError(null);
+    setPasswordResetSent(false);
+
+    try {
+      const functions = getFunctions();
+      const resetFn = httpsCallable<{ email: string }, { success: boolean; message: string }>(
+        functions,
+        "adminSendPasswordReset"
+      );
+
+      await resetFn({ email: selectedUser.profile.email });
+      setPasswordResetSent(true);
+
+      // Reset the success indicator after 5 seconds
+      // Clear any existing timeout first to prevent stale state updates
+      if (passwordResetTimeoutRef.current) {
+        clearTimeout(passwordResetTimeoutRef.current);
+      }
+      passwordResetTimeoutRef.current = setTimeout(() => setPasswordResetSent(false), 5000);
+    } catch (err) {
+      logger.error("Failed to send password reset", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+      });
+      setError("Failed to send password reset email. Please try again.");
+    } finally {
+      setSendingPasswordReset(false);
     }
   }
 
@@ -829,7 +909,7 @@ export function UsersTab() {
               {/* Admin Actions */}
               <div className="bg-white border border-amber-100 rounded-lg p-4">
                 <h4 className="font-medium text-amber-900 mb-3">Admin Actions</h4>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleToggleDisabled}
                     disabled={saving}
@@ -851,7 +931,39 @@ export function UsersTab() {
                       </>
                     )}
                   </button>
+                  <button
+                    onClick={handleSendPasswordReset}
+                    disabled={sendingPasswordReset || !selectedUser.profile.email}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      passwordResetSent
+                        ? "bg-green-500 text-white"
+                        : "bg-amber-500 text-white hover:bg-amber-600"
+                    }`}
+                    title={!selectedUser.profile.email ? "User has no email address" : undefined}
+                  >
+                    {sendingPasswordReset ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : passwordResetSent ? (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Email Sent!
+                      </>
+                    ) : (
+                      <>
+                        <KeyRound className="w-4 h-4" />
+                        Reset Password
+                      </>
+                    )}
+                  </button>
                 </div>
+                {!selectedUser.profile.email && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    Password reset unavailable - user signed up with Google/anonymous auth
+                  </p>
+                )}
               </div>
 
               {/* Recent Activity */}

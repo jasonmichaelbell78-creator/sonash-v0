@@ -13,6 +13,7 @@ import { UsersTab } from "./users-tab";
 import { JobsTab } from "./jobs-tab";
 import { ErrorsTab } from "./errors-tab";
 import { LogsTab } from "./logs-tab";
+import { PrivilegesTab } from "./privileges-tab";
 import {
   LayoutDashboard,
   Home,
@@ -25,6 +26,7 @@ import {
   Clock,
   AlertTriangle,
   FileText,
+  Shield,
 } from "lucide-react";
 
 interface AdminTabsProps {
@@ -37,6 +39,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
   const systemTabs = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "users", label: "Users", icon: Users },
+    { id: "privileges", label: "Privileges", icon: Shield },
     { id: "jobs", label: "Jobs", icon: Clock },
     { id: "errors", label: "Errors", icon: AlertTriangle },
     { id: "logs", label: "Logs", icon: FileText },
@@ -134,6 +137,14 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
           hidden={activeTab !== "users"}
         >
           <UsersTab />
+        </div>
+        <div
+          role="tabpanel"
+          id="admin-panel-privileges"
+          aria-labelledby="admin-tab-privileges"
+          hidden={activeTab !== "privileges"}
+        >
+          <PrivilegesTab />
         </div>
         <div
           role="tabpanel"

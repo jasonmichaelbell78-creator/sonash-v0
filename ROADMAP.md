@@ -1,7 +1,7 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.9
+**Document Version:** 2.11
 **Last Updated:** 2026-01-17
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -169,6 +169,7 @@ creation.
 | ---------------- | ------------------------------- | --------------- | -------- |
 | **Track A**      | Admin Panel (Sentry + GCP Logs) | ✅ Dev Complete | Week 1-2 |
 | **Track A-Test** | Track A Testing & Validation    | 🔄 In Progress  | Week 2   |
+| **Track A-P2**   | Firebase Console Phase 2 (5-8)  | 📋 Planned      | Week 3-4 |
 | **Track B**      | Dev Dashboard MVP               | 🔄 In Progress  | Week 1-3 |
 | **Track C**      | UI/UX Improvements              | 📋 Planned      | Week 2-3 |
 
@@ -204,6 +205,50 @@ creation.
 - [x] **A12:** Generate Usage Analytics job ✅
 - [x] **A13:** Prune Security Events job ✅
 - [x] **A14:** Health Check Notifications job ✅
+
+#### Firebase Console In-App Features ✅ Complete (Session #75)
+
+> **Goal:** Bring commonly-accessed Firebase Console features into the admin
+> panel to reduce context switching.
+
+- [x] **A15:** Password Reset Button in Users Tab ✅
+  - Sends password reset email via Firebase Admin SDK
+  - Shows disabled state for Google/anonymous auth users
+  - Confirmation dialog prevents accidental sends
+- [x] **A16:** Storage Stats in Dashboard ✅
+  - Total size, file count, user count
+  - Orphaned file detection
+  - File type breakdown
+- [x] **A17:** Rate Limit Viewer in Dashboard ✅
+  - View active rate limits with request counts
+  - Clear blocked rate limits manually
+  - Shows expiration times
+- [x] **A18:** Collection Document Counts in Dashboard ✅
+  - Document counts for all Firestore collections
+  - Subcollection estimates where applicable
+  - On-demand loading to reduce dashboard load time
+
+#### Firebase Console Features - Phase 2 (Items 5-8) 📋 PLANNED
+
+> **Next batch** from Firebase/GCP Console integration (Session #75). Implement
+> after Track A-Test validation complete.
+
+- [ ] **A19:** User Analytics Tab (3-4hr)
+  - DAU/WAU/MAU trends visualization
+  - Retention metrics from Firestore session data
+  - Feature usage breakdown
+- [ ] **A20:** Job Results Detailed Viewer (2-3hr)
+  - View full job output logs in-app
+  - Filter by job type, status, date range
+  - Download job logs as JSON
+- [ ] **A21:** Sentry Error → User Correlation (2-3hr)
+  - Link errors to specific user accounts
+  - Show user's recent actions before error
+  - Quick navigation to user details from error
+- [ ] **A22:** GCP Cloud Logging Query Builder (3-4hr)
+  - Simple log queries without GCP Console
+  - Pre-built query templates (errors, security events, auth)
+  - Export filtered results
 
 ### Track A-Test - Testing & Validation 🔄 IN PROGRESS
 
@@ -1854,6 +1899,8 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.11    | 2026-01-17 | Session #75: Added Track A-P2 (Firebase Console Phase 2) with items 5-8 (A19-A22) to active sprint; expanded task details with effort estimates                                                                                                                                                                                                                                             |
+| 2.10    | 2026-01-17 | Session #75: Added Firebase Console In-App Features (A15-A18) - Password reset, Storage stats, Rate limits, Collection counts; added future sprint items A19-A22                                                                                                                                                                                                                            |
 | 2.9     | 2026-01-17 | Track A development complete (A1-A14 all done); added Track A-Test phase with 125 test items; linked to TRACK_A_TESTING_CHECKLIST.md; updated blockers (Sentry/Dashboard resolved)                                                                                                                                                                                                          |
 | 2.8     | 2026-01-17 | Added Technical Debt Backlog section with 283 aggregated findings from all audits; created MASTER_ISSUE_LIST.md, IMPLEMENTATION_PLAN.md, ROADMAP_INTEGRATION.md; linked to `npm run aggregate:audit-findings`                                                                                                                                                                               |
 | 2.7     | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to Track A - cleanup sessions, orphaned files, usage analytics, prune security events, health checks; added Deferred Background Jobs to M2 (refresh cache, backup verification)                                                                                                                                                      |
