@@ -200,7 +200,8 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
 }> {
   const storage = admin.storage();
   const db = admin.firestore();
-  const bucket = storage.bucket();
+  // FIREBASE: Explicitly specify bucket - default bucket() uses appspot.com not firebasestorage.app
+  const bucket = storage.bucket("sonash-app.firebasestorage.app");
 
   let checked = 0;
   let deleted = 0;

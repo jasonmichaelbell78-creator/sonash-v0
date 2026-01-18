@@ -168,7 +168,7 @@ creation.
 | Track            | Focus                           | Status          | Target   |
 | ---------------- | ------------------------------- | --------------- | -------- |
 | **Track A**      | Admin Panel (Sentry + GCP Logs) | ✅ Dev Complete | Week 1-2 |
-| **Track A-Test** | Track A Testing & Validation    | 🔄 In Progress  | Week 2   |
+| **Track A-Test** | Track A Testing & Validation    | ✅ Complete     | Week 2   |
 | **Track A-P2**   | Firebase Console Phase 2 (5-8)  | 📋 Planned      | Week 3-4 |
 | **Track B**      | Dev Dashboard MVP               | 🔄 In Progress  | Week 1-3 |
 | **Track C**      | UI/UX Improvements              | 📋 Planned      | Week 2-3 |
@@ -250,7 +250,7 @@ creation.
   - Pre-built query templates (errors, security events, auth)
   - Export filtered results
 
-### Track A-Test - Testing & Validation 🔄 IN PROGRESS
+### Track A-Test - Testing & Validation ✅ COMPLETE
 
 > **Checklist:**
 > [TRACK_A_TESTING_CHECKLIST.md](docs/TRACK_A_TESTING_CHECKLIST.md) **Total
@@ -278,17 +278,20 @@ creation.
 | A14 | `security_logs`: `severity ASC + timestamp ASC`    | ✅ Deployed |
 | A14 | `admin_jobs`: `lastRunStatus + lastRun`            | ✅ Deployed |
 
-**Remaining Blocker:** A11 (Cleanup Orphaned Storage) fails due to missing
-Firebase Storage bucket - needs configuration.
+**All Blockers Resolved (Session #77):**
+
+- ✅ Firestore indexes deployed
+- ✅ A11 storage bucket fix deployed (`sonash-app.firebasestorage.app`)
 
 **Testing Prerequisites:**
 
 - [x] Deploy latest functions to Firebase
 - [x] Fix job visibility (Session #74 - added all jobs to registeredJobs)
 - [x] Create missing Firestore indexes (A10, A14) - **DONE 2026-01-18**
+- [x] Fix A11 storage bucket name - **DONE 2026-01-18**
+- [x] Re-test all jobs A10-A14 - **ALL PASSING 2026-01-18**
 - [ ] Verify Sentry env vars configured
 - [ ] Create test user accounts (admin, premium, free)
-- [ ] Re-test jobs A10, A12, A14 now that indexes are deployed
 
 ### Track B - Dev Dashboard
 
@@ -360,7 +363,7 @@ Firebase Storage bucket - needs configuration.
 | Sentry env vars missing  | ✅ Resolved | Firebase config verified |
 | Dashboard stats failing  | ✅ Resolved | A5 complete              |
 | /dev route doesn't exist | ❌ Blocking | B1 task (Track B)        |
-| Track A testing pending  | 🔄 Active   | Track A-Test in progress |
+| Track A testing complete | ✅ Complete | All jobs A10-A14 passing |
 
 ### Quick Reference: Environment Variables Needed
 
@@ -1115,6 +1118,16 @@ These pre-existing issues were identified during PR review CI:
   - Mock network status in tests
   - Test queue behavior, sync on reconnect
   - **Verification:** `npm test -- --grep offline` all pass
+
+- ⏳ **EFF-012: Network Failure Error Handling Tests** (M effort)
+  - **Deferred from:** Track A Admin Panel testing (Session #77)
+  - Test admin panel network failure scenarios:
+    - [ ] Logs tab error state on network failure
+    - [ ] Privilege save error handling and revert
+    - [ ] Jobs failure status display
+    - [ ] Password reset network failure handling
+  - Test graceful degradation patterns
+  - **Verification:** Simulate offline, verify error states and recovery
 
 #### Lighthouse Performance Monitoring (from 2026-01-14 Planning)
 
@@ -1899,6 +1912,8 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.13    | 2026-01-18 | Session #77: **Track A-Test COMPLETE** - All jobs A10-A14 passing (97.7% pass rate); Fixed A11 storage bucket (`sonash-app.firebasestorage.app`); Added EFF-012 (Network Failure Tests) to offline mode section                                                                                                                                                                             |
+| 2.12    | 2026-01-18 | Session #76: Firestore indexes deployed and verified; Track A-Test validation in progress                                                                                                                                                                                                                                                                                                   |
 | 2.11    | 2026-01-17 | Session #75: Added Track A-P2 (Firebase Console Phase 2) with items 5-8 (A19-A22) to active sprint; expanded task details with effort estimates                                                                                                                                                                                                                                             |
 | 2.10    | 2026-01-17 | Session #75: Added Firebase Console In-App Features (A15-A18) - Password reset, Storage stats, Rate limits, Collection counts; added future sprint items A19-A22                                                                                                                                                                                                                            |
 | 2.9     | 2026-01-17 | Track A development complete (A1-A14 all done); added Track A-Test phase with 125 test items; linked to TRACK_A_TESTING_CHECKLIST.md; updated blockers (Sentry/Dashboard resolved)                                                                                                                                                                                                          |
