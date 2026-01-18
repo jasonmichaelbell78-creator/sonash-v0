@@ -654,6 +654,11 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
     const searchQueryLower = trimmedQuery.toLowerCase();
     const db = admin.firestore();
 
+    // Prevent empty search from listing all users
+    if (!trimmedQuery) {
+      throw new HttpsError("invalid-argument", "Search query is required");
+    }
+
     // Search by UID (exact match) - UIDs are case-sensitive
     if (trimmedQuery.length >= 20) {
       try {
@@ -2084,22 +2089,25 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10_000);
 
-      const response = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
-        {
-          method: "POST",
-          signal: controller.signal,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            requestType: "PASSWORD_RESET",
-            email: email,
-          }),
-        }
-      ).finally(() => {
+      let response: Response;
+      try {
+        response = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
+          {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              requestType: "PASSWORD_RESET",
+              email: email,
+            }),
+          }
+        );
+      } finally {
         clearTimeout(timeoutId);
-      });
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -2211,8 +2219,13 @@ export const adminGetStorageStats = onCall(async (request) => {
         userFiles[userId].size += size;
       }
 
-      // Track file types
-      const ext = file.name.split(".").pop()?.toLowerCase() || "unknown";
+      // Track file types - handle files without extensions properly
+      const baseName = file.name.split("/").pop() ?? "";
+      const dotIndex = baseName.lastIndexOf(".");
+      const ext =
+        dotIndex > 0 && dotIndex < baseName.length - 1
+          ? baseName.slice(dotIndex + 1).toLowerCase()
+          : "unknown";
       if (!fileTypes[ext]) {
         fileTypes[ext] = { count: 0, size: 0 };
       }

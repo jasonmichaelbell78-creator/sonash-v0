@@ -130,6 +130,8 @@ export function UsersTab() {
   // Reset password reset UI when switching users (prevents stale timeout updates)
   useEffect(() => {
     setPasswordResetSent(false);
+    setSendingPasswordReset(false);
+
     if (passwordResetTimeoutRef.current) {
       clearTimeout(passwordResetTimeoutRef.current);
       passwordResetTimeoutRef.current = null;
