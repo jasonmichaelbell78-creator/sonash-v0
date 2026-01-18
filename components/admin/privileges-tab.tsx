@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import {
   Shield,
   Plus,
@@ -99,6 +100,9 @@ export function PrivilegesTab() {
       setLoading(false);
     }
   }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("privileges", loadPrivilegeTypes, { skipInitial: true });
 
   useEffect(() => {
     loadPrivilegeTypes();

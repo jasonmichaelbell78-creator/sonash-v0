@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
 import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Calendar } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 
 interface Job {
   id: string;
@@ -24,11 +25,7 @@ export function JobsTab() {
   const [error, setError] = useState<string | null>(null);
   const [runningJobs, setRunningJobs] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    loadJobs();
-  }, []);
-
-  async function loadJobs() {
+  const loadJobs = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -44,7 +41,14 @@ export function JobsTab() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("jobs", loadJobs, { skipInitial: true });
+
+  useEffect(() => {
+    loadJobs();
+  }, [loadJobs]);
 
   async function triggerJob(jobId: string) {
     if (runningJobs.has(jobId)) return;

@@ -1040,6 +1040,275 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
 });
 
 /**
+ * Admin: Soft-Delete User
+ * Marks a user for deletion with 30-day retention period
+ * Disables auth account and revokes tokens immediately
+ *
+ * SECURITY: Requires admin privilege, blocks self-deletion
+ * VALIDATION: Uses zod for input validation with length limits
+ * ROLLBACK: Re-enables auth if Firestore write fails
+ * AUDIT: Logs security event with hashed user ID
+ */
+interface SoftDeleteUserRequest {
+  uid: string;
+  reason?: string;
+}
+
+// Input validation schema for soft-delete
+const softDeleteSchema = z.object({
+  uid: z.string().trim().min(1, "User ID is required").max(128, "User ID too long"),
+  reason: z.string().trim().max(500, "Reason too long").optional(),
+});
+
+export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request) => {
+  await requireAdmin(request, "adminSoftDeleteUser");
+
+  // VALIDATION: Validate and sanitize input
+  const parseResult = softDeleteSchema.safeParse(request.data);
+  if (!parseResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      parseResult.error.issues[0]?.message || "Invalid input"
+    );
+  }
+  const { uid } = parseResult.data;
+  const reason = parseResult.data.reason?.length ? parseResult.data.reason : undefined;
+
+  // SECURITY: Block self-deletion
+  if (request.auth?.uid && uid === request.auth.uid) {
+    throw new HttpsError("failed-precondition", "Admins cannot delete their own account");
+  }
+
+  // SECURITY: Log audit event (hash targetUid to avoid PII in logs)
+  logSecurityEvent("ADMIN_ACTION", "adminSoftDeleteUser", "Admin soft-deleted user", {
+    userId: request.auth?.uid,
+    metadata: { targetUidHash: hashUserId(uid), hasReason: !!reason },
+    severity: "WARNING",
+  });
+
+  const db = admin.firestore();
+
+  try {
+    // Check if user exists and is not already soft-deleted
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      throw new HttpsError("not-found", "User not found");
+    }
+
+    const userData = userDoc.data();
+    if (userData?.isSoftDeleted) {
+      throw new HttpsError("failed-precondition", "User is already scheduled for deletion");
+    }
+
+    // Calculate scheduled hard delete date (30 days from now)
+    const now = new Date();
+    const scheduledHardDeleteAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    // OPERATION ORDER: Firestore first (source of truth), then Auth
+    // This ensures consistent rollback if Auth operations fail
+    await db
+      .collection("users")
+      .doc(uid)
+      .update({
+        isSoftDeleted: true,
+        softDeletedAt: admin.firestore.FieldValue.serverTimestamp(),
+        softDeletedBy: request.auth?.uid || null,
+        scheduledHardDeleteAt: admin.firestore.Timestamp.fromDate(scheduledHardDeleteAt),
+        softDeleteReason: reason || null,
+        // Also set disabled fields for consistency
+        disabled: true,
+        disabledAt: admin.firestore.FieldValue.serverTimestamp(),
+        disabledBy: request.auth?.uid || null,
+      });
+
+    // Apply Auth changes after Firestore is consistent
+    // ROLLBACK: If Auth changes fail, revert Firestore flags
+    try {
+      await admin.auth().updateUser(uid, { disabled: true });
+      await admin.auth().revokeRefreshTokens(uid);
+    } catch (authError) {
+      // ROLLBACK: Revert Firestore soft-delete fields
+      await db.collection("users").doc(uid).update({
+        isSoftDeleted: false,
+        softDeletedAt: null,
+        softDeletedBy: null,
+        scheduledHardDeleteAt: null,
+        softDeleteReason: null,
+        disabled: false,
+        disabledAt: null,
+        disabledBy: null,
+      });
+      throw authError;
+    }
+
+    return {
+      success: true,
+      message: "User scheduled for deletion in 30 days",
+      scheduledHardDeleteAt: scheduledHardDeleteAt.toISOString(),
+    };
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+
+    logSecurityEvent("ADMIN_ERROR", "adminSoftDeleteUser", "Failed to soft-delete user", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to soft-delete user");
+  }
+});
+
+/**
+ * Admin: Undelete User
+ * Restores a soft-deleted user before the 30-day retention expires
+ * Re-enables auth account
+ *
+ * SECURITY: Requires admin privilege
+ * VALIDATION: Uses zod for input validation with length limits
+ * ATOMICITY: Uses Firestore transaction to check expiry and update atomically
+ * ROLLBACK: Reverts Firestore if auth restore fails
+ * AUDIT: Logs security event with hashed user ID
+ */
+interface UndeleteUserRequest {
+  uid: string;
+}
+
+// Input validation schema for undelete
+const undeleteSchema = z.object({
+  uid: z.string().trim().min(1, "User ID is required").max(128, "User ID too long"),
+});
+
+export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => {
+  await requireAdmin(request, "adminUndeleteUser");
+
+  // VALIDATION: Validate and sanitize input (consistent with adminSoftDeleteUser)
+  const parseResult = undeleteSchema.safeParse(request.data);
+  if (!parseResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      parseResult.error.issues[0]?.message || "Invalid input"
+    );
+  }
+  const { uid } = parseResult.data;
+
+  // SECURITY: Log audit event
+  logSecurityEvent("ADMIN_ACTION", "adminUndeleteUser", "Admin restored soft-deleted user", {
+    userId: request.auth?.uid,
+    metadata: { targetUidHash: hashUserId(uid) },
+    severity: "INFO",
+  });
+
+  const db = admin.firestore();
+  const now = admin.firestore.Timestamp.now();
+
+  // ROLLBACK STATE: Type for original values captured in transaction
+  interface OriginalSoftDeleteFields {
+    softDeletedAt: admin.firestore.Timestamp | null;
+    softDeletedBy: string | null;
+    scheduledHardDeleteAt: admin.firestore.Timestamp | null;
+    softDeleteReason: string | null;
+    disabledAt: admin.firestore.Timestamp | null;
+    disabledBy: string | null;
+    disabledReason: string | null;
+  }
+
+  // Use object wrapper to allow mutation inside transaction callback
+  const rollbackState: { original: OriginalSoftDeleteFields | null } = { original: null };
+
+  try {
+    // ATOMICITY: Use transaction to check expiry and update in one atomic operation
+    await db.runTransaction(async (tx) => {
+      const userRef = db.collection("users").doc(uid);
+      const userDoc = await tx.get(userRef);
+
+      if (!userDoc.exists) {
+        throw new HttpsError("not-found", "User not found");
+      }
+
+      const userData = userDoc.data();
+      if (!userData?.isSoftDeleted) {
+        throw new HttpsError("failed-precondition", "User is not scheduled for deletion");
+      }
+
+      // EXPIRY CHECK: Block restores after retention period expires
+      const scheduled = userData.scheduledHardDeleteAt as
+        | admin.firestore.Timestamp
+        | null
+        | undefined;
+      if (!scheduled || scheduled.toMillis() <= now.toMillis()) {
+        throw new HttpsError(
+          "failed-precondition",
+          "User can no longer be restored (retention period expired)"
+        );
+      }
+
+      // CAPTURE: Store original values for potential rollback
+      rollbackState.original = {
+        softDeletedAt: userData.softDeletedAt ?? null,
+        softDeletedBy: userData.softDeletedBy ?? null,
+        scheduledHardDeleteAt: userData.scheduledHardDeleteAt ?? null,
+        softDeleteReason: userData.softDeleteReason ?? null,
+        disabledAt: userData.disabledAt ?? null,
+        disabledBy: userData.disabledBy ?? null,
+        disabledReason: userData.disabledReason ?? null,
+      };
+
+      // Update within transaction
+      tx.update(userRef, {
+        isSoftDeleted: false,
+        softDeletedAt: null,
+        softDeletedBy: null,
+        scheduledHardDeleteAt: null,
+        softDeleteReason: null,
+        // Also clear disabled fields
+        disabled: false,
+        disabledAt: null,
+        disabledBy: null,
+        disabledReason: null,
+      });
+    });
+
+    // Re-enable Firebase Auth account after Firestore is consistent
+    // ROLLBACK: If auth restore fails, revert Firestore to original state
+    try {
+      await admin.auth().updateUser(uid, { disabled: false });
+    } catch (authError) {
+      // FULL ROLLBACK: Restore all original soft-delete fields
+      const orig = rollbackState.original;
+      await db
+        .collection("users")
+        .doc(uid)
+        .update({
+          isSoftDeleted: true,
+          softDeletedAt: orig?.softDeletedAt ?? admin.firestore.FieldValue.serverTimestamp(),
+          softDeletedBy: orig?.softDeletedBy ?? null,
+          scheduledHardDeleteAt: orig?.scheduledHardDeleteAt ?? null,
+          softDeleteReason: orig?.softDeleteReason ?? null,
+          disabled: true,
+          disabledAt: orig?.disabledAt ?? admin.firestore.FieldValue.serverTimestamp(),
+          disabledBy: orig?.disabledBy ?? null,
+          disabledReason: orig?.disabledReason ?? null,
+        });
+      throw authError;
+    }
+
+    return {
+      success: true,
+      message: "User restored successfully",
+    };
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+
+    logSecurityEvent("ADMIN_ERROR", "adminUndeleteUser", "Failed to restore soft-deleted user", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to restore user");
+  }
+});
+
+/**
  * Admin: Trigger Background Job
  * Allows admin to manually trigger a background job
  */
@@ -1448,23 +1717,27 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
     });
 
     // Generate GCP Cloud Logging deep links
-    // Format: https://console.cloud.google.com/logs/query;query=QUERY;project=PROJECT_ID
+    // Format: https://console.cloud.google.com/logs/query;query=QUERY;storageScope=project;timeRange=PT24H?project=PROJECT_ID
+    // Note: project must be a query param (after ?), timeRange as path param for 24h window
     const projectId = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || "sonash-app";
     const baseUrl = `https://console.cloud.google.com/logs/query`;
 
     // URL-encode query strings for GCP Logs Explorer
     const encodeQuery = (query: string) => encodeURIComponent(query);
 
-    // Time range: last 24 hours
-    const timeRange = "timestamp>=-PT24H";
+    // Build URL with proper GCP format: path params with ; then query params with ?
+    const buildGcpUrl = (query: string) =>
+      `${baseUrl};query=${encodeQuery(query)};storageScope=project;timeRange=PT24H?project=${projectId}`;
 
     const gcpLinks = {
-      allLogs: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" ${timeRange}`)};project=${projectId}`,
-      errors: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" severity=ERROR ${timeRange}`)};project=${projectId}`,
-      warnings: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" severity>=WARNING ${timeRange}`)};project=${projectId}`,
-      security: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type:* ${timeRange}`)};project=${projectId}`,
-      auth: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"AUTH|AUTHORIZATION" ${timeRange}`)};project=${projectId}`,
-      admin: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"ADMIN" ${timeRange}`)};project=${projectId}`,
+      allLogs: buildGcpUrl(`resource.type="cloud_function"`),
+      errors: buildGcpUrl(`resource.type="cloud_function" severity=ERROR`),
+      warnings: buildGcpUrl(`resource.type="cloud_function" severity>=WARNING`),
+      security: buildGcpUrl(`resource.type="cloud_function" jsonPayload.securityEvent.type:*`),
+      auth: buildGcpUrl(
+        `resource.type="cloud_function" jsonPayload.securityEvent.type=~"AUTH|AUTHORIZATION"`
+      ),
+      admin: buildGcpUrl(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"ADMIN"`),
     };
 
     // AUDIT: Log successful access to security logs for compliance traceability

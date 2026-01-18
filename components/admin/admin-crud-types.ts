@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import type { AdminTabId } from "@/lib/contexts/admin-tab-context";
 
 /**
  * Generic Admin CRUD Table - Configuration Types
@@ -74,4 +75,7 @@ export interface AdminCrudConfig<T extends BaseEntity> {
 
   // Validation
   validateForm?: (data: Partial<T>) => string | null; // Returns error message or null
+
+  // Tab refresh integration (optional)
+  tabId?: AdminTabId; // If provided, enables auto-refresh when tab becomes active
 }

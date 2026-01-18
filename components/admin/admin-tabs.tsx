@@ -14,6 +14,7 @@ import { JobsTab } from "./jobs-tab";
 import { ErrorsTab } from "./errors-tab";
 import { LogsTab } from "./logs-tab";
 import { PrivilegesTab } from "./privileges-tab";
+import { useAdminTabContext, type AdminTabId } from "@/lib/contexts/admin-tab-context";
 import {
   LayoutDashboard,
   Home,
@@ -29,14 +30,14 @@ import {
   Shield,
 } from "lucide-react";
 
-interface AdminTabsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-}
-
-export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
+export function AdminTabs() {
+  const { activeTab, setActiveTab } = useAdminTabContext();
   // System tabs - admin operations
-  const systemTabs = [
+  const systemTabs: Array<{
+    id: AdminTabId;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "users", label: "Users", icon: Users },
     { id: "privileges", label: "Privileges", icon: Shield },
@@ -46,7 +47,11 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
   ];
 
   // Content tabs - content management
-  const contentTabs = [
+  const contentTabs: Array<{
+    id: AdminTabId;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
     { id: "meetings", label: "Meetings", icon: Home },
     { id: "sober-living", label: "Sober Living", icon: Home },
     { id: "quotes", label: "Daily Quotes", icon: Quote },
@@ -60,7 +65,7 @@ export function AdminTabs({ activeTab, setActiveTab }: AdminTabsProps) {
     tab,
   }: {
     tab: {
-      id: string;
+      id: AdminTabId;
       label: string;
       icon: React.ComponentType<{ className?: string }>;
     };

@@ -183,6 +183,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isSoftDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "scheduledHardDeleteAt",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

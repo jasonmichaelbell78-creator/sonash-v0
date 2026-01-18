@@ -8,6 +8,7 @@
  * - Separate login flow (Google OAuth)
  * - Admin claim verification
  * - Tabbed interface for content management
+ * - Auto-refresh tabs on switch
  */
 
 import { useState, useEffect } from "react";
@@ -20,6 +21,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { AdminTabs } from "@/components/admin/admin-tabs";
+import { AdminTabProvider } from "@/lib/contexts/admin-tab-context";
 import { logger } from "@/lib/logger";
 
 type AdminState = "loading" | "mobile" | "login" | "not-admin" | "authenticated";
@@ -36,7 +38,6 @@ export default function AdminPage() {
   });
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
     // Check for mobile after mount (only if state is still loading from SSR)
@@ -181,27 +182,29 @@ export default function AdminPage() {
 
   // Authenticated admin
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🔧</span>
-            <h1 className="text-xl font-semibold text-gray-800">Admin Panel</h1>
+    <AdminTabProvider>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔧</span>
+              <h1 className="text-xl font-semibold text-gray-800">Admin Panel</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-gray-600">{user?.email}</span>
+              <button onClick={handleLogout} className="text-gray-500 hover:text-gray-700">
+                Sign out
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-600">{user?.email}</span>
-            <button onClick={handleLogout} className="text-gray-500 hover:text-gray-700">
-              Sign out
-            </button>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      </main>
-    </div>
+        {/* Main content */}
+        <main className="max-w-7xl mx-auto px-6 py-8">
+          <AdminTabs />
+        </main>
+      </div>
+    </AdminTabProvider>
   );
 }
