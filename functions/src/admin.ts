@@ -2177,7 +2177,8 @@ export const adminGetStorageStats = onCall(async (request) => {
 
     for (const file of files) {
       const metadata = file.metadata;
-      const size = parseInt(String(metadata.size || "0"), 10);
+      const parsedSize = parseInt(String(metadata.size || "0"), 10);
+      const size = Number.isNaN(parsedSize) ? 0 : parsedSize;
       totalSize += size;
       fileCount++;
 
@@ -2300,9 +2301,26 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
 
     for (const doc of rateLimitsSnapshot.docs) {
       const data = doc.data();
-      const resetAt = data.resetAt?.toMillis?.() || data.resetAt || 0;
 
-      if (resetAt < now) {
+      // Robust timestamp normalization - handles Firestore Timestamp, number, string, Date
+      const resetAtRaw = data.resetAt;
+      const resetAtMs =
+        typeof resetAtRaw?.toMillis === "function"
+          ? resetAtRaw.toMillis()
+          : typeof resetAtRaw === "number"
+            ? resetAtRaw
+            : resetAtRaw instanceof Date
+              ? resetAtRaw.getTime()
+              : typeof resetAtRaw === "string"
+                ? Date.parse(resetAtRaw)
+                : NaN;
+
+      // Skip entries with invalid timestamps
+      if (!Number.isFinite(resetAtMs)) {
+        continue;
+      }
+
+      if (resetAtMs < now) {
         expiredCount.count++;
         continue;
       }
@@ -2316,7 +2334,7 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
         type,
         points: data.points || 0,
         maxPoints: data.maxPoints || 10,
-        resetAt: new Date(resetAt).toISOString(),
+        resetAt: new Date(resetAtMs).toISOString(),
         isBlocked: (data.points || 0) >= (data.maxPoints || 10),
       });
     }
@@ -2374,9 +2392,18 @@ export const adminClearRateLimit = onCall<ClearRateLimitRequest>(async (request)
     throw new HttpsError("invalid-argument", "Rate limit key is required");
   }
 
+  // SECURITY: Validate key format to prevent path traversal
+  // Rate limit keys should not contain path separators
+  if (key.includes("/") || key.includes("\\")) {
+    throw new HttpsError("invalid-argument", "Invalid rate limit key format");
+  }
+
+  // Hash key for logging to avoid exposing potential PII (user IDs, IPs, emails)
+  const hashedKey = hashUserId(key);
+
   logSecurityEvent("ADMIN_ACTION", "adminClearRateLimit", "Admin cleared rate limit", {
     userId: request.auth?.uid,
-    metadata: { rateLimitKey: key },
+    metadata: { rateLimitKeyHash: hashedKey },
     severity: "WARNING",
     storeInFirestore: true,
   });
@@ -2389,7 +2416,7 @@ export const adminClearRateLimit = onCall<ClearRateLimitRequest>(async (request)
   } catch (error) {
     logSecurityEvent("ADMIN_ERROR", "adminClearRateLimit", "Failed to clear rate limit", {
       userId: request.auth?.uid,
-      metadata: { error: String(error), key },
+      metadata: { error: String(error), rateLimitKeyHash: hashedKey },
       captureToSentry: true,
     });
     throw new HttpsError("internal", "Failed to clear rate limit");
