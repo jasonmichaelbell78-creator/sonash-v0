@@ -525,8 +525,20 @@ export function UsersTab() {
     setDeleteReason("");
   }
 
+  // SAFETY: Close delete dialog if selected user changes mid-flow to prevent deleting wrong user
+  useEffect(() => {
+    if (deleteDialogStep > 0) {
+      closeDeleteDialog();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser?.profile.uid]);
+
   async function handleSoftDelete() {
     if (!selectedUser || deleteConfirmText.trim() !== "DELETE") return;
+
+    // STABILITY: Capture uid at start to prevent race conditions if selection changes
+    const uid = selectedUser.profile.uid;
+    const reasonToSave = deleteReason || undefined;
 
     setDeletingUser(true);
     setError(null);
@@ -539,27 +551,30 @@ export function UsersTab() {
       >(functions, "adminSoftDeleteUser");
 
       const result = await softDeleteFn({
-        uid: selectedUser.profile.uid,
-        reason: deleteReason || undefined,
+        uid,
+        reason: reasonToSave,
       });
 
-      // Update local state
-      setSelectedUser({
-        ...selectedUser,
-        profile: {
-          ...selectedUser.profile,
-          isSoftDeleted: true,
-          softDeletedAt: new Date().toISOString(),
-          scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
-          softDeleteReason: deleteReason || null,
-          disabled: true,
-        },
+      // Update local state (guard against stale selection)
+      setSelectedUser((prev) => {
+        if (!prev || prev.profile.uid !== uid) return prev;
+        return {
+          ...prev,
+          profile: {
+            ...prev.profile,
+            isSoftDeleted: true,
+            softDeletedAt: new Date().toISOString(),
+            scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
+            softDeleteReason: reasonToSave || null,
+            disabled: true,
+          },
+        };
       });
 
       // Update users list
       setUsers((prev) =>
         prev.map((user) =>
-          user.uid === selectedUser.profile.uid
+          user.uid === uid
             ? {
                 ...user,
                 isSoftDeleted: true,
@@ -571,7 +586,7 @@ export function UsersTab() {
       );
       setSearchResults((prev) =>
         prev.map((user) =>
-          user.uid === selectedUser.profile.uid
+          user.uid === uid
             ? {
                 ...user,
                 isSoftDeleted: true,
@@ -586,7 +601,7 @@ export function UsersTab() {
     } catch (err) {
       logger.error("Failed to soft-delete user", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
-        userId: maskIdentifier(selectedUser.profile.uid),
+        userId: maskIdentifier(uid),
       });
       setError("Failed to delete user. Please try again.");
     } finally {
@@ -596,6 +611,9 @@ export function UsersTab() {
 
   async function handleUndelete() {
     if (!selectedUser) return;
+
+    // STABILITY: Capture uid at start to prevent race conditions if selection changes
+    const uid = selectedUser.profile.uid;
 
     if (!confirm("Are you sure you want to restore this user? They will be able to sign in again."))
       return;
@@ -610,26 +628,29 @@ export function UsersTab() {
         "adminUndeleteUser"
       );
 
-      await undeleteFn({ uid: selectedUser.profile.uid });
+      await undeleteFn({ uid });
 
-      // Update local state
-      setSelectedUser({
-        ...selectedUser,
-        profile: {
-          ...selectedUser.profile,
-          isSoftDeleted: false,
-          softDeletedAt: null,
-          softDeletedBy: null,
-          scheduledHardDeleteAt: null,
-          softDeleteReason: null,
-          disabled: false,
-        },
+      // Update local state (guard against stale selection)
+      setSelectedUser((prev) => {
+        if (!prev || prev.profile.uid !== uid) return prev;
+        return {
+          ...prev,
+          profile: {
+            ...prev.profile,
+            isSoftDeleted: false,
+            softDeletedAt: null,
+            softDeletedBy: null,
+            scheduledHardDeleteAt: null,
+            softDeleteReason: null,
+            disabled: false,
+          },
+        };
       });
 
       // Update users list
       setUsers((prev) =>
         prev.map((user) =>
-          user.uid === selectedUser.profile.uid
+          user.uid === uid
             ? {
                 ...user,
                 isSoftDeleted: false,
@@ -641,7 +662,7 @@ export function UsersTab() {
       );
       setSearchResults((prev) =>
         prev.map((user) =>
-          user.uid === selectedUser.profile.uid
+          user.uid === uid
             ? {
                 ...user,
                 isSoftDeleted: false,
@@ -654,7 +675,7 @@ export function UsersTab() {
     } catch (err) {
       logger.error("Failed to undelete user", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
-        userId: maskIdentifier(selectedUser.profile.uid),
+        userId: maskIdentifier(uid),
       });
       setError("Failed to restore user. Please try again.");
     } finally {
@@ -663,9 +684,14 @@ export function UsersTab() {
   }
 
   // Helper to calculate days until hard delete
+  // ROBUSTNESS: Validate date to prevent NaN display
   function getDaysUntilHardDelete(scheduledHardDeleteAt: string | null | undefined): number | null {
     if (!scheduledHardDeleteAt) return null;
-    const days = differenceInDays(new Date(scheduledHardDeleteAt), new Date());
+
+    const hardDeleteDate = new Date(scheduledHardDeleteAt);
+    if (Number.isNaN(hardDeleteDate.getTime())) return null;
+
+    const days = differenceInDays(hardDeleteDate, new Date());
     return days > 0 ? days : 0;
   }
 
@@ -1271,19 +1297,33 @@ export function UsersTab() {
         </div>
       )}
 
-      {/* Overlay */}
+      {/* Overlay - click or Escape to close */}
       {selectedUser && (
-        <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSelectedUser(null)} />
+        <div
+          className="fixed inset-0 bg-black/20 z-40"
+          onClick={() => setSelectedUser(null)}
+          onKeyDown={(e) => e.key === "Escape" && setSelectedUser(null)}
+          role="presentation"
+        />
       )}
 
       {/* Delete Confirmation Dialog */}
       {deleteDialogStep > 0 && selectedUser && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-50" onClick={closeDeleteDialog} />
+          <div
+            className="fixed inset-0 bg-black/50 z-50"
+            onClick={closeDeleteDialog}
+            onKeyDown={(e) => e.key === "Escape" && closeDeleteDialog()}
+            role="presentation"
+          />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
               className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-dialog-title"
             >
               {deleteDialogStep === 1 ? (
                 // Step 1: Initial confirmation
@@ -1293,7 +1333,9 @@ export function UsersTab() {
                       <Trash2 className="w-6 h-6 text-red-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Delete User</h3>
+                      <h3 id="delete-dialog-title" className="text-lg font-semibold text-gray-900">
+                        Delete User
+                      </h3>
                       <p className="text-sm text-gray-500">
                         This action can be undone within 30 days
                       </p>

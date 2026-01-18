@@ -1044,7 +1044,9 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
  * Marks a user for deletion with 30-day retention period
  * Disables auth account and revokes tokens immediately
  *
- * SECURITY: Requires admin privilege
+ * SECURITY: Requires admin privilege, blocks self-deletion
+ * VALIDATION: Uses zod for input validation with length limits
+ * ROLLBACK: Re-enables auth if Firestore write fails
  * AUDIT: Logs security event with hashed user ID
  */
 interface SoftDeleteUserRequest {
@@ -1052,13 +1054,29 @@ interface SoftDeleteUserRequest {
   reason?: string;
 }
 
+// Input validation schema for soft-delete
+const softDeleteSchema = z.object({
+  uid: z.string().trim().min(1, "User ID is required").max(128, "User ID too long"),
+  reason: z.string().trim().max(500, "Reason too long").optional(),
+});
+
 export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request) => {
   await requireAdmin(request, "adminSoftDeleteUser");
 
-  const { uid, reason } = request.data;
+  // VALIDATION: Validate and sanitize input
+  const parseResult = softDeleteSchema.safeParse(request.data);
+  if (!parseResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      parseResult.error.issues[0]?.message || "Invalid input"
+    );
+  }
+  const { uid } = parseResult.data;
+  const reason = parseResult.data.reason?.length ? parseResult.data.reason : undefined;
 
-  if (!uid) {
-    throw new HttpsError("invalid-argument", "User ID is required");
+  // SECURITY: Block self-deletion
+  if (request.auth?.uid && uid === request.auth.uid) {
+    throw new HttpsError("failed-precondition", "Admins cannot delete their own account");
   }
 
   // SECURITY: Log audit event (hash targetUid to avoid PII in logs)
@@ -1086,27 +1104,32 @@ export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request)
     const now = new Date();
     const scheduledHardDeleteAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    // Disable Firebase Auth account
+    // Disable Firebase Auth account and revoke tokens
     await admin.auth().updateUser(uid, { disabled: true });
-
-    // Revoke refresh tokens to force logout
     await admin.auth().revokeRefreshTokens(uid);
 
     // Update Firestore user document with soft-delete fields
-    await db
-      .collection("users")
-      .doc(uid)
-      .update({
-        isSoftDeleted: true,
-        softDeletedAt: admin.firestore.FieldValue.serverTimestamp(),
-        softDeletedBy: request.auth?.uid || null,
-        scheduledHardDeleteAt: admin.firestore.Timestamp.fromDate(scheduledHardDeleteAt),
-        softDeleteReason: reason || null,
-        // Also set disabled fields for consistency
-        disabled: true,
-        disabledAt: admin.firestore.FieldValue.serverTimestamp(),
-        disabledBy: request.auth?.uid || null,
-      });
+    // ROLLBACK: If Firestore write fails, re-enable auth to avoid inconsistent state
+    try {
+      await db
+        .collection("users")
+        .doc(uid)
+        .update({
+          isSoftDeleted: true,
+          softDeletedAt: admin.firestore.FieldValue.serverTimestamp(),
+          softDeletedBy: request.auth?.uid || null,
+          scheduledHardDeleteAt: admin.firestore.Timestamp.fromDate(scheduledHardDeleteAt),
+          softDeleteReason: reason || null,
+          // Also set disabled fields for consistency
+          disabled: true,
+          disabledAt: admin.firestore.FieldValue.serverTimestamp(),
+          disabledBy: request.auth?.uid || null,
+        });
+    } catch (writeError) {
+      // ROLLBACK: Re-enable auth if Firestore update fails
+      await admin.auth().updateUser(uid, { disabled: false });
+      throw writeError;
+    }
 
     return {
       success: true,
@@ -1131,6 +1154,7 @@ export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request)
  * Re-enables auth account
  *
  * SECURITY: Requires admin privilege
+ * ATOMICITY: Uses Firestore transaction to check expiry and update atomically
  * AUDIT: Logs security event with hashed user ID
  */
 interface UndeleteUserRequest {
@@ -1154,35 +1178,52 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
   });
 
   const db = admin.firestore();
+  const now = admin.firestore.Timestamp.now();
 
   try {
-    // Check if user exists and is soft-deleted
-    const userDoc = await db.collection("users").doc(uid).get();
-    if (!userDoc.exists) {
-      throw new HttpsError("not-found", "User not found");
-    }
+    // ATOMICITY: Use transaction to check expiry and update in one atomic operation
+    await db.runTransaction(async (tx) => {
+      const userRef = db.collection("users").doc(uid);
+      const userDoc = await tx.get(userRef);
 
-    const userData = userDoc.data();
-    if (!userData?.isSoftDeleted) {
-      throw new HttpsError("failed-precondition", "User is not scheduled for deletion");
-    }
+      if (!userDoc.exists) {
+        throw new HttpsError("not-found", "User not found");
+      }
 
-    // Re-enable Firebase Auth account
-    await admin.auth().updateUser(uid, { disabled: false });
+      const userData = userDoc.data();
+      if (!userData?.isSoftDeleted) {
+        throw new HttpsError("failed-precondition", "User is not scheduled for deletion");
+      }
 
-    // Clear soft-delete fields and re-enable user
-    await db.collection("users").doc(uid).update({
-      isSoftDeleted: false,
-      softDeletedAt: null,
-      softDeletedBy: null,
-      scheduledHardDeleteAt: null,
-      softDeleteReason: null,
-      // Also clear disabled fields
-      disabled: false,
-      disabledAt: null,
-      disabledBy: null,
-      disabledReason: null,
+      // EXPIRY CHECK: Block restores after retention period expires
+      const scheduled = userData.scheduledHardDeleteAt as
+        | admin.firestore.Timestamp
+        | null
+        | undefined;
+      if (!scheduled || scheduled.toMillis() <= now.toMillis()) {
+        throw new HttpsError(
+          "failed-precondition",
+          "User can no longer be restored (retention period expired)"
+        );
+      }
+
+      // Update within transaction
+      tx.update(userRef, {
+        isSoftDeleted: false,
+        softDeletedAt: null,
+        softDeletedBy: null,
+        scheduledHardDeleteAt: null,
+        softDeleteReason: null,
+        // Also clear disabled fields
+        disabled: false,
+        disabledAt: null,
+        disabledBy: null,
+        disabledReason: null,
+      });
     });
+
+    // Re-enable Firebase Auth account after Firestore is consistent
+    await admin.auth().updateUser(uid, { disabled: false });
 
     return {
       success: true,

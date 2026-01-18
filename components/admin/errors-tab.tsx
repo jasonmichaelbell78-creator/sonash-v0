@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
 import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
@@ -263,6 +263,19 @@ export function ErrorsTab() {
   const [showExportDropdown, setShowExportDropdown] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
+  // CLEANUP: Track timeout to clear on unmount
+  const copySuccessTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clear timeout on unmount to prevent React warnings
+  useEffect(() => {
+    return () => {
+      if (copySuccessTimeoutRef.current) {
+        clearTimeout(copySuccessTimeoutRef.current);
+        copySuccessTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
   const trendDirection = useMemo(() => {
     if (!summary) return null;
     if (summary.trendPct > 0) return "up";
@@ -370,7 +383,13 @@ export function ErrorsTab() {
 
     if (success) {
       setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
+
+      // Clear any existing timeout before setting a new one
+      if (copySuccessTimeoutRef.current) clearTimeout(copySuccessTimeoutRef.current);
+      copySuccessTimeoutRef.current = setTimeout(() => {
+        copySuccessTimeoutRef.current = null;
+        setCopySuccess(false);
+      }, 2000);
     }
     setShowExportDropdown(false);
   };
@@ -410,8 +429,13 @@ export function ErrorsTab() {
 
             {showExportDropdown && (
               <>
-                {/* Backdrop to close dropdown */}
-                <div className="fixed inset-0 z-10" onClick={() => setShowExportDropdown(false)} />
+                {/* Backdrop to close dropdown - click or Escape to close */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowExportDropdown(false)}
+                  onKeyDown={(e) => e.key === "Escape" && setShowExportDropdown(false)}
+                  role="presentation"
+                />
                 <div className="absolute right-0 mt-2 w-64 rounded-md border border-amber-200 bg-white shadow-lg z-20">
                   <div className="p-3 border-b border-amber-100">
                     <label className="block text-xs font-medium text-amber-700 mb-1.5">

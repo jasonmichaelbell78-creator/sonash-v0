@@ -35,6 +35,9 @@ interface State {
  * </ErrorBoundary>
  */
 export class ErrorBoundary extends Component<Props, State> {
+  // CLEANUP: Track timeout to clear on unmount
+  private copySuccessTimeout: ReturnType<typeof setTimeout> | null = null;
+
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null, componentStack: null, copySuccess: false };
@@ -54,6 +57,14 @@ export class ErrorBoundary extends Component<Props, State> {
       stack: error.stack,
       componentStack: errorInfo.componentStack,
     });
+  }
+
+  // CLEANUP: Clear timeout on unmount to prevent React warnings
+  componentWillUnmount(): void {
+    if (this.copySuccessTimeout) {
+      clearTimeout(this.copySuccessTimeout);
+      this.copySuccessTimeout = null;
+    }
   }
 
   handleReset = (): void => {
@@ -79,7 +90,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
     if (success) {
       this.setState({ copySuccess: true });
-      setTimeout(() => this.setState({ copySuccess: false }), 2000);
+
+      // Clear any existing timeout before setting a new one
+      if (this.copySuccessTimeout) clearTimeout(this.copySuccessTimeout);
+      this.copySuccessTimeout = setTimeout(() => {
+        this.copySuccessTimeout = null;
+        this.setState({ copySuccess: false });
+      }, 2000);
     }
   };
 
