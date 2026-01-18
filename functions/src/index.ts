@@ -787,6 +787,12 @@ export {
   adminSavePrivilegeType,
   adminDeletePrivilegeType,
   adminSetUserPrivilege,
+  // Quick Win Functions
+  adminSendPasswordReset,
+  adminGetStorageStats,
+  adminGetRateLimitStatus,
+  adminClearRateLimit,
+  adminGetCollectionStats,
 } from "./admin";
 
 // Export scheduled jobs

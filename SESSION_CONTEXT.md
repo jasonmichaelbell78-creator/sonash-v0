@@ -11,11 +11,11 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-01-17 **Branch**: `audit/single-session-2026-01-17`
-**Working On**: Track A Job Fixes & Testing **Files Modified**: `ROADMAP.md`,
-`functions/src/admin.ts`, `firestore.indexes.json`,
-`docs/TRACK_A_TESTING_CHECKLIST.md` **Next Step**: Create missing indexes
-manually, re-test A12/A14 after indexes build **Uncommitted Work**: yes (job
-visibility fix + indexes)
+**Working On**: Track A Quick Win Features **Files Modified**: `ROADMAP.md`,
+`functions/src/admin.ts`, `dashboard-tab.tsx`, `users-tab.tsx`,
+`privileges-tab.tsx`, `docs/TRACK_A_TESTING_CHECKLIST.md` **Next Step**: Fix
+password reset success feedback issue **Uncommitted Work**: yes (quick win
+features - deploying now)
 
 ---
 

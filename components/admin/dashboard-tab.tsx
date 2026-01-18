@@ -3,7 +3,20 @@
 import { useState, useEffect } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
-import { CheckCircle2, XCircle, Users, Activity, Clock, AlertCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Users,
+  Activity,
+  Clock,
+  AlertCircle,
+  HardDrive,
+  Database,
+  ShieldAlert,
+  Trash2,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface HealthCheck {
@@ -41,11 +54,44 @@ interface DashboardStats {
   generatedAt: string;
 }
 
+interface StorageStats {
+  totalSize: number;
+  fileCount: number;
+  userCount: number;
+  orphanedCount: number;
+  fileTypes: Record<string, { count: number; size: number }>;
+}
+
+interface RateLimitEntry {
+  key: string;
+  count: number;
+  windowStart: string;
+  expiresAt: string;
+  isBlocked: boolean;
+  limitConfig?: { maxRequests: number; windowMs: number };
+}
+
+interface CollectionStats {
+  collection: string;
+  count: number;
+  hasSubcollections?: boolean;
+  subcollectionEstimate?: number;
+}
+
 export function DashboardTab() {
   const [health, setHealth] = useState<HealthCheck | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Extended stats state
+  const [storageStats, setStorageStats] = useState<StorageStats | null>(null);
+  const [loadingStorage, setLoadingStorage] = useState(false);
+  const [rateLimits, setRateLimits] = useState<RateLimitEntry[]>([]);
+  const [loadingRateLimits, setLoadingRateLimits] = useState(false);
+  const [collectionStats, setCollectionStats] = useState<CollectionStats[]>([]);
+  const [loadingCollections, setLoadingCollections] = useState(false);
+  const [clearingRateLimit, setClearingRateLimit] = useState<string | null>(null);
 
   useEffect(() => {
     loadDashboard();
@@ -72,6 +118,85 @@ export function DashboardTab() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadStorageStats() {
+    setLoadingStorage(true);
+    try {
+      const functions = getFunctions();
+      const getStorageStatsFn = httpsCallable<void, StorageStats>(
+        functions,
+        "adminGetStorageStats"
+      );
+      const result = await getStorageStatsFn();
+      setStorageStats(result.data);
+    } catch (err) {
+      logger.error("Failed to load storage stats", { error: err });
+    } finally {
+      setLoadingStorage(false);
+    }
+  }
+
+  async function loadRateLimits() {
+    setLoadingRateLimits(true);
+    try {
+      const functions = getFunctions();
+      const getRateLimitsFn = httpsCallable<void, { limits: RateLimitEntry[] }>(
+        functions,
+        "adminGetRateLimitStatus"
+      );
+      const result = await getRateLimitsFn();
+      setRateLimits(result.data.limits);
+    } catch (err) {
+      logger.error("Failed to load rate limits", { error: err });
+    } finally {
+      setLoadingRateLimits(false);
+    }
+  }
+
+  async function loadCollectionStats() {
+    setLoadingCollections(true);
+    try {
+      const functions = getFunctions();
+      const getCollectionStatsFn = httpsCallable<void, { collections: CollectionStats[] }>(
+        functions,
+        "adminGetCollectionStats"
+      );
+      const result = await getCollectionStatsFn();
+      setCollectionStats(result.data.collections);
+    } catch (err) {
+      logger.error("Failed to load collection stats", { error: err });
+    } finally {
+      setLoadingCollections(false);
+    }
+  }
+
+  async function clearRateLimit(key: string) {
+    if (!confirm(`Are you sure you want to clear the rate limit for ${key}?`)) return;
+
+    setClearingRateLimit(key);
+    try {
+      const functions = getFunctions();
+      const clearFn = httpsCallable<{ key: string }, { success: boolean }>(
+        functions,
+        "adminClearRateLimit"
+      );
+      await clearFn({ key });
+      // Reload rate limits
+      await loadRateLimits();
+    } catch (err) {
+      logger.error("Failed to clear rate limit", { error: err });
+    } finally {
+      setClearingRateLimit(null);
+    }
+  }
+
+  function formatBytes(bytes: number): string {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
   }
 
   if (loading) {
@@ -188,6 +313,195 @@ export function DashboardTab() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Storage Stats */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-heading text-amber-900 flex items-center gap-2">
+            <HardDrive className="w-5 h-5" />
+            Storage Usage
+          </h3>
+          <button
+            onClick={loadStorageStats}
+            disabled={loadingStorage}
+            className="text-sm text-amber-700 hover:text-amber-900 flex items-center gap-2 disabled:opacity-50"
+          >
+            {loadingStorage ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                {storageStats ? "Refresh" : "Load Stats"}
+              </>
+            )}
+          </button>
+        </div>
+        {storageStats ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-lg border border-amber-200 p-4">
+              <div className="text-sm text-amber-700 mb-1">Total Size</div>
+              <div className="text-2xl font-bold text-amber-900">
+                {formatBytes(storageStats.totalSize)}
+              </div>
+            </div>
+            <div className="bg-white rounded-lg border border-amber-200 p-4">
+              <div className="text-sm text-amber-700 mb-1">Total Files</div>
+              <div className="text-2xl font-bold text-amber-900">{storageStats.fileCount}</div>
+            </div>
+            <div className="bg-white rounded-lg border border-amber-200 p-4">
+              <div className="text-sm text-amber-700 mb-1">Users with Files</div>
+              <div className="text-2xl font-bold text-amber-900">{storageStats.userCount}</div>
+            </div>
+            <div className="bg-white rounded-lg border border-amber-200 p-4">
+              <div className="text-sm text-amber-700 mb-1">Orphaned Files</div>
+              <div
+                className={`text-2xl font-bold ${storageStats.orphanedCount > 0 ? "text-orange-600" : "text-green-600"}`}
+              >
+                {storageStats.orphanedCount}
+              </div>
+            </div>
+            {Object.keys(storageStats.fileTypes).length > 0 && (
+              <div className="col-span-full bg-white rounded-lg border border-amber-200 p-4">
+                <div className="text-sm text-amber-700 mb-2">File Types</div>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(storageStats.fileTypes).map(([ext, data]) => (
+                    <span
+                      key={ext}
+                      className="px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs"
+                    >
+                      .{ext}: {data.count} ({formatBytes(data.size)})
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-amber-50 rounded-lg border border-amber-200 p-6 text-center text-amber-700">
+            Click &ldquo;Load Stats&rdquo; to view storage usage statistics
+          </div>
+        )}
+      </div>
+
+      {/* Rate Limits */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-heading text-amber-900 flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5" />
+            Active Rate Limits
+          </h3>
+          <button
+            onClick={loadRateLimits}
+            disabled={loadingRateLimits}
+            className="text-sm text-amber-700 hover:text-amber-900 flex items-center gap-2 disabled:opacity-50"
+          >
+            {loadingRateLimits ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                {rateLimits.length > 0 ? "Refresh" : "Check Limits"}
+              </>
+            )}
+          </button>
+        </div>
+        {rateLimits.length > 0 ? (
+          <div className="bg-white rounded-lg border border-amber-200 overflow-hidden">
+            <div className="divide-y divide-amber-100">
+              {rateLimits.map((limit) => (
+                <div key={limit.key} className="p-4 flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="font-medium text-amber-900 font-mono text-sm">{limit.key}</div>
+                    <div className="text-sm text-amber-700">
+                      {limit.count} requests • Expires{" "}
+                      {formatDistanceToNow(new Date(limit.expiresAt), { addSuffix: true })}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {limit.isBlocked && (
+                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">
+                        BLOCKED
+                      </span>
+                    )}
+                    <button
+                      onClick={() => clearRateLimit(limit.key)}
+                      disabled={clearingRateLimit === limit.key}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                      title="Clear rate limit"
+                    >
+                      {clearingRateLimit === limit.key ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : loadingRateLimits ? null : (
+          <div className="bg-green-50 rounded-lg border border-green-200 p-6 text-center text-green-700">
+            No active rate limits
+          </div>
+        )}
+      </div>
+
+      {/* Collection Stats */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-heading text-amber-900 flex items-center gap-2">
+            <Database className="w-5 h-5" />
+            Collection Document Counts
+          </h3>
+          <button
+            onClick={loadCollectionStats}
+            disabled={loadingCollections}
+            className="text-sm text-amber-700 hover:text-amber-900 flex items-center gap-2 disabled:opacity-50"
+          >
+            {loadingCollections ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                {collectionStats.length > 0 ? "Refresh" : "Load Counts"}
+              </>
+            )}
+          </button>
+        </div>
+        {collectionStats.length > 0 ? (
+          <div className="bg-white rounded-lg border border-amber-200 overflow-hidden">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-amber-100">
+              {collectionStats.map((col) => (
+                <div key={col.collection} className="bg-white p-4">
+                  <div className="text-sm text-amber-700 mb-1">{col.collection}</div>
+                  <div className="text-xl font-bold text-amber-900">
+                    {col.count.toLocaleString()}
+                  </div>
+                  {col.hasSubcollections && col.subcollectionEstimate && (
+                    <div className="text-xs text-amber-600 mt-1">
+                      +{col.subcollectionEstimate.toLocaleString()} in subcollections
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-amber-50 rounded-lg border border-amber-200 p-6 text-center text-amber-700">
+            Click &ldquo;Load Counts&rdquo; to view document counts for all collections
+          </div>
+        )}
       </div>
 
       {/* Recent Signups */}

@@ -1,16 +1,6 @@
 {
   "indexes": [
     {
-      "collectionGroup": "daily_logs",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        {
-          "fieldPath": "updatedAt",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "journal",
       "queryScope": "COLLECTION",
       "fields": [
@@ -196,6 +186,16 @@
     }
   ],
   "fieldOverrides": [
+    {
+      "collectionGroup": "daily_logs",
+      "fieldPath": "updatedAt",
+      "indexes": [
+        {
+          "queryScope": "COLLECTION_GROUP",
+          "order": "ASCENDING"
+        }
+      ]
+    },
     {
       "collectionGroup": "users",
       "fieldPath": "nickname",
