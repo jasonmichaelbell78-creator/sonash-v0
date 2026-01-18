@@ -56,19 +56,30 @@ interface DashboardStats {
 
 interface StorageStats {
   totalSize: number;
+  totalSizeFormatted: string;
   fileCount: number;
   userCount: number;
-  orphanedCount: number;
-  fileTypes: Record<string, { count: number; size: number }>;
+  orphanedFiles: {
+    count: number;
+    size: number;
+    sizeFormatted: string;
+  };
+  fileTypes: Array<{
+    extension: string;
+    count: number;
+    size: number;
+    sizeFormatted: string;
+  }>;
+  generatedAt: string;
 }
 
 interface RateLimitEntry {
   key: string;
-  count: number;
-  windowStart: string;
-  expiresAt: string;
+  type: string;
+  points: number;
+  maxPoints: number;
+  resetAt: string;
   isBlocked: boolean;
-  limitConfig?: { maxRequests: number; windowMs: number };
 }
 
 interface CollectionStats {
@@ -141,12 +152,12 @@ export function DashboardTab() {
     setLoadingRateLimits(true);
     try {
       const functions = getFunctions();
-      const getRateLimitsFn = httpsCallable<void, { limits: RateLimitEntry[] }>(
+      const getRateLimitsFn = httpsCallable<void, { activeLimits: RateLimitEntry[] }>(
         functions,
         "adminGetRateLimitStatus"
       );
       const result = await getRateLimitsFn();
-      setRateLimits(result.data.limits);
+      setRateLimits(result.data.activeLimits);
     } catch (err) {
       logger.error("Failed to load rate limits", { error: err });
     } finally {
@@ -359,21 +370,26 @@ export function DashboardTab() {
             <div className="bg-white rounded-lg border border-amber-200 p-4">
               <div className="text-sm text-amber-700 mb-1">Orphaned Files</div>
               <div
-                className={`text-2xl font-bold ${storageStats.orphanedCount > 0 ? "text-orange-600" : "text-green-600"}`}
+                className={`text-2xl font-bold ${storageStats.orphanedFiles.count > 0 ? "text-orange-600" : "text-green-600"}`}
               >
-                {storageStats.orphanedCount}
+                {storageStats.orphanedFiles.count}
+                {storageStats.orphanedFiles.count > 0 && (
+                  <span className="text-sm font-normal ml-2">
+                    ({storageStats.orphanedFiles.sizeFormatted})
+                  </span>
+                )}
               </div>
             </div>
-            {Object.keys(storageStats.fileTypes).length > 0 && (
+            {storageStats.fileTypes.length > 0 && (
               <div className="col-span-full bg-white rounded-lg border border-amber-200 p-4">
-                <div className="text-sm text-amber-700 mb-2">File Types</div>
+                <div className="text-sm text-amber-700 mb-2">File Types (Top 10)</div>
                 <div className="flex flex-wrap gap-2">
-                  {Object.entries(storageStats.fileTypes).map(([ext, data]) => (
+                  {storageStats.fileTypes.map((fileType) => (
                     <span
-                      key={ext}
+                      key={fileType.extension}
                       className="px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs"
                     >
-                      .{ext}: {data.count} ({formatBytes(data.size)})
+                      .{fileType.extension}: {fileType.count} ({fileType.sizeFormatted})
                     </span>
                   ))}
                 </div>
@@ -420,8 +436,8 @@ export function DashboardTab() {
                   <div className="flex-1">
                     <div className="font-medium text-amber-900 font-mono text-sm">{limit.key}</div>
                     <div className="text-sm text-amber-700">
-                      {limit.count} requests • Expires{" "}
-                      {formatDistanceToNow(new Date(limit.expiresAt), { addSuffix: true })}
+                      {limit.points}/{limit.maxPoints} points ({limit.type}) • Resets{" "}
+                      {formatDistanceToNow(new Date(limit.resetAt), { addSuffix: true })}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

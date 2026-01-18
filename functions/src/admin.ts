@@ -678,7 +678,7 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
     // Search by email - Firebase Auth email lookup is case-insensitive
     if (searchQueryLower.includes("@")) {
       try {
-        const authUser = await admin.auth().getUserByEmail(query);
+        const authUser = await admin.auth().getUserByEmail(trimmedQuery);
         const userDoc = await db.collection("users").doc(authUser.uid).get();
         const userData = userDoc.exists ? userDoc.data()! : {};
 
@@ -2146,8 +2146,8 @@ export const adminGetStorageStats = onCall(async (request) => {
   try {
     const bucket = admin.storage().bucket();
 
-    // Get all files in the bucket
-    const [files] = await bucket.getFiles({ maxResults: 1000 });
+    // Get all files in the bucket (autoPaginate handles >1000 files)
+    const [files] = await bucket.getFiles({ autoPaginate: true });
 
     let totalSize = 0;
     let fileCount = 0;
