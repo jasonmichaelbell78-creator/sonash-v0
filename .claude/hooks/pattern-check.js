@@ -138,7 +138,7 @@ if (output.includes("potential pattern violation")) {
   }
 
   console.error("");
-  console.error("Review docs/agent_docs/CODE_PATTERNS.md for documented patterns.");
+  console.error("Review docs/agent_docs/CODE_PATTERNS.md (🔴 = critical) for documented patterns.");
   console.error("\u2501".repeat(28));
 } else if (typeof result.status === "number" && result.status !== 0) {
   // Non-zero exit without explicit violation - non-blocking reminder

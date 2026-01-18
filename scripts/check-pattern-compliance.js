@@ -5,6 +5,9 @@
  * Scans code for known anti-patterns documented in claude.md and AI_REVIEW_LEARNINGS_LOG.md
  * This is a learning reinforcement tool - it surfaces patterns that have caused issues before.
  *
+ * NOTE: Patterns in this file are aligned with CODE_PATTERNS.md v2.1 (2026-01-18)
+ *       See docs/agent_docs/CODE_PATTERNS.md for full pattern reference with priority tiers.
+ *
  * Usage: node scripts/check-pattern-compliance.js [options] [files...]
  *
  * Options:

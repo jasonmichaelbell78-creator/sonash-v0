@@ -128,8 +128,8 @@ When receiving code review feedback (CodeRabbit, Qodo, etc.):
 ## 6. Anti-Pattern Awareness
 
 **Before writing code**, scan claude.md Section 4 "Critical Anti-Patterns" and
-[CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) for issues. Key
-patterns:
+[CODE_PATTERNS.md](../../docs/agent_docs/CODE_PATTERNS.md) Quick Reference
+section (🔴 = critical patterns). Key patterns:
 
 - **Read before edit** - Always read files before attempting to edit
 - **Regex performance** - Avoid greedy `.*` in patterns; use bounded
