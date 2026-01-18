@@ -535,8 +535,10 @@ export function UsersTab() {
 
   // ACCESSIBILITY: Global Escape key handler for closing dialogs and drawer
   // Note: onKeyDown on divs doesn't work because divs don't receive keyboard focus
+  // STABILITY: Use primitive uid instead of object to prevent unnecessary re-renders
+  const selectedUid = selectedUser?.profile.uid;
   useEffect(() => {
-    if (!selectedUser && deleteDialogStep === 0) return;
+    if (!selectedUid && deleteDialogStep === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
@@ -545,14 +547,13 @@ export function UsersTab() {
         closeDeleteDialog();
         return;
       }
-      if (selectedUser) {
-        setSelectedUser(null);
-      }
+      // Close drawer if open (selectedUid check ensures drawer is open)
+      setSelectedUser(null);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedUser, deleteDialogStep]);
+  }, [selectedUid, deleteDialogStep]);
 
   async function handleSoftDelete() {
     if (!selectedUser || deleteConfirmText.trim() !== "DELETE") return;
@@ -887,11 +888,16 @@ export function UsersTab() {
                               <Trash2 className="w-3 h-3 mr-1" />
                               Pending Deletion
                             </span>
-                            {user.scheduledHardDeleteAt && (
-                              <span className="text-xs text-orange-600">
-                                {getDaysUntilHardDelete(user.scheduledHardDeleteAt)} days left
-                              </span>
-                            )}
+                            {/* NULL CHECK: getDaysUntilHardDelete may return null for invalid dates */}
+                            {(() => {
+                              const daysLeft = getDaysUntilHardDelete(user.scheduledHardDeleteAt);
+                              if (daysLeft === null) return null;
+                              return (
+                                <span className="text-xs text-orange-600">
+                                  {daysLeft} days left
+                                </span>
+                              );
+                            })()}
                           </>
                         ) : user.disabled ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">

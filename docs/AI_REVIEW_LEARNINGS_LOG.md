@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 9.4     | 2026-01-18 | Review #179: PR #277 Round 4 - 8 items (1 CRITICAL: cursor-based pagination for batch jobs to prevent infinite loops; 3 MAJOR: Firestore-first operation order, full rollback with captured original values, functional setState updates; 2 MINOR: primitive useEffect deps, null check for days display; 2 VERIFIED: admin error messages acceptable, logSecurityEvent sanitizes). **KEY LESSONS: (1) startAfter(lastDoc) for batch jobs, not hasMore flag; (2) Firestore first for easier rollback; (3) Capture original values before transaction.**                                                                                                                                                                                                                                    |
 | 9.3     | 2026-01-18 | Review #178: PR #277 Soft-Delete + Error Export - 18 items (6 MAJOR: hardcoded bucket→default bucket, auth deletion only ignore user-not-found, paged batches for hard delete, Firestore transaction for undelete with expiry check, rollback soft-delete if Firestore fails, block admin self-deletion; 8 MEDIUM: zod validation with trim/max, stale state fix with uid capture, reset dialog on user change, NaN prevention, timeout cleanup ×2, accessibility keyboard listeners ×2; 4 MINOR: structured logging types, ARIA attributes, URL redaction, whitespace trim). **KEY LESSONS: (1) Use admin.storage().bucket() not hardcoded names; (2) Only ignore auth/user-not-found to prevent orphaned accounts; (3) Process batches until empty, not just first 50.**                 |
 | 9.2     | 2026-01-17 | Review #177: Qodo PR #273 - 3 items (1 MAJOR: use `--no-verify` instead of `HUSKY=0` env for CI hook bypass - more explicit/standard; 2 MINOR: trailing slash consistency for `functions/src/admin/` trigger, fix Session #XX→#72 comment). **KEY LESSON: `git commit --no-verify` is more explicit and standard than HUSKY env var for bypassing hooks in CI.**                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 9.1     | 2026-01-17 | Review #176: Qodo Round 4 - 7 items (1 SECURITY: path traversal hardened in check-docs-light.js with resolve()+startsWith()+sep for Windows drive letter handling; 2 BUG: CRLF JSONL parsing via .trim() before JSON.parse, pipe-safe table parsing using fixed positions from end; 3 DATA: EFFP-\*→engineering-productivity category mapping, self-dependency filtering to prevent loops, omit empty cwe fields; 1 CI: auto-Prettier in npm script chain). **KEY LESSON: resolve()+startsWith()+sep handles Windows paths safely - regex-based path traversal can be bypassed with different drive letters.**                                                                                                                                                                             |
@@ -532,8 +533,50 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #101-156 are actively maintained below. Older reviews are in the
+Reviews #101-179 are actively maintained below. Older reviews are in the
 archive.
+
+---
+
+#### Review #179: PR #277 Round 4 - Consistency & Pagination (2026-01-18)
+
+**Source:** Qodo Compliance + Qodo PR Suggestions **PR/Branch:**
+feature/admin-panel-phase-3 (PR #277) **Suggestions:** 8 items (Critical: 1,
+Major: 3, Minor: 2, Verified: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                              | Severity | Category    | Fix                                                               |
+| --- | ---------------------------------- | -------- | ----------- | ----------------------------------------------------------------- |
+| 1   | Infinite batch loop in hard-delete | Critical | Bug         | Cursor-based pagination with startAfter() instead of hasMore flag |
+| 2   | Partial soft-delete states         | Major    | Consistency | Firestore first, then Auth; complete rollback on Auth failure     |
+| 3   | Incomplete undelete rollback       | Major    | Consistency | Capture original values in transaction, restore all on Auth fail  |
+| 4   | Stale state in setActiveTab        | Major    | React       | Functional updates in useCallback to avoid closure state          |
+| 5   | Unstable useEffect dependency      | Minor    | React       | Use primitive uid instead of selectedUser object                  |
+| 6   | Invalid days display               | Minor    | UI          | Null check for getDaysUntilHardDelete before rendering            |
+| V1  | Existence-revealing admin errors   | Verified | Security    | Acceptable for admin-only functions protected by requireAdmin()   |
+| V2  | Raw error logging                  | Verified | Security    | logSecurityEvent uses redactSensitiveMetadata() for sanitization  |
+
+**Patterns Identified:**
+
+1. **Cursor pagination for batch jobs**: When processing batches where items may
+   fail, use `startAfter(lastDoc)` cursor instead of `hasMore = size === limit`
+   to prevent infinite loops.
+2. **Operation order for consistency**: Firestore first (source of truth), then
+   Auth/external services - easier to rollback Firestore on external failure.
+3. **Capture before transaction**: Store original values before transaction for
+   full rollback if post-transaction steps fail.
+4. **Primitive dependencies**: Use primitive values (uid) not objects in
+   useEffect deps to prevent unnecessary re-renders.
+
+**Key Learnings:**
+
+- Batch processing with `hasMore = snapshot.size === 50` causes infinite loops
+  if any item fails to delete
+- Functional setState updates (`setActiveTabState((prev) => ...)`) avoid stale
+  closure issues in useCallback
+- Admin error messages like "User not found" are acceptable in admin-only
+  functions that require privilege verification
 
 ---
 

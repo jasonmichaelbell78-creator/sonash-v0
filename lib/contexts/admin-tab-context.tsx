@@ -85,25 +85,29 @@ export function AdminTabProvider({ children, defaultTab = "dashboard" }: AdminTa
     };
   });
 
-  const setActiveTab = useCallback(
-    (tab: AdminTabId) => {
-      if (tab === activeTab) return; // No change
+  // STABILITY: Use functional updates to avoid stale closure state
+  const setActiveTab = useCallback((tab: AdminTabId) => {
+    setActiveTabState((prevActive) => {
+      if (tab === prevActive) return prevActive; // No change
 
       const now = Date.now();
-      const lastRefresh = refreshTimestamps[tab];
-      const shouldRefresh = now - lastRefresh >= MIN_REFRESH_INTERVAL_MS;
 
-      setActiveTabState(tab);
+      // Update refresh timestamps using functional update (avoids stale state)
+      setRefreshTimestamps((prev) => {
+        const lastRefresh = prev[tab];
+        const shouldRefresh = now - lastRefresh >= MIN_REFRESH_INTERVAL_MS;
 
-      if (shouldRefresh) {
-        setRefreshTimestamps((prev) => ({
-          ...prev,
-          [tab]: now,
-        }));
-      }
-    },
-    [activeTab, refreshTimestamps]
-  );
+        return shouldRefresh
+          ? {
+              ...prev,
+              [tab]: now,
+            }
+          : prev;
+      });
+
+      return tab;
+    });
+  }, []);
 
   const refreshCurrentTab = useCallback(() => {
     setRefreshTimestamps((prev) => ({

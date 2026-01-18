@@ -664,21 +664,27 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
   let deleted = 0;
   let errors = 0;
 
-  // COMPLETENESS: Process in batches until no more users pending deletion
-  let hasMore = true;
-  while (hasMore) {
+  // COMPLETENESS: Process in batches with cursor-based pagination
+  // STABILITY: Use startAfter to avoid infinite loops if deletion fails
+  let lastDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+
+  while (true) {
     // Find users scheduled for hard deletion (past their 30-day window)
-    // STABILITY: orderBy for deterministic pagination
-    const snapshot = await db
+    // STABILITY: orderBy for deterministic pagination + startAfter for cursor
+    let query = db
       .collection("users")
       .where("isSoftDeleted", "==", true)
       .where("scheduledHardDeleteAt", "<=", now)
       .orderBy("scheduledHardDeleteAt", "asc")
-      .limit(50)
-      .get();
+      .limit(50);
+
+    if (lastDoc) {
+      query = query.startAfter(lastDoc);
+    }
+
+    const snapshot = await query.get();
 
     if (snapshot.empty) {
-      hasMore = false;
       break;
     }
 
@@ -780,8 +786,13 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
       }
     }
 
-    // Continue if we processed a full batch
-    hasMore = snapshot.size === 50;
+    // CURSOR PAGINATION: Update cursor for next batch
+    lastDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
+
+    // If we got fewer than 50, we're done
+    if (snapshot.size < 50) {
+      break;
+    }
   }
 
   logSecurityEvent(

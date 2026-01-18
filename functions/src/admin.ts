@@ -1104,31 +1104,41 @@ export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request)
     const now = new Date();
     const scheduledHardDeleteAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    // Disable Firebase Auth account and revoke tokens
-    await admin.auth().updateUser(uid, { disabled: true });
-    await admin.auth().revokeRefreshTokens(uid);
+    // OPERATION ORDER: Firestore first (source of truth), then Auth
+    // This ensures consistent rollback if Auth operations fail
+    await db
+      .collection("users")
+      .doc(uid)
+      .update({
+        isSoftDeleted: true,
+        softDeletedAt: admin.firestore.FieldValue.serverTimestamp(),
+        softDeletedBy: request.auth?.uid || null,
+        scheduledHardDeleteAt: admin.firestore.Timestamp.fromDate(scheduledHardDeleteAt),
+        softDeleteReason: reason || null,
+        // Also set disabled fields for consistency
+        disabled: true,
+        disabledAt: admin.firestore.FieldValue.serverTimestamp(),
+        disabledBy: request.auth?.uid || null,
+      });
 
-    // Update Firestore user document with soft-delete fields
-    // ROLLBACK: If Firestore write fails, re-enable auth to avoid inconsistent state
+    // Apply Auth changes after Firestore is consistent
+    // ROLLBACK: If Auth changes fail, revert Firestore flags
     try {
-      await db
-        .collection("users")
-        .doc(uid)
-        .update({
-          isSoftDeleted: true,
-          softDeletedAt: admin.firestore.FieldValue.serverTimestamp(),
-          softDeletedBy: request.auth?.uid || null,
-          scheduledHardDeleteAt: admin.firestore.Timestamp.fromDate(scheduledHardDeleteAt),
-          softDeleteReason: reason || null,
-          // Also set disabled fields for consistency
-          disabled: true,
-          disabledAt: admin.firestore.FieldValue.serverTimestamp(),
-          disabledBy: request.auth?.uid || null,
-        });
-    } catch (writeError) {
-      // ROLLBACK: Re-enable auth if Firestore update fails
-      await admin.auth().updateUser(uid, { disabled: false });
-      throw writeError;
+      await admin.auth().updateUser(uid, { disabled: true });
+      await admin.auth().revokeRefreshTokens(uid);
+    } catch (authError) {
+      // ROLLBACK: Revert Firestore soft-delete fields
+      await db.collection("users").doc(uid).update({
+        isSoftDeleted: false,
+        softDeletedAt: null,
+        softDeletedBy: null,
+        scheduledHardDeleteAt: null,
+        softDeleteReason: null,
+        disabled: false,
+        disabledAt: null,
+        disabledBy: null,
+      });
+      throw authError;
     }
 
     return {
@@ -1191,6 +1201,20 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
   const db = admin.firestore();
   const now = admin.firestore.Timestamp.now();
 
+  // ROLLBACK STATE: Type for original values captured in transaction
+  interface OriginalSoftDeleteFields {
+    softDeletedAt: admin.firestore.Timestamp | null;
+    softDeletedBy: string | null;
+    scheduledHardDeleteAt: admin.firestore.Timestamp | null;
+    softDeleteReason: string | null;
+    disabledAt: admin.firestore.Timestamp | null;
+    disabledBy: string | null;
+    disabledReason: string | null;
+  }
+
+  // Use object wrapper to allow mutation inside transaction callback
+  const rollbackState: { original: OriginalSoftDeleteFields | null } = { original: null };
+
   try {
     // ATOMICITY: Use transaction to check expiry and update in one atomic operation
     await db.runTransaction(async (tx) => {
@@ -1218,6 +1242,17 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
         );
       }
 
+      // CAPTURE: Store original values for potential rollback
+      rollbackState.original = {
+        softDeletedAt: userData.softDeletedAt ?? null,
+        softDeletedBy: userData.softDeletedBy ?? null,
+        scheduledHardDeleteAt: userData.scheduledHardDeleteAt ?? null,
+        softDeleteReason: userData.softDeleteReason ?? null,
+        disabledAt: userData.disabledAt ?? null,
+        disabledBy: userData.disabledBy ?? null,
+        disabledReason: userData.disabledReason ?? null,
+      };
+
       // Update within transaction
       tx.update(userRef, {
         isSoftDeleted: false,
@@ -1234,15 +1269,26 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
     });
 
     // Re-enable Firebase Auth account after Firestore is consistent
-    // ROLLBACK: If auth restore fails, revert Firestore to keep state consistent
+    // ROLLBACK: If auth restore fails, revert Firestore to original state
     try {
       await admin.auth().updateUser(uid, { disabled: false });
     } catch (authError) {
-      // Rollback Firestore changes to maintain consistency
-      await db.collection("users").doc(uid).update({
-        isSoftDeleted: true,
-        disabled: true,
-      });
+      // FULL ROLLBACK: Restore all original soft-delete fields
+      const orig = rollbackState.original;
+      await db
+        .collection("users")
+        .doc(uid)
+        .update({
+          isSoftDeleted: true,
+          softDeletedAt: orig?.softDeletedAt ?? admin.firestore.FieldValue.serverTimestamp(),
+          softDeletedBy: orig?.softDeletedBy ?? null,
+          scheduledHardDeleteAt: orig?.scheduledHardDeleteAt ?? null,
+          softDeleteReason: orig?.softDeleteReason ?? null,
+          disabled: true,
+          disabledAt: orig?.disabledAt ?? admin.firestore.FieldValue.serverTimestamp(),
+          disabledBy: orig?.disabledBy ?? null,
+          disabledReason: orig?.disabledReason ?? null,
+        });
       throw authError;
     }
 
