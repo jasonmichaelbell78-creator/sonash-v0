@@ -81,8 +81,9 @@ use:** Retrieve AI-generated code review comments for processing **Example:**
 
 **Description:** Process AI-generated PR review feedback (CodeRabbit/Qodo)
 **When to use:** After receiving PR review comments, systematic processing
-**Example:** `/pr-review` **Parameters:** None **Output:** Categorized feedback
-with action items
+**Example:** `/pr-review` or `/pr-review fetch` **Parameters:** Optional "fetch"
+to auto-retrieve feedback from current PR using gh CLI **Output:** Categorized
+feedback with action items
 
 ### `/session-begin`
 

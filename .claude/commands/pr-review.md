@@ -19,7 +19,7 @@ documented.
 ## Protocol Overview
 
 ```
-INPUT (Raw Review)
+AUTO-FETCH (Get PR feedback if not provided)
     ↓
 STEP 0: CONTEXT (Load tiered docs)
     ↓
@@ -41,6 +41,41 @@ STEP 8: SUMMARY (Final verification status)
     ↓
 STEP 9: COMMIT (Following project conventions)
 ```
+
+---
+
+## AUTO-FETCH: Get PR Feedback (Optional)
+
+**Only triggered when user says "fetch"** (e.g., `/pr-review fetch` or "go fetch
+it").
+
+If triggered, fetch review data from the current PR:
+
+```bash
+# 1. Get current branch and find associated PR
+branch=$(git branch --show-current)
+pr_number=$(gh pr list --head "$branch" --json number --jq '.[0].number' 2>/dev/null)
+
+# 2. If PR exists, fetch reviews and comments
+if [ -n "$pr_number" ]; then
+  echo "Found PR #$pr_number"
+
+  # Get PR checks status (SonarCloud, etc.)
+  gh pr checks "$pr_number"
+
+  # Get review comments
+  gh pr view "$pr_number" --comments
+
+  # Get review requests and status
+  gh api "repos/{owner}/{repo}/pulls/$pr_number/reviews" --jq '.[] | {user: .user.login, state: .state, body: .body}'
+fi
+```
+
+**Behavior:**
+
+- **Default**: Wait for user to paste feedback
+- **If user says "fetch"**: Auto-fetch from current PR, then proceed
+- **If feedback already in message**: Skip fetch, process directly
 
 ---
 
@@ -479,4 +514,7 @@ all commands that invoke it.
 
 ---
 
-## NOW: Paste the review feedback below and I will process it using this protocol.
+## NOW: Ready to process PR review feedback
+
+Paste the review feedback below, or say "fetch" and I'll grab it from the
+current PR.
