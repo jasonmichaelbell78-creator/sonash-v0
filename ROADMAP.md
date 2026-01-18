@@ -267,28 +267,28 @@ creation.
 | Performance Tests   | 5     | 4      | 1       | ✅ Complete   |
 | Error Handling      | 6     | 0      | 6       | ⏳ Pending    |
 
-#### Track A Blockers - Firestore Indexes
+#### Track A Blockers - Firestore Indexes ✅ RESOLVED
 
-> **Issue:** Background jobs A10, A12, A14 require Firestore indexes that must
-> be created manually via Firebase Console.
+> **Status:** All required indexes are now deployed (verified 2026-01-18).
 
 | Job | Index Required                                     | Status      |
 | --- | -------------------------------------------------- | ----------- |
-| A10 | `daily_logs` collection group: `updatedAt ASC`     | ❌ Missing  |
+| A10 | `daily_logs` collection group: `updatedAt ASC`     | ✅ Deployed |
 | A12 | `security_logs`: `type + functionName + timestamp` | ✅ Deployed |
-| A14 | `security_logs`: `severity ASC + timestamp ASC`    | ❌ Missing  |
+| A14 | `security_logs`: `severity ASC + timestamp ASC`    | ✅ Deployed |
 | A14 | `admin_jobs`: `lastRunStatus + lastRun`            | ✅ Deployed |
 
-**To create missing indexes:** Click the link in the job error message in Admin
-Panel → Jobs tab.
+**Remaining Blocker:** A11 (Cleanup Orphaned Storage) fails due to missing
+Firebase Storage bucket - needs configuration.
 
 **Testing Prerequisites:**
 
 - [x] Deploy latest functions to Firebase
 - [x] Fix job visibility (Session #74 - added all jobs to registeredJobs)
-- [ ] Create missing Firestore indexes (A10, A14)
+- [x] Create missing Firestore indexes (A10, A14) - **DONE 2026-01-18**
 - [ ] Verify Sentry env vars configured
 - [ ] Create test user accounts (admin, premium, free)
+- [ ] Re-test jobs A10, A12, A14 now that indexes are deployed
 
 ### Track B - Dev Dashboard
 

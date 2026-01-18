@@ -10,11 +10,11 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-17 **Branch**: `audit/single-session-2026-01-17`
-**Working On**: Track A-P2 Planning (Firebase Console Phase 2) **Files
-Modified**: `ROADMAP.md`, `CLAUDE.md`, `docs/SESSION_DECISIONS.md`,
-`docs/TRACK_A_TESTING_CHECKLIST.md` **Next Step**: Implement A19-A22 when ready
-(re-research implementation details) **Uncommitted Work**: no
+**Last Checkpoint**: 2026-01-18 **Branch**: `audit/single-session-2026-01-17`
+**Working On**: Track A-Test validation (re-test jobs after index deployment)
+**Files Modified**: `ROADMAP.md` **Next Step**: Re-test jobs A10, A12, A14 in
+Admin Panel → Jobs tab now that Firestore indexes are deployed **Uncommitted
+Work**: no
 
 ---
 
@@ -30,7 +30,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 71 (since Jan 1, 2026)
+**Current Session Count**: 76 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions
@@ -45,6 +45,15 @@ productive work.
 **Status**: 🔄 IN PROGRESS (~40% complete)
 
 **See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0)
+
+**Session #76 Update** - Roadmap v2.12:
+
+- **✅ FIRESTORE INDEXES DEPLOYED**: All Track A job indexes confirmed deployed
+  - A10: `daily_logs` collection group (updatedAt ASC) ✅
+  - A12: `security_logs` (type + functionName + timestamp) ✅
+  - A14: `security_logs` (severity + timestamp ASC) ✅
+- **🔄 NEXT**: Re-test jobs A10, A12, A14 in Admin Panel
+- **⚠️ BLOCKER**: A11 (Cleanup Orphaned Storage) needs Firebase Storage bucket
 
 **Session #75 Update** - Roadmap v2.11:
 
