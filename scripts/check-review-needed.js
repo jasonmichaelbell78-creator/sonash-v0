@@ -432,6 +432,8 @@ function getCategoryAuditDates(content) {
 /**
  * Count single-session audits per category
  * Uses extractSection() to avoid regex backtracking DoS (SonarQube S5852)
+ * Deduplicates dates to avoid counting the same date multiple times
+ * (e.g., dates appear in both table cells and file path links like audit-2026-01-17.md)
  * @param {string} content - Full content of AUDIT_TRACKER.md
  * @returns {Object<string, number>} Map of category names to audit counts
  */
@@ -448,9 +450,11 @@ function getSingleAuditCounts(content) {
   for (const [category, headerPattern] of Object.entries(CATEGORY_HEADERS)) {
     const sectionContent = extractSection(content, headerPattern);
     if (sectionContent) {
-      // Count rows with dates (excluding header and "No audits yet")
+      // Count UNIQUE dates only (dates appear in table cells AND file paths like audit-2026-01-17.md)
+      // Using Set to deduplicate ensures each audit is counted once
       const dateMatches = sectionContent.match(/\d{4}-\d{2}-\d{2}/g);
-      counts[category] = dateMatches ? dateMatches.length : 0;
+      const uniqueDates = dateMatches ? new Set(dateMatches) : new Set();
+      counts[category] = uniqueDates.size;
     }
   }
 
