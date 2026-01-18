@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.1 **Last Updated:** 2026-01-06
+**Document Version:** 3.2 **Last Updated:** 2026-01-17
 
 ---
 
@@ -83,13 +83,14 @@ patterns from 72 reviews)
 
 ## 5. Documentation Index
 
-| Document                                   | Purpose                                      |
-| ------------------------------------------ | -------------------------------------------- |
-| [AI_WORKFLOW.md](./AI_WORKFLOW.md)         | **START HERE** - session startup, navigation |
-| [ARCHITECTURE.md](./ARCHITECTURE.md)       | Schema, security layers, components          |
-| [DEVELOPMENT.md](./DEVELOPMENT.md)         | Setup, testing, directory structure          |
-| [ROADMAP.md](./ROADMAP.md)                 | Planned vs completed features                |
-| [SESSION_CONTEXT.md](./SESSION_CONTEXT.md) | Current sprint, recent context               |
+| Document                                               | Purpose                                      |
+| ------------------------------------------------------ | -------------------------------------------- |
+| [AI_WORKFLOW.md](./AI_WORKFLOW.md)                     | **START HERE** - session startup, navigation |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                   | Schema, security layers, components          |
+| [DEVELOPMENT.md](./DEVELOPMENT.md)                     | Setup, testing, directory structure          |
+| [ROADMAP.md](./ROADMAP.md)                             | Planned vs completed features                |
+| [SESSION_CONTEXT.md](./SESSION_CONTEXT.md)             | Current sprint, recent context               |
+| [docs/SESSION_DECISIONS.md](docs/SESSION_DECISIONS.md) | Decision log to survive context compaction   |
 
 ## 6. Agent/Skill Triggers
 
@@ -116,7 +117,33 @@ patterns from 72 reviews)
 
 **Session End**: Run `/session-end` for full audit checklist.
 
-## 7. Coding Standards
+## 7. Context Preservation
+
+> [!IMPORTANT] Prevent loss of important decisions during context compaction.
+
+**Auto-save to `docs/SESSION_DECISIONS.md` when:**
+
+- Presenting 3+ options to user for a decision
+- User makes a significant architectural/feature choice
+- Discussing implementation approaches with trade-offs
+- Any decision that would be painful to re-research
+
+**Format:**
+
+```markdown
+### [DATE] - [SHORT TITLE]
+
+**Context:** What prompted this **Options:** Numbered list of choices **User
+Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
+```
+
+**Also consider:**
+
+- Writing detailed plans to `.claude/plans/` before implementation
+- Using `/checkpoint` before risky operations
+- Using Serena memories for cross-session context
+
+## 8. Coding Standards
 
 - **TypeScript**: Strict mode, no `any`
 - **Components**: Functional + Hooks
@@ -128,14 +155,15 @@ patterns from 72 reviews)
 
 ## Version History
 
-| Version | Date       | Description                                                                     |
-| ------- | ---------- | ------------------------------------------------------------------------------- |
-| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns) |
-| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md              |
-| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                |
-| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                |
-| 2.7     | 2026-01-03 | Added mandatory session-end audit                                               |
-| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                |
+| Version | Date       | Description                                                                         |
+| ------- | ---------- | ----------------------------------------------------------------------------------- |
+| 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md |
+| 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)     |
+| 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                  |
+| 2.9     | 2026-01-05 | CONSOLIDATION #5: Reviews #51-60                                                    |
+| 2.8     | 2026-01-04 | CONSOLIDATION #4: Reviews #41-50                                                    |
+| 2.7     | 2026-01-03 | Added mandatory session-end audit                                                   |
+| 2.6     | 2026-01-03 | Added CodeRabbit CLI integration                                                    |
 
 ---
 
