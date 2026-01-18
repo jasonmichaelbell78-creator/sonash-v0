@@ -533,6 +533,27 @@ export function UsersTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser?.profile.uid]);
 
+  // ACCESSIBILITY: Global Escape key handler for closing dialogs and drawer
+  // Note: onKeyDown on divs doesn't work because divs don't receive keyboard focus
+  useEffect(() => {
+    if (!selectedUser && deleteDialogStep === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      // Delete dialog takes priority over drawer
+      if (deleteDialogStep > 0) {
+        closeDeleteDialog();
+        return;
+      }
+      if (selectedUser) {
+        setSelectedUser(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedUser, deleteDialogStep]);
+
   async function handleSoftDelete() {
     if (!selectedUser || deleteConfirmText.trim() !== "DELETE") return;
 

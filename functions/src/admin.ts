@@ -1154,21 +1154,32 @@ export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request)
  * Re-enables auth account
  *
  * SECURITY: Requires admin privilege
+ * VALIDATION: Uses zod for input validation with length limits
  * ATOMICITY: Uses Firestore transaction to check expiry and update atomically
+ * ROLLBACK: Reverts Firestore if auth restore fails
  * AUDIT: Logs security event with hashed user ID
  */
 interface UndeleteUserRequest {
   uid: string;
 }
 
+// Input validation schema for undelete
+const undeleteSchema = z.object({
+  uid: z.string().trim().min(1, "User ID is required").max(128, "User ID too long"),
+});
+
 export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => {
   await requireAdmin(request, "adminUndeleteUser");
 
-  const { uid } = request.data;
-
-  if (!uid) {
-    throw new HttpsError("invalid-argument", "User ID is required");
+  // VALIDATION: Validate and sanitize input (consistent with adminSoftDeleteUser)
+  const parseResult = undeleteSchema.safeParse(request.data);
+  if (!parseResult.success) {
+    throw new HttpsError(
+      "invalid-argument",
+      parseResult.error.issues[0]?.message || "Invalid input"
+    );
   }
+  const { uid } = parseResult.data;
 
   // SECURITY: Log audit event
   logSecurityEvent("ADMIN_ACTION", "adminUndeleteUser", "Admin restored soft-deleted user", {
@@ -1223,7 +1234,17 @@ export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => 
     });
 
     // Re-enable Firebase Auth account after Firestore is consistent
-    await admin.auth().updateUser(uid, { disabled: false });
+    // ROLLBACK: If auth restore fails, revert Firestore to keep state consistent
+    try {
+      await admin.auth().updateUser(uid, { disabled: false });
+    } catch (authError) {
+      // Rollback Firestore changes to maintain consistency
+      await db.collection("users").doc(uid).update({
+        isSoftDeleted: true,
+        disabled: true,
+      });
+      throw authError;
+    }
 
     return {
       success: true,

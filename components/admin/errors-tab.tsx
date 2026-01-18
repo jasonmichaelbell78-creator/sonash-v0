@@ -276,6 +276,21 @@ export function ErrorsTab() {
     };
   }, []);
 
+  // ACCESSIBILITY: Global Escape key handler for closing export dropdown
+  // Note: onKeyDown on divs doesn't work because divs don't receive keyboard focus
+  useEffect(() => {
+    if (!showExportDropdown) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowExportDropdown(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showExportDropdown]);
+
   const trendDirection = useMemo(() => {
     if (!summary) return null;
     if (summary.trendPct > 0) return "up";
@@ -346,9 +361,11 @@ export function ErrorsTab() {
     const { startDate, endDate } = getTimeframeDates(exportTimeframe);
 
     // Filter issues within the timeframe
+    // ROBUSTNESS: Validate date parsing to prevent invalid date comparisons
     const filteredIssues = issues.filter((issue) => {
       if (!issue.lastSeen) return false;
       const lastSeenDate = new Date(issue.lastSeen);
+      if (Number.isNaN(lastSeenDate.getTime())) return false;
       return lastSeenDate >= startDate && lastSeenDate <= endDate;
     });
 
