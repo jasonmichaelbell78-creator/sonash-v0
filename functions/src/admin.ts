@@ -2041,11 +2041,20 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
 
 /**
  * Admin: Send Password Reset Email
- * Sends a password reset email to a user
+ * Sends a password reset email to a user using Firebase Auth REST API
+ *
+ * Note: The Admin SDK's generatePasswordResetLink() only generates a link but doesn't
+ * send an email. We use the Firebase Auth REST API to actually send the email.
  */
 interface SendPasswordResetRequest {
   email: string;
 }
+
+// Web API Key for Firebase Auth REST API calls (same as frontend - public key)
+// This is used to call the Identity Toolkit API for password reset emails
+const authApiKey = defineString("AUTH_REST_API_KEY", {
+  description: "Firebase Web API Key for Auth REST API calls (password reset, etc.)",
+});
 
 export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(async (request) => {
   await requireAdmin(request, "adminSendPasswordReset");
@@ -2056,6 +2065,17 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(async (re
     throw new HttpsError("invalid-argument", "Valid email is required");
   }
 
+  // First verify the user exists using Admin SDK
+  try {
+    await admin.auth().getUserByEmail(email);
+  } catch (error) {
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode === "auth/user-not-found") {
+      throw new HttpsError("not-found", "No user found with this email address");
+    }
+    throw error;
+  }
+
   logSecurityEvent("ADMIN_ACTION", "adminSendPasswordReset", "Admin sent password reset email", {
     userId: request.auth?.uid,
     metadata: { targetEmailHash: hashUserId(email) },
@@ -2064,19 +2084,42 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(async (re
   });
 
   try {
-    // Generate and send password reset email
-    // Firebase Auth handles sending the email automatically when configured
-    await admin.auth().generatePasswordResetLink(email);
+    // Use Firebase Auth REST API to send password reset email
+    // This actually sends the email using Firebase's built-in email templates
+    const response = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requestType: "PASSWORD_RESET",
+          email: email,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = (errorData as { error?: { message?: string } })?.error?.message;
+
+      // Handle specific Firebase Auth errors
+      if (errorMessage === "EMAIL_NOT_FOUND") {
+        throw new HttpsError("not-found", "No user found with this email address");
+      }
+
+      throw new Error(`Firebase Auth API error: ${errorMessage || response.status}`);
+    }
 
     return {
       success: true,
       message: "Password reset email sent successfully",
     };
   } catch (error) {
-    const errorCode = (error as { code?: string })?.code;
-
-    if (errorCode === "auth/user-not-found") {
-      throw new HttpsError("not-found", "No user found with this email address");
+    // Don't log if it's already an HttpsError (already handled)
+    if (error instanceof HttpsError) {
+      throw error;
     }
 
     logSecurityEvent("ADMIN_ERROR", "adminSendPasswordReset", "Failed to send password reset", {
