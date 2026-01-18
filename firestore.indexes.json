@@ -1,6 +1,16 @@
 {
   "indexes": [
     {
+      "collectionGroup": "daily_logs",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "updatedAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "journal",
       "queryScope": "COLLECTION",
       "fields": [
@@ -10,6 +20,70 @@
         },
         {
           "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "security_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "functionName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "admin_jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "lastRunStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastRun",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "admin_jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "lastRunStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastRun",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "security_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "functionName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
           "order": "DESCENDING"
         }
       ]
@@ -93,19 +167,13 @@
       ]
     },
     {
-      "collectionGroup": "daily_logs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "date",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "security_logs",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "severity",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "timestamp",
           "order": "DESCENDING"
@@ -122,7 +190,7 @@
         },
         {
           "fieldPath": "timestamp",
-          "order": "DESCENDING"
+          "order": "ASCENDING"
         }
       ]
     }

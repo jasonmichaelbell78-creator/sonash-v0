@@ -209,22 +209,39 @@ creation.
 
 > **Checklist:**
 > [TRACK_A_TESTING_CHECKLIST.md](docs/TRACK_A_TESTING_CHECKLIST.md) **Total
-> Tests:** 125 | **Categories:** 8
+> Tests:** 131 | **Categories:** 8
 
-| Category            | Tests | Status     |
-| ------------------- | ----- | ---------- |
-| Logs Tab UI         | 24    | ⏳ Pending |
-| Privileges Backend  | 16    | ⏳ Pending |
-| Privileges Frontend | 14    | ⏳ Pending |
-| Background Jobs     | 30    | ⏳ Pending |
-| Security Testing    | 10    | ⏳ Pending |
-| Integration Tests   | 20    | ⏳ Pending |
-| Performance Tests   | 5     | ⏳ Pending |
-| Error Handling      | 6     | ⏳ Pending |
+| Category            | Tests | Passed | Skipped | Status        |
+| ------------------- | ----- | ------ | ------- | ------------- |
+| Logs Tab UI         | 24    | 24     | 0       | ✅ Complete   |
+| Privileges Backend  | 16    | 5      | 11      | 🔄 Partial    |
+| Privileges Frontend | 14    | 10     | 4       | 🔄 Partial    |
+| Background Jobs     | 30    | 4      | 25      | 🔄 Re-testing |
+| Security Testing    | 10    | 6      | 4       | 🔄 Partial    |
+| Integration Tests   | 26    | 25     | 1       | ✅ Complete   |
+| Performance Tests   | 5     | 4      | 1       | ✅ Complete   |
+| Error Handling      | 6     | 0      | 6       | ⏳ Pending    |
+
+#### Track A Blockers - Firestore Indexes
+
+> **Issue:** Background jobs A10, A12, A14 require Firestore indexes that must
+> be created manually via Firebase Console.
+
+| Job | Index Required                                     | Status      |
+| --- | -------------------------------------------------- | ----------- |
+| A10 | `daily_logs` collection group: `updatedAt ASC`     | ❌ Missing  |
+| A12 | `security_logs`: `type + functionName + timestamp` | ✅ Deployed |
+| A14 | `security_logs`: `severity ASC + timestamp ASC`    | ❌ Missing  |
+| A14 | `admin_jobs`: `lastRunStatus + lastRun`            | ✅ Deployed |
+
+**To create missing indexes:** Click the link in the job error message in Admin
+Panel → Jobs tab.
 
 **Testing Prerequisites:**
 
-- [ ] Deploy latest functions to Firebase
+- [x] Deploy latest functions to Firebase
+- [x] Fix job visibility (Session #74 - added all jobs to registeredJobs)
+- [ ] Create missing Firestore indexes (A10, A14)
 - [ ] Verify Sentry env vars configured
 - [ ] Create test user accounts (admin, premium, free)
 

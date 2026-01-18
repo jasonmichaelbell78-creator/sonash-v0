@@ -11,9 +11,11 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-01-17 **Branch**: `audit/single-session-2026-01-17`
-**Working On**: Track A Testing & Validation **Files Modified**: `ROADMAP.md`,
-`SESSION_CONTEXT.md`, `scripts/check-cross-doc-deps.js` **Next Step**: Execute
-Track A Testing Checklist (125 tests) **Uncommitted Work**: no
+**Working On**: Track A Job Fixes & Testing **Files Modified**: `ROADMAP.md`,
+`functions/src/admin.ts`, `firestore.indexes.json`,
+`docs/TRACK_A_TESTING_CHECKLIST.md` **Next Step**: Create missing indexes
+manually, re-test A12/A14 after indexes build **Uncommitted Work**: yes (job
+visibility fix + indexes)
 
 ---
 

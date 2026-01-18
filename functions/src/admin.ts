@@ -1030,7 +1030,7 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
     // Import job runner and job functions dynamically to avoid circular dependencies
     const {
       runJob,
-      cleanupOldSessions,
+      cleanupOldDailyLogs,
       cleanupOrphanedStorageFiles,
       generateUsageAnalytics,
       pruneSecurityEvents,
@@ -1046,10 +1046,17 @@ export const adminTriggerJob = onCall<TriggerJobRequest>(async (request) => {
           await cleanupOldRateLimits();
         },
       },
-      cleanupOldSessions: {
-        name: "Cleanup Old Sessions",
+      cleanupOldDailyLogs: {
+        name: "Cleanup Old Daily Logs",
         fn: async () => {
-          await cleanupOldSessions();
+          await cleanupOldDailyLogs();
+        },
+      },
+      // Backward-compat alias for old job ID
+      cleanupOldSessions: {
+        name: "Cleanup Old Sessions (legacy)",
+        fn: async () => {
+          await cleanupOldDailyLogs();
         },
       },
       cleanupOrphanedStorageFiles: {
@@ -1132,12 +1139,43 @@ export const adminGetJobsStatus = onCall(async (request) => {
     });
 
     // Add any registered jobs that haven't run yet
+    // These must match the job IDs used in runJob() calls in jobs.ts
     const registeredJobs = [
       {
         id: "cleanupOldRateLimits",
         name: "Cleanup Rate Limits",
         schedule: "Daily at 3 AM CT",
         description: "Removes expired rate limit documents",
+      },
+      {
+        id: "cleanupOldDailyLogs",
+        name: "Cleanup Old Daily Logs",
+        schedule: "Daily at 4 AM CT",
+        description: "Deletes documents from daily_logs collection group older than 30 days (A10)",
+      },
+      {
+        id: "cleanupOrphanedStorageFiles",
+        name: "Cleanup Orphaned Storage",
+        schedule: "Sundays at 2 AM CT",
+        description: "Removes storage files for deleted users older than 7 days (A11)",
+      },
+      {
+        id: "generateUsageAnalytics",
+        name: "Generate Usage Analytics",
+        schedule: "Daily at 1 AM CT",
+        description: "Generates daily usage statistics for admin dashboard (A12)",
+      },
+      {
+        id: "pruneSecurityEvents",
+        name: "Prune Security Events",
+        schedule: "Sundays at 3 AM CT",
+        description: "Removes security log events older than 90 days (A13)",
+      },
+      {
+        id: "healthCheckNotifications",
+        name: "Health Check",
+        schedule: "Every 6 hours",
+        description: "Monitors system health and logs warnings/errors (A14)",
       },
     ];
 
