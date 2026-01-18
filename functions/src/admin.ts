@@ -2078,13 +2078,6 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
       throw error;
     }
 
-    logSecurityEvent("ADMIN_ACTION", "adminSendPasswordReset", "Admin sent password reset email", {
-      userId: request.auth?.uid,
-      metadata: { targetEmailHash: hashUserId(email) },
-      severity: "INFO",
-      storeInFirestore: true,
-    });
-
     try {
       // Use Firebase Auth REST API to send password reset email
       // This actually sends the email using Firebase's built-in email templates
@@ -2113,6 +2106,19 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
 
         throw new Error(`Firebase Auth API error: ${errorMessage || response.status}`);
       }
+
+      // Log success only after email was actually sent
+      logSecurityEvent(
+        "ADMIN_ACTION",
+        "adminSendPasswordReset",
+        "Admin sent password reset email",
+        {
+          userId: request.auth?.uid,
+          metadata: { targetEmailHash: hashUserId(email) },
+          severity: "INFO",
+          storeInFirestore: true,
+        }
+      );
 
       return {
         success: true,
@@ -2329,12 +2335,19 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
       const keyParts = doc.id.split(":");
       const type = keyParts[0] || "unknown";
 
+      // Create Date and validate it can be serialized
+      // Out-of-range timestamps can cause toISOString() to throw
+      const resetDate = new Date(resetAtMs);
+      if (Number.isNaN(resetDate.getTime())) {
+        continue;
+      }
+
       activeLimits.push({
         key: doc.id,
         type,
         points: data.points || 0,
         maxPoints: data.maxPoints || 10,
-        resetAt: new Date(resetAtMs).toISOString(),
+        resetAt: resetDate.toISOString(),
         isBlocked: (data.points || 0) >= (data.maxPoints || 10),
       });
     }
@@ -2392,9 +2405,15 @@ export const adminClearRateLimit = onCall<ClearRateLimitRequest>(async (request)
     throw new HttpsError("invalid-argument", "Rate limit key is required");
   }
 
-  // SECURITY: Validate key format to prevent path traversal
-  // Rate limit keys should not contain path separators
+  // SECURITY: Validate key format to prevent path traversal and DoS abuse
+  // Rate limit keys should be alphanumeric with colons/underscores/hyphens only
   if (key.includes("/") || key.includes("\\")) {
+    throw new HttpsError("invalid-argument", "Invalid rate limit key format");
+  }
+  if (key.length > 256) {
+    throw new HttpsError("invalid-argument", "Invalid rate limit key format");
+  }
+  if (!/^[a-z0-9:_-]+$/i.test(key)) {
     throw new HttpsError("invalid-argument", "Invalid rate limit key format");
   }
 

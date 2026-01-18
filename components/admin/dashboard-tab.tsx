@@ -99,10 +99,13 @@ export function DashboardTab() {
   // Extended stats state
   const [storageStats, setStorageStats] = useState<StorageStats | null>(null);
   const [loadingStorage, setLoadingStorage] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
   const [rateLimits, setRateLimits] = useState<RateLimitEntry[]>([]);
   const [loadingRateLimits, setLoadingRateLimits] = useState(false);
+  const [rateLimitsError, setRateLimitsError] = useState<string | null>(null);
   const [collectionStats, setCollectionStats] = useState<CollectionStats[]>([]);
   const [loadingCollections, setLoadingCollections] = useState(false);
+  const [collectionsError, setCollectionsError] = useState<string | null>(null);
   const [clearingRateLimit, setClearingRateLimit] = useState<string | null>(null);
 
   useEffect(() => {
@@ -134,6 +137,7 @@ export function DashboardTab() {
 
   async function loadStorageStats() {
     setLoadingStorage(true);
+    setStorageError(null);
     try {
       const functions = getFunctions();
       const getStorageStatsFn = httpsCallable<void, StorageStats>(
@@ -144,6 +148,7 @@ export function DashboardTab() {
       setStorageStats(result.data);
     } catch (err) {
       logger.error("Failed to load storage stats", { error: err });
+      setStorageError("Failed to load storage stats. Please try again.");
     } finally {
       setLoadingStorage(false);
     }
@@ -151,6 +156,7 @@ export function DashboardTab() {
 
   async function loadRateLimits() {
     setLoadingRateLimits(true);
+    setRateLimitsError(null);
     try {
       const functions = getFunctions();
       const getRateLimitsFn = httpsCallable<void, { activeLimits: RateLimitEntry[] }>(
@@ -161,6 +167,7 @@ export function DashboardTab() {
       setRateLimits(result.data.activeLimits);
     } catch (err) {
       logger.error("Failed to load rate limits", { error: err });
+      setRateLimitsError("Failed to load rate limits. Please try again.");
     } finally {
       setLoadingRateLimits(false);
     }
@@ -168,6 +175,7 @@ export function DashboardTab() {
 
   async function loadCollectionStats() {
     setLoadingCollections(true);
+    setCollectionsError(null);
     try {
       const functions = getFunctions();
       const getCollectionStatsFn = httpsCallable<void, { collections: CollectionStats[] }>(
@@ -178,6 +186,7 @@ export function DashboardTab() {
       setCollectionStats(result.data.collections);
     } catch (err) {
       logger.error("Failed to load collection stats", { error: err });
+      setCollectionsError("Failed to load collection stats. Please try again.");
     } finally {
       setLoadingCollections(false);
     }
@@ -405,6 +414,11 @@ export function DashboardTab() {
               )}
             </div>
           </div>
+        ) : storageError ? (
+          <div className="bg-red-50 rounded-lg border border-red-200 p-6 text-center text-red-700 flex items-center justify-center gap-2">
+            <XCircle className="w-5 h-5" />
+            {storageError}
+          </div>
         ) : (
           <div className="bg-amber-50 rounded-lg border border-amber-200 p-6 text-center text-amber-700">
             Click &ldquo;Load Stats&rdquo; to view storage usage statistics
@@ -477,6 +491,11 @@ export function DashboardTab() {
               ))}
             </div>
           </div>
+        ) : rateLimitsError ? (
+          <div className="bg-red-50 rounded-lg border border-red-200 p-6 text-center text-red-700 flex items-center justify-center gap-2">
+            <XCircle className="w-5 h-5" />
+            {rateLimitsError}
+          </div>
         ) : loadingRateLimits ? null : (
           <div className="bg-green-50 rounded-lg border border-green-200 p-6 text-center text-green-700">
             No active rate limits
@@ -526,6 +545,11 @@ export function DashboardTab() {
                 </div>
               ))}
             </div>
+          </div>
+        ) : collectionsError ? (
+          <div className="bg-red-50 rounded-lg border border-red-200 p-6 text-center text-red-700 flex items-center justify-center gap-2">
+            <XCircle className="w-5 h-5" />
+            {collectionsError}
           </div>
         ) : (
           <div className="bg-amber-50 rounded-lg border border-amber-200 p-6 text-center text-amber-700">

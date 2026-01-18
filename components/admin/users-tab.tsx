@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger, maskIdentifier } from "@/lib/logger";
 import {
@@ -116,6 +116,16 @@ export function UsersTab() {
   // Password reset state
   const [sendingPasswordReset, setSendingPasswordReset] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
+  const passwordResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup password reset timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (passwordResetTimeoutRef.current) {
+        clearTimeout(passwordResetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Load users on mount and when sort changes
   const loadUsers = useCallback(
@@ -455,7 +465,11 @@ export function UsersTab() {
       setPasswordResetSent(true);
 
       // Reset the success indicator after 5 seconds
-      setTimeout(() => setPasswordResetSent(false), 5000);
+      // Clear any existing timeout first to prevent stale state updates
+      if (passwordResetTimeoutRef.current) {
+        clearTimeout(passwordResetTimeoutRef.current);
+      }
+      passwordResetTimeoutRef.current = setTimeout(() => setPasswordResetSent(false), 5000);
     } catch (err) {
       logger.error("Failed to send password reset", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
