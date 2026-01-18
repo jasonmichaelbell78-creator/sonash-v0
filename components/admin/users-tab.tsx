@@ -127,6 +127,15 @@ export function UsersTab() {
     };
   }, []);
 
+  // Reset password reset UI when switching users (prevents stale timeout updates)
+  useEffect(() => {
+    setPasswordResetSent(false);
+    if (passwordResetTimeoutRef.current) {
+      clearTimeout(passwordResetTimeoutRef.current);
+      passwordResetTimeoutRef.current = null;
+    }
+  }, [selectedUser?.profile.uid]);
+
   // Load users on mount and when sort changes
   const loadUsers = useCallback(
     async (cursor?: string | null) => {

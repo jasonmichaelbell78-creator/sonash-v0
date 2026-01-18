@@ -297,7 +297,10 @@ export function PrivilegesTab() {
               <input
                 type="text"
                 value={formId}
-                onChange={(e) => setFormId(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+                onChange={(e) => {
+                  const normalized = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
+                  setFormId(normalized.replace(/^[^a-z]+/, ""));
+                }}
                 disabled={!!editingType}
                 placeholder="e.g., beta_tester"
                 className="w-full px-3 py-2 border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:bg-gray-100 disabled:cursor-not-allowed"

@@ -2081,10 +2081,14 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
     try {
       // Use Firebase Auth REST API to send password reset email
       // This actually sends the email using Firebase's built-in email templates
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
         {
           method: "POST",
+          signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
           },
@@ -2093,7 +2097,9 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
             email: email,
           }),
         }
-      );
+      ).finally(() => {
+        clearTimeout(timeoutId);
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -2114,7 +2120,7 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
         "Admin sent password reset email",
         {
           userId: request.auth?.uid,
-          metadata: { targetEmailHash: hashUserId(email) },
+          metadata: { targetEmailHash: hashUserId(email.trim().toLowerCase()) },
           severity: "INFO",
           storeInFirestore: true,
         }
@@ -2130,9 +2136,15 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
         throw error;
       }
 
+      // SECURITY: Sanitize error to avoid leaking API key from URL
+      // Only log error name/code, never full message which could contain secrets
+      const safeErrorInfo =
+        error instanceof Error
+          ? { name: error.name, code: (error as { code?: string }).code }
+          : { type: typeof error };
       logSecurityEvent("ADMIN_ERROR", "adminSendPasswordReset", "Failed to send password reset", {
         userId: request.auth?.uid,
-        metadata: { error: String(error) },
+        metadata: { error: safeErrorInfo },
         captureToSentry: true,
       });
       throw new HttpsError("internal", "Failed to send password reset email");

@@ -537,7 +537,7 @@ export function DashboardTab() {
                   <div className="text-xl font-bold text-amber-900">
                     {col.count.toLocaleString()}
                   </div>
-                  {col.hasSubcollections && col.subcollectionEstimate && (
+                  {col.hasSubcollections && col.subcollectionEstimate != null && (
                     <div className="text-xs text-amber-600 mt-1">
                       +{col.subcollectionEstimate.toLocaleString()} in subcollections
                     </div>
