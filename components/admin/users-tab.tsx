@@ -526,7 +526,7 @@ export function UsersTab() {
   }
 
   async function handleSoftDelete() {
-    if (!selectedUser || deleteConfirmText !== "DELETE") return;
+    if (!selectedUser || deleteConfirmText.trim() !== "DELETE") return;
 
     setDeletingUser(true);
     setError(null);
@@ -1370,7 +1370,7 @@ export function UsersTab() {
                     </button>
                     <button
                       onClick={handleSoftDelete}
-                      disabled={deleteConfirmText !== "DELETE" || deletingUser}
+                      disabled={deleteConfirmText.trim() !== "DELETE" || deletingUser}
                       className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
                       {deletingUser ? (

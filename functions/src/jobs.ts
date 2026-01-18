@@ -14,7 +14,7 @@
 
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { logSecurityEvent } from "./security-logger";
+import { logSecurityEvent, hashUserId } from "./security-logger";
 
 /**
  * Job wrapper for status tracking
@@ -698,7 +698,7 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
         // Storage errors are non-fatal - user may have no files
         const errorType = storageError instanceof Error ? storageError.name : "UnknownError";
         if (errorType !== "NotFoundError") {
-          console.warn(`Storage cleanup warning for user ${uid.slice(0, 8)}***: ${errorType}`);
+          console.warn(`Storage cleanup warning for user ${hashUserId(uid)}: ${errorType}`);
         }
       }
 
@@ -708,7 +708,7 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
       } catch (authError) {
         // Auth account may already be deleted - non-fatal
         const errorType = authError instanceof Error ? authError.name : "UnknownError";
-        console.warn(`Auth deletion warning for user ${uid.slice(0, 8)}***: ${errorType}`);
+        console.warn(`Auth deletion warning for user ${hashUserId(uid)}: ${errorType}`);
       }
 
       // 6. Delete user document (must be last)
@@ -723,7 +723,7 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
         "Permanently deleted user after 30-day retention",
         {
           severity: "WARNING",
-          metadata: { userIdHash: uid.slice(0, 8) + "***" },
+          metadata: { userIdHash: hashUserId(uid) },
         }
       );
     } catch (error) {
@@ -736,7 +736,7 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
         `Failed to permanently delete user: ${errorMessage}`,
         {
           severity: "ERROR",
-          metadata: { userIdHash: uid.slice(0, 8) + "***", error: errorMessage },
+          metadata: { userIdHash: hashUserId(uid), error: errorMessage },
           captureToSentry: true,
         }
       );

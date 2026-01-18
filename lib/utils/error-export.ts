@@ -97,14 +97,30 @@ export interface AdminErrorsExport {
 }
 
 /**
+ * Redact sensitive URL parameters (tokens, session IDs, etc.)
+ * Returns only the origin + pathname, stripping query string and hash
+ */
+function redactSensitiveUrl(fullUrl: string): string {
+  try {
+    const url = new URL(fullUrl);
+    // Return only origin + pathname (no query params or hash which may contain sensitive data)
+    return url.origin + url.pathname;
+  } catch {
+    // If URL parsing fails, return a safe placeholder
+    return "[invalid-url]";
+  }
+}
+
+/**
  * Get environment information for error context
  */
 function getEnvironmentInfo(): EnvironmentInfo {
+  const rawUrl = typeof window !== "undefined" ? window.location.href : "unknown";
   return {
     nodeEnv: process.env.NODE_ENV,
     appVersion: process.env.NEXT_PUBLIC_APP_VERSION,
     userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
-    url: typeof window !== "undefined" ? window.location.href : "unknown",
+    url: rawUrl !== "unknown" ? redactSensitiveUrl(rawUrl) : "unknown",
     pathname: typeof window !== "undefined" ? window.location.pathname : "unknown",
     timestamp: new Date().toISOString(),
   };
