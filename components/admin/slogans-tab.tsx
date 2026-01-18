@@ -114,6 +114,7 @@ const slogansServiceAdapter = {
 const slogansConfig: AdminCrudConfig<Slogan> = {
   entityName: "Slogan",
   entityNamePlural: "Recovery Slogans",
+  tabId: "slogans",
 
   service: slogansServiceAdapter,
 

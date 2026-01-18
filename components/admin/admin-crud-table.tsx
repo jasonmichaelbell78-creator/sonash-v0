@@ -6,6 +6,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { db } from "@/lib/firebase";
 import { logger } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 
 import {
   Dialog,
@@ -73,6 +74,14 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: AdminCrudTableP
     }
     setLoading(false);
   }, [config.service, config.collectionName, config.entityNamePlural]);
+
+  // Auto-refresh when tab becomes active (if tabId is configured)
+  // Note: Hook always runs (React rules), but only triggers refresh when tabId matches activeTab
+  useTabRefresh(
+    config.tabId ?? "dashboard", // Fallback required by hook, but won't match if on different tab
+    config.tabId ? fetchItems : () => {}, // No-op if tabId not configured
+    { skipInitial: true }
+  );
 
   // Fetch data
   useEffect(() => {

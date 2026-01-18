@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { logger } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,7 +54,7 @@ export default function PrayersTab() {
     isActive: true,
   });
 
-  async function loadPrayers() {
+  const loadPrayers = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getAllPrayers(true); // Include inactive
@@ -65,13 +66,14 @@ export default function PrayersTab() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("prayers", loadPrayers, { skipInitial: true });
 
   useEffect(() => {
-    void (async () => {
-      await loadPrayers();
-    })();
-  }, []);
+    void loadPrayers();
+  }, [loadPrayers]);
 
   function handleEdit(prayer: Prayer) {
     setEditingPrayer(prayer);

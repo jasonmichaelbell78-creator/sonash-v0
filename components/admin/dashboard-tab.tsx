@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import {
   CheckCircle2,
   XCircle,
@@ -108,11 +109,7 @@ export function DashboardTab() {
   const [collectionsError, setCollectionsError] = useState<string | null>(null);
   const [clearingRateLimit, setClearingRateLimit] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
-  async function loadDashboard() {
+  const loadDashboard = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -133,7 +130,15 @@ export function DashboardTab() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("dashboard", loadDashboard);
+
+  // Load on mount
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
   async function loadStorageStats() {
     setLoadingStorage(true);

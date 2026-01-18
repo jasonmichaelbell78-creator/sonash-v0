@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import {
   ExternalLink,
   FileText,
@@ -281,6 +282,9 @@ export function LogsTab() {
       setLoading(false);
     }
   }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("logs", () => void refresh(), { skipInitial: true });
 
   useEffect(() => {
     let active = true;

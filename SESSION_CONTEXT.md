@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 3.12 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 3.13 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-01-18 (Session #77)
+2026-01-18 (Session #78)
 
 ---
 
@@ -10,12 +10,12 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-18 **Branch**: `audit/single-session-2026-01-17`
-**Working On**: Track A-Test complete - moving to Track B or Track A-P2 **Files
-Modified**: `functions/src/jobs.ts`, `ROADMAP.md`, `SESSION_CONTEXT.md`,
-`docs/TRACK_A_TESTING_CHECKLIST.md` **Next Step**: Start Track B (Dev Dashboard)
-or Track A-P2 (Firebase Console Phase 2) **Uncommitted Work**: Storage bucket
-fix in jobs.ts + documentation updates
+**Last Checkpoint**: 2026-01-18 **Branch**: `main` **Working On**: Track A Phase
+3 complete (A23-A25) - Soft-delete users, auto-refresh tabs, error export
+**Files Modified**: `users-tab.tsx`, `admin.ts`, `jobs.ts`, `index.ts`, 13 admin
+tab components, new context/hook/utility files **Next Step**: Start Track B (Dev
+Dashboard) or Track A-P2 (Firebase Console Phase 2) **Uncommitted Work**: None -
+all changes committed and deployed
 
 ---
 
@@ -31,7 +31,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 77 (since Jan 1, 2026)
+**Current Session Count**: 78 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions
@@ -43,9 +43,22 @@ productive work.
 
 **Active Priority**: **Operational Visibility Sprint** (P0)
 
-**Status**: 🔄 IN PROGRESS (~55% complete - Track A & A-Test done)
+**Status**: 🔄 IN PROGRESS (~60% complete - Track A Phase 3 done)
 
 **See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0)
+
+**Session #78 Update** - Roadmap v2.14:
+
+- **✅ TRACK A PHASE 3 COMPLETE** (A23-A25):
+  - A23: Error JSON Export with timeframe selection (1h/6h/24h/7d/30d) ✅
+  - A24: Auto-Refresh Tabs on switch (all 13 tabs migrated) ✅
+  - A25: Soft-Delete Users with 30-day retention ✅
+- **✅ DEPLOYED**:
+  - Cloud Functions: adminSoftDeleteUser, adminUndeleteUser,
+    scheduledHardDeleteSoftDeletedUsers
+  - Firestore index: users(isSoftDeleted, scheduledHardDeleteAt)
+- **🔄 NEXT**: Start Track B (Dev Dashboard) or Track A-P2 (Firebase Console
+  Phase 2)
 
 **Session #77 Update** - Roadmap v2.13:
 

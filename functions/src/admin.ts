@@ -1040,6 +1040,167 @@ export const adminDisableUser = onCall<DisableUserRequest>(async (request) => {
 });
 
 /**
+ * Admin: Soft-Delete User
+ * Marks a user for deletion with 30-day retention period
+ * Disables auth account and revokes tokens immediately
+ *
+ * SECURITY: Requires admin privilege
+ * AUDIT: Logs security event with hashed user ID
+ */
+interface SoftDeleteUserRequest {
+  uid: string;
+  reason?: string;
+}
+
+export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request) => {
+  await requireAdmin(request, "adminSoftDeleteUser");
+
+  const { uid, reason } = request.data;
+
+  if (!uid) {
+    throw new HttpsError("invalid-argument", "User ID is required");
+  }
+
+  // SECURITY: Log audit event (hash targetUid to avoid PII in logs)
+  logSecurityEvent("ADMIN_ACTION", "adminSoftDeleteUser", "Admin soft-deleted user", {
+    userId: request.auth?.uid,
+    metadata: { targetUidHash: hashUserId(uid), hasReason: !!reason },
+    severity: "WARNING",
+  });
+
+  const db = admin.firestore();
+
+  try {
+    // Check if user exists and is not already soft-deleted
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      throw new HttpsError("not-found", "User not found");
+    }
+
+    const userData = userDoc.data();
+    if (userData?.isSoftDeleted) {
+      throw new HttpsError("failed-precondition", "User is already scheduled for deletion");
+    }
+
+    // Calculate scheduled hard delete date (30 days from now)
+    const now = new Date();
+    const scheduledHardDeleteAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    // Disable Firebase Auth account
+    await admin.auth().updateUser(uid, { disabled: true });
+
+    // Revoke refresh tokens to force logout
+    await admin.auth().revokeRefreshTokens(uid);
+
+    // Update Firestore user document with soft-delete fields
+    await db
+      .collection("users")
+      .doc(uid)
+      .update({
+        isSoftDeleted: true,
+        softDeletedAt: admin.firestore.FieldValue.serverTimestamp(),
+        softDeletedBy: request.auth?.uid || null,
+        scheduledHardDeleteAt: admin.firestore.Timestamp.fromDate(scheduledHardDeleteAt),
+        softDeleteReason: reason || null,
+        // Also set disabled fields for consistency
+        disabled: true,
+        disabledAt: admin.firestore.FieldValue.serverTimestamp(),
+        disabledBy: request.auth?.uid || null,
+      });
+
+    return {
+      success: true,
+      message: "User scheduled for deletion in 30 days",
+      scheduledHardDeleteAt: scheduledHardDeleteAt.toISOString(),
+    };
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+
+    logSecurityEvent("ADMIN_ERROR", "adminSoftDeleteUser", "Failed to soft-delete user", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to soft-delete user");
+  }
+});
+
+/**
+ * Admin: Undelete User
+ * Restores a soft-deleted user before the 30-day retention expires
+ * Re-enables auth account
+ *
+ * SECURITY: Requires admin privilege
+ * AUDIT: Logs security event with hashed user ID
+ */
+interface UndeleteUserRequest {
+  uid: string;
+}
+
+export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => {
+  await requireAdmin(request, "adminUndeleteUser");
+
+  const { uid } = request.data;
+
+  if (!uid) {
+    throw new HttpsError("invalid-argument", "User ID is required");
+  }
+
+  // SECURITY: Log audit event
+  logSecurityEvent("ADMIN_ACTION", "adminUndeleteUser", "Admin restored soft-deleted user", {
+    userId: request.auth?.uid,
+    metadata: { targetUidHash: hashUserId(uid) },
+    severity: "INFO",
+  });
+
+  const db = admin.firestore();
+
+  try {
+    // Check if user exists and is soft-deleted
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      throw new HttpsError("not-found", "User not found");
+    }
+
+    const userData = userDoc.data();
+    if (!userData?.isSoftDeleted) {
+      throw new HttpsError("failed-precondition", "User is not scheduled for deletion");
+    }
+
+    // Re-enable Firebase Auth account
+    await admin.auth().updateUser(uid, { disabled: false });
+
+    // Clear soft-delete fields and re-enable user
+    await db.collection("users").doc(uid).update({
+      isSoftDeleted: false,
+      softDeletedAt: null,
+      softDeletedBy: null,
+      scheduledHardDeleteAt: null,
+      softDeleteReason: null,
+      // Also clear disabled fields
+      disabled: false,
+      disabledAt: null,
+      disabledBy: null,
+      disabledReason: null,
+    });
+
+    return {
+      success: true,
+      message: "User restored successfully",
+    };
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+
+    logSecurityEvent("ADMIN_ERROR", "adminUndeleteUser", "Failed to restore soft-deleted user", {
+      userId: request.auth?.uid,
+      metadata: { error: String(error), targetUidHash: hashUserId(uid) },
+      captureToSentry: true,
+    });
+    throw new HttpsError("internal", "Failed to restore user");
+  }
+});
+
+/**
  * Admin: Trigger Background Job
  * Allows admin to manually trigger a background job
  */
@@ -1448,23 +1609,27 @@ export const adminGetLogs = onCall<GetLogsRequest>(async (request) => {
     });
 
     // Generate GCP Cloud Logging deep links
-    // Format: https://console.cloud.google.com/logs/query;query=QUERY;project=PROJECT_ID
+    // Format: https://console.cloud.google.com/logs/query;query=QUERY;storageScope=project;timeRange=PT24H?project=PROJECT_ID
+    // Note: project must be a query param (after ?), timeRange as path param for 24h window
     const projectId = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || "sonash-app";
     const baseUrl = `https://console.cloud.google.com/logs/query`;
 
     // URL-encode query strings for GCP Logs Explorer
     const encodeQuery = (query: string) => encodeURIComponent(query);
 
-    // Time range: last 24 hours
-    const timeRange = "timestamp>=-PT24H";
+    // Build URL with proper GCP format: path params with ; then query params with ?
+    const buildGcpUrl = (query: string) =>
+      `${baseUrl};query=${encodeQuery(query)};storageScope=project;timeRange=PT24H?project=${projectId}`;
 
     const gcpLinks = {
-      allLogs: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" ${timeRange}`)};project=${projectId}`,
-      errors: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" severity=ERROR ${timeRange}`)};project=${projectId}`,
-      warnings: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" severity>=WARNING ${timeRange}`)};project=${projectId}`,
-      security: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type:* ${timeRange}`)};project=${projectId}`,
-      auth: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"AUTH|AUTHORIZATION" ${timeRange}`)};project=${projectId}`,
-      admin: `${baseUrl};query=${encodeQuery(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"ADMIN" ${timeRange}`)};project=${projectId}`,
+      allLogs: buildGcpUrl(`resource.type="cloud_function"`),
+      errors: buildGcpUrl(`resource.type="cloud_function" severity=ERROR`),
+      warnings: buildGcpUrl(`resource.type="cloud_function" severity>=WARNING`),
+      security: buildGcpUrl(`resource.type="cloud_function" jsonPayload.securityEvent.type:*`),
+      auth: buildGcpUrl(
+        `resource.type="cloud_function" jsonPayload.securityEvent.type=~"AUTH|AUTHORIZATION"`
+      ),
+      admin: buildGcpUrl(`resource.type="cloud_function" jsonPayload.securityEvent.type=~"ADMIN"`),
     };
 
     // AUDIT: Log successful access to security logs for compliance traceability

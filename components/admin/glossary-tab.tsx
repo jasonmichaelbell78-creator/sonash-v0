@@ -92,6 +92,7 @@ const categoryColors: Record<string, string> = {
 const glossaryConfig: AdminCrudConfig<GlossaryTerm> = {
   entityName: "Term",
   entityNamePlural: "Glossary Terms",
+  tabId: "glossary",
 
   service: glossaryServiceAdapter,
 

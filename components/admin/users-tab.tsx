@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger, maskIdentifier } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import {
   Search,
   Users,
@@ -20,7 +21,10 @@ import {
   Loader2,
   Shield,
   KeyRound,
+  Trash2,
+  Undo2,
 } from "lucide-react";
+import { differenceInDays } from "date-fns";
 import { formatDistanceToNow } from "date-fns";
 
 interface UserSearchResult {
@@ -30,6 +34,8 @@ interface UserSearchResult {
   disabled: boolean;
   lastActive: string | null;
   createdAt: string | null;
+  isSoftDeleted?: boolean;
+  scheduledHardDeleteAt?: string | null;
 }
 
 type SortField = "createdAt" | "lastActive" | "nickname";
@@ -49,6 +55,11 @@ interface UserProfile {
   adminNotes: string | null;
   isAdmin: boolean;
   privilegeType?: string;
+  isSoftDeleted?: boolean;
+  softDeletedAt?: string | null;
+  softDeletedBy?: string | null;
+  scheduledHardDeleteAt?: string | null;
+  softDeleteReason?: string | null;
 }
 
 interface ActivityItem {
@@ -118,6 +129,13 @@ export function UsersTab() {
   const [passwordResetSent, setPasswordResetSent] = useState(false);
   const passwordResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Soft-delete state
+  const [deleteDialogStep, setDeleteDialogStep] = useState<0 | 1 | 2>(0); // 0=closed, 1=confirm, 2=type DELETE
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deletingUser, setDeletingUser] = useState(false);
+  const [undeletingUser, setUndeletingUser] = useState(false);
+
   // Cleanup password reset timeout on unmount
   useEffect(() => {
     return () => {
@@ -183,6 +201,9 @@ export function UsersTab() {
     },
     [sortBy, sortOrder]
   );
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("users", () => loadUsers(), { skipInitial: true });
 
   // Load users on mount
   useEffect(() => {
@@ -492,6 +513,162 @@ export function UsersTab() {
     }
   }
 
+  function openDeleteDialog() {
+    setDeleteDialogStep(1);
+    setDeleteConfirmText("");
+    setDeleteReason("");
+  }
+
+  function closeDeleteDialog() {
+    setDeleteDialogStep(0);
+    setDeleteConfirmText("");
+    setDeleteReason("");
+  }
+
+  async function handleSoftDelete() {
+    if (!selectedUser || deleteConfirmText !== "DELETE") return;
+
+    setDeletingUser(true);
+    setError(null);
+
+    try {
+      const functions = getFunctions();
+      const softDeleteFn = httpsCallable<
+        { uid: string; reason?: string },
+        { success: boolean; scheduledHardDeleteAt: string }
+      >(functions, "adminSoftDeleteUser");
+
+      const result = await softDeleteFn({
+        uid: selectedUser.profile.uid,
+        reason: deleteReason || undefined,
+      });
+
+      // Update local state
+      setSelectedUser({
+        ...selectedUser,
+        profile: {
+          ...selectedUser.profile,
+          isSoftDeleted: true,
+          softDeletedAt: new Date().toISOString(),
+          scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
+          softDeleteReason: deleteReason || null,
+          disabled: true,
+        },
+      });
+
+      // Update users list
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.uid === selectedUser.profile.uid
+            ? {
+                ...user,
+                isSoftDeleted: true,
+                scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
+                disabled: true,
+              }
+            : user
+        )
+      );
+      setSearchResults((prev) =>
+        prev.map((user) =>
+          user.uid === selectedUser.profile.uid
+            ? {
+                ...user,
+                isSoftDeleted: true,
+                scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
+                disabled: true,
+              }
+            : user
+        )
+      );
+
+      closeDeleteDialog();
+    } catch (err) {
+      logger.error("Failed to soft-delete user", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+      });
+      setError("Failed to delete user. Please try again.");
+    } finally {
+      setDeletingUser(false);
+    }
+  }
+
+  async function handleUndelete() {
+    if (!selectedUser) return;
+
+    if (!confirm("Are you sure you want to restore this user? They will be able to sign in again."))
+      return;
+
+    setUndeletingUser(true);
+    setError(null);
+
+    try {
+      const functions = getFunctions();
+      const undeleteFn = httpsCallable<{ uid: string }, { success: boolean }>(
+        functions,
+        "adminUndeleteUser"
+      );
+
+      await undeleteFn({ uid: selectedUser.profile.uid });
+
+      // Update local state
+      setSelectedUser({
+        ...selectedUser,
+        profile: {
+          ...selectedUser.profile,
+          isSoftDeleted: false,
+          softDeletedAt: null,
+          softDeletedBy: null,
+          scheduledHardDeleteAt: null,
+          softDeleteReason: null,
+          disabled: false,
+        },
+      });
+
+      // Update users list
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.uid === selectedUser.profile.uid
+            ? {
+                ...user,
+                isSoftDeleted: false,
+                scheduledHardDeleteAt: null,
+                disabled: false,
+              }
+            : user
+        )
+      );
+      setSearchResults((prev) =>
+        prev.map((user) =>
+          user.uid === selectedUser.profile.uid
+            ? {
+                ...user,
+                isSoftDeleted: false,
+                scheduledHardDeleteAt: null,
+                disabled: false,
+              }
+            : user
+        )
+      );
+    } catch (err) {
+      logger.error("Failed to undelete user", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        userId: maskIdentifier(selectedUser.profile.uid),
+      });
+      setError("Failed to restore user. Please try again.");
+    } finally {
+      setUndeletingUser(false);
+    }
+  }
+
+  // Helper to calculate days until hard delete
+  function getDaysUntilHardDelete(scheduledHardDeleteAt: string | null | undefined): number | null {
+    if (!scheduledHardDeleteAt) return null;
+    const days = differenceInDays(new Date(scheduledHardDeleteAt), new Date());
+    return days > 0 ? days : 0;
+  }
+
   return (
     <div className="space-y-6">
       {/* Search Bar */}
@@ -656,15 +833,29 @@ export function UsersTab() {
                         : "Never"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {user.disabled ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Disabled
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {user.isSoftDeleted ? (
+                          <>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                              <Trash2 className="w-3 h-3 mr-1" />
+                              Pending Deletion
+                            </span>
+                            {user.scheduledHardDeleteAt && (
+                              <span className="text-xs text-orange-600">
+                                {getDaysUntilHardDelete(user.scheduledHardDeleteAt)} days left
+                              </span>
+                            )}
+                          </>
+                        ) : user.disabled ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Disabled
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Active
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -906,31 +1097,74 @@ export function UsersTab() {
                 )}
               </div>
 
+              {/* Soft Delete Warning Banner */}
+              {selectedUser.profile.isSoftDeleted && (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <Trash2 className="w-5 h-5 text-orange-600 mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-orange-900">Scheduled for Deletion</h4>
+                      <p className="text-sm text-orange-700 mt-1">
+                        This user&apos;s account will be permanently deleted in{" "}
+                        <strong>
+                          {getDaysUntilHardDelete(selectedUser.profile.scheduledHardDeleteAt)} days
+                        </strong>
+                        . All their data (journal entries, check-ins, inventory) will be removed.
+                      </p>
+                      {selectedUser.profile.softDeleteReason && (
+                        <p className="text-sm text-orange-600 mt-2">
+                          <strong>Reason:</strong> {selectedUser.profile.softDeleteReason}
+                        </p>
+                      )}
+                      <button
+                        onClick={handleUndelete}
+                        disabled={undeletingUser}
+                        className="mt-3 flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 disabled:opacity-50"
+                      >
+                        {undeletingUser ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Restoring...
+                          </>
+                        ) : (
+                          <>
+                            <Undo2 className="w-4 h-4" />
+                            Restore User
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Admin Actions */}
               <div className="bg-white border border-amber-100 rounded-lg p-4">
                 <h4 className="font-medium text-amber-900 mb-3">Admin Actions</h4>
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={handleToggleDisabled}
-                    disabled={saving}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
-                      selectedUser.profile.disabled
-                        ? "bg-green-500 text-white hover:bg-green-600"
-                        : "bg-red-500 text-white hover:bg-red-600"
-                    }`}
-                  >
-                    {selectedUser.profile.disabled ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        Enable User
-                      </>
-                    ) : (
-                      <>
-                        <Ban className="w-4 h-4" />
-                        Disable User
-                      </>
-                    )}
-                  </button>
+                  {!selectedUser.profile.isSoftDeleted && (
+                    <button
+                      onClick={handleToggleDisabled}
+                      disabled={saving}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
+                        selectedUser.profile.disabled
+                          ? "bg-green-500 text-white hover:bg-green-600"
+                          : "bg-red-500 text-white hover:bg-red-600"
+                      }`}
+                    >
+                      {selectedUser.profile.disabled ? (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          Enable User
+                        </>
+                      ) : (
+                        <>
+                          <Ban className="w-4 h-4" />
+                          Disable User
+                        </>
+                      )}
+                    </button>
+                  )}
                   <button
                     onClick={handleSendPasswordReset}
                     disabled={sendingPasswordReset || !selectedUser.profile.email}
@@ -958,6 +1192,16 @@ export function UsersTab() {
                       </>
                     )}
                   </button>
+                  {!selectedUser.profile.isSoftDeleted && (
+                    <button
+                      onClick={openDeleteDialog}
+                      disabled={deletingUser}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete User
+                    </button>
+                  )}
                 </div>
                 {!selectedUser.profile.email && (
                   <p className="text-xs text-amber-600 mt-2">
@@ -1030,6 +1274,123 @@ export function UsersTab() {
       {/* Overlay */}
       {selectedUser && (
         <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSelectedUser(null)} />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {deleteDialogStep > 0 && selectedUser && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50" onClick={closeDeleteDialog} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {deleteDialogStep === 1 ? (
+                // Step 1: Initial confirmation
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                      <Trash2 className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Delete User</h3>
+                      <p className="text-sm text-gray-500">
+                        This action can be undone within 30 days
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 mb-4">
+                    Are you sure you want to delete <strong>{selectedUser.profile.nickname}</strong>
+                    ?
+                  </p>
+                  <p className="text-sm text-gray-600 mb-4">
+                    The user will be immediately logged out and unable to sign in. Their data will
+                    be permanently deleted after 30 days unless restored.
+                  </p>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Reason (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      placeholder="e.g., User requested account deletion"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                  </div>
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      onClick={closeDeleteDialog}
+                      className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => setDeleteDialogStep(2)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </>
+              ) : (
+                // Step 2: Type DELETE to confirm
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                      <AlertCircle className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Final Confirmation</h3>
+                      <p className="text-sm text-gray-500">Type DELETE to confirm</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 mb-4">
+                    To confirm deletion of <strong>{selectedUser.profile.nickname}</strong>, type{" "}
+                    <code className="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-mono">
+                      DELETE
+                    </code>{" "}
+                    below:
+                  </p>
+                  <input
+                    type="text"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                    placeholder="Type DELETE"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 mb-4 font-mono"
+                    autoFocus
+                  />
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      onClick={() => setDeleteDialogStep(1)}
+                      className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm"
+                    >
+                      Back
+                    </button>
+                    <button
+                      onClick={handleSoftDelete}
+                      disabled={deleteConfirmText !== "DELETE" || deletingUser}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {deletingUser ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="w-4 h-4" />
+                          Delete User
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

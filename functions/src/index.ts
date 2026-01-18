@@ -779,6 +779,9 @@ export {
   adminGetUserDetail,
   adminUpdateUser,
   adminDisableUser,
+  // Soft-delete user management
+  adminSoftDeleteUser,
+  adminUndeleteUser,
   adminTriggerJob,
   adminGetJobsStatus,
   adminGetSentryErrorSummary,
@@ -803,4 +806,5 @@ export {
   scheduledGenerateUsageAnalytics,
   scheduledPruneSecurityEvents,
   scheduledHealthCheckNotifications,
+  scheduledHardDeleteSoftDeletedUsers,
 } from "./jobs";

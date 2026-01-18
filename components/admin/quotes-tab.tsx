@@ -115,6 +115,7 @@ const quotesServiceAdapter = {
 const quotesConfig: AdminCrudConfig<Quote> = {
   entityName: "Quote",
   entityNamePlural: "Quotes",
+  tabId: "quotes",
 
   // Use adapter for direct Firestore service
   service: quotesServiceAdapter,

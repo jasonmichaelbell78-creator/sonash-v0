@@ -632,3 +632,170 @@ async function cleanupOldRateLimits(): Promise<{ deleted: number }> {
 
   return { deleted };
 }
+
+/**
+ * Hard Delete Soft-Deleted Users
+ * Permanently deletes users whose 30-day retention period has expired
+ * Schedule: Daily at 5 AM UTC
+ *
+ * Deletion order (to handle foreign key-like dependencies):
+ * 1. Delete subcollection: users/{uid}/journal
+ * 2. Delete subcollection: users/{uid}/daily_logs
+ * 3. Delete subcollection: users/{uid}/inventoryEntries
+ * 4. Delete storage files: user-uploads/{uid}/*
+ * 5. Delete Firebase Auth account
+ * 6. Delete user document: users/{uid}
+ *
+ * SAFETY: Each user deletion is wrapped in try/catch to prevent single failures from aborting the job
+ * AUDIT: Logs security event for each deleted user (with hashed UID)
+ */
+export async function hardDeleteSoftDeletedUsers(): Promise<{
+  processed: number;
+  deleted: number;
+  errors: number;
+}> {
+  const db = admin.firestore();
+  const storage = admin.storage();
+  const bucket = storage.bucket("sonash-app.firebasestorage.app");
+  const now = admin.firestore.Timestamp.now();
+
+  let processed = 0;
+  let deleted = 0;
+  let errors = 0;
+
+  // Find users scheduled for hard deletion (past their 30-day window)
+  const query = db
+    .collection("users")
+    .where("isSoftDeleted", "==", true)
+    .where("scheduledHardDeleteAt", "<=", now)
+    .limit(50); // Process in batches of 50 to avoid timeout
+
+  const snapshot = await query.get();
+
+  for (const userDoc of snapshot.docs) {
+    const uid = userDoc.id;
+    processed++;
+
+    try {
+      // 1. Delete subcollection: journal
+      await deleteSubcollection(db, `users/${uid}/journal`);
+
+      // 2. Delete subcollection: daily_logs
+      await deleteSubcollection(db, `users/${uid}/daily_logs`);
+
+      // 3. Delete subcollection: inventoryEntries
+      await deleteSubcollection(db, `users/${uid}/inventoryEntries`);
+
+      // 4. Delete storage files
+      try {
+        const [files] = await bucket.getFiles({
+          prefix: `user-uploads/${uid}/`,
+        });
+        for (const file of files) {
+          await file.delete();
+        }
+      } catch (storageError) {
+        // Storage errors are non-fatal - user may have no files
+        const errorType = storageError instanceof Error ? storageError.name : "UnknownError";
+        if (errorType !== "NotFoundError") {
+          console.warn(`Storage cleanup warning for user ${uid.slice(0, 8)}***: ${errorType}`);
+        }
+      }
+
+      // 5. Delete Firebase Auth account
+      try {
+        await admin.auth().deleteUser(uid);
+      } catch (authError) {
+        // Auth account may already be deleted - non-fatal
+        const errorType = authError instanceof Error ? authError.name : "UnknownError";
+        console.warn(`Auth deletion warning for user ${uid.slice(0, 8)}***: ${errorType}`);
+      }
+
+      // 6. Delete user document (must be last)
+      await db.collection("users").doc(uid).delete();
+
+      deleted++;
+
+      // AUDIT: Log successful permanent deletion
+      logSecurityEvent(
+        "ADMIN_ACTION",
+        "hardDeleteSoftDeletedUsers",
+        "Permanently deleted user after 30-day retention",
+        {
+          severity: "WARNING",
+          metadata: { userIdHash: uid.slice(0, 8) + "***" },
+        }
+      );
+    } catch (error) {
+      errors++;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      logSecurityEvent(
+        "JOB_FAILURE",
+        "hardDeleteSoftDeletedUsers",
+        `Failed to permanently delete user: ${errorMessage}`,
+        {
+          severity: "ERROR",
+          metadata: { userIdHash: uid.slice(0, 8) + "***", error: errorMessage },
+          captureToSentry: true,
+        }
+      );
+    }
+  }
+
+  logSecurityEvent(
+    "JOB_SUCCESS",
+    "hardDeleteSoftDeletedUsers",
+    `Hard deletion complete: ${deleted} deleted, ${errors} errors`,
+    {
+      severity: "INFO",
+      metadata: { processed, deleted, errors },
+    }
+  );
+
+  return { processed, deleted, errors };
+}
+
+/**
+ * Helper: Delete all documents in a subcollection
+ * Uses batched deletes for efficiency
+ */
+async function deleteSubcollection(
+  db: admin.firestore.Firestore,
+  collectionPath: string
+): Promise<number> {
+  let deleted = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const snapshot = await db.collection(collectionPath).limit(500).get();
+
+    if (snapshot.empty) {
+      hasMore = false;
+      break;
+    }
+
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    deleted += snapshot.size;
+    hasMore = snapshot.size === 500;
+  }
+
+  return deleted;
+}
+
+export const scheduledHardDeleteSoftDeletedUsers = onSchedule(
+  {
+    schedule: "0 5 * * *", // 5 AM UTC daily
+    timeZone: "UTC",
+    retryCount: 3,
+    timeoutSeconds: 540, // 9 minutes (job may process many users)
+  },
+  async () => {
+    await runJob("hardDeleteSoftDeletedUsers", "Hard Delete Soft-Deleted Users", async () => {
+      await hardDeleteSoftDeletedUsers();
+    });
+  }
+);

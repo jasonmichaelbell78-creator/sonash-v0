@@ -131,6 +131,7 @@ const soberLivingServiceAdapter = {
 const soberLivingConfig: AdminCrudConfig<SoberLivingHome> = {
   entityName: "Sober Living Home",
   entityNamePlural: "Sober Living Homes",
+  tabId: "sober-living",
 
   // Use adapted Firestore service
   service: soberLivingServiceAdapter,

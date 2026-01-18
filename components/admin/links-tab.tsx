@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { logger } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,7 +58,7 @@ export default function LinksTab() {
     isActive: true,
   });
 
-  async function loadLinks() {
+  const loadLinks = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getAllQuickLinks(true); // Include inactive
@@ -69,13 +70,14 @@ export default function LinksTab() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("links", loadLinks, { skipInitial: true });
 
   useEffect(() => {
-    void (async () => {
-      await loadLinks();
-    })();
-  }, []);
+    void loadLinks();
+  }, [loadLinks]);
 
   function handleEdit(link: QuickLink) {
     setEditingLink(link);

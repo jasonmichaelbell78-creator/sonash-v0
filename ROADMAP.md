@@ -250,6 +250,24 @@ creation.
   - Pre-built query templates (errors, security events, auth)
   - Export filtered results
 
+#### Admin Panel Enhancements - Phase 3 ✅ Complete (Session #78)
+
+- [x] **A23:** Error JSON Export with Timeframe Selection ✅
+  - Download error reports as JSON for Claude Code debugging
+  - Timeframe options: 1h, 6h, 24h, 7d, 30d
+  - Copy to clipboard functionality
+  - Error boundary export buttons for crash reports
+- [x] **A24:** Auto-Refresh Tabs on Switch ✅
+  - Tab context provider tracks active tab and refresh timestamps
+  - useTabRefresh hook with 30-second minimum interval
+  - All 13 admin tab components migrated
+- [x] **A25:** Soft-Delete Users with 30-Day Retention ✅
+  - Double confirmation dialog (Step 1: confirm, Step 2: type DELETE)
+  - Soft-delete sets isSoftDeleted flag, disables Firebase Auth
+  - Undelete button restores user within 30 days
+  - scheduledHardDeleteSoftDeletedUsers job (daily 5AM UTC)
+  - Visual indicators: "Pending Deletion" badge with days remaining
+
 ### Track A-Test - Testing & Validation ✅ COMPLETE
 
 > **Checklist:**
@@ -1912,6 +1930,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.14    | 2026-01-18 | Session #78: Added Admin Panel Phase 3 (A23-A25) - Error JSON export with timeframe selection, auto-refresh tabs on switch, soft-delete users with 30-day retention; deployed functions and Firestore indexes                                                                                                                                                                               |
 | 2.13    | 2026-01-18 | Session #77: **Track A-Test COMPLETE** - All jobs A10-A14 passing (97.7% pass rate); Fixed A11 storage bucket (`sonash-app.firebasestorage.app`); Added EFF-012 (Network Failure Tests) to offline mode section                                                                                                                                                                             |
 | 2.12    | 2026-01-18 | Session #76: Firestore indexes deployed and verified; Track A-Test validation in progress                                                                                                                                                                                                                                                                                                   |
 | 2.11    | 2026-01-17 | Session #75: Added Track A-P2 (Firebase Console Phase 2) with items 5-8 (A19-A22) to active sprint; expanded task details with effort estimates                                                                                                                                                                                                                                             |

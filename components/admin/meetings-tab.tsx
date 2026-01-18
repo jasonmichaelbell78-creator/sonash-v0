@@ -241,6 +241,7 @@ function getTimeSlot(time: string): string {
 const meetingsConfig: AdminCrudConfig<Meeting> = {
   entityName: "Meeting",
   entityNamePlural: "Meetings",
+  tabId: "meetings",
 
   // Use Cloud Functions (from Phase 1 security fixes)
   cloudFunctions: {

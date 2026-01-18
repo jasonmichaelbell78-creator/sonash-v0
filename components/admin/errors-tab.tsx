@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { logger } from "@/lib/logger";
+import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
 import {
   findErrorKnowledge,
   getSeverityColor,
@@ -11,10 +12,19 @@ import {
 } from "@/lib/error-knowledge-base";
 import { redactSensitive, safeFormatDate, isValidSentryUrl } from "@/lib/utils/admin-error-utils";
 import {
+  createAdminErrorsExport,
+  downloadErrorExport,
+  copyErrorExportToClipboard,
+  getTimeframeDates,
+  type TimeframePreset,
+} from "@/lib/utils/error-export";
+import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
   Clock,
+  Copy,
+  Download,
   ExternalLink,
   Info,
   Lightbulb,
@@ -23,6 +33,7 @@ import {
   TrendingUp,
   Users,
   Wrench,
+  Check,
 } from "lucide-react";
 
 interface SentryIssueSummary {
@@ -247,6 +258,11 @@ export function ErrorsTab() {
   const [error, setError] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
+  // Export state
+  const [exportTimeframe, setExportTimeframe] = useState<TimeframePreset>("24h");
+  const [showExportDropdown, setShowExportDropdown] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
   const trendDirection = useMemo(() => {
     if (!summary) return null;
     if (summary.trendPct > 0) return "up";
@@ -284,7 +300,7 @@ export function ErrorsTab() {
     setExpandedRows(new Set());
   };
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -303,11 +319,69 @@ export function ErrorsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Auto-refresh when tab becomes active
+  useTabRefresh("errors", refresh, { skipInitial: true });
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
+
+  // Export functions
+  const createExportData = () => {
+    const { startDate, endDate } = getTimeframeDates(exportTimeframe);
+
+    // Filter issues within the timeframe
+    const filteredIssues = issues.filter((issue) => {
+      if (!issue.lastSeen) return false;
+      const lastSeenDate = new Date(issue.lastSeen);
+      return lastSeenDate >= startDate && lastSeenDate <= endDate;
+    });
+
+    const totalEvents = filteredIssues.reduce((sum, i) => sum + i.count, 0);
+    const affectedUsers = filteredIssues.reduce((sum, i) => sum + (i.userCount ?? 0), 0);
+
+    return createAdminErrorsExport(
+      filteredIssues,
+      {
+        type: "preset",
+        preset: exportTimeframe,
+        startDate,
+        endDate,
+      },
+      {
+        totalEvents,
+        uniqueIssues: filteredIssues.length,
+        affectedUsers,
+      }
+    );
+  };
+
+  const handleExportDownload = () => {
+    const exportData = createExportData();
+    downloadErrorExport(exportData, `sentry-errors-${exportTimeframe}-${Date.now()}.json`);
+    setShowExportDropdown(false);
+  };
+
+  const handleExportCopy = async () => {
+    const exportData = createExportData();
+    const success = await copyErrorExportToClipboard(exportData);
+
+    if (success) {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+    setShowExportDropdown(false);
+  };
+
+  const timeframeLabels: Record<TimeframePreset, string> = {
+    "1h": "Last 1 hour",
+    "6h": "Last 6 hours",
+    "24h": "Last 24 hours",
+    "7d": "Last 7 days",
+    "30d": "Last 30 days",
+  };
 
   return (
     <div className="space-y-6">
@@ -321,13 +395,87 @@ export function ErrorsTab() {
             </p>
           </div>
         </div>
-        <button
-          onClick={refresh}
-          className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Export Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowExportDropdown(!showExportDropdown)}
+              disabled={loading || issues.length === 0}
+              className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="h-4 w-4" />
+              Export
+              <ChevronDown className="h-3 w-3" />
+            </button>
+
+            {showExportDropdown && (
+              <>
+                {/* Backdrop to close dropdown */}
+                <div className="fixed inset-0 z-10" onClick={() => setShowExportDropdown(false)} />
+                <div className="absolute right-0 mt-2 w-64 rounded-md border border-amber-200 bg-white shadow-lg z-20">
+                  <div className="p-3 border-b border-amber-100">
+                    <label className="block text-xs font-medium text-amber-700 mb-1.5">
+                      Timeframe
+                    </label>
+                    <select
+                      value={exportTimeframe}
+                      onChange={(e) => setExportTimeframe(e.target.value as TimeframePreset)}
+                      className="w-full rounded-md border border-amber-200 px-2 py-1.5 text-sm text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    >
+                      {(Object.keys(timeframeLabels) as TimeframePreset[]).map((preset) => (
+                        <option key={preset} value={preset}>
+                          {timeframeLabels[preset]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="p-2 space-y-1">
+                    <button
+                      onClick={handleExportDownload}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-amber-900 hover:bg-amber-50 rounded-md"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download JSON
+                    </button>
+                    <button
+                      onClick={handleExportCopy}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md ${
+                        copySuccess
+                          ? "text-green-700 bg-green-50"
+                          : "text-amber-900 hover:bg-amber-50"
+                      }`}
+                    >
+                      {copySuccess ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4" />
+                          Copy to Clipboard
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <div className="px-3 py-2 bg-amber-50 border-t border-amber-100 rounded-b-md">
+                    <p className="text-xs text-amber-600">
+                      Export for Claude Code debugging. PII is redacted.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <button
+            onClick={refresh}
+            className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
