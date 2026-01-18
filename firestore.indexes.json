@@ -203,6 +203,10 @@
         {
           "queryScope": "COLLECTION",
           "order": "ASCENDING"
+        },
+        {
+          "queryScope": "COLLECTION",
+          "order": "DESCENDING"
         }
       ]
     },
@@ -224,6 +228,10 @@
       "collectionGroup": "users",
       "fieldPath": "createdAt",
       "indexes": [
+        {
+          "queryScope": "COLLECTION",
+          "order": "ASCENDING"
+        },
         {
           "queryScope": "COLLECTION",
           "order": "DESCENDING"

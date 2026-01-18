@@ -650,11 +650,12 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
       createdAt: string | null;
     }> = [];
 
-    const searchQuery = query.trim().toLowerCase();
+    const trimmedQuery = query.trim();
+    const searchQueryLower = trimmedQuery.toLowerCase();
     const db = admin.firestore();
 
-    // Search by UID (exact match)
-    if (searchQuery.length >= 20) {
+    // Search by UID (exact match) - UIDs are case-sensitive
+    if (trimmedQuery.length >= 20) {
       try {
         const userDoc = await db.collection("users").doc(query).get();
         if (userDoc.exists) {
@@ -674,8 +675,8 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
       }
     }
 
-    // Search by email
-    if (searchQuery.includes("@")) {
+    // Search by email - Firebase Auth email lookup is case-insensitive
+    if (searchQueryLower.includes("@")) {
       try {
         const authUser = await admin.auth().getUserByEmail(query);
         const userDoc = await db.collection("users").doc(authUser.uid).get();
@@ -696,11 +697,13 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
       }
     }
 
-    // Search by nickname (partial match)
+    // Search by nickname (prefix match, case-sensitive)
+    // Note: Firestore doesn't support case-insensitive queries natively
+    // Users should search using the correct case (e.g., "John" not "john")
     const nicknameResults = await db
       .collection("users")
-      .where("nickname", ">=", searchQuery)
-      .where("nickname", "<=", searchQuery + "\uf8ff")
+      .where("nickname", ">=", trimmedQuery)
+      .where("nickname", "<=", trimmedQuery + "\uf8ff")
       .limit(limit)
       .get();
 
