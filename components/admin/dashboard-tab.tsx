@@ -70,6 +70,7 @@ interface StorageStats {
     size: number;
     sizeFormatted: string;
   }>;
+  truncated?: boolean; // True if data was capped at 10,000 files
   generatedAt: string;
 }
 
@@ -352,49 +353,57 @@ export function DashboardTab() {
           </button>
         </div>
         {storageStats ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-lg border border-amber-200 p-4">
-              <div className="text-sm text-amber-700 mb-1">Total Size</div>
-              <div className="text-2xl font-bold text-amber-900">
-                {formatBytes(storageStats.totalSize)}
-              </div>
-            </div>
-            <div className="bg-white rounded-lg border border-amber-200 p-4">
-              <div className="text-sm text-amber-700 mb-1">Total Files</div>
-              <div className="text-2xl font-bold text-amber-900">{storageStats.fileCount}</div>
-            </div>
-            <div className="bg-white rounded-lg border border-amber-200 p-4">
-              <div className="text-sm text-amber-700 mb-1">Users with Files</div>
-              <div className="text-2xl font-bold text-amber-900">{storageStats.userCount}</div>
-            </div>
-            <div className="bg-white rounded-lg border border-amber-200 p-4">
-              <div className="text-sm text-amber-700 mb-1">Orphaned Files</div>
-              <div
-                className={`text-2xl font-bold ${storageStats.orphanedFiles.count > 0 ? "text-orange-600" : "text-green-600"}`}
-              >
-                {storageStats.orphanedFiles.count}
-                {storageStats.orphanedFiles.count > 0 && (
-                  <span className="text-sm font-normal ml-2">
-                    ({storageStats.orphanedFiles.sizeFormatted})
-                  </span>
-                )}
-              </div>
-            </div>
-            {storageStats.fileTypes.length > 0 && (
-              <div className="col-span-full bg-white rounded-lg border border-amber-200 p-4">
-                <div className="text-sm text-amber-700 mb-2">File Types (Top 10)</div>
-                <div className="flex flex-wrap gap-2">
-                  {storageStats.fileTypes.map((fileType) => (
-                    <span
-                      key={fileType.extension}
-                      className="px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs"
-                    >
-                      .{fileType.extension}: {fileType.count} ({fileType.sizeFormatted})
-                    </span>
-                  ))}
-                </div>
+          <div className="space-y-4">
+            {storageStats.truncated && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                Stats limited to first 10,000 files. Actual totals may be higher.
               </div>
             )}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-lg border border-amber-200 p-4">
+                <div className="text-sm text-amber-700 mb-1">Total Size</div>
+                <div className="text-2xl font-bold text-amber-900">
+                  {formatBytes(storageStats.totalSize)}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg border border-amber-200 p-4">
+                <div className="text-sm text-amber-700 mb-1">Total Files</div>
+                <div className="text-2xl font-bold text-amber-900">{storageStats.fileCount}</div>
+              </div>
+              <div className="bg-white rounded-lg border border-amber-200 p-4">
+                <div className="text-sm text-amber-700 mb-1">Users with Files</div>
+                <div className="text-2xl font-bold text-amber-900">{storageStats.userCount}</div>
+              </div>
+              <div className="bg-white rounded-lg border border-amber-200 p-4">
+                <div className="text-sm text-amber-700 mb-1">Orphaned Files</div>
+                <div
+                  className={`text-2xl font-bold ${storageStats.orphanedFiles.count > 0 ? "text-orange-600" : "text-green-600"}`}
+                >
+                  {storageStats.orphanedFiles.count}
+                  {storageStats.orphanedFiles.count > 0 && (
+                    <span className="text-sm font-normal ml-2">
+                      ({storageStats.orphanedFiles.sizeFormatted})
+                    </span>
+                  )}
+                </div>
+              </div>
+              {storageStats.fileTypes.length > 0 && (
+                <div className="col-span-full bg-white rounded-lg border border-amber-200 p-4">
+                  <div className="text-sm text-amber-700 mb-2">File Types (Top 10)</div>
+                  <div className="flex flex-wrap gap-2">
+                    {storageStats.fileTypes.map((fileType) => (
+                      <span
+                        key={fileType.extension}
+                        className="px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs"
+                      >
+                        .{fileType.extension}: {fileType.count} ({fileType.sizeFormatted})
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="bg-amber-50 rounded-lg border border-amber-200 p-6 text-center text-amber-700">
@@ -437,7 +446,12 @@ export function DashboardTab() {
                     <div className="font-medium text-amber-900 font-mono text-sm">{limit.key}</div>
                     <div className="text-sm text-amber-700">
                       {limit.points}/{limit.maxPoints} points ({limit.type}) • Resets{" "}
-                      {formatDistanceToNow(new Date(limit.resetAt), { addSuffix: true })}
+                      {(() => {
+                        const resetDate = new Date(limit.resetAt);
+                        return Number.isNaN(resetDate.getTime())
+                          ? "unknown"
+                          : formatDistanceToNow(resetDate, { addSuffix: true });
+                      })()}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

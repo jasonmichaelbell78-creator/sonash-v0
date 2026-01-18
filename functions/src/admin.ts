@@ -657,10 +657,10 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
     // Search by UID (exact match) - UIDs are case-sensitive
     if (trimmedQuery.length >= 20) {
       try {
-        const userDoc = await db.collection("users").doc(query).get();
+        const userDoc = await db.collection("users").doc(trimmedQuery).get();
         if (userDoc.exists) {
           const userData = userDoc.data()!;
-          const authUser = await admin.auth().getUser(query);
+          const authUser = await admin.auth().getUser(trimmedQuery);
           results.push({
             uid: userDoc.id,
             email: authUser.email || null,
@@ -2050,86 +2050,89 @@ interface SendPasswordResetRequest {
   email: string;
 }
 
-// Web API Key for Firebase Auth REST API calls (same as frontend - public key)
-// This is used to call the Identity Toolkit API for password reset emails
-const authApiKey = defineString("AUTH_REST_API_KEY", {
-  description: "Firebase Web API Key for Auth REST API calls (password reset, etc.)",
-});
+// Web API Key for Firebase Auth REST API calls
+// Stored in GCP Secret Manager even though it's technically a "public" key
+// This prevents abuse via direct API calls if the repo is compromised
+// Set via: firebase functions:secrets:set AUTH_REST_API_KEY
+const authApiKey = defineSecret("AUTH_REST_API_KEY");
 
-export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(async (request) => {
-  await requireAdmin(request, "adminSendPasswordReset");
+export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
+  { secrets: [authApiKey] },
+  async (request) => {
+    await requireAdmin(request, "adminSendPasswordReset");
 
-  const { email } = request.data;
+    const { email } = request.data;
 
-  if (!email || !email.includes("@")) {
-    throw new HttpsError("invalid-argument", "Valid email is required");
-  }
-
-  // First verify the user exists using Admin SDK
-  try {
-    await admin.auth().getUserByEmail(email);
-  } catch (error) {
-    const errorCode = (error as { code?: string })?.code;
-    if (errorCode === "auth/user-not-found") {
-      throw new HttpsError("not-found", "No user found with this email address");
+    if (!email || !email.includes("@")) {
+      throw new HttpsError("invalid-argument", "Valid email is required");
     }
-    throw error;
-  }
 
-  logSecurityEvent("ADMIN_ACTION", "adminSendPasswordReset", "Admin sent password reset email", {
-    userId: request.auth?.uid,
-    metadata: { targetEmailHash: hashUserId(email) },
-    severity: "INFO",
-    storeInFirestore: true,
-  });
-
-  try {
-    // Use Firebase Auth REST API to send password reset email
-    // This actually sends the email using Firebase's built-in email templates
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          requestType: "PASSWORD_RESET",
-          email: email,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = (errorData as { error?: { message?: string } })?.error?.message;
-
-      // Handle specific Firebase Auth errors
-      if (errorMessage === "EMAIL_NOT_FOUND") {
+    // First verify the user exists using Admin SDK
+    try {
+      await admin.auth().getUserByEmail(email);
+    } catch (error) {
+      const errorCode = (error as { code?: string })?.code;
+      if (errorCode === "auth/user-not-found") {
         throw new HttpsError("not-found", "No user found with this email address");
       }
-
-      throw new Error(`Firebase Auth API error: ${errorMessage || response.status}`);
-    }
-
-    return {
-      success: true,
-      message: "Password reset email sent successfully",
-    };
-  } catch (error) {
-    // Don't log if it's already an HttpsError (already handled)
-    if (error instanceof HttpsError) {
       throw error;
     }
 
-    logSecurityEvent("ADMIN_ERROR", "adminSendPasswordReset", "Failed to send password reset", {
+    logSecurityEvent("ADMIN_ACTION", "adminSendPasswordReset", "Admin sent password reset email", {
       userId: request.auth?.uid,
-      metadata: { error: String(error) },
-      captureToSentry: true,
+      metadata: { targetEmailHash: hashUserId(email) },
+      severity: "INFO",
+      storeInFirestore: true,
     });
-    throw new HttpsError("internal", "Failed to send password reset email");
+
+    try {
+      // Use Firebase Auth REST API to send password reset email
+      // This actually sends the email using Firebase's built-in email templates
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${authApiKey.value()}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            requestType: "PASSWORD_RESET",
+            email: email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = (errorData as { error?: { message?: string } })?.error?.message;
+
+        // Handle specific Firebase Auth errors
+        if (errorMessage === "EMAIL_NOT_FOUND") {
+          throw new HttpsError("not-found", "No user found with this email address");
+        }
+
+        throw new Error(`Firebase Auth API error: ${errorMessage || response.status}`);
+      }
+
+      return {
+        success: true,
+        message: "Password reset email sent successfully",
+      };
+    } catch (error) {
+      // Don't log if it's already an HttpsError (already handled)
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+
+      logSecurityEvent("ADMIN_ERROR", "adminSendPasswordReset", "Failed to send password reset", {
+        userId: request.auth?.uid,
+        metadata: { error: String(error) },
+        captureToSentry: true,
+      });
+      throw new HttpsError("internal", "Failed to send password reset email");
+    }
   }
-});
+);
 
 /**
  * Admin: Get Storage Statistics
@@ -2146,8 +2149,26 @@ export const adminGetStorageStats = onCall(async (request) => {
   try {
     const bucket = admin.storage().bucket();
 
-    // Get all files in the bucket (autoPaginate handles >1000 files)
-    const [files] = await bucket.getFiles({ autoPaginate: true });
+    // Get files with bounded pagination to prevent timeout/memory issues
+    // Safety cap at 10,000 files - adjust based on operational limits
+    const MAX_FILES = 10000;
+    const files: Array<{ name: string; metadata: { size?: string | number } }> = [];
+    let pageToken: string | undefined;
+
+    do {
+      const [page, , resp] = await bucket.getFiles({
+        autoPaginate: false,
+        maxResults: Math.min(1000, MAX_FILES - files.length),
+        pageToken,
+      });
+
+      files.push(...page);
+      pageToken = (resp as { nextPageToken?: string } | undefined)?.nextPageToken;
+
+      if (files.length >= MAX_FILES) break;
+    } while (pageToken);
+
+    const truncated = files.length >= MAX_FILES;
 
     let totalSize = 0;
     let fileCount = 0;
@@ -2219,6 +2240,7 @@ export const adminGetStorageStats = onCall(async (request) => {
         }))
         .sort((a, b) => b.size - a.size)
         .slice(0, 10),
+      truncated, // True if we hit the 10,000 file safety cap
       generatedAt: new Date().toISOString(),
     };
   } catch (error) {
