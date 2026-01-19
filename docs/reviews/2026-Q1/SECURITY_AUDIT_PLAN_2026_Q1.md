@@ -662,7 +662,7 @@ OUTPUT
 
 ### Step 3: Create Security Findings Document
 
-Create `docs/reviews/SECURITY_AUDIT_[YYYY]_Q[X].md` with:
+Create `docs/reviews/SECURITY_AUDIT_{YYYY}_Q{N}.md` with:
 
 - Compliance status dashboard
 - All findings with remediation steps
@@ -715,7 +715,7 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 
 When using this template:
 
-1. **Copy this template** to `docs/reviews/SECURITY_AUDIT_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to `docs/reviews/SECURITY_AUDIT_PLAN_{YYYY}_Q{N}.md`
 2. **Fill in Audit Context** with project-specific details
 3. **Run the security audit prompt** on each model
 4. **Collect outputs** in specified formats

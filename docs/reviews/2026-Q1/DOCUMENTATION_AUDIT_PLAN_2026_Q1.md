@@ -402,15 +402,16 @@ properly synced. Check DOCUMENT_DEPENDENCIES.md for template-instance
 relationships.
 
 CHECKS: [ ] All template-derived instances are listed in
-DOCUMENT_DEPENDENCIES.md [ ] No `[e.g., ...]` or `[X]` placeholders remaining in
-instances [ ] Instances follow template section structure [ ] "Last Synced"
-dates in DOCUMENT_DEPENDENCIES.md are recent (<90 days) [ ] Broken links to
-moved files (e.g., ../../SECURITY.md should be ../SECURITY.md)
+DOCUMENT_DEPENDENCIES.md [ ] No example `{e.g., ...}` or value `{VALUE}`
+placeholders remaining in instances [ ] Instances follow template section
+structure [ ] "Last Synced" dates in DOCUMENT_DEPENDENCIES.md are recent (<90
+days) [ ] Broken links to moved files (e.g., ../../SECURITY.md should be
+../SECURITY.md)
 
 ANALYSIS:
 
 - Read DOCUMENT_DEPENDENCIES.md to identify template-instance pairs
-- For each instance, grep for `[e.g.,` and `[X]` patterns
+- For each instance, grep for example and value placeholder patterns
 - Verify instances have same section structure as templates
 - Check if any templates were updated but instances weren't
 - Identify any broken relative links
@@ -598,7 +599,7 @@ OUTPUT
 
 ### Step 3: Create Documentation Findings Document
 
-Create `docs/reviews/DOCUMENTATION_AUDIT_[YYYY]_Q[X].md` with:
+Create `docs/reviews/DOCUMENTATION_AUDIT_{YYYY}_Q{N}.md` with:
 
 - Quality metrics dashboard
 - All findings with remediation steps
@@ -652,7 +653,7 @@ Use R1, R2, and Between-PR checklist from MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md.
 When using this template:
 
 1. **Copy this template** to
-   `docs/reviews/DOCUMENTATION_AUDIT_PLAN_[YYYY]_Q[X].md`
+   `docs/reviews/DOCUMENTATION_AUDIT_PLAN_{YYYY}_Q{N}.md`
 2. **Fill in Audit Context** with project-specific details
 3. **Run the documentation audit prompt** on each model
 4. **Collect outputs** in specified formats
