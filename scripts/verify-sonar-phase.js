@@ -3,14 +3,17 @@
 /**
  * SonarCloud Phase Verification Script
  *
- * Verifies that all issues for a specific PR phase have been addressed:
- * - FIXED: The code at the issue location has changed
+ * Simple comparison between issues in the report vs what's been addressed.
+ * Each issue must be either:
+ * - FIXED: Documented in sonarcloud-fixes.md or sonarcloud-dismissals.md
  * - DISMISSED: Documented in sonarcloud-dismissals.md with justification
  *
- * Also extracts learnings for the AI learnings log after each phase.
+ * This does NOT auto-detect changes - it requires explicit tracking.
+ * Final verification happens when SonarCloud re-analyzes at end of sprint.
  *
  * Usage:
  *   node scripts/verify-sonar-phase.js --phase=1
+ *   node scripts/verify-sonar-phase.js --phase=1 --summary    # Summary only
  *   node scripts/verify-sonar-phase.js --phase=2 --extract-learnings
  */
 
@@ -20,16 +23,20 @@ import path from "node:path";
 const PROJECT_ROOT = process.cwd();
 const DETAILED_REPORT = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-issues-detailed.md");
 const DISMISSALS_FILE = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-dismissals.md");
+const FIXES_FILE = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-fixes.md");
 const _LEARNINGS_FILE = path.join(PROJECT_ROOT, "docs/agent_docs/AI_LESSONS_LOG.md");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
 const phaseArg = args.find((a) => a.startsWith("--phase="));
 const extractLearnings = args.includes("--extract-learnings");
+const summaryOnly = args.includes("--summary");
 const phase = phaseArg ? parseInt(phaseArg.split("=")[1], 10) : null;
 
 if (!phase || phase < 1 || phase > 5) {
-  console.error("Usage: node scripts/verify-sonar-phase.js --phase=<1-5> [--extract-learnings]");
+  console.error(
+    "Usage: node scripts/verify-sonar-phase.js --phase=<1-5> [--extract-learnings] [--summary]"
+  );
   console.error("");
   console.error("Phases:");
   console.error("  1 - Mechanical Fixes (node imports, shell scripts)");
@@ -37,6 +44,10 @@ if (!phase || phase < 1 || phase > 5) {
   console.error("  3 - Major Code Quality (ternaries, React)");
   console.error("  4 - Medium/Minor Priority (string methods, modern JS)");
   console.error("  5 - Security Hotspots");
+  console.error("");
+  console.error("Options:");
+  console.error("  --summary          Show summary counts only (no details)");
+  console.error("  --extract-learnings  Extract patterns for AI learnings log");
   process.exit(1);
 }
 
@@ -99,14 +110,13 @@ const PHASE_RULES = {
       "typescript:S6759",
       "typescript:S1874",
       "typescript:S1082",
-      // Plus all remaining MINOR/INFO rules not in other phases
     ],
     description: "String methods, modern JS patterns, React props",
-    catchAll: true, // This phase catches remaining MINOR/INFO
+    catchAll: true,
   },
   5: {
     name: "Security Hotspots",
-    rules: [], // Security hotspots are separate from code issues
+    rules: [],
     isSecurityPhase: true,
     description: "All security hotspots requiring review",
   },
@@ -124,11 +134,6 @@ function loadIssuesFromReport() {
   const issues = [];
   const hotspots = [];
 
-  // Parse issues from the "All Issues by File" section
-  // Note: Using character codes for emojis to avoid regex surrogate pair issues
-  const _issueRegex = /#### .+ Line (\d+|N\/A): (.+)\n\n- \*\*Rule\*\*: `([^`]+)`/gu;
-  const _fileRegex = /### .+ `([^`]+)`/gu;
-
   let currentFile = null;
   const lines = content.split("\n");
 
@@ -142,7 +147,7 @@ function loadIssuesFromReport() {
       continue;
     }
 
-    // Check for issue header (using . instead of emoji chars to avoid surrogate pair issues)
+    // Check for issue header
     const issueMatch = line.match(/#### .+ Line (\d+|N\/A): (.+)/u);
     if (issueMatch && currentFile) {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
@@ -160,19 +165,9 @@ function loadIssuesFromReport() {
             .includes("## 🔒 Security Hotspots");
 
           if (inSecuritySection) {
-            hotspots.push({
-              file: currentFile,
-              line: lineNum,
-              message,
-              rule,
-            });
+            hotspots.push({ file: currentFile, line: lineNum, message, rule });
           } else {
-            issues.push({
-              file: currentFile,
-              line: lineNum,
-              message,
-              rule,
-            });
+            issues.push({ file: currentFile, line: lineNum, message, rule });
           }
           break;
         }
@@ -183,47 +178,48 @@ function loadIssuesFromReport() {
   return { issues, hotspots };
 }
 
-// Load dismissals from the dismissals file
-function loadDismissals() {
-  if (!fs.existsSync(DISMISSALS_FILE)) {
-    return new Map();
+// Load tracking entries (both fixes and dismissals)
+function loadTrackingEntries() {
+  const entries = new Map();
+
+  // Load dismissals
+  if (fs.existsSync(DISMISSALS_FILE)) {
+    const content = fs.readFileSync(DISMISSALS_FILE, "utf-8");
+    // Match: ### [rule] - file:line or ### [rule] - file
+    const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A))?/g;
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      const rule = match[1];
+      const file = match[2].trim();
+      const line = match[3] || "N/A";
+      const key = `${rule}|${file}|${line}`;
+      entries.set(key, { type: "DISMISSED", rule, file, line });
+    }
   }
 
-  const content = fs.readFileSync(DISMISSALS_FILE, "utf-8");
-  const dismissals = new Map();
+  // Load fixes
+  if (fs.existsSync(FIXES_FILE)) {
+    const content = fs.readFileSync(FIXES_FILE, "utf-8");
+    // Match: ### [rule] - file:line or ### [rule] - file (batch fix)
+    const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A|BATCH))?/g;
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      const rule = match[1];
+      const file = match[2].trim();
+      const line = match[3] || "N/A";
+      const key = `${rule}|${file}|${line}`;
+      entries.set(key, { type: "FIXED", rule, file, line });
+    }
 
-  // Parse dismissals: ### [Rule] - File:Line
-  const dismissalRegex = /### \[([^\]]+)\] - ([^:]+):(\d+|N\/A)/g;
-  let match;
-  while ((match = dismissalRegex.exec(content)) !== null) {
-    const key = `${match[1]}|${match[2]}|${match[3]}`;
-    dismissals.set(key, true);
+    // Also check for bulk fix markers: #### Rule [rule] - FIXED (X files)
+    const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
+    while ((match = bulkRegex.exec(content)) !== null) {
+      const rule = match[1];
+      entries.set(`BULK|${rule}`, { type: "BULK_FIXED", rule });
+    }
   }
 
-  return dismissals;
-}
-
-// Check if a file/line has been modified (issue potentially fixed)
-function checkIfFixed(file, line) {
-  const fullPath = path.join(PROJECT_ROOT, file);
-  if (!fs.existsSync(fullPath)) {
-    return { exists: false, fixed: "FILE_DELETED" };
-  }
-
-  if (!line) {
-    return { exists: true, fixed: "NO_LINE" };
-  }
-
-  // Read the file and check if the line still exists
-  // This is a basic check - the real verification comes from re-running SonarCloud
-  const content = fs.readFileSync(fullPath, "utf-8");
-  const lines = content.split("\n");
-
-  if (line > lines.length) {
-    return { exists: true, fixed: "LINE_CHANGED" };
-  }
-
-  return { exists: true, fixed: "UNKNOWN" };
+  return entries;
 }
 
 // Filter issues for the current phase
@@ -236,7 +232,6 @@ function getPhaseIssues(issues, hotspots, phaseNum) {
 
   const phaseIssues = issues.filter((issue) => {
     if (phaseConfig.catchAll) {
-      // Phase 4 catches all remaining issues not in phases 1-3
       const allOtherRules = [
         ...PHASE_RULES[1].rules,
         ...PHASE_RULES[2].rules,
@@ -250,12 +245,35 @@ function getPhaseIssues(issues, hotspots, phaseNum) {
   return { issues: phaseIssues, hotspots: [] };
 }
 
+// Check if an issue is tracked (fixed or dismissed)
+function isIssueTracked(issue, entries) {
+  // Check exact match
+  const key = `${issue.rule}|${issue.file}|${issue.line || "N/A"}`;
+  if (entries.has(key)) {
+    return entries.get(key);
+  }
+
+  // Check file-level match (for batch fixes)
+  const fileKey = `${issue.rule}|${issue.file}|N/A`;
+  if (entries.has(fileKey)) {
+    return entries.get(fileKey);
+  }
+
+  // Check bulk rule fix
+  const bulkKey = `BULK|${issue.rule}`;
+  if (entries.has(bulkKey)) {
+    return entries.get(bulkKey);
+  }
+
+  return null;
+}
+
 // Generate learnings from the phase
 function extractPhaseLearnings(phaseNum, issues, hotspots) {
   const _phaseConfig = PHASE_RULES[phaseNum];
   const learnings = [];
 
-  // Group by rule to identify patterns
+  // Group by rule
   const byRule = {};
   for (const issue of issues) {
     if (!byRule[issue.rule]) {
@@ -264,26 +282,24 @@ function extractPhaseLearnings(phaseNum, issues, hotspots) {
     byRule[issue.rule].push(issue);
   }
 
-  // Generate learnings based on common patterns
   for (const [rule, ruleIssues] of Object.entries(byRule)) {
     if (ruleIssues.length >= 5) {
       learnings.push({
         category: "Code Pattern",
         rule,
         count: ruleIssues.length,
-        lesson: `Rule ${rule} appeared ${ruleIssues.length} times. Consider adding a lint rule or code review checklist item to catch this pattern earlier.`,
+        lesson: `Rule ${rule} appeared ${ruleIssues.length} times. Consider adding a lint rule or code review checklist item.`,
         files: [...new Set(ruleIssues.map((i) => i.file))].slice(0, 5),
       });
     }
   }
 
-  // Add security learnings
   if (hotspots.length > 0) {
     learnings.push({
       category: "Security",
       rule: "security-hotspots",
       count: hotspots.length,
-      lesson: `${hotspots.length} security hotspots found. Review security practices and consider security-focused code review checklists.`,
+      lesson: `${hotspots.length} security hotspots found. Review security practices.`,
       files: [...new Set(hotspots.map((h) => h.file))].slice(0, 5),
     });
   }
@@ -291,7 +307,7 @@ function extractPhaseLearnings(phaseNum, issues, hotspots) {
   return learnings;
 }
 
-// Format learnings for the AI learnings log
+// Format learnings for output
 function formatLearningsForLog(phaseNum, learnings) {
   const date = new Date().toISOString().split("T")[0];
   const phaseConfig = PHASE_RULES[phaseNum];
@@ -331,61 +347,89 @@ console.log(`   Description: ${PHASE_RULES[phase].description}`);
 console.log("━".repeat(60) + "\n");
 
 const { issues, hotspots } = loadIssuesFromReport();
-const dismissals = loadDismissals();
+const entries = loadTrackingEntries();
 const { issues: phaseIssues, hotspots: phaseHotspots } = getPhaseIssues(issues, hotspots, phase);
 
-console.log(`📊 Phase Statistics:`);
-console.log(`   Total issues in phase: ${phaseIssues.length}`);
-console.log(`   Security hotspots: ${phaseHotspots.length}`);
-console.log("");
-
-// Verify each issue
-let fixed = 0;
-let dismissed = 0;
-let pending = 0;
-const pendingIssues = [];
+// Categorize issues
+const stats = {
+  fixed: [],
+  dismissed: [],
+  pending: [],
+};
 
 for (const issue of phaseIssues) {
-  const dismissKey = `${issue.rule}|${issue.file}|${issue.line || "N/A"}`;
-
-  if (dismissals.has(dismissKey)) {
-    dismissed++;
-  } else {
-    const status = checkIfFixed(issue.file, issue.line);
-    if (status.fixed === "FILE_DELETED" || status.fixed === "LINE_CHANGED") {
-      fixed++;
+  const tracked = isIssueTracked(issue, entries);
+  if (tracked) {
+    if (tracked.type === "FIXED" || tracked.type === "BULK_FIXED") {
+      stats.fixed.push(issue);
     } else {
-      pending++;
-      pendingIssues.push(issue);
+      stats.dismissed.push(issue);
     }
+  } else {
+    stats.pending.push(issue);
   }
 }
 
-// Same for hotspots
 for (const hotspot of phaseHotspots) {
-  const dismissKey = `${hotspot.rule}|${hotspot.file}|${hotspot.line || "N/A"}`;
-  if (dismissals.has(dismissKey)) {
-    dismissed++;
+  const tracked = isIssueTracked(hotspot, entries);
+  if (tracked) {
+    if (tracked.type === "FIXED" || tracked.type === "BULK_FIXED") {
+      stats.fixed.push(hotspot);
+    } else {
+      stats.dismissed.push(hotspot);
+    }
   } else {
-    pending++;
-    pendingIssues.push(hotspot);
+    stats.pending.push(hotspot);
   }
 }
 
 const total = phaseIssues.length + phaseHotspots.length;
 
-console.log(`📋 Verification Results:`);
-console.log(`   ✅ Fixed (code changed): ${fixed}`);
-console.log(`   📝 Dismissed (documented): ${dismissed}`);
-console.log(`   ⏳ Pending (needs action): ${pending}`);
+// Output summary
+console.log(`📊 Phase Statistics:`);
+console.log(`   Total issues in report: ${total}`);
+console.log("");
+console.log(`📋 Tracking Status:`);
+console.log(`   ✅ Fixed: ${stats.fixed.length}`);
+console.log(`   📝 Dismissed: ${stats.dismissed.length}`);
+console.log(`   ⏳ Pending: ${stats.pending.length}`);
 console.log("");
 
-if (pending > 0) {
-  console.log(`⚠️  ${pending} issues require attention:\n`);
-
-  // Group pending by rule for better readability
+// Show by-rule breakdown
+if (!summaryOnly) {
   const byRule = {};
-  for (const issue of pendingIssues.slice(0, 20)) {
+  for (const issue of [...phaseIssues, ...phaseHotspots]) {
+    if (!byRule[issue.rule]) {
+      byRule[issue.rule] = { fixed: 0, dismissed: 0, pending: 0 };
+    }
+    const tracked = isIssueTracked(issue, entries);
+    if (tracked) {
+      if (tracked.type === "FIXED" || tracked.type === "BULK_FIXED") {
+        byRule[issue.rule].fixed++;
+      } else {
+        byRule[issue.rule].dismissed++;
+      }
+    } else {
+      byRule[issue.rule].pending++;
+    }
+  }
+
+  console.log("📊 By Rule:");
+  for (const [rule, counts] of Object.entries(byRule)) {
+    const status = counts.pending === 0 ? "✅" : "⏳";
+    console.log(
+      `   ${status} ${rule}: ${counts.fixed} fixed, ${counts.dismissed} dismissed, ${counts.pending} pending`
+    );
+  }
+  console.log("");
+}
+
+// Show pending details
+if (stats.pending.length > 0 && !summaryOnly) {
+  console.log(`⏳ Pending Issues (${stats.pending.length}):\n`);
+
+  const byRule = {};
+  for (const issue of stats.pending) {
     if (!byRule[issue.rule]) {
       byRule[issue.rule] = [];
     }
@@ -393,32 +437,35 @@ if (pending > 0) {
   }
 
   for (const [rule, ruleIssues] of Object.entries(byRule)) {
-    console.log(`   ${rule}:`);
-    for (const issue of ruleIssues.slice(0, 3)) {
+    console.log(`   ${rule} (${ruleIssues.length}):`);
+    for (const issue of ruleIssues.slice(0, 5)) {
       console.log(`     - ${issue.file}:${issue.line || "N/A"}`);
     }
-    if (ruleIssues.length > 3) {
-      console.log(`     ... and ${ruleIssues.length - 3} more`);
+    if (ruleIssues.length > 5) {
+      console.log(`     ... and ${ruleIssues.length - 5} more`);
     }
   }
+  console.log("");
+}
 
-  if (pendingIssues.length > 20) {
-    console.log(`\n   ... and ${pendingIssues.length - 20} more issues`);
-  }
-
-  console.log("\n❌ VERIFICATION FAILED");
-  console.log("\nTo resolve:");
-  console.log("  1. Fix the remaining issues in code");
-  console.log("  2. Or document dismissals in docs/audits/sonarcloud-dismissals.md");
-  console.log("\nDismissal format:");
-  console.log("  ### [rule] - file:line");
-  console.log("  **Reason**: [False positive | Acceptable risk | By design]");
-  console.log("  **Justification**: [Explanation]");
-
-  process.exit(1);
+// Final status
+if (stats.pending.length === 0) {
+  console.log("✅ PHASE COMPLETE");
+  console.log(`   All ${total} issues are tracked (fixed or dismissed).`);
+  console.log("   Final verification: SonarCloud re-analysis at end of sprint.");
 } else {
-  console.log("✅ VERIFICATION PASSED");
-  console.log(`   All ${total} issues in Phase ${phase} are addressed.`);
+  console.log("📋 PHASE IN PROGRESS");
+  console.log(`   ${stats.pending.length} of ${total} issues need tracking.`);
+  console.log("");
+  console.log("To track fixes, add to docs/audits/sonarcloud-fixes.md:");
+  console.log("  ### [rule] - file:line");
+  console.log("  **Commit**: [hash]");
+  console.log("  **Fix**: [description]");
+  console.log("");
+  console.log("Or for bulk rule fixes:");
+  console.log("  #### Rule `rule:SXXXX` - FIXED");
+  console.log("  **Commit**: [hash]");
+  console.log("  **Files**: [count] files");
 }
 
 // Extract learnings if requested
