@@ -20,18 +20,29 @@ const issueFiles = [
   process.env.SONAR_PAGE_4 || path.join(SONAR_DIR, "sonar_all_p4.json"),
 ];
 
-let allIssues = [];
+// De-duplicate issues across pages using Map with unique key
+const issuesByKey = new Map();
 for (const file of issueFiles) {
   if (fs.existsSync(file)) {
     try {
       const data = JSON.parse(fs.readFileSync(file, "utf-8"));
-      allIssues = allIssues.concat(data.issues || []);
+      const issues = data.issues || [];
+      for (const issue of issues) {
+        // Use issue.key if available, otherwise construct from rule/component/line/message
+        const dedupeKey =
+          issue.key ||
+          `${issue.rule || "unknown"}|${issue.component || "unknown"}|${issue.line || "N/A"}|${issue.message || ""}`;
+        if (!issuesByKey.has(dedupeKey)) {
+          issuesByKey.set(dedupeKey, issue);
+        }
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`Warning: Failed to parse ${file}: ${message}`);
     }
   }
 }
+const allIssues = [...issuesByKey.values()];
 
 console.log(`Loaded ${allIssues.length} issues`);
 
@@ -170,7 +181,8 @@ const severityEmoji = {
 for (const sev of severityOrder) {
   const count = bySeverity[sev]?.length || 0;
   if (count > 0) {
-    const pct = ((count / allIssues.length) * 100).toFixed(1);
+    // Guard against zero division when allIssues is empty
+    const pct = allIssues.length > 0 ? ((count / allIssues.length) * 100).toFixed(1) : "0.0";
     report += `| ${severityEmoji[sev]} ${sev} | ${count} | ${pct}% |\n`;
   }
 }
@@ -360,9 +372,16 @@ for (const [filePath, issues] of sortedFiles) {
   }
 }
 
-// Write the report
-fs.writeFileSync(OUTPUT_FILE, report);
-console.log(`\nReport written to: ${OUTPUT_FILE}`);
+// Write the report (ensure directory exists and handle errors gracefully)
+try {
+  fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
+  fs.writeFileSync(OUTPUT_FILE, report);
+  console.log(`\nReport written to: ${OUTPUT_FILE}`);
+} catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`Error: Failed to write report to ${OUTPUT_FILE}: ${message}`);
+  process.exit(1);
+}
 console.log(`Total issues documented: ${allIssues.length}`);
 console.log(`Security hotspots documented: ${hotspots.length}`);
 console.log(`Files with issues: ${sortedFiles.length}`);

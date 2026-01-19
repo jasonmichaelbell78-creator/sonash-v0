@@ -74,6 +74,9 @@ const GLOBAL_EXCLUDE = [
   // lighthouse-audit.js: CI reported false positives (lines 272-273 but file has only ~250 lines)
   // The script audits performance, not package management (no actual npm install in file)
   /^scripts\/lighthouse-audit\.js$/,
+  // init-artifact.sh: deliberately uses npm/pnpm installs to bootstrap new artifact projects
+  // This is a one-time setup script for the artifacts-builder skill
+  /^\.claude\/skills\/artifacts-builder\/scripts\/init-artifact\.sh$/,
 ];
 
 /**

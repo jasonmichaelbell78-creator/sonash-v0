@@ -144,8 +144,21 @@ function loadIssuesFromReport() {
   let currentFile = null;
   const lines = content.split("\n");
 
+  // State machine approach: track section by detecting headers (more reliable than indexOf)
+  let inSecuritySection = false;
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+
+    // Detect section transitions (state machine)
+    if (line.startsWith("## 🔒 Security Hotspots")) {
+      inSecuritySection = true;
+      continue;
+    }
+    if (line.startsWith("## 📂 All Issues by File")) {
+      inSecuritySection = false;
+      continue;
+    }
 
     // Check for file header
     const fileMatch = line.match(/### 📁 `([^`]+)`/);
@@ -166,11 +179,6 @@ function loadIssuesFromReport() {
         if (ruleMatch) {
           const rule = ruleMatch[1];
 
-          // Check if it's in the security hotspots section
-          const inSecuritySection = content
-            .substring(0, content.indexOf(line))
-            .includes("## 🔒 Security Hotspots");
-
           if (inSecuritySection) {
             hotspots.push({ file: currentFile, line: lineNum, message, rule });
           } else {
@@ -188,6 +196,17 @@ function loadIssuesFromReport() {
 // Load tracking entries (both fixes and dismissals)
 function loadTrackingEntries() {
   const entries = new Map();
+  const conflicts = [];
+
+  // Helper to add entry with conflict detection
+  function addEntry(key, entry) {
+    const existing = entries.get(key);
+    if (existing && existing.type !== entry.type) {
+      conflicts.push({ key, existing, entry });
+      return;
+    }
+    entries.set(key, entry);
+  }
 
   // Load dismissals
   if (fs.existsSync(DISMISSALS_FILE)) {
@@ -201,7 +220,7 @@ function loadTrackingEntries() {
         const file = match[2].trim();
         const line = match[3] || "N/A";
         const key = `${rule}|${file}|${line}`;
-        entries.set(key, { type: "DISMISSED", rule, file, line });
+        addEntry(key, { type: "DISMISSED", rule, file, line });
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -221,19 +240,31 @@ function loadTrackingEntries() {
         const file = match[2].trim();
         const line = match[3] || "N/A";
         const key = `${rule}|${file}|${line}`;
-        entries.set(key, { type: "FIXED", rule, file, line });
+        addEntry(key, { type: "FIXED", rule, file, line });
       }
 
       // Also check for bulk fix markers: #### Rule [rule] - FIXED (X files)
       const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
       while ((match = bulkRegex.exec(content)) !== null) {
         const rule = match[1];
-        entries.set(`BULK|${rule}`, { type: "BULK_FIXED", rule });
+        addEntry(`BULK|${rule}`, { type: "BULK_FIXED", rule });
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.warn(`Warning: Failed to read fixes file: ${message}`);
     }
+  }
+
+  // Report conflicts (issue marked both FIXED and DISMISSED is data integrity error)
+  if (conflicts.length > 0) {
+    console.error("Error: Conflicting tracking entries found (FIXED vs DISMISSED):");
+    for (const c of conflicts.slice(0, 20)) {
+      console.error(`  - ${c.key}`);
+    }
+    if (conflicts.length > 20) {
+      console.error(`  ... and ${conflicts.length - 20} more`);
+    }
+    process.exit(1);
   }
 
   return entries;

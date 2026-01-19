@@ -42,6 +42,9 @@ The SonarCloud API is publicly accessible. Fetch all issues with dynamic
 pagination:
 
 ```bash
+# NOTE: Requires bash (uses [[ ... ]] and for ((...)) loops)
+set -euo pipefail
+
 # Set project key
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
@@ -64,6 +67,7 @@ done
 # Fetch security hotspots (paginated)
 curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500&p=1" > /tmp/sonar_hotspots_p1.json
 TOTAL_HOTSPOTS="$(jq -r '.paging.total // empty' /tmp/sonar_hotspots_p1.json)"
+[[ "$TOTAL_HOTSPOTS" =~ ^[0-9]+$ ]] || { echo "API error: no numeric .paging.total" >&2; exit 1; }
 HOTSPOT_PAGES=$(( (TOTAL_HOTSPOTS + PAGE_SIZE - 1) / PAGE_SIZE ))
 
 for ((p=2; p<=HOTSPOT_PAGES; p++)); do

@@ -149,11 +149,11 @@ adding constants, ensure they're defined before first use.
 
 | Metric             | Value |
 | ------------------ | ----- |
-| Total Issues Fixed | 190   |
+| Total Issues Fixed | 186   |
 | Files Modified     | 48    |
 | Rules Addressed    | 8     |
 | Commits            | 10    |
 | False Positives    | 0     |
-| Issues Dismissed   | 0     |
+| Issues Dismissed   | 4     |
 
 ---

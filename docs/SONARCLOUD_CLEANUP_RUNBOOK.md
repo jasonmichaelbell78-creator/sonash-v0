@@ -74,6 +74,7 @@ done
 # Fetch security hotspots (paginated for >500 hotspots)
 curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500&p=1" > /tmp/sonar_hotspots_p1.json
 TOTAL_HOTSPOTS="$(jq -r '.paging.total // empty' /tmp/sonar_hotspots_p1.json)"
+[[ "$TOTAL_HOTSPOTS" =~ ^[0-9]+$ ]] || { echo "API error: no numeric .paging.total" >&2; exit 1; }
 HOTSPOT_PAGES=$(( (TOTAL_HOTSPOTS + PAGE_SIZE - 1) / PAGE_SIZE ))
 
 for ((p=2; p<=HOTSPOT_PAGES; p++)); do
@@ -233,7 +234,7 @@ git commit -m "fix(sonar): phase 1 mechanical fixes - node imports and shell scr
 - Fix 72 shell script syntax issues ([[ vs [)
 - 4 issues dismissed with documented justification
 
-See: docs/audits/sonarcloud-issues-detailed.md"
+Reference: node scripts/generate-detailed-sonar-report.js"
 ```
 
 ### 5.2 Create PR

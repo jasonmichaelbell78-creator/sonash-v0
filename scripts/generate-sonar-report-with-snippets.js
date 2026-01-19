@@ -184,8 +184,15 @@ for (const [filePath, issues] of sortedFiles) {
   }
 }
 
-// Write the report
-fs.writeFileSync(OUTPUT_FILE, report);
-console.log(`Report written to: ${OUTPUT_FILE}`);
+// Write the report (ensure directory exists and handle errors gracefully)
+try {
+  fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
+  fs.writeFileSync(OUTPUT_FILE, report);
+  console.log(`Report written to: ${OUTPUT_FILE}`);
+} catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`Error: Failed to write report to ${OUTPUT_FILE}: ${message}`);
+  process.exit(1);
+}
 console.log(`Total issues documented: ${allIssues.length}`);
 console.log(`Files with issues: ${sortedFiles.length}`);
