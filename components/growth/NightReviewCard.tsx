@@ -72,6 +72,368 @@ const REFLECTIONS = [
   { id: "apology", label: "To whom do I owe an apology?" },
 ];
 
+/**
+ * Build share text from form data
+ */
+function buildShareText(
+  actions: Record<string, boolean>,
+  traits: Record<string, "negative" | "positive" | null>,
+  reflectionAnswers: Record<string, string>,
+  gratitude: string,
+  surrender: string
+): string {
+  const actionsList =
+    Object.entries(actions)
+      .filter(([, v]) => v)
+      .map(([k]) => ACTIONS.find((a) => a.id === k)?.label)
+      .filter(Boolean)
+      .join(", ") || "None";
+
+  const traitsList =
+    Object.entries(traits)
+      .filter(([, v]) => v !== null)
+      .map(([k, v]) => {
+        const pair = TRAIT_PAIRS.find((p) => p.id === k);
+        return pair ? `${pair.left}/${pair.right}: ${v}` : null;
+      })
+      .filter(Boolean)
+      .join(", ") || "None";
+
+  const reflectionsList =
+    Object.values(reflectionAnswers)
+      .filter((v) => v && v.trim())
+      .join("\n") || "None";
+
+  return `Nightly Inventory\n\nActions: ${actionsList}\n\nTraits: ${traitsList}\n\nReflections: ${reflectionsList}\n\nGratitude: ${gratitude || "None"}\n\nSurrender: ${surrender || "None"}`;
+}
+
+/**
+ * Handle share action
+ */
+async function handleShare(shareText: string): Promise<void> {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "Nightly Inventory", text: shareText });
+    } catch (error: unknown) {
+      // AbortError = user cancelled, which is expected behavior
+      if (error instanceof Error && error.name === "AbortError") return;
+      logger.error("Share error", {
+        errorName: error instanceof Error ? error.name : "unknown",
+      });
+    }
+  } else {
+    // Fallback to mailto
+    window.open(`mailto:?subject=Nightly Inventory&body=${encodeURIComponent(shareText)}`);
+  }
+}
+
+// --- STEP COMPONENTS ---
+
+interface Step1Props {
+  actions: Record<string, boolean>;
+  setActions: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+}
+
+function Step1Actions({ actions, setActions }: Step1Props) {
+  return (
+    <motion.div
+      key="step1"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="space-y-2">
+        <h3 className="text-lg font-bold text-slate-100">The Action</h3>
+        <p className="text-sm text-slate-400">What did I do for my recovery today?</p>
+      </div>
+      <div className="grid grid-cols-1 gap-3">
+        {ACTIONS.map((action) => (
+          <button
+            key={action.id}
+            onClick={() => setActions((prev) => ({ ...prev, [action.id]: !prev[action.id] }))}
+            className={`p-4 rounded-xl border text-left transition-all flex items-center justify-between group ${
+              actions[action.id]
+                ? "bg-indigo-500/10 border-indigo-500/50"
+                : "bg-slate-900/50 border-slate-800 hover:border-slate-700"
+            }`}
+          >
+            <span
+              className={`font-medium transition-colors ${actions[action.id] ? "text-indigo-200" : "text-slate-300 group-hover:text-slate-200"}`}
+            >
+              {action.label}
+            </span>
+            <div
+              className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
+                actions[action.id]
+                  ? "bg-indigo-500 border-indigo-500 text-white"
+                  : "border-slate-600 group-hover:border-slate-500"
+              }`}
+            >
+              {actions[action.id] && <Check className="w-4 h-4" />}
+            </div>
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+interface Step2Props {
+  traits: Record<string, "negative" | "positive" | null>;
+  setTrait: (id: string, value: "positive" | "negative") => void;
+}
+
+function Step2Mirror({ traits, setTrait }: Step2Props) {
+  return (
+    <motion.div
+      key="step2"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="space-y-2">
+        <h3 className="text-lg font-bold text-slate-100">The Mirror</h3>
+        <p className="text-sm text-slate-400">Which side of the coin did I fall on?</p>
+      </div>
+
+      <div className="bg-slate-950 rounded-lg border border-slate-800 overflow-hidden">
+        {/* Header */}
+        <div className="grid grid-cols-2 bg-slate-900">
+          <div className="p-3 text-center border-r border-slate-800">
+            <span className="font-bold text-slate-200 uppercase tracking-wider text-xs md:text-sm">
+              SELF-WILL
+            </span>
+          </div>
+          <div className="p-3 text-center">
+            <span className="font-bold text-slate-200 uppercase tracking-wider text-xs md:text-sm">
+              SPIRIT-WILL
+            </span>
+          </div>
+        </div>
+
+        {/* Rows */}
+        {TRAIT_PAIRS.map((pair, index) => (
+          <div key={pair.id} className="grid grid-cols-2 border-t border-slate-800">
+            {/* Left Column Item (Negative) */}
+            <div
+              className={`p-2 flex items-center justify-between border-r border-slate-800 ${index % 2 === 0 ? "bg-slate-900/30" : "bg-transparent"}`}
+            >
+              <span className="text-sm text-slate-300 ml-2">{pair.left}</span>
+              <button
+                onClick={() => setTrait(pair.id, "negative")}
+                className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mr-2 ${
+                  traits[pair.id] === "negative"
+                    ? "bg-red-500 border-red-500 text-white"
+                    : "bg-slate-800/50 border-slate-600 hover:border-slate-500"
+                }`}
+              >
+                {traits[pair.id] === "negative" && <Check className="w-3 h-3" />}
+              </button>
+            </div>
+
+            {/* Right Column Item (Positive) */}
+            <div
+              className={`p-2 flex items-center gap-2 ${index % 2 === 0 ? "bg-slate-900/30" : "bg-transparent"}`}
+            >
+              <button
+                onClick={() => setTrait(pair.id, "positive")}
+                className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ml-2 shrink-0 ${
+                  traits[pair.id] === "positive"
+                    ? "bg-emerald-500 border-emerald-500 text-white"
+                    : "bg-slate-800/50 border-slate-600 hover:border-slate-500"
+                }`}
+              >
+                {traits[pair.id] === "positive" && <Check className="w-3 h-3" />}
+              </button>
+              <span className="text-sm text-slate-300">{pair.right}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+interface Step3Props {
+  reflectionAnswers: Record<string, string>;
+  setReflectionAnswers: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  hasSupport: boolean;
+  isListening: boolean;
+  activeSpeechField: string | null;
+  toggleSpeech: (fieldId: string, currentText: string) => void;
+}
+
+function Step3Reflections({
+  reflectionAnswers,
+  setReflectionAnswers,
+  hasSupport,
+  isListening,
+  activeSpeechField,
+  toggleSpeech,
+}: Step3Props) {
+  return (
+    <motion.div
+      key="step3"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6 pb-4"
+    >
+      <div className="space-y-2">
+        <h3 className="text-lg font-bold text-slate-100">Deep Dive</h3>
+        <p className="text-sm text-slate-400">Review the day constructively. Where were you?</p>
+      </div>
+      <div className="space-y-4">
+        {REFLECTIONS.map((item) => (
+          <div key={item.id} className="space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-medium text-indigo-200">{item.label}</label>
+              {hasSupport && (
+                <button
+                  onClick={() => toggleSpeech(item.id, reflectionAnswers[item.id] || "")}
+                  className={`p-1.5 rounded-full transition-colors ${
+                    activeSpeechField === item.id && isListening
+                      ? "bg-red-500/20 text-red-400 animate-pulse"
+                      : "bg-slate-800 text-slate-400 hover:text-indigo-300"
+                  }`}
+                >
+                  {activeSpeechField === item.id && isListening ? (
+                    <MicOff className="w-3.5 h-3.5" />
+                  ) : (
+                    <Mic className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              )}
+            </div>
+            <textarea
+              value={reflectionAnswers[item.id] || ""}
+              onChange={(e) =>
+                setReflectionAnswers((prev) => ({ ...prev, [item.id]: e.target.value }))
+              }
+              rows={2}
+              className={`w-full bg-slate-900/50 border rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/50 resize-none transition-colors ${activeSpeechField === item.id ? "border-indigo-500/50 ring-1 ring-indigo-500/20" : "border-slate-800"}`}
+            />
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+interface Step4Props {
+  gratitude: string;
+  setGratitude: (value: string) => void;
+  surrender: string;
+  setSurrender: (value: string) => void;
+  hasSupport: boolean;
+  isListening: boolean;
+  activeSpeechField: string | null;
+  toggleSpeech: (fieldId: string, currentText: string) => void;
+}
+
+function Step4Closing({
+  gratitude,
+  setGratitude,
+  surrender,
+  setSurrender,
+  hasSupport,
+  isListening,
+  activeSpeechField,
+  toggleSpeech,
+}: Step4Props) {
+  return (
+    <motion.div
+      key="step4"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-8"
+    >
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h3 className="text-lg font-bold text-slate-100">Closing</h3>
+          <p className="text-sm text-slate-400">Surrender the day.</p>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-medium text-emerald-200">
+              Today I am grateful for...
+            </label>
+            {hasSupport && (
+              <button
+                onClick={() => toggleSpeech("gratitude", gratitude)}
+                className={`p-1.5 rounded-full transition-colors ${
+                  activeSpeechField === "gratitude" && isListening
+                    ? "bg-red-500/20 text-red-400 animate-pulse"
+                    : "bg-slate-800 text-slate-400 hover:text-emerald-300"
+                }`}
+              >
+                {activeSpeechField === "gratitude" && isListening ? (
+                  <MicOff className="w-3.5 h-3.5" />
+                ) : (
+                  <Mic className="w-3.5 h-3.5" />
+                )}
+              </button>
+            )}
+          </div>
+          <textarea
+            value={gratitude}
+            onChange={(e) => setGratitude(e.target.value)}
+            rows={3}
+            className={`w-full bg-slate-900/50 border rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50 resize-none ${activeSpeechField === "gratitude" ? "border-emerald-500/50 ring-1 ring-emerald-500/20" : "border-slate-800"}`}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-medium text-indigo-200">
+              Today I accept/surrender...
+            </label>
+            {hasSupport && (
+              <button
+                onClick={() => toggleSpeech("surrender", surrender)}
+                className={`p-1.5 rounded-full transition-colors ${
+                  activeSpeechField === "surrender" && isListening
+                    ? "bg-red-500/20 text-red-400 animate-pulse"
+                    : "bg-slate-800 text-slate-400 hover:text-indigo-300"
+                }`}
+              >
+                {activeSpeechField === "surrender" && isListening ? (
+                  <MicOff className="w-3.5 h-3.5" />
+                ) : (
+                  <Mic className="w-3.5 h-3.5" />
+                )}
+              </button>
+            )}
+          </div>
+          <textarea
+            value={surrender}
+            onChange={(e) => setSurrender(e.target.value)}
+            rows={3}
+            className={`w-full bg-slate-900/50 border rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/50 resize-none ${activeSpeechField === "surrender" ? "border-indigo-500/50 ring-1 ring-indigo-500/20" : "border-slate-800"}`}
+          />
+        </div>
+      </div>
+
+      <div className="p-6 bg-indigo-950/40 border border-indigo-500/20 rounded-xl space-y-4 text-center">
+        <h4 className="font-handlee text-xl text-indigo-300">10th Step Amends Prayer</h4>
+        <p className="text-sm text-indigo-100/90 italic leading-relaxed font-serif">
+          "Please forgive me for my failings today. I know that because of my failings, I was not
+          able to be as effective as I could have been for you. Please forgive me and help me live
+          your will better today.
+          <br />
+          <br />I ask you now to show me how to correct the errors I have just outlined. Guide me
+          and direct me. Please remove my arrogance and my fear. Show me how to make my
+          relationships right and grant me the humility and strength to do your will." (86:1)
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function NightReviewCard({ className, ...props }: NightReviewCardProps) {
   const [open, setOpen] = useState(false); // Was isOpen, changed to open to match Dialog usage typical patterns if needed, but keeping isOpen internal variable name consistent. Wait, previous code used isOpen. Dialog expects 'open'.
   // Let's stick to 'open' state variable name if passed to Dialog open={open}
@@ -214,270 +576,29 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
         <div className="flex-1 overflow-y-auto pl-6 pr-8">
           <div className="pb-6">
             <AnimatePresence mode="wait">
-              {/* Step 1: Actions (Reverted to Checklist) */}
-              {step === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6"
-                >
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-slate-100">The Action</h3>
-                    <p className="text-sm text-slate-400">What did I do for my recovery today?</p>
-                  </div>
-                  <div className="grid grid-cols-1 gap-3">
-                    {ACTIONS.map((action) => (
-                      <button
-                        key={action.id}
-                        onClick={() =>
-                          setActions((prev) => ({ ...prev, [action.id]: !prev[action.id] }))
-                        }
-                        className={`p-4 rounded-xl border text-left transition-all flex items-center justify-between group ${
-                          actions[action.id]
-                            ? "bg-indigo-500/10 border-indigo-500/50"
-                            : "bg-slate-900/50 border-slate-800 hover:border-slate-700"
-                        }`}
-                      >
-                        <span
-                          className={`font-medium transition-colors ${actions[action.id] ? "text-indigo-200" : "text-slate-300 group-hover:text-slate-200"}`}
-                        >
-                          {action.label}
-                        </span>
-                        <div
-                          className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
-                            actions[action.id]
-                              ? "bg-indigo-500 border-indigo-500 text-white"
-                              : "border-slate-600 group-hover:border-slate-500"
-                          }`}
-                        >
-                          {actions[action.id] && <Check className="w-4 h-4" />}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 2: The Mirror (Traits) */}
-              {step === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6"
-                >
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-slate-100">The Mirror</h3>
-                    <p className="text-sm text-slate-400">Which side of the coin did I fall on?</p>
-                  </div>
-
-                  <div className="bg-slate-950 rounded-lg border border-slate-800 overflow-hidden">
-                    {/* Header */}
-                    <div className="grid grid-cols-2 bg-slate-900">
-                      <div className="p-3 text-center border-r border-slate-800">
-                        <span className="font-bold text-slate-200 uppercase tracking-wider text-xs md:text-sm">
-                          SELF-WILL
-                        </span>
-                      </div>
-                      <div className="p-3 text-center">
-                        <span className="font-bold text-slate-200 uppercase tracking-wider text-xs md:text-sm">
-                          SPIRIT-WILL
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Rows */}
-                    {TRAIT_PAIRS.map((pair, index) => (
-                      <div key={pair.id} className="grid grid-cols-2 border-t border-slate-800">
-                        {/* Left Column Item (Negative) */}
-                        <div
-                          className={`p-2 flex items-center justify-between border-r border-slate-800 ${index % 2 === 0 ? "bg-slate-900/30" : "bg-transparent"}`}
-                        >
-                          <span className="text-sm text-slate-300 ml-2">{pair.left}</span>
-                          <button
-                            onClick={() => setTrait(pair.id, "negative")}
-                            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mr-2 ${
-                              traits[pair.id] === "negative"
-                                ? "bg-red-500 border-red-500 text-white"
-                                : "bg-slate-800/50 border-slate-600 hover:border-slate-500"
-                            }`}
-                          >
-                            {traits[pair.id] === "negative" && <Check className="w-3 h-3" />}
-                          </button>
-                        </div>
-
-                        {/* Right Column Item (Positive) */}
-                        <div
-                          className={`p-2 flex items-center gap-2 ${index % 2 === 0 ? "bg-slate-900/30" : "bg-transparent"}`}
-                        >
-                          <button
-                            onClick={() => setTrait(pair.id, "positive")}
-                            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ml-2 shrink-0 ${
-                              traits[pair.id] === "positive"
-                                ? "bg-emerald-500 border-emerald-500 text-white"
-                                : "bg-slate-800/50 border-slate-600 hover:border-slate-500"
-                            }`}
-                          >
-                            {traits[pair.id] === "positive" && <Check className="w-3 h-3" />}
-                          </button>
-                          <span className="text-sm text-slate-300">{pair.right}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 3: Reflections */}
+              {step === 1 && <Step1Actions actions={actions} setActions={setActions} />}
+              {step === 2 && <Step2Mirror traits={traits} setTrait={setTrait} />}
               {step === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-6 pb-4"
-                >
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-slate-100">Deep Dive</h3>
-                    <p className="text-sm text-slate-400">
-                      Review the day constructively. Where were you?
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    {REFLECTIONS.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <label className="text-sm font-medium text-indigo-200">
-                            {item.label}
-                          </label>
-                          {hasSupport && (
-                            <button
-                              onClick={() =>
-                                toggleSpeech(item.id, reflectionAnswers[item.id] || "")
-                              }
-                              className={`p-1.5 rounded-full transition-colors ${
-                                activeSpeechField === item.id && isListening
-                                  ? "bg-red-500/20 text-red-400 animate-pulse"
-                                  : "bg-slate-800 text-slate-400 hover:text-indigo-300"
-                              }`}
-                            >
-                              {activeSpeechField === item.id && isListening ? (
-                                <MicOff className="w-3.5 h-3.5" />
-                              ) : (
-                                <Mic className="w-3.5 h-3.5" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                        <textarea
-                          value={reflectionAnswers[item.id] || ""}
-                          onChange={(e) =>
-                            setReflectionAnswers((prev) => ({ ...prev, [item.id]: e.target.value }))
-                          }
-                          rows={2}
-                          className={`w-full bg-slate-900/50 border rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/50 resize-none transition-colors ${activeSpeechField === item.id ? "border-indigo-500/50 ring-1 ring-indigo-500/20" : "border-slate-800"}`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
+                <Step3Reflections
+                  reflectionAnswers={reflectionAnswers}
+                  setReflectionAnswers={setReflectionAnswers}
+                  hasSupport={hasSupport}
+                  isListening={isListening}
+                  activeSpeechField={activeSpeechField}
+                  toggleSpeech={toggleSpeech}
+                />
               )}
-
-              {/* Step 4: Closing */}
               {step === 4 && (
-                <motion.div
-                  key="step4"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-bold text-slate-100">Closing</h3>
-                      <p className="text-sm text-slate-400">Surrender the day.</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-medium text-emerald-200">
-                          Today I am grateful for...
-                        </label>
-                        {hasSupport && (
-                          <button
-                            onClick={() => toggleSpeech("gratitude", gratitude)}
-                            className={`p-1.5 rounded-full transition-colors ${
-                              activeSpeechField === "gratitude" && isListening
-                                ? "bg-red-500/20 text-red-400 animate-pulse"
-                                : "bg-slate-800 text-slate-400 hover:text-emerald-300"
-                            }`}
-                          >
-                            {activeSpeechField === "gratitude" && isListening ? (
-                              <MicOff className="w-3.5 h-3.5" />
-                            ) : (
-                              <Mic className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                      <textarea
-                        value={gratitude}
-                        onChange={(e) => setGratitude(e.target.value)}
-                        rows={3}
-                        className={`w-full bg-slate-900/50 border rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50 resize-none ${activeSpeechField === "gratitude" ? "border-emerald-500/50 ring-1 ring-emerald-500/20" : "border-slate-800"}`}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-medium text-indigo-200">
-                          Today I accept/surrender...
-                        </label>
-                        {hasSupport && (
-                          <button
-                            onClick={() => toggleSpeech("surrender", surrender)}
-                            className={`p-1.5 rounded-full transition-colors ${
-                              activeSpeechField === "surrender" && isListening
-                                ? "bg-red-500/20 text-red-400 animate-pulse"
-                                : "bg-slate-800 text-slate-400 hover:text-indigo-300"
-                            }`}
-                          >
-                            {activeSpeechField === "surrender" && isListening ? (
-                              <MicOff className="w-3.5 h-3.5" />
-                            ) : (
-                              <Mic className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                      <textarea
-                        value={surrender}
-                        onChange={(e) => setSurrender(e.target.value)}
-                        rows={3}
-                        className={`w-full bg-slate-900/50 border rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/50 resize-none ${activeSpeechField === "surrender" ? "border-indigo-500/50 ring-1 ring-indigo-500/20" : "border-slate-800"}`}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="p-6 bg-indigo-950/40 border border-indigo-500/20 rounded-xl space-y-4 text-center">
-                    <h4 className="font-handlee text-xl text-indigo-300">
-                      10th Step Amends Prayer
-                    </h4>
-                    <p className="text-sm text-indigo-100/90 italic leading-relaxed font-serif">
-                      "Please forgive me for my failings today. I know that because of my failings,
-                      I was not able to be as effective as I could have been for you. Please forgive
-                      me and help me live your will better today.
-                      <br />
-                      <br />I ask you now to show me how to correct the errors I have just outlined.
-                      Guide me and direct me. Please remove my arrogance and my fear. Show me how to
-                      make my relationships right and grant me the humility and strength to do your
-                      will." (86:1)
-                    </p>
-                  </div>
-                </motion.div>
+                <Step4Closing
+                  gratitude={gratitude}
+                  setGratitude={setGratitude}
+                  surrender={surrender}
+                  setSurrender={setSurrender}
+                  hasSupport={hasSupport}
+                  isListening={isListening}
+                  activeSpeechField={activeSpeechField}
+                  toggleSpeech={toggleSpeech}
+                />
               )}
             </AnimatePresence>
           </div>
@@ -504,53 +625,14 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
               <Button
                 variant="outline"
                 onClick={() => {
-                  // Build share text with null checks
-                  const actionsList =
-                    Object.entries(actions)
-                      .filter(([_, v]) => v)
-                      .map(([k]) => ACTIONS.find((a) => a.id === k)?.label)
-                      .filter(Boolean)
-                      .join(", ") || "None";
-
-                  const traitsList =
-                    Object.entries(traits)
-                      .filter(([_, v]) => v !== null)
-                      .map(([k, v]) => {
-                        const pair = TRAIT_PAIRS.find((p) => p.id === k);
-                        return pair ? `${pair.left}/${pair.right}: ${v}` : null;
-                      })
-                      .filter(Boolean)
-                      .join(", ") || "None";
-
-                  const reflectionsList =
-                    Object.values(reflectionAnswers)
-                      .filter((v) => v && v.trim())
-                      .join("\n") || "None";
-
-                  const shareText = `Nightly Inventory\n\nActions: ${actionsList}\n\nTraits: ${traitsList}\n\nReflections: ${reflectionsList}\n\nGratitude: ${gratitude || "None"}\n\nSurrender: ${surrender || "None"}`;
-
-                  if (navigator.share) {
-                    navigator
-                      .share({
-                        title: "Nightly Inventory",
-                        text: shareText,
-                      })
-                      .catch((error: unknown) => {
-                        // AbortError = user cancelled, which is expected behavior
-                        if (error instanceof Error && error.name === "AbortError") {
-                          return;
-                        }
-                        // Log other share errors (sanitized, no sensitive paths in browser)
-                        logger.error("Share error", {
-                          errorName: error instanceof Error ? error.name : "unknown",
-                        });
-                      });
-                  } else {
-                    // Fallback to mailto
-                    window.open(
-                      `mailto:?subject=Nightly Inventory&body=${encodeURIComponent(shareText)}`
-                    );
-                  }
+                  const shareText = buildShareText(
+                    actions,
+                    traits,
+                    reflectionAnswers,
+                    gratitude,
+                    surrender
+                  );
+                  handleShare(shareText);
                 }}
                 className="border-indigo-500/50 text-indigo-300 hover:bg-indigo-900/50 hover:text-indigo-200"
               >
