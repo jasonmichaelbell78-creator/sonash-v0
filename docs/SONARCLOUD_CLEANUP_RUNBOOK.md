@@ -1,7 +1,17 @@
 # SonarCloud Cleanup Sprint Runbook
 
-**Created**: 2026-01-18 **Purpose**: Repeatable process for SonarCloud analysis
-and cleanup sprints
+**Created**: 2026-01-18 **Last Updated**: 2026-01-19
+
+---
+
+## Purpose
+
+This runbook provides a repeatable process for SonarCloud analysis and cleanup
+sprints. It covers the end-to-end workflow from triggering analysis to verifying
+improvements, with emphasis on GitHub Actions integration and MCP tooling.
+
+**Scope**: SonarCloud issue triage, cleanup branch management, and PR-based
+verification.
 
 ---
 
@@ -339,6 +349,7 @@ Please consider disabling one or the other.
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.4     | 2026-01-19 | Add Purpose section, Last Updated date (PR review fix)          |
 | 1.3     | 2026-01-19 | Add Phase 0: Automatic Analysis toggle instructions             |
 | 1.2     | 2026-01-18 | Round 2: Basic auth fix, conclusion-aware polling               |
 | 1.1     | 2026-01-18 | PR review fixes: polling robustness, token security, timestamps |
