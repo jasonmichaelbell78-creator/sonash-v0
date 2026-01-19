@@ -626,28 +626,31 @@ Severity guide (performance-specific):
 
 **Metrics Baseline**:
 
-- Bundle size: [X] KB
-- LCP: [X] s
-- Performance score: [X]/100
-- [Other measured metrics]
+- Bundle size: {VALUE} KB
+- LCP: {VALUE} s
+- Performance score: {VALUE}/100
+- {Other measured metrics}
 
 **Top 5 Optimization Opportunities** (ranked by impact/effort ratio):
 
-1. [Title] - Impact: [S0/S1/S2/S3], Effort: [E0/E1/E2/E3], Expected gain: [X]
-2. [...]
+1. {Title} - Impact: {S0/S1/S2/S3}, Effort: {E0/E1/E2/E3}, Expected gain:
+   {VALUE}
+2. {...}
 
 **Quick Wins** (E0-E1 effort, measurable gains):
 
-- [List 3-5 optimizations that can be done quickly]
+- {List 3-5 optimizations that can be done quickly}
 
 **Performance Bottlenecks Identified**:
 
-- [Summarize major issues by category]
+- {Summarize major issues by category}
 
 **Estimated Total Improvement**:
 
-- If all S0/S1 issues addressed: [X]% performance gain, [Y] KB bundle reduction
-- If all issues addressed: [X]% performance gain, [Y] KB bundle reduction
+- If all S0/S1 issues addressed: {VALUE}% performance gain, {VALUE} KB bundle
+  reduction
+- If all issues addressed: {VALUE}% performance gain, {VALUE} KB bundle
+  reduction
 
 **Recommended Implementation Order**:
 
@@ -746,7 +749,7 @@ OUTPUT
 
 ### Step 3: Create Performance Findings Document
 
-Create `docs/reviews/PERFORMANCE_AUDIT_[YYYY]_Q[X].md` with:
+Create `docs/reviews/PERFORMANCE_AUDIT_{YYYY}_Q{N}.md` with:
 
 - Baseline metrics
 - Target metrics
@@ -788,7 +791,7 @@ MULTI_AI_CODE_REVIEW_PLAN_TEMPLATE.md:
 When using this template:
 
 1. **Copy this template** to
-   `docs/reviews/PERFORMANCE_AUDIT_PLAN_[YYYY]_Q[X].md`
+   `docs/reviews/PERFORMANCE_AUDIT_PLAN_{YYYY}_Q{N}.md`
 2. **Establish baseline metrics** before running audit
 3. **Run the performance audit prompt** on each model
 4. **Collect outputs** in specified formats

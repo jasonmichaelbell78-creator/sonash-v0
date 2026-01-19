@@ -92,8 +92,8 @@ Exclude: [directories, e.g., docs/, public/, node_modules/]
 
 [What should be true after refactoring is complete:]
 
-- [ ] Single canonical pattern for [X]
-- [ ] All [Y] consolidated into [Z]
+- [ ] Single canonical pattern for {pattern}
+- [ ] All {duplicates} consolidated into {single source}
 - [ ] No duplication of [pattern]
 - [ ] Clear boundaries between [A] and [B]
 
@@ -672,7 +672,7 @@ Track what becomes canonical after each PR:
 
 When using this template:
 
-1. **Copy this template** to `docs/reviews/REFACTOR_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to `docs/reviews/REFACTOR_PLAN_{YYYY}_Q{N}.md`
 2. **Fill in Refactoring Context** with project-specific details
 3. **Document known technical debt** before running audit
 4. **Run the refactoring audit prompt** on each model

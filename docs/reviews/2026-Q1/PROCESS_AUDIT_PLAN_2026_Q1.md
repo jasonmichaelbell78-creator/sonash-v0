@@ -626,7 +626,7 @@ OUTPUT
 
 ### Step 3: Create Process Findings Document
 
-Create `docs/reviews/PROCESS_AUDIT_[YYYY]_Q[X].md` with:
+Create `docs/reviews/PROCESS_AUDIT_{YYYY}_Q{N}.md` with:
 - Health metrics dashboard
 - All findings with improvement steps
 - Prioritized implementation order
@@ -677,7 +677,7 @@ Use R1, R2, and Between-PR checklist from
 
 When using this template:
 
-1. **Copy this template** to `docs/reviews/PROCESS_AUDIT_PLAN_[YYYY]_Q[X].md`
+1. **Copy this template** to `docs/reviews/PROCESS_AUDIT_PLAN_{YYYY}_Q{N}.md`
 2. **Fill in Audit Context** with project-specific details
 3. **Run the process audit prompt** on each model
 4. **Collect outputs** in specified formats
