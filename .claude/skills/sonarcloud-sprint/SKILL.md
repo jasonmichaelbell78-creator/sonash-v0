@@ -45,9 +45,11 @@ pagination:
 # Set project key
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
-# Fetch first page and determine total pages needed
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=1" > /tmp/sonar_all_p1.json
-TOTAL_ISSUES=$(jq '.total' /tmp/sonar_all_p1.json)
+# Fetch first page and validate response
+curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=1" > /tmp/sonar_all_p1.json
+TOTAL_ISSUES="$(jq -r '.total // empty' /tmp/sonar_all_p1.json)"
+[[ "$TOTAL_ISSUES" =~ ^[0-9]+$ ]] || { echo "API error: no numeric .total" >&2; exit 1; }
+
 PAGE_SIZE=500
 TOTAL_PAGES=$(( (TOTAL_ISSUES + PAGE_SIZE - 1) / PAGE_SIZE ))
 
@@ -56,15 +58,22 @@ echo "Total issues: $TOTAL_ISSUES (need $TOTAL_PAGES pages)"
 # Fetch remaining pages dynamically
 for ((p=2; p<=TOTAL_PAGES; p++)); do
   echo "Fetching page $p of $TOTAL_PAGES..."
-  curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=$p" > "/tmp/sonar_all_p$p.json"
+  curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=$p" > "/tmp/sonar_all_p$p.json"
 done
 
-# Fetch security hotspots
-curl -s "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500" > /tmp/sonar_hotspots.json
+# Fetch security hotspots (paginated)
+curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500&p=1" > /tmp/sonar_hotspots_p1.json
+TOTAL_HOTSPOTS="$(jq -r '.paging.total // empty' /tmp/sonar_hotspots_p1.json)"
+HOTSPOT_PAGES=$(( (TOTAL_HOTSPOTS + PAGE_SIZE - 1) / PAGE_SIZE ))
+
+for ((p=2; p<=HOTSPOT_PAGES; p++)); do
+  echo "Fetching hotspots page $p of $HOTSPOT_PAGES..."
+  curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500&p=$p" > "/tmp/sonar_hotspots_p$p.json"
+done
 
 # Check counts
 echo "Issues: $TOTAL_ISSUES"
-echo "Hotspots: $(jq '.paging.total' /tmp/sonar_hotspots.json)"
+echo "Hotspots: $TOTAL_HOTSPOTS"
 ```
 
 ### Phase 2: Generate Detailed Report
@@ -103,7 +112,7 @@ git pull origin main
 
 # Create branch for current PR phase
 git checkout -b cleanup/phase-1-mechanical
-# or: cleanup/phase-2-complexity
+# or: cleanup/phase-2-critical
 # or: cleanup/phase-3-major-quality
 # or: cleanup/phase-4-medium-priority
 # or: cleanup/phase-5-security

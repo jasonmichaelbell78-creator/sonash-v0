@@ -64,7 +64,7 @@ if [[ -z "$SERVER_NAMES" ]]; then
 fi
 
 # Cap final output length to prevent terminal spam (DoS prevention)
-if [[[ ${#SERVER_NAMES} -gt 500 ]]; then
+if [[ ${#SERVER_NAMES} -gt 500 ]]; then
     SERVER_NAMES="${SERVER_NAMES:0:500}..."
 fi
 
