@@ -472,12 +472,15 @@ dead code cleanup, severity escalation)
 
 ## 🚨 Current Blockers
 
-### No Active Blockers! ✅
+### SonarCloud Cleanup Sprint (BLOCKER)
 
-The Integrated Improvement Plan (9/9 steps) is **COMPLETE**. Feature development
-can now resume on M1.5 and M1.6.
+**Status**: All 1,213 issues (1,116 code + 97 security hotspots) must be
+resolved before feature development resumes.
 
-All systems operational.
+**Plan**: 5-PR cleanup sprint in
+[`.claude/plans/sonarcloud-cleanup-sprint.md`](.claude/plans/sonarcloud-cleanup-sprint.md)
+
+**See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0)
 
 ---
 

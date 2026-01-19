@@ -264,8 +264,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #185
+**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #186
 
 ### When to Consolidate
 
@@ -544,8 +544,50 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #137-179 are actively maintained below. Older reviews (#101-136) are in
+Reviews #137-180 are actively maintained below. Older reviews (#101-136) are in
 Archive 4.
+
+---
+
+#### Review #180: PR #282 SonarCloud Cleanup Sprint Documentation (2026-01-19)
+
+**Source:** Qodo Compliance + Doc Lint + Qodo PR Suggestions **PR/Branch:**
+feature/admin-panel-phase-3 (PR #282) **Suggestions:** 4 items (Major: 2,
+Minor: 2)
+
+**Issues Fixed:**
+
+| #   | Issue                              | Severity | Category      | Fix                                                        |
+| --- | ---------------------------------- | -------- | ------------- | ---------------------------------------------------------- |
+| 1   | Missing Purpose section in runbook | Major    | Documentation | Added Purpose section and scope to runbook header          |
+| 2   | Inconsistent PR structures (5/15)  | Major    | Documentation | Consolidated snapshot to match 5-PR plan structure         |
+| 3   | Missing Last Updated metadata      | Minor    | Documentation | Added Last Updated date to runbook                         |
+| 4   | Incorrect version history counts   | Minor    | Documentation | Fixed 202→1,213 issue counts in ROADMAP.md version history |
+
+**Additional Investigation:**
+
+- **Code Review Triggers GHA Issue**: Analyzed why workflow shows 91 commits
+  instead of expected 30
+- **Root Cause**: Git `--since` date interpretation differs between UTC (GHA)
+  and local timezone, causing more commits to be counted
+- **Impact**: Pre-existing issue, not blocking; timezone-aware dates would fix
+- **Status**: Documented for future improvement (not fixed in this PR)
+
+**Patterns Identified:**
+
+1. **Doc lint required sections**: Tier 2+ documents need Purpose/Overview/Scope
+   section
+2. **Document consistency**: When referencing plans across files, structure must
+   match
+3. **Timezone-aware git dates**: Git `--since` interprets dates in local
+   timezone; use full ISO timestamps for cross-environment consistency
+
+**Key Learnings:**
+
+- Documentation linter enforces Purpose section for Tier 2+ docs
+- Snapshot files should reference and align with authoritative plan documents
+- Version history entries should be updated when issue counts change
+- Git date queries behave differently in UTC vs local timezones
 
 ---
 

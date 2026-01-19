@@ -26,6 +26,7 @@ Automate the SonarCloud analysis and cleanup workflow:
 - GitHub CLI (`gh`) authenticated with repo access
 - `SONAR_TOKEN` secret configured in GitHub repository
 - SonarCloud project imported: `jasonmichaelbell78-creator_sonash-v0`
+- **Automatic Analysis disabled** in SonarCloud (required for CI-based analysis)
 
 ## Usage
 
@@ -35,6 +36,15 @@ Automate the SonarCloud analysis and cleanup workflow:
 ```
 
 ## Workflow
+
+### Phase 0: Disable Automatic Analysis
+
+Before triggering CI analysis, disable Automatic Analysis in SonarCloud:
+
+1. Go to:
+   https://sonarcloud.io/project/analysis_method?id=jasonmichaelbell78-creator_sonash-v0
+2. Turn **OFF** "Automatic Analysis"
+3. Re-enable after sprint if preferred for ongoing monitoring
 
 ### Phase 1: Trigger Analysis
 

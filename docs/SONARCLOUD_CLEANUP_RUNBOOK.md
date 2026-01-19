@@ -1,7 +1,17 @@
 # SonarCloud Cleanup Sprint Runbook
 
-**Created**: 2026-01-18 **Purpose**: Repeatable process for SonarCloud analysis
-and cleanup sprints
+**Created**: 2026-01-18 **Last Updated**: 2026-01-19
+
+---
+
+## Purpose
+
+This runbook provides a repeatable process for SonarCloud analysis and cleanup
+sprints. It covers the end-to-end workflow from triggering analysis to verifying
+improvements, with emphasis on GitHub Actions integration and MCP tooling.
+
+**Scope**: SonarCloud issue triage, cleanup branch management, and PR-based
+verification.
 
 ---
 
@@ -28,6 +38,30 @@ Before running a cleanup sprint:
 2. **Project Imported**: Project `jasonmichaelbell78-creator_sonash-v0` exists
 3. **SONAR_TOKEN Secret**: Configured in GitHub repo secrets
 4. **Workflow Fixed**: `.github/workflows/sonarcloud.yml` has checkout step
+5. **Automatic Analysis Disabled**: Must be OFF to use GitHub Actions analysis
+
+---
+
+## Phase 0: Disable Automatic Analysis
+
+> **Important**: SonarCloud cannot run both Automatic Analysis and CI-based
+> analysis simultaneously. You must disable Automatic Analysis before triggering
+> the GitHub Actions workflow.
+
+### 0.1 Disable Before Analysis
+
+1. Go to:
+   https://sonarcloud.io/project/analysis_method?id=jasonmichaelbell78-creator_sonash-v0
+2. Under **Analysis Method**, turn **OFF** "Automatic Analysis"
+3. Confirm the change is saved
+
+### 0.2 Re-enable After Sprint (Optional)
+
+If you prefer Automatic Analysis for ongoing monitoring:
+
+1. After merging your cleanup PR, return to the Analysis Method page
+2. Turn **ON** "Automatic Analysis"
+3. Note: Future PRs will use Automatic Analysis instead of GitHub Actions
 
 ---
 
@@ -226,7 +260,28 @@ See PR checks for New Code analysis.
 3. Click "Details" on SonarCloud status check
 4. Review "New Code" tab for improvements
 
-### 6.3 Update Documentation
+### 6.3 Create Analysis Snapshot
+
+Before starting fixes, create a snapshot for tracking progress:
+
+```bash
+# Create snapshot directory
+mkdir -p docs/audits/sonarcloud-snapshots
+
+# Create dated snapshot file
+# Include: Quality Gate status, all issues by rule, all hotspots by category
+# See existing snapshots for format: docs/audits/sonarcloud-snapshots/
+```
+
+Snapshot should include:
+
+- Quality Gate status and metrics
+- All CRITICAL/BLOCKER issues with file:line
+- All Security Hotspots grouped by probability
+- Issues checklist for tracking fixes
+- Estimated effort per batch
+
+### 6.4 Update Documentation
 
 After merge:
 
@@ -234,10 +289,8 @@ After merge:
 # Update triage document with new baseline
 # docs/SONARCLOUD_TRIAGE.md - update counts
 
-# Archive snapshot for comparison
-mkdir -p docs/audits/sonarcloud-snapshots
-echo "Date: $(date)" > docs/audits/sonarcloud-snapshots/$(date +%Y%m%d).md
-echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%d).md
+# Create post-sprint snapshot for comparison
+# Compare issue counts: before vs after
 ```
 
 ---
@@ -256,6 +309,22 @@ echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%
 1. Verify project is imported at https://sonarcloud.io/projects/create
 2. Check analysis method is set to "GitHub Actions" (not automatic)
 3. Re-trigger workflow manually
+
+### "CI analysis while Automatic Analysis is enabled" Error
+
+If you see this error in the workflow logs:
+
+```
+ERROR You are running CI analysis while Automatic Analysis is enabled.
+Please consider disabling one or the other.
+```
+
+**Solution**: Disable Automatic Analysis in SonarCloud:
+
+1. Go to:
+   https://sonarcloud.io/project/analysis_method?id=jasonmichaelbell78-creator_sonash-v0
+2. Turn **OFF** "Automatic Analysis"
+3. Re-trigger the workflow: `gh workflow run sonarcloud.yml --ref main`
 
 ### MCP Tools Return Empty
 
@@ -280,6 +349,8 @@ echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.4     | 2026-01-19 | Add Purpose section, Last Updated date (PR review fix)          |
+| 1.3     | 2026-01-19 | Add Phase 0: Automatic Analysis toggle instructions             |
 | 1.2     | 2026-01-18 | Round 2: Basic auth fix, conclusion-aware polling               |
 | 1.1     | 2026-01-18 | PR review fixes: polling robustness, token security, timestamps |
 | 1.0     | 2026-01-18 | Initial runbook created                                         |
