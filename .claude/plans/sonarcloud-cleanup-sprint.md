@@ -330,40 +330,39 @@ For each PR phase, document:
 3. **False Positive Patterns** - Rules that frequently flag non-issues
 4. **Prevention Strategies** - How to avoid these issues in future code
 
-#### Template for AI_LESSONS_LOG.md
+#### Template for AI_REVIEW_LEARNINGS_LOG.md
+
+Use the standard Review #N format:
 
 ```markdown
-### SonarCloud Sprint PR X: [Phase Name] (YYYY-MM-DD)
+#### Review #N: SonarCloud Sprint PR X - [Phase Name] (YYYY-MM-DD)
 
-**Issues Resolved**: X total (Y rules across Z files)
+**Source:** SonarCloud Sprint Plan + [Analysis Type] **PR/Branch:** [branch
+name] (PR #XXX) **Issues Fixed:** X (Y rules across Z files)
 
-**Patterns Discovered**:
+**Summary:** [Brief description of what was done]
+
+**Issues Fixed:**
+
+| #   | Issue         | Severity | Category | Fix               |
+| --- | ------------- | -------- | -------- | ----------------- |
+| 1   | S7772: [desc] | Minor    | Node.js  | [Fix description] |
+
+**Patterns Identified:**
 
 1. **[Pattern Name]**: [Description]
-   - Root cause: [Why this pattern occurred]
-   - Prevention: [How to avoid in future]
 
-**Fix Techniques**:
+**Key Learnings:**
 
-| Rule  | Technique          | Example                                |
-| ----- | ------------------ | -------------------------------------- |
-| S7772 | Add `node:` prefix | `require('fs')` → `require('node:fs')` |
-
-**False Positives Identified**:
-
-- [Rule]: [Why it's a false positive in this context]
-
-**Recommendations for claude.md**:
-
-- [ ] Add pattern to Section 4 if recurring
-- [ ] Update CODE_PATTERNS.md if new anti-pattern
+- [Lesson 1]
+- [Lesson 2]
 ```
 
 #### Checklist Item
 
 Each PR checklist now includes:
 
-- [ ] Post-PR learnings extracted to `docs/agent_docs/AI_LESSONS_LOG.md`
+- [ ] Post-PR learnings extracted to `docs/AI_REVIEW_LEARNINGS_LOG.md`
 
 ---
 
@@ -385,7 +384,7 @@ Each PR checklist now includes:
 - [x] All 190 Phase 1 issues resolved
 - [x] Tests passing: `npm test`
 - [x] Lint passing: `npm run lint`
-- [x] Post-PR learnings extracted to AI_LESSONS_LOG.md
+- [x] Post-PR learnings extracted to AI_REVIEW_LEARNINGS_LOG.md
 
 ### PR 2 Checklist
 
@@ -397,7 +396,7 @@ Each PR checklist now includes:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=2`
 - [ ] Any dismissals documented
 - [ ] All tests passing
-- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+- [ ] Post-PR learnings extracted to AI_REVIEW_LEARNINGS_LOG.md
 
 ### PR 3 Checklist
 
@@ -406,7 +405,7 @@ Each PR checklist now includes:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=3`
 - [ ] Any dismissals documented
 - [ ] All tests passing
-- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+- [ ] Post-PR learnings extracted to AI_REVIEW_LEARNINGS_LOG.md
 
 ### PR 4 Checklist
 
@@ -417,7 +416,7 @@ Each PR checklist now includes:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=4`
 - [ ] Any dismissals documented
 - [ ] All tests passing
-- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+- [ ] Post-PR learnings extracted to AI_REVIEW_LEARNINGS_LOG.md
 
 ### PR 5 Checklist
 
@@ -427,7 +426,7 @@ Each PR checklist now includes:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=5`
 - [ ] All hotspot decisions documented (FIXED/SAFE/ACKNOWLEDGED)
 - [ ] All tests passing
-- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+- [ ] Post-PR learnings extracted to AI_REVIEW_LEARNINGS_LOG.md
 
 ---
 
