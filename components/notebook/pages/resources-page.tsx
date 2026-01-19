@@ -28,6 +28,75 @@ type FellowshipFilter = (typeof FELLOWSHIP_OPTIONS)[number];
 // Sort options
 type SortOption = "time" | "nearest";
 
+// ============================================================================
+// Helper Functions (extracted for cognitive complexity reduction)
+// ============================================================================
+
+/**
+ * Parse time string (HH:MM or H:MM AM/PM) to minutes since midnight
+ */
+function parseTime(timeStr: string): number {
+  if (/AM|PM/i.test(timeStr)) {
+    return parse12HourTime(timeStr);
+  }
+  return parse24HourTime(timeStr);
+}
+
+function parse12HourTime(timeStr: string): number {
+  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return -1;
+  let h = parseInt(match[1]);
+  const m = parseInt(match[2]);
+  const p = match[3].toUpperCase();
+  if (p === "PM" && h !== 12) h += 12;
+  if (p === "AM" && h === 12) h = 0;
+  return h * 60 + m;
+}
+
+function parse24HourTime(timeStr: string): number {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
+
+/**
+ * Check if two dates are the same day
+ */
+function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  );
+}
+
+/**
+ * Get CSS classes for meeting type badge
+ */
+function getMeetingTypeBadgeClasses(type: string): string {
+  return type === "NA"
+    ? "border-amber-500 text-amber-700 bg-amber-50"
+    : "border-blue-400 text-blue-700 bg-blue-50";
+}
+
+/**
+ * Get CSS classes for sober home gender badge
+ */
+function getHomeGenderBadgeClasses(gender: string): string {
+  const styleMap: Record<string, string> = {
+    Men: "border-blue-200 bg-blue-50 text-blue-700",
+    Women: "border-pink-200 bg-pink-50 text-pink-700",
+  };
+  return styleMap[gender] || "border-purple-200 bg-purple-50 text-purple-700";
+}
+
+/**
+ * Get single-letter abbreviation for home gender
+ */
+function getGenderAbbreviation(gender: string): string {
+  const abbrevMap: Record<string, string> = { Men: "M", Women: "W" };
+  return abbrevMap[gender] || "C";
+}
+
 const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
   ssr: false,
   loading: () => (
@@ -206,23 +275,6 @@ export default function ResourcesPage() {
     },
   ];
 
-  // Helper to parse HH:MM to minutes
-  const parseTime = (timeStr: string) => {
-    // Handle 24h "19:30" or 12h "7:30 PM"
-    if (/AM|PM/i.test(timeStr)) {
-      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-      if (!match) return -1;
-      let h = parseInt(match[1]);
-      const m = parseInt(match[2]);
-      const p = match[3].toUpperCase();
-      if (p === "PM" && h !== 12) h += 12;
-      if (p === "AM" && h === 12) h = 0;
-      return h * 60 + m;
-    }
-    const [h, m] = timeStr.split(":").map(Number);
-    return h * 60 + m;
-  };
-
   // Combined filtering: time (for today view) + fellowship + sorting
   const filteredMeetings = useMemo(() => {
     let result = meetings;
@@ -232,24 +284,14 @@ export default function ResourcesPage() {
       result = result.filter((m) => m.type === fellowshipFilter);
     }
 
-    // Apply time filter for "date" view only
+    // Apply time filter for "date" view only (filter for today, show all for future dates)
     if (viewMode === "date") {
-      // If selected date is TODAY, filter by current time.
-      // If it's a future date, show all meetings for that day.
       const now = new Date();
-      const isToday =
-        selectedDate.getDate() === now.getDate() &&
-        selectedDate.getMonth() === now.getMonth() &&
-        selectedDate.getFullYear() === now.getFullYear();
-
+      const isToday = isSameDay(selectedDate, now);
       if (isToday) {
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        result = result.filter((m) => {
-          const meetingMinutes = parseTime(m.time);
-          return meetingMinutes >= currentMinutes; // Only future meetings today
-        });
+        result = result.filter((m) => parseTime(m.time) >= currentMinutes);
       }
-      // If future/past date, we don't filter by time, just show the day's schedule (which is already fetched by queryDayName)
     }
 
     // Apply sorting
@@ -257,7 +299,7 @@ export default function ResourcesPage() {
       result = sortByDistance(result, userLocation, (m) => m.coordinates);
     }
 
-    // Apply neighborhood filter (last, effectively)
+    // Apply neighborhood filter
     if (neighborhoodFilter !== "All") {
       result = result.filter((m) => m.neighborhood === neighborhoodFilter);
     }
@@ -545,7 +587,7 @@ export default function ResourcesPage() {
                         className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
                       >
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === "NA" ? "border-amber-500 text-amber-700 bg-amber-50" : "border-blue-400 text-blue-700 bg-blue-50"}`}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${getMeetingTypeBadgeClasses(meeting.type)}`}
                         >
                           {meeting.type}
                         </div>
@@ -600,16 +642,9 @@ export default function ResourcesPage() {
                         />
                       ) : (
                         <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0
-                          ${
-                            home.gender === "Men"
-                              ? "border-blue-200 bg-blue-50 text-blue-700"
-                              : home.gender === "Women"
-                                ? "border-pink-200 bg-pink-50 text-pink-700"
-                                : "border-purple-200 bg-purple-50 text-purple-700"
-                          }`}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 ${getHomeGenderBadgeClasses(home.gender)}`}
                         >
-                          {home.gender === "Men" ? "M" : home.gender === "Women" ? "W" : "C"}
+                          {getGenderAbbreviation(home.gender)}
                         </div>
                       )}
 
@@ -660,7 +695,7 @@ export default function ResourcesPage() {
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2">
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${selectedMeeting?.type === "NA" ? "border-amber-500 text-amber-700 bg-amber-50" : "border-blue-400 text-blue-700 bg-blue-50"}`}
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${getMeetingTypeBadgeClasses(selectedMeeting?.type || "")}`}
               >
                 {selectedMeeting?.type}
               </div>

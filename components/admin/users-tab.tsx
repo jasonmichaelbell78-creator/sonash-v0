@@ -93,6 +93,55 @@ interface PrivilegeType {
   isDefault?: boolean;
 }
 
+// ============================================================================
+// Helper Functions (extracted for cognitive complexity reduction)
+// ============================================================================
+
+/**
+ * Update a user in an array of search results
+ */
+function updateUserInList(
+  users: UserSearchResult[],
+  uid: string,
+  updates: Partial<UserSearchResult>
+): UserSearchResult[] {
+  return users.map((user) => (user.uid === uid ? { ...user, ...updates } : user));
+}
+
+/**
+ * Get sort button classes based on active state
+ */
+function getSortButtonClasses(isActive: boolean): string {
+  return isActive ? "bg-amber-500 text-white" : "bg-amber-100 text-amber-800 hover:bg-amber-200";
+}
+
+/**
+ * Get status badge based on user state
+ */
+function getUserStatusInfo(user: UserSearchResult): {
+  label: string;
+  className: string;
+  icon?: string;
+} {
+  if (user.isSoftDeleted) {
+    return {
+      label: "Pending Deletion",
+      className: "bg-orange-100 text-orange-800",
+      icon: "trash",
+    };
+  }
+  if (user.disabled) {
+    return {
+      label: "Disabled",
+      className: "bg-red-100 text-red-800",
+    };
+  }
+  return {
+    label: "Active",
+    className: "bg-green-100 text-green-800",
+  };
+}
+
 export function UsersTab() {
   // List/pagination state
   const [users, setUsers] = useState<UserSearchResult[]>([]);
@@ -593,31 +642,14 @@ export function UsersTab() {
         };
       });
 
-      // Update users list
-      setUsers((prev) =>
-        prev.map((user) =>
-          user.uid === uid
-            ? {
-                ...user,
-                isSoftDeleted: true,
-                scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
-                disabled: true,
-              }
-            : user
-        )
-      );
-      setSearchResults((prev) =>
-        prev.map((user) =>
-          user.uid === uid
-            ? {
-                ...user,
-                isSoftDeleted: true,
-                scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
-                disabled: true,
-              }
-            : user
-        )
-      );
+      // Update users list using helper
+      const softDeleteUpdates = {
+        isSoftDeleted: true,
+        scheduledHardDeleteAt: result.data.scheduledHardDeleteAt,
+        disabled: true,
+      };
+      setUsers((prev) => updateUserInList(prev, uid, softDeleteUpdates));
+      setSearchResults((prev) => updateUserInList(prev, uid, softDeleteUpdates));
 
       closeDeleteDialog();
     } catch (err) {
@@ -669,31 +701,14 @@ export function UsersTab() {
         };
       });
 
-      // Update users list
-      setUsers((prev) =>
-        prev.map((user) =>
-          user.uid === uid
-            ? {
-                ...user,
-                isSoftDeleted: false,
-                scheduledHardDeleteAt: null,
-                disabled: false,
-              }
-            : user
-        )
-      );
-      setSearchResults((prev) =>
-        prev.map((user) =>
-          user.uid === uid
-            ? {
-                ...user,
-                isSoftDeleted: false,
-                scheduledHardDeleteAt: null,
-                disabled: false,
-              }
-            : user
-        )
-      );
+      // Update users list using helper
+      const undeleteUpdates = {
+        isSoftDeleted: false,
+        scheduledHardDeleteAt: null,
+        disabled: false,
+      };
+      setUsers((prev) => updateUserInList(prev, uid, undeleteUpdates));
+      setSearchResults((prev) => updateUserInList(prev, uid, undeleteUpdates));
     } catch (err) {
       logger.error("Failed to undelete user", {
         errorType: err instanceof Error ? err.constructor.name : typeof err,
