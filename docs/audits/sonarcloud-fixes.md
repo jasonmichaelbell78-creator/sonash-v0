@@ -61,6 +61,62 @@ case statement
 **Commit**: `374d565` **Fix**: Added default case to absolute/traversal path
 check case statement
 
+### Shell Script Return Statements (S7682)
+
+#### Rule `shelldre:S7682` - FIXED
+
+**Commit**: (current) **Files**: 4 files **Fix**: Added explicit `return`
+statements at end of functions
+
+Files fixed:
+
+- `.claude/hooks/session-start.sh` - `compute_hash()`, `save_root_hash()`,
+  `save_functions_hash()`
+- `.claude/hooks/coderabbit-review.sh` - `to_lower()`
+- `.claude/hooks/check-mcp-servers.sh` - `sanitize_output()`
+- `.claude/hooks/analyze-user-request.sh` - `matches_word()`
+
+### Shell Script Error Output (S7677)
+
+#### Rule `shelldre:S7677` - FIXED
+
+**Commit**: (current) **Files**: 3 files **Fix**: Redirected error messages to
+stderr using `>&2`
+
+Files fixed:
+
+- `.claude/hooks/session-start.sh:254,280` - Error output for pattern checker
+  and auto-consolidation
+- `.claude/skills/artifacts-builder/scripts/init-artifact.sh:12,51` - Node
+  version and tarball errors
+- `.claude/skills/artifacts-builder/scripts/bundle-artifact.sh:8,14` - Missing
+  file errors
+
+### Shell Script Constants (S1192)
+
+#### Rule `shelldre:S1192` - FIXED
+
+**Commit**: (current) **Files**: 2 files **Fix**: Defined constants for repeated
+literal strings
+
+Files fixed:
+
+- `.claude/hooks/session-start.sh` - Added `ROOT_LOCKFILE`,
+  `FUNCTIONS_LOCKFILE`, `SEPARATOR_LINE` constants
+- `scripts/check-review-triggers.sh` - Added `SEPARATOR_LINE` constant
+
+### Shell Script Positional Parameters (S7679)
+
+#### Rule `shelldre:S7679` - FIXED
+
+**Commit**: (current) **Files**: 1 file **Fix**: Assigned positional parameter
+to local variable before use
+
+### [shelldre:S7679] - .claude/hooks/coderabbit-review.sh:33
+
+**Commit**: (current) **Fix**: Changed `$1` to `local input="$1"` in
+`to_lower()` function
+
 ---
 
 ## Phase 2: Critical Issues

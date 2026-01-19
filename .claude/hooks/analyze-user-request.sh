@@ -36,6 +36,7 @@ matches_word() {
     # Use printf instead of echo to prevent option injection
     # Note: -i flag removed since REQUEST_LOWER is already lowercased
     printf '%s' "$REQUEST_LOWER" | grep -qE "(^|[^[:alnum:]])(${pattern})([^[:alnum:]]|$)"
+    return $?
 }
 
 # Priority 1: SECURITY (HIGHEST - per PR review, must come before bugs)

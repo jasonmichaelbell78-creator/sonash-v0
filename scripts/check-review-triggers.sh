@@ -6,10 +6,13 @@
 
 set -e
 
-echo "========================================"
+# Constants for repeated literals (S1192)
+readonly SEPARATOR_LINE="========================================"
+
+echo "$SEPARATOR_LINE"
 echo "  Multi-AI Review Trigger Check"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
-echo "========================================"
+echo "$SEPARATOR_LINE"
 echo ""
 
 # Color codes for output
@@ -135,9 +138,9 @@ echo "Docs modified (last 20 commits): $RECENT_DOCS"
 echo ""
 
 # --- Summary ---
-echo "========================================"
+echo "$SEPARATOR_LINE"
 echo "  SUMMARY"
-echo "========================================"
+echo "$SEPARATOR_LINE"
 
 if [[ "$TRIGGERS_FOUND" -gt 0 ]]; then
   echo -e "${YELLOW}Triggers found: $TRIGGERS_FOUND${NC}"
@@ -153,4 +156,4 @@ fi
 
 echo ""
 echo "See docs/MULTI_AI_REVIEW_COORDINATOR.md for full trigger checklist"
-echo "========================================"
+echo "$SEPARATOR_LINE"

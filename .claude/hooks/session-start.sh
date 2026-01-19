@@ -32,7 +32,7 @@ if [[ "${CLAUDE_CODE_REMOTE:-}" != "true" ]]; then
 fi
 
 echo "🚀 SessionStart Hook for sonash-v0"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 
 # Get repository root for CWD-safe script execution
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
@@ -60,6 +60,11 @@ echo ""
 LOCKFILE_HASH_FILE=".claude/.lockfile-hash"
 FUNCTIONS_LOCKFILE_HASH_FILE=".claude/.functions-lockfile-hash"
 
+# Constants for repeated literals (S1192)
+readonly ROOT_LOCKFILE="package-lock.json"
+readonly FUNCTIONS_LOCKFILE="functions/package-lock.json"
+readonly SEPARATOR_LINE="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
 # Function to compute hash of a file (portable across systems)
 compute_hash() {
   local file="$1"
@@ -73,6 +78,7 @@ compute_hash() {
     # Fallback: use file modification time
     stat -c %Y "$file" 2>/dev/null || stat -f %m "$file" 2>/dev/null || echo "unknown"
   fi
+  return 0
 }
 
 # Check if root dependencies need install
@@ -83,14 +89,14 @@ needs_root_install() {
   fi
 
   # Always install if lockfile doesn't exist
-  if [[ ! -s "package-lock.json" ]]; then
+  if [[ ! -s "$ROOT_LOCKFILE" ]]; then
     return 0  # true - needs install
   fi
 
   # Check if lockfile hash matches cached hash
   if [[ -f "$LOCKFILE_HASH_FILE" ]]; then
     local current_hash
-    current_hash=$(compute_hash "package-lock.json")
+    current_hash=$(compute_hash "$ROOT_LOCKFILE")
     local cached_hash
     cached_hash=$(cat "$LOCKFILE_HASH_FILE" 2>/dev/null || echo "")
     if [[ "$current_hash" = "$cached_hash" ]]; then
@@ -109,14 +115,14 @@ needs_functions_install() {
   fi
 
   # Always install if lockfile doesn't exist
-  if [[ ! -s "functions/package-lock.json" ]]; then
+  if [[ ! -s "$FUNCTIONS_LOCKFILE" ]]; then
     return 0  # true - needs install
   fi
 
   # Check if lockfile hash matches cached hash
   if [[ -f "$FUNCTIONS_LOCKFILE_HASH_FILE" ]]; then
     local current_hash
-    current_hash=$(compute_hash "functions/package-lock.json")
+    current_hash=$(compute_hash "$FUNCTIONS_LOCKFILE")
     local cached_hash
     cached_hash=$(cat "$FUNCTIONS_LOCKFILE_HASH_FILE" 2>/dev/null || echo "")
     if [[ "$current_hash" = "$cached_hash" ]]; then
@@ -130,12 +136,14 @@ needs_functions_install() {
 # Save hash after successful install
 save_root_hash() {
   mkdir -p "$(dirname "$LOCKFILE_HASH_FILE")"
-  compute_hash "package-lock.json" > "$LOCKFILE_HASH_FILE"
+  compute_hash "$ROOT_LOCKFILE" > "$LOCKFILE_HASH_FILE"
+  return 0
 }
 
 save_functions_hash() {
   mkdir -p "$(dirname "$FUNCTIONS_LOCKFILE_HASH_FILE")"
-  compute_hash "functions/package-lock.json" > "$FUNCTIONS_LOCKFILE_HASH_FILE"
+  compute_hash "$FUNCTIONS_LOCKFILE" > "$FUNCTIONS_LOCKFILE_HASH_FILE"
+  return 0
 }
 
 # Helper function for npm commands with timeout
@@ -183,13 +191,13 @@ run_npm_with_timeout() {
 # Falls back to 'npm install' if lockfile is missing (new repos, etc.)
 # OPTIMIZATION: Skip install if lockfile hash matches cached version
 if needs_root_install; then
-  if [[ -s "package-lock.json" ]]; then
+  if [[ -s "$ROOT_LOCKFILE" ]]; then
     if run_npm_with_timeout "Installing root dependencies" \
       "npm ci --prefer-offline --no-audit --no-fund" 120; then
       save_root_hash
     fi
   else
-    echo "   ⚠️ package-lock.json not found or empty, falling back to npm install"
+    echo "   ⚠️ $ROOT_LOCKFILE not found or empty, falling back to npm install"
     WARNINGS=$(( ${WARNINGS:-0} + 1 ))
     if run_npm_with_timeout "Installing root dependencies (no lockfile)" \
       "npm install --prefer-offline --no-audit --no-fund" 120; then
@@ -206,13 +214,13 @@ fi
 # OPTIMIZATION: Skip install if lockfile hash matches cached version
 if [[ -d "functions" ]]; then
   if needs_functions_install; then
-    if [[ -s "functions/package-lock.json" ]]; then
+    if [[ -s "$FUNCTIONS_LOCKFILE" ]]; then
       if run_npm_with_timeout "Installing Firebase Functions dependencies" \
         "cd functions && npm ci --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120; then
         save_functions_hash
       fi
     else
-      echo "   ⚠️ functions/package-lock.json not found or empty, falling back to npm install"
+      echo "   ⚠️ $FUNCTIONS_LOCKFILE not found or empty, falling back to npm install"
       WARNINGS=$(( ${WARNINGS:-0} + 1 ))
       run_npm_with_timeout "Installing Firebase Functions dependencies (no lockfile)" \
         "cd functions && npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120
@@ -248,7 +256,7 @@ if node scripts/check-pattern-compliance.js 2>"$PATTERN_ERR_TMP"; then
 else
   EXIT_CODE=$?
   if [[ "$EXIT_CODE" -ge 2 ]]; then
-    echo "   ❌ Pattern checker failed (exit $EXIT_CODE)"
+    echo "   ❌ Pattern checker failed (exit $EXIT_CODE)" >&2
     if [[ -s "$PATTERN_ERR_TMP" ]]; then
       echo "   stderr:"
       sed 's/^/   /' "$PATTERN_ERR_TMP"
@@ -274,7 +282,7 @@ if [[ "$EXIT_CODE" -eq 0 ]]; then
     echo "   ✓ No consolidation needed"
   fi
 elif [[ "$EXIT_CODE" -ge 2 ]]; then
-  echo "   ❌ Auto-consolidation failed (exit $EXIT_CODE):"
+  echo "   ❌ Auto-consolidation failed (exit $EXIT_CODE):" >&2
   echo "$OUTPUT" | sed 's/^/     /'
   WARNINGS=$((WARNINGS + 1))
 fi
@@ -313,7 +321,7 @@ else
 fi
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 if [[ "$WARNINGS" -eq 0 ]]; then
   echo "✅ SessionStart hook completed successfully!"
 else
@@ -322,7 +330,7 @@ else
 fi
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 echo "📋 SESSION CHECKLIST (from AI_WORKFLOW.md):"
 echo ""
 echo "  1. ☐ Read SESSION_CONTEXT.md (current status, next goals)"
@@ -339,7 +347,7 @@ echo "      └─ Complex task? → Check ls .claude/skills/ for matches"
 echo ""
 echo "  5. ☐ Review active blockers before starting work"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 echo ""
 echo "💡 Tips:"
 echo "   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns"
