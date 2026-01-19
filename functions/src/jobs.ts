@@ -15,6 +15,226 @@
 import * as admin from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logSecurityEvent, hashUserId } from "./security-logger";
+import type { File, Bucket } from "@google-cloud/storage";
+
+// ============================================================================
+// Helper Types
+// ============================================================================
+
+interface FileProcessResult {
+  deleted: boolean;
+  error: boolean;
+}
+
+// ============================================================================
+// Storage Cleanup Helpers
+// ============================================================================
+
+/**
+ * Extracts and validates userId from a storage file path.
+ * Expected format: user-uploads/{userId}/...
+ * Returns null if path is invalid or userId is empty.
+ */
+function extractUserIdFromPath(filePath: string): string | null {
+  const pathParts = filePath.split("/");
+  if (pathParts.length < 2) return null;
+
+  const userId = pathParts[1];
+  if (!userId || typeof userId !== "string") return null;
+
+  return userId;
+}
+
+/**
+ * Checks if a file is older than the specified age threshold.
+ * Returns false if metadata is unavailable.
+ */
+async function isFileOlderThan(file: File, daysOld: number): Promise<boolean> {
+  const metadata = await file.getMetadata();
+  const timeCreated = metadata[0].timeCreated;
+  if (!timeCreated) return false;
+
+  const createTime = new Date(timeCreated);
+  const threshold = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000);
+  return createTime < threshold;
+}
+
+/**
+ * Checks if a storage file is referenced by any journal entry.
+ * Uses stable imagePath reference only (no URL substring fallback).
+ */
+async function isFileReferencedInJournal(
+  file: File,
+  userId: string,
+  db: FirebaseFirestore.Firestore
+): Promise<boolean> {
+  const journalByPathRef = db
+    .collection(`users/${userId}/journal`)
+    .where("data.imagePath", "==", file.name)
+    .limit(1);
+
+  const snapshot = await journalByPathRef.get();
+  return !snapshot.empty;
+}
+
+/**
+ * Processes a single storage file for orphan cleanup.
+ * Returns whether the file was deleted or encountered an error.
+ */
+async function processStorageFile(
+  file: File,
+  existingUserIds: Set<string>,
+  db: FirebaseFirestore.Firestore,
+  onError: () => void
+): Promise<FileProcessResult> {
+  try {
+    const userId = extractUserIdFromPath(file.name);
+    if (!userId) return { deleted: false, error: false };
+
+    // User doesn't exist - delete immediately
+    if (!existingUserIds.has(userId)) {
+      await file.delete();
+      return { deleted: true, error: false };
+    }
+
+    // Check if file is referenced in journal
+    const isReferenced = await isFileReferencedInJournal(file, userId, db);
+    if (isReferenced) return { deleted: false, error: false };
+
+    // File appears orphaned - check age before deleting (7-day safety buffer)
+    const isOldEnough = await isFileOlderThan(file, 7);
+    if (isOldEnough) {
+      await file.delete();
+      return { deleted: true, error: false };
+    }
+
+    return { deleted: false, error: false };
+  } catch (fileError) {
+    onError();
+    const errorType = fileError instanceof Error ? fileError.name : "UnknownError";
+    const structuredLog = {
+      severity: "WARNING",
+      message: "Storage cleanup per-file error",
+      error: { type: errorType },
+      timestamp: new Date().toISOString(),
+    };
+    console.error(JSON.stringify(structuredLog));
+    return { deleted: false, error: true };
+  }
+}
+
+// ============================================================================
+// User Deletion Helpers
+// ============================================================================
+
+/**
+ * Helper: Delete all documents in a subcollection
+ * Uses batched deletes for efficiency
+ */
+async function deleteSubcollection(
+  db: admin.firestore.Firestore,
+  collectionPath: string
+): Promise<number> {
+  let deleted = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const snapshot = await db.collection(collectionPath).limit(500).get();
+
+    if (snapshot.empty) {
+      hasMore = false;
+      break;
+    }
+
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    deleted += snapshot.size;
+    hasMore = snapshot.size === 500;
+  }
+
+  return deleted;
+}
+
+/**
+ * Deletes all storage files for a user.
+ * Non-fatal: logs warning on failure but doesn't throw.
+ */
+async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void> {
+  try {
+    const [files] = await bucket.getFiles({
+      prefix: `user-uploads/${uid}/`,
+    });
+    for (const file of files) {
+      await file.delete();
+    }
+  } catch (storageError) {
+    const errorType = storageError instanceof Error ? storageError.name : "UnknownError";
+    if (errorType !== "NotFoundError") {
+      logSecurityEvent("JOB_WARNING", "hardDeleteSoftDeletedUsers", "Storage cleanup warning", {
+        severity: "WARNING",
+        metadata: { userIdHash: hashUserId(uid), errorType },
+      });
+    }
+  }
+}
+
+/**
+ * Deletes a Firebase Auth account.
+ * Ignores "user-not-found" errors (user may have been deleted already).
+ * Re-throws other errors to prevent orphaned auth accounts.
+ */
+async function deleteUserAuthAccount(uid: string): Promise<void> {
+  try {
+    await admin.auth().deleteUser(uid);
+  } catch (authError) {
+    const errorCode =
+      typeof authError === "object" && authError !== null && "code" in authError
+        ? String((authError as { code?: unknown }).code)
+        : null;
+
+    if (errorCode !== "auth/user-not-found") {
+      throw authError;
+    }
+    logSecurityEvent("JOB_INFO", "hardDeleteSoftDeletedUsers", "Auth account already deleted", {
+      severity: "INFO",
+      metadata: { userIdHash: hashUserId(uid) },
+    });
+  }
+}
+
+/**
+ * Performs complete hard deletion for a single user.
+ * Deletes subcollections, storage files, auth account, and user document.
+ * Note: deleteSubcollection is defined later in this file.
+ */
+async function performHardDeleteForUser(
+  uid: string,
+  db: FirebaseFirestore.Firestore,
+  bucket: Bucket
+): Promise<void> {
+  // 1-3. Delete subcollections
+  await deleteSubcollection(db, `users/${uid}/journal`);
+  await deleteSubcollection(db, `users/${uid}/daily_logs`);
+  await deleteSubcollection(db, `users/${uid}/inventoryEntries`);
+
+  // 4. Delete storage files (non-fatal)
+  await deleteUserStorageFiles(uid, bucket);
+
+  // 5. Delete auth account (fatal if not "user-not-found")
+  await deleteUserAuthAccount(uid);
+
+  // 6. Delete user document (must be last)
+  await db.collection("users").doc(uid).delete();
+
+  logSecurityEvent(
+    "ADMIN_ACTION",
+    "hardDeleteSoftDeletedUsers",
+    "Permanently deleted user after 30-day retention",
+    { severity: "WARNING", metadata: { userIdHash: hashUserId(uid) } }
+  );
+}
 
 /**
  * Job wrapper for status tracking
@@ -223,68 +443,13 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
         pageToken,
       });
 
+      // Process each file using extracted helper
       for (const file of files) {
         checked++;
-
-        try {
-          // Extract userId from file path (user-uploads/{userId}/...)
-          const pathParts = file.name.split("/");
-          if (pathParts.length < 2) continue;
-
-          const userId = pathParts[1];
-          // SECURITY: Validate userId is a non-empty string to prevent malformed path issues
-          if (!userId || typeof userId !== "string") continue;
-
-          // PERFORMANCE: Check if user exists using pre-fetched set (O(1) lookup)
-          if (!existingUserIds.has(userId)) {
-            // User doesn't exist, delete the file
-            await file.delete();
-            deleted++;
-            continue;
-          }
-
-          // Check if file is referenced - use stable storage path reference ONLY
-          // SAFETY: Removed URL substring fallback to prevent accidental deletion
-          // Files without imagePath reference are treated as "unknown" (not deleted)
-          const journalByPathRef = db
-            .collection(`users/${userId}/journal`)
-            .where("data.imagePath", "==", file.name)
-            .limit(1);
-
-          const byPathSnap = await journalByPathRef.get();
-          const isReferenced = !byPathSnap.empty;
-
-          // SAFETY: If we can't conclusively determine the file is orphaned, skip it
-          // Legacy entries without imagePath will be preserved until migrated
-          if (!isReferenced) {
-            // File appears orphaned, check age before deleting (safety buffer)
-            const metadata = await file.getMetadata();
-            const timeCreated = metadata[0].timeCreated;
-            if (!timeCreated) continue;
-
-            const createTime = new Date(timeCreated);
-            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-            if (createTime < sevenDaysAgo) {
-              await file.delete();
-              deleted++;
-            }
-          }
-        } catch (fileError) {
-          // RESILIENCE: Log per-file errors but continue processing other files
+        const result = await processStorageFile(file, existingUserIds, db, () => {
           errors++;
-          // SECURITY: Don't log file.name (contains userId) - log error type and count only
-          // COMPLIANCE: Use structured JSON format for consistent log parsing/monitoring
-          const errorType = fileError instanceof Error ? fileError.name : "UnknownError";
-          const structuredLog = {
-            severity: "WARNING",
-            message: "Storage cleanup per-file error",
-            error: { type: errorType },
-            stats: { totalErrors: errors },
-            timestamp: new Date().toISOString(),
-          };
-          console.error(JSON.stringify(structuredLog));
-        }
+        });
+        if (result.deleted) deleted++;
       }
 
       // SAFETY: Prevent infinite loop if pageToken doesn't change
@@ -656,7 +821,6 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
   errors: number;
 }> {
   const db = admin.firestore();
-  // PORTABILITY: Use default bucket instead of hardcoded name for environment flexibility
   const bucket = admin.storage().bucket();
   const now = admin.firestore.Timestamp.now();
 
@@ -665,12 +829,10 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
   let errors = 0;
 
   // COMPLETENESS: Process in batches with cursor-based pagination
-  // STABILITY: Use startAfter to avoid infinite loops if deletion fails
   let lastDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
 
   while (true) {
     // Find users scheduled for hard deletion (past their 30-day window)
-    // STABILITY: orderBy for deterministic pagination + startAfter for cursor
     let query = db
       .collection("users")
       .where("isSoftDeleted", "==", true)
@@ -683,96 +845,19 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
     }
 
     const snapshot = await query.get();
+    if (snapshot.empty) break;
 
-    if (snapshot.empty) {
-      break;
-    }
-
+    // Process each user using extracted helper
     for (const userDoc of snapshot.docs) {
       const uid = userDoc.id;
       processed++;
 
       try {
-        // 1. Delete subcollection: journal
-        await deleteSubcollection(db, `users/${uid}/journal`);
-
-        // 2. Delete subcollection: daily_logs
-        await deleteSubcollection(db, `users/${uid}/daily_logs`);
-
-        // 3. Delete subcollection: inventoryEntries
-        await deleteSubcollection(db, `users/${uid}/inventoryEntries`);
-
-        // 4. Delete storage files
-        try {
-          const [files] = await bucket.getFiles({
-            prefix: `user-uploads/${uid}/`,
-          });
-          for (const file of files) {
-            await file.delete();
-          }
-        } catch (storageError) {
-          // Storage errors are non-fatal - user may have no files
-          const errorType = storageError instanceof Error ? storageError.name : "UnknownError";
-          if (errorType !== "NotFoundError") {
-            // STRUCTURED LOGGING: Use logSecurityEvent instead of console.warn
-            logSecurityEvent(
-              "JOB_WARNING",
-              "hardDeleteSoftDeletedUsers",
-              "Storage cleanup warning",
-              {
-                severity: "WARNING",
-                metadata: { userIdHash: hashUserId(uid), errorType },
-              }
-            );
-          }
-        }
-
-        // 5. Delete Firebase Auth account
-        // SAFETY: Only ignore "user-not-found" - other errors should prevent Firestore deletion
-        try {
-          await admin.auth().deleteUser(uid);
-        } catch (authError) {
-          const errorCode =
-            typeof authError === "object" && authError !== null && "code" in authError
-              ? String((authError as { code?: unknown }).code)
-              : null;
-
-          // Only ignore "user-not-found" - user may have been deleted already
-          if (errorCode !== "auth/user-not-found") {
-            // Re-throw to prevent orphaned auth accounts
-            throw authError;
-          }
-          // Log the expected case for audit trail
-          logSecurityEvent(
-            "JOB_INFO",
-            "hardDeleteSoftDeletedUsers",
-            "Auth account already deleted",
-            {
-              severity: "INFO",
-              metadata: { userIdHash: hashUserId(uid) },
-            }
-          );
-        }
-
-        // 6. Delete user document (must be last)
-        await db.collection("users").doc(uid).delete();
-
+        await performHardDeleteForUser(uid, db, bucket);
         deleted++;
-
-        // AUDIT: Log successful permanent deletion
-        logSecurityEvent(
-          "ADMIN_ACTION",
-          "hardDeleteSoftDeletedUsers",
-          "Permanently deleted user after 30-day retention",
-          {
-            severity: "WARNING",
-            metadata: { userIdHash: hashUserId(uid) },
-          }
-        );
       } catch (error) {
         errors++;
         const errorMessage = error instanceof Error ? error.message : String(error);
-
         logSecurityEvent(
           "JOB_FAILURE",
           "hardDeleteSoftDeletedUsers",
@@ -788,54 +873,17 @@ export async function hardDeleteSoftDeletedUsers(): Promise<{
 
     // CURSOR PAGINATION: Update cursor for next batch
     lastDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
-
-    // If we got fewer than 50, we're done
-    if (snapshot.size < 50) {
-      break;
-    }
+    if (snapshot.size < 50) break;
   }
 
   logSecurityEvent(
     "JOB_SUCCESS",
     "hardDeleteSoftDeletedUsers",
     `Hard deletion complete: ${deleted} deleted, ${errors} errors`,
-    {
-      severity: "INFO",
-      metadata: { processed, deleted, errors },
-    }
+    { severity: "INFO", metadata: { processed, deleted, errors } }
   );
 
   return { processed, deleted, errors };
-}
-
-/**
- * Helper: Delete all documents in a subcollection
- * Uses batched deletes for efficiency
- */
-async function deleteSubcollection(
-  db: admin.firestore.Firestore,
-  collectionPath: string
-): Promise<number> {
-  let deleted = 0;
-  let hasMore = true;
-
-  while (hasMore) {
-    const snapshot = await db.collection(collectionPath).limit(500).get();
-
-    if (snapshot.empty) {
-      hasMore = false;
-      break;
-    }
-
-    const batch = db.batch();
-    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
-    await batch.commit();
-
-    deleted += snapshot.size;
-    hasMore = snapshot.size === 500;
-  }
-
-  return deleted;
 }
 
 export const scheduledHardDeleteSoftDeletedUsers = onSchedule(

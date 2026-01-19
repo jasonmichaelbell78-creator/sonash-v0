@@ -134,30 +134,38 @@ const createServerGuard = <T extends object>(name: string): T => {
 // Exports with SSR safety
 // In browser: real Firebase instances
 // On server: proxy objects that throw helpful errors instead of crashing silently
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-
-if (typeof window !== "undefined") {
-  // Client-side: use real Firebase instances
-  try {
-    const firebase = getFirebase();
-    app = firebase.app;
-    auth = firebase.auth;
-    db = firebase.db;
-  } catch (e) {
-    // If getFirebase fails on client (shouldn't happen), create guards
-    console.error("Firebase initialization failed on client:", e);
-    app = createServerGuard<FirebaseApp>("app");
-    auth = createServerGuard<Auth>("auth");
-    db = createServerGuard<Firestore>("db");
+function initializeFirebaseExports(): {
+  app: FirebaseApp;
+  auth: Auth;
+  db: Firestore;
+} {
+  if (typeof window !== "undefined") {
+    // Client-side: use real Firebase instances
+    try {
+      const firebase = getFirebase();
+      return {
+        app: firebase.app,
+        auth: firebase.auth,
+        db: firebase.db,
+      };
+    } catch (e) {
+      // If getFirebase fails on client (shouldn't happen), create guards
+      console.error("Firebase initialization failed on client:", e);
+      return {
+        app: createServerGuard<FirebaseApp>("app"),
+        auth: createServerGuard<Auth>("auth"),
+        db: createServerGuard<Firestore>("db"),
+      };
+    }
   }
-} else {
   // Server-side: provide helpful error proxies instead of undefined
   // This prevents "Cannot read property X of undefined" crashes
-  app = createServerGuard<FirebaseApp>("app");
-  auth = createServerGuard<Auth>("auth");
-  db = createServerGuard<Firestore>("db");
+  return {
+    app: createServerGuard<FirebaseApp>("app"),
+    auth: createServerGuard<Auth>("auth"),
+    db: createServerGuard<Firestore>("db"),
+  };
 }
 
+const { app, auth, db } = initializeFirebaseExports();
 export { app, auth, db };

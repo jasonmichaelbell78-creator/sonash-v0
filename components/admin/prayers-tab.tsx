@@ -72,7 +72,7 @@ export default function PrayersTab() {
   useTabRefresh("prayers", loadPrayers, { skipInitial: true });
 
   useEffect(() => {
-    void loadPrayers();
+    loadPrayers();
   }, [loadPrayers]);
 
   function handleEdit(prayer: Prayer) {
@@ -118,7 +118,7 @@ export default function PrayersTab() {
       toast.error("Failed to save prayer");
     } finally {
       setDialogOpen(false);
-      void loadPrayers();
+      loadPrayers();
     }
   }
 
@@ -132,7 +132,7 @@ export default function PrayersTab() {
       logger.error("Failed to delete prayer", { error, prayerId: id });
       toast.error("Failed to delete prayer");
     } finally {
-      void loadPrayers();
+      loadPrayers();
     }
   }
 
@@ -144,7 +144,7 @@ export default function PrayersTab() {
       logger.error("Failed to update prayer", { error, prayerId: id });
       toast.error("Failed to update prayer");
     } finally {
-      void loadPrayers();
+      loadPrayers();
     }
   }
 
