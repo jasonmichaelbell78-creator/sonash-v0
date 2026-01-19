@@ -43,6 +43,96 @@ const ALT_ID_PATTERNS = [
   { pattern: /^CANON-P-\d{3}$/, name: "Process (CANON-P-XXX)" },
 ];
 
+/**
+ * Detect alternative ID format for better error messages
+ */
+function detectAltIdFormat(id) {
+  for (const alt of ALT_ID_PATTERNS) {
+    if (alt.pattern.test(id)) return alt.name;
+  }
+  return "Unknown";
+}
+
+/**
+ * Validate canonical_id format
+ */
+function validateIdFormat(finding, lineNum, result) {
+  if (!finding.canonical_id) return;
+  if (CANON_ID_REGEX.test(finding.canonical_id)) return;
+
+  const altFormat = detectAltIdFormat(finding.canonical_id);
+  result.addError(
+    lineNum,
+    "canonical_id",
+    `Invalid ID format: "${finding.canonical_id}" (detected: ${altFormat}, expected: CANON-XXXX)`
+  );
+}
+
+/**
+ * Validate an enum field against allowed values
+ */
+function validateEnumField(finding, lineNum, result, field, validValues, isError = true) {
+  if (!finding[field]) return;
+  if (validValues.includes(finding[field])) return;
+
+  const message = `Invalid ${field}: "${finding[field]}" (expected: ${validValues.join(", ")})`;
+  if (isError) {
+    result.addError(lineNum, field, message);
+  } else {
+    result.addWarning(lineNum, field, message.replace("Invalid", "Non-standard"));
+  }
+}
+
+/**
+ * Track field coverage for compliance calculation
+ */
+function trackFieldCoverage(finding, result, allFields) {
+  for (const field of allFields) {
+    if (!(field in result.fieldCoverage)) {
+      result.fieldCoverage[field] = 0;
+    }
+    if (field in finding) {
+      result.fieldCoverage[field]++;
+    }
+  }
+}
+
+/**
+ * Validate confidence field range
+ */
+function validateConfidence(finding, lineNum, result) {
+  if (!("confidence" in finding) && !("final_confidence" in finding)) return;
+
+  const conf = finding.confidence ?? finding.final_confidence;
+  if (typeof conf === "number" && (conf < 0 || conf > 100)) {
+    result.addWarning(lineNum, "confidence", `Confidence out of range: ${conf} (expected: 0-100)`);
+  }
+}
+
+/**
+ * Validate consensus field format
+ */
+function validateConsensus(finding, lineNum, result) {
+  if ("consensus_score" in finding && typeof finding.consensus_score !== "number") {
+    result.addWarning(
+      lineNum,
+      "consensus_score",
+      `consensus_score should be number, got: ${typeof finding.consensus_score}`
+    );
+  }
+  if (
+    "consensus" in finding &&
+    typeof finding.consensus === "string" &&
+    finding.consensus.includes("/")
+  ) {
+    result.addWarning(
+      lineNum,
+      "consensus",
+      `consensus as string "X/Y" should be normalized to number`
+    );
+  }
+}
+
 class ValidationResult {
   constructor(filename) {
     this.filename = filename;
@@ -93,96 +183,22 @@ function validateFinding(finding, lineNum, result) {
   }
 
   // Track field coverage
-  for (const field of [...REQUIRED_FIELDS, ...RECOMMENDED_FIELDS]) {
-    if (!(field in result.fieldCoverage)) {
-      result.fieldCoverage[field] = 0;
-    }
-    if (field in finding) {
-      result.fieldCoverage[field]++;
-    }
-  }
+  trackFieldCoverage(finding, result, [...REQUIRED_FIELDS, ...RECOMMENDED_FIELDS]);
 
-  // Validate canonical_id format
-  if (finding.canonical_id) {
-    if (!CANON_ID_REGEX.test(finding.canonical_id)) {
-      let altFormat = "Unknown";
-      for (const alt of ALT_ID_PATTERNS) {
-        if (alt.pattern.test(finding.canonical_id)) {
-          altFormat = alt.name;
-          break;
-        }
-      }
-      result.addError(
-        lineNum,
-        "canonical_id",
-        `Invalid ID format: "${finding.canonical_id}" (detected: ${altFormat}, expected: CANON-XXXX)`
-      );
-    }
-  }
-
-  // Validate severity
-  if (finding.severity && !VALID_SEVERITY.includes(finding.severity)) {
-    result.addError(
-      lineNum,
-      "severity",
-      `Invalid severity: "${finding.severity}" (expected: ${VALID_SEVERITY.join(", ")})`
-    );
-  }
-
-  // Validate effort
-  if (finding.effort && !VALID_EFFORT.includes(finding.effort)) {
-    result.addError(
-      lineNum,
-      "effort",
-      `Invalid effort: "${finding.effort}" (expected: ${VALID_EFFORT.join(", ")})`
-    );
-  }
-
-  // Validate status if present
-  if (finding.status && !VALID_STATUS.includes(finding.status)) {
-    result.addWarning(
-      lineNum,
-      "status",
-      `Non-standard status: "${finding.status}" (expected: ${VALID_STATUS.join(", ")})`
-    );
-  }
+  // Validate specific fields using helpers
+  validateIdFormat(finding, lineNum, result);
+  validateEnumField(finding, lineNum, result, "severity", VALID_SEVERITY, true);
+  validateEnumField(finding, lineNum, result, "effort", VALID_EFFORT, true);
+  validateEnumField(finding, lineNum, result, "status", VALID_STATUS, false);
 
   // Validate files is array
   if (finding.files && !Array.isArray(finding.files)) {
     result.addError(lineNum, "files", `"files" must be an array, got: ${typeof finding.files}`);
   }
 
-  // Validate confidence range
-  if ("confidence" in finding || "final_confidence" in finding) {
-    const conf = finding.confidence ?? finding.final_confidence;
-    if (typeof conf === "number" && (conf < 0 || conf > 100)) {
-      result.addWarning(
-        lineNum,
-        "confidence",
-        `Confidence out of range: ${conf} (expected: 0-100)`
-      );
-    }
-  }
-
-  // Check for consensus field variations
-  if ("consensus_score" in finding && typeof finding.consensus_score !== "number") {
-    result.addWarning(
-      lineNum,
-      "consensus_score",
-      `consensus_score should be number, got: ${typeof finding.consensus_score}`
-    );
-  }
-  if (
-    "consensus" in finding &&
-    typeof finding.consensus === "string" &&
-    finding.consensus.includes("/")
-  ) {
-    result.addWarning(
-      lineNum,
-      "consensus",
-      `consensus as string "X/Y" should be normalized to number`
-    );
-  }
+  // Validate numeric fields
+  validateConfidence(finding, lineNum, result);
+  validateConsensus(finding, lineNum, result);
 }
 
 function validateFile(filepath) {
@@ -305,14 +321,37 @@ function printSummary(results) {
   }
 }
 
-function main() {
-  const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
-
-  if (args.length === 0) {
-    // Default: validate all CANON files in docs/reviews/*/canonical/
-    args.push("docs/reviews");
+/**
+ * Recursively find CANON-*.jsonl files in a directory
+ */
+function findCanonFilesRecursive(dir, files) {
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch (err) {
+    console.error(`Error reading directory ${dir}: ${err.message}`);
+    return;
   }
 
+  for (const entry of entries) {
+    const fullPath = join(dir, entry);
+    try {
+      const entryStat = statSync(fullPath);
+      if (entryStat.isDirectory()) {
+        findCanonFilesRecursive(fullPath, files);
+      } else if (entry.startsWith("CANON-") && entry.endsWith(".jsonl")) {
+        files.push(fullPath);
+      }
+    } catch (err) {
+      console.error(`Error accessing path ${fullPath}: ${err.message}`);
+    }
+  }
+}
+
+/**
+ * Collect files from argument paths
+ */
+function collectFilesFromArgs(args) {
   const files = [];
 
   for (const arg of args) {
@@ -330,35 +369,23 @@ function main() {
     }
 
     if (stat.isDirectory()) {
-      // Recursively find CANON-*.jsonl files
-      const findCanonFiles = (dir) => {
-        let entries;
-        try {
-          entries = readdirSync(dir);
-        } catch (err) {
-          console.error(`Error reading directory ${dir}: ${err.message}`);
-          return;
-        }
-
-        for (const entry of entries) {
-          const fullPath = join(dir, entry);
-          try {
-            const entryStat = statSync(fullPath);
-            if (entryStat.isDirectory()) {
-              findCanonFiles(fullPath);
-            } else if (entry.startsWith("CANON-") && entry.endsWith(".jsonl")) {
-              files.push(fullPath);
-            }
-          } catch (err) {
-            console.error(`Error accessing path ${fullPath}: ${err.message}`);
-          }
-        }
-      };
-      findCanonFiles(arg);
+      findCanonFilesRecursive(arg, files);
     } else if (arg.endsWith(".jsonl")) {
       files.push(arg);
     }
   }
+
+  return files;
+}
+
+function main() {
+  const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+
+  if (args.length === 0) {
+    args.push("docs/reviews");
+  }
+
+  const files = collectFilesFromArgs(args);
 
   if (files.length === 0) {
     console.log("No CANON-*.jsonl files found.");

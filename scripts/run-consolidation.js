@@ -407,55 +407,142 @@ function generatePatternSuggestions(recurringPatterns, categories) {
 }
 
 /**
+ * Output consolidation analysis results
+ */
+function outputAnalysisResults(report, recurringPatterns, categories) {
+  if (!quiet || verbose) {
+    console.log(report);
+  }
+
+  if (recurringPatterns.length > 0 && (!quiet || verbose)) {
+    console.log(generatePatternSuggestions(recurringPatterns, categories));
+  }
+}
+
+/**
+ * Apply consolidation changes to files
+ */
+function applyConsolidationChanges(content, reviews, recurringPatterns) {
+  log(`\n${colors.bold}Applying consolidation...${colors.reset}`, colors.green);
+
+  // Calculate next review number
+  const maxReviewNum = Math.max(...reviews.map((r) => r.number));
+  const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
+
+  // Update log file
+  const updatedContent = updateConsolidationCounter(content, 0, nextConsolidationReview);
+  writeFileSync(LOG_FILE, updatedContent, "utf8");
+  log(`  ✅ Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md`, colors.green);
+  log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
+
+  // Output summary based on mode
+  if (autoMode) {
+    console.log(
+      `   ✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`
+    );
+  } else {
+    outputManualSteps();
+  }
+}
+
+/**
+ * Output manual steps for non-auto mode
+ */
+function outputManualSteps() {
+  log("");
+  log(`${colors.bold}📋 Manual steps required:${colors.reset}`);
+  log("  1. Review the suggested patterns above");
+  log("  2. Add relevant patterns to docs/agent_docs/CODE_PATTERNS.md");
+  log("  3. Add critical patterns (top 5) to claude.md Section 4");
+  log("  4. Run: npm run patterns:suggest (for automatable patterns)");
+  log("  5. Commit with message: 'chore: consolidate Reviews #X-#Y patterns'");
+  log("");
+}
+
+/**
+ * Output dry run message
+ */
+function outputDryRunMessage() {
+  log("");
+  log(
+    `${colors.yellow}Dry run complete. Use --apply to reset counter and begin consolidation.${colors.reset}`
+  );
+  log(`  npm run consolidation:run -- --apply`);
+  log("");
+}
+
+/**
+ * Read and validate log file
+ */
+function readLogFile() {
+  if (!existsSync(LOG_FILE)) {
+    log("❌ AI_REVIEW_LEARNINGS_LOG.md not found", colors.red);
+    return null;
+  }
+
+  try {
+    return readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+  } catch (readError) {
+    const message = readError instanceof Error ? readError.message : String(readError);
+    log(`❌ Failed to read AI_REVIEW_LEARNINGS_LOG.md: ${message}`, colors.red);
+    return null;
+  }
+}
+
+/**
+ * Output current consolidation status
+ */
+function outputConsolidationStatus(status) {
+  log(`Current status:`);
+  log(`  Reviews since consolidation: ${status.reviewCount}`);
+  log(`  Threshold: ${CONSOLIDATION_THRESHOLD}`);
+  log(`  Last consolidation: ${status.lastConsolidation}`);
+  log("");
+}
+
+/**
+ * Check if consolidation is needed
+ * Returns true if consolidation should proceed
+ */
+function checkConsolidationNeeded(status) {
+  if (status.reviewCount < CONSOLIDATION_THRESHOLD) {
+    if (!autoMode) {
+      log(
+        `✅ No consolidation needed (${CONSOLIDATION_THRESHOLD - status.reviewCount} reviews until next)`,
+        colors.green
+      );
+    }
+    return false;
+  }
+
+  log(`⚠️  Consolidation triggered: ${status.reviewCount} reviews pending`, colors.yellow);
+  log("");
+  return true;
+}
+
+/**
  * Main consolidation function
  */
 function main() {
   try {
     log(`\n${colors.bold}🔄 Pattern Consolidation Tool${colors.reset}\n`);
 
-    // Check files exist
-    if (!existsSync(LOG_FILE)) {
-      log("❌ AI_REVIEW_LEARNINGS_LOG.md not found", colors.red);
+    // Read log file
+    const content = readLogFile();
+    if (!content) {
       process.exitCode = 2;
       return;
     }
 
-    // Read log content with explicit try/catch for race conditions (Review #158)
-    let content;
-    try {
-      content = readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
-    } catch (readError) {
-      const message = readError instanceof Error ? readError.message : String(readError);
-      log(`❌ Failed to read AI_REVIEW_LEARNINGS_LOG.md: ${message}`, colors.red);
-      process.exitCode = 2;
-      return;
-    }
-
-    // Get consolidation status
+    // Get and output status
     const status = getConsolidationStatus(content);
-    log(`Current status:`);
-    log(`  Reviews since consolidation: ${status.reviewCount}`);
-    log(`  Threshold: ${CONSOLIDATION_THRESHOLD}`);
-    log(`  Last consolidation: ${status.lastConsolidation}`);
-    log("");
+    outputConsolidationStatus(status);
 
     // Check if consolidation is needed
-    if (status.reviewCount < CONSOLIDATION_THRESHOLD) {
-      if (autoMode) {
-        // Silent exit in auto mode when no consolidation needed
-        process.exitCode = 0;
-        return;
-      }
-      log(
-        `✅ No consolidation needed (${CONSOLIDATION_THRESHOLD - status.reviewCount} reviews until next)`,
-        colors.green
-      );
+    if (!checkConsolidationNeeded(status)) {
       process.exitCode = 0;
       return;
     }
-
-    log(`⚠️  Consolidation triggered: ${status.reviewCount} reviews pending`, colors.yellow);
-    log("");
 
     // Extract reviews since last consolidation
     const reviews = extractRecentReviews(content, status.lastReviewNum);
@@ -472,54 +559,15 @@ function main() {
     const categories = categorizePatterns(patterns);
     const { report, recurringPatterns } = generateReport(reviews, patterns, categories);
 
-    // Print report (respect quiet mode - Review #159)
-    if (!quiet || verbose) {
-      console.log(report);
-    }
+    // Output analysis results
+    outputAnalysisResults(report, recurringPatterns, categories);
 
-    // Generate suggestions (respect quiet mode - Review #159)
-    if (recurringPatterns.length > 0 && (!quiet || verbose)) {
-      console.log(generatePatternSuggestions(recurringPatterns, categories));
-    }
-
-    // Apply changes if requested
+    // Apply changes if requested, otherwise show dry run message
     if (applyChanges) {
-      log(`\n${colors.bold}Applying consolidation...${colors.reset}`, colors.green);
-
-      // Calculate next review number
-      const maxReviewNum = Math.max(...reviews.map((r) => r.number));
-      const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
-
-      // Update log file
-      const updatedContent = updateConsolidationCounter(content, 0, nextConsolidationReview);
-      writeFileSync(LOG_FILE, updatedContent, "utf8");
-      log(`  ✅ Reset consolidation counter in AI_REVIEW_LEARNINGS_LOG.md`, colors.green);
-      log(`  ✅ Next consolidation due after Review #${nextConsolidationReview}`, colors.green);
-
-      // In auto mode, output a brief summary (always shown)
-      if (autoMode) {
-        console.log(
-          `   ✓ Auto-consolidated ${reviews.length} reviews (patterns: ${recurringPatterns.length})`
-        );
-      } else {
-        log("");
-        log(`${colors.bold}📋 Manual steps required:${colors.reset}`);
-        log("  1. Review the suggested patterns above");
-        log("  2. Add relevant patterns to docs/agent_docs/CODE_PATTERNS.md");
-        log("  3. Add critical patterns (top 5) to claude.md Section 4");
-        log("  4. Run: npm run patterns:suggest (for automatable patterns)");
-        log("  5. Commit with message: 'chore: consolidate Reviews #X-#Y patterns'");
-        log("");
-      }
-
+      applyConsolidationChanges(content, reviews, recurringPatterns);
       process.exitCode = 0;
     } else {
-      log("");
-      log(
-        `${colors.yellow}Dry run complete. Use --apply to reset counter and begin consolidation.${colors.reset}`
-      );
-      log(`  npm run consolidation:run -- --apply`);
-      log("");
+      outputDryRunMessage();
       process.exitCode = 1;
     }
   } catch (err) {
