@@ -36,27 +36,208 @@ const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
   ),
 });
 
-// Helper to parse time string like "6:00 PM" or "18:00" to minutes since midnight
+/**
+ * Handle time jump to scroll to a meeting
+ */
+function scrollToMeetingByTime(
+  timeStr: string,
+  filteredMeetings: Meeting[],
+  parseTimeFn: (t: string) => number
+): void {
+  if (!timeStr) return;
+
+  const targetMinutes = parseTimeFn(timeStr);
+  const targetMeeting = filteredMeetings.find((m) => parseTimeFn(m.time) >= targetMinutes);
+
+  if (targetMeeting) {
+    const element = document.getElementById(`meeting-${targetMeeting.id}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast.success(`Jumped to ${timeStr}`);
+    } else {
+      toast("Meeting not visible in current list.");
+    }
+  } else {
+    toast("No meetings found after " + timeStr);
+  }
+}
+
+/**
+ * Loading state display
+ */
+function LoadingState() {
+  return (
+    <div className="flex items-center gap-2 text-amber-900/40 italic justify-center py-12">
+      <Loader2 className="w-5 h-5 animate-spin" />
+      <p>Loading meetings...</p>
+    </div>
+  );
+}
+
+/**
+ * Empty state when no meetings match filters
+ */
+function EmptyState({
+  fellowshipFilter,
+  onClearFilters,
+}: {
+  fellowshipFilter: FellowshipFilter;
+  onClearFilters: () => void;
+}) {
+  return (
+    <div className="p-8 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
+      <p className="text-amber-900/60 mb-3">
+        No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found.
+      </p>
+      <button
+        onClick={onClearFilters}
+        className="text-sm text-amber-700 font-medium hover:underline"
+      >
+        Clear all filters
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Load more meetings section
+ */
+function LoadMoreSection({
+  viewMode,
+  loading,
+  isLoadingMore,
+  hasMore,
+  meetingsCount,
+  onLoadMore,
+}: {
+  viewMode: "date" | "all";
+  loading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  meetingsCount: number;
+  onLoadMore: () => void;
+}) {
+  if (viewMode !== "all" || loading) return null;
+
+  if (isLoadingMore) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-4 text-amber-900/60">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        <span className="text-sm">Loading more meetings...</span>
+      </div>
+    );
+  }
+
+  if (hasMore) {
+    return (
+      <button
+        onClick={onLoadMore}
+        className="w-full py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-medium text-sm transition-colors border border-amber-200"
+      >
+        Load More Meetings ({meetingsCount} loaded)
+      </button>
+    );
+  }
+
+  if (meetingsCount > 0) {
+    return (
+      <div className="text-center py-4 text-xs text-amber-900/40 italic">
+        All meetings loaded ({meetingsCount} total)
+      </div>
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Meeting card component for list display
+ */
+function MeetingCard({
+  meeting,
+  distance,
+  viewMode,
+  onClick,
+}: {
+  meeting: Meeting;
+  distance: string | null;
+  viewMode: "date" | "all";
+  onClick: () => void;
+}) {
+  const typeStyles =
+    meeting.type === "NA"
+      ? "border-amber-500 text-amber-700 bg-amber-50"
+      : "border-blue-400 text-blue-700 bg-blue-50";
+
+  return (
+    <button
+      id={`meeting-${meeting.id}`}
+      onClick={onClick}
+      className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
+    >
+      <div
+        className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${typeStyles}`}
+      >
+        {meeting.type}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-heading text-sm text-amber-900 truncate font-semibold">
+            {meeting.name}
+          </span>
+          <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+            {meeting.time}
+          </span>
+        </div>
+        <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
+          {viewMode === "all" && (
+            <span className="font-medium text-amber-700">{meeting.day.substring(0, 3)} • </span>
+          )}
+          <MapPin className="w-3 h-3" /> {meeting.neighborhood}
+        </p>
+      </div>
+      {distance && (
+        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
+          {distance}
+        </span>
+      )}
+    </button>
+  );
+}
+
+/**
+ * Parse 12-hour time format (e.g., "6:00 PM") to minutes since midnight
+ */
+function parse12HourTime(timeStr: string): number | null {
+  const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!match) return null;
+
+  const [, hours, minutes, meridiem] = match;
+  let h = parseInt(hours);
+  const m = parseInt(minutes);
+
+  if (meridiem.toUpperCase() === "PM" && h !== 12) h += 12;
+  if (meridiem.toUpperCase() === "AM" && h === 12) h = 0;
+
+  return h * 60 + m;
+}
+
+/**
+ * Parse 24-hour time format (e.g., "18:00") to minutes since midnight
+ */
+function parse24HourTime(timeStr: string): number | null {
+  const match = timeStr.match(/(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+
+  const [, hours, minutes] = match;
+  return parseInt(hours) * 60 + parseInt(minutes);
+}
+
+/**
+ * Parse time string like "6:00 PM" or "18:00" to minutes since midnight
+ */
 function parseTime(timeStr: string): number {
-  // Try 12-hour format first (e.g., "6:00 PM")
-  const match12h = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
-  if (match12h) {
-    const [, hours, minutes, meridiem] = match12h;
-    let h = parseInt(hours);
-    const m = parseInt(minutes);
-    if (meridiem.toUpperCase() === "PM" && h !== 12) h += 12;
-    if (meridiem.toUpperCase() === "AM" && h === 12) h = 0;
-    return h * 60 + m;
-  }
-
-  // Try 24-hour format (e.g., "18:00" or "6:00")
-  const match24h = timeStr.match(/(\d{1,2}):(\d{2})/);
-  if (match24h) {
-    const [, hours, minutes] = match24h;
-    return parseInt(hours) * 60 + parseInt(minutes);
-  }
-
-  return 0;
+  return parse12HourTime(timeStr) ?? parse24HourTime(timeStr) ?? 0;
 }
 
 export default function AllMeetingsPage() {
@@ -184,21 +365,7 @@ export default function AllMeetingsPage() {
   };
 
   const handleTimeJump = (timeStr: string) => {
-    if (!timeStr) return;
-    const targetMinutes = parseTime(timeStr);
-    const targetMeeting = filteredMeetings.find((m) => parseTime(m.time) >= targetMinutes);
-
-    if (targetMeeting) {
-      const element = document.getElementById(`meeting-${targetMeeting.id}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        toast.success(`Jumped to ${timeStr}`);
-      } else {
-        toast("Meeting not visible in current list.");
-      }
-    } else {
-      toast("No meetings found after " + timeStr);
-    }
+    scrollToMeetingByTime(timeStr, filteredMeetings, parseTime);
   };
 
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
@@ -356,25 +523,15 @@ export default function AllMeetingsPage() {
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-6">
         {loading ? (
-          <div className="flex items-center gap-2 text-amber-900/40 italic justify-center py-12">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <p>Loading meetings...</p>
-          </div>
+          <LoadingState />
         ) : filteredMeetings.length === 0 ? (
-          <div className="p-8 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
-            <p className="text-amber-900/60 mb-3">
-              No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found.
-            </p>
-            <button
-              onClick={() => {
-                setFellowshipFilter("All");
-                setNeighborhoodFilter("All");
-              }}
-              className="text-sm text-amber-700 font-medium hover:underline"
-            >
-              Clear all filters
-            </button>
-          </div>
+          <EmptyState
+            fellowshipFilter={fellowshipFilter}
+            onClearFilters={() => {
+              setFellowshipFilter("All");
+              setNeighborhoodFilter("All");
+            }}
+          />
         ) : displayMode === "map" ? (
           <div className="animate-in fade-in zoom-in-95 duration-300">
             <div className="mb-3 text-center">
@@ -392,71 +549,25 @@ export default function AllMeetingsPage() {
               </span>
             </div>
 
-            {filteredMeetings.map((meeting) => {
-              const distance = getMeetingDistance(meeting);
-              return (
-                <button
-                  key={meeting.id}
-                  id={`meeting-${meeting.id}`}
-                  onClick={() => setSelectedMeeting(meeting)}
-                  className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${meeting.type === "NA" ? "border-amber-500 text-amber-700 bg-amber-50" : "border-blue-400 text-blue-700 bg-blue-50"}`}
-                  >
-                    {meeting.type}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-heading text-sm text-amber-900 truncate font-semibold">
-                        {meeting.name}
-                      </span>
-                      <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                        {meeting.time}
-                      </span>
-                    </div>
-                    <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
-                      {viewMode === "all" && (
-                        <span className="font-medium text-amber-700">
-                          {meeting.day.substring(0, 3)} •{" "}
-                        </span>
-                      )}
-                      <MapPin className="w-3 h-3" /> {meeting.neighborhood}
-                    </p>
-                  </div>
-                  {distance && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
-                      {distance}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+            {filteredMeetings.map((meeting) => (
+              <MeetingCard
+                key={meeting.id}
+                meeting={meeting}
+                distance={getMeetingDistance(meeting)}
+                viewMode={viewMode}
+                onClick={() => setSelectedMeeting(meeting)}
+              />
+            ))}
 
             {/* Load More */}
-            {viewMode === "all" && !loading && (
-              <>
-                {isLoadingMore && (
-                  <div className="flex items-center justify-center gap-2 py-4 text-amber-900/60">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-sm">Loading more meetings...</span>
-                  </div>
-                )}
-                {hasMore && !isLoadingMore && (
-                  <button
-                    onClick={loadMoreMeetings}
-                    className="w-full py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg font-medium text-sm transition-colors border border-amber-200"
-                  >
-                    Load More Meetings ({meetings.length} loaded)
-                  </button>
-                )}
-                {!hasMore && meetings.length > 0 && (
-                  <div className="text-center py-4 text-xs text-amber-900/40 italic">
-                    All meetings loaded ({meetings.length} total)
-                  </div>
-                )}
-              </>
-            )}
+            <LoadMoreSection
+              viewMode={viewMode}
+              loading={loading}
+              isLoadingMore={isLoadingMore}
+              hasMore={hasMore}
+              meetingsCount={meetings.length}
+              onLoadMore={loadMoreMeetings}
+            />
           </div>
         )}
       </div>
