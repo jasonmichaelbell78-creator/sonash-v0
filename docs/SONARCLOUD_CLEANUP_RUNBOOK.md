@@ -250,7 +250,28 @@ See PR checks for New Code analysis.
 3. Click "Details" on SonarCloud status check
 4. Review "New Code" tab for improvements
 
-### 6.3 Update Documentation
+### 6.3 Create Analysis Snapshot
+
+Before starting fixes, create a snapshot for tracking progress:
+
+```bash
+# Create snapshot directory
+mkdir -p docs/audits/sonarcloud-snapshots
+
+# Create dated snapshot file
+# Include: Quality Gate status, all issues by rule, all hotspots by category
+# See existing snapshots for format: docs/audits/sonarcloud-snapshots/
+```
+
+Snapshot should include:
+
+- Quality Gate status and metrics
+- All CRITICAL/BLOCKER issues with file:line
+- All Security Hotspots grouped by probability
+- Issues checklist for tracking fixes
+- Estimated effort per batch
+
+### 6.4 Update Documentation
 
 After merge:
 
@@ -258,10 +279,8 @@ After merge:
 # Update triage document with new baseline
 # docs/SONARCLOUD_TRIAGE.md - update counts
 
-# Archive snapshot for comparison
-mkdir -p docs/audits/sonarcloud-snapshots
-echo "Date: $(date)" > docs/audits/sonarcloud-snapshots/$(date +%Y%m%d).md
-echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%d).md
+# Create post-sprint snapshot for comparison
+# Compare issue counts: before vs after
 ```
 
 ---

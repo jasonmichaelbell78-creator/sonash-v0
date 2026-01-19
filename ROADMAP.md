@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.11
-**Last Updated:** 2026-01-17
+**Document Version:** 2.15
+**Last Updated:** 2026-01-19
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -158,7 +158,23 @@ Planned | 🟣 Research
 > **Spec:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > **Goal:** Full operational visibility via Admin Panel + Development Dashboard
-> **Status:** 🔄 In Progress | **Started:** 2026-01-14 | **Updated:** 2026-01-16
+> **Status:** ⏸️ BLOCKED | **Started:** 2026-01-14 | **Updated:** 2026-01-19
+
+> **🚨 BLOCKER: SonarCloud Cleanup Sprint**
+>
+> Before resuming feature development, ALL 1,213 SonarCloud issues must be
+> resolved to achieve a passing Quality Gate.
+>
+> - **Plan:**
+>   [.claude/plans/sonarcloud-cleanup-sprint.md](.claude/plans/sonarcloud-cleanup-sprint.md)
+> - **Snapshot:**
+>   [docs/audits/sonarcloud-snapshots/20260119-full.md](docs/audits/sonarcloud-snapshots/20260119-full.md)
+> - **Issues:** 1,116 code issues (93 CRITICAL, 304 MAJOR, 719 MINOR) + 97
+>   security hotspots
+> - **Structure:** 5 PRs (one per phase)
+> - **Estimated Effort:** ~52 hours
+> - **Runbook:**
+>   [docs/SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)
 
 This sprint consolidates Admin Panel Phases 4-5 and Development Dashboard
 creation.
@@ -375,13 +391,14 @@ creation.
 
 ### Blockers
 
-| Blocker                  | Status      | Resolution               |
-| ------------------------ | ----------- | ------------------------ |
-| Sentry not initialized   | ✅ Resolved | A1 complete              |
-| Sentry env vars missing  | ✅ Resolved | Firebase config verified |
-| Dashboard stats failing  | ✅ Resolved | A5 complete              |
-| /dev route doesn't exist | ❌ Blocking | B1 task (Track B)        |
-| Track A testing complete | ✅ Complete | All jobs A10-A14 passing |
+| Blocker                  | Status      | Resolution                              |
+| ------------------------ | ----------- | --------------------------------------- |
+| **SonarCloud Cleanup**   | ❌ Blocking | 1,213 issues (1,116 code + 97 hotspots) |
+| Sentry not initialized   | ✅ Resolved | A1 complete                             |
+| Sentry env vars missing  | ✅ Resolved | Firebase config verified                |
+| Dashboard stats failing  | ✅ Resolved | A5 complete                             |
+| /dev route doesn't exist | ⏸️ Paused   | B1 task (Track B) - after SonarCloud    |
+| Track A testing complete | ✅ Complete | All jobs A10-A14 passing                |
 
 ### Quick Reference: Environment Variables Needed
 
@@ -1929,6 +1946,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.15    | 2026-01-19 | **BLOCKER ADDED**: SonarCloud Cleanup Sprint blocks Operational Visibility Sprint; 202 issues (93 CRITICAL + 109 hotspots) must be resolved before feature development resumes; created plan, snapshot, and runbook                                                                                                                                                                         |
 | 2.14    | 2026-01-18 | Session #78: Added Admin Panel Phase 3 (A23-A25) - Error JSON export with timeframe selection, auto-refresh tabs on switch, soft-delete users with 30-day retention; deployed functions and Firestore indexes                                                                                                                                                                               |
 | 2.13    | 2026-01-18 | Session #77: **Track A-Test COMPLETE** - All jobs A10-A14 passing (97.7% pass rate); Fixed A11 storage bucket (`sonash-app.firebasestorage.app`); Added EFF-012 (Network Failure Tests) to offline mode section                                                                                                                                                                             |
 | 2.12    | 2026-01-18 | Session #76: Firestore indexes deployed and verified; Track A-Test validation in progress                                                                                                                                                                                                                                                                                                   |
