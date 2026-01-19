@@ -39,6 +39,27 @@ const TIER_DESCRIPTIONS = {
   5: "Archive",
 };
 
+// External URL schemes to skip in link extraction (S3776 complexity reduction)
+const EXTERNAL_SCHEMES = ["http://", "https://", "mailto:", "tel:", "data:"];
+
+// Image extensions to skip in link extraction (S3776 complexity reduction)
+const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
+
+/**
+ * Check if href is an external link or special scheme.
+ */
+function isExternalOrSpecialLink(href) {
+  return EXTERNAL_SCHEMES.some((scheme) => href.startsWith(scheme));
+}
+
+/**
+ * Check if href points to an image file.
+ */
+function isImageLink(href) {
+  const lower = href.toLowerCase();
+  return IMAGE_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}
+
 // Category definitions based on directory structure
 const CATEGORIES = {
   root: { name: "Root Documents", tier: 1, description: "Essential project-level documentation" },
@@ -382,32 +403,8 @@ function extractLinks(content, currentFile) {
   while ((match = linkRegex.exec(strippedContent)) !== null) {
     const [, text, href] = match;
 
-    // Skip external URLs and special schemes
-    if (
-      href.startsWith("http://") ||
-      href.startsWith("https://") ||
-      href.startsWith("mailto:") ||
-      href.startsWith("tel:") ||
-      href.startsWith("data:")
-    ) {
-      continue;
-    }
-
-    // Skip pure anchors
-    if (href.startsWith("#")) {
-      continue;
-    }
-
-    // Skip image links (common image extensions)
-    const lowerHref = href.toLowerCase();
-    if (
-      lowerHref.endsWith(".png") ||
-      lowerHref.endsWith(".jpg") ||
-      lowerHref.endsWith(".jpeg") ||
-      lowerHref.endsWith(".gif") ||
-      lowerHref.endsWith(".svg") ||
-      lowerHref.endsWith(".webp")
-    ) {
+    // Skip external URLs, anchors, and image links using helpers (S3776)
+    if (isExternalOrSpecialLink(href) || href.startsWith("#") || isImageLink(href)) {
       continue;
     }
 

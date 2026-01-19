@@ -82,43 +82,59 @@ const TIER_DEFINITIONS = {
 };
 
 /**
- * Determine the tier of a document
- * @param {string} filePath - Path to the document
- * @param {string} content - Document content
- * @returns {number} - Tier number (1-5) or 0 if unknown
+ * Check if file matches an explicit file list
  */
-function determineTier(filePath, _content) {
-  const fileName = basename(filePath);
-  const relativePath = relative(ROOT, filePath);
-
-  // Check explicit file lists first
+function matchExplicitFiles(fileName) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
     if (def.files && def.files.includes(fileName)) {
       return parseInt(tier);
     }
   }
+  return null;
+}
 
-  // Check folder patterns
+/**
+ * Check if path matches folder patterns
+ */
+function matchFolderPatterns(relativePath) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.folders) {
-      for (const folder of def.folders) {
-        if (relativePath.startsWith(folder)) {
-          return parseInt(tier);
-        }
-      }
+    if (!def.folders) continue;
+    for (const folder of def.folders) {
+      if (relativePath.startsWith(folder)) return parseInt(tier);
     }
   }
+  return null;
+}
 
-  // Check filename patterns
+/**
+ * Check if filename matches patterns
+ */
+function matchFilenamePatterns(fileName) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.patterns) {
-      for (const pattern of def.patterns) {
-        if (pattern.test(fileName)) {
-          return parseInt(tier);
-        }
-      }
+    if (!def.patterns) continue;
+    for (const pattern of def.patterns) {
+      if (pattern.test(fileName)) return parseInt(tier);
     }
   }
+  return null;
+}
+
+/**
+ * Determine the tier of a document
+ */
+function determineTier(filePath, _content) {
+  const fileName = basename(filePath);
+  const relativePath = relative(ROOT, filePath);
+
+  // Check in priority order
+  const explicitMatch = matchExplicitFiles(fileName);
+  if (explicitMatch !== null) return explicitMatch;
+
+  const folderMatch = matchFolderPatterns(relativePath);
+  if (folderMatch !== null) return folderMatch;
+
+  const patternMatch = matchFilenamePatterns(fileName);
+  if (patternMatch !== null) return patternMatch;
 
   // Default to tier 4 (Reference) for unknown docs
   return 4;
@@ -382,34 +398,63 @@ function checkRequiredSections(tier, headings) {
 }
 
 /**
+ * Read document content safely
+ */
+function readDocumentContent(filePath) {
+  try {
+    const content = readFileSync(filePath, "utf-8");
+    if (!content || content.trim().length === 0) {
+      return { content: null, error: "File is empty" };
+    }
+    return { content, error: null };
+  } catch (error) {
+    return { content: null, error: `Cannot read file: ${error.message}` };
+  }
+}
+
+/**
+ * Validate document metadata (Last Updated date)
+ */
+function validateMetadataDate(metadata, tier, warnings) {
+  if (!metadata.lastUpdated) {
+    warnings.push('Missing "Last Updated" date in metadata');
+    return;
+  }
+
+  const dateResult = parseDate(metadata.lastUpdated);
+  if (!dateResult.valid) {
+    warnings.push(`Invalid "Last Updated" date: ${dateResult.error}`);
+    return;
+  }
+
+  // Check if date is stale (> 90 days for active docs)
+  const daysSinceUpdate = Math.floor((new Date() - dateResult.date) / (1000 * 60 * 60 * 24));
+  if (daysSinceUpdate > 90 && tier <= 3) {
+    warnings.push(`Document may be stale: last updated ${daysSinceUpdate} days ago`);
+  }
+}
+
+/**
+ * Validate document version format
+ */
+function validateVersionFormat(metadata, warnings) {
+  if (!metadata.version) return;
+  if (!/^\d+(\.\d+)?$/.test(metadata.version)) {
+    warnings.push(`Version number format should be X.Y, got: "${metadata.version}"`);
+  }
+}
+
+/**
  * Lint a single document
- * @param {string} filePath - Path to the document
- * @returns {{file: string, tier: number, errors: string[], warnings: string[]}}
  */
 function lintDocument(filePath) {
   const errors = [];
   const warnings = [];
 
   // Read file
-  let content;
-  try {
-    content = readFileSync(filePath, "utf-8");
-  } catch (error) {
-    return {
-      file: filePath,
-      tier: 0,
-      errors: [`Cannot read file: ${error.message}`],
-      warnings: [],
-    };
-  }
-
-  if (!content || content.trim().length === 0) {
-    return {
-      file: filePath,
-      tier: 0,
-      errors: ["File is empty"],
-      warnings: [],
-    };
+  const { content, error: readError } = readDocumentContent(filePath);
+  if (readError) {
+    return { file: filePath, tier: 0, errors: [readError], warnings: [] };
   }
 
   // Determine tier
@@ -427,34 +472,15 @@ function lintDocument(filePath) {
   const links = extractLinks(content);
 
   // Check 1: Has title (H1)
-  const h1 = headings.find((h) => h.level === 1);
-  if (!h1) {
+  if (!headings.find((h) => h.level === 1)) {
     errors.push("Missing document title (H1 heading)");
   }
 
   // Check 2: Has metadata
-  if (!metadata.lastUpdated) {
-    warnings.push('Missing "Last Updated" date in metadata');
-  } else {
-    // Validate date
-    const dateResult = parseDate(metadata.lastUpdated);
-    if (!dateResult.valid) {
-      warnings.push(`Invalid "Last Updated" date: ${dateResult.error}`);
-    } else {
-      // Check if date is stale (> 90 days for active docs)
-      const daysSinceUpdate = Math.floor((new Date() - dateResult.date) / (1000 * 60 * 60 * 24));
-      if (daysSinceUpdate > 90 && tier <= 3) {
-        warnings.push(`Document may be stale: last updated ${daysSinceUpdate} days ago`);
-      }
-    }
-  }
+  validateMetadataDate(metadata, tier, warnings);
 
   // Check 3: Version format
-  if (metadata.version) {
-    if (!/^\d+(\.\d+)?$/.test(metadata.version)) {
-      warnings.push(`Version number format should be X.Y, got: "${metadata.version}"`);
-    }
-  }
+  validateVersionFormat(metadata, warnings);
 
   // Check 4: Required sections
   const sectionCheck = checkRequiredSections(tier, headings);
@@ -462,22 +488,15 @@ function lintDocument(filePath) {
   warnings.push(...sectionCheck.warnings);
 
   // Check 5: File links
-  const linkErrors = validateFileLinks(links, filePath);
-  errors.push(...linkErrors);
+  errors.push(...validateFileLinks(links, filePath));
 
   // Check 6: Anchor links (warning only, as emoji handling is imperfect)
   const anchorErrors = validateAnchorLinks(links, headings);
   if (anchorErrors.length <= 3) {
-    // Only show anchor warnings if few (to reduce noise from emoji anchors)
     warnings.push(...anchorErrors);
   }
 
-  return {
-    file: relative(ROOT, filePath),
-    tier,
-    errors,
-    warnings,
-  };
+  return { file: relative(ROOT, filePath), tier, errors, warnings };
 }
 
 /**
@@ -520,36 +539,102 @@ function findMarkdownFiles(dir, files = []) {
 }
 
 /**
+ * Resolve file arguments with path traversal protection
+ */
+function resolveFileArgs(files) {
+  const resolved = [];
+  const rootResolved = resolve(ROOT);
+
+  for (const file of files) {
+    const fullPath = isAbsolute(file) ? file : join(ROOT, file);
+    const resolvedPath = resolve(fullPath);
+
+    if (resolvedPath !== rootResolved && !resolvedPath.startsWith(rootResolved + sep)) {
+      console.error(`Error: Path traversal blocked: ${file}`);
+      continue;
+    }
+
+    if (existsSync(fullPath)) {
+      resolved.push(fullPath);
+    } else {
+      console.error(`Warning: File not found: ${file}`);
+    }
+  }
+
+  return resolved;
+}
+
+/**
+ * Output file errors and warnings
+ */
+function outputFileErrors(filesWithErrors) {
+  if (filesWithErrors.length === 0) return;
+
+  console.log("❌ FILES WITH ERRORS:\n");
+  for (const result of filesWithErrors) {
+    console.log(`  ${result.file} (Tier ${result.tier}):`);
+    for (const error of result.errors) {
+      console.log(`    ❌ ${error}`);
+    }
+    if (!ERRORS_ONLY) {
+      for (const warning of result.warnings) {
+        console.log(`    ⚠️  ${warning}`);
+      }
+    }
+    console.log("");
+  }
+}
+
+/**
+ * Output file warnings only
+ */
+function outputFileWarnings(filesWithWarnings) {
+  if (ERRORS_ONLY || filesWithWarnings.length === 0) return;
+
+  console.log("⚠️  FILES WITH WARNINGS:\n");
+  for (const result of filesWithWarnings) {
+    console.log(`  ${result.file} (Tier ${result.tier}):`);
+    for (const warning of result.warnings) {
+      console.log(`    ⚠️  ${warning}`);
+    }
+    console.log("");
+  }
+}
+
+/**
+ * Output summary statistics
+ */
+function outputSummary(results, totalErrors, totalWarnings) {
+  const cleanFiles = results.filter((r) => r.errors.length === 0 && r.warnings.length === 0);
+  const filesWithErrors = results.filter((r) => r.errors.length > 0);
+  const filesWithWarnings = results.filter((r) => r.warnings.length > 0 && r.errors.length === 0);
+
+  console.log("─".repeat(50));
+  console.log(`\n📊 SUMMARY:`);
+  console.log(`   Files checked: ${results.length}`);
+  console.log(`   Files passing: ${cleanFiles.length}`);
+  console.log(`   Files with errors: ${filesWithErrors.length}`);
+  console.log(`   Files with warnings: ${filesWithWarnings.length}`);
+  console.log(`   Total errors: ${totalErrors}`);
+  console.log(`   Total warnings: ${totalWarnings}`);
+
+  if (totalErrors === 0 && (totalWarnings === 0 || !STRICT_MODE)) {
+    console.log("\n✅ All documentation checks passed!");
+  } else if (totalErrors === 0 && totalWarnings > 0 && STRICT_MODE) {
+    console.log("\n❌ Documentation checks failed (--strict mode: warnings treated as errors).");
+  } else {
+    console.log("\n❌ Documentation checks failed. Please fix errors above.");
+  }
+}
+
+/**
  * Main function
  */
 function main() {
   console.log("📝 Running documentation linter...\n");
 
   // Determine files to check
-  let filesToCheck = [];
-
-  if (fileArgs.length > 0) {
-    // Check specific files
-    for (const file of fileArgs) {
-      // Use path.isAbsolute() for cross-platform support (Windows C:\ and Unix /)
-      const fullPath = isAbsolute(file) ? file : join(ROOT, file);
-      // Path traversal check: resolve() + startsWith() handles Windows drive letters (Qodo Review #176)
-      const resolved = resolve(fullPath);
-      const rootResolved = resolve(ROOT);
-      if (resolved !== rootResolved && !resolved.startsWith(rootResolved + sep)) {
-        console.error(`Error: Path traversal blocked: ${file}`);
-        continue;
-      }
-      if (existsSync(fullPath)) {
-        filesToCheck.push(fullPath);
-      } else {
-        console.error(`Warning: File not found: ${file}`);
-      }
-    }
-  } else {
-    // Find all markdown files
-    filesToCheck = findMarkdownFiles(ROOT);
-  }
+  const filesToCheck = fileArgs.length > 0 ? resolveFileArgs(fileArgs) : findMarkdownFiles(ROOT);
 
   if (filesToCheck.length === 0) {
     console.log("No markdown files found to check.");
@@ -559,72 +644,20 @@ function main() {
   console.log(`Checking ${filesToCheck.length} file(s)...\n`);
 
   // Lint all files
-  const results = [];
-  let totalErrors = 0;
-  let totalWarnings = 0;
-
-  for (const file of filesToCheck) {
-    const result = lintDocument(file);
-    results.push(result);
-    totalErrors += result.errors.length;
-    totalWarnings += result.warnings.length;
-  }
+  const results = filesToCheck.map((file) => lintDocument(file));
+  const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
+  const totalWarnings = results.reduce((sum, r) => sum + r.warnings.length, 0);
 
   // Output results
   if (JSON_OUTPUT) {
     console.log(JSON.stringify({ results, totalErrors, totalWarnings }, null, 2));
   } else {
-    // Group results by status
     const filesWithErrors = results.filter((r) => r.errors.length > 0);
     const filesWithWarnings = results.filter((r) => r.warnings.length > 0 && r.errors.length === 0);
-    const cleanFiles = results.filter((r) => r.errors.length === 0 && r.warnings.length === 0);
 
-    // Show errors
-    if (filesWithErrors.length > 0) {
-      console.log("❌ FILES WITH ERRORS:\n");
-      for (const result of filesWithErrors) {
-        console.log(`  ${result.file} (Tier ${result.tier}):`);
-        for (const error of result.errors) {
-          console.log(`    ❌ ${error}`);
-        }
-        if (!ERRORS_ONLY) {
-          for (const warning of result.warnings) {
-            console.log(`    ⚠️  ${warning}`);
-          }
-        }
-        console.log("");
-      }
-    }
-
-    // Show warnings
-    if (!ERRORS_ONLY && filesWithWarnings.length > 0) {
-      console.log("⚠️  FILES WITH WARNINGS:\n");
-      for (const result of filesWithWarnings) {
-        console.log(`  ${result.file} (Tier ${result.tier}):`);
-        for (const warning of result.warnings) {
-          console.log(`    ⚠️  ${warning}`);
-        }
-        console.log("");
-      }
-    }
-
-    // Summary
-    console.log("─".repeat(50));
-    console.log(`\n📊 SUMMARY:`);
-    console.log(`   Files checked: ${results.length}`);
-    console.log(`   Files passing: ${cleanFiles.length}`);
-    console.log(`   Files with errors: ${filesWithErrors.length}`);
-    console.log(`   Files with warnings: ${filesWithWarnings.length}`);
-    console.log(`   Total errors: ${totalErrors}`);
-    console.log(`   Total warnings: ${totalWarnings}`);
-
-    if (totalErrors === 0 && (totalWarnings === 0 || !STRICT_MODE)) {
-      console.log("\n✅ All documentation checks passed!");
-    } else if (totalErrors === 0 && totalWarnings > 0 && STRICT_MODE) {
-      console.log("\n❌ Documentation checks failed (--strict mode: warnings treated as errors).");
-    } else {
-      console.log("\n❌ Documentation checks failed. Please fix errors above.");
-    }
+    outputFileErrors(filesWithErrors);
+    outputFileWarnings(filesWithWarnings);
+    outputSummary(results, totalErrors, totalWarnings);
   }
 
   // Exit with appropriate code (in strict mode, warnings also cause failure)
