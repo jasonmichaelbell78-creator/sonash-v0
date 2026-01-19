@@ -30,6 +30,15 @@ const CONFIG = {
   maxDescriptionLength: 200,
 };
 
+// Tier description mapping (S3776 complexity reduction)
+const TIER_DESCRIPTIONS = {
+  1: "Essential",
+  2: "Core",
+  3: "Specialized",
+  4: "Reference",
+  5: "Archive",
+};
+
 // Category definitions based on directory structure
 const CATEGORIES = {
   root: { name: "Root Documents", tier: 1, description: "Essential project-level documentation" },
@@ -609,16 +618,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push("|------|-------|-------------|");
   for (const tier of [1, 2, 3, 4, 5]) {
     const count = tierCount.get(tier) || 0;
-    const desc =
-      tier === 1
-        ? "Essential"
-        : tier === 2
-          ? "Core"
-          : tier === 3
-            ? "Specialized"
-            : tier === 4
-              ? "Reference"
-              : "Archive";
+    const desc = TIER_DESCRIPTIONS[tier] || "Unknown";
     lines.push(`| Tier ${tier} | ${count} | ${desc} |`);
   }
   lines.push("");
