@@ -33,9 +33,9 @@ import {
   readdirSync,
   statSync,
   realpathSync,
-} from "fs";
-import { join, dirname, basename, relative } from "path";
-import { fileURLToPath } from "url";
+} from "node:fs";
+import { join, dirname, basename, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { sanitizeError } from "./lib/sanitize-error.js";
 

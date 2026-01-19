@@ -12,7 +12,7 @@
  * 4. Markdown files
  */
 
-const path = require("path");
+const path = require("node:path");
 
 // Get base directory for path containment check
 const baseDir = path.resolve(process.env.CLAUDE_PROJECT_DIR || process.cwd());

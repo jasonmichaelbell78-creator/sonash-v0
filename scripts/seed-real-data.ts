@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as readline from "readline";
+import * as fs from "node:fs";
+import * as readline from "node:readline";
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import fetch from "node-fetch"; // Ensure request is installed or use global fetch if available (Node 18+)

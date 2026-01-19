@@ -16,9 +16,9 @@
  * Exit codes: 0 = success (including when all patterns covered), 2 = error
  */
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { join, dirname, basename } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
+import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);

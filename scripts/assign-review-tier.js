@@ -17,9 +17,9 @@
  *   Exit code: 0 (success)
  */
 
-import { readFileSync, existsSync, realpathSync } from "fs";
-import { resolve, relative, isAbsolute } from "path";
-import { pathToFileURL } from "url";
+import { readFileSync, existsSync, realpathSync } from "node:fs";
+import { resolve, relative, isAbsolute } from "node:path";
+import { pathToFileURL } from "node:url";
 
 /**
  * Sanitize file paths in error messages to avoid exposing absolute paths

@@ -12,9 +12,9 @@
  *   node scripts/ai-review.js --type=dependencies --staged
  */
 
-import fs from "fs";
-import path from "path";
-import { execSync, execFileSync } from "child_process";
+import fs from "node:fs";
+import path from "node:path";
+import { execSync, execFileSync } from "node:child_process";
 
 const REVIEW_PROMPTS_FILE = ".claude/review-prompts.md";
 

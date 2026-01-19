@@ -19,10 +19,10 @@
  * Exit codes: 0 = no violations, 1 = violations found, 2 = error
  */
 
-import { readFileSync, existsSync, readdirSync, lstatSync } from "fs";
-import { join, dirname, extname, relative } from "path";
-import { fileURLToPath } from "url";
-import { execSync } from "child_process";
+import { readFileSync, existsSync, readdirSync, lstatSync } from "node:fs";
+import { join, dirname, extname, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import { execSync } from "node:child_process";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);

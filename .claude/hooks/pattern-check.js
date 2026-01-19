@@ -9,9 +9,9 @@
  * Non-blocking: outputs warnings but doesn't fail the operation
  */
 
-const { spawnSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Get and validate project directory
 const safeBaseDir = path.resolve(process.cwd());

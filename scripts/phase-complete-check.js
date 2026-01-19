@@ -15,11 +15,11 @@
  *   1 = Checks failed, do NOT mark complete
  */
 
-import { execSync } from "child_process";
-import * as readline from "readline";
-import * as fs from "fs";
-import * as path from "path";
-import { pathToFileURL } from "url";
+import { execSync } from "node:child_process";
+import * as readline from "node:readline";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 
 // Parse command line arguments
 const args = process.argv.slice(2);
