@@ -19,7 +19,7 @@ fi
 
 # Truncate excessively long input to prevent DoS
 MAX_LENGTH=2000
-if [[ ${#USER_REQUEST} -gt $MAX_LENGTH ]]; then
+if [[[ ${#USER_REQUEST} -gt $MAX_LENGTH ]]; then
     USER_REQUEST="${USER_REQUEST:0:$MAX_LENGTH}"
 fi
 

@@ -41,7 +41,7 @@ if [[ -z "$SANITIZED_PATH" ]]; then
 fi
 
 # Truncate excessively long paths (prevent DoS)
-if [[ ${#SANITIZED_PATH} -gt 500 ]]; then
+if [[[ ${#SANITIZED_PATH} -gt 500 ]]; then
     SANITIZED_PATH="${SANITIZED_PATH:0:500}"
 fi
 
