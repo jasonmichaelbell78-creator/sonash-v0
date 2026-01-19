@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 9.6 **Created:** 2026-01-02 **Last Updated:** 2026-01-18
+**Document Version:** 9.7 **Created:** 2026-01-02 **Last Updated:** 2026-01-19
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 9.7     | 2026-01-19 | Reviews #182-183: SonarCloud Cleanup Sprint learnings consolidated from deleted AI_LESSONS_LOG.md. Review #182: PR 1 Mechanical Fixes (186 issues, 8 rules, 48 files - node: prefix, shell modernization). Review #183: PR 2 Critical Issues partial (~20 issues, 6 rules - cognitive complexity refactoring, void operator, mutable exports). **KEY LEARNINGS**: Helper extraction for complexity reduction, factory functions for SSR exports, syntax validation after batch operations.                                                                                                                                                                                                                                                                                                 |
 | 9.6     | 2026-01-18 | Review #142: PR #281 SonarCloud workflow configuration - 11 fixes across 2 rounds (4 Major: SHA pinning, contents:read, Basic auth fix, conclusion polling; 7 Minor: permissions, fork skip, GITHUB_TOKEN). 1 deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 9.5     | 2026-01-18 | **CONSOLIDATION #13 + ARCHIVE #4**: Patterns from Reviews #137-143, #154-179 (33 reviews) → CODE_PATTERNS.md v2.0. **22 new patterns added**: 6 React/Frontend (cursor pagination, Firestore-first, capture before tx, primitive deps, functional setState, claims preservation); 5 Security (isPlainObject, O(n²) DoS, npx --no-install, URL allowlist, self-scanner exclusion); 4 JS/TS (listDocuments, non-greedy JSON, Next.js bundling, cognitive complexity); 3 CI (per-item error, complete loops, pre-push); 2 Docs (YAML frontmatter, xargs hang); 1 GitHub Actions (boolean outputs). **ARCHIVE #4**: Reviews #101-136 → REVIEWS_101-136.md. Active reviews now #137-179. Counter reset.                                                                                         |
 | 9.4     | 2026-01-18 | Review #179: PR #277 Round 4 - 8 items (1 CRITICAL: cursor-based pagination for batch jobs to prevent infinite loops; 3 MAJOR: Firestore-first operation order, full rollback with captured original values, functional setState updates; 2 MINOR: primitive useEffect deps, null check for days display; 2 VERIFIED: admin error messages acceptable, logSecurityEvent sanitizes). **KEY LESSONS: (1) startAfter(lastDoc) for batch jobs, not hasMore flag; (2) Firestore first for easier rollback; (3) Capture original values before transaction.**                                                                                                                                                                                                                                    |
@@ -181,7 +182,7 @@ This log uses a tiered structure to optimize context consumption:
 | **1**  | [claude.md](../claude.md)                                                                                                  | Always (in AI context)        | ~115 lines  |
 | **1b** | [CODE_PATTERNS.md](./agent_docs/CODE_PATTERNS.md)                                                                          | When investigating violations | ~190 lines  |
 | **2**  | Quick Index (below)                                                                                                        | Pattern lookup                | ~50 lines   |
-| **3**  | Active Reviews (#101-136)                                                                                                  | Deep investigation            | ~1000 lines |
+| **3**  | Active Reviews (#137-183)                                                                                                  | Deep investigation            | ~1200 lines |
 | **4**  | Archive ([#1-40](./archive/REVIEWS_1-40.md), [#42-60](./archive/REVIEWS_42-60.md), [#61-100](./archive/REVIEWS_61-100.md)) | Historical research           | ~4400 lines |
 
 **Read Tier 3 only when:**
@@ -544,8 +545,123 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #137-181 are actively maintained below. Older reviews (#101-136) are in
+Reviews #137-183 are actively maintained below. Older reviews (#101-136) are in
 Archive 4.
+
+---
+
+#### Review #183: SonarCloud Sprint PR 2 - Critical Issues Partial (2026-01-19)
+
+**Source:** SonarCloud Sprint Plan + Code Quality Analysis **PR/Branch:**
+claude/enhance-sonarcloud-report-3lp4i (PR #284 continued) **Issues Fixed:** ~20
+(6 rules across 7 files)
+
+**Summary:** High-impact critical issues including cognitive complexity
+refactoring of the two worst offenders (complexity 42 and 34), void operator
+removal, and mutable export fixes.
+
+**Issues Fixed:**
+
+| #   | Issue                              | Severity | Category   | Fix                                                                        |
+| --- | ---------------------------------- | -------- | ---------- | -------------------------------------------------------------------------- |
+| 1   | S3776: cleanupOrphanedStorageFiles | Critical | Complexity | Extract 4 helpers (processStorageFile, isFileOlderThan, etc.)              |
+| 2   | S3776: hardDeleteSoftDeletedUsers  | Critical | Complexity | Extract 3 helpers (performHardDeleteForUser, deleteUserStorageFiles, etc.) |
+| 3   | S3735: void operator (12x)         | Critical | Code Smell | Remove `void` prefix from async calls in 4 files                           |
+| 4   | S6861: mutable let exports (3x)    | Critical | Code Smell | Refactor to factory function in lib/firebase.ts                            |
+| 5   | S2871: sort without compare        | Critical | Bug        | Add localeCompare to .sort() in sync-geocache.ts                           |
+
+**Patterns Identified:**
+
+1. **Cognitive complexity in job functions**: Background jobs accumulate
+   complexity due to pagination loops, nested try/catch, and inline error
+   handling
+2. **Void operator pattern**: `void asyncFunction()` used to ignore promise
+   returns in React hooks - can be safely removed
+3. **Mutable exports for SSR**: `let app; let auth; let db;` pattern should use
+   factory function returning const destructured values
+
+**Fix Techniques:**
+
+| Rule  | Technique                     | Example                                                 |
+| ----- | ----------------------------- | ------------------------------------------------------- |
+| S3776 | Extract helper functions      | `processStorageFile()`, `performHardDeleteForUser()`    |
+| S3735 | Remove void operator          | `void loadLinks()` → `loadLinks()`                      |
+| S6861 | Factory function for init     | `const { app, auth, db } = initializeFirebaseExports()` |
+| S2871 | Add explicit compare function | `.sort()` → `.sort((a, b) => a.localeCompare(b))`       |
+
+**Key Learnings:**
+
+- Each helper function should do one thing; names should describe the
+  check/action
+- Firebase job functions grow organically without refactoring - set complexity
+  alerts
+- `void promise` is often unnecessary if the function handles its own errors
+
+**Deferred:** ~90 issues (S3776: 80 remaining complexity, S2004: 5 nested
+functions, S2871: 3 sort comparisons)
+
+---
+
+#### Review #182: SonarCloud Sprint PR 1 - Mechanical Fixes (2026-01-19)
+
+**Source:** SonarCloud Sprint Plan + Automated Analysis **PR/Branch:**
+claude/enhance-sonarcloud-report-3lp4i (PR #284) **Issues Fixed:** 186 (8 rules
+across 48 files)
+
+**Summary:** All mechanical/automatable SonarCloud issues including Node.js
+import conventions and shell script best practices.
+
+**Issues Fixed:**
+
+| #   | Issue                        | Severity | Category     | Fix                                  |
+| --- | ---------------------------- | -------- | ------------ | ------------------------------------ |
+| 1   | S7772: Missing node: prefix  | Minor    | Node.js      | Add `node:` prefix to 117 imports    |
+| 2   | S7688: Legacy `[` syntax     | Major    | Shell Script | Convert to `[[` in 10 shell scripts  |
+| 3   | S7682: Missing return        | Major    | Shell Script | Add explicit `return 0` to functions |
+| 4   | S7677: Errors to stdout      | Major    | Shell Script | Redirect to stderr with `>&2`        |
+| 5   | S1192: Repeated literals     | Minor    | Shell Script | Define `readonly` constants          |
+| 6   | S131: Missing default case   | Major    | Shell Script | Add `*) ;; # default case`           |
+| 7   | S7679: Raw positional params | Minor    | Shell Script | Assign to locals: `local input="$1"` |
+
+**Patterns Identified:**
+
+1. **Node.js import inconsistency**: Mixed `require('fs')` and
+   `require('node:fs')` with no established convention - 117 issues across 40
+   files
+2. **Shell script modernization**: Legacy `[ ]` syntax, missing returns,
+   inconsistent error handling - 73 issues across 10 shell scripts
+3. **Repeated string literals**: Same strings repeated instead of constants - 4
+   issues
+
+**Secondary Learnings (from PR Review #181):**
+
+1. **SonarCloud fixes can introduce bugs**: `[ ]` to `[[ ]]` conversion
+   introduced `[[[` typo caught by pattern compliance
+2. **ESM namespace imports**: Use `import * as fs from 'node:fs'` not
+   `import fs`
+3. **Path containment patterns**: Use regex `/^\.\.(?:[\\/]|$)/.test(relative)`
+   instead of simple `.startsWith('..')`
+4. **Shell variable order**: With `set -u`, variables must be defined before use
+
+**Fix Techniques:**
+
+| Rule  | Technique                     | Example                                |
+| ----- | ----------------------------- | -------------------------------------- |
+| S7772 | Add `node:` prefix            | `require('fs')` → `require('node:fs')` |
+| S7688 | Use `[[` for tests            | `[ -z "$var" ]` → `[[ -z "$var" ]]`    |
+| S7682 | Add explicit return           | Add `return 0` at function end         |
+| S7677 | Redirect errors to stderr     | `echo "Error"` → `echo "Error" >&2`    |
+| S1192 | Define constants for literals | `readonly SEPARATOR="━━━"`             |
+
+**Key Learnings:**
+
+- Run syntax validation after batch find-replace operations
+- Node.js built-ins need namespace imports in ESM (`import * as fs`)
+- Path security checks need robust regex patterns, not simple string methods
+- Shell variable order matters with strict mode (`set -u`)
+
+**Metrics:** 186 issues fixed, 48 files modified, 8 rules addressed, 0 false
+positives
 
 ---
 
