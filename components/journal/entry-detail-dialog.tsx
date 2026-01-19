@@ -7,6 +7,255 @@ interface EntryDetailDialogProps {
   onClose: () => void;
 }
 
+// Type-specific detail view components
+function MoodDetailView({ data }: { data: JournalEntry["data"] }) {
+  return (
+    <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
+      <span className="text-4xl block mb-2">{data?.mood ?? "😐"}</span>
+      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+        Feeling (Intensity: {data?.intensity ?? 5}/10)
+      </span>
+      {data?.note && <p className="mt-2 text-sm text-slate-600">{data.note}</p>}
+    </div>
+  );
+}
+
+function GratitudeDetailView({ data }: { data: JournalEntry["data"] }) {
+  if (!data?.items) return null;
+  return (
+    <div>
+      <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
+      <ul className="list-disc pl-5">
+        {data.items.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function InventoryDetailView({ data }: { data: JournalEntry["data"] }) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <span className="font-bold">Resentments:</span> {data?.resentments ?? "N/A"}
+      </div>
+      <div>
+        <span className="font-bold">Dishonesty:</span> {data?.dishonesty ?? "N/A"}
+      </div>
+      <div>
+        <span className="font-bold">Apologies:</span> {data?.apologies ?? "N/A"}
+      </div>
+      <div>
+        <span className="font-bold">Successes:</span> {data?.successes ?? "N/A"}
+      </div>
+    </div>
+  );
+}
+
+function NoteDetailView({ data }: { data: JournalEntry["data"] }) {
+  return (
+    <>
+      {data?.title && <h4 className="font-bold text-xl mb-2 font-heading">{data.title}</h4>}
+      {data?.content ?? ""}
+    </>
+  );
+}
+
+function SpotCheckDetailView({ data }: { data: JournalEntry["data"] }) {
+  return (
+    <div className="space-y-2">
+      <div>
+        <span className="font-bold">Feelings:</span> {data?.feelings?.join(", ") ?? "N/A"}
+      </div>
+      <div>
+        <span className="font-bold">Absolutes:</span> {data?.absolutes?.join(", ") ?? "N/A"}
+      </div>
+      {data?.action && (
+        <div>
+          <span className="font-bold">Action:</span> {data.action}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Format boolean/null value for display
+ */
+function formatYesNoNull(value: boolean | null | undefined): string {
+  if (value === null || value === undefined) return "n/a";
+  return value ? "yes" : "no";
+}
+
+function DailyLogDetailView({ data }: { data: JournalEntry["data"] }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-widest text-slate-500 font-bold">
+        <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">
+          Mood: {data.mood || "n/a"}
+        </span>
+        <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">
+          Cravings: {formatYesNoNull(data.cravings)}
+        </span>
+        <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">
+          Used: {formatYesNoNull(data.used)}
+        </span>
+      </div>
+      {data.note && (
+        <p className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">
+          {data.note}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function Step1WorksheetDetailView({ data }: { data: JournalEntry["data"] }) {
+  const worksheetData = data as unknown as Record<string, unknown>;
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+        <h4 className="font-bold text-green-900 mb-2">📗 Step 1 Worksheet</h4>
+        <p className="text-sm text-green-800">Powerlessness • Unmanageability • Acceptance</p>
+      </div>
+
+      <Step1Concept1Section data={worksheetData} />
+      <Step1Concept2Section data={worksheetData} />
+      <Step1Concept3Section data={worksheetData} />
+      <Step1ConclusionsSection data={worksheetData} />
+    </div>
+  );
+}
+
+// Concept sections for Step 1 worksheet
+function Step1Concept1Section({ data }: { data: Record<string, unknown> }) {
+  return (
+    <div className="space-y-3">
+      <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
+        Concept 1: Powerlessness over Amount
+      </h5>
+      {renderWorksheetField(
+        data,
+        "concept1_q1_examples",
+        "concept1_q1_results",
+        "1.1 Tried to stop drinking/drugging"
+      )}
+      {renderWorksheetField(
+        data,
+        "concept1_q2_examples",
+        "concept1_q2_results",
+        "1.2 Tried to limit/control by dosage"
+      )}
+      {renderWorksheetField(
+        data,
+        "concept1_q3_examples",
+        "concept1_q3_results",
+        "1.3 Tried to limit by switching drinks"
+      )}
+      {renderWorksheetField(
+        data,
+        "concept1_q4_examples",
+        "concept1_q4_results",
+        "1.4 Tried to limit by time restrictions"
+      )}
+      {renderWorksheetArray(data, "concept1_q5", "1.5 Blackouts/memory loss")}
+    </div>
+  );
+}
+
+function Step1Concept2Section({ data }: { data: Record<string, unknown> }) {
+  return (
+    <div className="space-y-3">
+      <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
+        Concept 2: Powerlessness over Bad Results
+      </h5>
+      {renderWorksheetField(
+        data,
+        "concept2_q1_examples",
+        "concept2_q1_results",
+        "2.1 Tried to drink without bad results"
+      )}
+      {renderWorksheetField(
+        data,
+        "concept2_q2_examples",
+        "concept2_q2_results",
+        "2.2 Tried to limit health effects"
+      )}
+      {renderWorksheetField(
+        data,
+        "concept2_q3_examples",
+        "concept2_q3_results",
+        "2.3 Other control attempts"
+      )}
+    </div>
+  );
+}
+
+function Step1Concept3Section({ data }: { data: Record<string, unknown> }) {
+  return (
+    <div className="space-y-3">
+      <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
+        Concept 3: Unmanageability
+      </h5>
+      {renderWorksheetArray(data, "concept3_q1", "3.1 What brought me to AA")}
+      {renderWorksheetArray(data, "concept3_q2", "3.2 Crisis that would have occurred")}
+      {renderWorksheetArray(data, "concept3_q3", "3.3 Effect on self-esteem")}
+      {renderWorksheetArray(data, "concept3_q4", "3.4 Physical fights")}
+      {renderWorksheetArray(data, "concept3_q5", "3.5 Lost job/promotion")}
+      {renderWorksheetArray(data, "concept3_q6", "3.6 Lost relationships")}
+      {renderWorksheetArray(data, "concept3_q7", "3.7 Hospitalizations")}
+      {renderWorksheetArray(data, "concept3_q8", "3.8 Depression/suicide")}
+      {renderWorksheetArray(data, "concept3_q9", "3.9 Effect on life goals")}
+      {renderWorksheetArray(data, "concept3_q10", "3.10 Health effects")}
+      {renderWorksheetArray(data, "concept3_q11", "3.11 Danger to life")}
+      {renderWorksheetArray(data, "concept3_q12", "3.12 Objections from loved ones")}
+      {renderWorksheetArray(data, "concept3_q13", "3.13 Physical abuse")}
+      {renderWorksheetArray(data, "concept3_q14", "3.14 Effects while sober")}
+    </div>
+  );
+}
+
+function Step1ConclusionsSection({ data }: { data: Record<string, unknown> }) {
+  return (
+    <div className="space-y-3">
+      <h5 className="font-bold text-amber-900 text-sm uppercase tracking-wide border-b border-amber-200 pb-1">
+        Conclusions
+      </h5>
+      {renderWorksheetArray(data, "conclusion_q1", "4.1 Why I can't use safely")}
+      {renderWorksheetString(data, "conclusion_q2", "4.2 Admitting vs accepting")}
+      {renderWorksheetString(data, "conclusion_q3", "4.3 Am I an alcoholic?")}
+      {renderWorksheetArray(data, "conclusion_q4", "4.4 Reasons to continue in AA")}
+    </div>
+  );
+}
+
+/**
+ * Render entry detail content based on type
+ */
+function EntryDetailContent({ entry }: { entry: JournalEntry }) {
+  switch (entry.type) {
+    case "mood":
+      return entry.data ? <MoodDetailView data={entry.data} /> : null;
+    case "gratitude":
+      return <GratitudeDetailView data={entry.data} />;
+    case "inventory":
+      return entry.data ? <InventoryDetailView data={entry.data} /> : null;
+    case "free-write":
+    case "meeting-note":
+      return entry.data ? <NoteDetailView data={entry.data} /> : null;
+    case "spot-check":
+      return entry.data ? <SpotCheckDetailView data={entry.data} /> : null;
+    case "daily-log":
+      return <DailyLogDetailView data={entry.data} />;
+    case "step-1-worksheet":
+      return entry.data ? <Step1WorksheetDetailView data={entry.data} /> : null;
+    default:
+      return null;
+  }
+}
+
 export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
   if (!entry) return null;
 
@@ -31,239 +280,7 @@ export function EntryDetailDialog({ entry, onClose }: EntryDetailDialogProps) {
           </button>
         </div>
         <div className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">
-          {entry.type === "mood" && entry.data && (
-            <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
-              <span className="text-4xl block mb-2">{entry.data?.mood ?? "😐"}</span>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Feeling (Intensity: {entry.data?.intensity ?? 5}/10)
-              </span>
-              {entry.data?.note && <p className="mt-2 text-sm text-slate-600">{entry.data.note}</p>}
-            </div>
-          )}
-
-          {entry.type === "gratitude" && entry.data?.items && (
-            <div>
-              <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
-              <ul className="list-disc pl-5">
-                {entry.data.items.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {entry.type === "inventory" && entry.data && (
-            <div className="space-y-4">
-              <div>
-                <span className="font-bold">Resentments:</span> {entry.data?.resentments ?? "N/A"}
-              </div>
-              <div>
-                <span className="font-bold">Dishonesty:</span> {entry.data?.dishonesty ?? "N/A"}
-              </div>
-              <div>
-                <span className="font-bold">Apologies:</span> {entry.data?.apologies ?? "N/A"}
-              </div>
-              <div>
-                <span className="font-bold">Successes:</span> {entry.data?.successes ?? "N/A"}
-              </div>
-            </div>
-          )}
-
-          {(entry.type === "free-write" || entry.type === "meeting-note") && entry.data && (
-            <>
-              {entry.data?.title && (
-                <h4 className="font-bold text-xl mb-2 font-heading">{entry.data.title}</h4>
-              )}
-              {entry.data?.content ?? ""}
-            </>
-          )}
-
-          {entry.type === "spot-check" && entry.data && (
-            <div className="space-y-2">
-              <div>
-                <span className="font-bold">Feelings:</span>{" "}
-                {entry.data?.feelings?.join(", ") ?? "N/A"}
-              </div>
-              <div>
-                <span className="font-bold">Absolutes:</span>{" "}
-                {entry.data?.absolutes?.join(", ") ?? "N/A"}
-              </div>
-              {entry.data?.action && (
-                <div>
-                  <span className="font-bold">Action:</span> {entry.data.action}
-                </div>
-              )}
-            </div>
-          )}
-
-          {entry.type === "daily-log" && (
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2 text-xs uppercase tracking-widest text-slate-500 font-bold">
-                <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">
-                  Mood: {entry.data.mood || "n/a"}
-                </span>
-                <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">
-                  Cravings:{" "}
-                  {entry.data.cravings === null ? "n/a" : entry.data.cravings ? "yes" : "no"}
-                </span>
-                <span className="bg-amber-50 border border-amber-100 rounded-full px-3 py-1">
-                  Used: {entry.data.used === null ? "n/a" : entry.data.used ? "yes" : "no"}
-                </span>
-              </div>
-              {entry.data.note && (
-                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">
-                  {entry.data.note}
-                </p>
-              )}
-            </div>
-          )}
-
-          {entry.type === "step-1-worksheet" &&
-            entry.data &&
-            (() => {
-              // Cast to Record for dynamic property access
-              const worksheetData = entry.data as unknown as Record<string, unknown>;
-
-              return (
-                <div className="space-y-6">
-                  <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                    <h4 className="font-bold text-green-900 mb-2">📗 Step 1 Worksheet</h4>
-                    <p className="text-sm text-green-800">
-                      Powerlessness • Unmanageability • Acceptance
-                    </p>
-                  </div>
-
-                  {/* Concept 1: Powerlessness over Amount */}
-                  <div className="space-y-3">
-                    <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
-                      Concept 1: Powerlessness over Amount
-                    </h5>
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept1_q1_examples",
-                      "concept1_q1_results",
-                      "1.1 Tried to stop drinking/drugging"
-                    )}
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept1_q2_examples",
-                      "concept1_q2_results",
-                      "1.2 Tried to limit/control by dosage"
-                    )}
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept1_q3_examples",
-                      "concept1_q3_results",
-                      "1.3 Tried to limit by switching drinks"
-                    )}
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept1_q4_examples",
-                      "concept1_q4_results",
-                      "1.4 Tried to limit by time restrictions"
-                    )}
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "concept1_q5",
-                      "1.5 Blackouts/memory loss"
-                    )}
-                  </div>
-
-                  {/* Concept 2: Powerlessness over Bad Results */}
-                  <div className="space-y-3">
-                    <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
-                      Concept 2: Powerlessness over Bad Results
-                    </h5>
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept2_q1_examples",
-                      "concept2_q1_results",
-                      "2.1 Tried to drink without bad results"
-                    )}
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept2_q2_examples",
-                      "concept2_q2_results",
-                      "2.2 Tried to limit health effects"
-                    )}
-                    {renderWorksheetField(
-                      worksheetData,
-                      "concept2_q3_examples",
-                      "concept2_q3_results",
-                      "2.3 Other control attempts"
-                    )}
-                  </div>
-
-                  {/* Concept 3: Unmanageability */}
-                  <div className="space-y-3">
-                    <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
-                      Concept 3: Unmanageability
-                    </h5>
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "concept3_q1",
-                      "3.1 What brought me to AA"
-                    )}
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "concept3_q2",
-                      "3.2 Crisis that would have occurred"
-                    )}
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "concept3_q3",
-                      "3.3 Effect on self-esteem"
-                    )}
-                    {renderWorksheetArray(worksheetData, "concept3_q4", "3.4 Physical fights")}
-                    {renderWorksheetArray(worksheetData, "concept3_q5", "3.5 Lost job/promotion")}
-                    {renderWorksheetArray(worksheetData, "concept3_q6", "3.6 Lost relationships")}
-                    {renderWorksheetArray(worksheetData, "concept3_q7", "3.7 Hospitalizations")}
-                    {renderWorksheetArray(worksheetData, "concept3_q8", "3.8 Depression/suicide")}
-                    {renderWorksheetArray(worksheetData, "concept3_q9", "3.9 Effect on life goals")}
-                    {renderWorksheetArray(worksheetData, "concept3_q10", "3.10 Health effects")}
-                    {renderWorksheetArray(worksheetData, "concept3_q11", "3.11 Danger to life")}
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "concept3_q12",
-                      "3.12 Objections from loved ones"
-                    )}
-                    {renderWorksheetArray(worksheetData, "concept3_q13", "3.13 Physical abuse")}
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "concept3_q14",
-                      "3.14 Effects while sober"
-                    )}
-                  </div>
-
-                  {/* Conclusions */}
-                  <div className="space-y-3">
-                    <h5 className="font-bold text-amber-900 text-sm uppercase tracking-wide border-b border-amber-200 pb-1">
-                      Conclusions
-                    </h5>
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "conclusion_q1",
-                      "4.1 Why I can't use safely"
-                    )}
-                    {renderWorksheetString(
-                      worksheetData,
-                      "conclusion_q2",
-                      "4.2 Admitting vs accepting"
-                    )}
-                    {renderWorksheetString(
-                      worksheetData,
-                      "conclusion_q3",
-                      "4.3 Am I an alcoholic?"
-                    )}
-                    {renderWorksheetArray(
-                      worksheetData,
-                      "conclusion_q4",
-                      "4.4 Reasons to continue in AA"
-                    )}
-                  </div>
-                </div>
-              );
-            })()}
+          <EntryDetailContent entry={entry} />
         </div>
       </div>
     </div>
