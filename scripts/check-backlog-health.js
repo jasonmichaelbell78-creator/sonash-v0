@@ -32,6 +32,119 @@ const CONFIG = {
   BLOCK_S1_DAYS: parseInt(process.env.BACKLOG_BLOCK_S1_DAYS, 10) || 14,
 };
 
+/**
+ * Categorize items by severity level
+ */
+function categorizeBySeverity(items) {
+  return {
+    s0: items.filter((i) => i.severity === "S0"),
+    s1: items.filter((i) => i.severity === "S1"),
+    s2: items.filter((i) => i.severity === "S2"),
+    s3: items.filter((i) => i.severity === "S3"),
+  };
+}
+
+/**
+ * Check thresholds and generate warnings/blockers
+ */
+function checkThresholds(severityGroups, daysSinceUpdate, config, isPrePush) {
+  const warnings = [];
+  const blockers = [];
+  let exitCode = 0;
+
+  // Check for S0 items (should never be in backlog)
+  if (severityGroups.s0.length > 0) {
+    const msg = `S0 (Critical) items in backlog: ${severityGroups.s0.map((i) => i.canonId).join(", ")}`;
+    blockers.push(msg);
+    exitCode = 1;
+  }
+
+  // Check S1 aging
+  if (severityGroups.s1.length > 0 && daysSinceUpdate !== null) {
+    if (daysSinceUpdate > config.BLOCK_S1_DAYS && isPrePush) {
+      const msg = `S1 items aging ${daysSinceUpdate} days (block threshold: ${config.BLOCK_S1_DAYS})`;
+      blockers.push(msg);
+      exitCode = 1;
+    } else if (daysSinceUpdate > config.S1_MAX_DAYS) {
+      const msg = `S1 items aging ${daysSinceUpdate} days (warn threshold: ${config.S1_MAX_DAYS})`;
+      warnings.push(msg);
+      exitCode = Math.max(exitCode, 1);
+    }
+  }
+
+  // Check S2 aging
+  if (
+    severityGroups.s2.length > 0 &&
+    daysSinceUpdate !== null &&
+    daysSinceUpdate > config.S2_MAX_DAYS
+  ) {
+    const msg = `S2 items aging ${daysSinceUpdate} days (warn threshold: ${config.S2_MAX_DAYS})`;
+    warnings.push(msg);
+    exitCode = Math.max(exitCode, 1);
+  }
+
+  return { warnings, blockers, exitCode };
+}
+
+/**
+ * Check total item count threshold
+ */
+function checkItemCountThreshold(itemCount, maxItems) {
+  if (itemCount > maxItems) {
+    return `Total items (${itemCount}) exceeds threshold (${maxItems})`;
+  }
+  return null;
+}
+
+/**
+ * Output health summary
+ */
+function outputHealthSummary(items, severityGroups, daysSinceUpdate) {
+  console.log("📊 Backlog Health Check");
+  console.log("═".repeat(50));
+  console.log(`   Total active items: ${items.length}`);
+  console.log(`   S0 (Critical): ${severityGroups.s0.length}`);
+  console.log(`   S1 (Major):    ${severityGroups.s1.length}`);
+  console.log(`   S2 (Medium):   ${severityGroups.s2.length}`);
+  console.log(`   S3 (Minor):    ${severityGroups.s3.length}`);
+  if (daysSinceUpdate !== null) {
+    console.log(`   Days since last update: ${daysSinceUpdate}`);
+  }
+  console.log("");
+}
+
+/**
+ * Output blockers and warnings
+ */
+function outputIssues(blockers, warnings) {
+  if (blockers.length > 0) {
+    console.log("🛑 BLOCKERS (must address before push):");
+    blockers.forEach((b) => console.log(`   - ${b}`));
+    console.log("");
+  }
+
+  if (warnings.length > 0) {
+    console.log("⚠️  WARNINGS:");
+    warnings.forEach((w) => console.log(`   - ${w}`));
+    console.log("");
+  }
+}
+
+/**
+ * Output final status message
+ */
+function outputFinalStatus(exitCode, blockers, isPrePush) {
+  if (exitCode === 0) {
+    console.log("✅ Backlog health OK");
+  } else if (blockers.length > 0 && isPrePush) {
+    console.log("🛑 Push blocked - address critical backlog items first");
+    console.log("   Use --force to override (not recommended)");
+  } else {
+    console.log("⚠️  Backlog needs attention - consider addressing items soon");
+  }
+  console.log("");
+}
+
 const BACKLOG_FILE = join(__dirname, "..", "docs", "AUDIT_FINDINGS_BACKLOG.md");
 
 /**
@@ -98,6 +211,28 @@ function getDaysSinceUpdate(content) {
 }
 
 /**
+ * Get the cut index for active content (before Completed/Rejected sections)
+ */
+function getActiveSectionCutIndex(content) {
+  const completedIndex = content.indexOf("## Completed Items");
+  const rejectedIndex = content.indexOf("## Rejected Items");
+
+  if (completedIndex === -1) return rejectedIndex;
+  if (rejectedIndex === -1) return completedIndex;
+  return Math.min(completedIndex, rejectedIndex);
+}
+
+/**
+ * Determine final exit code based on mode and results
+ */
+function determineFinalExitCode(isPrePush, blockers, exitCode) {
+  if (isPrePush && blockers.length > 0 && !process.argv.includes("--force")) {
+    return 1;
+  }
+  return exitCode;
+}
+
+/**
  * Main function
  */
 function main() {
@@ -106,123 +241,44 @@ function main() {
 
   try {
     if (!existsSync(BACKLOG_FILE)) {
-      if (!isQuiet) {
-        console.error("❌ AUDIT_FINDINGS_BACKLOG.md not found");
-      }
+      if (!isQuiet) console.error("❌ AUDIT_FINDINGS_BACKLOG.md not found");
       process.exitCode = 2;
       return;
     }
 
     // Normalize CRLF to LF for cross-platform compatibility
     const content = readFileSync(BACKLOG_FILE, "utf8").replace(/\r\n/g, "\n");
-
-    // Get days since last update
     const daysSinceUpdate = getDaysSinceUpdate(content);
 
-    // Parse items (only from active backlog section, before Completed/Rejected)
-    const completedIndex = content.indexOf("## Completed Items");
-    const rejectedIndex = content.indexOf("## Rejected Items");
-
-    // Cut at whichever section appears first (or -1 if neither exists)
-    const cutIndex =
-      completedIndex === -1
-        ? rejectedIndex
-        : rejectedIndex === -1
-          ? completedIndex
-          : Math.min(completedIndex, rejectedIndex);
-
+    // Parse items (only from active backlog section)
+    const cutIndex = getActiveSectionCutIndex(content);
     const activeContent = cutIndex !== -1 ? content.slice(0, cutIndex) : content;
     const items = parseBacklogItems(activeContent);
 
-    // Categorize by severity
-    const s0Items = items.filter((i) => i.severity === "S0");
-    const s1Items = items.filter((i) => i.severity === "S1");
-    const s2Items = items.filter((i) => i.severity === "S2");
-    const s3Items = items.filter((i) => i.severity === "S3");
+    // Categorize and check thresholds
+    const severityGroups = categorizeBySeverity(items);
+    const { warnings, blockers, exitCode } = checkThresholds(
+      severityGroups,
+      daysSinceUpdate,
+      CONFIG,
+      isPrePush
+    );
 
-    if (!isQuiet) {
-      console.log("📊 Backlog Health Check");
-      console.log("═".repeat(50));
-      console.log(`   Total active items: ${items.length}`);
-      console.log(`   S0 (Critical): ${s0Items.length}`);
-      console.log(`   S1 (Major):    ${s1Items.length}`);
-      console.log(`   S2 (Medium):   ${s2Items.length}`);
-      console.log(`   S3 (Minor):    ${s3Items.length}`);
-      if (daysSinceUpdate !== null) {
-        console.log(`   Days since last update: ${daysSinceUpdate}`);
-      }
-      console.log("");
-    }
+    // Check item count threshold
+    const itemCountWarning = checkItemCountThreshold(items.length, CONFIG.MAX_ITEMS);
+    if (itemCountWarning) warnings.push(itemCountWarning);
 
-    let exitCode = 0;
-    const warnings = [];
-    const blockers = [];
-
-    // Check for S0 items (should never be in backlog)
-    if (s0Items.length > 0) {
-      const msg = `S0 (Critical) items in backlog: ${s0Items.map((i) => i.canonId).join(", ")}`;
-      blockers.push(msg);
-      exitCode = 1;
-    }
-
-    // Check S1 aging
-    if (s1Items.length > 0 && daysSinceUpdate !== null) {
-      if (daysSinceUpdate > CONFIG.BLOCK_S1_DAYS && isPrePush) {
-        const msg = `S1 items aging ${daysSinceUpdate} days (block threshold: ${CONFIG.BLOCK_S1_DAYS})`;
-        blockers.push(msg);
-        exitCode = 1;
-      } else if (daysSinceUpdate > CONFIG.S1_MAX_DAYS) {
-        const msg = `S1 items aging ${daysSinceUpdate} days (warn threshold: ${CONFIG.S1_MAX_DAYS})`;
-        warnings.push(msg);
-        exitCode = Math.max(exitCode, 1);
-      }
-    }
-
-    // Check S2 aging
-    if (s2Items.length > 0 && daysSinceUpdate !== null && daysSinceUpdate > CONFIG.S2_MAX_DAYS) {
-      const msg = `S2 items aging ${daysSinceUpdate} days (warn threshold: ${CONFIG.S2_MAX_DAYS})`;
-      warnings.push(msg);
-      exitCode = Math.max(exitCode, 1);
-    }
-
-    // Check total item count
-    if (items.length > CONFIG.MAX_ITEMS) {
-      const msg = `Total items (${items.length}) exceeds threshold (${CONFIG.MAX_ITEMS})`;
-      warnings.push(msg);
-      exitCode = Math.max(exitCode, 1);
-    }
+    // Calculate final exit code
+    const finalExitCode = itemCountWarning ? Math.max(exitCode, 1) : exitCode;
 
     // Output results
     if (!isQuiet) {
-      if (blockers.length > 0) {
-        console.log("🛑 BLOCKERS (must address before push):");
-        blockers.forEach((b) => console.log(`   - ${b}`));
-        console.log("");
-      }
-
-      if (warnings.length > 0) {
-        console.log("⚠️  WARNINGS:");
-        warnings.forEach((w) => console.log(`   - ${w}`));
-        console.log("");
-      }
-
-      if (exitCode === 0) {
-        console.log("✅ Backlog health OK");
-      } else if (blockers.length > 0 && isPrePush) {
-        console.log("🛑 Push blocked - address critical backlog items first");
-        console.log("   Use --force to override (not recommended)");
-      } else {
-        console.log("⚠️  Backlog needs attention - consider addressing items soon");
-      }
-      console.log("");
+      outputHealthSummary(items, severityGroups, daysSinceUpdate);
+      outputIssues(blockers, warnings);
+      outputFinalStatus(finalExitCode, blockers, isPrePush);
     }
 
-    // In pre-push mode with blockers, exit non-zero to block push
-    if (isPrePush && blockers.length > 0 && !process.argv.includes("--force")) {
-      process.exitCode = 1;
-    } else {
-      process.exitCode = exitCode;
-    }
+    process.exitCode = determineFinalExitCode(isPrePush, blockers, finalExitCode);
   } catch (err) {
     if (!isQuiet) {
       console.error(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);
