@@ -76,7 +76,7 @@ export default function LinksTab() {
   useTabRefresh("links", loadLinks, { skipInitial: true });
 
   useEffect(() => {
-    void loadLinks();
+    loadLinks();
   }, [loadLinks]);
 
   function handleEdit(link: QuickLink) {
@@ -124,7 +124,7 @@ export default function LinksTab() {
       toast.error("Failed to save link");
     } finally {
       setDialogOpen(false);
-      void loadLinks();
+      loadLinks();
     }
   }
 
@@ -138,7 +138,7 @@ export default function LinksTab() {
       logger.error("Failed to delete link", { error, linkId: id });
       toast.error("Failed to delete link");
     } finally {
-      void loadLinks();
+      loadLinks();
     }
   }
 
@@ -150,7 +150,7 @@ export default function LinksTab() {
       logger.error("Failed to update link", { error, linkId: id });
       toast.error("Failed to update link");
     } finally {
-      void loadLinks();
+      loadLinks();
     }
   }
 
