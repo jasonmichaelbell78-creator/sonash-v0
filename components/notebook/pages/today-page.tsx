@@ -30,6 +30,183 @@ interface TodayPageProps {
   onNavigate: (id: NotebookModuleId) => void;
 }
 
+// Duration part configuration for clean time display
+type DurationPart = { text: string; size: string };
+type DurationUnit = {
+  key: keyof ReturnType<typeof intervalToDuration>;
+  singular: string;
+  plural: string;
+  size: string;
+};
+
+const DURATION_UNITS: DurationUnit[] = [
+  { key: "years", singular: "Year", plural: "Years", size: "text-3xl md:text-4xl" },
+  { key: "months", singular: "Month", plural: "Months", size: "text-2xl md:text-3xl" },
+  { key: "days", singular: "Day", plural: "Days", size: "text-xl md:text-2xl" },
+  { key: "hours", singular: "Hour", plural: "Hours", size: "text-xl md:text-2xl" },
+  { key: "minutes", singular: "Minute", plural: "Minutes", size: "text-lg md:text-xl" },
+];
+
+/**
+ * Format a duration unit value into a display part
+ */
+function formatDurationPart(value: number, unit: DurationUnit): DurationPart | null {
+  if (value <= 0) return null;
+  const label = value === 1 ? unit.singular : unit.plural;
+  return { text: `${value} ${label}`, size: unit.size };
+}
+
+/**
+ * Calculate clean time display parts from a start date
+ */
+function calculateCleanTimeParts(start: Date): DurationPart[] | null {
+  const now = new Date();
+  const duration = intervalToDuration({ start, end: now });
+
+  const parts: DurationPart[] = [];
+  for (const unit of DURATION_UNITS) {
+    const value = duration[unit.key] ?? 0;
+    const part = formatDurationPart(value, unit);
+    if (part) parts.push(part);
+  }
+
+  return parts.length > 0 ? parts : null;
+}
+
+// Toggle button component for cravings/used questions
+interface ToggleButtonProps {
+  isSelected: boolean;
+  isYes: boolean;
+  onClick: () => void;
+  label: string;
+}
+
+function ToggleButton({ isSelected, isYes, onClick, label }: ToggleButtonProps) {
+  const selectedStyle = isYes
+    ? isSelected
+      ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
+      : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
+    : isSelected
+      ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
+      : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105";
+
+  // Special case for "Yes" on "Used?" question - use red
+  const usedYesStyle =
+    label === "Yes used" && isSelected
+      ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-md scale-105"
+      : selectedStyle;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${
+        label === "Yes used" ? usedYesStyle : selectedStyle
+      }`}
+    >
+      {isYes ? "Yes" : "No"}
+    </button>
+  );
+}
+
+// Check-in question row component
+interface CheckInQuestionProps {
+  label: string;
+  value: boolean | null;
+  onNo: () => void;
+  onYes: () => void;
+  questionType: "cravings" | "used";
+}
+
+function CheckInQuestion({ label, value, onNo, onYes, questionType }: CheckInQuestionProps) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="font-heading text-lg text-amber-900/80">{label}</span>
+      <div className="flex items-center gap-3">
+        <ToggleButton
+          isSelected={value === false}
+          isYes={false}
+          onClick={onNo}
+          label={`No ${questionType}`}
+        />
+        <ToggleButton
+          isSelected={value === true}
+          isYes={true}
+          onClick={onYes}
+          label={`Yes ${questionType}`}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Smart prompts container component
+interface SmartPromptsProps {
+  showCheckInReminder: boolean;
+  showHaltSuggestion: boolean;
+  showNoCravingsStreak: boolean;
+  weekStats: { streak: number };
+  handleQuickMood: () => void;
+  dismissPrompt: (type: string) => void;
+}
+
+function SmartPromptsSection({
+  showCheckInReminder,
+  showHaltSuggestion,
+  showNoCravingsStreak,
+  weekStats,
+  handleQuickMood,
+  dismissPrompt,
+}: SmartPromptsProps) {
+  return (
+    <>
+      {showCheckInReminder && (
+        <SmartPrompt
+          type="check-in-reminder"
+          message="Evening check-in time! How was your day?"
+          action={{
+            label: "Check in now",
+            onClick: handleQuickMood,
+          }}
+          onDismiss={() => dismissPrompt("check-in-reminder")}
+        />
+      )}
+
+      {showHaltSuggestion && (
+        <SmartPrompt
+          type="halt-suggestion"
+          message="You're struggling today. A quick HALT check might help identify what you need."
+          action={{
+            label: "Do HALT check",
+            onClick: () => {
+              try {
+                const headings = Array.from(document.querySelectorAll("h2"));
+                const haltHeading = headings.find((h) => h.textContent?.includes("HALT Check"));
+                const haltSection = haltHeading?.parentElement;
+                if (haltSection) {
+                  haltSection.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              } catch (error) {
+                logger.warn("Could not scroll to HALT section", { error });
+              }
+            },
+          }}
+          onDismiss={() => dismissPrompt("halt-suggestion")}
+        />
+      )}
+
+      {showNoCravingsStreak && (
+        <SmartPrompt
+          type="no-cravings-streak"
+          message={`🎉 Amazing! You've logged ${weekStats.streak} days in a row. Your consistency is inspiring!`}
+          onDismiss={() => dismissPrompt("no-cravings-streak")}
+        />
+      )}
+    </>
+  );
+}
+
 /**
  * Render the Today page UI including the recovery notepad, mood check-in, HALT check, clean-time tracker, weekly stats, and related prompts and controls.
  *
@@ -649,67 +826,12 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
 
   const dateString = formatDateForDisplay(referenceDate);
 
-  // Calculate clean time dynamically with minutes
-  const getCleanTime = () => {
+  // Calculate clean time display using extracted helper
+  const cleanTimeDisplay = useMemo(() => {
     if (!profile?.cleanStart) return null;
-
-    // Handle Firestore Timestamp or Date object
     const start = toDate(profile.cleanStart);
-    if (!start) return null;
-
-    const now = new Date();
-    const duration = intervalToDuration({ start, end: now });
-
-    const years = duration.years ?? 0;
-    const months = duration.months ?? 0;
-    const days = duration.days ?? 0;
-    const hours = duration.hours ?? 0;
-    const minutes = duration.minutes ?? 0;
-
-    const parts = [];
-
-    // Build parts with graduated text sizes
-    if (years > 0) {
-      parts.push({
-        text: years === 1 ? "1 Year" : `${years} Years`,
-        size: "text-3xl md:text-4xl",
-      });
-    }
-    if (months > 0) {
-      parts.push({
-        text: months === 1 ? "1 Month" : `${months} Months`,
-        size: "text-2xl md:text-3xl",
-      });
-    }
-    if (days > 0) {
-      parts.push({
-        text: days === 1 ? "1 Day" : `${days} Days`,
-        size: "text-xl md:text-2xl",
-      });
-    }
-
-    // Always show hours if > 0
-    if (hours > 0) {
-      parts.push({
-        text: hours === 1 ? "1 Hour" : `${hours} Hours`,
-        size: "text-xl md:text-2xl",
-      });
-    }
-
-    // Always show minutes (just minutes, not hours converted to minutes)
-    if (minutes > 0) {
-      parts.push({
-        text: minutes === 1 ? "1 Minute" : `${minutes} Minutes`,
-        size: "text-lg md:text-xl",
-      });
-    }
-
-    if (parts.length === 0) return null;
-
-    return parts;
-  };
-
-  const cleanTimeDisplay = getCleanTime();
+    return start ? calculateCleanTimeParts(start) : null;
+  }, [profile?.cleanStart]);
 
   // Show loading skeleton
   if (isLoading) {
@@ -746,51 +868,14 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         <AuthErrorBanner />
 
         {/* Smart Prompts */}
-        {showCheckInReminder && (
-          <SmartPrompt
-            type="check-in-reminder"
-            message="Evening check-in time! How was your day?"
-            action={{
-              label: "Check in now",
-              onClick: handleQuickMood,
-            }}
-            onDismiss={() => dismissPrompt("check-in-reminder")}
-          />
-        )}
-
-        {showHaltSuggestion && (
-          <SmartPrompt
-            type="halt-suggestion"
-            message="You're struggling today. A quick HALT check might help identify what you need."
-            action={{
-              label: "Do HALT check",
-              onClick: () => {
-                try {
-                  // Find HALT Check heading by text content
-                  const headings = Array.from(document.querySelectorAll("h2"));
-                  const haltHeading = headings.find((h) => h.textContent?.includes("HALT Check"));
-                  const haltSection = haltHeading?.parentElement;
-
-                  if (haltSection) {
-                    haltSection.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }
-                } catch (error) {
-                  // Gracefully degrade - log error but don't crash UI
-                  logger.warn("Could not scroll to HALT section", { error });
-                }
-              },
-            }}
-            onDismiss={() => dismissPrompt("halt-suggestion")}
-          />
-        )}
-
-        {showNoCravingsStreak && (
-          <SmartPrompt
-            type="no-cravings-streak"
-            message={`🎉 Amazing! You've logged ${weekStats.streak} days in a row. Your consistency is inspiring!`}
-            onDismiss={() => dismissPrompt("no-cravings-streak")}
-          />
-        )}
+        <SmartPromptsSection
+          showCheckInReminder={showCheckInReminder}
+          showHaltSuggestion={showHaltSuggestion}
+          showNoCravingsStreak={showNoCravingsStreak}
+          weekStats={weekStats}
+          handleQuickMood={handleQuickMood}
+          dismissPrompt={dismissPrompt}
+        />
 
         {/* Two column layout for larger screens, single column on mobile */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
@@ -890,77 +975,32 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
               {/* Toggle questions - Only show after mood is selected */}
               {mood && (
                 <div className="space-y-3 pl-1 animate-in slide-in-from-top duration-300">
-                  <div className="flex items-center justify-between">
-                    <span className="font-heading text-lg text-amber-900/80">Cravings?</span>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCravings(false);
-                          setHasTouched(true);
-                        }}
-                        aria-label="No cravings"
-                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${
-                          cravings === false
-                            ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
-                            : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                      >
-                        No
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCravings(true);
-                          setHasTouched(true);
-                        }}
-                        aria-label="Yes cravings"
-                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${
-                          cravings === true
-                            ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
-                            : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                      >
-                        Yes
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="font-heading text-lg text-amber-900/80">Used?</span>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setUsed(false);
-                          setHasTouched(true);
-                        }}
-                        aria-label="No used"
-                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${
-                          used === false
-                            ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
-                            : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                      >
-                        No
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setUsed(true);
-                          setHasTouched(true);
-                        }}
-                        aria-label="Yes used"
-                        className={`px-4 py-2 rounded-lg font-body text-sm transition-all duration-200 transform active:scale-95 ${
-                          used === true
-                            ? "bg-red-100 border-2 border-red-400 text-red-900 font-bold shadow-md scale-105"
-                            : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-                        }`}
-                      >
-                        Yes
-                      </button>
-                    </div>
-                  </div>
+                  <CheckInQuestion
+                    label="Cravings?"
+                    value={cravings}
+                    questionType="cravings"
+                    onNo={() => {
+                      setCravings(false);
+                      setHasTouched(true);
+                    }}
+                    onYes={() => {
+                      setCravings(true);
+                      setHasTouched(true);
+                    }}
+                  />
+                  <CheckInQuestion
+                    label="Used?"
+                    value={used}
+                    questionType="used"
+                    onNo={() => {
+                      setUsed(false);
+                      setHasTouched(true);
+                    }}
+                    onYes={() => {
+                      setUsed(true);
+                      setHasTouched(true);
+                    }}
+                  />
                 </div>
               )}
 
