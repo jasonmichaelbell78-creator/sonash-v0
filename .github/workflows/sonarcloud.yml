@@ -23,7 +23,6 @@ jobs:
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-
     steps:
       # CRITICAL: Must checkout code first for SonarCloud to analyze
       - name: Checkout repository
@@ -34,7 +33,7 @@ jobs:
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@383f7e52eae3ab0510c3cb0e7d9d150bbaeab838 # v3.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for PR decoration
+          GITHUB_TOKEN: ${{ github.token }} # Required for PR decoration
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: .

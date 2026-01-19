@@ -40,10 +40,10 @@ Before running a cleanup sprint:
 gh workflow run sonarcloud.yml --ref main
 
 # Wait for completion (poll every 30s, check both status and conclusion)
+# Uses gh's built-in --jq to avoid external jq dependency
 while true; do
-  RUN=$(gh run list --workflow=sonarcloud.yml --limit 1 --json status,conclusion --jq '.[0]')
-  STATUS=$(echo "$RUN" | jq -r '.status')
-  CONCLUSION=$(echo "$RUN" | jq -r '.conclusion // empty')
+  STATUS="$(gh run list --workflow=sonarcloud.yml --limit 1 --json status --jq '.[0].status')"
+  CONCLUSION="$(gh run list --workflow=sonarcloud.yml --limit 1 --json conclusion --jq '.[0].conclusion // ""')"
 
   case "$STATUS" in
     completed)
@@ -111,8 +111,9 @@ mcp__sonarcloud__get_security_hotspots(projectKey: "jasonmichaelbell78-creator_s
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
 # Get issues using Authorization header (Basic auth with token, safer than -u flag)
-# Ensure SONAR_TOKEN is set in your environment
-SONAR_BASIC_AUTH="$(printf "%s:" "$SONAR_TOKEN" | base64)"
+# Fail if SONAR_TOKEN not set, strip newlines from base64 output
+: "${SONAR_TOKEN:?SONAR_TOKEN must be set}"
+SONAR_BASIC_AUTH="$(printf "%s:" "$SONAR_TOKEN" | base64 | tr -d '\n')"
 curl -s -H "Authorization: Basic $SONAR_BASIC_AUTH" \
   "https://sonarcloud.io/api/issues/search?projectKeys=$PROJECT_KEY&severities=BLOCKER,CRITICAL"
 ```
