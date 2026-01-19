@@ -14,9 +14,14 @@ on:
 permissions:
   contents: read # required for actions/checkout
   pull-requests: write # allows SonarCloud to decorate PRs with analysis results
+  security-events: write # required to publish results to GitHub Code Scanning (if enabled)
 
 jobs:
   Analysis:
+    # Skip analysis for fork PRs (secrets not available)
+    if: >
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +34,7 @@ jobs:
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@383f7e52eae3ab0510c3cb0e7d9d150bbaeab838 # v3.1.0
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for PR decoration
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: .

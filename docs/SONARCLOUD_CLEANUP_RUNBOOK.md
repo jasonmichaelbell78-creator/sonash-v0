@@ -39,17 +39,28 @@ Before running a cleanup sprint:
 # Trigger analysis on main branch
 gh workflow run sonarcloud.yml --ref main
 
-# Wait for completion (poll every 30s, handle all terminal states)
+# Wait for completion (poll every 30s, check both status and conclusion)
 while true; do
-  STATUS=$(gh run list --workflow=sonarcloud.yml --limit 1 --json status --jq '.[0].status')
+  RUN=$(gh run list --workflow=sonarcloud.yml --limit 1 --json status,conclusion --jq '.[0]')
+  STATUS=$(echo "$RUN" | jq -r '.status')
+  CONCLUSION=$(echo "$RUN" | jq -r '.conclusion // empty')
+
   case "$STATUS" in
     completed)
-      echo "Analysis complete!"
-      break
-      ;;
-    failure|cancelled|skipped)
-      echo "Analysis finished with status: $STATUS"
-      exit 1
+      case "$CONCLUSION" in
+        success)
+          echo "Analysis complete!"
+          break
+          ;;
+        cancelled|failure|skipped|timed_out|action_required|stale)
+          echo "Analysis finished with conclusion: $CONCLUSION"
+          exit 1
+          ;;
+        *)
+          echo "Analysis completed with unknown conclusion: ${CONCLUSION:-<none>}"
+          exit 1
+          ;;
+      esac
       ;;
     *)
       echo "Waiting for analysis to complete... (current status: $STATUS)"
@@ -91,16 +102,18 @@ mcp__sonarcloud__get_security_hotspots(projectKey: "jasonmichaelbell78-creator_s
 
 ### 2.2 Manual API Queries
 
-> **Security Note**: Avoid using `curl -u "$TOKEN:"` as it can expose secrets in
-> shell history or logs. Use the header approach below instead.
+> **Security Note**: SonarCloud API uses Basic auth. Avoid using
+> `curl -u "$TOKEN:"` as it can expose secrets in shell history or logs. Use the
+> encoded header approach below instead.
 
 ```bash
 # Export project key
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
-# Get issues using Authorization header (safer than -u flag)
+# Get issues using Authorization header (Basic auth with token, safer than -u flag)
 # Ensure SONAR_TOKEN is set in your environment
-curl -s -H "Authorization: Bearer $SONAR_TOKEN" \
+SONAR_BASIC_AUTH="$(printf "%s:" "$SONAR_TOKEN" | base64)"
+curl -s -H "Authorization: Basic $SONAR_BASIC_AUTH" \
   "https://sonarcloud.io/api/issues/search?projectKeys=$PROJECT_KEY&severities=BLOCKER,CRITICAL"
 ```
 
@@ -266,5 +279,6 @@ echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.2     | 2026-01-18 | Round 2: Basic auth fix, conclusion-aware polling               |
 | 1.1     | 2026-01-18 | PR review fixes: polling robustness, token security, timestamps |
 | 1.0     | 2026-01-18 | Initial runbook created                                         |
