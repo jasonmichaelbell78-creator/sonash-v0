@@ -300,6 +300,16 @@ before merging to verify work meets requirements **When to use:** Before merging
 significant changes **Example:** Feature complete, ready for final review
 **Parameters:** None
 
+#### `sonarcloud-sprint`
+
+**Description:** Run a SonarCloud cleanup sprint. Triggers re-analysis, queries
+current issues via MCP tools, generates a prioritized issue report, creates a
+cleanup branch, and tracks fixes with TodoWrite **When to use:** Starting a code
+quality cleanup sprint or when you need current snapshot of SonarCloud issues
+**Example:** `/sonarcloud-sprint` or `/sonarcloud-sprint --report`
+**Parameters:** Optional `--report` flag for report-only mode (no branch
+creation)
+
 #### `skill-creator`
 
 **Description:** Guide for creating effective skills. Create new skills or
@@ -1528,6 +1538,7 @@ a prompt **What it does:**
 | `code-reviewer`        | Comprehensive code review   |
 | `frontend-design`      | Build polished UI           |
 | `senior-fullstack`     | Full-stack development      |
+| `sonarcloud-sprint`    | SonarCloud cleanup sprint   |
 | `/session-begin`       | Session validation          |
 | `/session-end`         | Session completion          |
 
