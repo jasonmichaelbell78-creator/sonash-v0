@@ -382,6 +382,31 @@ function normalizeSingleSession(item, sourceCategory, date) {
 }
 
 /**
+ * Extract description from CANON item (multiple possible fields)
+ */
+function extractCanonDescription(item) {
+  return item.why_it_matters || item.description || item.issue_details?.description;
+}
+
+/**
+ * Extract recommendation from CANON item (multiple possible fields)
+ */
+function extractCanonRecommendation(item) {
+  if (item.suggested_fix) return item.suggested_fix;
+  if (item.optimization?.description) return item.optimization.description;
+  if (item.remediation?.steps?.length) return item.remediation.steps.join("; ");
+  return undefined;
+}
+
+/**
+ * Filter dependencies to prevent self-references
+ */
+function filterSelfDependencies(dependencies, selfId) {
+  if (!dependencies?.length) return [];
+  return dependencies.filter((dep) => dep !== selfId);
+}
+
+/**
  * Normalize a CANON finding to master schema
  */
 function normalizeCanon(item, sourceFile) {
@@ -394,26 +419,18 @@ function normalizeCanon(item, sourceFile) {
     severity: item.severity,
     effort: item.effort,
     confidence: normalizeConfidence(item.confidence || item.final_confidence),
-    file: item.files ? item.files[0] : undefined,
+    file: item.files?.[0],
     files: item.files,
     symbols: item.symbols,
-    description: item.why_it_matters || item.description || item.issue_details?.description,
-    recommendation:
-      item.suggested_fix || item.optimization?.description || item.remediation?.steps?.join("; "),
+    description: extractCanonDescription(item),
+    recommendation: extractCanonRecommendation(item),
     evidence: item.evidence,
     pr_bucket_suggestion: item.pr_bucket_suggestion || item.pr_bucket,
-    // Filter out self-dependencies to prevent infinite loops (Qodo Review #176)
-    dependencies: item.dependencies?.filter((dep) => dep !== item.canonical_id) || [],
+    dependencies: filterSelfDependencies(item.dependencies, item.canonical_id),
     status: item.status,
     consensus_score: item.consensus_score || item.consensus,
     models_agreeing: item.models_agreeing,
-    sources: [
-      {
-        type: "canon",
-        id: item.canonical_id,
-        file: sourceFile,
-      },
-    ],
+    sources: [{ type: "canon", id: item.canonical_id, file: sourceFile }],
   };
 }
 
@@ -682,6 +699,24 @@ function parseCanonFiles(allFindings, stats) {
 // ============================================================================
 
 /**
+ * Add a value to a Map<key, array> index
+ */
+function addToMapIndex(map, key, value) {
+  if (!key) return;
+  if (!map.has(key)) map.set(key, []);
+  map.get(key).push(value);
+}
+
+/**
+ * Get all files from a finding (handles both .files array and single .file)
+ */
+function getFilesFromFinding(finding) {
+  if (finding.files?.length) return finding.files;
+  if (finding.file) return [finding.file];
+  return [];
+}
+
+/**
  * Build lookup indices for findings deduplication.
  * Returns fileIndex, categoryIndex, and idToIndex maps for O(1) lookups.
  */
@@ -694,31 +729,19 @@ function buildFindingIndices(findings) {
     const f = findings[i];
 
     // Index by all files (including merged files array)
-    const files = f.files?.length ? f.files : f.file ? [f.file] : [];
-    for (const file of files) {
-      if (!file) continue;
-      if (!fileIndex.has(file)) fileIndex.set(file, []);
-      fileIndex.get(file).push(i);
+    for (const file of getFilesFromFinding(f)) {
+      addToMapIndex(fileIndex, file, i);
     }
 
     // Index by category
-    if (f.category) {
-      if (!categoryIndex.has(f.category)) categoryIndex.set(f.category, []);
-      categoryIndex.get(f.category).push(i);
-    }
+    addToMapIndex(categoryIndex, f.category, i);
 
     // Index by original_id
-    if (f.original_id) {
-      idToIndex.set(f.original_id, i);
-    }
+    if (f.original_id) idToIndex.set(f.original_id, i);
 
     // Also index merged_from IDs for stable dependency lookups (Qodo Review #175)
-    if (f.merged_from?.length) {
-      for (const mergedId of f.merged_from) {
-        if (mergedId && !idToIndex.has(mergedId)) {
-          idToIndex.set(mergedId, i);
-        }
-      }
+    for (const mergedId of f.merged_from || []) {
+      if (mergedId && !idToIndex.has(mergedId)) idToIndex.set(mergedId, i);
     }
   }
 

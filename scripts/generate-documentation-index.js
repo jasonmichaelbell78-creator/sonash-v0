@@ -165,6 +165,36 @@ function escapeTableCell(text) {
 }
 
 /**
+ * Check if an entry should be skipped based on exclude patterns
+ * @param {string} entry - Directory entry name
+ * @param {string} relativePath - Relative path from root
+ * @returns {boolean} True if entry should be skipped
+ */
+function shouldSkipEntry(entry, relativePath) {
+  return CONFIG.excludeDirs.some(
+    (exc) => entry === exc || relativePath === exc || relativePath.startsWith(exc + "/")
+  );
+}
+
+/**
+ * Safely get lstat for a path
+ * @param {string} fullPath - Full file path
+ * @param {string} relativePath - Relative path for logging
+ * @returns {{stat: object|null, isSymlink: boolean}} Stat result
+ */
+function safeStatEntry(fullPath, relativePath) {
+  try {
+    const stat = lstatSync(fullPath);
+    return { stat, isSymlink: stat.isSymbolicLink() };
+  } catch (error) {
+    if (verbose && !jsonOutput) {
+      console.error(`   Warning: Cannot stat ${relativePath}: ${error.code || "unknown error"}`);
+    }
+    return { stat: null, isSymlink: false };
+  }
+}
+
+/**
  * Find all markdown files in the repository
  * Returns { active: [], archived: [] }
  */
@@ -190,46 +220,23 @@ function findMarkdownFiles(dir, result = { active: [], archived: [] }) {
     const relativePath = relative(ROOT, fullPath).replace(/\\/g, "/"); // Cross-platform normalization
 
     // Skip excluded directories (with proper boundary check)
-    if (
-      CONFIG.excludeDirs.some(
-        (exc) => entry === exc || relativePath === exc || relativePath.startsWith(exc + "/")
-      )
-    ) {
-      continue;
-    }
+    if (shouldSkipEntry(entry, relativePath)) continue;
 
     // Use lstatSync to detect symlinks without following them
-    let lstat;
-    try {
-      lstat = lstatSync(fullPath);
-    } catch (error) {
-      // Handle permission denied, broken symlinks, etc.
-      if (verbose && !jsonOutput) {
-        console.error(`   Warning: Cannot stat ${relativePath}: ${error.code || "unknown error"}`);
-      }
-      continue;
-    }
+    const { stat, isSymlink } = safeStatEntry(fullPath, relativePath);
+    if (!stat) continue;
 
     // Skip symlinks to prevent recursion and escape
-    if (lstat.isSymbolicLink()) {
-      if (verbose && !jsonOutput) {
-        console.log(`   Skipping symlink: ${relativePath}`);
-      }
+    if (isSymlink) {
+      if (verbose && !jsonOutput) console.log(`   Skipping symlink: ${relativePath}`);
       continue;
     }
 
-    if (lstat.isDirectory()) {
+    if (stat.isDirectory()) {
       findMarkdownFiles(fullPath, result);
-    } else if (extname(entry).toLowerCase() === ".md") {
-      // Skip excluded files
-      if (!CONFIG.excludeFiles.includes(entry)) {
-        // Separate archived from active
-        if (isArchived(relativePath)) {
-          result.archived.push(relativePath);
-        } else {
-          result.active.push(relativePath);
-        }
-      }
+    } else if (extname(entry).toLowerCase() === ".md" && !CONFIG.excludeFiles.includes(entry)) {
+      // Categorize as active or archived
+      (isArchived(relativePath) ? result.archived : result.active).push(relativePath);
     }
   }
 
@@ -559,47 +566,12 @@ function buildReferenceGraph(docs) {
 }
 
 /**
- * Generate markdown output
+ * Generate summary statistics section
+ * @param {Array} docs - Processed documents
+ * @returns {string[]} Lines for the summary section
  */
-function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
+function generateSummaryStats(docs) {
   const lines = [];
-  const now = new Date().toISOString().split("T")[0];
-
-  // Create path->doc lookup Map for O(1) lookups instead of O(n) docs.find()
-  const docsByPath = new Map(docs.map((d) => [d.path, d]));
-
-  // Header
-  lines.push("# Documentation Index");
-  lines.push("");
-  lines.push(
-    "> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate."
-  );
-  lines.push("");
-  lines.push(`**Generated:** ${now}`);
-  lines.push(`**Active Documents:** ${docs.length}`);
-  lines.push(`**Archived Documents:** ${archivedFiles.length}`);
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-
-  // Table of Contents
-  lines.push("## Table of Contents");
-  lines.push("");
-  lines.push("1. [Summary Statistics](#summary-statistics)");
-  lines.push("2. [Documents by Category](#documents-by-category)");
-  lines.push("3. [Reference Graph](#reference-graph)");
-  lines.push("4. [Orphaned Documents](#orphaned-documents)");
-  lines.push("5. [Full Document List](#full-document-list)");
-  lines.push("6. [Archived Documents](#archived-documents)");
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-
-  // Summary Statistics
-  lines.push("## Summary Statistics");
-  lines.push("");
-
-  // Count by category
   const categoryCount = new Map();
   const tierCount = new Map();
 
@@ -609,6 +581,8 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     tierCount.set(doc.category.tier, (tierCount.get(doc.category.tier) || 0) + 1);
   }
 
+  lines.push("## Summary Statistics");
+  lines.push("");
   lines.push("### By Tier");
   lines.push("");
   lines.push("| Tier | Count | Description |");
@@ -619,7 +593,6 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     lines.push(`| Tier ${tier} | ${count} | ${desc} |`);
   }
   lines.push("");
-
   lines.push("### By Category");
   lines.push("");
   lines.push("| Category | Count |");
@@ -631,8 +604,17 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push("");
   lines.push("---");
   lines.push("");
+  return lines;
+}
 
-  // Documents by Category
+/**
+ * Generate documents by category section
+ * @param {Array} docs - Processed documents
+ * @param {Map} referenceGraph - Reference graph
+ * @returns {string[]} Lines for the category section
+ */
+function generateDocsByCategorySection(docs, referenceGraph) {
+  const lines = [];
   lines.push("## Documents by Category");
   lines.push("");
 
@@ -656,7 +638,6 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
 
   for (const catKey of sortedCategoryKeys) {
     const { category, docs: catDocs } = byCategory.get(catKey);
-
     lines.push(`### ${category.name} (Tier ${category.tier})`);
     lines.push("");
     lines.push(`*${category.description}*`);
@@ -664,31 +645,35 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     lines.push("| Document | Description | References | Last Modified |");
     lines.push("|----------|-------------|------------|---------------|");
 
-    // Sort docs by name
     catDocs.sort((a, b) => a.title.localeCompare(b.title));
-
     for (const doc of catDocs) {
       const refs = referenceGraph.get(doc.path);
       const inCount = refs ? refs.inbound.length : 0;
       const outCount = refs ? refs.outbound.length : 0;
       const refStr = `↓${inCount} ↑${outCount}`;
-      // Escape pipe characters in description for markdown table
       let desc = doc.description
         ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
         : "-";
       desc = desc.replace(/\|/g, "\\|");
       const linkPath = encodeURI(doc.path);
-      // Escape pipe characters in title for markdown table
       const safeTitle = doc.title.replace(/\|/g, "\\|");
       lines.push(`| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`);
     }
     lines.push("");
   }
-
   lines.push("---");
   lines.push("");
+  return lines;
+}
 
-  // Reference Graph - Most Connected
+/**
+ * Generate reference graph section (inbound and outbound)
+ * @param {Map} referenceGraph - Reference graph
+ * @param {Map} docsByPath - Document lookup map
+ * @returns {string[]} Lines for the reference graph section
+ */
+function generateReferenceGraphSection(referenceGraph, docsByPath) {
+  const lines = [];
   lines.push("## Reference Graph");
   lines.push("");
   lines.push("### Most Referenced Documents (Inbound Links)");
@@ -739,6 +724,54 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push("");
   lines.push("---");
   lines.push("");
+  return lines;
+}
+
+/**
+ * Generate markdown output
+ */
+function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
+  const lines = [];
+  const now = new Date().toISOString().split("T")[0];
+
+  // Create path->doc lookup Map for O(1) lookups instead of O(n) docs.find()
+  const docsByPath = new Map(docs.map((d) => [d.path, d]));
+
+  // Header
+  lines.push("# Documentation Index");
+  lines.push("");
+  lines.push(
+    "> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate."
+  );
+  lines.push("");
+  lines.push(`**Generated:** ${now}`);
+  lines.push(`**Active Documents:** ${docs.length}`);
+  lines.push(`**Archived Documents:** ${archivedFiles.length}`);
+  lines.push("");
+  lines.push("---");
+  lines.push("");
+
+  // Table of Contents
+  lines.push("## Table of Contents");
+  lines.push("");
+  lines.push("1. [Summary Statistics](#summary-statistics)");
+  lines.push("2. [Documents by Category](#documents-by-category)");
+  lines.push("3. [Reference Graph](#reference-graph)");
+  lines.push("4. [Orphaned Documents](#orphaned-documents)");
+  lines.push("5. [Full Document List](#full-document-list)");
+  lines.push("6. [Archived Documents](#archived-documents)");
+  lines.push("");
+  lines.push("---");
+  lines.push("");
+
+  // Summary Statistics (extracted helper)
+  lines.push(...generateSummaryStats(docs));
+
+  // Documents by Category (extracted helper)
+  lines.push(...generateDocsByCategorySection(docs, referenceGraph));
+
+  // Reference Graph (extracted helper)
+  lines.push(...generateReferenceGraphSection(referenceGraph, docsByPath));
 
   // Orphaned Documents
   lines.push("## Orphaned Documents");
