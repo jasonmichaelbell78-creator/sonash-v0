@@ -26,6 +26,13 @@ interface FileProcessResult {
   error: boolean;
 }
 
+interface HealthCheckResult {
+  status: "healthy" | "warning" | "critical";
+  message: string;
+}
+
+type OverallStatus = "healthy" | "warning" | "critical";
+
 // ============================================================================
 // Storage Cleanup Helpers
 // ============================================================================
@@ -633,6 +640,118 @@ export const scheduledPruneSecurityEvents = onSchedule(
   }
 );
 
+// ============================================================================
+// Health Check Helpers
+// ============================================================================
+
+/**
+ * Updates overall status to the more severe level
+ */
+function updateOverallStatus(current: OverallStatus, checkStatus: OverallStatus): OverallStatus {
+  if (checkStatus === "critical") return "critical";
+  if (checkStatus === "warning" && current === "healthy") return "warning";
+  return current;
+}
+
+/**
+ * Check error rate in last 6 hours
+ */
+async function checkErrorRateHealth(
+  db: FirebaseFirestore.Firestore,
+  sixHoursAgo: Date
+): Promise<HealthCheckResult> {
+  const errorCountQuery = await db
+    .collection("security_logs")
+    .where("severity", "==", "ERROR")
+    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sixHoursAgo))
+    .count()
+    .get();
+  const errorCount = errorCountQuery.data().count;
+
+  if (errorCount > 100) {
+    return {
+      status: "critical",
+      message: `High error rate: ${errorCount} errors in last 6 hours`,
+    };
+  }
+  if (errorCount > 20) {
+    return {
+      status: "warning",
+      message: `Elevated error rate: ${errorCount} errors in last 6 hours`,
+    };
+  }
+  return {
+    status: "healthy",
+    message: `Error rate normal: ${errorCount} errors in last 6 hours`,
+  };
+}
+
+/**
+ * Check for failed jobs in last 24 hours
+ */
+async function checkJobStatusHealth(
+  db: FirebaseFirestore.Firestore,
+  oneDayAgo: Date
+): Promise<HealthCheckResult> {
+  const failedJobsQuery = await db
+    .collection("admin_jobs")
+    .where("lastRunStatus", "==", "failed")
+    .where("lastRun", ">=", admin.firestore.Timestamp.fromDate(oneDayAgo))
+    .get();
+
+  if (failedJobsQuery.docs.length > 0) {
+    const failedJobNames = failedJobsQuery.docs.map((d) => d.data().name || d.id).join(", ");
+    return {
+      status: "warning",
+      message: `Failed jobs in last 24h: ${failedJobNames}`,
+    };
+  }
+  return {
+    status: "healthy",
+    message: "All jobs running successfully",
+  };
+}
+
+/**
+ * Check user activity in last 6 hours
+ */
+async function checkUserActivityHealth(
+  db: FirebaseFirestore.Firestore,
+  sixHoursAgo: Date
+): Promise<HealthCheckResult> {
+  const activeUsersQuery = await db
+    .collection("users")
+    .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(sixHoursAgo))
+    .count()
+    .get();
+  const activeUserCount = activeUsersQuery.data().count;
+
+  return {
+    status: "healthy",
+    message: `${activeUserCount} active users in last 6 hours`,
+  };
+}
+
+/**
+ * Check Firestore connectivity
+ */
+async function checkFirestoreHealth(db: FirebaseFirestore.Firestore): Promise<HealthCheckResult> {
+  try {
+    await db.collection("_health").doc("check").set({
+      lastCheck: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    return {
+      status: "healthy",
+      message: "Firestore connection healthy",
+    };
+  } catch {
+    return {
+      status: "critical",
+      message: "Firestore connection failed",
+    };
+  }
+}
+
 /**
  * A14: Health Check Notifications
  * Monitors system health: Firebase quotas, error rates, job status
@@ -644,88 +763,27 @@ export async function healthCheckNotifications(): Promise<{
 }> {
   const db = admin.firestore();
   const checks: Record<string, { status: string; message: string }> = {};
-  let overallStatus: "healthy" | "warning" | "critical" = "healthy";
+  let overallStatus: OverallStatus = "healthy";
 
-  // Check 1: Error rate in last 6 hours
+  // Time thresholds
   const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-  const errorCountQuery = await db
-    .collection("security_logs")
-    .where("severity", "==", "ERROR")
-    .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(sixHoursAgo))
-    .count()
-    .get();
-  const errorCount = errorCountQuery.data().count;
-
-  if (errorCount > 100) {
-    checks["errorRate"] = {
-      status: "critical",
-      message: `High error rate: ${errorCount} errors in last 6 hours`,
-    };
-    overallStatus = "critical";
-  } else if (errorCount > 20) {
-    checks["errorRate"] = {
-      status: "warning",
-      message: `Elevated error rate: ${errorCount} errors in last 6 hours`,
-    };
-    if (overallStatus === "healthy") overallStatus = "warning";
-  } else {
-    checks["errorRate"] = {
-      status: "healthy",
-      message: `Error rate normal: ${errorCount} errors in last 6 hours`,
-    };
-  }
-
-  // Check 2: Failed jobs in last 24 hours
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const failedJobsQuery = await db
-    .collection("admin_jobs")
-    .where("lastRunStatus", "==", "failed")
-    .where("lastRun", ">=", admin.firestore.Timestamp.fromDate(oneDayAgo))
-    .get();
 
-  if (failedJobsQuery.docs.length > 0) {
-    const failedJobNames = failedJobsQuery.docs.map((d) => d.data().name || d.id).join(", ");
-    checks["jobStatus"] = {
-      status: "warning",
-      message: `Failed jobs in last 24h: ${failedJobNames}`,
-    };
-    if (overallStatus === "healthy") overallStatus = "warning";
-  } else {
-    checks["jobStatus"] = {
-      status: "healthy",
-      message: "All jobs running successfully",
-    };
-  }
+  // Run all health checks using extracted helpers
+  const errorRateResult = await checkErrorRateHealth(db, sixHoursAgo);
+  checks["errorRate"] = errorRateResult;
+  overallStatus = updateOverallStatus(overallStatus, errorRateResult.status);
 
-  // Check 3: User activity (ensure users are active)
-  const activeUsersQuery = await db
-    .collection("users")
-    .where("lastActive", ">=", admin.firestore.Timestamp.fromDate(sixHoursAgo))
-    .count()
-    .get();
-  const activeUserCount = activeUsersQuery.data().count;
+  const jobStatusResult = await checkJobStatusHealth(db, oneDayAgo);
+  checks["jobStatus"] = jobStatusResult;
+  overallStatus = updateOverallStatus(overallStatus, jobStatusResult.status);
 
-  checks["userActivity"] = {
-    status: "healthy",
-    message: `${activeUserCount} active users in last 6 hours`,
-  };
+  const userActivityResult = await checkUserActivityHealth(db, sixHoursAgo);
+  checks["userActivity"] = userActivityResult;
 
-  // Check 4: Database connectivity
-  try {
-    await db.collection("_health").doc("check").set({
-      lastCheck: admin.firestore.FieldValue.serverTimestamp(),
-    });
-    checks["firestore"] = {
-      status: "healthy",
-      message: "Firestore connection healthy",
-    };
-  } catch {
-    checks["firestore"] = {
-      status: "critical",
-      message: "Firestore connection failed",
-    };
-    overallStatus = "critical";
-  }
+  const firestoreResult = await checkFirestoreHealth(db);
+  checks["firestore"] = firestoreResult;
+  overallStatus = updateOverallStatus(overallStatus, firestoreResult.status);
 
   // Store health check result
   await db.collection("system").doc("health").set({
