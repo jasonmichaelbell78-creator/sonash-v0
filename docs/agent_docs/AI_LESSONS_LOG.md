@@ -12,6 +12,7 @@ AI_REVIEW_LEARNINGS_LOG.md which tracks PR review learnings.
 
 1. [SonarCloud Cleanup Sprint](#sonarcloud-cleanup-sprint)
    - [PR 1: Mechanical Fixes](#pr-1-mechanical-fixes-2026-01-19)
+   - [PR 2: Critical Issues (Partial)](#pr-2-critical-issues-partial-2026-01-19)
 
 ---
 
@@ -155,5 +156,145 @@ adding constants, ensure they're defined before first use.
 | Commits            | 10    |
 | False Positives    | 0     |
 | Issues Dismissed   | 4     |
+
+---
+
+### PR 2: Critical Issues (Partial) (2026-01-19)
+
+**Issues Resolved**: ~20 (6 rules across 7 files)
+
+**Summary**: Addressed high-impact critical issues including cognitive
+complexity refactoring of the two worst offenders (complexity 42 and 34), void
+operator removal, and mutable export fixes. Remaining critical issues (S2004
+nested functions, additional S3776 complexity) deferred to follow-up.
+
+---
+
+#### Patterns Discovered
+
+##### 1. Cognitive Complexity Accumulates in Job Functions
+
+**Description**: Background job functions (`cleanupOrphanedStorageFiles`,
+`hardDeleteSoftDeletedUsers`) accumulated high complexity (34-42) due to:
+
+- Pagination loops with nested file processing
+- Multiple nested try/catch for resilience
+- Inline conditional logic for error handling
+
+- **Root Cause**: Jobs grew organically to handle edge cases without refactoring
+- **Scale**: 2 functions with combined complexity of 76
+- **Prevention**: Add complexity threshold check to PR reviews for job files
+
+##### 2. Void Operator Pattern in React Hooks
+
+**Description**: `void asyncFunction()` pattern used extensively in useEffect
+and event handlers to explicitly ignore promise returns.
+
+- **Root Cause**: TypeScript strict mode requires handling async returns
+- **Scale**: 12 issues across 4 files
+- **Prevention**: Remove `void` and let TypeScript infer (or use ESLint rule)
+
+##### 3. Mutable Let Exports for SSR Conditional Initialization
+
+**Description**: `let app; let auth; let db;` pattern used to conditionally
+initialize Firebase instances for browser vs server.
+
+- **Root Cause**: Need different values based on runtime environment
+- **Scale**: 3 issues in lib/firebase.ts
+- **Prevention**: Use factory function returning const destructured values
+
+---
+
+#### Fix Techniques
+
+| Rule  | Technique                          | Example                                                  |
+| ----- | ---------------------------------- | -------------------------------------------------------- |
+| S3776 | Extract helper functions           | `processStorageFile()`, `performHardDeleteForUser()`     |
+| S3776 | Separate concerns into focused fns | `isFileReferencedInJournal()`, `deleteUserAuthAccount()` |
+| S3735 | Remove void operator               | `void loadLinks()` → `loadLinks()`                       |
+| S6861 | Use factory function for init      | `const { app, auth, db } = initializeFirebaseExports()`  |
+| S2871 | Add explicit compare function      | `.sort()` → `.sort((a, b) => a.localeCompare(b))`        |
+
+---
+
+#### Refactoring Patterns Applied
+
+##### Helper Extraction for Complexity Reduction
+
+Before (complexity 34):
+
+```ts
+export async function cleanupOrphanedStorageFiles() {
+  // 100+ lines with nested loops, try/catch, conditionals
+}
+```
+
+After (complexity ~12):
+
+```ts
+// Focused helpers
+function extractUserIdFromPath(filePath: string): string | null { ... }
+async function isFileOlderThan(file: File, days: number): Promise<boolean> { ... }
+async function isFileReferencedInJournal(file, userId, db): Promise<boolean> { ... }
+async function processStorageFile(file, userIds, db, onError): Promise<FileProcessResult> { ... }
+
+// Main function now delegates
+export async function cleanupOrphanedStorageFiles() {
+  // Simple loop calling processStorageFile()
+}
+```
+
+**Lesson**: Each helper should do one thing. Names should describe the
+check/action.
+
+---
+
+#### False Positives Identified
+
+None in PR 2 - all issues were valid and fixable.
+
+---
+
+#### Recommendations for claude.md
+
+- [ ] Add cognitive complexity check for functions/src/\*.ts files
+- [ ] Consider adding "no void operator" ESLint rule
+- [ ] Document factory function pattern for SSR-safe exports
+
+---
+
+#### Files Modified
+
+**Firebase Functions (1 file)**:
+
+- `functions/src/jobs.ts` - Major refactoring of job functions
+
+**React Components (3 files)**:
+
+- `components/admin/links-tab.tsx` - Remove void operators
+- `components/admin/prayers-tab.tsx` - Remove void operators
+- `components/admin/logs-tab.tsx` - Remove void operators
+
+**Hooks and Libraries (2 files)**:
+
+- `lib/hooks/use-tab-refresh.ts` - Remove void operator
+- `lib/firebase.ts` - Refactor mutable exports
+
+**Scripts (1 file)**:
+
+- `scripts/sync-geocache.ts` - Add compare function to sort
+
+---
+
+#### Metrics
+
+| Metric             | Value                               |
+| ------------------ | ----------------------------------- |
+| Total Issues Fixed | ~20                                 |
+| Files Modified     | 7                                   |
+| Rules Addressed    | 6                                   |
+| Commits            | 2                                   |
+| False Positives    | 0                                   |
+| Deferred Issues    | ~90 (S3776: 80, S2004: 5, S2871: 3) |
 
 ---
