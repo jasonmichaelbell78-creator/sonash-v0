@@ -127,6 +127,72 @@ function extractDeliverablesFromPlan(planContent) {
 }
 
 /**
+ * Check if relative path indicates path traversal
+ * @param {string} rel - Relative path
+ * @returns {boolean} True if path traversal detected
+ */
+function isPathTraversal(rel) {
+  return rel === "" || /^\.\.(?:[/\\]|$)/.test(rel) || path.isAbsolute(rel);
+}
+
+/**
+ * Check archive directory for a file
+ * @param {object} deliverable - Deliverable object with path
+ * @param {string} projectRoot - Project root directory
+ * @returns {{found: boolean, reason?: string}} Archive check result
+ */
+function checkArchiveForFile(deliverable, projectRoot) {
+  const archiveRoot = path.join(projectRoot, "docs/archive");
+  const isWithinArchive = (candidate) => {
+    const resolved = path.resolve(candidate);
+    const rel = path.relative(archiveRoot, resolved);
+    return rel && !isPathTraversal(rel);
+  };
+
+  // Try exact relative path first
+  const archivePathExact = path.join(archiveRoot, deliverable.path);
+  try {
+    if (isWithinArchive(archivePathExact)) {
+      fs.statSync(archivePathExact);
+      return { found: true, reason: "Archived" };
+    }
+  } catch {
+    // Continue to basename fallback
+  }
+
+  // Fall back to basename-only check
+  const archivePathBasename = path.join(archiveRoot, path.basename(deliverable.path));
+  try {
+    if (isWithinArchive(archivePathBasename)) {
+      fs.statSync(archivePathBasename);
+      return { found: true, reason: "Archived" };
+    }
+  } catch {
+    // File not found
+  }
+  return { found: false };
+}
+
+/**
+ * Normalize a deliverable path
+ * @param {object} d - Deliverable object
+ * @returns {object} Deliverable with normalized path
+ */
+function normalizeDeliverablePath(d) {
+  return {
+    ...d,
+    path: d.path
+      .replace(/\\/g, "/")
+      .trim()
+      .replace(/^\.\/+/, "")
+      .replace(/^`(.+)`$/, "$1")
+      .replace(/^"(.+)"$/, "$1")
+      .replace(/^'(.+)'$/, "$1")
+      .replace(/[)`"'.,;:]+$/g, ""),
+  };
+}
+
+/**
  * Verify deliverable exists and has content
  * Security: Prevents path traversal by ensuring resolved path stays within projectRoot
  */
@@ -137,23 +203,17 @@ function verifyDeliverable(deliverable, projectRoot) {
   }
 
   const resolvedPath = path.resolve(projectRoot, deliverable.path);
-
-  // Security: Prevent path traversal using path.relative() (cross-platform safe)
-  // Use regex for traversal detection (Review #53)
   const rel = path.relative(projectRoot, resolvedPath);
-  if (rel === "" || /^\.\.(?:[/\\]|$)/.test(rel) || path.isAbsolute(rel)) {
+  if (isPathTraversal(rel)) {
     return { exists: false, valid: false, reason: "Invalid path (outside project root)" };
   }
 
-  const fullPath = resolvedPath;
   let stat;
-
   try {
-    stat = fs.statSync(fullPath);
+    stat = fs.statSync(resolvedPath);
   } catch (err) {
     if (err.code === "ENOENT") {
-      // File doesn't exist - check if it's in docs/archive (might be archived)
-      // Skip archive lookup if path already points to docs/archive (avoid double-nesting)
+      // Check if path already points to docs/archive
       const normalizedPath = deliverable.path.replace(/\\/g, "/");
       if (
         normalizedPath.startsWith("docs/archive/") ||
@@ -161,65 +221,70 @@ function verifyDeliverable(deliverable, projectRoot) {
       ) {
         return { exists: false, valid: false, reason: "File not found (already in archive path)" };
       }
-
-      // Try exact relative path first to avoid false positives
-      const archiveRoot = path.join(projectRoot, "docs/archive");
-
-      // Containment check to prevent path traversal in archive lookups
-      // Use regex for traversal detection (Review #53)
-      const isWithinArchive = (candidate) => {
-        const resolved = path.resolve(candidate);
-        const rel = path.relative(archiveRoot, resolved);
-        return rel && !/^\.\.(?:[/\\]|$)/.test(rel) && !path.isAbsolute(rel);
-      };
-
-      const archivePathExact = path.join(archiveRoot, deliverable.path);
-      try {
-        if (isWithinArchive(archivePathExact)) {
-          fs.statSync(archivePathExact);
-          return { exists: true, valid: true, reason: "Archived" };
-        }
-      } catch {
-        // Continue to basename fallback
-      }
-
-      // Fall back to basename-only check
-      const archivePathBasename = path.join(archiveRoot, path.basename(deliverable.path));
-      try {
-        if (isWithinArchive(archivePathBasename)) {
-          fs.statSync(archivePathBasename);
-          return { exists: true, valid: true, reason: "Archived" };
-        }
-      } catch {
-        // File not found
+      // Check archive for file
+      const archiveResult = checkArchiveForFile(deliverable, projectRoot);
+      if (archiveResult.found) {
+        return { exists: true, valid: true, reason: archiveResult.reason };
       }
       return { exists: false, valid: false, reason: "File not found" };
     }
-    // Other error (permissions, etc.)
     return { exists: false, valid: false, reason: "Error checking file status" };
   }
 
   try {
     if (stat.isFile()) {
-      const content = fs.readFileSync(fullPath, "utf-8");
+      const content = fs.readFileSync(resolvedPath, "utf-8");
       if (content.trim().length < 10) {
         return { exists: true, valid: false, reason: "File exists but appears empty" };
       }
       return { exists: true, valid: true };
-    } else if (stat.isDirectory()) {
-      // Check directory is not empty
-      const files = fs.readdirSync(fullPath);
-      if (files.length === 0) {
-        return { exists: true, valid: false, reason: "Directory exists but is empty" };
-      }
-      return { exists: true, valid: true, reason: "Directory exists" };
     }
-  } catch (err) {
-    // Error reading file content or directory
+    if (stat.isDirectory()) {
+      const files = fs.readdirSync(resolvedPath);
+      return files.length === 0
+        ? { exists: true, valid: false, reason: "Directory exists but is empty" }
+        : { exists: true, valid: true, reason: "Directory exists" };
+    }
+  } catch {
     return { exists: true, valid: false, reason: "File exists but could not be read" };
   }
 
   return { exists: false, valid: false, reason: "Unknown file type" };
+}
+
+/**
+ * Create result for missing or unreadable plan file
+ * @param {boolean} planWasProvided - Whether --plan was explicitly specified
+ * @param {boolean} isAutoMode - Whether running in CI/auto mode
+ * @param {string} warningMessage - Warning message to include
+ * @returns {{passed: boolean, verified: number, missing: Array, warnings: Array}}
+ */
+function createPlanErrorResult(planWasProvided, isAutoMode, warningMessage) {
+  const isFatal = planWasProvided || isAutoMode;
+  return {
+    passed: !isFatal,
+    verified: 0,
+    missing: [],
+    warnings: [warningMessage],
+  };
+}
+
+/**
+ * Process a single deliverable verification result
+ * @param {object} verifyResult - Result from verifyDeliverable
+ * @param {object} deliverable - Deliverable being checked
+ * @param {object} results - Results object to update
+ */
+function processDeliverableResult(verifyResult, deliverable, results) {
+  if (verifyResult.exists && verifyResult.valid) {
+    results.verified++;
+  } else if (!verifyResult.exists) {
+    results.missing.push(deliverable.path);
+    if (deliverable.required) results.passed = false;
+  } else {
+    results.warnings.push(`${deliverable.path}: ${verifyResult.reason}`);
+    if (deliverable.required) results.passed = false;
+  }
 }
 
 /**
@@ -237,17 +302,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
   if (!planPath || !fs.existsSync(planPath)) {
     console.log("  ⚠️  No plan file specified or file not found");
     console.log("     Use --plan <path> to specify a plan document");
-
-    // If plan explicitly requested or in auto mode, treat missing plan as failure
-    if (planWasProvided || isAutoMode) {
-      return { passed: false, verified: 0, missing: [], warnings: ["Plan file not found"] };
-    }
-    return {
-      passed: true,
-      verified: 0,
-      missing: [],
-      warnings: ["No plan file for automated audit"],
-    };
+    return createPlanErrorResult(planWasProvided, isAutoMode, "Plan file not found");
   }
 
   // Log relative path to avoid exposing filesystem info in CI logs
@@ -268,16 +323,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
     planContent = fs.readFileSync(planPath, "utf-8");
   } catch (err) {
     console.log(`  ⚠️  Could not read plan file: ${err.code || "unknown error"}`);
-    // If plan explicitly requested or in auto mode, treat unreadable as failure
-    if (planWasProvided || isAutoMode) {
-      return { passed: false, verified: 0, missing: [], warnings: ["Unable to read plan file"] };
-    }
-    return {
-      passed: true,
-      verified: 0,
-      missing: [],
-      warnings: ["Unable to read plan file for automated audit"],
-    };
+    return createPlanErrorResult(planWasProvided, isAutoMode, "Unable to read plan file");
   }
   const deliverables = extractDeliverablesFromPlan(planContent);
 
@@ -292,21 +338,10 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
   };
 
   // Normalize paths: handle quotes, backticks, ./ prefix, trailing punctuation
-  // Note: Don't filter by extension - directories are valid deliverables
   const normalizedDeliverables = deliverables
-    .map((d) => ({
-      ...d,
-      path: d.path
-        .replace(/\\/g, "/") // Normalize backslashes
-        .trim() // Remove whitespace
-        .replace(/^\.\/+/, "") // Remove leading ./
-        .replace(/^`(.+)`$/, "$1") // Remove backticks
-        .replace(/^"(.+)"$/, "$1") // Remove double quotes
-        .replace(/^'(.+)'$/, "$1") // Remove single quotes
-        .replace(/[)`"'.,;:]+$/g, ""), // Remove trailing punctuation
-    }))
+    .map(normalizeDeliverablePath)
     .filter((d) => d.path.length > 0)
-    .filter((d) => !d.path.replace(/\\/g, "/").split("/").includes("..")); // Reject path traversal (cross-platform)
+    .filter((d) => !d.path.split("/").includes("..")); // Reject path traversal
 
   const MAX_CHECKS = 20;
   const wasTruncated = normalizedDeliverables.length > MAX_CHECKS;
@@ -324,21 +359,7 @@ function runAutomatedDeliverableAudit(planPath, projectRoot, isAutoMode, planWas
 
   for (const deliverable of relevantDeliverables) {
     const result = verifyDeliverable(deliverable, projectRoot);
-
-    if (result.exists && result.valid) {
-      results.verified++;
-    } else if (!result.exists) {
-      results.missing.push(deliverable.path);
-      if (deliverable.required) {
-        results.passed = false;
-      }
-    } else {
-      // File exists but is invalid (empty, unreadable, etc.)
-      results.warnings.push(`${deliverable.path}: ${result.reason}`);
-      if (deliverable.required) {
-        results.passed = false;
-      }
-    }
+    processDeliverableResult(result, deliverable, results);
   }
 
   console.log(`  ✅ Verified: ${results.verified} files exist`);

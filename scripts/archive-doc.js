@@ -468,6 +468,74 @@ Examples:
 }
 
 /**
+ * Check if path matches unsafe patterns (absolute, UNC)
+ * @param {string} fileArg - User-provided file path
+ * @returns {boolean} True if path is unsafe
+ */
+function isUnsafePathPattern(fileArg) {
+  const isAbsoluteUnix = fileArg.startsWith("/");
+  const isAbsoluteWindows = /^[A-Za-z]:/.test(fileArg);
+  const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
+  const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
+  return isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath;
+}
+
+/**
+ * Resolve source file path from user input
+ * @param {string} fileArg - User-provided file path
+ * @returns {{found: boolean, path: string|null}} Resolution result
+ */
+function resolveSourcePath(fileArg) {
+  if (existsSync(fileArg)) return { found: true, path: fileArg };
+  if (existsSync(join(ROOT, fileArg))) return { found: true, path: join(ROOT, fileArg) };
+  if (existsSync(join(DOCS_DIR, fileArg))) return { found: true, path: join(DOCS_DIR, fileArg) };
+  return { found: false, path: null };
+}
+
+/**
+ * Check if path is already in archive directory
+ * @param {string} path - File path to check
+ * @returns {boolean} True if already archived
+ */
+function isAlreadyArchived(path) {
+  return path.includes("/archive/") || path.includes("\\archive\\");
+}
+
+/**
+ * Validate source file can be archived
+ * @param {string} sourcePath - Source file path
+ * @param {string} archivePath - Destination archive path
+ * @returns {{valid: boolean, error?: string}} Validation result
+ */
+function validateCanArchive(sourcePath, archivePath) {
+  if (isAlreadyArchived(sourcePath)) {
+    return { valid: false, error: "File is already in the archive directory" };
+  }
+  if (existsSync(archivePath)) {
+    return {
+      valid: false,
+      error: `Destination already exists: ${archivePath}\n   Remove or rename the existing file first`,
+    };
+  }
+  return { valid: true };
+}
+
+/**
+ * Output cross-reference update results
+ * @param {{success: boolean, updated: Array, error?: string}} refResult - Update result
+ */
+function outputCrossRefResults(refResult) {
+  if (refResult.updated.length > 0) {
+    console.log(`Updated ${refResult.updated.length} references:`);
+    for (const update of refResult.updated) {
+      console.log(`  - ${relative(ROOT, update.file)}:${update.line}`);
+    }
+  } else {
+    console.log("No cross-references found to update");
+  }
+}
+
+/**
  * Main function
  */
 function main() {
@@ -483,31 +551,20 @@ function main() {
   }
 
   // SECURITY: Block absolute and UNC paths from user input
-  // Only relative paths (resolved against known safe directories) are allowed
-  const isAbsoluteUnix = FILE_ARG.startsWith("/");
-  const isAbsoluteWindows = /^[A-Za-z]:/.test(FILE_ARG);
-  const isWindowsRooted = FILE_ARG.startsWith("\\") && !FILE_ARG.startsWith("\\\\"); // Single backslash (e.g., \Windows)
-  const isUNCPath = FILE_ARG.startsWith("\\\\") || FILE_ARG.startsWith("//");
-
-  if (isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath) {
+  if (isUnsafePathPattern(FILE_ARG)) {
     console.error("❌ Security Error: Absolute or UNC paths are not allowed");
     console.error("   Please provide a relative path or filename");
     process.exit(1);
   }
 
   // Resolve file path
-  let sourcePath;
-  if (existsSync(FILE_ARG)) {
-    sourcePath = FILE_ARG;
-  } else if (existsSync(join(ROOT, FILE_ARG))) {
-    sourcePath = join(ROOT, FILE_ARG);
-  } else if (existsSync(join(DOCS_DIR, FILE_ARG))) {
-    sourcePath = join(DOCS_DIR, FILE_ARG);
-  } else {
+  const sourceResult = resolveSourcePath(FILE_ARG);
+  if (!sourceResult.found) {
     console.error(`❌ Error: File not found: ${FILE_ARG}`);
     console.error("   Searched in: current directory, project root, docs/");
     process.exit(1);
   }
+  const sourcePath = sourceResult.path;
 
   // SECURITY: Validate path is within repository root
   const pathValidation = validatePathWithinRepo(sourcePath);
@@ -525,16 +582,10 @@ function main() {
   console.log(`Destination: ${archivePath}`);
   console.log(`Reason: ${ARCHIVE_REASON}\n`);
 
-  // Check if already archived (cross-platform: handle both / and \ separators)
-  if (sourcePath.includes("/archive/") || sourcePath.includes("\\archive\\")) {
-    console.error("❌ Error: File is already in the archive directory");
-    process.exit(1);
-  }
-
-  // Check if destination exists
-  if (existsSync(archivePath)) {
-    console.error(`❌ Error: Destination already exists: ${archivePath}`);
-    console.error("   Remove or rename the existing file first");
+  // Check if file can be archived
+  const canArchive = validateCanArchive(sourcePath, archivePath);
+  if (!canArchive.valid) {
+    console.error(`❌ Error: ${canArchive.error}`);
     process.exit(1);
   }
 
@@ -589,14 +640,7 @@ function main() {
     process.exit(1);
   }
 
-  if (refResult.updated.length > 0) {
-    console.log(`Updated ${refResult.updated.length} references:`);
-    for (const update of refResult.updated) {
-      console.log(`  - ${relative(ROOT, update.file)}:${update.line}`);
-    }
-  } else {
-    console.log("No cross-references found to update");
-  }
+  outputCrossRefResults(refResult);
 
   // Step 7: Update ROADMAP_LOG.md if requested
   if (UPDATE_LOG) {

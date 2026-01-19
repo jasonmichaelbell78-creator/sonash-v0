@@ -248,6 +248,41 @@ function validateFile(filepath) {
   return result;
 }
 
+/**
+ * Print a limited list of items with truncation message
+ * @param {string} label - Section label
+ * @param {Array} items - Items to print
+ * @param {number} limit - Max items to show
+ * @param {string} color - ANSI color code
+ */
+function printLimitedList(label, items, limit, color) {
+  console.log(`${color}  ${label}:\x1b[0m`);
+  for (const item of items.slice(0, limit)) {
+    console.log(`    Line ${item.line}: [${item.field}] ${item.message}`);
+  }
+  if (items.length > limit) {
+    console.log(`    ... and ${items.length - limit} more ${label.toLowerCase()}`);
+  }
+}
+
+/**
+ * Print field coverage for a set of fields
+ * @param {object} result - Validation result
+ * @param {string[]} fields - Fields to report
+ * @param {boolean} isRequired - Whether fields are required
+ */
+function printFieldCoverageSection(result, fields, isRequired) {
+  const label = isRequired ? "Required" : "Recommended";
+  console.log(`    ${label}:`);
+  for (const field of fields) {
+    const count = result.fieldCoverage[field] || 0;
+    const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
+    const indicator =
+      pct === 100 ? "\x1b[32m✓\x1b[0m" : isRequired ? "\x1b[31m✗\x1b[0m" : "\x1b[33m○\x1b[0m";
+    console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
+  }
+}
+
 function printResult(result) {
   const status = result.isValid ? "\x1b[32m✓\x1b[0m" : "\x1b[31m✗\x1b[0m";
   console.log(
@@ -255,42 +290,17 @@ function printResult(result) {
   );
 
   if (result.errors.length > 0) {
-    console.log("\x1b[31m  Errors:\x1b[0m");
-    for (const err of result.errors.slice(0, 10)) {
-      console.log(`    Line ${err.line}: [${err.field}] ${err.message}`);
-    }
-    if (result.errors.length > 10) {
-      console.log(`    ... and ${result.errors.length - 10} more errors`);
-    }
+    printLimitedList("Errors", result.errors, 10, "\x1b[31m");
   }
 
   if (result.warnings.length > 0 && process.argv.includes("--verbose")) {
-    console.log("\x1b[33m  Warnings:\x1b[0m");
-    for (const warn of result.warnings.slice(0, 5)) {
-      console.log(`    Line ${warn.line}: [${warn.field}] ${warn.message}`);
-    }
-    if (result.warnings.length > 5) {
-      console.log(`    ... and ${result.warnings.length - 5} more warnings`);
-    }
+    printLimitedList("Warnings", result.warnings, 5, "\x1b[33m");
   }
 
-  // Field coverage summary (includes both required and recommended fields to match compliance calculation)
   if (process.argv.includes("--coverage")) {
     console.log("  Field Coverage:");
-    console.log("    Required:");
-    for (const field of REQUIRED_FIELDS) {
-      const count = result.fieldCoverage[field] || 0;
-      const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-      const indicator = pct === 100 ? "\x1b[32m✓\x1b[0m" : "\x1b[31m✗\x1b[0m";
-      console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
-    }
-    console.log("    Recommended:");
-    for (const field of RECOMMENDED_FIELDS) {
-      const count = result.fieldCoverage[field] || 0;
-      const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-      const indicator = pct === 100 ? "\x1b[32m✓\x1b[0m" : "\x1b[33m○\x1b[0m";
-      console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
-    }
+    printFieldCoverageSection(result, REQUIRED_FIELDS, true);
+    printFieldCoverageSection(result, RECOMMENDED_FIELDS, false);
   }
 }
 

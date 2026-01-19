@@ -74,6 +74,33 @@ function parseArgs() {
 }
 
 /**
+ * Topic detection patterns - maps file path patterns to topics
+ */
+const TOPIC_PATTERNS = [
+  { patterns: ["firebase", "firestore"], topic: "firebase" },
+  { patterns: ["auth"], topic: "auth" },
+  { patterns: ["test"], topic: "tests" },
+  { patterns: ["security"], topic: "security" },
+  { patterns: ["hook"], topic: "hooks" },
+  { patterns: ["api", "endpoint"], topic: "api" },
+  { patterns: [".yml", "workflow"], topic: "ci" },
+  { patterns: [".md", "doc"], topic: "docs" },
+];
+
+/**
+ * Detect topics from a file path
+ * @param {string} fileLower - Lowercase file path
+ * @param {Set} topics - Set to add detected topics to
+ */
+function detectTopicsFromFile(fileLower, topics) {
+  for (const { patterns, topic } of TOPIC_PATTERNS) {
+    if (patterns.some((p) => fileLower.includes(p))) {
+      topics.add(topic);
+    }
+  }
+}
+
+/**
  * Auto-detect topics from git changes
  * Cross-platform compatible (no shell-specific syntax)
  */
@@ -125,18 +152,7 @@ function detectTopicsFromGitChanges() {
     const detectedTopics = new Set();
 
     for (const file of changedFiles) {
-      const fileLower = file.toLowerCase();
-
-      // Detect topics from file paths
-      if (fileLower.includes("firebase") || fileLower.includes("firestore"))
-        detectedTopics.add("firebase");
-      if (fileLower.includes("auth")) detectedTopics.add("auth");
-      if (fileLower.includes("test")) detectedTopics.add("tests");
-      if (fileLower.includes("security")) detectedTopics.add("security");
-      if (fileLower.includes("hook")) detectedTopics.add("hooks");
-      if (fileLower.includes("api") || fileLower.includes("endpoint")) detectedTopics.add("api");
-      if (fileLower.includes(".yml") || fileLower.includes("workflow")) detectedTopics.add("ci");
-      if (fileLower.includes(".md") || fileLower.includes("doc")) detectedTopics.add("docs");
+      detectTopicsFromFile(file.toLowerCase(), detectedTopics);
     }
 
     return Array.from(detectedTopics);
