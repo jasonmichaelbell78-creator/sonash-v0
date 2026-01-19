@@ -14,8 +14,8 @@
  * - Proper error handling for missing/malformed config
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Get and validate project directory
 const safeBaseDir = path.resolve(process.cwd());

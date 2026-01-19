@@ -5,14 +5,14 @@ echo "📦 Bundling React app to single HTML artifact..."
 
 # Check if we're in a project directory
 if [ ! -f "package.json" ]; then
-  echo "❌ Error: No package.json found. Run this script from your project root."
+  echo "❌ Error: No package.json found. Run this script from your project root." >&2
   exit 1
 fi
 
 # Check if index.html exists
 if [ ! -f "index.html" ]; then
-  echo "❌ Error: No index.html found in project root."
-  echo "   This script requires an index.html entry point."
+  echo "❌ Error: No index.html found in project root." >&2
+  echo "   This script requires an index.html entry point." >&2
   exit 1
 fi
 

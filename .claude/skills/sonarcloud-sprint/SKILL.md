@@ -1,10 +1,10 @@
 ---
 name: sonarcloud-sprint
 description:
-  Run a SonarCloud cleanup sprint. Triggers re-analysis, queries current issues
-  via MCP tools, generates a prioritized issue report, creates a cleanup branch,
-  and tracks fixes with the TodoWrite tool. Use when starting a code quality
-  cleanup sprint or when you need a current snapshot of SonarCloud issues.
+  Run a SonarCloud cleanup sprint. Fetches fresh issues via public API,
+  generates a detailed report with code snippets, creates a cleanup branch, and
+  tracks fixes with the TodoWrite tool. Use when starting a code quality cleanup
+  sprint or when you need a current snapshot of SonarCloud issues.
 metadata:
   short-description: SonarCloud cleanup sprint workflow
 ---
@@ -15,18 +15,17 @@ metadata:
 
 Automate the SonarCloud analysis and cleanup workflow:
 
-1. Trigger a fresh analysis on the main branch
-2. Query issues via MCP tools
-3. Generate a prioritized report
-4. Create a cleanup branch
-5. Track fixes with TodoWrite
+1. Fetch fresh issues via SonarCloud public API (no token needed for read)
+2. Generate detailed report with code snippets
+3. Create cleanup branches following 5-PR structure
+4. Track fixes with TodoWrite
 
 ## Prerequisites
 
 - GitHub CLI (`gh`) authenticated with repo access
-- `SONAR_TOKEN` secret configured in GitHub repository
-- SonarCloud project imported: `jasonmichaelbell78-creator_sonash-v0`
-- **Automatic Analysis disabled** in SonarCloud (required for CI-based analysis)
+- SonarCloud project: `jasonmichaelbell78-creator_sonash-v0`
+- Node.js for report generation script
+- `jq` for JSON parsing in shell commands (dynamic pagination)
 
 ## Usage
 
@@ -37,110 +36,214 @@ Automate the SonarCloud analysis and cleanup workflow:
 
 ## Workflow
 
-### Phase 0: Disable Automatic Analysis
+### Phase 1: Fetch Fresh Data from API
 
-Before triggering CI analysis, disable Automatic Analysis in SonarCloud:
-
-1. Go to:
-   https://sonarcloud.io/project/analysis_method?id=jasonmichaelbell78-creator_sonash-v0
-2. Turn **OFF** "Automatic Analysis"
-3. Re-enable after sprint if preferred for ongoing monitoring
-
-### Phase 1: Trigger Analysis
+The SonarCloud API is publicly accessible. Fetch all issues with dynamic
+pagination:
 
 ```bash
-# Trigger analysis on main
-gh workflow run sonarcloud.yml --ref main
+# NOTE: Requires bash (uses [[ ... ]] and for ((...)) loops)
+set -euo pipefail
 
-# Check status (poll until complete)
-gh run list --workflow=sonarcloud.yml --limit 1
+# Set project key
+PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
+
+# Fetch first page and validate response
+curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=1" > /tmp/sonar_all_p1.json
+TOTAL_ISSUES="$(jq -r '.total // empty' /tmp/sonar_all_p1.json)"
+[[ "$TOTAL_ISSUES" =~ ^[0-9]+$ ]] || { echo "API error: no numeric .total" >&2; exit 1; }
+
+PAGE_SIZE=500
+TOTAL_PAGES=$(( (TOTAL_ISSUES + PAGE_SIZE - 1) / PAGE_SIZE ))
+
+echo "Total issues: $TOTAL_ISSUES (need $TOTAL_PAGES pages)"
+
+# Fetch remaining pages dynamically
+for ((p=2; p<=TOTAL_PAGES; p++)); do
+  echo "Fetching page $p of $TOTAL_PAGES..."
+  curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=$p" > "/tmp/sonar_all_p$p.json"
+done
+
+# Fetch security hotspots (paginated)
+curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500&p=1" > /tmp/sonar_hotspots_p1.json
+TOTAL_HOTSPOTS="$(jq -r '.paging.total // empty' /tmp/sonar_hotspots_p1.json)"
+[[ "$TOTAL_HOTSPOTS" =~ ^[0-9]+$ ]] || { echo "API error: no numeric .paging.total" >&2; exit 1; }
+HOTSPOT_PAGES=$(( (TOTAL_HOTSPOTS + PAGE_SIZE - 1) / PAGE_SIZE ))
+
+for ((p=2; p<=HOTSPOT_PAGES; p++)); do
+  echo "Fetching hotspots page $p of $HOTSPOT_PAGES..."
+  curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500&p=$p" > "/tmp/sonar_hotspots_p$p.json"
+done
+
+# Check counts
+echo "Issues: $TOTAL_ISSUES"
+echo "Hotspots: $TOTAL_HOTSPOTS"
 ```
 
-Wait for the workflow to complete before proceeding.
+### Phase 2: Generate Detailed Report
 
-### Phase 2: Query Issues via MCP
+Run the report generator script:
 
-Use the SonarCloud MCP tools to get structured data:
-
-```
-# Get quality gate status
-mcp__sonarcloud__get_quality_gate(projectKey: "jasonmichaelbell78-creator_sonash-v0")
-
-# Get issues by severity
-mcp__sonarcloud__get_issues(projectKey: "jasonmichaelbell78-creator_sonash-v0", severities: "BLOCKER,CRITICAL")
-mcp__sonarcloud__get_issues(projectKey: "jasonmichaelbell78-creator_sonash-v0", severities: "MAJOR")
-
-# Get security hotspots
-mcp__sonarcloud__get_security_hotspots(projectKey: "jasonmichaelbell78-creator_sonash-v0")
+```bash
+node scripts/generate-detailed-sonar-report.js
 ```
 
-### Phase 3: Generate Report
+This creates `docs/audits/sonarcloud-issues-detailed.md` with:
 
-Format issues by priority:
+- All issues organized by file
+- Code snippets with `>>>` markers at issue lines
+- Priority section for BLOCKER/CRITICAL issues
+- Security hotspots section
+- Rule reference table
 
-| Priority | Criteria                      | Action             |
-| -------- | ----------------------------- | ------------------ |
-| P0       | BLOCKER, CRITICAL security    | Fix immediately    |
-| P1       | CRITICAL bugs, MAJOR security | Fix this sprint    |
-| P2       | MAJOR bugs/smells             | Batch fix if quick |
-| P3       | MINOR issues                  | Defer to backlog   |
+### Phase 3: Review Report Structure
 
-Present summary to user before proceeding.
+The detailed report is organized for the 5-PR cleanup structure:
 
-### Phase 4: Create Cleanup Branch
+| PR   | Focus               | Target Issues                      |
+| ---- | ------------------- | ---------------------------------- |
+| PR 1 | Mechanical Fixes    | ~190 (node imports, shell scripts) |
+| PR 2 | Critical Complexity | ~107 (BLOCKER + CRITICAL)          |
+| PR 3 | Major Code Quality  | ~220 (ternaries, React issues)     |
+| PR 4 | Medium/Minor Issues | ~1,000+ (remaining MINOR/INFO)     |
+| PR 5 | Security Hotspots   | ~97 (all hotspots)                 |
+
+### Phase 4: Create Cleanup Branches
 
 ```bash
 git checkout main
 git pull origin main
-git checkout -b cleanup/sonarcloud-$(date +%Y%m%d-%H%M%S)
+
+# Create branch for current PR phase
+git checkout -b cleanup/phase-1-mechanical
+# or: cleanup/phase-2-critical
+# or: cleanup/phase-3-major-quality
+# or: cleanup/phase-4-medium-priority
+# or: cleanup/phase-5-security
 ```
 
-### Phase 5: Track Fixes
+### Phase 5: Fix Issues Using the Report
 
-Use TodoWrite to track issues being fixed:
+For each file in the detailed report:
 
-1. Add each P0/P1 issue as a todo item
-2. Mark in_progress when working on an issue
-3. Mark completed after verification
+1. Navigate to the file section in `docs/audits/sonarcloud-issues-detailed.md`
+2. Review each issue with its code snippet
+3. Apply the fix based on the rule description
+4. Mark progress with TodoWrite
 
-### Phase 6: Commit and PR
+Example workflow for a file:
+
+```
+📁 `scripts/generate-documentation-index.js` (213 issues)
+
+>>> Line 45: Prefer `String#replaceAll()` over `String#replace()`
+```
+
+Fix: Change `str.replace(/pattern/g, 'replacement')` to
+`str.replaceAll('pattern', 'replacement')`
+
+### Phase 6: Verify and Create PR
 
 ```bash
-# Commit fixes
+# Run pre-commit verification (checks all phase issues resolved)
+node scripts/verify-sonar-phase.js --phase=1  # (or 2, 3, 4, 5)
+
+# Run tests
+npm run lint && npm run type-check && npm test
+
+# Commit with descriptive message
 git add -A
-git commit -m "fix: SonarCloud cleanup sprint - resolve X issues"
+git commit -m "fix(sonar): phase 1 mechanical fixes - node imports and shell scripts
+
+- Convert bare Node imports to node: protocol
+- Fix shell script conditional syntax
+- Resolves ~190 SonarCloud issues"
 
 # Create PR
-gh pr create --title "fix: SonarCloud cleanup sprint $(date +%Y-%m-%d)" \
+gh pr create --title "fix(sonar): Phase 1 - Mechanical Fixes" \
   --body "## Summary
-- Fixed X security hotspots
-- Resolved Y bugs
-- Addressed Z code smells
+Resolves ~190 mechanical issues identified by SonarCloud.
 
-## SonarCloud Analysis
-See PR checks for New Code analysis."
+### Changes
+- Converted bare Node.js imports to \`node:\` protocol prefix
+- Fixed shell script \`[[\` vs \`[\` syntax
+- Applied other shell script best practices
+
+### Reference
+See: docs/audits/sonarcloud-issues-detailed.md
+
+## Test Plan
+- [ ] All tests passing
+- [ ] Lint check passing
+- [ ] Type check passing
+- [ ] SonarCloud PR analysis shows improvement"
 ```
+
+### Phase 7: Extract Learnings (MANDATORY)
+
+After PR is merged, extract learnings to the AI Lessons Log:
+
+```bash
+# Add entry to docs/agent_docs/AI_LESSONS_LOG.md
+```
+
+Use this template:
+
+```markdown
+### SonarCloud Sprint PR X: [Phase Name] (YYYY-MM-DD)
+
+**Issues Resolved**: X total (Y rules across Z files)
+
+**Patterns Discovered**:
+
+1. **[Pattern Name]**: [Description]
+   - Root cause: [Why this pattern occurred]
+   - Prevention: [How to avoid in future]
+
+**Fix Techniques**: | Rule | Technique | Example |
+|------|-----------|---------| | SXXXX | [Fix approach] | [Before] → [After] |
+
+**False Positives Identified**:
+
+- [Rule]: [Why it's a false positive]
+
+**Recommendations for claude.md**:
+
+- [ ] Add pattern to Section 4 if recurring
+```
+
+This ensures learnings are captured just like PR review learnings.
 
 ## Report-Only Mode
 
 When called with `--report`:
 
-1. Skip triggering new analysis
-2. Query current issues via MCP
-3. Generate summary report
-4. Do not create branch or track fixes
+1. Fetch fresh data from SonarCloud API
+2. Generate detailed report with code snippets
+3. Do not create branch or track fixes
+
+## API Endpoints Reference
+
+| Endpoint                           | Purpose                              |
+| ---------------------------------- | ------------------------------------ |
+| `/api/issues/search`               | Get all code issues                  |
+| `/api/hotspots/search`             | Get security hotspots                |
+| `/api/sources/issue_snippets`      | Get code context (requires issueKey) |
+| `/api/qualitygates/project_status` | Check quality gate status            |
 
 ## Related Documents
 
-- [SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md) - Detailed
-  runbook
-- [SONARCLOUD_TRIAGE.md](docs/SONARCLOUD_TRIAGE.md) - Current issue triage
-  decisions
-- [sonar-project.properties](sonar-project.properties) - Scanner configuration
+- [Detailed Report](docs/audits/sonarcloud-issues-detailed.md) - Current issues
+  with code snippets
+- [Cleanup Sprint Plan](.claude/plans/sonarcloud-cleanup-sprint.md) - 5-PR
+  structure
+- [Cleanup Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md) - Detailed procedures
+- [Triage Decisions](docs/SONARCLOUD_TRIAGE.md) - Issue triage guidelines
+- [SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=jasonmichaelbell78-creator_sonash-v0)
 
 ## Project Configuration
 
 - **Project Key**: `jasonmichaelbell78-creator_sonash-v0`
 - **Organization**: `jasonmichaelbell78-creator`
-- **Dashboard**:
-  https://sonarcloud.io/project/overview?id=jasonmichaelbell78-creator_sonash-v0
+- **API Base**: `https://sonarcloud.io`
+- **Report Script**: `scripts/generate-detailed-sonar-report.js`

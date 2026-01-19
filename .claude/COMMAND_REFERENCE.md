@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 1.0 **Last Updated:** 2026-01-10 **Purpose:** Comprehensive
+**Version:** 1.1 **Last Updated:** 2026-01-19 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -302,11 +302,13 @@ significant changes **Example:** Feature complete, ready for final review
 
 #### `sonarcloud-sprint`
 
-**Description:** Run a SonarCloud cleanup sprint. Triggers re-analysis, queries
-current issues via MCP tools, generates a prioritized issue report, creates a
-cleanup branch, and tracks fixes with TodoWrite **When to use:** Starting a code
-quality cleanup sprint or when you need current snapshot of SonarCloud issues
-**Example:** `/sonarcloud-sprint` or `/sonarcloud-sprint --report`
+**Description:** Run a SonarCloud cleanup sprint. Fetches fresh issues via
+public API (with dynamic pagination), generates a detailed report with code
+snippets, creates cleanup branches following 5-PR structure, tracks fixes with
+TodoWrite, runs pre-commit verification, and extracts post-PR learnings to
+AI_LESSONS_LOG.md. Requires: `jq` for JSON parsing. **When to use:** Starting a
+code quality cleanup sprint or when you need current snapshot of SonarCloud
+issues **Example:** `/sonarcloud-sprint` or `/sonarcloud-sprint --report`
 **Parameters:** Optional `--report` flag for report-only mode (no branch
 creation)
 
@@ -1557,9 +1559,10 @@ a prompt **What it does:**
 
 ## Version History
 
-| Version | Date       | Changes                                         |
-| ------- | ---------- | ----------------------------------------------- |
-| 1.0     | 2026-01-10 | Initial comprehensive command reference created |
+| Version | Date       | Changes                                            |
+| ------- | ---------- | -------------------------------------------------- |
+| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction |
+| 1.0     | 2026-01-10 | Initial comprehensive command reference created    |
 
 ---
 

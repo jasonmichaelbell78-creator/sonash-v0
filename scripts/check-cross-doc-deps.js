@@ -21,7 +21,7 @@
  * Created: Session #69 (2026-01-16)
  */
 
-const { execFileSync } = require("child_process");
+const { execFileSync } = require("node:child_process");
 
 // Parse arguments
 const args = process.argv.slice(2);

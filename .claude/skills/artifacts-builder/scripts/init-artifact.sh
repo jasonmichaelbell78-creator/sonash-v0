@@ -9,8 +9,8 @@ NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
 echo "🔍 Detected Node.js version: $NODE_VERSION"
 
 if [ "$NODE_VERSION" -lt 18 ]; then
-  echo "❌ Error: Node.js 18 or higher is required"
-  echo "   Current version: $(node -v)"
+  echo "❌ Error: Node.js 18 or higher is required" >&2
+  echo "   Current version: $(node -v)" >&2
   exit 1
 fi
 
@@ -48,8 +48,8 @@ COMPONENTS_TARBALL="$SCRIPT_DIR/shadcn-components.tar.gz"
 
 # Check if components tarball exists
 if [ ! -f "$COMPONENTS_TARBALL" ]; then
-  echo "❌ Error: shadcn-components.tar.gz not found in script directory"
-  echo "   Expected location: $COMPONENTS_TARBALL"
+  echo "❌ Error: shadcn-components.tar.gz not found in script directory" >&2
+  echo "   Expected location: $COMPONENTS_TARBALL" >&2
   exit 1
 fi
 

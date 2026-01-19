@@ -9,8 +9,8 @@
 
 import { initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import * as path from "path";
-import * as fs from "fs";
+import * as path from "node:path";
+import * as fs from "node:fs";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 async function migrateAddresses() {

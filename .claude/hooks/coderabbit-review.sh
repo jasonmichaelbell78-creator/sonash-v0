@@ -27,11 +27,13 @@ fi
 
 # Portable lowercase function (Bash 4.0+ has ${var,,}, macOS ships Bash 3.2)
 to_lower() {
-    if ( set +u; : "${1,,}" ) 2>/dev/null; then
-        printf '%s' "${1,,}"
+    local input="$1"
+    if ( set +u; : "${input,,}" ) 2>/dev/null; then
+        printf '%s' "${input,,}"
     else
-        printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+        printf '%s' "$input" | tr '[:upper:]' '[:lower:]'
     fi
+    return 0
 }
 
 # Track if we found any issues across all files

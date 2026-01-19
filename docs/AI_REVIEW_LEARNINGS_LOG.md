@@ -544,8 +544,54 @@ Access archives only for historical investigation of specific patterns.
 
 ## Active Reviews (Tier 3)
 
-Reviews #137-180 are actively maintained below. Older reviews (#101-136) are in
+Reviews #137-181 are actively maintained below. Older reviews (#101-136) are in
 Archive 4.
+
+---
+
+#### Review #181: PR #284 SonarCloud Cleanup CI Compliance (2026-01-19)
+
+**Source:** Qodo Compliance + CI Pattern Check + Qodo PR Suggestions
+**PR/Branch:** claude/enhance-sonarcloud-report-3lp4i (PR #284) **Suggestions:**
+33 total (Critical: 4, Major: 18, Minor: 9, Trivial: 1, Rejected: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                              | Severity | Category      | Fix                                                        |
+| --- | ---------------------------------- | -------- | ------------- | ---------------------------------------------------------- |
+| 1   | Bash syntax `[ ... ]]` error       | Critical | Shell Script  | Unified to `[[ ... ]]` syntax in pattern-check.sh:95       |
+| 2   | Invalid `if [[[` syntax            | Critical | Shell Script  | Fixed to `if [[` in session-start.sh:168                   |
+| 3   | Invalid `if [[[` syntax (3x)       | Critical | Shell Script  | Fixed to `if [[` in coderabbit-review.sh:101,116,134       |
+| 4   | SEPARATOR_LINE used before defined | Critical | Shell Script  | Moved constant definition before first use                 |
+| 5   | ESM imports `import fs`            | Major    | Node.js       | Changed to `import * as fs` in 3 scripts                   |
+| 6   | readFileSync without try/catch     | Major    | Error Handle  | Added try/catch to 9 locations across 3 scripts            |
+| 7   | path.join without containment      | Major    | Security      | Added path traversal check in getCodeSnippet functions     |
+| 8   | Unsafe error.message access        | Major    | Error Handle  | Changed to `err instanceof Error ? err.message : String()` |
+| 9   | Hardcoded /tmp paths               | Major    | Portability   | Changed to env vars with .sonar/ directory fallback        |
+| 10  | JSON.parse without try/catch       | Major    | Error Handle  | Added try/catch around all JSON.parse calls                |
+| 11  | Mismatched markdown fences         | Trivial  | Documentation | Fixed 4-backtick fences to 3-backtick in runbook           |
+
+**Rejected (1):**
+
+| Issue                         | Reason                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| void loadLinks() needs .catch | loadLinks() already has internal try/catch with toast.error - deliberate |
+
+**Patterns Identified:**
+
+1. **Shell syntax validation**: Use `shellcheck` or similar to catch `[[[` and
+   `[ ... ]]` mismatches before commit
+2. **ESM namespace imports**: Node.js built-in modules need `import * as fs` not
+   `import fs` for proper ESM compatibility
+3. **Path containment checks**: Any path.join with external input needs
+   `path.relative()` validation to prevent traversal
+
+**Key Learnings:**
+
+- Shell scripts with `set -u` will fail if variables are used before definition
+- SonarCloud fixes can introduce new bugs if not validated (triple bracket)
+- Pattern compliance checks catch issues before SonarCloud does
+- `void promise` is acceptable when the function handles its own errors
 
 ---
 

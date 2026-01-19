@@ -10,8 +10,8 @@
 
 import { initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import * as path from "path";
-import * as fs from "fs";
+import * as path from "node:path";
+import * as fs from "node:fs";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 // Day name to index mapping (0=Sunday, 1=Monday, ..., 6=Saturday)

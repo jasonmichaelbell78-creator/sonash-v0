@@ -21,9 +21,9 @@
  *   2 - Script error
  */
 
-const fs = require("fs");
-const path = require("path");
-const { spawnSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 
 // Get repository root for consistent log location
 function getRepoRoot() {
@@ -166,7 +166,7 @@ function logOverride(check, reason) {
 // Get current git branch
 function getGitBranch() {
   try {
-    const { spawnSync } = require("child_process");
+    const { spawnSync } = require("node:child_process");
     const result = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       encoding: "utf-8",
       timeout: 3000,

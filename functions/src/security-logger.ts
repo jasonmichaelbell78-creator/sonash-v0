@@ -7,7 +7,7 @@
  */
 
 import * as Sentry from "@sentry/node";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 import * as admin from "firebase-admin";
 
 // Security event types

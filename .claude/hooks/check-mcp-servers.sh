@@ -26,6 +26,7 @@ sanitize_output() {
     # Remove ANSI escape sequences (ESC[...m patterns) and control characters
     # Only allow alphanumeric, spaces, commas, underscores, hyphens
     tr -cd '[:alnum:] ,_-'
+    return 0
 }
 
 # Check if config file exists

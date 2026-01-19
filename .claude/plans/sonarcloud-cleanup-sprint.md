@@ -1,298 +1,426 @@
 # SonarCloud Cleanup Sprint Plan
 
-**Created**: 2026-01-19 **Status**: BLOCKER for Operational Visibility Sprint
-**Full Snapshot**:
-[docs/audits/sonarcloud-snapshots/20260119-full.md](../../docs/audits/sonarcloud-snapshots/20260119-full.md)
+**Created**: 2026-01-19 **Last Updated**: 2026-01-19 **Status**: ACTIVE
+**Detailed Report**:
+[sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)
 
 ---
 
 ## Goal
 
-Resolve ALL 1,213 SonarCloud issues (1,116 code issues + 97 security hotspots)
-to achieve a passing Quality Gate before resuming feature development.
+Resolve ALL 1,608 SonarCloud issues and 97 security hotspots to achieve a
+passing Quality Gate. Each issue must be either FIXED or DISMISSED with
+documented justification.
 
 ---
 
-## Current State
+## Current State (2026-01-19)
 
 | Metric            | Value     | Target       |
 | ----------------- | --------- | ------------ |
 | Quality Gate      | ERROR     | PASSED       |
-| CRITICAL Issues   | 93        | 0            |
-| MAJOR Issues      | 304       | 0            |
-| MINOR Issues      | 716       | 0            |
+| BLOCKER Issues    | 3         | 0            |
+| CRITICAL Issues   | 107       | 0            |
+| MAJOR Issues      | 409       | 0            |
+| MINOR Issues      | 1,080     | 0            |
+| INFO Issues       | 9         | 0            |
 | Security Hotspots | 97        | All reviewed |
-| **Total**         | **1,213** | **0 open**   |
+| **Total**         | **1,705** | **0 open**   |
 
-### Issues by Directory
+### Issues by Type
 
-| Directory  | Total | CRITICAL | MAJOR | MINOR |
-| ---------- | ----- | -------- | ----- | ----- |
-| scripts    | 512   | 51       | 84    | 376   |
-| components | 352   | 24       | 140   | 187   |
-| lib        | 76    | 5        | 11    | 59    |
-| .claude    | 55    | 1        | 51    | 3     |
-| functions  | 41    | 10       | 11    | 20    |
-| hooks      | 34    | 1        | 0     | 33    |
-| tests      | 21    | 0        | 1     | 20    |
-| app        | 21    | 1        | 5     | 15    |
+| Type          | Count |
+| ------------- | ----- |
+| CODE_SMELL    | 1,581 |
+| BUG           | 24    |
+| VULNERABILITY | 3     |
 
----
+### Top Files by Issue Count
 
-## PR Structure (5 PRs - One Per Phase)
+| File                                      | Issues |
+| ----------------------------------------- | ------ |
+| `scripts/generate-documentation-index.js` | 213    |
+| `scripts/suggest-pattern-automation.js`   | 52     |
+| `hooks/use-journal.ts`                    | 49     |
+| `scripts/phase-complete-check.js`         | 48     |
+| `lib/db/meetings.ts`                      | 42     |
 
-### PR 1: Mechanical Fixes (~290 issues, ~5hr)
-
-**Branch**: `cleanup/phase-1-mechanical` **Commit**:
-`fix(sonar): mechanical fixes - node imports and shell scripts`
-
-#### Part A: Node Protocol Imports (~230 issues, MINOR)
-
-Convert bare Node.js imports to use `node:` protocol prefix.
-
-| Rule  | Count | Example Fix                                                |
-| ----- | ----- | ---------------------------------------------------------- |
-| S7772 | 93    | `require('fs')` → `require('node:fs')`                     |
-| S7781 | 126   | `import path from 'path'` → `import path from 'node:path'` |
-| S7778 | ~93   | Similar pattern                                            |
-
-**Directories**: scripts/, tests/, functions/
-
-#### Part B: Shell Script Fixes (~60 issues, MAJOR)
-
-| Rule  | Count | Fix                         |
-| ----- | ----- | --------------------------- |
-| S7688 | 51    | Shell script best practices |
-| S7682 | 6     | Double-quote variables      |
-| S7677 | 5     | Proper condition brackets   |
-| S131  | 1     | Add default case            |
-| S1192 | 4     | Reduce string duplication   |
-
-**Directories**: .claude/, scripts/
+See full breakdown:
+[sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)
 
 ---
 
-### PR 2: Critical Complexity (75 issues, ~14hr)
+## PR Structure (5 PRs)
 
-**Branch**: `cleanup/phase-2-complexity` **Commit**:
-`refactor(sonar): reduce cognitive complexity across codebase`
+### PR 1: Mechanical Fixes (~189 issues) ✅ COMPLETED
 
-#### Part A: Scripts Complexity (46 issues, CRITICAL)
+**Branch**: `claude/enhance-sonarcloud-report-3lp4i` **Status**: READY FOR PR
 
-Reduce cognitive complexity below threshold of 15.
+#### Part A: Node Protocol Imports (~117 issues, MINOR) ✅ COMPLETED
 
-| File                            | Current | Target | Approach                     |
-| ------------------------------- | ------- | ------ | ---------------------------- |
-| aggregate-audit-findings.js     | 87      | 15     | Extract 5+ helper functions  |
-| generate-documentation-index.js | 56      | 15     | Split generator logic        |
-| check-docs-light.js             | 55      | 15     | Extract validation functions |
-| check-backlog-health.js         | 39      | 15     | Modularize checks            |
-| validate-canon-schema.js        | 37      | 15     | Extract rule validators      |
-| security-check.js               | 35      | 15     | Separate check patterns      |
-| run-consolidation.js            | 34      | 15     | Extract steps                |
-| validate-audit.js               | 34      | 15     | Modularize                   |
-| + 38 more files                 | 16-32   | 15     | Simplify logic               |
+Commit: `18025f7` -
+`fix(sonar): convert bare Node imports to node: protocol prefix`
 
-#### Part B: App Code Complexity (29 issues, CRITICAL)
+Converted bare Node.js imports to use `node:` protocol prefix across **40
+files**.
 
-| File                                         | Current | Target | Approach                  |
-| -------------------------------------------- | ------- | ------ | ------------------------- |
-| functions/src/jobs.ts:653                    | 42      | 15     | Extract job handlers      |
-| functions/src/security-wrapper.ts:106        | 39      | 15     | Split validation          |
-| components/notebook/pages/resources-page.tsx | 48      | 15     | Split into sub-components |
-| components/admin/users-tab.tsx               | 41      | 15     | Extract UserRow, filters  |
-| components/settings/settings-page.tsx        | 41      | 15     | Split sections            |
-| + 24 more                                    | 16-35   | 15     | Various                   |
+| Rule             | Count | Example Fix                                        | Status   |
+| ---------------- | ----- | -------------------------------------------------- | -------- |
+| javascript:S7772 | 63    | `require('fs')` → `require('node:fs')`             | ✅ FIXED |
+| typescript:S7772 | 54    | `import fs from 'fs'` → `import fs from 'node:fs'` | ✅ FIXED |
+
+**Files Fixed**: `scripts/*.js`, `scripts/*.ts`, `.claude/hooks/*.js`,
+`tests/scripts/*.ts`, `functions/src/*.ts`, `lib/*.ts`
+
+#### Part B: Shell Script Fixes (~72 issues, MAJOR/MINOR) ✅ COMPLETED
+
+| Rule           | Count | Fix                               | Commit    | Status   |
+| -------------- | ----- | --------------------------------- | --------- | -------- |
+| shelldre:S7688 | 55    | Use `[[` instead of `[` for tests | `ba5ba23` | ✅ FIXED |
+| shelldre:S7682 | 6     | Add explicit return statements    | (current) | ✅ FIXED |
+| shelldre:S7677 | 5     | Redirect errors to stderr         | (current) | ✅ FIXED |
+| shelldre:S1192 | 4     | Define constants for literals     | (current) | ✅ FIXED |
+| shelldre:S7679 | 1     | Assign positional param to local  | (current) | ✅ FIXED |
+| shelldre:S131  | 2     | Add default case                  | `374d565` | ✅ FIXED |
+
+**Files Fixed**: `.claude/hooks/*.sh`, `scripts/check-review-triggers.sh`,
+`.claude/skills/artifacts-builder/scripts/*.sh`
+
+#### Part C: Process Improvements ✅ COMPLETED
+
+| Commit    | Description                                         |
+| --------- | --------------------------------------------------- |
+| `7df9666` | Add SonarCloud report generator with code snippets  |
+| `f085eec` | Add comprehensive SonarCloud report (30k lines)     |
+| `1a390fc` | Add verification workflow and process documentation |
+| `ef77e9b` | Simplify verification to checklist-based tracking   |
+
+**New Artifacts**:
+
+- `scripts/generate-detailed-sonar-report.js` - Report generator
+- `scripts/verify-sonar-phase.js` - Pre-commit verification
+- `docs/audits/sonarcloud-issues-detailed.md` - Detailed report with code
+  snippets
+- `docs/audits/sonarcloud-fixes.md` - Fix tracking document
+- `docs/audits/sonarcloud-dismissals.md` - Dismissal template
+- `docs/SONARCLOUD_CLEANUP_RUNBOOK.md` - Updated runbook v2.0
 
 ---
 
-### PR 3: Major Code Quality (~175 issues, ~11hr)
+### PR 2: Critical Issues (~107 issues)
+
+**Branch**: `cleanup/phase-2-critical` **Commit**:
+`fix(sonar): resolve all critical and blocker issues` **Tracking**:
+[PR2 Checklist](#pr-2-checklist)
+
+#### Part A: Cognitive Complexity (~82 issues, CRITICAL)
+
+Refactor functions exceeding complexity threshold of 15.
+
+| Rule             | Count | Approach                     |
+| ---------------- | ----- | ---------------------------- |
+| javascript:S3776 | 48    | Extract helper functions     |
+| typescript:S3776 | 34    | Split into smaller functions |
+
+**High-Priority Files** (from detailed report Priority section):
+
+- `functions/src/jobs.ts:196` - Complexity 34
+- `functions/src/jobs.ts:653` - Complexity 42
+- `scripts/aggregate-audit-findings.js` - Multiple functions
+
+#### Part B: Other Critical Issues (~25 issues, CRITICAL)
+
+| Rule             | Count | Fix                               |
+| ---------------- | ----- | --------------------------------- |
+| typescript:S3735 | 12    | Remove `void` operator misuse     |
+| typescript:S2004 | 5     | Extract nested functions          |
+| typescript:S2871 | 4     | Add compare function to sort()    |
+| typescript:S6861 | 3     | Use `const` for exported bindings |
+| shelldre:S131    | 1     | Add default case to switch        |
+
+---
+
+### PR 3: Major Code Quality (~220 issues)
 
 **Branch**: `cleanup/phase-3-major-quality` **Commit**:
-`fix(sonar): resolve major code quality issues`
+`fix(sonar): resolve major code quality issues` **Tracking**:
+[PR3 Checklist](#pr-3-checklist)
 
-#### Part A: Ternary Expression Complexity (71 issues, MAJOR)
+#### Part A: Ternary Expression Complexity (~108 issues, MAJOR)
 
-| Language   | Count | Pattern                        |
-| ---------- | ----- | ------------------------------ |
-| TypeScript | 52    | Nested ternaries in components |
-| JavaScript | 19    | Nested ternaries in scripts    |
+| Rule             | Count | Fix                                 |
+| ---------------- | ----- | ----------------------------------- |
+| typescript:S3358 | 79    | Extract nested ternaries to if/else |
+| javascript:S3358 | 29    | Use intermediate variables          |
 
-**Fix**: Extract to if/else blocks or intermediate variables
+#### Part B: React-Specific Issues (~110 issues, MAJOR)
 
-#### Part B: Critical Code Smells (17 issues, CRITICAL)
+| Rule             | Count | Description                  |
+| ---------------- | ----- | ---------------------------- |
+| typescript:S6853 | 42    | Form label association       |
+| typescript:S6479 | 21    | Don't use array index as key |
+| typescript:S6819 | 19    | Img alt vs presentation role |
+| typescript:S6848 | 13    | Non-native interactive roles |
+| typescript:S6772 | 9     | Ambiguous spacing            |
+| typescript:S6481 | 6     | Object in context value      |
 
-| Rule  | Count | Fix                                            |
-| ----- | ----- | ---------------------------------------------- |
-| S3735 | 12    | `void promise()` → `promise().catch(() => {})` |
-| S2004 | 2     | Extract deeply nested functions                |
-| S6861 | 3     | Case-by-case fixes                             |
+#### Part C: Other Major Issues (~10 issues)
 
-#### Part C: React-Specific Issues (~90 issues, MAJOR)
+| Rule             | Count | Fix                       |
+| ---------------- | ----- | ------------------------- |
+| typescript:S7785 | 14    | Use top-level await       |
+| javascript:S7785 | 13    | Use top-level await       |
+| javascript:S5843 | 12    | Simplify regex complexity |
 
-| Rule   | Count | Description                    |
-| ------ | ----- | ------------------------------ |
-| S6853  | 35    | React component best practices |
-| S6479  | 20    | Don't use array index as key   |
-| S6819  | 15    | JSX accessibility issues       |
-| S6772  | 5     | Component structure            |
-| S6848  | 5     | Hook dependencies              |
-| Others | 10    | Misc React patterns            |
+**Note**: Shell script issues (S7688, S7682, S7677) counted in PR1.
 
 ---
 
-### PR 4: Medium Priority (~480 issues, ~13hr)
+### PR 4: Medium/Minor Priority (~1,095 issues)
 
 **Branch**: `cleanup/phase-4-medium-priority` **Commit**:
-`fix(sonar): resolve medium and minor code issues`
+`fix(sonar): resolve medium and minor code issues` **Tracking**:
+[PR4 Checklist](#pr-4-checklist)
 
-#### Part A: Deprecation Warnings (~100 issues, MINOR)
+#### Part A: String Methods (~362 issues, MINOR)
 
-| Rule  | Count | Description                  |
-| ----- | ----- | ---------------------------- |
-| S6759 | 68    | Various deprecation warnings |
-| S1874 | 36    | Deprecated API usage         |
+| Rule             | Count | Fix                                       |
+| ---------------- | ----- | ----------------------------------------- |
+| javascript:S7781 | 150   | Use `replaceAll()` instead of `replace()` |
+| typescript:S7781 | 61    | Use `replaceAll()` instead of `replace()` |
+| javascript:S7778 | 151   | Batch multiple `push()` calls             |
 
-#### Part B: Remaining MAJOR Issues (~50 issues)
+#### Part B: Modern JavaScript (~300 issues, MINOR)
 
-| Rule              | Count | Description                      |
-| ----------------- | ----- | -------------------------------- |
-| S7785             | 19    | Various issues                   |
-| S1854             | 8     | Dead stores (unused assignments) |
-| S6582             | 7     | Use optional chaining            |
-| S5869/S4624/S5843 | 18    | Regex and logic issues           |
-| Others            | ~10   | Miscellaneous                    |
+| Rule             | Count | Fix                                   |
+| ---------------- | ----- | ------------------------------------- |
+| javascript:S7780 | 77    | Use `String.raw` for escapes          |
+| typescript:S7764 | 73    | Use `globalThis` over `window`        |
+| typescript:S7773 | 52    | Use `Number.isNaN` over `isNaN`       |
+| javascript:S7773 | 26    | Use `Number.parseInt` over `parseInt` |
 
-#### Part C: Remaining MINOR Issues (~330 issues)
+#### Part C: React Props (~143 issues, MINOR)
 
-| Rule   | Count |
-| ------ | ----- |
-| S7780  | 44    |
-| S7773  | 50    |
-| S7735  | 34    |
-| S6551  | 13    |
-| S3863  | 12    |
-| Others | ~180  |
+| Rule             | Count | Fix                                     |
+| ---------------- | ----- | --------------------------------------- |
+| typescript:S6759 | 71    | Mark component props as read-only       |
+| typescript:S1874 | 52    | Replace deprecated API usage            |
+| typescript:S1082 | 13    | Add keyboard handlers to click handlers |
+
+#### Part D: Remaining Issues (~290 issues)
+
+All other MINOR and INFO level issues. See detailed report for complete list.
 
 ---
 
-### PR 5: Security Hotspots (97 hotspots, ~9hr)
+### PR 5: Security Hotspots (97 hotspots)
 
 **Branch**: `cleanup/phase-5-security` **Commit**:
-`security(sonar): resolve all security hotspots`
+`security(sonar): resolve all security hotspots` **Tracking**:
+[PR5 Checklist](#pr-5-checklist)
 
-#### Part A: HIGH Priority - Command Injection (10 hotspots)
+#### Part A: HIGH Probability (~14 hotspots)
 
-| File                                | Lines    | Fix                |
-| ----------------------------------- | -------- | ------------------ |
-| scripts/ai-review.js                | 222, 227 | Use `execFileSync` |
-| scripts/check-pattern-compliance.js | 463      | Use array args     |
-| scripts/check-review-needed.js      | 234      | Use array args     |
-| scripts/phase-complete-check.js     | 437      | Use array args     |
-| scripts/security-check.js           | 189      | Use array args     |
-| scripts/retry-failures.ts           | 113      | Use array args     |
+Command injection and hard-coded credentials. See report "Security Hotspots"
+section.
 
-**Pattern**:
+**Action**: Fix or mark SAFE with justification.
 
-```javascript
-// Before (vulnerable)
-execSync(`git log ${userInput}`);
+#### Part B: MEDIUM Probability (~48 hotspots)
 
-// After (safe)
-execFileSync("git", ["log", userInput]);
-```
+Regex DoS and Math.random usage.
 
-#### Part B: HIGH Priority - Hard-coded Passwords (4 hotspots)
+| Category    | Count | Resolution                                |
+| ----------- | ----- | ----------------------------------------- |
+| Regex DoS   | ~33   | Limit input length, rewrite patterns      |
+| Math.random | ~15   | Mark SAFE if visual-only (confetti, etc.) |
 
-| File                       | Lines   | Action                                          |
-| -------------------------- | ------- | ----------------------------------------------- |
-| lib/utils/errors.ts        | 69, 71  | Review - likely false positive (error patterns) |
-| tests/utils/logger.test.ts | 96, 130 | Review - test fixture data                      |
+#### Part C: LOW Probability (~35 hotspots)
 
-#### Part C: MEDIUM Priority - Regex DoS (33 hotspots)
-
-Affected: 15 script files, 5 app files
-
-**Fixes**:
-
-1. Limit input length before regex matching
-2. Rewrite patterns to avoid catastrophic backtracking
-3. Use linear-time alternatives where possible
-
-#### Part D: MEDIUM Priority - Math.random (15 hotspots)
-
-| File                                       | Count | Resolution                 |
-| ------------------------------------------ | ----- | -------------------------- |
-| components/celebrations/confetti-burst.tsx | 10    | Mark SAFE - visual effects |
-| components/celebrations/firework-burst.tsx | 5     | Mark SAFE - visual effects |
-
-**Rationale**: Math.random used for purely visual particle animations - no
-security impact.
-
-#### Part E: LOW Priority Hotspots (35 hotspots)
-
-| Rule            | Count | Action                                      |
-| --------------- | ----- | ------------------------------------------- |
-| S4036 (PATH)    | 27    | Review dev scripts - controlled environment |
-| S7637 (SHA)     | 2     | Pin GitHub Actions to full SHA              |
-| S7636 (secrets) | 1     | Review workflow pattern                     |
-| S5604 (geo)     | 1     | Document geolocation usage                  |
-| S5332 (HTTP)    | 1     | Test file - mark SAFE                       |
-| S1523 (eval)    | 1     | Test file - review                          |
+| Category          | Count | Resolution                      |
+| ----------------- | ----- | ------------------------------- |
+| PATH manipulation | 27    | Review, mark SAFE if dev-only   |
+| GitHub Actions    | 3     | Pin to full SHA, review secrets |
+| Other             | 5     | Case-by-case review             |
 
 ---
 
-## Execution Strategy
+## Verification Process
 
-### Branch Structure
+### Pre-Commit Verification
 
-```
-main
-├── cleanup/phase-1-mechanical     # PR 1: ~290 issues
-├── cleanup/phase-2-complexity     # PR 2: 75 issues
-├── cleanup/phase-3-major-quality  # PR 3: ~175 issues
-├── cleanup/phase-4-medium-priority # PR 4: ~480 issues
-└── cleanup/phase-5-security       # PR 5: 97 hotspots
-```
-
-### Recommended Order
-
-1. **PR 1**: Mechanical fixes (build confidence, reduce noise)
-2. **PR 2**: Critical complexity (biggest quality impact)
-3. **PR 5**: Security hotspots (address HIGH priority early)
-4. **PR 3**: Major code quality
-5. **PR 4**: Medium/minor issues (largest volume, lowest risk)
-
-### Verification Per PR
+Before committing each PR phase, run the verification checklist:
 
 ```bash
-npm run lint && npm run type-check && npm test
+# Generate fresh checklist for the PR phase
+node scripts/verify-sonar-phase.js --phase=1  # (or 2, 3, 4, 5)
 ```
 
-Push to trigger SonarCloud PR analysis before merging.
+This script:
+
+1. Reads the detailed report for issues in that phase
+2. Checks which issues are resolved (file/line no longer matches)
+3. Requires dismissal justification for unresolved issues
+4. Outputs a verification report
+
+### Checklist Requirements
+
+For each issue, one of:
+
+- **FIXED**: Code changed, issue no longer present
+- **DISMISSED**: Issue acknowledged, documented reason (e.g., false positive,
+  acceptable risk)
+- **DEFERRED**: Moved to different PR with justification
+
+### Dismissal Documentation
+
+Create `docs/audits/sonarcloud-dismissals.md` with:
+
+```markdown
+## Dismissed Issues
+
+### [Rule ID] - File:Line
+
+**Reason**: [False positive | Acceptable risk | By design | ...]
+**Justification**: [Detailed explanation] **Reviewed by**: [Name/Date]
+```
+
+### Post-PR Learnings Extraction (MANDATORY)
+
+After each PR is merged, extract learnings to the AI Lessons Log. This mirrors
+the PR review process and ensures valuable patterns are captured.
+
+#### What to Extract
+
+For each PR phase, document:
+
+1. **Patterns Discovered** - Recurring issues that suggest systemic problems
+2. **Fix Techniques** - Reusable approaches for similar issues
+3. **False Positive Patterns** - Rules that frequently flag non-issues
+4. **Prevention Strategies** - How to avoid these issues in future code
+
+#### Template for AI_LESSONS_LOG.md
+
+```markdown
+### SonarCloud Sprint PR X: [Phase Name] (YYYY-MM-DD)
+
+**Issues Resolved**: X total (Y rules across Z files)
+
+**Patterns Discovered**:
+
+1. **[Pattern Name]**: [Description]
+   - Root cause: [Why this pattern occurred]
+   - Prevention: [How to avoid in future]
+
+**Fix Techniques**:
+
+| Rule  | Technique          | Example                                |
+| ----- | ------------------ | -------------------------------------- |
+| S7772 | Add `node:` prefix | `require('fs')` → `require('node:fs')` |
+
+**False Positives Identified**:
+
+- [Rule]: [Why it's a false positive in this context]
+
+**Recommendations for claude.md**:
+
+- [ ] Add pattern to Section 4 if recurring
+- [ ] Update CODE_PATTERNS.md if new anti-pattern
+```
+
+#### Checklist Item
+
+Each PR checklist now includes:
+
+- [ ] Post-PR learnings extracted to `docs/agent_docs/AI_LESSONS_LOG.md`
 
 ---
 
-## Timeline
+## PR Checklists
 
-| PR        | Focus               | Issues    | Effort    | Cumulative |
-| --------- | ------------------- | --------- | --------- | ---------- |
-| PR 1      | Mechanical Fixes    | 290       | 5hr       | 5hr        |
-| PR 2      | Critical Complexity | 75        | 14hr      | 19hr       |
-| PR 3      | Major Code Quality  | 175       | 11hr      | 30hr       |
-| PR 4      | Medium/Minor        | 480       | 13hr      | 43hr       |
-| PR 5      | Security Hotspots   | 97        | 9hr       | 52hr       |
-| **TOTAL** |                     | **1,117** | **~52hr** |            |
+### PR 1 Checklist
+
+- [x] All S7772 node import issues resolved (117) - commit `18025f7`
+- [x] Shell S7688 `[[` syntax issues resolved (55) - commit `ba5ba23`
+- [x] Shell S131 default case issues resolved (2) - commit `374d565`
+- [x] Shell S7682 return statement issues resolved (6) - (current)
+- [x] Shell S7677 stderr redirect issues resolved (5) - (current)
+- [x] Shell S1192 constant definition issues resolved (4) - (current)
+- [x] Shell S7679 positional param issues resolved (1) - (current)
+- [x] Report generator script added - commit `7df9666`
+- [x] Detailed report with code snippets generated - commit `f085eec`
+- [x] Verification workflow added - commit `1a390fc`
+- [x] Checklist-based verification added - commit `ef77e9b`
+- [x] All 190 Phase 1 issues resolved
+- [x] Tests passing: `npm test`
+- [x] Lint passing: `npm run lint`
+- [x] Post-PR learnings extracted to AI_LESSONS_LOG.md
+
+### PR 2 Checklist
+
+- [ ] All S3776 complexity issues resolved (82)
+- [ ] All S3735 void operator issues resolved (12)
+- [ ] All S2004 nested function issues resolved (5)
+- [ ] All S2871 sort comparison issues resolved (4)
+- [ ] All S6861 mutable export issues resolved (3)
+- [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=2`
+- [ ] Any dismissals documented
+- [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+
+### PR 3 Checklist
+
+- [ ] All S3358 nested ternary issues resolved (108)
+- [ ] All React accessibility issues resolved (~110)
+- [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=3`
+- [ ] Any dismissals documented
+- [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+
+### PR 4 Checklist
+
+- [ ] All string method issues resolved (~362)
+- [ ] All modern JS issues resolved (~300)
+- [ ] All React props issues resolved (~143)
+- [ ] Remaining MINOR/INFO issues resolved (~290)
+- [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=4`
+- [ ] Any dismissals documented
+- [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+
+### PR 5 Checklist
+
+- [ ] All HIGH probability hotspots reviewed
+- [ ] All MEDIUM probability hotspots reviewed
+- [ ] All LOW probability hotspots reviewed
+- [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=5`
+- [ ] All hotspot decisions documented (FIXED/SAFE/ACKNOWLEDGED)
+- [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
+
+---
+
+## Execution Order
+
+Recommended sequence for maximum impact:
+
+1. **PR 1** - Mechanical (build confidence, reduce noise)
+2. **PR 2** - Critical (highest severity, biggest quality impact)
+3. **PR 5** - Security (address security early in sprint)
+4. **PR 3** - Major quality (significant improvements)
+5. **PR 4** - Medium/minor (largest volume, lowest risk)
 
 ---
 
 ## Success Criteria
 
 - [ ] Quality Gate: PASSED
+- [ ] BLOCKER Issues: 0
 - [ ] CRITICAL Issues: 0
 - [ ] MAJOR Issues: 0
-- [ ] MINOR Issues: 0
+- [ ] MINOR Issues: 0 (or all dismissed with documentation)
 - [ ] Security Hotspots: All reviewed (SAFE/FIXED/ACKNOWLEDGED)
+- [ ] All dismissals documented in sonarcloud-dismissals.md
 - [ ] No new issues introduced
 - [ ] All tests passing
 - [ ] Post-sprint snapshot created
@@ -301,6 +429,12 @@ Push to trigger SonarCloud PR analysis before merging.
 
 ## Related Documents
 
-- [Full Snapshot](../../docs/audits/sonarcloud-snapshots/20260119-full.md)
-- [SONARCLOUD_CLEANUP_RUNBOOK.md](../../docs/SONARCLOUD_CLEANUP_RUNBOOK.md)
+- [Detailed Report](../../docs/audits/sonarcloud-issues-detailed.md) - Full
+  issue list with code snippets
+- [Cleanup Runbook](../../docs/SONARCLOUD_CLEANUP_RUNBOOK.md) - Step-by-step
+  procedures
+- [Triage Decisions](../../docs/SONARCLOUD_TRIAGE.md) - Historical triage
+  decisions
 - [SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=jasonmichaelbell78-creator_sonash-v0)
+- [Report Generator](../../scripts/generate-detailed-sonar-report.js) - Script
+  to refresh report

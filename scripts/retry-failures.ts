@@ -1,8 +1,8 @@
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { execSync } from "child_process";
-import * as fs from "fs";
-import * as path from "path";
+import { execSync } from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { sanitizeError } from "./lib/sanitize-error";
 
 // Nominatim Config

@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 
 # Parse file path from arguments (JSON format: {"file_path": "..."})
-if [ -z "${1:-}" ]; then
+if [[ -z "${1:-}" ]]; then
   exit 0
 fi
 
@@ -28,7 +28,7 @@ FILE_PATH="$(
 )"
 
 # If no file path found, exit silently
-if [ -z "$FILE_PATH" ]; then
+if [[ -z "$FILE_PATH" ]]; then
   exit 0
 fi
 
@@ -36,6 +36,9 @@ fi
 case "$FILE_PATH" in
   -* | *$'\n'* | *$'\r'* )
     exit 0
+    ;;
+  *)
+    # Valid path format, continue processing
     ;;
 esac
 
@@ -53,6 +56,9 @@ case "$FILE_PATH" in
   *"/../"* | "../"* | *"/.." )
     # Traversal segment - reject (POSIX-style)
     exit 0
+    ;;
+  *)
+    # Relative path without traversal, continue processing
     ;;
 esac
 
@@ -74,7 +80,7 @@ REL_PATH="${FILE_PATH#"$PROJECT_DIR/"}"
 
 # SECURITY: Verify the resolved path is within PROJECT_DIR
 # Use Node.js for portable path resolution (realpath -m not available on all systems)
-if [ -f "$REL_PATH" ]; then
+if [[ -f "$REL_PATH" ]]; then
   REAL_PATH="$(
     node -e 'const fs=require("fs"); try { process.stdout.write(fs.realpathSync(process.argv[1])); } catch { process.stdout.write(""); }' \
       "$REL_PATH" 2>/dev/null
@@ -86,7 +92,7 @@ if [ -f "$REL_PATH" ]; then
 
   # Verify containment: REAL_PATH must start with REAL_PROJECT/
   # Also reject if REAL_PROJECT is root (/) to prevent bypass
-  if [ -z "$REAL_PATH" ] || [ -z "$REAL_PROJECT" ] || [ "$REAL_PROJECT" = "/" ]; then
+  if [[ -z "$REAL_PATH" || -z "$REAL_PROJECT" || "$REAL_PROJECT" == "/" ]]; then
     exit 0
   fi
   case "$REAL_PATH" in

@@ -8,7 +8,7 @@
  */
 
 import * as Sentry from "@sentry/nextjs";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 // Hash user ID for privacy
 function hashUserId(userId: string): string {

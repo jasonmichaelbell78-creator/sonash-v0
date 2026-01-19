@@ -27,12 +27,15 @@ set -euo pipefail
 # =============================================================================
 
 # Only run in Claude Code on the web (remote environments)
-if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
+if [[ "${CLAUDE_CODE_REMOTE:-}" != "true" ]]; then
   exit 0
 fi
 
+# Define separator line constant before first use (S1192)
+readonly SEPARATOR_LINE="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
 echo "🚀 SessionStart Hook for sonash-v0"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 
 # Get repository root for CWD-safe script execution
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
@@ -60,6 +63,11 @@ echo ""
 LOCKFILE_HASH_FILE=".claude/.lockfile-hash"
 FUNCTIONS_LOCKFILE_HASH_FILE=".claude/.functions-lockfile-hash"
 
+# Constants for repeated literals (S1192)
+readonly ROOT_LOCKFILE="package-lock.json"
+readonly FUNCTIONS_LOCKFILE="functions/package-lock.json"
+# Note: SEPARATOR_LINE is defined earlier (before first use)
+
 # Function to compute hash of a file (portable across systems)
 compute_hash() {
   local file="$1"
@@ -73,27 +81,28 @@ compute_hash() {
     # Fallback: use file modification time
     stat -c %Y "$file" 2>/dev/null || stat -f %m "$file" 2>/dev/null || echo "unknown"
   fi
+  return 0
 }
 
 # Check if root dependencies need install
 needs_root_install() {
   # Always install if node_modules doesn't exist
-  if [ ! -d "node_modules" ]; then
+  if [[ ! -d "node_modules" ]]; then
     return 0  # true - needs install
   fi
 
   # Always install if lockfile doesn't exist
-  if [ ! -s "package-lock.json" ]; then
+  if [[ ! -s "$ROOT_LOCKFILE" ]]; then
     return 0  # true - needs install
   fi
 
   # Check if lockfile hash matches cached hash
-  if [ -f "$LOCKFILE_HASH_FILE" ]; then
+  if [[ -f "$LOCKFILE_HASH_FILE" ]]; then
     local current_hash
-    current_hash=$(compute_hash "package-lock.json")
+    current_hash=$(compute_hash "$ROOT_LOCKFILE")
     local cached_hash
     cached_hash=$(cat "$LOCKFILE_HASH_FILE" 2>/dev/null || echo "")
-    if [ "$current_hash" = "$cached_hash" ]; then
+    if [[ "$current_hash" = "$cached_hash" ]]; then
       return 1  # false - skip install
     fi
   fi
@@ -104,22 +113,22 @@ needs_root_install() {
 # Check if functions dependencies need install
 needs_functions_install() {
   # Always install if functions/node_modules doesn't exist
-  if [ ! -d "functions/node_modules" ]; then
+  if [[ ! -d "functions/node_modules" ]]; then
     return 0  # true - needs install
   fi
 
   # Always install if lockfile doesn't exist
-  if [ ! -s "functions/package-lock.json" ]; then
+  if [[ ! -s "$FUNCTIONS_LOCKFILE" ]]; then
     return 0  # true - needs install
   fi
 
   # Check if lockfile hash matches cached hash
-  if [ -f "$FUNCTIONS_LOCKFILE_HASH_FILE" ]; then
+  if [[ -f "$FUNCTIONS_LOCKFILE_HASH_FILE" ]]; then
     local current_hash
-    current_hash=$(compute_hash "functions/package-lock.json")
+    current_hash=$(compute_hash "$FUNCTIONS_LOCKFILE")
     local cached_hash
     cached_hash=$(cat "$FUNCTIONS_LOCKFILE_HASH_FILE" 2>/dev/null || echo "")
-    if [ "$current_hash" = "$cached_hash" ]; then
+    if [[ "$current_hash" = "$cached_hash" ]]; then
       return 1  # false - skip install
     fi
   fi
@@ -130,12 +139,14 @@ needs_functions_install() {
 # Save hash after successful install
 save_root_hash() {
   mkdir -p "$(dirname "$LOCKFILE_HASH_FILE")"
-  compute_hash "package-lock.json" > "$LOCKFILE_HASH_FILE"
+  compute_hash "$ROOT_LOCKFILE" > "$LOCKFILE_HASH_FILE"
+  return 0
 }
 
 save_functions_hash() {
   mkdir -p "$(dirname "$FUNCTIONS_LOCKFILE_HASH_FILE")"
-  compute_hash "functions/package-lock.json" > "$FUNCTIONS_LOCKFILE_HASH_FILE"
+  compute_hash "$FUNCTIONS_LOCKFILE" > "$FUNCTIONS_LOCKFILE_HASH_FILE"
+  return 0
 }
 
 # Helper function for npm commands with timeout
@@ -154,7 +165,7 @@ run_npm_with_timeout() {
       return 0
     else
       local exit_code=$?
-      if [ $exit_code -eq 124 ]; then
+      if [[ $exit_code -eq 124 ]]; then
         echo "   ⚠️ $description timed out after ${timeout_seconds}s (continuing anyway)"
       else
         echo "   ⚠️ $description failed with exit code $exit_code (continuing anyway)"
@@ -183,13 +194,13 @@ run_npm_with_timeout() {
 # Falls back to 'npm install' if lockfile is missing (new repos, etc.)
 # OPTIMIZATION: Skip install if lockfile hash matches cached version
 if needs_root_install; then
-  if [ -s "package-lock.json" ]; then
+  if [[ -s "$ROOT_LOCKFILE" ]]; then
     if run_npm_with_timeout "Installing root dependencies" \
       "npm ci --prefer-offline --no-audit --no-fund" 120; then
       save_root_hash
     fi
   else
-    echo "   ⚠️ package-lock.json not found or empty, falling back to npm install"
+    echo "   ⚠️ $ROOT_LOCKFILE not found or empty, falling back to npm install"
     WARNINGS=$(( ${WARNINGS:-0} + 1 ))
     if run_npm_with_timeout "Installing root dependencies (no lockfile)" \
       "npm install --prefer-offline --no-audit --no-fund" 120; then
@@ -204,15 +215,15 @@ fi
 # Install Firebase Functions dependencies and build
 # Use --legacy-peer-deps for functions/ to preserve original dependency resolution
 # OPTIMIZATION: Skip install if lockfile hash matches cached version
-if [ -d "functions" ]; then
+if [[ -d "functions" ]]; then
   if needs_functions_install; then
-    if [ -s "functions/package-lock.json" ]; then
+    if [[ -s "$FUNCTIONS_LOCKFILE" ]]; then
       if run_npm_with_timeout "Installing Firebase Functions dependencies" \
         "cd functions && npm ci --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120; then
         save_functions_hash
       fi
     else
-      echo "   ⚠️ functions/package-lock.json not found or empty, falling back to npm install"
+      echo "   ⚠️ $FUNCTIONS_LOCKFILE not found or empty, falling back to npm install"
       WARNINGS=$(( ${WARNINGS:-0} + 1 ))
       run_npm_with_timeout "Installing Firebase Functions dependencies (no lockfile)" \
         "cd functions && npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps" 120
@@ -223,7 +234,7 @@ if [ -d "functions" ]; then
   else
     echo "📦 Skipping Firebase Functions dependencies (unchanged since last install)"
     # Still need to build if lib/ doesn't exist or is stale
-    if [ ! -d "functions/lib" ] || [ "functions/src" -nt "functions/lib" ]; then
+    if [[ ! -d "functions/lib" ]] || [ "functions/src" -nt "functions/lib" ]]; then
       run_npm_with_timeout "Building Firebase Functions" \
         "cd functions && npm run build" 60
     else
@@ -247,9 +258,9 @@ if node scripts/check-pattern-compliance.js 2>"$PATTERN_ERR_TMP"; then
   echo "   ✓ No pattern violations found"
 else
   EXIT_CODE=$?
-  if [ "$EXIT_CODE" -ge 2 ]; then
-    echo "   ❌ Pattern checker failed (exit $EXIT_CODE)"
-    if [ -s "$PATTERN_ERR_TMP" ]; then
+  if [[ "$EXIT_CODE" -ge 2 ]]; then
+    echo "   ❌ Pattern checker failed (exit $EXIT_CODE)" >&2
+    if [[ -s "$PATTERN_ERR_TMP" ]]; then
       echo "   stderr:"
       sed 's/^/   /' "$PATTERN_ERR_TMP"
     fi
@@ -267,14 +278,14 @@ echo "🔍 Running auto-consolidation check..."
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 OUTPUT=$(node "$REPO_ROOT/scripts/run-consolidation.js" --auto 2>&1)
 EXIT_CODE=$?
-if [ "$EXIT_CODE" -eq 0 ]; then
-  if [ -n "$OUTPUT" ]; then
+if [[ "$EXIT_CODE" -eq 0 ]]; then
+  if [[ -n "$OUTPUT" ]]; then
     echo "$OUTPUT"
   else
     echo "   ✓ No consolidation needed"
   fi
-elif [ "$EXIT_CODE" -ge 2 ]; then
-  echo "   ❌ Auto-consolidation failed (exit $EXIT_CODE):"
+elif [[ "$EXIT_CODE" -ge 2 ]]; then
+  echo "   ❌ Auto-consolidation failed (exit $EXIT_CODE):" >&2
   echo "$OUTPUT" | sed 's/^/     /'
   WARNINGS=$((WARNINGS + 1))
 fi
@@ -304,7 +315,7 @@ if node "$REPO_ROOT/scripts/check-document-sync.js" --quick 2>/dev/null; then
   echo "   ✓ Documents are in sync"
 else
   DOC_SYNC_EXIT=$?
-  if [ "$DOC_SYNC_EXIT" -eq 1 ]; then
+  if [[ "$DOC_SYNC_EXIT" -eq 1 ]]; then
     echo "   ⚠️ Some documents may be out of sync - run: npm run docs:sync-check"
     WARNINGS=$((WARNINGS + 1))
   else
@@ -313,8 +324,8 @@ else
 fi
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-if [ "$WARNINGS" -eq 0 ]; then
+echo "$SEPARATOR_LINE"
+if [[ "$WARNINGS" -eq 0 ]]; then
   echo "✅ SessionStart hook completed successfully!"
 else
   echo "⚠️ SessionStart hook completed with $WARNINGS warning(s)"
@@ -322,7 +333,7 @@ else
 fi
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 echo "📋 SESSION CHECKLIST (from AI_WORKFLOW.md):"
 echo ""
 echo "  1. ☐ Read SESSION_CONTEXT.md (current status, next goals)"
@@ -339,7 +350,7 @@ echo "      └─ Complex task? → Check ls .claude/skills/ for matches"
 echo ""
 echo "  5. ☐ Review active blockers before starting work"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$SEPARATOR_LINE"
 echo ""
 echo "💡 Tips:"
 echo "   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns"

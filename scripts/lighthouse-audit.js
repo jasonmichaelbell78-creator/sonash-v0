@@ -14,8 +14,8 @@
 
 const lighthouse = require("lighthouse");
 const chromeLauncher = require("chrome-launcher");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Configuration
 const BASE_URL = process.env.LIGHTHOUSE_BASE_URL || "http://localhost:3000";

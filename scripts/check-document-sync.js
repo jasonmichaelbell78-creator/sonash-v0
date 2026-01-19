@@ -16,9 +16,9 @@
  * Exit codes: 0 = all synced, 1 = sync issues found, 2 = error
  */
 
-import { readFileSync, existsSync, realpathSync } from "fs";
-import { join, dirname, relative } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, existsSync, realpathSync } from "node:fs";
+import { join, dirname, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

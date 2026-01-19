@@ -25,9 +25,9 @@
  * Exit codes: 0 = pass, 1 = errors found (or warnings in --strict mode)
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from "fs";
-import { join, dirname, basename, relative, extname, isAbsolute, resolve, sep } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { join, dirname, basename, relative, extname, isAbsolute, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";
 
 const __filename = fileURLToPath(import.meta.url);

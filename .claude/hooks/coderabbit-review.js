@@ -13,9 +13,9 @@
  *   coderabbit auth login
  */
 
-const { spawnSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Exit early if no arguments
 if (process.argv.length <= 2) {

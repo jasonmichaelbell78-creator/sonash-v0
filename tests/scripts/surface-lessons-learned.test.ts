@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { test, describe } from "node:test";
-import { spawnSync } from "child_process";
-import * as path from "path";
-import * as fs from "fs";
-import * as os from "os";
+import { spawnSync } from "node:child_process";
+import * as path from "node:path";
+import * as fs from "node:fs";
+import * as os from "node:os";
 
 // Get project root (works both in source and compiled contexts)
 // When compiled, __dirname is dist-tests/tests/scripts, so go up 3 levels

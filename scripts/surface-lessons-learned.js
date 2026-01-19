@@ -15,10 +15,10 @@
  *   1 = Error (file not found, etc.)
  */
 
-import * as fs from "fs";
-import * as path from "path";
-import { execSync } from "child_process";
-import { pathToFileURL } from "url";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { execSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 const LEARNINGS_FILE = "docs/AI_REVIEW_LEARNINGS_LOG.md";
 

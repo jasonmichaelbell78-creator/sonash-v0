@@ -19,7 +19,7 @@
  *   2 - Script error
  */
 
-const { spawnSync } = require("child_process");
+const { spawnSync } = require("node:child_process");
 
 // Configuration
 const TRIGGERS = {
@@ -268,7 +268,7 @@ function main() {
     // Log the override for accountability
     // Using execFileSync to prevent command injection from SKIP_REASON
     try {
-      const { execFileSync } = require("child_process");
+      const { execFileSync } = require("node:child_process");
       const reason = process.env.SKIP_REASON || "";
       execFileSync("node", ["scripts/log-override.js", "--check=triggers", `--reason=${reason}`], {
         encoding: "utf-8",

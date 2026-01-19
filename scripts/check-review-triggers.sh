@@ -6,10 +6,13 @@
 
 set -e
 
-echo "========================================"
+# Constants for repeated literals (S1192)
+readonly SEPARATOR_LINE="========================================"
+
+echo "$SEPARATOR_LINE"
 echo "  Multi-AI Review Trigger Check"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
-echo "========================================"
+echo "$SEPARATOR_LINE"
 echo ""
 
 # Color codes for output
@@ -25,7 +28,7 @@ echo "=== Code Changes ==="
 
 # Get commits since last tag (or last 50 if no tags)
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-if [ -n "$LAST_TAG" ]; then
+if [[ -n "$LAST_TAG" ]]; then
   COMMITS_SINCE=$(git rev-list --count HEAD ^"$LAST_TAG")
   echo "Commits since last tag ($LAST_TAG): $COMMITS_SINCE"
 else
@@ -33,7 +36,7 @@ else
   echo "Total commits (no tags): $COMMITS_SINCE"
 fi
 
-if [ "$COMMITS_SINCE" -ge 50 ]; then
+if [[ "$COMMITS_SINCE" -ge 50 ]]; then
   echo -e "${YELLOW}[TRIGGER]${NC} 50+ commits - consider code review"
   TRIGGERS_FOUND=$((TRIGGERS_FOUND + 1))
 fi
@@ -41,13 +44,13 @@ fi
 # Files changed in last 10 commits (with guard for short repos)
 # Note: HEAD~N requires at least N+1 commits, so LOOKBACK must be < COMMIT_COUNT
 COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
-if [ "$COMMIT_COUNT" -le 1 ]; then
+if [[ "$COMMIT_COUNT" -le 1 ]]; then
   LOOKBACK=0
 else
   # LOOKBACK must be strictly less than COMMIT_COUNT to avoid referencing before initial commit
   LOOKBACK=$((COMMIT_COUNT <= 10 ? COMMIT_COUNT - 1 : 10))
 fi
-if [ "$LOOKBACK" -gt 0 ]; then
+if [[ "$LOOKBACK" -gt 0 ]]; then
   FILES_CHANGED=$(git diff --name-only HEAD~$LOOKBACK 2>/dev/null | wc -l | tr -d ' ')
 else
   FILES_CHANGED=0
@@ -58,12 +61,12 @@ echo ""
 # --- Security Triggers ---
 echo "=== Security-Sensitive Changes (last $LOOKBACK commits) ==="
 
-if [ "$LOOKBACK" -gt 0 ]; then
+if [[ "$LOOKBACK" -gt 0 ]]; then
   SECURITY_FILES=$(git diff --name-only HEAD~$LOOKBACK 2>/dev/null | grep -iE "(auth|security|firebase|api|secret|env|token|key|password|credential)" || echo "")
 else
   SECURITY_FILES=""
 fi
-if [ -n "$SECURITY_FILES" ]; then
+if [[ -n "$SECURITY_FILES" ]]; then
   echo -e "${YELLOW}[TRIGGER]${NC} Security-sensitive files changed:"
   echo "$SECURITY_FILES" | head -10 | sed 's/^/  - /'
   TRIGGERS_FOUND=$((TRIGGERS_FOUND + 1))
@@ -76,7 +79,7 @@ echo ""
 echo "=== Performance Indicators ==="
 
 # Bundle size check
-if [ -d ".next/static/chunks" ]; then
+if [[ -d ".next/static/chunks" ]]; then
   BUNDLE_SIZE=$(du -sh .next/static/chunks 2>/dev/null | cut -f1)
   echo "Bundle size (chunks): $BUNDLE_SIZE"
 else
@@ -84,12 +87,12 @@ else
 fi
 
 # Check for heavy dependencies added recently
-if [ "$LOOKBACK" -gt 0 ]; then
+if [[ "$LOOKBACK" -gt 0 ]]; then
   NEW_DEPS=$(git diff HEAD~$LOOKBACK -- package.json 2>/dev/null | grep "^\+" | grep -E '"(lodash|moment|jquery|rxjs|three|d3|chart\.js)"' || echo "")
 else
   NEW_DEPS=""
 fi
-if [ -n "$NEW_DEPS" ]; then
+if [[ -n "$NEW_DEPS" ]]; then
   echo -e "${YELLOW}[TRIGGER]${NC} Heavy dependencies may have been added"
   TRIGGERS_FOUND=$((TRIGGERS_FOUND + 1))
 fi
@@ -105,7 +108,7 @@ SNAPSHOT_COUNT=$(grep -rn "onSnapshot" --include="*.ts" --include="*.tsx" 2>/dev
 echo "Firebase collection() calls: $COLLECTION_COUNT"
 echo "Firebase onSnapshot() calls: $SNAPSHOT_COUNT"
 
-if [ "$COLLECTION_COUNT" -ge 10 ] || [ "$SNAPSHOT_COUNT" -ge 5 ]; then
+if [[ "$COLLECTION_COUNT" -ge 10 ]] || [ "$SNAPSHOT_COUNT" -ge 5 ]]; then
   echo -e "${YELLOW}[INFO]${NC} Multiple Firebase access patterns - consider consolidation review"
 fi
 
@@ -135,11 +138,11 @@ echo "Docs modified (last 20 commits): $RECENT_DOCS"
 echo ""
 
 # --- Summary ---
-echo "========================================"
+echo "$SEPARATOR_LINE"
 echo "  SUMMARY"
-echo "========================================"
+echo "$SEPARATOR_LINE"
 
-if [ "$TRIGGERS_FOUND" -gt 0 ]; then
+if [[ "$TRIGGERS_FOUND" -gt 0 ]]; then
   echo -e "${YELLOW}Triggers found: $TRIGGERS_FOUND${NC}"
   echo ""
   echo "Recommended actions:"
@@ -153,4 +156,4 @@ fi
 
 echo ""
 echo "See docs/MULTI_AI_REVIEW_COORDINATOR.md for full trigger checklist"
-echo "========================================"
+echo "$SEPARATOR_LINE"
