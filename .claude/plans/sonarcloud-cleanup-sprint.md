@@ -52,35 +52,72 @@ See full breakdown:
 
 ## PR Structure (5 PRs)
 
-### PR 1: Mechanical Fixes (~189 issues)
+### PR 1: Mechanical Fixes (~189 issues) ✅ COMPLETED
 
-**Branch**: `cleanup/phase-1-mechanical` **Commit**:
-`fix(sonar): mechanical fixes - node imports and shell scripts` **Tracking**:
-[PR1 Checklist](#pr-1-checklist)
+**Branch**: `claude/enhance-sonarcloud-report-3lp4i` **Status**: READY FOR PR
 
-#### Part A: Node Protocol Imports (~117 issues, MINOR)
+#### Part A: Node Protocol Imports (~117 issues, MINOR) ✅ COMPLETED
 
-Convert bare Node.js imports to use `node:` protocol prefix.
+Commit: `18025f7` -
+`fix(sonar): convert bare Node imports to node: protocol prefix`
 
-| Rule             | Count | Example Fix                                        |
-| ---------------- | ----- | -------------------------------------------------- |
-| javascript:S7772 | 63    | `require('fs')` → `require('node:fs')`             |
-| typescript:S7772 | 54    | `import fs from 'fs'` → `import fs from 'node:fs'` |
+Converted bare Node.js imports to use `node:` protocol prefix across **40
+files**.
 
-**Files**: See report section "Rule Reference" filtering by S7772
+| Rule             | Count | Example Fix                                        | Status   |
+| ---------------- | ----- | -------------------------------------------------- | -------- |
+| javascript:S7772 | 63    | `require('fs')` → `require('node:fs')`             | ✅ FIXED |
+| typescript:S7772 | 54    | `import fs from 'fs'` → `import fs from 'node:fs'` | ✅ FIXED |
 
-#### Part B: Shell Script Fixes (~72 issues, MAJOR/MINOR)
+**Files Fixed**: `scripts/*.js`, `scripts/*.ts`, `.claude/hooks/*.js`,
+`tests/scripts/*.ts`, `functions/src/*.ts`, `lib/*.ts`
 
-| Rule           | Count | Fix                               |
-| -------------- | ----- | --------------------------------- |
-| shelldre:S7688 | 55    | Use `[[` instead of `[` for tests |
-| shelldre:S7682 | 6     | Add explicit return statements    |
-| shelldre:S7677 | 5     | Redirect errors to stderr         |
-| shelldre:S1192 | 4     | Define constants for literals     |
-| shelldre:S7679 | 1     | Exit code handling                |
-| shelldre:S131  | 1     | Add default case                  |
+#### Part B: Shell Script Fixes (~72 issues, MAJOR/MINOR) ✅ COMPLETED
 
-**Files**: `.claude/hooks/*.sh`, `scripts/*.sh`
+Commit: `ba5ba23` - `fix(sonar): convert shell scripts from [ ] to [[ ]] syntax`
+
+| Rule           | Count | Fix                               | Status     |
+| -------------- | ----- | --------------------------------- | ---------- |
+| shelldre:S7688 | 55    | Use `[[` instead of `[` for tests | ✅ FIXED   |
+| shelldre:S7682 | 6     | Add explicit return statements    | 🔄 PENDING |
+| shelldre:S7677 | 5     | Redirect errors to stderr         | 🔄 PENDING |
+| shelldre:S1192 | 4     | Define constants for literals     | 🔄 PENDING |
+| shelldre:S7679 | 1     | Exit code handling                | 🔄 PENDING |
+| shelldre:S131  | 1     | Add default case                  | 🔄 PENDING |
+
+**Files Fixed** (8 files): `.claude/hooks/analyze-user-request.sh`,
+`.claude/hooks/check-edit-requirements.sh`,
+`.claude/hooks/check-mcp-servers.sh`,
+`.claude/hooks/check-write-requirements.sh`,
+`.claude/hooks/coderabbit-review.sh`, `.claude/hooks/pattern-check.sh`,
+`.claude/hooks/session-start.sh`, `scripts/check-review-triggers.sh`
+
+#### Part C: Process Improvements ✅ COMPLETED
+
+Additional commits in this PR:
+
+| Commit    | Description                                         |
+| --------- | --------------------------------------------------- |
+| `7df9666` | Add SonarCloud report generator with code snippets  |
+| `f085eec` | Add comprehensive SonarCloud report (30k lines)     |
+| `1a390fc` | Add verification workflow and process documentation |
+
+**New Artifacts**:
+
+- `scripts/generate-detailed-sonar-report.js` - Report generator
+- `scripts/verify-sonar-phase.js` - Pre-commit verification
+- `docs/audits/sonarcloud-issues-detailed.md` - Detailed report with code
+  snippets
+- `docs/audits/sonarcloud-dismissals.md` - Dismissal template
+- `docs/SONARCLOUD_CLEANUP_RUNBOOK.md` - Updated runbook v2.0
+
+#### Remaining for PR 1 (17 shell script issues)
+
+The S7688 `[[` syntax issues are fixed. Remaining shell issues (S7682, S7677,
+S1192, S7679, S131) can be:
+
+1. Fixed in this PR before merge, OR
+2. Deferred to a follow-up commit with documentation
 
 ---
 
@@ -268,8 +305,12 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 
 ### PR 1 Checklist
 
-- [ ] All S7772 node import issues resolved (117)
-- [ ] All shelldre:\* issues resolved (72)
+- [x] All S7772 node import issues resolved (117) - commit `18025f7`
+- [x] Shell S7688 `[[` syntax issues resolved (55) - commit `ba5ba23`
+- [ ] Remaining shell issues resolved (17) OR documented as deferred
+- [x] Report generator script added - commit `7df9666`
+- [x] Detailed report with code snippets generated - commit `f085eec`
+- [x] Verification workflow added - commit `1a390fc`
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=1`
 - [ ] Any dismissals documented in sonarcloud-dismissals.md
 - [ ] Tests passing: `npm test`

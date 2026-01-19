@@ -37,6 +37,9 @@ case "$FILE_PATH" in
   -* | *$'\n'* | *$'\r'* )
     exit 0
     ;;
+  *)
+    # Valid path format, continue processing
+    ;;
 esac
 
 # SECURITY: Normalize backslashes to forward slashes for consistent checks
@@ -53,6 +56,9 @@ case "$FILE_PATH" in
   *"/../"* | "../"* | *"/.." )
     # Traversal segment - reject (POSIX-style)
     exit 0
+    ;;
+  *)
+    # Relative path without traversal, continue processing
     ;;
 esac
 
