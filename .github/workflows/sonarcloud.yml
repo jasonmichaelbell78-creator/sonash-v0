@@ -12,7 +12,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+  contents: read # required for actions/checkout
+  pull-requests: write # allows SonarCloud to decorate PRs with analysis results
 
 jobs:
   Analysis:
@@ -21,12 +22,12 @@ jobs:
     steps:
       # CRITICAL: Must checkout code first for SonarCloud to analyze
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0 # Full history for blame info and accurate analysis
 
       - name: Analyze with SonarCloud
-        uses: SonarSource/sonarcloud-github-action@v3
+        uses: SonarSource/sonarcloud-github-action@383f7e52eae3ab0510c3cb0e7d9d150bbaeab838 # v3.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:

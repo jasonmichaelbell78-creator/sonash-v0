@@ -1,6 +1,6 @@
 # AI Review Learnings Log
 
-**Document Version:** 9.5 **Created:** 2026-01-02 **Last Updated:** 2026-01-18
+**Document Version:** 9.6 **Created:** 2026-01-02 **Last Updated:** 2026-01-18
 
 ## Purpose
 
@@ -28,6 +28,7 @@ improvements made.
 
 | Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 9.6     | 2026-01-18 | Review #142: PR #281 SonarCloud workflow configuration - 6 fixes (2 Major: SHA pinning + contents:read permission; 4 Minor: write permission, bearer auth, polling robustness, timestamp uniqueness). 1 deferred (intentional duplication).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 9.5     | 2026-01-18 | **CONSOLIDATION #13 + ARCHIVE #4**: Patterns from Reviews #137-143, #154-179 (33 reviews) → CODE_PATTERNS.md v2.0. **22 new patterns added**: 6 React/Frontend (cursor pagination, Firestore-first, capture before tx, primitive deps, functional setState, claims preservation); 5 Security (isPlainObject, O(n²) DoS, npx --no-install, URL allowlist, self-scanner exclusion); 4 JS/TS (listDocuments, non-greedy JSON, Next.js bundling, cognitive complexity); 3 CI (per-item error, complete loops, pre-push); 2 Docs (YAML frontmatter, xargs hang); 1 GitHub Actions (boolean outputs). **ARCHIVE #4**: Reviews #101-136 → REVIEWS_101-136.md. Active reviews now #137-179. Counter reset.                                                                                         |
 | 9.4     | 2026-01-18 | Review #179: PR #277 Round 4 - 8 items (1 CRITICAL: cursor-based pagination for batch jobs to prevent infinite loops; 3 MAJOR: Firestore-first operation order, full rollback with captured original values, functional setState updates; 2 MINOR: primitive useEffect deps, null check for days display; 2 VERIFIED: admin error messages acceptable, logSecurityEvent sanitizes). **KEY LESSONS: (1) startAfter(lastDoc) for batch jobs, not hasMore flag; (2) Firestore first for easier rollback; (3) Capture original values before transaction.**                                                                                                                                                                                                                                    |
 | 9.3     | 2026-01-18 | Review #178: PR #277 Soft-Delete + Error Export - 18 items (6 MAJOR: hardcoded bucket→default bucket, auth deletion only ignore user-not-found, paged batches for hard delete, Firestore transaction for undelete with expiry check, rollback soft-delete if Firestore fails, block admin self-deletion; 8 MEDIUM: zod validation with trim/max, stale state fix with uid capture, reset dialog on user change, NaN prevention, timeout cleanup ×2, accessibility keyboard listeners ×2; 4 MINOR: structured logging types, ARIA attributes, URL redaction, whitespace trim). **KEY LESSONS: (1) Use admin.storage().bucket() not hardcoded names; (2) Only ignore auth/user-not-found to prevent orphaned accounts; (3) Process batches until empty, not just first 50.**                 |
@@ -263,8 +264,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 5 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #168
+**Reviews since last consolidation:** 6 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #185
 
 ### When to Consolidate
 
@@ -1627,6 +1628,54 @@ claude/cherry-pick-phase-4b-fAyRp **Suggestions:** 7 items (Critical: 0, Major:
    - Pattern: For client-side env access, always use explicit string literals
 
 **Resolution:** Fixed 4 items, rejected 3 (2 administrative, 1 false positive)
+
+---
+
+#### Review #142: PR #281 SonarCloud Workflow Configuration (2026-01-18)
+
+**Source:** Qodo Compliance + Qodo PR Suggestions + SonarCloud **PR/Branch:** PR
+#281 / feature/admin-panel-phase-3 **Suggestions:** 7 unique items (Critical: 0,
+Major: 2, Minor: 4, Deferred: 1)
+
+**Context:** Review of SonarCloud workflow configuration PR. Issues covered
+supply-chain security (action pinning), workflow permissions, documentation
+security, and script robustness.
+
+**Issues Fixed:**
+
+| #   | Issue                               | Severity | Category   | Fix                                                  |
+| --- | ----------------------------------- | -------- | ---------- | ---------------------------------------------------- |
+| 1   | Pin GitHub Actions to commit SHAs   | 🟠 Major | Security   | Pinned checkout@v4.3.1, sonarcloud@v3.1.0 to SHA     |
+| 2   | Missing contents: read permission   | 🟠 Major | CI         | Added `contents: read` for checkout step             |
+| 3   | pull-requests: read → write         | 🟡 Minor | CI         | Changed to `write` for PR decoration                 |
+| 4   | Token handling in curl examples     | 🟡 Minor | Security   | Changed `-u $TOKEN:` to `-H "Authorization: Bearer"` |
+| 5   | Infinite loop in polling script     | 🟡 Minor | Robustness | Added case statement for terminal states             |
+| 6   | Branch name not unique if run twice | 🟡 Minor | Usability  | Added `-H%M%S` timestamp to branch name              |
+
+**Deferred Items:**
+
+| #   | Issue                                 | Reason                                                                                   |
+| --- | ------------------------------------- | ---------------------------------------------------------------------------------------- |
+| 7   | Centralize workflow logic into script | Intentional duplication for discoverability; skill and runbook serve different use cases |
+
+**Patterns Identified:**
+
+1. **Pin GitHub Actions to commit SHAs** (Major)
+   - Root cause: Mutable tags (@v4, @v3) can be moved or compromised
+   - Prevention: Use `action@<SHA> # v<version>` format
+   - Pattern: Already in CODE_PATTERNS.md
+
+2. **Avoid `-u $TOKEN:` in curl examples** (Minor)
+   - Root cause: Can expose secrets in shell history/logs
+   - Prevention: Use `-H "Authorization: Bearer $TOKEN"` header approach
+   - Pattern: Header auth is safer than basic auth with env vars
+
+3. **Handle all terminal states in polling loops** (Minor)
+   - Root cause: Only checking "completed" causes infinite loop on failure
+   - Prevention: case statement for completed/failure/cancelled/skipped
+   - Pattern: `case "$STATUS" in completed) break;; failure|cancelled) exit 1;;`
+
+**Resolution:** Fixed 6 items, deferred 1 (intentional design)
 
 ---
 

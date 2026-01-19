@@ -82,7 +82,7 @@ Present summary to user before proceeding.
 ```bash
 git checkout main
 git pull origin main
-git checkout -b cleanup/sonarcloud-$(date +%Y%m%d)
+git checkout -b cleanup/sonarcloud-$(date +%Y%m%d-%H%M%S)
 ```
 
 ### Phase 5: Track Fixes

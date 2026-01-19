@@ -39,13 +39,24 @@ Before running a cleanup sprint:
 # Trigger analysis on main branch
 gh workflow run sonarcloud.yml --ref main
 
-# Wait for completion (poll every 30s)
-while ! gh run list --workflow=sonarcloud.yml --limit 1 --json status -q '.[0].status' | grep -q "completed"; do
-  echo "Waiting for analysis to complete..."
-  sleep 30
+# Wait for completion (poll every 30s, handle all terminal states)
+while true; do
+  STATUS=$(gh run list --workflow=sonarcloud.yml --limit 1 --json status --jq '.[0].status')
+  case "$STATUS" in
+    completed)
+      echo "Analysis complete!"
+      break
+      ;;
+    failure|cancelled|skipped)
+      echo "Analysis finished with status: $STATUS"
+      exit 1
+      ;;
+    *)
+      echo "Waiting for analysis to complete... (current status: $STATUS)"
+      sleep 30
+      ;;
+  esac
 done
-
-echo "Analysis complete!"
 ```
 
 ### 1.2 Verify in SonarCloud
@@ -80,12 +91,16 @@ mcp__sonarcloud__get_security_hotspots(projectKey: "jasonmichaelbell78-creator_s
 
 ### 2.2 Manual API Queries
 
+> **Security Note**: Avoid using `curl -u "$TOKEN:"` as it can expose secrets in
+> shell history or logs. Use the header approach below instead.
+
 ```bash
 # Export project key
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
-# Get issues (requires SONAR_TOKEN env var)
-curl -u "$SONAR_TOKEN:" \
+# Get issues using Authorization header (safer than -u flag)
+# Ensure SONAR_TOKEN is set in your environment
+curl -s -H "Authorization: Bearer $SONAR_TOKEN" \
   "https://sonarcloud.io/api/issues/search?projectKeys=$PROJECT_KEY&severities=BLOCKER,CRITICAL"
 ```
 
@@ -122,8 +137,8 @@ For each issue, assign one category:
 git checkout main
 git pull origin main
 
-# Create dated cleanup branch
-git checkout -b cleanup/sonarcloud-$(date +%Y%m%d)
+# Create dated cleanup branch (includes time for uniqueness if run multiple times)
+git checkout -b cleanup/sonarcloud-$(date +%Y%m%d-%H%M%S)
 
 # Verify branch
 git branch --show-current
@@ -165,8 +180,8 @@ git commit -m "fix(security): resolve S4721 command injection in scripts
 
 Resolves 5 SonarCloud security hotspots."
 
-# Push to trigger PR analysis
-git push -u origin cleanup/sonarcloud-$(date +%Y%m%d)
+# Push to trigger PR analysis (use current branch name)
+git push -u origin HEAD
 ```
 
 ---
@@ -249,6 +264,7 @@ echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%
 
 ## Version History
 
-| Version | Date       | Changes                 |
-| ------- | ---------- | ----------------------- |
-| 1.0     | 2026-01-18 | Initial runbook created |
+| Version | Date       | Changes                                                         |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.1     | 2026-01-18 | PR review fixes: polling robustness, token security, timestamps |
+| 1.0     | 2026-01-18 | Initial runbook created                                         |
