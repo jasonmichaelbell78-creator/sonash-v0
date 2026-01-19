@@ -35,6 +35,110 @@ interface NotebookShellProps {
   nickname: string;
 }
 
+interface AccountSecuritySectionProps {
+  isAnonymous: boolean;
+  showLinkPrompt: boolean;
+  email?: string;
+  onSecureAccount: () => void;
+}
+
+/**
+ * Account security status display for settings menu
+ */
+function AccountSecuritySection({
+  isAnonymous,
+  showLinkPrompt,
+  email,
+  onSecureAccount,
+}: AccountSecuritySectionProps) {
+  if (!isAnonymous && email) {
+    return (
+      <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+        <div className="flex items-center gap-2">
+          <Shield className="w-5 h-5 text-green-600" />
+          <p className="font-handlee text-sm text-green-800">Signed in as {email}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAnonymous) {
+    const isWarning = showLinkPrompt;
+    const bgClass = isWarning ? "bg-amber-50 border-amber-200" : "bg-blue-50 border-blue-200";
+    const textClass = isWarning ? "text-amber-800" : "text-blue-800";
+    const linkClass = isWarning
+      ? "text-amber-700 hover:text-amber-900"
+      : "text-blue-700 hover:text-blue-900";
+    const message = isWarning
+      ? "Your journal is at risk! Link your account to keep your entries safe."
+      : "Your account is anonymous. Link it to keep your data safe.";
+    const Icon = isWarning ? AlertTriangle : Shield;
+    const iconClass = isWarning ? "text-amber-600" : "text-blue-600";
+
+    return (
+      <div className={`p-3 rounded-lg border ${bgClass}`}>
+        <div className="flex items-start gap-2">
+          <Icon className={`w-5 h-5 ${iconClass} flex-shrink-0 mt-0.5`} />
+          <div>
+            <p className={`font-handlee text-sm ${textClass}`}>{message}</p>
+            <button
+              onClick={onSecureAccount}
+              className={`mt-2 text-sm font-handlee underline ${linkClass}`}
+            >
+              Secure My Account →
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Handle swipe gestures to navigate between tabs
+ */
+function handleSwipeNavigation(
+  touchStart: number | null,
+  touchEnd: number | null,
+  currentIndex: number,
+  tabs: Array<{ id: string }>,
+  handleTabChange: (id: string) => void
+): void {
+  if (!touchStart || !touchEnd) return;
+
+  const distance = touchStart - touchEnd;
+  const isLeftSwipe = distance > 50;
+  const isRightSwipe = distance < -50;
+
+  if (isLeftSwipe && currentIndex < tabs.length - 1) {
+    handleTabChange(tabs[currentIndex + 1].id);
+  } else if (isRightSwipe && currentIndex > 0) {
+    handleTabChange(tabs[currentIndex - 1].id);
+  }
+}
+
+/**
+ * Handle sign out action
+ */
+async function handleSignOut(onClose: () => void): Promise<void> {
+  try {
+    const { signOut } = await import("firebase/auth");
+    const { auth } = await import("@/lib/firebase");
+
+    // Clear local temp data for security
+    localStorage.removeItem("sonash_journal_temp");
+
+    await signOut(auth);
+    onClose();
+  } catch (error) {
+    logger.error("Sign out failed", { error });
+    const { toast } = await import("sonner");
+    toast.error("Failed to sign out. Please try again.");
+  }
+}
+
 export default function NotebookShell({ onClose, nickname }: NotebookShellProps) {
   const { isAnonymous, showLinkPrompt, profile } = useAuth();
   const tabs = notebookModules.map((module) => ({
@@ -159,19 +263,8 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
               }}
               onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
               onTouchEnd={() => {
-                if (!touchStart || !touchEnd) return;
-                const distance = touchStart - touchEnd;
-                const isLeftSwipe = distance > 50;
-                const isRightSwipe = distance < -50;
-
                 const currentIndex = tabs.findIndex((t) => t.id === activeTab);
-
-                if (isLeftSwipe && currentIndex < tabs.length - 1) {
-                  handleTabChange(tabs[currentIndex + 1].id);
-                }
-                if (isRightSwipe && currentIndex > 0) {
-                  handleTabChange(tabs[currentIndex - 1].id);
-                }
+                handleSwipeNavigation(touchStart, touchEnd, currentIndex, tabs, handleTabChange);
               }}
               initial={{
                 rotateY: direction > 0 ? 90 : -90,
@@ -210,50 +303,15 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
         {showSettings && (
           <StickyNote title="My Notebook" onClose={() => setShowSettings(false)}>
             <div className="space-y-3">
-              {/* Account Security Section */}
-              {isAnonymous && (
-                <div
-                  className={`p-3 rounded-lg border ${showLinkPrompt ? "bg-amber-50 border-amber-200" : "bg-blue-50 border-blue-200"}`}
-                >
-                  <div className="flex items-start gap-2">
-                    {showLinkPrompt ? (
-                      <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                    ) : (
-                      <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    )}
-                    <div>
-                      <p
-                        className={`font-handlee text-sm ${showLinkPrompt ? "text-amber-800" : "text-blue-800"}`}
-                      >
-                        {showLinkPrompt
-                          ? "Your journal is at risk! Link your account to keep your entries safe."
-                          : "Your account is anonymous. Link it to keep your data safe."}
-                      </p>
-                      <button
-                        onClick={() => {
-                          setShowSettings(false);
-                          setShowAccountLink(true);
-                        }}
-                        className={`mt-2 text-sm font-handlee underline ${showLinkPrompt ? "text-amber-700 hover:text-amber-900" : "text-blue-700 hover:text-blue-900"}`}
-                      >
-                        Secure My Account →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Show linked account info */}
-              {!isAnonymous && profile?.email && (
-                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-green-600" />
-                    <p className="font-handlee text-sm text-green-800">
-                      Signed in as {profile.email}
-                    </p>
-                  </div>
-                </div>
-              )}
+              <AccountSecuritySection
+                isAnonymous={isAnonymous}
+                showLinkPrompt={showLinkPrompt}
+                email={profile?.email}
+                onSecureAccount={() => {
+                  setShowSettings(false);
+                  setShowAccountLink(true);
+                }}
+              />
 
               {/* Manage Profile Link */}
               <button
@@ -271,23 +329,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
 
               <div className="pt-4 border-t border-amber-900/10">
                 <button
-                  onClick={async () => {
-                    try {
-                      const { signOut } = await import("firebase/auth");
-                      const { auth } = await import("@/lib/firebase");
-
-                      // Clear local temp data for security
-                      localStorage.removeItem("sonash_journal_temp");
-
-                      await signOut(auth);
-                      onClose(); // Close the book
-                    } catch (error) {
-                      logger.error("Sign out failed", { error });
-                      // Import toast dynamically to avoid issues
-                      const { toast } = await import("sonner");
-                      toast.error("Failed to sign out. Please try again.");
-                    }
-                  }}
+                  onClick={() => handleSignOut(onClose)}
                   className="font-handlee text-red-800/70 hover:text-red-800 hover:underline flex items-center gap-2"
                 >
                   Sign Out
