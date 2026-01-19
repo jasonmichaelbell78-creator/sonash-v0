@@ -108,7 +108,6 @@ standardized workflows critical to project compliance.
 | `/session-begin`       | session-begin.md       | Pre-session verification |
 | `/session-end`         | session-end.md         | Post-session audit       |
 | `/pr-review`           | pr-review.md           | Code review processing   |
-| `/fetch-pr-feedback`   | fetch-pr-feedback.md   | Fetch AI review feedback |
 | `/docs-sync`           | docs-sync.md           | Document synchronization |
 | `/checkpoint`          | checkpoint.md          | Session state save       |
 | `/audit-code`          | audit-code.md          | Code review audit        |
@@ -247,41 +246,6 @@ documented.
 | MAJOR    | Bugs, performance, missing validation | Fix before proceeding |
 | MINOR    | Style, naming, tests, docs            | Fix (don't defer)     |
 | TRIVIAL  | Typos, whitespace, formatting         | **FIX THESE TOO**     |
-
----
-
-### `/fetch-pr-feedback`
-
-**File:** `.claude/commands/fetch-pr-feedback.md` **Created:** Session #38
-
-#### Description
-
-Fetch AI code review feedback (CodeRabbit, Qodo, SonarQube) from a GitHub PR and
-prepare it for processing with `/pr-review`.
-
-#### Syntax
-
-```
-/fetch-pr-feedback [PR_NUMBER]
-```
-
-If no PR number provided, automatically finds the PR for the current branch.
-
-#### Use Cases
-
-- When CodeRabbit/Qodo comments arrive on a PR
-- Before processing PR review feedback
-- Gathering all AI feedback from multiple sources
-
-#### Workflow Steps
-
-1. **Determine PR** - Use provided number or find PR for current branch via
-   `gh pr list`
-2. **Fetch Details** - Get PR info, comments, review comments, and check runs
-3. **Parse Sources** - Categorize by source (CodeRabbit, Qodo, SonarQube)
-4. **Output Summary** - Present structured summary with counts per source
-5. **Auto-Invoke `/pr-review`** - Automatically proceeds with full PR review
-   protocol
 
 ---
 
@@ -752,7 +716,6 @@ All custom commands go in `.claude/commands/`:
 ├── session-begin.md       # Session start
 ├── session-end.md         # Session end
 ├── pr-review.md           # Code review processing
-├── fetch-pr-feedback.md   # Fetch PR feedback
 ├── docs-sync.md           # Document sync
 ├── checkpoint.md          # State checkpoint
 ├── audit-code.md          # Code audit
@@ -802,17 +765,17 @@ args: arg1 - Description of argument
 
 ### Current Automation Coverage
 
-| Area               | Hooks                | Scripts                           | Commands                     | Gap              |
-| ------------------ | -------------------- | --------------------------------- | ---------------------------- | ---------------- |
-| Session management | SessionStart         | -                                 | session-begin, session-end   | Covered          |
-| Code review        | UserPromptSubmit     | -                                 | pr-review, fetch-pr-feedback | Covered          |
-| Pattern checking   | pre-commit, pre-push | patterns:check                    | -                            | No command       |
-| Consolidation      | -                    | lessons:surface, patterns:suggest | -                            | **CRITICAL GAP** |
-| Security audit     | -                    | -                                 | audit-security               | Covered          |
-| Review triggers    | -                    | review:check                      | -                            | Advisory only    |
-| Phase completion   | -                    | phase-complete-check              | -                            | Manual audit     |
-| Archival           | -                    | archive-doc                       | -                            | No safety check  |
-| CANON remediation  | -                    | -                                 | -                            | **CRITICAL GAP** |
+| Area               | Hooks                | Scripts                           | Commands                   | Gap              |
+| ------------------ | -------------------- | --------------------------------- | -------------------------- | ---------------- |
+| Session management | SessionStart         | -                                 | session-begin, session-end | Covered          |
+| Code review        | UserPromptSubmit     | -                                 | pr-review                  | Covered          |
+| Pattern checking   | pre-commit, pre-push | patterns:check                    | -                          | No command       |
+| Consolidation      | -                    | lessons:surface, patterns:suggest | -                          | **CRITICAL GAP** |
+| Security audit     | -                    | -                                 | audit-security             | Covered          |
+| Review triggers    | -                    | review:check                      | -                          | Advisory only    |
+| Phase completion   | -                    | phase-complete-check              | -                          | Manual audit     |
+| Archival           | -                    | archive-doc                       | -                          | No safety check  |
+| CANON remediation  | -                    | -                                 | -                          | **CRITICAL GAP** |
 
 ### Priority Implementation Order
 
@@ -825,12 +788,13 @@ args: arg1 - Description of argument
 
 ## Version History
 
-| Version | Date       | Changes                                                                 |
-| ------- | ---------- | ----------------------------------------------------------------------- |
-| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md           |
-| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                          |
-| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration |
-| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                |
+| Version | Date       | Changes                                                                   |
+| ------- | ---------- | ------------------------------------------------------------------------- |
+| 2.1     | 2026-01-19 | Removed /fetch-pr-feedback (copy/paste more thorough), updated /pr-review |
+| 2.0     | 2026-01-15 | Combined SLASH_COMMANDS.md and CUSTOM_SLASH_COMMANDS_GUIDE.md             |
+| 1.2     | 2026-01-09 | Added /fetch-pr-feedback command documentation                            |
+| 1.1     | 2026-01-08 | Added 6 single-session audit commands with AUDIT_TRACKER.md integration   |
+| 1.0     | 2026-01-05 | Initial creation - comprehensive slash command reference                  |
 
 ---
 
