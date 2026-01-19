@@ -71,19 +71,13 @@ compliance check
 content **Example:** `/docs-sync` **Parameters:** None **Output:** Sync status
 and drift detection
 
-### `/fetch-pr-feedback`
-
-**Description:** Fetch pending CodeRabbit/Qodo PR review feedback **When to
-use:** Retrieve AI-generated code review comments for processing **Example:**
-`/fetch-pr-feedback` **Parameters:** None **Output:** PR feedback summary
-
 ### `/pr-review`
 
-**Description:** Process AI-generated PR review feedback (CodeRabbit/Qodo)
-**When to use:** After receiving PR review comments, systematic processing
-**Example:** `/pr-review` or `/pr-review fetch` **Parameters:** Optional "fetch"
-to auto-retrieve feedback from current PR using gh CLI **Output:** Categorized
-feedback with action items
+**Description:** Process AI-generated PR review feedback (CodeRabbit, Qodo,
+SonarCloud, CI logs) **When to use:** After receiving PR review comments via
+copy/paste **Example:** `/pr-review` then paste feedback **Parameters:** None -
+paste feedback directly **Output:** Categorized feedback with action items,
+auto-enriches SonarCloud issues via API
 
 ### `/session-begin`
 

@@ -19,13 +19,13 @@ documented.
 ## Protocol Overview
 
 ```
-AUTO-FETCH (Get PR feedback if not provided)
-    ↓
 STEP 0: CONTEXT (Load tiered docs)
     ↓
-STEP 1: PARSE (Multi-pass extraction + validate claims)
+STEP 1: PARSE (Multi-pass for >200 lines + validate claims)
     ↓
-STEP 2: CATEGORIZE (Critical/Major/Minor/Trivial)
+STEP 1.5: SONARCLOUD ENRICHMENT (Auto-fetch code snippets if SonarCloud issues present)
+    ↓
+STEP 2: CATEGORIZE (ALWAYS - Critical/Major/Minor/Trivial)
     ↓
 STEP 3: PLAN (TodoWrite - learning entry FIRST)
     ↓
@@ -44,38 +44,18 @@ STEP 9: COMMIT (Following project conventions)
 
 ---
 
-## AUTO-FETCH: Get PR Feedback (Optional)
+## INPUT: Copy/Paste Feedback
 
-**Only triggered when user says "fetch"** (e.g., `/pr-review fetch` or "go fetch
-it").
+**Why copy/paste**: Direct paste from CodeRabbit, Qodo, or SonarCloud provides
+the most specific and thorough feedback. Automated fetch commands lose detail
+and context.
 
-If triggered, fetch review data from the current PR:
+**Supported sources**:
 
-```bash
-# 1. Get current branch and find associated PR
-branch=$(git branch --show-current)
-pr_number=$(gh pr list --head "$branch" --json number --jq '.[0].number' 2>/dev/null)
-
-# 2. If PR exists, fetch reviews and comments
-if [ -n "$pr_number" ]; then
-  echo "Found PR #$pr_number"
-
-  # Get PR checks status (SonarCloud, etc.)
-  gh pr checks "$pr_number"
-
-  # Get review comments
-  gh pr view "$pr_number" --comments
-
-  # Get review requests and status
-  gh api "repos/{owner}/{repo}/pulls/$pr_number/reviews" --jq '.[] | {user: .user.login, state: .state, body: .body}'
-fi
-```
-
-**Behavior:**
-
-- **Default**: Wait for user to paste feedback
-- **If user says "fetch"**: Auto-fetch from current PR, then proceed
-- **If feedback already in message**: Skip fetch, process directly
+- CodeRabbit PR comments/suggestions
+- Qodo PR compliance and code suggestions
+- SonarCloud security hotspots and issues
+- CI failure logs with pattern violations
 
 ---
 
@@ -114,11 +94,13 @@ Determine which tool generated this review:
 
 ### 1.2 Extract ALL Suggestions
 
-Parse the entire input systematically. For reviews >500 lines:
+Parse the entire input systematically. For reviews >200 lines:
 
 - **First pass**: Extract all issue headers/titles
 - **Second pass**: Extract details for each issue
 - **Third pass**: Verify no issues were missed
+
+For shorter reviews, single-pass extraction is acceptable.
 
 Create a numbered master list:
 
@@ -181,7 +163,51 @@ hours fixing non-existent problems.
 
 ---
 
-## STEP 2: CATEGORIZATION (Per AI_REVIEW_PROCESS.md)
+## STEP 1.5: SONARCLOUD ENRICHMENT (Automatic)
+
+**When SonarCloud issues are detected in pasted feedback**, automatically fetch
+code snippets via the SonarCloud MCP to get specific code context.
+
+### Detection Triggers
+
+Look for these patterns in pasted content:
+
+- `javascript:S####` or `typescript:S####` rule IDs
+- "Security Hotspot" / "Code Smell" / "Bug" labels
+- SonarCloud file paths like `owner_repo:path/to/file.js`
+- References to SonarCloud review priority (HIGH/MEDIUM/LOW)
+
+### Auto-Enrichment Steps
+
+When SonarCloud issues detected:
+
+```bash
+# 1. Fetch issue details with code snippets
+curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&rules=<rule_id>&ps=100" | jq '.issues[] | {file: .component, line: .line, message: .message, rule: .rule}'
+
+# 2. For security hotspots, fetch with status
+curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=jasonmichaelbell78-creator_sonash-v0&status=TO_REVIEW&ps=100" | jq '.hotspots[] | {file: .component, line: .line, message: .message, rule: .securityCategory}'
+```
+
+**Or use MCP tools:**
+
+```
+mcp__sonarcloud__<tool>
+```
+
+### Why This Matters
+
+Pasted SonarCloud feedback often lacks:
+
+- Actual code snippets showing the issue
+- Full context around the flagged line
+- Related issues in the same file
+
+Auto-enrichment ensures you see the EXACT code before fixing.
+
+---
+
+## STEP 2: CATEGORIZATION (ALWAYS)
 
 Categorize EVERY suggestion using this matrix:
 
@@ -459,7 +485,7 @@ Create commit(s) following project conventions:
 - ❌ Forgetting learning entry
 - ❌ Not using TodoWrite for tracking
 - ❌ Not invoking specialist agents when applicable
-- ❌ Single-pass parsing of large reviews (500+ lines)
+- ❌ Single-pass parsing of large reviews (200+ lines)
 - ❌ Trusting AI claims about "missing data" without git verification
 
 ---
@@ -503,18 +529,17 @@ npm run patterns:check
 
 When updating this command (steps, rules, protocol), also update:
 
-| Document                                | What to Update              | Why                                          |
-| --------------------------------------- | --------------------------- | -------------------------------------------- |
-| `.claude/commands/fetch-pr-feedback.md` | Step 5 (invoked steps list) | fetch-pr-feedback auto-invokes this protocol |
-| `docs/SLASH_COMMANDS_REFERENCE.md`      | `/pr-review` section        | Documentation of this command                |
-| `docs/AI_REVIEW_PROCESS.md`             | Related workflow sections   | Process documentation                        |
+| Document                           | What to Update            | Why                           |
+| ---------------------------------- | ------------------------- | ----------------------------- |
+| `docs/SLASH_COMMANDS_REFERENCE.md` | `/pr-review` section      | Documentation of this command |
+| `docs/AI_REVIEW_PROCESS.md`        | Related workflow sections | Process documentation         |
 
-**Why this matters:** This is the core PR review protocol. Changes here affect
-all commands that invoke it.
+**Why this matters:** This is the core PR review protocol.
 
 ---
 
 ## NOW: Ready to process PR review feedback
 
-Paste the review feedback below, or say "fetch" and I'll grab it from the
-current PR.
+Paste the review feedback below (CodeRabbit, Qodo, SonarCloud, or CI logs).
+
+**Note:** Copy/paste provides more thorough feedback than automated fetching.

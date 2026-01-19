@@ -113,6 +113,13 @@ files**.
 `fix(sonar): resolve all critical and blocker issues` **Tracking**:
 [PR2 Checklist](#pr-2-checklist)
 
+> 📖 **Code Context**:
+> [sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)
+>
+> - Search: `S3776` for all complexity issues with code snippets
+> - Or: Navigate to **Priority Issues** section for highest-complexity functions
+> - If report missing: `node scripts/generate-detailed-sonar-report.js`
+
 #### Part A: Cognitive Complexity (~82 issues, CRITICAL)
 
 Refactor functions exceeding complexity threshold of 15.
@@ -145,6 +152,14 @@ Refactor functions exceeding complexity threshold of 15.
 **Branch**: `cleanup/phase-3-major-quality` **Commit**:
 `fix(sonar): resolve major code quality issues` **Tracking**:
 [PR3 Checklist](#pr-3-checklist)
+
+> 📖 **Code Context**:
+> [sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)
+>
+> - Search: `S3358` for nested ternary issues with code snippets
+> - Search: `S6853` for form label issues, `S6479` for array key issues
+> - Or: Navigate to **Issues by Severity > MAJOR** section
+> - If report missing: `node scripts/generate-detailed-sonar-report.js`
 
 #### Part A: Ternary Expression Complexity (~108 issues, MAJOR)
 
@@ -182,6 +197,14 @@ Refactor functions exceeding complexity threshold of 15.
 `fix(sonar): resolve medium and minor code issues` **Tracking**:
 [PR4 Checklist](#pr-4-checklist)
 
+> 📖 **Code Context**:
+> [sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)
+>
+> - Search: `S7781` for replaceAll issues, `S7778` for push batching
+> - Search: `S7780` for String.raw, `S7773` for Number.isNaN
+> - Or: Navigate to **Issues by Severity > MINOR** section
+> - If report missing: `node scripts/generate-detailed-sonar-report.js`
+
 #### Part A: String Methods (~362 issues, MINOR)
 
 | Rule             | Count | Fix                                       |
@@ -218,6 +241,14 @@ All other MINOR and INFO level issues. See detailed report for complete list.
 **Branch**: `cleanup/phase-5-security` **Commit**:
 `security(sonar): resolve all security hotspots` **Tracking**:
 [PR5 Checklist](#pr-5-checklist)
+
+> 📖 **Code Context**:
+> [sonarcloud-issues-detailed.md](../../docs/audits/sonarcloud-issues-detailed.md)
+>
+> - Navigate to **Security Hotspots** section for all hotspots by category
+> - Search: `S1523` for code injection, `S5852` for regex DoS
+> - Search: `S2245` for Math.random, `S4797` for PATH manipulation
+> - If report missing: `node scripts/generate-detailed-sonar-report.js`
 
 #### Part A: HIGH Probability (~14 hotspots)
 
