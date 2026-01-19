@@ -77,6 +77,39 @@ export function hashUserId(userId: string): string {
 }
 
 /**
+ * Log structured entry to console based on severity level
+ */
+function logToConsole(severity: Severity, logEntry: object): void {
+  const json = JSON.stringify(logEntry);
+  if (severity === "ERROR") console.error(json);
+  else if (severity === "WARNING") console.warn(json);
+  else console.log(json);
+}
+
+/**
+ * Capture event to Sentry for non-INFO severity events
+ */
+function captureToSentryIfNeeded(
+  options: { captureToSentry?: boolean; userId?: string } | undefined,
+  severity: Severity,
+  message: string,
+  type: SecurityEventType,
+  functionName: string,
+  redactedMetadata: Record<string, unknown> | undefined
+): void {
+  if (options?.captureToSentry === false || severity === "INFO") return;
+
+  Sentry.captureMessage(message, {
+    level: severity === "ERROR" ? "error" : "warning",
+    tags: { securityEventType: type, functionName },
+    extra: {
+      ...redactedMetadata,
+      userIdHash: options?.userId ? hashUserId(options.userId) : undefined,
+    },
+  });
+}
+
+/**
  * Log a security event to GCP Cloud Logging
  *
  * Events are structured JSON for easy querying in Logs Explorer:
@@ -96,9 +129,6 @@ export function logSecurityEvent(
   }
 ): void {
   const severity = options?.severity ?? getSeverityForType(type);
-
-  // SECURITY: Redact metadata BEFORE logging to console/Sentry (not just Firestore)
-  // This prevents sensitive error strings from leaking to Cloud Logging
   const redactedMetadata = redactSensitiveMetadata(options?.metadata);
 
   const event: SecurityEvent = {
@@ -107,50 +137,17 @@ export function logSecurityEvent(
     userId: options?.userId ? hashUserId(options.userId) : undefined,
     functionName,
     message,
-    metadata: redactedMetadata, // Use redacted metadata in event
+    metadata: redactedMetadata,
     timestamp: new Date().toISOString(),
   };
 
-  // Structured logging for GCP Cloud Logging
-  const logEntry = {
-    severity,
-    message: `[${type}] ${message}`,
-    securityEvent: event,
-  };
-
-  // Use appropriate console method based on severity
-  switch (severity) {
-    case "ERROR":
-      console.error(JSON.stringify(logEntry));
-      break;
-    case "WARNING":
-      console.warn(JSON.stringify(logEntry));
-      break;
-    default:
-      console.log(JSON.stringify(logEntry));
-  }
-
-  // Capture warnings and errors to Sentry
-  if (options?.captureToSentry !== false && severity !== "INFO") {
-    Sentry.captureMessage(message, {
-      level: severity === "ERROR" ? "error" : "warning",
-      tags: {
-        securityEventType: type,
-        functionName,
-      },
-      extra: {
-        ...redactedMetadata, // Use redacted metadata for Sentry too
-        userIdHash: options?.userId ? hashUserId(options.userId) : undefined,
-      },
-    });
-  }
+  const logEntry = { severity, message: `[${type}] ${message}`, securityEvent: event };
+  logToConsole(severity, logEntry);
+  captureToSentryIfNeeded(options, severity, message, type, functionName, redactedMetadata);
 
   // Store in Firestore for admin panel logs tab (non-blocking)
-  // Only store WARNING and ERROR events to avoid excessive writes
   if (severity !== "INFO" || options?.storeInFirestore) {
     storeLogInFirestore(event).catch((err) => {
-      // Don't log errors about logging to prevent infinite loops
-      // SECURITY: Sanitize error - only log type, not full object (may contain sensitive details)
       const errorType = err instanceof Error ? err.name : "UnknownError";
       console.error(`Failed to store security event in Firestore: ${errorType}`);
     });
@@ -341,39 +338,51 @@ async function storeLogInFirestore(event: SecurityEvent): Promise<void> {
   }
 }
 
-// Default severity mapping
+// Default severity mapping using lookup table for reduced complexity
+const SEVERITY_MAP: Record<SecurityEventType, Severity> = {
+  // WARNING level events
+  AUTH_FAILURE: "WARNING",
+  RATE_LIMIT_EXCEEDED: "WARNING",
+  APP_CHECK_FAILURE: "WARNING",
+  ACCOUNT_DELETE_REQUESTED: "WARNING",
+  JOB_WARNING: "WARNING",
+  RECAPTCHA_CONFIG_ERROR: "WARNING",
+  RECAPTCHA_MISSING_TOKEN: "WARNING",
+  RECAPTCHA_BYPASSED: "WARNING",
+  RECAPTCHA_API_ERROR: "WARNING",
+  RECAPTCHA_INVALID_TOKEN: "WARNING",
+  RECAPTCHA_ACTION_MISMATCH: "WARNING",
+  RECAPTCHA_LOW_SCORE: "WARNING",
+  RECAPTCHA_UNEXPECTED_ERROR: "WARNING",
+
+  // ERROR level events
+  AUTHORIZATION_FAILURE: "ERROR",
+  SAVE_FAILURE: "ERROR",
+  DELETE_FAILURE: "ERROR",
+  DATA_EXPORT_FAILURE: "ERROR",
+  ACCOUNT_DELETE_FAILURE: "ERROR",
+  DATA_MIGRATION_FAILURE: "ERROR",
+  PARTIAL_MIGRATION_FAILURE: "ERROR",
+  ADMIN_ERROR: "ERROR",
+  HEALTH_CHECK_FAILURE: "ERROR",
+  JOB_FAILURE: "ERROR",
+
+  // INFO level events
+  VALIDATION_FAILURE: "INFO",
+  SAVE_SUCCESS: "INFO",
+  DELETE_SUCCESS: "INFO",
+  DATA_EXPORT_REQUESTED: "INFO",
+  DATA_EXPORT_SUCCESS: "INFO",
+  ACCOUNT_DELETE_SUCCESS: "INFO",
+  DATA_MIGRATION_SUCCESS: "INFO",
+  ADMIN_ACTION: "INFO",
+  JOB_SUCCESS: "INFO",
+  JOB_INFO: "INFO",
+  RECAPTCHA_SUCCESS: "INFO",
+};
+
 function getSeverityForType(type: SecurityEventType): Severity {
-  switch (type) {
-    case "AUTH_FAILURE":
-    case "RATE_LIMIT_EXCEEDED":
-    case "APP_CHECK_FAILURE":
-    case "ACCOUNT_DELETE_REQUESTED":
-      return "WARNING";
-    case "AUTHORIZATION_FAILURE":
-    case "SAVE_FAILURE":
-    case "DELETE_FAILURE":
-    case "DATA_EXPORT_FAILURE":
-    case "ACCOUNT_DELETE_FAILURE":
-    case "DATA_MIGRATION_FAILURE":
-    case "PARTIAL_MIGRATION_FAILURE":
-    case "ADMIN_ERROR":
-    case "HEALTH_CHECK_FAILURE":
-      return "ERROR";
-    case "VALIDATION_FAILURE":
-    case "SAVE_SUCCESS":
-    case "DELETE_SUCCESS":
-    case "DATA_EXPORT_REQUESTED":
-    case "DATA_EXPORT_SUCCESS":
-    case "ACCOUNT_DELETE_SUCCESS":
-    case "DATA_MIGRATION_SUCCESS":
-    case "ADMIN_ACTION":
-    case "JOB_SUCCESS":
-      return "INFO";
-    case "JOB_FAILURE":
-      return "ERROR";
-    default:
-      return "INFO";
-  }
+  return SEVERITY_MAP[type] ?? "INFO";
 }
 
 /**
