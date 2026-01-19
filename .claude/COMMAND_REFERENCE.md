@@ -302,13 +302,14 @@ significant changes **Example:** Feature complete, ready for final review
 
 #### `sonarcloud-sprint`
 
-**Description:** Run a SonarCloud cleanup sprint. Triggers re-analysis, queries
-current issues via MCP tools, generates a prioritized issue report, creates a
-cleanup branch, and tracks fixes with TodoWrite **When to use:** Starting a code
-quality cleanup sprint or when you need current snapshot of SonarCloud issues
-**Example:** `/sonarcloud-sprint` or `/sonarcloud-sprint --report`
-**Parameters:** Optional `--report` flag for report-only mode (no branch
-creation)
+**Description:** Run a SonarCloud cleanup sprint. Fetches fresh issues via
+public API, generates a detailed report with code snippets, creates cleanup
+branches following 5-PR structure, and tracks fixes with TodoWrite. Includes
+pre-commit verification and post-PR learnings extraction. **When to use:**
+Starting a code quality cleanup sprint or when you need current snapshot of
+SonarCloud issues **Example:** `/sonarcloud-sprint` or
+`/sonarcloud-sprint --report` **Parameters:** Optional `--report` flag for
+report-only mode (no branch creation)
 
 #### `skill-creator`
 
