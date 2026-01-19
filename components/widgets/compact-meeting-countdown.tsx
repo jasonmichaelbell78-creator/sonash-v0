@@ -66,37 +66,51 @@ function getCountdownString(meeting: Meeting): string | null {
   }
 }
 
-const parseMinutesSinceMidnight = (timeStr: string): number | null => {
-  const t = timeStr.trim();
+/**
+ * Parse 24-hour time format "HH:mm" to minutes since midnight
+ */
+function parse24HourMinutes(cleaned: string): number | null {
+  const match = cleaned.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return null;
 
-  // 24-hour format: "HH:mm"
-  const m24 = t.match(/^(\d{1,2}):(\d{2})$/);
-  if (m24) {
-    const h = Number(m24[1]);
-    const m = Number(m24[2]);
-    if (Number.isFinite(h) && Number.isFinite(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59) {
-      return h * 60 + m;
-    }
-    return null;
-  }
+  const h = Number(match[1]);
+  const m = Number(match[2]);
 
-  // 12-hour format: "h:mm AM/PM"
-  const m12 = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-  if (m12) {
-    let h = Number(m12[1]);
-    const m = Number(m12[2]);
-    const period = m12[3].toUpperCase();
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+  if (h < 0 || h > 23 || m < 0 || m > 59) return null;
 
-    if (!Number.isFinite(h) || !Number.isFinite(m) || h < 1 || h > 12 || m < 0 || m > 59)
-      return null;
-    if (period === "AM") h = h === 12 ? 0 : h;
-    if (period === "PM") h = h === 12 ? 12 : h + 12;
+  return h * 60 + m;
+}
 
-    return h * 60 + m;
-  }
+/**
+ * Parse 12-hour time format "h:mm AM/PM" to minutes since midnight
+ */
+function parse12HourMinutes(cleaned: string): number | null {
+  const match = cleaned.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return null;
 
-  return null;
-};
+  let h = Number(match[1]);
+  const m = Number(match[2]);
+  const period = match[3].toUpperCase();
+
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+  if (h < 1 || h > 12 || m < 0 || m > 59) return null;
+
+  if (period === "AM") h = h === 12 ? 0 : h;
+  if (period === "PM") h = h === 12 ? 12 : h + 12;
+
+  return h * 60 + m;
+}
+
+/**
+ * Parse time string to minutes since midnight
+ * Supports both 24-hour (HH:mm) and 12-hour (h:mm AM/PM) formats
+ */
+function parseMinutesSinceMidnight(timeStr: string): number | null {
+  const cleaned = timeStr.trim();
+  // Try 24-hour format first (more common in our data)
+  return parse24HourMinutes(cleaned) ?? parse12HourMinutes(cleaned);
+}
 
 /**
  * Next Closest Meeting Widget
