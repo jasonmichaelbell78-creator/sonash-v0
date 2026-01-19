@@ -122,35 +122,53 @@ const PHASE_RULES = {
   },
 };
 
-// Load and parse the detailed report to extract issues
-function loadIssuesFromReport() {
-  if (!fs.existsSync(DETAILED_REPORT)) {
-    console.error(`Error: Detailed report not found at ${DETAILED_REPORT}`);
-    console.error("Run: node scripts/generate-detailed-sonar-report.js");
+/**
+ * Safely read file content or exit with error
+ */
+function readFileOrExit(filePath, errorPrefix) {
+  if (!fs.existsSync(filePath)) {
+    console.error(`Error: ${errorPrefix} not found at ${filePath}`);
     process.exit(1);
   }
-
-  let content;
   try {
-    content = fs.readFileSync(DETAILED_REPORT, "utf-8");
+    return fs.readFileSync(filePath, "utf-8");
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`Error reading detailed report: ${message}`);
+    console.error(`Error reading ${errorPrefix}: ${message}`);
     process.exit(1);
   }
+}
+
+/**
+ * Extract rule from subsequent lines after an issue header
+ */
+function extractRuleFromLines(lines, startIndex) {
+  for (let j = startIndex; j < lines.length; j++) {
+    const nextLine = lines[j];
+    // Stop if we hit the next issue or file section
+    if (nextLine.startsWith("#### ") || nextLine.startsWith("### 📁 `")) {
+      break;
+    }
+    const ruleMatch = nextLine.match(/- \*\*Rule\*\*: `([^`]+)`/);
+    if (ruleMatch) return ruleMatch[1];
+  }
+  return null;
+}
+
+// Load and parse the detailed report to extract issues
+function loadIssuesFromReport() {
+  const content = readFileOrExit(DETAILED_REPORT, "Detailed report");
   const issues = [];
   const hotspots = [];
 
   let currentFile = null;
   const lines = content.split("\n");
-
-  // State machine approach: track section by detecting headers (more reliable than indexOf)
   let inSecuritySection = false;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Detect section transitions (state machine)
+    // Detect section transitions
     if (line.startsWith("## 🔒 Security Hotspots")) {
       inSecuritySection = true;
       continue;
@@ -167,32 +185,16 @@ function loadIssuesFromReport() {
       continue;
     }
 
-    // Check for issue header (anchored, non-greedy for reliable parsing)
+    // Check for issue header
     const issueMatch = line.match(/^#### .*? Line (\d+|N\/A):\s*(.*)$/u);
     if (issueMatch && currentFile) {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
       const message = issueMatch[2];
+      const rule = extractRuleFromLines(lines, i + 1);
 
-      // Look for rule until next issue/file header (more robust than fixed lookahead)
-      for (let j = i + 1; j < lines.length; j++) {
-        const nextLine = lines[j];
-
-        // Stop if we hit the next issue or file section
-        if (nextLine.startsWith("#### ") || nextLine.startsWith("### 📁 `")) {
-          break;
-        }
-
-        const ruleMatch = nextLine.match(/- \*\*Rule\*\*: `([^`]+)`/);
-        if (ruleMatch) {
-          const rule = ruleMatch[1];
-
-          if (inSecuritySection) {
-            hotspots.push({ file: currentFile, line: lineNum, message, rule });
-          } else {
-            issues.push({ file: currentFile, line: lineNum, message, rule });
-          }
-          break;
-        }
+      if (rule) {
+        const target = inSecuritySection ? hotspots : issues;
+        target.push({ file: currentFile, line: lineNum, message, rule });
       }
     }
   }
@@ -200,81 +202,71 @@ function loadIssuesFromReport() {
   return { issues, hotspots };
 }
 
+/**
+ * Parse tracking entries from file content
+ */
+function parseTrackingFile(filePath, type, entries, conflicts) {
+  if (!fs.existsSync(filePath)) return;
+
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf-8");
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`Warning: Failed to read ${type} file: ${message}`);
+    return;
+  }
+
+  const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A|BATCH))?/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    const rule = match[1];
+    const file = match[2].trim();
+    const rawLine = match[3] || "N/A";
+    const line = rawLine === "BATCH" ? "N/A" : rawLine;
+    const key = `${rule}|${file}|${line}`;
+
+    const existing = entries.get(key);
+    if (existing && existing.type !== type) {
+      conflicts.push({ key, existing, entry: { type, rule, file, line } });
+    } else {
+      entries.set(key, { type, rule, file, line });
+    }
+  }
+
+  // Check for bulk fix markers (only in fixes file)
+  if (type === "FIXED") {
+    const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
+    while ((match = bulkRegex.exec(content)) !== null) {
+      entries.set(`BULK|${match[1]}`, { type: "BULK_FIXED", rule: match[1] });
+    }
+  }
+}
+
+/**
+ * Report tracking conflicts and exit if any found
+ */
+function reportConflictsAndExit(conflicts) {
+  if (conflicts.length === 0) return;
+
+  console.error("Error: Conflicting tracking entries found (FIXED vs DISMISSED):");
+  for (const c of conflicts.slice(0, 20)) {
+    console.error(`  - ${c.key}`);
+  }
+  if (conflicts.length > 20) {
+    console.error(`  ... and ${conflicts.length - 20} more`);
+  }
+  process.exit(1);
+}
+
 // Load tracking entries (both fixes and dismissals)
 function loadTrackingEntries() {
   const entries = new Map();
   const conflicts = [];
 
-  // Helper to add entry with conflict detection
-  function addEntry(key, entry) {
-    const existing = entries.get(key);
-    if (existing && existing.type !== entry.type) {
-      conflicts.push({ key, existing, entry });
-      return;
-    }
-    entries.set(key, entry);
-  }
-
-  // Load dismissals
-  if (fs.existsSync(DISMISSALS_FILE)) {
-    try {
-      const content = fs.readFileSync(DISMISSALS_FILE, "utf-8");
-      // Match: ### [rule] - file:line or ### [rule] - file
-      const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A))?/g;
-      let match;
-      while ((match = regex.exec(content)) !== null) {
-        const rule = match[1];
-        const file = match[2].trim();
-        const line = match[3] || "N/A";
-        const key = `${rule}|${file}|${line}`;
-        addEntry(key, { type: "DISMISSED", rule, file, line });
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.warn(`Warning: Failed to read dismissals file: ${message}`);
-    }
-  }
-
-  // Load fixes
-  if (fs.existsSync(FIXES_FILE)) {
-    try {
-      const content = fs.readFileSync(FIXES_FILE, "utf-8");
-      // Match: ### [rule] - file:line or ### [rule] - file (batch fix)
-      const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A|BATCH))?/g;
-      let match;
-      while ((match = regex.exec(content)) !== null) {
-        const rule = match[1];
-        const file = match[2].trim();
-        // Normalize BATCH to N/A for file-level matching consistency
-        const rawLine = match[3] || "N/A";
-        const line = rawLine === "BATCH" ? "N/A" : rawLine;
-        const key = `${rule}|${file}|${line}`;
-        addEntry(key, { type: "FIXED", rule, file, line });
-      }
-
-      // Also check for bulk fix markers: #### Rule [rule] - FIXED (X files)
-      const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
-      while ((match = bulkRegex.exec(content)) !== null) {
-        const rule = match[1];
-        addEntry(`BULK|${rule}`, { type: "BULK_FIXED", rule });
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.warn(`Warning: Failed to read fixes file: ${message}`);
-    }
-  }
-
-  // Report conflicts (issue marked both FIXED and DISMISSED is data integrity error)
-  if (conflicts.length > 0) {
-    console.error("Error: Conflicting tracking entries found (FIXED vs DISMISSED):");
-    for (const c of conflicts.slice(0, 20)) {
-      console.error(`  - ${c.key}`);
-    }
-    if (conflicts.length > 20) {
-      console.error(`  ... and ${conflicts.length - 20} more`);
-    }
-    process.exit(1);
-  }
+  parseTrackingFile(DISMISSALS_FILE, "DISMISSED", entries, conflicts);
+  parseTrackingFile(FIXES_FILE, "FIXED", entries, conflicts);
+  reportConflictsAndExit(conflicts);
 
   return entries;
 }

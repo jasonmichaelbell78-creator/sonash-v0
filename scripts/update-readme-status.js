@@ -144,6 +144,73 @@ function validateMilestone(milestone, index) {
 }
 
 /**
+ * Find the milestones table content from ROADMAP.md
+ * @param {string} content - ROADMAP.md content
+ * @returns {{found: boolean, tableContent?: string, error?: string}}
+ */
+function findMilestonesTable(content) {
+  // Find the milestones table (starts after "## 📊 Milestones Overview")
+  const tableMatch = content.match(
+    /## 📊 Milestones Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/
+  );
+
+  if (tableMatch?.[1]) {
+    return { found: true, tableContent: tableMatch[1] };
+  }
+
+  // Try alternative heading formats
+  const altMatch = content.match(
+    /## .*Milestones.*Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/i
+  );
+
+  if (altMatch?.[1]) {
+    return { found: true, tableContent: altMatch[1] };
+  }
+
+  return {
+    found: false,
+    error:
+      "Could not find Milestones Overview table in ROADMAP.md. Expected format:\n" +
+      "## 📊 Milestones Overview\n\n| Milestone | Status | Progress | ...",
+  };
+}
+
+/**
+ * Parse a single table row into a milestone object
+ * @param {string} row - Table row string
+ * @param {number} rowIndex - Row index for error messages
+ * @returns {{milestone?: object, warning?: string, skip?: boolean}}
+ */
+function parseTableRow(row, rowIndex) {
+  // Skip empty rows or separator rows
+  if (!row.includes("|") || row.match(/^\|[\s-|]+\|$/)) {
+    return { skip: true };
+  }
+
+  // Parse table row: | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
+  const cells = row
+    .split("|")
+    .map((cell) => cell.trim())
+    .filter((cell) => cell);
+
+  if (cells.length < 3) {
+    return { warning: `Row ${rowIndex}: Too few columns (${cells.length}), skipping` };
+  }
+
+  const name = cells[0].replace(/\*\*/g, "").trim();
+  const status = cells[1].trim();
+  const progressStr = cells[2].trim();
+  const target = cells[3]?.trim() || "";
+  const priority = cells[4]?.trim() || "";
+
+  // Parse progress percentage (handle "~50%", "100%", "0%")
+  const progressMatch = progressStr.match(/~?(\d+)%/);
+  const progress = progressMatch ? parseInt(progressMatch[1], 10) : 0;
+
+  return { milestone: { name, status, progress, target, priority } };
+}
+
+/**
  * Parse the milestones table from ROADMAP.md
  * @param {string} content - ROADMAP.md content
  * @returns {{success: boolean, milestones?: Array, error?: string}}
@@ -154,81 +221,39 @@ function parseMilestonesTable(content) {
 
   verbose("Looking for Milestones Overview table...");
 
-  // Find the milestones table (starts after "## 📊 Milestones Overview")
-  const tableMatch = content.match(
-    /## 📊 Milestones Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/
-  );
-
-  if (!tableMatch) {
-    // Try alternative heading formats
-    const altMatch = content.match(
-      /## .*Milestones.*Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/i
-    );
-    if (!altMatch) {
-      return {
-        success: false,
-        error:
-          "Could not find Milestones Overview table in ROADMAP.md. Expected format:\n" +
-          "## 📊 Milestones Overview\n\n| Milestone | Status | Progress | ...",
-      };
-    }
+  const tableResult = findMilestonesTable(content);
+  if (!tableResult.found) {
+    return { success: false, error: tableResult.error };
   }
 
-  const tableContent = tableMatch ? tableMatch[1] : null;
-  if (!tableContent) {
-    return {
-      success: false,
-      error: "Milestones table found but no data rows present",
-    };
-  }
-
-  const tableRows = tableContent
+  const tableRows = tableResult.tableContent
     .trim()
     .split("\n")
     .filter((row) => row.trim());
   verbose(`Found ${tableRows.length} table rows`);
 
   for (let i = 0; i < tableRows.length; i++) {
-    const row = tableRows[i];
+    const parseResult = parseTableRow(tableRows[i], i + 1);
 
-    // Skip empty rows or separator rows
-    if (!row.includes("|") || row.match(/^\|[\s-|]+\|$/)) {
+    if (parseResult.skip) {
       verbose(`Skipping row ${i}: separator or empty`);
       continue;
     }
 
-    // Parse table row: | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
-    const cells = row
-      .split("|")
-      .map((cell) => cell.trim())
-      .filter((cell) => cell);
-
-    if (cells.length < 3) {
-      warnings.push(`Row ${i + 1}: Too few columns (${cells.length}), skipping`);
+    if (parseResult.warning) {
+      warnings.push(parseResult.warning);
       continue;
     }
 
-    const name = cells[0].replace(/\*\*/g, "").trim();
-    const status = cells[1].trim();
-    const progressStr = cells[2].trim();
-    const target = cells[3]?.trim() || "";
-    const priority = cells[4]?.trim() || "";
-
-    // Parse progress percentage (handle "~50%", "100%", "0%")
-    const progressMatch = progressStr.match(/~?(\d+)%/);
-    const progress = progressMatch ? parseInt(progressMatch[1], 10) : 0;
-
-    const milestone = { name, status, progress, target, priority };
-
     // Validate milestone
-    const validation = validateMilestone(milestone, i + 1);
+    const validation = validateMilestone(parseResult.milestone, i + 1);
     if (!validation.valid) {
       warnings.push(...validation.errors);
       continue;
     }
 
-    milestones.push(milestone);
-    verbose(`Parsed milestone: ${name} (${progress}%)`);
+    milestones.push(parseResult.milestone);
+    verbose(`Parsed milestone: ${parseResult.milestone.name} (${parseResult.milestone.progress}%)`);
   }
 
   if (warnings.length > 0) {
@@ -237,10 +262,7 @@ function parseMilestonesTable(content) {
   }
 
   if (milestones.length === 0) {
-    return {
-      success: false,
-      error: "No valid milestones found in table",
-    };
+    return { success: false, error: "No valid milestones found in table" };
   }
 
   return { success: true, milestones };

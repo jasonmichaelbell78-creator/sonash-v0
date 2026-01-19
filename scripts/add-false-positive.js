@@ -238,29 +238,48 @@ async function interactiveMode() {
   console.log(JSON.stringify(saved, null, 2));
 }
 
+// Value arguments that consume the next argument
+const VALUE_ARGS = new Set(["--pattern", "--category", "--reason", "--source", "--expires"]);
+
+/**
+ * Process a single command-line argument
+ * @param {string} arg - Current argument
+ * @param {string|undefined} nextArg - Next argument (for value flags)
+ * @param {object} parsed - Parsed arguments object
+ * @returns {boolean} True if next arg was consumed
+ */
+function processArg(arg, nextArg, parsed) {
+  // Handle boolean flags
+  if (arg === "--list") {
+    parsed.list = true;
+    return false;
+  }
+  if (arg === "--interactive") {
+    parsed.interactive = true;
+    return false;
+  }
+  if (arg === "--help" || arg === "-h") {
+    parsed.help = true;
+    return false;
+  }
+
+  // Handle value flags
+  if (VALUE_ARGS.has(arg) && nextArg) {
+    const key = arg.slice(2); // Remove "--" prefix
+    parsed[key] = nextArg;
+    return true; // Consumed next arg
+  }
+
+  return false;
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
   const parsed = {};
 
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--list") {
-      parsed.list = true;
-    } else if (arg === "--interactive") {
-      parsed.interactive = true;
-    } else if (arg === "--pattern" && args[i + 1]) {
-      parsed.pattern = args[++i];
-    } else if (arg === "--category" && args[i + 1]) {
-      parsed.category = args[++i];
-    } else if (arg === "--reason" && args[i + 1]) {
-      parsed.reason = args[++i];
-    } else if (arg === "--source" && args[i + 1]) {
-      parsed.source = args[++i];
-    } else if (arg === "--expires" && args[i + 1]) {
-      parsed.expires = args[++i];
-    } else if (arg === "--help" || arg === "-h") {
-      parsed.help = true;
-    }
+    const consumed = processArg(args[i], args[i + 1], parsed);
+    if (consumed) i++; // Skip next arg if it was consumed as a value
   }
 
   return parsed;
