@@ -115,7 +115,7 @@ if printf '%s' "$SAFE_OUTPUT" | grep -q "potential pattern violation"; then
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   printf '%s' "$SAFE_OUTPUT" | grep -E -A3 "📄|Line|✓ Fix|📚 See" || true
   echo ""
-  echo "Review docs/agent_docs/CODE_PATTERNS.md for documented patterns."
+  echo "Review docs/agent_docs/CODE_PATTERNS.md (🔴 = critical) for documented patterns."
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi
 

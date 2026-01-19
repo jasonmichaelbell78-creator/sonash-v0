@@ -70,7 +70,7 @@ When suggesting improvements:
 - Follow React 19 conventions (use() hook, Server Components by default)
 - Suggest TypeScript strict mode improvements where safe
 - Avoid suggesting changes to intentionally simple code
-- Reference docs/agent_docs/CODE_PATTERNS.md for anti-patterns
+- Reference docs/agent_docs/CODE_PATTERNS.md for anti-patterns (🔴 = critical priority)
 """
 
 [pr_description]

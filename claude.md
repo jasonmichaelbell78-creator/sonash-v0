@@ -1,6 +1,6 @@
 # AI Context & Rules for SoNash
 
-**Document Version:** 3.2 **Last Updated:** 2026-01-17
+**Document Version:** 3.3 **Last Updated:** 2026-01-18
 
 ---
 
@@ -72,8 +72,8 @@ This is the primary context file for Claude Code sessions:
 | exec() loops       | `/g` flag REQUIRED (no /g = infinite loop)                        |
 
 **Full Reference**:
-[docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (100+
-patterns from 72 reviews)
+[docs/agent_docs/CODE_PATTERNS.md](docs/agent_docs/CODE_PATTERNS.md) (180+
+patterns with priority tiers 🔴/🟡/⚪ from 179 reviews)
 
 **App-Specific:**
 
@@ -157,6 +157,7 @@ Choice:** What was selected **Implementation:** Link to PR/commit/roadmap
 
 | Version | Date       | Description                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------- |
+| 3.3     | 2026-01-18 | Updated CODE_PATTERNS.md count to 180+ with priority tiers (🔴/🟡/⚪)               |
 | 3.2     | 2026-01-17 | Added Section 7: Context Preservation - auto-save decisions to SESSION_DECISIONS.md |
 | 3.1     | 2026-01-06 | CONSOLIDATION #6: Reviews #61-72 → CODE_PATTERNS.md (10 Documentation patterns)     |
 | 3.0     | 2026-01-05 | Refactored for conciseness: moved 90+ patterns to CODE_PATTERNS.md                  |
