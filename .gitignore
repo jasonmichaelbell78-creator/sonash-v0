@@ -56,6 +56,9 @@ scripts/suggested-patterns.json
 docs/analysis/sonarqube-issues-*.json
 .sonar/
 
+# SonarCloud detailed reports (regenerate with: node scripts/generate-detailed-sonar-report.js)
+docs/audits/sonarcloud-issues-detailed.md
+
 # MCP configuration (VS Code - not used by Claude Code)
 .vscode/mcp.json
 # NOTE: .mcp.json is intentionally tracked - required for MCP persistence in cloud environments

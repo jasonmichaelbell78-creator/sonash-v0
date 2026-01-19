@@ -154,8 +154,8 @@ function loadIssuesFromReport() {
       continue;
     }
 
-    // Check for issue header
-    const issueMatch = line.match(/#### .+ Line (\d+|N\/A): (.+)/u);
+    // Check for issue header (use non-greedy .+? to stop at first "Line")
+    const issueMatch = line.match(/#### .+? Line (\d+|N\/A): (.+)/u);
     if (issueMatch && currentFile) {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
       const message = issueMatch[2];

@@ -25,6 +25,7 @@ Automate the SonarCloud analysis and cleanup workflow:
 - GitHub CLI (`gh`) authenticated with repo access
 - SonarCloud project: `jasonmichaelbell78-creator_sonash-v0`
 - Node.js for report generation script
+- `jq` for JSON parsing in shell commands (dynamic pagination)
 
 ## Usage
 
@@ -37,20 +38,32 @@ Automate the SonarCloud analysis and cleanup workflow:
 
 ### Phase 1: Fetch Fresh Data from API
 
-The SonarCloud API is publicly accessible. Fetch all issues:
+The SonarCloud API is publicly accessible. Fetch all issues with dynamic
+pagination:
 
 ```bash
-# Fetch all issues (paginated, 500 per page)
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&ps=500&p=1" > /tmp/sonar_all_p1.json
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&ps=500&p=2" > /tmp/sonar_all_p2.json
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&ps=500&p=3" > /tmp/sonar_all_p3.json
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&ps=500&p=4" > /tmp/sonar_all_p4.json
+# Set project key
+PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
+
+# Fetch first page and determine total pages needed
+curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=1" > /tmp/sonar_all_p1.json
+TOTAL_ISSUES=$(jq '.total' /tmp/sonar_all_p1.json)
+PAGE_SIZE=500
+TOTAL_PAGES=$(( (TOTAL_ISSUES + PAGE_SIZE - 1) / PAGE_SIZE ))
+
+echo "Total issues: $TOTAL_ISSUES (need $TOTAL_PAGES pages)"
+
+# Fetch remaining pages dynamically
+for ((p=2; p<=TOTAL_PAGES; p++)); do
+  echo "Fetching page $p of $TOTAL_PAGES..."
+  curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=$p" > "/tmp/sonar_all_p$p.json"
+done
 
 # Fetch security hotspots
-curl -s "https://sonarcloud.io/api/hotspots/search?projectKey=jasonmichaelbell78-creator_sonash-v0&status=TO_REVIEW&ps=500" > /tmp/sonar_hotspots.json
+curl -s "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500" > /tmp/sonar_hotspots.json
 
 # Check counts
-echo "Issues: $(jq '.total' /tmp/sonar_all_p1.json)"
+echo "Issues: $TOTAL_ISSUES"
 echo "Hotspots: $(jq '.paging.total' /tmp/sonar_hotspots.json)"
 ```
 
@@ -119,6 +132,9 @@ Fix: Change `str.replace(/pattern/g, 'replacement')` to
 ### Phase 6: Verify and Create PR
 
 ```bash
+# Run pre-commit verification (checks all phase issues resolved)
+node scripts/verify-sonar-phase.js --phase=1  # (or 2, 3, 4, 5)
+
 # Run tests
 npm run lint && npm run type-check && npm test
 
@@ -149,6 +165,41 @@ See: docs/audits/sonarcloud-issues-detailed.md
 - [ ] Type check passing
 - [ ] SonarCloud PR analysis shows improvement"
 ```
+
+### Phase 7: Extract Learnings (MANDATORY)
+
+After PR is merged, extract learnings to the AI Lessons Log:
+
+```bash
+# Add entry to docs/agent_docs/AI_LESSONS_LOG.md
+```
+
+Use this template:
+
+```markdown
+### SonarCloud Sprint PR X: [Phase Name] (YYYY-MM-DD)
+
+**Issues Resolved**: X total (Y rules across Z files)
+
+**Patterns Discovered**:
+
+1. **[Pattern Name]**: [Description]
+   - Root cause: [Why this pattern occurred]
+   - Prevention: [How to avoid in future]
+
+**Fix Techniques**: | Rule | Technique | Example |
+|------|-----------|---------| | SXXXX | [Fix approach] | [Before] → [After] |
+
+**False Positives Identified**:
+
+- [Rule]: [Why it's a false positive]
+
+**Recommendations for claude.md**:
+
+- [ ] Add pattern to Section 4 if recurring
+```
+
+This ensures learnings are captured just like PR review learnings.
 
 ## Report-Only Mode
 

@@ -285,6 +285,55 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 **Justification**: [Detailed explanation] **Reviewed by**: [Name/Date]
 ```
 
+### Post-PR Learnings Extraction (MANDATORY)
+
+After each PR is merged, extract learnings to the AI Lessons Log. This mirrors
+the PR review process and ensures valuable patterns are captured.
+
+#### What to Extract
+
+For each PR phase, document:
+
+1. **Patterns Discovered** - Recurring issues that suggest systemic problems
+2. **Fix Techniques** - Reusable approaches for similar issues
+3. **False Positive Patterns** - Rules that frequently flag non-issues
+4. **Prevention Strategies** - How to avoid these issues in future code
+
+#### Template for AI_LESSONS_LOG.md
+
+```markdown
+### SonarCloud Sprint PR X: [Phase Name] (YYYY-MM-DD)
+
+**Issues Resolved**: X total (Y rules across Z files)
+
+**Patterns Discovered**:
+
+1. **[Pattern Name]**: [Description]
+   - Root cause: [Why this pattern occurred]
+   - Prevention: [How to avoid in future]
+
+**Fix Techniques**:
+
+| Rule  | Technique          | Example                                |
+| ----- | ------------------ | -------------------------------------- |
+| S7772 | Add `node:` prefix | `require('fs')` → `require('node:fs')` |
+
+**False Positives Identified**:
+
+- [Rule]: [Why it's a false positive in this context]
+
+**Recommendations for claude.md**:
+
+- [ ] Add pattern to Section 4 if recurring
+- [ ] Update CODE_PATTERNS.md if new anti-pattern
+```
+
+#### Checklist Item
+
+Each PR checklist now includes:
+
+- [ ] Post-PR learnings extracted to `docs/agent_docs/AI_LESSONS_LOG.md`
+
 ---
 
 ## PR Checklists
@@ -303,8 +352,9 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 - [x] Verification workflow added - commit `1a390fc`
 - [x] Checklist-based verification added - commit `ef77e9b`
 - [x] All 190 Phase 1 issues resolved
-- [ ] Tests passing: `npm test`
-- [ ] Lint passing: `npm run lint`
+- [x] Tests passing: `npm test`
+- [x] Lint passing: `npm run lint`
+- [x] Post-PR learnings extracted to AI_LESSONS_LOG.md
 
 ### PR 2 Checklist
 
@@ -316,6 +366,7 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=2`
 - [ ] Any dismissals documented
 - [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
 
 ### PR 3 Checklist
 
@@ -324,6 +375,7 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=3`
 - [ ] Any dismissals documented
 - [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
 
 ### PR 4 Checklist
 
@@ -334,6 +386,7 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=4`
 - [ ] Any dismissals documented
 - [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
 
 ### PR 5 Checklist
 
@@ -343,6 +396,7 @@ Create `docs/audits/sonarcloud-dismissals.md` with:
 - [ ] Verification script passes: `node scripts/verify-sonar-phase.js --phase=5`
 - [ ] All hotspot decisions documented (FIXED/SAFE/ACKNOWLEDGED)
 - [ ] All tests passing
+- [ ] Post-PR learnings extracted to AI_LESSONS_LOG.md
 
 ---
 

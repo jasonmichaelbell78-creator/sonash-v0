@@ -55,17 +55,24 @@ The SonarCloud API is publicly accessible for read operations:
 # Set project key
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
-# Fetch all issues (paginated, max 500 per page)
+# Fetch first page and determine total pages needed
 curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=1" > /tmp/sonar_all_p1.json
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=2" > /tmp/sonar_all_p2.json
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=3" > /tmp/sonar_all_p3.json
-curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=4" > /tmp/sonar_all_p4.json
+TOTAL_ISSUES=$(jq '.total' /tmp/sonar_all_p1.json)
+PAGE_SIZE=500
+TOTAL_PAGES=$(( (TOTAL_ISSUES + PAGE_SIZE - 1) / PAGE_SIZE ))
+
+echo "Total issues: $TOTAL_ISSUES (need $TOTAL_PAGES pages)"
+
+# Fetch remaining pages dynamically
+for ((p=2; p<=TOTAL_PAGES; p++)); do
+  echo "Fetching page $p of $TOTAL_PAGES..."
+  curl -s "https://sonarcloud.io/api/issues/search?componentKeys=$PROJECT_KEY&ps=500&p=$p" > "/tmp/sonar_all_p$p.json"
+done
 
 # Fetch security hotspots
 curl -s "https://sonarcloud.io/api/hotspots/search?projectKey=$PROJECT_KEY&status=TO_REVIEW&ps=500" > /tmp/sonar_hotspots.json
 
 # Verify counts
-echo "Total issues: $(jq '.total' /tmp/sonar_all_p1.json)"
 echo "Total hotspots: $(jq '.paging.total' /tmp/sonar_hotspots.json)"
 ```
 
