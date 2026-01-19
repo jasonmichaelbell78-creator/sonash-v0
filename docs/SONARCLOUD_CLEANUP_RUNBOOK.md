@@ -28,6 +28,30 @@ Before running a cleanup sprint:
 2. **Project Imported**: Project `jasonmichaelbell78-creator_sonash-v0` exists
 3. **SONAR_TOKEN Secret**: Configured in GitHub repo secrets
 4. **Workflow Fixed**: `.github/workflows/sonarcloud.yml` has checkout step
+5. **Automatic Analysis Disabled**: Must be OFF to use GitHub Actions analysis
+
+---
+
+## Phase 0: Disable Automatic Analysis
+
+> **Important**: SonarCloud cannot run both Automatic Analysis and CI-based
+> analysis simultaneously. You must disable Automatic Analysis before triggering
+> the GitHub Actions workflow.
+
+### 0.1 Disable Before Analysis
+
+1. Go to:
+   https://sonarcloud.io/project/analysis_method?id=jasonmichaelbell78-creator_sonash-v0
+2. Under **Analysis Method**, turn **OFF** "Automatic Analysis"
+3. Confirm the change is saved
+
+### 0.2 Re-enable After Sprint (Optional)
+
+If you prefer Automatic Analysis for ongoing monitoring:
+
+1. After merging your cleanup PR, return to the Analysis Method page
+2. Turn **ON** "Automatic Analysis"
+3. Note: Future PRs will use Automatic Analysis instead of GitHub Actions
 
 ---
 
@@ -257,6 +281,22 @@ echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%
 2. Check analysis method is set to "GitHub Actions" (not automatic)
 3. Re-trigger workflow manually
 
+### "CI analysis while Automatic Analysis is enabled" Error
+
+If you see this error in the workflow logs:
+
+```
+ERROR You are running CI analysis while Automatic Analysis is enabled.
+Please consider disabling one or the other.
+```
+
+**Solution**: Disable Automatic Analysis in SonarCloud:
+
+1. Go to:
+   https://sonarcloud.io/project/analysis_method?id=jasonmichaelbell78-creator_sonash-v0
+2. Turn **OFF** "Automatic Analysis"
+3. Re-trigger the workflow: `gh workflow run sonarcloud.yml --ref main`
+
 ### MCP Tools Return Empty
 
 1. Verify project key matches exactly: `jasonmichaelbell78-creator_sonash-v0`
@@ -280,6 +320,7 @@ echo "Issues: X (down from Y)" >> docs/audits/sonarcloud-snapshots/$(date +%Y%m%
 
 | Version | Date       | Changes                                                         |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.3     | 2026-01-19 | Add Phase 0: Automatic Analysis toggle instructions             |
 | 1.2     | 2026-01-18 | Round 2: Basic auth fix, conclusion-aware polling               |
 | 1.1     | 2026-01-18 | PR review fixes: polling robustness, token security, timestamps |
 | 1.0     | 2026-01-18 | Initial runbook created                                         |
