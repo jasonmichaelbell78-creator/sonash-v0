@@ -62,6 +62,8 @@ console.log(`Loaded ${hotspots.length} security hotspots`);
 
 // Extract file path from component
 function getFilePath(component) {
+  // Guard against missing or invalid component values from malformed JSON
+  if (typeof component !== "string" || component.length === 0) return "unknown";
   // Component format: "owner_repo:path/to/file.js"
   const parts = component.split(":");
   return parts.length > 1 ? parts.slice(1).join(":") : component;

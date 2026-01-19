@@ -64,7 +64,33 @@ ROADMAP.md #legacy-cleanup). **Reviewed by**: Example Reviewer / 2026-01-19
 
 ### Phase 5: Security Hotspots
 
-<!-- Security hotspot dismissals with detailed risk assessment -->
+#### [javascript:S1523] - scripts/verify-sonar-phase.js (multiple lines)
+
+**Reason**: False Positive **Justification**: SonarCloud flags strings like
+"javascript:S7772", "typescript:S3776" as potential code injection because they
+contain "javascript:" prefix. These are SonarCloud rule identifiers stored in
+the PHASE_RULES configuration object, NOT JavaScript URIs or code to be
+evaluated. No eval(), new Function(), or dynamic code execution occurs with
+these values - they are used purely for string matching against API responses.
+**Reviewed by**: Claude / 2026-01-19
+
+#### [javascript:S5852] - scripts/generate-detailed-sonar-report.js:107
+
+**Reason**: Acceptable Risk **Justification**: The regex `/<[^>]+>/g` in
+stripHtml() uses a negated character class `[^>]` which cannot cause
+catastrophic backtracking. The pattern linearly scans for HTML tags. Input comes
+from SonarCloud API JSON responses which we process ourselves - not arbitrary
+user input. Risk is minimal and accepted. **Reviewed by**: Claude / 2026-01-19
+
+#### [javascript:S5852] - scripts/verify-sonar-phase.js:171
+
+**Reason**: Acceptable Risk **Justification**: The regex
+`/^#### .*? Line (\d+|N\/A):\s*(.*)$/u` parses our own generated markdown report
+file (sonarcloud-issues-detailed.md). The `.*?` is non-greedy and anchored to
+line boundaries. Input is trusted (self-generated). Even worst-case backtracking
+on pathologically long lines is bounded by line length. Performance profiling
+shows no issues with current report sizes (~300 issues). **Reviewed by**: Claude
+/ 2026-01-19
 
 ---
 

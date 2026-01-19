@@ -173,9 +173,16 @@ function loadIssuesFromReport() {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
       const message = issueMatch[2];
 
-      // Look for rule in next few lines
-      for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
-        const ruleMatch = lines[j].match(/- \*\*Rule\*\*: `([^`]+)`/);
+      // Look for rule until next issue/file header (more robust than fixed lookahead)
+      for (let j = i + 1; j < lines.length; j++) {
+        const nextLine = lines[j];
+
+        // Stop if we hit the next issue or file section
+        if (nextLine.startsWith("#### ") || nextLine.startsWith("### 📁 `")) {
+          break;
+        }
+
+        const ruleMatch = nextLine.match(/- \*\*Rule\*\*: `([^`]+)`/);
         if (ruleMatch) {
           const rule = ruleMatch[1];
 
@@ -238,7 +245,9 @@ function loadTrackingEntries() {
       while ((match = regex.exec(content)) !== null) {
         const rule = match[1];
         const file = match[2].trim();
-        const line = match[3] || "N/A";
+        // Normalize BATCH to N/A for file-level matching consistency
+        const rawLine = match[3] || "N/A";
+        const line = rawLine === "BATCH" ? "N/A" : rawLine;
         const key = `${rule}|${file}|${line}`;
         addEntry(key, { type: "FIXED", rule, file, line });
       }

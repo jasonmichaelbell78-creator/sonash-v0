@@ -52,6 +52,9 @@ Before running a cleanup sprint:
 The SonarCloud API is publicly accessible for read operations:
 
 ```bash
+# NOTE: Requires bash (uses [[ ... ]] and for ((...)) loops)
+set -euo pipefail
+
 # Set project key
 PROJECT_KEY="jasonmichaelbell78-creator_sonash-v0"
 
