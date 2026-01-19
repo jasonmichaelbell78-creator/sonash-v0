@@ -300,6 +300,16 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     // Auto-scroll handled by useScrollToSection hook
   }, []);
 
+  // Helper to position cursor at end of text for both textareas (S2004 complexity reduction)
+  const positionCursorsAtEnd = useCallback((textLength: number) => {
+    if (desktopTextareaRef.current) {
+      desktopTextareaRef.current.setSelectionRange(textLength, textLength);
+    }
+    if (mobileTextareaRef.current) {
+      mobileTextareaRef.current.setSelectionRange(textLength, textLength);
+    }
+  }, []);
+
   // Real-time data sync
   useEffect(() => {
     if (!user) return;
@@ -333,16 +343,8 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
                 // Only update text if not currently editing (collision avoidance)
                 if (data.content && !isEditingRef.current) {
                   setJournalEntry(data.content);
-                  // Position cursor at end of text on load for both textareas
-                  setTimeout(() => {
-                    const len = data.content.length;
-                    if (desktopTextareaRef.current) {
-                      desktopTextareaRef.current.setSelectionRange(len, len);
-                    }
-                    if (mobileTextareaRef.current) {
-                      mobileTextareaRef.current.setSelectionRange(len, len);
-                    }
-                  }, 0);
+                  // Position cursor at end of text on load using extracted helper
+                  setTimeout(() => positionCursorsAtEnd(data.content.length), 0);
                 }
               }
             },
@@ -368,7 +370,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       isMounted = false;
       if (unsubscribe) unsubscribe();
     };
-  }, [referenceDate, user, journalEntry]); // journalEntry added for exhaustive-deps; isEditingRef handles collision avoidance
+  }, [referenceDate, user, journalEntry, positionCursorsAtEnd]); // journalEntry added for exhaustive-deps; isEditingRef handles collision avoidance
 
   // Perform the actual save operation
   const performSave = useCallback(async () => {
