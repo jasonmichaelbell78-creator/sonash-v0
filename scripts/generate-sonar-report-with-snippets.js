@@ -5,15 +5,22 @@
  * Reads from the JSON export and fetches actual source code for each issue
  */
 
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const JSON_FILE = path.join(PROJECT_ROOT, "docs/analysis/sonarqube-all-issues-complete.json");
 const OUTPUT_FILE = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-issues-detailed.md");
 
-// Read the JSON data
-const data = JSON.parse(fs.readFileSync(JSON_FILE, "utf-8"));
+// Read the JSON data with proper error handling
+let data;
+try {
+  data = JSON.parse(fs.readFileSync(JSON_FILE, "utf-8"));
+} catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`Fatal: Failed to read issues file: ${message}`);
+  process.exit(1);
+}
 
 // Combine all issues
 const allIssues = [...(data.issues?.reliability || []), ...(data.issues?.maintainability || [])];
@@ -27,16 +34,22 @@ function getFilePath(component) {
   return parts.length > 1 ? parts.slice(1).join(":") : component;
 }
 
-// Read code snippet from file
+// Read code snippet from file (with path containment check)
 function getCodeSnippet(filePath, line, contextLines = 2) {
   const fullPath = path.join(PROJECT_ROOT, filePath);
+  const resolved = path.resolve(fullPath);
+  const relative = path.relative(PROJECT_ROOT, resolved);
+  // Use regex for robust ".." detection (handles edge cases like "..hidden.md")
+  if (/^\.\.(?:[\\/]|$)/.test(relative) || relative === "" || path.isAbsolute(relative)) {
+    return { found: false, snippet: `[Path outside project: ${filePath}]` };
+  }
 
-  if (!fs.existsSync(fullPath)) {
+  if (!fs.existsSync(resolved)) {
     return { found: false, snippet: `[File not found: ${filePath}]` };
   }
 
   try {
-    const content = fs.readFileSync(fullPath, "utf-8");
+    const content = fs.readFileSync(resolved, "utf-8");
     const lines = content.split("\n");
 
     const startLine = Math.max(0, line - 1 - contextLines);
@@ -51,7 +64,8 @@ function getCodeSnippet(filePath, line, contextLines = 2) {
 
     return { found: true, snippet: snippetLines.join("\n") };
   } catch (err) {
-    return { found: false, snippet: `[Error reading file: ${err.message}]` };
+    const message = err instanceof Error ? err.message : String(err);
+    return { found: false, snippet: `[Error reading file: ${message}]` };
   }
 }
 

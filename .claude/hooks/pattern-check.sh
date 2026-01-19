@@ -92,7 +92,7 @@ if [[ -f "$REL_PATH" ]]; then
 
   # Verify containment: REAL_PATH must start with REAL_PROJECT/
   # Also reject if REAL_PROJECT is root (/) to prevent bypass
-  if [[ -z "$REAL_PATH" ]] || [ -z "$REAL_PROJECT" ]] || [ "$REAL_PROJECT" = "/" ]]; then
+  if [[ -z "$REAL_PATH" || -z "$REAL_PROJECT" || "$REAL_PROJECT" == "/" ]]; then
     exit 0
   fi
   case "$REAL_PATH" in

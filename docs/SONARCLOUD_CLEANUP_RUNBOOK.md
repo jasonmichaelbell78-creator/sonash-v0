@@ -144,17 +144,15 @@ Open `docs/audits/sonarcloud-issues-detailed.md` and find issues by:
 ```
 ````
 
-````
-
 ### 3.3 Fix Patterns by Rule
 
-| Rule | Fix Pattern |
-|------|------------|
-| S7772 | `require('fs')` → `require('node:fs')` |
+| Rule  | Fix Pattern                                       |
+| ----- | ------------------------------------------------- |
+| S7772 | `require('fs')` → `require('node:fs')`            |
 | S7781 | `str.replace(/x/g, y)` → `str.replaceAll('x', y)` |
-| S7688 | `[ condition ]` → `[[ condition ]]` |
-| S3776 | Extract helper functions to reduce complexity |
-| S3358 | Convert nested ternaries to if/else |
+| S7688 | `[ condition ]` → `[[ condition ]]`               |
+| S3776 | Extract helper functions to reduce complexity     |
+| S3358 | Convert nested ternaries to if/else               |
 
 ---
 
@@ -166,7 +164,7 @@ Before committing, verify all phase issues are addressed:
 
 ```bash
 node scripts/verify-sonar-phase.js --phase=1
-````
+```
 
 Output:
 

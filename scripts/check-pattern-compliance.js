@@ -386,9 +386,13 @@ const ANTI_PATTERNS = [
     // - run-consolidation.js: readFileSync at L413 IS in try/catch (L412-419)
     // 2026-01-17 audit (Review #175):
     // - aggregate-audit-findings.js: readFileSync at L145, L181, L246 all in try/catch blocks
+    // 2026-01-19 audit (Review #181):
+    // - generate-detailed-sonar-report.js: readFileSync at L27, L43, L76 all in try/catch blocks
+    // - generate-sonar-report-with-snippets.js: readFileSync at L18 in try/catch (L17-23), L54 in try/catch (L52-70)
+    // - verify-sonar-phase.js: readFileSync at L135, L195, L215 all in try/catch blocks
     // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation|aggregate-audit-findings)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation|aggregate-audit-findings|generate-detailed-sonar-report|generate-sonar-report-with-snippets|verify-sonar-phase)\.js$/,
   },
   {
     id: "auto-mode-slice-truncation",

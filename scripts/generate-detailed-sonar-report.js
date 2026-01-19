@@ -5,36 +5,47 @@
  * Fetches fresh data from SonarCloud API and reads local source files for snippets
  */
 
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const OUTPUT_FILE = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-issues-detailed.md");
 
-// Load all issue pages
+// Load all issue pages from configurable paths (default: .sonar/ directory)
+const SONAR_DIR = process.env.SONAR_DATA_DIR || path.join(PROJECT_ROOT, ".sonar");
 const issueFiles = [
-  "/tmp/sonar_all_p1.json",
-  "/tmp/sonar_all_p2.json",
-  "/tmp/sonar_all_p3.json",
-  "/tmp/sonar_all_p4.json",
+  process.env.SONAR_PAGE_1 || path.join(SONAR_DIR, "sonar_all_p1.json"),
+  process.env.SONAR_PAGE_2 || path.join(SONAR_DIR, "sonar_all_p2.json"),
+  process.env.SONAR_PAGE_3 || path.join(SONAR_DIR, "sonar_all_p3.json"),
+  process.env.SONAR_PAGE_4 || path.join(SONAR_DIR, "sonar_all_p4.json"),
 ];
 
 let allIssues = [];
 for (const file of issueFiles) {
   if (fs.existsSync(file)) {
-    const data = JSON.parse(fs.readFileSync(file, "utf-8"));
-    allIssues = allIssues.concat(data.issues || []);
+    try {
+      const data = JSON.parse(fs.readFileSync(file, "utf-8"));
+      allIssues = allIssues.concat(data.issues || []);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`Warning: Failed to parse ${file}: ${message}`);
+    }
   }
 }
 
 console.log(`Loaded ${allIssues.length} issues`);
 
-// Load hotspots
-const hotspotsFile = "/tmp/sonar_hotspots.json";
+// Load hotspots from configurable path
+const hotspotsFile = process.env.SONAR_HOTSPOTS || path.join(SONAR_DIR, "sonar_hotspots.json");
 let hotspots = [];
 if (fs.existsSync(hotspotsFile)) {
-  const data = JSON.parse(fs.readFileSync(hotspotsFile, "utf-8"));
-  hotspots = data.hotspots || [];
+  try {
+    const data = JSON.parse(fs.readFileSync(hotspotsFile, "utf-8"));
+    hotspots = data.hotspots || [];
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Warning: Failed to parse hotspots file: ${message}`);
+  }
 }
 console.log(`Loaded ${hotspots.length} security hotspots`);
 
@@ -45,16 +56,22 @@ function getFilePath(component) {
   return parts.length > 1 ? parts.slice(1).join(":") : component;
 }
 
-// Read code snippet from local file
+// Read code snippet from local file (with path containment check)
 function getCodeSnippet(filePath, line, textRange, contextLines = 3) {
   const fullPath = path.join(PROJECT_ROOT, filePath);
+  const resolved = path.resolve(fullPath);
+  const relative = path.relative(PROJECT_ROOT, resolved);
+  // Use regex for robust ".." detection (handles edge cases like "..hidden.md")
+  if (/^\.\.(?:[\\/]|$)/.test(relative) || relative === "" || path.isAbsolute(relative)) {
+    return { found: false, snippet: `[Path outside project: ${filePath}]` };
+  }
 
-  if (!fs.existsSync(fullPath)) {
+  if (!fs.existsSync(resolved)) {
     return { found: false, snippet: `[File not found: ${filePath}]` };
   }
 
   try {
-    const content = fs.readFileSync(fullPath, "utf-8");
+    const content = fs.readFileSync(resolved, "utf-8");
     const lines = content.split("\n");
 
     const startLine = Math.max(0, line - 1 - contextLines);
@@ -70,7 +87,8 @@ function getCodeSnippet(filePath, line, textRange, contextLines = 3) {
 
     return { found: true, snippet: snippetLines.join("\n") };
   } catch (err) {
-    return { found: false, snippet: `[Error reading file: ${err.message}]` };
+    const message = err instanceof Error ? err.message : String(err);
+    return { found: false, snippet: `[Error reading file: ${message}]` };
   }
 }
 

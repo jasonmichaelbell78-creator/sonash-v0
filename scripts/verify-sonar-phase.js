@@ -17,8 +17,8 @@
  *   node scripts/verify-sonar-phase.js --phase=2 --extract-learnings
  */
 
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const DETAILED_REPORT = path.join(PROJECT_ROOT, "docs/audits/sonarcloud-issues-detailed.md");
@@ -130,7 +130,14 @@ function loadIssuesFromReport() {
     process.exit(1);
   }
 
-  const content = fs.readFileSync(DETAILED_REPORT, "utf-8");
+  let content;
+  try {
+    content = fs.readFileSync(DETAILED_REPORT, "utf-8");
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Error reading detailed report: ${message}`);
+    process.exit(1);
+  }
   const issues = [];
   const hotspots = [];
 
@@ -184,38 +191,48 @@ function loadTrackingEntries() {
 
   // Load dismissals
   if (fs.existsSync(DISMISSALS_FILE)) {
-    const content = fs.readFileSync(DISMISSALS_FILE, "utf-8");
-    // Match: ### [rule] - file:line or ### [rule] - file
-    const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A))?/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      const rule = match[1];
-      const file = match[2].trim();
-      const line = match[3] || "N/A";
-      const key = `${rule}|${file}|${line}`;
-      entries.set(key, { type: "DISMISSED", rule, file, line });
+    try {
+      const content = fs.readFileSync(DISMISSALS_FILE, "utf-8");
+      // Match: ### [rule] - file:line or ### [rule] - file
+      const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A))?/g;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const rule = match[1];
+        const file = match[2].trim();
+        const line = match[3] || "N/A";
+        const key = `${rule}|${file}|${line}`;
+        entries.set(key, { type: "DISMISSED", rule, file, line });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`Warning: Failed to read dismissals file: ${message}`);
     }
   }
 
   // Load fixes
   if (fs.existsSync(FIXES_FILE)) {
-    const content = fs.readFileSync(FIXES_FILE, "utf-8");
-    // Match: ### [rule] - file:line or ### [rule] - file (batch fix)
-    const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A|BATCH))?/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      const rule = match[1];
-      const file = match[2].trim();
-      const line = match[3] || "N/A";
-      const key = `${rule}|${file}|${line}`;
-      entries.set(key, { type: "FIXED", rule, file, line });
-    }
+    try {
+      const content = fs.readFileSync(FIXES_FILE, "utf-8");
+      // Match: ### [rule] - file:line or ### [rule] - file (batch fix)
+      const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A|BATCH))?/g;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const rule = match[1];
+        const file = match[2].trim();
+        const line = match[3] || "N/A";
+        const key = `${rule}|${file}|${line}`;
+        entries.set(key, { type: "FIXED", rule, file, line });
+      }
 
-    // Also check for bulk fix markers: #### Rule [rule] - FIXED (X files)
-    const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
-    while ((match = bulkRegex.exec(content)) !== null) {
-      const rule = match[1];
-      entries.set(`BULK|${rule}`, { type: "BULK_FIXED", rule });
+      // Also check for bulk fix markers: #### Rule [rule] - FIXED (X files)
+      const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
+      while ((match = bulkRegex.exec(content)) !== null) {
+        const rule = match[1];
+        entries.set(`BULK|${rule}`, { type: "BULK_FIXED", rule });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`Warning: Failed to read fixes file: ${message}`);
     }
   }
 

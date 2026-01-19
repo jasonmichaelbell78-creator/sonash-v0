@@ -54,6 +54,7 @@ scripts/suggested-patterns.json
 
 # SonarQube/SonarCloud analysis data (large generated files - use CI artifacts instead)
 docs/analysis/sonarqube-issues-*.json
+.sonar/
 
 # MCP configuration (VS Code - not used by Claude Code)
 .vscode/mcp.json

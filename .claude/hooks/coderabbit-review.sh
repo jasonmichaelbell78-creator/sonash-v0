@@ -98,7 +98,7 @@ for FILE_PATH in "$@"; do
     # But capture the error for visibility
     if [[ "$REVIEW_STATUS" -ne 0 ]]; then
         # Only note errors if output is short (likely an error message)
-        if [[[ ${#REVIEW_OUTPUT} -lt 200 ]]; then
+        if [[ ${#REVIEW_OUTPUT} -lt 200 ]]; then
             ALL_FINDINGS+="
 --- $FILE_PATH ---
 (review failed: exit $REVIEW_STATUS)
@@ -113,7 +113,7 @@ for FILE_PATH in "$@"; do
         FOUND_ISSUES=true
 
         # Truncate very long output to prevent terminal spam (per file)
-        if [[[ ${#REVIEW_OUTPUT} -gt 1500 ]]; then
+        if [[ ${#REVIEW_OUTPUT} -gt 1500 ]]; then
             REVIEW_OUTPUT="${REVIEW_OUTPUT:0:1500}... (truncated)"
         fi
 
@@ -131,7 +131,7 @@ done
 # Output findings to stderr to keep stdout clean for hook protocol
 if [[ "$FOUND_ISSUES" == true || -n "$ALL_FINDINGS" ]]; then
     # Cap total output length
-    if [[[ ${#ALL_FINDINGS} -gt 3000 ]]; then
+    if [[ ${#ALL_FINDINGS} -gt 3000 ]]; then
         ALL_FINDINGS="${ALL_FINDINGS:0:3000}... (output truncated)"
     fi
 

@@ -31,6 +31,9 @@ if [[ "${CLAUDE_CODE_REMOTE:-}" != "true" ]]; then
   exit 0
 fi
 
+# Define separator line constant before first use (S1192)
+readonly SEPARATOR_LINE="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
 echo "🚀 SessionStart Hook for sonash-v0"
 echo "$SEPARATOR_LINE"
 
@@ -63,7 +66,7 @@ FUNCTIONS_LOCKFILE_HASH_FILE=".claude/.functions-lockfile-hash"
 # Constants for repeated literals (S1192)
 readonly ROOT_LOCKFILE="package-lock.json"
 readonly FUNCTIONS_LOCKFILE="functions/package-lock.json"
-readonly SEPARATOR_LINE="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+# Note: SEPARATOR_LINE is defined earlier (before first use)
 
 # Function to compute hash of a file (portable across systems)
 compute_hash() {
@@ -162,7 +165,7 @@ run_npm_with_timeout() {
       return 0
     else
       local exit_code=$?
-      if [[[ $exit_code -eq 124 ]]; then
+      if [[ $exit_code -eq 124 ]]; then
         echo "   ⚠️ $description timed out after ${timeout_seconds}s (continuing anyway)"
       else
         echo "   ⚠️ $description failed with exit code $exit_code (continuing anyway)"
