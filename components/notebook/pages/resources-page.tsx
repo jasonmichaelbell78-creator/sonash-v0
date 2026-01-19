@@ -106,6 +106,440 @@ const MeetingMap = dynamic(() => import("@/components/maps/meeting-map"), {
   ),
 });
 
+// Meeting list item component
+interface MeetingCardProps {
+  meeting: Meeting;
+  distance: string | null;
+  viewMode: "date" | "all";
+  onClick: () => void;
+}
+
+function MeetingCard({ meeting, distance, viewMode, onClick }: MeetingCardProps) {
+  return (
+    <button
+      key={meeting.id}
+      id={`meeting-${meeting.id}`}
+      onClick={onClick}
+      className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
+    >
+      <div
+        className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${getMeetingTypeBadgeClasses(meeting.type)}`}
+      >
+        {meeting.type}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-heading text-sm text-amber-900 truncate font-semibold">
+            {meeting.name}
+          </span>
+          <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+            {meeting.time}
+          </span>
+        </div>
+        <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
+          {viewMode === "all" && (
+            <span className="font-medium text-amber-700">{meeting.day.substring(0, 3)} • </span>
+          )}
+          <MapPin className="w-3 h-3" /> {meeting.neighborhood}
+        </p>
+      </div>
+      {distance && (
+        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
+          {distance}
+        </span>
+      )}
+    </button>
+  );
+}
+
+// Sober living home card component
+interface SoberHomeCardProps {
+  home: SoberLivingHome;
+}
+
+function SoberHomeCard({ home }: SoberHomeCardProps) {
+  return (
+    <div
+      key={home.id}
+      className="w-full text-left flex items-start gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all"
+    >
+      {home.heroImage ? (
+        <div
+          className="w-12 h-12 rounded-lg bg-gray-100 bg-cover bg-center shrink-0 border border-amber-100"
+          style={{ backgroundImage: `url(${home.heroImage})` }}
+        />
+      ) : (
+        <div
+          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 ${getHomeGenderBadgeClasses(home.gender)}`}
+        >
+          {getGenderAbbreviation(home.gender)}
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 mb-0.5">
+          <h3 className="font-heading text-sm text-amber-900 font-semibold truncate">
+            {home.name}
+          </h3>
+        </div>
+        <p className="text-xs text-amber-900/60 flex items-center gap-1 mb-1.5">
+          <MapPin className="w-3 h-3" /> {home.neighborhood || home.address}
+        </p>
+        <div className="flex gap-2">
+          {home.website && (
+            <a
+              href={home.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-1 rounded-full hover:bg-amber-100"
+            >
+              Website
+            </a>
+          )}
+          {home.phone && (
+            <a
+              href={`tel:${home.phone}`}
+              className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full hover:bg-green-100 flex items-center gap-1"
+            >
+              Call
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Empty state component for resource list
+interface EmptyResourceStateProps {
+  resourceType: "meetings" | "sober-living";
+  fellowshipFilter: FellowshipFilter;
+  viewMode: "date" | "all";
+  onShowAllFellowships: () => void;
+  onViewAllMeetings: () => void;
+}
+
+function EmptyResourceState({
+  resourceType,
+  fellowshipFilter,
+  viewMode,
+  onShowAllFellowships,
+  onViewAllMeetings,
+}: EmptyResourceStateProps) {
+  return (
+    <div className="p-4 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
+      <p className="text-sm text-amber-900/60 italic mb-3">
+        {resourceType === "meetings" ? (
+          <>
+            No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found
+            {viewMode === "date" ? " on this date" : ""}.
+          </>
+        ) : (
+          <>No sober living homes found.</>
+        )}
+      </p>
+      <div className="flex gap-2 justify-center">
+        {fellowshipFilter !== "All" && (
+          <button
+            onClick={onShowAllFellowships}
+            className="text-xs text-amber-700 font-medium hover:underline"
+          >
+            Show all fellowships
+          </button>
+        )}
+        {viewMode === "date" && (
+          <button
+            onClick={onViewAllMeetings}
+            className="text-xs text-amber-700 font-medium hover:underline"
+          >
+            View full schedule
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Fellowship filter pills component
+interface FellowshipFilterProps {
+  value: FellowshipFilter;
+  onChange: (value: FellowshipFilter) => void;
+}
+
+function FellowshipFilterPills({ value, onChange }: FellowshipFilterProps) {
+  return (
+    <div className="flex bg-amber-50/80 p-1 rounded-lg border border-amber-200/50 flex-1">
+      {FELLOWSHIP_OPTIONS.map((option) => (
+        <button
+          key={option}
+          onClick={() => onChange(option)}
+          className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${
+            value === option
+              ? "bg-amber-600 text-white shadow-sm font-medium"
+              : "text-amber-800 hover:bg-amber-100/50"
+          }`}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Gender filter pills component
+interface GenderFilterProps {
+  value: "All" | "Men" | "Women";
+  onChange: (value: "All" | "Men" | "Women") => void;
+}
+
+function GenderFilterPills({ value, onChange }: GenderFilterProps) {
+  const options: ("All" | "Men" | "Women")[] = ["All", "Men", "Women"];
+  return (
+    <div className="flex bg-white/50 p-1 rounded-lg border border-amber-200/30">
+      {options.map((option) => (
+        <button
+          key={option}
+          onClick={() => onChange(option)}
+          className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${
+            value === option
+              ? "bg-amber-600 text-white shadow-sm font-medium"
+              : "text-amber-800 hover:bg-amber-100/50"
+          }`}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Nearby button component
+interface NearbyButtonProps {
+  sortBy: SortOption;
+  locationLoading: boolean;
+  userLocation: { lat: number; lng: number } | null;
+  onClick: () => void;
+}
+
+function NearbyButton({ sortBy, locationLoading, userLocation, onClick }: NearbyButtonProps) {
+  const isActive = sortBy === "nearest" && userLocation;
+  return (
+    <button
+      onClick={onClick}
+      disabled={locationLoading}
+      className={`px-4 py-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${
+        isActive
+          ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
+          : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
+      } ${locationLoading ? "opacity-50" : ""}`}
+    >
+      {locationLoading ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <Locate className="w-4 h-4" />
+      )}
+      Nearby
+    </button>
+  );
+}
+
+// Resource cards grid component
+interface ResourceCardProps {
+  resources: Array<{
+    id: string;
+    icon: typeof MapPin;
+    title: string;
+    description: string;
+  }>;
+  onClick: (title: string, id: string) => void;
+}
+
+function ResourceCardsGrid({ resources, onClick }: ResourceCardProps) {
+  return (
+    <div className="space-y-3">
+      {resources.map((resource, index) => (
+        <button
+          key={index}
+          onClick={() => onClick(resource.title, resource.id)}
+          className="w-full text-left p-4 border border-amber-200/50 rounded-lg hover:bg-amber-50 transition-colors group shadow-sm"
+        >
+          <div className="flex items-start gap-3">
+            <resource.icon className="w-6 h-6 text-amber-700/70 mt-0.5 flex-shrink-0" />
+            <div>
+              <h3 className="font-heading text-lg text-amber-900 group-hover:underline">
+                {resource.title}
+              </h3>
+              <p className="font-body text-sm text-amber-900/60">{resource.description}</p>
+            </div>
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// List header with count component
+interface ListHeaderProps {
+  resourceType: "meetings" | "sober-living";
+  fellowshipFilter: FellowshipFilter;
+  genderFilter: "All" | "Men" | "Women";
+  viewMode: "date" | "all";
+  selectedDate: Date;
+  meetingsCount: number;
+  homesCount: number;
+  isDevMode: boolean;
+  onReset: () => void;
+}
+
+function ListHeader({
+  resourceType,
+  fellowshipFilter,
+  genderFilter,
+  viewMode,
+  selectedDate,
+  meetingsCount,
+  homesCount,
+  isDevMode,
+  onReset,
+}: ListHeaderProps) {
+  return (
+    <div className="flex justify-between items-center mb-2 px-1">
+      <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
+        {resourceType === "meetings" ? (
+          <>
+            {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
+            {viewMode === "date"
+              ? `${selectedDate.toLocaleDateString()} (${meetingsCount})`
+              : `All (${meetingsCount})`}
+          </>
+        ) : (
+          <>
+            {genderFilter !== "All" ? `${genderFilter} ` : ""}
+            Homes ({homesCount})
+          </>
+        )}
+      </span>
+      {isDevMode && (
+        <button
+          onClick={onReset}
+          className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1"
+        >
+          <Loader2 className="w-3 h-3" /> Reset Data (Dev)
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Loading state component
+function LoadingState() {
+  return (
+    <div className="flex items-center gap-2 text-amber-900/40 italic p-4">
+      <Loader2 className="w-4 h-4 animate-spin" />
+      <p className="text-sm">Loading schedule...</p>
+    </div>
+  );
+}
+
+// Map view header component
+interface MapViewHeaderProps {
+  count: number;
+}
+
+function MapViewHeader({ count }: MapViewHeaderProps) {
+  return (
+    <div className="flex justify-between items-center mb-2 px-1">
+      <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
+        Map View ({count})
+      </span>
+    </div>
+  );
+}
+
+// Meeting details dialog component
+interface MeetingDialogProps {
+  meeting: Meeting | null;
+  onOpenChange: (open: boolean) => void;
+  getMeetingDistance: (meeting: Meeting) => string | null;
+}
+
+function MeetingDetailsDialogComponent({
+  meeting,
+  onOpenChange,
+  getMeetingDistance,
+}: MeetingDialogProps) {
+  const handleGetDirections = () => {
+    if (!meeting) return;
+    const mapsUrl = meeting.coordinates
+      ? `https://www.google.com/maps/dir/?api=1&destination=${meeting.coordinates.lat},${meeting.coordinates.lng}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(meeting.address)}`;
+    window.open(mapsUrl, "_blank");
+  };
+
+  const handleShare = () => {
+    toast.success("Link copied to clipboard!");
+  };
+
+  return (
+    <Dialog open={!!meeting} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md bg-[#fdfbf7] border-amber-200">
+        <DialogHeader>
+          <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2">
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${getMeetingTypeBadgeClasses(meeting?.type || "")}`}
+            >
+              {meeting?.type}
+            </div>
+            {meeting?.name}
+          </DialogTitle>
+          <DialogDescription className="text-amber-900/70 text-base">
+            {meeting?.day}, {meeting?.time}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
+            <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-medium text-amber-900 text-sm">Location</h4>
+              <p className="text-sm text-amber-800/80">{meeting?.address}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">
+                  {meeting?.neighborhood}
+                </span>
+                {meeting && getMeetingDistance(meeting) && (
+                  <>
+                    <span className="text-amber-300">•</span>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                      {getMeetingDistance(meeting)} away
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
+              onClick={handleGetDirections}
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Get Directions
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
+              onClick={handleShare}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function ResourcesPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [soberHomes, setSoberHomes] = useState<SoberLivingHome[]>([]);
@@ -404,25 +838,7 @@ export default function ResourcesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left column - Resource cards */}
-        <div className="space-y-3">
-          {resources.map((resource, index) => (
-            <button
-              key={index}
-              onClick={() => handleResourceClick(resource.title, resource.id)}
-              className="w-full text-left p-4 border border-amber-200/50 rounded-lg hover:bg-amber-50 transition-colors group shadow-sm"
-            >
-              <div className="flex items-start gap-3">
-                <resource.icon className="w-6 h-6 text-amber-700/70 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h3 className="font-heading text-lg text-amber-900 group-hover:underline">
-                    {resource.title}
-                  </h3>
-                  <p className="font-body text-sm text-amber-900/60">{resource.description}</p>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
+        <ResourceCardsGrid resources={resources} onClick={handleResourceClick} />
 
         {/* Right column - Meeting finder today */}
         <div ref={finderRef}>
@@ -443,58 +859,16 @@ export default function ResourcesPage() {
             <div className="flex flex-col sm:flex-row gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm">
               {resourceType === "meetings" ? (
                 <>
-                  {/* Fellowship Pills */}
-                  <div className="flex bg-amber-50/80 p-1 rounded-lg border border-amber-200/50 flex-1">
-                    {FELLOWSHIP_OPTIONS.map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => setFellowshipFilter(option)}
-                        className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${
-                          fellowshipFilter === option
-                            ? "bg-amber-600 text-white shadow-sm font-medium"
-                            : "text-amber-800 hover:bg-amber-100/50"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Nearest Button */}
-                  <button
+                  <FellowshipFilterPills value={fellowshipFilter} onChange={setFellowshipFilter} />
+                  <NearbyButton
+                    sortBy={sortBy}
+                    locationLoading={locationLoading}
+                    userLocation={userLocation}
                     onClick={handleNearestClick}
-                    disabled={locationLoading}
-                    className={`px-4 py-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${
-                      sortBy === "nearest" && userLocation
-                        ? "bg-blue-600 text-white border-blue-600 font-medium shadow-sm"
-                        : "bg-white text-amber-700 border-amber-200 hover:border-amber-400"
-                    } ${locationLoading ? "opacity-50" : ""}`}
-                  >
-                    {locationLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Locate className="w-4 h-4" />
-                    )}
-                    Nearby
-                  </button>
+                  />
                 </>
               ) : (
-                <div className="flex bg-white/50 p-1 rounded-lg border border-amber-200/30">
-                  {["All", "Men", "Women"].map((option) => (
-                    <button
-                      key={option}
-                      // @ts-expect-error - option is "All" | "Men" | "Women" which are valid values for setGenderFilter
-                      onClick={() => setGenderFilter(option)}
-                      className={`flex-1 text-xs px-3 py-2 rounded-md transition-all ${
-                        genderFilter === option
-                          ? "bg-amber-600 text-white shadow-sm font-medium"
-                          : "text-amber-800 hover:bg-amber-100/50"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
+                <GenderFilterPills value={genderFilter} onChange={setGenderFilter} />
               )}
             </div>
           </div>
@@ -502,122 +876,47 @@ export default function ResourcesPage() {
           {/* Meeting content (List or Map) */}
           <div className="space-y-2">
             {loading ? (
-              <div className="flex items-center gap-2 text-amber-900/40 italic p-4">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <p className="text-sm">Loading schedule...</p>
-              </div>
+              <LoadingState />
             ) : currentData.length === 0 ? (
-              <div className="p-4 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
-                <p className="text-sm text-amber-900/60 italic mb-3">
-                  {resourceType === "meetings" ? (
-                    <>
-                      No {fellowshipFilter !== "All" ? fellowshipFilter : ""} meetings found
-                      {viewMode === "date" ? " on this date" : ""}.
-                    </>
-                  ) : (
-                    <>No sober living homes found.</>
-                  )}
-                </p>
-                <div className="flex gap-2 justify-center">
-                  {fellowshipFilter !== "All" && (
-                    <button
-                      onClick={() => setFellowshipFilter("All")}
-                      className="text-xs text-amber-700 font-medium hover:underline"
-                    >
-                      Show all fellowships
-                    </button>
-                  )}
-                  {viewMode === "date" && (
-                    <button
-                      onClick={() => setViewMode("all")}
-                      className="text-xs text-amber-700 font-medium hover:underline"
-                    >
-                      View full schedule
-                    </button>
-                  )}
-                </div>
-              </div>
+              <EmptyResourceState
+                resourceType={resourceType}
+                fellowshipFilter={fellowshipFilter}
+                viewMode={viewMode}
+                onShowAllFellowships={() => setFellowshipFilter("All")}
+                onViewAllMeetings={() => setViewMode("all")}
+              />
             ) : displayMode === "map" ? (
               <div className="animate-in fade-in zoom-in-95 duration-300">
-                <div className="flex justify-between items-center mb-2 px-1">
-                  <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
-                    Map View ({currentData.length})
-                  </span>
-                </div>
+                <MapViewHeader count={currentData.length} />
                 <MeetingMap meetings={filteredMeetings} userLocation={userLocation} />
               </div>
             ) : (
               // List View
               <>
-                <div className="flex justify-between items-center mb-2 px-1">
-                  <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
-                    {resourceType === "meetings" ? (
-                      <>
-                        {fellowshipFilter !== "All" ? `${fellowshipFilter} ` : ""}
-                        {viewMode === "date"
-                          ? `${selectedDate.toLocaleDateString()} (${filteredMeetings.length})`
-                          : `All (${filteredMeetings.length})`}
-                      </>
-                    ) : (
-                      <>
-                        {genderFilter !== "All" ? `${genderFilter} ` : ""}
-                        Homes ({filteredSoberHomes.length})
-                      </>
-                    )}
-                  </span>
-                  {/* SECURITY: Reset button only visible in development mode */}
-                  {isDevMode && (
-                    <button
-                      onClick={handleReset}
-                      className="text-[10px] text-amber-500 hover:text-amber-700 underline flex items-center gap-1"
-                    >
-                      <Loader2 className="w-3 h-3" /> Reset Data (Dev)
-                    </button>
-                  )}
-                </div>
+                <ListHeader
+                  resourceType={resourceType}
+                  fellowshipFilter={fellowshipFilter}
+                  genderFilter={genderFilter}
+                  viewMode={viewMode}
+                  selectedDate={selectedDate}
+                  meetingsCount={filteredMeetings.length}
+                  homesCount={filteredSoberHomes.length}
+                  isDevMode={isDevMode}
+                  onReset={handleReset}
+                />
 
                 {resourceType === "meetings" &&
-                  filteredMeetings.slice(0, 10).map((meeting) => {
-                    const distance = getMeetingDistance(meeting);
-                    return (
-                      <button
+                  filteredMeetings
+                    .slice(0, 10)
+                    .map((meeting) => (
+                      <MeetingCard
                         key={meeting.id}
-                        id={`meeting-${meeting.id}`}
+                        meeting={meeting}
+                        distance={getMeetingDistance(meeting)}
+                        viewMode={viewMode}
                         onClick={() => setSelectedMeeting(meeting)}
-                        className="w-full text-left flex items-center gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all hover:translate-x-1"
-                      >
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${getMeetingTypeBadgeClasses(meeting.type)}`}
-                        >
-                          {meeting.type}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-heading text-sm text-amber-900 truncate font-semibold">
-                              {meeting.name}
-                            </span>
-                            <span className="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                              {meeting.time}
-                            </span>
-                          </div>
-                          <p className="text-xs text-amber-900/50 truncate flex items-center gap-1">
-                            {viewMode === "all" && (
-                              <span className="font-medium text-amber-700">
-                                {meeting.day.substring(0, 3)} •{" "}
-                              </span>
-                            )}
-                            <MapPin className="w-3 h-3" /> {meeting.neighborhood}
-                          </p>
-                        </div>
-                        {/* Distance badge when location is available */}
-                        {distance && (
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap font-medium shrink-0">
-                            {distance}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                      />
+                    ))}
 
                 {/* Show "View More" link if there are more than 10 meetings */}
                 {resourceType === "meetings" && filteredMeetings.length > 10 && (
@@ -630,56 +929,7 @@ export default function ResourcesPage() {
                 )}
 
                 {resourceType === "sober-living" &&
-                  filteredSoberHomes.map((home) => (
-                    <div
-                      key={home.id}
-                      className="w-full text-left flex items-start gap-3 p-3 bg-white border border-amber-100/50 hover:border-amber-300 shadow-sm rounded-lg transition-all"
-                    >
-                      {home.heroImage ? (
-                        <div
-                          className="w-12 h-12 rounded-lg bg-gray-100 bg-cover bg-center shrink-0 border border-amber-100"
-                          style={{ backgroundImage: `url(${home.heroImage})` }}
-                        />
-                      ) : (
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 ${getHomeGenderBadgeClasses(home.gender)}`}
-                        >
-                          {getGenderAbbreviation(home.gender)}
-                        </div>
-                      )}
-
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="font-heading text-sm text-amber-900 font-semibold truncate">
-                            {home.name}
-                          </h3>
-                        </div>
-                        <p className="text-xs text-amber-900/60 flex items-center gap-1 mb-1.5">
-                          <MapPin className="w-3 h-3" /> {home.neighborhood || home.address}
-                        </p>
-                        <div className="flex gap-2">
-                          {home.website && (
-                            <a
-                              href={home.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[10px] bg-amber-50 text-amber-900 border border-amber-200 px-2 py-1 rounded-full hover:bg-amber-100"
-                            >
-                              Website
-                            </a>
-                          )}
-                          {home.phone && (
-                            <a
-                              href={`tel:${home.phone}`}
-                              className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-full hover:bg-green-100 flex items-center gap-1"
-                            >
-                              Call
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  filteredSoberHomes.map((home) => <SoberHomeCard key={home.id} home={home} />)}
               </>
             )}
           </div>
@@ -690,74 +940,11 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedMeeting} onOpenChange={(open) => !open && setSelectedMeeting(null)}>
-        <DialogContent className="sm:max-w-md bg-[#fdfbf7] border-amber-200">
-          <DialogHeader>
-            <DialogTitle className="font-heading text-2xl text-amber-900 flex items-center gap-2">
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 shrink-0 ${getMeetingTypeBadgeClasses(selectedMeeting?.type || "")}`}
-              >
-                {selectedMeeting?.type}
-              </div>
-              {selectedMeeting?.name}
-            </DialogTitle>
-            <DialogDescription className="text-amber-900/70 text-base">
-              {selectedMeeting?.day}, {selectedMeeting?.time}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
-              <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h4 className="font-medium text-amber-900 text-sm">Location</h4>
-                <p className="text-sm text-amber-800/80">{selectedMeeting?.address}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">
-                    {selectedMeeting?.neighborhood}
-                  </span>
-                  {selectedMeeting && getMeetingDistance(selectedMeeting) && (
-                    <>
-                      <span className="text-amber-300">•</span>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                        {getMeetingDistance(selectedMeeting)} away
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
-                onClick={() => {
-                  if (selectedMeeting) {
-                    // Use coordinates if available for precise navigation, fallback to address search
-                    const mapsUrl = selectedMeeting.coordinates
-                      ? `https://www.google.com/maps/dir/?api=1&destination=${selectedMeeting.coordinates.lat},${selectedMeeting.coordinates.lng}`
-                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMeeting.address)}`;
-                    window.open(mapsUrl, "_blank");
-                  }
-                }}
-              >
-                <Navigation className="w-4 h-4 mr-2" />
-                Get Directions
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-amber-200 hover:bg-amber-100 text-amber-800"
-                onClick={() => {
-                  // Share logic or calendar add could go here
-                  toast.success("Link copied to clipboard!");
-                }}
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Share
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <MeetingDetailsDialogComponent
+        meeting={selectedMeeting}
+        onOpenChange={(open) => !open && setSelectedMeeting(null)}
+        getMeetingDistance={getMeetingDistance}
+      />
     </div>
   );
 }
