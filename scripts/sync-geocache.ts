@@ -107,7 +107,7 @@ async function syncGeocache() {
 
   // 5. Write back to file (Sorted keys for clean diffs)
   const sortedCache = Object.keys(cache)
-    .sort()
+    .sort((a, b) => a.localeCompare(b))
     .reduce((obj: Record<string, { lat: number; lng: number }>, key) => {
       obj[key] = cache[key];
       return obj;
