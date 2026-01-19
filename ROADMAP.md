@@ -602,28 +602,27 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
     - [ ] Document in TRIGGERS.md
     - **Verification:** Session start is ~2-3s faster
 
-#### Lighthouse Performance Tracking (from 2026-01-14 Planning)
+#### Test Coverage Quick Wins (from Session #79 PR #277 Testing)
 
-> **Source:** Lighthouse integration planning session (Session #66) **Goal:**
-> Track performance across all pages with non-blocking CI integration
+> **Source:** PR #277 Testing revealed missing automated tests for
+> security-critical code
 
-18. **PERF-001: Add Lighthouse CLI Script** (S effort, High ROI)
-    - [ ] Install `lighthouse` as dev dependency
-    - [ ] Create `scripts/lighthouse-audit.js` for multi-page auditing
-    - [ ] Add `npm run lighthouse` to package.json
-    - [ ] Output JSON/HTML reports to `.lighthouse/` (gitignored)
-    - [ ] Audit all routes: `/`, `/today`, `/journal`, `/growth`, `/more`,
-          `/admin`, `/login`
-    - **Verification:** `npm run lighthouse` generates reports for all routes
+18. **TEST-001: Add redactSensitiveUrl Tests** (S effort, High ROI)
+    - [ ] Export `redactSensitiveUrl` from `lib/utils/error-export.ts` (or test
+          via exported wrapper)
+    - [ ] Test strips query params from URLs
+    - [ ] Test strips hash fragments from URLs
+    - [ ] Test handles malformed URLs (returns `"[invalid-url]"`)
+    - **Verification:** `npm test` includes URL redaction tests
 
-19. **PERF-002: Add Lighthouse to CI (Non-blocking)** (M effort, High ROI)
-    - [ ] Add Lighthouse CI job to `.github/workflows/ci.yml`
-    - [ ] Run against preview deployment or localhost with
-          `start-server-and-test`
-    - [ ] Upload HTML reports as artifacts
-    - [ ] `continue-on-error: true` (warnings only, non-blocking)
-    - [ ] Add score summary to PR comment (optional)
-    - **Verification:** PR shows Lighthouse scores in CI summary/artifacts
+19. **TEST-002: Add Cloud Functions Validation Tests** (M effort, High ROI)
+    - [ ] Set up test infrastructure in `functions/` (vitest +
+          firebase-functions-test)
+    - [ ] Test `adminSoftDeleteUser` Zod validation (uid > 128 chars rejected,
+          reason > 500 chars rejected)
+    - [ ] Test self-deletion block (admin cannot delete own account)
+    - [ ] Test rollback on Auth failure (Firestore restored)
+    - **Verification:** `cd functions && npm test` runs backend tests
 
 ---
 

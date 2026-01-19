@@ -368,6 +368,26 @@ was using `appspot.com` instead of the actual `firebasestorage.app` bucket.
 
 **Overall Pass Rate:** 128/131 tested = 97.7%
 
+### Session #79 (PR #277 Security Fixes Testing)
+
+| Category               | Total  | Passed | Failed | Skipped |
+| ---------------------- | ------ | ------ | ------ | ------- |
+| Frontend Accessibility | 4      | 4      | 0      | 0       |
+| State Management       | 3      | 2      | 0      | 1       |
+| Backend Validation     | 5      | 5      | 0      | 0       |
+| Job Reliability        | 3      | 3      | 0      | 0       |
+| Security Utilities     | 3      | 3      | 0      | 0       |
+| **PR #277 TOTAL**      | **18** | **17** | **0**  | **1**   |
+
+**Session #79 Summary:**
+
+- ✅ **Playwright E2E tests:** Escape key handlers verified (3/3)
+- ✅ **ARIA attributes:** Dialog role and aria-modal confirmed
+- ✅ **Code review verified:** Zod validation, self-deletion block, rollbacks
+- ✅ **Cursor pagination:** hardDeleteSoftDeletedUsers processes all users
+- ✅ **URL redaction:** redactSensitiveUrl() strips query/hash
+- ⏭️ **Skipped:** Timeout cleanup test (requires runtime monitoring)
+
 ---
 
 ## Critical Findings
@@ -497,12 +517,67 @@ actual bucket is `sonash-app.firebasestorage.app`.
 
 ---
 
-## 9. Phase 2 Features (A19-A22) - PLANNED
+## 9. PR #277 Security & Reliability Fixes
+
+**Session:** #79 (2026-01-18) **Scope:** Unplanned security hardening from 4
+rounds of PR review
+
+### 9.1 Frontend Accessibility
+
+- [x] Users Tab: Escape key closes delete dialog (**Playwright verified**)
+- [x] Users Tab: Escape key closes user drawer (**Playwright verified**)
+- [x] Errors Tab: Escape key closes export dropdown (**Playwright verified**)
+- [x] All modals have proper ARIA attributes (role="dialog", aria-modal)
+      (**Playwright snapshot verified**)
+
+### 9.2 State Management Fixes
+
+- [x] Delete dialog closes if selected user changes during confirmation (**Code
+      review: users-tab.tsx:528-534**)
+- [x] Tab context uses functional setState (no stale closures) (**Code review:
+      admin-tab-context.tsx:88-110**)
+- [ ] Timeout cleanup on component unmount (no React warnings) _(requires
+      runtime test)_
+
+### 9.3 Backend Validation
+
+- [x] adminSoftDeleteUser: Zod schema validates input (uid: 128 max, reason: 500
+      max) (**Code review: admin.ts:1058-1061**)
+- [x] adminSoftDeleteUser: Blocks self-deletion with clear error (**Code review:
+      admin.ts:1077-1080**)
+- [x] adminSoftDeleteUser: Firestore updated BEFORE Auth (rollback possible)
+      (**Code review: admin.ts:1107-1140**)
+- [x] adminUndeleteUser: Transaction checks expiry atomically (**Code review:
+      admin.ts:1219-1260**)
+- [x] adminUndeleteUser: Full rollback on Auth failure (all original fields
+      restored) (**Code review: admin.ts:1276-1290**)
+
+### 9.4 Job Reliability
+
+- [x] hardDeleteSoftDeletedUsers: Uses cursor pagination (processes ALL users,
+      not just 50) (**Code review: jobs.ts:667-796**)
+- [x] hardDeleteSoftDeletedUsers: Uses default storage bucket (not hardcoded)
+      (**Code review: jobs.ts:659-660**)
+- [x] hardDeleteSoftDeletedUsers: Structured logging with hashUserId() (**Code
+      review: jobs.ts:718-755**)
+
+### 9.5 Security Utilities
+
+- [x] error-export.ts: redactSensitiveUrl() strips query params (**Code review:
+      error-export.ts:103-112**)
+- [x] error-export.ts: redactSensitiveUrl() strips hash fragments (**Code
+      review: error-export.ts:107**)
+- [x] error-export.ts: Handles malformed URLs gracefully (**Code review:
+      error-export.ts:108-111 returns "[invalid-url]"**)
+
+---
+
+## 10. Phase 2 Features (A19-A22) - PLANNED
 
 > **Status:** Not yet implemented. Testing checklist to be added when
 > development begins.
 
-### 9.1 User Analytics Tab (A19)
+### 10.1 User Analytics Tab (A19)
 
 - [ ] DAU/WAU/MAU trends visualization
 - [ ] Retention metrics from session data
@@ -510,7 +585,7 @@ actual bucket is `sonash-app.firebasestorage.app`.
 - [ ] Date range selector
 - [ ] Export analytics data
 
-### 9.2 Job Results Detailed Viewer (A20)
+### 10.2 Job Results Detailed Viewer (A20)
 
 - [ ] View full job output logs in-app
 - [ ] Filter by job type
@@ -518,14 +593,14 @@ actual bucket is `sonash-app.firebasestorage.app`.
 - [ ] Filter by date range
 - [ ] Download job logs as JSON
 
-### 9.3 Sentry Error → User Correlation (A21)
+### 10.3 Sentry Error → User Correlation (A21)
 
 - [ ] Link errors to specific user accounts
 - [ ] Show user's recent actions before error
 - [ ] Quick navigation to user details from error
 - [ ] Error timeline per user
 
-### 9.4 GCP Cloud Logging Query Builder (A22)
+### 10.4 GCP Cloud Logging Query Builder (A22)
 
 - [ ] Simple log queries without GCP Console
 - [ ] Pre-built query templates (errors, security events, auth)
@@ -563,3 +638,4 @@ actual bucket is `sonash-app.firebasestorage.app`.
 | 1.6     | 2026-01-17 | Session #75: Updated Password Reset to reflect fix (REST API sends emails); Added Phase 2 section (A19-A22) placeholder |
 | 1.7     | 2026-01-18 | Session #77: All Firestore indexes deployed. Jobs A10, A12, A14 passing. Security validation verified. 93.1% pass rate  |
 | 1.8     | 2026-01-18 | Session #77: Fixed A11 storage bucket. **ALL Track A jobs (A10-A14) now passing.** Track A complete.                    |
+| 1.9     | 2026-01-18 | Session #79: Added Section 9 for PR #277 security/reliability fixes. Phase 2 renumbered to Section 10.                  |
