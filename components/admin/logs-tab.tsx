@@ -284,11 +284,11 @@ export function LogsTab() {
   }, []);
 
   // Auto-refresh when tab becomes active
-  useTabRefresh("logs", () => void refresh(), { skipInitial: true });
+  useTabRefresh("logs", refresh, { skipInitial: true });
 
   useEffect(() => {
     let active = true;
-    void refresh(() => active);
+    refresh(() => active);
     return () => {
       active = false;
     };
@@ -335,7 +335,7 @@ export function LogsTab() {
           </div>
         </div>
         <button
-          onClick={() => void refresh()}
+          onClick={() => refresh()}
           disabled={loading}
           className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
