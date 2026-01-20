@@ -306,7 +306,7 @@ export default function NotebookShell({ onClose, nickname }: NotebookShellProps)
               <AccountSecuritySection
                 isAnonymous={isAnonymous}
                 showLinkPrompt={showLinkPrompt}
-                email={profile?.email}
+                email={profile?.email ?? undefined}
                 onSecureAccount={() => {
                   setShowSettings(false);
                   setShowAccountLink(true);

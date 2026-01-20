@@ -4,7 +4,17 @@ import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EntryCard } from "./entry-card";
-import { JournalEntry } from "@/types/journal";
+import {
+  JournalEntry,
+  CheckInEntry,
+  DailyLogEntry,
+  MoodEntry,
+  GratitudeEntry,
+  InventoryEntry,
+  NoteEntry,
+  SpotCheckEntry,
+  NightReviewEntry,
+} from "@/types/journal";
 import { JournalFilterType } from "./journal-sidebar";
 import { format } from "date-fns";
 
@@ -20,8 +30,9 @@ type SearchMatcher = (entry: JournalEntry, query: string) => boolean;
  * Search matcher for mood entries
  */
 function matchMoodEntry(entry: JournalEntry, query: string): boolean {
-  const moodMatch = entry.data?.mood?.toLowerCase().includes(query) || false;
-  const noteMatch = entry.data?.note?.toLowerCase().includes(query) || false;
+  const data = (entry as MoodEntry).data;
+  const moodMatch = data?.mood?.toLowerCase().includes(query) || false;
+  const noteMatch = data?.note?.toLowerCase().includes(query) || false;
   return moodMatch || noteMatch;
 }
 
@@ -29,7 +40,8 @@ function matchMoodEntry(entry: JournalEntry, query: string): boolean {
  * Search matcher for gratitude entries
  */
 function matchGratitudeEntry(entry: JournalEntry, query: string): boolean {
-  return entry.data?.items?.some((item) => item.toLowerCase().includes(query)) || false;
+  const data = (entry as GratitudeEntry).data;
+  return data?.items?.some((item: string) => item.toLowerCase().includes(query)) || false;
 }
 
 // Inventory fields to search
@@ -39,17 +51,17 @@ const INVENTORY_FIELDS = ["resentments", "dishonesty", "apologies", "successes"]
  * Search matcher for inventory entries
  */
 function matchInventoryEntry(entry: JournalEntry, query: string): boolean {
-  return INVENTORY_FIELDS.some(
-    (field) => entry.data?.[field]?.toLowerCase().includes(query) || false
-  );
+  const data = (entry as InventoryEntry).data;
+  return INVENTORY_FIELDS.some((field) => data?.[field]?.toLowerCase().includes(query) || false);
 }
 
 /**
  * Search matcher for free-write and meeting-note entries
  */
 function matchNoteEntry(entry: JournalEntry, query: string): boolean {
-  const titleMatch = entry.data?.title?.toLowerCase().includes(query) || false;
-  const contentMatch = entry.data?.content?.toLowerCase().includes(query) || false;
+  const data = (entry as NoteEntry).data;
+  const titleMatch = data?.title?.toLowerCase().includes(query) || false;
+  const contentMatch = data?.content?.toLowerCase().includes(query) || false;
   return titleMatch || contentMatch;
 }
 
@@ -57,8 +69,10 @@ function matchNoteEntry(entry: JournalEntry, query: string): boolean {
  * Search matcher for spot-check entries
  */
 function matchSpotCheckEntry(entry: JournalEntry, query: string): boolean {
-  const feelingsMatch = entry.data.feelings?.some((f) => f.toLowerCase().includes(query)) || false;
-  const actionMatch = entry.data.action?.toLowerCase().includes(query) || false;
+  const data = (entry as SpotCheckEntry).data;
+  const feelingsMatch =
+    data.feelings?.some((f: string) => f.toLowerCase().includes(query)) || false;
+  const actionMatch = data.action?.toLowerCase().includes(query) || false;
   return feelingsMatch || actionMatch;
 }
 
@@ -66,8 +80,9 @@ function matchSpotCheckEntry(entry: JournalEntry, query: string): boolean {
  * Search matcher for night-review entries
  */
 function matchNightReviewEntry(entry: JournalEntry, query: string): boolean {
-  const gratMatch = entry.data.step4_gratitude?.toLowerCase().includes(query) || false;
-  const surrMatch = entry.data.step4_surrender?.toLowerCase().includes(query) || false;
+  const data = (entry as NightReviewEntry).data;
+  const gratMatch = data.step4_gratitude?.toLowerCase().includes(query) || false;
+  const surrMatch = data.step4_surrender?.toLowerCase().includes(query) || false;
   return gratMatch || surrMatch;
 }
 
@@ -80,8 +95,10 @@ const SEARCH_MATCHERS: Record<string, SearchMatcher> = {
   "meeting-note": matchNoteEntry,
   "spot-check": matchSpotCheckEntry,
   "night-review": matchNightReviewEntry,
-  "check-in": (entry, query) => entry.data.mood?.toLowerCase().includes(query) || false,
-  "daily-log": (entry, query) => entry.data.note?.toLowerCase().includes(query) || false,
+  "check-in": (entry, query) =>
+    (entry as CheckInEntry).data.mood?.toLowerCase().includes(query) || false,
+  "daily-log": (entry, query) =>
+    (entry as DailyLogEntry).data.note?.toLowerCase().includes(query) || false,
 };
 
 /**
@@ -99,7 +116,7 @@ function matchEntrySearch(entry: JournalEntry, query: string): boolean {
 }
 
 // Detail view components for each entry type
-function MoodDetail({ data }: { data: JournalEntry["data"] }) {
+function MoodDetail({ data }: { data: MoodEntry["data"] }) {
   return (
     <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
       <span className="text-4xl block mb-2">{data.mood}</span>
@@ -111,12 +128,12 @@ function MoodDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function GratitudeDetail({ data }: { data: JournalEntry["data"] }) {
+function GratitudeDetail({ data }: { data: GratitudeEntry["data"] }) {
   return (
     <div>
       <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
       <ul className="list-disc pl-5">
-        {data.items.map((item, i) => (
+        {data.items.map((item: string, i: number) => (
           <li key={i}>{item}</li>
         ))}
       </ul>
@@ -124,7 +141,7 @@ function GratitudeDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function InventoryDetail({ data }: { data: JournalEntry["data"] }) {
+function InventoryDetail({ data }: { data: InventoryEntry["data"] }) {
   return (
     <div className="space-y-4">
       <div>
@@ -143,7 +160,7 @@ function InventoryDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function NoteDetail({ data }: { data: JournalEntry["data"] }) {
+function NoteDetail({ data }: { data: NoteEntry["data"] }) {
   return (
     <>
       {data.title && <h4 className="font-bold text-xl mb-2 font-heading">{data.title}</h4>}
@@ -152,7 +169,7 @@ function NoteDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function SpotCheckDetail({ data }: { data: JournalEntry["data"] }) {
+function SpotCheckDetail({ data }: { data: SpotCheckEntry["data"] }) {
   return (
     <div className="space-y-2">
       <div>
@@ -167,7 +184,7 @@ function SpotCheckDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function NightReviewDetail({ data }: { data: JournalEntry["data"] }) {
+function NightReviewDetail({ data }: { data: NightReviewEntry["data"] }) {
   return (
     <div className="space-y-2">
       {data.step4_gratitude && (
@@ -184,7 +201,7 @@ function NightReviewDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function CheckInDetail({ data }: { data: JournalEntry["data"] }) {
+function CheckInDetail({ data }: { data: CheckInEntry["data"] }) {
   return (
     <div className="space-y-2">
       {data.mood && (
@@ -202,7 +219,7 @@ function CheckInDetail({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function DailyLogDetail({ data }: { data: JournalEntry["data"] }) {
+function DailyLogDetail({ data }: { data: DailyLogEntry["data"] }) {
   return (
     <div>
       <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>

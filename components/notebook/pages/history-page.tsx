@@ -172,7 +172,7 @@ export default function HistoryPage() {
               type: entry.type,
               date,
               title: "Entry",
-              preview: (entry.data?.content as string) || "",
+              preview: (entry.data as unknown as { content?: string })?.content || "",
               icon: NotebookPen,
               color: "text-amber-600",
             };
