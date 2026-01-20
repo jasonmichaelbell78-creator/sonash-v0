@@ -576,8 +576,12 @@ function main() {
 
     // Apply changes if requested, otherwise show dry run message
     if (applyChanges) {
-      applyConsolidationChanges(content, reviews, recurringPatterns);
-      process.exitCode = 0;
+      // Review #193: Preserve failure exit code set by applyConsolidationChanges
+      const applied = applyConsolidationChanges(content, reviews, recurringPatterns);
+      if (applied) {
+        process.exitCode = 0;
+      }
+      // If not applied, applyConsolidationChanges already set exitCode = 2
     } else {
       outputDryRunMessage();
       process.exitCode = 1;

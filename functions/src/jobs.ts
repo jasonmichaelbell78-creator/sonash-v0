@@ -41,18 +41,20 @@ type OverallStatus = "healthy" | "warning" | "critical";
  * Extracts and validates userId from a storage file path.
  * Expected format: user-uploads/{userId}/...
  * Returns null if path is invalid or userId is empty.
+ * Review #193: Filter empty segments, check for .. anywhere in path
  */
 function extractUserIdFromPath(filePath: string): string | null {
-  const pathParts = filePath.split("/");
+  // Filter empty segments to handle leading/trailing/repeated slashes
+  const pathParts = filePath.split("/").filter(Boolean);
   if (pathParts.length < 2) return null;
+
+  // Security: Reject path traversal attempts anywhere in the path
+  if (pathParts.some((p) => p === "." || p === "..")) return null;
 
   if (pathParts[0] !== "user-uploads") return null;
 
   const userId = pathParts[1];
   if (!userId || typeof userId !== "string") return null;
-
-  // Security: Reject path traversal attempts (Review #184 - Qodo security)
-  if (userId === "." || userId === "..") return null;
 
   // Firebase Auth UIDs are typically >= 20 chars and use URL-safe characters
   // This prevents malformed IDs from being used in database queries
@@ -179,15 +181,25 @@ async function deleteSubcollection(
 /**
  * Deletes all storage files for a user.
  * Non-fatal: logs warning on failure but doesn't throw.
+ * Review #193: Implement pagination to delete ALL files, not just first page
  */
 async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void> {
   try {
-    const [files] = await bucket.getFiles({
-      prefix: `user-uploads/${uid}/`,
-    });
-    for (const file of files) {
-      await file.delete();
-    }
+    let pageToken: string | undefined;
+
+    do {
+      const [files, , response] = await bucket.getFiles({
+        prefix: `user-uploads/${uid}/`,
+        pageToken,
+        autoPaginate: false,
+      });
+
+      for (const file of files) {
+        await file.delete();
+      }
+
+      pageToken = (response as { nextPageToken?: string } | undefined)?.nextPageToken;
+    } while (pageToken);
   } catch (storageError) {
     const errorType = storageError instanceof Error ? storageError.name : "UnknownError";
     if (errorType !== "NotFoundError") {

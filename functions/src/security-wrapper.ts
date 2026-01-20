@@ -83,6 +83,7 @@ interface SecureCallableContext<T> {
 
 /**
  * Check user-based rate limit
+ * Review #193: Sanitize error logging to prevent sensitive data leakage
  */
 async function checkUserRateLimit(
   rateLimiter: FirestoreRateLimiter | undefined,
@@ -94,15 +95,23 @@ async function checkUserRateLimit(
   try {
     await rateLimiter.consume(userId, functionName);
   } catch (rateLimitError) {
-    const internalMessage =
-      rateLimitError instanceof Error ? rateLimitError.message : "Rate limit exceeded";
-    logSecurityEvent("RATE_LIMIT_EXCEEDED", functionName, internalMessage, { userId });
+    // Review #193: Log generic message with safe error info in metadata
+    const safeErrorInfo =
+      rateLimitError instanceof Error
+        ? { name: rateLimitError.name, code: (rateLimitError as { code?: string }).code }
+        : { type: typeof rateLimitError };
+
+    logSecurityEvent("RATE_LIMIT_EXCEEDED", functionName, "User-based rate limit exceeded", {
+      userId,
+      metadata: { error: safeErrorInfo },
+    });
     throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
   }
 }
 
 /**
  * Check IP-based rate limit (CANON-0036: secondary defense against account cycling)
+ * Review #193: Sanitize error logging to prevent sensitive data leakage
  */
 async function checkIpRateLimit(
   ipRateLimiter: FirestoreRateLimiter | undefined,
@@ -118,20 +127,19 @@ async function checkIpRateLimit(
   try {
     await ipRateLimiter.consumeByIp(clientIp, functionName);
   } catch (rateLimitError) {
-    const internalMessage =
-      rateLimitError instanceof Error ? rateLimitError.message : "Rate limit exceeded";
     // Hash IP to avoid PII in logs (Review #184 - Qodo compliance: Secure Logging Practices)
     const hashedIp = hashUserId(clientIp); // Reuse hash function for consistent anonymization
-    logSecurityEvent(
-      "RATE_LIMIT_EXCEEDED",
-      functionName,
-      `IP-based rate limit: ${internalMessage}`,
-      {
-        userId,
-        metadata: { ipHash: hashedIp }, // Log hash instead of raw IP (PII compliance)
-        captureToSentry: false, // Review #187: Keep IP-derived identifiers out of third-party telemetry
-      }
-    );
+    // Review #193: Log generic message with safe error info in metadata
+    const safeErrorInfo =
+      rateLimitError instanceof Error
+        ? { name: rateLimitError.name, code: (rateLimitError as { code?: string }).code }
+        : { type: typeof rateLimitError };
+
+    logSecurityEvent("RATE_LIMIT_EXCEEDED", functionName, "IP-based rate limit exceeded", {
+      userId,
+      metadata: { ipHash: hashedIp, error: safeErrorInfo }, // Log hash instead of raw IP (PII compliance)
+      captureToSentry: false, // Review #187: Keep IP-derived identifiers out of third-party telemetry
+    });
     throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
   }
 }

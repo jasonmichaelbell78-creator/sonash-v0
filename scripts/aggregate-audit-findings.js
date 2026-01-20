@@ -703,6 +703,7 @@ function parseCanonFiles(allFindings, stats) {
  * Review #188: Use Set instead of array for reliable uniqueness
  * Review #191: Defensive check to ensure bucket is a Set before adding
  * Review #192: Self-heal corrupted buckets, allow empty string keys
+ * Review #193: Preserve existing values when recovering corrupted buckets
  */
 function addToMapIndex(map, key, value) {
   // Only reject null/undefined, allow empty string keys
@@ -710,9 +711,11 @@ function addToMapIndex(map, key, value) {
   if (!map.has(key)) map.set(key, new Set());
 
   const bucket = map.get(key);
-  // Self-heal if the map was corrupted (replace non-Set with new Set)
+  // Self-heal if the map was corrupted, preserving existing values if iterable
   if (!(bucket instanceof Set)) {
-    map.set(key, new Set());
+    const recovered =
+      bucket && typeof bucket[Symbol.iterator] === "function" ? new Set(bucket) : new Set();
+    map.set(key, recovered);
   }
   map.get(key).add(value);
 }

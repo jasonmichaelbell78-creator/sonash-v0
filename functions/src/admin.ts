@@ -397,20 +397,23 @@ const FIREBASE_UID_PATTERN = /^[a-zA-Z0-9_-]{20,128}$/;
  * Extract user ID from storage path if it follows users/{userId}/... pattern.
  * Review #191: Added UID validation to prevent injection via malformed paths
  * Review #192: Normalize path by filtering empty parts, block . and .. segments
+ * Review #193: Check for path traversal segments anywhere in path
  */
 function extractUserIdFromPath(path: string): string | null {
   // Filter empty parts to handle leading/trailing/repeated slashes
   const pathParts = path.split("/").filter(Boolean);
-  if (pathParts[0] === "users" && pathParts[1]) {
-    const potentialUid = pathParts[1];
+  if (pathParts.length < 2) return null;
 
-    // Reject path traversal segments explicitly
-    if (potentialUid === "." || potentialUid === "..") return null;
+  // Reject path traversal segments anywhere in the path
+  if (pathParts.some((p) => p === "." || p === "..")) return null;
 
-    // Validate the extracted UID matches expected Firebase UID pattern
-    if (FIREBASE_UID_PATTERN.test(potentialUid)) {
-      return potentialUid;
-    }
+  if (pathParts[0] !== "users") return null;
+
+  const potentialUid = pathParts[1];
+
+  // Validate the extracted UID matches expected Firebase UID pattern
+  if (FIREBASE_UID_PATTERN.test(potentialUid)) {
+    return potentialUid;
   }
   return null;
 }

@@ -161,6 +161,7 @@ export function useDailyQuote(): UseDailyQuoteResult {
       return undefined;
     }
 
+    // Timer ID from window.setTimeout (DOM returns number)
     let currentTimer: number | undefined;
     let cancelled = false;
 

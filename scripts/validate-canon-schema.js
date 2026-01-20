@@ -18,7 +18,13 @@
  */
 
 import { readFileSync, readdirSync, statSync, lstatSync, existsSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join, basename, resolve, sep, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Review #193: ES module __dirname equivalent for path containment checks
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const REPO_ROOT = resolve(__dirname, "..");
 
 // Required fields per MULTI_AI_AGGREGATOR_TEMPLATE.md
 const REQUIRED_FIELDS = ["canonical_id", "category", "title", "severity", "effort", "files"];
@@ -370,12 +376,22 @@ function findCanonFilesRecursive(dir, files) {
 
 /**
  * Collect files from argument paths
+ * Review #193: Add path traversal check to ensure args resolve within repo
  */
 function collectFilesFromArgs(args) {
   const files = [];
+  const repoRootResolved = resolve(REPO_ROOT);
 
   for (const arg of args) {
-    if (!existsSync(arg)) {
+    const argResolved = resolve(arg);
+
+    // Review #193: Block path traversal - ensure resolved path is within repo
+    if (argResolved !== repoRootResolved && !argResolved.startsWith(repoRootResolved + sep)) {
+      console.error(`Error: Path traversal blocked: ${arg}`);
+      continue;
+    }
+
+    if (!existsSync(argResolved)) {
       console.error(`Error: Path not found: ${arg}`);
       process.exit(2);
     }
@@ -384,7 +400,7 @@ function collectFilesFromArgs(args) {
     try {
       // Review #187: Use lstatSync to detect symlinks without following them
       // This prevents symlink traversal attacks that could escape project boundaries
-      stat = lstatSync(arg);
+      stat = lstatSync(argResolved);
     } catch (err) {
       console.error(`Error accessing path ${arg}: ${err.message}`);
       continue;
@@ -397,9 +413,9 @@ function collectFilesFromArgs(args) {
     }
 
     if (stat.isDirectory()) {
-      findCanonFilesRecursive(arg, files);
-    } else if (arg.endsWith(".jsonl")) {
-      files.push(arg);
+      findCanonFilesRecursive(argResolved, files);
+    } else if (argResolved.endsWith(".jsonl")) {
+      files.push(argResolved);
     }
   }
 

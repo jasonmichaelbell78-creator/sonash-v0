@@ -549,10 +549,14 @@ function findMarkdownFiles(dir, files = []) {
 /**
  * Resolve file arguments with path traversal and symlink protection
  * Review #190: Check for symlinks to prevent symlink traversal attacks
+ * Review #193: Canonicalize ROOT, use resolvedPath for non-symlinks, deduplicate
  */
 function resolveFileArgs(files) {
   const resolved = [];
+  const seen = new Set();
   const rootResolved = resolve(ROOT);
+  // Review #193: Canonicalize ROOT to handle symlinked project directories
+  const rootRealResolved = resolve(realpathSync(ROOT));
 
   for (const file of files) {
     const fullPath = isAbsolute(file) ? file : join(ROOT, file);
@@ -572,18 +576,29 @@ function resolveFileArgs(files) {
     // Review #190: Check for symlinks to prevent symlink traversal attacks
     try {
       const stat = lstatSync(fullPath);
-      if (stat.isSymbolicLink()) {
-        // Review #192: Use resolve() + startsWith for robust cross-platform symlink containment
-        const realPath = realpathSync(fullPath);
-        const realResolved = resolve(realPath);
-        if (realResolved !== rootResolved && !realResolved.startsWith(rootResolved + sep)) {
-          console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
-          continue;
-        }
-        resolved.push(realResolved);
-      } else {
-        resolved.push(fullPath);
-      }
+      // Review #193: Use canonical path for both symlinks and regular files
+      const finalPath = stat.isSymbolicLink()
+        ? (() => {
+            // Review #192: Use resolve() + startsWith for robust cross-platform symlink containment
+            const realPath = realpathSync(fullPath);
+            const realResolved = resolve(realPath);
+            // Review #193: Use canonicalized root for symlink containment check
+            if (
+              realResolved !== rootRealResolved &&
+              !realResolved.startsWith(rootRealResolved + sep)
+            ) {
+              console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
+              return null;
+            }
+            return realResolved;
+          })()
+        : resolvedPath;
+
+      if (!finalPath) continue;
+      // Review #193: Deduplicate to prevent linting same file multiple times
+      if (seen.has(finalPath)) continue;
+      seen.add(finalPath);
+      resolved.push(finalPath);
     } catch {
       console.error(`Warning: Cannot stat file: ${file}`);
     }
