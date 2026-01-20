@@ -16,7 +16,7 @@
 import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { ZodSchema, ZodError } from "zod";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
-import { logSecurityEvent } from "./security-logger";
+import { logSecurityEvent, hashUserId } from "./security-logger";
 import { verifyRecaptchaToken } from "./recaptcha-verify";
 
 interface SecurityOptions<T> {
@@ -120,14 +120,16 @@ async function checkIpRateLimit(
   } catch (rateLimitError) {
     const internalMessage =
       rateLimitError instanceof Error ? rateLimitError.message : "Rate limit exceeded";
+    // Hash IP to avoid PII in logs (Review #184 - Qodo compliance: Secure Logging Practices)
+    const hashedIp = hashUserId(clientIp); // Reuse hash function for consistent anonymization
     logSecurityEvent(
       "RATE_LIMIT_EXCEEDED",
       functionName,
       `IP-based rate limit: ${internalMessage}`,
       {
         userId,
-        metadata: { clientIp },
-        captureToSentry: false, // Don't send raw IP addresses to third-party services
+        metadata: { ipHash: hashedIp }, // Log hash instead of raw IP (PII compliance)
+        captureToSentry: false, // Don't send IP data to third-party services
       }
     );
     throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");

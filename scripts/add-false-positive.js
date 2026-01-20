@@ -265,7 +265,8 @@ function processArg(arg, nextArg, parsed) {
 
   // Handle value flags
   if (VALUE_ARGS.has(arg)) {
-    if (!nextArg || nextArg.startsWith("--")) {
+    // Check undefined instead of startsWith to allow values starting with -- (Review #184 - Qodo)
+    if (nextArg === undefined) {
       throw new Error(`Missing value for ${arg}`);
     }
     const key = arg.slice(2); // Remove "--" prefix

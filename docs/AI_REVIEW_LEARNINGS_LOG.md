@@ -602,6 +602,68 @@ removal, and mutable export fixes.
 **Deferred:** ~90 issues (S3776: 80 remaining complexity, S2004: 5 nested
 functions, S2871: 3 sort comparisons)
 
+#### Review #184: PR #286 SonarCloud + Qodo Combined Review (2026-01-19)
+
+**Source:** SonarCloud PR API + Qodo PR Compliance + Qodo Code Suggestions
+**PR/Branch:** claude/enhance-sonarcloud-report-3lp4i (PR #286) **Suggestions:**
+32 total (Critical: 3, Hotspots: 2, Major: 16, Minor: 11)
+
+**Issues Fixed:**
+
+| #   | Issue                                   | Severity | File                               | Fix                                            |
+| --- | --------------------------------------- | -------- | ---------------------------------- | ---------------------------------------------- |
+| 1   | S3776: findPatternMatches complexity 16 | Critical | check-pattern-compliance.js:606    | Create new RegExp to avoid shared state        |
+| 2   | Non-global regex infinite loop          | Critical | security-check.js:154              | Add non-global regex handling                  |
+| 3   | PII: clientIp in logs                   | Critical | security-wrapper.ts:129            | Hash IP address before logging                 |
+| 4   | S5852: ReDoS in path cleanup            | Hotspot  | phase-complete-check.js:191        | Simplify regex, limit input length             |
+| 5   | S5852: ReDoS in time parsing            | Hotspot  | meetings/all/page.tsx:212          | Mark as safe (linear pattern)                  |
+| 6   | S5843: Regex complexity 21              | Major    | check-pattern-compliance.js:406    | Split pathExclude into array                   |
+| 7   | S3358: Nested ternary                   | Major    | validate-audit.js:187              | Extract to helper function                     |
+| 8   | S2301: Boolean method flag              | Major    | users-tab.tsx:381,388              | REJECTED: Simple return functions, not actions |
+| 9   | S3358: Nested ternary                   | Major    | entry-card.tsx:110                 | Extract getStatusIcon helper                   |
+| 10  | Interpolated Firestore path             | Major    | jobs.ts:80                         | Use .collection().doc().collection()           |
+| 11  | Skip unknown rules                      | Major    | verify-sonar-phase.js:194          | Continue if extractedRule is null              |
+| 12  | Parse headers with colons               | Major    | verify-sonar-phase.js:219          | Update regex with anchors                      |
+| 13  | Empty table cells                       | Major    | update-readme-status.js:187        | Use slice instead of filter                    |
+| 14  | getPreviousPrivilegeType error          | Major    | admin.ts:311                       | Add try-catch wrapper                          |
+| 15  | Shared regex state mutation             | Major    | check-pattern-compliance.js:606    | Create new RegExp instance                     |
+| 16  | Empty reviews check                     | Major    | run-consolidation.js:425           | Add length check before Math.max               |
+| 17  | JSON parse error                        | Major    | check-review-needed.js:383         | Add try-catch for json()                       |
+| 18  | Missing thresholds crash                | Major    | check-review-needed.js:922         | Add optional chaining                          |
+| 19  | Validate userId path traversal          | Major    | jobs.ts:45                         | Add . and .. checks, regex validation          |
+| 20  | Silent error in buildUserSearchResult   | Major    | admin.ts:81                        | Add console.warn for debugging                 |
+| 21  | S7781: Use replaceAll                   | Minor    | update-readme-status.js:153        | Already using replaceAll, fix regex            |
+| 22  | S7781: Simplify regex                   | Minor    | phase-complete-check.js:185        | Use string literal                             |
+| 23  | S7781: Simplify CRLF regex              | Minor    | run-consolidation.js:484           | Use string literal                             |
+| 24  | S7778: Multiple push                    | Minor    | generate-documentation-index.js    | Use spread in single push                      |
+| 25  | Malformed href guard                    | Minor    | generate-documentation-index.js:51 | Add null/type check                            |
+| 26  | False missing-value arg                 | Minor    | add-false-positive.js:268          | Check undefined instead of startsWith          |
+| 27  | Duplicate ID error context              | Minor    | normalize-canon-ids.js:245         | Include filename in error message              |
+
+**Patterns Identified:**
+
+1. **Shared regex state mutation**: Reusing `antiPattern.pattern.lastIndex`
+   across calls creates subtle bugs - always create new RegExp instances
+2. **PII in security logs**: Even "internal only" logs may be exposed;
+   hash/redact IPs before logging
+3. **Non-global regex in loops**: `while (regex.exec())` infinite loops if regex
+   lacks /g flag - handle separately
+4. **Empty array edge cases**: `Math.max(...[])` returns -Infinity; always guard
+   against empty inputs
+
+**Key Learnings:**
+
+- SonarCloud catches shared state issues human reviewers miss
+- Qodo excels at defensive programming suggestions (null guards, error handling)
+- Security hotspots for ReDoS often false positives for simple patterns
+- Boolean method flags (S2301) appropriate for simple return functions
+
+**Resolution:**
+
+- Fixed: 27 items
+- Rejected: 1 item (S2301 for simple getter functions)
+- Deferred: 0 items
+
 ---
 
 #### Review #182: SonarCloud Sprint PR 1 - Mechanical Fixes (2026-01-19)

@@ -207,8 +207,13 @@ function MeetingCard({
 
 /**
  * Parse 12-hour time format (e.g., "6:00 PM") to minutes since midnight
+ * Note: S5852 flagged for ReDoS but this is a false positive - the pattern
+ * is linear with no nested quantifiers that could cause catastrophic backtracking.
+ * The input is also bounded (user-provided time strings are typically < 20 chars).
  */
 function parse12HourTime(timeStr: string): number | null {
+  // Guard against excessively long input (defense in depth)
+  if (timeStr.length > 20) return null;
   const regex = /(\d+):(\d+)\s*(AM|PM)/i;
   const match = regex.exec(timeStr);
   if (!match) return null;
