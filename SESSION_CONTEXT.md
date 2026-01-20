@@ -35,7 +35,7 @@ productive work.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions
-> (processing CodeRabbit/Qodo feedback) may not add major feature entries.
+> (processing Qodo/SonarCloud feedback) may not add major feature entries.
 
 ---
 
@@ -47,13 +47,23 @@ productive work.
 
 **See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0)
 
-**Session #85 Update** - SonarCloud Sprint Paused, Blocker Resolved:
+**Session #85 Update** - SonarCloud Sprint Paused, Blocker Resolved, CodeRabbit
+Removed:
 
 - **✅ BLOCKER RESOLVED**: SonarCloud Cleanup Sprint no longer blocking
   - PR 1 (Mechanical Fixes): ✅ COMPLETE (~190 issues)
   - PR 2 (Critical Issues): ✅ COMPLETE (~110 issues)
   - PR 3-5 (Major/Minor/Hotspots): ⏸️ DEFERRED to M2 Architecture backlog
 - **🔓 UNBLOCKED**: Feature development can proceed
+- **✅ CodeRabbit Integration Removed**: CodeRabbit no longer used
+  - Deleted hook files (coderabbit-review.js, coderabbit-review.sh)
+  - Removed from settings.json, HOOKS.md, PR template,
+    check-pattern-compliance.js
+- **✅ Audit Thresholds Increased**: Reduced false trigger frequency
+  - Code: 25/15 → 75/40, Security: 20/1 → 50/5, Performance: 30/10 → 100/30
+  - Refactoring: 40/20 → 150/50, Documentation: 30/20 → 100/50, Process: 30/1 →
+    75/10
+  - Multi-AI: 3→5 audits, 100→300 commits, 14→30 days
 - **📋 Next**: Continue Operational Visibility Sprint (Track B: Dev Dashboard)
 
 **Session #83-84 Update** - PR #286 Review Processing (Reviews #191-197):
@@ -209,11 +219,11 @@ Choose from:
 
 ---
 
-## 🔄 Pending CodeRabbit Reviews
+## 🔄 Pending PR Reviews
 
-**Status**: No pending CodeRabbit reviews
+**Status**: No pending PR reviews
 
-**When reviews arrive**:
+**When reviews arrive** (Qodo, SonarCloud, etc.):
 
 1. See [AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md) for systematic
    processing
@@ -222,8 +232,8 @@ Choose from:
 4. Document using template
 5. Implement and commit with review summary
 
-**Last Processed**: 2026-01-08 (Review #100: Review #99 post-commit refinements,
-dead code cleanup, severity escalation)
+**Last Processed**: 2026-01-19 (Review #197: CI pattern compliance fixes,
+symlink rejection)
 
 ---
 
@@ -547,8 +557,8 @@ Remaining work (PR 3-5) deferred to M2 Architecture backlog.
    Current unified roadmap (START HERE)
 2. **[AI_WORKFLOW.md](./AI_WORKFLOW.md)** - How to navigate documentation
 3. **[ROADMAP.md](./ROADMAP.md)** - Overall project priorities
-4. **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - When CodeRabbit
-   feedback arrives
+4. **[AI_REVIEW_PROCESS.md](docs/AI_REVIEW_PROCESS.md)** - When PR review
+   feedback arrives (Qodo, SonarCloud)
 5. **[TRIGGERS.md](./docs/TRIGGERS.md)** - All automation and enforcement
    mechanisms
 
@@ -626,7 +636,7 @@ npm run docs:check   # Documentation linting
 - ✅ Session goals change
 - ✅ New blockers discovered
 - ✅ Significant work completed
-- ✅ CodeRabbit reviews processed
+- ✅ PR reviews processed
 - ✅ Sprint focus shifts
 - ✅ New session starts (increment counter)
 
@@ -675,7 +685,7 @@ npm run docs:check   # Documentation linting
 2. **Increment session counter** - track session frequency
 3. **Check "Next Session Goals"** - understand priority
 4. **Review "Current Blockers"** - know what's blocked
-5. **Note "Pending CodeRabbit Reviews"** - process if any
+5. **Note "Pending PR Reviews"** - process if any
 6. **Update at end of session** - keep current for next session
 
 **When updating**:
