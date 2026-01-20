@@ -137,6 +137,7 @@ function isPathTraversal(rel) {
 
 /**
  * Check archive directory for a file
+ * Review #190: Use lstatSync to detect symlinks and block symlink traversal
  * @param {object} deliverable - Deliverable object with path
  * @param {string} projectRoot - Project root directory
  * @returns {{found: boolean, reason?: string}} Archive check result
@@ -149,27 +150,35 @@ function checkArchiveForFile(deliverable, projectRoot) {
     return rel && !isPathTraversal(rel);
   };
 
-  // Try exact relative path first
-  const archivePathExact = path.join(archiveRoot, deliverable.path);
-  try {
-    if (isWithinArchive(archivePathExact)) {
-      fs.statSync(archivePathExact);
-      return { found: true, reason: "Archived" };
+  // Review #190: Helper to safely check if file exists (skipping symlinks pointing outside)
+  const safeStatCheck = (archivePath) => {
+    if (!isWithinArchive(archivePath)) return false;
+    try {
+      const stat = fs.lstatSync(archivePath);
+      if (stat.isSymbolicLink()) {
+        // Block symlinks pointing outside archive
+        const realPath = fs.realpathSync(archivePath);
+        const realRel = path.relative(archiveRoot, realPath);
+        return realRel && !isPathTraversal(realRel);
+      }
+      return true;
+    } catch {
+      return false;
     }
-  } catch {
-    // Continue to basename fallback
+  };
+
+  // Try exact relative path first (containment check in safeStatCheck→isWithinArchive)
+  const archivePathExact = path.join(archiveRoot, deliverable.path); // VALIDATED: safeStatCheck
+  if (safeStatCheck(archivePathExact)) {
+    return { found: true, reason: "Archived" };
   }
 
   // Fall back to basename-only check
   const archivePathBasename = path.join(archiveRoot, path.basename(deliverable.path));
-  try {
-    if (isWithinArchive(archivePathBasename)) {
-      fs.statSync(archivePathBasename);
-      return { found: true, reason: "Archived" };
-    }
-  } catch {
-    // File not found
+  if (safeStatCheck(archivePathBasename)) {
+    return { found: true, reason: "Archived" };
   }
+
   return { found: false };
 }
 
@@ -203,6 +212,7 @@ function normalizeDeliverablePath(d) {
 /**
  * Verify deliverable exists and has content
  * Security: Prevents path traversal by ensuring resolved path stays within projectRoot
+ * Review #190: Block symlinked deliverable paths to prevent symlink traversal attacks
  */
 function verifyDeliverable(deliverable, projectRoot) {
   // Security: Reject absolute paths
@@ -218,7 +228,28 @@ function verifyDeliverable(deliverable, projectRoot) {
 
   let stat;
   try {
-    stat = fs.statSync(resolvedPath);
+    // Review #190: Use lstatSync first to detect symlinks
+    stat = fs.lstatSync(resolvedPath);
+
+    // Block symlinks to prevent symlink traversal attacks
+    if (stat.isSymbolicLink()) {
+      // Verify symlink target is within project root
+      try {
+        const realPath = fs.realpathSync(resolvedPath);
+        const realRel = path.relative(projectRoot, realPath);
+        if (isPathTraversal(realRel)) {
+          return {
+            exists: false,
+            valid: false,
+            reason: "Invalid path (symlink points outside project root)",
+          };
+        }
+        // Re-stat the actual file for type checking
+        stat = fs.statSync(realPath);
+      } catch {
+        return { exists: false, valid: false, reason: "Invalid symlink (cannot resolve target)" };
+      }
+    }
   } catch (err) {
     if (err.code === "ENOENT") {
       // Check if path already points to docs/archive

@@ -484,7 +484,7 @@ interface MigrationData {
  * 6. Audit logging
  */
 export const migrateAnonymousUserData = onCall<MigrationData>(async (request) => {
-  const { data, app: _app, auth } = request;
+  const { data, auth } = request;
 
   if (!auth) {
     logSecurityEvent("AUTH_FAILURE", "migrateAnonymousUserData", "Unauthenticated request");

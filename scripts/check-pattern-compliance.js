@@ -308,6 +308,8 @@ const ANTI_PATTERNS = [
     fix: 'Verify path.relative(root, resolved) does not start with ".." or equal ""',
     review: "#33, #34, #38, #39, #40",
     fileTypes: [".js", ".ts"],
+    // Review #190: phase-complete-check.js L171 has containment via safeStatCheck→isWithinArchive
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -548,9 +550,13 @@ function getFilesToCheck() {
             // Include files with known extensions OR extensionless files in .husky
             if (extensions.includes(ext)) {
               files.push(relative(ROOT, fullPath));
-            } else if (!ext && relative(ROOT, dir).startsWith(".husky")) {
-              // Extensionless files in .husky are shell scripts
-              files.push(relative(ROOT, fullPath));
+            } else if (!ext) {
+              // Review #190: Normalize backslashes for Windows path detection
+              const relDir = relative(ROOT, dir).replace(/\\/g, "/");
+              if (relDir.startsWith(".husky")) {
+                // Extensionless files in .husky are shell scripts
+                files.push(relative(ROOT, fullPath));
+              }
             }
           }
         }
@@ -589,6 +595,7 @@ function getFilesToCheck() {
 
 /**
  * Detect file type from shebang for extensionless files
+ * Review #190: Normalize backslashes for Windows path detection
  * @param {string} filePath - File path
  * @param {string} content - File content
  * @param {string} ext - Current extension (may be empty)
@@ -597,7 +604,9 @@ function getFilesToCheck() {
 function detectFileType(filePath, content, ext) {
   if (ext) return ext;
   const shellShebangs = ["#!/bin/sh", "#!/bin/bash", "#!/usr/bin/env bash", "#!/usr/bin/env sh"];
-  if (filePath.startsWith(".husky/") || shellShebangs.some((s) => content.startsWith(s))) {
+  // Review #190: Normalize backslashes for Windows .husky path detection
+  const normalizedPath = filePath.replace(/\\/g, "/");
+  if (normalizedPath.startsWith(".husky/") || shellShebangs.some((s) => content.startsWith(s))) {
     return ".sh";
   }
   return ext;

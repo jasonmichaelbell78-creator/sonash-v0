@@ -757,7 +757,8 @@ function buildFindingIndices(findings) {
 function processBucketPairs(bucketMap, tryMergePair, maxSize = Infinity, bucketType = "bucket") {
   for (const [key, indicesSet] of bucketMap.entries()) {
     // Review #189: Convert Set to Array for iteration with numerical indices
-    const indices = Array.from(indicesSet);
+    // Review #190: Sort indices for deterministic merge order across runs
+    const indices = Array.from(indicesSet).sort((a, b) => a - b);
     if (indices.length > maxSize) {
       console.warn(
         `Warning: Skipping ${bucketType} '${key}' (${indices.length} items > ${maxSize} cap)`

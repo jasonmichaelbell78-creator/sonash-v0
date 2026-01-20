@@ -59,6 +59,24 @@ function toJsonSafe(value: unknown): unknown {
   return value;
 }
 
+/**
+ * Review #190: Helper to safely convert Firestore Timestamp to ISO string
+ * Handles undefined, null, and objects without toDate() method
+ * @param value - Potential Firestore Timestamp or undefined
+ * @param fallback - Value to return if conversion fails (default: null)
+ * @returns ISO string or fallback value
+ */
+function safeToIso(value: unknown, fallback: string | null = null): string | null {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === "object" && value && "toDate" in value) {
+    const maybeToDate = (value as { toDate?: () => Date }).toDate;
+    if (typeof maybeToDate === "function") {
+      return maybeToDate.call(value).toISOString();
+    }
+  }
+  return fallback;
+}
+
 // ============================================================================
 // User Search Helpers (for adminSearchUsers complexity reduction)
 // ============================================================================
@@ -934,7 +952,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
     const recentSignups = recentSignupsSnapshot.docs.map((doc) => ({
       id: doc.id,
       nickname: doc.data().nickname || "Anonymous",
-      createdAt: doc.data().createdAt?.toDate().toISOString() || null,
+      createdAt: safeToIso(doc.data().createdAt),
       authProvider: doc.data().authProvider || "unknown",
     }));
 
@@ -958,7 +976,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
         id: doc.id,
         event: doc.data().event || "",
         level: doc.data().level || "info",
-        timestamp: doc.data().timestamp?.toDate().toISOString() || new Date().toISOString(),
+        timestamp: safeToIso(doc.data().timestamp, new Date().toISOString()) as string,
         details: doc.data().details || "",
       }));
     } catch {
@@ -979,7 +997,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
         id: doc.id,
         name: doc.data().name || doc.id,
         lastRunStatus: doc.data().lastRunStatus || "unknown",
-        lastRun: doc.data().lastRun?.toDate().toISOString() || null,
+        lastRun: safeToIso(doc.data().lastRun),
       }));
     } catch {
       // admin_jobs collection doesn't exist yet - that's okay

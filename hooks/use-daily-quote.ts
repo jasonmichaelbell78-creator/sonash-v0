@@ -21,6 +21,10 @@ let cachedQuote: Quote | null = null;
 let cacheDate: string | null = null;
 let fetchPromise: Promise<Quote | null> | null = null;
 
+// Review #190: Extract magic number to named constant for clarity
+/** Delay after midnight before refreshing quote (avoid edge timing issues) */
+const MIDNIGHT_REFRESH_DELAY_SECONDS = 5;
+
 /**
  * Get today's date string for cache invalidation
  */
@@ -181,7 +185,8 @@ export function useDailyQuote(): UseDailyQuoteResult {
     const scheduleNextRefresh = () => {
       const now = new Date();
       const nextMidnight = new Date(now);
-      nextMidnight.setHours(24, 0, 5, 0); // 5 seconds after midnight to avoid edge timing
+      // Review #190: Use named constant for delay after midnight
+      nextMidnight.setHours(24, 0, MIDNIGHT_REFRESH_DELAY_SECONDS, 0);
       const msUntilMidnight = nextMidnight.getTime() - now.getTime();
       currentTimer = globalThis.window.setTimeout(handleMidnightRefresh, msUntilMidnight);
     };

@@ -32,6 +32,7 @@ import {
   mkdirSync,
   readdirSync,
   statSync,
+  lstatSync,
   realpathSync,
 } from "node:fs";
 import { join, dirname, basename, relative } from "node:path";
@@ -273,6 +274,7 @@ function addArchiveFrontmatter(content, originalPath, reason) {
 
 /**
  * Get all markdown files recursively in a directory
+ * Review #190: Use lstatSync to detect and skip symlinks for security
  * @param {string} dir - Directory to scan
  * @param {string[]} files - Accumulated file list
  * @returns {string[]} - List of markdown file paths
@@ -294,7 +296,13 @@ function getMarkdownFiles(dir, files = []) {
       }
 
       try {
-        const stat = statSync(fullPath);
+        // Review #190: Use lstatSync to detect symlinks
+        const stat = lstatSync(fullPath);
+
+        // Skip symlinks to prevent symlink traversal attacks
+        if (stat.isSymbolicLink()) {
+          continue;
+        }
 
         if (stat.isDirectory()) {
           getMarkdownFiles(fullPath, files);
@@ -494,11 +502,15 @@ function resolveSourcePath(fileArg) {
 
 /**
  * Check if path is already in archive directory
- * @param {string} path - File path to check
+ * Review #190: Use segment-based detection to avoid matching paths like "archive-backup/"
+ * @param {string} filePath - File path to check
  * @returns {boolean} True if already archived
  */
-function isAlreadyArchived(path) {
-  return path.includes("/archive/") || path.includes("\\archive\\");
+function isAlreadyArchived(filePath) {
+  // Normalize to forward slashes and split into segments
+  const segments = filePath.replace(/\\/g, "/").split("/");
+  // Check if any segment is exactly "archive"
+  return segments.includes("archive");
 }
 
 /**

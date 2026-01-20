@@ -150,12 +150,15 @@ function shouldApplyPattern(pattern, ext, relativePath) {
 
 /**
  * Find pattern matches in content and return violations
+ * Review #190: Use normalizedLines derived from normalizedContent for consistent lookup
  */
-function findPatternViolations(pattern, content, lines, relativePath) {
+function findPatternViolations(pattern, content, _lines, relativePath) {
   const violations = [];
 
   // Review #189: Normalize CRLF to LF for consistent line number calculation
   const normalizedContent = content.replace(/\r\n/g, "\n");
+  // Review #190: Compute normalizedLines from normalizedContent for consistent line lookup
+  const normalizedLines = normalizedContent.split("\n");
 
   // Review #187: Always use global regex to find ALL matches, not just the first.
   // Non-global regexes would only find the first occurrence, missing security issues.
@@ -169,7 +172,7 @@ function findPatternViolations(pattern, content, lines, relativePath) {
   while ((match = regex.exec(normalizedContent)) !== null) {
     const beforeMatch = normalizedContent.slice(0, match.index);
     const lineNum = beforeMatch.split("\n").length;
-    const lineContent = lines[lineNum - 1]?.slice(0, 80) || "";
+    const lineContent = normalizedLines[lineNum - 1]?.slice(0, 80) || "";
 
     violations.push({
       file: relativePath,

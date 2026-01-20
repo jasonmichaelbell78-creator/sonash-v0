@@ -25,7 +25,7 @@
  * Exit codes: 0 = pass, 1 = errors found (or warnings in --strict mode)
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync, lstatSync, realpathSync } from "node:fs";
 import { join, dirname, basename, relative, extname, isAbsolute, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";
@@ -547,7 +547,8 @@ function findMarkdownFiles(dir, files = []) {
 }
 
 /**
- * Resolve file arguments with path traversal protection
+ * Resolve file arguments with path traversal and symlink protection
+ * Review #190: Check for symlinks to prevent symlink traversal attacks
  */
 function resolveFileArgs(files) {
   const resolved = [];
@@ -557,15 +558,34 @@ function resolveFileArgs(files) {
     const fullPath = isAbsolute(file) ? file : join(ROOT, file);
     const resolvedPath = resolve(fullPath);
 
+    // Check path traversal before checking existence
     if (resolvedPath !== rootResolved && !resolvedPath.startsWith(rootResolved + sep)) {
       console.error(`Error: Path traversal blocked: ${file}`);
       continue;
     }
 
-    if (existsSync(fullPath)) {
-      resolved.push(fullPath);
-    } else {
+    if (!existsSync(fullPath)) {
       console.error(`Warning: File not found: ${file}`);
+      continue;
+    }
+
+    // Review #190: Check for symlinks to prevent symlink traversal attacks
+    try {
+      const stat = lstatSync(fullPath);
+      if (stat.isSymbolicLink()) {
+        // Resolve the symlink target and verify it's within project root
+        const realPath = realpathSync(fullPath);
+        const relToRoot = relative(rootResolved, realPath);
+        if (relToRoot.startsWith("..") || relToRoot.startsWith(sep)) {
+          console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
+          continue;
+        }
+        resolved.push(realPath);
+      } else {
+        resolved.push(fullPath);
+      }
+    } catch {
+      console.error(`Warning: Cannot stat file: ${file}`);
     }
   }
 

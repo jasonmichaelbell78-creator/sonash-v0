@@ -218,11 +218,14 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
   }
 
   // Updated regex with anchors to handle file paths containing colons (Review #184 - Qodo)
+  // Review #190: Normalize CRLF line endings for Windows cross-platform handling
+  const normalizedContent = content.replace(/\r\n/g, "\n");
   const regex = /^### \[([^\]]+)\] - (.+?)(?::(\d+|N\/A|BATCH))?$/gm;
   let match;
-  while ((match = regex.exec(content)) !== null) {
+  while ((match = regex.exec(normalizedContent)) !== null) {
     const rule = match[1];
-    const file = match[2].trim();
+    // Review #190: Normalize backslashes to forward slashes for Windows paths
+    const file = match[2].trim().replace(/\\/g, "/");
     const rawLine = match[3] || "N/A";
     const line = rawLine === "BATCH" ? "N/A" : rawLine;
     const key = `${rule}|${file}|${line}`;
@@ -238,11 +241,26 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
   // Check for bulk fix markers (only in fixes file)
   if (type === "FIXED") {
     const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
-    while ((match = bulkRegex.exec(content)) !== null) {
+    while ((match = bulkRegex.exec(normalizedContent)) !== null) {
+      const bulkRule = match[1];
+      const bulkKey = `BULK|${bulkRule}`;
+
+      // Review #190: Check for conflicts with dismissed entries for this rule
+      // A bulk fix conflicts with any dismissal for the same rule
+      for (const [existingKey, existingEntry] of entries.entries()) {
+        if (existingEntry.type === "DISMISSED" && existingEntry.rule === bulkRule) {
+          conflicts.push({
+            key: existingKey,
+            existing: existingEntry,
+            entry: { type: "BULK_FIXED", rule: bulkRule, file: "*", line: "N/A" },
+          });
+        }
+      }
+
       // Review #189: Include placeholder file/line for consistent entry structure
-      entries.set(`BULK|${match[1]}`, {
+      entries.set(bulkKey, {
         type: "BULK_FIXED",
-        rule: match[1],
+        rule: bulkRule,
         file: "*",
         line: "N/A",
       });
