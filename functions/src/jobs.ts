@@ -188,7 +188,8 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
     let pageToken: string | undefined;
 
     do {
-      const [files, , response] = await bucket.getFiles({
+      // Review #194: Use nextQuery (2nd element) for pageToken, not response (3rd element)
+      const [files, nextQuery] = await bucket.getFiles({
         prefix: `user-uploads/${uid}/`,
         pageToken,
         autoPaginate: false,
@@ -198,7 +199,7 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
         await file.delete();
       }
 
-      pageToken = (response as { nextPageToken?: string } | undefined)?.nextPageToken;
+      pageToken = (nextQuery as { pageToken?: string } | undefined)?.pageToken;
     } while (pageToken);
   } catch (storageError) {
     const errorType = storageError instanceof Error ? storageError.name : "UnknownError";

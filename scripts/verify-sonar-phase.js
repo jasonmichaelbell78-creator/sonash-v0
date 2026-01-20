@@ -217,16 +217,32 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
     return;
   }
 
-  // Updated regex with anchors to handle file paths containing colons (Review #184 - Qodo)
-  // Review #190: Normalize CRLF line endings for Windows cross-platform handling
-  const normalizedContent = content.replace(/\r\n/g, "\n");
-  const regex = /^### \[([^\]]+)\] - (.+?)(?::(\d+|N\/A|BATCH))?$/gm;
+  // Review #190: Normalize CRLF/CR line endings for cross-platform handling
+  const normalizedContent = content.replace(/\r\n?/g, "\n");
+
+  // Review #194: Use last-colon parsing to handle Windows paths with drive letters (C:\...)
+  // First capture full "location" part; then split out ":line" using last-colon parsing
+  const regex = /^### \[([^\]]+)\] - (.+)$/gm;
   let match;
   while ((match = regex.exec(normalizedContent)) !== null) {
     const rule = match[1];
+    const locationRaw = match[2].trim();
+
+    // Review #194: Parse line number from last colon to handle Windows drive letters
+    let filePart = locationRaw;
+    let rawLine = "N/A";
+
+    const lastColon = locationRaw.lastIndexOf(":");
+    if (lastColon !== -1) {
+      const maybeLine = locationRaw.slice(lastColon + 1);
+      if (/^(?:\d+|N\/A|BATCH)$/.test(maybeLine)) {
+        filePart = locationRaw.slice(0, lastColon);
+        rawLine = maybeLine;
+      }
+    }
+
     // Review #190: Normalize backslashes to forward slashes for Windows paths
-    const file = match[2].trim().replace(/\\/g, "/");
-    const rawLine = match[3] || "N/A";
+    const file = filePart.replace(/\\/g, "/");
     const line = rawLine === "BATCH" ? "N/A" : rawLine;
     const key = `${rule}|${file}|${line}`;
 

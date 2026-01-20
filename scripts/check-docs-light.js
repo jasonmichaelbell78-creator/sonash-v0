@@ -550,13 +550,21 @@ function findMarkdownFiles(dir, files = []) {
  * Resolve file arguments with path traversal and symlink protection
  * Review #190: Check for symlinks to prevent symlink traversal attacks
  * Review #193: Canonicalize ROOT, use resolvedPath for non-symlinks, deduplicate
+ * Review #194: Canonicalize ALL paths to defend against symlinked parent directories
  */
 function resolveFileArgs(files) {
   const resolved = [];
   const seen = new Set();
   const rootResolved = resolve(ROOT);
+
   // Review #193: Canonicalize ROOT to handle symlinked project directories
-  const rootRealResolved = resolve(realpathSync(ROOT));
+  // Review #194: Guard against realpathSync throwing (broken symlink/permission/missing dir)
+  let rootRealResolved = rootResolved;
+  try {
+    rootRealResolved = resolve(realpathSync(ROOT));
+  } catch (error) {
+    console.warn(`Warning: Cannot resolve real path for ROOT, using resolved path`);
+  }
 
   for (const file of files) {
     const fullPath = isAbsolute(file) ? file : join(ROOT, file);
@@ -573,32 +581,21 @@ function resolveFileArgs(files) {
       continue;
     }
 
-    // Review #190: Check for symlinks to prevent symlink traversal attacks
     try {
-      const stat = lstatSync(fullPath);
-      // Review #193: Use canonical path for both symlinks and regular files
-      const finalPath = stat.isSymbolicLink()
-        ? (() => {
-            // Review #192: Use resolve() + startsWith for robust cross-platform symlink containment
-            const realPath = realpathSync(fullPath);
-            const realResolved = resolve(realPath);
-            // Review #193: Use canonicalized root for symlink containment check
-            if (
-              realResolved !== rootRealResolved &&
-              !realResolved.startsWith(rootRealResolved + sep)
-            ) {
-              console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
-              return null;
-            }
-            return realResolved;
-          })()
-        : resolvedPath;
+      // Review #194: Canonicalize ALL paths to defend against symlinked parent directories
+      const realResolved = resolve(realpathSync(fullPath));
+      if (realResolved !== rootRealResolved && !realResolved.startsWith(rootRealResolved + sep)) {
+        console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
+        continue;
+      }
 
-      if (!finalPath) continue;
+      // Keep lstatSync for diagnostics / future checks, but containment is enforced above
+      lstatSync(fullPath);
+
       // Review #193: Deduplicate to prevent linting same file multiple times
-      if (seen.has(finalPath)) continue;
-      seen.add(finalPath);
-      resolved.push(finalPath);
+      if (seen.has(realResolved)) continue;
+      seen.add(realResolved);
+      resolved.push(realResolved);
     } catch {
       console.error(`Warning: Cannot stat file: ${file}`);
     }

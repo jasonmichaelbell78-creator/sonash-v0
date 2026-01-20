@@ -577,11 +577,15 @@ function main() {
     // Apply changes if requested, otherwise show dry run message
     if (applyChanges) {
       // Review #193: Preserve failure exit code set by applyConsolidationChanges
+      // Review #194: Make failure path explicit with return
       const applied = applyConsolidationChanges(content, reviews, recurringPatterns);
       if (applied) {
         process.exitCode = 0;
+        return;
       }
-      // If not applied, applyConsolidationChanges already set exitCode = 2
+      // Explicitly set failure exit code for clarity
+      process.exitCode = 2;
+      return;
     } else {
       outputDryRunMessage();
       process.exitCode = 1;

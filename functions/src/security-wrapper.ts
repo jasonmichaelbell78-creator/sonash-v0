@@ -232,14 +232,19 @@ function validateInputData<T>(
     return validationSchema.parse(request.data);
   } catch (error) {
     if (error instanceof ZodError) {
-      const errorMessages = error.issues.map((e) => e.message).join(", ");
+      // Review #194: Sanitize Zod validation logs to prevent PII leakage
+      // Only log field paths and error codes, not messages or user-provided values
+      const safeIssues = error.issues.map((issue) => ({
+        path: issue.path.join(".") || "(root)",
+        code: issue.code,
+      }));
       logSecurityEvent(
         "VALIDATION_FAILURE",
         functionName,
-        `Zod validation failed: ${errorMessages}`,
+        `Validation failed on ${error.issues.length} field(s)`,
         {
           userId,
-          metadata: { issues: error.issues },
+          metadata: { issues: safeIssues },
         }
       );
       // Sanitized error message - avoids exposing detailed schema structure

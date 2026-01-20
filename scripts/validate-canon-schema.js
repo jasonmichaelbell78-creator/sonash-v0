@@ -18,7 +18,7 @@
  */
 
 import { readFileSync, readdirSync, statSync, lstatSync, existsSync } from "node:fs";
-import { join, basename, resolve, sep, dirname } from "node:path";
+import { join, basename, resolve, sep, dirname, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Review #193: ES module __dirname equivalent for path containment checks
@@ -377,13 +377,15 @@ function findCanonFilesRecursive(dir, files) {
 /**
  * Collect files from argument paths
  * Review #193: Add path traversal check to ensure args resolve within repo
+ * Review #194: Resolve relative args relative to REPO_ROOT for cwd independence
  */
 function collectFilesFromArgs(args) {
   const files = [];
   const repoRootResolved = resolve(REPO_ROOT);
 
   for (const arg of args) {
-    const argResolved = resolve(arg);
+    // Review #194: Resolve relative paths relative to REPO_ROOT, not cwd
+    const argResolved = isAbsolute(arg) ? resolve(arg) : resolve(REPO_ROOT, arg);
 
     // Review #193: Block path traversal - ensure resolved path is within repo
     if (argResolved !== repoRootResolved && !argResolved.startsWith(repoRootResolved + sep)) {

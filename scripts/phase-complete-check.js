@@ -144,9 +144,18 @@ function isPathTraversal(rel) {
  */
 function checkArchiveForFile(deliverable, projectRoot) {
   const archiveRoot = path.join(projectRoot, "docs/archive");
+
+  // Review #194: Canonicalize archiveRoot for consistent symlink containment checks
+  let archiveRootReal = archiveRoot;
+  try {
+    archiveRootReal = fs.realpathSync(archiveRoot);
+  } catch {
+    // If archive dir doesn't exist or can't be resolved, fall back to non-real path checks
+  }
+
   const isWithinArchive = (candidate) => {
     const resolved = path.resolve(candidate);
-    const rel = path.relative(archiveRoot, resolved);
+    const rel = path.relative(archiveRootReal, resolved);
     return rel && !isPathTraversal(rel);
   };
 
@@ -156,9 +165,9 @@ function checkArchiveForFile(deliverable, projectRoot) {
     try {
       const stat = fs.lstatSync(archivePath);
       if (stat.isSymbolicLink()) {
-        // Block symlinks pointing outside archive
+        // Block symlinks pointing outside archive - use canonicalized archiveRoot
         const realPath = fs.realpathSync(archivePath);
-        const realRel = path.relative(archiveRoot, realPath);
+        const realRel = path.relative(archiveRootReal, realPath);
         return realRel && !isPathTraversal(realRel);
       }
       return true;
