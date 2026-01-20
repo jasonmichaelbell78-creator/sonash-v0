@@ -450,7 +450,12 @@ function main() {
     process.exit(2);
   }
 
-  const suffix = args.file ? ` (${args.file})` : args.skill ? ` (${args.skill})` : "";
+  let suffix = "";
+  if (args.file) {
+    suffix = ` (${args.file})`;
+  } else if (args.skill) {
+    suffix = ` (${args.skill})`;
+  }
   console.log(`Logged: ${args.event}${suffix}`);
 }
 

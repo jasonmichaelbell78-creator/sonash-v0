@@ -33,7 +33,7 @@ const SEVERITY_LEVELS = { S0: 0, S1: 1, S2: 2, S3: 3 };
 const CONFIDENCE_LEVELS = { HIGH: 2, MEDIUM: 1, LOW: 0 };
 
 // Valid confidence values
-const VALID_CONFIDENCES = ["HIGH", "MEDIUM", "LOW"];
+const VALID_CONFIDENCES = new Set(["HIGH", "MEDIUM", "LOW"]);
 
 // Required fields by severity
 const REQUIRED_FIELDS_BY_SEVERITY = {
@@ -280,7 +280,7 @@ function validateConfidenceField(finding, severity, issues) {
   if (severity !== "S0" && severity !== "S1") return;
   if (!finding.confidence) return;
 
-  if (!VALID_CONFIDENCES.includes(finding.confidence)) {
+  if (!VALID_CONFIDENCES.has(finding.confidence)) {
     issues.push({
       type: "INVALID_CONFIDENCE",
       findingId: finding.id,

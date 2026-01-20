@@ -80,10 +80,10 @@ function LoadingState() {
 function EmptyState({
   fellowshipFilter,
   onClearFilters,
-}: {
+}: Readonly<{
   fellowshipFilter: FellowshipFilter;
   onClearFilters: () => void;
-}) {
+}>) {
   return (
     <div className="p-8 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
       <p className="text-amber-900/60 mb-3">
@@ -109,14 +109,14 @@ function LoadMoreSection({
   hasMore,
   meetingsCount,
   onLoadMore,
-}: {
+}: Readonly<{
   viewMode: "date" | "all";
   loading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
   meetingsCount: number;
   onLoadMore: () => void;
-}) {
+}>) {
   if (viewMode !== "all" || loading) return null;
 
   if (isLoadingMore) {
@@ -158,12 +158,12 @@ function MeetingCard({
   distance,
   viewMode,
   onClick,
-}: {
+}: Readonly<{
   meeting: Meeting;
   distance: string | null;
   viewMode: "date" | "all";
   onClick: () => void;
-}) {
+}>) {
   const typeStyles =
     meeting.type === "NA"
       ? "border-amber-500 text-amber-700 bg-amber-50"
@@ -209,7 +209,8 @@ function MeetingCard({
  * Parse 12-hour time format (e.g., "6:00 PM") to minutes since midnight
  */
 function parse12HourTime(timeStr: string): number | null {
-  const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  const regex = /(\d+):(\d+)\s*(AM|PM)/i;
+  const match = regex.exec(timeStr);
   if (!match) return null;
 
   const [, hours, minutes, meridiem] = match;
@@ -226,7 +227,8 @@ function parse12HourTime(timeStr: string): number | null {
  * Parse 24-hour time format (e.g., "18:00") to minutes since midnight
  */
 function parse24HourTime(timeStr: string): number | null {
-  const match = timeStr.match(/(\d{1,2}):(\d{2})/);
+  const regex = /(\d{1,2}):(\d{2})/;
+  const match = regex.exec(timeStr);
   if (!match) return null;
 
   const [, hours, minutes] = match;

@@ -377,7 +377,7 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       if (nicknameChanged) patch.nickname = nickname.trim();
       if (cleanStartUpdated) patch.cleanStart = cleanStartTimestamp;
       if (preferencesChanged)
-        patch.preferences = { ...(profile.preferences ?? {}), largeText, simpleLanguage };
+        patch.preferences = { ...profile.preferences, largeText, simpleLanguage };
 
       // Only call updateUserProfile if there are actual changes
       if (Object.keys(patch).length > 0) await updateUserProfile(user.uid, patch);

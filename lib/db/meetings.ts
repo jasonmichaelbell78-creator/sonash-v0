@@ -50,7 +50,7 @@ function parse24HourTime(cleaned: string): number | null {
   const minutes = parseInt(parts[1], 10);
 
   // SECURITY: Validate hours (0-23) and minutes (0-59)
-  if (isNaN(hours) || isNaN(minutes)) return null;
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
 
   return hours * 60 + minutes;

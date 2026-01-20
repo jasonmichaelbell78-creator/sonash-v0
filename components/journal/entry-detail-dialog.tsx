@@ -16,7 +16,7 @@ interface EntryDetailDialogProps {
 }
 
 // Type-specific detail view components
-function MoodDetailView({ data }: { data: MoodEntry["data"] }) {
+function MoodDetailView({ data }: Readonly<{ data: MoodEntry["data"] }>) {
   return (
     <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
       <span className="text-4xl block mb-2">{data?.mood ?? "😐"}</span>
@@ -28,7 +28,7 @@ function MoodDetailView({ data }: { data: MoodEntry["data"] }) {
   );
 }
 
-function GratitudeDetailView({ data }: { data: GratitudeEntry["data"] }) {
+function GratitudeDetailView({ data }: Readonly<{ data: GratitudeEntry["data"] }>) {
   if (!data?.items) return null;
   return (
     <div>
@@ -42,7 +42,7 @@ function GratitudeDetailView({ data }: { data: GratitudeEntry["data"] }) {
   );
 }
 
-function InventoryDetailView({ data }: { data: InventoryEntry["data"] }) {
+function InventoryDetailView({ data }: Readonly<{ data: InventoryEntry["data"] }>) {
   return (
     <div className="space-y-4">
       <div>
@@ -61,7 +61,7 @@ function InventoryDetailView({ data }: { data: InventoryEntry["data"] }) {
   );
 }
 
-function NoteDetailView({ data }: { data: NoteEntry["data"] }) {
+function NoteDetailView({ data }: Readonly<{ data: NoteEntry["data"] }>) {
   return (
     <>
       {data?.title && <h4 className="font-bold text-xl mb-2 font-heading">{data.title}</h4>}
@@ -70,7 +70,7 @@ function NoteDetailView({ data }: { data: NoteEntry["data"] }) {
   );
 }
 
-function SpotCheckDetailView({ data }: { data: SpotCheckEntry["data"] }) {
+function SpotCheckDetailView({ data }: Readonly<{ data: SpotCheckEntry["data"] }>) {
   return (
     <div className="space-y-2">
       <div>
@@ -96,7 +96,7 @@ function formatYesNoNull(value: boolean | null | undefined): string {
   return value ? "yes" : "no";
 }
 
-function DailyLogDetailView({ data }: { data: DailyLogEntry["data"] }) {
+function DailyLogDetailView({ data }: Readonly<{ data: DailyLogEntry["data"] }>) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 text-xs uppercase tracking-widest text-slate-500 font-bold">
@@ -119,7 +119,7 @@ function DailyLogDetailView({ data }: { data: DailyLogEntry["data"] }) {
   );
 }
 
-function Step1WorksheetDetailView({ data }: { data: JournalEntry["data"] }) {
+function Step1WorksheetDetailView({ data }: Readonly<{ data: JournalEntry["data"] }>) {
   const worksheetData = data as unknown as Record<string, unknown>;
 
   return (
@@ -138,7 +138,7 @@ function Step1WorksheetDetailView({ data }: { data: JournalEntry["data"] }) {
 }
 
 // Concept sections for Step 1 worksheet
-function Step1Concept1Section({ data }: { data: Record<string, unknown> }) {
+function Step1Concept1Section({ data }: Readonly<{ data: Record<string, unknown> }>) {
   return (
     <div className="space-y-3">
       <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
@@ -173,7 +173,7 @@ function Step1Concept1Section({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-function Step1Concept2Section({ data }: { data: Record<string, unknown> }) {
+function Step1Concept2Section({ data }: Readonly<{ data: Record<string, unknown> }>) {
   return (
     <div className="space-y-3">
       <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
@@ -201,7 +201,7 @@ function Step1Concept2Section({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-function Step1Concept3Section({ data }: { data: Record<string, unknown> }) {
+function Step1Concept3Section({ data }: Readonly<{ data: Record<string, unknown> }>) {
   return (
     <div className="space-y-3">
       <h5 className="font-bold text-red-900 text-sm uppercase tracking-wide border-b border-red-200 pb-1">
@@ -225,7 +225,7 @@ function Step1Concept3Section({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-function Step1ConclusionsSection({ data }: { data: Record<string, unknown> }) {
+function Step1ConclusionsSection({ data }: Readonly<{ data: Record<string, unknown> }>) {
   return (
     <div className="space-y-3">
       <h5 className="font-bold text-amber-900 text-sm uppercase tracking-wide border-b border-amber-200 pb-1">
@@ -242,7 +242,7 @@ function Step1ConclusionsSection({ data }: { data: Record<string, unknown> }) {
 /**
  * Render entry detail content based on type
  */
-function EntryDetailContent({ entry }: { entry: JournalEntry }) {
+function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   switch (entry.type) {
     case "mood":
       return entry.data ? <MoodDetailView data={entry.data} /> : null;

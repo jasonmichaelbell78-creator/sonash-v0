@@ -49,10 +49,28 @@ type MappableEntry = {
  */
 function mapDailyLogEntry(entry: MappableEntry, date: Date): HistoryItem {
   const { data } = entry;
-  const cravingText =
-    data.cravings === null ? "Cravings: n/a" : data.cravings ? "Cravings: yes" : "Cravings: no";
-  const usedText = data.used === null ? "Used: n/a" : data.used ? "Used: yes" : "Used: no";
-  const moodText = data.mood ? `Mood: ${data.mood}` : "Mood not set";
+
+  // Fix S3358: Extract nested ternary into clearer logic
+  let cravingText: string;
+  if (data.cravings === null) {
+    cravingText = "Cravings: n/a";
+  } else if (data.cravings) {
+    cravingText = "Cravings: yes";
+  } else {
+    cravingText = "Cravings: no";
+  }
+
+  let usedText: string;
+  if (data.used === null) {
+    usedText = "Used: n/a";
+  } else if (data.used) {
+    usedText = "Used: yes";
+  } else {
+    usedText = "Used: no";
+  }
+
+  // Fix S6551: Ensure proper stringification of mood
+  const moodText = data.mood ? `Mood: ${String(data.mood)}` : "Mood not set";
   const noteText = data.note ? `Note: ${(data.note as string).slice(0, 80)}` : "";
   const preview = [moodText, cravingText, usedText, noteText].filter(Boolean).join(" • ");
 

@@ -28,6 +28,9 @@ type FellowshipFilter = (typeof FELLOWSHIP_OPTIONS)[number];
 // Sort options
 type SortOption = "time" | "nearest";
 
+// Gender filter type
+type GenderFilter = "All" | "Men" | "Women";
+
 // ============================================================================
 // Helper Functions (extracted for cognitive complexity reduction)
 // ============================================================================
@@ -114,7 +117,7 @@ interface MeetingCardProps {
   onClick: () => void;
 }
 
-function MeetingCard({ meeting, distance, viewMode, onClick }: MeetingCardProps) {
+function MeetingCard({ meeting, distance, viewMode, onClick }: Readonly<MeetingCardProps>) {
   return (
     <button
       key={meeting.id}
@@ -157,7 +160,7 @@ interface SoberHomeCardProps {
   home: SoberLivingHome;
 }
 
-function SoberHomeCard({ home }: SoberHomeCardProps) {
+function SoberHomeCard({ home }: Readonly<SoberHomeCardProps>) {
   return (
     <div
       key={home.id}
@@ -224,7 +227,7 @@ function EmptyResourceState({
   viewMode,
   onShowAllFellowships,
   onViewAllMeetings,
-}: EmptyResourceStateProps) {
+}: Readonly<EmptyResourceStateProps>) {
   return (
     <div className="p-4 border border-dashed border-amber-300 rounded-lg bg-amber-50/50 text-center">
       <p className="text-sm text-amber-900/60 italic mb-3">
@@ -265,7 +268,7 @@ interface FellowshipFilterProps {
   onChange: (value: FellowshipFilter) => void;
 }
 
-function FellowshipFilterPills({ value, onChange }: FellowshipFilterProps) {
+function FellowshipFilterPills({ value, onChange }: Readonly<FellowshipFilterProps>) {
   return (
     <div className="flex bg-amber-50/80 p-1 rounded-lg border border-amber-200/50 flex-1">
       {FELLOWSHIP_OPTIONS.map((option) => (
@@ -287,12 +290,12 @@ function FellowshipFilterPills({ value, onChange }: FellowshipFilterProps) {
 
 // Gender filter pills component
 interface GenderFilterProps {
-  value: "All" | "Men" | "Women";
-  onChange: (value: "All" | "Men" | "Women") => void;
+  value: GenderFilter;
+  onChange: (value: GenderFilter) => void;
 }
 
-function GenderFilterPills({ value, onChange }: GenderFilterProps) {
-  const options: ("All" | "Men" | "Women")[] = ["All", "Men", "Women"];
+function GenderFilterPills({ value, onChange }: Readonly<GenderFilterProps>) {
+  const options: GenderFilter[] = ["All", "Men", "Women"];
   return (
     <div className="flex bg-white/50 p-1 rounded-lg border border-amber-200/30">
       {options.map((option) => (
@@ -320,7 +323,12 @@ interface NearbyButtonProps {
   onClick: () => void;
 }
 
-function NearbyButton({ sortBy, locationLoading, userLocation, onClick }: NearbyButtonProps) {
+function NearbyButton({
+  sortBy,
+  locationLoading,
+  userLocation,
+  onClick,
+}: Readonly<NearbyButtonProps>) {
   const isActive = sortBy === "nearest" && userLocation;
   return (
     <button
@@ -353,7 +361,7 @@ interface ResourceCardProps {
   onClick: (title: string, id: string) => void;
 }
 
-function ResourceCardsGrid({ resources, onClick }: ResourceCardProps) {
+function ResourceCardsGrid({ resources, onClick }: Readonly<ResourceCardProps>) {
   return (
     <div className="space-y-3">
       {resources.map((resource, index) => (
@@ -381,7 +389,7 @@ function ResourceCardsGrid({ resources, onClick }: ResourceCardProps) {
 interface ListHeaderProps {
   resourceType: "meetings" | "sober-living";
   fellowshipFilter: FellowshipFilter;
-  genderFilter: "All" | "Men" | "Women";
+  genderFilter: GenderFilter;
   viewMode: "date" | "all";
   selectedDate: Date;
   meetingsCount: number;
@@ -400,7 +408,7 @@ function ListHeader({
   homesCount,
   isDevMode,
   onReset,
-}: ListHeaderProps) {
+}: Readonly<ListHeaderProps>) {
   return (
     <div className="flex justify-between items-center mb-2 px-1">
       <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
@@ -445,7 +453,7 @@ interface MapViewHeaderProps {
   count: number;
 }
 
-function MapViewHeader({ count }: MapViewHeaderProps) {
+function MapViewHeader({ count }: Readonly<MapViewHeaderProps>) {
   return (
     <div className="flex justify-between items-center mb-2 px-1">
       <span className="text-xs font-medium text-amber-900/50 uppercase tracking-wider">
@@ -466,7 +474,7 @@ function MeetingDetailsDialogComponent({
   meeting,
   onOpenChange,
   getMeetingDistance,
-}: MeetingDialogProps) {
+}: Readonly<MeetingDialogProps>) {
   const handleGetDirections = () => {
     if (!meeting) return;
     const mapsUrl = meeting.coordinates
@@ -548,7 +556,7 @@ export default function ResourcesPage() {
   const [selectedDate] = useState<Date>(new Date()); // New state
   const [displayMode, setDisplayMode] = useState<"list" | "map">("list");
   const [fellowshipFilter, setFellowshipFilter] = useState<FellowshipFilter>("All");
-  const [genderFilter, setGenderFilter] = useState<"All" | "Men" | "Women">("All");
+  const [genderFilter, setGenderFilter] = useState<GenderFilter>("All");
   const [neighborhoodFilter] = useState("All");
   const [sortBy, setSortBy] = useState<SortOption>("time");
   const [loading, setLoading] = useState(true);

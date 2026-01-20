@@ -620,6 +620,11 @@ function findPatternMatches(antiPattern, content, filePath) {
       review: antiPattern.review,
       match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
     });
+
+    // Prevent infinite loops on zero-length matches
+    if (match[0].length === 0) {
+      antiPattern.pattern.lastIndex++;
+    }
   }
   return violations;
 }

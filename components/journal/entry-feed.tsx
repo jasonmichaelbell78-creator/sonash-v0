@@ -116,7 +116,7 @@ function matchEntrySearch(entry: JournalEntry, query: string): boolean {
 }
 
 // Detail view components for each entry type
-function MoodDetail({ data }: { data: MoodEntry["data"] }) {
+function MoodDetail({ data }: Readonly<{ data: MoodEntry["data"] }>) {
   return (
     <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
       <span className="text-4xl block mb-2">{data.mood}</span>
@@ -128,7 +128,7 @@ function MoodDetail({ data }: { data: MoodEntry["data"] }) {
   );
 }
 
-function GratitudeDetail({ data }: { data: GratitudeEntry["data"] }) {
+function GratitudeDetail({ data }: Readonly<{ data: GratitudeEntry["data"] }>) {
   return (
     <div>
       <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
@@ -141,7 +141,7 @@ function GratitudeDetail({ data }: { data: GratitudeEntry["data"] }) {
   );
 }
 
-function InventoryDetail({ data }: { data: InventoryEntry["data"] }) {
+function InventoryDetail({ data }: Readonly<{ data: InventoryEntry["data"] }>) {
   return (
     <div className="space-y-4">
       <div>
@@ -160,7 +160,7 @@ function InventoryDetail({ data }: { data: InventoryEntry["data"] }) {
   );
 }
 
-function NoteDetail({ data }: { data: NoteEntry["data"] }) {
+function NoteDetail({ data }: Readonly<{ data: NoteEntry["data"] }>) {
   return (
     <>
       {data.title && <h4 className="font-bold text-xl mb-2 font-heading">{data.title}</h4>}
@@ -169,7 +169,7 @@ function NoteDetail({ data }: { data: NoteEntry["data"] }) {
   );
 }
 
-function SpotCheckDetail({ data }: { data: SpotCheckEntry["data"] }) {
+function SpotCheckDetail({ data }: Readonly<{ data: SpotCheckEntry["data"] }>) {
   return (
     <div className="space-y-2">
       <div>
@@ -184,7 +184,7 @@ function SpotCheckDetail({ data }: { data: SpotCheckEntry["data"] }) {
   );
 }
 
-function NightReviewDetail({ data }: { data: NightReviewEntry["data"] }) {
+function NightReviewDetail({ data }: Readonly<{ data: NightReviewEntry["data"] }>) {
   return (
     <div className="space-y-2">
       {data.step4_gratitude && (
@@ -201,7 +201,7 @@ function NightReviewDetail({ data }: { data: NightReviewEntry["data"] }) {
   );
 }
 
-function CheckInDetail({ data }: { data: CheckInEntry["data"] }) {
+function CheckInDetail({ data }: Readonly<{ data: CheckInEntry["data"] }>) {
   return (
     <div className="space-y-2">
       {data.mood && (
@@ -219,7 +219,7 @@ function CheckInDetail({ data }: { data: CheckInEntry["data"] }) {
   );
 }
 
-function DailyLogDetail({ data }: { data: DailyLogEntry["data"] }) {
+function DailyLogDetail({ data }: Readonly<{ data: DailyLogEntry["data"] }>) {
   return (
     <div>
       <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>
@@ -231,7 +231,7 @@ function DailyLogDetail({ data }: { data: DailyLogEntry["data"] }) {
 /**
  * Render detail view based on entry type
  */
-function EntryDetailContent({ entry }: { entry: JournalEntry }) {
+function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   switch (entry.type) {
     case "mood":
       return <MoodDetail data={entry.data} />;

@@ -81,14 +81,21 @@ interface ToggleButtonProps {
   label: string;
 }
 
-function ToggleButton({ isSelected, isYes, onClick, label }: ToggleButtonProps) {
-  const selectedStyle = isYes
-    ? isSelected
-      ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
-      : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105"
-    : isSelected
-      ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
-      : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105";
+function ToggleButton({ isSelected, isYes, onClick, label }: Readonly<ToggleButtonProps>) {
+  // Define style lookup to avoid nested ternaries
+  const getSelectedStyle = (): string => {
+    if (isYes) {
+      return isSelected
+        ? "bg-amber-100 border-2 border-amber-400 text-amber-900 font-bold shadow-md scale-105"
+        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105";
+    } else {
+      return isSelected
+        ? "bg-green-100 border-2 border-green-400 text-green-900 font-bold shadow-md scale-105"
+        : "bg-gray-100 border border-gray-300 text-gray-600 hover:bg-gray-200 hover:scale-105";
+    }
+  };
+
+  const selectedStyle = getSelectedStyle();
 
   // Special case for "Yes" on "Used?" question - use red
   const usedYesStyle =
@@ -119,7 +126,13 @@ interface CheckInQuestionProps {
   questionType: "cravings" | "used";
 }
 
-function CheckInQuestion({ label, value, onNo, onYes, questionType }: CheckInQuestionProps) {
+function CheckInQuestion({
+  label,
+  value,
+  onNo,
+  onYes,
+  questionType,
+}: Readonly<CheckInQuestionProps>) {
   return (
     <div className="flex items-center justify-between">
       <span className="font-heading text-lg text-amber-900/80">{label}</span>
@@ -158,7 +171,7 @@ function SmartPromptsSection({
   weekStats,
   handleQuickMood,
   dismissPrompt,
-}: SmartPromptsProps) {
+}: Readonly<SmartPromptsProps>) {
   return (
     <>
       {showCheckInReminder && (
@@ -487,6 +500,26 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
     }
   }, []);
 
+  // Handler for Firestore snapshot updates (extracted to reduce nesting)
+  const handleSnapshotUpdate = useCallback(
+    (docSnap: any, isMounted: boolean) => {
+      if (!isMounted) return; // Guard against late callbacks
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        // Do not pre-fill mood/cravings/used; keep neutral by default
+
+        // Only update text if not currently editing (collision avoidance)
+        if (data.content && !isEditingRef.current) {
+          setJournalEntry(data.content);
+          // Position cursor at end of text on load using extracted helper
+          setTimeout(() => positionCursorsAtEnd(data.content.length), 0);
+        }
+      }
+    },
+    [positionCursorsAtEnd]
+  );
+
   // Real-time data sync
   useEffect(() => {
     if (!user) return;
@@ -510,21 +543,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         if (isMounted) {
           unsubscribe = onSnapshot(
             docRef,
-            (docSnap) => {
-              if (!isMounted) return; // Guard against late callbacks
-
-              if (docSnap.exists()) {
-                const data = docSnap.data();
-                // Do not pre-fill mood/cravings/used; keep neutral by default
-
-                // Only update text if not currently editing (collision avoidance)
-                if (data.content && !isEditingRef.current) {
-                  setJournalEntry(data.content);
-                  // Position cursor at end of text on load using extracted helper
-                  setTimeout(() => positionCursorsAtEnd(data.content.length), 0);
-                }
-              }
-            },
+            (docSnap) => handleSnapshotUpdate(docSnap, isMounted),
             (error) => {
               logger.error("Error in today listener", {
                 userId: maskIdentifier(user.uid),
@@ -547,7 +566,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       isMounted = false;
       if (unsubscribe) unsubscribe();
     };
-  }, [referenceDate, user, journalEntry, positionCursorsAtEnd]); // journalEntry added for exhaustive-deps; isEditingRef handles collision avoidance
+  }, [referenceDate, user, journalEntry, handleSnapshotUpdate]); // journalEntry added for exhaustive-deps; isEditingRef handles collision avoidance
 
   // Perform the actual save operation
   const performSave = useCallback(async () => {

@@ -43,7 +43,10 @@ const titleTextShadow = `
 /**
  * Render the personalized title section
  */
-function CoverTitleSection({ user, displayNickname }: { user: unknown; displayNickname: string }) {
+function CoverTitleSection({
+  user,
+  displayNickname,
+}: Readonly<{ user: unknown; displayNickname: string }>) {
   if (user) {
     return (
       <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
@@ -74,7 +77,7 @@ function CoverTitleSection({ user, displayNickname }: { user: unknown; displayNi
 /**
  * Render the footer CTA when user is signed in
  */
-function CoverFooterCta({ isProfileComplete }: { isProfileComplete: boolean }) {
+function CoverFooterCta({ isProfileComplete }: Readonly<{ isProfileComplete: boolean }>) {
   return (
     <div className="flex items-center gap-2 mt-auto">
       <p
@@ -94,11 +97,11 @@ function CoverStatusBadge({
   user,
   isProfileComplete,
   cleanDays,
-}: {
+}: Readonly<{
   user: unknown;
   isProfileComplete: boolean;
   cleanDays: number;
-}) {
+}>) {
   if (!user) {
     return (
       <div

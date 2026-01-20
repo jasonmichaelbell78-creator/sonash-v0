@@ -182,13 +182,13 @@ function normalizeDeliverablePath(d) {
   return {
     ...d,
     path: d.path
-      .replace(/\\/g, "/")
+      .replaceAll(/\\/g, "/")
       .trim()
       .replace(/^\.\/+/, "")
       .replace(/^`(.+)`$/, "$1")
       .replace(/^"(.+)"$/, "$1")
       .replace(/^'(.+)'$/, "$1")
-      .replace(/[)`"'.,;:]+$/g, ""),
+      .replaceAll(/[)`"'.,;:]+$/g, ""),
   };
 }
 
@@ -278,11 +278,11 @@ function createPlanErrorResult(planWasProvided, isAutoMode, warningMessage) {
 function processDeliverableResult(verifyResult, deliverable, results) {
   if (verifyResult.exists && verifyResult.valid) {
     results.verified++;
-  } else if (!verifyResult.exists) {
-    results.missing.push(deliverable.path);
+  } else if (verifyResult.exists) {
+    results.warnings.push(`${deliverable.path}: ${verifyResult.reason}`);
     if (deliverable.required) results.passed = false;
   } else {
-    results.warnings.push(`${deliverable.path}: ${verifyResult.reason}`);
+    results.missing.push(deliverable.path);
     if (deliverable.required) results.passed = false;
   }
 }

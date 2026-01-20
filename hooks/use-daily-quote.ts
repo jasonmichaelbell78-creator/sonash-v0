@@ -153,7 +153,7 @@ export function useDailyQuote(): UseDailyQuoteResult {
   // This ensures the quote updates even if the user doesn't refresh the page
   useEffect(() => {
     // Only schedule if window is available (client-side)
-    if (typeof globalThis.window === "undefined") {
+    if (globalThis.window === undefined) {
       return undefined;
     }
 
