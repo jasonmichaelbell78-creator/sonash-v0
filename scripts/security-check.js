@@ -156,7 +156,8 @@ function findPatternViolations(pattern, content, _lines, relativePath) {
   const violations = [];
 
   // Review #189: Normalize CRLF to LF for consistent line number calculation
-  const normalizedContent = content.replace(/\r\n/g, "\n");
+  // Review #195: Handle both CRLF (\r\n) and CR (\r) line endings
+  const normalizedContent = content.replace(/\r\n?/g, "\n");
   // Review #190: Compute normalizedLines from normalizedContent for consistent line lookup
   const normalizedLines = normalizedContent.split("\n");
 

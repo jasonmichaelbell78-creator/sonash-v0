@@ -187,6 +187,9 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
   try {
     let pageToken: string | undefined;
 
+    // Review #195: Bounded parallelism to avoid timeouts on large user folders
+    const DELETE_CONCURRENCY = 20;
+
     do {
       // Review #194: Use nextQuery (2nd element) for pageToken, not response (3rd element)
       const [files, nextQuery] = await bucket.getFiles({
@@ -195,11 +198,18 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
         autoPaginate: false,
       });
 
-      for (const file of files) {
-        await file.delete();
+      // Review #195: Delete files in parallel batches instead of sequentially
+      for (let i = 0; i < files.length; i += DELETE_CONCURRENCY) {
+        const chunk = files.slice(i, i + DELETE_CONCURRENCY);
+        await Promise.allSettled(chunk.map((f) => f.delete()));
       }
 
-      pageToken = (nextQuery as { pageToken?: string } | undefined)?.pageToken;
+      // Review #195: Guard against infinite loop if token doesn't advance
+      const nextPageToken = (nextQuery as { pageToken?: string } | undefined)?.pageToken;
+      if (nextPageToken && nextPageToken === pageToken) {
+        break;
+      }
+      pageToken = nextPageToken;
     } while (pageToken);
   } catch (storageError) {
     const errorType = storageError instanceof Error ? storageError.name : "UnknownError";
@@ -475,13 +485,24 @@ export async function cleanupOrphanedStorageFiles(): Promise<{
         pageToken,
       });
 
-      // Process each file using extracted helper
-      for (const file of files) {
-        checked++;
-        const result = await processStorageFile(file, existingUserIds, db, () => {
-          errors++;
-        });
-        if (result.deleted) deleted++;
+      // Review #195: Process files concurrently in batches to prevent timeouts
+      const PROCESS_CONCURRENCY = 10;
+
+      for (let i = 0; i < files.length; i += PROCESS_CONCURRENCY) {
+        const chunk = files.slice(i, i + PROCESS_CONCURRENCY);
+        checked += chunk.length;
+
+        const chunkResults = await Promise.all(
+          chunk.map((file) =>
+            processStorageFile(file, existingUserIds, db, () => {
+              errors++;
+            })
+          )
+        );
+
+        for (const r of chunkResults) {
+          if (r.deleted) deleted++;
+        }
       }
 
       // SAFETY: Prevent infinite loop if pageToken doesn't change

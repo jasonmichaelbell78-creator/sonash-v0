@@ -583,8 +583,8 @@ function main() {
         process.exitCode = 0;
         return;
       }
-      // Explicitly set failure exit code for clarity
-      process.exitCode = 2;
+      // Review #195: Preserve exitCode set by applyConsolidationChanges (default to 2 if unset)
+      process.exitCode ??= 2;
       return;
     } else {
       outputDryRunMessage();

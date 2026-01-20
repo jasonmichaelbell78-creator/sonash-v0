@@ -234,7 +234,9 @@ function validateInputData<T>(
     if (error instanceof ZodError) {
       // Review #194: Sanitize Zod validation logs to prevent PII leakage
       // Only log field paths and error codes, not messages or user-provided values
-      const safeIssues = error.issues.map((issue) => ({
+      // Review #195: Cap the number of issues logged to prevent log flooding
+      const MAX_ISSUES_TO_LOG = 25;
+      const safeIssues = error.issues.slice(0, MAX_ISSUES_TO_LOG).map((issue) => ({
         path: issue.path.join(".") || "(root)",
         code: issue.code,
       }));
@@ -244,7 +246,10 @@ function validateInputData<T>(
         `Validation failed on ${error.issues.length} field(s)`,
         {
           userId,
-          metadata: { issues: safeIssues },
+          metadata: {
+            issues: safeIssues,
+            truncated: error.issues.length > MAX_ISSUES_TO_LOG,
+          },
         }
       );
       // Sanitized error message - avoids exposing detailed schema structure

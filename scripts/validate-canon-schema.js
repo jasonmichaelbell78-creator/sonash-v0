@@ -17,7 +17,7 @@
  *   2 - Usage/file access error
  */
 
-import { readFileSync, readdirSync, statSync, lstatSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, lstatSync, existsSync, realpathSync } from "node:fs";
 import { join, basename, resolve, sep, dirname, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -378,10 +378,19 @@ function findCanonFilesRecursive(dir, files) {
  * Collect files from argument paths
  * Review #193: Add path traversal check to ensure args resolve within repo
  * Review #194: Resolve relative args relative to REPO_ROOT for cwd independence
+ * Review #195: Canonicalize paths to block symlinked parent escapes
  */
 function collectFilesFromArgs(args) {
   const files = [];
   const repoRootResolved = resolve(REPO_ROOT);
+
+  // Review #195: Canonicalize repo root to detect symlinked parent escapes
+  let repoRootReal = repoRootResolved;
+  try {
+    repoRootReal = resolve(realpathSync(repoRootResolved));
+  } catch {
+    // fall back to resolved path
+  }
 
   for (const arg of args) {
     // Review #194: Resolve relative paths relative to REPO_ROOT, not cwd
@@ -411,6 +420,20 @@ function collectFilesFromArgs(args) {
     // Review #187: Skip symlinks to avoid path traversal vulnerabilities
     if (stat.isSymbolicLink()) {
       console.warn(`Warning: Skipping symlink path: ${arg}`);
+      continue;
+    }
+
+    // Review #195: Enforce containment on canonical path to prevent symlinked parent escapes
+    let argReal = argResolved;
+    try {
+      argReal = resolve(realpathSync(argResolved));
+    } catch {
+      // If we can't resolve, avoid recursing outside known boundaries
+      console.error(`Error: Cannot resolve real path: ${arg}`);
+      continue;
+    }
+    if (argReal !== repoRootReal && !argReal.startsWith(repoRootReal + sep)) {
+      console.error(`Error: Symlink traversal blocked: ${arg}`);
       continue;
     }
 

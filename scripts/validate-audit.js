@@ -313,11 +313,19 @@ function validateFilePath(finding, issues) {
   if (!finding.file) return;
 
   // Review #188: Guard against non-string file paths to prevent runtime crashes
+  // Review #195: Use try-catch on String() to handle non-stringifiable values like Symbol
   if (typeof finding.file !== "string") {
+    let fileRepr;
+    try {
+      fileRepr = String(finding.file);
+    } catch {
+      fileRepr = Object.prototype.toString.call(finding.file);
+    }
+
     issues.push({
       type: "INVALID_TYPE",
       findingId: finding.id,
-      file: String(finding.file),
+      file: fileRepr,
       message: `Invalid file path type (expected string, got ${typeof finding.file})`,
     });
     return;

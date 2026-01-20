@@ -595,7 +595,9 @@ function resolveFileArgs(files) {
       // Review #193: Deduplicate to prevent linting same file multiple times
       if (seen.has(realResolved)) continue;
       seen.add(realResolved);
-      resolved.push(realResolved);
+
+      // Review #195: Return project-local canonical path for stable relative() output/logging
+      resolved.push(resolvedPath);
     } catch {
       console.error(`Warning: Cannot stat file: ${file}`);
     }

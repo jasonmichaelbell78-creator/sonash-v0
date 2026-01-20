@@ -242,7 +242,12 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
     }
 
     // Review #190: Normalize backslashes to forward slashes for Windows paths
-    const file = filePart.replace(/\\/g, "/");
+    // Review #195: Further normalize paths - trim, collapse multiple slashes, remove leading ./
+    const file = filePart
+      .trim()
+      .replace(/\\/g, "/")
+      .replace(/\/{2,}/g, "/")
+      .replace(/^\.\//, "");
     const line = rawLine === "BATCH" ? "N/A" : rawLine;
     const key = `${rule}|${file}|${line}`;
 
