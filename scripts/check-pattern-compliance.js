@@ -606,6 +606,28 @@ function shouldSkipPattern(antiPattern, ext, normalizedPath) {
 function findPatternMatches(antiPattern, content, filePath) {
   const violations = [];
   antiPattern.pattern.lastIndex = 0;
+
+  // Non-global regexes don't advance `lastIndex`, so looping with `exec` would never terminate.
+  if (!antiPattern.pattern.global) {
+    const match = antiPattern.pattern.exec(content);
+    if (!match) return violations;
+    if (antiPattern.exclude && antiPattern.exclude.test(match[0])) return violations;
+
+    const beforeMatch = content.slice(0, match.index);
+    const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
+    violations.push({
+      file: filePath,
+      line: lineNumber,
+      id: antiPattern.id,
+      message: antiPattern.message,
+      fix: antiPattern.fix,
+      review: antiPattern.review,
+      match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
+    });
+    return violations;
+  }
+
+  // Rest of existing loop for global regexes
   let match;
   while ((match = antiPattern.pattern.exec(content)) !== null) {
     if (antiPattern.exclude && antiPattern.exclude.test(match[0])) continue;

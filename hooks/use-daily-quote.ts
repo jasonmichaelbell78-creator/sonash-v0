@@ -158,15 +158,23 @@ export function useDailyQuote(): UseDailyQuoteResult {
     }
 
     let currentTimer: number | undefined;
+    let cancelled = false;
 
     // Handler for midnight refresh - extracted to reduce nesting
     const handleMidnightRefresh = async () => {
       clearQuoteCache();
+      if (cancelled) return;
+
       setLoading(true);
-      const newQuote = await fetchDailyQuote();
-      setQuote(newQuote);
-      setLoading(false);
-      scheduleNextRefresh();
+      try {
+        const newQuote = await fetchDailyQuote();
+        if (cancelled) return;
+        setQuote(newQuote);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+
+      if (!cancelled) scheduleNextRefresh();
     };
 
     // Schedule next midnight refresh
@@ -180,7 +188,8 @@ export function useDailyQuote(): UseDailyQuoteResult {
 
     scheduleNextRefresh();
     return () => {
-      if (currentTimer) globalThis.window.clearTimeout(currentTimer);
+      cancelled = true;
+      if (currentTimer !== undefined) globalThis.window.clearTimeout(currentTimer);
     };
   }, []);
 
