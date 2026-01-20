@@ -407,27 +407,29 @@ function checkRequiredSections(tier, headings) {
 /**
  * Read document content safely
  * Review #196: Read via canonical path to mitigate TOCTOU symlink swap vulnerability
+ * Review #197: Remove unsafe fallback, add root containment check
  */
 function readDocumentContent(filePath) {
   try {
-    // Read via canonical path when possible to reduce symlink swap/TOCTOU risk
+    // Read via canonical path to reduce symlink swap/TOCTOU risk
+    const rootReal = realpathSync(ROOT);
     const effectivePath = realpathSync(filePath);
+
+    // Review #197: Ensure canonicalized path is within project root
+    const rel = relative(rootReal, effectivePath);
+    if (!rel || rel.startsWith("..")) {
+      return { content: null, error: "Path resolves outside project root" };
+    }
+
     const content = readFileSync(effectivePath, "utf-8");
     if (!content || content.trim().length === 0) {
       return { content: null, error: "File is empty" };
     }
     return { content, error: null };
-  } catch (error) {
-    try {
-      // Fallback to original path (e.g., broken symlink / permission issues resolving realpath)
-      const content = readFileSync(filePath, "utf-8");
-      if (!content || content.trim().length === 0) {
-        return { content: null, error: "File is empty" };
-      }
-      return { content, error: null };
-    } catch (fallbackError) {
-      return { content: null, error: `Cannot read file: ${fallbackError.message}` };
-    }
+  } catch (err) {
+    // Review #197: Do not fall back to reading a potentially non-canonical/symlink-swapped path
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: null, error: `Cannot read file safely: ${message}` };
   }
 }
 

@@ -600,6 +600,18 @@ function main() {
   }
   const sourcePath = sourceResult.path;
 
+  // Review #197: SECURITY - Reject symlink sources to prevent symlink traversal
+  try {
+    if (lstatSync(sourcePath).isSymbolicLink()) {
+      console.error("❌ Security Error: Symlink source files cannot be archived");
+      process.exit(1);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Error: Failed to stat source file: ${message}`);
+    process.exit(1);
+  }
+
   // SECURITY: Validate path is within repository root
   const pathValidation = validatePathWithinRepo(sourcePath);
   if (!pathValidation.valid) {

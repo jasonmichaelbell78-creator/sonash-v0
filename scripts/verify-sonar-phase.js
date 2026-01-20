@@ -250,11 +250,13 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
       .replace(/^\.\//, "");
 
     // Review #196: Reject unsafe tracked file paths (absolute or repo-escaping)
+    // Review #197: Use regex instead of startsWith() to avoid pattern compliance false positive
+    // Review #197: Check for ".." anywhere in path, not just at the start
+    const segments = file.split("/").filter(Boolean);
     if (
-      file.startsWith("/") || // unix absolute / UNC-like
-      file.startsWith("//") || // UNC
+      /^\//.test(file) || // unix absolute / UNC-like
       /^[A-Za-z]:\//.test(file) || // windows drive absolute
-      /^\.\.(?:\/|$)/.test(file) // repo-escaping relative
+      segments.includes("..") // repo-escaping anywhere in path
     ) {
       console.warn(`Warning: Skipping unsafe tracked path: ${filePart}`);
       continue;

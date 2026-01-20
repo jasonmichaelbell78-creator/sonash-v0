@@ -343,10 +343,24 @@ function validateFilePath(finding, issues) {
     return;
   }
 
-  // Wildcards: allow glob patterns, but don't attempt filesystem existence checks
-  if (finding.file.includes("*")) return;
-
   const repoRoot = node_path.resolve(__dirname, "..");
+
+  // Review #197: Wildcards - allow glob patterns, but still enforce repo containment on the prefix
+  if (finding.file.includes("*")) {
+    const prefix = finding.file.split("*", 1)[0] || ".";
+    const prefixPath = node_path.resolve(repoRoot, prefix);
+
+    if (prefixPath !== repoRoot && !prefixPath.startsWith(repoRoot + node_path.sep)) {
+      issues.push({
+        type: "UNSAFE_PATH",
+        findingId: finding.id,
+        file: finding.file,
+        message: `Potentially unsafe file path (traversal attempt): ${finding.file}`,
+      });
+    }
+    return;
+  }
+
   const fullPath = node_path.resolve(repoRoot, finding.file);
 
   // Ensure resolved path stays within repo root

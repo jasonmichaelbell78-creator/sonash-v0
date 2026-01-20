@@ -278,7 +278,8 @@ function checkUserIdAuthorization(
   const attemptedUserId = dataWithUserId.userId;
 
   // Review #196: Guard against non-string userId to prevent hashUserId crash
-  if (attemptedUserId !== undefined && typeof attemptedUserId !== "string") {
+  // Review #197: Treat null/undefined as "not provided"; only reject non-null non-strings
+  if (attemptedUserId != null && typeof attemptedUserId !== "string") {
     logSecurityEvent(
       "AUTHORIZATION_FAILURE",
       functionName,
@@ -291,7 +292,8 @@ function checkUserIdAuthorization(
     throw new HttpsError("permission-denied", "Cannot write to another user's data");
   }
 
-  if (attemptedUserId && attemptedUserId !== userId) {
+  // Review #197: Enforce only when a non-empty string is provided
+  if (typeof attemptedUserId === "string" && attemptedUserId !== "" && attemptedUserId !== userId) {
     logSecurityEvent(
       "AUTHORIZATION_FAILURE",
       functionName,

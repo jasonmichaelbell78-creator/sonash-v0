@@ -200,11 +200,15 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
 
       // Review #195: Delete files in parallel batches instead of sequentially
       // Review #196: Log partial deletion failures for observability
+      // Review #197: Filter out expected NotFoundError to reduce log noise
       for (let i = 0; i < files.length; i += DELETE_CONCURRENCY) {
         const chunk = files.slice(i, i + DELETE_CONCURRENCY);
         const results = await Promise.allSettled(chunk.map((f) => f.delete()));
 
-        const failures = results.filter((r) => r.status === "rejected");
+        const failures = results
+          .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+          .filter((r) => !(r.reason instanceof Error && r.reason.name === "NotFoundError"));
+
         if (failures.length > 0) {
           logSecurityEvent("JOB_WARNING", "hardDeleteSoftDeletedUsers", "Partial storage delete", {
             severity: "WARNING",
@@ -213,11 +217,7 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
               failures: failures.length,
               errorTypes: failures
                 .slice(0, 5)
-                .map((f) =>
-                  f.status === "rejected" && f.reason instanceof Error
-                    ? f.reason.name
-                    : "UnknownError"
-                ),
+                .map((f) => (f.reason instanceof Error ? f.reason.name : "UnknownError")),
               truncated: failures.length > 5,
             },
           });

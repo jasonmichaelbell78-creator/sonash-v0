@@ -270,7 +270,10 @@ function parseIssuesResponse(issuesData) {
     issuesData && typeof issuesData === "object" && !Array.isArray(issuesData)
       ? issuesData.paging
       : null;
-  const total = typeof paging?.total === "number" ? paging.total : 0;
+  // Review #197: Apply robust number coercion to total (same as facet counts)
+  const rawTotal = paging?.total ?? 0;
+  const totalNum = typeof rawTotal === "number" ? rawTotal : Number(rawTotal);
+  const total = Number.isFinite(totalNum) ? totalNum : 0;
   const facets = Array.isArray(issuesData?.facets) ? issuesData.facets : [];
   const typeFacet = facets.find((f) => f?.property === "types");
   const typeValues = Array.isArray(typeFacet?.values) ? typeFacet.values : [];

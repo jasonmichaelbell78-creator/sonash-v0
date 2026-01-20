@@ -147,20 +147,25 @@ function checkArchiveForFile(deliverable, projectRoot) {
 
   // Review #194: Canonicalize archiveRoot for consistent symlink containment checks
   let archiveRootReal = archiveRoot;
+  let archiveRootCanonicalized = false;
   try {
     archiveRootReal = fs.realpathSync(archiveRoot);
+    archiveRootCanonicalized = true;
   } catch {
     // If archive dir doesn't exist or can't be resolved, fall back to non-real path checks
   }
 
   // Review #196: Canonicalize candidate path for consistent comparison with archiveRootReal
+  // Review #197: Only canonicalize candidate if archiveRootReal was also canonicalized
   const isWithinArchive = (candidate) => {
     let resolved = path.resolve(candidate);
-    try {
-      // Prefer canonical path so comparisons match archiveRootReal's realpath space
-      resolved = fs.realpathSync(resolved);
-    } catch {
-      // Fall back to resolved path for non-existent candidates
+    if (archiveRootCanonicalized) {
+      try {
+        // Prefer canonical path so comparisons match archiveRootReal's realpath space
+        resolved = fs.realpathSync(resolved);
+      } catch {
+        // Fall back to resolved path for non-existent candidates
+      }
     }
     const rel = path.relative(archiveRootReal, resolved);
     return rel && !isPathTraversal(rel);
