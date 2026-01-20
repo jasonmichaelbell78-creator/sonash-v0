@@ -174,15 +174,25 @@ function processJournalDoc(docId: string, data: Record<string, unknown>): Journa
   if (data.isSoftDeleted) return null;
 
   // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
-  const createdAt = data.createdAt as { toMillis?: () => number } | undefined;
-  const updatedAt = data.updatedAt as { toMillis?: () => number } | undefined;
+  // Use duck-typing with typeof check to be extra robust against non-function toMillis
+  const createdAt = data.createdAt as { toMillis?: unknown } | undefined;
+  const updatedAt = data.updatedAt as { toMillis?: unknown } | undefined;
 
-  if (!createdAt?.toMillis || !updatedAt?.toMillis) {
+  const createdAtToMillis =
+    createdAt && typeof createdAt.toMillis === "function"
+      ? (createdAt.toMillis as () => number)
+      : null;
+  const updatedAtToMillis =
+    updatedAt && typeof updatedAt.toMillis === "function"
+      ? (updatedAt.toMillis as () => number)
+      : null;
+
+  if (!createdAtToMillis || !updatedAtToMillis) {
     logger.warn(`Skipping journal entry ${docId}: missing or invalid timestamps`, {
       hasCreatedAt: !!createdAt,
       hasUpdatedAt: !!updatedAt,
-      createdAtHasToMillis: !!createdAt?.toMillis,
-      updatedAtHasToMillis: !!updatedAt?.toMillis,
+      createdAtHasToMillis: typeof createdAt?.toMillis === "function",
+      updatedAtHasToMillis: typeof updatedAt?.toMillis === "function",
     });
     return null;
   }
@@ -190,8 +200,8 @@ function processJournalDoc(docId: string, data: Record<string, unknown>): Journa
   return {
     id: docId,
     ...data,
-    createdAt: createdAt.toMillis(),
-    updatedAt: updatedAt.toMillis(),
+    createdAt: createdAtToMillis(),
+    updatedAt: updatedAtToMillis(),
   } as JournalEntry;
 }
 

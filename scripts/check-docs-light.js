@@ -100,7 +100,7 @@ function matchFolderPatterns(relativePath) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
     if (!def.folders) continue;
     for (const folder of def.folders) {
-      if (relativePath.startsWith(folder)) return parseInt(tier);
+      if (relativePath.startsWith(folder)) return Number.parseInt(tier, 10);
     }
   }
   return null;
@@ -113,7 +113,7 @@ function matchFilenamePatterns(fileName) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
     if (!def.patterns) continue;
     for (const pattern of def.patterns) {
-      if (pattern.test(fileName)) return parseInt(tier);
+      if (pattern.test(fileName)) return Number.parseInt(tier, 10);
     }
   }
   return null;
@@ -472,7 +472,7 @@ function lintDocument(filePath) {
   const links = extractLinks(content);
 
   // Check 1: Has title (H1)
-  if (!headings.find((h) => h.level === 1)) {
+  if (!headings.some((h) => h.level === 1)) {
     errors.push("Missing document title (H1 heading)");
   }
 

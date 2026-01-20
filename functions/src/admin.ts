@@ -202,9 +202,10 @@ function buildCursorValue(
   const isTimestampField = fieldName === "createdAt" || fieldName === "lastActive";
 
   if (isTimestampField) {
-    // Validate rawValue is a Firestore Timestamp or Date
-    if (rawValue instanceof admin.firestore.Timestamp) {
-      return rawValue;
+    // Prefer duck-typing to avoid cross-module instanceof issues
+    const maybeTs = rawValue as { toMillis?: () => number } | null;
+    if (maybeTs && typeof maybeTs.toMillis === "function") {
+      return admin.firestore.Timestamp.fromMillis(maybeTs.toMillis());
     }
     if (rawValue instanceof Date) {
       return admin.firestore.Timestamp.fromDate(rawValue);
@@ -232,12 +233,20 @@ async function batchFetchAuthUsers(
   const authByUid = new Map<string, admin.auth.UserRecord>();
   if (uids.length === 0) return authByUid;
 
-  try {
-    const authResult = await admin.auth().getUsers(uids.map((uid) => ({ uid })));
-    authResult.users.forEach((u) => authByUid.set(u.uid, u));
-  } catch (authError) {
-    onError(authError);
-    throw new HttpsError("internal", "Failed to fetch user authentication details");
+  // Split into batches of 100 (Firebase Auth API limit)
+  const batches: string[][] = [];
+  for (let i = 0; i < uids.length; i += 100) {
+    batches.push(uids.slice(i, i + 100));
+  }
+
+  for (const batch of batches) {
+    try {
+      const authResult = await admin.auth().getUsers(batch.map((uid) => ({ uid })));
+      authResult.users.forEach((u) => authByUid.set(u.uid, u));
+    } catch (error) {
+      onError(error);
+      throw new HttpsError("internal", "Failed to fetch user authentication details");
+    }
   }
 
   return authByUid;
@@ -269,7 +278,7 @@ function normalizeTimestampToMs(rawValue: unknown): number {
   if (typeof rawValue === "string") {
     return Date.parse(rawValue);
   }
-  return NaN;
+  return Number.NaN;
 }
 
 /**

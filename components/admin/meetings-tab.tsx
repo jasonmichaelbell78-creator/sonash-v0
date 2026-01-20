@@ -29,7 +29,7 @@ function handleCoordinateChange(
   field: "lat" | "lng",
   value: string
 ): void {
-  const parsedValue = value === "" ? undefined : parseFloat(value);
+  const parsedValue = value === "" ? undefined : Number.parseFloat(value);
   const otherField = field === "lat" ? "lng" : "lat";
   const otherValue = formData.coordinates?.[otherField];
 
@@ -73,7 +73,7 @@ function ExternalLinkIcon() {
 /**
  * Google Maps link component
  */
-function GoogleMapsLink({ lat, lng }: { lat: number; lng: number }) {
+function GoogleMapsLink({ lat, lng }: Readonly<{ lat: number; lng: number }>) {
   return (
     <div className="flex justify-end pt-1">
       <a
@@ -95,10 +95,10 @@ function GoogleMapsLink({ lat, lng }: { lat: number; lng: number }) {
 function LocationDetailsSection({
   formData,
   setFormData,
-}: {
+}: Readonly<{
   formData: Partial<Meeting>;
   setFormData: (data: Partial<Meeting>) => void;
-}) {
+}>) {
   return (
     <div className="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
       <h3 className="text-sm font-medium text-gray-900">Location Details</h3>

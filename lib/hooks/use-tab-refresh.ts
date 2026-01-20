@@ -63,8 +63,11 @@ export function useTabRefresh(
     // Check if timestamp actually changed (new refresh triggered)
     if (currentTimestamp > lastRefreshRef.current) {
       lastRefreshRef.current = currentTimestamp;
-      // Call the refresh callback (promise result intentionally ignored)
-      onRefresh();
+      // Call the refresh callback (fire-and-forget, but avoid unhandled rejections)
+      // Use Promise.resolve to handle both void and Promise<void> return types
+      Promise.resolve(onRefresh()).catch(() => {
+        // Intentionally ignore refresh errors
+      });
     }
   }, [activeTab, tabId, getTabRefreshTimestamp, onRefresh, options.skipInitial]);
 }

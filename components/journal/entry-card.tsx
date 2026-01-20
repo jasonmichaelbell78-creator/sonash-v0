@@ -63,7 +63,7 @@ function getMoodEmoji(mood: string): string {
 /**
  * Render decoration (tape, clip, pin) for entry
  */
-function EntryDecoration({ type }: { type: string }) {
+function EntryDecoration({ type }: Readonly<{ type: string }>) {
   if (type === "mood") return null;
 
   if (type === "gratitude") {
@@ -88,7 +88,7 @@ function EntryDecoration({ type }: { type: string }) {
 /**
  * Render mood entry content
  */
-function MoodContent({ data }: { data: MoodEntry["data"] }) {
+function MoodContent({ data }: Readonly<{ data: MoodEntry["data"] }>) {
   return (
     <>
       <div className="text-5xl mb-1 drop-shadow-sm">{getMoodEmoji(data.mood)}</div>
@@ -103,7 +103,7 @@ function MoodContent({ data }: { data: MoodEntry["data"] }) {
 /**
  * Render daily-log entry content
  */
-function DailyLogContent({ data }: { data: DailyLogEntry["data"] }) {
+function DailyLogContent({ data }: Readonly<{ data: DailyLogEntry["data"] }>) {
   return (
     <div className="w-full relative">
       <div className="absolute -top-2 -right-2 text-3xl opacity-20">
@@ -140,7 +140,7 @@ function DailyLogContent({ data }: { data: DailyLogEntry["data"] }) {
 /**
  * Render step-1-worksheet entry content
  */
-function Step1WorksheetContent({ data }: { data: Record<string, unknown> }) {
+function Step1WorksheetContent({ data }: Readonly<{ data: Record<string, unknown> }>) {
   const worksheetSections = [
     { key: "powerlessnessOverAmount", label: "Powerlessness over Amount" },
     { key: "powerlessnessOverBadResults", label: "Powerlessness over Bad Results" },
@@ -172,7 +172,7 @@ function Step1WorksheetContent({ data }: { data: Record<string, unknown> }) {
 /**
  * Render gratitude entry content
  */
-function GratitudeContent({ data }: { data: GratitudeEntry["data"] }) {
+function GratitudeContent({ data }: Readonly<{ data: GratitudeEntry["data"] }>) {
   return (
     <div className="w-full">
       <h4 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Gratitude</h4>
@@ -188,7 +188,7 @@ function GratitudeContent({ data }: { data: GratitudeEntry["data"] }) {
 /**
  * Render free-write or meeting-note entry content
  */
-function NoteContent({ data }: { data: NoteEntry["data"] }) {
+function NoteContent({ data }: Readonly<{ data: NoteEntry["data"] }>) {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-2">
@@ -204,7 +204,7 @@ function NoteContent({ data }: { data: NoteEntry["data"] }) {
 /**
  * Render spot-check entry content
  */
-function SpotCheckContent({ data }: { data: SpotCheckEntry["data"] }) {
+function SpotCheckContent({ data }: Readonly<{ data: SpotCheckEntry["data"] }>) {
   return (
     <div className="space-y-2">
       <h3 className="font-heading text-lg text-amber-900">Spot Check</h3>
@@ -221,7 +221,7 @@ function SpotCheckContent({ data }: { data: SpotCheckEntry["data"] }) {
 /**
  * Render night-review entry content
  */
-function NightReviewContent({ data }: { data: NightReviewEntry["data"] }) {
+function NightReviewContent({ data }: Readonly<{ data: NightReviewEntry["data"] }>) {
   return (
     <div className="space-y-2">
       <h3 className="font-heading text-lg text-indigo-900">Night Review</h3>
@@ -246,7 +246,7 @@ function InventoryContent() {
 /**
  * Render entry content based on type
  */
-function EntryContent({ entry }: { entry: JournalEntry }) {
+function EntryContent({ entry }: Readonly<{ entry: JournalEntry }>) {
   switch (entry.type) {
     case "mood":
       return <MoodContent data={entry.data} />;
