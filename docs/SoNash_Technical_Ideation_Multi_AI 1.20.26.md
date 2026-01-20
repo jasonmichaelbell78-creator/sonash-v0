@@ -1,28 +1,26 @@
 # **Multi - AI Aggregated Technical App Ideas**
 
-
-
 ## **GEMINI**
 
+This is a comprehensive technical architecture proposal designed to evolve the
+current SoNash Next.js PWA into a robust, offline-first, privacy-centric
+recovery tool.
 
+I have optimized for **resilience** (offline trust), **privacy**
+(encryption/sharing controls), and **maintainability** (clean migration path).
 
-This is a comprehensive technical architecture proposal designed to evolve the current SoNash Next.js PWA into a robust, offline-first, privacy-centric recovery tool.
-
-I have optimized for **resilience** (offline trust), **privacy** (encryption/sharing controls), and **maintainability** (clean migration path).
-
-* * *
+---
 
 ### A) SYSTEM ARCHITECTURE PROPOSAL (Offline-First PWA)
 
-To achieve true offline-first reliability without rewriting the application logic for every interaction, we will move from a direct "Component → Firestore" pattern to a **Repository Pattern with a Sync Engine**.
+To achieve true offline-first reliability without rewriting the application
+logic for every interaction, we will move from a direct "Component → Firestore"
+pattern to a **Repository Pattern with a Sync Engine**.
 
 **Architecture Diagram:**
 
-Code snippet
-    flowchart TD
-        subgraph Client ["Client (PWA/Native)"]
-            UI["React UI Components"]
-            Hooks["Custom Hooks (useJournal, useInventory)"]
+Code snippet flowchart TD subgraph Client ["Client (PWA/Native)"] UI["React UI
+Components"] Hooks["Custom Hooks (useJournal, useInventory)"]
 
             subgraph DataLayer ["Data Access Layer"]
                 Queue["Mutation Queue (IndexedDB)"]
@@ -49,37 +47,38 @@ Code snippet
 
 **Key Decisions:**
 
-1. **Local Store (IndexedDB):** We will use **Dexie.js** (wrapper for IndexedDB) as the source of truth for the UI. The UI _always_ reads from Dexie.
+1. **Local Store (IndexedDB):** We will use **Dexie.js** (wrapper for IndexedDB)
+   as the source of truth for the UI. The UI _always_ reads from Dexie.
 
-2. **Sync Engine:** We will not rely solely on Firebase's native offline cache (which is a black box and can be aggressive about evicting writes). We will build a lightweight **Mutation Queue**.
-   
-   * _Read Pipeline:_ Firestore Snapshot Listeners $\rightarrow$ Update Dexie $\rightarrow$ React Query updates UI.
-   
-   * _Write Pipeline:_ UI Action $\rightarrow$ Write to Dexie (optimistic) + Add to Queue $\rightarrow$ Background Worker processes Queue to Firestore.
+2. **Sync Engine:** We will not rely solely on Firebase's native offline cache
+   (which is a black box and can be aggressive about evicting writes). We will
+   build a lightweight **Mutation Queue**.
+   - _Read Pipeline:_ Firestore Snapshot Listeners $\rightarrow$ Update Dexie
+     $\rightarrow$ React Query updates UI.
+   - _Write Pipeline:_ UI Action $\rightarrow$ Write to Dexie (optimistic) + Add
+     to Queue $\rightarrow$ Background Worker processes Queue to Firestore.
 
 3. **iOS PWA Constraints & Mitigation:**
-   
-   * _Risk:_ iOS deletes IndexedDB/LocalStorage if the device is low on space (approx every 7 days if unused).
-   
-   * _Mitigation:_ **Persisted Storage API**. We must request `navigator.storage.persist()`.
-   
-   * _Mitigation:_ **"Sync on Open"**. The app must assume local data _might_ be stale/wiped on iOS and aggressively fetch the latest snapshot on boot.
+   - _Risk:_ iOS deletes IndexedDB/LocalStorage if the device is low on space
+     (approx every 7 days if unused).
+   - _Mitigation:_ **Persisted Storage API**. We must request
+     `navigator.storage.persist()`.
+   - _Mitigation:_ **"Sync on Open"**. The app must assume local data _might_ be
+     stale/wiped on iOS and aggressively fetch the latest snapshot on boot.
 
-* * *
+---
 
 ### B) DATA MODEL + FIRESTORE RULES DIRECTION
 
-To satisfy the "Sponsor Anti-Surveillance" requirement, we utilize a **"Push" Model** (Snapshot Sharing), not a "Pull" Model (Permission Granting).
+To satisfy the "Sponsor Anti-Surveillance" requirement, we utilize a **"Push"
+Model** (Snapshot Sharing), not a "Pull" Model (Permission Granting).
 
 **Collection Structure:**
 
-Plaintext
-    /users/{userId}
-        /profile            // Public-ish (nickname, sobriety date)
-        /preferences        // Settings, theme, sync config
-        /journal            // PRIVATE. Encrypted content optional.
-        /inventory          // PRIVATE (Step 4). High encryption candidate.
-        /security_keys      // PRIVATE. Wrapped encryption keys (recovery).
+Plaintext /users/{userId} /profile // Public-ish (nickname, sobriety date)
+/preferences // Settings, theme, sync config /journal // PRIVATE. Encrypted
+content optional. /inventory // PRIVATE (Step 4). High encryption candidate.
+/security_keys // PRIVATE. Wrapped encryption keys (recovery).
 
     /shared_packets/{packetId}
         // This is where "Sharing" happens.
@@ -93,13 +92,18 @@ Plaintext
 
 **Security Posture (Firestore Rules Strategy):**
 
-1. **Strict Owner Access:** `/users/{userId}/**` is `read, write: if request.auth.uid == userId`. No exceptions. Admins/Sponsors cannot read this via rules.
+1. **Strict Owner Access:** `/users/{userId}/**` is
+   `read, write: if request.auth.uid == userId`. No exceptions. Admins/Sponsors
+   cannot read this via rules.
 
-2. **Packet Sharing:** `/shared_packets/{packetId}` allows read if `request.auth.uid in resource.data.sharedWith`.
+2. **Packet Sharing:** `/shared_packets/{packetId}` allows read if
+   `request.auth.uid in resource.data.sharedWith`.
 
-3. **Revocation:** To revoke access, the user deletes the document in `/shared_packets` or updates `sharedWith` to remove the sponsor. Access is instantly cut.
+3. **Revocation:** To revoke access, the user deletes the document in
+   `/shared_packets` or updates `sharedWith` to remove the sponsor. Access is
+   instantly cut.
 
-* * *
+---
 
 ### C) OFFLINE QUEUE + CONFLICT RESOLUTION SPEC
 
@@ -107,8 +111,7 @@ We need a bespoke queue to handle the "Visible Status" requirement.
 
 **Queue Item Format (Interface):**
 
-TypeScript
-    type MutationType = 'CREATE' | 'UPDATE' | 'DELETE';
+TypeScript type MutationType = 'CREATE' | 'UPDATE' | 'DELETE';
 
     interface QueueItem {
       id: string;             // UUID
@@ -124,17 +127,17 @@ TypeScript
 
 **Conflict Resolution Strategy:**
 
-* **Journal Entries:** `Append-Only` logic. If Server has text "A" and Client has text "B", and timestamps differ significantly, we merge to "A \n\n [Sync Conflict - Local Version]: B".
+- **Journal Entries:** `Append-Only` logic. If Server has text "A" and Client
+  has text "B", and timestamps differ significantly, we merge to "A \n\n [Sync
+  Conflict - Local Version]: B".
 
-* **Settings/Profile:** `Last-Write-Wins` (LWW) based on server timestamp.
+- **Settings/Profile:** `Last-Write-Wins` (LWW) based on server timestamp.
 
 **Code Skeleton (Sync Worker):**
 
-TypeScript
-    // hooks/useOfflineQueue.ts
-    export const useOfflineQueue = () => {
-      const processQueue = async () => {
-        const pendingItems = await db.queue.where('status').equals('PENDING').toArray();
+TypeScript // hooks/useOfflineQueue.ts export const useOfflineQueue = () => {
+const processQueue = async () => { const pendingItems = await
+db.queue.where('status').equals('PENDING').toArray();
 
         for (const item of pendingItems) {
           try {
@@ -165,7 +168,7 @@ TypeScript
       useEventListener('online', processQueue);
     };
 
-* * *
+---
 
 ### D) ENCRYPTION & PASSCODE SYSTEM
 
@@ -177,72 +180,72 @@ We will use WebCrypto API (native to browser/native).
 
 2. **Key Generation:** PBKDF2 derives a `MasterKey` from the PIN + Salt.
 
-3. **Encryption:** Sensitive fields (e.g., Step 4 content) are encrypted with `MasterKey` (AES-GCM) _before_ saving to IndexedDB or Firestore.
+3. **Encryption:** Sensitive fields (e.g., Step 4 content) are encrypted with
+   `MasterKey` (AES-GCM) _before_ saving to IndexedDB or Firestore.
 
-4. **At Rest:** Firestore only sees ciphertext. If the DB is leaked, the data is garbage without the PIN.
+4. **At Rest:** Firestore only sees ciphertext. If the DB is leaked, the data is
+   garbage without the PIN.
 
 **Recovery Model (The "Hybrid" Approach):**
 
-* _Risk:_ User forgets PIN. Data is lost forever.
+- _Risk:_ User forgets PIN. Data is lost forever.
 
-* _Solution:_ **Escrowed Recovery Key.**
-  
+- _Solution:_ **Escrowed Recovery Key.**
   1. When setting up the PIN, we generate a random `RecoveryKey`.
-  
   2. We encrypt the `MasterKey` with the `RecoveryKey`.
-  
-  3. We display the `RecoveryKey` to the user ("Write this down/Save to 1Password").
-  
-  4. **Optional Cloud Escrow:** We allow the user to save an _encrypted bundle_ of the `RecoveryKey` to Firestore, protected by _Security Questions_ (low security) or a separate _High-Entropy Password_ (high security).
+  3. We display the `RecoveryKey` to the user ("Write this down/Save to
+     1Password").
+  4. **Optional Cloud Escrow:** We allow the user to save an _encrypted bundle_
+     of the `RecoveryKey` to Firestore, protected by _Security Questions_ (low
+     security) or a separate _High-Entropy Password_ (high security).
 
 **Threat Model:**
 
-* _Sponsor Misuse:_ Impossible. Sponsor only sees what is explicitly decrypted and copied to `shared_packets`.
+- _Sponsor Misuse:_ Impossible. Sponsor only sees what is explicitly decrypted
+  and copied to `shared_packets`.
 
-* _Database Leak:_ Protected by AES-256.
+- _Database Leak:_ Protected by AES-256.
 
-* _Passcode Forgotten:_ Recovery Key restores access.
+- _Passcode Forgotten:_ Recovery Key restores access.
 
-* * *
+---
 
 ### E) EXPORTS / PDF GENERATION / METADATA HYGIENE
 
 Implementation:
 
-Use @react-pdf/renderer. It renders PDFs entirely client-side (in the browser), ensuring no sensitive data is sent to a server for generation.
+Use @react-pdf/renderer. It renders PDFs entirely client-side (in the browser),
+ensuring no sensitive data is sent to a server for generation.
 
 Metadata Stripping:
 
 Before passing data to the PDF generator, run a sanitizer function:
 
-TypeScript
-    function sanitizeForExport(data: any) {
-      // Recursively remove specific keys
-      delete data.gpsCoordinates;
-      delete data.ipAddress;
-      delete data.deviceInfo;
-      return data;
-    }
+TypeScript function sanitizeForExport(data: any) { // Recursively remove
+specific keys delete data.gpsCoordinates; delete data.ipAddress; delete
+data.deviceInfo; return data; }
 
 **Sponsor Packet UX:**
 
-1. **Select:** User selects date range or specific items (e.g., "Step 4 - Resentments").
+1. **Select:** User selects date range or specific items (e.g., "Step 4 -
+   Resentments").
 
 2. **Preview:** Renders HTML preview of the exact PDF content.
 
 3. **Generate:** Creates PDF Blob.
 
 4. **Share:**
-   
-   * _Mobile:_ `navigator.share({ files: [pdfBlob] })` opens native Share Sheet (Signal, iMessage, AirDrop).
-   
-   * _Desktop:_ Download to disk.
+   - _Mobile:_ `navigator.share({ files: [pdfBlob] })` opens native Share Sheet
+     (Signal, iMessage, AirDrop).
+   - _Desktop:_ Download to disk.
 
-* * *
+---
 
 ### F) ANALYTICS PLAN (Privacy-Forward)
 
-We will use **PostHog** (Open Source/Cloud). It allows strict masking of inputs and action-based tracking without capturing Personally Identifiable Information (PII).
+We will use **PostHog** (Open Source/Cloud). It allows strict masking of inputs
+and action-based tracking without capturing Personally Identifiable Information
+(PII).
 
 **Event Taxonomy (Examples):**
 
@@ -257,35 +260,32 @@ We will use **PostHog** (Open Source/Cloud). It allows strict masking of inputs 
 
 User Choice:
 
-"Analytics & Privacy" setting in the menu. Toggle for "Share Usage Statistics." Defaults to Anonymous, but respects Off.
+"Analytics & Privacy" setting in the menu. Toggle for "Share Usage Statistics."
+Defaults to Anonymous, but respects Off.
 
-* * *
+---
 
 ### G) TECH DEBT / QUALITY GATES
 
 To integrate this without breaking the current sprint or quality gates:
 
-1. **Feature Flags:** Wrap the new Write Queue in a flag: `NEXT_PUBLIC_ENABLE_OFFLINE_QUEUE=false`. Develop behind the flag.
+1. **Feature Flags:** Wrap the new Write Queue in a flag:
+   `NEXT_PUBLIC_ENABLE_OFFLINE_QUEUE=false`. Develop behind the flag.
 
 2. **Testing Plan:**
-   
-   * _Unit:_ Test the Conflict Resolver logic with 100% coverage (it's pure logic).
-   
-   * _Integration:_ Use Firebase Emulators. Script a test that:
-     
+   - _Unit:_ Test the Conflict Resolver logic with 100% coverage (it's pure
+     logic).
+   - _Integration:_ Use Firebase Emulators. Script a test that:
      1. Writes to DB.
-     
      2. Simulates network disconnect.
-     
      3. Writes more.
-     
      4. Reconnects.
-     
      5. Verifies Firestore state.
 
-3. **SonarCloud Guardrails:** Do not merge the "Offline Queue" PR unless it passes the existing quality gate. Keep strict typing to satisfy the linter.
+3. **SonarCloud Guardrails:** Do not merge the "Offline Queue" PR unless it
+   passes the existing quality gate. Keep strict typing to satisfy the linter.
 
-* * *
+---
 
 ### H) FUTURE NATIVE PATH RECOMMENDATION
 
@@ -295,170 +295,183 @@ To integrate this without breaking the current sprint or quality gates:
 
 1. **No Rewrite:** Wraps your existing Next.js build. You keep 95% of your code.
 
-2. **Native Plugins:** Capacitor provides access to Native Biometrics (FaceID), Filesystem (for secure storage), and Share Sheets via simple JS bridges.
+2. **Native Plugins:** Capacitor provides access to Native Biometrics (FaceID),
+   Filesystem (for secure storage), and Share Sheets via simple JS bridges.
 
 3. **Offline:** The architecture proposed in (A) works identical in Capacitor.
 
 **Tradeoffs:**
 
-* It's not "Native UI" (it's still a WebView). However, for a "Notebook" app, CSS/DOM is actually superior for rendering text and complex layouts than native views.
+- It's not "Native UI" (it's still a WebView). However, for a "Notebook" app,
+  CSS/DOM is actually superior for rendering text and complex layouts than
+  native views.
 
-* _Expo/React Native_ would require rewriting all your `<div>`s to `<View>`s and replacing your CSS with StyleSheet objects. Too expensive for this stage.
+- _Expo/React Native_ would require rewriting all your `<div>`s to `<View>`s and
+  replacing your CSS with StyleSheet objects. Too expensive for this stage.
 
-* * *
+---
 
 ### I) "WHAT I’M MISSING" (Decisions for Later)
 
-1. **Push Notification Strategy:** If we go offline-first, local notifications are easy. Remote notifications (e.g., "Sponsor viewed your packet") require FCM tokens. _Default: Stick to Local Notifications for now._
+1. **Push Notification Strategy:** If we go offline-first, local notifications
+   are easy. Remote notifications (e.g., "Sponsor viewed your packet") require
+   FCM tokens. _Default: Stick to Local Notifications for now._
 
-2. **Data Retention/Auto-Delete:** Do users want their 4th step to auto-destruct after 1 year? _Default: Keep forever until user deletes._
+2. **Data Retention/Auto-Delete:** Do users want their 4th step to auto-destruct
+   after 1 year? _Default: Keep forever until user deletes._
 
-3. **Cross-Device Sync Race Conditions:** If a user is offline on iPad and iPhone simultaneously editing the same doc. _Default: Last-Write-Wins on the server timestamp._
+3. **Cross-Device Sync Race Conditions:** If a user is offline on iPad and
+   iPhone simultaneously editing the same doc. _Default: Last-Write-Wins on the
+   server timestamp._
 
-4. **File Attachments:** If users want to attach photos to journals, offline syncing becomes much harder (Blob storage). _Default: Text only for V1._
+4. **File Attachments:** If users want to attach photos to journals, offline
+   syncing becomes much harder (Blob storage). _Default: Text only for V1._
 
-5. **Search:** Client-side search (FlexSearch) vs. Server-side (Algolia). _Default: Client-side FlexSearch against the local Dexie DB._
+5. **Search:** Client-side search (FlexSearch) vs. Server-side (Algolia).
+   _Default: Client-side FlexSearch against the local Dexie DB._
 
-* * *
+---
 
 ### 9) OFFLINE-EVERYTHING QUESTION (Answered)
 
 **Advantages:**
 
-* **Speed:** Zero latency.
+- **Speed:** Zero latency.
 
-* **Trust:** User knows their data is there even in a basement meeting.
+- **Trust:** User knows their data is there even in a basement meeting.
 
-* **Search:** Searching local IndexedDB is instantaneous and free (no Algolia cost).
+- **Search:** Searching local IndexedDB is instantaneous and free (no Algolia
+  cost).
 
 **Disadvantages/Risks:**
 
-* **Initial Load:** Syncing _everything_ (years of journals) on first login takes time and bandwidth. _Mitigation: Pagination or "Last 90 Days" sync policy._
+- **Initial Load:** Syncing _everything_ (years of journals) on first login
+  takes time and bandwidth. _Mitigation: Pagination or "Last 90 Days" sync
+  policy._
 
-* **Storage Limits:** Browser storage is "Best Effort." If the user records 4K video, the OS might wipe your DB. _Mitigation: Text is tiny. Years of journals is <10MB. We are safe if we stick to text._
+- **Storage Limits:** Browser storage is "Best Effort." If the user records 4K
+  video, the OS might wipe your DB. _Mitigation: Text is tiny. Years of journals
+  is <10MB. We are safe if we stick to text._
 
-* **Complexity:** You are essentially building a database replication engine.
+- **Complexity:** You are essentially building a database replication engine.
 
-**Verdict:** For a text-heavy Recovery Notebook, **Offline-Everything is the correct choice.** The data size is small enough that the storage risks are minimal, and the UX benefit for "basement meetings" is massive.
-
-
+**Verdict:** For a text-heavy Recovery Notebook, **Offline-Everything is the
+correct choice.** The data size is small enough that the storage risks are
+minimal, and the UX benefit for "basement meetings" is massive.
 
 ## CHATGPT
 
-
-
 ### Assumptions (so we can move fast without scope blow-ups)
 
-* You’ll keep the **Firebase/Next.js stack** as-is (Next.js 16.1 + Firebase 12.7 + Functions v2 + App Check)
-  DEVELOPMENT
-  and you want an **additive offline layer** (not a rewrite).
+- You’ll keep the **Firebase/Next.js stack** as-is (Next.js 16.1 + Firebase
+  12.7 + Functions v2 + App Check) DEVELOPMENT and you want an **additive
+  offline layer** (not a rewrite).
 
-* The **Operational Visibility sprint is currently blocked by SonarCloud cleanup** and we should design + implement the offline engine in small PRs that won’t worsen the gate
-  ROADMAP
-  .
+- The **Operational Visibility sprint is currently blocked by SonarCloud
+  cleanup** and we should design + implement the offline engine in small PRs
+  that won’t worsen the gate ROADMAP .
 
-* “Offline-first” is primarily about **journal/step-work writes** (high-volume text), plus some structured data for Step 4 / nightly review.
+- “Offline-first” is primarily about **journal/step-work writes** (high-volume
+  text), plus some structured data for Step 4 / nightly review.
 
-* * *
+---
 
-A) SYSTEM ARCHITECTURE PROPOSAL (PWA now, Native later)
--------------------------------------------------------
+## A) SYSTEM ARCHITECTURE PROPOSAL (PWA now, Native later)
 
 **(1) Recommended choice**  
 Build a **local-first data layer** with:
 
-* **IndexedDB “primary” store** (Dexie or `idb`) for documents + queue
+- **IndexedDB “primary” store** (Dexie or `idb`) for documents + queue
 
-* **Sync engine** that uploads to Firestore when online
+- **Sync engine** that uploads to Firestore when online
 
-* **UI-visible queue state** + a “Sync & Storage” settings surface
+- **UI-visible queue state** + a “Sync & Storage” settings surface
 
 You can still use Firestore for:
 
-* auth
+- auth
 
-* server persistence
+- server persistence
 
-* sponsor artifacts
+- sponsor artifacts
 
-* telemetry (non-sensitive)
+- telemetry (non-sensitive)
 
-* optional real-time reads (but never as the write source-of-truth)
+- optional real-time reads (but never as the write source-of-truth)
 
 **Why**
 
-* Meets “writes land locally first” hard requirement.
+- Meets “writes land locally first” hard requirement.
 
-* Avoids Firestore’s “offline magic” being opaque to users (you need explicit pending/sync/failed).
+- Avoids Firestore’s “offline magic” being opaque to users (you need explicit
+  pending/sync/failed).
 
-* Makes encryption and “never upload” data possible because your primary store is yours.
+- Makes encryption and “never upload” data possible because your primary store
+  is yours.
 
 **Tradeoffs**
 
-* More code than “turn on Firestore persistence.”
+- More code than “turn on Firestore persistence.”
 
-* You own conflict resolution.
+- You own conflict resolution.
 
-* You must design for iOS PWA limitations (foreground-only sync; storage eviction rules).
+- You must design for iOS PWA limitations (foreground-only sync; storage
+  eviction rules).
 
 **Implementation notes**
 
-* **Write pipeline**
-  
+- **Write pipeline**
   1. user edits → **local doc upsert** (IndexedDB)
-  
   2. enqueue “mutation” → mark doc `syncState=pending`
-  
   3. UI shows status immediately (no network dependency)
-  
   4. sync worker runs when online and app is active
 
-* **Read pipeline**
-  
-  * Always render from IndexedDB (fast, consistent).
-  
-  * Optionally hydrate from Firestore on startup / refresh.
-  
-  * “Remote updates” become queued _merge candidates_ into local, not instant overwrites.
+- **Read pipeline**
+  - Always render from IndexedDB (fast, consistent).
+  - Optionally hydrate from Firestore on startup / refresh.
+  - “Remote updates” become queued _merge candidates_ into local, not instant
+    overwrites.
 
-* **Background sync realities**
-  
-  * Safari/iOS does **not support Background Sync API** , so “true background” is not reliable on iPhone PWA.
-  
-  * Strategy: sync on **(a)** app open, **(b)** network regained, **(c)** periodic in-foreground timer, **(d)** user manual “Sync now”.
+- **Background sync realities**
+  - Safari/iOS does **not support Background Sync API** , so “true background”
+    is not reliable on iPhone PWA.
+  - Strategy: sync on **(a)** app open, **(b)** network regained, **(c)**
+    periodic in-foreground timer, **(d)** user manual “Sync now”.
 
-* **iOS PWA constraints + mitigations**
-  
-  * Storage policy: WebKit has a 7-day cap for script-writable storage in some contexts, but **Home Screen web apps are exempt** (and isolated) . Still: plan for **eviction under storage pressure** and quota management .
-  
-  * Push: iOS supports Web Push for **Home Screen web apps** (16.4+) — but don’t rely on push for syncing; use it for user-visible notifications only.
+- **iOS PWA constraints + mitigations**
+  - Storage policy: WebKit has a 7-day cap for script-writable storage in some
+    contexts, but **Home Screen web apps are exempt** (and isolated) . Still:
+    plan for **eviction under storage pressure** and quota management .
+  - Push: iOS supports Web Push for **Home Screen web apps** (16.4+) — but don’t
+    rely on push for syncing; use it for user-visible notifications only.
 
 **ASCII diagram (core data flow)**
-        `UI (Notebook / Step Work / Night Review)                     |                     | local-first write                      v          IndexedDB "Primary Store" (docs)                     |                     | enqueue mutation                     v            IndexedDB "Offline Queue"                     |         +-----------+------------+          |                        |   online + active           offline / error         |                        |         v                        v Firestore (replica)        UI shows: pending/failed         |         v Sponsor artifacts / telemetry (no content)`
+`UI (Notebook / Step Work / Night Review)                     |                     | local-first write                      v          IndexedDB "Primary Store" (docs)                     |                     | enqueue mutation                     v            IndexedDB "Offline Queue"                     |         +-----------+------------+          |                        |   online + active           offline / error         |                        |         v                        v Firestore (replica)        UI shows: pending/failed         |         v Sponsor artifacts / telemetry (no content)`
 
-Also: your current roadmap already flags **offline queue as CRITICAL** and that writes currently require network (risking data loss)
+Also: your current roadmap already flags **offline queue as CRITICAL** and that
+writes currently require network (risking data loss)
 
 ROADMAP
 
 — this architecture directly fixes that.
 
-* * *
+---
 
-B) DATA MODEL + FIRESTORE RULES DIRECTION (HIGH LEVEL, NOT FULL RULES)
-----------------------------------------------------------------------
+## B) DATA MODEL + FIRESTORE RULES DIRECTION (HIGH LEVEL, NOT FULL RULES)
 
 **(1) Recommended choice**  
 Use a **user-scoped Firestore model** with _separate collections_ for:
 
-* private user data (never sponsor-readable)
+- private user data (never sponsor-readable)
 
-* sponsor-shared artifacts (explicit snapshots only)
+- sponsor-shared artifacts (explicit snapshots only)
 
-* telemetry (action-only)
+- telemetry (action-only)
 
-* relationship edges (no data access implied)
+- relationship edges (no data access implied)
 
-This matches your existing rules posture: “all data user-scoped (`request.auth.uid == uid`)”
+This matches your existing rules posture: “all data user-scoped
+(`request.auth.uid == uid`)”
 
 DEVELOPMENT
 
@@ -470,114 +483,95 @@ DEVELOPMENT
 
 **(2) Proposed collections**
 
-* `users/{uid}`
-  
-  * profile-lite (no real name required)
-  
-  * settings: privacy level, analytics opt-in, encryption enabled, storage mode
+- `users/{uid}`
+  - profile-lite (no real name required)
+  - settings: privacy level, analytics opt-in, encryption enabled, storage mode
 
-* `users/{uid}/journalEntries/{entryId}`
-  
-  * server replica of journal entry “atomic doc”
-  
-  * fields: `content`, `createdAt`, `updatedAt`, `deviceId`, `rev`, `contentHash`
+- `users/{uid}/journalEntries/{entryId}`
+  - server replica of journal entry “atomic doc”
+  - fields: `content`, `createdAt`, `updatedAt`, `deviceId`, `rev`,
+    `contentHash`
 
-* `users/{uid}/stepPackets/{packetId}`
-  
-  * structured worksheets (Step 4 inventories etc.)
-  
-  * fields: `schemaVersion`, `sections[]`, `rev`, `contentHash`, `updatedAt`
+- `users/{uid}/stepPackets/{packetId}`
+  - structured worksheets (Step 4 inventories etc.)
+  - fields: `schemaVersion`, `sections[]`, `rev`, `contentHash`, `updatedAt`
 
-* `users/{uid}/syncLogs/{logId}` (non-sensitive)
-  
-  * queue depth, last sync time, error codes (no content)
+- `users/{uid}/syncLogs/{logId}` (non-sensitive)
+  - queue depth, last sync time, error codes (no content)
 
-* `sponsorLinks/{linkId}`
-  
-  * `sponseeUid`, `sponsorUid`, `status`, `createdAt`, `revokedAt`
-  
-  * **No access to any data** by default
+- `sponsorLinks/{linkId}`
+  - `sponseeUid`, `sponsorUid`, `status`, `createdAt`, `revokedAt`
+  - **No access to any data** by default
 
-* `sharedArtifacts/{artifactId}`
-  
-  * immutable “snapshot payload” (or references to it)
-  
-  * `ownerUid` (sponsee), `sponsorUid`, `type`, `createdAt`, `expiresAt?`
-  
-  * `payload` is either:
-    
-    * plaintext (if not sensitive) or
-    
-    * encrypted blob (if sensitive & user enabled encryption)
+- `sharedArtifacts/{artifactId}`
+  - immutable “snapshot payload” (or references to it)
+  - `ownerUid` (sponsee), `sponsorUid`, `type`, `createdAt`, `expiresAt?`
+  - `payload` is either:
+    - plaintext (if not sensitive) or
+    - encrypted blob (if sensitive & user enabled encryption)
 
-* `users/{uid}/exports/{exportId}` (metadata only)
-  
-  * type, size, createdAt, shareTarget type (email/share sheet), **no content**
+- `users/{uid}/exports/{exportId}` (metadata only)
+  - type, size, createdAt, shareTarget type (email/share sheet), **no content**
 
-* `telemetryDaily/{uid_yyyyMMdd}` (or `telemetryDaily/{yyyyMMdd}/users/{uid}`)
-  
-  * counters only: `journal_entry_created: 3`, `sync_failed: 1`, etc.
+- `telemetryDaily/{uid_yyyyMMdd}` (or `telemetryDaily/{yyyyMMdd}/users/{uid}`)
+  - counters only: `journal_entry_created: 3`, `sync_failed: 1`, etc.
 
 **(3) Security posture direction**
 
-* **Row-level security everywhere**
-  
-  * `users/{uid}/**`: only `request.auth.uid == uid`
-    DEVELOPMENT
+- **Row-level security everywhere**
+  - `users/{uid}/**`: only `request.auth.uid == uid` DEVELOPMENT
 
-* **Sponsor access only to `sharedArtifacts`**
-  
-  * rule: `request.auth.uid == sponsorUid` AND `status == active`
+- **Sponsor access only to `sharedArtifacts`**
+  - rule: `request.auth.uid == sponsorUid` AND `status == active`
 
-* **Revocation strategy**
-  
-  * “revoke” flips `sharedArtifacts.status=revoked` (deny reads)
-  
-  * optional: scheduled function deletes revoked/expired artifacts after retention window
+- **Revocation strategy**
+  - “revoke” flips `sharedArtifacts.status=revoked` (deny reads)
+  - optional: scheduled function deletes revoked/expired artifacts after
+    retention window
 
-* **Minimal PII**
-  
-  * don’t store names/emails unless user links account later
-  
-  * sponsor link can be established via short code / QR, but keep it pseudonymous
+- **Minimal PII**
+  - don’t store names/emails unless user links account later
+  - sponsor link can be established via short code / QR, but keep it
+    pseudonymous
 
-* * *
+---
 
-C) OFFLINE QUEUE + CONFLICT RESOLUTION SPEC
--------------------------------------------
+## C) OFFLINE QUEUE + CONFLICT RESOLUTION SPEC
 
 **(1) Recommended choice**  
 Use a **mutation queue** (event log) + **atomic docs** in local store:
 
-* Local store holds the **current doc state** (“atomic doc”)
+- Local store holds the **current doc state** (“atomic doc”)
 
-* Queue holds **mutations** to send upstream (append/edit/upsert/delete)
+- Queue holds **mutations** to send upstream (append/edit/upsert/delete)
 
-* Server stores atomic doc too (simple Firestore reads)
+- Server stores atomic doc too (simple Firestore reads)
 
 This avoids full event-sourcing complexity while still giving you reliable sync.
 
 **Why**
 
-* “Atomic doc only” is simplest, but conflict handling is harder because you lose intent.
+- “Atomic doc only” is simplest, but conflict handling is harder because you
+  lose intent.
 
-* “Event-sourcing only” is robust but heavy.
+- “Event-sourcing only” is robust but heavy.
 
-* Hybrid gives you intent when you need it (queue), but keeps your data model simple.
+- Hybrid gives you intent when you need it (queue), but keeps your data model
+  simple.
 
 **Tradeoffs**
 
-* You must ensure idempotency (mutation IDs, retries).
+- You must ensure idempotency (mutation IDs, retries).
 
-* For long-lived offline periods, queue can grow; you’ll need compaction.
+- For long-lived offline periods, queue can grow; you’ll need compaction.
 
-* * *
+---
 
 ### Queue item format (concrete)
 
 `type QueueStatus = "pending" | "syncing" | "failed" | "applied" | "dead";  type DocType = "journalEntry" | "stepPacket" | "nightReview";  type MutationKind =  | "UPSERT_DOC"          // replace full doc (small docs)   | "PATCH_FIELDS"        // structured updates   | "APPEND_TEXT"         // journal append optimization   | "DELETE_DOC";  type OfflineMutation = {  id: string;                 // ULID   uid: string;                // owner   deviceId: string;           // stable per install   docType: DocType;  docId: string;              // ULID   kind: MutationKind;  baseRev?: number;           // rev at time of edit   baseHash?: string;          // content hash at time of edit   payload: unknown;           // validated with Zod   createdAtMs: number;  attemptCount: number;  lastAttemptAtMs?: number;  status: QueueStatus;  lastError?: { code: string; message: string; atMs: number };};`
 
-* * *
+---
 
 ### Conflict resolution detection: “same / same+additional / meaningfully different”
 
@@ -586,46 +580,39 @@ This avoids full event-sourcing complexity while still giving you reliable sync.
 1. If `localHash == remoteHash` → no conflict.
 
 2. If “append-only”:
-   
-   * if `remoteText.startsWith(localText)` → remote has extra; take remote
-   
-   * if `localText.startsWith(remoteText)` → local has extra; keep local
-   
-   * else → conflict prompt
+   - if `remoteText.startsWith(localText)` → remote has extra; take remote
+   - if `localText.startsWith(remoteText)` → local has extra; keep local
+   - else → conflict prompt
 
 3. For structured docs (Step 4 sections/rows):
-   
-   * merge by stable row IDs; if same row edited on both sides → conflict prompt for that row (not whole packet)
+   - merge by stable row IDs; if same row edited on both sides → conflict prompt
+     for that row (not whole packet)
 
 **Implementation notes**
 
-* Use a stable hash (SHA-256) of normalized content to compare quickly.
+- Use a stable hash (SHA-256) of normalized content to compare quickly.
 
-* Store `rev` integers and increment on each server write. (Simpler than vector clocks; good enough for a single-user-per-doc scenario with occasional multi-device.)
+- Store `rev` integers and increment on each server write. (Simpler than vector
+  clocks; good enough for a single-user-per-doc scenario with occasional
+  multi-device.)
 
-* * *
+---
 
 ### Merge UX (non-blocking, user-controlled)
 
-* Banner chip in notebook ribbon: **“Sync needs attention (2)”**
+- Banner chip in notebook ribbon: **“Sync needs attention (2)”**
 
-* Conflict screen per doc:
-  
-  * show Local vs Remote (diff-highlight for text)
-  
-  * actions:
-    
-    * Keep local
-    
-    * Keep remote
-    
-    * Keep both (duplicates remote into a new docId)
-    
-    * Merge (enabled when append-safe or structured row merge is possible)
+- Conflict screen per doc:
+  - show Local vs Remote (diff-highlight for text)
+  - actions:
+    - Keep local
+    - Keep remote
+    - Keep both (duplicates remote into a new docId)
+    - Merge (enabled when append-safe or structured row merge is possible)
 
-* Always allow “resolve later” but keep status visible.
+- Always allow “resolve later” but keep status visible.
 
-* * *
+---
 
 ### Code skeletons (TypeScript-ish)
 
@@ -641,48 +628,44 @@ This avoids full event-sourcing complexity while still giving you reliable sync.
 
 `export async function runSyncWorkerOnce(uid: string): Promise<{ blocked: boolean; error?: string }> {  if (!navigator.onLine) return { blocked: true };  const batch = await offlineDb.queue.nextBatch(uid, { limit: 25 });  if (batch.length === 0) return { blocked: false };  for (const m of batch) {    try {      await offlineDb.queue.markSyncing(m.id);      // Fetch remote doc (if needed for conflict)       const remote = await fetchRemoteDocIfExists(uid, m.docType, m.docId);      // Compute local doc state to upload       const local = await offlineDb.docs.get(uid, m.docType, m.docId);      if (remote) {        const decision = await detectConflict({ docType: m.docType, localDoc: local, remoteDoc: remote });        if (decision.kind === "NEEDS_USER") {          await offlineDb.conflicts.record(uid, m, decision);          await offlineDb.queue.markFailed(m.id, { code: "CONFLICT", message: decision.reason });          continue;        }        if (decision.kind === "AUTO_MERGE") {          await offlineDb.docs.put(uid, m.docType, m.docId, decision.mergedDoc);        }      }      // Upload (idempotent)       await upsertFirestoreAtomicDoc(uid, m.docType, m.docId, await offlineDb.docs.get(uid, m.docType, m.docId));      await offlineDb.queue.markApplied(m.id);      await offlineDb.docs.markSynced(uid, m.docType, m.docId);    } catch (e) {      await offlineDb.queue.bumpFailure(m.id, normalizeError(e));      // retry strategy: exponential backoff, but never silent—surface "failed"       return { blocked: false, error: e instanceof Error ? e.message : "sync_error" };    }  }  return { blocked: false };}`
 
-* * *
+---
 
-D) ENCRYPTION & PASSCODE SYSTEM (WITH RECOVERY)
------------------------------------------------
+## D) ENCRYPTION & PASSCODE SYSTEM (WITH RECOVERY)
 
 **(1) Recommended choice (phased)**
 
 ### Phase 1 (ship soon, safe default)
 
-* **Passcode gate** (app-level lock)
+- **Passcode gate** (app-level lock)
 
-* **Encrypted vault** only for selected categories:
-  
-  * Step 4 inventory
-  
-  * amends planning
-  
-  * “high sensitivity” journal entries (user-toggled)
+- **Encrypted vault** only for selected categories:
+  - Step 4 inventory
+  - amends planning
+  - “high sensitivity” journal entries (user-toggled)
 
-* Crypto: Web Crypto API (PBKDF2 + AES-GCM)
+- Crypto: Web Crypto API (PBKDF2 + AES-GCM)
 
 ### Phase 2 (expand if desired)
 
-* Allow “encrypt all journal entries”
+- Allow “encrypt all journal entries”
 
-* Add biometric unlock in native wrapper (later)
+- Add biometric unlock in native wrapper (later)
 
-* Optional: per-field encryption (more granular)
+- Optional: per-field encryption (more granular)
 
 **Why**
 
-* Phase 1 gives privacy wins without blocking the core offline queue milestone.
+- Phase 1 gives privacy wins without blocking the core offline queue milestone.
 
-* Web Crypto is available in secure contexts and works in workers .
+- Web Crypto is available in secure contexts and works in workers .
 
 **Tradeoffs**
 
-* PWA can’t rely on OS keychain the way native can.
+- PWA can’t rely on OS keychain the way native can.
 
-* User experience risk: “I forgot my passcode” must be solved _now_.
+- User experience risk: “I forgot my passcode” must be solved _now_.
 
-* * *
+---
 
 ### Default recovery model (no catastrophic lockout)
 
@@ -690,130 +673,113 @@ D) ENCRYPTION & PASSCODE SYSTEM (WITH RECOVERY)
 
 **Recommended default**
 
-* Generate a random **Data Encryption Key (DEK)** for the vault.
+- Generate a random **Data Encryption Key (DEK)** for the vault.
 
-* Wrap the DEK with:
-  
+- Wrap the DEK with:
   1. **Passcode-derived Key (KEK)** for daily use
-  
   2. **Recovery Key (RK)** shown once to the user (print/save it)
 
-* Store:
-  
-  * `wrappedDEK_passcode` locally
-  
-  * `wrappedDEK_recovery` locally **and optionally** in Firestore (safe because it’s encrypted _by RK_, which you never upload)
+- Store:
+  - `wrappedDEK_passcode` locally
+  - `wrappedDEK_recovery` locally **and optionally** in Firestore (safe because
+    it’s encrypted _by RK_, which you never upload)
 
 If passcode forgotten:
 
-* user enters Recovery Key → unwrap DEK → set new passcode → rewrap
+- user enters Recovery Key → unwrap DEK → set new passcode → rewrap
 
 **Options + tradeoffs**
 
-* Recovery key (recommended): strongest + simplest; user must store it.
+- Recovery key (recommended): strongest + simplest; user must store it.
 
-* “Security questions”: weak (guessable), not recommended.
+- “Security questions”: weak (guessable), not recommended.
 
-* Device-bound key (WebAuthn wrap): good UX, but more moving parts; make optional later.
+- Device-bound key (WebAuthn wrap): good UX, but more moving parts; make
+  optional later.
 
-* Cloud escrow of plaintext keys: **don’t**.
+- Cloud escrow of plaintext keys: **don’t**.
 
-* * *
+---
 
 ### Threat model (simple but real)
 
-* **Device stolen**
-  
-  * passcode gate + encrypted vault prevents casual access
-  
-  * still assume device-level compromise is possible; don’t promise “nation-state safe”
+- **Device stolen**
+  - passcode gate + encrypted vault prevents casual access
+  - still assume device-level compromise is possible; don’t promise
+    “nation-state safe”
 
-* **Shared phone**
-  
-  * passcode gate prevents shoulder-surfing / family access
-  
-  * “auto-lock after X minutes”
+- **Shared phone**
+  - passcode gate prevents shoulder-surfing / family access
+  - “auto-lock after X minutes”
 
-* **Sponsor misuse**
-  
-  * sponsor never gets live data; only explicit artifacts
-  
-  * artifacts can be encrypted if user marks “sensitive”
+- **Sponsor misuse**
+  - sponsor never gets live data; only explicit artifacts
+  - artifacts can be encrypted if user marks “sensitive”
 
-* **Accidental export leaks**
-  
-  * export preview + redaction
-  
-  * watermark option + “contains sensitive info” warning
+- **Accidental export leaks**
+  - export preview + redaction
+  - watermark option + “contains sensitive info” warning
 
-* * *
+---
 
-E) EXPORTS / PDF GENERATION / METADATA HYGIENE
-----------------------------------------------
+## E) EXPORTS / PDF GENERATION / METADATA HYGIENE
 
 **(1) Recommended choice**
 
-* **PWA now:** generate PDFs **locally** in-browser via `pdf-lib` (or similar), from your structured content model.
+- **PWA now:** generate PDFs **locally** in-browser via `pdf-lib` (or similar),
+  from your structured content model.
 
-* **Native later:** use platform PDF renderers (Capacitor plugins / native APIs), but keep the same “packet schema”.
+- **Native later:** use platform PDF renderers (Capacitor plugins / native
+  APIs), but keep the same “packet schema”.
 
 **Why**
 
-* Avoid sending journal content to a server for PDF generation (privacy).
+- Avoid sending journal content to a server for PDF generation (privacy).
 
-* Avoid metadata leaks from server logs.
+- Avoid metadata leaks from server logs.
 
 **Tradeoffs**
 
-* Local PDF generation can be slower on low-end phones.
+- Local PDF generation can be slower on low-end phones.
 
-* “Photoreal notebook” exact fidelity may be harder than HTML print; but you can style the PDF output as a _clean print packet_ (more sponsor-friendly anyway).
+- “Photoreal notebook” exact fidelity may be harder than HTML print; but you can
+  style the PDF output as a _clean print packet_ (more sponsor-friendly anyway).
 
 **Implementation notes**
 
-* **Metadata hygiene**
-  
-  * For images: strip EXIF by re-encoding via `<canvas>` before storing/exporting (drops GPS/EXIF).
-  
-  * For PDFs: don’t set author/title/producer fields; keep minimal document info where possible.
+- **Metadata hygiene**
+  - For images: strip EXIF by re-encoding via `<canvas>` before
+    storing/exporting (drops GPS/EXIF).
+  - For PDFs: don’t set author/title/producer fields; keep minimal document info
+    where possible.
 
-* **Sponsor packet format guidance**
-  
-  * Packet builder UI:
-    
-    * checklist: include Step 4 rows? include summary only? include dates?
-    
-    * preview screen
-    
-    * “Sensitive” toggle: watermark + optional encryption
-  
-  * Export result types:
-    
-    * PDF
-    
-    * plaintext summary (copy/share)
+- **Sponsor packet format guidance**
+  - Packet builder UI:
+    - checklist: include Step 4 rows? include summary only? include dates?
+    - preview screen
+    - “Sensitive” toggle: watermark + optional encryption
 
-* **Sharing**
-  
-  * PWA: Web Share API when available
-  
-  * fallback: download + “copy to clipboard” + mailto template
-  
-  * Native: share sheet (later)
+  - Export result types:
+    - PDF
+    - plaintext summary (copy/share)
 
-* * *
+- **Sharing**
+  - PWA: Web Share API when available
+  - fallback: download + “copy to clipboard” + mailto template
+  - Native: share sheet (later)
 
-F) ANALYTICS PLAN (PRIVACY-FORWARD)
------------------------------------
+---
+
+## F) ANALYTICS PLAN (PRIVACY-FORWARD)
 
 **(1) Recommended choice**  
 Implement **first-party “action telemetry”**:
 
-* a tiny client logger that records **events without content**
+- a tiny client logger that records **events without content**
 
-* store as **daily counters** (not raw streams) unless debugging is enabled
+- store as **daily counters** (not raw streams) unless debugging is enabled
 
-* upload to Firestore under strict schema + retention
+- upload to Firestore under strict schema + retention
 
 This aligns with your existing tooling list (Firebase Analytics exists)
 
@@ -823,15 +789,16 @@ DEVELOPMENT
 
 **Why**
 
-* Tracks what matters (sync failures, queue depth, exports) without journaling content.
+- Tracks what matters (sync failures, queue depth, exports) without journaling
+  content.
 
-* Easy to explain in “Sync & Storage” menu.
+- Easy to explain in “Sync & Storage” menu.
 
 **Tradeoffs**
 
-* Less out-of-the-box dashboards than GA/Firebase Analytics.
+- Less out-of-the-box dashboards than GA/Firebase Analytics.
 
-* You’ll build a small admin view for aggregated metrics later.
+- You’ll build a small admin view for aggregated metrics later.
 
 **(2) Event taxonomy examples (action-based)**
 
@@ -851,22 +818,19 @@ DEVELOPMENT
 
 **(3) Opt-in/opt-out UX + retention**
 
-* Place in **Sync & Storage**:
-  
-  * Analytics: Off / Basic (daily counters) / Debug (short-lived raw event stream)
+- Place in **Sync & Storage**:
+  - Analytics: Off / Basic (daily counters) / Debug (short-lived raw event
+    stream)
 
-* Retention suggestions:
-  
-  * Basic counters: 90 days
-  
-  * Debug raw stream: 7 days, and only if user opts in
+- Retention suggestions:
+  - Basic counters: 90 days
+  - Debug raw stream: 7 days, and only if user opts in
 
-* Never log content; never log sponsor packet bodies.
+- Never log content; never log sponsor packet bodies.
 
-* * *
+---
 
-G) TECH DEBT / QUALITY GATES
-----------------------------
+## G) TECH DEBT / QUALITY GATES
 
 You’re explicitly blocked by SonarCloud cleanup before feature work resumes
 
@@ -876,9 +840,11 @@ ROADMAP
 
 **(1) Recommended incremental adoption plan**
 
-1. **PR0 (no behavior change):** add offline DB module + types + Zod schemas + tests
+1. **PR0 (no behavior change):** add offline DB module + types + Zod schemas +
+   tests
 
-2. **PR1:** implement queue + local writes behind feature flag (`OFFLINE_QUEUE_V1`)
+2. **PR1:** implement queue + local writes behind feature flag
+   (`OFFLINE_QUEUE_V1`)
 
 3. **PR2:** UI indicators + Sync & Storage menu (read-only stats first)
 
@@ -896,189 +862,178 @@ without forcing a “big bang” change.
 
 **(2) Testing plan**
 
-* Unit tests:
-  
-  * queue state transitions
-  
-  * conflict detection cases (identical / append-only / divergent)
-  
-  * retry backoff
+- Unit tests:
+  - queue state transitions
+  - conflict detection cases (identical / append-only / divergent)
+  - retry backoff
 
-* Emulator tests (Firebase emulator recommended in your dev guide)
-  DEVELOPMENT
-  :
-  
-  * sync worker against emulated Firestore
-  
-  * rules checks (user-scope; sponsor artifact access)
+- Emulator tests (Firebase emulator recommended in your dev guide) DEVELOPMENT :
+  - sync worker against emulated Firestore
+  - rules checks (user-scope; sponsor artifact access)
 
-* “Offline test suite”
-  
-  * your roadmap already calls for offline tests (EFF-011)
-    ROADMAP
+- “Offline test suite”
+  - your roadmap already calls for offline tests (EFF-011) ROADMAP
 
-* Guardrails for SonarCloud:
-  
-  * keep functions small/pure
-  
-  * strict typing (no `any`)
-  
-  * isolate crypto code + add misuse-resistant wrappers
-  
-  * add lint/test to PR gates (already expected in your tooling)
-    DEVELOPMENT
+- Guardrails for SonarCloud:
+  - keep functions small/pure
+  - strict typing (no `any`)
+  - isolate crypto code + add misuse-resistant wrappers
+  - add lint/test to PR gates (already expected in your tooling) DEVELOPMENT
 
 **(3) Rollout plan**
 
-* feature flag default OFF
+- feature flag default OFF
 
-* ship to yourself first
+- ship to yourself first
 
-* add “Export local backup” early (protects you during beta)
+- add “Export local backup” early (protects you during beta)
 
-* then gradually enable for a small cohort
+- then gradually enable for a small cohort
 
-* * *
+---
 
-H) FUTURE NATIVE PATH RECOMMENDATION
-------------------------------------
+## H) FUTURE NATIVE PATH RECOMMENDATION
 
 **(1) Recommended option: (1) Continue web + add native wrapper (Capacitor)**
 
 **Why**
 
-* Lowest rewrite risk: you keep Next.js + TS + your offline DB + sync engine.
+- Lowest rewrite risk: you keep Next.js + TS + your offline DB + sync engine.
 
-* Gains native capabilities exactly where you need them later:
-  
-  * secure storage/keychain for vault keys
-  
-  * biometric unlock
-  
-  * reliable share sheet
-  
-  * better file system access (encrypted backups)
+- Gains native capabilities exactly where you need them later:
+  - secure storage/keychain for vault keys
+  - biometric unlock
+  - reliable share sheet
+  - better file system access (encrypted backups)
 
-* Lets you stay PWA-first while solving iOS constraints over time.
+- Lets you stay PWA-first while solving iOS constraints over time.
 
 **Tradeoffs**
 
-* Still not “pure native UX” everywhere.
+- Still not “pure native UX” everywhere.
 
-* You’ll manage some platform plugin surface area.
+- You’ll manage some platform plugin surface area.
 
 **Implementation notes**
 
-* Extract your offline layer into a shared package: `packages/offline-core`
-  
-  * queue, hashing, conflict detection, encryption primitives
+- Extract your offline layer into a shared package: `packages/offline-core`
+  - queue, hashing, conflict detection, encryption primitives
 
-* For native:
-  
-  * store DEK in Keychain/Keystore
-  
-  * background tasks become more feasible than PWA (platform-dependent)
+- For native:
+  - store DEK in Keychain/Keystore
+  - background tasks become more feasible than PWA (platform-dependent)
 
 **Comparisons**
 
-* Expo/React Native:
-  
-  * Pros: full native UI, better background controls
-  
-  * Cons: higher rewrite; you’ll reimplement the notebook UI and likely the routing/layout model
+- Expo/React Native:
+  - Pros: full native UI, better background controls
+  - Cons: higher rewrite; you’ll reimplement the notebook UI and likely the
+    routing/layout model
 
-* “Another approach” (e.g., Flutter):
-  
-  * Pros: strong native packaging
-  
-  * Cons: biggest rewrite; not aligned with current Next.js repo momentum
+- “Another approach” (e.g., Flutter):
+  - Pros: strong native packaging
+  - Cons: biggest rewrite; not aligned with current Next.js repo momentum
 
-* * *
+---
 
-I) “WHAT I’M MISSING”
----------------------
+## I) “WHAT I’M MISSING”
 
-Here are the key decisions/risks to park (defaults included) — none block progress:
+Here are the key decisions/risks to park (defaults included) — none block
+progress:
 
 1. **Doc ID strategy** (default: ULID everywhere; stable across devices)
 
-2. **Retention policy for local-only data** (default: user choice; “keep forever” vs “auto-archive after N days”)
+2. **Retention policy for local-only data** (default: user choice; “keep
+   forever” vs “auto-archive after N days”)
 
-3. **Max queue size + compaction** (default: compact per-doc: keep only latest UPSERT + last APPEND chain)
+3. **Max queue size + compaction** (default: compact per-doc: keep only latest
+   UPSERT + last APPEND chain)
 
-4. **Multi-device expectations** (default: supported, but conflicts expected; prioritize correctness over seamless merging)
+4. **Multi-device expectations** (default: supported, but conflicts expected;
+   prioritize correctness over seamless merging)
 
-5. **Step 4 schema** (default: structured rows with stable row IDs; text fields per row; attachments optional)
+5. **Step 4 schema** (default: structured rows with stable row IDs; text fields
+   per row; attachments optional)
 
-6. **Sponsor link UX** (default: invite code + confirm screen; sponsor sees nothing until first artifact shared)
+6. **Sponsor link UX** (default: invite code + confirm screen; sponsor sees
+   nothing until first artifact shared)
 
-7. **Encrypted artifact sharing** (default: if vault enabled + artifact marked sensitive → encrypt payload before upload)
+7. **Encrypted artifact sharing** (default: if vault enabled + artifact marked
+   sensitive → encrypt payload before upload)
 
-8. **Telemetry posture** (default: opt-out by default; Basic counters only when user opts in)
+8. **Telemetry posture** (default: opt-out by default; Basic counters only when
+   user opts in)
 
-9. **Backup UX** (default: “Export encrypted backup bundle” monthly reminder inside app; no cloud auto-backup unless user enables)
+9. **Backup UX** (default: “Export encrypted backup bundle” monthly reminder
+   inside app; no cloud auto-backup unless user enables)
 
-10. **Service worker caching policy** (default: cache app shell + static assets; never cache sensitive exports; keep caches small)
+10. **Service worker caching policy** (default: cache app shell + static assets;
+    never cache sensitive exports; keep caches small)
 
-* * *
+---
 
 ### Your “offline-everything” question (advantages / disadvantages)
 
 **Advantages**
 
-* Trust: app works anywhere; no “lost my Step 4 because subway.”
+- Trust: app works anywhere; no “lost my Step 4 because subway.”
 
-* Performance: instant reads/writes from IndexedDB.
+- Performance: instant reads/writes from IndexedDB.
 
-* Privacy: user can choose “never upload” categories.
+- Privacy: user can choose “never upload” categories.
 
 **Disadvantages / realities (especially iOS PWA)**
 
-* **Storage limits & eviction:** quota and eviction rules exist; WebKit’s storage policy and eviction behavior can delete origin data under pressure or policy triggers . Home Screen web apps are exempt from some ITP deletion rules, but you still must plan for eviction/pressure .
+- **Storage limits & eviction:** quota and eviction rules exist; WebKit’s
+  storage policy and eviction behavior can delete origin data under pressure or
+  policy triggers . Home Screen web apps are exempt from some ITP deletion
+  rules, but you still must plan for eviction/pressure .
 
-* **Service worker complexity:** caching + versioning + migrations are real engineering work.
+- **Service worker complexity:** caching + versioning + migrations are real
+  engineering work.
 
-* **IndexedDB backup realities:** the OS can still wipe app storage; you need explicit **export/backup** flows.
+- **IndexedDB backup realities:** the OS can still wipe app storage; you need
+  explicit **export/backup** flows.
 
-* **Conflict burden:** “offline everywhere” implies more multi-device divergence; you need polished conflict UX.
+- **Conflict burden:** “offline everywhere” implies more multi-device
+  divergence; you need polished conflict UX.
 
-* **Security implications:** more sensitive data at rest on device; encryption + passcode + recovery become mandatory.
+- **Security implications:** more sensitive data at rest on device; encryption +
+  passcode + recovery become mandatory.
 
-* **Background sync gaps on iOS:** Safari/iOS lacks Background Sync API , so “offline-everything” must still assume sync happens mostly when the app is foregrounded.
+- **Background sync gaps on iOS:** Safari/iOS lacks Background Sync API , so
+  “offline-everything” must still assume sync happens mostly when the app is
+  foregrounded.
 
-* * *
+---
 
-If you want the next thin-slice that ships safely (and aligns with your current roadmap), it’s:
+If you want the next thin-slice that ships safely (and aligns with your current
+roadmap), it’s:
 
-1. implement **IndexedDB primary store + queue + UI status** (EFF-010)
-   ROADMAP
+1. implement **IndexedDB primary store + queue + UI status** (EFF-010) ROADMAP
 
-2. add **offline test coverage** (EFF-011)
-   ROADMAP
+2. add **offline test coverage** (EFF-011) ROADMAP
 
 3. only then add Step 4 builder + sponsor export loops.
 
-
-
 ## CLAUDE
 
-
-
-SoNash Technical Co-Design Specification
-========================================
+# SoNash Technical Co-Design Specification
 
 **Version:** 1.0  
 **Date:** 2026-01-20  
-**Author:** Claude (Senior Staff Engineer / Security-Privacy Architect / UX-minded Product Engineer)  
+**Author:** Claude (Senior Staff Engineer / Security-Privacy Architect /
+UX-minded Product Engineer)  
 **Status:** DRAFT – For Review  
 **Audience:** Technical decision-maker, solo developer context
 
-* * *
+---
 
-Executive Summary
------------------
+## Executive Summary
 
-This document provides a comprehensive technical specification for evolving SoNash from its current PWA state to a production-grade, offline-first recovery notebook with sponsor tooling, encryption, and a clear native app path.
+This document provides a comprehensive technical specification for evolving
+SoNash from its current PWA state to a production-grade, offline-first recovery
+notebook with sponsor tooling, encryption, and a clear native app path.
 
 **Key Recommendations (TL;DR):**
 
@@ -1092,27 +1047,28 @@ This document provides a comprehensive technical specification for evolving SoNa
 | Analytics      | Firebase Analytics, action-only events, no content              | **High**        |
 | Native Path    | Capacitor wrapper over existing Next.js PWA                     | **High**        |
 
-**Scope Guardrails:** This spec is designed to be implemented incrementally. Nothing here requires abandoning the SonarCloud cleanup or Operational Visibility sprint. I've tagged each section with estimated effort and suggested phase.
+**Scope Guardrails:** This spec is designed to be implemented incrementally.
+Nothing here requires abandoning the SonarCloud cleanup or Operational
+Visibility sprint. I've tagged each section with estimated effort and suggested
+phase.
 
-* * *
+---
 
-Table of Contents
------------------
+## Table of Contents
 
-* [A. System Architecture Proposal](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#a-system-architecture-proposal)
-* [B. Data Model + Firestore Rules Direction](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#b-data-model--firestore-rules-direction)
-* [C. Offline Queue + Conflict Resolution Spec](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#c-offline-queue--conflict-resolution-spec)
-* [D. Encryption & Passcode System](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#d-encryption--passcode-system)
-* [E. Exports / PDF Generation / Metadata Hygiene](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#e-exports--pdf-generation--metadata-hygiene)
-* [F. Analytics Plan](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#f-analytics-plan)
-* [G. Tech Debt / Quality Gates](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#g-tech-debt--quality-gates)
-* [H. Future Native Path Recommendation](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#h-future-native-path-recommendation)
-* [I. What You're Missing](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#i-what-youre-missing)
+- [A. System Architecture Proposal](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#a-system-architecture-proposal)
+- [B. Data Model + Firestore Rules Direction](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#b-data-model--firestore-rules-direction)
+- [C. Offline Queue + Conflict Resolution Spec](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#c-offline-queue--conflict-resolution-spec)
+- [D. Encryption & Passcode System](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#d-encryption--passcode-system)
+- [E. Exports / PDF Generation / Metadata Hygiene](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#e-exports--pdf-generation--metadata-hygiene)
+- [F. Analytics Plan](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#f-analytics-plan)
+- [G. Tech Debt / Quality Gates](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#g-tech-debt--quality-gates)
+- [H. Future Native Path Recommendation](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#h-future-native-path-recommendation)
+- [I. What You're Missing](https://claude.ai/chat/78589497-0a26-4f5f-93b7-0b8356619792#i-what-youre-missing)
 
-* * *
+---
 
-A. System Architecture Proposal
--------------------------------
+## A. System Architecture Proposal
 
 **Phase:** Foundation (can start after SonarCloud cleanup)  
 **Effort:** 3-4 weeks for core offline layer  
@@ -1152,21 +1108,11 @@ A. System Architecture Proposal
 
 ### A.2 Write Pipeline (Local-First)
 
-**Principle:** Every write succeeds immediately, locally. Network is async.
-    User Action → Optimistic Update → IndexedDB Write → Queue Entry → UI Confirms
-                                            │
-                                            ▼
-                                  [Background Sync Worker]
-                                            │
-                             ┌──────────────┼──────────────┐
-                             ▼              ▼              ▼
-                        Network OK     Network Fail    Conflict
-                             │              │              │
-                             ▼              ▼              ▼
-                      Firestore Write   Retry Queue   User Prompt
-                             │              │              │
-                             ▼              ▼              ▼
-                      Mark Synced      Exp. Backoff   Resolution
+**Principle:** Every write succeeds immediately, locally. Network is async. User
+Action → Optimistic Update → IndexedDB Write → Queue Entry → UI Confirms │ ▼
+[Background Sync Worker] │ ┌──────────────┼──────────────┐ ▼ ▼ ▼ Network OK
+Network Fail Conflict │ │ │ ▼ ▼ ▼ Firestore Write Retry Queue User Prompt │ │ │
+▼ ▼ ▼ Mark Synced Exp. Backoff Resolution
 
 **Implementation Notes:**
 
@@ -1188,17 +1134,17 @@ A. System Architecture Proposal
 
 **Staleness Policy:**
 
-* Journal entries: Fetch if > 5 minutes since last sync
-* Meetings: Fetch if > 1 hour
-* Static content (prayers, steps): Fetch if > 24 hours
-* User can force-refresh via pull-to-refresh gesture
+- Journal entries: Fetch if > 5 minutes since last sync
+- Meetings: Fetch if > 1 hour
+- Static content (prayers, steps): Fetch if > 24 hours
+- User can force-refresh via pull-to-refresh gesture
 
 ### A.4 Background Sync Strategy
 
     // Retry with exponential backoff
     const RETRY_INTERVALS = [1000, 5000, 15000, 60000, 300000]; // ms
     const MAX_RETRIES = 5;
-    
+
     // When online detected:
     // 1. Process queue in FIFO order
     // 2. On success: remove from queue, update local with server timestamp
@@ -1217,13 +1163,14 @@ A. System Architecture Proposal
 | 50MB localStorage limit | May hit ceiling                         | Use IndexedDB (larger quota); compress old entries       |
 | No beforeinstallprompt  | Can't prompt PWA install                | Manual "Add to Home Screen" instructions                 |
 
-**Critical Mitigation:** Implement a "Sync & Storage" settings panel (per requirement) that:
+**Critical Mitigation:** Implement a "Sync & Storage" settings panel (per
+requirement) that:
 
-* Shows estimated local storage used
-* Explains what's stored locally vs. cloud
-* Allows user to export backup
-* Shows last successful sync timestamp
-* Allows force-sync attempt
+- Shows estimated local storage used
+- Explains what's stored locally vs. cloud
+- Allows user to export backup
+- Shows last successful sync timestamp
+- Allows force-sync attempt
 
 ### A.6 Why Not [Alternative]?
 
@@ -1234,10 +1181,9 @@ A. System Architecture Proposal
 | **Firebase offline persistence** | Too opaque; no queue visibility; poor conflict handling; silent failures                     |
 | **localStorage only**            | 5-10MB limit; no good querying; not suitable for journal volume                              |
 
-* * *
+---
 
-B. Data Model + Firestore Rules Direction
------------------------------------------
+## B. Data Model + Firestore Rules Direction
 
 **Phase:** Foundation  
 **Effort:** 1-2 weeks  
@@ -1283,7 +1229,7 @@ B. Data Model + Firestore Rules Direction
       encryptionKeyId?: string;     // Future: which key encrypted this
       deletedAt?: Timestamp;        // Soft delete
     }
-    
+
     // Sponsor Relationship
     interface SponsorRelationship {
       id: string;
@@ -1295,7 +1241,7 @@ B. Data Model + Firestore Rules Direction
       allowedShareTypes: string[];  // What categories sponsee can share
       revokedAt?: Timestamp;
     }
-    
+
     // Shared Packet
     interface SharedPacket {
       id: string;
@@ -1309,7 +1255,7 @@ B. Data Model + Firestore Rules Direction
       expiresAt?: Timestamp;        // Optional auto-expiry
       revoked: boolean;
     }
-    
+
     // Sync State (per device)
     interface SyncState {
       deviceId: string;
@@ -1325,19 +1271,18 @@ B. Data Model + Firestore Rules Direction
 
 1. **Row-level security:** Users can only read/write their own data
 2. **App Check required:** Production requires valid App Check token
-3. **Sponsor access is explicit:** Sponsors can only read `sharedPackets` where `toUid == request.auth.uid`
+3. **Sponsor access is explicit:** Sponsors can only read `sharedPackets` where
+   `toUid == request.auth.uid`
 4. **Revocation is immediate:** Once `revoked: true`, no further reads
 5. **Minimal PII:** No names, emails, or phone numbers in document content
 
-**Pseudocode Rules:**
-    // Journal entries: owner only
-    match /users/{uid}/journalEntries/{entryId} {
-      allow read, write: if request.auth.uid == uid;
-    }
+**Pseudocode Rules:** // Journal entries: owner only match
+/users/{uid}/journalEntries/{entryId} { allow read, write: if request.auth.uid
+== uid; }
 
     // Shared packets: both parties can read, only sender can write
     match /sharedPackets/{packetId} {
-      allow read: if resource.data.fromUid == request.auth.uid 
+      allow read: if resource.data.fromUid == request.auth.uid
                   || (resource.data.toUid == request.auth.uid && resource.data.revoked == false);
       allow create: if request.auth.uid == request.resource.data.fromUid;
       allow update: if request.auth.uid == resource.data.fromUid; // Only sender can revoke
@@ -1362,14 +1307,13 @@ When sponsee revokes access:
 
 **Tradeoffs:**
 
-* Sponsor still saw content before revocation (unavoidable)
-* Could add expiration timestamps for auto-revoke
-* No way to "unsend" — this is by design (matches real-world)
+- Sponsor still saw content before revocation (unavoidable)
+- Could add expiration timestamps for auto-revoke
+- No way to "unsend" — this is by design (matches real-world)
 
-* * *
+---
 
-C. Offline Queue + Conflict Resolution Spec
--------------------------------------------
+## C. Offline Queue + Conflict Resolution Spec
 
 **Phase:** Foundation  
 **Effort:** 2-3 weeks  
@@ -1397,20 +1341,20 @@ C. Offline Queue + Conflict Resolution Spec
 
 **Why not pure event sourcing:**
 
-* Overkill for journal entries
-* Increases storage and complexity
-* Harder to query and display
+- Overkill for journal entries
+- Increases storage and complexity
+- Harder to query and display
 
 **Why not pure last-write-wins:**
 
-* Loses data silently
-* Bad UX for concurrent edits
+- Loses data silently
+- Bad UX for concurrent edits
 
 **Hybrid approach:**
 
-* Store full document state (atomic)
-* Include `localVersion` counter
-* On conflict: compare versions, prompt user if needed
+- Store full document state (atomic)
+- Include `localVersion` counter
+- On conflict: compare versions, prompt user if needed
 
 ### C.3 Conflict Detection Algorithm
 
@@ -1422,22 +1366,22 @@ C. Offline Queue + Conflict Resolution Spec
       if (deepEqual(localDoc.content, remoteDoc.content)) {
         return 'identical';
       }
-    
+
       // Case 2: Local is superset (append-only)
       // e.g., local has everything remote has, plus more at the end
       if (isAppendOnly(localDoc, remoteDoc)) {
         return 'mergeable'; // Keep local
       }
-    
+
       // Case 3: Remote is superset (we're behind)
       if (isAppendOnly(remoteDoc, localDoc)) {
         return 'mergeable'; // Keep remote
       }
-    
+
       // Case 4: True conflict
       return 'conflict';
     }
-    
+
     function isAppendOnly(newer: Document, older: Document): boolean {
       // For text fields: check if newer starts with older's content
       // For arrays: check if newer contains all of older's items in order
@@ -1468,7 +1412,8 @@ C. Offline Queue + Conflict Resolution Spec
     │  └──────────┘ └──────────┘ └──────────────┘                │
     └──────────────────────────────────────────────────────────────┘
 
-**Keep Both:** Creates a merged document with both versions separated by timestamp markers.
+**Keep Both:** Creates a merged document with both versions separated by
+timestamp markers.
 
 ### C.5 Code Skeletons
 
@@ -1477,14 +1422,14 @@ C. Offline Queue + Conflict Resolution Spec
     // hooks/use-offline-queue.ts
     import { useState, useEffect, useCallback } from 'react';
     import { openDB, IDBPDatabase } from 'idb';
-    
+
     interface QueueState {
       pending: number;
       syncing: number;
       failed: number;
       conflicts: QueueItem[];
     }
-    
+
     export function useOfflineQueue() {
       const [db, setDb] = useState<IDBPDatabase | null>(null);
       const [state, setState] = useState<QueueState>({
@@ -1493,7 +1438,7 @@ C. Offline Queue + Conflict Resolution Spec
         failed: 0,
         conflicts: [],
       });
-    
+
       // Initialize IndexedDB
       useEffect(() => {
         const initDb = async () => {
@@ -1503,7 +1448,7 @@ C. Offline Queue + Conflict Resolution Spec
               const queueStore = db.createObjectStore('queue', { keyPath: 'id' });
               queueStore.createIndex('status', 'status');
               queueStore.createIndex('timestamp', 'timestamp');
-    
+
               // Documents store (local cache)
               const docsStore = db.createObjectStore('documents', { keyPath: 'id' });
               docsStore.createIndex('collection', 'collection');
@@ -1514,7 +1459,7 @@ C. Offline Queue + Conflict Resolution Spec
         };
         initDb();
       }, []);
-    
+
       // Enqueue a write operation
       const enqueue = useCallback(async (
         operation: 'create' | 'update' | 'delete',
@@ -1523,7 +1468,7 @@ C. Offline Queue + Conflict Resolution Spec
         payload: Record<string, unknown>
       ): Promise<void> => {
         if (!db) throw new Error('Database not initialized');
-    
+
         const item: QueueItem = {
           id: crypto.randomUUID(),
           operation,
@@ -1536,10 +1481,10 @@ C. Offline Queue + Conflict Resolution Spec
           retryCount: 0,
           createdAt: Date.now(),
         };
-    
+
         // Write to queue
         await db.add('queue', item);
-    
+
         // Also update local document cache
         await db.put('documents', {
           id: `${collection}/${documentId}`,
@@ -1549,43 +1494,43 @@ C. Offline Queue + Conflict Resolution Spec
           updatedAt: Date.now(),
           syncStatus: 'pending',
         });
-    
+
         // Update state
         setState(prev => ({ ...prev, pending: prev.pending + 1 }));
       }, [db]);
-    
+
       // Get queue status
       const getStatus = useCallback(async (): Promise<QueueState> => {
         if (!db) return state;
-    
+
         const pending = await db.countFromIndex('queue', 'status', 'pending');
         const syncing = await db.countFromIndex('queue', 'status', 'syncing');
         const failed = await db.countFromIndex('queue', 'status', 'failed');
         const conflicts = await db.getAllFromIndex('queue', 'status', 'conflict');
-    
+
         const newState = { pending, syncing, failed, conflicts };
         setState(newState);
         return newState;
       }, [db, state]);
-    
+
       // Resolve a conflict
       const resolveConflict = useCallback(async (
         itemId: string,
         resolution: 'keep_local' | 'keep_remote' | 'keep_both'
       ): Promise<void> => {
         if (!db) throw new Error('Database not initialized');
-    
+
         const item = await db.get('queue', itemId);
         if (!item || item.status !== 'conflict') return;
-    
+
         // Handle resolution based on choice
         // ... implementation depends on resolution type
-    
+
         // Remove from queue after resolution
         await db.delete('queue', itemId);
         await getStatus();
       }, [db, getStatus]);
-    
+
       return {
         enqueue,
         getStatus,
@@ -1600,19 +1545,19 @@ C. Offline Queue + Conflict Resolution Spec
     // lib/sync/sync-worker.ts
     import { db as firestore } from '@/lib/firebase';
     import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-    
+
     const RETRY_DELAYS = [1000, 5000, 15000, 60000, 300000];
-    
+
     export class SyncWorker {
       private db: IDBPDatabase;
       private isProcessing = false;
       private networkStatus: 'online' | 'offline' = 'online';
-    
+
       constructor(db: IDBPDatabase) {
         this.db = db;
         this.setupNetworkListener();
       }
-    
+
       private setupNetworkListener() {
         window.addEventListener('online', () => {
           this.networkStatus = 'online';
@@ -1622,14 +1567,14 @@ C. Offline Queue + Conflict Resolution Spec
           this.networkStatus = 'offline';
         });
       }
-    
+
       async processQueue(): Promise<void> {
         if (this.isProcessing || this.networkStatus === 'offline') return;
         this.isProcessing = true;
-    
+
         try {
           const pendingItems = await this.db.getAllFromIndex('queue', 'status', 'pending');
-    
+
           for (const item of pendingItems) {
             await this.processItem(item);
           }
@@ -1637,11 +1582,11 @@ C. Offline Queue + Conflict Resolution Spec
           this.isProcessing = false;
         }
       }
-    
+
       private async processItem(item: QueueItem): Promise<void> {
         // Mark as syncing
         await this.db.put('queue', { ...item, status: 'syncing' });
-    
+
         try {
           // Check for conflicts first
           const conflict = await this.checkConflict(item);
@@ -1649,10 +1594,10 @@ C. Offline Queue + Conflict Resolution Spec
             await this.db.put('queue', { ...item, status: 'conflict' });
             return;
           }
-    
+
           // Perform Firestore operation
           const docRef = doc(firestore, `users/${item.payload.uid}/${item.collection}/${item.documentId}`);
-    
+
           switch (item.operation) {
             case 'create':
             case 'update':
@@ -1666,46 +1611,46 @@ C. Offline Queue + Conflict Resolution Spec
               await deleteDoc(docRef);
               break;
           }
-    
+
           // Success: remove from queue
           await this.db.delete('queue', item.id);
-    
+
           // Update local doc status
           const localDocKey = `${item.collection}/${item.documentId}`;
           const localDoc = await this.db.get('documents', localDocKey);
           if (localDoc) {
             await this.db.put('documents', { ...localDoc, syncStatus: 'synced' });
           }
-    
+
         } catch (error) {
           await this.handleError(item, error);
         }
       }
-    
+
       private async checkConflict(item: QueueItem): Promise<boolean> {
         const docRef = doc(firestore, `users/${item.payload.uid}/${item.collection}/${item.documentId}`);
         const remoteSnap = await getDoc(docRef);
-    
+
         if (!remoteSnap.exists()) {
           return false; // No remote doc, no conflict
         }
-    
+
         const remoteData = remoteSnap.data();
         const remoteVersion = remoteData.localVersion || 0;
-    
+
         // If remote version is newer than what we based our edit on
         // AND content differs meaningfully, it's a conflict
         if (remoteVersion > item.localVersion) {
           // Run conflict detection algorithm
           return detectConflict(item.payload, remoteData) === 'conflict';
         }
-    
+
         return false;
       }
-    
+
       private async handleError(item: QueueItem, error: unknown): Promise<void> {
         const newRetryCount = item.retryCount + 1;
-    
+
         if (newRetryCount >= RETRY_DELAYS.length) {
           // Max retries reached
           await this.db.put('queue', {
@@ -1722,17 +1667,16 @@ C. Offline Queue + Conflict Resolution Spec
             retryCount: newRetryCount,
             lastError: String(error),
           });
-    
+
           // Delay next attempt
           setTimeout(() => this.processQueue(), RETRY_DELAYS[newRetryCount]);
         }
       }
     }
 
-* * *
+---
 
-D. Encryption & Passcode System
--------------------------------
+## D. Encryption & Passcode System
 
 **Phase:** Phase 2 (after offline-first is stable)  
 **Effort:** 3-4 weeks  
@@ -1756,16 +1700,16 @@ D. Encryption & Passcode System
 
 **What it does:**
 
-* User sets a 4-6 digit PIN when enabling "Vault Mode"
-* Sensitive areas (Step 4, Amends List) require PIN entry
-* Optional: FaceID/TouchID bypass after initial PIN setup
+- User sets a 4-6 digit PIN when enabling "Vault Mode"
+- Sensitive areas (Step 4, Amends List) require PIN entry
+- Optional: FaceID/TouchID bypass after initial PIN setup
 
 **Implementation:**
 
-* Store PIN hash in device Keychain (iOS) / Keystore (Android)
-* For PWA: Use `window.crypto.subtle` to derive key from PIN
-* Session timeout: 5 minutes of inactivity = re-lock
-* No cloud storage of PIN or derived key
+- Store PIN hash in device Keychain (iOS) / Keystore (Android)
+- For PWA: Use `window.crypto.subtle` to derive key from PIN
+- Session timeout: 5 minutes of inactivity = re-lock
+- No cloud storage of PIN or derived key
 
 **No encryption yet** — just access control. This ships fast and validates UX.
 
@@ -1773,24 +1717,18 @@ D. Encryption & Passcode System
 
 **What it does:**
 
-* Sensitive documents encrypted at rest in IndexedDB
-* Same content encrypted before upload to Firestore
-* Decryption requires passcode/biometric
+- Sensitive documents encrypted at rest in IndexedDB
+- Same content encrypted before upload to Firestore
+- Decryption requires passcode/biometric
 
-**Architecture:**
-    User PIN → PBKDF2 (100k iterations) → Master Key (AES-256)
-                                               │
-                                               ▼
-                                  Encrypt Document Key (per doc)
-                                               │
-                                               ▼
-                                  Document Key encrypts content
+**Architecture:** User PIN → PBKDF2 (100k iterations) → Master Key (AES-256) │ ▼
+Encrypt Document Key (per doc) │ ▼ Document Key encrypts content
 
 **Why per-document keys:**
 
-* Rotating master key doesn't require re-encrypting everything
-* Can share specific docs without exposing others
-* Smaller blast radius if one key leaked
+- Rotating master key doesn't require re-encrypting everything
+- Can share specific docs without exposing others
+- Smaller blast radius if one key leaked
 
 ### D.3 Recovery Model (Critical)
 
@@ -1819,7 +1757,8 @@ D. Encryption & Passcode System
 | Cloud escrow           | Can recover via email/phone | Privacy concern, single point of failure |
 | Both (optional escrow) | Flexibility                 | Complexity, may confuse users            |
 
-**Recommendation:** Recovery key only, with strong UX around saving it. Consider optional export-encrypted-backup as fallback.
+**Recommendation:** Recovery key only, with strong UX around saving it. Consider
+optional export-encrypted-backup as fallback.
 
 ### D.4 Key Storage by Platform
 
@@ -1830,11 +1769,12 @@ D. Encryption & Passcode System
 | Native (iOS)     | Keychain Services    | User saves externally |
 | Native (Android) | Android Keystore     | User saves externally |
 
-**PWA Limitation:** No secure key storage. `localStorage` can be read by any JS on the page. Mitigations:
+**PWA Limitation:** No secure key storage. `localStorage` can be read by any JS
+on the page. Mitigations:
 
-* Clear key on page unload
-* Short session timeouts
-* Require PIN re-entry frequently
+- Clear key on page unload
+- Short session timeouts
+- Require PIN re-entry frequently
 
 **This is a strong argument for native apps for users who want encryption.**
 
@@ -1842,25 +1782,25 @@ D. Encryption & Passcode System
 
 **Phase 1 (Passcode Gate Only):**
 
-* Nothing encrypted, just access-controlled
+- Nothing encrypted, just access-controlled
 
 **Phase 2 (Selective Encryption):**
 
-* Step 4 inventory entries (resentments, fears, sex conduct)
-* Step 8/9 amends lists
-* Any entry user explicitly marks "sensitive"
+- Step 4 inventory entries (resentments, fears, sex conduct)
+- Step 8/9 amends lists
+- Any entry user explicitly marks "sensitive"
 
 **Phase 3 (Optional Full Encryption):**
 
-* All journal entries
-* All step work
+- All journal entries
+- All step work
 
-**Trade-off:** More encryption = more complexity = harder recovery. Default to selective.
+**Trade-off:** More encryption = more complexity = harder recovery. Default to
+selective.
 
-* * *
+---
 
-E. Exports / PDF Generation / Metadata Hygiene
-----------------------------------------------
+## E. Exports / PDF Generation / Metadata Hygiene
 
 **Phase:** Can ship incrementally with each feature  
 **Effort:** 2 weeks for core PDF system  
@@ -1868,9 +1808,8 @@ E. Exports / PDF Generation / Metadata Hygiene
 
 ### E.1 PDF Generation Approach
 
-**PWA (Recommended): jsPDF + html2canvas**
-    import jsPDF from 'jspdf';
-    import html2canvas from 'html2canvas';
+**PWA (Recommended): jsPDF + html2canvas** import jsPDF from 'jspdf'; import
+html2canvas from 'html2canvas';
 
     async function exportToPdf(elementId: string, filename: string): Promise<void> {
       const element = document.getElementById(elementId);
@@ -1900,8 +1839,8 @@ E. Exports / PDF Generation / Metadata Hygiene
 
 **Alternative: pdf-lib (for structured PDFs)**
 
-Better for multi-page documents with consistent styling:
-    import { PDFDocument, StandardFonts } from 'pdf-lib';
+Better for multi-page documents with consistent styling: import { PDFDocument,
+StandardFonts } from 'pdf-lib';
 
     async function createStepWorkPdf(stepWork: StepWork): Promise<Uint8Array> {
       const pdf = await PDFDocument.create();
@@ -1922,8 +1861,8 @@ Better for multi-page documents with consistent styling:
       return pdf.save();
     }
 
-**Native (Capacitor):** Use native print dialog:
-    import { Printer } from '@capacitor-community/printer';
+**Native (Capacitor):** Use native print dialog: import { Printer } from
+'@capacitor-community/printer';
 
     async function printDocument(html: string): Promise<void> {
       await Printer.print({ content: html });
@@ -1941,17 +1880,12 @@ Better for multi-page documents with consistent styling:
 | PDF modification dates | Usage patterns       | Set to creation date   |
 | Filename patterns      | Content inference    | User-controlled naming |
 
-**Implementation:**
-    // For images embedded in exports
-    async function stripImageMetadata(imageBlob: Blob): Promise<Blob> {
-      const img = await createImageBitmap(imageBlob);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0);
-      return new Promise(resolve => canvas.toBlob(resolve!, 'image/jpeg', 0.9));
-    }
+**Implementation:** // For images embedded in exports async function
+stripImageMetadata(imageBlob: Blob): Promise<Blob> { const img = await
+createImageBitmap(imageBlob); const canvas = document.createElement('canvas');
+canvas.width = img.width; canvas.height = img.height; const ctx =
+canvas.getContext('2d')!; ctx.drawImage(img, 0, 0); return new Promise(resolve
+=> canvas.toBlob(resolve!, 'image/jpeg', 0.9)); }
 
     // For PDFs
     function setPdfMetadata(pdf: jsPDF): void {
@@ -1976,7 +1910,7 @@ Better for multi-page documents with consistent styling:
       excludedFields: string[]; // Fields user chose to omit
       watermark?: string; // "Shared with [sponsor name] on [date]"
     }
-    
+
     interface PacketSection {
       heading: string;
       content: string | StructuredContent;
@@ -1984,34 +1918,21 @@ Better for multi-page documents with consistent styling:
     }
 
 **User Selection Flow:**
-    ┌─────────────────────────────────────────────────────────────┐
-    │              Create Packet for Sponsor                      │
-    ├─────────────────────────────────────────────────────────────┤
-    │                                                             │
-    │  Select what to include:                                    │
-    │                                                             │
-    │  ☑ Step 4 Resentment Inventory                            │
-    │    ☑ Names/People                                         │
-    │    ☐ Specific incidents (exclude)                         │
-    │    ☑ My part                                              │
-    │                                                             │
-    │  ☐ Step 4 Fear Inventory                                  │
-    │                                                             │
-    │  ☑ Journal entries (Jan 15-20)                            │
-    │    ☑ Mood stamps                                          │
-    │    ☑ Notes                                                │
-    │    ☐ Check-ins (exclude)                                  │
-    │                                                             │
-    │  ┌──────────────────┐ ┌──────────────────────────┐        │
-    │  │ Preview Packet   │ │ Share with [Sponsor]     │        │
-    │  └──────────────────┘ └──────────────────────────┘        │
-    └─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐ │ Create Packet
+for Sponsor │ ├─────────────────────────────────────────────────────────────┤ │
+│ │ Select what to include: │ │ │ │ ☑ Step 4 Resentment Inventory │ │ ☑
+Names/People │ │ ☐ Specific incidents (exclude) │ │ ☑ My part │ │ │ │ ☐ Step 4
+Fear Inventory │ │ │ │ ☑ Journal entries (Jan 15-20) │ │ ☑ Mood stamps │ │ ☑
+Notes │ │ ☐ Check-ins (exclude) │ │ │ │ ┌──────────────────┐
+┌──────────────────────────┐ │ │ │ Preview Packet │ │ Share with [Sponsor] │ │ │
+└──────────────────┘ └──────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
 
 ### E.4 Sharing Integration
 
-**PWA (Web Share API):**
-    async function sharePacket(packet: SponsorPacket, pdfBlob: Blob): Promise<void> {
-      const file = new File([pdfBlob], `${packet.title}.pdf`, { type: 'application/pdf' });
+**PWA (Web Share API):** async function sharePacket(packet: SponsorPacket,
+pdfBlob: Blob): Promise<void> { const file = new File([pdfBlob],
+`${packet.title}.pdf`, { type: 'application/pdf' });
 
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
@@ -2030,8 +1951,7 @@ Better for multi-page documents with consistent styling:
       }
     }
 
-**Native (Capacitor Share):**
-    import { Share } from '@capacitor/share';
+**Native (Capacitor Share):** import { Share } from '@capacitor/share';
 
     await Share.share({
       title: packet.title,
@@ -2040,10 +1960,9 @@ Better for multi-page documents with consistent styling:
       dialogTitle: 'Share with sponsor',
     });
 
-* * *
+---
 
-F. Analytics Plan
------------------
+## F. Analytics Plan
 
 **Phase:** Can implement immediately (low effort)  
 **Effort:** 1 week  
@@ -2055,11 +1974,11 @@ F. Analytics Plan
 
 **Why Firebase Analytics:**
 
-* Already integrated with Firebase
-* Free tier is generous
-* Automatic session/engagement tracking
-* Works offline (queues events)
-* Privacy controls available
+- Already integrated with Firebase
+- Free tier is generous
+- Automatic session/engagement tracking
+- Works offline (queues events)
+- Privacy controls available
 
 **Alternative Considered:**
 
@@ -2074,10 +1993,10 @@ F. Analytics Plan
 
 **Principles:**
 
-* Track ACTIONS, not CONTENT
-* No PII in event properties
-* No journal text, no names
-* Aggregate where possible
+- Track ACTIONS, not CONTENT
+- No PII in event properties
+- No journal text, no names
+- Aggregate where possible
 
 | Event Name               | Properties                            | Purpose             |
 | ------------------------ | ------------------------------------- | ------------------- |
@@ -2105,7 +2024,7 @@ F. Analytics Plan
     // lib/analytics.ts
     import { logEvent, setUserProperties, setUserId } from 'firebase/analytics';
     import { analytics } from '@/lib/firebase';
-    
+
     export const Analytics = {
       // Never log content, only actions
       journalEntryCreated(type: string, hasMood: boolean, hasText: boolean) {
@@ -2115,14 +2034,14 @@ F. Analytics Plan
           has_text: hasText,
         });
       },
-    
+
       syncFailed(errorType: string, retryCount: number) {
         logEvent(analytics, 'sync_failed', {
           error_type: errorType,
           retry_count: retryCount,
         });
       },
-    
+
       // Set user properties (aggregate, not PII)
       setUserContext(fellowship: string, hasCleanDate: boolean) {
         setUserProperties(analytics, {
@@ -2137,27 +2056,15 @@ F. Analytics Plan
 **Default:** Analytics ON (with disclosure in onboarding)
 
 **Settings Screen:**
-    ┌─────────────────────────────────────────────────────────────┐
-    │  Privacy Settings                                           │
-    ├─────────────────────────────────────────────────────────────┤
-    │                                                             │
-    │  📊 Usage Analytics                              [ON]       │
-    │  Help improve SoNash by sharing anonymous usage data.       │
-    │  We never collect your journal content or personal info.    │
-    │                                                             │
-    │  What we collect:                                           │
-    │  • Which features you use                                   │
-    │  • App performance and errors                               │
-    │  • Sync success/failure rates                               │
-    │                                                             │
-    │  What we never collect:                                     │
-    │  • Journal entries or notes                                 │
-    │  • Names, locations, or contact info                        │
-    │  • Sponsor relationships                                    │
-    │                                                             │
-    │  [View Privacy Policy]                                      │
-    │                                                             │
-    └─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐ │ Privacy
+Settings │ ├─────────────────────────────────────────────────────────────┤ │ │ │
+📊 Usage Analytics [ON] │ │ Help improve SoNash by sharing anonymous usage data.
+│ │ We never collect your journal content or personal info. │ │ │ │ What we
+collect: │ │ • Which features you use │ │ • App performance and errors │ │ •
+Sync success/failure rates │ │ │ │ What we never collect: │ │ • Journal entries
+or notes │ │ • Names, locations, or contact info │ │ • Sponsor relationships │ │
+│ │ [View Privacy Policy] │ │ │
+└─────────────────────────────────────────────────────────────┘
 
 ### F.5 Retention Policy
 
@@ -2168,10 +2075,9 @@ F. Analytics Plan
 | Crash reports       | 90 days   | Sentry default   |
 | Performance metrics | 30 days   | Rolling window   |
 
-* * *
+---
 
-G. Tech Debt / Quality Gates
-----------------------------
+## G. Tech Debt / Quality Gates
 
 **Phase:** Ongoing (start now)  
 **Effort:** Continuous  
@@ -2179,14 +2085,12 @@ G. Tech Debt / Quality Gates
 
 ### G.1 Incremental Adoption Plan
 
-**Principle:** No big bang rewrites. Each feature ships behind a flag.
-    // lib/feature-flags.ts
-    export const FeatureFlags = {
-      OFFLINE_FIRST: process.env.NEXT_PUBLIC_FF_OFFLINE_FIRST === 'true',
-      ENCRYPTION: process.env.NEXT_PUBLIC_FF_ENCRYPTION === 'true',
-      SPONSOR_SHARING: process.env.NEXT_PUBLIC_FF_SPONSOR_SHARING === 'true',
-      PDF_EXPORT: process.env.NEXT_PUBLIC_FF_PDF_EXPORT === 'true',
-    };
+**Principle:** No big bang rewrites. Each feature ships behind a flag. //
+lib/feature-flags.ts export const FeatureFlags = { OFFLINE_FIRST:
+process.env.NEXT_PUBLIC_FF_OFFLINE_FIRST === 'true', ENCRYPTION:
+process.env.NEXT_PUBLIC_FF_ENCRYPTION === 'true', SPONSOR_SHARING:
+process.env.NEXT_PUBLIC_FF_SPONSOR_SHARING === 'true', PDF_EXPORT:
+process.env.NEXT_PUBLIC_FF_PDF_EXPORT === 'true', };
 
     // Usage
     if (FeatureFlags.OFFLINE_FIRST) {
@@ -2206,14 +2110,11 @@ G. Tech Debt / Quality Gates
 
 ### G.2 Testing Plan
 
-**Unit Tests (Jest):**
-    // tests/sync/conflict-resolver.test.ts
-    describe('ConflictResolver', () => {
-      it('detects identical documents', () => {
-        const local = { content: 'hello', version: 1 };
-        const remote = { content: 'hello', version: 1 };
-        expect(detectConflict(local, remote)).toBe('identical');
-      });
+**Unit Tests (Jest):** // tests/sync/conflict-resolver.test.ts
+describe('ConflictResolver', () => { it('detects identical documents', () => {
+const local = { content: 'hello', version: 1 }; const remote = { content:
+'hello', version: 1 }; expect(detectConflict(local, remote)).toBe('identical');
+});
 
       it('detects append-only as mergeable', () => {
         const local = { content: 'hello world', version: 2 };
@@ -2228,9 +2129,8 @@ G. Tech Debt / Quality Gates
       });
     });
 
-**Emulator Tests (Firebase):**
-    // tests/firestore/sync.emulator.test.ts
-    import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
+**Emulator Tests (Firebase):** // tests/firestore/sync.emulator.test.ts import {
+initializeTestEnvironment } from '@firebase/rules-unit-testing';
 
     describe('Sync with Firestore', () => {
       let testEnv;
@@ -2247,11 +2147,9 @@ G. Tech Debt / Quality Gates
       });
     });
 
-**E2E Tests (Playwright):**
-    // e2e/offline-sync.spec.ts
-    test('survives offline then syncs', async ({ page, context }) => {
-      // Go offline
-      await context.setOffline(true);
+**E2E Tests (Playwright):** // e2e/offline-sync.spec.ts test('survives offline
+then syncs', async ({ page, context }) => { // Go offline await
+context.setOffline(true);
 
       // Create journal entry
       await page.fill('[data-testid="journal-input"]', 'Test entry');
@@ -2269,14 +2167,8 @@ G. Tech Debt / Quality Gates
 
 ### G.3 SonarCloud Guardrails
 
-**Pre-merge Checks:**
-    # .github/workflows/quality.yml
-    jobs:
-      quality:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-node@v4
+**Pre-merge Checks:** # .github/workflows/quality.yml jobs: quality: runs-on:
+ubuntu-latest steps: - uses: actions/checkout@v4 - uses: actions/setup-node@v4
 
           - name: Install dependencies
             run: npm ci
@@ -2298,11 +2190,11 @@ G. Tech Debt / Quality Gates
 
 **Quality Gate Rules:**
 
-* No new bugs
-* No new vulnerabilities
-* No new security hotspots
-* Coverage on new code > 80%
-* Duplication on new code < 3%
+- No new bugs
+- No new vulnerabilities
+- No new security hotspots
+- Coverage on new code > 80%
+- Duplication on new code < 3%
 
 ### G.4 Rollout Plan with Feature Flags
 
@@ -2314,10 +2206,9 @@ G. Tech Debt / Quality Gates
 | Sponsor Linking | `SPONSOR_SHARING` | Beta   | 10%       | Security review passed                 |
 | Encryption      | `ENCRYPTION`      | Stable | 1%        | Recovery flow tested extensively       |
 
-* * *
+---
 
-H. Future Native Path Recommendation
-------------------------------------
+## H. Future Native Path Recommendation
 
 **Phase:** After PWA is stable (Q2-Q3 2026)  
 **Effort:** 4-6 weeks for initial Capacitor wrapper  
@@ -2370,23 +2261,18 @@ H. Future Native Path Recommendation
 
 **Requirements:**
 
-* Mac with Xcode 15+
-* Apple Developer Account ($99/year)
-* Provisioning profiles and certificates
+- Mac with Xcode 15+
+- Apple Developer Account ($99/year)
+- Provisioning profiles and certificates
 
 **Options if No Mac:**
 
-* GitHub Actions with macOS runners
-* Cloud Mac services (MacStadium, MacinCloud)
-* Friend/contractor with Mac
+- GitHub Actions with macOS runners
+- Cloud Mac services (MacStadium, MacinCloud)
+- Friend/contractor with Mac
 
-**CI/CD Pipeline:**
-    # .github/workflows/ios.yml
-    jobs:
-      ios:
-        runs-on: macos-latest
-        steps:
-          - uses: actions/checkout@v4
+**CI/CD Pipeline:** # .github/workflows/ios.yml jobs: ios: runs-on: macos-latest
+steps: - uses: actions/checkout@v4
 
           - name: Setup Node
             uses: actions/setup-node@v4
@@ -2407,28 +2293,27 @@ H. Future Native Path Recommendation
 
 **Phase 1: Capacitor Wrapper (4-6 weeks)**
 
-* Export Next.js as static site
-* Add Capacitor to project
-* Replace web crypto with native secure storage
-* Replace Web Share API with native share
-* Test on real devices
+- Export Next.js as static site
+- Add Capacitor to project
+- Replace web crypto with native secure storage
+- Replace Web Share API with native share
+- Test on real devices
 
 **Phase 2: Native Features (2-4 weeks)**
 
-* Add biometric unlock
-* Add push notifications
-* Add background sync (iOS limitations apply)
+- Add biometric unlock
+- Add push notifications
+- Add background sync (iOS limitations apply)
 
 **Phase 3: Store Submission (2-3 weeks)**
 
-* App Store Connect setup
-* Privacy policy, screenshots
-* Review process (1-2 weeks)
+- App Store Connect setup
+- Privacy policy, screenshots
+- Review process (1-2 weeks)
 
-* * *
+---
 
-I. What You're Missing
-----------------------
+## I. What You're Missing
 
 **Questions/risks to decide later, with reasonable defaults provided.**
 
@@ -2460,16 +2345,15 @@ I. What You're Missing
 
 ### I.3 Decisions Punted (Intentionally)
 
-* **AI features:** Not implementing now. Design allows for future addition.
-* **Multiple sponsor support:** Data model supports it, UI can come later.
-* **Group/family sharing:** Not in scope. Individual recovery focus.
-* **Web dashboard for sponsors:** Mobile-first. Web can come later.
-* **Internationalization:** English only initially. Structure allows i18n later.
+- **AI features:** Not implementing now. Design allows for future addition.
+- **Multiple sponsor support:** Data model supports it, UI can come later.
+- **Group/family sharing:** Not in scope. Individual recovery focus.
+- **Web dashboard for sponsors:** Mobile-first. Web can come later.
+- **Internationalization:** English only initially. Structure allows i18n later.
 
-* * *
+---
 
-Appendix A: Diagram — Full System Architecture
-----------------------------------------------
+## Appendix A: Diagram — Full System Architecture
 
     ┌─────────────────────────────────────────────────────────────────────────────────┐
     │                              USER DEVICE                                        │
@@ -2529,10 +2413,9 @@ Appendix A: Diagram — Full System Architecture
     │  └─────────────────┘  └─────────────────┘  └─────────────────┘                 │
     └──────────────────────────────────────────────────────────────────────────────────┘
 
-* * *
+---
 
-Appendix B: Implementation Priority Matrix
-------------------------------------------
+## Appendix B: Implementation Priority Matrix
 
 | Feature                   | User Value  | Technical Risk | Effort  | Priority Score | Ship Order |
 | ------------------------- | ----------- | -------------- | ------- | -------------- | ---------- |
@@ -2546,10 +2429,9 @@ Appendix B: Implementation Priority Matrix
 | Document encryption       | 🟢 Nice     | High           | 3 weeks | **45**         | 8          |
 | Native (Capacitor)        | 🟢 Nice     | Medium         | 5 weeks | **40**         | 9          |
 
-* * *
+---
 
-Document Metadata
------------------
+## Document Metadata
 
 **Change Log:**
 
@@ -2559,10 +2441,10 @@ Document Metadata
 
 **Review Status:**
 
-* [ ] Technical review
-* [ ] Security review
-* [ ] UX review
-* [ ] Owner approval
+- [ ] Technical review
+- [ ] Security review
+- [ ] UX review
+- [ ] Owner approval
 
 **Next Steps:**
 
@@ -2572,119 +2454,84 @@ Document Metadata
 4. Ship behind feature flag
 5. Iterate based on real-world testing
 
-
-
 ## KIMI K2
 
+# SoNash Technical Co-Design Proposal
 
-
-SoNash Technical Co-Design Proposal
-===================================
-
-A) SYSTEM ARCHITECTURE PROPOSAL (PWA now, Native later)
--------------------------------------------------------
+## A) SYSTEM ARCHITECTURE PROPOSAL (PWA now, Native later)
 
 ### Recommended Architecture: "Offline-First with Transparent Sync"
 
-Copy
-    ┌─────────────────────────────────────────────────────────────────┐
-    │                        CLIENT LAYER                              │
-    ├─────────────────────────────────────────────────────────────────┤
-    │  UI Components (React)                                          │
-    │  ├── Notebook Shell                                            │
-    │  ├── Journal Timeline                                          │
-    │  └── Step Work Builder                                         │
-    ├─────────────────────────────────────────────────────────────────┤
-    │  State Management (Zustand + TanStack Query)                   │
-    │  ├── Local Store (IndexedDB via Dexie)                         │
-    │  ├── Sync Engine (Conflict Resolution)                         │
-    │  └── Offline Queue (Pending Operations)                        │
-    ├─────────────────────────────────────────────────────────────────┤
-    │  Service Layer                                                  │
-    │  ├── useOfflineQueue() Hook                                    │
-    │  ├── SyncWorker (Background Sync)                              │
-    │  └── Encryption Service (Vault)                                │
-    └─────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-    ┌─────────────────────────────────────────────────────────────────┐
-    │                      SYNC ADAPTER LAYER                          │
-    ├─────────────────────────────────────────────────────────────────┤
-    │  Firebase Sync Adapter                                          │
-    │  ├── Batch Write Operations                                    │
-    │  ├── Conflict Detection                                        │
-    │  └── Retry Strategy (Exponential Backoff)                      │
-    └─────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-    ┌─────────────────────────────────────────────────────────────────┐
-    │                    FIREBASE BACKEND                              │
-    ├─────────────────────────────────────────────────────────────────┤
-    │  Cloud Functions v2                                             │
-    │  ├── Security Validation (App Check + reCAPTCHA)               │
-    │  ├── Conflict Resolution API                                   │
-    │  └── Export Generation (Server-side PDF)                       │
-    │                                                                 │
-    │  Firestore                                                      │
-    │  ├── users/{uid}/journal/{entryId}                             │
-    │  ├── users/{uid}/stepwork/{stepId}                             │
-    │  └── shared/{shareId} (Sponsor Shares)                         │
-    └─────────────────────────────────────────────────────────────────┘
+Copy ┌─────────────────────────────────────────────────────────────────┐ │
+CLIENT LAYER │
+├─────────────────────────────────────────────────────────────────┤ │ UI
+Components (React) │ │ ├── Notebook Shell │ │ ├── Journal Timeline │ │ └── Step
+Work Builder │
+├─────────────────────────────────────────────────────────────────┤ │ State
+Management (Zustand + TanStack Query) │ │ ├── Local Store (IndexedDB via Dexie)
+│ │ ├── Sync Engine (Conflict Resolution) │ │ └── Offline Queue (Pending
+Operations) │
+├─────────────────────────────────────────────────────────────────┤ │ Service
+Layer │ │ ├── useOfflineQueue() Hook │ │ ├── SyncWorker (Background Sync) │ │
+└── Encryption Service (Vault) │
+└─────────────────────────────────────────────────────────────────┘ │ ▼
+┌─────────────────────────────────────────────────────────────────┐ │ SYNC
+ADAPTER LAYER │
+├─────────────────────────────────────────────────────────────────┤ │ Firebase
+Sync Adapter │ │ ├── Batch Write Operations │ │ ├── Conflict Detection │ │ └──
+Retry Strategy (Exponential Backoff) │
+└─────────────────────────────────────────────────────────────────┘ │ ▼
+┌─────────────────────────────────────────────────────────────────┐ │ FIREBASE
+BACKEND │ ├─────────────────────────────────────────────────────────────────┤ │
+Cloud Functions v2 │ │ ├── Security Validation (App Check + reCAPTCHA) │ │ ├──
+Conflict Resolution API │ │ └── Export Generation (Server-side PDF) │ │ │ │
+Firestore │ │ ├── users/{uid}/journal/{entryId} │ │ ├──
+users/{uid}/stepwork/{stepId} │ │ └── shared/{shareId} (Sponsor Shares) │
+└─────────────────────────────────────────────────────────────────┘
 
 ### Data Flow Architecture
 
-Copy
-    WRITE FLOW:
-    User Input → Local Store (IndexedDB) → Offline Queue → 
-    Background Sync → Firebase → Conflict Resolution → Local Update
+Copy WRITE FLOW: User Input → Local Store (IndexedDB) → Offline Queue →
+Background Sync → Firebase → Conflict Resolution → Local Update
 
     READ FLOW:
-    User Request → Local Store (immediate) → 
+    User Request → Local Store (immediate) →
     Background Refresh → Firebase (if online) → Local Update
 
 ### iOS PWA Constraints & Mitigation
 
 **Constraint 1: 50MB IndexedDB Limit**
 
-* **Mitigation**: Implement LRU cache with user-configurable retention
+- **Mitigation**: Implement LRU cache with user-configurable retention
 
-* **Code**: Size-aware eviction in sync worker
+- **Code**: Size-aware eviction in sync worker
 
-* **UX**: "Storage Settings" shows usage breakdown
+- **UX**: "Storage Settings" shows usage breakdown
 
 **Constraint 2: No Background Sync**
 
-* **Mitigation**: Aggressive sync on app focus + beforeunload handler
+- **Mitigation**: Aggressive sync on app focus + beforeunload handler
 
-* **Code**: `visibilitychange` listener triggers sync
+- **Code**: `visibilitychange` listener triggers sync
 
-* **UX**: "Sync Pending" badge when leaving app
+- **UX**: "Sync Pending" badge when leaving app
 
 **Constraint 3: Service Worker Installation Prompt**
 
-* **Mitigation**: Custom install UI with clear value proposition
+- **Mitigation**: Custom install UI with clear value proposition
 
-* **Code**: `beforeinstallprompt` handler with custom UI
+- **Code**: `beforeinstallprompt` handler with custom UI
 
-* **UX**: "Install for Offline Access" banner
+- **UX**: "Install for Offline Access" banner
 
 ### Implementation Notes
 
 TypeScript
 
-Copy
-    // Core offline queue structure
-    interface OfflineQueueItem {
-      id: string;
-      operation: 'create' | 'update' | 'delete';
-      collection: string;
-      docId: string;
-      data: any;
-      timestamp: number;
-      retryCount: number;
-      status: 'pending' | 'syncing' | 'failed' | 'resolved';
-      conflictResolution?: 'local' | 'remote' | 'both';
-    }
+Copy // Core offline queue structure interface OfflineQueueItem { id: string;
+operation: 'create' | 'update' | 'delete'; collection: string; docId: string;
+data: any; timestamp: number; retryCount: number; status: 'pending' | 'syncing'
+| 'failed' | 'resolved'; conflictResolution?: 'local' | 'remote' | 'both'; }
 
     // Sync status for UI
     interface SyncStatus {
@@ -2693,55 +2540,28 @@ Copy
       lastSync: number | null;
       error: string | null;
     }
-B) DATA MODEL + FIRESTORE RULES DIRECTION
------------------------------------------
+
+## B) DATA MODEL + FIRESTORE RULES DIRECTION
 
 ### Firestore Collection Structure
 
-Copy
-    users/{uid}/
-    ├── profile/                    # Minimal profile data
-    │   ├── createdAt: timestamp
-    │   ├── lastSeen: timestamp
-    │   ├── settings: {
-    │   │   ├── offlineRetentionDays: number (default: 90)
-    │   │   ├── syncEnabled: boolean (default: true)
-    │   │   └── encryptionEnabled: boolean (default: false)
-    │   │   }
-    │   └── stats: {
-    │       ├── totalEntries: number
-    │       ├── lastEntryDate: timestamp
-    │       └── syncStatus: string
-    │       }
-    │
-    ├── journal/{entryId}/          # Journal entries
-    │   ├── type: 'mood' | 'note' | 'spotcheck' | 'inventory'
-    │   ├── content: string         # Encrypted if vault enabled
-    │   ├── metadata: {
-    │   │   ├── mood?: number
-    │   │   ├── craving?: number
-    │   │   └── location?: GeoPoint (approximate)
-    │   │   }
-    │   ├── localTimestamp: timestamp
-    │   ├── syncedAt?: timestamp
-    │   └── encryption?: 'vault' | 'none'
-    │
-    ├── stepwork/{stepId}/          # Step work packets
-    │   ├── stepNumber: number      # 1-12
-    │   ├── title: string
-    │   ├── content: string         # Encrypted for Step 4/5/8/9
-    │   ├── status: 'draft' | 'ready' | 'shared' | 'completed'
-    │   ├── sharedWith?: string[]   # sponsor UIDs
-    │   ├── shareExpiry?: timestamp
-    │   └── encryption: 'vault' | 'none'
-    │
-    ├── offlinequeue/{itemId}/      # Offline queue (auto-cleaned)
-    │   └── [OfflineQueueItem structure]
-    │
-    └── syncstate/                  # Sync metadata
-        ├── lastFullSync: timestamp
-        ├── pendingCount: number
-        └── conflictCount: number
+Copy users/{uid}/ ├── profile/ # Minimal profile data │ ├── createdAt: timestamp
+│ ├── lastSeen: timestamp │ ├── settings: { │ │ ├── offlineRetentionDays: number
+(default: 90) │ │ ├── syncEnabled: boolean (default: true) │ │ └──
+encryptionEnabled: boolean (default: false) │ │ } │ └── stats: { │ ├──
+totalEntries: number │ ├── lastEntryDate: timestamp │ └── syncStatus: string │ }
+│ ├── journal/{entryId}/ # Journal entries │ ├── type: 'mood' | 'note' |
+'spotcheck' | 'inventory' │ ├── content: string # Encrypted if vault enabled │
+├── metadata: { │ │ ├── mood?: number │ │ ├── craving?: number │ │ └──
+location?: GeoPoint (approximate) │ │ } │ ├── localTimestamp: timestamp │ ├──
+syncedAt?: timestamp │ └── encryption?: 'vault' | 'none' │ ├──
+stepwork/{stepId}/ # Step work packets │ ├── stepNumber: number # 1-12 │ ├──
+title: string │ ├── content: string # Encrypted for Step 4/5/8/9 │ ├── status:
+'draft' | 'ready' | 'shared' | 'completed' │ ├── sharedWith?: string[] # sponsor
+UIDs │ ├── shareExpiry?: timestamp │ └── encryption: 'vault' | 'none' │ ├──
+offlinequeue/{itemId}/ # Offline queue (auto-cleaned) │ └── [OfflineQueueItem
+structure] │ └── syncstate/ # Sync metadata ├── lastFullSync: timestamp ├──
+pendingCount: number └── conflictCount: number
 
     shared/{shareId}/               # Sponsor sharing (immutable)
     ├── sponsorId: string           # Who shared with
@@ -2764,32 +2584,31 @@ Copy
 
 **Row-Level Security:**
 
-* Users access only their `users/{uid}` subtree
+- Users access only their `users/{uid}` subtree
 
-* Sponsor access only via explicit `shared/{shareId}` documents
+- Sponsor access only via explicit `shared/{shareId}` documents
 
-* No collection-level queries across users
+- No collection-level queries across users
 
 **Sponsor Access Control:**
 
-* Sponsee creates `shared/{shareId}` with `sponsorId`
+- Sponsee creates `shared/{shareId}` with `sponsorId`
 
-* Sponsor can read only active (non-revoked) shares
+- Sponsor can read only active (non-revoked) shares
 
-* Revocation = set `revokedAt: timestamp`
+- Revocation = set `revokedAt: timestamp`
 
-* Automatic expiry via `expiresAt`
+- Automatic expiry via `expiresAt`
 
 **Minimal PII:**
 
-* No email, phone, or real names in Firestore
+- No email, phone, or real names in Firestore
 
-* Anonymous auth UIDs only
+- Anonymous auth UIDs only
 
-* Location data approximate (city-level)
+- Location data approximate (city-level)
 
-C) OFFLINE QUEUE + CONFLICT RESOLUTION SPEC
--------------------------------------------
+## C) OFFLINE QUEUE + CONFLICT RESOLUTION SPEC
 
 ### Queue Implementation Strategy: "Event Sourcing Lite"
 
@@ -2797,16 +2616,10 @@ We use an append-only event log with deterministic conflict resolution:
 
 TypeScript
 
-Copy
-    // Event-based offline operations
-    interface OfflineEvent {
-      id: string;
-      type: 'journal_create' | 'journal_update' | 'stepwork_update';
-      payload: any;
-      timestamp: number;  // Local timestamp
-      vectorClock: number; // Monotonic counter
-      userId: string;
-    }
+Copy // Event-based offline operations interface OfflineEvent { id: string;
+type: 'journal_create' | 'journal_update' | 'stepwork_update'; payload: any;
+timestamp: number; // Local timestamp vectorClock: number; // Monotonic counter
+userId: string; }
 
     // Conflict resolution result
     interface ConflictResolution {
@@ -2819,10 +2632,8 @@ Copy
 
 TypeScript
 
-Copy
-    function detectConflict(local: any, remote: any): ConflictType {
-      // Same content = no conflict
-      if (deepEqual(local, remote)) return 'none';
+Copy function detectConflict(local: any, remote: any): ConflictType { // Same
+content = no conflict if (deepEqual(local, remote)) return 'none';
 
       // Local has remote + additional content = auto-merge
       if (isSuperset(local, remote)) return 'local_superset';
@@ -2843,15 +2654,10 @@ Copy
 
 TypeScript
 
-Copy
-    export function useOfflineQueue() {
-      const [queue, setQueue] = useState<OfflineQueueItem[]>([]);
-      const [syncStatus, setSyncStatus] = useState<SyncStatus>({
-        status: 'online',
-        pendingCount: 0,
-        lastSync: null,
-        error: null
-      });
+Copy export function useOfflineQueue() { const [queue, setQueue] =
+useState<OfflineQueueItem[]>([]); const [syncStatus, setSyncStatus] =
+useState<SyncStatus>({ status: 'online', pendingCount: 0, lastSync: null, error:
+null });
 
       // Add item to queue
       const queueOperation = useCallback(async (operation: QueueOperation) => {
@@ -2899,9 +2705,8 @@ Copy
 
 TypeScript
 
-Copy
-    function ConflictResolver({ conflict, onResolve }: Props) {
-      const [choice, setChoice] = useState<'local' | 'remote' | 'both' | null>(null);
+Copy function ConflictResolver({ conflict, onResolve }: Props) { const [choice,
+setChoice] = useState<'local' | 'remote' | 'both' | null>(null);
 
       return (
         <div className="conflict-resolution-ui">
@@ -2936,35 +2741,33 @@ Copy
         </div>
       );
     }
-D) ENCRYPTION & PASSCODE SYSTEM (WITH RECOVERY)
------------------------------------------------
+
+## D) ENCRYPTION & PASSCODE SYSTEM (WITH RECOVERY)
 
 ### Phased Encryption Plan
 
 **Phase 1: Vault-Based Encryption (Months 1-2)**
 
-* Optional encrypted "vault" for sensitive categories
+- Optional encrypted "vault" for sensitive categories
 
-* Passcode-protected with recovery key
+- Passcode-protected with recovery key
 
-* AES-256-GCM encryption with PBKDF2 key derivation
+- AES-256-GCM encryption with PBKDF2 key derivation
 
 **Phase 2: Extended Encryption (Months 3-4)**
 
-* Expand to more field types based on user feedback
+- Expand to more field types based on user feedback
 
-* Biometric unlock option
+- Biometric unlock option
 
-* Secure export with encryption
+- Secure export with encryption
 
 ### Recovery Model: "Recovery Key + Device Keychain"
 
 TypeScript
 
-Copy
-    interface EncryptionConfig {
-      // Master encryption key (never stored directly)
-      masterKey: CryptoKey;
+Copy interface EncryptionConfig { // Master encryption key (never stored
+directly) masterKey: CryptoKey;
 
       // Recovery key (shown once to user)
       recoveryKey: string; // 24-word mnemonic
@@ -2984,9 +2787,7 @@ Copy
 
 TypeScript
 
-Copy
-    class EncryptionService {
-      private masterKey: CryptoKey | null = null;
+Copy class EncryptionService { private masterKey: CryptoKey | null = null;
 
       async initialize(passcode: string, recoveryKey?: string): Promise<void> {
         if (recoveryKey) {
@@ -3036,38 +2837,37 @@ Copy
 
 **Device Theft:**
 
-* ✅ Passcode required on app launch
+- ✅ Passcode required on app launch
 
-* ✅ Device keychain encryption
+- ✅ Device keychain encryption
 
-* ✅ Optional biometric protection
+- ✅ Optional biometric protection
 
 **Shared Phone:**
 
-* ✅ Separate app passcode (not device PIN)
+- ✅ Separate app passcode (not device PIN)
 
-* ✅ Auto-lock after 5 minutes
+- ✅ Auto-lock after 5 minutes
 
-* ✅ No sensitive data in notifications
+- ✅ No sensitive data in notifications
 
 **Sponsor Misuse:**
 
-* ✅ Explicit sharing only (no live access)
+- ✅ Explicit sharing only (no live access)
 
-* ✅ Share expiry dates
+- ✅ Share expiry dates
 
-* ✅ Revocation capability
+- ✅ Revocation capability
 
 **Accidental Export Leaks:**
 
-* ✅ PDF watermarking with user name/date
+- ✅ PDF watermarking with user name/date
 
-* ✅ No metadata in exports
+- ✅ No metadata in exports
 
-* ✅ Optional password protection on PDFs
+- ✅ Optional password protection on PDFs
 
-E) EXPORTS / PDF GENERATION / METADATA HYGIENE
-----------------------------------------------
+## E) EXPORTS / PDF GENERATION / METADATA HYGIENE
 
 ### Local PDF Generation Approach
 
@@ -3075,9 +2875,7 @@ E) EXPORTS / PDF GENERATION / METADATA HYGIENE
 
 TypeScript
 
-Copy
-    import jsPDF from 'jspdf';
-    import html2canvas from 'html2canvas';
+Copy import jsPDF from 'jspdf'; import html2canvas from 'html2canvas';
 
     async function generateLocalPDF(content: string, options: PDFOptions): Promise<Blob> {
       const pdf = new jsPDF({
@@ -3130,14 +2928,8 @@ Copy
 
 TypeScript
 
-Copy
-    interface SponsorPacket {
-      title: string;
-      sponseeName: string;
-      generatedAt: string;
-      sections: PacketSection[];
-      watermark?: string;
-    }
+Copy interface SponsorPacket { title: string; sponseeName: string; generatedAt:
+string; sections: PacketSection[]; watermark?: string; }
 
     interface PacketSection {
       title: string;
@@ -3186,10 +2978,9 @@ Copy
 
 TypeScript
 
-Copy
-    async function sharePDF(pdfBlob: Blob, filename: string): Promise<void> {
-      if (navigator.share && navigator.canShare) {
-        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+Copy async function sharePDF(pdfBlob: Blob, filename: string): Promise<void> {
+if (navigator.share && navigator.canShare) { const file = new File([pdfBlob],
+filename, { type: 'application/pdf' });
 
         if (navigator.canShare({ files: [file] })) {
           await navigator.share({
@@ -3206,26 +2997,25 @@ Copy
 
 **Native (Capacitor/Expo):**
 
-* Use native share sheet
+- Use native share sheet
 
-* Integrate with system email/messaging
+- Integrate with system email/messaging
 
-* Handle large files via system file providers
+- Handle large files via system file providers
 
-F) ANALYTICS PLAN (PRIVACY-FORWARD)
------------------------------------
+## F) ANALYTICS PLAN (PRIVACY-FORWARD)
 
 ### Recommended Tooling: Firebase Analytics + Custom Events
 
 **Why Firebase Analytics:**
 
-* Already integrated with Firebase stack
+- Already integrated with Firebase stack
 
-* Privacy-forward by default (no personal data)
+- Privacy-forward by default (no personal data)
 
-* Free tier sufficient for our needs
+- Free tier sufficient for our needs
 
-* GDPR compliant with proper configuration
+- GDPR compliant with proper configuration
 
 ### Event Taxonomy (Action-Based Only)
 
@@ -3253,10 +3043,8 @@ Copy
 
 TypeScript
 
-Copy
-    // Analytics service wrapper
-    class PrivacyAnalytics {
-      private analytics: FirebaseAnalytics;
+Copy // Analytics service wrapper class PrivacyAnalytics { private analytics:
+FirebaseAnalytics;
 
       constructor() {
         this.analytics = getAnalytics(app);
@@ -3301,17 +3089,16 @@ Copy
 
 TypeScript
 
-Copy
-    function AnalyticsConsent() {
-      const [consent, setConsent] = useState<'pending' | 'granted' | 'denied'>('pending');
+Copy function AnalyticsConsent() { const [consent, setConsent] =
+useState<'pending' | 'granted' | 'denied'>('pending');
 
       if (consent === 'pending') {
         return (
           <div className="analytics-consent">
             <h3>Help Improve SoNash</h3>
             <p>
-              We'd like to collect anonymous usage data to improve the app. 
-              This includes feature usage, performance metrics, and error reports. 
+              We'd like to collect anonymous usage data to improve the app.
+              This includes feature usage, performance metrics, and error reports.
               No personal content or identifying information is collected.
             </p>
             <div className="consent-buttons">
@@ -3332,69 +3119,66 @@ Copy
 
 ### Data Retention Policy
 
-* Analytics events: 14 months (Firebase default)
+- Analytics events: 14 months (Firebase default)
 
-* Error logs: 90 days
+- Error logs: 90 days
 
-* Sync metadata: 30 days
+- Sync metadata: 30 days
 
-* All data anonymized (no IP addresses, no user IDs)
+- All data anonymized (no IP addresses, no user IDs)
 
-G) TECH DEBT / QUALITY GATES
-----------------------------
+## G) TECH DEBT / QUALITY GATES
 
 ### Incremental Adoption Plan
 
 **Phase 1: Foundation (Weeks 1-2)**
 
-* Set up IndexedDB with Dexie
+- Set up IndexedDB with Dexie
 
-* Implement basic offline queue
+- Implement basic offline queue
 
-* Add sync status UI
+- Add sync status UI
 
-* **Quality Gates**: Unit tests for queue operations, no SonarCloud regressions
+- **Quality Gates**: Unit tests for queue operations, no SonarCloud regressions
 
 **Phase 2: Sync Engine (Weeks 3-4)**
 
-* Implement conflict detection
+- Implement conflict detection
 
-* Add background sync worker
+- Add background sync worker
 
-* Basic conflict resolution UI
+- Basic conflict resolution UI
 
-* **Quality Gates**: Integration tests with Firebase emulator, performance benchmarks
+- **Quality Gates**: Integration tests with Firebase emulator, performance
+  benchmarks
 
 **Phase 3: Encryption (Weeks 5-6)**
 
-* Add vault encryption service
+- Add vault encryption service
 
-* Implement recovery key flow
+- Implement recovery key flow
 
-* Encrypt sensitive step work
+- Encrypt sensitive step work
 
-* **Quality Gates**: Security audit, recovery testing, accessibility review
+- **Quality Gates**: Security audit, recovery testing, accessibility review
 
 **Phase 4: Advanced Features (Weeks 7-8)**
 
-* PDF generation
+- PDF generation
 
-* Sponsor sharing
+- Sponsor sharing
 
-* Analytics integration
+- Analytics integration
 
-* **Quality Gates**: End-to-end tests, privacy audit, user acceptance testing
+- **Quality Gates**: End-to-end tests, privacy audit, user acceptance testing
 
 ### Testing Strategy
 
 TypeScript
 
-Copy
-    // Unit test example for offline queue
-    describe('useOfflineQueue', () => {
-      it('should queue operation when offline', async () => {
-        // Mock offline state
-        mockNetworkStatus(false);
+Copy // Unit test example for offline queue describe('useOfflineQueue', () => {
+it('should queue operation when offline', async () => { // Mock offline state
+mockNetworkStatus(false);
 
         const { queueOperation } = renderHook(() => useOfflineQueue());
 
@@ -3422,15 +3206,9 @@ Copy
 
 TypeScript
 
-Copy
-    // Feature flag service
-    class FeatureFlags {
-      private flags: Record<string, boolean> = {
-        'offlineQueue': false,
-        'encryptionVault': false,
-        'sponsorSharing': false,
-        'localPDF': false
-      };
+Copy // Feature flag service class FeatureFlags { private flags: Record<string,
+boolean> = { 'offlineQueue': false, 'encryptionVault': false, 'sponsorSharing':
+false, 'localPDF': false };
 
       async initialize(): Promise<void> {
         // Check remote config or use local defaults
@@ -3461,9 +3239,7 @@ Copy
 
 yaml
 
-Copy
-    # .github/workflows/quality-gates.yml
-    name: Quality Gates
+Copy # .github/workflows/quality-gates.yml name: Quality Gates
 
     on: [push, pull_request]
 
@@ -3482,31 +3258,27 @@ Copy
           - name: Check quality gate
             run: |
               # Fail if new critical issues introduced          if [ ${{ steps.sonarcloud.outputs.quality-gate-status }} == 'ERROR' ]; then            echo "Quality gate failed - new critical issues detected"            exit 1          fi
-H) FUTURE NATIVE PATH RECOMMENDATION
-------------------------------------
+
+## H) FUTURE NATIVE PATH RECOMMENDATION
 
 ### Recommended Approach: Expo React Native
 
 **Why Expo over Capacitor:**
 
-* Better offline-first support (SQLite, secure storage)
+- Better offline-first support (SQLite, secure storage)
 
-* Superior biometric integration
+- Superior biometric integration
 
-* More predictable performance
+- More predictable performance
 
-* Better debugging tools
+- Better debugging tools
 
-* Easier native module integration
+- Easier native module integration
 
 **Migration Strategy: "Shared Core, Native Shell"**
 
-Copy
-    Shared Business Logic (80%)
-    ├── hooks/useOfflineQueue.ts
-    ├── lib/encryptionService.ts
-    ├── lib/syncEngine.ts
-    └── utils/conflictResolution.ts
+Copy Shared Business Logic (80%) ├── hooks/useOfflineQueue.ts ├──
+lib/encryptionService.ts ├── lib/syncEngine.ts └── utils/conflictResolution.ts
 
     Platform-Specific (20%)
     ├── Storage: IndexedDB → SQLite
@@ -3518,40 +3290,35 @@ Copy
 
 **Phase 1: Core Extraction (Weeks 1-3)**
 
-* Extract business logic to platform-agnostic modules
+- Extract business logic to platform-agnostic modules
 
-* Create React Native compatible components
+- Create React Native compatible components
 
-* Set up shared TypeScript configuration
+- Set up shared TypeScript configuration
 
 **Phase 2: Native Shell (Weeks 4-6)**
 
-* Create Expo app with same routing structure
+- Create Expo app with same routing structure
 
-* Implement platform-specific storage layer
+- Implement platform-specific storage layer
 
-* Add biometric authentication
+- Add biometric authentication
 
 **Phase 3: Feature Parity (Weeks 7-10)**
 
-* Port all features to native
+- Port all features to native
 
-* Ensure data format compatibility
+- Ensure data format compatibility
 
-* Test cross-platform sync
+- Test cross-platform sync
 
 ### Code Example: Platform Abstraction
 
 TypeScript
 
-Copy
-    // Shared interface
-    interface IStorage {
-      getItem(key: string): Promise<string | null>;
-      setItem(key: string, value: string): Promise<void>;
-      removeItem(key: string): Promise<void>;
-      clear(): Promise<void>;
-    }
+Copy // Shared interface interface IStorage { getItem(key: string):
+Promise<string | null>; setItem(key: string, value: string): Promise<void>;
+removeItem(key: string): Promise<void>; clear(): Promise<void>; }
 
     // Web implementation
     class IndexedDBStorage implements IStorage {
@@ -3586,14 +3353,9 @@ Copy
 
 TypeScript
 
-Copy
-    // Shared biometric interface
-    interface IBiometrics {
-      isAvailable(): Promise<boolean>;
-      authenticate(reason: string): Promise<boolean>;
-      storeKey(key: string): Promise<void>;
-      retrieveKey(): Promise<string | null>;
-    }
+Copy // Shared biometric interface interface IBiometrics { isAvailable():
+Promise<boolean>; authenticate(reason: string): Promise<boolean>; storeKey(key:
+string): Promise<void>; retrieveKey(): Promise<string | null>; }
 
     // Native implementation (Expo)
     class ExpoBiometrics implements IBiometrics {
@@ -3612,264 +3374,302 @@ Copy
         });
       }
     }
-I) "WHAT I'M MISSING" - Technical Risks & Decisions
----------------------------------------------------
+
+## I) "WHAT I'M MISSING" - Technical Risks & Decisions
 
 ### 1. **IndexedDB Reliability on Mobile**
 
-**Risk**: iOS Safari clears IndexedDB in low storage scenarios **Default**: Implement aggressive backup to cloud + warn users about storage **Decision Needed**: Define backup frequency and user communication strategy
+**Risk**: iOS Safari clears IndexedDB in low storage scenarios **Default**:
+Implement aggressive backup to cloud + warn users about storage **Decision
+Needed**: Define backup frequency and user communication strategy
 
 ### 2. **Encryption Key Rotation**
 
-**Risk**: Long-term key exposure without rotation **Default**: Annual rotation with user notification **Decision Needed**: Whether to implement automatic rotation
+**Risk**: Long-term key exposure without rotation **Default**: Annual rotation
+with user notification **Decision Needed**: Whether to implement automatic
+rotation
 
 ### 3. **GDPR/Data Deletion Compliance**
 
-**Risk**: User right to be forgotten vs. encrypted backups **Default**: Allow account deletion, keep encrypted backups for 30 days **Decision Needed**: Legal review of retention policies
+**Risk**: User right to be forgotten vs. encrypted backups **Default**: Allow
+account deletion, keep encrypted backups for 30 days **Decision Needed**: Legal
+review of retention policies
 
 ### 4. **Sync Performance at Scale**
 
-**Risk**: Queue performance degradation with 1000+ pending items **Default**: Implement queue pagination + background processing **Decision Needed**: Performance benchmarks and optimization triggers
+**Risk**: Queue performance degradation with 1000+ pending items **Default**:
+Implement queue pagination + background processing **Decision Needed**:
+Performance benchmarks and optimization triggers
 
 ### 5. **Sponsor Relationship Abuse**
 
-**Risk**: Sponsors pressuring sponsees for access **Default**: No live access, explicit sharing only, easy revocation **Decision Needed**: Whether to add relationship counseling resources
+**Risk**: Sponsors pressuring sponsees for access **Default**: No live access,
+explicit sharing only, easy revocation **Decision Needed**: Whether to add
+relationship counseling resources
 
 ### 6. **Export File Size Limits**
 
-**Risk**: Large exports failing on mobile devices **Default**: Chunk exports into 5MB pieces, compress where possible **Decision Needed**: Maximum export size and user expectations
+**Risk**: Large exports failing on mobile devices **Default**: Chunk exports
+into 5MB pieces, compress where possible **Decision Needed**: Maximum export
+size and user expectations
 
 ### 7. **Offline Map Data for Meetings**
 
-**Risk**: Meeting finder requires online maps **Default**: Cache meeting list offline, show addresses only when offline **Decision Needed**: Whether to bundle offline map tiles
+**Risk**: Meeting finder requires online maps **Default**: Cache meeting list
+offline, show addresses only when offline **Decision Needed**: Whether to bundle
+offline map tiles
 
 ### 8. **Biometric Fallback Strategy**
 
-**Risk**: Biometric sensor failure locking users out **Default**: Always allow passcode fallback, recovery key option **Decision Needed**: Whether to require passcode setup with biometrics
+**Risk**: Biometric sensor failure locking users out **Default**: Always allow
+passcode fallback, recovery key option **Decision Needed**: Whether to require
+passcode setup with biometrics
 
 ### 9. **Cross-Platform Data Migration**
 
-**Risk**: Users switching between web and native apps **Default**: Cloud sync handles migration automatically **Decision Needed**: Whether to provide manual export/import tools
+**Risk**: Users switching between web and native apps **Default**: Cloud sync
+handles migration automatically **Decision Needed**: Whether to provide manual
+export/import tools
 
 ### 10. **Crisis Resource Integration**
 
-**Risk**: Offline users unable to access crisis resources **Default**: Bundle essential crisis resources offline **Decision Needed**: Which resources to include and update frequency
+**Risk**: Offline users unable to access crisis resources **Default**: Bundle
+essential crisis resources offline **Decision Needed**: Which resources to
+include and update frequency
 
-* * *
+---
 
-Summary Recommendations
------------------------
+## Summary Recommendations
 
 1. **Start with IndexedDB + Firebase sync** - proven, reliable, good PWA support
 
-2. **Implement vault encryption early** - builds user trust, differentiates product
+2. **Implement vault encryption early** - builds user trust, differentiates
+   product
 
 3. **Use Expo for native path** - best offline support, shared codebase
 
 4. **Focus on sponsor sharing UX** - explicit controls build trust
 
-5. **Keep analytics minimal** - privacy-first approach aligns with recovery values
+5. **Keep analytics minimal** - privacy-first approach aligns with recovery
+   values
 
 6. **Plan for incremental rollout** - feature flags prevent quality regressions
 
-The architecture proposed balances offline-first reliability with cloud sync convenience, maintains privacy-sacred principles, and provides a clear path to native apps without major rewrites.
-
-
-
-
+The architecture proposed balances offline-first reliability with cloud sync
+convenience, maintains privacy-sacred principles, and provides a clear path to
+native apps without major rewrites.
 
 ## PERPLEXITY
-
-
 
 A) SYSTEM ARCHITECTURE PROPOSAL (PWA now, Native later)  
 (offline-first data layer, sync engine, queues)
 
 **(1) Recommended choice**  
-Use a “local-first core” in the browser: IndexedDB + an outbox queue + Firestore as the cloud source of truth, with a thin sync engine and explicit status surfaced in the notebook UI.​​
+Use a “local-first core” in the browser: IndexedDB + an outbox queue + Firestore
+as the cloud source of truth, with a thin sync engine and explicit status
+surfaced in the notebook UI.​​
 
 **(2) Why**
 
-* IndexedDB can store structured objects and large volumes (hundreds of MB on most platforms), making it appropriate for heavy journaling and step work.​
+- IndexedDB can store structured objects and large volumes (hundreds of MB on
+  most platforms), making it appropriate for heavy journaling and step work.​
 
-* A dedicated outbox avoids coupling UX to Firestore’s built-in offline persistence, which is good but opaque and LWW-only; you need deterministic conflict policies and visible queue state for trust.​[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
+- A dedicated outbox avoids coupling UX to Firestore’s built-in offline
+  persistence, which is good but opaque and LWW-only; you need deterministic
+  conflict policies and visible queue state for
+  trust.​[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
 
 **(3) Tradeoffs**
 
-* IndexedDB is less reliable on iOS PWAs (quota ~50 MB cache, aggressive eviction, IndexedDB bugs), so you must treat offline as “best-effort” on iOS and message that clearly.​
+- IndexedDB is less reliable on iOS PWAs (quota ~50 MB cache, aggressive
+  eviction, IndexedDB bugs), so you must treat offline as “best-effort” on iOS
+  and message that clearly.​
 
-* Maintaining your own sync engine adds complexity (queue, conflict resolver, retries) but gives you the control you need for sensitive, user-controlled recovery data.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​​
+- Maintaining your own sync engine adds complexity (queue, conflict resolver,
+  retries) but gives you the control you need for sensitive, user-controlled
+  recovery
+  data.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​​
 
 **(4) Implementation notes**
 
 **Architecture sketch (PWA)**
 
 text
-              `┌─────────────────────────────┐              │   React / Next.js UI        │              │  (journal, step4, exports)  │              └─────────────┬───────────────┘                            │             Reads          │      Writes (intent)                            ▼                 ┌────────────────────┐                 │   Data Layer       │                 │                    │                 │  - localStore      │                 │    (IndexedDB)     │                 │  - outbox queue    │                 │  - sync engine     │                 └─────────┬──────────┘                           │                 Online    │       Offline                           ▼                 ┌─────────────────────┐                 │   Firestore         │                 │ (Auth + Rules)      │                 └─────────────────────┘`
+`┌─────────────────────────────┐              │   React / Next.js UI        │              │  (journal, step4, exports)  │              └─────────────┬───────────────┘                            │             Reads          │      Writes (intent)                            ▼                 ┌────────────────────┐                 │   Data Layer       │                 │                    │                 │  - localStore      │                 │    (IndexedDB)     │                 │  - outbox queue    │                 │  - sync engine     │                 └─────────┬──────────┘                           │                 Online    │       Offline                           ▼                 ┌─────────────────────┐                 │   Firestore         │                 │ (Auth + Rules)      │                 └─────────────────────┘`
 
-* **Data layer (client)**
-  
-  * `localStore`: IndexedDB wrapper with typed stores (`journalEntries`, `stepPackets`, `sponsorShares`, `outbox`, `syncLog`).
-  
-  * `syncEngine`: monitors network + auth; flushes `outbox` to Firestore with retry/backoff and conflict detection.
-  
-  * `statusBus`: in-memory store (e.g., Zustand or simple context) that exposes per-item sync state for UI badges.​
+- **Data layer (client)**
+  - `localStore`: IndexedDB wrapper with typed stores
+    (`journalEntries`, `stepPackets`, `sponsorShares`, `outbox`, `syncLog`).
+  - `syncEngine`: monitors network + auth; flushes `outbox` to Firestore with
+    retry/backoff and conflict detection.
+  - `statusBus`: in-memory store (e.g., Zustand or simple context) that exposes
+    per-item sync state for UI badges.​
 
-* **Write pipeline**
-  
-  1. User action → create “intent” mutation (`operationId`, `docId`, `type`, `payload`, `baseVersion`).
-  
-  2. Immediately apply optimistic update to IndexedDB + in-memory store, mark status `pending`.
-  
+- **Write pipeline**
+  1. User action → create “intent” mutation
+     (`operationId`, `docId`, `type`, `payload`, `baseVersion`).
+  2. Immediately apply optimistic update to IndexedDB + in-memory store, mark
+     status `pending`.
   3. Outbox worker attempts upload when `navigator.onLine && userAuthReady`.
-  
-  4. On success → update local doc `version`, mark `synced`. On conflict → run resolver (see C).​[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
+  4. On success → update local doc `version`, mark `synced`. On conflict → run
+     resolver (see
+     C).​[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
 
-* **Read pipeline**
-  
-  * Default reads hit IndexedDB; Firestore is used as a background “hydration” source, streaming changes into localStore when online.
-  
-  * For newly signed-in users or re-installs, run a one-time “warm sync”: pull recent docs from Firestore, merge into local.​
+- **Read pipeline**
+  - Default reads hit IndexedDB; Firestore is used as a background “hydration”
+    source, streaming changes into localStore when online.
+  - For newly signed-in users or re-installs, run a one-time “warm sync”: pull
+    recent docs from Firestore, merge into local.​
 
-* **Background sync & retries**
-  
-  * Use a dedicated `syncWorker` (custom hook + possibly Background Sync API when supported) that:
-    
-    * Flushes outbox in small batches (e.g., 10 ops) with exponential backoff.
-    
-    * Marks items `failed` after N attempts and exposes them to the “Sync & Storage” screen for user actions (retry / discard).[](https://dev.to/tianyaschool/pwa-offline-storage-strategies-indexeddb-and-cache-api-3570)​​
+- **Background sync & retries**
+  - Use a dedicated `syncWorker` (custom hook + possibly Background Sync API
+    when supported) that:
+    - Flushes outbox in small batches (e.g., 10 ops) with exponential backoff.
+    - Marks items `failed` after N attempts and exposes them to the “Sync &
+      Storage” screen for user actions (retry /
+      discard).[](https://dev.to/tianyaschool/pwa-offline-storage-strategies-indexeddb-and-cache-api-3570)​​
 
-* **Queue visibility UX**
-  
-  * Global indicator in notebook chrome: e.g., “All changes synced”, “3 items pending”, “1 failed”.
-  
-  * Per-entry pill: `pending`, `synced`, `conflict`.
-  
-  * “Sync & Storage” screen exposing: local size estimate, last sync time, queue depth, and a “Retry all” button.​
+- **Queue visibility UX**
+  - Global indicator in notebook chrome: e.g., “All changes synced”, “3 items
+    pending”, “1 failed”.
+  - Per-entry pill: `pending`, `synced`, `conflict`.
+  - “Sync & Storage” screen exposing: local size estimate, last sync time, queue
+    depth, and a “Retry all” button.​
 
-* **iOS PWA constraints & mitigation**
-  
-  * iOS may evict PWA storage (Cache + IndexedDB) if unused for ~7–30 days; quota is low and behavior inconsistent.​
-  
-  * Mitigations:
-    
-    * Encourage “install to Home Screen” and regular use; clearly message risk in “Sync & Storage” on iOS.
-    
-    * Keep assets cache small; prioritize data in IndexedDB vs Cache API.
-    
-    * Provide explicit “Export encrypted backup” so users can backup locally (e.g., to Files) before OS wipes.[](https://vinova.sg/navigating-safari-ios-pwa-limitations/)​​
+- **iOS PWA constraints & mitigation**
+  - iOS may evict PWA storage (Cache + IndexedDB) if unused for ~7–30 days;
+    quota is low and behavior inconsistent.​
+  - Mitigations:
+    - Encourage “install to Home Screen” and regular use; clearly message risk
+      in “Sync & Storage” on iOS.
+    - Keep assets cache small; prioritize data in IndexedDB vs Cache API.
+    - Provide explicit “Export encrypted backup” so users can backup locally
+      (e.g., to Files) before OS
+      wipes.[](https://vinova.sg/navigating-safari-ios-pwa-limitations/)​​
 
-* **Native later**
-  
-  * Same conceptual model: replace IndexedDB with SQLite/EncryptedStore and keep Firestore + outbox pattern; see H.​
+- **Native later**
+  - Same conceptual model: replace IndexedDB with SQLite/EncryptedStore and keep
+    Firestore + outbox pattern; see H.​
 
 B) DATA MODEL + FIRESTORE RULES DIRECTION
 
 **(1) Recommended choice**  
-Model user data as mostly user-scoped collections with “share artifacts” for sponsors; avoid direct sponsor read of primary journals. Use minimal PII on user documents.​
+Model user data as mostly user-scoped collections with “share artifacts” for
+sponsors; avoid direct sponsor read of primary journals. Use minimal PII on user
+documents.​
 
 **(2) Why**
 
-* User-scoped collections align with current rules (“all data user-scoped by uid”) and keep row-level isolation simple.​
+- User-scoped collections align with current rules (“all data user-scoped by
+  uid”) and keep row-level isolation simple.​
 
-* A separate “share” layer lets you define exactly what a sponsor sees, with revocation and audit-friendly metadata.​
+- A separate “share” layer lets you define exactly what a sponsor sees, with
+  revocation and audit-friendly metadata.​
 
 **(3) Tradeoffs**
 
-* Slight duplication for derived views (e.g., summary packets) but far simpler than complex row-level sharing inside core docs.
+- Slight duplication for derived views (e.g., summary packets) but far simpler
+  than complex row-level sharing inside core docs.
 
-* More collections mean more indices and some higher read costs, but volume is likely modest versus trust benefits.​
+- More collections mean more indices and some higher read costs, but volume is
+  likely modest versus trust benefits.​
 
 **(4) Implementation notes**
 
 **Collections (high level)**
 
-* `users/{uid}`
-  
-  * Fields: `nickname`, `createdAt`, `stageOfRecovery`, `hasSponsor`, `quickActionsPreferences`, minimal contact info.​
-  
-  * No email/phone unless absolutely needed; rely on Firebase Auth for email.
+- `users/{uid}`
+  - Fields: `nickname`, `createdAt`, `stageOfRecovery`, `hasSponsor`, `quickActionsPreferences`,
+    minimal contact info.​
+  - No email/phone unless absolutely needed; rely on Firebase Auth for email.
 
-* `users/{uid}/journalEntries/{entryId}`
-  
-  * For all “timeline” items: moods, nightly review, notes; field `entryType` to distinguish.​
-  
-  * Peer to `inventoryEntries` if you decide to separate Step 4 (but start with a single journal collection + `category` for simplicity).
+- `users/{uid}/journalEntries/{entryId}`
+  - For all “timeline” items: moods, nightly review, notes; field `entryType` to
+    distinguish.​
+  - Peer to `inventoryEntries` if you decide to separate Step 4 (but start with
+    a single journal collection + `category` for simplicity).
 
-* `users/{uid}/stepPackets/{packetId}`
-  
-  * Structured Step 4 (and later 8–9) worksheets with sections (`resentments`, `fears`, etc.) stored as arrays/objects, plus `version`, `updatedAt`, `sensitive: true`.
+- `users/{uid}/stepPackets/{packetId}`
+  - Structured Step 4 (and later 8–9) worksheets with sections
+    (`resentments`, `fears`, etc.) stored as arrays/objects,
+    plus `version`, `updatedAt`, `sensitive: true`.
 
-* `users/{uid}/sponsorProfiles/{sponsorId}`
-  
-  * Sponsee’s view of sponsor contact info, preferences; not visible to sponsor directly (informational only).
+- `users/{uid}/sponsorProfiles/{sponsorId}`
+  - Sponsee’s view of sponsor contact info, preferences; not visible to sponsor
+    directly (informational only).
 
-* `users/{uid}/exports/{exportId}`
-  
-  * Metadata only: `type` (pdf, text), `createdAt`, `scope` (packet, date range), `sizeBytes`, `destination` (local, share sheet). No content.​
+- `users/{uid}/exports/{exportId}`
+  - Metadata only: `type` (pdf, text), `createdAt`, `scope` (packet, date
+    range), `sizeBytes`, `destination` (local, share sheet). No content.​
 
-* `users/{uid}/syncEvents/{eventId}`
-  
-  * Non-sensitive sync telemetry: `type` (`sync_success`, `sync_failed`, `conflict`), `queueDepth`, timestamps.​
+- `users/{uid}/syncEvents/{eventId}`
+  - Non-sensitive sync
+    telemetry: `type` (`sync_success`, `sync_failed`, `conflict`), `queueDepth`,
+    timestamps.​
 
-* `sponsorLinks/{linkId}`
-  
-  * Represents a sponsee↔sponsor relationship and explicit share scope.
-  
-  * Fields: `sponseeUid`, `sponsorUid`, `status` (`active`, `revoked`), `scopes` (e.g., `["step4_summary", "nightly_review_summary"]`), `createdAt`, `revokedAt`.
+- `sponsorLinks/{linkId}`
+  - Represents a sponsee↔sponsor relationship and explicit share scope.
+  - Fields: `sponseeUid`, `sponsorUid`, `status` (`active`, `revoked`), `scopes` (e.g., `["step4_summary", "nightly_review_summary"]`), `createdAt`, `revokedAt`.
 
-* `sponsorShares/{shareId}`
-  
-  * Concrete artifacts created at export/share time.
-  
-  * Fields: `sponseeUid`, `sponsorUid`, `linkId`, `type` (`step4_packet`, `summary_pdf`, `note`), `dataRef` (Firestore path or blob id), `createdAt`, `expiresAt`, `revoked` flag.
+- `sponsorShares/{shareId}`
+  - Concrete artifacts created at export/share time.
+  - Fields: `sponseeUid`, `sponsorUid`, `linkId`, `type` (`step4_packet`, `summary_pdf`, `note`), `dataRef` (Firestore
+    path or blob id), `createdAt`, `expiresAt`, `revoked` flag.
 
 **Rules direction (pseudo)**
 
-* **User-scoped collections**
+- **User-scoped collections**
 
 js
 
 `match /users/{uid} {   allow read, write: if request.auth.uid == uid && appCheckValid();     match /journalEntries/{entryId} {    allow read, write: if request.auth.uid == uid && appCheckValid();  }   match /stepPackets/{packetId} {    allow read, write: if request.auth.uid == uid && appCheckValid();  }   match /exports/{exportId} {    allow read, write: if request.auth.uid == uid && appCheckValid();  }   match /syncEvents/{eventId} {    allow read, write: if request.auth.uid == uid && appCheckValid();  } }`
 
-* **Sponsor relationships**
+- **Sponsor relationships**
 
 js
 
 `match /sponsorLinks/{linkId} {   allow read: if request.auth.uid in [resource.data.sponseeUid, resource.data.sponsorUid] && appCheckValid();  allow create: if request.auth.uid == request.resource.data.sponseeUid && appCheckValid();  allow update: if request.auth.uid == resource.data.sponseeUid && appCheckValid();  allow delete: if request.auth.uid == resource.data.sponseeUid && appCheckValid(); }`
 
-* **Sponsor shares**
+- **Sponsor shares**
 
 js
 
 `match /sponsorShares/{shareId} {   allow read: if appCheckValid() &&    (request.auth.uid == resource.data.sponseeUid ||     (request.auth.uid == resource.data.sponsorUid && resource.data.revoked == false));  allow create, update, delete: if request.auth.uid == request.resource.data.sponseeUid && appCheckValid(); }`
 
-* **Security posture**
-  
-  * Require App Check + auth on all user data reads/writes (re-enable App Check once prerequisites done).​
-  
-  * No direct queries from sponsor into `users/{sponseeUid}/journalEntries`; sponsor only reads `sponsorShares` that reference derived or filtered data.
-  
-  * Revocation: set `revoked: true` and optionally delete referenced artifact; sponsor dashboard hides revoked shares by default.​
-  
-  * PII minimization: keep recovery content and sponsor contact separate from identities used for auth and analytics.​
+- **Security posture**
+  - Require App Check + auth on all user data reads/writes (re-enable App Check
+    once prerequisites done).​
+  - No direct queries from sponsor into `users/{sponseeUid}/journalEntries`;
+    sponsor only reads `sponsorShares` that reference derived or filtered data.
+  - Revocation: set `revoked: true` and optionally delete referenced artifact;
+    sponsor dashboard hides revoked shares by default.​
+  - PII minimization: keep recovery content and sponsor contact separate from
+    identities used for auth and analytics.​
 
 C) OFFLINE QUEUE + CONFLICT RESOLUTION SPEC
 
 **(1) Recommended choice**  
-Use “atomic document with versioning + intent-based ops” rather than pure event sourcing, with a per-doc conflict strategy: auto-append when one side is strict prefix, otherwise user-assisted merge.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
+Use “atomic document with versioning + intent-based ops” rather than pure event
+sourcing, with a per-doc conflict strategy: auto-append when one side is strict
+prefix, otherwise user-assisted
+merge.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
 
 **(2) Why**
 
-* Step work and journal entries are document-like objects that users think of as a page, not a stream of low-level ops.
+- Step work and journal entries are document-like objects that users think of as
+  a page, not a stream of low-level ops.
 
-* Versioned atomic docs with a small, typed outbox are easier to reason about and test in your current codebase.​
+- Versioned atomic docs with a small, typed outbox are easier to reason about
+  and test in your current codebase.​
 
 **(3) Tradeoffs**
 
-* You lose some fine-grained CRDT-style merges but gain simplicity and maintainable UI.
+- You lose some fine-grained CRDT-style merges but gain simplicity and
+  maintainable UI.
 
-* Some rare conflicts will require user intervention; acceptable given the data sensitivity and need for explicitness.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
+- Some rare conflicts will require user intervention; acceptable given the data
+  sensitivity and need for
+  explicitness.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
 
 **(4) Implementation notes**
 
@@ -3881,17 +3681,14 @@ ts
 
 **Conflict detection**
 
-* Each doc has `version` and `updatedAt`.
+- Each doc has `version` and `updatedAt`.
 
-* When flushing an outbox item:
-  
-  * Fetch remote doc; compare `remote.version` vs `baseVersion`.
-  
-  * If no remote doc and opType `create` → simple create.
-  
-  * If `remote.version === baseVersion` → safe update.
-  
-  * If `remote.version > baseVersion` → potential conflict.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
+- When flushing an outbox item:
+  - Fetch remote doc; compare `remote.version` vs `baseVersion`.
+  - If no remote doc and opType `create` → simple create.
+  - If `remote.version === baseVersion` → safe update.
+  - If `remote.version > baseVersion` → potential
+    conflict.[](https://wild.codes/candidate-toolkit-question/how-do-you-design-offline-first-sync-conflict-resolution-on-firebase)​
 
 **“Same or same+additional” detection**
 
@@ -3901,27 +3698,29 @@ ts
 
 `function classifyTextConflict(local: string, remote: string) {   if (local === remote) return 'identical';   if (local.startsWith(remote)) return 'local_extends_remote';  if (remote.startsWith(local)) return 'remote_extends_local';   return 'diverged'; }`
 
-* If `identical` → mark `synced`.
+- If `identical` → mark `synced`.
 
-* If `local_extends_remote` → auto-merge: keep `local` as authoritative; send full doc with incremented `version`.
+- If `local_extends_remote` → auto-merge: keep `local` as authoritative; send
+  full doc with incremented `version`.
 
-* If `remote_extends_local` → update local doc from remote; mark outbox item `synced`.
+- If `remote_extends_local` → update local doc from remote; mark outbox
+  item `synced`.
 
-* If `diverged` → mark `conflict` and surface in UI.
+- If `diverged` → mark `conflict` and surface in UI.
 
-For structured Step 4 packets, run per-field comparison where possible (e.g., arrays of resentments by id; “append-only” lists get union semantics).
+For structured Step 4 packets, run per-field comparison where possible (e.g.,
+arrays of resentments by id; “append-only” lists get union semantics).
 
 **Merge UX**
 
-* Show “Conflict detected” banner on the entry or packet, with three choices:
-  
-  * “Keep my version” (apply local over remote, bump `version`).
-  
-  * “Keep cloud version” (overwrite local from Firestore, clear outbox item).
-  
-  * “Keep both (duplicate)” (create a new entry with suffix “(copy)” and store both).
+- Show “Conflict detected” banner on the entry or packet, with three choices:
+  - “Keep my version” (apply local over remote, bump `version`).
+  - “Keep cloud version” (overwrite local from Firestore, clear outbox item).
+  - “Keep both (duplicate)” (create a new entry with suffix “(copy)” and store
+    both).
 
-* For complex packets, present side-by-side diff at section level; default to “Keep my version” but make it explicit tap.
+- For complex packets, present side-by-side diff at section level; default to
+  “Keep my version” but make it explicit tap.
 
 **Code skeletons**
 
@@ -3946,165 +3745,185 @@ ts
 D) ENCRYPTION & PASSCODE SYSTEM (WITH RECOVERY)
 
 **(1) Recommended choice**  
-Phase 1: app-level passcode gate + category-based encrypted vault in IndexedDB for especially sensitive docs; Phase 2: extend vault coverage and add optional encrypted cloud backup with user-held recovery key.​
+Phase 1: app-level passcode gate + category-based encrypted vault in IndexedDB
+for especially sensitive docs; Phase 2: extend vault coverage and add optional
+encrypted cloud backup with user-held recovery key.​
 
 **(2) Why**
 
-* Many users need extra protection for Step 4/8–9 but full end-to-end encryption for everything would complicate sync, analytics, and recovery.
+- Many users need extra protection for Step 4/8–9 but full end-to-end encryption
+  for everything would complicate sync, analytics, and recovery.
 
-* A vault model lets you encrypt content fields while leaving some metadata (timestamps, types) usable for sync and action-based analytics.​
+- A vault model lets you encrypt content fields while leaving some metadata
+  (timestamps, types) usable for sync and action-based analytics.​
 
 **(3) Tradeoffs**
 
-* You must manage keys carefully; too strict (no recovery) = catastrophic lockout, too lax = weaker privacy.
+- You must manage keys carefully; too strict (no recovery) = catastrophic
+  lockout, too lax = weaker privacy.
 
-* Some operations (full-text search, AI later) will not work on encrypted content without additional client-side work.
+- Some operations (full-text search, AI later) will not work on encrypted
+  content without additional client-side work.
 
 **(4) Implementation notes**
 
 **Phase 1**
 
-* **Passcode gate**
-  
-  * On first use of “Protected content” (e.g., Step 4 inventory), prompt user to create a 6–10 digit passcode.
-  
-  * Derive a key with PBKDF2/scrypt and store a verifier hash in IndexedDB/localStorage; keep the actual content-encryption key in `crypto.subtle`-encrypted form.
+- **Passcode gate**
+  - On first use of “Protected content” (e.g., Step 4 inventory), prompt user to
+    create a 6–10 digit passcode.
+  - Derive a key with PBKDF2/scrypt and store a verifier hash in
+    IndexedDB/localStorage; keep the actual content-encryption key
+    in `crypto.subtle`-encrypted form.
 
-* **Vault data model**
-  
-  * For Step 4 docs:
-    
-    * Store `encryptedBody` (ciphertext), `nonce`, `encryptionVersion`, plus non-sensitive metadata (`createdAt`, `updatedAt`, `category`).
-    
-    * Local vault key decrypts body when passcode validated.
+- **Vault data model**
+  - For Step 4 docs:
+    - Store `encryptedBody` (ciphertext), `nonce`, `encryptionVersion`, plus
+      non-sensitive metadata (`createdAt`, `updatedAt`, `category`).
+    - Local vault key decrypts body when passcode validated.
 
-* **Recovery model (default)**
-  
-  * Generate a random 256-bit master key.
-  
-  * Wrap it with a key derived from the passcode (for local use) AND separately with a random “recovery key” shown to the user once as a 12-word phrase or encoded string.
-  
-  * Store the recovery-wrapped key in Firestore under `users/{uid}/keyEscrow/recoveryKeyWrapped` (encrypted blob), with strict rules (only user can read).
-  
-  * UX: “If you forget your passcode, you can restore using this recovery key; store it somewhere safe. This key is never sent to sponsors or third parties.”
+- **Recovery model (default)**
+  - Generate a random 256-bit master key.
+  - Wrap it with a key derived from the passcode (for local use) AND separately
+    with a random “recovery key” shown to the user once as a 12-word phrase or
+    encoded string.
+  - Store the recovery-wrapped key in Firestore
+    under `users/{uid}/keyEscrow/recoveryKeyWrapped` (encrypted blob), with
+    strict rules (only user can read).
+  - UX: “If you forget your passcode, you can restore using this recovery key;
+    store it somewhere safe. This key is never sent to sponsors or third
+    parties.”
 
 Threat model in Phase 1 (baseline):
 
-* Device stolen: attacker cannot open app vault without passcode or recovery key; OS-level biometrics and device encryption still help.
+- Device stolen: attacker cannot open app vault without passcode or recovery
+  key; OS-level biometrics and device encryption still help.
 
-* Shared phone: passcode gate prevents casual snooping; optionally hide app name/icon per roadmap.​
+- Shared phone: passcode gate prevents casual snooping; optionally hide app
+  name/icon per roadmap.​
 
-* Sponsor misuse: sponsors never get vault keys or raw content through the app; only see explicit exports.​
+- Sponsor misuse: sponsors never get vault keys or raw content through the app;
+  only see explicit exports.​
 
-* Accidental export leaks: PDF exports can be optionally passcode-protected (see E) and clearly labeled.
+- Accidental export leaks: PDF exports can be optionally passcode-protected (see
+  E) and clearly labeled.
 
 **Phase 2**
 
-* Optionally:
-  
-  * Allow encrypted cloud backup of vault to Firestore: encrypted bundle of all protected docs plus key-wrapped with recovery key.
-  
-  * Device-bound keys (using platform keychain) in native apps later, while keeping recovery key path consistent.
+- Optionally:
+  - Allow encrypted cloud backup of vault to Firestore: encrypted bundle of all
+    protected docs plus key-wrapped with recovery key.
+  - Device-bound keys (using platform keychain) in native apps later, while
+    keeping recovery key path consistent.
 
 **Safe default**
 
-* Require passcode for vault; offer biometric unlock where available, but never as sole factor.
+- Require passcode for vault; offer biometric unlock where available, but never
+  as sole factor.
 
-* Show clear, repeated explanation:
-  
-  * “If you lose both your passcode and recovery key, SoNash cannot recover encrypted entries.”
-  
-  * Provide easy export of recovery key to password manager / printed sheet.
+- Show clear, repeated explanation:
+  - “If you lose both your passcode and recovery key, SoNash cannot recover
+    encrypted entries.”
+  - Provide easy export of recovery key to password manager / printed sheet.
 
 E) EXPORTS / PDF GENERATION / METADATA HYGIENE
 
 **(1) Recommended choice**  
-Generate PDFs client-side (e.g., via a browser PDF generator or `pdf-lib`–style library) using in-memory data only; strip metadata and never upload the generated file to Firestore by default.[](https://dev.to/tianyaschool/pwa-offline-storage-strategies-indexeddb-and-cache-api-3570)​​
+Generate PDFs client-side (e.g., via a browser PDF generator or `pdf-lib`–style
+library) using in-memory data only; strip metadata and never upload the
+generated file to Firestore by
+default.[](https://dev.to/tianyaschool/pwa-offline-storage-strategies-indexeddb-and-cache-api-3570)​​
 
 **(2) Why**
 
-* Client-side PDF avoids sending sensitive inventory text to third-party services; no need for a server renderer for this use case.
+- Client-side PDF avoids sending sensitive inventory text to third-party
+  services; no need for a server renderer for this use case.
 
-* A local-generation baseline works both for PWA and later native, where you can map the same packet structure into native PDF APIs.
+- A local-generation baseline works both for PWA and later native, where you can
+  map the same packet structure into native PDF APIs.
 
 **(3) Tradeoffs**
 
-* Heavy PDFs (many pages, images) may be slow to generate on low-end devices.
+- Heavy PDFs (many pages, images) may be slow to generate on low-end devices.
 
-* Accessibility and pagination layout require care; you must design for simple text-first layouts.
+- Accessibility and pagination layout require care; you must design for simple
+  text-first layouts.
 
 **(4) Implementation notes**
 
-* **PDF generation** (web)
-  
-  * Use a lightweight client-side library that lets you feed text and basic layout.
-  
-  * Build a “Sponsor Packet” view as a React component, then render data into a PDF template, not by rasterizing the DOM; avoid canvas-based prints that might leak styling-specific metadata.
+- **PDF generation** (web)
+  - Use a lightweight client-side library that lets you feed text and basic
+    layout.
+  - Build a “Sponsor Packet” view as a React component, then render data into a
+    PDF template, not by rasterizing the DOM; avoid canvas-based prints that
+    might leak styling-specific metadata.
 
-* **Metadata hygiene**
-  
-  * Do not embed GPS, EXIF, or custom metadata; keep only the content plus minimal header/footer (e.g., app name, date).
-  
-  * Ensure the PDF library does not add author/creator metadata; if it does, set them to neutral values or blank.
+- **Metadata hygiene**
+  - Do not embed GPS, EXIF, or custom metadata; keep only the content plus
+    minimal header/footer (e.g., app name, date).
+  - Ensure the PDF library does not add author/creator metadata; if it does, set
+    them to neutral values or blank.
 
-* **Sponsor packet format**
-  
-  * Sections:
-    
-    * Header (user-chosen nickname only, never real name mandatory).
-    
-    * Optional statement: “This packet contains sensitive recovery work; do not redistribute without consent.”
-    
-    * Per-entry sections summarizing Step 4 or nightly review, only including fields user selected.
-  
-  * Options in UI:
-    
-    * Include/exclude “causes”, “effects”, “my part” columns.
-    
-    * An optional **watermark** string like “For sponsor review only” toggled by user.
+- **Sponsor packet format**
+  - Sections:
+    - Header (user-chosen nickname only, never real name mandatory).
+    - Optional statement: “This packet contains sensitive recovery work; do not
+      redistribute without consent.”
+    - Per-entry sections summarizing Step 4 or nightly review, only including
+      fields user selected.
 
-* **Native sharing path**
-  
-  * PWA: use Web Share API when available to share PDF blob or text; fallback: download link and “open in…” instructions.[](https://dev.to/tianyaschool/pwa-offline-storage-strategies-indexeddb-and-cache-api-3570)​
-  
-  * Native: generate PDF with the same JSON structure; use platform share sheets (iOS `UIActivityViewController`, Android `Intent`).
+  - Options in UI:
+    - Include/exclude “causes”, “effects”, “my part” columns.
+    - An optional **watermark** string like “For sponsor review only” toggled by
+      user.
 
-* **Tokenized links (later)**
-  
-  * If needed, create temporary download URLs from Storage secured by tokens, but still make “export to device + OS share” the first-class path.​
+- **Native sharing path**
+  - PWA: use Web Share API when available to share PDF blob or text; fallback:
+    download link and “open in…”
+    instructions.[](https://dev.to/tianyaschool/pwa-offline-storage-strategies-indexeddb-and-cache-api-3570)​
+  - Native: generate PDF with the same JSON structure; use platform share sheets
+    (iOS `UIActivityViewController`, Android `Intent`).
+
+- **Tokenized links (later)**
+  - If needed, create temporary download URLs from Storage secured by tokens,
+    but still make “export to device + OS share” the first-class path.​
 
 F) ANALYTICS PLAN (PRIVACY-FORWARD)
 
 **(1) Recommended choice**  
-Use Firebase Analytics with a strict client-side event schema that never includes content; optionally add PostHog or similar later for richer product analytics, keeping volume modest and documented.​
+Use Firebase Analytics with a strict client-side event schema that never
+includes content; optionally add PostHog or similar later for richer product
+analytics, keeping volume modest and documented.​
 
 **(2) Why**
 
-* Firebase Analytics is already integrated in the stack and can capture action events with low overhead.​
+- Firebase Analytics is already integrated in the stack and can capture action
+  events with low overhead.​
 
-* Your roadmap already mentions PostHog as an evaluated option; starting with Firebase only keeps cognitive load lower while honoring privacy.​
+- Your roadmap already mentions PostHog as an evaluated option; starting with
+  Firebase only keeps cognitive load lower while honoring privacy.​
 
 **(3) Tradeoffs**
 
-* Firebase Analytics has limited querying compared to dedicated tools, but sufficient for action counts and funnels.
+- Firebase Analytics has limited querying compared to dedicated tools, but
+  sufficient for action counts and funnels.
 
-* PostHog or similar adds complexity and risk of over-collection; must be carefully configured and clearly disclosed.​
+- PostHog or similar adds complexity and risk of over-collection; must be
+  carefully configured and clearly disclosed.​
 
 **(4) Implementation notes**
 
-* **Principles**
-  
-  * Only log events about actions, never content: no text snippets, no Step details.
-  
-  * Hash or generalize anything that could be identifying (e.g., sizes, counts).
-  
-  * Make analytics opt-in where possible, with a simple toggle in Settings that clearly states what is collected.​
+- **Principles**
+  - Only log events about actions, never content: no text snippets, no Step
+    details.
+  - Hash or generalize anything that could be identifying (e.g., sizes, counts).
+  - Make analytics opt-in where possible, with a simple toggle in Settings that
+    clearly states what is collected.​
 
-* **Retention**
-  
-  * Default: keep raw analytics for 6–12 months; aggregate for longer-term trends if needed.
-  
-  * Document retention policy in privacy screen and ROADMAP/SECURITY docs.​
+- **Retention**
+  - Default: keep raw analytics for 6–12 months; aggregate for longer-term
+    trends if needed.
+  - Document retention policy in privacy screen and ROADMAP/SECURITY docs.​
 
 **Event taxonomy (example)**
 
@@ -4129,145 +3948,157 @@ Use Firebase Analytics with a strict client-side event schema that never include
 G) TECH DEBT / QUALITY GATES
 
 **(1) Recommended choice**  
-Introduce offline queue + sync as a well-contained feature module and ship behind feature flags, aligning with existing CI, SonarCloud, and audit processes.​
+Introduce offline queue + sync as a well-contained feature module and ship
+behind feature flags, aligning with existing CI, SonarCloud, and audit
+processes.​
 
 **(2) Why**
 
-* Your roadmap already has “EFF-010 Implement Offline Queue” marked critical; building a dedicated module matches that and keeps blast radius small.​
+- Your roadmap already has “EFF-010 Implement Offline Queue” marked critical;
+  building a dedicated module matches that and keeps blast radius small.​
 
-* Existing tooling (tests, pattern checks, CI) is strong; piggyback on it rather than introducing new infra.​
+- Existing tooling (tests, pattern checks, CI) is strong; piggyback on it rather
+  than introducing new infra.​
 
 **(3) Tradeoffs**
 
-* Slight duplication of local data handling logic (IndexedDB vs Firestore-service) until refactor, but manageable.
+- Slight duplication of local data handling logic (IndexedDB vs
+  Firestore-service) until refactor, but manageable.
 
-* Feature flags can add branching; ensure they are removed once stable.
+- Feature flags can add branching; ensure they are removed once stable.
 
 **(4) Implementation notes**
 
-* **Incremental adoption plan**
-  
-  1. Implement `localStore` (IndexedDB wrapper) and `outboxStore`, with unit tests and emulator tests focusing on data safety.​
-  
-  2. Add `useOfflineQueue` and `syncWorker`; behind a dev feature flag (env or Firestore-config flag).
-  
-  3. Wire journal writes to queue while leaving some less-critical paths (e.g., growth tools) online-only until stable.​
+- **Incremental adoption plan**
+  1. Implement `localStore` (IndexedDB wrapper) and `outboxStore`, with unit
+     tests and emulator tests focusing on data safety.​
+  2. Add `useOfflineQueue` and `syncWorker`; behind a dev feature flag (env or
+     Firestore-config flag).
+  3. Wire journal writes to queue while leaving some less-critical paths (e.g.,
+     growth tools) online-only until stable.​
 
-* **Testing**
-  
-  * Unit tests for queue operations, conflict detection, and merge; reuse existing test harness patterns.​
-  
-  * Emulator tests simulating offline/online transitions as a dedicated suite (fulfilling EFF-011).​
+- **Testing**
+  - Unit tests for queue operations, conflict detection, and merge; reuse
+    existing test harness patterns.​
+  - Emulator tests simulating offline/online transitions as a dedicated suite
+    (fulfilling EFF-011).​
 
-* **SonarCloud / quality gates**
-  
-  * Keep sync engine small and split:
-    
-    * `offline-queue.ts` (pure data)
-    
-    * `sync-worker.ts` (side-effects)
-    
-    * `conflict-resolver.ts` (pure logic).
-  
-  * Add tests for complex branches to keep cognitive complexity in check.​
+- **SonarCloud / quality gates**
+  - Keep sync engine small and split:
+    - `offline-queue.ts` (pure data)
+    - `sync-worker.ts` (side-effects)
+    - `conflict-resolver.ts` (pure logic).
 
-* **Rollout**
-  
-  * Feature flag path: `users/{uid}/featureFlags/offlineQueueEnabled`.
-  
-  * Start with internal dogfooding + a small beta group; monitor `sync_failed`, `conflict_detected`, `queue_depth` analytics.​
+  - Add tests for complex branches to keep cognitive complexity in check.​
+
+- **Rollout**
+  - Feature flag path: `users/{uid}/featureFlags/offlineQueueEnabled`.
+  - Start with internal dogfooding + a small beta group;
+    monitor `sync_failed`, `conflict_detected`, `queue_depth` analytics.​
 
 H) FUTURE NATIVE PATH RECOMMENDATION
 
 **(1) Recommended choice**  
-Go with Expo/React Native as the primary native path, with a shared “local-first core” module reused between web and native.​
+Go with Expo/React Native as the primary native path, with a shared “local-first
+core” module reused between web and native.​
 
 **(2) Why**
 
-* You already use React/TS; RN + Expo lets you reuse business logic and even some UI concepts.​
+- You already use React/TS; RN + Expo lets you reuse business logic and even
+  some UI concepts.​
 
-* Native RN apps can use secure storage (Keychain/Keystore), local encrypted DBs (WatermelonDB, SQLite-based) and OS-level biometrics reliably, which PWAs cannot on iOS today.[](https://vinova.sg/navigating-safari-ios-pwa-limitations/)​
+- Native RN apps can use secure storage (Keychain/Keystore), local encrypted DBs
+  (WatermelonDB, SQLite-based) and OS-level biometrics reliably, which PWAs
+  cannot on iOS
+  today.[](https://vinova.sg/navigating-safari-ios-pwa-limitations/)​
 
 **(3) Tradeoffs**
 
-* Separate RN app means some duplication of UI and integration code vs. a pure web+wrapper approach (Capacitor).
+- Separate RN app means some duplication of UI and integration code vs. a pure
+  web+wrapper approach (Capacitor).
 
-* You’ll maintain two builds and deployment pipelines (web + stores).
+- You’ll maintain two builds and deployment pipelines (web + stores).
 
 **(4) Implementation notes**
 
-* **Option 1 – Web + Capacitor wrapper**
-  
-  * Pros: minimal extra work; reuse PWA as-is, add push + some native APIs.
-  
-  * Cons: iOS PWA limitations still apply inside wrapper (WebView); offline storage and biometric support remain subpar.[](https://vinova.sg/navigating-safari-ios-pwa-limitations/)​
+- **Option 1 – Web + Capacitor wrapper**
+  - Pros: minimal extra work; reuse PWA as-is, add push + some native APIs.
+  - Cons: iOS PWA limitations still apply inside wrapper (WebView); offline
+    storage and biometric support remain
+    subpar.[](https://vinova.sg/navigating-safari-ios-pwa-limitations/)​
 
-* **Option 2 – Expo/React Native (recommended)**
-  
-  * Shared modules:
-    
-    * `core-data` (TypeScript): outbox types, conflict resolution, sync protocols.
-    
-    * `core-models`: journal and step packet schemas, encryption helpers.
-  
-  * Platform-adapted parts:
-    
-    * Storage: IndexedDB (web) vs SQLite/AsyncStorage (native).
-    
-    * Encryption: WebCrypto vs native crypto + secure key storage.
-    
-    * Sharing: Web Share API vs native share sheet.
+- **Option 2 – Expo/React Native (recommended)**
+  - Shared modules:
+    - `core-data` (TypeScript): outbox types, conflict resolution, sync
+      protocols.
+    - `core-models`: journal and step packet schemas, encryption helpers.
 
-* **Option 3 – Different stack (e.g., Flutter)**
-  
-  * Pros: strong rendering, good offline;
-  
-  * Cons: heavy rewrite, no React reuse; not aligned with current stack.
+  - Platform-adapted parts:
+    - Storage: IndexedDB (web) vs SQLite/AsyncStorage (native).
+    - Encryption: WebCrypto vs native crypto + secure key storage.
+    - Sharing: Web Share API vs native share sheet.
+
+- **Option 3 – Different stack (e.g., Flutter)**
+  - Pros: strong rendering, good offline;
+  - Cons: heavy rewrite, no React reuse; not aligned with current stack.
 
 Practical path:
 
-* 2026: ship robust offline-first PWA with queue and vault.
+- 2026: ship robust offline-first PWA with queue and vault.
 
-* Parallel: extract shared logic into a library, target RN integration in a later milestone (M3/M4) once PWA stable.​
+- Parallel: extract shared logic into a library, target RN integration in a
+  later milestone (M3/M4) once PWA stable.​
 
 I) “WHAT I’M MISSING” (non-blocking questions + defaults)
 
 **1. How big can a single Step 4 packet be?**
 
-* Default: cap per-doc size to ~100–200 KB of text and encourage multiple packets for very large inventories to keep sync fast and conflicts manageable.
+- Default: cap per-doc size to ~100–200 KB of text and encourage multiple
+  packets for very large inventories to keep sync fast and conflicts manageable.
 
 **2. Do you want per-device vs per-account vault keys?**
 
-* Default: account-level vault key with device-bound cached key; easier to move between devices while still using OS security.
+- Default: account-level vault key with device-bound cached key; easier to move
+  between devices while still using OS security.
 
 **3. How aggressive should auto-lock be?**
 
-* Default: lock vault after 10 minutes of inactivity or app backgrounding; configurable in settings with clear warning that longer times reduce privacy.
+- Default: lock vault after 10 minutes of inactivity or app backgrounding;
+  configurable in settings with clear warning that longer times reduce privacy.
 
 **4. Should sponsor see real-time progress or only snapshots?**
 
-* Default: snapshots only (exports/shares) to avoid surveillance feel; later consider opt-in aggregate progress indicators (e.g., “completed X items”).​
+- Default: snapshots only (exports/shares) to avoid surveillance feel; later
+  consider opt-in aggregate progress indicators (e.g., “completed X items”).​
 
 **5. Are anonymous users allowed to use the encrypted vault?**
 
-* Default: yes, but strongly encourage setting a recovery key, since no email-based recovery is possible.
+- Default: yes, but strongly encourage setting a recovery key, since no
+  email-based recovery is possible.
 
 **6. Do you want device-level backups (iCloud/Google Drive) integrated?**
 
-* Default: provide manual encrypted backup export that users can store anywhere; postpone native cloud integrations until later.
+- Default: provide manual encrypted backup export that users can store anywhere;
+  postpone native cloud integrations until later.
 
 **7. How strict should analytics opt-in be?**
 
-* Default: analytics on with minimal collection, but prominent toggle + onboarding explanation; no analytics inside vault flows.
+- Default: analytics on with minimal collection, but prominent toggle +
+  onboarding explanation; no analytics inside vault flows.
 
 **8. How much of the app should be “offline-everything”?**
 
-* Default: make all personal content tools (journal, Step work, nightly review) available offline; treat heavy external data (meeting directory, maps, speaker recordings) as online-first with graceful fallbacks.​
+- Default: make all personal content tools (journal, Step work, nightly review)
+  available offline; treat heavy external data (meeting directory, maps, speaker
+  recordings) as online-first with graceful fallbacks.​
 
 **9. Should you allow sponsor messaging inside SoNash?**
 
-* Default: not initially; use exports + OS-level channels (email/SMS) until you have a clear moderation and abuse model.
+- Default: not initially; use exports + OS-level channels (email/SMS) until you
+  have a clear moderation and abuse model.
 
 **10. What’s the policy for deleted content recovery?**
 
-* Default: soft-delete with local undo window and optional server-side “trash” with 30-day retention (non-encrypted metadata only; encrypted content subject to vault policies).
+- Default: soft-delete with local undo window and optional server-side “trash”
+  with 30-day retention (non-encrypted metadata only; encrypted content subject
+  to vault policies).
