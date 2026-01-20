@@ -56,8 +56,8 @@ function isExternalOrSpecialLink(href) {
  * Check if href points to an image file.
  */
 function isImageLink(href) {
-  const lower = href.toLowerCase();
-  return IMAGE_EXTENSIONS.some((ext) => lower.endsWith(ext));
+  const pathOnly = href.split(/[?#]/)[0].toLowerCase();
+  return IMAGE_EXTENSIONS.some((ext) => pathOnly.endsWith(ext));
 }
 
 // Category definitions based on directory structure

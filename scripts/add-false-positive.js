@@ -264,7 +264,10 @@ function processArg(arg, nextArg, parsed) {
   }
 
   // Handle value flags
-  if (VALUE_ARGS.has(arg) && nextArg) {
+  if (VALUE_ARGS.has(arg)) {
+    if (!nextArg || nextArg.startsWith("--")) {
+      throw new Error(`Missing value for ${arg}`);
+    }
     const key = arg.slice(2); // Remove "--" prefix
     parsed[key] = nextArg;
     return true; // Consumed next arg

@@ -149,6 +149,9 @@ function validateMilestone(milestone, index) {
  * @returns {{found: boolean, tableContent?: string, error?: string}}
  */
 function findMilestonesTable(content) {
+  // Normalize Windows CRLF to LF
+  content = content.replace(/\r\n/g, "\n");
+
   // Find the milestones table (starts after "## 📊 Milestones Overview")
   const tableMatch = content.match(
     /## 📊 Milestones Overview[\s\S]*?\n\|[^\n]+\|[\s\S]*?\n\|[-|\s]+\|[\s\S]*?\n((?:\|[^\n]+\|\n?)+)/

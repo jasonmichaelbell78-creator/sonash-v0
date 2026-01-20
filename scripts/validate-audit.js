@@ -182,11 +182,17 @@ function shouldSkipFalsePositive(fp) {
  * Build search text from a finding for pattern matching
  */
 function buildFindingSearchText(finding) {
+  const evidenceParts = Array.isArray(finding.evidence)
+    ? finding.evidence
+    : typeof finding.evidence === "string"
+      ? [finding.evidence]
+      : [];
+
   return [
     finding.title || "",
     finding.description || "",
     finding.file || "",
-    ...(finding.evidence || []),
+    ...evidenceParts.map((e) => (typeof e === "string" ? e : String(e))),
   ].join(" ");
 }
 

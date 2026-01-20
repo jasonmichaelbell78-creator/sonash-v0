@@ -288,8 +288,13 @@ async function parseHotspotsResponse(hotspotsResponse, warnings) {
     warnings.push(`Hotspots API returned ${hotspotsResponse.status} - count unavailable`);
     return 0;
   }
-  const hotspotsData = await hotspotsResponse.json();
-  return hotspotsData.paging?.total ?? 0;
+  try {
+    const hotspotsData = await hotspotsResponse.json();
+    return hotspotsData.paging?.total ?? 0;
+  } catch {
+    warnings.push(`Hotspots API returned invalid JSON - count unavailable`);
+    return 0;
+  }
 }
 
 /**
@@ -303,8 +308,13 @@ async function parseQualityGateResponse(gateResponse, warnings) {
     warnings.push(`Quality gate API returned ${gateResponse.status} - status unavailable`);
     return "UNKNOWN";
   }
-  const gateData = await gateResponse.json();
-  return gateData.projectStatus?.status || "UNKNOWN";
+  try {
+    const gateData = await gateResponse.json();
+    return gateData.projectStatus?.status || "UNKNOWN";
+  } catch {
+    warnings.push(`Quality gate API returned invalid JSON - status unavailable`);
+    return "UNKNOWN";
+  }
 }
 
 /**

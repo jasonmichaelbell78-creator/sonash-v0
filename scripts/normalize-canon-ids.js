@@ -237,6 +237,14 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
     const effectiveOldId = typeof oldId === "string" && oldId.trim() ? oldId : `MISSING-${counter}`;
     const newId = `CANON-${String(counter).padStart(4, "0")}`;
 
+    // Duplicate ID detection
+    if (idMap.has(effectiveOldId)) {
+      console.error(
+        `  ❌ ${filename} finding #${idx + 1}: Duplicate canonical_id "${effectiveOldId}" would remap ${idMap.get(effectiveOldId)} -> ${newId}`
+      );
+      throw new Error(`Duplicate canonical_id detected: ${effectiveOldId}`);
+    }
+
     idMap.set(effectiveOldId, newId);
     idMapping.push({
       old_id: effectiveOldId,

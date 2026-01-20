@@ -17,7 +17,7 @@
  *   2 - Usage/file access error
  */
 
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, lstatSync, existsSync } from "node:fs";
 import { join, basename } from "node:path";
 
 // Required fields per MULTI_AI_AGGREGATOR_TEMPLATE.md
@@ -352,7 +352,11 @@ function findCanonFilesRecursive(dir, files) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
     try {
-      const entryStat = statSync(fullPath);
+      const entryStat = lstatSync(fullPath);
+
+      // Avoid cycles: do not follow symlinked directories
+      if (entryStat.isSymbolicLink()) continue;
+
       if (entryStat.isDirectory()) {
         findCanonFilesRecursive(fullPath, files);
       } else if (entry.startsWith("CANON-") && entry.endsWith(".jsonl")) {
