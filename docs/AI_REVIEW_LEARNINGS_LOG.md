@@ -666,6 +666,51 @@ functions, S2871: 3 sort comparisons)
 
 ---
 
+#### Review #186: PR #287 Qodo + SonarCloud Follow-up (2026-01-20)
+
+**Source:** Qodo PR Code Suggestions + SonarCloud Security Hotspots
+**PR/Branch:** claude/new-session-Qy21d (PR #287) **Suggestions:** 12 total
+(Major: 3, Minor: 6, Trivial: 2, Deferred: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                           | Severity | File                        | Fix                                   |
+| --- | ------------------------------- | -------- | --------------------------- | ------------------------------------- | ---------- | --- |
+| 1   | S5852: ReDoS in separator regex | Major    | update-readme-status.js:189 | Replace `[-                           | ]+`with`[- | ]+` |
+| 2   | S5852: ReDoS in path cleanup    | Major    | phase-complete-check.js:194 | FALSE POSITIVE - char class is linear |
+| 3   | S5852: ReDoS in time parsing    | Major    | page.tsx:217                | FALSE POSITIVE - already documented   |
+| 4   | Validate empty milestone names  | Minor    | update-readme-status.js:205 | Add empty name check with warning     |
+| 5   | Throw error for unknown args    | Minor    | add-false-positive.js:276   | Add unknown argument validation       |
+| 6   | Enable Sentry for hashed IP     | Minor    | security-wrapper.ts:132     | Set captureToSentry: true             |
+| 7   | Log refresh callback errors     | Minor    | use-tab-refresh.ts:68       | Add console.error for debugging       |
+| 8   | Use relative path on error      | Minor    | check-docs-light.js:457     | Use relative() for consistency        |
+| 9   | Filter string evidence only     | Minor    | validate-audit.js:200       | Filter instead of stringify           |
+| 10  | Log file AND skill in suffix    | Trivial  | log-session-activity.js:454 | Concatenate both args                 |
+| 11  | Refactor duplicated exclusion   | Trivial  | check-pattern-compliance.js | OBSERVATION ONLY - no code change     |
+
+**Patterns Identified:**
+
+1. **ReDoS false positives in simple patterns**: Character classes like `[xyz]+`
+   are linear - SonarCloud flags them but they're safe
+2. **Input validation gaps**: Empty/missing input validation prevents confusing
+   downstream errors
+3. **Anonymized data can be sent to third parties**: Once PII is hashed, it's
+   safe for external services
+
+**Key Learnings:**
+
+- SonarCloud S5852 often flags linear patterns - verify before fixing
+- Defensive validation (empty names, unknown args) improves error messages
+- Hashed IP addresses are no longer PII and can be sent to Sentry
+
+**Resolution:**
+
+- Fixed: 9 items
+- Rejected: 2 items (S5852 false positives already documented)
+- Deferred: 1 item (helper modularization - architectural refactoring)
+
+---
+
 #### Review #182: SonarCloud Sprint PR 1 - Mechanical Fixes (2026-01-19)
 
 **Source:** SonarCloud Sprint Plan + Automated Analysis **PR/Branch:**

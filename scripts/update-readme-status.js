@@ -185,8 +185,9 @@ function findMilestonesTable(content) {
  * @returns {{milestone?: object, warning?: string, skip?: boolean}}
  */
 function parseTableRow(row, rowIndex) {
-  // Skip empty rows or separator rows (Review #184 - improved regex)
-  if (!row.includes("|") || /^\|\s*[-| ]+\|\s*$/.test(row)) {
+  // Skip empty rows or separator rows
+  // S5852 fix: Use [-|]+ (no space) since \s* handles whitespace - prevents overlap
+  if (!row.includes("|") || /^\|\s*[-|]+\s*\|\s*$/.test(row)) {
     return { skip: true };
   }
 
@@ -203,6 +204,10 @@ function parseTableRow(row, rowIndex) {
   }
 
   const name = (cells[0] || "").replace(/\*\*/g, "").trim();
+  // Review #186: Validate milestone name is not empty
+  if (!name) {
+    return { warning: `Row ${rowIndex}: Milestone name is empty, skipping` };
+  }
   const status = (cells[1] || "").trim();
   const progressStr = (cells[2] || "").trim();
   const target = (cells[3] || "").trim();

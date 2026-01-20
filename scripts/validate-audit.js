@@ -197,7 +197,8 @@ function buildFindingSearchText(finding) {
     finding.title || "",
     finding.description || "",
     finding.file || "",
-    ...evidenceParts.map((e) => (typeof e === "string" ? e : String(e))),
+    // Review #186: Filter to strings only - avoid [object Object] from stringify
+    ...evidenceParts.filter((e) => typeof e === "string"),
   ].join(" ");
 }
 

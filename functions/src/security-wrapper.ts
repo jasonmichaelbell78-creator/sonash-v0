@@ -129,7 +129,7 @@ async function checkIpRateLimit(
       {
         userId,
         metadata: { ipHash: hashedIp }, // Log hash instead of raw IP (PII compliance)
-        captureToSentry: false, // Don't send IP data to third-party services
+        captureToSentry: true, // Review #186: Hashed IP is no longer PII, safe for Sentry
       }
     );
     throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");

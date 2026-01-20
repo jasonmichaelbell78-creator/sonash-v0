@@ -450,11 +450,13 @@ function main() {
     process.exit(2);
   }
 
+  // Review #186: Concatenate both file AND skill if both present
   let suffix = "";
   if (args.file) {
-    suffix = ` (${args.file})`;
-  } else if (args.skill) {
-    suffix = ` (${args.skill})`;
+    suffix += ` (${args.file})`;
+  }
+  if (args.skill) {
+    suffix += ` (${args.skill})`;
   }
   console.log(`Logged: ${args.event}${suffix}`);
 }
