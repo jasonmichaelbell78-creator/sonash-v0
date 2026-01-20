@@ -149,8 +149,8 @@ function validateMilestone(milestone, index) {
  * @returns {{found: boolean, tableContent?: string, error?: string}}
  */
 function findMilestonesTable(content) {
-  // Normalize Windows CRLF to LF
-  content = content.replace(/\r\n/g, "\n");
+  // Normalize Windows CRLF to LF (S7781: use replaceAll for clarity)
+  content = content.replaceAll("\r\n", "\n");
 
   // Find the milestones table (starts after "## 📊 Milestones Overview")
   const tableMatch = content.match(
@@ -185,26 +185,28 @@ function findMilestonesTable(content) {
  * @returns {{milestone?: object, warning?: string, skip?: boolean}}
  */
 function parseTableRow(row, rowIndex) {
-  // Skip empty rows or separator rows
-  if (!row.includes("|") || row.match(/^\|[\s-|]+\|$/)) {
+  // Skip empty rows or separator rows (Review #184 - improved regex)
+  if (!row.includes("|") || /^\|\s*[-| ]+\|\s*$/.test(row)) {
     return { skip: true };
   }
 
   // Parse table row: | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
-  const cells = row
-    .split("|")
-    .map((cell) => cell.trim())
-    .filter((cell) => cell);
+  // Keep empty cells so later columns don't shift when optional columns are blank (Review #184 - Qodo)
+  const rawCells = row.split("|");
 
+  // Drop leading/trailing empty segments produced by the outer pipes, then trim each cell
+  const cells = rawCells.slice(1, -1).map((cell) => cell.trim());
+
+  // Require at least: Milestone | Status | Progress
   if (cells.length < 3) {
     return { warning: `Row ${rowIndex}: Too few columns (${cells.length}), skipping` };
   }
 
-  const name = cells[0].replace(/\*\*/g, "").trim();
-  const status = cells[1].trim();
-  const progressStr = cells[2].trim();
-  const target = cells[3]?.trim() || "";
-  const priority = cells[4]?.trim() || "";
+  const name = (cells[0] || "").replace(/\*\*/g, "").trim();
+  const status = (cells[1] || "").trim();
+  const progressStr = (cells[2] || "").trim();
+  const target = (cells[3] || "").trim();
+  const priority = (cells[4] || "").trim();
 
   // Parse progress percentage (handle "~50%", "100%", "0%")
   const progressMatch = progressStr.match(/~?(\d+)%/);

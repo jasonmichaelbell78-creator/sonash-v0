@@ -103,11 +103,20 @@ function MoodContent({ data }: Readonly<{ data: MoodEntry["data"] }>) {
 /**
  * Render daily-log entry content
  */
+/**
+ * Get status indicator icon based on daily log data (S3358 fix - extract nested ternary)
+ */
+function getDailyLogStatusIcon(data: DailyLogEntry["data"]): string {
+  if (data.used === true) return "⚠️";
+  if (data.cravings === true) return "⚡";
+  return "✓";
+}
+
 function DailyLogContent({ data }: Readonly<{ data: DailyLogEntry["data"] }>) {
   return (
     <div className="w-full relative">
       <div className="absolute -top-2 -right-2 text-3xl opacity-20">
-        {data.used === true ? "⚠️" : data.cravings === true ? "⚡" : "✓"}
+        {getDailyLogStatusIcon(data)}
       </div>
       <h4 className="font-heading text-sm mb-3 text-sky-900/90 flex items-center gap-2">
         <span className="text-lg">📋</span>

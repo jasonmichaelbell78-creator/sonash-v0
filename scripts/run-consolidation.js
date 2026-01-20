@@ -425,6 +425,11 @@ function outputAnalysisResults(report, recurringPatterns, categories) {
 function applyConsolidationChanges(content, reviews, recurringPatterns) {
   log(`\n${colors.bold}Applying consolidation...${colors.reset}`, colors.green);
 
+  // Guard against empty reviews array to prevent -Infinity from Math.max (Review #184 - Qodo)
+  if (reviews.length === 0) {
+    throw new Error("No reviews found to consolidate; refusing to reset consolidation counter.");
+  }
+
   // Calculate next review number
   const maxReviewNum = Math.max(...reviews.map((r) => r.number));
   const nextConsolidationReview = maxReviewNum + CONSOLIDATION_THRESHOLD;
@@ -481,7 +486,7 @@ function readLogFile() {
   }
 
   try {
-    return readFileSync(LOG_FILE, "utf8").replaceAll(/\r\n/g, "\n");
+    return readFileSync(LOG_FILE, "utf8").replaceAll("\r\n", "\n"); // S7781: Use string literal
   } catch (readError) {
     const message = readError instanceof Error ? readError.message : String(readError);
     log(`❌ Failed to read AI_REVIEW_LEARNINGS_LOG.md: ${message}`, colors.red);

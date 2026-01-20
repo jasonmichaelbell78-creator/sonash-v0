@@ -49,6 +49,8 @@ const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
  * Check if href is an external link or special scheme.
  */
 function isExternalOrSpecialLink(href) {
+  // Guard against malformed link hrefs (Review #184 - Qodo)
+  if (!href || typeof href !== "string") return false;
   return EXTERNAL_SCHEMES.some((scheme) => href.startsWith(scheme));
 }
 
@@ -56,6 +58,8 @@ function isExternalOrSpecialLink(href) {
  * Check if href points to an image file.
  */
 function isImageLink(href) {
+  // Guard against malformed link hrefs (Review #184 - Qodo)
+  if (!href || typeof href !== "string") return false;
   const pathOnly = href.split(/[?#]/)[0].toLowerCase();
   return IMAGE_EXTENSIONS.some((ext) => pathOnly.endsWith(ext));
 }
@@ -844,10 +848,14 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     );
   }
 
-  lines.push("", "</details>", "", "---", "");
-
-  // Archived Documents (simple list, not fully tracked)
+  // S7778: Combine consecutive push calls into one
   lines.push(
+    "",
+    "</details>",
+    "",
+    "---",
+    "",
+    // Archived Documents (simple list, not fully tracked)
     "## Archived Documents",
     "",
     "*Historical and completed documentation. These documents are preserved for reference but not actively tracked in the reference graph.*",

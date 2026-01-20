@@ -51,6 +51,13 @@ function extractUserIdFromPath(filePath: string): string | null {
   const userId = pathParts[1];
   if (!userId || typeof userId !== "string") return null;
 
+  // Security: Reject path traversal attempts (Review #184 - Qodo security)
+  if (userId === "." || userId === "..") return null;
+
+  // Firebase Auth UIDs are typically >= 20 chars and use URL-safe characters
+  // This prevents malformed IDs from being used in database queries
+  if (!/^[A-Za-z0-9_-]{20,}$/.test(userId)) return null;
+
   return userId;
 }
 
@@ -77,8 +84,11 @@ async function isFileReferencedInJournal(
   userId: string,
   db: FirebaseFirestore.Firestore
 ): Promise<boolean> {
+  // Use structured path to prevent path traversal vulnerabilities (Review #184 - Qodo security)
   const journalByPathRef = db
-    .collection(`users/${userId}/journal`)
+    .collection("users")
+    .doc(userId)
+    .collection("journal")
     .where("data.imagePath", "==", file.name)
     .limit(1);
 

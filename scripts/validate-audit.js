@@ -181,12 +181,17 @@ function shouldSkipFalsePositive(fp) {
 /**
  * Build search text from a finding for pattern matching
  */
+/**
+ * Convert evidence field to array format (S3358 fix - extract nested ternary)
+ */
+function normalizeEvidence(evidence) {
+  if (Array.isArray(evidence)) return evidence;
+  if (typeof evidence === "string") return [evidence];
+  return [];
+}
+
 function buildFindingSearchText(finding) {
-  const evidenceParts = Array.isArray(finding.evidence)
-    ? finding.evidence
-    : typeof finding.evidence === "string"
-      ? [finding.evidence]
-      : [];
+  const evidenceParts = normalizeEvidence(finding.evidence);
 
   return [
     finding.title || "",

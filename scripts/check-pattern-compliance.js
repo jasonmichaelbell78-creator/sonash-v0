@@ -401,9 +401,30 @@ const ANTI_PATTERNS = [
     // 2026-01-20 audit (PR #286):
     // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
     // - security-check.js: readFileSync at L358 IS in try/catch (L357-361)
-    // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation|aggregate-audit-findings|generate-detailed-sonar-report|generate-sonar-report-with-snippets|verify-sonar-phase|check-backlog-health|security-check)\.js$/,
+    // S5843: Use array instead of complex regex to reduce complexity from 21 to < 20
+    // (Review #184 - SonarCloud regex complexity)
+    pathExcludeList: [
+      "check-pattern-compliance.js",
+      "phase-complete-check.js",
+      "surface-lessons-learned.js",
+      "suggest-pattern-automation.js",
+      "archive-doc.js",
+      "validate-phase-completion.js",
+      "update-readme-status.js",
+      "check-mcp-servers.js",
+      "session-start.js",
+      "log-override.js",
+      "log-session-activity.js",
+      "validate-skill-config.js",
+      "verify-skill-usage.js",
+      "run-consolidation.js",
+      "aggregate-audit-findings.js",
+      "generate-detailed-sonar-report.js",
+      "generate-sonar-report-with-snippets.js",
+      "verify-sonar-phase.js",
+      "check-backlog-health.js",
+      "security-check.js",
+    ],
   },
   {
     id: "auto-mode-slice-truncation",
@@ -593,6 +614,11 @@ function shouldSkipPattern(antiPattern, ext, normalizedPath) {
   if (!antiPattern.fileTypes.includes(ext)) return true;
   if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) return true;
   if (antiPattern.pathExclude && antiPattern.pathExclude.test(normalizedPath)) return true;
+  // Support array-based exclusions for S5843 regex complexity compliance
+  if (antiPattern.pathExcludeList) {
+    const fileName = normalizedPath.split("/").pop() || "";
+    if (antiPattern.pathExcludeList.includes(fileName)) return true;
+  }
   return false;
 }
 
@@ -605,50 +631,48 @@ function shouldSkipPattern(antiPattern, ext, normalizedPath) {
  */
 function findPatternMatches(antiPattern, content, filePath) {
   const violations = [];
-  antiPattern.pattern.lastIndex = 0;
+  // Create new RegExp to avoid shared state mutation (S3776 fix + Qodo suggestion)
+  const pattern = new RegExp(antiPattern.pattern.source, antiPattern.pattern.flags);
 
-  // Non-global regexes don't advance `lastIndex`, so looping with `exec` would never terminate.
-  if (!antiPattern.pattern.global) {
-    const match = antiPattern.pattern.exec(content);
-    if (!match) return violations;
-    if (antiPattern.exclude && antiPattern.exclude.test(match[0])) return violations;
-
-    const beforeMatch = content.slice(0, match.index);
-    const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
-    violations.push({
-      file: filePath,
-      line: lineNumber,
-      id: antiPattern.id,
-      message: antiPattern.message,
-      fix: antiPattern.fix,
-      review: antiPattern.review,
-      match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
-    });
+  // Non-global regexes: single match only (prevents infinite loop)
+  if (!pattern.global) {
+    const match = pattern.exec(content);
+    if (match && !(antiPattern.exclude && antiPattern.exclude.test(match[0]))) {
+      violations.push(buildViolation(antiPattern, match, content, filePath));
+    }
     return violations;
   }
 
-  // Rest of existing loop for global regexes
+  // Global regexes: iterate all matches
   let match;
-  while ((match = antiPattern.pattern.exec(content)) !== null) {
+  while ((match = pattern.exec(content)) !== null) {
     if (antiPattern.exclude && antiPattern.exclude.test(match[0])) continue;
-    const beforeMatch = content.slice(0, match.index);
-    const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
-    violations.push({
-      file: filePath,
-      line: lineNumber,
-      id: antiPattern.id,
-      message: antiPattern.message,
-      fix: antiPattern.fix,
-      review: antiPattern.review,
-      match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
-    });
+    violations.push(buildViolation(antiPattern, match, content, filePath));
 
     // Prevent infinite loops on zero-length matches
     if (match[0].length === 0) {
-      antiPattern.pattern.lastIndex++;
+      pattern.lastIndex++;
     }
   }
   return violations;
+}
+
+/**
+ * Build a violation object from a regex match
+ * Extracted helper for cognitive complexity reduction (S3776)
+ */
+function buildViolation(antiPattern, match, content, filePath) {
+  const beforeMatch = content.slice(0, match.index);
+  const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
+  return {
+    file: filePath,
+    line: lineNumber,
+    id: antiPattern.id,
+    message: antiPattern.message,
+    fix: antiPattern.fix,
+    review: antiPattern.review,
+    match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
+  };
 }
 
 /**
