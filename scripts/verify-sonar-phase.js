@@ -191,10 +191,11 @@ function loadIssuesFromReport() {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
       const message = issueMatch[2];
       const extractedRule = extractRuleFromLines(lines, i + 1);
-      const rule = extractedRule || "UNKNOWN";
+      // Skip entries without a valid rule to prevent incorrect failures (Review #184 - Qodo)
+      if (!extractedRule) continue;
 
       const target = inSecuritySection ? hotspots : issues;
-      target.push({ file: currentFile, line: lineNum, message, rule });
+      target.push({ file: currentFile, line: lineNum, message, rule: extractedRule });
     }
   }
 
@@ -216,7 +217,8 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
     return;
   }
 
-  const regex = /### \[([^\]]+)\] - ([^\n]+?)(?::(\d+|N\/A|BATCH))?/g;
+  // Updated regex with anchors to handle file paths containing colons (Review #184 - Qodo)
+  const regex = /^### \[([^\]]+)\] - (.+?)(?::(\d+|N\/A|BATCH))?$/gm;
   let match;
   while ((match = regex.exec(content)) !== null) {
     const rule = match[1];

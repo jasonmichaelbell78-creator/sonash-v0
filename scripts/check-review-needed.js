@@ -380,7 +380,13 @@ async function fetchSonarCloudData() {
       return { success: false, error: `SonarCloud API: ${status} - ${message}` };
     }
 
-    const issuesData = await issuesResponse.json();
+    // Wrap JSON parsing in try-catch to handle malformed responses (Review #184 - Qodo)
+    let issuesData;
+    try {
+      issuesData = await issuesResponse.json();
+    } catch {
+      return { success: false, error: "SonarCloud API: Issues returned invalid JSON" };
+    }
     const {
       total: totalIssues,
       bugs,
@@ -920,11 +926,12 @@ function buildTriggersObject(categoryResults) {
   const triggers = {};
   for (const result of categoryResults) {
     const thresholds = CATEGORY_THRESHOLDS[result.category];
+    // Use optional chaining to handle missing thresholds gracefully (Review #184 - Qodo)
     triggers[result.category] = {
       triggered: result.triggered,
       hadPriorAudit: result.hadPriorAudit,
-      commits: { value: result.commits, threshold: thresholds.commits },
-      files: { value: result.filesChanged, threshold: thresholds.files },
+      commits: { value: result.commits, threshold: thresholds?.commits ?? null },
+      files: { value: result.filesChanged, threshold: thresholds?.files ?? null },
       reasons: result.reasons,
     };
   }

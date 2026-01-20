@@ -242,7 +242,10 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
       console.error(
         `  ❌ ${filename} finding #${idx + 1}: Duplicate canonical_id "${effectiveOldId}" would remap ${idMap.get(effectiveOldId)} -> ${newId}`
       );
-      throw new Error(`Duplicate canonical_id detected: ${effectiveOldId}`);
+      // Include filename and finding index in error for CI log debugging (Review #184 - Qodo)
+      throw new Error(
+        `Duplicate canonical_id detected in ${filename} (finding #${idx + 1}): ${effectiveOldId}`
+      );
     }
 
     idMap.set(effectiveOldId, newId);

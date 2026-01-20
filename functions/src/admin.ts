@@ -93,7 +93,13 @@ async function buildUserSearchResult(
       lastActive: userData?.lastActive?.toDate().toISOString() || null,
       createdAt: userData?.createdAt?.toDate().toISOString() || null,
     };
-  } catch {
+  } catch (error) {
+    // Log error for debugging (Review #184 - Qodo: Robust Error Handling)
+    // Don't log full error message to avoid PII leakage from auth errors
+    console.warn(
+      `buildUserSearchResult failed for uid=${hashUserId(uid)}:`,
+      error instanceof Error ? error.name : "Unknown error"
+    );
     return null;
   }
 }
@@ -312,15 +318,22 @@ async function getPreviousPrivilegeType(
   uid: string,
   db: admin.firestore.Firestore
 ): Promise<string> {
-  const userSnap = await db.collection("users").doc(uid).get();
-  if (!userSnap.exists) {
+  // Wrap in try-catch to handle Firestore read failures gracefully (Review #184 - Qodo)
+  try {
+    const userSnap = await db.collection("users").doc(uid).get();
+    if (!userSnap.exists) {
+      return "free";
+    }
+    const rawPrivilegeType = (userSnap.data() as Record<string, unknown> | undefined)
+      ?.privilegeType;
+    if (typeof rawPrivilegeType === "string" && rawPrivilegeType) {
+      return rawPrivilegeType;
+    }
+    return "free";
+  } catch {
+    // Default to "free" on read failures to avoid disrupting the parent operation
     return "free";
   }
-  const rawPrivilegeType = (userSnap.data() as Record<string, unknown> | undefined)?.privilegeType;
-  if (typeof rawPrivilegeType === "string" && rawPrivilegeType) {
-    return rawPrivilegeType;
-  }
-  return "free";
 }
 
 // ============================================================================

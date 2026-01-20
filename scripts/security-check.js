@@ -155,6 +155,30 @@ function findPatternViolations(pattern, content, lines, relativePath) {
   const violations = [];
   const regex = new RegExp(pattern.pattern.source, pattern.pattern.flags);
 
+  // Non-global regexes don't advance `lastIndex`, so looping with `exec` would never terminate.
+  // Handle them separately with a single match (Review #184 - Qodo suggestion impact 9)
+  if (!regex.global) {
+    const match = regex.exec(content);
+    if (!match) return violations;
+
+    const beforeMatch = content.slice(0, match.index);
+    const lineNum = beforeMatch.split("\n").length;
+    const lineContent = lines[lineNum - 1]?.slice(0, 80) || "";
+
+    violations.push({
+      file: relativePath,
+      line: lineNum,
+      pattern: pattern.id,
+      name: pattern.name,
+      severity: pattern.severity,
+      message: pattern.message,
+      snippet: lineContent.trim(),
+    });
+
+    return violations;
+  }
+
+  // Global regexes: iterate all matches
   let match;
   while ((match = regex.exec(content)) !== null) {
     const beforeMatch = content.slice(0, match.index);
