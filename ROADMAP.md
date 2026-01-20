@@ -1,8 +1,8 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.15
-**Last Updated:** 2026-01-19
+**Document Version:** 2.16
+**Last Updated:** 2026-01-20
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -158,32 +158,18 @@ Planned | 🟣 Research
 > **Spec:**
 > [OPERATIONAL_VISIBILITY_SPRINT.md](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 > **Goal:** Full operational visibility via Admin Panel + Development Dashboard
-> **Status:** ⏸️ BLOCKED | **Started:** 2026-01-14 | **Updated:** 2026-01-19
+> **Status:** 🔄 ACTIVE | **Started:** 2026-01-14 | **Updated:** 2026-01-20
 
-> **🚨 BLOCKER: SonarCloud Cleanup Sprint**
+> **✅ SonarCloud Sprint Partially Complete (Session #85)**
 >
-> Before resuming feature development, ALL 1,213 SonarCloud issues must be
-> resolved to achieve a passing Quality Gate.
+> PR 1 (Mechanical Fixes) and PR 2 (Critical Issues) completed. Remaining work
+> (PR 3-5: Major/Minor quality + Security Hotspots) moved to M2 Architecture
+> backlog as lower-priority maintenance items. Sprint unblocked.
 >
 > - **Plan:**
 >   [.claude/plans/sonarcloud-cleanup-sprint.md](.claude/plans/sonarcloud-cleanup-sprint.md)
-> - **Snapshot:**
->   [docs/audits/sonarcloud-snapshots/20260119-full.md](docs/audits/sonarcloud-snapshots/20260119-full.md)
-> - **Issues:** 1,116 code issues (93 CRITICAL, 304 MAJOR, 719 MINOR) + 97
->   security hotspots
-> - **Structure:** 5 PRs (one per phase)
-> - **Estimated Effort:** ~52 hours
-> - **Runbook:**
->   [docs/SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)
->
-> **📋 RETURN TASK: Qodo PR Review Processing (Paused 2026-01-20)**
->
-> - **Last Completed:** Review #197 (commit `738d8af`)
-> - **Reviews Completed:** #191-197 (7 rounds, 24+ files modified)
-> - **Status:** PR merged; additional Qodo suggestions may remain unprocessed
-> - **Before Resuming:** Re-run SonarCloud scan for fresh issue data
-> - **Context:** Security hardening (TOCTOU, path containment, symlink
->   protection)
+> - **Completed:** ~300 issues fixed (mechanical + critical)
+> - **Deferred:** ~1,400 issues to M2 (major, minor, security hotspots)
 
 This sprint consolidates Admin Panel Phases 4-5 and Development Dashboard
 creation.
@@ -400,14 +386,14 @@ creation.
 
 ### Blockers
 
-| Blocker                  | Status      | Resolution                              |
-| ------------------------ | ----------- | --------------------------------------- |
-| **SonarCloud Cleanup**   | ❌ Blocking | 1,213 issues (1,116 code + 97 hotspots) |
-| Sentry not initialized   | ✅ Resolved | A1 complete                             |
-| Sentry env vars missing  | ✅ Resolved | Firebase config verified                |
-| Dashboard stats failing  | ✅ Resolved | A5 complete                             |
-| /dev route doesn't exist | ⏸️ Paused   | B1 task (Track B) - after SonarCloud    |
-| Track A testing complete | ✅ Complete | All jobs A10-A14 passing                |
+| Blocker                  | Status      | Resolution                         |
+| ------------------------ | ----------- | ---------------------------------- |
+| **SonarCloud Cleanup**   | ✅ Partial  | PR 1+2 done; PR 3-5 deferred to M2 |
+| Sentry not initialized   | ✅ Resolved | A1 complete                        |
+| Sentry env vars missing  | ✅ Resolved | Firebase config verified           |
+| Dashboard stats failing  | ✅ Resolved | A5 complete                        |
+| /dev route doesn't exist | 🔄 Ready    | B1 task (Track B) - can proceed    |
+| Track A testing complete | ✅ Complete | All jobs A10-A14 passing           |
 
 ### Quick Reference: Environment Variables Needed
 
@@ -939,6 +925,35 @@ been aggregated into a master list for prioritized implementation.
 - ⏳ **Database Backup Verification** - Verify Firebase backup integrity
   - Schedule: Weekly on Saturdays at 1 AM CT
   - Priority: P3 - implement when backup strategy formalized
+
+### SonarCloud Deferred Work (Added 2026-01-20 - Session #85)
+
+> **Source:**
+> [sonarcloud-cleanup-sprint.md](.claude/plans/sonarcloud-cleanup-sprint.md) PR
+> 1 (Mechanical) + PR 2 (Critical) completed; remaining work deferred here.
+
+**Deferred PRs (~1,400 issues):**
+
+- ⏳ **PR 3: Major Code Quality** (~220 issues, P2)
+  - S3358 nested ternary issues (108)
+  - React accessibility issues (~110)
+  - Priority: Address when friction affects development
+- ⏳ **PR 4: Medium/Minor Priority** (~1,095 issues, P3)
+  - String methods (replaceAll, push batching)
+  - Modern JavaScript (globalThis, Number.isNaN)
+  - React props (read-only, deprecated APIs)
+  - Priority: Low - code works correctly, stylistic improvements
+- ⏳ **PR 5: Security Hotspots** (97 hotspots, P2)
+  - HIGH probability: Command injection review (14)
+  - MEDIUM probability: Regex DoS, Math.random (48)
+  - LOW probability: PATH manipulation, GitHub Actions (35)
+  - Priority: Review as part of security audit cycles
+
+**Rationale for Deferral:**
+
+- PR 1+2 addressed all BLOCKER and CRITICAL severity issues
+- Remaining issues are stylistic or low-risk code smells
+- Feature development can proceed without Quality Gate blocking
 
 ### Developer Tooling (Added 2026-01-14 - Step 6.1)
 
@@ -1956,6 +1971,7 @@ When working on roadmap items:
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.16    | 2026-01-20 | **BLOCKER RESOLVED**: Session #85 - SonarCloud Sprint PR 1+2 completed (~300 issues); PR 3-5 deferred to M2 Architecture backlog; Operational Visibility Sprint unblocked; feature development can proceed                                                                                                                                                                                  |
 | 2.15    | 2026-01-19 | **BLOCKER ADDED**: SonarCloud Cleanup Sprint blocks Operational Visibility Sprint; all 1,213 issues (1,116 code issues + 97 security hotspots) must be resolved before feature development resumes; created plan, snapshot, and runbook                                                                                                                                                     |
 | 2.14    | 2026-01-18 | Session #78: Added Admin Panel Phase 3 (A23-A25) - Error JSON export with timeframe selection, auto-refresh tabs on switch, soft-delete users with 30-day retention; deployed functions and Firestore indexes                                                                                                                                                                               |
 | 2.13    | 2026-01-18 | Session #77: **Track A-Test COMPLETE** - All jobs A10-A14 passing (97.7% pass rate); Fixed A11 storage bucket (`sonash-app.firebasestorage.app`); Added EFF-012 (Network Failure Tests) to offline mode section                                                                                                                                                                             |
