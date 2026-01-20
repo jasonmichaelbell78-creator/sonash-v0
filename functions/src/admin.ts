@@ -136,7 +136,13 @@ async function searchUserByEmail(
       userDoc.exists ? (userDoc.data() ?? null) : null,
       () => Promise.resolve(authUser)
     );
-  } catch {
+  } catch (error) {
+    // Review #187: Log unexpected errors for debugging, but don't expose to caller
+    // auth/user-not-found is expected and not logged to avoid noise
+    const code = (error as { code?: string })?.code;
+    if (code !== "auth/user-not-found") {
+      console.warn("searchUserByEmail unexpected error:", sanitizeErrorMessage(error));
+    }
     return null;
   }
 }
@@ -532,6 +538,22 @@ function sanitizeSentryTitle(title: string) {
   );
   const redactedTokens = redactedPhone.replace(/\b[a-f0-9]{32,}\b/gi, "[redacted-token]");
   return redactedTokens;
+}
+
+/**
+ * Review #187: Sanitize error messages to prevent PII leakage in logs.
+ * Firebase/Admin SDK error strings can include identifiers or contextual details.
+ */
+function sanitizeErrorMessage(error: unknown): string {
+  const raw = error instanceof Error ? error.message : String(error);
+  // Redact emails
+  let sanitized = raw.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]");
+  // Redact Firebase UIDs (typically 28 alphanumeric chars)
+  sanitized = sanitized.replace(/\b[a-zA-Z0-9]{28}\b/g, "[redacted-uid]");
+  // Redact long hex tokens
+  sanitized = sanitized.replace(/\b[a-f0-9]{32,}\b/gi, "[redacted-token]");
+  // Truncate to reasonable length
+  return sanitized.length > 200 ? sanitized.slice(0, 200) + "..." : sanitized;
 }
 
 /**
@@ -2518,7 +2540,8 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
     const authByUid = await batchFetchAuthUsers(uids, (error) => {
       logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Batch auth fetch failed", {
         userId: request.auth?.uid,
-        metadata: { error: String(error), uidsCount: uids.length },
+        // Review #187: Sanitize error to prevent PII leakage in logs
+        metadata: { error: sanitizeErrorMessage(error), uidsCount: uids.length },
         captureToSentry: true,
       });
     });

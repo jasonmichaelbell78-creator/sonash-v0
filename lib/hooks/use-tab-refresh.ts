@@ -64,11 +64,15 @@ export function useTabRefresh(
     if (currentTimestamp > lastRefreshRef.current) {
       lastRefreshRef.current = currentTimestamp;
       // Call the refresh callback (fire-and-forget, but avoid unhandled rejections)
-      // Use Promise.resolve to handle both void and Promise<void> return types
-      Promise.resolve(onRefresh()).catch((error) => {
-        // Review #186: Log refresh errors for debugging, but don't crash the app
-        console.error("useTabRefresh: onRefresh callback failed", error);
-      });
+      // Review #187: Use .then() pattern to catch both sync and async errors
+      // Promise.resolve(fn()) only catches errors if fn() returns a rejected promise,
+      // but throws from sync code propagate before Promise.resolve wraps them
+      Promise.resolve()
+        .then(() => onRefresh())
+        .catch((error) => {
+          // Review #186: Log refresh errors for debugging, but don't crash the app
+          console.error("useTabRefresh: onRefresh callback failed", error);
+        });
     }
   }, [activeTab, tabId, getTabRefreshTimestamp, onRefresh, options.skipInitial]);
 }

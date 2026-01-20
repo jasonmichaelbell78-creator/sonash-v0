@@ -279,7 +279,8 @@ function processArg(arg, nextArg, parsed) {
     throw new Error(`Unknown argument: ${arg}`);
   }
 
-  return false;
+  // Review #187: Also fail on unexpected positional args to avoid silently ignoring user input
+  throw new Error(`Unexpected positional argument: ${arg}`);
 }
 
 function parseArgs() {

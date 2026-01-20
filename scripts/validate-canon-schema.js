@@ -382,9 +382,18 @@ function collectFilesFromArgs(args) {
 
     let stat;
     try {
-      stat = statSync(arg);
+      // Review #187: Use lstatSync to detect symlinks without following them
+      // Prevents potential path traversal and infinite loop vulnerabilities
+      stat = lstatSync(arg);
     } catch (err) {
-      console.error(`Error accessing path ${arg}: ${err.message}`);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`Error accessing path ${arg}: ${message}`);
+      continue;
+    }
+
+    // Review #187: Skip symlinks to avoid security issues
+    if (stat.isSymbolicLink()) {
+      console.warn(`Warning: Skipping symlink path: ${arg}`);
       continue;
     }
 

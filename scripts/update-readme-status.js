@@ -186,8 +186,10 @@ function findMilestonesTable(content) {
  */
 function parseTableRow(row, rowIndex) {
   // Skip empty rows or separator rows
-  // S5852 fix: Use [-|]+ (no space) since \s* handles whitespace - prevents overlap
-  if (!row.includes("|") || /^\|\s*[-|]+\s*\|\s*$/.test(row)) {
+  // Review #187: Improved regex to correctly detect multi-column separator rows
+  // Matches: | --- | --- | or | :---: | ---: | etc.
+  const trimmedRow = row.trim();
+  if (!trimmedRow.includes("|") || /^\|\s*[-:]+\s*(\|\s*[-:]+\s*)+\|\s*$/.test(trimmedRow)) {
     return { skip: true };
   }
 

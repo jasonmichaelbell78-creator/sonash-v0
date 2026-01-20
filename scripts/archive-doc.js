@@ -525,9 +525,15 @@ function validateCanArchive(sourcePath, archivePath) {
  * @param {{success: boolean, updated: Array, error?: string}} refResult - Update result
  */
 function outputCrossRefResults(refResult) {
-  if (refResult.updated.length > 0) {
-    console.log(`Updated ${refResult.updated.length} references:`);
-    for (const update of refResult.updated) {
+  // Review #187: Check for failure status and handle missing updated array
+  if (!refResult?.success) {
+    console.error(`❌ Failed to update cross-references: ${refResult?.error || "Unknown error"}`);
+    return;
+  }
+  const updated = Array.isArray(refResult.updated) ? refResult.updated : [];
+  if (updated.length > 0) {
+    console.log(`Updated ${updated.length} references:`);
+    for (const update of updated) {
       console.log(`  - ${relative(ROOT, update.file)}:${update.line}`);
     }
   } else {

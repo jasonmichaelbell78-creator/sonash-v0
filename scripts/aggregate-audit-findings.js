@@ -700,11 +700,16 @@ function parseCanonFiles(allFindings, stats) {
 
 /**
  * Add a value to a Map<key, array> index
+ * Review #187: Prevent duplicate values to avoid inflating bucket sizes
  */
 function addToMapIndex(map, key, value) {
   if (!key) return;
   if (!map.has(key)) map.set(key, []);
-  map.get(key).push(value);
+  const arr = map.get(key);
+  // Only add if not a duplicate of the last entry (efficient adjacent dedup)
+  if (arr.length === 0 || arr[arr.length - 1] !== value) {
+    arr.push(value);
+  }
 }
 
 /**

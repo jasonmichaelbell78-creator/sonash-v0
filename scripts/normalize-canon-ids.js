@@ -212,7 +212,9 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
   try {
     content = readFileSync(filepath, "utf-8");
   } catch (err) {
-    console.error(`  Error reading ${filename}: ${err.message}`);
+    // Review #187: Safe error message handling for non-Error exceptions
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`  Error reading ${filename}: ${message}`);
     return { findings: null, counter: globalCounter };
   }
 
@@ -229,8 +231,11 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
     const oldId = finding.canonical_id;
 
     if (typeof oldId !== "string" || oldId.trim() === "") {
+      // Review #187: Type-check title before calling substring to prevent crashes
+      const titlePreview =
+        typeof finding.title === "string" ? `${finding.title.substring(0, 50)}...` : "(no title)";
       console.warn(
-        `  ⚠️ ${filename} finding #${idx + 1}: Missing/invalid canonical_id (title: "${finding.title?.substring(0, 50)}...")`
+        `  ⚠️ ${filename} finding #${idx + 1}: Missing/invalid canonical_id (title: "${titlePreview}")`
       );
     }
 
@@ -301,18 +306,25 @@ function main() {
 
   for (const filename of files) {
     const filepath = join(directory, filename);
-    const result = processFileForMapping(
-      filepath,
-      filename,
-      idMap,
-      idMapping,
-      globalCounter,
-      verbose
-    );
+    // Review #187: Wrap in try/catch to handle errors gracefully and exit cleanly
+    try {
+      const result = processFileForMapping(
+        filepath,
+        filename,
+        idMap,
+        idMapping,
+        globalCounter,
+        verbose
+      );
 
-    if (result.findings) {
-      fileData.push({ filepath, filename, category: result.category, findings: result.findings });
-      globalCounter = result.counter;
+      if (result.findings) {
+        fileData.push({ filepath, filename, category: result.category, findings: result.findings });
+        globalCounter = result.counter;
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`\n❌ Failed while processing ${filename}: ${message}`);
+      process.exit(2);
     }
   }
 

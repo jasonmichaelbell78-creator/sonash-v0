@@ -450,15 +450,16 @@ function main() {
     process.exit(2);
   }
 
-  // Review #186: Concatenate both file AND skill if both present
+  // Review #186+#187: Concatenate both file AND skill if both present
+  // Use eventData (not raw args) to reflect what was actually logged
   let suffix = "";
-  if (args.file) {
-    suffix += ` (${args.file})`;
+  if (eventData.file) {
+    suffix += ` (${eventData.file})`;
   }
-  if (args.skill) {
-    suffix += ` (${args.skill})`;
+  if (eventData.skill) {
+    suffix += ` (${eventData.skill})`;
   }
-  console.log(`Logged: ${args.event}${suffix}`);
+  console.log(`Logged: ${eventData.event}${suffix}`);
 }
 
 main();

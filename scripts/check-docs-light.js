@@ -87,7 +87,8 @@ const TIER_DEFINITIONS = {
 function matchExplicitFiles(fileName) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
     if (def.files && def.files.includes(fileName)) {
-      return parseInt(tier);
+      // Review #187: Use explicit radix 10 for predictable parsing
+      return Number.parseInt(tier, 10);
     }
   }
   return null;
@@ -124,7 +125,8 @@ function matchFilenamePatterns(fileName) {
  */
 function determineTier(filePath, _content) {
   const fileName = basename(filePath);
-  const relativePath = relative(ROOT, filePath);
+  // Review #187: Normalize to POSIX-style separators for cross-platform matching
+  const relativePath = relative(ROOT, filePath).replaceAll("\\", "/");
 
   // Check in priority order
   const explicitMatch = matchExplicitFiles(fileName);

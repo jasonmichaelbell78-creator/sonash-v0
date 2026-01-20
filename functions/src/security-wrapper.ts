@@ -129,7 +129,9 @@ async function checkIpRateLimit(
       {
         userId,
         metadata: { ipHash: hashedIp }, // Log hash instead of raw IP (PII compliance)
-        captureToSentry: true, // Review #186: Hashed IP is no longer PII, safe for Sentry
+        // Review #187: Keep IP-derived identifiers out of third-party telemetry
+        // Even hashed, this could be considered derived PII under some regulations
+        captureToSentry: false,
       }
     );
     throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
@@ -263,7 +265,9 @@ function checkUserIdAuthorization(
       "Attempted to write to another user's data",
       {
         userId,
-        metadata: { attemptedUserId: dataWithUserId.userId },
+        // Review #187: Hash attemptedUserId to prevent PII leakage in logs
+        // Maintains auditability while protecting user identifiers
+        metadata: { attemptedUserIdHash: hashUserId(dataWithUserId.userId) },
       }
     );
     throw new HttpsError("permission-denied", "Cannot write to another user's data");
