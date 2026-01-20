@@ -5,7 +5,15 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Paperclip, Pin } from "lucide-react";
 
-import { JournalEntry } from "@/types/journal";
+import {
+  JournalEntry,
+  MoodEntry,
+  DailyLogEntry,
+  GratitudeEntry,
+  NoteEntry,
+  SpotCheckEntry,
+  NightReviewEntry,
+} from "@/types/journal";
 
 interface EntryCardProps {
   entry: JournalEntry;
@@ -80,7 +88,7 @@ function EntryDecoration({ type }: { type: string }) {
 /**
  * Render mood entry content
  */
-function MoodContent({ data }: { data: JournalEntry["data"] }) {
+function MoodContent({ data }: { data: MoodEntry["data"] }) {
   return (
     <>
       <div className="text-5xl mb-1 drop-shadow-sm">{getMoodEmoji(data.mood)}</div>
@@ -95,7 +103,7 @@ function MoodContent({ data }: { data: JournalEntry["data"] }) {
 /**
  * Render daily-log entry content
  */
-function DailyLogContent({ data }: { data: JournalEntry["data"] }) {
+function DailyLogContent({ data }: { data: DailyLogEntry["data"] }) {
   return (
     <div className="w-full relative">
       <div className="absolute -top-2 -right-2 text-3xl opacity-20">
@@ -164,12 +172,12 @@ function Step1WorksheetContent({ data }: { data: Record<string, unknown> }) {
 /**
  * Render gratitude entry content
  */
-function GratitudeContent({ data }: { data: JournalEntry["data"] }) {
+function GratitudeContent({ data }: { data: GratitudeEntry["data"] }) {
   return (
     <div className="w-full">
       <h4 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Gratitude</h4>
       <ul className="list-disc pl-4 text-sm font-handlee text-[var(--journal-text)]">
-        {data.items.slice(0, 3).map((item, i) => (
+        {data.items.slice(0, 3).map((item: string, i: number) => (
           <li key={i}>{item}</li>
         ))}
       </ul>
@@ -180,7 +188,7 @@ function GratitudeContent({ data }: { data: JournalEntry["data"] }) {
 /**
  * Render free-write or meeting-note entry content
  */
-function NoteContent({ data }: { data: JournalEntry["data"] }) {
+function NoteContent({ data }: { data: NoteEntry["data"] }) {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-2">
@@ -196,7 +204,7 @@ function NoteContent({ data }: { data: JournalEntry["data"] }) {
 /**
  * Render spot-check entry content
  */
-function SpotCheckContent({ data }: { data: JournalEntry["data"] }) {
+function SpotCheckContent({ data }: { data: SpotCheckEntry["data"] }) {
   return (
     <div className="space-y-2">
       <h3 className="font-heading text-lg text-amber-900">Spot Check</h3>
@@ -213,7 +221,7 @@ function SpotCheckContent({ data }: { data: JournalEntry["data"] }) {
 /**
  * Render night-review entry content
  */
-function NightReviewContent({ data }: { data: JournalEntry["data"] }) {
+function NightReviewContent({ data }: { data: NightReviewEntry["data"] }) {
   return (
     <div className="space-y-2">
       <h3 className="font-heading text-lg text-indigo-900">Night Review</h3>

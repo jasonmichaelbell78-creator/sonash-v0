@@ -1,5 +1,13 @@
 import * as React from "react";
-import { JournalEntry } from "@/types/journal";
+import {
+  JournalEntry,
+  MoodEntry,
+  GratitudeEntry,
+  InventoryEntry,
+  NoteEntry,
+  SpotCheckEntry,
+  DailyLogEntry,
+} from "@/types/journal";
 import { X } from "lucide-react";
 
 interface EntryDetailDialogProps {
@@ -8,7 +16,7 @@ interface EntryDetailDialogProps {
 }
 
 // Type-specific detail view components
-function MoodDetailView({ data }: { data: JournalEntry["data"] }) {
+function MoodDetailView({ data }: { data: MoodEntry["data"] }) {
   return (
     <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
       <span className="text-4xl block mb-2">{data?.mood ?? "😐"}</span>
@@ -20,13 +28,13 @@ function MoodDetailView({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function GratitudeDetailView({ data }: { data: JournalEntry["data"] }) {
+function GratitudeDetailView({ data }: { data: GratitudeEntry["data"] }) {
   if (!data?.items) return null;
   return (
     <div>
       <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
       <ul className="list-disc pl-5">
-        {data.items.map((item, i) => (
+        {data.items.map((item: string, i: number) => (
           <li key={i}>{item}</li>
         ))}
       </ul>
@@ -34,7 +42,7 @@ function GratitudeDetailView({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function InventoryDetailView({ data }: { data: JournalEntry["data"] }) {
+function InventoryDetailView({ data }: { data: InventoryEntry["data"] }) {
   return (
     <div className="space-y-4">
       <div>
@@ -53,7 +61,7 @@ function InventoryDetailView({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function NoteDetailView({ data }: { data: JournalEntry["data"] }) {
+function NoteDetailView({ data }: { data: NoteEntry["data"] }) {
   return (
     <>
       {data?.title && <h4 className="font-bold text-xl mb-2 font-heading">{data.title}</h4>}
@@ -62,7 +70,7 @@ function NoteDetailView({ data }: { data: JournalEntry["data"] }) {
   );
 }
 
-function SpotCheckDetailView({ data }: { data: JournalEntry["data"] }) {
+function SpotCheckDetailView({ data }: { data: SpotCheckEntry["data"] }) {
   return (
     <div className="space-y-2">
       <div>
@@ -88,7 +96,7 @@ function formatYesNoNull(value: boolean | null | undefined): string {
   return value ? "yes" : "no";
 }
 
-function DailyLogDetailView({ data }: { data: JournalEntry["data"] }) {
+function DailyLogDetailView({ data }: { data: DailyLogEntry["data"] }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 text-xs uppercase tracking-widest text-slate-500 font-bold">
