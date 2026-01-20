@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.3",
+  "name": "sonarcloud-mcp",
+  "version": "1.0.0",
+  "display_name": "SonarCloud MCP Server",
+  "description": "MCP server for SonarCloud/SonarQube integration - fetch security hotspots, code issues, and quality gate status",
+  "author": {
+    "name": "SoNash Project"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "sonarcloud-server.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/sonarcloud-server.js"],
+      "env": {
+        "SONAR_TOKEN": "${user_config.SONAR_TOKEN}",
+        "SONAR_URL": "${user_config.SONAR_URL}"
+      }
+    }
+  },
+  "user_config": {
+    "SONAR_TOKEN": {
+      "type": "string",
+      "title": "SonarCloud API Token",
+      "description": "Your SonarCloud API token for authentication",
+      "required": true,
+      "sensitive": true
+    },
+    "SONAR_URL": {
+      "type": "string",
+      "title": "SonarCloud Base URL",
+      "description": "SonarCloud base URL (default: https://sonarcloud.io)",
+      "required": false,
+      "default": "https://sonarcloud.io"
+    }
+  },
+  "tools": [
+    {
+      "name": "get_security_hotspots",
+      "description": "Get security hotspots for a project/PR with file paths, line numbers, and descriptions"
+    },
+    {
+      "name": "get_issues",
+      "description": "Get code issues (bugs, vulnerabilities, code smells) for a project/PR"
+    },
+    {
+      "name": "get_quality_gate",
+      "description": "Get quality gate status for a project/PR"
+    },
+    {
+      "name": "get_hotspot_details",
+      "description": "Get detailed information about a specific security hotspot including code context"
+    }
+  ],
+  "license": "MIT"
+}

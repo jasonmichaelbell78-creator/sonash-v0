@@ -232,7 +232,11 @@ function validateInputData<T>(
           metadata: { issues: error.issues },
         }
       );
-      throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
+      // Sanitized error message - avoids exposing detailed schema structure
+      throw new HttpsError(
+        "invalid-argument",
+        "Invalid input data. Please check your request and try again."
+      );
     }
     throw error;
   }

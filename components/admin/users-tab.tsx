@@ -440,14 +440,14 @@ function SortButton({
   icon: Icon,
   label,
   onClick,
-}: {
+}: Readonly<{
   field: SortField;
   currentField: SortField;
   currentOrder: SortOrder;
   icon: typeof Calendar;
   label: string;
   onClick: () => void;
-}) {
+}>) {
   const isActive = field === currentField;
   return (
     <button
@@ -471,10 +471,10 @@ function SortButton({
 function UserStatusBadge({
   user,
   getDaysUntilHardDelete,
-}: {
+}: Readonly<{
   user: UserSearchResult;
   getDaysUntilHardDelete: (date: string | null | undefined) => number | null;
-}) {
+}>) {
   const status = getUserStatusInfo(user);
 
   if (user.isSoftDeleted) {
@@ -512,7 +512,7 @@ function SearchBarSection({
   isSearchMode,
   onClear,
   error,
-}: {
+}: Readonly<{
   searchQuery: string;
   setSearchQuery: (v: string) => void;
   onSearch: () => void;
@@ -520,7 +520,7 @@ function SearchBarSection({
   isSearchMode: boolean;
   onClear: () => void;
   error: string | null;
-}) {
+}>) {
   return (
     <div className="bg-white rounded-lg border border-amber-100 p-6">
       <div className="flex gap-4">
@@ -568,11 +568,11 @@ function SortControlsSection({
   sortBy,
   sortOrder,
   onSortChange,
-}: {
+}: Readonly<{
   sortBy: SortField;
   sortOrder: SortOrder;
   onSortChange: (field: SortField) => void;
-}) {
+}>) {
   return (
     <div className="flex items-center gap-4">
       <span className="text-sm text-amber-700">Sort by:</span>
@@ -621,7 +621,7 @@ function UsersLoading() {
 /**
  * Users empty state
  */
-function UsersEmptyState({ isSearchMode }: { isSearchMode: boolean }) {
+function UsersEmptyState({ isSearchMode }: Readonly<{ isSearchMode: boolean }>) {
   return (
     <div className="bg-white rounded-lg border border-amber-100 p-12 text-center">
       <Users className="w-12 h-12 text-amber-300 mx-auto mb-4" />
@@ -647,7 +647,7 @@ function UsersListView({
   onUserClick,
   onLoadMore,
   getDaysUntilHardDelete,
-}: {
+}: Readonly<{
   loading: boolean;
   isSearchMode: boolean;
   searchResults: UserSearchResult[];
@@ -659,7 +659,7 @@ function UsersListView({
   onUserClick: (uid: string) => void;
   onLoadMore: () => void;
   getDaysUntilHardDelete: (date: string | null | undefined) => number | null;
-}) {
+}>) {
   if (loading) return <UsersLoading />;
 
   if (isSearchMode && searchResults.length > 0) {
@@ -705,11 +705,11 @@ function UserTableRow({
   user,
   onClick,
   getDaysUntilHardDelete,
-}: {
+}: Readonly<{
   user: UserSearchResult;
   onClick: () => void;
   getDaysUntilHardDelete: (date: string | null | undefined) => number | null;
-}) {
+}>) {
   return (
     <tr onClick={onClick} className="hover:bg-amber-50/50 cursor-pointer transition-colors">
       <td className="px-6 py-4 whitespace-nowrap">
@@ -744,7 +744,7 @@ function UserTableRow({
 /**
  * Load more pagination button
  */
-function LoadMoreButton({ onClick, loading }: { onClick: () => void; loading: boolean }) {
+function LoadMoreButton({ onClick, loading }: Readonly<{ onClick: () => void; loading: boolean }>) {
   return (
     <div className="p-4 border-t border-amber-100 flex justify-center">
       <button
@@ -771,7 +771,7 @@ function LoadMoreButton({ onClick, loading }: { onClick: () => void; loading: bo
 /**
  * Search mode result indicator
  */
-function SearchResultIndicator({ count, query }: { count: number; query: string }) {
+function SearchResultIndicator({ count, query }: Readonly<{ count: number; query: string }>) {
   return (
     <div className="text-sm text-amber-700">
       Found {count} user(s) matching &ldquo;{query}&rdquo;
@@ -814,7 +814,7 @@ function UsersTable({
   isSearchMode,
   loadingMore,
   onLoadMore,
-}: {
+}: Readonly<{
   users: UserSearchResult[];
   onUserClick: (uid: string) => void;
   getDaysUntilHardDelete: (date: string | null | undefined) => number | null;
@@ -822,7 +822,7 @@ function UsersTable({
   isSearchMode: boolean;
   loadingMore: boolean;
   onLoadMore: () => void;
-}) {
+}>) {
   return (
     <div className="bg-white rounded-lg border border-amber-100 overflow-hidden">
       <div className="overflow-x-auto">
@@ -848,7 +848,7 @@ function UsersTable({
 /**
  * User profile section in detail drawer
  */
-function UserProfileSection({ profile }: { profile: UserProfile }) {
+function UserProfileSection({ profile }: Readonly<{ profile: UserProfile }>) {
   return (
     <div className="bg-amber-50 rounded-lg p-6">
       <div className="flex items-center gap-4 mb-4">
@@ -899,7 +899,7 @@ function UserProfileSection({ profile }: { profile: UserProfile }) {
 /**
  * User stats section in detail drawer
  */
-function UserStatsSection({ stats }: { stats: UserDetail["stats"] }) {
+function UserStatsSection({ stats }: Readonly<{ stats: UserDetail["stats"] }>) {
   return (
     <div className="grid grid-cols-3 gap-4">
       <div className="bg-white border border-amber-100 rounded-lg p-4 text-center">
@@ -930,7 +930,7 @@ function AdminNotesSection({
   onStartEdit,
   onSave,
   onCancel,
-}: {
+}: Readonly<{
   notes: string | null;
   editing: boolean;
   adminNotes: string;
@@ -939,16 +939,12 @@ function AdminNotesSection({
   onStartEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
-}) {
+}>) {
   return (
     <div className="bg-white border border-amber-100 rounded-lg p-4">
       <div className="flex items-center justify-between mb-2">
         <h4 className="font-medium text-amber-900">Admin Notes</h4>
-        {!editing ? (
-          <button onClick={onStartEdit} className="p-1 hover:bg-amber-50 rounded transition-colors">
-            <Edit2 className="w-4 h-4 text-amber-600" />
-          </button>
-        ) : (
+        {editing ? (
           <div className="flex gap-2">
             <button
               onClick={onSave}
@@ -964,6 +960,10 @@ function AdminNotesSection({
               <X className="w-4 h-4" />
             </button>
           </div>
+        ) : (
+          <button onClick={onStartEdit} className="p-1 hover:bg-amber-50 rounded transition-colors">
+            <Edit2 className="w-4 h-4 text-amber-600" />
+          </button>
         )}
       </div>
       {editing ? (
@@ -991,14 +991,14 @@ function UserPrivilegeSection({
   setSelectedPrivilege,
   savingPrivilege,
   onSave,
-}: {
+}: Readonly<{
   profile: UserProfile;
   privilegeTypes: PrivilegeType[];
   selectedPrivilege: string;
   setSelectedPrivilege: (v: string) => void;
   savingPrivilege: boolean;
   onSave: () => void;
-}) {
+}>) {
   return (
     <div className="bg-white border border-amber-100 rounded-lg p-4">
       <h4 className="font-medium text-amber-900 mb-3 flex items-center gap-2">
@@ -1057,12 +1057,12 @@ function SoftDeleteBanner({
   getDaysUntilHardDelete,
   onUndelete,
   undeletingUser,
-}: {
+}: Readonly<{
   profile: UserProfile;
   getDaysUntilHardDelete: (date: string | null | undefined) => number | null;
   onUndelete: () => void;
   undeletingUser: boolean;
-}) {
+}>) {
   if (!profile.isSoftDeleted) return null;
 
   return (
@@ -1116,7 +1116,7 @@ function AdminActionsSection({
   onToggleDisabled,
   onSendPasswordReset,
   onOpenDeleteDialog,
-}: {
+}: Readonly<{
   profile: UserProfile;
   saving: boolean;
   sendingPasswordReset: boolean;
@@ -1125,7 +1125,7 @@ function AdminActionsSection({
   onToggleDisabled: () => void;
   onSendPasswordReset: () => void;
   onOpenDeleteDialog: () => void;
-}) {
+}>) {
   return (
     <div className="bg-white border border-amber-100 rounded-lg p-4">
       <h4 className="font-medium text-amber-900 mb-3">Admin Actions</h4>
@@ -1161,7 +1161,7 @@ function AdminActionsSection({
               ? "bg-green-500 text-white"
               : "bg-amber-500 text-white hover:bg-amber-600"
           }`}
-          title={!profile.email ? "User has no email address" : undefined}
+          title={profile.email ? undefined : "User has no email address"}
         >
           {sendingPasswordReset ? (
             <>
@@ -1203,7 +1203,7 @@ function AdminActionsSection({
 /**
  * Activity item in recent activity list
  */
-function ActivityItemRow({ activity }: { activity: ActivityItem }) {
+function ActivityItemRow({ activity }: Readonly<{ activity: ActivityItem }>) {
   return (
     <div className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-lg">
       <Calendar className="w-4 h-4 text-amber-600 mt-0.5" />
@@ -1244,7 +1244,7 @@ function ActivityItemRow({ activity }: { activity: ActivityItem }) {
 /**
  * Recent activity section in detail drawer
  */
-function RecentActivitySection({ activities }: { activities: ActivityItem[] }) {
+function RecentActivitySection({ activities }: Readonly<{ activities: ActivityItem[] }>) {
   return (
     <div className="bg-white border border-amber-100 rounded-lg p-4">
       <h4 className="font-medium text-amber-900 mb-3 flex items-center gap-2">
@@ -1288,7 +1288,7 @@ function UserDetailDrawerContent({
   onToggleDisabled,
   onSendPasswordReset,
   onOpenDeleteDialog,
-}: {
+}: Readonly<{
   user: UserDetail;
   privilegeTypes: PrivilegeType[];
   selectedPrivilege: string;
@@ -1311,7 +1311,7 @@ function UserDetailDrawerContent({
   onToggleDisabled: () => void;
   onSendPasswordReset: () => void;
   onOpenDeleteDialog: () => void;
-}) {
+}>) {
   return (
     <div className="p-6 space-y-6">
       <UserProfileSection profile={user.profile} />
@@ -1390,7 +1390,7 @@ function UserDetailDrawer({
 /**
  * Drawer overlay component
  */
-function DrawerOverlay({ onClose }: { onClose: () => void }) {
+function DrawerOverlay({ onClose }: Readonly<{ onClose: () => void }>) {
   return (
     <div
       className="fixed inset-0 bg-black/20 z-40"
@@ -1410,13 +1410,13 @@ function DeleteDialogStep1({
   setDeleteReason,
   onCancel,
   onContinue,
-}: {
+}: Readonly<{
   nickname: string;
   deleteReason: string;
   setDeleteReason: (v: string) => void;
   onCancel: () => void;
   onContinue: () => void;
-}) {
+}>) {
   return (
     <>
       <div className="flex items-center gap-3 mb-4">
@@ -1438,8 +1438,14 @@ function DeleteDialogStep1({
         permanently deleted after 30 days unless restored.
       </p>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Reason (optional)</label>
+        <label
+          htmlFor="delete-reason-input"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Reason (optional)
+        </label>
         <input
+          id="delete-reason-input"
           type="text"
           value={deleteReason}
           onChange={(e) => setDeleteReason(e.target.value)}
@@ -1475,14 +1481,14 @@ function DeleteDialogStep2({
   deletingUser,
   onBack,
   onDelete,
-}: {
+}: Readonly<{
   nickname: string;
   deleteConfirmText: string;
   setDeleteConfirmText: (v: string) => void;
   deletingUser: boolean;
   onBack: () => void;
   onDelete: () => void;
-}) {
+}>) {
   return (
     <>
       <div className="flex items-center gap-3 mb-4">
@@ -1551,7 +1557,7 @@ function DeleteConfirmationDialog({
   onContinue,
   onBack,
   onDelete,
-}: {
+}: Readonly<{
   step: 1 | 2;
   nickname: string;
   deleteReason: string;
@@ -1563,7 +1569,7 @@ function DeleteConfirmationDialog({
   onContinue: () => void;
   onBack: () => void;
   onDelete: () => void;
-}) {
+}>) {
   return (
     <>
       <div

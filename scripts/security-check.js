@@ -170,6 +170,11 @@ function findPatternViolations(pattern, content, lines, relativePath) {
       message: pattern.message,
       snippet: lineContent.trim(),
     });
+
+    // Prevent infinite loops on zero-length matches
+    if (match[0].length === 0) {
+      regex.lastIndex++;
+    }
   }
 
   return violations;

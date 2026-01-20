@@ -277,8 +277,14 @@ function printFieldCoverageSection(result, fields, isRequired) {
   for (const field of fields) {
     const count = result.fieldCoverage[field] || 0;
     const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-    const indicator =
-      pct === 100 ? "\x1b[32m✓\x1b[0m" : isRequired ? "\x1b[31m✗\x1b[0m" : "\x1b[33m○\x1b[0m";
+    let indicator;
+    if (pct === 100) {
+      indicator = "\x1b[32m✓\x1b[0m";
+    } else if (isRequired) {
+      indicator = "\x1b[31m✗\x1b[0m";
+    } else {
+      indicator = "\x1b[33m○\x1b[0m";
+    }
     console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
   }
 }

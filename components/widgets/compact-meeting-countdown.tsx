@@ -86,7 +86,8 @@ function parse24HourMinutes(cleaned: string): number | null {
  * Parse 12-hour time format "h:mm AM/PM" to minutes since midnight
  */
 function parse12HourMinutes(cleaned: string): number | null {
-  const match = cleaned.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  const regex = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i;
+  const match = regex.exec(cleaned);
   if (!match) return null;
 
   let h = Number(match[1]);

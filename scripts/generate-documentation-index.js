@@ -581,30 +581,77 @@ function generateSummaryStats(docs) {
     tierCount.set(doc.category.tier, (tierCount.get(doc.category.tier) || 0) + 1);
   }
 
-  lines.push("## Summary Statistics");
-  lines.push("");
-  lines.push("### By Tier");
-  lines.push("");
-  lines.push("| Tier | Count | Description |");
-  lines.push("|------|-------|-------------|");
+  lines.push(
+    "## Summary Statistics",
+    "",
+    "### By Tier",
+    "",
+    "| Tier | Count | Description |",
+    "|------|-------|-------------|"
+  );
   for (const tier of [1, 2, 3, 4, 5]) {
     const count = tierCount.get(tier) || 0;
     const desc = TIER_DESCRIPTIONS[tier] || "Unknown";
     lines.push(`| Tier ${tier} | ${count} | ${desc} |`);
   }
-  lines.push("");
-  lines.push("### By Category");
-  lines.push("");
-  lines.push("| Category | Count |");
-  lines.push("|----------|-------|");
+  lines.push("", "### By Category", "", "| Category | Count |", "|----------|-------|");
   const sortedCategories = [...categoryCount.entries()].sort((a, b) => b[1] - a[1]);
   for (const [cat, count] of sortedCategories) {
     lines.push(`| ${cat} | ${count} |`);
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push("", "---", "");
   return lines;
+}
+
+/**
+ * Group documents by category
+ * @param {Array} docs - Processed documents
+ * @returns {Map} Map of category path to {category, docs[]}
+ */
+function groupDocsByCategory(docs) {
+  const byCategory = new Map();
+  for (const doc of docs) {
+    const catKey = doc.category.path;
+    if (!byCategory.has(catKey)) {
+      byCategory.set(catKey, { category: doc.category, docs: [] });
+    }
+    byCategory.get(catKey).docs.push(doc);
+  }
+  return byCategory;
+}
+
+/**
+ * Sort categories by tier, then name
+ * @param {Map} byCategory - Category map
+ * @returns {string[]} Sorted category keys
+ */
+function sortCategoryKeys(byCategory) {
+  return [...byCategory.keys()].sort((a, b) => {
+    const catA = byCategory.get(a).category;
+    const catB = byCategory.get(b).category;
+    if (catA.tier !== catB.tier) return catA.tier - catB.tier;
+    return catA.name.localeCompare(catB.name);
+  });
+}
+
+/**
+ * Format document row for category table
+ * @param {Object} doc - Document object
+ * @param {Map} referenceGraph - Reference graph
+ * @returns {string} Table row
+ */
+function formatDocumentRow(doc, referenceGraph) {
+  const refs = referenceGraph.get(doc.path);
+  const inCount = refs ? refs.inbound.length : 0;
+  const outCount = refs ? refs.outbound.length : 0;
+  const refStr = `↓${inCount} ↑${outCount}`;
+  let desc = doc.description
+    ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
+    : "-";
+  desc = desc.replace(/\|/g, "\\|");
+  const linkPath = encodeURI(doc.path);
+  const safeTitle = doc.title.replace(/\|/g, "\\|");
+  return `| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`;
 }
 
 /**
@@ -615,54 +662,29 @@ function generateSummaryStats(docs) {
  */
 function generateDocsByCategorySection(docs, referenceGraph) {
   const lines = [];
-  lines.push("## Documents by Category");
-  lines.push("");
+  lines.push("## Documents by Category", "");
 
-  // Group docs by category
-  const byCategory = new Map();
-  for (const doc of docs) {
-    const catKey = doc.category.path;
-    if (!byCategory.has(catKey)) {
-      byCategory.set(catKey, { category: doc.category, docs: [] });
-    }
-    byCategory.get(catKey).docs.push(doc);
-  }
-
-  // Sort categories by tier, then name
-  const sortedCategoryKeys = [...byCategory.keys()].sort((a, b) => {
-    const catA = byCategory.get(a).category;
-    const catB = byCategory.get(b).category;
-    if (catA.tier !== catB.tier) return catA.tier - catB.tier;
-    return catA.name.localeCompare(catB.name);
-  });
+  const byCategory = groupDocsByCategory(docs);
+  const sortedCategoryKeys = sortCategoryKeys(byCategory);
 
   for (const catKey of sortedCategoryKeys) {
     const { category, docs: catDocs } = byCategory.get(catKey);
-    lines.push(`### ${category.name} (Tier ${category.tier})`);
-    lines.push("");
-    lines.push(`*${category.description}*`);
-    lines.push("");
-    lines.push("| Document | Description | References | Last Modified |");
-    lines.push("|----------|-------------|------------|---------------|");
+    lines.push(
+      `### ${category.name} (Tier ${category.tier})`,
+      "",
+      `*${category.description}*`,
+      "",
+      "| Document | Description | References | Last Modified |",
+      "|----------|-------------|------------|---------------|"
+    );
 
     catDocs.sort((a, b) => a.title.localeCompare(b.title));
     for (const doc of catDocs) {
-      const refs = referenceGraph.get(doc.path);
-      const inCount = refs ? refs.inbound.length : 0;
-      const outCount = refs ? refs.outbound.length : 0;
-      const refStr = `↓${inCount} ↑${outCount}`;
-      let desc = doc.description
-        ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
-        : "-";
-      desc = desc.replace(/\|/g, "\\|");
-      const linkPath = encodeURI(doc.path);
-      const safeTitle = doc.title.replace(/\|/g, "\\|");
-      lines.push(`| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`);
+      lines.push(formatDocumentRow(doc, referenceGraph));
     }
     lines.push("");
   }
-  lines.push("---");
-  lines.push("");
+  lines.push("---", "");
   return lines;
 }
 
@@ -738,31 +760,33 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   const docsByPath = new Map(docs.map((d) => [d.path, d]));
 
   // Header
-  lines.push("# Documentation Index");
-  lines.push("");
   lines.push(
-    "> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate."
+    "# Documentation Index",
+    "",
+    "> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate.",
+    "",
+    `**Generated:** ${now}`,
+    `**Active Documents:** ${docs.length}`,
+    `**Archived Documents:** ${archivedFiles.length}`,
+    "",
+    "---",
+    ""
   );
-  lines.push("");
-  lines.push(`**Generated:** ${now}`);
-  lines.push(`**Active Documents:** ${docs.length}`);
-  lines.push(`**Archived Documents:** ${archivedFiles.length}`);
-  lines.push("");
-  lines.push("---");
-  lines.push("");
 
   // Table of Contents
-  lines.push("## Table of Contents");
-  lines.push("");
-  lines.push("1. [Summary Statistics](#summary-statistics)");
-  lines.push("2. [Documents by Category](#documents-by-category)");
-  lines.push("3. [Reference Graph](#reference-graph)");
-  lines.push("4. [Orphaned Documents](#orphaned-documents)");
-  lines.push("5. [Full Document List](#full-document-list)");
-  lines.push("6. [Archived Documents](#archived-documents)");
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push(
+    "## Table of Contents",
+    "",
+    "1. [Summary Statistics](#summary-statistics)",
+    "2. [Documents by Category](#documents-by-category)",
+    "3. [Reference Graph](#reference-graph)",
+    "4. [Orphaned Documents](#orphaned-documents)",
+    "5. [Full Document List](#full-document-list)",
+    "6. [Archived Documents](#archived-documents)",
+    "",
+    "---",
+    ""
+  );
 
   // Summary Statistics (extracted helper)
   lines.push(...generateSummaryStats(docs));
@@ -774,10 +798,12 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push(...generateReferenceGraphSection(referenceGraph, docsByPath));
 
   // Orphaned Documents
-  lines.push("## Orphaned Documents");
-  lines.push("");
-  lines.push("Documents with no inbound links (not referenced by any other document):");
-  lines.push("");
+  lines.push(
+    "## Orphaned Documents",
+    "",
+    "Documents with no inbound links (not referenced by any other document):",
+    ""
+  );
 
   const orphaned = [...referenceGraph.entries()]
     .filter(([, refs]) => refs.inbound.length === 0)
@@ -787,8 +813,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   if (orphaned.length === 0) {
     lines.push("*No orphaned documents found.*");
   } else {
-    lines.push(`**${orphaned.length} orphaned documents:**`);
-    lines.push("");
+    lines.push(`**${orphaned.length} orphaned documents:**`, "");
     for (const path of orphaned) {
       const doc = docsByPath.get(path);
       const title = doc ? doc.title : basename(path, ".md");
@@ -796,18 +821,18 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       lines.push(`- [${escapeTableCell(title)}](${linkPath})`);
     }
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push("", "---", "");
 
   // Full Document List
-  lines.push("## Full Document List");
-  lines.push("");
-  lines.push("<details>");
-  lines.push("<summary>Click to expand full list of all documents</summary>");
-  lines.push("");
-  lines.push("| # | Path | Title | Tier | Status |");
-  lines.push("|---|------|-------|------|--------|");
+  lines.push(
+    "## Full Document List",
+    "",
+    "<details>",
+    "<summary>Click to expand full list of all documents</summary>",
+    "",
+    "| # | Path | Title | Tier | Status |",
+    "|---|------|-------|------|--------|"
+  );
 
   const sortedDocs = [...docs].sort((a, b) => a.path.localeCompare(b.path));
   let i = 1;
@@ -819,42 +844,35 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     );
   }
 
-  lines.push("");
-  lines.push("</details>");
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push("", "</details>", "", "---", "");
 
   // Archived Documents (simple list, not fully tracked)
-  lines.push("## Archived Documents");
-  lines.push("");
   lines.push(
-    "*Historical and completed documentation. These documents are preserved for reference but not actively tracked in the reference graph.*"
+    "## Archived Documents",
+    "",
+    "*Historical and completed documentation. These documents are preserved for reference but not actively tracked in the reference graph.*",
+    ""
   );
-  lines.push("");
 
   if (archivedFiles.length === 0) {
     lines.push("*No archived documents.*");
   } else {
-    lines.push("<details>");
-    lines.push("<summary>Click to expand archived documents list</summary>");
-    lines.push("");
-    lines.push("| # | Path |");
-    lines.push("|---|------|");
+    lines.push(
+      "<details>",
+      "<summary>Click to expand archived documents list</summary>",
+      "",
+      "| # | Path |",
+      "|---|------|"
+    );
     const sortedArchived = [...archivedFiles].sort();
     let archiveNum = 1;
     for (const filePath of sortedArchived) {
       const linkPath = encodeURI(filePath);
       lines.push(`| ${archiveNum++} | [${escapeTableCell(filePath)}](${linkPath}) |`);
     }
-    lines.push("");
-    lines.push("</details>");
+    lines.push("", "</details>");
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-  lines.push("*Generated by `scripts/generate-documentation-index.js`*");
-  lines.push("");
+  lines.push("", "---", "", "*Generated by `scripts/generate-documentation-index.js`*", "");
 
   return lines.join("\n");
 }

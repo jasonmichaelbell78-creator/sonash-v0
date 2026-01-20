@@ -73,11 +73,16 @@ const REFLECTIONS = [
 ];
 
 /**
+ * Type alias for trait values
+ */
+type TraitValue = "negative" | "positive" | null;
+
+/**
  * Build share text from form data
  */
 function buildShareText(
   actions: Record<string, boolean>,
-  traits: Record<string, "negative" | "positive" | null>,
+  traits: Record<string, TraitValue>,
   reflectionAnswers: Record<string, string>,
   gratitude: string,
   surrender: string
@@ -134,7 +139,7 @@ interface Step1Props {
   setActions: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
-function Step1Actions({ actions, setActions }: Step1Props) {
+function Step1Actions({ actions, setActions }: Readonly<Step1Props>) {
   return (
     <motion.div
       key="step1"
@@ -180,11 +185,11 @@ function Step1Actions({ actions, setActions }: Step1Props) {
 }
 
 interface Step2Props {
-  traits: Record<string, "negative" | "positive" | null>;
+  traits: Record<string, TraitValue>;
   setTrait: (id: string, value: "positive" | "negative") => void;
 }
 
-function Step2Mirror({ traits, setTrait }: Step2Props) {
+function Step2Mirror({ traits, setTrait }: Readonly<Step2Props>) {
   return (
     <motion.div
       key="step2"
@@ -272,7 +277,7 @@ function Step3Reflections({
   isListening,
   activeSpeechField,
   toggleSpeech,
-}: Step3Props) {
+}: Readonly<Step3Props>) {
   return (
     <motion.div
       key="step3"
@@ -342,7 +347,7 @@ function Step4Closing({
   isListening,
   activeSpeechField,
   toggleSpeech,
-}: Step4Props) {
+}: Readonly<Step4Props>) {
   return (
     <motion.div
       key="step4"
@@ -448,7 +453,7 @@ export default function NightReviewCard({ className, ...props }: NightReviewCard
 
   // Form State
   const [actions, setActions] = useState<Record<string, boolean>>({});
-  const [traits, setTraits] = useState<Record<string, "negative" | "positive" | null>>({});
+  const [traits, setTraits] = useState<Record<string, TraitValue>>({});
   const [reflectionAnswers, setReflectionAnswers] = useState<Record<string, string>>({});
   const [gratitude, setGratitude] = useState("");
   const [surrender, setSurrender] = useState("");

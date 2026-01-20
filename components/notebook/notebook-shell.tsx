@@ -50,7 +50,7 @@ function AccountSecuritySection({
   showLinkPrompt,
   email,
   onSecureAccount,
-}: AccountSecuritySectionProps) {
+}: Readonly<AccountSecuritySectionProps>) {
   if (!isAnonymous && email) {
     return (
       <div className="p-3 rounded-lg bg-green-50 border border-green-200">

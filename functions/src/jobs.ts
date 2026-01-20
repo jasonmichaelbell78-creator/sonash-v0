@@ -46,6 +46,8 @@ function extractUserIdFromPath(filePath: string): string | null {
   const pathParts = filePath.split("/");
   if (pathParts.length < 2) return null;
 
+  if (pathParts[0] !== "user-uploads") return null;
+
   const userId = pathParts[1];
   if (!userId || typeof userId !== "string") return null;
 
@@ -780,6 +782,7 @@ export async function healthCheckNotifications(): Promise<{
 
   const userActivityResult = await checkUserActivityHealth(db, sixHoursAgo);
   checks["userActivity"] = userActivityResult;
+  overallStatus = updateOverallStatus(overallStatus, userActivityResult.status);
 
   const firestoreResult = await checkFirestoreHealth(db);
   checks["firestore"] = firestoreResult;

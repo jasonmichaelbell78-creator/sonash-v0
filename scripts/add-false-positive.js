@@ -277,9 +277,13 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const parsed = {};
 
-  for (let i = 0; i < args.length; i++) {
+  for (let i = 0; i < args.length; ) {
     const consumed = processArg(args[i], args[i + 1], parsed);
-    if (consumed) i++; // Skip next arg if it was consumed as a value
+    if (consumed) {
+      i += 2; // Skip both current and next arg
+    } else {
+      i++; // Skip only current arg
+    }
   }
 
   return parsed;

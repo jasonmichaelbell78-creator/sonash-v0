@@ -98,7 +98,10 @@ interface CollectionStats {
 /**
  * Health status card for a single service
  */
-function HealthStatusCard({ label, isHealthy }: { label: string; isHealthy: boolean | undefined }) {
+function HealthStatusCard({
+  label,
+  isHealthy,
+}: Readonly<{ label: string; isHealthy: boolean | undefined }>) {
   const Icon = isHealthy ? CheckCircle2 : XCircle;
   const iconClass = isHealthy ? "text-green-500" : "text-red-500";
   const statusText = isHealthy ? "Connected" : "Disconnected";
@@ -124,12 +127,12 @@ function MetricCard({
   iconClass,
   label,
   value,
-}: {
+}: Readonly<{
   icon: typeof Users;
   iconClass: string;
   label: string;
   value: number;
-}) {
+}>) {
   return (
     <div className="bg-white rounded-lg border border-amber-200 p-4">
       <div className="flex items-center gap-2 mb-2">
@@ -150,13 +153,13 @@ function LoadRefreshButton({
   hasData,
   loadLabel,
   refreshLabel,
-}: {
+}: Readonly<{
   onClick: () => void;
   loading: boolean;
   hasData: boolean;
   loadLabel: string;
   refreshLabel: string;
-}) {
+}>) {
   return (
     <button
       onClick={onClick}
@@ -184,10 +187,10 @@ function LoadRefreshButton({
 function StorageStatsDisplay({
   stats,
   formatBytes,
-}: {
+}: Readonly<{
   stats: StorageStats;
   formatBytes: (bytes: number) => string;
-}) {
+}>) {
   return (
     <div className="space-y-4">
       {stats.truncated && (
@@ -249,11 +252,11 @@ function RateLimitRow({
   limit,
   onClear,
   clearing,
-}: {
+}: Readonly<{
   limit: RateLimitEntry;
   onClear: () => void;
   clearing: boolean;
-}) {
+}>) {
   const resetText = (() => {
     const resetDate = new Date(limit.resetAt);
     return Number.isNaN(resetDate.getTime())
@@ -291,7 +294,7 @@ function RateLimitRow({
 /**
  * Collection stat card
  */
-function CollectionStatCard({ col }: { col: CollectionStats }) {
+function CollectionStatCard({ col }: Readonly<{ col: CollectionStats }>) {
   return (
     <div className="bg-white p-4">
       <div className="text-sm text-amber-700 mb-1">{col.collection}</div>
@@ -308,7 +311,7 @@ function CollectionStatCard({ col }: { col: CollectionStats }) {
 /**
  * Signup row in recent signups list
  */
-function SignupRow({ signup }: { signup: DashboardStats["recentSignups"][0] }) {
+function SignupRow({ signup }: Readonly<{ signup: DashboardStats["recentSignups"][0] }>) {
   return (
     <div className="p-4 flex items-center justify-between">
       <div>
@@ -327,7 +330,7 @@ function SignupRow({ signup }: { signup: DashboardStats["recentSignups"][0] }) {
 /**
  * Job status row
  */
-function JobStatusRow({ job }: { job: DashboardStats["jobStatuses"][0] }) {
+function JobStatusRow({ job }: Readonly<{ job: DashboardStats["jobStatuses"][0] }>) {
   const statusClass =
     job.lastRunStatus === "success"
       ? "bg-green-100 text-green-800"
@@ -356,7 +359,7 @@ function JobStatusRow({ job }: { job: DashboardStats["jobStatuses"][0] }) {
 /**
  * Log entry row
  */
-function LogEntryRow({ log }: { log: DashboardStats["recentLogs"][0] }) {
+function LogEntryRow({ log }: Readonly<{ log: DashboardStats["recentLogs"][0] }>) {
   const levelClass =
     log.level === "error"
       ? "bg-red-100 text-red-800"
@@ -391,11 +394,11 @@ function StateDisplay({
   error,
   emptyMessage,
   bgClass,
-}: {
+}: Readonly<{
   error: string | null;
   emptyMessage: string;
   bgClass: "amber" | "green" | "red";
-}) {
+}>) {
   if (error) {
     return (
       <div className="bg-red-50 rounded-lg border border-red-200 p-6 text-center text-red-700 flex items-center justify-center gap-2">
@@ -421,13 +424,13 @@ function StorageSection({
   storageError,
   onLoad,
   formatBytes,
-}: {
+}: Readonly<{
   storageStats: StorageStats | null;
   loadingStorage: boolean;
   storageError: string | null;
   onLoad: () => void;
   formatBytes: (bytes: number) => string;
-}) {
+}>) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -466,14 +469,14 @@ function RateLimitsSection({
   clearingRateLimit,
   onLoad,
   onClear,
-}: {
+}: Readonly<{
   rateLimits: RateLimitEntry[];
   loadingRateLimits: boolean;
   rateLimitsError: string | null;
   clearingRateLimit: string | null;
   onLoad: () => void;
   onClear: (key: string) => void;
-}) {
+}>) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -521,12 +524,12 @@ function CollectionStatsSection({
   loadingCollections,
   collectionsError,
   onLoad,
-}: {
+}: Readonly<{
   collectionStats: CollectionStats[];
   loadingCollections: boolean;
   collectionsError: string | null;
   onLoad: () => void;
-}) {
+}>) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -564,7 +567,9 @@ function CollectionStatsSection({
 /**
  * Recent signups section
  */
-function RecentSignupsSection({ signups }: { signups?: DashboardStats["recentSignups"] }) {
+function RecentSignupsSection({
+  signups,
+}: Readonly<{ signups?: DashboardStats["recentSignups"] }>) {
   return (
     <div>
       <h3 className="text-lg font-heading text-amber-900 mb-3">Recent Signups</h3>
@@ -586,7 +591,7 @@ function RecentSignupsSection({ signups }: { signups?: DashboardStats["recentSig
 /**
  * Background jobs section
  */
-function BackgroundJobsSection({ jobs }: { jobs?: DashboardStats["jobStatuses"] }) {
+function BackgroundJobsSection({ jobs }: Readonly<{ jobs?: DashboardStats["jobStatuses"] }>) {
   if (!jobs || jobs.length === 0) return null;
   return (
     <div>
@@ -605,7 +610,7 @@ function BackgroundJobsSection({ jobs }: { jobs?: DashboardStats["jobStatuses"] 
 /**
  * Recent logs section
  */
-function RecentLogsSection({ logs }: { logs?: DashboardStats["recentLogs"] }) {
+function RecentLogsSection({ logs }: Readonly<{ logs?: DashboardStats["recentLogs"] }>) {
   if (!logs || logs.length === 0) return null;
   return (
     <div>
@@ -624,7 +629,7 @@ function RecentLogsSection({ logs }: { logs?: DashboardStats["recentLogs"] }) {
 /**
  * User metrics section
  */
-function UserMetricsSection({ stats }: { stats: DashboardStats | null }) {
+function UserMetricsSection({ stats }: Readonly<{ stats: DashboardStats | null }>) {
   return (
     <div>
       <h3 className="text-lg font-heading text-amber-900 mb-3">User Metrics</h3>
@@ -661,7 +666,7 @@ function UserMetricsSection({ stats }: { stats: DashboardStats | null }) {
 /**
  * Dashboard footer
  */
-function DashboardFooter({ generatedAt }: { generatedAt?: string }) {
+function DashboardFooter({ generatedAt }: Readonly<{ generatedAt?: string }>) {
   const displayTime = generatedAt
     ? formatDistanceToNow(new Date(generatedAt), { addSuffix: true })
     : "Unknown";
@@ -682,7 +687,7 @@ function DashboardLoading() {
 /**
  * Dashboard error state
  */
-function DashboardError({ error, onRetry }: { error: string; onRetry: () => void }) {
+function DashboardError({ error, onRetry }: Readonly<{ error: string; onRetry: () => void }>) {
   return (
     <div className="flex flex-col items-center justify-center h-96 gap-4">
       <AlertCircle className="w-12 h-12 text-red-500" />
@@ -859,7 +864,7 @@ function DashboardContent({
   loadingCollections,
   collectionsError,
   loadCollectionStats,
-}: {
+}: Readonly<{
   health: HealthCheck | null;
   stats: DashboardStats | null;
   loadDashboard: () => void;
@@ -877,7 +882,7 @@ function DashboardContent({
   loadingCollections: boolean;
   collectionsError: string | null;
   loadCollectionStats: () => void;
-}) {
+}>) {
   return (
     <div className="space-y-6">
       {/* Header */}

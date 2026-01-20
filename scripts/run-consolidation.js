@@ -481,7 +481,7 @@ function readLogFile() {
   }
 
   try {
-    return readFileSync(LOG_FILE, "utf8").replace(/\r\n/g, "\n");
+    return readFileSync(LOG_FILE, "utf8").replaceAll(/\r\n/g, "\n");
   } catch (readError) {
     const message = readError instanceof Error ? readError.message : String(readError);
     log(`❌ Failed to read AI_REVIEW_LEARNINGS_LOG.md: ${message}`, colors.red);
