@@ -157,7 +157,7 @@ function parseCliArgs() {
   const args = process.argv.slice(2);
   const urlArg = args.find((arg) => arg.startsWith("--url="));
   return {
-    singleUrl: urlArg ? urlArg.split("=")[1] : null,
+    singleUrl: urlArg ? urlArg.substring(urlArg.indexOf("=") + 1) : null,
     jsonOnly: args.includes("--json"),
     desktop: args.includes("--desktop"),
   };

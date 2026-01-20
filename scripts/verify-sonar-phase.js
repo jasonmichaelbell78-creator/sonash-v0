@@ -190,12 +190,11 @@ function loadIssuesFromReport() {
     if (issueMatch && currentFile) {
       const lineNum = issueMatch[1] === "N/A" ? null : parseInt(issueMatch[1], 10);
       const message = issueMatch[2];
-      const rule = extractRuleFromLines(lines, i + 1);
+      const extractedRule = extractRuleFromLines(lines, i + 1);
+      const rule = extractedRule || "UNKNOWN";
 
-      if (rule) {
-        const target = inSecuritySection ? hotspots : issues;
-        target.push({ file: currentFile, line: lineNum, message, rule });
-      }
+      const target = inSecuritySection ? hotspots : issues;
+      target.push({ file: currentFile, line: lineNum, message, rule });
     }
   }
 
@@ -217,7 +216,7 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
     return;
   }
 
-  const regex = /### \[([^\]]+)\] - ([^:\n]+)(?::(\d+|N\/A|BATCH))?/g;
+  const regex = /### \[([^\]]+)\] - ([^\n]+?)(?::(\d+|N\/A|BATCH))?/g;
   let match;
   while ((match = regex.exec(content)) !== null) {
     const rule = match[1];

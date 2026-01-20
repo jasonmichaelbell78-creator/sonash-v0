@@ -770,9 +770,19 @@ function processBucketPairs(bucketMap, tryMergePair, maxSize = Infinity, bucketT
 
 /**
  * Deduplicate findings using multi-pass merge with pre-bucketing (Qodo Review #173, #174)
+ *
+ * Multi-pass approach rationale (vs Disjoint Set Union):
+ * - DSU would require upfront equivalence determination, but merge criteria depend on
+ *   accumulated evidence from previous merges (e.g., merged_from arrays, combined files)
+ * - Multi-pass allows iterative refinement: early merges create new merge opportunities
+ * - Fixpoint iteration handles transitive merges naturally (A+B, then AB+C)
+ * - Pre-bucketing provides O(n) grouping before O(k²) pair comparison within buckets
+ *
+ * Implementation notes:
  * - Multi-pass iteration until fixpoint (no more merges possible)
  * - Pre-buckets by file/category to reduce comparisons
  * - Uses ID index for O(1) DEDUP->CANON dependency lookup
+ * - Size caps prevent O(n²) blowup on large buckets
  */
 function deduplicateFindings(allFindings) {
   const dedupLog = [];
@@ -780,6 +790,7 @@ function deduplicateFindings(allFindings) {
   let didMerge = true;
   let passCount = 0;
   const MAX_PASSES = 10; // Safety limit to prevent infinite loops
+  const MAX_FILE_BUCKET = 250; // Cap file bucket processing to prevent quadratic blowup
   const MAX_CATEGORY_BUCKET = 250;
 
   while (didMerge && passCount < MAX_PASSES) {
@@ -803,8 +814,8 @@ function deduplicateFindings(allFindings) {
       }
     };
 
-    // Process same-file pairs using extracted helper
-    processBucketPairs(fileIndex, tryMergePair);
+    // Process same-file pairs with size cap to prevent quadratic blowup
+    processBucketPairs(fileIndex, tryMergePair, MAX_FILE_BUCKET, "file");
 
     // Process same-category pairs with size cap
     processBucketPairs(categoryIndex, tryMergePair, MAX_CATEGORY_BUCKET, "category");
