@@ -265,15 +265,21 @@ function getIssueApiErrorMessage(status) {
  * @returns {{total: number, bugs: number, vulnerabilities: number, codeSmells: number}}
  */
 function parseIssuesResponse(issuesData) {
-  const total = issuesData.paging?.total ?? 0;
-  const typeFacet = issuesData.facets?.find((f) => f.property === "types");
-  const typeValues = typeFacet?.values || [];
+  // Review #187: Guard against malformed API payloads
+  const paging =
+    issuesData && typeof issuesData === "object" && !Array.isArray(issuesData)
+      ? issuesData.paging
+      : null;
+  const total = typeof paging?.total === "number" ? paging.total : 0;
+  const facets = Array.isArray(issuesData?.facets) ? issuesData.facets : [];
+  const typeFacet = facets.find((f) => f?.property === "types");
+  const typeValues = Array.isArray(typeFacet?.values) ? typeFacet.values : [];
 
   return {
     total,
-    bugs: typeValues.find((v) => v.val === "BUG")?.count ?? 0,
-    vulnerabilities: typeValues.find((v) => v.val === "VULNERABILITY")?.count ?? 0,
-    codeSmells: typeValues.find((v) => v.val === "CODE_SMELL")?.count ?? 0,
+    bugs: typeValues.find((v) => v?.val === "BUG")?.count ?? 0,
+    vulnerabilities: typeValues.find((v) => v?.val === "VULNERABILITY")?.count ?? 0,
+    codeSmells: typeValues.find((v) => v?.val === "CODE_SMELL")?.count ?? 0,
   };
 }
 

@@ -450,15 +450,15 @@ function main() {
     process.exit(2);
   }
 
-  // Review #186: Concatenate both file AND skill if both present
+  // Review #187: Use eventData (processed values) instead of raw args for accurate log output
   let suffix = "";
-  if (args.file) {
-    suffix += ` (${args.file})`;
+  if (eventData.file) {
+    suffix += ` (${eventData.file})`;
   }
-  if (args.skill) {
-    suffix += ` (${args.skill})`;
+  if (eventData.skill) {
+    suffix += ` (${eventData.skill})`;
   }
-  console.log(`Logged: ${args.event}${suffix}`);
+  console.log(`Logged: ${eventData.event}${suffix}`);
 }
 
 main();

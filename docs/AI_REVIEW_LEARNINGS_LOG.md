@@ -267,8 +267,8 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 7 **Consolidation threshold:** 10 reviews
-**Status:** ✅ Current **Next consolidation due:** After Review #186
+**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
+**Status:** ✅ Current **Next consolidation due:** After Review #190
 
 ### When to Consolidate
 
@@ -708,6 +708,67 @@ functions, S2871: 3 sort comparisons)
 - Fixed: 9 items
 - Rejected: 2 items (S5852 false positives already documented)
 - Deferred: 1 item (helper modularization - architectural refactoring)
+
+---
+
+#### Review #187: Cherry-Pick PR Qodo Compliance Review (2026-01-20)
+
+**Source:** Qodo PR Compliance + Qodo PR Code Suggestions **PR/Branch:**
+claude/cherry-pick-commits-pr-review-NlFAz **Suggestions:** 20 total (Critical:
+0, Major: 6, Minor: 11, Trivial: 3)
+
+**Issues Fixed:**
+
+| #   | Issue                              | Severity | File                         | Fix                                      |
+| --- | ---------------------------------- | -------- | ---------------------------- | ---------------------------------------- |
+| 1   | Non-global regex misses matches    | Major    | security-check.js:154        | Always add 'g' flag if missing           |
+| 2   | Sync errors escape Promise.resolve | Major    | use-tab-refresh.ts:68        | Wrap onRefresh() in .then() block        |
+| 3   | Hashed IP sent to Sentry           | Major    | security-wrapper.ts:132      | Revert to captureToSentry: false         |
+| 4   | Raw attemptedUserId in logs        | Major    | security-wrapper.ts:266      | Hash userId before logging               |
+| 5   | statSync follows symlinks          | Major    | validate-canon-schema.js:385 | Use lstatSync + skip symlinks            |
+| 6   | Sensitive String(error) logged     | Major    | admin.ts:2521                | Log error type/code, not raw message     |
+| 7   | Multi-column separator regex       | Minor    | update-readme-status.js:190  | Handle tables with multiple columns      |
+| 8   | Unhandled duplicate error          | Minor    | normalize-canon-ids.js:304   | Wrap processFileForMapping in try/catch  |
+| 9   | Windows path backslash             | Minor    | check-docs-light.js:127      | Normalize path separators                |
+| 10  | Crash on non-string d.path         | Minor    | phase-complete-check.js:183  | Add typeof guard                         |
+| 11  | Crash on failed cross-ref          | Minor    | archive-doc.js:527           | Check refResult.success before accessing |
+| 12  | Malformed API payload crash        | Minor    | check-review-needed.js:268   | Guard with Array.isArray                 |
+| 13  | JSONL read error handling          | Minor    | normalize-canon-ids.js:215   | Use instanceof Error for message         |
+| 14  | Unbounded regex input              | Minor    | validate-audit.js:196        | Cap text length at 50K                   |
+| 15  | Unexpected args silently ignored   | Minor    | add-false-positive.js:282    | Throw on unexpected positional args      |
+| 16  | Truthy isSoftDeleted check         | Minor    | use-journal.ts:174           | Use strict === true comparison           |
+| 17  | Duplicate bucket indices           | Minor    | aggregate-audit-findings.js  | Check last element before push           |
+| 18  | Log uses args instead of eventData | Trivial  | log-session-activity.js:455  | Use processed eventData values           |
+| 19  | parseInt without radix             | Trivial  | check-docs-light.js:90       | Add radix 10 to parseInt                 |
+| 20  | Swallowed errors in searchByEmail  | Trivial  | admin.ts:139                 | Add debug logging for non-user-not-found |
+
+**Patterns Identified:**
+
+1. **Global regex flag for scanning**: When iterating all matches with exec(),
+   patterns without /g flag cause infinite loops or miss occurrences
+2. **Promise.resolve for sync errors**: Wrapping in .then() catches both sync
+   and async errors in the same chain
+3. **IP hash still privacy-sensitive**: Even hashed identifiers shouldn't go to
+   third parties
+4. **lstatSync for symlink detection**: statSync follows symlinks, potentially
+   escaping project boundaries
+5. **Error type over message**: Log error.name/error.code, not error.message
+   which may contain sensitive paths
+
+**Key Learnings:**
+
+- Security scanners must detect ALL matches - non-global regex is a critical bug
+- Use `Promise.resolve().then(() => fn())` pattern to catch sync exceptions
+- Even anonymized data should stay out of third-party services (privacy best
+  practice)
+- symlink traversal is a real security concern for file processing scripts
+- Error messages may contain API keys, paths, or PII - log type/code only
+
+**Resolution:**
+
+- Fixed: 20 items
+- Rejected: 0 items
+- Deferred: 0 items
 
 ---
 

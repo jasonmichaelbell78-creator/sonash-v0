@@ -704,7 +704,9 @@ function parseCanonFiles(allFindings, stats) {
 function addToMapIndex(map, key, value) {
   if (!key) return;
   if (!map.has(key)) map.set(key, []);
-  map.get(key).push(value);
+  const arr = map.get(key);
+  // Review #187: Avoid duplicate indices by checking if value already present
+  if (arr[arr.length - 1] !== value) arr.push(value);
 }
 
 /**

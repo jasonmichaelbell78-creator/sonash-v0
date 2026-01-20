@@ -212,7 +212,9 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
   try {
     content = readFileSync(filepath, "utf-8");
   } catch (err) {
-    console.error(`  Error reading ${filename}: ${err.message}`);
+    // Review #187: Use instanceof Error for safe message access
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`  Error reading ${filename}: ${message}`);
     return { findings: null, counter: globalCounter };
   }
 
@@ -301,18 +303,25 @@ function main() {
 
   for (const filename of files) {
     const filepath = join(directory, filename);
-    const result = processFileForMapping(
-      filepath,
-      filename,
-      idMap,
-      idMapping,
-      globalCounter,
-      verbose
-    );
+    // Review #187: Wrap in try/catch to handle duplicate ID errors gracefully
+    try {
+      const result = processFileForMapping(
+        filepath,
+        filename,
+        idMap,
+        idMapping,
+        globalCounter,
+        verbose
+      );
 
-    if (result.findings) {
-      fileData.push({ filepath, filename, category: result.category, findings: result.findings });
-      globalCounter = result.counter;
+      if (result.findings) {
+        fileData.push({ filepath, filename, category: result.category, findings: result.findings });
+        globalCounter = result.counter;
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`\n❌ Failed while processing ${filename}: ${message}`);
+      process.exit(2);
     }
   }
 

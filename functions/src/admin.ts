@@ -136,7 +136,15 @@ async function searchUserByEmail(
       userDoc.exists ? (userDoc.data() ?? null) : null,
       () => Promise.resolve(authUser)
     );
-  } catch {
+  } catch (error) {
+    // Review #187: Log unexpected errors (not just user-not-found) for debugging
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode !== "auth/user-not-found") {
+      console.warn("searchUserByEmail: unexpected error", {
+        code: errorCode,
+        name: error instanceof Error ? error.name : "unknown",
+      });
+    }
     return null;
   }
 }
@@ -2516,9 +2524,14 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
     // Batch fetch auth users
     const uids = docs.map((d) => d.id);
     const authByUid = await batchFetchAuthUsers(uids, (error) => {
+      // Review #187: Log error type/code only, not String(error) which may contain sensitive info
+      const safeErrorInfo =
+        error instanceof Error
+          ? { name: error.name, code: (error as { code?: string }).code }
+          : { type: typeof error };
       logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Batch auth fetch failed", {
         userId: request.auth?.uid,
-        metadata: { error: String(error), uidsCount: uids.length },
+        metadata: { error: safeErrorInfo, uidsCount: uids.length },
         captureToSentry: true,
       });
     });

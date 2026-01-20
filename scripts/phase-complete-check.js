@@ -179,6 +179,10 @@ function checkArchiveForFile(deliverable, projectRoot) {
  * @returns {object} Deliverable with normalized path
  */
 function normalizeDeliverablePath(d) {
+  // Review #187: Guard against non-string d.path to prevent runtime errors
+  if (typeof d.path !== "string") {
+    return { ...d, path: "" };
+  }
   // Limit path length to prevent ReDoS (S5852 security hotspot)
   const safePath = d.path.length > 500 ? d.path.slice(0, 500) : d.path;
   return {

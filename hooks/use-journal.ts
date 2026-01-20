@@ -170,8 +170,8 @@ export function generateTags(type: JournalEntryType, data: Record<string, unknow
  * Returns null for soft-deleted entries or entries with invalid timestamps.
  */
 function processJournalDoc(docId: string, data: Record<string, unknown>): JournalEntry | null {
-  // Filter out soft-deleted entries client-side
-  if (data.isSoftDeleted) return null;
+  // Review #187: Use strict boolean check to prevent incorrect filtering on falsy values
+  if (data.isSoftDeleted === true) return null;
 
   // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
   // Use duck-typing with typeof check to be extra robust against non-function toMillis

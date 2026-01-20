@@ -191,15 +191,20 @@ function normalizeEvidence(evidence) {
 }
 
 function buildFindingSearchText(finding) {
-  const evidenceParts = normalizeEvidence(finding.evidence);
+  // Review #187: Cap evidence items and total size to bound regex work
+  const evidenceParts = normalizeEvidence(finding.evidence)
+    .filter((e) => typeof e === "string")
+    .slice(0, 20); // Cap evidence items
 
-  return [
+  const text = [
     finding.title || "",
     finding.description || "",
     finding.file || "",
-    // Review #186: Filter to strings only - avoid [object Object] from stringify
-    ...evidenceParts.filter((e) => typeof e === "string"),
+    ...evidenceParts,
   ].join(" ");
+
+  // Review #187: Cap total size to prevent performance issues with regex
+  return text.length > 50_000 ? text.slice(0, 50_000) : text;
 }
 
 /**
