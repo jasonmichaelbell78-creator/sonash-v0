@@ -282,7 +282,9 @@ function main() {
   try {
     files = findCanonFiles(directory);
   } catch (err) {
-    console.error(`Error reading directory: ${err.message}`);
+    // Review #189: Defensive error message access
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Error reading directory: ${message}`);
     process.exit(2);
   }
 

@@ -641,8 +641,12 @@ function findPatternMatches(antiPattern, content, filePath) {
   // Non-global regexes: single match only (prevents infinite loop)
   if (!pattern.global) {
     const match = pattern.exec(content);
-    if (match && !(exclude && exclude.test(match[0]))) {
-      violations.push(buildViolation(antiPattern, match, content, filePath));
+    if (match) {
+      // Review #189: Reset exclude.lastIndex before test to ensure consistent behavior
+      if (exclude) exclude.lastIndex = 0;
+      if (!(exclude && exclude.test(match[0]))) {
+        violations.push(buildViolation(antiPattern, match, content, filePath));
+      }
     }
     return violations;
   }
@@ -650,6 +654,8 @@ function findPatternMatches(antiPattern, content, filePath) {
   // Global regexes: iterate all matches
   let match;
   while ((match = pattern.exec(content)) !== null) {
+    // Review #189: Reset exclude.lastIndex before each test
+    if (exclude) exclude.lastIndex = 0;
     if (exclude && exclude.test(match[0])) continue;
     violations.push(buildViolation(antiPattern, match, content, filePath));
 

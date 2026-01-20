@@ -414,8 +414,14 @@ function extractLinks(content, currentFile) {
   while ((match = linkRegex.exec(strippedContent)) !== null) {
     const [, text, href] = match;
 
+    // Review #189: Guard against non-string href to prevent crashes on malformed links
     // Skip external URLs, anchors, and image links using helpers (S3776)
-    if (isExternalOrSpecialLink(href) || href.startsWith("#") || isImageLink(href)) {
+    if (
+      typeof href !== "string" ||
+      isExternalOrSpecialLink(href) ||
+      href.startsWith("#") ||
+      isImageLink(href)
+    ) {
       continue;
     }
 

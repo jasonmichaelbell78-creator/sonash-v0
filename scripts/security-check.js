@@ -154,6 +154,9 @@ function shouldApplyPattern(pattern, ext, relativePath) {
 function findPatternViolations(pattern, content, lines, relativePath) {
   const violations = [];
 
+  // Review #189: Normalize CRLF to LF for consistent line number calculation
+  const normalizedContent = content.replace(/\r\n/g, "\n");
+
   // Review #187: Always use global regex to find ALL matches, not just the first.
   // Non-global regexes would only find the first occurrence, missing security issues.
   const flags = pattern.pattern.flags.includes("g")
@@ -163,8 +166,8 @@ function findPatternViolations(pattern, content, lines, relativePath) {
 
   // Global regexes: iterate all matches
   let match;
-  while ((match = regex.exec(content)) !== null) {
-    const beforeMatch = content.slice(0, match.index);
+  while ((match = regex.exec(normalizedContent)) !== null) {
+    const beforeMatch = normalizedContent.slice(0, match.index);
     const lineNum = beforeMatch.split("\n").length;
     const lineContent = lines[lineNum - 1]?.slice(0, 80) || "";
 

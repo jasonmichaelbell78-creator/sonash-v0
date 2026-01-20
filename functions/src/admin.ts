@@ -85,13 +85,18 @@ async function buildUserSearchResult(
 ): Promise<UserSearchResult | null> {
   try {
     const authUser = await authGetter();
+    // Review #189: Guard timestamp.toDate() calls to prevent crashes on non-Timestamp values
+    const lastActiveRaw = userData?.lastActive as { toDate?: () => Date } | undefined;
+    const createdAtRaw = userData?.createdAt as { toDate?: () => Date } | undefined;
     return {
       uid,
       email: authUser.email || null,
       nickname: userData?.nickname || "Anonymous",
       disabled: authUser.disabled || false,
-      lastActive: userData?.lastActive?.toDate().toISOString() || null,
-      createdAt: userData?.createdAt?.toDate().toISOString() || null,
+      lastActive:
+        typeof lastActiveRaw?.toDate === "function" ? lastActiveRaw.toDate().toISOString() : null,
+      createdAt:
+        typeof createdAtRaw?.toDate === "function" ? createdAtRaw.toDate().toISOString() : null,
     };
   } catch (error) {
     // Log error for debugging (Review #184 - Qodo: Robust Error Handling)
@@ -178,6 +183,11 @@ async function searchUsersByNickname(
     }
   }
 
+  // Review #189: Skip prefix search if exact match already filled the limit
+  if (results.length >= limit) {
+    return results;
+  }
+
   // Prefix match for additional results
   const prefixResults = await db
     .collection("users")
@@ -187,6 +197,8 @@ async function searchUsersByNickname(
     .get();
 
   for (const doc of prefixResults.docs) {
+    // Review #189: Stop once we have enough results
+    if (results.length >= limit) break;
     if (existingUids.has(doc.id)) continue;
     const result = await buildUserSearchResult(doc.id, doc.data(), () =>
       admin.auth().getUser(doc.id)

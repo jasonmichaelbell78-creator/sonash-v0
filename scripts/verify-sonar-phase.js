@@ -239,7 +239,13 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
   if (type === "FIXED") {
     const bulkRegex = /#### Rule `([^`]+)` - FIXED/g;
     while ((match = bulkRegex.exec(content)) !== null) {
-      entries.set(`BULK|${match[1]}`, { type: "BULK_FIXED", rule: match[1] });
+      // Review #189: Include placeholder file/line for consistent entry structure
+      entries.set(`BULK|${match[1]}`, {
+        type: "BULK_FIXED",
+        rule: match[1],
+        file: "*",
+        line: "N/A",
+      });
     }
   }
 }

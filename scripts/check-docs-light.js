@@ -96,12 +96,17 @@ function matchExplicitFiles(fileName) {
 
 /**
  * Check if path matches folder patterns
+ * Review #189: Enforce folder boundary to prevent "docs/" matching "docs-extra/"
  */
 function matchFolderPatterns(relativePath) {
   for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
     if (!def.folders) continue;
     for (const folder of def.folders) {
-      if (relativePath.startsWith(folder)) return Number.parseInt(tier, 10);
+      // Ensure folder ends with / for proper boundary matching
+      const normalizedFolder = folder.endsWith("/") ? folder : `${folder}/`;
+      if (relativePath === folder || relativePath.startsWith(normalizedFolder)) {
+        return Number.parseInt(tier, 10);
+      }
     }
   }
   return null;

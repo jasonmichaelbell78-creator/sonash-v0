@@ -303,7 +303,10 @@ async function parseHotspotsResponse(hotspotsResponse, warnings) {
   }
   try {
     const hotspotsData = await hotspotsResponse.json();
-    return hotspotsData.paging?.total ?? 0;
+    // Review #189: Safely coerce hotspot total to number (consistency with issues parsing)
+    const raw = hotspotsData?.paging?.total ?? 0;
+    const n = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(n) ? n : 0;
   } catch {
     warnings.push(`Hotspots API returned invalid JSON - count unavailable`);
     return 0;

@@ -752,9 +752,12 @@ function buildFindingIndices(findings) {
 /**
  * Process all pairs within bucket indices, calling tryMergePair for each.
  * Skips buckets exceeding maxSize to prevent O(n²) blowup.
+ * Review #189: Convert Set to Array for numerical indexing
  */
 function processBucketPairs(bucketMap, tryMergePair, maxSize = Infinity, bucketType = "bucket") {
-  for (const [key, indices] of bucketMap.entries()) {
+  for (const [key, indicesSet] of bucketMap.entries()) {
+    // Review #189: Convert Set to Array for iteration with numerical indices
+    const indices = Array.from(indicesSet);
     if (indices.length > maxSize) {
       console.warn(
         `Warning: Skipping ${bucketType} '${key}' (${indices.length} items > ${maxSize} cap)`
