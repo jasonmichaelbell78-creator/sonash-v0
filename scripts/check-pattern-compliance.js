@@ -266,7 +266,9 @@ const ANTI_PATTERNS = [
     review: "Security Standards",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    // 2026-01-20 audit (PR #286):
+    // - security-check.js: Contains regex pattern /\beval\s*\(/ at L42 as detection pattern, not actual eval usage
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check)\.js$/,
   },
   {
     id: "sql-injection-risk",
@@ -396,9 +398,12 @@ const ANTI_PATTERNS = [
     // - generate-detailed-sonar-report.js: readFileSync at L27, L43, L76 all in try/catch blocks
     // - generate-sonar-report-with-snippets.js: readFileSync at L18 in try/catch (L17-23), L54 in try/catch (L52-70)
     // - verify-sonar-phase.js: readFileSync at L135, L195, L215 all in try/catch blocks
+    // 2026-01-20 audit (PR #286):
+    // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
+    // - security-check.js: readFileSync at L358 IS in try/catch (L357-361)
     // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation|aggregate-audit-findings|generate-detailed-sonar-report|generate-sonar-report-with-snippets|verify-sonar-phase)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation|aggregate-audit-findings|generate-detailed-sonar-report|generate-sonar-report-with-snippets|verify-sonar-phase|check-backlog-health|security-check)\.js$/,
   },
   {
     id: "auto-mode-slice-truncation",
