@@ -30,11 +30,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.js\" \"$ARGUMENTS\"",
-            "statusMessage": "Running CodeRabbit review..."
           }
         ]
       },
@@ -50,11 +45,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.js\" \"$ARGUMENTS\"",
-            "statusMessage": "Running CodeRabbit review..."
           }
         ]
       },
@@ -70,11 +60,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pattern-check.js\" \"$ARGUMENTS\"",
             "statusMessage": "Checking pattern compliance..."
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/coderabbit-review.js\" \"$ARGUMENTS\"",
-            "statusMessage": "Running CodeRabbit review..."
           }
         ]
       }

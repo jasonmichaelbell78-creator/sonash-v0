@@ -102,17 +102,6 @@ on modified files
 
 **Output:** Warns if patterns violated (does not block)
 
-### coderabbit-review.sh
-
-**Trigger:** Write, Edit, MultiEdit tools **Purpose:** Run CodeRabbit review on
-changes
-
-**What it does:**
-
-1. Analyzes code changes
-2. Provides review feedback
-3. Surfaces potential issues
-
 ---
 
 ## UserPromptSubmit Hooks
@@ -142,7 +131,6 @@ changes
 | `check-write-requirements.sh` | PostToolUse (Write)                | Agent requirements |
 | `check-edit-requirements.sh`  | PostToolUse (Edit/MultiEdit)       | Agent requirements |
 | `pattern-check.sh`            | PostToolUse (Write/Edit/MultiEdit) | Pattern compliance |
-| `coderabbit-review.sh`        | PostToolUse (Write/Edit/MultiEdit) | Code review        |
 | `analyze-user-request.sh`     | UserPromptSubmit                   | PRE-TASK triggers  |
 
 ---
