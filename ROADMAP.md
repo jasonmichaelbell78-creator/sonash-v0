@@ -175,6 +175,15 @@ Planned | 🟣 Research
 > - **Estimated Effort:** ~52 hours
 > - **Runbook:**
 >   [docs/SONARCLOUD_CLEANUP_RUNBOOK.md](docs/SONARCLOUD_CLEANUP_RUNBOOK.md)
+>
+> **📋 RETURN TASK: Qodo PR Review Processing (Paused 2026-01-20)**
+>
+> - **Last Completed:** Review #197 (commit `738d8af`)
+> - **Reviews Completed:** #191-197 (7 rounds, 24+ files modified)
+> - **Status:** PR merged; additional Qodo suggestions may remain unprocessed
+> - **Before Resuming:** Re-run SonarCloud scan for fresh issue data
+> - **Context:** Security hardening (TOCTOU, path containment, symlink
+>   protection)
 
 This sprint consolidates Admin Panel Phases 4-5 and Development Dashboard
 creation.
