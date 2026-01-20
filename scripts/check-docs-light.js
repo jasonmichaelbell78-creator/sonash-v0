@@ -406,16 +406,28 @@ function checkRequiredSections(tier, headings) {
 
 /**
  * Read document content safely
+ * Review #196: Read via canonical path to mitigate TOCTOU symlink swap vulnerability
  */
 function readDocumentContent(filePath) {
   try {
-    const content = readFileSync(filePath, "utf-8");
+    // Read via canonical path when possible to reduce symlink swap/TOCTOU risk
+    const effectivePath = realpathSync(filePath);
+    const content = readFileSync(effectivePath, "utf-8");
     if (!content || content.trim().length === 0) {
       return { content: null, error: "File is empty" };
     }
     return { content, error: null };
   } catch (error) {
-    return { content: null, error: `Cannot read file: ${error.message}` };
+    try {
+      // Fallback to original path (e.g., broken symlink / permission issues resolving realpath)
+      const content = readFileSync(filePath, "utf-8");
+      if (!content || content.trim().length === 0) {
+        return { content: null, error: "File is empty" };
+      }
+      return { content, error: null };
+    } catch (fallbackError) {
+      return { content: null, error: `Cannot read file: ${fallbackError.message}` };
+    }
   }
 }
 

@@ -248,6 +248,18 @@ function parseTrackingFile(filePath, type, entries, conflicts) {
       .replace(/\\/g, "/")
       .replace(/\/{2,}/g, "/")
       .replace(/^\.\//, "");
+
+    // Review #196: Reject unsafe tracked file paths (absolute or repo-escaping)
+    if (
+      file.startsWith("/") || // unix absolute / UNC-like
+      file.startsWith("//") || // UNC
+      /^[A-Za-z]:\//.test(file) || // windows drive absolute
+      /^\.\.(?:\/|$)/.test(file) // repo-escaping relative
+    ) {
+      console.warn(`Warning: Skipping unsafe tracked path: ${filePart}`);
+      continue;
+    }
+
     const line = rawLine === "BATCH" ? "N/A" : rawLine;
     const key = `${rule}|${file}|${line}`;
 

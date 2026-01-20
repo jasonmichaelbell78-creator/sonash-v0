@@ -199,14 +199,44 @@ async function deleteUserStorageFiles(uid: string, bucket: Bucket): Promise<void
       });
 
       // Review #195: Delete files in parallel batches instead of sequentially
+      // Review #196: Log partial deletion failures for observability
       for (let i = 0; i < files.length; i += DELETE_CONCURRENCY) {
         const chunk = files.slice(i, i + DELETE_CONCURRENCY);
-        await Promise.allSettled(chunk.map((f) => f.delete()));
+        const results = await Promise.allSettled(chunk.map((f) => f.delete()));
+
+        const failures = results.filter((r) => r.status === "rejected");
+        if (failures.length > 0) {
+          logSecurityEvent("JOB_WARNING", "hardDeleteSoftDeletedUsers", "Partial storage delete", {
+            severity: "WARNING",
+            metadata: {
+              userIdHash: hashUserId(uid),
+              failures: failures.length,
+              errorTypes: failures
+                .slice(0, 5)
+                .map((f) =>
+                  f.status === "rejected" && f.reason instanceof Error
+                    ? f.reason.name
+                    : "UnknownError"
+                ),
+              truncated: failures.length > 5,
+            },
+          });
+        }
       }
 
       // Review #195: Guard against infinite loop if token doesn't advance
+      // Review #196: Log when pagination stalls for debugging
       const nextPageToken = (nextQuery as { pageToken?: string } | undefined)?.pageToken;
       if (nextPageToken && nextPageToken === pageToken) {
+        logSecurityEvent(
+          "JOB_WARNING",
+          "hardDeleteSoftDeletedUsers",
+          "Storage pagination stalled",
+          {
+            severity: "WARNING",
+            metadata: { userIdHash: hashUserId(uid) },
+          }
+        );
         break;
       }
       pageToken = nextPageToken;

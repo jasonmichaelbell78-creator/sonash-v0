@@ -264,6 +264,7 @@ function validateInputData<T>(
 
 /**
  * Check userId authorization (ensure user can only access their own data)
+ * Review #196: Add type guard to prevent runtime crash from non-string userId
  */
 function checkUserIdAuthorization(
   request: CallableRequest,
@@ -273,8 +274,24 @@ function checkUserIdAuthorization(
 ): void {
   if (!authorizeUserId) return;
 
-  const dataWithUserId = request.data as { userId?: string };
-  if (dataWithUserId.userId && dataWithUserId.userId !== userId) {
+  const dataWithUserId = request.data as { userId?: unknown };
+  const attemptedUserId = dataWithUserId.userId;
+
+  // Review #196: Guard against non-string userId to prevent hashUserId crash
+  if (attemptedUserId !== undefined && typeof attemptedUserId !== "string") {
+    logSecurityEvent(
+      "AUTHORIZATION_FAILURE",
+      functionName,
+      "Attempted to write to another user's data",
+      {
+        userId,
+        metadata: { attemptedUserIdType: typeof attemptedUserId },
+      }
+    );
+    throw new HttpsError("permission-denied", "Cannot write to another user's data");
+  }
+
+  if (attemptedUserId && attemptedUserId !== userId) {
     logSecurityEvent(
       "AUTHORIZATION_FAILURE",
       functionName,
@@ -282,7 +299,7 @@ function checkUserIdAuthorization(
       {
         userId,
         // Review #187: Hash attemptedUserId to prevent PII in logs
-        metadata: { attemptedUserIdHash: hashUserId(dataWithUserId.userId) },
+        metadata: { attemptedUserIdHash: hashUserId(attemptedUserId) },
       }
     );
     throw new HttpsError("permission-denied", "Cannot write to another user's data");

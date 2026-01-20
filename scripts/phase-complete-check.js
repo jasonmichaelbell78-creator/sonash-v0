@@ -153,8 +153,15 @@ function checkArchiveForFile(deliverable, projectRoot) {
     // If archive dir doesn't exist or can't be resolved, fall back to non-real path checks
   }
 
+  // Review #196: Canonicalize candidate path for consistent comparison with archiveRootReal
   const isWithinArchive = (candidate) => {
-    const resolved = path.resolve(candidate);
+    let resolved = path.resolve(candidate);
+    try {
+      // Prefer canonical path so comparisons match archiveRootReal's realpath space
+      resolved = fs.realpathSync(resolved);
+    } catch {
+      // Fall back to resolved path for non-existent candidates
+    }
     const rel = path.relative(archiveRootReal, resolved);
     return rel && !isPathTraversal(rel);
   };

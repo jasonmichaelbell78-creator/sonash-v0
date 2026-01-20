@@ -331,8 +331,8 @@ function validateFilePath(finding, issues) {
     return;
   }
 
-  if (finding.file.includes("*")) return;
-
+  // Review #196: Check path safety BEFORE wildcards to prevent bypassing security checks
+  // e.g., "../../../etc/passwd*" would otherwise skip validation entirely
   if (!isSafeFilePath(finding.file)) {
     issues.push({
       type: "UNSAFE_PATH",
@@ -342,6 +342,9 @@ function validateFilePath(finding, issues) {
     });
     return;
   }
+
+  // Wildcards: allow glob patterns, but don't attempt filesystem existence checks
+  if (finding.file.includes("*")) return;
 
   const repoRoot = node_path.resolve(__dirname, "..");
   const fullPath = node_path.resolve(repoRoot, finding.file);
