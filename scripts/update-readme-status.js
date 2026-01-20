@@ -258,6 +258,12 @@ function parseMilestonesTable(content) {
       continue;
     }
 
+    // Review #192: Guard against missing milestone from parse failure
+    if (!parseResult.milestone) {
+      warnings.push(`Row ${i + 1}: Failed to parse milestone, skipping`);
+      continue;
+    }
+
     // Validate milestone
     const validation = validateMilestone(parseResult.milestone, i + 1);
     if (!validation.valid) {

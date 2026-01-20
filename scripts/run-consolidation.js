@@ -421,13 +421,18 @@ function outputAnalysisResults(report, recurringPatterns, categories) {
 
 /**
  * Apply consolidation changes to files
+ * Review #192: Return boolean success status instead of throwing on empty input
+ * @returns {boolean} True if consolidation was applied, false if rejected
  */
 function applyConsolidationChanges(content, reviews, recurringPatterns) {
   log(`\n${colors.bold}Applying consolidation...${colors.reset}`, colors.green);
 
-  // Guard against empty reviews array to prevent -Infinity from Math.max (Review #184 - Qodo)
+  // Guard against empty reviews array to prevent -Infinity from Math.max
+  // Review #192: Use controlled error path instead of throwing
   if (reviews.length === 0) {
-    throw new Error("No reviews found to consolidate; refusing to reset consolidation counter.");
+    log("❌ No reviews found to consolidate; refusing to reset consolidation counter.", colors.red);
+    process.exitCode = 2;
+    return false;
   }
 
   // Calculate next review number
@@ -448,6 +453,8 @@ function applyConsolidationChanges(content, reviews, recurringPatterns) {
   } else {
     outputManualSteps();
   }
+
+  return true;
 }
 
 /**

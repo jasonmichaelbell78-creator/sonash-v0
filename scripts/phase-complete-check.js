@@ -230,6 +230,9 @@ function verifyDeliverable(deliverable, projectRoot) {
   // Review #191: Track effective path for reads (symlink target if symlink, else resolved path)
   let effectivePath = resolvedPath;
   try {
+    // Review #192: Canonicalize projectRoot to handle symlinked project directories
+    const projectRootReal = fs.realpathSync(projectRoot);
+
     // Review #190: Use lstatSync first to detect symlinks
     stat = fs.lstatSync(resolvedPath);
 
@@ -238,7 +241,8 @@ function verifyDeliverable(deliverable, projectRoot) {
       // Verify symlink target is within project root
       try {
         const realPath = fs.realpathSync(resolvedPath);
-        const realRel = path.relative(projectRoot, realPath);
+        // Use canonicalized projectRoot for containment check
+        const realRel = path.relative(projectRootReal, realPath);
         if (isPathTraversal(realRel)) {
           return {
             exists: false,

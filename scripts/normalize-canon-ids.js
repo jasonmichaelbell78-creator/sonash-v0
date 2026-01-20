@@ -230,9 +230,15 @@ function processFileForMapping(filepath, filename, idMap, idMapping, globalCount
   const mappedFindings = sortedFindings.map((finding, idx) => {
     const oldId = finding.canonical_id;
 
+    // Review #192: Type-safe title preview to prevent crash on malformed data
+    const titlePreview =
+      typeof finding.title === "string"
+        ? `${finding.title.substring(0, 50)}...`
+        : "<non-string title>";
+
     if (typeof oldId !== "string" || oldId.trim() === "") {
       console.warn(
-        `  ⚠️ ${filename} finding #${idx + 1}: Missing/invalid canonical_id (title: "${finding.title?.substring(0, 50)}...")`
+        `  ⚠️ ${filename} finding #${idx + 1}: Missing/invalid canonical_id (title: "${titlePreview}")`
       );
     }
 

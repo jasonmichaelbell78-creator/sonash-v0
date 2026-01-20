@@ -504,6 +504,7 @@ function resolveSourcePath(fileArg) {
  * Check if path is already in archive directory
  * Review #190: Use segment-based detection to avoid matching paths like "archive-backup/"
  * Review #191: Use repo-relative path to avoid false positives from OS-level "archive" folders
+ * Review #192: Case-insensitive detection, handle paths outside repo
  * @param {string} filePath - File path to check
  * @returns {boolean} True if already archived
  */
@@ -511,9 +512,20 @@ function isAlreadyArchived(filePath) {
   // Compute repo-relative path to avoid false positives from OS-level paths
   // (e.g., /home/archive/projects/sonash/docs/file.md should not match)
   const relPath = relative(ROOT, filePath);
-  // Normalize to forward slashes and split into segments
-  const segments = relPath.replace(/\\/g, "/").split("/");
-  // Check if any segment is exactly "archive"
+
+  // If the file is outside the repo root, don't attempt "archive" detection
+  // (Repo containment should be enforced separately)
+  // Review #192: Use regex for proper ".." detection (avoids false positives like "..hidden.md")
+  if (relPath === "" || /^\.\.(?:[\\/]|$)/.test(relPath)) return false;
+
+  // Normalize to forward slashes, filter empty segments, lowercase for case-insensitive match
+  const segments = relPath
+    .replace(/\\/g, "/")
+    .split("/")
+    .filter(Boolean)
+    .map((s) => s.toLowerCase());
+
+  // Check if any segment is exactly "archive" (case-insensitive)
   return segments.includes("archive");
 }
 

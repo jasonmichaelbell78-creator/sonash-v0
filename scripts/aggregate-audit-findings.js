@@ -702,15 +702,19 @@ function parseCanonFiles(allFindings, stats) {
  * Add a value to a Map<key, Set> index for true deduplication
  * Review #188: Use Set instead of array for reliable uniqueness
  * Review #191: Defensive check to ensure bucket is a Set before adding
+ * Review #192: Self-heal corrupted buckets, allow empty string keys
  */
 function addToMapIndex(map, key, value) {
-  if (!key) return;
+  // Only reject null/undefined, allow empty string keys
+  if (key === null || key === undefined) return;
   if (!map.has(key)) map.set(key, new Set());
+
   const bucket = map.get(key);
-  // Defensive: ensure bucket is a Set (protects against map corruption)
-  if (bucket instanceof Set) {
-    bucket.add(value);
+  // Self-heal if the map was corrupted (replace non-Set with new Set)
+  if (!(bucket instanceof Set)) {
+    map.set(key, new Set());
   }
+  map.get(key).add(value);
 }
 
 /**

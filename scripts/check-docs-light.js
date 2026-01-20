@@ -573,14 +573,14 @@ function resolveFileArgs(files) {
     try {
       const stat = lstatSync(fullPath);
       if (stat.isSymbolicLink()) {
-        // Resolve the symlink target and verify it's within project root
+        // Review #192: Use resolve() + startsWith for robust cross-platform symlink containment
         const realPath = realpathSync(fullPath);
-        const relToRoot = relative(rootResolved, realPath);
-        if (relToRoot.startsWith("..") || relToRoot.startsWith(sep)) {
+        const realResolved = resolve(realPath);
+        if (realResolved !== rootResolved && !realResolved.startsWith(rootResolved + sep)) {
           console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
           continue;
         }
-        resolved.push(realPath);
+        resolved.push(realResolved);
       } else {
         resolved.push(fullPath);
       }

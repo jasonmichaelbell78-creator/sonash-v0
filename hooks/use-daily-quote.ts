@@ -188,6 +188,8 @@ export function useDailyQuote(): UseDailyQuoteResult {
       // Review #190: Use named constant for delay after midnight
       nextMidnight.setHours(24, 0, MIDNIGHT_REFRESH_DELAY_SECONDS, 0);
       const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+      // Review #192: Clear any existing timer to prevent double-scheduling
+      if (currentTimer !== undefined) globalThis.window.clearTimeout(currentTimer);
       // Review #191: Use Math.max(0, ...) to prevent negative timeout (clock drift edge case)
       currentTimer = globalThis.window.setTimeout(
         handleMidnightRefresh,

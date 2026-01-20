@@ -115,18 +115,14 @@ async function buildUserSearchResult(
 ): Promise<UserSearchResult | null> {
   try {
     const authUser = await authGetter();
-    // Review #189: Guard timestamp.toDate() calls to prevent crashes on non-Timestamp values
-    const lastActiveRaw = userData?.lastActive as { toDate?: () => Date } | undefined;
-    const createdAtRaw = userData?.createdAt as { toDate?: () => Date } | undefined;
+    // Review #192: Use safeToIso helper for robust timestamp conversion
     return {
       uid,
       email: authUser.email || null,
       nickname: userData?.nickname || "Anonymous",
       disabled: authUser.disabled || false,
-      lastActive:
-        typeof lastActiveRaw?.toDate === "function" ? lastActiveRaw.toDate().toISOString() : null,
-      createdAt:
-        typeof createdAtRaw?.toDate === "function" ? createdAtRaw.toDate().toISOString() : null,
+      lastActive: safeToIso(userData?.lastActive),
+      createdAt: safeToIso(userData?.createdAt),
     };
   } catch (error) {
     // Log error for debugging (Review #184 - Qodo: Robust Error Handling)
@@ -392,18 +388,25 @@ async function getPreviousPrivilegeType(
 
 /**
  * Review #191: Firebase UID validation pattern
+ * Review #192: Include _ and - characters to match all valid Firebase UIDs
  * UIDs are typically 28 alphanumeric characters, but we allow a range for flexibility
  */
-const FIREBASE_UID_PATTERN = /^[a-zA-Z0-9]{20,128}$/;
+const FIREBASE_UID_PATTERN = /^[a-zA-Z0-9_-]{20,128}$/;
 
 /**
  * Extract user ID from storage path if it follows users/{userId}/... pattern.
  * Review #191: Added UID validation to prevent injection via malformed paths
+ * Review #192: Normalize path by filtering empty parts, block . and .. segments
  */
 function extractUserIdFromPath(path: string): string | null {
-  const pathParts = path.split("/");
+  // Filter empty parts to handle leading/trailing/repeated slashes
+  const pathParts = path.split("/").filter(Boolean);
   if (pathParts[0] === "users" && pathParts[1]) {
     const potentialUid = pathParts[1];
+
+    // Reject path traversal segments explicitly
+    if (potentialUid === "." || potentialUid === "..") return null;
+
     // Validate the extracted UID matches expected Firebase UID pattern
     if (FIREBASE_UID_PATTERN.test(potentialUid)) {
       return potentialUid;
