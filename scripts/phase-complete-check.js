@@ -190,7 +190,8 @@ function normalizeDeliverablePath(d) {
       .replace(/^`(.+)`$/, "$1")
       .replace(/^"(.+)"$/, "$1")
       .replace(/^'(.+)'$/, "$1")
-      // Split trailing char cleanup to avoid backtracking (S5852 ReDoS fix)
+      // S5852: Character class [xyz]+ is linear (no backtracking) - safe pattern
+      // Input bounded to 500 chars above for defense in depth
       .replace(/[)"'.,;:]+$/, ""),
   };
 }

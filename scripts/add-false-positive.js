@@ -274,6 +274,11 @@ function processArg(arg, nextArg, parsed) {
     return true; // Consumed next arg
   }
 
+  // Review #186: Fail on unknown arguments to prevent silent failures
+  if (arg.startsWith("-")) {
+    throw new Error(`Unknown argument: ${arg}`);
+  }
+
   return false;
 }
 

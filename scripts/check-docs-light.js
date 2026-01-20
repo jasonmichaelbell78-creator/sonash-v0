@@ -454,7 +454,8 @@ function lintDocument(filePath) {
   // Read file
   const { content, error: readError } = readDocumentContent(filePath);
   if (readError) {
-    return { file: filePath, tier: 0, errors: [readError], warnings: [] };
+    // Review #186: Use relative path for consistency with success output
+    return { file: relative(ROOT, filePath), tier: 0, errors: [readError], warnings: [] };
   }
 
   // Determine tier

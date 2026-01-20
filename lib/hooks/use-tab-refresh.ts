@@ -65,8 +65,9 @@ export function useTabRefresh(
       lastRefreshRef.current = currentTimestamp;
       // Call the refresh callback (fire-and-forget, but avoid unhandled rejections)
       // Use Promise.resolve to handle both void and Promise<void> return types
-      Promise.resolve(onRefresh()).catch(() => {
-        // Intentionally ignore refresh errors
+      Promise.resolve(onRefresh()).catch((error) => {
+        // Review #186: Log refresh errors for debugging, but don't crash the app
+        console.error("useTabRefresh: onRefresh callback failed", error);
       });
     }
   }, [activeTab, tabId, getTabRefreshTimestamp, onRefresh, options.skipInitial]);
