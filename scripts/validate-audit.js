@@ -310,7 +310,20 @@ function validateConfidenceField(finding, severity, issues) {
  * Validate file path safety and existence
  */
 function validateFilePath(finding, issues) {
-  if (!finding.file || finding.file.includes("*")) return;
+  if (!finding.file) return;
+
+  // Review #188: Guard against non-string file paths to prevent runtime crashes
+  if (typeof finding.file !== "string") {
+    issues.push({
+      type: "INVALID_TYPE",
+      findingId: finding.id,
+      file: String(finding.file),
+      message: `Invalid file path type (expected string, got ${typeof finding.file})`,
+    });
+    return;
+  }
+
+  if (finding.file.includes("*")) return;
 
   if (!isSafeFilePath(finding.file)) {
     issues.push({

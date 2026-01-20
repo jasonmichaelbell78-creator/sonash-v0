@@ -275,11 +275,18 @@ function parseIssuesResponse(issuesData) {
   const typeFacet = facets.find((f) => f?.property === "types");
   const typeValues = Array.isArray(typeFacet?.values) ? typeFacet.values : [];
 
+  // Review #188: Safely coerce API facet counts to numbers (may be strings in some responses)
+  const getCount = (val) => {
+    const raw = typeValues.find((v) => v?.val === val)?.count ?? 0;
+    const n = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  };
+
   return {
     total,
-    bugs: typeValues.find((v) => v?.val === "BUG")?.count ?? 0,
-    vulnerabilities: typeValues.find((v) => v?.val === "VULNERABILITY")?.count ?? 0,
-    codeSmells: typeValues.find((v) => v?.val === "CODE_SMELL")?.count ?? 0,
+    bugs: getCount("BUG"),
+    vulnerabilities: getCount("VULNERABILITY"),
+    codeSmells: getCount("CODE_SMELL"),
   };
 }
 

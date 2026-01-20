@@ -633,11 +633,15 @@ function findPatternMatches(antiPattern, content, filePath) {
   const violations = [];
   // Create new RegExp to avoid shared state mutation (S3776 fix + Qodo suggestion)
   const pattern = new RegExp(antiPattern.pattern.source, antiPattern.pattern.flags);
+  // Review #188: Clone exclude regex to prevent state mutation from g/y flags
+  const exclude = antiPattern.exclude
+    ? new RegExp(antiPattern.exclude.source, antiPattern.exclude.flags)
+    : null;
 
   // Non-global regexes: single match only (prevents infinite loop)
   if (!pattern.global) {
     const match = pattern.exec(content);
-    if (match && !(antiPattern.exclude && antiPattern.exclude.test(match[0]))) {
+    if (match && !(exclude && exclude.test(match[0]))) {
       violations.push(buildViolation(antiPattern, match, content, filePath));
     }
     return violations;
@@ -646,7 +650,7 @@ function findPatternMatches(antiPattern, content, filePath) {
   // Global regexes: iterate all matches
   let match;
   while ((match = pattern.exec(content)) !== null) {
-    if (antiPattern.exclude && antiPattern.exclude.test(match[0])) continue;
+    if (exclude && exclude.test(match[0])) continue;
     violations.push(buildViolation(antiPattern, match, content, filePath));
 
     // Prevent infinite loops on zero-length matches

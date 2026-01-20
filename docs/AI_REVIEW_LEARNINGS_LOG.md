@@ -267,7 +267,7 @@ Log findings from ALL AI code review sources:
 
 ## 🔔 Consolidation Trigger
 
-**Reviews since last consolidation:** 8 **Consolidation threshold:** 10 reviews
+**Reviews since last consolidation:** 9 **Consolidation threshold:** 10 reviews
 **Status:** ✅ Current **Next consolidation due:** After Review #190
 
 ### When to Consolidate
@@ -768,6 +768,58 @@ claude/cherry-pick-commits-pr-review-NlFAz **Suggestions:** 20 total (Critical:
 
 - Fixed: 20 items
 - Rejected: 0 items
+- Deferred: 0 items
+
+---
+
+#### Review #188: Cherry-Pick PR Qodo Follow-up Review (2026-01-20)
+
+**Source:** Qodo PR Code Suggestions (Follow-up) **PR/Branch:**
+claude/cherry-pick-commits-pr-review-NlFAz **Suggestions:** 8 total (Critical:
+0, Major: 1, Minor: 5, Trivial: 1, Rejected: 1)
+
+**Issues Fixed:**
+
+| #   | Issue                         | Severity | File                        | Fix                                    |
+| --- | ----------------------------- | -------- | --------------------------- | -------------------------------------- | --------- |
+| 1   | Non-string file path crash    | Major    | validate-audit.js:312       | Add typeof check before string methods |
+| 2   | Exclude regex state mutation  | Minor    | check-pattern-compliance.js | Clone exclude regex before use         |
+| 3   | Missing trailing pipe parsing | Minor    | update-readme-status.js:187 | Handle optional trailing               | in tables |
+| 4   | Array dedup unreliable        | Minor    | aggregate-audit-findings.js | Use Set for true deduplication         |
+| 5   | API count coercion            | Minor    | check-review-needed.js:267  | Safely coerce counts to numbers        |
+| 6   | --key=value syntax rejected   | Minor    | add-false-positive.js:282   | Support equals-style CLI flags         |
+| 7   | Unknown event types logged    | Trivial  | log-session-activity.js:374 | Add event type allowlist validation    |
+
+**Rejected Items:**
+
+| #   | Issue                          | Reason                                                     |
+| --- | ------------------------------ | ---------------------------------------------------------- |
+| 1   | Block whitespace-only searches | FALSE POSITIVE: Check already exists at admin.ts:1020-1022 |
+
+**Patterns Identified:**
+
+1. **Type guards before string methods**: Always check `typeof x === "string"`
+   before calling `.includes()`, `.trim()`, etc. on values from external sources
+2. **Stateful regex cloning**: Clone both pattern AND exclude regexes when
+   testing multiple matches to prevent state leakage from g/y flags
+3. **Set for deduplication**: Use Set instead of array-based adjacent dedup for
+   reliable uniqueness guarantees
+4. **CLI argument flexibility**: Support both `--key value` and `--key=value`
+   syntax for better UX
+
+**Key Learnings:**
+
+- Qodo can flag issues that are already handled elsewhere - always verify with
+  code
+- Adjacent-only deduplication (`arr[arr.length-1] !== value`) doesn't prevent
+  non-adjacent duplicates
+- API responses may return numbers as strings - use explicit coercion
+- Event type allowlists prevent malformed log entries and improve error messages
+
+**Resolution:**
+
+- Fixed: 7 items
+- Rejected: 1 item (false positive - check exists)
 - Deferred: 0 items
 
 ---

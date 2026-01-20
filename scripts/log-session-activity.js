@@ -368,11 +368,27 @@ function generateSummary() {
   console.log("\n" + "═".repeat(50));
 }
 
+// Review #188: Allowlist of valid event types to prevent logging malformed events
+const ALLOWED_EVENT_TYPES = new Set([
+  "session_start",
+  "session_end",
+  "file_write",
+  "file_edit",
+  "skill_invoke",
+  "commit",
+]);
+
 /**
  * Build event data based on event type and arguments
  */
 function buildEventData(args) {
   const eventType = args.event;
+
+  // Review #188: Validate event type against allowlist
+  if (!ALLOWED_EVENT_TYPES.has(eventType)) {
+    return null;
+  }
+
   const eventData = { event: eventType };
 
   if (eventType === "session_start") {
@@ -443,6 +459,14 @@ function main() {
 
   // Build and log event
   const eventData = buildEventData(args);
+
+  // Review #188: Handle invalid event types (buildEventData returns null)
+  if (!eventData) {
+    console.error(`❌ ERROR: Unknown event type: ${args.event}`);
+    console.error(`   Valid types: ${[...ALLOWED_EVENT_TYPES].join(", ")}`);
+    process.exit(1);
+  }
+
   const entry = logEvent(eventData);
 
   if (!entry) {

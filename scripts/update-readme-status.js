@@ -186,18 +186,20 @@ function findMilestonesTable(content) {
  */
 function parseTableRow(row, rowIndex) {
   // Skip empty rows or separator rows
-  // Review #187: Handle multi-column tables - separator has repeating patterns of [-:]
-  // Pattern: |------|-------|...| (with optional : for alignment)
-  if (!row.includes("|") || /^\|\s*[-:]+\s*(\|\s*[-:]+\s*)+\|\s*$/.test(row.trim())) {
+  // Review #188: Handle missing trailing pipe - pattern allows optional trailing |
+  // Pattern: |------|-------|...|? (with optional : for alignment)
+  const trimmedRow = row.trim();
+  if (!trimmedRow.includes("|") || /^\|\s*[-:]+\s*(\|\s*[-:]+\s*)+\|?\s*$/.test(trimmedRow)) {
     return { skip: true };
   }
 
   // Parse table row: | **M0 - Baseline** | ✅ Complete | 100% | Q4 2025 | Foundation |
-  // Keep empty cells so later columns don't shift when optional columns are blank (Review #184 - Qodo)
-  const rawCells = row.split("|");
+  // Review #188: Handle rows that may omit optional trailing pipe
+  let cells = trimmedRow.split("|").map((cell) => cell.trim());
 
-  // Drop leading/trailing empty segments produced by the outer pipes, then trim each cell
-  const cells = rawCells.slice(1, -1).map((cell) => cell.trim());
+  // Only drop outer empty segments when outer pipes exist
+  if (trimmedRow.startsWith("|")) cells = cells.slice(1);
+  if (trimmedRow.endsWith("|")) cells = cells.slice(0, -1);
 
   // Require at least: Milestone | Status | Progress
   if (cells.length < 3) {

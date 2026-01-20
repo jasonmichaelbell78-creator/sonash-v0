@@ -274,6 +274,17 @@ function processArg(arg, nextArg, parsed) {
     return true; // Consumed next arg
   }
 
+  // Review #188: Support --key=value argument syntax
+  if (arg.startsWith("--") && arg.includes("=")) {
+    const [rawKey, ...rest] = arg.split("=");
+    const value = rest.join("="); // Handle values that contain =
+    if (VALUE_ARGS.has(rawKey)) {
+      const key = rawKey.slice(2); // Remove -- prefix
+      parsed[key] = value;
+      return false; // Did not consume next arg
+    }
+  }
+
   // Review #186: Fail on unknown arguments to prevent silent failures
   if (arg.startsWith("-")) {
     throw new Error(`Unknown argument: ${arg}`);

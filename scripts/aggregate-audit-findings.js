@@ -699,14 +699,13 @@ function parseCanonFiles(allFindings, stats) {
 // ============================================================================
 
 /**
- * Add a value to a Map<key, array> index
+ * Add a value to a Map<key, Set> index for true deduplication
+ * Review #188: Use Set instead of array for reliable uniqueness
  */
 function addToMapIndex(map, key, value) {
   if (!key) return;
-  if (!map.has(key)) map.set(key, []);
-  const arr = map.get(key);
-  // Review #187: Avoid duplicate indices by checking if value already present
-  if (arr[arr.length - 1] !== value) arr.push(value);
+  if (!map.has(key)) map.set(key, new Set());
+  map.get(key).add(value);
 }
 
 /**
