@@ -62,16 +62,28 @@ function toJsonSafe(value: unknown): unknown {
 /**
  * Review #190: Helper to safely convert Firestore Timestamp to ISO string
  * Handles undefined, null, and objects without toDate() method
+ * Review #191: Added try/catch, Date validation, and function overloads for type safety
  * @param value - Potential Firestore Timestamp or undefined
  * @param fallback - Value to return if conversion fails (default: null)
  * @returns ISO string or fallback value
  */
+function safeToIso(value: unknown, fallback: string): string;
+function safeToIso(value: unknown, fallback?: null): string | null;
 function safeToIso(value: unknown, fallback: string | null = null): string | null {
   if (value === null || value === undefined) return fallback;
   if (typeof value === "object" && value && "toDate" in value) {
     const maybeToDate = (value as { toDate?: () => Date }).toDate;
     if (typeof maybeToDate === "function") {
-      return maybeToDate.call(value).toISOString();
+      // Review #191: Wrap in try/catch to handle potential Date conversion errors
+      try {
+        const date = maybeToDate.call(value);
+        // Validate the Date is valid before calling toISOString()
+        if (date instanceof Date && !Number.isNaN(date.getTime())) {
+          return date.toISOString();
+        }
+      } catch {
+        // Fall through to return fallback on any conversion error
+      }
     }
   }
   return fallback;
@@ -379,12 +391,23 @@ async function getPreviousPrivilegeType(
 // ============================================================================
 
 /**
+ * Review #191: Firebase UID validation pattern
+ * UIDs are typically 28 alphanumeric characters, but we allow a range for flexibility
+ */
+const FIREBASE_UID_PATTERN = /^[a-zA-Z0-9]{20,128}$/;
+
+/**
  * Extract user ID from storage path if it follows users/{userId}/... pattern.
+ * Review #191: Added UID validation to prevent injection via malformed paths
  */
 function extractUserIdFromPath(path: string): string | null {
   const pathParts = path.split("/");
   if (pathParts[0] === "users" && pathParts[1]) {
-    return pathParts[1];
+    const potentialUid = pathParts[1];
+    // Validate the extracted UID matches expected Firebase UID pattern
+    if (FIREBASE_UID_PATTERN.test(potentialUid)) {
+      return potentialUid;
+    }
   }
   return null;
 }

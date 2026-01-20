@@ -503,12 +503,16 @@ function resolveSourcePath(fileArg) {
 /**
  * Check if path is already in archive directory
  * Review #190: Use segment-based detection to avoid matching paths like "archive-backup/"
+ * Review #191: Use repo-relative path to avoid false positives from OS-level "archive" folders
  * @param {string} filePath - File path to check
  * @returns {boolean} True if already archived
  */
 function isAlreadyArchived(filePath) {
+  // Compute repo-relative path to avoid false positives from OS-level paths
+  // (e.g., /home/archive/projects/sonash/docs/file.md should not match)
+  const relPath = relative(ROOT, filePath);
   // Normalize to forward slashes and split into segments
-  const segments = filePath.replace(/\\/g, "/").split("/");
+  const segments = relPath.replace(/\\/g, "/").split("/");
   // Check if any segment is exactly "archive"
   return segments.includes("archive");
 }

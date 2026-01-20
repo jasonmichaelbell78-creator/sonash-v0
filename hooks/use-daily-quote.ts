@@ -188,7 +188,11 @@ export function useDailyQuote(): UseDailyQuoteResult {
       // Review #190: Use named constant for delay after midnight
       nextMidnight.setHours(24, 0, MIDNIGHT_REFRESH_DELAY_SECONDS, 0);
       const msUntilMidnight = nextMidnight.getTime() - now.getTime();
-      currentTimer = globalThis.window.setTimeout(handleMidnightRefresh, msUntilMidnight);
+      // Review #191: Use Math.max(0, ...) to prevent negative timeout (clock drift edge case)
+      currentTimer = globalThis.window.setTimeout(
+        handleMidnightRefresh,
+        Math.max(0, msUntilMidnight)
+      );
     };
 
     scheduleNextRefresh();

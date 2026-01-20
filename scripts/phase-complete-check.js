@@ -227,6 +227,8 @@ function verifyDeliverable(deliverable, projectRoot) {
   }
 
   let stat;
+  // Review #191: Track effective path for reads (symlink target if symlink, else resolved path)
+  let effectivePath = resolvedPath;
   try {
     // Review #190: Use lstatSync first to detect symlinks
     stat = fs.lstatSync(resolvedPath);
@@ -246,6 +248,8 @@ function verifyDeliverable(deliverable, projectRoot) {
         }
         // Re-stat the actual file for type checking
         stat = fs.statSync(realPath);
+        // Review #191: Use symlink target for subsequent reads
+        effectivePath = realPath;
       } catch {
         return { exists: false, valid: false, reason: "Invalid symlink (cannot resolve target)" };
       }
@@ -272,14 +276,16 @@ function verifyDeliverable(deliverable, projectRoot) {
 
   try {
     if (stat.isFile()) {
-      const content = fs.readFileSync(resolvedPath, "utf-8");
+      // Review #191: Use effectivePath (symlink target) for reads
+      const content = fs.readFileSync(effectivePath, "utf-8");
       if (content.trim().length < 10) {
         return { exists: true, valid: false, reason: "File exists but appears empty" };
       }
       return { exists: true, valid: true };
     }
     if (stat.isDirectory()) {
-      const files = fs.readdirSync(resolvedPath);
+      // Review #191: Use effectivePath (symlink target) for directory listing
+      const files = fs.readdirSync(effectivePath);
       return files.length === 0
         ? { exists: true, valid: false, reason: "Directory exists but is empty" }
         : { exists: true, valid: true, reason: "Directory exists" };
