@@ -20,6 +20,145 @@ const DAYS = [
 ] as const;
 const TYPES = ["AA", "NA", "CA", "Smart", "Al-Anon"] as const;
 
+/**
+ * Handle coordinate field updates, clearing the coordinates object when both values are empty
+ */
+function handleCoordinateChange(
+  formData: Partial<Meeting>,
+  setFormData: (data: Partial<Meeting>) => void,
+  field: "lat" | "lng",
+  value: string
+): void {
+  const parsedValue = value === "" ? undefined : Number.parseFloat(value);
+  const otherField = field === "lat" ? "lng" : "lat";
+  const otherValue = formData.coordinates?.[otherField];
+
+  // If both cleared (or other is 0 default), remove coordinates object
+  if (parsedValue === undefined && (otherValue === undefined || otherValue === 0)) {
+    const { coordinates: _coordinates, ...rest } = formData;
+    setFormData(rest);
+  } else {
+    setFormData({
+      ...formData,
+      coordinates: {
+        lat: field === "lat" ? (parsedValue ?? 0) : (formData.coordinates?.lat ?? 0),
+        lng: field === "lng" ? (parsedValue ?? 0) : (formData.coordinates?.lng ?? 0),
+      },
+    });
+  }
+}
+
+/**
+ * External link icon component
+ */
+function ExternalLinkIcon() {
+  return (
+    <svg
+      className="w-3 h-3"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Google Maps link component
+ */
+function GoogleMapsLink({ lat, lng }: Readonly<{ lat: number; lng: number }>) {
+  return (
+    <div className="flex justify-end pt-1">
+      <a
+        href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+      >
+        <span>View on Google Maps</span>
+        <ExternalLinkIcon />
+      </a>
+    </div>
+  );
+}
+
+/**
+ * Location details section of the meeting form
+ */
+function LocationDetailsSection({
+  formData,
+  setFormData,
+}: Readonly<{
+  formData: Partial<Meeting>;
+  setFormData: (data: Partial<Meeting>) => void;
+}>) {
+  return (
+    <div className="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+      <h3 className="text-sm font-medium text-gray-900">Location Details</h3>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+        <input
+          type="text"
+          value={formData.address || ""}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+          placeholder="123 Main St"
+        />
+      </div>
+
+      <div className="grid grid-cols-6 gap-3">
+        <div className="col-span-3">
+          <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+          <input
+            type="text"
+            value={formData.city || ""}
+            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+          />
+        </div>
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+          <input
+            type="text"
+            value={formData.state || ""}
+            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Zip</label>
+          <input
+            type="text"
+            value={formData.zip || ""}
+            onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            placeholder="37209"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Neighborhood</label>
+        <input
+          type="text"
+          value={formData.neighborhood || ""}
+          onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2"
+          placeholder="e.g., East Nashville"
+        />
+      </div>
+    </div>
+  );
+}
+
 // Meeting form component
 function MeetingForm({
   formData,
@@ -82,62 +221,7 @@ function MeetingForm({
         />
       </div>
 
-      <div className="space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-        <h3 className="text-sm font-medium text-gray-900">Location Details</h3>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
-          <input
-            type="text"
-            value={formData.address || ""}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            placeholder="123 Main St"
-          />
-        </div>
-
-        <div className="grid grid-cols-6 gap-3">
-          <div className="col-span-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-            <input
-              type="text"
-              value={formData.city || ""}
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-            <input
-              type="text"
-              value={formData.state || ""}
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Zip</label>
-            <input
-              type="text"
-              value={formData.zip || ""}
-              onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-              placeholder="37209"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Neighborhood</label>
-          <input
-            type="text"
-            value={formData.neighborhood || ""}
-            onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            placeholder="e.g., East Nashville"
-          />
-        </div>
-      </div>
+      <LocationDetailsSection formData={formData} setFormData={setFormData} />
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -146,24 +230,7 @@ function MeetingForm({
             type="number"
             step="any"
             value={formData.coordinates?.lat ?? ""}
-            onChange={(e) => {
-              const newLat = e.target.value === "" ? undefined : parseFloat(e.target.value);
-              const currentLng = formData.coordinates?.lng;
-
-              if (newLat === undefined && (currentLng === undefined || currentLng === 0)) {
-                // If both cleared (or other is 0 default), remove coordinates object
-                const { coordinates: _coordinates, ...rest } = formData;
-                setFormData(rest);
-              } else {
-                setFormData({
-                  ...formData,
-                  coordinates: {
-                    lat: newLat ?? 0,
-                    lng: currentLng ?? 0,
-                  },
-                });
-              }
-            }}
+            onChange={(e) => handleCoordinateChange(formData, setFormData, "lat", e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
             placeholder="36.1627"
           />
@@ -174,24 +241,7 @@ function MeetingForm({
             type="number"
             step="any"
             value={formData.coordinates?.lng ?? ""}
-            onChange={(e) => {
-              const newLng = e.target.value === "" ? undefined : parseFloat(e.target.value);
-              const currentLat = formData.coordinates?.lat;
-
-              if (newLng === undefined && (currentLat === undefined || currentLat === 0)) {
-                // If both cleared (or other is 0 default), remove coordinates object
-                const { coordinates: _coordinates, ...rest } = formData;
-                setFormData(rest);
-              } else {
-                setFormData({
-                  ...formData,
-                  coordinates: {
-                    lat: currentLat ?? 0,
-                    lng: newLng ?? 0,
-                  },
-                });
-              }
-            }}
+            onChange={(e) => handleCoordinateChange(formData, setFormData, "lng", e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
             placeholder="-86.7816"
           />
@@ -200,30 +250,7 @@ function MeetingForm({
 
       {/* Dynamic Map Link */}
       {formData.coordinates?.lat != null && formData.coordinates?.lng != null && (
-        <div className="flex justify-end pt-1">
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${formData.coordinates.lat},${formData.coordinates.lng}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
-          >
-            <span>View on Google Maps</span>
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
-        </div>
+        <GoogleMapsLink lat={formData.coordinates.lat} lng={formData.coordinates.lng} />
       )}
     </div>
   );

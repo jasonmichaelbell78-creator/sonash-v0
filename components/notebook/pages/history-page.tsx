@@ -35,6 +35,95 @@ type HistoryItem = {
   color: string;
 };
 
+// Entry type for mapping (narrowed from JournalEntry)
+type MappableEntry = {
+  id: string;
+  type: string;
+  dateLabel: string;
+  createdAt?: string | number | Date;
+  data: Record<string, unknown>;
+};
+
+/**
+ * Map daily-log entry to HistoryItem
+ */
+function mapDailyLogEntry(entry: MappableEntry, date: Date): HistoryItem {
+  const { data } = entry;
+
+  // Fix S3358: Extract nested ternary into clearer logic
+  let cravingText: string;
+  if (data.cravings === null) {
+    cravingText = "Cravings: n/a";
+  } else if (data.cravings) {
+    cravingText = "Cravings: yes";
+  } else {
+    cravingText = "Cravings: no";
+  }
+
+  let usedText: string;
+  if (data.used === null) {
+    usedText = "Used: n/a";
+  } else if (data.used) {
+    usedText = "Used: yes";
+  } else {
+    usedText = "Used: no";
+  }
+
+  // Fix S6551: Ensure proper stringification of mood
+  const moodText = data.mood ? `Mood: ${String(data.mood)}` : "Mood not set";
+  const noteText = data.note ? `Note: ${(data.note as string).slice(0, 80)}` : "";
+  const preview = [moodText, cravingText, usedText, noteText].filter(Boolean).join(" • ");
+
+  return {
+    id: entry.id,
+    type: "daily-log",
+    date,
+    title: "Daily Check-in",
+    preview,
+    icon: Calendar,
+    color: "text-amber-600",
+  };
+}
+
+/**
+ * Map inventory/review type entries to HistoryItem
+ */
+function mapInventoryEntry(
+  entry: MappableEntry,
+  date: Date,
+  entryType: "inventory" | "night-review" | "spot-check"
+): HistoryItem {
+  const data = entry.data || {};
+  const preview =
+    (data.gratitude as string) ||
+    (data.action as string) ||
+    (data.resentments as string) ||
+    (data.note as string) ||
+    "Review completed";
+
+  const iconMap = { "spot-check": Zap, "night-review": Moon, inventory: Calendar };
+  const colorMap = {
+    "spot-check": "text-orange-500",
+    "night-review": "text-indigo-500",
+    inventory: "text-amber-600",
+  };
+  const titleMap = {
+    "spot-check": "Spot Check",
+    "night-review": "Night Review",
+    inventory: "Inventory",
+  };
+
+  return {
+    id: entry.id,
+    type: entryType,
+    date,
+    title: titleMap[entryType],
+    preview,
+    icon: iconMap[entryType],
+    color: colorMap[entryType],
+  };
+}
+
 export default function HistoryPage() {
   const { entries, loading } = useJournal();
 
@@ -47,117 +136,65 @@ export default function HistoryPage() {
         const entryDate = startOfDay(new Date(y, m - 1, d));
         return entryDate >= sevenDaysAgo;
       })
-      .map((entry) => {
+      .map((entry): HistoryItem => {
         const date = entry.createdAt
           ? new Date(entry.createdAt)
           : new Date(entry.dateLabel + "T12:00:00");
+        const mappable = entry as MappableEntry;
 
-        if (entry.type === "daily-log") {
-          const cravingText =
-            entry.data.cravings === null
-              ? "Cravings: n/a"
-              : entry.data.cravings
-                ? "Cravings: yes"
-                : "Cravings: no";
-          const usedText =
-            entry.data.used === null ? "Used: n/a" : entry.data.used ? "Used: yes" : "Used: no";
-          const moodText = entry.data.mood ? `Mood: ${entry.data.mood}` : "Mood not set";
-          const noteText = entry.data.note ? `Note: ${entry.data.note.slice(0, 80)}` : "";
-          const preview = [moodText, cravingText, usedText, noteText].filter(Boolean).join(" • ");
+        switch (entry.type) {
+          case "daily-log":
+            return mapDailyLogEntry(mappable, date);
 
-          return {
-            id: entry.id, // Use actual Firestore ID, not synthetic date-based ID
-            type: "daily-log" as const,
-            date,
-            title: "Daily Check-in",
-            preview,
-            icon: Calendar,
-            color: "text-amber-600",
-          };
+          case "mood":
+            return {
+              id: entry.id,
+              type: "mood",
+              date,
+              title: "Mood",
+              preview: (entry.data.note as string) || (entry.data.mood as string),
+              icon: NotebookPen,
+              color: "text-amber-700",
+            };
+
+          case "gratitude":
+            return {
+              id: entry.id,
+              type: "gratitude",
+              date,
+              title: "Gratitude",
+              preview: `${(entry.data.items as unknown[]).length} gratitude items`,
+              icon: Heart,
+              color: "text-emerald-500",
+            };
+
+          case "inventory":
+          case "night-review":
+          case "spot-check":
+            return mapInventoryEntry(mappable, date, entry.type);
+
+          case "step-1-worksheet":
+            return {
+              id: entry.id,
+              type: "step-1-worksheet",
+              date,
+              title: "Step 1 Worksheet",
+              preview: "Powerlessness • Unmanageability • Acceptance",
+              icon: BookOpen,
+              color: "text-green-600",
+            };
+
+          default:
+            return {
+              id: entry.id,
+              type: entry.type,
+              date,
+              title: "Entry",
+              preview: (entry.data as unknown as { content?: string })?.content || "",
+              icon: NotebookPen,
+              color: "text-amber-600",
+            };
         }
-
-        if (entry.type === "mood") {
-          return {
-            id: entry.id,
-            type: "mood" as const,
-            date,
-            title: "Mood",
-            preview: entry.data.note || entry.data.mood,
-            icon: NotebookPen,
-            color: "text-amber-700",
-          };
-        }
-
-        if (entry.type === "gratitude") {
-          return {
-            id: entry.id,
-            type: "gratitude" as const,
-            date,
-            title: "Gratitude",
-            preview: `${entry.data.items.length} gratitude items`,
-            icon: Heart,
-            color: "text-emerald-500",
-          };
-        }
-
-        if (
-          entry.type === "inventory" ||
-          entry.type === "night-review" ||
-          entry.type === "spot-check"
-        ) {
-          const data = (entry as { data?: Record<string, unknown> }).data || {};
-          const preview =
-            (data.gratitude as string) ||
-            (data.action as string) ||
-            (data.resentments as string) ||
-            (data.note as string) ||
-            "Review completed";
-          const icon =
-            entry.type === "spot-check" ? Zap : entry.type === "night-review" ? Moon : Calendar;
-          const color =
-            entry.type === "spot-check"
-              ? "text-orange-500"
-              : entry.type === "night-review"
-                ? "text-indigo-500"
-                : "text-amber-600";
-          return {
-            id: entry.id,
-            type: entry.type,
-            date,
-            title:
-              entry.type === "spot-check"
-                ? "Spot Check"
-                : entry.type === "night-review"
-                  ? "Night Review"
-                  : "Inventory",
-            preview,
-            icon,
-            color,
-          };
-        }
-
-        // Check for step-1-worksheet with type guard
-        if ((entry as { type: string }).type === "step-1-worksheet") {
-          return {
-            id: entry.id,
-            type: "step-1-worksheet" as const,
-            date,
-            title: "Step 1 Worksheet",
-            preview: "Powerlessness • Unmanageability • Acceptance",
-            icon: BookOpen,
-            color: "text-green-600",
-          };
-        }
-
-        return {
-          id: entry.id,
-          type: entry.type,
-          date,
-          title: "Entry",
-          preview: ((entry as { data?: Record<string, unknown> }).data?.content as string) || "",
-          icon: NotebookPen,
-          color: "text-amber-600",
-        };
       })
       .sort((a, b) => b.date.getTime() - a.date.getTime());
   }, [entries]);

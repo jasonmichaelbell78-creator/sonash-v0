@@ -150,27 +150,55 @@ function printScoreTable(results) {
   }
 }
 
-async function main() {
-  // Parse arguments
+/**
+ * Parse command line arguments for lighthouse audit
+ */
+function parseCliArgs() {
   const args = process.argv.slice(2);
   const urlArg = args.find((arg) => arg.startsWith("--url="));
-  const singleUrl = urlArg ? urlArg.split("=")[1] : null;
-  const jsonOnly = args.includes("--json");
-  const desktop = args.includes("--desktop");
+  return {
+    singleUrl: urlArg ? urlArg.substring(urlArg.indexOf("=") + 1) : null,
+    jsonOnly: args.includes("--json"),
+    desktop: args.includes("--desktop"),
+  };
+}
+
+/**
+ * Get routes to audit based on CLI args
+ */
+function getRoutesToAudit(singleUrl) {
+  const routes = singleUrl ? ROUTES.filter((r) => r.path === singleUrl) : ROUTES;
+  if (routes.length === 0) {
+    console.error(`No route found for: ${singleUrl}`);
+    console.error(`Available routes: ${ROUTES.map((r) => r.path).join(", ")}`);
+    process.exit(1);
+  }
+  return routes;
+}
+
+/**
+ * Build audit summary object
+ */
+function buildSummary(results, desktop) {
+  return {
+    timestamp: new Date().toISOString(),
+    commit: process.env.GITHUB_SHA?.substring(0, 7) || null,
+    branch: process.env.GITHUB_REF_NAME || process.env.GITHUB_HEAD_REF || null,
+    baseUrl: BASE_URL,
+    device: desktop ? "desktop" : "mobile",
+    results,
+  };
+}
+
+async function main() {
+  const { singleUrl, jsonOnly, desktop } = parseCliArgs();
 
   // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
-  // Filter routes if single URL specified
-  const routesToAudit = singleUrl ? ROUTES.filter((r) => r.path === singleUrl) : ROUTES;
-
-  if (routesToAudit.length === 0) {
-    console.error(`No route found for: ${singleUrl}`);
-    console.error(`Available routes: ${ROUTES.map((r) => r.path).join(", ")}`);
-    process.exit(1);
-  }
+  const routesToAudit = getRoutesToAudit(singleUrl);
 
   if (!jsonOnly) {
     console.log("Lighthouse Performance Audit");
@@ -202,23 +230,13 @@ async function main() {
       console.log("Results Summary");
       console.log("---------------");
       printScoreTable(results);
-
       console.log("");
       console.log(`Reports saved to: ${OUTPUT_DIR}/`);
     }
 
     // Save summary JSON
-    const summary = {
-      timestamp: new Date().toISOString(),
-      commit: process.env.GITHUB_SHA?.substring(0, 7) || null,
-      branch: process.env.GITHUB_REF_NAME || process.env.GITHUB_HEAD_REF || null,
-      baseUrl: BASE_URL,
-      device: desktop ? "desktop" : "mobile",
-      results,
-    };
-
-    const summaryPath = path.join(OUTPUT_DIR, "summary.json");
-    fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
+    const summary = buildSummary(results, desktop);
+    fs.writeFileSync(path.join(OUTPUT_DIR, "summary.json"), JSON.stringify(summary, null, 2));
 
     // Exit with error if any audits failed
     const failures = results.filter((r) => !r.success);
@@ -226,9 +244,6 @@ async function main() {
       console.log("");
       console.log(`Warning: ${failures.length} route(s) failed to audit.`);
     }
-
-    // Always exit 0 for now (warning mode only)
-    // Change to process.exit(1) when ready to block on failures
   } finally {
     await chrome.kill();
   }

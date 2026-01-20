@@ -15,53 +15,62 @@ import { logger } from "../logger";
 import { DAY_ORDER } from "../constants";
 
 /**
+ * Parse 12-hour format time string to minutes
+ * @param cleaned - Trimmed time string containing AM/PM
+ * @returns Minutes since midnight, or null if invalid
+ */
+function parse12HourTime(cleaned: string): number | null {
+  const match = cleaned.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return null;
+
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const period = match[3].toUpperCase();
+
+  // SECURITY: Validate hours (1-12 for 12-hour format) and minutes (0-59)
+  if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) return null;
+
+  // Convert to 24-hour
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+
+  return hours * 60 + minutes;
+}
+
+/**
+ * Parse 24-hour format time string to minutes
+ * @param cleaned - Trimmed time string in HH:MM format
+ * @returns Minutes since midnight, or null if invalid
+ */
+function parse24HourTime(cleaned: string): number | null {
+  const parts = cleaned.split(":");
+  if (parts.length !== 2) return null;
+
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+
+  // SECURITY: Validate hours (0-23) and minutes (0-59)
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+
+  return hours * 60 + minutes;
+}
+
+/**
  * Parse time string to minutes since midnight for robust sorting
  * Handles both 24-hour format ("07:00", "19:30") and 12-hour format ("7:00 AM", "7:30 PM")
  */
 function timeToMinutes(timeStr: string): number {
   try {
-    // Validate input type
     if (!timeStr || typeof timeStr !== "string") return 0;
 
-    // Remove whitespace
     const cleaned = timeStr.trim();
-
-    // Check if 12-hour format (contains AM/PM)
     const is12Hour = /AM|PM/i.test(cleaned);
+    const result = is12Hour ? parse12HourTime(cleaned) : parse24HourTime(cleaned);
 
-    if (is12Hour) {
-      // Parse 12-hour format
-      const match = cleaned.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-      if (!match) return 0;
-
-      let hours = parseInt(match[1], 10);
-      const minutes = parseInt(match[2], 10);
-      const period = match[3].toUpperCase();
-
-      // SECURITY: Validate hours (1-12 for 12-hour format) and minutes (0-59)
-      if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) return 0;
-
-      // Convert to 24-hour
-      if (period === "PM" && hours !== 12) hours += 12;
-      if (period === "AM" && hours === 12) hours = 0;
-
-      return hours * 60 + minutes;
-    } else {
-      // Parse 24-hour format
-      const parts = cleaned.split(":");
-      if (parts.length !== 2) return 0;
-
-      const hours = parseInt(parts[0], 10);
-      const minutes = parseInt(parts[1], 10);
-
-      // SECURITY: Validate hours (0-23) and minutes (0-59)
-      if (isNaN(hours) || isNaN(minutes)) return 0;
-      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return 0;
-
-      return hours * 60 + minutes;
-    }
+    return result ?? 0;
   } catch {
-    return 0; // Fallback for invalid formats
+    return 0;
   }
 }
 

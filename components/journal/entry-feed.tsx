@@ -4,7 +4,17 @@ import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EntryCard } from "./entry-card";
-import { JournalEntry } from "@/types/journal";
+import {
+  JournalEntry,
+  CheckInEntry,
+  DailyLogEntry,
+  MoodEntry,
+  GratitudeEntry,
+  InventoryEntry,
+  NoteEntry,
+  SpotCheckEntry,
+  NightReviewEntry,
+} from "@/types/journal";
 import { JournalFilterType } from "./journal-sidebar";
 import { format } from "date-fns";
 
@@ -13,72 +23,251 @@ interface EntryFeedProps {
   filter: JournalFilterType;
 }
 
+// Search matcher types for each entry type
+type SearchMatcher = (entry: JournalEntry, query: string) => boolean;
+
+/**
+ * Search matcher for mood entries
+ */
+function matchMoodEntry(entry: JournalEntry, query: string): boolean {
+  const data = (entry as MoodEntry).data;
+  const moodMatch = data?.mood?.toLowerCase().includes(query) || false;
+  const noteMatch = data?.note?.toLowerCase().includes(query) || false;
+  return moodMatch || noteMatch;
+}
+
+/**
+ * Search matcher for gratitude entries
+ */
+function matchGratitudeEntry(entry: JournalEntry, query: string): boolean {
+  const data = (entry as GratitudeEntry).data;
+  return data?.items?.some((item: string) => item.toLowerCase().includes(query)) || false;
+}
+
+// Inventory fields to search
+const INVENTORY_FIELDS = ["resentments", "dishonesty", "apologies", "successes"] as const;
+
+/**
+ * Search matcher for inventory entries
+ */
+function matchInventoryEntry(entry: JournalEntry, query: string): boolean {
+  const data = (entry as InventoryEntry).data;
+  return INVENTORY_FIELDS.some((field) => data?.[field]?.toLowerCase().includes(query) || false);
+}
+
+/**
+ * Search matcher for free-write and meeting-note entries
+ */
+function matchNoteEntry(entry: JournalEntry, query: string): boolean {
+  const data = (entry as NoteEntry).data;
+  const titleMatch = data?.title?.toLowerCase().includes(query) || false;
+  const contentMatch = data?.content?.toLowerCase().includes(query) || false;
+  return titleMatch || contentMatch;
+}
+
+/**
+ * Search matcher for spot-check entries
+ */
+function matchSpotCheckEntry(entry: JournalEntry, query: string): boolean {
+  const data = (entry as SpotCheckEntry).data;
+  const feelingsMatch =
+    data.feelings?.some((f: string) => f.toLowerCase().includes(query)) || false;
+  const actionMatch = data.action?.toLowerCase().includes(query) || false;
+  return feelingsMatch || actionMatch;
+}
+
+/**
+ * Search matcher for night-review entries
+ */
+function matchNightReviewEntry(entry: JournalEntry, query: string): boolean {
+  const data = (entry as NightReviewEntry).data;
+  const gratMatch = data.step4_gratitude?.toLowerCase().includes(query) || false;
+  const surrMatch = data.step4_surrender?.toLowerCase().includes(query) || false;
+  return gratMatch || surrMatch;
+}
+
+// Lookup table for entry type search matchers
+const SEARCH_MATCHERS: Record<string, SearchMatcher> = {
+  mood: matchMoodEntry,
+  gratitude: matchGratitudeEntry,
+  inventory: matchInventoryEntry,
+  "free-write": matchNoteEntry,
+  "meeting-note": matchNoteEntry,
+  "spot-check": matchSpotCheckEntry,
+  "night-review": matchNightReviewEntry,
+  "check-in": (entry, query) =>
+    (entry as CheckInEntry).data.mood?.toLowerCase().includes(query) || false,
+  "daily-log": (entry, query) =>
+    (entry as DailyLogEntry).data.note?.toLowerCase().includes(query) || false,
+};
+
+/**
+ * Match entry against search query using type-specific matchers
+ */
+function matchEntrySearch(entry: JournalEntry, query: string): boolean {
+  const matcher = SEARCH_MATCHERS[entry.type];
+  if (matcher) return matcher(entry, query);
+
+  // Fall through for searchableText if available
+  if ("searchableText" in entry && typeof entry.searchableText === "string") {
+    return entry.searchableText.includes(query);
+  }
+  return false;
+}
+
+// Detail view components for each entry type
+function MoodDetail({ data }: Readonly<{ data: MoodEntry["data"] }>) {
+  return (
+    <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
+      <span className="text-4xl block mb-2">{data.mood}</span>
+      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+        Feeling (Intensity: {data.intensity}/10)
+      </span>
+      {data.note && <p className="mt-2 text-sm text-slate-600">{data.note}</p>}
+    </div>
+  );
+}
+
+function GratitudeDetail({ data }: Readonly<{ data: GratitudeEntry["data"] }>) {
+  return (
+    <div>
+      <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
+      <ul className="list-disc pl-5">
+        {data.items.map((item: string, i: number) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function InventoryDetail({ data }: Readonly<{ data: InventoryEntry["data"] }>) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <span className="font-bold">Resentments:</span> {data.resentments}
+      </div>
+      <div>
+        <span className="font-bold">Dishonesty:</span> {data.dishonesty}
+      </div>
+      <div>
+        <span className="font-bold">Apologies:</span> {data.apologies}
+      </div>
+      <div>
+        <span className="font-bold">Successes:</span> {data.successes}
+      </div>
+    </div>
+  );
+}
+
+function NoteDetail({ data }: Readonly<{ data: NoteEntry["data"] }>) {
+  return (
+    <>
+      {data.title && <h4 className="font-bold text-xl mb-2 font-heading">{data.title}</h4>}
+      {data.content}
+    </>
+  );
+}
+
+function SpotCheckDetail({ data }: Readonly<{ data: SpotCheckEntry["data"] }>) {
+  return (
+    <div className="space-y-2">
+      <div>
+        <span className="font-bold">Feelings:</span> {data.feelings?.join(", ")}
+      </div>
+      {data.action && (
+        <div>
+          <span className="font-bold">Action:</span> {data.action}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NightReviewDetail({ data }: Readonly<{ data: NightReviewEntry["data"] }>) {
+  return (
+    <div className="space-y-2">
+      {data.step4_gratitude && (
+        <div>
+          <span className="font-bold">Gratitude:</span> {data.step4_gratitude}
+        </div>
+      )}
+      {data.step4_surrender && (
+        <div>
+          <span className="font-bold">Surrender:</span> {data.step4_surrender}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CheckInDetail({ data }: Readonly<{ data: CheckInEntry["data"] }>) {
+  return (
+    <div className="space-y-2">
+      {data.mood && (
+        <div>
+          <span className="font-bold">Mood:</span> {data.mood}
+        </div>
+      )}
+      <div>
+        <span className="font-bold">Cravings:</span> {data.cravings ? "Yes" : "No"}
+      </div>
+      <div>
+        <span className="font-bold">Used:</span> {data.used ? "Yes" : "No"}
+      </div>
+    </div>
+  );
+}
+
+function DailyLogDetail({ data }: Readonly<{ data: DailyLogEntry["data"] }>) {
+  return (
+    <div>
+      <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>
+      {data.note}
+    </div>
+  );
+}
+
+/**
+ * Render detail view based on entry type
+ */
+function EntryDetailContent({ entry }: Readonly<{ entry: JournalEntry }>) {
+  switch (entry.type) {
+    case "mood":
+      return <MoodDetail data={entry.data} />;
+    case "gratitude":
+      return <GratitudeDetail data={entry.data} />;
+    case "inventory":
+      return <InventoryDetail data={entry.data} />;
+    case "free-write":
+    case "meeting-note":
+      return <NoteDetail data={entry.data} />;
+    case "spot-check":
+      return <SpotCheckDetail data={entry.data} />;
+    case "night-review":
+      return <NightReviewDetail data={entry.data} />;
+    case "check-in":
+      return <CheckInDetail data={entry.data} />;
+    case "daily-log":
+      return <DailyLogDetail data={entry.data} />;
+    default:
+      return null;
+  }
+}
+
 export function EntryFeed({ entries, filter }: EntryFeedProps) {
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredEntries = useMemo(() => {
+    const query = searchQuery.toLowerCase();
     return entries
       .filter((entry) => {
         // 1. Type Filter
         if (filter !== "all" && entry.type !== filter) return false;
-
         // 2. Search Filter (Basic text match)
         if (!searchQuery) return true;
-
-        const query = searchQuery.toLowerCase();
-
-        if (entry.type === "mood") {
-          const moodMatch = entry.data?.mood?.toLowerCase().includes(query) || false;
-          const noteMatch = entry.data?.note?.toLowerCase().includes(query) || false;
-          return moodMatch || noteMatch;
-        }
-
-        if (entry.type === "gratitude") {
-          return entry.data?.items?.some((item) => item.toLowerCase().includes(query)) || false;
-        }
-
-        if (entry.type === "inventory") {
-          const resentments = entry.data?.resentments?.toLowerCase().includes(query) || false;
-          const dishonesty = entry.data?.dishonesty?.toLowerCase().includes(query) || false;
-          const apologies = entry.data?.apologies?.toLowerCase().includes(query) || false;
-          const successes = entry.data?.successes?.toLowerCase().includes(query) || false;
-          return resentments || dishonesty || apologies || successes;
-        }
-
-        if (entry.type === "free-write" || entry.type === "meeting-note") {
-          const titleMatch = entry.data?.title?.toLowerCase().includes(query) || false;
-          const contentMatch = entry.data?.content?.toLowerCase().includes(query) || false;
-          return titleMatch || contentMatch;
-        }
-
-        if (entry.type === "spot-check") {
-          const feelingsMatch =
-            entry.data.feelings?.some((f) => f.toLowerCase().includes(query)) || false;
-          const actionMatch = entry.data.action?.toLowerCase().includes(query) || false;
-          return feelingsMatch || actionMatch;
-        }
-
-        if (entry.type === "night-review") {
-          const gratMatch = entry.data.step4_gratitude?.toLowerCase().includes(query) || false;
-          const surrMatch = entry.data.step4_surrender?.toLowerCase().includes(query) || false;
-          return gratMatch || surrMatch;
-        }
-
-        if (entry.type === "check-in") {
-          return entry.data.mood?.toLowerCase().includes(query) || false;
-        }
-
-        if (entry.type === "daily-log") {
-          return entry.data.note?.toLowerCase().includes(query) || false;
-        }
-
-        // Fall through for searchableText if available
-        if ("searchableText" in entry && typeof entry.searchableText === "string") {
-          return entry.searchableText.includes(query);
-        }
-
-        return false;
+        return matchEntrySearch(entry, query);
       })
       .sort((a, b) => b.createdAt - a.createdAt);
   }, [entries, filter, searchQuery]);
@@ -174,112 +363,7 @@ export function EntryFeed({ entries, filter }: EntryFeedProps) {
               </button>
             </div>
             <div className="text-slate-700 leading-relaxed whitespace-pre-wrap font-handlee text-lg">
-              {selectedEntry.type === "mood" && (
-                <div className="mb-4 p-4 bg-slate-50 rounded-lg text-center">
-                  <span className="text-4xl block mb-2">{selectedEntry.data.mood}</span>
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Feeling (Intensity: {selectedEntry.data.intensity}/10)
-                  </span>
-                  {selectedEntry.data.note && (
-                    <p className="mt-2 text-sm text-slate-600">{selectedEntry.data.note}</p>
-                  )}
-                </div>
-              )}
-
-              {selectedEntry.type === "gratitude" && (
-                <div>
-                  <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
-                  <ul className="list-disc pl-5">
-                    {selectedEntry.data.items.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {selectedEntry.type === "inventory" && (
-                <div className="space-y-4">
-                  <div>
-                    <span className="font-bold">Resentments:</span> {selectedEntry.data.resentments}
-                  </div>
-                  <div>
-                    <span className="font-bold">Dishonesty:</span> {selectedEntry.data.dishonesty}
-                  </div>
-                  <div>
-                    <span className="font-bold">Apologies:</span> {selectedEntry.data.apologies}
-                  </div>
-                  <div>
-                    <span className="font-bold">Successes:</span> {selectedEntry.data.successes}
-                  </div>
-                </div>
-              )}
-
-              {(selectedEntry.type === "free-write" || selectedEntry.type === "meeting-note") && (
-                <>
-                  {selectedEntry.data.title && (
-                    <h4 className="font-bold text-xl mb-2 font-heading">
-                      {selectedEntry.data.title}
-                    </h4>
-                  )}
-                  {selectedEntry.data.content}
-                </>
-              )}
-
-              {selectedEntry.type === "spot-check" && (
-                <div className="space-y-2">
-                  <div>
-                    <span className="font-bold">Feelings:</span>{" "}
-                    {selectedEntry.data.feelings?.join(", ")}
-                  </div>
-                  {selectedEntry.data.action && (
-                    <div>
-                      <span className="font-bold">Action:</span> {selectedEntry.data.action}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {selectedEntry.type === "night-review" && (
-                <div className="space-y-2">
-                  {selectedEntry.data.step4_gratitude && (
-                    <div>
-                      <span className="font-bold">Gratitude:</span>{" "}
-                      {selectedEntry.data.step4_gratitude}
-                    </div>
-                  )}
-                  {selectedEntry.data.step4_surrender && (
-                    <div>
-                      <span className="font-bold">Surrender:</span>{" "}
-                      {selectedEntry.data.step4_surrender}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {selectedEntry.type === "check-in" && (
-                <div className="space-y-2">
-                  {selectedEntry.data.mood && (
-                    <div>
-                      <span className="font-bold">Mood:</span> {selectedEntry.data.mood}
-                    </div>
-                  )}
-                  <div>
-                    <span className="font-bold">Cravings:</span>{" "}
-                    {selectedEntry.data.cravings ? "Yes" : "No"}
-                  </div>
-                  <div>
-                    <span className="font-bold">Used:</span>{" "}
-                    {selectedEntry.data.used ? "Yes" : "No"}
-                  </div>
-                </div>
-              )}
-
-              {selectedEntry.type === "daily-log" && (
-                <div>
-                  <h4 className="font-bold text-xl mb-2 font-heading">Recovery Notes</h4>
-                  {selectedEntry.data.note}
-                </div>
-              )}
+              <EntryDetailContent entry={selectedEntry} />
             </div>
           </div>
         </div>

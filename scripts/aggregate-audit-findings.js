@@ -115,6 +115,29 @@ const CATEGORY_MAP = {
   Offline: "offline",
 };
 
+// ID prefix to category mapping (S3776 complexity reduction)
+// Takes precedence over item.category for consistent categorization
+const ID_PREFIX_CATEGORY_MAP = {
+  "SEC-": "security",
+  "PERF-": "performance",
+  "CODE-": "code",
+  "PROC-": "process",
+  "REF-": "refactoring",
+  "DOC-": "documentation",
+  "EFFP-": "engineering-productivity",
+};
+
+/**
+ * Get category from ID prefix using lookup map (S3776 complexity reduction)
+ */
+function getCategoryFromIdPrefix(id) {
+  if (!id) return null;
+  for (const [prefix, category] of Object.entries(ID_PREFIX_CATEGORY_MAP)) {
+    if (id.startsWith(prefix)) return category;
+  }
+  return null;
+}
+
 // PR bucket suggestions based on category
 const PR_BUCKET_MAP = {
   security: "security-hardening",
@@ -321,22 +344,8 @@ function normalizeConfidence(value) {
  */
 function normalizeSingleSession(item, sourceCategory, date) {
   // ID prefix mapping takes precedence over item.category (e.g., SEC-010 with "Framework" category → security)
-  // EFFP-* maps to "engineering-productivity" not "dx" for consistency with source (Qodo Review #176)
-  const idPrefixCategory = item.id?.startsWith("SEC-")
-    ? "security"
-    : item.id?.startsWith("PERF-")
-      ? "performance"
-      : item.id?.startsWith("CODE-")
-        ? "code"
-        : item.id?.startsWith("PROC-")
-          ? "process"
-          : item.id?.startsWith("REF-")
-            ? "refactoring"
-            : item.id?.startsWith("DOC-")
-              ? "documentation"
-              : item.id?.startsWith("EFFP-")
-                ? "engineering-productivity"
-                : null;
+  // Uses extracted helper for S3776 complexity reduction
+  const idPrefixCategory = getCategoryFromIdPrefix(item.id);
   const normalizedCategory =
     idPrefixCategory || CATEGORY_MAP[item.category] || CATEGORY_MAP[sourceCategory] || "code";
 
@@ -373,6 +382,31 @@ function normalizeSingleSession(item, sourceCategory, date) {
 }
 
 /**
+ * Extract description from CANON item (multiple possible fields)
+ */
+function extractCanonDescription(item) {
+  return item.why_it_matters || item.description || item.issue_details?.description;
+}
+
+/**
+ * Extract recommendation from CANON item (multiple possible fields)
+ */
+function extractCanonRecommendation(item) {
+  if (item.suggested_fix) return item.suggested_fix;
+  if (item.optimization?.description) return item.optimization.description;
+  if (item.remediation?.steps?.length) return item.remediation.steps.join("; ");
+  return undefined;
+}
+
+/**
+ * Filter dependencies to prevent self-references
+ */
+function filterSelfDependencies(dependencies, selfId) {
+  if (!dependencies?.length) return [];
+  return dependencies.filter((dep) => dep !== selfId);
+}
+
+/**
  * Normalize a CANON finding to master schema
  */
 function normalizeCanon(item, sourceFile) {
@@ -385,26 +419,18 @@ function normalizeCanon(item, sourceFile) {
     severity: item.severity,
     effort: item.effort,
     confidence: normalizeConfidence(item.confidence || item.final_confidence),
-    file: item.files ? item.files[0] : undefined,
+    file: item.files?.[0],
     files: item.files,
     symbols: item.symbols,
-    description: item.why_it_matters || item.description || item.issue_details?.description,
-    recommendation:
-      item.suggested_fix || item.optimization?.description || item.remediation?.steps?.join("; "),
+    description: extractCanonDescription(item),
+    recommendation: extractCanonRecommendation(item),
     evidence: item.evidence,
     pr_bucket_suggestion: item.pr_bucket_suggestion || item.pr_bucket,
-    // Filter out self-dependencies to prevent infinite loops (Qodo Review #176)
-    dependencies: item.dependencies?.filter((dep) => dep !== item.canonical_id) || [],
+    dependencies: filterSelfDependencies(item.dependencies, item.canonical_id),
     status: item.status,
     consensus_score: item.consensus_score || item.consensus,
     models_agreeing: item.models_agreeing,
-    sources: [
-      {
-        type: "canon",
-        id: item.canonical_id,
-        file: sourceFile,
-      },
-    ],
+    sources: [{ type: "canon", id: item.canonical_id, file: sourceFile }],
   };
 }
 
@@ -668,11 +694,112 @@ function parseCanonFiles(allFindings, stats) {
   }
 }
 
+// ============================================================================
+// Deduplication Helpers (S3776 complexity reduction)
+// ============================================================================
+
+/**
+ * Add a value to a Map<key, Set> index for true deduplication
+ * Review #188: Use Set instead of array for reliable uniqueness
+ * Review #191: Defensive check to ensure bucket is a Set before adding
+ * Review #192: Self-heal corrupted buckets, allow empty string keys
+ * Review #193: Preserve existing values when recovering corrupted buckets
+ */
+function addToMapIndex(map, key, value) {
+  // Only reject null/undefined, allow empty string keys
+  if (key === null || key === undefined) return;
+  if (!map.has(key)) map.set(key, new Set());
+
+  const bucket = map.get(key);
+  // Self-heal if the map was corrupted, preserving existing values if iterable
+  if (!(bucket instanceof Set)) {
+    const recovered =
+      bucket && typeof bucket[Symbol.iterator] === "function" ? new Set(bucket) : new Set();
+    map.set(key, recovered);
+  }
+  map.get(key).add(value);
+}
+
+/**
+ * Get all files from a finding (handles both .files array and single .file)
+ */
+function getFilesFromFinding(finding) {
+  if (finding.files?.length) return finding.files;
+  if (finding.file) return [finding.file];
+  return [];
+}
+
+/**
+ * Build lookup indices for findings deduplication.
+ * Returns fileIndex, categoryIndex, and idToIndex maps for O(1) lookups.
+ */
+function buildFindingIndices(findings) {
+  const fileIndex = new Map(); // file -> [indices]
+  const categoryIndex = new Map(); // category -> [indices]
+  const idToIndex = new Map(); // original_id -> index
+
+  for (let i = 0; i < findings.length; i++) {
+    const f = findings[i];
+
+    // Index by all files (including merged files array)
+    for (const file of getFilesFromFinding(f)) {
+      addToMapIndex(fileIndex, file, i);
+    }
+
+    // Index by category
+    addToMapIndex(categoryIndex, f.category, i);
+
+    // Index by original_id
+    if (f.original_id) idToIndex.set(f.original_id, i);
+
+    // Also index merged_from IDs for stable dependency lookups (Qodo Review #175)
+    for (const mergedId of f.merged_from || []) {
+      if (mergedId && !idToIndex.has(mergedId)) idToIndex.set(mergedId, i);
+    }
+  }
+
+  return { fileIndex, categoryIndex, idToIndex };
+}
+
+/**
+ * Process all pairs within bucket indices, calling tryMergePair for each.
+ * Skips buckets exceeding maxSize to prevent O(n²) blowup.
+ * Review #189: Convert Set to Array for numerical indexing
+ */
+function processBucketPairs(bucketMap, tryMergePair, maxSize = Infinity, bucketType = "bucket") {
+  for (const [key, indicesSet] of bucketMap.entries()) {
+    // Review #189: Convert Set to Array for iteration with numerical indices
+    // Review #190: Sort indices for deterministic merge order across runs
+    const indices = Array.from(indicesSet).sort((a, b) => a - b);
+    if (indices.length > maxSize) {
+      console.warn(
+        `Warning: Skipping ${bucketType} '${key}' (${indices.length} items > ${maxSize} cap)`
+      );
+      continue;
+    }
+    for (let a = 0; a < indices.length; a++) {
+      for (let b = a + 1; b < indices.length; b++) {
+        tryMergePair(indices[a], indices[b]);
+      }
+    }
+  }
+}
+
 /**
  * Deduplicate findings using multi-pass merge with pre-bucketing (Qodo Review #173, #174)
+ *
+ * Multi-pass approach rationale (vs Disjoint Set Union):
+ * - DSU would require upfront equivalence determination, but merge criteria depend on
+ *   accumulated evidence from previous merges (e.g., merged_from arrays, combined files)
+ * - Multi-pass allows iterative refinement: early merges create new merge opportunities
+ * - Fixpoint iteration handles transitive merges naturally (A+B, then AB+C)
+ * - Pre-bucketing provides O(n) grouping before O(k²) pair comparison within buckets
+ *
+ * Implementation notes:
  * - Multi-pass iteration until fixpoint (no more merges possible)
  * - Pre-buckets by file/category to reduce comparisons
  * - Uses ID index for O(1) DEDUP->CANON dependency lookup
+ * - Size caps prevent O(n²) blowup on large buckets
  */
 function deduplicateFindings(allFindings) {
   const dedupLog = [];
@@ -680,83 +807,35 @@ function deduplicateFindings(allFindings) {
   let didMerge = true;
   let passCount = 0;
   const MAX_PASSES = 10; // Safety limit to prevent infinite loops
+  const MAX_FILE_BUCKET = 250; // Cap file bucket processing to prevent quadratic blowup
+  const MAX_CATEGORY_BUCKET = 250;
 
   while (didMerge && passCount < MAX_PASSES) {
     didMerge = false;
     passCount++;
     const processed = new Set();
-
-    // Pre-bucket by file path and category for efficient comparison
-    const fileIndex = new Map(); // file -> [indices]
-    const categoryIndex = new Map(); // category -> [indices]
-    const idToIndex = new Map(); // original_id -> index (for O(1) dependency lookup)
-
-    for (let i = 0; i < current.length; i++) {
-      const f = current[i];
-      // Index by all files (including merged files array)
-      const files = f.files?.length ? f.files : f.file ? [f.file] : [];
-      for (const file of files) {
-        if (!file) continue;
-        if (!fileIndex.has(file)) fileIndex.set(file, []);
-        fileIndex.get(file).push(i);
-      }
-      if (f.category) {
-        if (!categoryIndex.has(f.category)) categoryIndex.set(f.category, []);
-        categoryIndex.get(f.category).push(i);
-      }
-      if (f.original_id) {
-        idToIndex.set(f.original_id, i);
-      }
-      // Also index merged_from IDs for stable dependency lookups (Qodo Review #175)
-      if (f.merged_from?.length) {
-        for (const mergedId of f.merged_from) {
-          if (mergedId && !idToIndex.has(mergedId)) {
-            idToIndex.set(mergedId, i);
-          }
-        }
-      }
-    }
-
-    // Process merges directly from buckets (avoid materializing candidatePairs Set)
     const mergeGroups = new Map(); // canonical index -> merged finding
 
-    function tryMergePair(i, j) {
+    // Build indices using extracted helper (S3776)
+    const { fileIndex, categoryIndex, idToIndex } = buildFindingIndices(current);
+
+    // Merge helper that tracks state via closure
+    const tryMergePair = (i, j) => {
       if (processed.has(i) || processed.has(j)) return;
       const finding1 = mergeGroups.get(i) || current[i];
       const finding2 = current[j];
       if (shouldMerge(finding1, finding2, dedupLog)) {
-        const merged = mergeFindings(finding1, finding2);
-        mergeGroups.set(i, merged);
+        mergeGroups.set(i, mergeFindings(finding1, finding2));
         processed.add(j);
         didMerge = true;
       }
-    }
+    };
 
-    // Same-file pairs
-    for (const indices of fileIndex.values()) {
-      for (let a = 0; a < indices.length; a++) {
-        for (let b = a + 1; b < indices.length; b++) {
-          tryMergePair(indices[a], indices[b]);
-        }
-      }
-    }
+    // Process same-file pairs with size cap to prevent quadratic blowup
+    processBucketPairs(fileIndex, tryMergePair, MAX_FILE_BUCKET, "file");
 
-    // Same-category pairs (for title similarity matching)
-    // Cap bucket size to prevent O(n²) blowup with large categories (Qodo Review #175)
-    const MAX_CATEGORY_BUCKET = 250;
-    for (const [category, indices] of categoryIndex.entries()) {
-      if (indices.length > MAX_CATEGORY_BUCKET) {
-        console.warn(
-          `Warning: Skipping category '${category}' bucket (${indices.length} items > ${MAX_CATEGORY_BUCKET} cap)`
-        );
-        continue;
-      }
-      for (let a = 0; a < indices.length; a++) {
-        for (let b = a + 1; b < indices.length; b++) {
-          tryMergePair(indices[a], indices[b]);
-        }
-      }
-    }
+    // Process same-category pairs with size cap
+    processBucketPairs(categoryIndex, tryMergePair, MAX_CATEGORY_BUCKET, "category");
 
     // DEDUP->CANON dependencies using O(1) ID lookup
     for (let i = 0; i < current.length; i++) {
@@ -764,19 +843,15 @@ function deduplicateFindings(allFindings) {
       if (f.original_id?.startsWith("DEDUP-") && f.dependencies?.length) {
         for (const depId of f.dependencies) {
           const j = idToIndex.get(depId);
-          if (j === undefined || i === j) continue;
-          tryMergePair(i, j);
+          if (j !== undefined && i !== j) tryMergePair(i, j);
         }
       }
     }
 
     // Collect results for next pass
-    const next = [];
-    for (let i = 0; i < current.length; i++) {
-      if (processed.has(i)) continue;
-      next.push(mergeGroups.get(i) || current[i]);
-    }
-    current = next;
+    current = current
+      .map((item, i) => (processed.has(i) ? null : mergeGroups.get(i) || item))
+      .filter(Boolean);
   }
 
   if (passCount >= MAX_PASSES) {

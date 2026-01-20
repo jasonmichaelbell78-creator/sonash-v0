@@ -27,6 +27,144 @@ interface BookCoverProps {
   cleanDays?: number; // Fallback prop
 }
 
+// Common text shadow style for embossed effect
+const embossedTextShadow = `
+  1px 1px 0px rgba(0,0,0,0.6),
+  2px 2px 2px rgba(0,0,0,0.4),
+  -1px -1px 0px rgba(255,255,255,0.2)
+`;
+
+const titleTextShadow = `
+  1px 1px 0px rgba(0,0,0,0.7),
+  2px 2px 3px rgba(0,0,0,0.5),
+  -1px -1px 0px rgba(255,255,255,0.2)
+`;
+
+/**
+ * Render the personalized title section
+ */
+function CoverTitleSection({
+  user,
+  displayNickname,
+}: Readonly<{ user: unknown; displayNickname: string }>) {
+  if (user) {
+    return (
+      <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
+        <h2
+          className="font-rocksalt leading-relaxed text-center text-2xl md:text-3xl"
+          style={{ color: "#e0d8cc", textShadow: titleTextShadow }}
+        >
+          {displayNickname}'s
+          <br />
+          Recovery Notebook
+        </h2>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center mt-auto px-4 text-center">
+      <p
+        className="font-handlee text-2xl text-[#e0d8cc] mb-2"
+        style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}
+      >
+        Sign in to open your notebook.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Render the footer CTA when user is signed in
+ */
+function CoverFooterCta({ isProfileComplete }: Readonly<{ isProfileComplete: boolean }>) {
+  return (
+    <div className="flex items-center gap-2 mt-auto">
+      <p
+        className="font-shortstack text-base md:text-lg"
+        style={{ color: "#d4ccc0", textShadow: embossedTextShadow }}
+      >
+        {isProfileComplete ? "Turn to Today's Page →" : "One last step →"}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Render the clean days counter, setup prompt, or sign-in CTA
+ */
+function CoverStatusBadge({
+  user,
+  isProfileComplete,
+  cleanDays,
+}: Readonly<{
+  user: unknown;
+  isProfileComplete: boolean;
+  cleanDays: number;
+}>) {
+  if (!user) {
+    return (
+      <div
+        className="font-permanent-marker text-white text-2xl bg-black/20 px-8 py-3 rounded-full border border-white/20"
+        style={{ backdropFilter: "blur(2px)" }}
+      >
+        Tap to Start
+      </div>
+    );
+  }
+
+  if (!isProfileComplete) {
+    return (
+      <div
+        className="font-permanent-marker text-amber-200 text-2xl bg-black/30 px-8 py-3 rounded-full border border-amber-200/40 animate-pulse"
+        style={{ backdropFilter: "blur(2px)" }}
+      >
+        Finish Setup
+      </div>
+    );
+  }
+
+  return (
+    <p
+      className="font-shortstack text-center leading-snug text-lg md:text-xl"
+      style={{ color: "#d4ccc0", textShadow: embossedTextShadow }}
+    >
+      You've been clean
+      <br />
+      for {cleanDays} days.
+    </p>
+  );
+}
+
+/**
+ * Calculate clean days from profile cleanStart date
+ */
+function calculateCleanDays(cleanStart: unknown): number {
+  if (!cleanStart) return 0;
+
+  try {
+    const parsedDate = parseFirebaseTimestamp(cleanStart);
+    if (!parsedDate) {
+      logger.warn("Invalid cleanStart value - could not parse timestamp");
+      return 0;
+    }
+    return Math.max(0, differenceInDays(new Date(), parsedDate));
+  } catch (error) {
+    logger.warn("Error calculating clean days", { error });
+    return 0;
+  }
+}
+
+/**
+ * Calculate book dimensions based on viewport
+ */
+function getBookDimensions(viewportWidth: number): { width: number; height: number } {
+  const isMobile = viewportWidth > 0 && viewportWidth < 768;
+  const width = isMobile ? Math.min(viewportWidth * 0.9, 600) : 600;
+  const height = isMobile ? width * 1.42 : 850;
+  return { width, height };
+}
+
 export default function BookCover({ onOpen, isAnimating = false }: BookCoverProps) {
   const { user, profile, loading } = useAuth();
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -43,28 +181,8 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  const isMobile = viewportWidth > 0 && viewportWidth < 768;
-  const bookWidth = isMobile ? Math.min(viewportWidth * 0.9, 600) : 600;
-  const bookHeight = isMobile ? bookWidth * 1.42 : 850;
-
-  // Calculate real clean days if available
-  const cleanDays = useMemo(() => {
-    if (!profile?.cleanStart) return 0;
-
-    try {
-      const parsedDate = parseFirebaseTimestamp(profile.cleanStart);
-
-      if (!parsedDate) {
-        logger.warn("Invalid cleanStart value - could not parse timestamp");
-        return 0;
-      }
-
-      return Math.max(0, differenceInDays(new Date(), parsedDate));
-    } catch (error) {
-      logger.warn("Error calculating clean days", { error });
-      return 0;
-    }
-  }, [profile]);
+  const { width: bookWidth, height: bookHeight } = getBookDimensions(viewportWidth);
+  const cleanDays = useMemo(() => calculateCleanDays(profile?.cleanStart), [profile?.cleanStart]);
 
   const displayNickname = profile?.nickname || "Friend";
   const isProfileComplete = !!profile?.cleanStart;
@@ -215,92 +333,19 @@ export default function BookCover({ onOpen, isAnimating = false }: BookCoverProp
             </div>
 
             {/* Middle section - Personalized title */}
-            {user ? (
-              <div className="flex flex-col items-center mt-auto" style={{ marginLeft: "-1%" }}>
-                <h2
-                  className="font-rocksalt leading-relaxed text-center text-2xl md:text-3xl"
-                  style={{
-                    color: "#e0d8cc",
-                    textShadow: `
-                      1px 1px 0px rgba(0,0,0,0.7),
-                      2px 2px 3px rgba(0,0,0,0.5),
-                      -1px -1px 0px rgba(255,255,255,0.2)
-                    `,
-                  }}
-                >
-                  {displayNickname}'s
-                  <br />
-                  Recovery Notebook
-                </h2>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center mt-auto px-4 text-center">
-                <p
-                  className="font-handlee text-2xl text-[#e0d8cc] mb-2"
-                  style={{
-                    textShadow: "1px 1px 0 rgba(0,0,0,0.5)",
-                  }}
-                >
-                  Sign in to open your notebook.
-                </p>
-              </div>
-            )}
+            <CoverTitleSection user={user} displayNickname={displayNickname} />
 
             {/* Clean days counter OR Sign In CTA */}
             <div className="flex flex-col items-center mt-auto">
-              {user ? (
-                isProfileComplete ? (
-                  <p
-                    className="font-shortstack text-center leading-snug text-lg md:text-xl"
-                    style={{
-                      color: "#d4ccc0",
-                      textShadow: `
-                        1px 1px 0px rgba(0,0,0,0.6),
-                        2px 2px 2px rgba(0,0,0,0.4),
-                        -1px -1px 0px rgba(255,255,255,0.2)
-                      `,
-                    }}
-                  >
-                    You've been clean
-                    <br />
-                    for {cleanDays} days.
-                  </p>
-                ) : (
-                  <div
-                    className="font-permanent-marker text-amber-200 text-2xl bg-black/30 px-8 py-3 rounded-full border border-amber-200/40 animate-pulse"
-                    style={{ backdropFilter: "blur(2px)" }}
-                  >
-                    Finish Setup
-                  </div>
-                )
-              ) : (
-                <div
-                  className="font-permanent-marker text-white text-2xl bg-black/20 px-8 py-3 rounded-full border border-white/20"
-                  style={{ backdropFilter: "blur(2px)" }}
-                >
-                  Tap to Start
-                </div>
-              )}
+              <CoverStatusBadge
+                user={user}
+                isProfileComplete={isProfileComplete}
+                cleanDays={cleanDays}
+              />
             </div>
 
             {/* Footer CTA */}
-            {user && (
-              <div className="flex items-center gap-2 mt-auto">
-                <p
-                  className="font-shortstack text-base md:text-lg"
-                  style={{
-                    color: "#d4ccc0",
-                    textShadow: `
-                      1px 1px 0px rgba(0,0,0,0.6),
-                      2px 2px 2px rgba(0,0,0,0.4),
-                      -1px -1px 0px rgba(255,255,255,0.2)
-                    `,
-                  }}
-                >
-                  {isProfileComplete ? "Turn to Today's Page →" : "One last step →"}
-                </p>
-              </div>
-            )}
+            {user && <CoverFooterCta isProfileComplete={isProfileComplete} />}
           </motion.div>
 
           {/* Back of cover (visible when flipped) */}

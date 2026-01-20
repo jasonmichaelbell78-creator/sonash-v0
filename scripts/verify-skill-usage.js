@@ -187,6 +187,36 @@ function verifySkillUsage(events) {
   return results;
 }
 
+/**
+ * Print a category of violations
+ */
+function printViolationCategory(violations, icon, header) {
+  if (violations.length === 0) return;
+  console.log(header);
+  for (const v of violations) {
+    console.log(`   ${icon} ${v.skill}`);
+    console.log(`      Reason: ${v.description}`);
+    console.log(`      Action: ${v.recommendation}\n`);
+  }
+}
+
+/**
+ * Print full verification report
+ */
+function printVerificationReport(blocking, warnings, suggestions) {
+  console.log("📊 SKILL USAGE VERIFICATION");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+  printViolationCategory(blocking, "❌", "🚫 REQUIRED SKILLS NOT USED:");
+  printViolationCategory(warnings, "⚠️ ", "⚠️  RECOMMENDED SKILLS NOT USED:");
+  printViolationCategory(suggestions, "💡", "💡 SUGGESTED SKILLS:");
+
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log(
+    `Summary: ${blocking.length} required, ${warnings.length} recommended, ${suggestions.length} suggested\n`
+  );
+}
+
 // Main execution
 function main() {
   const args = process.argv.slice(2);
@@ -198,9 +228,7 @@ function main() {
   const sessionEvents = getCurrentSessionEvents(allEvents);
 
   if (sessionEvents.length === 0) {
-    if (!quiet) {
-      console.log("📊 No session activity logged yet.\n");
-    }
+    if (!quiet) console.log("📊 No session activity logged yet.\n");
     process.exit(0);
   }
 
@@ -208,9 +236,7 @@ function main() {
   const violations = verifySkillUsage(sessionEvents);
 
   if (violations.length === 0) {
-    if (!quiet) {
-      console.log("✅ All expected skills were used appropriately.\n");
-    }
+    if (!quiet) console.log("✅ All expected skills were used appropriately.\n");
     process.exit(0);
   }
 
@@ -220,40 +246,7 @@ function main() {
   const suggestions = violations.filter((v) => v.severity === "suggestion");
 
   if (!quiet) {
-    console.log("📊 SKILL USAGE VERIFICATION");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-
-    if (blocking.length > 0) {
-      console.log("🚫 REQUIRED SKILLS NOT USED:");
-      for (const v of blocking) {
-        console.log(`   ❌ ${v.skill}`);
-        console.log(`      Reason: ${v.description}`);
-        console.log(`      Action: ${v.recommendation}\n`);
-      }
-    }
-
-    if (warnings.length > 0) {
-      console.log("⚠️  RECOMMENDED SKILLS NOT USED:");
-      for (const v of warnings) {
-        console.log(`   ⚠️  ${v.skill}`);
-        console.log(`      Reason: ${v.description}`);
-        console.log(`      Action: ${v.recommendation}\n`);
-      }
-    }
-
-    if (suggestions.length > 0) {
-      console.log("💡 SUGGESTED SKILLS:");
-      for (const v of suggestions) {
-        console.log(`   💡 ${v.skill}`);
-        console.log(`      Reason: ${v.description}`);
-        console.log(`      Action: ${v.recommendation}\n`);
-      }
-    }
-
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log(
-      `Summary: ${blocking.length} required, ${warnings.length} recommended, ${suggestions.length} suggested\n`
-    );
+    printVerificationReport(blocking, warnings, suggestions);
   }
 
   // Exit code depends on mode and severity

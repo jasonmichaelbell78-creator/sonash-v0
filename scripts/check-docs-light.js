@@ -25,7 +25,7 @@
  * Exit codes: 0 = pass, 1 = errors found (or warnings in --strict mode)
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync, lstatSync, realpathSync } from "node:fs";
 import { join, dirname, basename, relative, extname, isAbsolute, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { sanitizeError } from "./lib/sanitize-error.js";
@@ -82,43 +82,66 @@ const TIER_DEFINITIONS = {
 };
 
 /**
+ * Check if file matches an explicit file list
+ */
+function matchExplicitFiles(fileName) {
+  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
+    if (def.files && def.files.includes(fileName)) {
+      // Review #187: Always use radix 10 for predictable base-10 parsing
+      return Number.parseInt(tier, 10);
+    }
+  }
+  return null;
+}
+
+/**
+ * Check if path matches folder patterns
+ * Review #189: Enforce folder boundary to prevent "docs/" matching "docs-extra/"
+ */
+function matchFolderPatterns(relativePath) {
+  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
+    if (!def.folders) continue;
+    for (const folder of def.folders) {
+      // Ensure folder ends with / for proper boundary matching
+      const normalizedFolder = folder.endsWith("/") ? folder : `${folder}/`;
+      if (relativePath === folder || relativePath.startsWith(normalizedFolder)) {
+        return Number.parseInt(tier, 10);
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Check if filename matches patterns
+ */
+function matchFilenamePatterns(fileName) {
+  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
+    if (!def.patterns) continue;
+    for (const pattern of def.patterns) {
+      if (pattern.test(fileName)) return Number.parseInt(tier, 10);
+    }
+  }
+  return null;
+}
+
+/**
  * Determine the tier of a document
- * @param {string} filePath - Path to the document
- * @param {string} content - Document content
- * @returns {number} - Tier number (1-5) or 0 if unknown
  */
 function determineTier(filePath, _content) {
   const fileName = basename(filePath);
-  const relativePath = relative(ROOT, filePath);
+  // Review #187: Normalize Windows backslashes to forward slashes for cross-platform matching
+  const relativePath = relative(ROOT, filePath).replaceAll("\\", "/");
 
-  // Check explicit file lists first
-  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.files && def.files.includes(fileName)) {
-      return parseInt(tier);
-    }
-  }
+  // Check in priority order
+  const explicitMatch = matchExplicitFiles(fileName);
+  if (explicitMatch !== null) return explicitMatch;
 
-  // Check folder patterns
-  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.folders) {
-      for (const folder of def.folders) {
-        if (relativePath.startsWith(folder)) {
-          return parseInt(tier);
-        }
-      }
-    }
-  }
+  const folderMatch = matchFolderPatterns(relativePath);
+  if (folderMatch !== null) return folderMatch;
 
-  // Check filename patterns
-  for (const [tier, def] of Object.entries(TIER_DEFINITIONS)) {
-    if (def.patterns) {
-      for (const pattern of def.patterns) {
-        if (pattern.test(fileName)) {
-          return parseInt(tier);
-        }
-      }
-    }
-  }
+  const patternMatch = matchFilenamePatterns(fileName);
+  if (patternMatch !== null) return patternMatch;
 
   // Default to tier 4 (Reference) for unknown docs
   return 4;
@@ -382,34 +405,78 @@ function checkRequiredSections(tier, headings) {
 }
 
 /**
+ * Read document content safely
+ * Review #196: Read via canonical path to mitigate TOCTOU symlink swap vulnerability
+ * Review #197: Remove unsafe fallback, add root containment check
+ */
+function readDocumentContent(filePath) {
+  try {
+    // Read via canonical path to reduce symlink swap/TOCTOU risk
+    const rootReal = realpathSync(ROOT);
+    const effectivePath = realpathSync(filePath);
+
+    // Review #197: Ensure canonicalized path is within project root
+    const rel = relative(rootReal, effectivePath);
+    if (!rel || rel.startsWith("..")) {
+      return { content: null, error: "Path resolves outside project root" };
+    }
+
+    const content = readFileSync(effectivePath, "utf-8");
+    if (!content || content.trim().length === 0) {
+      return { content: null, error: "File is empty" };
+    }
+    return { content, error: null };
+  } catch (err) {
+    // Review #197: Do not fall back to reading a potentially non-canonical/symlink-swapped path
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: null, error: `Cannot read file safely: ${message}` };
+  }
+}
+
+/**
+ * Validate document metadata (Last Updated date)
+ */
+function validateMetadataDate(metadata, tier, warnings) {
+  if (!metadata.lastUpdated) {
+    warnings.push('Missing "Last Updated" date in metadata');
+    return;
+  }
+
+  const dateResult = parseDate(metadata.lastUpdated);
+  if (!dateResult.valid) {
+    warnings.push(`Invalid "Last Updated" date: ${dateResult.error}`);
+    return;
+  }
+
+  // Check if date is stale (> 90 days for active docs)
+  const daysSinceUpdate = Math.floor((new Date() - dateResult.date) / (1000 * 60 * 60 * 24));
+  if (daysSinceUpdate > 90 && tier <= 3) {
+    warnings.push(`Document may be stale: last updated ${daysSinceUpdate} days ago`);
+  }
+}
+
+/**
+ * Validate document version format
+ */
+function validateVersionFormat(metadata, warnings) {
+  if (!metadata.version) return;
+  if (!/^\d+(\.\d+)?$/.test(metadata.version)) {
+    warnings.push(`Version number format should be X.Y, got: "${metadata.version}"`);
+  }
+}
+
+/**
  * Lint a single document
- * @param {string} filePath - Path to the document
- * @returns {{file: string, tier: number, errors: string[], warnings: string[]}}
  */
 function lintDocument(filePath) {
   const errors = [];
   const warnings = [];
 
   // Read file
-  let content;
-  try {
-    content = readFileSync(filePath, "utf-8");
-  } catch (error) {
-    return {
-      file: filePath,
-      tier: 0,
-      errors: [`Cannot read file: ${error.message}`],
-      warnings: [],
-    };
-  }
-
-  if (!content || content.trim().length === 0) {
-    return {
-      file: filePath,
-      tier: 0,
-      errors: ["File is empty"],
-      warnings: [],
-    };
+  const { content, error: readError } = readDocumentContent(filePath);
+  if (readError) {
+    // Review #186: Use relative path for consistency with success output
+    return { file: relative(ROOT, filePath), tier: 0, errors: [readError], warnings: [] };
   }
 
   // Determine tier
@@ -427,34 +494,15 @@ function lintDocument(filePath) {
   const links = extractLinks(content);
 
   // Check 1: Has title (H1)
-  const h1 = headings.find((h) => h.level === 1);
-  if (!h1) {
+  if (!headings.some((h) => h.level === 1)) {
     errors.push("Missing document title (H1 heading)");
   }
 
   // Check 2: Has metadata
-  if (!metadata.lastUpdated) {
-    warnings.push('Missing "Last Updated" date in metadata');
-  } else {
-    // Validate date
-    const dateResult = parseDate(metadata.lastUpdated);
-    if (!dateResult.valid) {
-      warnings.push(`Invalid "Last Updated" date: ${dateResult.error}`);
-    } else {
-      // Check if date is stale (> 90 days for active docs)
-      const daysSinceUpdate = Math.floor((new Date() - dateResult.date) / (1000 * 60 * 60 * 24));
-      if (daysSinceUpdate > 90 && tier <= 3) {
-        warnings.push(`Document may be stale: last updated ${daysSinceUpdate} days ago`);
-      }
-    }
-  }
+  validateMetadataDate(metadata, tier, warnings);
 
   // Check 3: Version format
-  if (metadata.version) {
-    if (!/^\d+(\.\d+)?$/.test(metadata.version)) {
-      warnings.push(`Version number format should be X.Y, got: "${metadata.version}"`);
-    }
-  }
+  validateVersionFormat(metadata, warnings);
 
   // Check 4: Required sections
   const sectionCheck = checkRequiredSections(tier, headings);
@@ -462,22 +510,15 @@ function lintDocument(filePath) {
   warnings.push(...sectionCheck.warnings);
 
   // Check 5: File links
-  const linkErrors = validateFileLinks(links, filePath);
-  errors.push(...linkErrors);
+  errors.push(...validateFileLinks(links, filePath));
 
   // Check 6: Anchor links (warning only, as emoji handling is imperfect)
   const anchorErrors = validateAnchorLinks(links, headings);
   if (anchorErrors.length <= 3) {
-    // Only show anchor warnings if few (to reduce noise from emoji anchors)
     warnings.push(...anchorErrors);
   }
 
-  return {
-    file: relative(ROOT, filePath),
-    tier,
-    errors,
-    warnings,
-  };
+  return { file: relative(ROOT, filePath), tier, errors, warnings };
 }
 
 /**
@@ -520,36 +561,136 @@ function findMarkdownFiles(dir, files = []) {
 }
 
 /**
+ * Resolve file arguments with path traversal and symlink protection
+ * Review #190: Check for symlinks to prevent symlink traversal attacks
+ * Review #193: Canonicalize ROOT, use resolvedPath for non-symlinks, deduplicate
+ * Review #194: Canonicalize ALL paths to defend against symlinked parent directories
+ */
+function resolveFileArgs(files) {
+  const resolved = [];
+  const seen = new Set();
+  const rootResolved = resolve(ROOT);
+
+  // Review #193: Canonicalize ROOT to handle symlinked project directories
+  // Review #194: Guard against realpathSync throwing (broken symlink/permission/missing dir)
+  let rootRealResolved = rootResolved;
+  try {
+    rootRealResolved = resolve(realpathSync(ROOT));
+  } catch (error) {
+    console.warn(`Warning: Cannot resolve real path for ROOT, using resolved path`);
+  }
+
+  for (const file of files) {
+    const fullPath = isAbsolute(file) ? file : join(ROOT, file);
+    const resolvedPath = resolve(fullPath);
+
+    // Check path traversal before checking existence
+    if (resolvedPath !== rootResolved && !resolvedPath.startsWith(rootResolved + sep)) {
+      console.error(`Error: Path traversal blocked: ${file}`);
+      continue;
+    }
+
+    if (!existsSync(fullPath)) {
+      console.error(`Warning: File not found: ${file}`);
+      continue;
+    }
+
+    try {
+      // Review #194: Canonicalize ALL paths to defend against symlinked parent directories
+      const realResolved = resolve(realpathSync(fullPath));
+      if (realResolved !== rootRealResolved && !realResolved.startsWith(rootRealResolved + sep)) {
+        console.error(`Error: Symlink traversal blocked: ${file} -> outside project root`);
+        continue;
+      }
+
+      // Keep lstatSync for diagnostics / future checks, but containment is enforced above
+      lstatSync(fullPath);
+
+      // Review #193: Deduplicate to prevent linting same file multiple times
+      if (seen.has(realResolved)) continue;
+      seen.add(realResolved);
+
+      // Review #195: Return project-local canonical path for stable relative() output/logging
+      resolved.push(resolvedPath);
+    } catch {
+      console.error(`Warning: Cannot stat file: ${file}`);
+    }
+  }
+
+  return resolved;
+}
+
+/**
+ * Output file errors and warnings
+ */
+function outputFileErrors(filesWithErrors) {
+  if (filesWithErrors.length === 0) return;
+
+  console.log("❌ FILES WITH ERRORS:\n");
+  for (const result of filesWithErrors) {
+    console.log(`  ${result.file} (Tier ${result.tier}):`);
+    for (const error of result.errors) {
+      console.log(`    ❌ ${error}`);
+    }
+    if (!ERRORS_ONLY) {
+      for (const warning of result.warnings) {
+        console.log(`    ⚠️  ${warning}`);
+      }
+    }
+    console.log("");
+  }
+}
+
+/**
+ * Output file warnings only
+ */
+function outputFileWarnings(filesWithWarnings) {
+  if (ERRORS_ONLY || filesWithWarnings.length === 0) return;
+
+  console.log("⚠️  FILES WITH WARNINGS:\n");
+  for (const result of filesWithWarnings) {
+    console.log(`  ${result.file} (Tier ${result.tier}):`);
+    for (const warning of result.warnings) {
+      console.log(`    ⚠️  ${warning}`);
+    }
+    console.log("");
+  }
+}
+
+/**
+ * Output summary statistics
+ */
+function outputSummary(results, totalErrors, totalWarnings) {
+  const cleanFiles = results.filter((r) => r.errors.length === 0 && r.warnings.length === 0);
+  const filesWithErrors = results.filter((r) => r.errors.length > 0);
+  const filesWithWarnings = results.filter((r) => r.warnings.length > 0 && r.errors.length === 0);
+
+  console.log("─".repeat(50));
+  console.log(`\n📊 SUMMARY:`);
+  console.log(`   Files checked: ${results.length}`);
+  console.log(`   Files passing: ${cleanFiles.length}`);
+  console.log(`   Files with errors: ${filesWithErrors.length}`);
+  console.log(`   Files with warnings: ${filesWithWarnings.length}`);
+  console.log(`   Total errors: ${totalErrors}`);
+  console.log(`   Total warnings: ${totalWarnings}`);
+
+  if (totalErrors === 0 && (totalWarnings === 0 || !STRICT_MODE)) {
+    console.log("\n✅ All documentation checks passed!");
+  } else if (totalErrors === 0 && totalWarnings > 0 && STRICT_MODE) {
+    console.log("\n❌ Documentation checks failed (--strict mode: warnings treated as errors).");
+  } else {
+    console.log("\n❌ Documentation checks failed. Please fix errors above.");
+  }
+}
+
+/**
  * Main function
  */
 function main() {
   console.log("📝 Running documentation linter...\n");
 
   // Determine files to check
-  let filesToCheck = [];
-
-  if (fileArgs.length > 0) {
-    // Check specific files
-    for (const file of fileArgs) {
-      // Use path.isAbsolute() for cross-platform support (Windows C:\ and Unix /)
-      const fullPath = isAbsolute(file) ? file : join(ROOT, file);
-      // Path traversal check: resolve() + startsWith() handles Windows drive letters (Qodo Review #176)
-      const resolved = resolve(fullPath);
-      const rootResolved = resolve(ROOT);
-      if (resolved !== rootResolved && !resolved.startsWith(rootResolved + sep)) {
-        console.error(`Error: Path traversal blocked: ${file}`);
-        continue;
-      }
-      if (existsSync(fullPath)) {
-        filesToCheck.push(fullPath);
-      } else {
-        console.error(`Warning: File not found: ${file}`);
-      }
-    }
-  } else {
-    // Find all markdown files
-    filesToCheck = findMarkdownFiles(ROOT);
-  }
+  const filesToCheck = fileArgs.length > 0 ? resolveFileArgs(fileArgs) : findMarkdownFiles(ROOT);
 
   if (filesToCheck.length === 0) {
     console.log("No markdown files found to check.");
@@ -559,72 +700,20 @@ function main() {
   console.log(`Checking ${filesToCheck.length} file(s)...\n`);
 
   // Lint all files
-  const results = [];
-  let totalErrors = 0;
-  let totalWarnings = 0;
-
-  for (const file of filesToCheck) {
-    const result = lintDocument(file);
-    results.push(result);
-    totalErrors += result.errors.length;
-    totalWarnings += result.warnings.length;
-  }
+  const results = filesToCheck.map((file) => lintDocument(file));
+  const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
+  const totalWarnings = results.reduce((sum, r) => sum + r.warnings.length, 0);
 
   // Output results
   if (JSON_OUTPUT) {
     console.log(JSON.stringify({ results, totalErrors, totalWarnings }, null, 2));
   } else {
-    // Group results by status
     const filesWithErrors = results.filter((r) => r.errors.length > 0);
     const filesWithWarnings = results.filter((r) => r.warnings.length > 0 && r.errors.length === 0);
-    const cleanFiles = results.filter((r) => r.errors.length === 0 && r.warnings.length === 0);
 
-    // Show errors
-    if (filesWithErrors.length > 0) {
-      console.log("❌ FILES WITH ERRORS:\n");
-      for (const result of filesWithErrors) {
-        console.log(`  ${result.file} (Tier ${result.tier}):`);
-        for (const error of result.errors) {
-          console.log(`    ❌ ${error}`);
-        }
-        if (!ERRORS_ONLY) {
-          for (const warning of result.warnings) {
-            console.log(`    ⚠️  ${warning}`);
-          }
-        }
-        console.log("");
-      }
-    }
-
-    // Show warnings
-    if (!ERRORS_ONLY && filesWithWarnings.length > 0) {
-      console.log("⚠️  FILES WITH WARNINGS:\n");
-      for (const result of filesWithWarnings) {
-        console.log(`  ${result.file} (Tier ${result.tier}):`);
-        for (const warning of result.warnings) {
-          console.log(`    ⚠️  ${warning}`);
-        }
-        console.log("");
-      }
-    }
-
-    // Summary
-    console.log("─".repeat(50));
-    console.log(`\n📊 SUMMARY:`);
-    console.log(`   Files checked: ${results.length}`);
-    console.log(`   Files passing: ${cleanFiles.length}`);
-    console.log(`   Files with errors: ${filesWithErrors.length}`);
-    console.log(`   Files with warnings: ${filesWithWarnings.length}`);
-    console.log(`   Total errors: ${totalErrors}`);
-    console.log(`   Total warnings: ${totalWarnings}`);
-
-    if (totalErrors === 0 && (totalWarnings === 0 || !STRICT_MODE)) {
-      console.log("\n✅ All documentation checks passed!");
-    } else if (totalErrors === 0 && totalWarnings > 0 && STRICT_MODE) {
-      console.log("\n❌ Documentation checks failed (--strict mode: warnings treated as errors).");
-    } else {
-      console.log("\n❌ Documentation checks failed. Please fix errors above.");
-    }
+    outputFileErrors(filesWithErrors);
+    outputFileWarnings(filesWithWarnings);
+    outputSummary(results, totalErrors, totalWarnings);
   }
 
   // Exit with appropriate code (in strict mode, warnings also cause failure)

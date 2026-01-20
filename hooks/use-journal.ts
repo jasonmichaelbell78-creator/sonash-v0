@@ -161,6 +161,76 @@ export function generateTags(type: JournalEntryType, data: Record<string, unknow
   return [...new Set(tags)]; // Deduplicate
 }
 
+// ============================================================================
+// Entry Processing Helpers (S2004 complexity reduction)
+// ============================================================================
+
+/**
+ * Validate and convert a raw Firestore document to a JournalEntry.
+ * Returns null for soft-deleted entries or entries with invalid timestamps.
+ */
+function processJournalDoc(docId: string, data: Record<string, unknown>): JournalEntry | null {
+  // Review #187: Use strict boolean check to prevent incorrect filtering on falsy values
+  if (data.isSoftDeleted === true) return null;
+
+  // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
+  // Use duck-typing with typeof check to be extra robust against non-function toMillis
+  const createdAt = data.createdAt as { toMillis?: unknown } | undefined;
+  const updatedAt = data.updatedAt as { toMillis?: unknown } | undefined;
+
+  const createdAtToMillis =
+    createdAt && typeof createdAt.toMillis === "function"
+      ? (createdAt.toMillis as () => number)
+      : null;
+  const updatedAtToMillis =
+    updatedAt && typeof updatedAt.toMillis === "function"
+      ? (updatedAt.toMillis as () => number)
+      : null;
+
+  if (!createdAtToMillis || !updatedAtToMillis) {
+    logger.warn(`Skipping journal entry ${docId}: missing or invalid timestamps`, {
+      hasCreatedAt: !!createdAt,
+      hasUpdatedAt: !!updatedAt,
+      createdAtHasToMillis: typeof createdAt?.toMillis === "function",
+      updatedAtHasToMillis: typeof updatedAt?.toMillis === "function",
+    });
+    return null;
+  }
+
+  return {
+    id: docId,
+    ...data,
+    createdAt: createdAtToMillis(),
+    updatedAt: updatedAtToMillis(),
+  } as JournalEntry;
+}
+
+/**
+ * Group journal entries by their dateLabel (relative date display).
+ * Filters out entries with invalid dateLabel format.
+ */
+function groupEntriesByDate(entries: JournalEntry[]): Record<string, JournalEntry[]> {
+  const groups: Record<string, JournalEntry[]> = {};
+
+  for (const entry of entries) {
+    // SECURITY: Validate dateLabel format before grouping
+    // Expected format: YYYY-MM-DD (e.g., "2025-01-15")
+    const dateLabel = entry.dateLabel;
+    if (!dateLabel || typeof dateLabel !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(dateLabel)) {
+      logger.warn(`Skipping journal entry ${entry.id}: invalid dateLabel format`, {
+        dateLabel: typeof dateLabel === "string" ? dateLabel.slice(0, 20) : typeof dateLabel,
+      });
+      continue;
+    }
+
+    const label = getRelativeDateLabel(dateLabel);
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(entry);
+  }
+
+  return groups;
+}
+
 /**
  * React hook that provides the current user's journal entries, grouped views, loading state, and actions to add or soft-delete entries.
  *
@@ -210,63 +280,21 @@ export function useJournal() {
       limit(QUERY_LIMITS.JOURNAL_MAX)
     );
 
-    // REAL-TIME LISTENER
+    // REAL-TIME LISTENER - using extracted helpers to reduce nesting (S2004)
     const unsubscribeSnapshot = onSnapshot(
       q,
       (snapshot) => {
+        // Process documents using extracted helper
         const fetchedEntries: JournalEntry[] = [];
-
         snapshot.forEach((doc) => {
-          const data = doc.data();
-          // Filter out soft-deleted entries client-side
-          if (data.isSoftDeleted) return;
-
-          // CANON-0042: Validate timestamps - skip entries with missing/invalid timestamps
-          // All entries should have valid Firestore Timestamps from Cloud Functions
-          if (!data.createdAt?.toMillis || !data.updatedAt?.toMillis) {
-            logger.warn(`Skipping journal entry ${doc.id}: missing or invalid timestamps`, {
-              hasCreatedAt: !!data.createdAt,
-              hasUpdatedAt: !!data.updatedAt,
-              createdAtHasToMillis: !!data.createdAt?.toMillis,
-              updatedAtHasToMillis: !!data.updatedAt?.toMillis,
-            });
-            return;
-          }
-
-          fetchedEntries.push({
-            id: doc.id,
-            ...data,
-            // Convert Firestore Timestamp to millis for consistent client-side typing
-            createdAt: data.createdAt.toMillis(),
-            updatedAt: data.updatedAt.toMillis(),
-          } as JournalEntry);
+          const entry = processJournalDoc(doc.id, doc.data());
+          if (entry) fetchedEntries.push(entry);
         });
 
         setEntries(fetchedEntries);
 
-        // GROUPING LOGIC (The "Index" for your notebook)
-        const groups: Record<string, JournalEntry[]> = {};
-        fetchedEntries.forEach((entry) => {
-          // SECURITY: Validate dateLabel format before grouping
-          // Expected format: YYYY-MM-DD (e.g., "2025-01-15")
-          const dateLabel = entry.dateLabel;
-          if (
-            !dateLabel ||
-            typeof dateLabel !== "string" ||
-            !/^\d{4}-\d{2}-\d{2}$/.test(dateLabel)
-          ) {
-            // Skip entries with invalid dateLabel to prevent grouping errors
-            logger.warn(`Skipping journal entry ${entry.id}: invalid dateLabel format`, {
-              dateLabel: typeof dateLabel === "string" ? dateLabel.slice(0, 20) : typeof dateLabel,
-            });
-            return;
-          }
-          const label = getRelativeDateLabel(dateLabel);
-          if (!groups[label]) groups[label] = [];
-          groups[label].push(entry);
-        });
-
-        setGroupedEntries(groups);
+        // Group entries using extracted helper
+        setGroupedEntries(groupEntriesByDate(fetchedEntries));
         setJournalLoading(false);
       },
       (error) => {

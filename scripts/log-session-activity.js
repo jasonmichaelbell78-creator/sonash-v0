@@ -235,6 +235,101 @@ function getCurrentSessionEvents() {
   return events.slice(sessionStartIndex);
 }
 
+/**
+ * Process a single event into the summary
+ */
+function processEventIntoSummary(event, summary) {
+  const eventType = event.event;
+
+  if (eventType === "session_start") {
+    summary.sessionStart = event.timestamp;
+  } else if (eventType === "session_end") {
+    summary.sessionEnd = event.timestamp;
+  } else if ((eventType === "file_write" || eventType === "file_edit") && event.file) {
+    summary.filesModified.add(event.file);
+  } else if (eventType === "skill_invoke" && event.skill) {
+    summary.skillsInvoked[event.skill] = (summary.skillsInvoked[event.skill] || 0) + 1;
+  } else if (eventType === "commit") {
+    summary.commits.push({
+      hash: event.hash,
+      message: event.message,
+      timestamp: event.timestamp,
+    });
+  }
+}
+
+/**
+ * Calculate session duration from summary
+ */
+function calculateDuration(summary) {
+  if (!summary.sessionStart) return null;
+
+  const start = new Date(summary.sessionStart);
+  const end = summary.sessionEnd ? new Date(summary.sessionEnd) : new Date();
+
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+
+  if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
+    return "unknown";
+  }
+
+  const durationMs = Math.max(0, endMs - startMs);
+  const minutes = Math.floor(durationMs / 60000);
+  return `${minutes} minutes`;
+}
+
+/**
+ * Output session timing information
+ */
+function outputSessionTiming(summary) {
+  if (!summary.sessionStart) return;
+
+  console.log(`\n⏱️  Session Started: ${summary.sessionStart}`);
+  if (summary.sessionEnd) {
+    console.log(`   Session Ended: ${summary.sessionEnd}`);
+  }
+  console.log(`   Duration: ${summary.duration}${summary.sessionEnd ? "" : " (active)"}`);
+}
+
+/**
+ * Output files modified section
+ */
+function outputFilesModified(filesModified) {
+  console.log(`\n📁 Files Modified: ${filesModified.size}`);
+  if (filesModified.size === 0) return;
+
+  const fileList = [...filesModified];
+  for (const file of fileList.slice(0, 10)) {
+    console.log(`   - ${file}`);
+  }
+  if (filesModified.size > 10) {
+    console.log(`   ... and ${filesModified.size - 10} more`);
+  }
+}
+
+/**
+ * Output skills invoked section
+ */
+function outputSkillsInvoked(skillsInvoked) {
+  console.log(`\n🔧 Skills/Agents Invoked: ${Object.keys(skillsInvoked).length}`);
+  for (const [skill, count] of Object.entries(skillsInvoked)) {
+    console.log(`   - ${skill}: ${count}x`);
+  }
+}
+
+/**
+ * Output commits section
+ */
+function outputCommits(commits) {
+  console.log(`\n📝 Commits: ${commits.length}`);
+  for (const commit of commits.slice(0, 5)) {
+    const shortHash = commit.hash ? commit.hash.slice(0, 7) : "unknown";
+    const shortMsg = commit.message ? commit.message.slice(0, 50) : "no message";
+    console.log(`   - ${shortHash}: ${shortMsg}`);
+  }
+}
+
 // Generate session summary
 function generateSummary() {
   const events = getCurrentSessionEvents();
@@ -253,88 +348,80 @@ function generateSummary() {
     duration: null,
   };
 
+  // Process all events into summary
   for (const event of events) {
-    switch (event.event) {
-      case "session_start":
-        summary.sessionStart = event.timestamp;
-        break;
-      case "session_end":
-        summary.sessionEnd = event.timestamp;
-        break;
-      case "file_write":
-      case "file_edit":
-        if (event.file) {
-          summary.filesModified.add(event.file);
-        }
-        break;
-      case "skill_invoke":
-        if (event.skill) {
-          summary.skillsInvoked[event.skill] = (summary.skillsInvoked[event.skill] || 0) + 1;
-        }
-        break;
-      case "commit":
-        summary.commits.push({
-          hash: event.hash,
-          message: event.message,
-          timestamp: event.timestamp,
-        });
-        break;
-    }
+    processEventIntoSummary(event, summary);
   }
 
-  // Calculate duration (use sessionEnd if present, otherwise current time)
-  if (summary.sessionStart) {
-    const start = new Date(summary.sessionStart);
-    const end = summary.sessionEnd ? new Date(summary.sessionEnd) : new Date();
+  // Calculate duration
+  summary.duration = calculateDuration(summary);
 
-    const startMs = start.getTime();
-    const endMs = end.getTime();
-
-    // Handle invalid timestamps gracefully
-    if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-      summary.duration = "unknown";
-    } else {
-      const durationMs = Math.max(0, endMs - startMs);
-      const minutes = Math.floor(durationMs / 60000);
-      summary.duration = `${minutes} minutes`;
-    }
-  }
-
-  // Output summary
+  // Output summary sections
   console.log("\n📊 SESSION ACTIVITY SUMMARY");
   console.log("═".repeat(50));
 
-  if (summary.sessionStart) {
-    console.log(`\n⏱️  Session Started: ${summary.sessionStart}`);
-    if (summary.sessionEnd) {
-      console.log(`   Session Ended: ${summary.sessionEnd}`);
-    }
-    console.log(`   Duration: ${summary.duration}${summary.sessionEnd ? "" : " (active)"}`);
-  }
-
-  console.log(`\n📁 Files Modified: ${summary.filesModified.size}`);
-  if (summary.filesModified.size > 0) {
-    for (const file of [...summary.filesModified].slice(0, 10)) {
-      console.log(`   - ${file}`);
-    }
-    if (summary.filesModified.size > 10) {
-      console.log(`   ... and ${summary.filesModified.size - 10} more`);
-    }
-  }
-
-  console.log(`\n🔧 Skills/Agents Invoked: ${Object.keys(summary.skillsInvoked).length}`);
-  for (const [skill, count] of Object.entries(summary.skillsInvoked)) {
-    console.log(`   - ${skill}: ${count}x`);
-  }
-
-  console.log(`\n📝 Commits: ${summary.commits.length}`);
-  for (const commit of summary.commits.slice(0, 5)) {
-    const shortHash = commit.hash ? commit.hash.slice(0, 7) : "unknown";
-    const shortMsg = commit.message ? commit.message.slice(0, 50) : "no message";
-    console.log(`   - ${shortHash}: ${shortMsg}`);
-  }
+  outputSessionTiming(summary);
+  outputFilesModified(summary.filesModified);
+  outputSkillsInvoked(summary.skillsInvoked);
+  outputCommits(summary.commits);
 
   console.log("\n" + "═".repeat(50));
+}
+
+// Review #188: Allowlist of valid event types to prevent logging malformed events
+const ALLOWED_EVENT_TYPES = new Set([
+  "session_start",
+  "session_end",
+  "file_write",
+  "file_edit",
+  "skill_invoke",
+  "commit",
+]);
+
+/**
+ * Build event data based on event type and arguments
+ */
+function buildEventData(args) {
+  const eventType = args.event;
+
+  // Review #188: Validate event type against allowlist
+  if (!ALLOWED_EVENT_TYPES.has(eventType)) {
+    return null;
+  }
+
+  const eventData = { event: eventType };
+
+  if (eventType === "session_start") {
+    eventData.source = "hook";
+  } else if (eventType === "session_end") {
+    eventData.source = "command";
+  } else if (eventType === "file_write" || eventType === "file_edit") {
+    if (args.file) eventData.file = args.file;
+  } else if (eventType === "skill_invoke") {
+    if (args.skill) eventData.skill = args.skill;
+  } else if (eventType === "commit") {
+    if (args.hash) eventData.hash = args.hash;
+    if (args.message) eventData.message = args.message;
+  }
+
+  return eventData;
+}
+
+/**
+ * Output usage information
+ */
+function outputUsage() {
+  console.log("Usage: node log-session-activity.js --event=<type> [options]");
+  console.log("\nEvent types:");
+  console.log("  session_start  - Log session start");
+  console.log("  session_end    - Log session end");
+  console.log("  file_write     - Log file write (--file=path)");
+  console.log("  file_edit      - Log file edit (--file=path)");
+  console.log("  skill_invoke   - Log skill invocation (--skill=name)");
+  console.log("  commit         - Log commit (--hash=abc --message='msg')");
+  console.log("\nOther commands:");
+  console.log("  --summary      - Show current session summary");
+  console.log("  --clear        - Clear log and start new session");
 }
 
 // Clear the log (for new session)
@@ -366,55 +453,36 @@ function main() {
   }
 
   if (!args.event) {
-    console.log("Usage: node log-session-activity.js --event=<type> [options]");
-    console.log("\nEvent types:");
-    console.log("  session_start  - Log session start");
-    console.log("  session_end    - Log session end");
-    console.log("  file_write     - Log file write (--file=path)");
-    console.log("  file_edit      - Log file edit (--file=path)");
-    console.log("  skill_invoke   - Log skill invocation (--skill=name)");
-    console.log("  commit         - Log commit (--hash=abc --message='msg')");
-    console.log("\nOther commands:");
-    console.log("  --summary      - Show current session summary");
-    console.log("  --clear        - Clear log and start new session");
+    outputUsage();
     process.exit(1);
   }
 
-  // Build event data based on type
-  const eventData = { event: args.event };
+  // Build and log event
+  const eventData = buildEventData(args);
 
-  switch (args.event) {
-    case "session_start":
-      eventData.source = "hook";
-      break;
-    case "session_end":
-      eventData.source = "command";
-      break;
-    case "file_write":
-    case "file_edit":
-      if (args.file) {
-        eventData.file = args.file;
-      }
-      break;
-    case "skill_invoke":
-      if (args.skill) {
-        eventData.skill = args.skill;
-      }
-      break;
-    case "commit":
-      if (args.hash) eventData.hash = args.hash;
-      if (args.message) eventData.message = args.message;
-      break;
+  // Review #188: Handle invalid event types (buildEventData returns null)
+  if (!eventData) {
+    console.error(`❌ ERROR: Unknown event type: ${args.event}`);
+    console.error(`   Valid types: ${[...ALLOWED_EVENT_TYPES].join(", ")}`);
+    process.exit(1);
   }
 
   const entry = logEvent(eventData);
+
   if (!entry) {
     console.error("❌ ERROR: Failed to write session activity log.");
     process.exit(2);
   }
-  console.log(
-    `Logged: ${args.event}${args.file ? ` (${args.file})` : ""}${args.skill ? ` (${args.skill})` : ""}`
-  );
+
+  // Review #187: Use eventData (processed values) instead of raw args for accurate log output
+  let suffix = "";
+  if (eventData.file) {
+    suffix += ` (${eventData.file})`;
+  }
+  if (eventData.skill) {
+    suffix += ` (${eventData.skill})`;
+  }
+  console.log(`Logged: ${eventData.event}${suffix}`);
 }
 
 main();

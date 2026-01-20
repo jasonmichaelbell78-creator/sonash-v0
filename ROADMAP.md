@@ -434,7 +434,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 > **Prerequisite:** Complete before starting new feature work. See
 > [AUDIT_FINDINGS_BACKLOG.md](docs/AUDIT_FINDINGS_BACKLOG.md)
 
-**Current backlog:** 9 items (8-11 hours estimated)
+**Current backlog:** 10 items (9-13 hours estimated)
 
 | ID         | Category      | Severity | Effort | Description                      |
 | ---------- | ------------- | -------- | ------ | -------------------------------- |
@@ -445,6 +445,7 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 | CANON-0105 | Process       | S2       | E1     | Add CANON validation to CI       |
 | CANON-0106 | Process       | S3       | E0     | Add npm commands for scripts     |
 | LEGACY-001 | Code Quality  | S3       | E1     | Retrofit SSR-safe localStorage   |
+| REFAC-001  | Code Quality  | S3       | E2     | Extract admin.ts/jobs.ts helpers |
 | CANON-0101 | Documentation | S3       | E2     | Missing Quick Start sections     |
 | CANON-0102 | Documentation | S3       | E1     | Missing AI Instructions sections |
 

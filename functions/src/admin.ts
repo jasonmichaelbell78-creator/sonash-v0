@@ -60,6 +60,456 @@ function toJsonSafe(value: unknown): unknown {
 }
 
 /**
+ * Review #190: Helper to safely convert Firestore Timestamp to ISO string
+ * Handles undefined, null, and objects without toDate() method
+ * Review #191: Added try/catch, Date validation, and function overloads for type safety
+ * @param value - Potential Firestore Timestamp or undefined
+ * @param fallback - Value to return if conversion fails (default: null)
+ * @returns ISO string or fallback value
+ */
+function safeToIso(value: unknown, fallback: string): string;
+function safeToIso(value: unknown, fallback?: null): string | null;
+function safeToIso(value: unknown, fallback: string | null = null): string | null {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === "object" && value && "toDate" in value) {
+    const maybeToDate = (value as { toDate?: () => Date }).toDate;
+    if (typeof maybeToDate === "function") {
+      // Review #191: Wrap in try/catch to handle potential Date conversion errors
+      try {
+        const date = maybeToDate.call(value);
+        // Validate the Date is valid before calling toISOString()
+        if (date instanceof Date && !Number.isNaN(date.getTime())) {
+          return date.toISOString();
+        }
+      } catch {
+        // Fall through to return fallback on any conversion error
+      }
+    }
+  }
+  return fallback;
+}
+
+// ============================================================================
+// User Search Helpers (for adminSearchUsers complexity reduction)
+// ============================================================================
+
+/**
+ * User search result structure
+ */
+interface UserSearchResult {
+  uid: string;
+  email: string | null;
+  nickname: string;
+  disabled: boolean;
+  lastActive: string | null;
+  createdAt: string | null;
+}
+
+/**
+ * Build a UserSearchResult from Firestore and Auth data
+ */
+async function buildUserSearchResult(
+  uid: string,
+  userData: FirebaseFirestore.DocumentData | null,
+  authGetter: () => Promise<admin.auth.UserRecord>
+): Promise<UserSearchResult | null> {
+  try {
+    const authUser = await authGetter();
+    // Review #192: Use safeToIso helper for robust timestamp conversion
+    return {
+      uid,
+      email: authUser.email || null,
+      nickname: userData?.nickname || "Anonymous",
+      disabled: authUser.disabled || false,
+      lastActive: safeToIso(userData?.lastActive),
+      createdAt: safeToIso(userData?.createdAt),
+    };
+  } catch (error) {
+    // Log error for debugging (Review #184 - Qodo: Robust Error Handling)
+    // Don't log full error message to avoid PII leakage from auth errors
+    console.warn(
+      `buildUserSearchResult failed for uid=${hashUserId(uid)}:`,
+      error instanceof Error ? error.name : "Unknown error"
+    );
+    return null;
+  }
+}
+
+/**
+ * Search for user by UID (exact match, case-sensitive)
+ */
+async function searchUserByUid(
+  uid: string,
+  db: FirebaseFirestore.Firestore
+): Promise<UserSearchResult | null> {
+  if (uid.length < 20) return null;
+
+  const userDoc = await db.collection("users").doc(uid).get();
+  if (!userDoc.exists) return null;
+
+  return buildUserSearchResult(userDoc.id, userDoc.data() ?? null, () => admin.auth().getUser(uid));
+}
+
+/**
+ * Search for user by email (case-insensitive via Firebase Auth)
+ */
+async function searchUserByEmail(
+  email: string,
+  db: FirebaseFirestore.Firestore
+): Promise<UserSearchResult | null> {
+  if (!email.includes("@")) return null;
+
+  try {
+    const authUser = await admin.auth().getUserByEmail(email);
+    const userDoc = await db.collection("users").doc(authUser.uid).get();
+    return buildUserSearchResult(
+      authUser.uid,
+      userDoc.exists ? (userDoc.data() ?? null) : null,
+      () => Promise.resolve(authUser)
+    );
+  } catch (error) {
+    // Review #187: Log unexpected errors (not just user-not-found) for debugging
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode !== "auth/user-not-found") {
+      console.warn("searchUserByEmail: unexpected error", {
+        code: errorCode,
+        name: error instanceof Error ? error.name : "unknown",
+      });
+    }
+    return null;
+  }
+}
+
+/**
+ * Search for users by nickname (exact and prefix match)
+ */
+async function searchUsersByNickname(
+  nickname: string,
+  limit: number,
+  db: FirebaseFirestore.Firestore,
+  existingUids: Set<string>
+): Promise<UserSearchResult[]> {
+  const results: UserSearchResult[] = [];
+
+  // Exact match first
+  const exactResults = await db
+    .collection("users")
+    .where("nickname", "==", nickname)
+    .limit(limit)
+    .get();
+
+  for (const doc of exactResults.docs) {
+    if (existingUids.has(doc.id)) continue;
+    const result = await buildUserSearchResult(doc.id, doc.data(), () =>
+      admin.auth().getUser(doc.id)
+    );
+    if (result) {
+      results.push(result);
+      existingUids.add(doc.id);
+    }
+  }
+
+  // Review #189: Skip prefix search if exact match already filled the limit
+  if (results.length >= limit) {
+    return results;
+  }
+
+  // Prefix match for additional results
+  const prefixResults = await db
+    .collection("users")
+    .where("nickname", ">=", nickname)
+    .where("nickname", "<=", nickname + "\uf8ff")
+    .limit(limit)
+    .get();
+
+  for (const doc of prefixResults.docs) {
+    // Review #189: Stop once we have enough results
+    if (results.length >= limit) break;
+    if (existingUids.has(doc.id)) continue;
+    const result = await buildUserSearchResult(doc.id, doc.data(), () =>
+      admin.auth().getUser(doc.id)
+    );
+    if (result) {
+      results.push(result);
+      existingUids.add(doc.id);
+    }
+  }
+
+  return results;
+}
+
+// ============================================================================
+// Pagination Helpers (for adminListUsers complexity reduction)
+// ============================================================================
+
+/**
+ * Build cursor value for pagination with proper type handling.
+ * Returns sentinel values for null/missing fields to prevent cursor errors.
+ */
+function buildCursorValue(
+  rawValue: unknown,
+  fieldName: string,
+  sortOrder: "asc" | "desc"
+): admin.firestore.Timestamp | string {
+  const isTimestampField = fieldName === "createdAt" || fieldName === "lastActive";
+
+  if (isTimestampField) {
+    // Prefer duck-typing to avoid cross-module instanceof issues
+    const maybeTs = rawValue as { toMillis?: () => number } | null;
+    if (maybeTs && typeof maybeTs.toMillis === "function") {
+      return admin.firestore.Timestamp.fromMillis(maybeTs.toMillis());
+    }
+    if (rawValue instanceof Date) {
+      return admin.firestore.Timestamp.fromDate(rawValue);
+    }
+    // Sentinel timestamp: min for asc, max for desc
+    return sortOrder === "asc"
+      ? admin.firestore.Timestamp.fromMillis(0)
+      : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
+  }
+
+  // For string fields (nickname), return string or sentinel
+  if (typeof rawValue === "string") {
+    return rawValue;
+  }
+  return sortOrder === "asc" ? "" : "\uf8ff";
+}
+
+/**
+ * Batch fetch auth users and return a Map for O(1) lookup.
+ */
+async function batchFetchAuthUsers(
+  uids: string[],
+  onError: (error: unknown) => void
+): Promise<Map<string, admin.auth.UserRecord>> {
+  const authByUid = new Map<string, admin.auth.UserRecord>();
+  if (uids.length === 0) return authByUid;
+
+  // Split into batches of 100 (Firebase Auth API limit)
+  const batches: string[][] = [];
+  for (let i = 0; i < uids.length; i += 100) {
+    batches.push(uids.slice(i, i + 100));
+  }
+
+  for (const batch of batches) {
+    try {
+      const authResult = await admin.auth().getUsers(batch.map((uid) => ({ uid })));
+      authResult.users.forEach((u) => authByUid.set(u.uid, u));
+    } catch (error) {
+      onError(error);
+      throw new HttpsError("internal", "Failed to fetch user authentication details");
+    }
+  }
+
+  return authByUid;
+}
+
+// ============================================================================
+// Rate Limit Helpers (for adminGetRateLimitStatus complexity reduction)
+// ============================================================================
+
+/**
+ * Normalize various timestamp formats to milliseconds.
+ * Handles Firestore Timestamp, number (ms), Date, and ISO string.
+ * @returns milliseconds since epoch, or NaN if invalid
+ */
+function normalizeTimestampToMs(rawValue: unknown): number {
+  // Firestore Timestamp with toMillis method
+  if (typeof (rawValue as { toMillis?: () => number })?.toMillis === "function") {
+    return (rawValue as { toMillis: () => number }).toMillis();
+  }
+  // Already milliseconds number
+  if (typeof rawValue === "number") {
+    return rawValue;
+  }
+  // Native Date object
+  if (rawValue instanceof Date) {
+    return rawValue.getTime();
+  }
+  // ISO string format
+  if (typeof rawValue === "string") {
+    return Date.parse(rawValue);
+  }
+  return Number.NaN;
+}
+
+/**
+ * Aggregate rate limits by type for summary statistics.
+ */
+function aggregateRateLimitsByType(
+  limits: Array<{ type: string; isBlocked: boolean }>
+): Record<string, { total: number; blocked: number }> {
+  const byType: Record<string, { total: number; blocked: number }> = {};
+  for (const limit of limits) {
+    if (!byType[limit.type]) {
+      byType[limit.type] = { total: 0, blocked: 0 };
+    }
+    byType[limit.type].total++;
+    if (limit.isBlocked) {
+      byType[limit.type].blocked++;
+    }
+  }
+  return byType;
+}
+
+// ============================================================================
+// Privilege Helpers (for adminSetUserPrivilege complexity reduction)
+// ============================================================================
+
+/**
+ * Get user's previous privilege type from Firestore.
+ * Returns "free" as fallback if user doesn't exist or privilege is invalid.
+ */
+async function getPreviousPrivilegeType(
+  uid: string,
+  db: admin.firestore.Firestore
+): Promise<string> {
+  // Wrap in try-catch to handle Firestore read failures gracefully (Review #184 - Qodo)
+  try {
+    const userSnap = await db.collection("users").doc(uid).get();
+    if (!userSnap.exists) {
+      return "free";
+    }
+    const rawPrivilegeType = (userSnap.data() as Record<string, unknown> | undefined)
+      ?.privilegeType;
+    if (typeof rawPrivilegeType === "string" && rawPrivilegeType) {
+      return rawPrivilegeType;
+    }
+    return "free";
+  } catch {
+    // Default to "free" on read failures to avoid disrupting the parent operation
+    return "free";
+  }
+}
+
+// ============================================================================
+// Storage Stats Helpers (for adminGetStorageStats complexity reduction)
+// ============================================================================
+
+/**
+ * Review #191: Firebase UID validation pattern
+ * Review #192: Include _ and - characters to match all valid Firebase UIDs
+ * UIDs are typically 28 alphanumeric characters, but we allow a range for flexibility
+ */
+const FIREBASE_UID_PATTERN = /^[a-zA-Z0-9_-]{20,128}$/;
+
+/**
+ * Extract user ID from storage path if it follows users/{userId}/... pattern.
+ * Review #191: Added UID validation to prevent injection via malformed paths
+ * Review #192: Normalize path by filtering empty parts, block . and .. segments
+ * Review #193: Check for path traversal segments anywhere in path
+ */
+function extractUserIdFromPath(path: string): string | null {
+  // Filter empty parts to handle leading/trailing/repeated slashes
+  const pathParts = path.split("/").filter(Boolean);
+  if (pathParts.length < 2) return null;
+
+  // Reject path traversal segments anywhere in the path
+  if (pathParts.some((p) => p === "." || p === "..")) return null;
+
+  if (pathParts[0] !== "users") return null;
+
+  const potentialUid = pathParts[1];
+
+  // Validate the extracted UID matches expected Firebase UID pattern
+  if (FIREBASE_UID_PATTERN.test(potentialUid)) {
+    return potentialUid;
+  }
+  return null;
+}
+
+/**
+ * Extract file extension from file name.
+ * Returns "unknown" for files without valid extensions.
+ */
+function extractFileExtension(fileName: string): string {
+  const baseName = fileName.split("/").pop() ?? "";
+  const dotIndex = baseName.lastIndexOf(".");
+  if (dotIndex > 0 && dotIndex < baseName.length - 1) {
+    return baseName.slice(dotIndex + 1).toLowerCase();
+  }
+  return "unknown";
+}
+
+/**
+ * Find orphaned storage files (files belonging to non-existent users).
+ * Checks users in batches of 10.
+ */
+async function findOrphanedStorageFiles(
+  userFiles: Record<string, { count: number; size: number }>,
+  db: admin.firestore.Firestore
+): Promise<{ count: number; size: number }> {
+  const userIds = Object.keys(userFiles);
+  let orphanedCount = 0;
+  let orphanedSize = 0;
+
+  for (let i = 0; i < userIds.length; i += 10) {
+    const batch = userIds.slice(i, i + 10);
+    const userDocs = await Promise.all(batch.map((uid) => db.collection("users").doc(uid).get()));
+
+    userDocs.forEach((doc, idx) => {
+      if (!doc.exists) {
+        const userId = batch[idx];
+        orphanedCount += userFiles[userId].count;
+        orphanedSize += userFiles[userId].size;
+      }
+    });
+  }
+
+  return { count: orphanedCount, size: orphanedSize };
+}
+
+// ============================================================================
+// Collection Stats Helpers (for adminGetCollectionStats complexity reduction)
+// ============================================================================
+
+/**
+ * Estimate subcollection document counts by sampling users.
+ * Returns total estimated docs and whether subcollections were found.
+ */
+async function estimateUserSubcollections(
+  db: admin.firestore.Firestore,
+  userCount: number
+): Promise<{ hasSubcollections: boolean; estimate: number }> {
+  const sampleUsers = await db.collection("users").limit(5).get();
+  const subcollectionNames = ["journal", "daily_logs", "inventoryEntries"];
+  const subcollectionCounts: Record<string, number[]> = {};
+
+  for (const name of subcollectionNames) {
+    subcollectionCounts[name] = [];
+  }
+
+  // Sample subcollection counts from each user
+  for (const userDoc of sampleUsers.docs) {
+    for (const subColName of subcollectionNames) {
+      try {
+        const subCount = await db.collection(`users/${userDoc.id}/${subColName}`).count().get();
+        subcollectionCounts[subColName].push(subCount.data().count);
+      } catch {
+        // Subcollection might not exist for this user
+      }
+    }
+  }
+
+  // Calculate averages and estimate totals
+  const estimates = Object.values(subcollectionCounts)
+    .filter((counts) => counts.length > 0)
+    .map((counts) => {
+      const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
+      return Math.round(avg * userCount);
+    });
+
+  if (estimates.length === 0) {
+    return { hasSubcollections: false, estimate: 0 };
+  }
+
+  return {
+    hasSubcollections: true,
+    estimate: estimates.reduce((a, b) => a + b, 0),
+  };
+}
+
+/**
  * CANON-0015: Rate limiter for admin operations
  * More permissive than user endpoints (30 req/60s) but still protected
  * Prevents compromised admin accounts from mass operations
@@ -531,7 +981,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
     const recentSignups = recentSignupsSnapshot.docs.map((doc) => ({
       id: doc.id,
       nickname: doc.data().nickname || "Anonymous",
-      createdAt: doc.data().createdAt?.toDate().toISOString() || null,
+      createdAt: safeToIso(doc.data().createdAt),
       authProvider: doc.data().authProvider || "unknown",
     }));
 
@@ -555,7 +1005,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
         id: doc.id,
         event: doc.data().event || "",
         level: doc.data().level || "info",
-        timestamp: doc.data().timestamp?.toDate().toISOString() || new Date().toISOString(),
+        timestamp: safeToIso(doc.data().timestamp, new Date().toISOString()) as string,
         details: doc.data().details || "",
       }));
     } catch {
@@ -576,7 +1026,7 @@ export const adminGetDashboardStats = onCall(async (request) => {
         id: doc.id,
         name: doc.data().name || doc.id,
         lastRunStatus: doc.data().lastRunStatus || "unknown",
-        lastRun: doc.data().lastRun?.toDate().toISOString() || null,
+        lastRun: safeToIso(doc.data().lastRun),
       }));
     } catch {
       // admin_jobs collection doesn't exist yet - that's okay
@@ -630,134 +1080,39 @@ export const adminSearchUsers = onCall<SearchUsersRequest>(async (request) => {
     throw new HttpsError("invalid-argument", "Search query is required");
   }
 
+  const trimmedQuery = query.trim();
+
   // SECURITY: Don't log raw search queries that may contain PII (emails, UIDs)
-  // Log only sanitized metadata for audit purposes
   logSecurityEvent("ADMIN_ACTION", "adminSearchUsers", "Admin performed user search", {
     userId: request.auth?.uid,
     metadata: {
-      queryLength: query.trim().length,
-      queryType: query.includes("@") ? "email" : "text",
+      queryLength: trimmedQuery.length,
+      queryType: trimmedQuery.includes("@") ? "email" : "text",
     },
   });
 
   try {
-    const results: Array<{
-      uid: string;
-      email: string | null;
-      nickname: string;
-      disabled: boolean;
-      lastActive: string | null;
-      createdAt: string | null;
-    }> = [];
-
-    const trimmedQuery = query.trim();
-    const searchQueryLower = trimmedQuery.toLowerCase();
+    const results: UserSearchResult[] = [];
+    const existingUids = new Set<string>();
     const db = admin.firestore();
 
-    // Prevent empty search from listing all users
-    if (!trimmedQuery) {
-      throw new HttpsError("invalid-argument", "Search query is required");
+    // Search by UID (exact match, case-sensitive)
+    const uidResult = await searchUserByUid(trimmedQuery, db);
+    if (uidResult) {
+      results.push(uidResult);
+      existingUids.add(uidResult.uid);
     }
 
-    // Search by UID (exact match) - UIDs are case-sensitive
-    if (trimmedQuery.length >= 20) {
-      try {
-        const userDoc = await db.collection("users").doc(trimmedQuery).get();
-        if (userDoc.exists) {
-          const userData = userDoc.data()!;
-          const authUser = await admin.auth().getUser(trimmedQuery);
-          results.push({
-            uid: userDoc.id,
-            email: authUser.email || null,
-            nickname: userData.nickname || "Anonymous",
-            disabled: authUser.disabled || false,
-            lastActive: userData.lastActive?.toDate().toISOString() || null,
-            createdAt: userData.createdAt?.toDate().toISOString() || null,
-          });
-        }
-      } catch {
-        // Not a valid UID, continue to other searches
-      }
+    // Search by email (case-insensitive via Firebase Auth)
+    const emailResult = await searchUserByEmail(trimmedQuery, db);
+    if (emailResult && !existingUids.has(emailResult.uid)) {
+      results.push(emailResult);
+      existingUids.add(emailResult.uid);
     }
 
-    // Search by email - Firebase Auth email lookup is case-insensitive
-    if (searchQueryLower.includes("@")) {
-      try {
-        const authUser = await admin.auth().getUserByEmail(trimmedQuery);
-        const userDoc = await db.collection("users").doc(authUser.uid).get();
-        const userData = userDoc.exists ? userDoc.data()! : {};
-
-        if (!results.find((u) => u.uid === authUser.uid)) {
-          results.push({
-            uid: authUser.uid,
-            email: authUser.email || null,
-            nickname: userData.nickname || "Anonymous",
-            disabled: authUser.disabled || false,
-            lastActive: userData.lastActive?.toDate().toISOString() || null,
-            createdAt: userData.createdAt?.toDate().toISOString() || null,
-          });
-        }
-      } catch {
-        // User not found by email
-      }
-    }
-
-    // Search by nickname - try both exact match and prefix match
-    // Note: Firestore doesn't support case-insensitive queries natively
-    // Users should search using the correct case (e.g., "John" not "john")
-
-    // First try exact match
-    const exactNicknameResults = await db
-      .collection("users")
-      .where("nickname", "==", trimmedQuery)
-      .limit(limit)
-      .get();
-
-    for (const doc of exactNicknameResults.docs) {
-      if (results.find((u) => u.uid === doc.id)) continue;
-
-      const userData = doc.data();
-      try {
-        const authUser = await admin.auth().getUser(doc.id);
-        results.push({
-          uid: doc.id,
-          email: authUser.email || null,
-          nickname: userData.nickname || "Anonymous",
-          disabled: authUser.disabled || false,
-          lastActive: userData.lastActive?.toDate().toISOString() || null,
-          createdAt: userData.createdAt?.toDate().toISOString() || null,
-        });
-      } catch {
-        // Auth user not found, skip
-      }
-    }
-
-    // Then try prefix match for additional results
-    const nicknameResults = await db
-      .collection("users")
-      .where("nickname", ">=", trimmedQuery)
-      .where("nickname", "<=", trimmedQuery + "\uf8ff")
-      .limit(limit)
-      .get();
-
-    for (const doc of nicknameResults.docs) {
-      if (results.find((u) => u.uid === doc.id)) continue;
-
-      const userData = doc.data();
-      try {
-        const authUser = await admin.auth().getUser(doc.id);
-        results.push({
-          uid: doc.id,
-          email: authUser.email || null,
-          nickname: userData.nickname || "Anonymous",
-          disabled: authUser.disabled || false,
-          lastActive: userData.lastActive?.toDate().toISOString() || null,
-          createdAt: userData.createdAt?.toDate().toISOString() || null,
-        });
-      } catch {
-        // Auth user not found, skip
-      }
-    }
+    // Search by nickname (exact and prefix match)
+    const nicknameResults = await searchUsersByNickname(trimmedQuery, limit, db, existingUids);
+    results.push(...nicknameResults);
 
     return {
       results: results.slice(0, limit),
@@ -2113,15 +2468,7 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
 
     // ATOMICITY: Store previous privilege for accurate rollback (not hardcoded "free")
     const userRef = db.collection("users").doc(uid);
-    const userSnap = await userRef.get();
-    // ROBUSTNESS: Validate prevPrivilegeType is a string to prevent writing corrupt data on rollback
-    const rawPrevPrivilegeType = userSnap.exists
-      ? (userSnap.data() as Record<string, unknown> | undefined)?.privilegeType
-      : undefined;
-    const prevPrivilegeType =
-      typeof rawPrevPrivilegeType === "string" && rawPrevPrivilegeType
-        ? rawPrevPrivilegeType
-        : "free";
+    const prevPrivilegeType = await getPreviousPrivilegeType(uid, db);
 
     if (privilegeTypeId === "admin") {
       // GRANTING admin: Write Firestore FIRST, then set claims
@@ -2200,7 +2547,7 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
   // Validate sortBy to prevent injection
   const allowedSortFields = ["createdAt", "lastActive", "nickname"];
   const safeSortBy = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
-  const safeSortOrder = sortOrder === "asc" ? "asc" : "desc";
+  const safeSortOrder: "asc" | "desc" = sortOrder === "asc" ? "asc" : "desc";
 
   logSecurityEvent("ADMIN_ACTION", "adminListUsers", "Admin listed users", {
     userId: request.auth?.uid,
@@ -2217,42 +2564,12 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
       .orderBy(admin.firestore.FieldPath.documentId(), safeSortOrder)
       .limit(limit + 1); // Fetch one extra to check if there's more
 
-    // STABILITY: Use value-based cursor for robust pagination
-    // Provides explicit values for all orderBy clauses to prevent cursor errors
-    // when the sort field is missing or null on the cursor document
+    // Apply cursor if provided
     if (startAfterUid) {
       const cursorDoc = await db.collection("users").doc(startAfterUid).get();
       if (cursorDoc.exists) {
         const cursorData = cursorDoc.data() as Record<string, unknown> | undefined;
-        const rawValue = cursorData?.[safeSortBy] as unknown;
-
-        // ROBUSTNESS: Use sentinel timestamps for timestamp fields when null/malformed
-        // Prevents Firestore cursor type mismatch errors that cause startAfter() to throw
-        const isTimestampField = safeSortBy === "createdAt" || safeSortBy === "lastActive";
-        let sortValue: unknown;
-
-        if (isTimestampField) {
-          // Validate rawValue is a Firestore Timestamp or Date before using
-          if (rawValue instanceof admin.firestore.Timestamp) {
-            sortValue = rawValue;
-          } else if (rawValue instanceof Date) {
-            sortValue = admin.firestore.Timestamp.fromDate(rawValue);
-          } else {
-            // Use sentinel timestamp: min for asc, max for desc
-            sortValue =
-              safeSortOrder === "asc"
-                ? admin.firestore.Timestamp.fromMillis(0)
-                : admin.firestore.Timestamp.fromMillis(253402300799000); // year 9999
-          }
-        } else if (typeof rawValue === "string") {
-          // For nickname field, only use if it's a string
-          sortValue = rawValue;
-        } else {
-          // ROBUSTNESS: Use string sentinels for nickname field (prevents cursor type mismatch)
-          sortValue = safeSortOrder === "asc" ? "" : "\uf8ff";
-        }
-
-        // Provide explicit values for both orderBy clauses (sortField + docId)
+        const sortValue = buildCursorValue(cursorData?.[safeSortBy], safeSortBy, safeSortOrder);
         query = query.startAfter(sortValue, cursorDoc.id);
       }
     }
@@ -2263,25 +2580,20 @@ export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
     const hasMore = snapshot.docs.length > limit;
     const docs = hasMore ? snapshot.docs.slice(0, limit) : snapshot.docs;
 
-    // Batch fetch auth users instead of N+1 pattern
+    // Batch fetch auth users
     const uids = docs.map((d) => d.id);
-    const authByUid = new Map<string, admin.auth.UserRecord>();
-
-    if (uids.length > 0) {
-      try {
-        const authResult = await admin.auth().getUsers(uids.map((uid) => ({ uid })));
-        authResult.users.forEach((u) => authByUid.set(u.uid, u));
-      } catch (authError) {
-        // SECURITY: Propagate auth errors instead of returning partial data
-        // Returning incomplete data could be misleading and hide issues
-        logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Batch auth fetch failed", {
-          userId: request.auth?.uid,
-          metadata: { error: String(authError), uidsCount: uids.length },
-          captureToSentry: true,
-        });
-        throw new HttpsError("internal", "Failed to fetch user authentication details");
-      }
-    }
+    const authByUid = await batchFetchAuthUsers(uids, (error) => {
+      // Review #187: Log error type/code only, not String(error) which may contain sensitive info
+      const safeErrorInfo =
+        error instanceof Error
+          ? { name: error.name, code: (error as { code?: string }).code }
+          : { type: typeof error };
+      logSecurityEvent("ADMIN_ERROR", "adminListUsers", "Batch auth fetch failed", {
+        userId: request.auth?.uid,
+        metadata: { error: safeErrorInfo, uidsCount: uids.length },
+        captureToSentry: true,
+      });
+    });
 
     // Build user list with batched auth data
     const users: ListUsersResponse["users"] = docs.map((doc) => {
@@ -2481,10 +2793,9 @@ export const adminGetStorageStats = onCall(async (request) => {
       totalSize += size;
       fileCount++;
 
-      // Extract user ID from path (users/{userId}/...)
-      const pathParts = file.name.split("/");
-      if (pathParts[0] === "users" && pathParts[1]) {
-        const userId = pathParts[1];
+      // Extract user ID from path using helper
+      const userId = extractUserIdFromPath(file.name);
+      if (userId) {
         if (!userFiles[userId]) {
           userFiles[userId] = { count: 0, size: 0 };
         }
@@ -2492,13 +2803,8 @@ export const adminGetStorageStats = onCall(async (request) => {
         userFiles[userId].size += size;
       }
 
-      // Track file types - handle files without extensions properly
-      const baseName = file.name.split("/").pop() ?? "";
-      const dotIndex = baseName.lastIndexOf(".");
-      const ext =
-        dotIndex > 0 && dotIndex < baseName.length - 1
-          ? baseName.slice(dotIndex + 1).toLowerCase()
-          : "unknown";
+      // Track file types using helper
+      const ext = extractFileExtension(file.name);
       if (!fileTypes[ext]) {
         fileTypes[ext] = { count: 0, size: 0 };
       }
@@ -2506,25 +2812,9 @@ export const adminGetStorageStats = onCall(async (request) => {
       fileTypes[ext].size += size;
     }
 
-    // Find orphaned files (users who don't exist)
+    // Find orphaned files using helper
     const db = admin.firestore();
-    const userIds = Object.keys(userFiles);
-    let orphanedCount = 0;
-    let orphanedSize = 0;
-
-    // Check users in batches of 10
-    for (let i = 0; i < userIds.length; i += 10) {
-      const batch = userIds.slice(i, i + 10);
-      const userDocs = await Promise.all(batch.map((uid) => db.collection("users").doc(uid).get()));
-
-      userDocs.forEach((doc, idx) => {
-        if (!doc.exists) {
-          const userId = batch[idx];
-          orphanedCount += userFiles[userId].count;
-          orphanedSize += userFiles[userId].size;
-        }
-      });
-    }
+    const orphaned = await findOrphanedStorageFiles(userFiles, db);
 
     return {
       totalSize,
@@ -2532,9 +2822,9 @@ export const adminGetStorageStats = onCall(async (request) => {
       fileCount,
       userCount: Object.keys(userFiles).length,
       orphanedFiles: {
-        count: orphanedCount,
-        size: orphanedSize,
-        sizeFormatted: formatBytes(orphanedSize),
+        count: orphaned.count,
+        size: orphaned.size,
+        sizeFormatted: formatBytes(orphaned.size),
       },
       fileTypes: Object.entries(fileTypes)
         .map(([ext, data]) => ({
@@ -2606,18 +2896,8 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
     for (const doc of rateLimitsSnapshot.docs) {
       const data = doc.data();
 
-      // Robust timestamp normalization - handles Firestore Timestamp, number, string, Date
-      const resetAtRaw = data.resetAt;
-      const resetAtMs =
-        typeof resetAtRaw?.toMillis === "function"
-          ? resetAtRaw.toMillis()
-          : typeof resetAtRaw === "number"
-            ? resetAtRaw
-            : resetAtRaw instanceof Date
-              ? resetAtRaw.getTime()
-              : typeof resetAtRaw === "string"
-                ? Date.parse(resetAtRaw)
-                : NaN;
+      // Normalize timestamp using extracted helper
+      const resetAtMs = normalizeTimestampToMs(data.resetAt);
 
       // Skip entries with invalid timestamps
       if (!Number.isFinite(resetAtMs)) {
@@ -2653,17 +2933,8 @@ export const adminGetRateLimitStatus = onCall(async (request) => {
     // Sort by points descending (most rate-limited first)
     activeLimits.sort((a, b) => b.points - a.points);
 
-    // Get counts by type
-    const byType: Record<string, { total: number; blocked: number }> = {};
-    for (const limit of activeLimits) {
-      if (!byType[limit.type]) {
-        byType[limit.type] = { total: 0, blocked: 0 };
-      }
-      byType[limit.type].total++;
-      if (limit.isBlocked) {
-        byType[limit.type].blocked++;
-      }
-    }
+    // Aggregate counts by type using extracted helper
+    const byType = aggregateRateLimitsByType(activeLimits);
 
     return {
       activeLimits: activeLimits.slice(0, 50), // Return top 50
@@ -2794,38 +3065,12 @@ export const adminGetCollectionStats = onCall(async (request) => {
           count: count,
         };
 
-        // For users collection, estimate subcollection counts
+        // For users collection, estimate subcollection counts using helper
         if (col.name === "users" && count > 0) {
-          // Sample a few users to estimate subcollection sizes
-          const sampleUsers = await db.collection("users").limit(5).get();
-          const subcollectionCounts: Record<string, number[]> = {
-            journal: [],
-            daily_logs: [],
-            inventoryEntries: [],
-          };
-
-          for (const userDoc of sampleUsers.docs) {
-            for (const subCol of Object.keys(subcollectionCounts)) {
-              try {
-                const subCount = await db.collection(`users/${userDoc.id}/${subCol}`).count().get();
-                subcollectionCounts[subCol].push(subCount.data().count);
-              } catch {
-                // Subcollection might not exist for this user
-              }
-            }
-          }
-
-          // Calculate averages and estimate totals
-          const subcollections = Object.entries(subcollectionCounts)
-            .filter(([, counts]) => counts.length > 0)
-            .map(([, counts]) => {
-              const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
-              return Math.round(avg * count);
-            });
-
-          if (subcollections.length > 0) {
+          const subResult = await estimateUserSubcollections(db, count);
+          if (subResult.hasSubcollections) {
             colStat.hasSubcollections = true;
-            colStat.subcollectionEstimate = subcollections.reduce((a, b) => a + b, 0);
+            colStat.subcollectionEstimate = subResult.estimate;
           }
         }
 

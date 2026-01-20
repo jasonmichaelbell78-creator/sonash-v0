@@ -12,6 +12,220 @@ import { updateUserProfile } from "@/lib/db/users";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 
+// ============================================================================
+// Helper Functions (extracted for cognitive complexity reduction)
+// ============================================================================
+
+interface DateTimeParts {
+  year: number;
+  month: number;
+  day: number;
+  hours: number;
+  minutes: number;
+}
+
+/**
+ * Parse date and time strings into numeric parts
+ * Returns null if format is invalid
+ */
+function parseDateTimeParts(dateStr: string, timeStr: string): DateTimeParts | null {
+  const dateParts = dateStr.split("-").map(Number);
+  const timeParts = timeStr.split(":").map(Number);
+
+  if (dateParts.length !== 3 || timeParts.length !== 2) {
+    return null;
+  }
+
+  return {
+    year: dateParts[0],
+    month: dateParts[1],
+    day: dateParts[2],
+    hours: timeParts[0],
+    minutes: timeParts[1],
+  };
+}
+
+/**
+ * Validate date/time parts are within valid ranges
+ */
+function isValidDateTimeParts(parts: DateTimeParts): boolean {
+  const { year, month, day, hours, minutes } = parts;
+  return !(
+    Number.isNaN(year) ||
+    Number.isNaN(month) ||
+    Number.isNaN(day) ||
+    Number.isNaN(hours) ||
+    Number.isNaN(minutes) ||
+    year < 1900 ||
+    year > 2100 ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31 ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  );
+}
+
+/**
+ * Check if date components match (JS may normalize invalid dates silently)
+ */
+function dateMatchesComponents(date: Date, parts: DateTimeParts): boolean {
+  return (
+    !Number.isNaN(date.getTime()) &&
+    date.getFullYear() === parts.year &&
+    date.getMonth() === parts.month - 1 &&
+    date.getDate() === parts.day &&
+    date.getHours() === parts.hours &&
+    date.getMinutes() === parts.minutes
+  );
+}
+
+/**
+ * Build and validate a clean start timestamp from date/time strings
+ * Returns { timestamp, error } - timestamp is null if cleared, undefined if error
+ */
+function buildCleanStartTimestamp(
+  dateStr: string,
+  timeStr: string,
+  shouldUpdate: boolean
+): { timestamp: Timestamp | null | undefined; error: string | null } {
+  if (!shouldUpdate) {
+    return { timestamp: undefined, error: null };
+  }
+
+  if (!dateStr) {
+    return { timestamp: null, error: null }; // User is clearing
+  }
+
+  const parts = parseDateTimeParts(dateStr, timeStr);
+  if (!parts) {
+    return { timestamp: undefined, error: "Invalid date or time format." };
+  }
+
+  if (!isValidDateTimeParts(parts)) {
+    return { timestamp: undefined, error: "Invalid date or time values." };
+  }
+
+  const dateObj = new Date(parts.year, parts.month - 1, parts.day, parts.hours, parts.minutes);
+
+  if (!dateMatchesComponents(dateObj, parts)) {
+    return { timestamp: undefined, error: "Invalid date." };
+  }
+
+  if (dateObj.getTime() > Date.now()) {
+    return { timestamp: undefined, error: "Clean date cannot be in the future." };
+  }
+
+  return { timestamp: Timestamp.fromDate(dateObj), error: null };
+}
+
+/**
+ * Result of computing clean date changes
+ */
+interface CleanDateChangeResult {
+  needsConfirmation: boolean;
+  shouldUpdate: boolean;
+}
+
+/**
+ * Check if any clean date field has changed
+ */
+function hasCleanDateFieldChanged(
+  hadCleanStart: boolean,
+  profileCleanDate: string | null,
+  profileCleanTime: string,
+  cleanDate: string,
+  cleanTime: string
+): boolean {
+  const cleanDateChanged =
+    hadCleanStart && profileCleanDate !== null && cleanDate !== profileCleanDate;
+  const cleanTimeChanged = hadCleanStart && cleanTime !== profileCleanTime;
+  const cleanDateCleared = hadCleanStart && profileCleanDate !== null && !cleanDate;
+  return cleanDateChanged || cleanTimeChanged || cleanDateCleared;
+}
+
+/**
+ * Compute clean date change state for confirmation and update logic
+ */
+function computeCleanDateChanges(
+  profile: { cleanStart?: { toDate: () => Date } | null },
+  cleanDate: string,
+  cleanTime: string,
+  formatLocalDate: (d: Date) => string,
+  formatLocalTime: (d: Date) => string
+): CleanDateChangeResult {
+  const hadCleanStart = Boolean(profile.cleanStart);
+  const hasCleanDateNow = Boolean(cleanDate);
+  const profileCleanDate = profile.cleanStart ? formatLocalDate(profile.cleanStart.toDate()) : null;
+  const profileCleanTime = profile.cleanStart
+    ? formatLocalTime(profile.cleanStart.toDate())
+    : "08:00";
+
+  const fieldChanged = hasCleanDateFieldChanged(
+    hadCleanStart,
+    profileCleanDate,
+    profileCleanTime,
+    cleanDate,
+    cleanTime
+  );
+  const isCleanDateBeingSetFirstTime = !hadCleanStart && hasCleanDateNow;
+
+  return {
+    needsConfirmation: fieldChanged || isCleanDateBeingSetFirstTime,
+    shouldUpdate: fieldChanged || (!profile.cleanStart && cleanDate.trim() !== ""),
+  };
+}
+
+/**
+ * Categorize an error for logging (without exposing raw error messages)
+ */
+function categorizeError(error: unknown): string {
+  if (!(error instanceof Error)) return "unknown";
+  const msg = error.message.toLowerCase();
+  if (msg.includes("permission")) return "permission_denied";
+  if (msg.includes("network")) return "network_error";
+  return "unknown";
+}
+
+/**
+ * Check if nickname has changed
+ */
+function hasNicknameChanged(nickname: string, profileNickname: string | undefined): boolean {
+  return nickname.trim() !== (profileNickname || "");
+}
+
+/**
+ * Check if preferences have changed
+ */
+function havePreferencesChanged(
+  largeText: boolean,
+  simpleLanguage: boolean,
+  preferences?: { largeText?: boolean; simpleLanguage?: boolean }
+): boolean {
+  return (
+    largeText !== (preferences?.largeText || false) ||
+    simpleLanguage !== (preferences?.simpleLanguage || false)
+  );
+}
+
+/**
+ * Build list of fields that were updated
+ */
+function buildFieldsUpdatedList(
+  nicknameChanged: boolean,
+  cleanStartUpdated: boolean,
+  preferencesChanged: boolean
+): string[] {
+  const fields: string[] = [];
+  if (nicknameChanged) fields.push("nickname");
+  if (cleanStartUpdated) fields.push("cleanStart");
+  if (preferencesChanged) fields.push("preferences");
+  return fields;
+}
+
 interface SettingsPageProps {
   readonly onClose?: () => void;
 }
@@ -114,28 +328,16 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       return;
     }
 
-    // Check if clean date/time is being changed or cleared - require confirmation
-    // Compute from profile directly to avoid race conditions with stale state
-    const hadCleanStart = Boolean(profile.cleanStart);
-    const hasCleanDateNow = Boolean(cleanDate);
+    // Compute clean date changes using helper
+    const changes = computeCleanDateChanges(
+      profile,
+      cleanDate,
+      cleanTime,
+      formatLocalDate,
+      formatLocalTime
+    );
 
-    const profileCleanDate = profile.cleanStart
-      ? formatLocalDate(profile.cleanStart.toDate())
-      : null;
-    const profileCleanTime = profile.cleanStart
-      ? formatLocalTime(profile.cleanStart.toDate())
-      : "08:00";
-
-    const cleanDateChanged =
-      hadCleanStart && profileCleanDate !== null && cleanDate !== profileCleanDate;
-    const cleanTimeChanged = hadCleanStart && cleanTime !== profileCleanTime;
-    const cleanDateCleared = hadCleanStart && profileCleanDate !== null && !cleanDate;
-    const isCleanDateBeingSetFirstTime = !hadCleanStart && hasCleanDateNow;
-
-    const needsCleanDateConfirm =
-      cleanDateChanged || cleanTimeChanged || cleanDateCleared || isCleanDateBeingSetFirstTime;
-
-    if (needsCleanDateConfirm && !showCleanDateConfirm) {
+    if (changes.needsConfirmation && !showCleanDateConfirm) {
       setShowCleanDateConfirm(true);
       return;
     }
@@ -144,133 +346,54 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
     setShowCleanDateConfirm(false);
 
     try {
-      // Build clean date timestamp with validation (only if user changed it)
-      // Use undefined to indicate "no change" vs null for "clear the value"
-      let cleanStartTimestamp: Timestamp | null | undefined = undefined;
+      // Build clean date timestamp using extracted helper (handles validation)
+      const { timestamp: cleanStartTimestamp, error: cleanDateError } = buildCleanStartTimestamp(
+        cleanDate,
+        cleanTime,
+        changes.shouldUpdate
+      );
 
-      // Determine if we need to update clean start
-      // Case 1: User is setting date for the first time (no existing date, has new date)
-      // Case 2: User is changing existing date
-      // Case 3: User is changing time on existing date
-      // Case 4: User is clearing their date
-      const normalizedCleanDate = (cleanDate ?? "").trim();
-      const hasExistingCleanStart = profile.cleanStart != null; // handles null + undefined
-      const isSettingFirstTime = !hasExistingCleanStart && normalizedCleanDate !== "";
-      const shouldUpdateCleanDate =
-        cleanDateChanged || cleanTimeChanged || cleanDateCleared || isSettingFirstTime;
-
-      if (shouldUpdateCleanDate && !cleanDate) {
-        // User is clearing their clean date
-        cleanStartTimestamp = null;
-      } else if (shouldUpdateCleanDate && cleanDate) {
-        const dateParts = cleanDate.split("-").map(Number);
-        const timeParts = cleanTime.split(":").map(Number);
-
-        // Validate parsed values to prevent NaN
-        if (dateParts.length !== 3 || timeParts.length !== 2) {
-          toast.error("Invalid date or time format.");
-          setIsSaving(false);
-          return;
-        }
-
-        const [year, month, day] = dateParts;
-        const [hours, minutes] = timeParts;
-
-        if (
-          Number.isNaN(year) ||
-          Number.isNaN(month) ||
-          Number.isNaN(day) ||
-          Number.isNaN(hours) ||
-          Number.isNaN(minutes) ||
-          year < 1900 ||
-          year > 2100 ||
-          month < 1 ||
-          month > 12 ||
-          day < 1 ||
-          day > 31 ||
-          hours < 0 ||
-          hours > 23 ||
-          minutes < 0 ||
-          minutes > 59
-        ) {
-          toast.error("Invalid date or time values.");
-          setIsSaving(false);
-          return;
-        }
-
-        const dateObj = new Date(year, month - 1, day, hours, minutes);
-
-        // Verify the date is valid and wasn't normalized (e.g., Feb 31 → Mar 3)
-        // JS normalizes invalid dates silently, so we check that components match
-        if (
-          Number.isNaN(dateObj.getTime()) ||
-          dateObj.getFullYear() !== year ||
-          dateObj.getMonth() !== month - 1 ||
-          dateObj.getDate() !== day ||
-          dateObj.getHours() !== hours ||
-          dateObj.getMinutes() !== minutes
-        ) {
-          toast.error("Invalid date.");
-          setIsSaving(false);
-          return;
-        }
-
-        // Server-side validation: Prevent future dates (defense in depth beyond UI max attribute)
-        if (dateObj.getTime() > Date.now()) {
-          toast.error("Clean date cannot be in the future.");
-          setIsSaving(false);
-          return;
-        }
-
-        cleanStartTimestamp = Timestamp.fromDate(dateObj);
+      if (cleanDateError) {
+        toast.error(cleanDateError);
+        setIsSaving(false);
+        return;
       }
 
-      // Build patch object with only fields that actually changed
-      const nicknameChanged = nickname.trim() !== (profile.nickname || "");
-      const preferencesChanged =
-        largeText !== (profile.preferences?.largeText || false) ||
-        simpleLanguage !== (profile.preferences?.simpleLanguage || false);
+      // Compute change flags using helpers
+      const nicknameChanged = hasNicknameChanged(nickname, profile.nickname);
+      const preferencesChanged = havePreferencesChanged(
+        largeText,
+        simpleLanguage,
+        profile.preferences
+      );
+      const cleanStartUpdated = cleanStartTimestamp !== undefined;
 
+      // Build patch object
       const patch: {
         nickname?: string;
         cleanStart?: Timestamp | null;
         preferences?: typeof profile.preferences;
       } = {};
-
-      if (nicknameChanged) {
-        patch.nickname = nickname.trim();
-      }
-
-      if (cleanStartTimestamp !== undefined) {
-        patch.cleanStart = cleanStartTimestamp;
-      }
-
-      if (preferencesChanged) {
-        patch.preferences = {
-          ...(profile.preferences ?? {}),
-          largeText,
-          simpleLanguage,
-        };
-      }
+      if (nicknameChanged) patch.nickname = nickname.trim();
+      if (cleanStartUpdated) patch.cleanStart = cleanStartTimestamp;
+      if (preferencesChanged)
+        patch.preferences = { ...profile.preferences, largeText, simpleLanguage };
 
       // Only call updateUserProfile if there are actual changes
-      if (Object.keys(patch).length > 0) {
-        await updateUserProfile(user.uid, patch);
-      }
+      if (Object.keys(patch).length > 0) await updateUserProfile(user.uid, patch);
 
-      // Build fieldsUpdated array dynamically based on actual changes
-      const fieldsUpdated: string[] = [];
-      if (nicknameChanged) fieldsUpdated.push("nickname");
-      if (cleanStartTimestamp !== undefined) fieldsUpdated.push("cleanStart");
-      if (preferencesChanged) fieldsUpdated.push("preferences");
-
-      // Audit logging for profile update (non-sensitive data only)
+      // Build and log fieldsUpdated array
+      const fieldsUpdated = buildFieldsUpdatedList(
+        nicknameChanged,
+        cleanStartUpdated,
+        preferencesChanged
+      );
       logger.info("Profile settings updated", {
         action: "profile_update",
         userId: user.uid,
         outcome: "success",
         fieldsUpdated,
-        cleanStartUpdated: shouldUpdateCleanDate,
+        cleanStartUpdated: changes.shouldUpdate,
       });
 
       setOriginalCleanDate(cleanDate);
@@ -279,18 +402,12 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
       setHasChanges(false);
     } catch (error) {
       // Sanitize error logging - include context but not raw error object
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       logger.error("Failed to save settings", {
         action: "profile_update",
         userId: user.uid,
         outcome: "failure",
         errorType: error instanceof Error ? error.name : "UnknownError",
-        // Redact potential PII from error message
-        errorCategory: errorMessage.includes("permission")
-          ? "permission_denied"
-          : errorMessage.includes("network")
-            ? "network_error"
-            : "unknown",
+        errorCategory: categorizeError(error),
       });
       toast.error("Failed to save settings. Please try again.");
     } finally {

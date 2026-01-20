@@ -17,8 +17,14 @@
  *   2 - Usage/file access error
  */
 
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
-import { join, basename } from "node:path";
+import { readFileSync, readdirSync, statSync, lstatSync, existsSync, realpathSync } from "node:fs";
+import { join, basename, resolve, sep, dirname, isAbsolute } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Review #193: ES module __dirname equivalent for path containment checks
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const REPO_ROOT = resolve(__dirname, "..");
 
 // Required fields per MULTI_AI_AGGREGATOR_TEMPLATE.md
 const REQUIRED_FIELDS = ["canonical_id", "category", "title", "severity", "effort", "files"];
@@ -42,6 +48,96 @@ const ALT_ID_PATTERNS = [
   { pattern: /^CANON-D-\d{3}$/, name: "Documentation (CANON-D-XXX)" },
   { pattern: /^CANON-P-\d{3}$/, name: "Process (CANON-P-XXX)" },
 ];
+
+/**
+ * Detect alternative ID format for better error messages
+ */
+function detectAltIdFormat(id) {
+  for (const alt of ALT_ID_PATTERNS) {
+    if (alt.pattern.test(id)) return alt.name;
+  }
+  return "Unknown";
+}
+
+/**
+ * Validate canonical_id format
+ */
+function validateIdFormat(finding, lineNum, result) {
+  if (!finding.canonical_id) return;
+  if (CANON_ID_REGEX.test(finding.canonical_id)) return;
+
+  const altFormat = detectAltIdFormat(finding.canonical_id);
+  result.addError(
+    lineNum,
+    "canonical_id",
+    `Invalid ID format: "${finding.canonical_id}" (detected: ${altFormat}, expected: CANON-XXXX)`
+  );
+}
+
+/**
+ * Validate an enum field against allowed values
+ */
+function validateEnumField(finding, lineNum, result, field, validValues, isError = true) {
+  if (!finding[field]) return;
+  if (validValues.includes(finding[field])) return;
+
+  const message = `Invalid ${field}: "${finding[field]}" (expected: ${validValues.join(", ")})`;
+  if (isError) {
+    result.addError(lineNum, field, message);
+  } else {
+    result.addWarning(lineNum, field, message.replace("Invalid", "Non-standard"));
+  }
+}
+
+/**
+ * Track field coverage for compliance calculation
+ */
+function trackFieldCoverage(finding, result, allFields) {
+  for (const field of allFields) {
+    if (!(field in result.fieldCoverage)) {
+      result.fieldCoverage[field] = 0;
+    }
+    if (field in finding) {
+      result.fieldCoverage[field]++;
+    }
+  }
+}
+
+/**
+ * Validate confidence field range
+ */
+function validateConfidence(finding, lineNum, result) {
+  if (!("confidence" in finding) && !("final_confidence" in finding)) return;
+
+  const conf = finding.confidence ?? finding.final_confidence;
+  if (typeof conf === "number" && (conf < 0 || conf > 100)) {
+    result.addWarning(lineNum, "confidence", `Confidence out of range: ${conf} (expected: 0-100)`);
+  }
+}
+
+/**
+ * Validate consensus field format
+ */
+function validateConsensus(finding, lineNum, result) {
+  if ("consensus_score" in finding && typeof finding.consensus_score !== "number") {
+    result.addWarning(
+      lineNum,
+      "consensus_score",
+      `consensus_score should be number, got: ${typeof finding.consensus_score}`
+    );
+  }
+  if (
+    "consensus" in finding &&
+    typeof finding.consensus === "string" &&
+    finding.consensus.includes("/")
+  ) {
+    result.addWarning(
+      lineNum,
+      "consensus",
+      `consensus as string "X/Y" should be normalized to number`
+    );
+  }
+}
 
 class ValidationResult {
   constructor(filename) {
@@ -93,96 +189,22 @@ function validateFinding(finding, lineNum, result) {
   }
 
   // Track field coverage
-  for (const field of [...REQUIRED_FIELDS, ...RECOMMENDED_FIELDS]) {
-    if (!(field in result.fieldCoverage)) {
-      result.fieldCoverage[field] = 0;
-    }
-    if (field in finding) {
-      result.fieldCoverage[field]++;
-    }
-  }
+  trackFieldCoverage(finding, result, [...REQUIRED_FIELDS, ...RECOMMENDED_FIELDS]);
 
-  // Validate canonical_id format
-  if (finding.canonical_id) {
-    if (!CANON_ID_REGEX.test(finding.canonical_id)) {
-      let altFormat = "Unknown";
-      for (const alt of ALT_ID_PATTERNS) {
-        if (alt.pattern.test(finding.canonical_id)) {
-          altFormat = alt.name;
-          break;
-        }
-      }
-      result.addError(
-        lineNum,
-        "canonical_id",
-        `Invalid ID format: "${finding.canonical_id}" (detected: ${altFormat}, expected: CANON-XXXX)`
-      );
-    }
-  }
-
-  // Validate severity
-  if (finding.severity && !VALID_SEVERITY.includes(finding.severity)) {
-    result.addError(
-      lineNum,
-      "severity",
-      `Invalid severity: "${finding.severity}" (expected: ${VALID_SEVERITY.join(", ")})`
-    );
-  }
-
-  // Validate effort
-  if (finding.effort && !VALID_EFFORT.includes(finding.effort)) {
-    result.addError(
-      lineNum,
-      "effort",
-      `Invalid effort: "${finding.effort}" (expected: ${VALID_EFFORT.join(", ")})`
-    );
-  }
-
-  // Validate status if present
-  if (finding.status && !VALID_STATUS.includes(finding.status)) {
-    result.addWarning(
-      lineNum,
-      "status",
-      `Non-standard status: "${finding.status}" (expected: ${VALID_STATUS.join(", ")})`
-    );
-  }
+  // Validate specific fields using helpers
+  validateIdFormat(finding, lineNum, result);
+  validateEnumField(finding, lineNum, result, "severity", VALID_SEVERITY, true);
+  validateEnumField(finding, lineNum, result, "effort", VALID_EFFORT, true);
+  validateEnumField(finding, lineNum, result, "status", VALID_STATUS, false);
 
   // Validate files is array
   if (finding.files && !Array.isArray(finding.files)) {
     result.addError(lineNum, "files", `"files" must be an array, got: ${typeof finding.files}`);
   }
 
-  // Validate confidence range
-  if ("confidence" in finding || "final_confidence" in finding) {
-    const conf = finding.confidence ?? finding.final_confidence;
-    if (typeof conf === "number" && (conf < 0 || conf > 100)) {
-      result.addWarning(
-        lineNum,
-        "confidence",
-        `Confidence out of range: ${conf} (expected: 0-100)`
-      );
-    }
-  }
-
-  // Check for consensus field variations
-  if ("consensus_score" in finding && typeof finding.consensus_score !== "number") {
-    result.addWarning(
-      lineNum,
-      "consensus_score",
-      `consensus_score should be number, got: ${typeof finding.consensus_score}`
-    );
-  }
-  if (
-    "consensus" in finding &&
-    typeof finding.consensus === "string" &&
-    finding.consensus.includes("/")
-  ) {
-    result.addWarning(
-      lineNum,
-      "consensus",
-      `consensus as string "X/Y" should be normalized to number`
-    );
-  }
+  // Validate numeric fields
+  validateConfidence(finding, lineNum, result);
+  validateConsensus(finding, lineNum, result);
 }
 
 function validateFile(filepath) {
@@ -232,6 +254,47 @@ function validateFile(filepath) {
   return result;
 }
 
+/**
+ * Print a limited list of items with truncation message
+ * @param {string} label - Section label
+ * @param {Array} items - Items to print
+ * @param {number} limit - Max items to show
+ * @param {string} color - ANSI color code
+ */
+function printLimitedList(label, items, limit, color) {
+  console.log(`${color}  ${label}:\x1b[0m`);
+  for (const item of items.slice(0, limit)) {
+    console.log(`    Line ${item.line}: [${item.field}] ${item.message}`);
+  }
+  if (items.length > limit) {
+    console.log(`    ... and ${items.length - limit} more ${label.toLowerCase()}`);
+  }
+}
+
+/**
+ * Print field coverage for a set of fields
+ * @param {object} result - Validation result
+ * @param {string[]} fields - Fields to report
+ * @param {boolean} isRequired - Whether fields are required
+ */
+function printFieldCoverageSection(result, fields, isRequired) {
+  const label = isRequired ? "Required" : "Recommended";
+  console.log(`    ${label}:`);
+  for (const field of fields) {
+    const count = result.fieldCoverage[field] || 0;
+    const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
+    let indicator;
+    if (pct === 100) {
+      indicator = "\x1b[32m✓\x1b[0m";
+    } else if (isRequired) {
+      indicator = "\x1b[31m✗\x1b[0m";
+    } else {
+      indicator = "\x1b[33m○\x1b[0m";
+    }
+    console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
+  }
+}
+
 function printResult(result) {
   const status = result.isValid ? "\x1b[32m✓\x1b[0m" : "\x1b[31m✗\x1b[0m";
   console.log(
@@ -239,42 +302,17 @@ function printResult(result) {
   );
 
   if (result.errors.length > 0) {
-    console.log("\x1b[31m  Errors:\x1b[0m");
-    for (const err of result.errors.slice(0, 10)) {
-      console.log(`    Line ${err.line}: [${err.field}] ${err.message}`);
-    }
-    if (result.errors.length > 10) {
-      console.log(`    ... and ${result.errors.length - 10} more errors`);
-    }
+    printLimitedList("Errors", result.errors, 10, "\x1b[31m");
   }
 
   if (result.warnings.length > 0 && process.argv.includes("--verbose")) {
-    console.log("\x1b[33m  Warnings:\x1b[0m");
-    for (const warn of result.warnings.slice(0, 5)) {
-      console.log(`    Line ${warn.line}: [${warn.field}] ${warn.message}`);
-    }
-    if (result.warnings.length > 5) {
-      console.log(`    ... and ${result.warnings.length - 5} more warnings`);
-    }
+    printLimitedList("Warnings", result.warnings, 5, "\x1b[33m");
   }
 
-  // Field coverage summary (includes both required and recommended fields to match compliance calculation)
   if (process.argv.includes("--coverage")) {
     console.log("  Field Coverage:");
-    console.log("    Required:");
-    for (const field of REQUIRED_FIELDS) {
-      const count = result.fieldCoverage[field] || 0;
-      const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-      const indicator = pct === 100 ? "\x1b[32m✓\x1b[0m" : "\x1b[31m✗\x1b[0m";
-      console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
-    }
-    console.log("    Recommended:");
-    for (const field of RECOMMENDED_FIELDS) {
-      const count = result.fieldCoverage[field] || 0;
-      const pct = result.findings > 0 ? Math.round((count / result.findings) * 100) : 0;
-      const indicator = pct === 100 ? "\x1b[32m✓\x1b[0m" : "\x1b[33m○\x1b[0m";
-      console.log(`      ${indicator} ${field}: ${count}/${result.findings} (${pct}%)`);
-    }
+    printFieldCoverageSection(result, REQUIRED_FIELDS, true);
+    printFieldCoverageSection(result, RECOMMENDED_FIELDS, false);
   }
 }
 
@@ -305,60 +343,118 @@ function printSummary(results) {
   }
 }
 
-function main() {
-  const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
-
-  if (args.length === 0) {
-    // Default: validate all CANON files in docs/reviews/*/canonical/
-    args.push("docs/reviews");
+/**
+ * Recursively find CANON-*.jsonl files in a directory
+ */
+function findCanonFilesRecursive(dir, files) {
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch (err) {
+    console.error(`Error reading directory ${dir}: ${err.message}`);
+    return;
   }
 
+  for (const entry of entries) {
+    const fullPath = join(dir, entry);
+    try {
+      const entryStat = lstatSync(fullPath);
+
+      // Avoid cycles: do not follow symlinked directories
+      if (entryStat.isSymbolicLink()) continue;
+
+      if (entryStat.isDirectory()) {
+        findCanonFilesRecursive(fullPath, files);
+      } else if (entry.startsWith("CANON-") && entry.endsWith(".jsonl")) {
+        files.push(fullPath);
+      }
+    } catch (err) {
+      console.error(`Error accessing path ${fullPath}: ${err.message}`);
+    }
+  }
+}
+
+/**
+ * Collect files from argument paths
+ * Review #193: Add path traversal check to ensure args resolve within repo
+ * Review #194: Resolve relative args relative to REPO_ROOT for cwd independence
+ * Review #195: Canonicalize paths to block symlinked parent escapes
+ */
+function collectFilesFromArgs(args) {
   const files = [];
+  const repoRootResolved = resolve(REPO_ROOT);
+
+  // Review #195: Canonicalize repo root to detect symlinked parent escapes
+  let repoRootReal = repoRootResolved;
+  try {
+    repoRootReal = resolve(realpathSync(repoRootResolved));
+  } catch {
+    // fall back to resolved path
+  }
 
   for (const arg of args) {
-    if (!existsSync(arg)) {
+    // Review #194: Resolve relative paths relative to REPO_ROOT, not cwd
+    const argResolved = isAbsolute(arg) ? resolve(arg) : resolve(REPO_ROOT, arg);
+
+    // Review #193: Block path traversal - ensure resolved path is within repo
+    if (argResolved !== repoRootResolved && !argResolved.startsWith(repoRootResolved + sep)) {
+      console.error(`Error: Path traversal blocked: ${arg}`);
+      continue;
+    }
+
+    if (!existsSync(argResolved)) {
       console.error(`Error: Path not found: ${arg}`);
       process.exit(2);
     }
 
     let stat;
     try {
-      stat = statSync(arg);
+      // Review #187: Use lstatSync to detect symlinks without following them
+      // This prevents symlink traversal attacks that could escape project boundaries
+      stat = lstatSync(argResolved);
     } catch (err) {
       console.error(`Error accessing path ${arg}: ${err.message}`);
       continue;
     }
 
-    if (stat.isDirectory()) {
-      // Recursively find CANON-*.jsonl files
-      const findCanonFiles = (dir) => {
-        let entries;
-        try {
-          entries = readdirSync(dir);
-        } catch (err) {
-          console.error(`Error reading directory ${dir}: ${err.message}`);
-          return;
-        }
+    // Review #187: Skip symlinks to avoid path traversal vulnerabilities
+    if (stat.isSymbolicLink()) {
+      console.warn(`Warning: Skipping symlink path: ${arg}`);
+      continue;
+    }
 
-        for (const entry of entries) {
-          const fullPath = join(dir, entry);
-          try {
-            const entryStat = statSync(fullPath);
-            if (entryStat.isDirectory()) {
-              findCanonFiles(fullPath);
-            } else if (entry.startsWith("CANON-") && entry.endsWith(".jsonl")) {
-              files.push(fullPath);
-            }
-          } catch (err) {
-            console.error(`Error accessing path ${fullPath}: ${err.message}`);
-          }
-        }
-      };
-      findCanonFiles(arg);
-    } else if (arg.endsWith(".jsonl")) {
-      files.push(arg);
+    // Review #195: Enforce containment on canonical path to prevent symlinked parent escapes
+    let argReal = argResolved;
+    try {
+      argReal = resolve(realpathSync(argResolved));
+    } catch {
+      // If we can't resolve, avoid recursing outside known boundaries
+      console.error(`Error: Cannot resolve real path: ${arg}`);
+      continue;
+    }
+    if (argReal !== repoRootReal && !argReal.startsWith(repoRootReal + sep)) {
+      console.error(`Error: Symlink traversal blocked: ${arg}`);
+      continue;
+    }
+
+    if (stat.isDirectory()) {
+      findCanonFilesRecursive(argResolved, files);
+    } else if (argResolved.endsWith(".jsonl")) {
+      files.push(argResolved);
     }
   }
+
+  return files;
+}
+
+function main() {
+  const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+
+  if (args.length === 0) {
+    args.push("docs/reviews");
+  }
+
+  const files = collectFilesFromArgs(args);
 
   if (files.length === 0) {
     console.log("No CANON-*.jsonl files found.");

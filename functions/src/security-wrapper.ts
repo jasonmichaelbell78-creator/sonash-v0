@@ -16,7 +16,7 @@
 import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { ZodSchema, ZodError } from "zod";
 import { FirestoreRateLimiter } from "./firestore-rate-limiter";
-import { logSecurityEvent } from "./security-logger";
+import { logSecurityEvent, hashUserId } from "./security-logger";
 import { verifyRecaptchaToken } from "./recaptcha-verify";
 
 interface SecurityOptions<T> {
@@ -77,6 +77,237 @@ interface SecureCallableContext<T> {
   request: CallableRequest;
 }
 
+// ============================================================================
+// Security Check Helpers (extracted for cognitive complexity reduction)
+// ============================================================================
+
+/**
+ * Check user-based rate limit
+ * Review #193: Sanitize error logging to prevent sensitive data leakage
+ */
+async function checkUserRateLimit(
+  rateLimiter: FirestoreRateLimiter | undefined,
+  userId: string,
+  functionName: string
+): Promise<void> {
+  if (!rateLimiter) return;
+
+  try {
+    await rateLimiter.consume(userId, functionName);
+  } catch (rateLimitError) {
+    // Review #193: Log generic message with safe error info in metadata
+    const safeErrorInfo =
+      rateLimitError instanceof Error
+        ? { name: rateLimitError.name, code: (rateLimitError as { code?: string }).code }
+        : { type: typeof rateLimitError };
+
+    logSecurityEvent("RATE_LIMIT_EXCEEDED", functionName, "User-based rate limit exceeded", {
+      userId,
+      metadata: { error: safeErrorInfo },
+    });
+    throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
+  }
+}
+
+/**
+ * Check IP-based rate limit (CANON-0036: secondary defense against account cycling)
+ * Review #193: Sanitize error logging to prevent sensitive data leakage
+ */
+async function checkIpRateLimit(
+  ipRateLimiter: FirestoreRateLimiter | undefined,
+  request: CallableRequest,
+  userId: string,
+  functionName: string
+): Promise<void> {
+  if (!ipRateLimiter) return;
+
+  const clientIp = request.rawRequest?.ip;
+  if (!clientIp) return;
+
+  try {
+    await ipRateLimiter.consumeByIp(clientIp, functionName);
+  } catch (rateLimitError) {
+    // Hash IP to avoid PII in logs (Review #184 - Qodo compliance: Secure Logging Practices)
+    const hashedIp = hashUserId(clientIp); // Reuse hash function for consistent anonymization
+    // Review #193: Log generic message with safe error info in metadata
+    const safeErrorInfo =
+      rateLimitError instanceof Error
+        ? { name: rateLimitError.name, code: (rateLimitError as { code?: string }).code }
+        : { type: typeof rateLimitError };
+
+    logSecurityEvent("RATE_LIMIT_EXCEEDED", functionName, "IP-based rate limit exceeded", {
+      userId,
+      metadata: { ipHash: hashedIp, error: safeErrorInfo }, // Log hash instead of raw IP (PII compliance)
+      captureToSentry: false, // Review #187: Keep IP-derived identifiers out of third-party telemetry
+    });
+    throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
+  }
+}
+
+/**
+ * Verify App Check token
+ */
+function verifyAppCheck(
+  request: CallableRequest,
+  requireAppCheck: boolean,
+  userId: string,
+  functionName: string
+): void {
+  if (requireAppCheck && !request.app) {
+    logSecurityEvent("APP_CHECK_FAILURE", functionName, "App Check token missing or invalid", {
+      userId,
+    });
+    throw new HttpsError(
+      "failed-precondition",
+      "App Check verification failed. Please refresh the page."
+    );
+  }
+}
+
+/**
+ * Handle reCAPTCHA verification with emulator bypass support
+ */
+async function handleRecaptchaVerification(
+  request: CallableRequest,
+  recaptchaAction: string | undefined,
+  userId: string,
+  functionName: string
+): Promise<void> {
+  if (!recaptchaAction) return;
+
+  const dataWithToken = request.data as { recaptchaToken?: string };
+  const token = dataWithToken.recaptchaToken;
+
+  // Check for explicit bypass (Firebase emulator only)
+  const isEmulator = process.env.FUNCTIONS_EMULATOR === "true";
+  const bypassRequested = process.env.RECAPTCHA_BYPASS === "true";
+  const allowBypass = bypassRequested && isEmulator;
+
+  if (!token || token.trim() === "") {
+    if (allowBypass) {
+      logSecurityEvent(
+        "RECAPTCHA_BYPASSED",
+        functionName,
+        "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - emulator only",
+        {
+          userId,
+          severity: "WARNING",
+          metadata: { action: recaptchaAction, isEmulator },
+        }
+      );
+    } else {
+      logSecurityEvent(
+        "RECAPTCHA_MISSING_TOKEN",
+        functionName,
+        "Request rejected: reCAPTCHA token required",
+        {
+          userId,
+          metadata: { action: recaptchaAction },
+        }
+      );
+      throw new HttpsError(
+        "failed-precondition",
+        "Security verification required. Please refresh the page and try again."
+      );
+    }
+  } else {
+    await verifyRecaptchaToken(token, recaptchaAction, userId);
+  }
+}
+
+/**
+ * Validate input data using Zod schema
+ */
+function validateInputData<T>(
+  request: CallableRequest,
+  validationSchema: ZodSchema<T> | undefined,
+  userId: string,
+  functionName: string
+): T {
+  if (!validationSchema) {
+    return request.data as T;
+  }
+
+  try {
+    return validationSchema.parse(request.data);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      // Review #194: Sanitize Zod validation logs to prevent PII leakage
+      // Only log field paths and error codes, not messages or user-provided values
+      // Review #195: Cap the number of issues logged to prevent log flooding
+      const MAX_ISSUES_TO_LOG = 25;
+      const safeIssues = error.issues.slice(0, MAX_ISSUES_TO_LOG).map((issue) => ({
+        path: issue.path.join(".") || "(root)",
+        code: issue.code,
+      }));
+      logSecurityEvent(
+        "VALIDATION_FAILURE",
+        functionName,
+        `Validation failed on ${error.issues.length} field(s)`,
+        {
+          userId,
+          metadata: {
+            issues: safeIssues,
+            truncated: error.issues.length > MAX_ISSUES_TO_LOG,
+          },
+        }
+      );
+      // Sanitized error message - avoids exposing detailed schema structure
+      throw new HttpsError(
+        "invalid-argument",
+        "Invalid input data. Please check your request and try again."
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Check userId authorization (ensure user can only access their own data)
+ * Review #196: Add type guard to prevent runtime crash from non-string userId
+ */
+function checkUserIdAuthorization(
+  request: CallableRequest,
+  authorizeUserId: boolean,
+  userId: string,
+  functionName: string
+): void {
+  if (!authorizeUserId) return;
+
+  const dataWithUserId = request.data as { userId?: unknown };
+  const attemptedUserId = dataWithUserId.userId;
+
+  // Review #196: Guard against non-string userId to prevent hashUserId crash
+  // Review #197: Treat null/undefined as "not provided"; only reject non-null non-strings
+  if (attemptedUserId != null && typeof attemptedUserId !== "string") {
+    logSecurityEvent(
+      "AUTHORIZATION_FAILURE",
+      functionName,
+      "Attempted to write to another user's data",
+      {
+        userId,
+        metadata: { attemptedUserIdType: typeof attemptedUserId },
+      }
+    );
+    throw new HttpsError("permission-denied", "Cannot write to another user's data");
+  }
+
+  // Review #197: Enforce only when a non-empty string is provided
+  if (typeof attemptedUserId === "string" && attemptedUserId !== "" && attemptedUserId !== userId) {
+    logSecurityEvent(
+      "AUTHORIZATION_FAILURE",
+      functionName,
+      "Attempted to write to another user's data",
+      {
+        userId,
+        // Review #187: Hash attemptedUserId to prevent PII in logs
+        metadata: { attemptedUserIdHash: hashUserId(attemptedUserId) },
+      }
+    );
+    throw new HttpsError("permission-denied", "Cannot write to another user's data");
+  }
+}
+
 /**
  * Wrapper function that applies all security checks before executing handler
  *
@@ -126,160 +357,21 @@ export async function withSecurityChecks<TInput, TOutput>(
 
   const userId = request.auth.uid;
 
-  // 2. Check user-based rate limit (if rate limiter provided)
-  if (rateLimiter) {
-    try {
-      await rateLimiter.consume(userId, functionName);
-    } catch (rateLimitError) {
-      // Log detailed error server-side for debugging
-      const internalMessage =
-        rateLimitError instanceof Error ? rateLimitError.message : "Rate limit exceeded";
+  // 2. Check rate limits using extracted helpers
+  await checkUserRateLimit(rateLimiter, userId, functionName);
+  await checkIpRateLimit(ipRateLimiter, request, userId, functionName);
 
-      logSecurityEvent("RATE_LIMIT_EXCEEDED", functionName, internalMessage, { userId });
+  // 3. Verify App Check token
+  verifyAppCheck(request, requireAppCheck, userId, functionName);
 
-      // Return generic message to client (prevent information leakage)
-      throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
-    }
-  }
+  // 4. Verify reCAPTCHA token
+  await handleRecaptchaVerification(request, recaptchaAction, userId, functionName);
 
-  // 2.5. CANON-0036: Check IP-based rate limit (secondary defense against account cycling)
-  // NOTE: IP from X-Forwarded-For can be spoofed in some deployments. This is a secondary
-  // defense layer - primary protection is per-user rate limiting above.
-  //
-  // SECURITY LOG POLICY: IP addresses are logged to GCP Cloud Logging for security analysis
-  // (rate limit abuse detection, incident response). These logs are:
-  // - Stored in GCP Cloud Logging (restricted access, not user-facing)
-  // - Subject to retention policy (90 days)
-  // - NOT sent to Sentry (captureToSentry: false) to prevent IP leakage to third parties
-  // IP logging is necessary for effective rate limit enforcement and abuse detection.
-  if (ipRateLimiter) {
-    // Get client IP from Cloud Functions request
-    // request.rawRequest.ip is the recommended approach (set by Cloud Functions)
-    const clientIp = request.rawRequest?.ip;
+  // 5. Validate input data using Zod
+  const validatedData = validateInputData<TInput>(request, validationSchema, userId, functionName);
 
-    if (clientIp) {
-      try {
-        await ipRateLimiter.consumeByIp(clientIp, functionName);
-      } catch (rateLimitError) {
-        // Log detailed error server-side for debugging
-        const internalMessage =
-          rateLimitError instanceof Error ? rateLimitError.message : "Rate limit exceeded";
-
-        logSecurityEvent(
-          "RATE_LIMIT_EXCEEDED",
-          functionName,
-          `IP-based rate limit: ${internalMessage}`,
-          {
-            userId,
-            metadata: { clientIp },
-            captureToSentry: false, // Don't send raw IP addresses to third-party services
-          }
-        );
-
-        // Return generic message to client (prevent information leakage)
-        throw new HttpsError("resource-exhausted", "Too many requests. Please try again later.");
-      }
-    }
-  }
-
-  // 3. Verify App Check token (if required)
-  if (requireAppCheck && !request.app) {
-    logSecurityEvent("APP_CHECK_FAILURE", functionName, "App Check token missing or invalid", {
-      userId,
-    });
-    throw new HttpsError(
-      "failed-precondition",
-      "App Check verification failed. Please refresh the page."
-    );
-  }
-
-  // 3.5. Verify reCAPTCHA token (if action specified)
-  // CANON-0008/CANON-0035: Fail-closed enforcement - reject missing tokens unless
-  // explicitly bypassed in dev/test environments
-  if (recaptchaAction) {
-    const dataWithToken = request.data as { recaptchaToken?: string };
-    const token = dataWithToken.recaptchaToken;
-
-    // Check for explicit bypass (Firebase emulator only)
-    // SECURITY: Bypass only allowed when BOTH conditions are true:
-    // 1. RECAPTCHA_BYPASS=true is explicitly set
-    // 2. Running in Firebase emulator (FUNCTIONS_EMULATOR=true)
-    // This is more restrictive than "not production" to prevent bypass in staging environments
-    const isEmulator = process.env.FUNCTIONS_EMULATOR === "true";
-    const bypassRequested = process.env.RECAPTCHA_BYPASS === "true";
-    const allowBypass = bypassRequested && isEmulator;
-
-    if (!token || token.trim() === "") {
-      if (allowBypass) {
-        // Emulator bypass - log but don't block
-        logSecurityEvent(
-          "RECAPTCHA_BYPASSED",
-          functionName,
-          "reCAPTCHA bypassed (RECAPTCHA_BYPASS=true) - emulator only",
-          {
-            userId,
-            severity: "WARNING",
-            metadata: { action: recaptchaAction, isEmulator },
-          }
-        );
-      } else {
-        // Production: Fail-closed - reject missing tokens
-        logSecurityEvent(
-          "RECAPTCHA_MISSING_TOKEN",
-          functionName,
-          "Request rejected: reCAPTCHA token required",
-          {
-            userId,
-            metadata: { action: recaptchaAction },
-          }
-        );
-        throw new HttpsError(
-          "failed-precondition",
-          "Security verification required. Please refresh the page and try again."
-        );
-      }
-    } else {
-      // Verify token if present
-      await verifyRecaptchaToken(token, recaptchaAction, userId);
-    }
-  }
-
-  // 4. Validate input data using Zod (if schema provided)
-  let validatedData: TInput;
-  if (validationSchema) {
-    try {
-      validatedData = validationSchema.parse(request.data);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const errorMessages = error.issues.map((e) => e.message).join(", ");
-        logSecurityEvent(
-          "VALIDATION_FAILURE",
-          functionName,
-          `Zod validation failed: ${errorMessages}`,
-          { userId, metadata: { issues: error.issues } }
-        );
-        throw new HttpsError("invalid-argument", "Validation failed: " + errorMessages);
-      }
-      throw error;
-    }
-  } else {
-    // No validation schema, pass data through as-is
-    validatedData = request.data as TInput;
-  }
-
-  // 5. Server-side authorization check (if enabled)
-  if (authorizeUserId) {
-    const dataWithUserId = request.data as { userId?: string };
-    if (dataWithUserId.userId && dataWithUserId.userId !== userId) {
-      logSecurityEvent(
-        "AUTHORIZATION_FAILURE",
-        functionName,
-        "Attempted to write to another user's data",
-        { userId, metadata: { attemptedUserId: dataWithUserId.userId } }
-      );
-      throw new HttpsError("permission-denied", "Cannot write to another user's data");
-    }
-  }
+  // 6. Check userId authorization
+  checkUserIdAuthorization(request, authorizeUserId, userId, functionName);
 
   // Execute the handler with validated context
   return handler({

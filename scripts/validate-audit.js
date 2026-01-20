@@ -32,6 +32,9 @@ const SEVERITY_LEVELS = { S0: 0, S1: 1, S2: 2, S3: 3 };
 // Confidence levels
 const CONFIDENCE_LEVELS = { HIGH: 2, MEDIUM: 1, LOW: 0 };
 
+// Valid confidence values
+const VALID_CONFIDENCES = new Set(["HIGH", "MEDIUM", "LOW"]);
+
 // Required fields by severity
 const REQUIRED_FIELDS_BY_SEVERITY = {
   S0: [
@@ -154,11 +157,74 @@ function isSafeFilePath(filePath) {
 }
 
 /**
+ * Check if a false positive entry should be skipped
+ */
+function shouldSkipFalsePositive(fp) {
+  // Check expiration
+  if (fp.expires) {
+    if (!isValidDate(fp.expires)) {
+      console.warn(`⚠️  Invalid expires date in ${fp.id}: ${fp.expires} (skipping entry)`);
+      return true;
+    }
+    if (new Date(fp.expires) < new Date()) return true;
+  }
+
+  // ReDoS protection
+  if (isLikelyUnsafeRegex(fp.pattern)) {
+    console.warn(`⚠️  Skipping potentially unsafe regex in ${fp.id}`);
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Build search text from a finding for pattern matching
+ */
+/**
+ * Convert evidence field to array format (S3358 fix - extract nested ternary)
+ */
+function normalizeEvidence(evidence) {
+  if (Array.isArray(evidence)) return evidence;
+  if (typeof evidence === "string") return [evidence];
+  return [];
+}
+
+function buildFindingSearchText(finding) {
+  // Review #187: Cap evidence items and total size to bound regex work
+  const evidenceParts = normalizeEvidence(finding.evidence)
+    .filter((e) => typeof e === "string")
+    .slice(0, 20); // Cap evidence items
+
+  const text = [
+    finding.title || "",
+    finding.description || "",
+    finding.file || "",
+    ...evidenceParts,
+  ].join(" ");
+
+  // Review #187: Cap total size to prevent performance issues with regex
+  return text.length > 50_000 ? text.slice(0, 50_000) : text;
+}
+
+/**
+ * Try to match a false positive pattern against a finding
+ */
+function tryMatchFalsePositive(finding, fp) {
+  try {
+    const regex = new RegExp(fp.pattern, "i");
+    const searchText = buildFindingSearchText(finding);
+    const match = regex.exec(searchText);
+    return match ? match[0] : null;
+  } catch {
+    console.warn(`⚠️  Invalid regex in ${fp.id}: ${fp.pattern}`);
+    return null;
+  }
+}
+
+/**
  * Check findings against false positives database
  * Includes ReDoS protection and date validation
- * @param {Array<Object>} findings - Audit findings to check
- * @param {Array<Object>} falsePositives - False positive patterns
- * @returns {Array<{finding: Object, falsePositive: Object, match: string}>} Matched false positives
  */
 function checkFalsePositives(findings, falsePositives) {
   const flagged = [];
@@ -167,45 +233,152 @@ function checkFalsePositives(findings, falsePositives) {
     if (finding._parseError) continue;
 
     for (const fp of falsePositives) {
-      // Validate and check expiration
-      if (fp.expires) {
-        if (!isValidDate(fp.expires)) {
-          console.warn(`⚠️  Invalid expires date in ${fp.id}: ${fp.expires} (skipping entry)`);
-          continue;
-        }
-        if (new Date(fp.expires) < new Date()) continue;
-      }
+      if (shouldSkipFalsePositive(fp)) continue;
 
-      // ReDoS protection: skip potentially unsafe patterns
-      if (isLikelyUnsafeRegex(fp.pattern)) {
-        console.warn(`⚠️  Skipping potentially unsafe regex in ${fp.id}`);
-        continue;
-      }
-
-      try {
-        const regex = new RegExp(fp.pattern, "i");
-        const searchText = [
-          finding.title || "",
-          finding.description || "",
-          finding.file || "",
-          ...(finding.evidence || []),
-        ].join(" ");
-
-        const match = regex.exec(searchText);
-        if (match) {
-          flagged.push({
-            finding,
-            falsePositive: fp,
-            match: match[0],
-          });
-        }
-      } catch {
-        console.warn(`⚠️  Invalid regex in ${fp.id}: ${fp.pattern}`);
+      const match = tryMatchFalsePositive(finding, fp);
+      if (match) {
+        flagged.push({ finding, falsePositive: fp, match });
       }
     }
   }
 
   return flagged;
+}
+
+/**
+ * Check if a field value is considered missing
+ */
+function isFieldMissing(value) {
+  return (
+    value === undefined || value === null || (typeof value === "string" && value.trim() === "")
+  );
+}
+
+/**
+ * Validate required fields for a single finding
+ */
+function validateFindingRequiredFields(finding, severity, issues) {
+  const required = REQUIRED_FIELDS_BY_SEVERITY[severity] || REQUIRED_FIELDS_BY_SEVERITY.S3;
+
+  for (const field of required) {
+    if (isFieldMissing(finding[field])) {
+      issues.push({
+        type: "MISSING_FIELD",
+        findingId: finding.id,
+        severity,
+        field,
+        message: `${severity} findings require '${field}' field`,
+      });
+    }
+  }
+}
+
+/**
+ * Validate evidence array for high-severity findings
+ */
+function validateEvidence(finding, severity, issues) {
+  if (severity !== "S0" && severity !== "S1") return;
+  if (!finding.evidence) return;
+
+  if (!Array.isArray(finding.evidence) || finding.evidence.length === 0) {
+    issues.push({
+      type: "EMPTY_EVIDENCE",
+      findingId: finding.id,
+      severity,
+      message: `${severity} findings require non-empty evidence array`,
+    });
+  }
+}
+
+/**
+ * Validate confidence field for high-severity findings
+ */
+function validateConfidenceField(finding, severity, issues) {
+  if (severity !== "S0" && severity !== "S1") return;
+  if (!finding.confidence) return;
+
+  if (!VALID_CONFIDENCES.has(finding.confidence)) {
+    issues.push({
+      type: "INVALID_CONFIDENCE",
+      findingId: finding.id,
+      message: `Invalid confidence level: ${finding.confidence} (must be HIGH, MEDIUM, or LOW)`,
+    });
+  }
+}
+
+/**
+ * Validate file path safety and existence
+ */
+function validateFilePath(finding, issues) {
+  if (!finding.file) return;
+
+  // Review #188: Guard against non-string file paths to prevent runtime crashes
+  // Review #195: Use try-catch on String() to handle non-stringifiable values like Symbol
+  if (typeof finding.file !== "string") {
+    let fileRepr;
+    try {
+      fileRepr = String(finding.file);
+    } catch {
+      fileRepr = Object.prototype.toString.call(finding.file);
+    }
+
+    issues.push({
+      type: "INVALID_TYPE",
+      findingId: finding.id,
+      file: fileRepr,
+      message: `Invalid file path type (expected string, got ${typeof finding.file})`,
+    });
+    return;
+  }
+
+  // Review #196: Check path safety BEFORE wildcards to prevent bypassing security checks
+  // e.g., "../../../etc/passwd*" would otherwise skip validation entirely
+  if (!isSafeFilePath(finding.file)) {
+    issues.push({
+      type: "UNSAFE_PATH",
+      findingId: finding.id,
+      file: finding.file,
+      message: `Potentially unsafe file path (traversal attempt): ${finding.file}`,
+    });
+    return;
+  }
+
+  const repoRoot = node_path.resolve(__dirname, "..");
+
+  // Review #197: Wildcards - allow glob patterns, but still enforce repo containment on the prefix
+  if (finding.file.includes("*")) {
+    const prefix = finding.file.split("*", 1)[0] || ".";
+    const prefixPath = node_path.resolve(repoRoot, prefix);
+
+    if (prefixPath !== repoRoot && !prefixPath.startsWith(repoRoot + node_path.sep)) {
+      issues.push({
+        type: "UNSAFE_PATH",
+        findingId: finding.id,
+        file: finding.file,
+        message: `Potentially unsafe file path (traversal attempt): ${finding.file}`,
+      });
+    }
+    return;
+  }
+
+  const fullPath = node_path.resolve(repoRoot, finding.file);
+
+  // Ensure resolved path stays within repo root
+  if (fullPath !== repoRoot && !fullPath.startsWith(repoRoot + node_path.sep)) {
+    issues.push({
+      type: "UNSAFE_PATH",
+      findingId: finding.id,
+      file: finding.file,
+      message: `Potentially unsafe file path (traversal attempt): ${finding.file}`,
+    });
+  } else if (!node_fs.existsSync(fullPath)) {
+    issues.push({
+      type: "FILE_NOT_FOUND",
+      findingId: finding.id,
+      file: finding.file,
+      message: `Referenced file does not exist: ${finding.file}`,
+    });
+  }
 }
 
 function validateRequiredFields(findings) {
@@ -223,79 +396,10 @@ function validateRequiredFields(findings) {
     }
 
     const severity = finding.severity || "S3";
-    const required = REQUIRED_FIELDS_BY_SEVERITY[severity] || REQUIRED_FIELDS_BY_SEVERITY.S3;
-
-    for (const field of required) {
-      // Use explicit check for undefined/null/empty-string to allow value 0 (e.g., line: 0)
-      const value = finding[field];
-      const isMissing =
-        value === undefined || value === null || (typeof value === "string" && value.trim() === "");
-
-      if (isMissing) {
-        issues.push({
-          type: "MISSING_FIELD",
-          findingId: finding.id,
-          severity,
-          field,
-          message: `${severity} findings require '${field}' field`,
-        });
-      }
-    }
-
-    // Validate evidence array for S0/S1
-    if ((severity === "S0" || severity === "S1") && finding.evidence) {
-      if (!Array.isArray(finding.evidence) || finding.evidence.length === 0) {
-        issues.push({
-          type: "EMPTY_EVIDENCE",
-          findingId: finding.id,
-          severity,
-          message: `${severity} findings require non-empty evidence array`,
-        });
-      }
-    }
-
-    // Validate confidence for S0/S1
-    if ((severity === "S0" || severity === "S1") && finding.confidence) {
-      if (!["HIGH", "MEDIUM", "LOW"].includes(finding.confidence)) {
-        issues.push({
-          type: "INVALID_CONFIDENCE",
-          findingId: finding.id,
-          message: `Invalid confidence level: ${finding.confidence} (must be HIGH, MEDIUM, or LOW)`,
-        });
-      }
-    }
-
-    // Validate file exists if specified (with path traversal protection)
-    if (finding.file && !finding.file.includes("*")) {
-      if (!isSafeFilePath(finding.file)) {
-        issues.push({
-          type: "UNSAFE_PATH",
-          findingId: finding.id,
-          file: finding.file,
-          message: `Potentially unsafe file path (traversal attempt): ${finding.file}`,
-        });
-      } else {
-        const repoRoot = node_path.resolve(__dirname, "..");
-        const fullPath = node_path.resolve(repoRoot, finding.file);
-
-        // Ensure resolved path stays within repo root
-        if (fullPath !== repoRoot && !fullPath.startsWith(repoRoot + node_path.sep)) {
-          issues.push({
-            type: "UNSAFE_PATH",
-            findingId: finding.id,
-            file: finding.file,
-            message: `Potentially unsafe file path (traversal attempt): ${finding.file}`,
-          });
-        } else if (!node_fs.existsSync(fullPath)) {
-          issues.push({
-            type: "FILE_NOT_FOUND",
-            findingId: finding.id,
-            file: finding.file,
-            message: `Referenced file does not exist: ${finding.file}`,
-          });
-        }
-      }
-    }
+    validateFindingRequiredFields(finding, severity, issues);
+    validateEvidence(finding, severity, issues);
+    validateConfidenceField(finding, severity, issues);
+    validateFilePath(finding, issues);
   }
 
   return issues;

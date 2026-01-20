@@ -238,28 +238,73 @@ async function interactiveMode() {
   console.log(JSON.stringify(saved, null, 2));
 }
 
+// Value arguments that consume the next argument
+const VALUE_ARGS = new Set(["--pattern", "--category", "--reason", "--source", "--expires"]);
+
+/**
+ * Process a single command-line argument
+ * @param {string} arg - Current argument
+ * @param {string|undefined} nextArg - Next argument (for value flags)
+ * @param {object} parsed - Parsed arguments object
+ * @returns {boolean} True if next arg was consumed
+ */
+function processArg(arg, nextArg, parsed) {
+  // Handle boolean flags
+  if (arg === "--list") {
+    parsed.list = true;
+    return false;
+  }
+  if (arg === "--interactive") {
+    parsed.interactive = true;
+    return false;
+  }
+  if (arg === "--help" || arg === "-h") {
+    parsed.help = true;
+    return false;
+  }
+
+  // Handle value flags
+  if (VALUE_ARGS.has(arg)) {
+    // Review #196: Reject missing values and avoid consuming the next flag as a value
+    // Use --arg=value syntax if the value legitimately starts with '-'
+    if (nextArg === undefined || nextArg.startsWith("-")) {
+      throw new Error(`Missing value for ${arg} (use ${arg}=... if the value starts with '-')`);
+    }
+    const key = arg.slice(2); // Remove "--" prefix
+    parsed[key] = nextArg;
+    return true; // Consumed next arg
+  }
+
+  // Review #188: Support --key=value argument syntax
+  if (arg.startsWith("--") && arg.includes("=")) {
+    const [rawKey, ...rest] = arg.split("=");
+    const value = rest.join("="); // Handle values that contain =
+    if (VALUE_ARGS.has(rawKey)) {
+      const key = rawKey.slice(2); // Remove -- prefix
+      parsed[key] = value;
+      return false; // Did not consume next arg
+    }
+  }
+
+  // Review #186: Fail on unknown arguments to prevent silent failures
+  if (arg.startsWith("-")) {
+    throw new Error(`Unknown argument: ${arg}`);
+  }
+
+  // Review #187: Also fail on unexpected positional args to avoid silently ignoring user input
+  throw new Error(`Unexpected positional argument: ${arg}`);
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
   const parsed = {};
 
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--list") {
-      parsed.list = true;
-    } else if (arg === "--interactive") {
-      parsed.interactive = true;
-    } else if (arg === "--pattern" && args[i + 1]) {
-      parsed.pattern = args[++i];
-    } else if (arg === "--category" && args[i + 1]) {
-      parsed.category = args[++i];
-    } else if (arg === "--reason" && args[i + 1]) {
-      parsed.reason = args[++i];
-    } else if (arg === "--source" && args[i + 1]) {
-      parsed.source = args[++i];
-    } else if (arg === "--expires" && args[i + 1]) {
-      parsed.expires = args[++i];
-    } else if (arg === "--help" || arg === "-h") {
-      parsed.help = true;
+  for (let i = 0; i < args.length; ) {
+    const consumed = processArg(args[i], args[i + 1], parsed);
+    if (consumed) {
+      i += 2; // Skip both current and next arg
+    } else {
+      i++; // Skip only current arg
     }
   }
 

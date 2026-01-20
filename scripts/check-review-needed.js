@@ -248,6 +248,95 @@ function safeExec(command, description) {
 }
 
 /**
+ * Map HTTP status codes to user-friendly error messages
+ * @param {number} status - HTTP status code
+ * @returns {string} Error message
+ */
+function getIssueApiErrorMessage(status) {
+  if (status === 401) return "Authentication failed - check SONAR_TOKEN";
+  if (status === 403) return "Access denied - insufficient permissions";
+  if (status === 404) return "Project not found";
+  return "Request failed";
+}
+
+/**
+ * Parse issues response and extract type counts
+ * @param {object} issuesData - Raw issues API response
+ * @returns {{total: number, bugs: number, vulnerabilities: number, codeSmells: number}}
+ */
+function parseIssuesResponse(issuesData) {
+  // Review #187: Guard against malformed API payloads
+  const paging =
+    issuesData && typeof issuesData === "object" && !Array.isArray(issuesData)
+      ? issuesData.paging
+      : null;
+  // Review #197: Apply robust number coercion to total (same as facet counts)
+  const rawTotal = paging?.total ?? 0;
+  const totalNum = typeof rawTotal === "number" ? rawTotal : Number(rawTotal);
+  const total = Number.isFinite(totalNum) ? totalNum : 0;
+  const facets = Array.isArray(issuesData?.facets) ? issuesData.facets : [];
+  const typeFacet = facets.find((f) => f?.property === "types");
+  const typeValues = Array.isArray(typeFacet?.values) ? typeFacet.values : [];
+
+  // Review #188: Safely coerce API facet counts to numbers (may be strings in some responses)
+  const getCount = (val) => {
+    const raw = typeValues.find((v) => v?.val === val)?.count ?? 0;
+    const n = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  return {
+    total,
+    bugs: getCount("BUG"),
+    vulnerabilities: getCount("VULNERABILITY"),
+    codeSmells: getCount("CODE_SMELL"),
+  };
+}
+
+/**
+ * Parse hotspots response
+ * @param {Response} hotspotsResponse - Fetch response
+ * @param {string[]} warnings - Array to push warnings to
+ * @returns {Promise<number>} Hotspot count
+ */
+async function parseHotspotsResponse(hotspotsResponse, warnings) {
+  if (!hotspotsResponse.ok) {
+    warnings.push(`Hotspots API returned ${hotspotsResponse.status} - count unavailable`);
+    return 0;
+  }
+  try {
+    const hotspotsData = await hotspotsResponse.json();
+    // Review #189: Safely coerce hotspot total to number (consistency with issues parsing)
+    const raw = hotspotsData?.paging?.total ?? 0;
+    const n = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  } catch {
+    warnings.push(`Hotspots API returned invalid JSON - count unavailable`);
+    return 0;
+  }
+}
+
+/**
+ * Parse quality gate response
+ * @param {Response} gateResponse - Fetch response
+ * @param {string[]} warnings - Array to push warnings to
+ * @returns {Promise<string>} Quality gate status
+ */
+async function parseQualityGateResponse(gateResponse, warnings) {
+  if (!gateResponse.ok) {
+    warnings.push(`Quality gate API returned ${gateResponse.status} - status unavailable`);
+    return "UNKNOWN";
+  }
+  try {
+    const gateData = await gateResponse.json();
+    return gateData.projectStatus?.status || "UNKNOWN";
+  } catch {
+    warnings.push(`Quality gate API returned invalid JSON - status unavailable`);
+    return "UNKNOWN";
+  }
+}
+
+/**
  * Fetch issue counts from SonarCloud API
  * @returns {Promise<{success: boolean, data?: {bugs: number, vulnerabilities: number, codeSmells: number, hotspots: number, qualityGate: string}, error?: string}>}
  */
@@ -306,43 +395,29 @@ async function fetchSonarCloudData() {
     // Process issues response (primary - fail if this fails)
     if (!issuesResponse.ok) {
       const status = issuesResponse.status;
-      let message = "Request failed";
-      if (status === 401) message = "Authentication failed - check SONAR_TOKEN";
-      else if (status === 403) message = "Access denied - insufficient permissions";
-      else if (status === 404) message = "Project not found";
+      const message = getIssueApiErrorMessage(status);
       return { success: false, error: `SonarCloud API: ${status} - ${message}` };
     }
 
-    const issuesData = await issuesResponse.json();
-
-    // Use paging.total for accurate count (instead of summing facets)
-    const totalIssues = issuesData.paging?.total ?? 0;
-
-    // Extract counts from facets for breakdown
-    const typeFacet = issuesData.facets?.find((f) => f.property === "types");
-    const typeValues = typeFacet?.values || [];
-
-    const bugs = typeValues.find((v) => v.val === "BUG")?.count ?? 0;
-    const vulnerabilities = typeValues.find((v) => v.val === "VULNERABILITY")?.count ?? 0;
-    const codeSmells = typeValues.find((v) => v.val === "CODE_SMELL")?.count ?? 0;
-
-    // Process hotspots response (warn on failure, don't silently default)
-    let hotspots = 0;
-    if (hotspotsResponse.ok) {
-      const hotspotsData = await hotspotsResponse.json();
-      hotspots = hotspotsData.paging?.total ?? 0;
-    } else {
-      warnings.push(`Hotspots API returned ${hotspotsResponse.status} - count unavailable`);
+    // Wrap JSON parsing in try-catch to handle malformed responses (Review #184 - Qodo)
+    let issuesData;
+    try {
+      issuesData = await issuesResponse.json();
+    } catch {
+      return { success: false, error: "SonarCloud API: Issues returned invalid JSON" };
     }
+    const {
+      total: totalIssues,
+      bugs,
+      vulnerabilities,
+      codeSmells,
+    } = parseIssuesResponse(issuesData);
 
-    // Process quality gate response (warn on failure, don't silently default)
-    let qualityGate = "UNKNOWN";
-    if (gateResponse.ok) {
-      const gateData = await gateResponse.json();
-      qualityGate = gateData.projectStatus?.status || "UNKNOWN";
-    } else {
-      warnings.push(`Quality gate API returned ${gateResponse.status} - status unavailable`);
-    }
+    // Process hotspots and quality gate responses in parallel
+    const [hotspots, qualityGate] = await Promise.all([
+      parseHotspotsResponse(hotspotsResponse, warnings),
+      parseQualityGateResponse(gateResponse, warnings),
+    ]);
 
     return {
       success: true,
@@ -844,6 +919,45 @@ function formatTextOutput(categoryResults, multiAITriggers, auditCounts, sonarRe
 }
 
 /**
+ * Build recommendation string based on trigger state
+ * @param {boolean} reviewNeeded - Whether any review is needed
+ * @param {Array} multiAITriggers - Multi-AI escalation triggers
+ * @param {Array} triggeredCategories - Categories with active triggers
+ * @returns {string} Recommendation message
+ */
+function buildRecommendation(reviewNeeded, multiAITriggers, triggeredCategories) {
+  if (!reviewNeeded) {
+    return "No review triggers active. Continue development.";
+  }
+  if (multiAITriggers.length > 0) {
+    return `${multiAITriggers.length} multi-AI trigger(s) active. Consider running full multi-AI audit.`;
+  }
+  const commands = triggeredCategories.map((c) => `/audit-${c.category}`).join(", ");
+  return `${triggeredCategories.length} single-session trigger(s) active. Run: ${commands}`;
+}
+
+/**
+ * Build workflow-compatible triggers object for JSON output
+ * @param {Array} categoryResults - Results from category checks
+ * @returns {object} Triggers object with metrics
+ */
+function buildTriggersObject(categoryResults) {
+  const triggers = {};
+  for (const result of categoryResults) {
+    const thresholds = CATEGORY_THRESHOLDS[result.category];
+    // Use optional chaining to handle missing thresholds gracefully (Review #184 - Qodo)
+    triggers[result.category] = {
+      triggered: result.triggered,
+      hadPriorAudit: result.hadPriorAudit,
+      commits: { value: result.commits, threshold: thresholds?.commits ?? null },
+      files: { value: result.filesChanged, threshold: thresholds?.files ?? null },
+      reasons: result.reasons,
+    };
+  }
+  return triggers;
+}
+
+/**
  * Get the repository's first commit date as a fallback baseline
  * Prevents false-positive triggers when AUDIT_TRACKER.md is missing
  * @returns {string} ISO date string of first commit, or '2025-01-01' if unavailable
@@ -914,41 +1028,12 @@ async function main() {
 
   // Calculate review needed
   const reviewNeeded = categoryResults.some((r) => r.triggered) || multiAITriggers.length > 0;
-
-  // Build recommendation string
   const triggeredCategories = categoryResults.filter((r) => r.triggered);
-  let recommendation = "";
-  if (!reviewNeeded) {
-    recommendation = "No review triggers active. Continue development.";
-  } else if (multiAITriggers.length > 0) {
-    recommendation = `${multiAITriggers.length} multi-AI trigger(s) active. Consider running full multi-AI audit.`;
-  } else {
-    const commands = triggeredCategories.map((c) => `/audit-${c.category}`).join(", ");
-    recommendation = `${triggeredCategories.length} single-session trigger(s) active. Run: ${commands}`;
-  }
+  const recommendation = buildRecommendation(reviewNeeded, multiAITriggers, triggeredCategories);
 
   // Output results
   if (JSON_OUTPUT) {
-    // Build workflow-compatible triggers object with unambiguous metric structure
-    const triggers = {};
-    for (const result of categoryResults) {
-      const thresholds = CATEGORY_THRESHOLDS[result.category];
-      triggers[result.category] = {
-        triggered: result.triggered,
-        hadPriorAudit: result.hadPriorAudit,
-        // Explicit commit metrics
-        commits: {
-          value: result.commits,
-          threshold: thresholds.commits,
-        },
-        // Explicit file metrics
-        files: {
-          value: result.filesChanged,
-          threshold: thresholds.files,
-        },
-        reasons: result.reasons,
-      };
-    }
+    const triggers = buildTriggersObject(categoryResults);
 
     const output = {
       // Workflow-compatible fields

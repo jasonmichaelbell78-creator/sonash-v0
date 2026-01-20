@@ -266,7 +266,9 @@ const ANTI_PATTERNS = [
     review: "Security Standards",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     // Exclude check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    // 2026-01-20 audit (PR #286):
+    // - security-check.js: Contains regex pattern /\beval\s*\(/ at L42 as detection pattern, not actual eval usage
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|security-check)\.js$/,
   },
   {
     id: "sql-injection-risk",
@@ -306,6 +308,8 @@ const ANTI_PATTERNS = [
     fix: 'Verify path.relative(root, resolved) does not start with ".." or equal ""',
     review: "#33, #34, #38, #39, #40",
     fileTypes: [".js", ".ts"],
+    // Review #190: phase-complete-check.js L171 has containment via safeStatCheck→isWithinArchive
+    pathExclude: /(?:^|[\\/])phase-complete-check\.js$/,
   },
   {
     id: "error-without-first-line",
@@ -396,9 +400,33 @@ const ANTI_PATTERNS = [
     // - generate-detailed-sonar-report.js: readFileSync at L27, L43, L76 all in try/catch blocks
     // - generate-sonar-report-with-snippets.js: readFileSync at L18 in try/catch (L17-23), L54 in try/catch (L52-70)
     // - verify-sonar-phase.js: readFileSync at L135, L195, L215 all in try/catch blocks
-    // Path boundary anchor (^|[\\/]) prevents substring matches (Review #51)
-    pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|surface-lessons-learned|suggest-pattern-automation|archive-doc|validate-phase-completion|update-readme-status|check-mcp-servers|session-start|log-override|log-session-activity|validate-skill-config|verify-skill-usage|run-consolidation|aggregate-audit-findings|generate-detailed-sonar-report|generate-sonar-report-with-snippets|verify-sonar-phase)\.js$/,
+    // 2026-01-20 audit (PR #286):
+    // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
+    // - security-check.js: readFileSync at L358 IS in try/catch (L357-361)
+    // S5843: Use array instead of complex regex to reduce complexity from 21 to < 20
+    // (Review #184 - SonarCloud regex complexity)
+    pathExcludeList: [
+      "check-pattern-compliance.js",
+      "phase-complete-check.js",
+      "surface-lessons-learned.js",
+      "suggest-pattern-automation.js",
+      "archive-doc.js",
+      "validate-phase-completion.js",
+      "update-readme-status.js",
+      "check-mcp-servers.js",
+      "session-start.js",
+      "log-override.js",
+      "log-session-activity.js",
+      "validate-skill-config.js",
+      "verify-skill-usage.js",
+      "run-consolidation.js",
+      "aggregate-audit-findings.js",
+      "generate-detailed-sonar-report.js",
+      "generate-sonar-report-with-snippets.js",
+      "verify-sonar-phase.js",
+      "check-backlog-health.js",
+      "security-check.js",
+    ],
   },
   {
     id: "auto-mode-slice-truncation",
@@ -522,9 +550,13 @@ function getFilesToCheck() {
             // Include files with known extensions OR extensionless files in .husky
             if (extensions.includes(ext)) {
               files.push(relative(ROOT, fullPath));
-            } else if (!ext && relative(ROOT, dir).startsWith(".husky")) {
-              // Extensionless files in .husky are shell scripts
-              files.push(relative(ROOT, fullPath));
+            } else if (!ext) {
+              // Review #190: Normalize backslashes for Windows path detection
+              const relDir = relative(ROOT, dir).replace(/\\/g, "/");
+              if (relDir.startsWith(".husky")) {
+                // Extensionless files in .husky are shell scripts
+                files.push(relative(ROOT, fullPath));
+              }
             }
           }
         }
@@ -562,84 +594,130 @@ function getFilesToCheck() {
 }
 
 /**
+ * Detect file type from shebang for extensionless files
+ * Review #190: Normalize backslashes for Windows path detection
+ * @param {string} filePath - File path
+ * @param {string} content - File content
+ * @param {string} ext - Current extension (may be empty)
+ * @returns {string} Detected extension
+ */
+function detectFileType(filePath, content, ext) {
+  if (ext) return ext;
+  const shellShebangs = ["#!/bin/sh", "#!/bin/bash", "#!/usr/bin/env bash", "#!/usr/bin/env sh"];
+  // Review #190: Normalize backslashes for Windows .husky path detection
+  const normalizedPath = filePath.replace(/\\/g, "/");
+  if (normalizedPath.startsWith(".husky/") || shellShebangs.some((s) => content.startsWith(s))) {
+    return ".sh";
+  }
+  return ext;
+}
+
+/**
+ * Check if a pattern should be skipped for a file
+ * @param {object} antiPattern - Pattern configuration
+ * @param {string} ext - File extension
+ * @param {string} normalizedPath - Normalized file path
+ * @returns {boolean} True if pattern should be skipped
+ */
+function shouldSkipPattern(antiPattern, ext, normalizedPath) {
+  if (!antiPattern.fileTypes.includes(ext)) return true;
+  if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) return true;
+  if (antiPattern.pathExclude && antiPattern.pathExclude.test(normalizedPath)) return true;
+  // Support array-based exclusions for S5843 regex complexity compliance
+  if (antiPattern.pathExcludeList) {
+    const fileName = normalizedPath.split("/").pop() || "";
+    if (antiPattern.pathExcludeList.includes(fileName)) return true;
+  }
+  return false;
+}
+
+/**
+ * Find pattern matches in file content
+ * @param {object} antiPattern - Pattern configuration
+ * @param {string} content - File content
+ * @param {string} filePath - File path for reporting
+ * @returns {Array} Array of violation objects
+ */
+function findPatternMatches(antiPattern, content, filePath) {
+  const violations = [];
+  // Create new RegExp to avoid shared state mutation (S3776 fix + Qodo suggestion)
+  const pattern = new RegExp(antiPattern.pattern.source, antiPattern.pattern.flags);
+  // Review #188: Clone exclude regex to prevent state mutation from g/y flags
+  const exclude = antiPattern.exclude
+    ? new RegExp(antiPattern.exclude.source, antiPattern.exclude.flags)
+    : null;
+
+  // Non-global regexes: single match only (prevents infinite loop)
+  if (!pattern.global) {
+    const match = pattern.exec(content);
+    if (match) {
+      // Review #189: Reset exclude.lastIndex before test to ensure consistent behavior
+      if (exclude) exclude.lastIndex = 0;
+      if (!(exclude && exclude.test(match[0]))) {
+        violations.push(buildViolation(antiPattern, match, content, filePath));
+      }
+    }
+    return violations;
+  }
+
+  // Global regexes: iterate all matches
+  let match;
+  while ((match = pattern.exec(content)) !== null) {
+    // Review #189: Reset exclude.lastIndex before each test
+    if (exclude) exclude.lastIndex = 0;
+    if (exclude && exclude.test(match[0])) continue;
+    violations.push(buildViolation(antiPattern, match, content, filePath));
+
+    // Prevent infinite loops on zero-length matches
+    if (match[0].length === 0) {
+      pattern.lastIndex++;
+    }
+  }
+  return violations;
+}
+
+/**
+ * Build a violation object from a regex match
+ * Extracted helper for cognitive complexity reduction (S3776)
+ */
+function buildViolation(antiPattern, match, content, filePath) {
+  const beforeMatch = content.slice(0, match.index);
+  const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
+  return {
+    file: filePath,
+    line: lineNumber,
+    id: antiPattern.id,
+    message: antiPattern.message,
+    fix: antiPattern.fix,
+    review: antiPattern.review,
+    match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
+  };
+}
+
+/**
  * Check a file for anti-patterns
  */
 function checkFile(filePath) {
   const fullPath = join(ROOT, filePath);
-  if (!existsSync(fullPath)) {
-    return [];
-  }
+  if (!existsSync(fullPath)) return [];
 
-  let ext = extname(filePath);
   let content;
   try {
     content = readFileSync(fullPath, "utf-8");
   } catch (error) {
-    // Skip unreadable files (permissions, binary, etc.) to prevent scan abort
     if (VERBOSE && !JSON_OUTPUT) {
       console.warn(`⚠️ Skipping unreadable file: ${filePath} (${sanitizeError(error)})`);
     }
     return [];
   }
 
-  // Extensionless files: detect type by shebang or path
-  if (!ext) {
-    if (
-      filePath.startsWith(".husky/") ||
-      content.startsWith("#!/bin/sh") ||
-      content.startsWith("#!/bin/bash") ||
-      content.startsWith("#!/usr/bin/env bash") ||
-      content.startsWith("#!/usr/bin/env sh")
-    ) {
-      ext = ".sh"; // Treat as shell script
-    }
-  }
-
+  const ext = detectFileType(filePath, content, extname(filePath));
+  const normalizedPath = filePath.replace(/\\/g, "/");
   const violations = [];
 
-  // Normalize path separators for consistent regex matching on Windows
-  const normalizedPath = filePath.replace(/\\/g, "/");
-
   for (const antiPattern of ANTI_PATTERNS) {
-    // Skip if file type doesn't match
-    if (!antiPattern.fileTypes.includes(ext)) {
-      continue;
-    }
-
-    // Skip if path filter doesn't match (for patterns that only apply to specific directories)
-    if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) {
-      continue;
-    }
-
-    // Skip if path exclusion matches (for patterns that have false positives in specific files)
-    if (antiPattern.pathExclude && antiPattern.pathExclude.test(normalizedPath)) {
-      continue;
-    }
-
-    // Reset regex lastIndex
-    antiPattern.pattern.lastIndex = 0;
-
-    let match;
-    while ((match = antiPattern.pattern.exec(content)) !== null) {
-      // Check exclusion pattern
-      if (antiPattern.exclude && antiPattern.exclude.test(match[0])) {
-        continue;
-      }
-
-      // Find line number
-      const beforeMatch = content.slice(0, match.index);
-      const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
-
-      violations.push({
-        file: filePath,
-        line: lineNumber,
-        id: antiPattern.id,
-        message: antiPattern.message,
-        fix: antiPattern.fix,
-        review: antiPattern.review,
-        match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),
-      });
-    }
+    if (shouldSkipPattern(antiPattern, ext, normalizedPath)) continue;
+    violations.push(...findPatternMatches(antiPattern, content, filePath));
   }
 
   return violations;

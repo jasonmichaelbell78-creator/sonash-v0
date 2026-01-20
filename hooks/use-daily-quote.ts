@@ -21,11 +21,25 @@ let cachedQuote: Quote | null = null;
 let cacheDate: string | null = null;
 let fetchPromise: Promise<Quote | null> | null = null;
 
+// Review #190: Extract magic number to named constant for clarity
+/** Delay after midnight before refreshing quote (avoid edge timing issues) */
+const MIDNIGHT_REFRESH_DELAY_SECONDS = 5;
+
 /**
  * Get today's date string for cache invalidation
  */
 function getTodayString(): string {
   return new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+}
+
+/**
+ * Clear cache to force a fresh quote fetch.
+ * Used for manual refresh and midnight auto-refresh.
+ */
+function clearQuoteCache(): void {
+  cachedQuote = null;
+  cacheDate = null;
+  fetchPromise = null;
 }
 
 /**
@@ -142,42 +156,58 @@ export function useDailyQuote(): UseDailyQuoteResult {
   // Schedule automatic refresh shortly after midnight for long-lived sessions
   // This ensures the quote updates even if the user doesn't refresh the page
   useEffect(() => {
-    const scheduleMidnightRefresh = (): (() => void) => {
-      const now = new Date();
-      const nextMidnight = new Date(now);
-      nextMidnight.setHours(24, 0, 5, 0); // 5 seconds after midnight to avoid edge timing
-      const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+    // Only schedule if window is available (client-side)
+    if (globalThis.window === undefined) {
+      return undefined;
+    }
 
-      const timer = globalThis.window?.setTimeout(() => {
-        // Clear cache and trigger refresh
-        cachedQuote = null;
-        cacheDate = null;
-        fetchPromise = null;
-        setLoading(true);
-        fetchDailyQuote()
-          .then(setQuote)
-          .finally(() => setLoading(false));
-        // Reschedule for next day
-        scheduleMidnightRefresh();
-      }, msUntilMidnight);
+    // Timer ID from window.setTimeout (DOM returns number)
+    let currentTimer: number | undefined;
+    let cancelled = false;
 
-      return () => {
-        if (timer) globalThis.window?.clearTimeout(timer);
-      };
+    // Handler for midnight refresh - extracted to reduce nesting
+    const handleMidnightRefresh = async () => {
+      clearQuoteCache();
+      if (cancelled) return;
+
+      setLoading(true);
+      try {
+        const newQuote = await fetchDailyQuote();
+        if (cancelled) return;
+        setQuote(newQuote);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+
+      if (!cancelled) scheduleNextRefresh();
     };
 
-    // Only schedule if window is available (client-side)
-    if (typeof globalThis.window !== "undefined") {
-      return scheduleMidnightRefresh();
-    }
-    return undefined;
+    // Schedule next midnight refresh
+    const scheduleNextRefresh = () => {
+      const now = new Date();
+      const nextMidnight = new Date(now);
+      // Review #190: Use named constant for delay after midnight
+      nextMidnight.setHours(24, 0, MIDNIGHT_REFRESH_DELAY_SECONDS, 0);
+      const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+      // Review #192: Clear any existing timer to prevent double-scheduling
+      if (currentTimer !== undefined) globalThis.window.clearTimeout(currentTimer);
+      // Review #191: Use Math.max(0, ...) to prevent negative timeout (clock drift edge case)
+      currentTimer = globalThis.window.setTimeout(
+        handleMidnightRefresh,
+        Math.max(0, msUntilMidnight)
+      );
+    };
+
+    scheduleNextRefresh();
+    return () => {
+      cancelled = true;
+      if (currentTimer !== undefined) globalThis.window.clearTimeout(currentTimer);
+    };
   }, []);
 
   const refresh = () => {
     // Clear cache and trigger re-fetch
-    cachedQuote = null;
-    cacheDate = null;
-    fetchPromise = null;
+    clearQuoteCache();
     setLoading(true);
     fetchDailyQuote()
       .then(setQuote)

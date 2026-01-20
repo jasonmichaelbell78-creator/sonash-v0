@@ -133,6 +133,133 @@ const SKIP_PATTERNS = [
 ];
 
 /**
+ * Check if a pattern should be applied to a file
+ */
+function shouldApplyPattern(pattern, ext, relativePath) {
+  // Check file type filter
+  if (!pattern.fileTypes.includes(ext)) return false;
+
+  // Check path filter
+  if (pattern.pathFilter && !pattern.pathFilter.test(relativePath)) return false;
+
+  // Check exclude patterns
+  if (pattern.exclude && pattern.exclude.some((e) => e.test(relativePath))) return false;
+
+  return true;
+}
+
+/**
+ * Find pattern matches in content and return violations
+ * Review #190: Use normalizedLines derived from normalizedContent for consistent lookup
+ */
+function findPatternViolations(pattern, content, _lines, relativePath) {
+  const violations = [];
+
+  // Review #189: Normalize CRLF to LF for consistent line number calculation
+  // Review #195: Handle both CRLF (\r\n) and CR (\r) line endings
+  const normalizedContent = content.replace(/\r\n?/g, "\n");
+  // Review #190: Compute normalizedLines from normalizedContent for consistent line lookup
+  const normalizedLines = normalizedContent.split("\n");
+
+  // Review #187: Always use global regex to find ALL matches, not just the first.
+  // Non-global regexes would only find the first occurrence, missing security issues.
+  const flags = pattern.pattern.flags.includes("g")
+    ? pattern.pattern.flags
+    : pattern.pattern.flags + "g";
+  const regex = new RegExp(pattern.pattern.source, flags);
+
+  // Global regexes: iterate all matches
+  let match;
+  while ((match = regex.exec(normalizedContent)) !== null) {
+    const beforeMatch = normalizedContent.slice(0, match.index);
+    const lineNum = beforeMatch.split("\n").length;
+    const lineContent = normalizedLines[lineNum - 1]?.slice(0, 80) || "";
+
+    violations.push({
+      file: relativePath,
+      line: lineNum,
+      pattern: pattern.id,
+      name: pattern.name,
+      severity: pattern.severity,
+      message: pattern.message,
+      snippet: lineContent.trim(),
+    });
+
+    // Prevent infinite loops on zero-length matches
+    if (match[0].length === 0) {
+      regex.lastIndex++;
+    }
+  }
+
+  return violations;
+}
+
+/**
+ * Group violations by severity level
+ */
+function groupViolationsBySeverity(violations) {
+  return {
+    critical: violations.filter((v) => v.severity === "CRITICAL"),
+    high: violations.filter((v) => v.severity === "HIGH"),
+    medium: violations.filter((v) => v.severity === "MEDIUM"),
+    low: violations.filter((v) => v.severity === "LOW"),
+  };
+}
+
+/**
+ * Output violation summary
+ */
+function outputViolationSummary(groups, total) {
+  console.log(`Found ${total} potential issue(s):`);
+  console.log(`   CRITICAL: ${groups.critical.length}`);
+  console.log(`   HIGH:     ${groups.high.length}`);
+  console.log(`   MEDIUM:   ${groups.medium.length}`);
+  console.log(`   LOW:      ${groups.low.length}`);
+  console.log("");
+}
+
+/**
+ * Output high/critical violation details
+ */
+function outputHighSeverityDetails(violations) {
+  if (violations.length === 0) return;
+
+  console.log("🛑 HIGH/CRITICAL Issues:");
+  for (const v of violations) {
+    console.log(`   ${v.file}:${v.line}`);
+    console.log(`      [${v.pattern}] ${v.name}`);
+    console.log(`      ${v.message}`);
+    console.log(`      > ${v.snippet}`);
+    console.log("");
+  }
+}
+
+/**
+ * Output medium/low violation summary
+ */
+function outputLowSeveritySummary(violations) {
+  if (violations.length === 0) return;
+
+  console.log("⚠️  MEDIUM/LOW Issues (summary):");
+  for (const v of violations) {
+    console.log(`   ${v.file}:${v.line} [${v.pattern}] ${v.name}`);
+  }
+  console.log("");
+}
+
+/**
+ * Determine exit code based on violations and blocking mode
+ */
+function determineExitCode(groups, isBlocking) {
+  const totalViolations =
+    groups.critical.length + groups.high.length + groups.medium.length + groups.low.length;
+
+  if (totalViolations === 0) return 0;
+  if (isBlocking && (groups.critical.length > 0 || groups.high.length > 0)) return 1;
+  return 0; // Non-blocking by default
+}
+
+/**
  * Get files to check based on mode
  */
 function getFilesToCheck(args) {
@@ -252,44 +379,16 @@ function checkFile(filePath) {
     return violations;
   }
 
+  const lines = content.split("\n");
+
   for (const pattern of SECURITY_PATTERNS) {
-    // Check file type filter
-    if (!pattern.fileTypes.includes(ext)) continue;
-
-    // Check path filter
-    if (pattern.pathFilter && !pattern.pathFilter.test(relativePath)) continue;
-
-    // Check exclude patterns
-    if (pattern.exclude && pattern.exclude.some((e) => e.test(relativePath))) continue;
+    if (!shouldApplyPattern(pattern, ext, relativePath)) continue;
 
     // Reset regex state
     pattern.pattern.lastIndex = 0;
 
-    // Find matches
-    let match;
-    const lines = content.split("\n");
-
-    // Re-create regex to avoid state issues
-    const regex = new RegExp(pattern.pattern.source, pattern.pattern.flags);
-
-    while ((match = regex.exec(content)) !== null) {
-      // Find line number
-      const beforeMatch = content.slice(0, match.index);
-      const lineNum = beforeMatch.split("\n").length;
-
-      // Get line content (truncated)
-      const lineContent = lines[lineNum - 1]?.slice(0, 80) || "";
-
-      violations.push({
-        file: relativePath,
-        line: lineNum,
-        pattern: pattern.id,
-        name: pattern.name,
-        severity: pattern.severity,
-        message: pattern.message,
-        snippet: lineContent.trim(),
-      });
-    }
+    const patternViolations = findPatternViolations(pattern, content, lines, relativePath);
+    violations.push(...patternViolations);
   }
 
   return violations;
@@ -307,9 +406,7 @@ function main() {
     const files = getFilesToCheck(args);
 
     if (files.length === 0) {
-      if (!isQuiet) {
-        console.log("✅ No files to check");
-      }
+      if (!isQuiet) console.log("✅ No files to check");
       process.exitCode = 0;
       return;
     }
@@ -321,65 +418,27 @@ function main() {
       console.log("");
     }
 
-    const allViolations = [];
+    // Collect all violations
+    const allViolations = files.flatMap((file) => checkFile(file));
+    const groups = groupViolationsBySeverity(allViolations);
 
-    for (const file of files) {
-      const violations = checkFile(file);
-      allViolations.push(...violations);
-    }
-
-    // Group by severity
-    const critical = allViolations.filter((v) => v.severity === "CRITICAL");
-    const high = allViolations.filter((v) => v.severity === "HIGH");
-    const medium = allViolations.filter((v) => v.severity === "MEDIUM");
-    const low = allViolations.filter((v) => v.severity === "LOW");
-
+    // Output results
     if (!isQuiet) {
       if (allViolations.length === 0) {
         console.log("✅ No security violations found");
       } else {
-        console.log(`Found ${allViolations.length} potential issue(s):`);
-        console.log(`   CRITICAL: ${critical.length}`);
-        console.log(`   HIGH:     ${high.length}`);
-        console.log(`   MEDIUM:   ${medium.length}`);
-        console.log(`   LOW:      ${low.length}`);
-        console.log("");
-
-        // Show details for high+ severity
-        const importantViolations = [...critical, ...high];
-        if (importantViolations.length > 0) {
-          console.log("🛑 HIGH/CRITICAL Issues:");
-          for (const v of importantViolations) {
-            console.log(`   ${v.file}:${v.line}`);
-            console.log(`      [${v.pattern}] ${v.name}`);
-            console.log(`      ${v.message}`);
-            console.log(`      > ${v.snippet}`);
-            console.log("");
-          }
-        }
-
-        // Show summary for medium/low
-        if (medium.length + low.length > 0) {
-          console.log("⚠️  MEDIUM/LOW Issues (summary):");
-          for (const v of [...medium, ...low]) {
-            console.log(`   ${v.file}:${v.line} [${v.pattern}] ${v.name}`);
-          }
-          console.log("");
-        }
+        outputViolationSummary(groups, allViolations.length);
+        outputHighSeverityDetails([...groups.critical, ...groups.high]);
+        outputLowSeveritySummary([...groups.medium, ...groups.low]);
       }
     }
 
     // Determine exit code
-    if (allViolations.length === 0) {
-      process.exitCode = 0;
-    } else if (isBlocking && (critical.length > 0 || high.length > 0)) {
-      if (!isQuiet) {
-        console.log("🛑 Blocking due to CRITICAL/HIGH severity issues");
-      }
-      process.exitCode = 1;
-    } else {
-      process.exitCode = 0; // Non-blocking by default
+    const exitCode = determineExitCode(groups, isBlocking);
+    if (exitCode === 1 && !isQuiet) {
+      console.log("🛑 Blocking due to CRITICAL/HIGH severity issues");
     }
+    process.exitCode = exitCode;
   } catch (err) {
     if (!isQuiet) {
       console.error(`❌ Error: ${err instanceof Error ? err.message : String(err)}`);

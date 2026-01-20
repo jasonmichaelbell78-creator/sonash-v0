@@ -32,6 +32,7 @@ import {
   mkdirSync,
   readdirSync,
   statSync,
+  lstatSync,
   realpathSync,
 } from "node:fs";
 import { join, dirname, basename, relative } from "node:path";
@@ -273,6 +274,7 @@ function addArchiveFrontmatter(content, originalPath, reason) {
 
 /**
  * Get all markdown files recursively in a directory
+ * Review #190: Use lstatSync to detect and skip symlinks for security
  * @param {string} dir - Directory to scan
  * @param {string[]} files - Accumulated file list
  * @returns {string[]} - List of markdown file paths
@@ -294,7 +296,13 @@ function getMarkdownFiles(dir, files = []) {
       }
 
       try {
-        const stat = statSync(fullPath);
+        // Review #190: Use lstatSync to detect symlinks
+        const stat = lstatSync(fullPath);
+
+        // Skip symlinks to prevent symlink traversal attacks
+        if (stat.isSymbolicLink()) {
+          continue;
+        }
 
         if (stat.isDirectory()) {
           getMarkdownFiles(fullPath, files);
@@ -468,6 +476,100 @@ Examples:
 }
 
 /**
+ * Check if path matches unsafe patterns (absolute, UNC)
+ * @param {string} fileArg - User-provided file path
+ * @returns {boolean} True if path is unsafe
+ */
+function isUnsafePathPattern(fileArg) {
+  const isAbsoluteUnix = fileArg.startsWith("/");
+  const isAbsoluteWindows = /^[A-Za-z]:/.test(fileArg);
+  const isWindowsRooted = fileArg.startsWith("\\") && !fileArg.startsWith("\\\\");
+  const isUNCPath = fileArg.startsWith("\\\\") || fileArg.startsWith("//");
+  return isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath;
+}
+
+/**
+ * Resolve source file path from user input
+ * @param {string} fileArg - User-provided file path
+ * @returns {{found: boolean, path: string|null}} Resolution result
+ */
+function resolveSourcePath(fileArg) {
+  if (existsSync(fileArg)) return { found: true, path: fileArg };
+  if (existsSync(join(ROOT, fileArg))) return { found: true, path: join(ROOT, fileArg) };
+  if (existsSync(join(DOCS_DIR, fileArg))) return { found: true, path: join(DOCS_DIR, fileArg) };
+  return { found: false, path: null };
+}
+
+/**
+ * Check if path is already in archive directory
+ * Review #190: Use segment-based detection to avoid matching paths like "archive-backup/"
+ * Review #191: Use repo-relative path to avoid false positives from OS-level "archive" folders
+ * Review #192: Case-insensitive detection, handle paths outside repo
+ * @param {string} filePath - File path to check
+ * @returns {boolean} True if already archived
+ */
+function isAlreadyArchived(filePath) {
+  // Compute repo-relative path to avoid false positives from OS-level paths
+  // (e.g., /home/archive/projects/sonash/docs/file.md should not match)
+  const relPath = relative(ROOT, filePath);
+
+  // If the file is outside the repo root, don't attempt "archive" detection
+  // (Repo containment should be enforced separately)
+  // Review #192: Use regex for proper ".." detection (avoids false positives like "..hidden.md")
+  if (relPath === "" || /^\.\.(?:[\\/]|$)/.test(relPath)) return false;
+
+  // Normalize to forward slashes, filter empty segments, lowercase for case-insensitive match
+  const segments = relPath
+    .replace(/\\/g, "/")
+    .split("/")
+    .filter(Boolean)
+    .map((s) => s.toLowerCase());
+
+  // Check if any segment is exactly "archive" (case-insensitive)
+  return segments.includes("archive");
+}
+
+/**
+ * Validate source file can be archived
+ * @param {string} sourcePath - Source file path
+ * @param {string} archivePath - Destination archive path
+ * @returns {{valid: boolean, error?: string}} Validation result
+ */
+function validateCanArchive(sourcePath, archivePath) {
+  if (isAlreadyArchived(sourcePath)) {
+    return { valid: false, error: "File is already in the archive directory" };
+  }
+  if (existsSync(archivePath)) {
+    return {
+      valid: false,
+      error: `Destination already exists: ${archivePath}\n   Remove or rename the existing file first`,
+    };
+  }
+  return { valid: true };
+}
+
+/**
+ * Output cross-reference update results
+ * @param {{success: boolean, updated: Array, error?: string}} refResult - Update result
+ */
+function outputCrossRefResults(refResult) {
+  // Review #187: Check for failure status before accessing refResult.updated
+  if (!refResult?.success) {
+    console.error(`❌ Failed to update cross-references: ${refResult?.error || "Unknown error"}`);
+    return;
+  }
+  const updated = Array.isArray(refResult.updated) ? refResult.updated : [];
+  if (updated.length > 0) {
+    console.log(`Updated ${updated.length} references:`);
+    for (const update of updated) {
+      console.log(`  - ${relative(ROOT, update.file)}:${update.line}`);
+    }
+  } else {
+    console.log("No cross-references found to update");
+  }
+}
+
+/**
  * Main function
  */
 function main() {
@@ -483,29 +585,30 @@ function main() {
   }
 
   // SECURITY: Block absolute and UNC paths from user input
-  // Only relative paths (resolved against known safe directories) are allowed
-  const isAbsoluteUnix = FILE_ARG.startsWith("/");
-  const isAbsoluteWindows = /^[A-Za-z]:/.test(FILE_ARG);
-  const isWindowsRooted = FILE_ARG.startsWith("\\") && !FILE_ARG.startsWith("\\\\"); // Single backslash (e.g., \Windows)
-  const isUNCPath = FILE_ARG.startsWith("\\\\") || FILE_ARG.startsWith("//");
-
-  if (isAbsoluteUnix || isAbsoluteWindows || isWindowsRooted || isUNCPath) {
+  if (isUnsafePathPattern(FILE_ARG)) {
     console.error("❌ Security Error: Absolute or UNC paths are not allowed");
     console.error("   Please provide a relative path or filename");
     process.exit(1);
   }
 
   // Resolve file path
-  let sourcePath;
-  if (existsSync(FILE_ARG)) {
-    sourcePath = FILE_ARG;
-  } else if (existsSync(join(ROOT, FILE_ARG))) {
-    sourcePath = join(ROOT, FILE_ARG);
-  } else if (existsSync(join(DOCS_DIR, FILE_ARG))) {
-    sourcePath = join(DOCS_DIR, FILE_ARG);
-  } else {
+  const sourceResult = resolveSourcePath(FILE_ARG);
+  if (!sourceResult.found) {
     console.error(`❌ Error: File not found: ${FILE_ARG}`);
     console.error("   Searched in: current directory, project root, docs/");
+    process.exit(1);
+  }
+  const sourcePath = sourceResult.path;
+
+  // Review #197: SECURITY - Reject symlink sources to prevent symlink traversal
+  try {
+    if (lstatSync(sourcePath).isSymbolicLink()) {
+      console.error("❌ Security Error: Symlink source files cannot be archived");
+      process.exit(1);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`❌ Error: Failed to stat source file: ${message}`);
     process.exit(1);
   }
 
@@ -525,16 +628,10 @@ function main() {
   console.log(`Destination: ${archivePath}`);
   console.log(`Reason: ${ARCHIVE_REASON}\n`);
 
-  // Check if already archived (cross-platform: handle both / and \ separators)
-  if (sourcePath.includes("/archive/") || sourcePath.includes("\\archive\\")) {
-    console.error("❌ Error: File is already in the archive directory");
-    process.exit(1);
-  }
-
-  // Check if destination exists
-  if (existsSync(archivePath)) {
-    console.error(`❌ Error: Destination already exists: ${archivePath}`);
-    console.error("   Remove or rename the existing file first");
+  // Check if file can be archived
+  const canArchive = validateCanArchive(sourcePath, archivePath);
+  if (!canArchive.valid) {
+    console.error(`❌ Error: ${canArchive.error}`);
     process.exit(1);
   }
 
@@ -589,14 +686,7 @@ function main() {
     process.exit(1);
   }
 
-  if (refResult.updated.length > 0) {
-    console.log(`Updated ${refResult.updated.length} references:`);
-    for (const update of refResult.updated) {
-      console.log(`  - ${relative(ROOT, update.file)}:${update.line}`);
-    }
-  } else {
-    console.log("No cross-references found to update");
-  }
+  outputCrossRefResults(refResult);
 
   // Step 7: Update ROADMAP_LOG.md if requested
   if (UPDATE_LOG) {

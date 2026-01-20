@@ -30,6 +30,40 @@ const CONFIG = {
   maxDescriptionLength: 200,
 };
 
+// Tier description mapping (S3776 complexity reduction)
+const TIER_DESCRIPTIONS = {
+  1: "Essential",
+  2: "Core",
+  3: "Specialized",
+  4: "Reference",
+  5: "Archive",
+};
+
+// External URL schemes to skip in link extraction (S3776 complexity reduction)
+const EXTERNAL_SCHEMES = ["http://", "https://", "mailto:", "tel:", "data:"];
+
+// Image extensions to skip in link extraction (S3776 complexity reduction)
+const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
+
+/**
+ * Check if href is an external link or special scheme.
+ */
+function isExternalOrSpecialLink(href) {
+  // Guard against malformed link hrefs (Review #184 - Qodo)
+  if (!href || typeof href !== "string") return false;
+  return EXTERNAL_SCHEMES.some((scheme) => href.startsWith(scheme));
+}
+
+/**
+ * Check if href points to an image file.
+ */
+function isImageLink(href) {
+  // Guard against malformed link hrefs (Review #184 - Qodo)
+  if (!href || typeof href !== "string") return false;
+  const pathOnly = href.split(/[?#]/)[0].toLowerCase();
+  return IMAGE_EXTENSIONS.some((ext) => pathOnly.endsWith(ext));
+}
+
 // Category definitions based on directory structure
 const CATEGORIES = {
   root: { name: "Root Documents", tier: 1, description: "Essential project-level documentation" },
@@ -135,6 +169,36 @@ function escapeTableCell(text) {
 }
 
 /**
+ * Check if an entry should be skipped based on exclude patterns
+ * @param {string} entry - Directory entry name
+ * @param {string} relativePath - Relative path from root
+ * @returns {boolean} True if entry should be skipped
+ */
+function shouldSkipEntry(entry, relativePath) {
+  return CONFIG.excludeDirs.some(
+    (exc) => entry === exc || relativePath === exc || relativePath.startsWith(exc + "/")
+  );
+}
+
+/**
+ * Safely get lstat for a path
+ * @param {string} fullPath - Full file path
+ * @param {string} relativePath - Relative path for logging
+ * @returns {{stat: object|null, isSymlink: boolean}} Stat result
+ */
+function safeStatEntry(fullPath, relativePath) {
+  try {
+    const stat = lstatSync(fullPath);
+    return { stat, isSymlink: stat.isSymbolicLink() };
+  } catch (error) {
+    if (verbose && !jsonOutput) {
+      console.error(`   Warning: Cannot stat ${relativePath}: ${error.code || "unknown error"}`);
+    }
+    return { stat: null, isSymlink: false };
+  }
+}
+
+/**
  * Find all markdown files in the repository
  * Returns { active: [], archived: [] }
  */
@@ -160,46 +224,23 @@ function findMarkdownFiles(dir, result = { active: [], archived: [] }) {
     const relativePath = relative(ROOT, fullPath).replace(/\\/g, "/"); // Cross-platform normalization
 
     // Skip excluded directories (with proper boundary check)
-    if (
-      CONFIG.excludeDirs.some(
-        (exc) => entry === exc || relativePath === exc || relativePath.startsWith(exc + "/")
-      )
-    ) {
-      continue;
-    }
+    if (shouldSkipEntry(entry, relativePath)) continue;
 
     // Use lstatSync to detect symlinks without following them
-    let lstat;
-    try {
-      lstat = lstatSync(fullPath);
-    } catch (error) {
-      // Handle permission denied, broken symlinks, etc.
-      if (verbose && !jsonOutput) {
-        console.error(`   Warning: Cannot stat ${relativePath}: ${error.code || "unknown error"}`);
-      }
-      continue;
-    }
+    const { stat, isSymlink } = safeStatEntry(fullPath, relativePath);
+    if (!stat) continue;
 
     // Skip symlinks to prevent recursion and escape
-    if (lstat.isSymbolicLink()) {
-      if (verbose && !jsonOutput) {
-        console.log(`   Skipping symlink: ${relativePath}`);
-      }
+    if (isSymlink) {
+      if (verbose && !jsonOutput) console.log(`   Skipping symlink: ${relativePath}`);
       continue;
     }
 
-    if (lstat.isDirectory()) {
+    if (stat.isDirectory()) {
       findMarkdownFiles(fullPath, result);
-    } else if (extname(entry).toLowerCase() === ".md") {
-      // Skip excluded files
-      if (!CONFIG.excludeFiles.includes(entry)) {
-        // Separate archived from active
-        if (isArchived(relativePath)) {
-          result.archived.push(relativePath);
-        } else {
-          result.active.push(relativePath);
-        }
-      }
+    } else if (extname(entry).toLowerCase() === ".md" && !CONFIG.excludeFiles.includes(entry)) {
+      // Categorize as active or archived
+      (isArchived(relativePath) ? result.archived : result.active).push(relativePath);
     }
   }
 
@@ -373,31 +414,13 @@ function extractLinks(content, currentFile) {
   while ((match = linkRegex.exec(strippedContent)) !== null) {
     const [, text, href] = match;
 
-    // Skip external URLs and special schemes
+    // Review #189: Guard against non-string href to prevent crashes on malformed links
+    // Skip external URLs, anchors, and image links using helpers (S3776)
     if (
-      href.startsWith("http://") ||
-      href.startsWith("https://") ||
-      href.startsWith("mailto:") ||
-      href.startsWith("tel:") ||
-      href.startsWith("data:")
-    ) {
-      continue;
-    }
-
-    // Skip pure anchors
-    if (href.startsWith("#")) {
-      continue;
-    }
-
-    // Skip image links (common image extensions)
-    const lowerHref = href.toLowerCase();
-    if (
-      lowerHref.endsWith(".png") ||
-      lowerHref.endsWith(".jpg") ||
-      lowerHref.endsWith(".jpeg") ||
-      lowerHref.endsWith(".gif") ||
-      lowerHref.endsWith(".svg") ||
-      lowerHref.endsWith(".webp")
+      typeof href !== "string" ||
+      isExternalOrSpecialLink(href) ||
+      href.startsWith("#") ||
+      isImageLink(href)
     ) {
       continue;
     }
@@ -553,47 +576,12 @@ function buildReferenceGraph(docs) {
 }
 
 /**
- * Generate markdown output
+ * Generate summary statistics section
+ * @param {Array} docs - Processed documents
+ * @returns {string[]} Lines for the summary section
  */
-function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
+function generateSummaryStats(docs) {
   const lines = [];
-  const now = new Date().toISOString().split("T")[0];
-
-  // Create path->doc lookup Map for O(1) lookups instead of O(n) docs.find()
-  const docsByPath = new Map(docs.map((d) => [d.path, d]));
-
-  // Header
-  lines.push("# Documentation Index");
-  lines.push("");
-  lines.push(
-    "> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate."
-  );
-  lines.push("");
-  lines.push(`**Generated:** ${now}`);
-  lines.push(`**Active Documents:** ${docs.length}`);
-  lines.push(`**Archived Documents:** ${archivedFiles.length}`);
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-
-  // Table of Contents
-  lines.push("## Table of Contents");
-  lines.push("");
-  lines.push("1. [Summary Statistics](#summary-statistics)");
-  lines.push("2. [Documents by Category](#documents-by-category)");
-  lines.push("3. [Reference Graph](#reference-graph)");
-  lines.push("4. [Orphaned Documents](#orphaned-documents)");
-  lines.push("5. [Full Document List](#full-document-list)");
-  lines.push("6. [Archived Documents](#archived-documents)");
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-
-  // Summary Statistics
-  lines.push("## Summary Statistics");
-  lines.push("");
-
-  // Count by category
   const categoryCount = new Map();
   const tierCount = new Map();
 
@@ -603,43 +591,34 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     tierCount.set(doc.category.tier, (tierCount.get(doc.category.tier) || 0) + 1);
   }
 
-  lines.push("### By Tier");
-  lines.push("");
-  lines.push("| Tier | Count | Description |");
-  lines.push("|------|-------|-------------|");
+  lines.push(
+    "## Summary Statistics",
+    "",
+    "### By Tier",
+    "",
+    "| Tier | Count | Description |",
+    "|------|-------|-------------|"
+  );
   for (const tier of [1, 2, 3, 4, 5]) {
     const count = tierCount.get(tier) || 0;
-    const desc =
-      tier === 1
-        ? "Essential"
-        : tier === 2
-          ? "Core"
-          : tier === 3
-            ? "Specialized"
-            : tier === 4
-              ? "Reference"
-              : "Archive";
+    const desc = TIER_DESCRIPTIONS[tier] || "Unknown";
     lines.push(`| Tier ${tier} | ${count} | ${desc} |`);
   }
-  lines.push("");
-
-  lines.push("### By Category");
-  lines.push("");
-  lines.push("| Category | Count |");
-  lines.push("|----------|-------|");
+  lines.push("", "### By Category", "", "| Category | Count |", "|----------|-------|");
   const sortedCategories = [...categoryCount.entries()].sort((a, b) => b[1] - a[1]);
   for (const [cat, count] of sortedCategories) {
     lines.push(`| ${cat} | ${count} |`);
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push("", "---", "");
+  return lines;
+}
 
-  // Documents by Category
-  lines.push("## Documents by Category");
-  lines.push("");
-
-  // Group docs by category
+/**
+ * Group documents by category
+ * @param {Array} docs - Processed documents
+ * @returns {Map} Map of category path to {category, docs[]}
+ */
+function groupDocsByCategory(docs) {
   const byCategory = new Map();
   for (const doc of docs) {
     const catKey = doc.category.path;
@@ -648,50 +627,85 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     }
     byCategory.get(catKey).docs.push(doc);
   }
+  return byCategory;
+}
 
-  // Sort categories by tier, then name
-  const sortedCategoryKeys = [...byCategory.keys()].sort((a, b) => {
+/**
+ * Sort categories by tier, then name
+ * @param {Map} byCategory - Category map
+ * @returns {string[]} Sorted category keys
+ */
+function sortCategoryKeys(byCategory) {
+  return [...byCategory.keys()].sort((a, b) => {
     const catA = byCategory.get(a).category;
     const catB = byCategory.get(b).category;
     if (catA.tier !== catB.tier) return catA.tier - catB.tier;
     return catA.name.localeCompare(catB.name);
   });
+}
+
+/**
+ * Format document row for category table
+ * @param {Object} doc - Document object
+ * @param {Map} referenceGraph - Reference graph
+ * @returns {string} Table row
+ */
+function formatDocumentRow(doc, referenceGraph) {
+  const refs = referenceGraph.get(doc.path);
+  const inCount = refs ? refs.inbound.length : 0;
+  const outCount = refs ? refs.outbound.length : 0;
+  const refStr = `↓${inCount} ↑${outCount}`;
+  let desc = doc.description
+    ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
+    : "-";
+  desc = desc.replace(/\|/g, "\\|");
+  const linkPath = encodeURI(doc.path);
+  const safeTitle = doc.title.replace(/\|/g, "\\|");
+  return `| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`;
+}
+
+/**
+ * Generate documents by category section
+ * @param {Array} docs - Processed documents
+ * @param {Map} referenceGraph - Reference graph
+ * @returns {string[]} Lines for the category section
+ */
+function generateDocsByCategorySection(docs, referenceGraph) {
+  const lines = [];
+  lines.push("## Documents by Category", "");
+
+  const byCategory = groupDocsByCategory(docs);
+  const sortedCategoryKeys = sortCategoryKeys(byCategory);
 
   for (const catKey of sortedCategoryKeys) {
     const { category, docs: catDocs } = byCategory.get(catKey);
+    lines.push(
+      `### ${category.name} (Tier ${category.tier})`,
+      "",
+      `*${category.description}*`,
+      "",
+      "| Document | Description | References | Last Modified |",
+      "|----------|-------------|------------|---------------|"
+    );
 
-    lines.push(`### ${category.name} (Tier ${category.tier})`);
-    lines.push("");
-    lines.push(`*${category.description}*`);
-    lines.push("");
-    lines.push("| Document | Description | References | Last Modified |");
-    lines.push("|----------|-------------|------------|---------------|");
-
-    // Sort docs by name
     catDocs.sort((a, b) => a.title.localeCompare(b.title));
-
     for (const doc of catDocs) {
-      const refs = referenceGraph.get(doc.path);
-      const inCount = refs ? refs.inbound.length : 0;
-      const outCount = refs ? refs.outbound.length : 0;
-      const refStr = `↓${inCount} ↑${outCount}`;
-      // Escape pipe characters in description for markdown table
-      let desc = doc.description
-        ? doc.description.slice(0, 60) + (doc.description.length > 60 ? "..." : "")
-        : "-";
-      desc = desc.replace(/\|/g, "\\|");
-      const linkPath = encodeURI(doc.path);
-      // Escape pipe characters in title for markdown table
-      const safeTitle = doc.title.replace(/\|/g, "\\|");
-      lines.push(`| [${safeTitle}](${linkPath}) | ${desc} | ${refStr} | ${doc.lastModified} |`);
+      lines.push(formatDocumentRow(doc, referenceGraph));
     }
     lines.push("");
   }
+  lines.push("---", "");
+  return lines;
+}
 
-  lines.push("---");
-  lines.push("");
-
-  // Reference Graph - Most Connected
+/**
+ * Generate reference graph section (inbound and outbound)
+ * @param {Map} referenceGraph - Reference graph
+ * @param {Map} docsByPath - Document lookup map
+ * @returns {string[]} Lines for the reference graph section
+ */
+function generateReferenceGraphSection(referenceGraph, docsByPath) {
+  const lines = [];
   lines.push("## Reference Graph");
   lines.push("");
   lines.push("### Most Referenced Documents (Inbound Links)");
@@ -742,12 +756,64 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   lines.push("");
   lines.push("---");
   lines.push("");
+  return lines;
+}
+
+/**
+ * Generate markdown output
+ */
+function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
+  const lines = [];
+  const now = new Date().toISOString().split("T")[0];
+
+  // Create path->doc lookup Map for O(1) lookups instead of O(n) docs.find()
+  const docsByPath = new Map(docs.map((d) => [d.path, d]));
+
+  // Header
+  lines.push(
+    "# Documentation Index",
+    "",
+    "> **Auto-generated** - Do not edit manually. Run `npm run docs:index` to regenerate.",
+    "",
+    `**Generated:** ${now}`,
+    `**Active Documents:** ${docs.length}`,
+    `**Archived Documents:** ${archivedFiles.length}`,
+    "",
+    "---",
+    ""
+  );
+
+  // Table of Contents
+  lines.push(
+    "## Table of Contents",
+    "",
+    "1. [Summary Statistics](#summary-statistics)",
+    "2. [Documents by Category](#documents-by-category)",
+    "3. [Reference Graph](#reference-graph)",
+    "4. [Orphaned Documents](#orphaned-documents)",
+    "5. [Full Document List](#full-document-list)",
+    "6. [Archived Documents](#archived-documents)",
+    "",
+    "---",
+    ""
+  );
+
+  // Summary Statistics (extracted helper)
+  lines.push(...generateSummaryStats(docs));
+
+  // Documents by Category (extracted helper)
+  lines.push(...generateDocsByCategorySection(docs, referenceGraph));
+
+  // Reference Graph (extracted helper)
+  lines.push(...generateReferenceGraphSection(referenceGraph, docsByPath));
 
   // Orphaned Documents
-  lines.push("## Orphaned Documents");
-  lines.push("");
-  lines.push("Documents with no inbound links (not referenced by any other document):");
-  lines.push("");
+  lines.push(
+    "## Orphaned Documents",
+    "",
+    "Documents with no inbound links (not referenced by any other document):",
+    ""
+  );
 
   const orphaned = [...referenceGraph.entries()]
     .filter(([, refs]) => refs.inbound.length === 0)
@@ -757,8 +823,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   if (orphaned.length === 0) {
     lines.push("*No orphaned documents found.*");
   } else {
-    lines.push(`**${orphaned.length} orphaned documents:**`);
-    lines.push("");
+    lines.push(`**${orphaned.length} orphaned documents:**`, "");
     for (const path of orphaned) {
       const doc = docsByPath.get(path);
       const title = doc ? doc.title : basename(path, ".md");
@@ -766,18 +831,18 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       lines.push(`- [${escapeTableCell(title)}](${linkPath})`);
     }
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
+  lines.push("", "---", "");
 
   // Full Document List
-  lines.push("## Full Document List");
-  lines.push("");
-  lines.push("<details>");
-  lines.push("<summary>Click to expand full list of all documents</summary>");
-  lines.push("");
-  lines.push("| # | Path | Title | Tier | Status |");
-  lines.push("|---|------|-------|------|--------|");
+  lines.push(
+    "## Full Document List",
+    "",
+    "<details>",
+    "<summary>Click to expand full list of all documents</summary>",
+    "",
+    "| # | Path | Title | Tier | Status |",
+    "|---|------|-------|------|--------|"
+  );
 
   const sortedDocs = [...docs].sort((a, b) => a.path.localeCompare(b.path));
   let i = 1;
@@ -789,42 +854,39 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
     );
   }
 
-  lines.push("");
-  lines.push("</details>");
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-
-  // Archived Documents (simple list, not fully tracked)
-  lines.push("## Archived Documents");
-  lines.push("");
+  // S7778: Combine consecutive push calls into one
   lines.push(
-    "*Historical and completed documentation. These documents are preserved for reference but not actively tracked in the reference graph.*"
+    "",
+    "</details>",
+    "",
+    "---",
+    "",
+    // Archived Documents (simple list, not fully tracked)
+    "## Archived Documents",
+    "",
+    "*Historical and completed documentation. These documents are preserved for reference but not actively tracked in the reference graph.*",
+    ""
   );
-  lines.push("");
 
   if (archivedFiles.length === 0) {
     lines.push("*No archived documents.*");
   } else {
-    lines.push("<details>");
-    lines.push("<summary>Click to expand archived documents list</summary>");
-    lines.push("");
-    lines.push("| # | Path |");
-    lines.push("|---|------|");
+    lines.push(
+      "<details>",
+      "<summary>Click to expand archived documents list</summary>",
+      "",
+      "| # | Path |",
+      "|---|------|"
+    );
     const sortedArchived = [...archivedFiles].sort();
     let archiveNum = 1;
     for (const filePath of sortedArchived) {
       const linkPath = encodeURI(filePath);
       lines.push(`| ${archiveNum++} | [${escapeTableCell(filePath)}](${linkPath}) |`);
     }
-    lines.push("");
-    lines.push("</details>");
+    lines.push("", "</details>");
   }
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-  lines.push("*Generated by `scripts/generate-documentation-index.js`*");
-  lines.push("");
+  lines.push("", "---", "", "*Generated by `scripts/generate-documentation-index.js`*", "");
 
   return lines.join("\n");
 }

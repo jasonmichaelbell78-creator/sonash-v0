@@ -63,8 +63,15 @@ export function useTabRefresh(
     // Check if timestamp actually changed (new refresh triggered)
     if (currentTimestamp > lastRefreshRef.current) {
       lastRefreshRef.current = currentTimestamp;
-      // Call the refresh callback
-      void onRefresh();
+      // Call the refresh callback (fire-and-forget, but avoid unhandled rejections)
+      // Review #187: Use Promise.resolve().then() to catch both synchronous and async errors
+      // This ensures errors thrown synchronously by onRefresh() are also caught
+      Promise.resolve()
+        .then(() => onRefresh())
+        .catch((error) => {
+          // Review #186: Log refresh errors for debugging, but don't crash the app
+          console.error("useTabRefresh: onRefresh callback failed", error);
+        });
     }
   }, [activeTab, tabId, getTabRefreshTimestamp, onRefresh, options.skipInitial]);
 }
