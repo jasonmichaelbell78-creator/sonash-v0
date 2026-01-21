@@ -60,6 +60,49 @@ try {
 console.log("");
 
 // =============================================================================
+// Encrypted Secrets Check (for MCP tokens)
+// =============================================================================
+
+const ENV_LOCAL_PATH = path.join(projectDir, ".env.local");
+const ENCRYPTED_PATH = path.join(projectDir, ".env.local.encrypted");
+
+function checkSecretsStatus() {
+  const hasEnvLocal = fs.existsSync(ENV_LOCAL_PATH);
+  const hasEncrypted = fs.existsSync(ENCRYPTED_PATH);
+
+  // Check if .env.local has actual tokens (not just template)
+  let hasTokens = false;
+  if (hasEnvLocal) {
+    try {
+      const content = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
+      hasTokens = /^(GITHUB_TOKEN|SONAR_TOKEN|CONTEXT7_API_KEY)=.+$/m.test(content);
+    } catch {
+      // Ignore read errors
+    }
+  }
+
+  return { hasEnvLocal, hasEncrypted, hasTokens };
+}
+
+console.log("🔐 Checking MCP secrets status...");
+const secretsStatus = checkSecretsStatus();
+
+if (secretsStatus.hasTokens) {
+  console.log("   ✓ .env.local has tokens configured");
+} else if (secretsStatus.hasEncrypted) {
+  console.log("   ⚠️ Encrypted secrets found but not decrypted");
+  console.log("   → Run: node scripts/secrets/decrypt-secrets.js");
+  console.log("   → Or tell Claude: 'decrypt my secrets'");
+  warnings++;
+} else {
+  console.log("   ℹ️ No MCP tokens configured (some MCP servers may not work)");
+  console.log("   → To set up: Add tokens to .env.local");
+  console.log("   → Or encrypt: node scripts/secrets/encrypt-secrets.js");
+}
+
+console.log("");
+
+// =============================================================================
 // Dependency Cache Check
 // =============================================================================
 
@@ -302,3 +345,4 @@ console.log("💡 Tips:");
 console.log("   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns");
 console.log("   - Use TodoWrite for complex tasks (3+ steps)");
 console.log("   - Update SESSION_CONTEXT.md at end of session");
+console.log("   - If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");

@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 1.3 **Last Updated:** 2026-01-21 **Purpose:** Comprehensive
+**Version:** 1.5 **Last Updated:** 2026-01-21 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -282,6 +282,15 @@ DOCX, PPTX, XLSX, images (OCR), audio (transcription), HTML, CSV, JSON, XML,
 ZIP, YouTube URLs, EPubs **When to use:** Converting documents to Markdown
 format **Example:** Converting PDF documentation to Markdown **Parameters:**
 File path to convert
+
+#### `decrypt-secrets`
+
+**Description:** Decrypt MCP tokens for remote sessions. Decrypts
+`.env.local.encrypted` into `.env.local` using AES-256-GCM encryption. **When to
+use:** At the start of remote/web sessions when MCP servers need tokens
+**Example:** `/decrypt-secrets` then enter passphrase **Parameters:** None
+(prompts for passphrase) **Setup:** First encrypt your tokens with
+`node scripts/secrets/encrypt-secrets.js`
 
 #### `mcp-builder`
 
@@ -1126,119 +1135,114 @@ Migration task **Tools:** All tools
 ## MCP Servers
 
 MCP (Model Context Protocol) servers provide external integrations and
-capabilities.
+capabilities. Configuration is in `.mcp.json`.
+
+**Note:** Some servers require API tokens. Set tokens in `.env.local`
+(gitignored). For remote sessions, use encrypted secrets:
+`node scripts/secrets/decrypt-secrets.js`
 
 ### Active MCP Servers
 
-#### `serena`
+#### `filesystem`
 
-**Description:** Semantic code analysis and manipulation server. Provides
-symbol-based code navigation, search, and editing capabilities. Essential for
-intelligent codebase understanding. **When to use:** Code exploration, symbol
-search, semantic editing, finding references **Tools Available:**
+**Description:** Secure file operations with configurable access controls.
+**When to use:** File operations within the project directory **Tools
+Available:**
 
-- `list_dir` - List directory contents
-- `find_file` - Find files by pattern
-- `search_for_pattern` - Search code with regex
-- `get_symbols_overview` - Get file symbol overview
-- `find_symbol` - Find code symbols by name path
-- `find_referencing_symbols` - Find symbol references
-- `replace_symbol_body` - Replace symbol code
-- `insert_after_symbol` - Insert code after symbol
-- `insert_before_symbol` - Insert code before symbol
-- `rename_symbol` - Rename symbol across codebase
-- `write_memory` - Save project context
-- `read_memory` - Load project context
-- `list_memories` - List saved memories
-- `delete_memory` - Remove memory
-- `edit_memory` - Update memory content
-- `activate_project` - Switch project
-- `get_current_config` - View configuration
-- `check_onboarding_performed` - Check setup status
-- `onboarding` - Initialize project
-- `think_about_collected_information` - Reflection tool
-- `think_about_task_adherence` - Task validation
-- `think_about_whether_you_are_done` - Completion check
-- `initial_instructions` - Get Serena manual
+- `read_file` / `read_text_file` - Read file contents
+- `read_media_file` - Read images/audio files
+- `read_multiple_files` - Batch file reading
+- `write_file` - Create or overwrite files
+- `edit_file` - Make line-based edits
+- `create_directory` - Create directories
+- `list_directory` / `list_directory_with_sizes` - List directory contents
+- `directory_tree` - Get recursive tree view
+- `move_file` - Move or rename files
+- `search_files` - Search for files by pattern
+- `get_file_info` - Get file metadata
+- `list_allowed_directories` - Show accessible paths
 
-#### `sequential-thinking`
+#### `playwright`
 
-**Description:** Advanced problem-solving through structured chain-of-thought
-reasoning. Enables dynamic, reflective thinking with revision and branching.
-**When to use:** Complex problem-solving, multi-step analysis, situations
-requiring course correction **Tools Available:**
+**Description:** Browser automation and testing server. Control browsers, take
+screenshots, test web applications. **When to use:** E2E testing, web scraping,
+UI testing, debugging web applications **Setup:** Run
+`npx playwright install chrome` **Tools Available:**
 
-- `sequentialthinking` - Execute structured reasoning with thought chains
+- `browser_navigate` - Navigate to URL
+- `browser_click` - Click element
+- `browser_type` - Type text
+- `browser_snapshot` - Accessibility snapshot (preferred over screenshot)
+- `browser_take_screenshot` - Capture screenshot
+- `browser_fill_form` - Fill form fields
+- `browser_evaluate` - Execute JavaScript in browser
+- `browser_console_messages` - Get console logs
+- `browser_network_requests` - View network requests
+- `browser_tabs` - Manage browser tabs
+- `browser_wait_for` - Wait for conditions
+- `browser_close` - Close browser
 
-#### `magic`
+#### `github`
 
-**Description:** UI component generation and logo search server. Creates React
-components from descriptions and finds brand logos. **When to use:** Building UI
-components, finding logos, getting design inspiration **Tools Available:**
+**Description:** Full GitHub API access for repository management, issues, PRs.
+**When to use:** Managing GitHub repositories, issues, pull requests, file
+operations **Requires:** `GITHUB_TOKEN` in `.env.local` **Token scopes:**
+`repo`, `read:org`, `read:user` **Tools Available:**
 
-- `21st_magic_component_builder` - Generate UI components from natural language
-- `21st_magic_component_inspiration` - Get UI component inspiration from
-  21st.dev
-- `21st_magic_component_refiner` - Refine/improve existing UI components
-- `logo_search` - Search and retrieve brand logos in JSX/TSX/SVG format
+- Repository management (create, fork, search)
+- File operations (create, update, push)
+- Branch management
+- Issues (create, update, list, comment)
+- Pull requests (create, merge, review)
+- Search (code, issues, PRs, users)
+
+#### `memory`
+
+**Description:** Knowledge graph-based persistent memory system. **When to
+use:** Storing context that persists across sessions **Tools Available:**
+
+- Knowledge graph storage
+- Memory retrieval
+- Context persistence
+
+#### `git`
+
+**Description:** Local Git repository operations. **When to use:** Advanced git
+manipulation beyond standard commands **Tools Available:**
+
+- Repository inspection
+- Commit history analysis
+- Branch operations
+
+#### `sonarcloud`
+
+**Description:** SonarCloud/SonarQube analysis results fetcher. **When to use:**
+Fetching code quality issues, security hotspots, quality gate status
+**Requires:** `SONAR_TOKEN` in `.env.local` **Tools Available:**
+
+- `get_issues` - Fetch code issues with pagination
+- `get_hotspots` - Fetch security hotspots
+- `get_quality_gate` - Get quality gate status
+
+#### `firebase`
+
+**Description:** Firebase tools integration for project management. **When to
+use:** Firebase project operations, deployment, emulator management **Tools
+Available:**
+
+- Firebase CLI operations
+- Project management
+- Deployment tools
 
 #### `context7`
 
 **Description:** Library documentation and code example provider. Access
 up-to-date documentation for any programming library or framework. **When to
 use:** Learning new libraries, finding code examples, checking latest API
-documentation **Tools Available:**
+**Requires:** `CONTEXT7_API_KEY` in `.env.local` (optional) **Tools Available:**
 
 - `resolve-library-id` - Find Context7 library ID from package name
 - `query-docs` - Retrieve documentation and examples for library
-
-#### `playwright`
-
-**Description:** Browser automation and testing server. Control browsers, take
-screenshots, test web applications. **When to use:** E2E testing, web scraping,
-UI testing, debugging web applications **Tools Available:**
-
-- `browser_close` - Close browser
-- `browser_resize` - Resize browser window
-- `browser_console_messages` - Get console logs
-- `browser_handle_dialog` - Handle browser dialogs
-- `browser_evaluate` - Execute JavaScript in browser
-- `browser_file_upload` - Upload files
-- `browser_fill_form` - Fill form fields
-- `browser_install` - Install browser
-- `browser_press_key` - Keyboard input
-- `browser_type` - Type text
-- `browser_navigate` - Navigate to URL
-- `browser_navigate_back` - Go back
-- `browser_network_requests` - View network requests
-- `browser_run_code` - Execute Playwright code
-- `browser_take_screenshot` - Capture screenshot
-- `browser_snapshot` - Accessibility snapshot
-- `browser_click` - Click element
-- `browser_drag` - Drag and drop
-- `browser_hover` - Hover element
-- `browser_select_option` - Select dropdown option
-- `browser_tabs` - Manage browser tabs
-- `browser_wait_for` - Wait for conditions
-
-#### `ide`
-
-**Description:** IDE integration server. Access VS Code diagnostics and execute
-Jupyter notebook code. **When to use:** Getting language diagnostics, running
-Python notebooks, IDE integration **Tools Available:**
-
-- `getDiagnostics` - Get VS Code language diagnostics
-- `executeCode` - Execute Python in Jupyter kernel
-
-### Disabled MCP Servers
-
-#### `rube` (DISABLED)
-
-**Description:** Composio MCP server connecting 500+ apps (Slack, GitHub, Gmail,
-etc.) for cross-app automation. **Currently disabled in settings.** **When to
-use:** (Not available - disabled) **Tools Available:** (Server disabled)
-**Note:** To enable, modify `.claude/settings.json` and remove from
-`disabledMcpjsonServers` array
 
 ---
 
@@ -1336,7 +1340,7 @@ session **What it does:**
 
 - Validates project setup
 - Checks dependencies
-- Runs startup diagnostics **Location:** `.claude/hooks/session-start.sh`
+- Runs startup diagnostics **Location:** `.claude/hooks/session-start.js`
 
 #### `check-mcp-servers.sh`
 
@@ -1345,7 +1349,7 @@ start (after session-start.sh) **What it does:**
 
 - Verifies MCP servers are accessible
 - Reports unavailable servers
-- Validates MCP configuration **Location:** `.claude/hooks/check-mcp-servers.sh`
+- Validates MCP configuration **Location:** `.claude/hooks/check-mcp-servers.js`
   **Status Message:** "Checking MCP availability..."
 
 ### PostToolUse Hooks
@@ -1358,7 +1362,7 @@ After Write tool is used **What it does:**
 - Checks if required agents were invoked
 - Validates file write requirements
 - Ensures proper review process **Location:**
-  `.claude/hooks/check-write-requirements.sh` **Status Message:** "Checking
+  `.claude/hooks/check-write-requirements.js` **Status Message:** "Checking
   agent requirements..."
 
 #### `check-edit-requirements.sh`
@@ -1369,7 +1373,7 @@ triggered:** After Edit or MultiEdit tool is used **What it does:**
 - Validates edit requirements
 - Ensures proper code review
 - Checks agent invocation **Location:**
-  `.claude/hooks/check-edit-requirements.sh` **Status Message:** "Checking agent
+  `.claude/hooks/check-edit-requirements.js` **Status Message:** "Checking agent
   requirements..."
 
 #### `pattern-check.sh`
@@ -1379,19 +1383,8 @@ Write, Edit, or MultiEdit tools **What it does:**
 
 - Scans modified files for known anti-patterns
 - Reports pattern violations
-- Enforces code quality standards **Location:** `.claude/hooks/pattern-check.sh`
+- Enforces code quality standards **Location:** `.claude/hooks/pattern-check.js`
   **Status Message:** "Checking pattern compliance..."
-
-#### `coderabbit-review.sh`
-
-**Description:** Automated CodeRabbit review invocation **When triggered:**
-After Write, Edit, or MultiEdit tools **What it does:**
-
-- Triggers CodeRabbit AI review
-- Analyzes code changes
-- Generates review feedback **Location:** `.claude/hooks/coderabbit-review.sh`
-  **Status Message:** "Running CodeRabbit review..." **Note:** Uses `set -f` to
-  prevent glob expansion
 
 ### UserPromptSubmit Hooks
 
@@ -1403,7 +1396,7 @@ a prompt **What it does:**
 - Analyzes user request for trigger conditions
 - Checks if specific agents/skills should be invoked
 - Provides pre-task recommendations **Location:**
-  `.claude/hooks/analyze-user-request.sh` **Status Message:** "Checking PRE-TASK
+  `.claude/hooks/analyze-user-request.js` **Status Message:** "Checking PRE-TASK
   triggers..."
 
 ---
@@ -1567,13 +1560,14 @@ a prompt **What it does:**
 
 ## Version History
 
-| Version | Date       | Changes                                            |
-| ------- | ---------- | -------------------------------------------------- |
-| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas      |
-| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions    |
-| 1.2     | 2026-01-20 | Note custom commands migrated to skills format     |
-| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction |
-| 1.0     | 2026-01-10 | Initial comprehensive command reference created    |
+| Version | Date       | Changes                                                         |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.5     | 2026-01-21 | Update MCP servers, add decrypt-secrets, remove CodeRabbit hook |
+| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas                   |
+| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions                 |
+| 1.2     | 2026-01-20 | Note custom commands migrated to skills format                  |
+| 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction              |
+| 1.0     | 2026-01-10 | Initial comprehensive command reference created                 |
 
 ---
 

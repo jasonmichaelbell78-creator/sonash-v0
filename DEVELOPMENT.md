@@ -620,51 +620,58 @@ MCP servers extend Claude Code's capabilities with external integrations.
 
 ### Setup
 
-1. **Copy the example config:**
-
-   ```bash
-   cp .mcp.json.example .mcp.json
-   ```
-
-2. **Add your tokens:** Edit `.mcp.json` and replace placeholder values with
-   real tokens.
-
-3. **Restart Claude Code** to load the new configuration.
+1. **Configuration is in `.mcp.json`** (committed to repo)
+2. **Tokens are in `.env.local`** (gitignored, never committed)
+3. **For remote sessions:** Decrypt tokens with
+   `node scripts/secrets/decrypt-secrets.js`
 
 ### Available Servers
 
-| Server       | Purpose               | Token Required    |
-| ------------ | --------------------- | ----------------- |
-| `ccusage`    | Claude usage tracking | No                |
-| `sonarcloud` | Code quality metrics  | Yes (SONAR_TOKEN) |
+| Server       | Purpose               | Token Required              |
+| ------------ | --------------------- | --------------------------- |
+| `filesystem` | File operations       | No                          |
+| `playwright` | Browser automation    | No (needs browser)          |
+| `github`     | GitHub API access     | Yes (GITHUB_TOKEN)          |
+| `memory`     | Persistent knowledge  | No                          |
+| `git`        | Local git operations  | No                          |
+| `sonarcloud` | Code quality metrics  | Yes (SONAR_TOKEN)           |
+| `firebase`   | Firebase tools        | No                          |
+| `context7`   | Library documentation | Optional (CONTEXT7_API_KEY) |
 
-### SonarCloud Setup
+### Token Setup
 
-1. Get a token from https://sonarcloud.io/account/security
-2. Add to `.mcp.json`:
-   ```json
-   "sonarcloud": {
-     "env": {
-       "SONAR_TOKEN": "your-token-here"
-     }
-   }
+1. **Add tokens to `.env.local`:**
+
+   ```bash
+   GITHUB_TOKEN=ghp_your_token_here
+   SONAR_TOKEN=sqp_your_token_here
+   CONTEXT7_API_KEY=your_key_here  # optional
+   ```
+
+2. **For remote sessions (encrypted storage):**
+
+   ```bash
+   # First time: encrypt your tokens
+   node scripts/secrets/encrypt-secrets.js
+
+   # Each session: decrypt with your passphrase
+   node scripts/secrets/decrypt-secrets.js
    ```
 
 ### Security
 
-- **`.mcp.json` is gitignored** - Never commit tokens
-- **Use `.mcp.json.example`** as a template (committed, no secrets)
+- **`.mcp.json` uses `${VAR}` syntax** - Safe to commit, reads from environment
+- **`.env.local` is gitignored** - Never committed, contains actual tokens
+- **`.env.local.encrypted`** - AES-256 encrypted, safe to commit
 - **Rotate tokens** if accidentally exposed
 
-### Adding New MCP Servers
+### Playwright Setup
 
-Recommended servers for this project:
+```bash
+npx playwright install chrome
+```
 
-- **Next.js DevTools MCP** - Error detection, build status
-- **Firebase MCP** - Firestore, Auth, Storage access
-- **GitHub MCP** - PR management, issue tracking
-
-See: https://github.com/modelcontextprotocol/servers
+See: [.claude/COMMAND_REFERENCE.md](.claude/COMMAND_REFERENCE.md#mcp-servers)
 
 ---
 
