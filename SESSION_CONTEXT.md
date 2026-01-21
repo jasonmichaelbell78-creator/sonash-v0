@@ -10,12 +10,13 @@ to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-01-18 **Branch**: `main` **Working On**: Track A Phase
-3 complete (A23-A25) - Soft-delete users, auto-refresh tabs, error export
-**Files Modified**: `users-tab.tsx`, `admin.ts`, `jobs.ts`, `index.ts`, 13 admin
-tab components, new context/hook/utility files **Next Step**: Start Track B (Dev
-Dashboard) or Track A-P2 (Firebase Console Phase 2) **Uncommitted Work**: None -
-all changes committed and deployed
+**Last Checkpoint**: 2026-01-20 **Branch**: `main` **Working On**: Expansion
+Evaluation Process Setup - /expansion skill created for ~240 feature/technical
+ideas **Files Modified**: Technical Modules doc,
+EXPANSION_EVALUATION_TRACKER.md, expansion-evaluation skill,
+COMMAND_REFERENCE.md, PLAN_MAP.md, DOCUMENT_DEPENDENCIES.md **Next Step**: Run
+`/expansion begin` to start evaluation **Uncommitted Work**: None - all changes
+committed and pushed
 
 ---
 
@@ -31,7 +32,7 @@ productive work.
 
 ## 🔢 Session Tracking
 
-**Current Session Count**: 86 (since Jan 1, 2026)
+**Current Session Count**: 87 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recently Completed" entries; review-focused sessions
@@ -47,6 +48,24 @@ productive work.
 
 **See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0) |
 [Sprint Spec](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
+
+**Session #87 Update** - Expansion Evaluation Process Created:
+
+- **✅ EXPANSION SKILL CREATED**: `/expansion` commands for evaluating ~240
+  ideas
+  - Commands: begin, evaluate, status, decide, questions, end
+  - Created `.claude/skills/expansion-evaluation/` with SKILL.md + criteria
+- **✅ TECHNICAL MODULES PARSED**: T1-T9 from Multi-AI ideation doc
+  - Created `docs/SoNash Expansion - Technical Modules.md` (~105 ideas)
+  - Consolidated 5 AI perspectives (Gemini, ChatGPT, Claude, Kimi K2,
+    Perplexity)
+- **✅ TRACKER CREATED**: `docs/EXPANSION_EVALUATION_TRACKER.md`
+  - 21 modules: F1-F12 (feature) + T1-T9 (technical)
+  - 12 foundational questions for initial discussion
+  - Cross-reference table (F↔T dependencies)
+- **✅ PLAN_MAP.md PERSISTED**: Moved to `docs/` as reference document
+  - Added update triggers to DOCUMENT_DEPENDENCIES.md
+- **📋 NEXT**: Run `/expansion begin` to start evaluation session
 
 **Session #85 Update** - SonarCloud Sprint Paused, Blocker Resolved, CodeRabbit
 Removed:
@@ -241,6 +260,27 @@ symlink rejection)
 ---
 
 ## ✅ Recently Completed
+
+- **Session #87** (Jan 20, 2026):
+  - ✅ **Expansion Evaluation Process** - Complete infrastructure for ~240 ideas
+    - Created `/expansion` skill with 6 commands (begin, evaluate, status,
+      decide, questions, end)
+    - Parsed technical ideation doc into T1-T9 modules (~105 ideas)
+    - Created unified tracker with 21 modules (F1-F12 feature + T1-T9 technical)
+    - Added 12 foundational questions for initial discussion
+    - Cross-references mapped (F↔T dependencies)
+  - ✅ **Documentation Updates**
+    - Created `docs/SoNash Expansion - Technical Modules.md`
+    - Created `docs/EXPANSION_EVALUATION_TRACKER.md`
+    - Created `.claude/skills/expansion-evaluation/` skill directory
+    - Updated COMMAND_REFERENCE.md with expansion-evaluation skill
+    - Moved PLAN_MAP.md to docs/ as persistent reference
+    - Added plan update triggers to DOCUMENT_DEPENDENCIES.md
+  - **Commits**: 2 commits pushed to `main`
+    - `a043fcb` - feat: create expansion evaluation process for ~240 feature
+      ideas
+    - `13c1717` - docs: add PLAN_MAP.md as persistent documentation hierarchy
+      reference
 
 - **Session #68** (Jan 16, 2026):
   - ✅ **PR Reviews #155-156** - Security scanner hardening (Qodo suggestions)
@@ -657,6 +697,7 @@ npm run docs:check   # Documentation linting
 
 | Version | Date       | Changes                                                                                                                                                        | Author      |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 3.14    | 2026-01-20 | Session #87: Expansion Evaluation Process created; /expansion skill with 6 commands; T1-T9 parsed; Tracker + PLAN_MAP.md                                       | Claude      |
 | 3.11    | 2026-01-17 | Session #75: Track A-P2 planned (A19-A22); Context preservation pattern added; Password reset fix; Quick wins A15-A18 complete                                 | Claude      |
 | 3.10    | 2026-01-16 | Session #70: Added Background Jobs Expansion (A10-A14) to ROADMAP Track A; Added Deferred Background Jobs to M2; Updated sprint priorities                     | Claude      |
 | 3.8     | 2026-01-16 | Session #68: PR Reviews #155-156 (security scanner hardening - symlink protection, path traversal, pre-push fix); AI_REVIEW_LEARNINGS_LOG v7.1; 5 commits      | Claude      |
