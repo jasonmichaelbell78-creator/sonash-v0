@@ -1,45 +1,45 @@
 {
   "mcpServers": {
-    "ccusage": {
-      "command": "bunx",
-      "args": ["@ccusage/mcp@latest"]
-    },
-    "firebase": {
-      "command": "npx",
-      "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
-    },
-    "sonarcloud": {
-      "command": "node",
-      "args": ["scripts/mcp/sonarcloud-server.js"],
-      "env": {
-        "SONAR_TOKEN": "",
-        "SONAR_URL": "https://sonarcloud.io"
-      }
-    },
     "filesystem": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    },
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
     },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
     },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git", "."]
+    },
+    "sonarcloud": {
+      "command": "node",
+      "args": ["scripts/mcp/sonarcloud-server.js"],
+      "env": {
+        "SONAR_TOKEN": "${SONAR_TOKEN}",
+        "SONAR_URL": "https://sonarcloud.io"
+      }
+    },
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
+    },
     "context7": {
       "command": "npx",
       "args": ["-y", "@context7/mcp@latest"],
       "env": {
-        "CONTEXT7_API_KEY": ""
-      }
-    },
-    "nextjs-devtools": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/nextjs-devtools-mcp"],
-      "env": {
-        "NEXTJS_DEV_URL": "http://localhost:3000"
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
       }
     }
   }
