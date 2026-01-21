@@ -145,7 +145,8 @@ to local variable before use
 
 ## Related Documents
 
-- [Detailed Report](sonarcloud-issues-detailed.md) - Full issue list with code
+- **Detailed Report** - Run `node scripts/generate-detailed-sonar-report.js` to
+  generate `sonarcloud-issues-detailed.md` (not tracked in git)
 - [Dismissals](sonarcloud-dismissals.md) - Issues dismissed with justification
 - [Sprint Plan](../archive/completed-plans/sonarcloud-cleanup-sprint.md) - 5-PR
   structure (paused)

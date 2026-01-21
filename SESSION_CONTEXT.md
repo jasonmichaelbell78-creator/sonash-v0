@@ -45,7 +45,8 @@ productive work.
 
 **Status**: 🔄 IN PROGRESS (~60% complete - Track A Phase 3 done)
 
-**See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0)
+**See**: [ROADMAP.md](./ROADMAP.md#-active-sprint-operational-visibility-p0) |
+[Sprint Spec](docs/OPERATIONAL_VISIBILITY_SPRINT.md)
 
 **Session #85 Update** - SonarCloud Sprint Paused, Blocker Resolved, CodeRabbit
 Removed:
@@ -547,7 +548,7 @@ Remaining work (PR 3-5) deferred to M2 Architecture backlog.
 (Status: PAUSED, archived 2026-01-20)
 
 **Deferred work**: See
-[ROADMAP.md M2 section](./ROADMAP.md#sonarcloud-deferred-work-added-2026-01-20---session-85)
+[ROADMAP.md M2 → SonarCloud Deferred Work](./ROADMAP.md#m2-architecture--scalability)
 
 ---
 

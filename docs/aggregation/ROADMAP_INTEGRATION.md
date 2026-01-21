@@ -180,7 +180,7 @@ ROADMAP.md.
 ### 🚨 Clear Audit Backlog (EXPANDED)
 
 **Current backlog:** 56 items (was 9) **Source:**
-[MASTER_ISSUE_LIST.md](docs/aggregation/MASTER_ISSUE_LIST.md)
+[MASTER_ISSUE_LIST.md](./MASTER_ISSUE_LIST.md)
 
 #### E0 Quick Wins (15 items, ~4-6 hours)
 

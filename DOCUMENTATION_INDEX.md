@@ -215,7 +215,7 @@ _Claude Code skills_
 | [Nextjs Optimization Guide](.claude/skills/senior-frontend/references/nextjs_optimization_guide.md)                                 | This reference guide provides comprehensive information for ...   | ↓0 ↑0      | 2026-01-08    |
 | [Node/TypeScript MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/node_mcp_server.md)                          | This document provides Node/TypeScript-specific best practic...   | ↓1 ↑0      | 2026-01-08    |
 | [OpenRouter Integration for MarkItDown](.claude/skills/markitdown/OPENROUTER_INTEGRATION.md)                                        | This MarkItDown skill has been configured to use \*\*OpenRoute... | ↓0 ↑0      | 2026-01-08    |
-| [PR Review Processor](.claude/skills/pr-review-processor/SKILL.md)                                                                  | Standardized protocol for processing AI code review feedback...   | ↓0 ↑0      | 2026-01-08    |
+| [PR Review Skill](.claude/skills/pr-review/SKILL.md)                                                                                | Standardized protocol for processing AI code review feedback...   | ↓0 ↑0      | 2026-01-08    |
 | [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)                                 | -                                                                 | ↓0 ↑0      | 2026-01-08    |
 | [Pressure Test 2: Sunk Cost + Exhaustion](.claude/skills/systematic-debugging/test-pressure-2.md)                                   | -                                                                 | ↓0 ↑0      | 2026-01-08    |
 | [Pressure Test 3: Authority + Social Pressure](.claude/skills/systematic-debugging/test-pressure-3.md)                              | -                                                                 | ↓0 ↑0      | 2026-01-08    |
@@ -251,7 +251,6 @@ _Claude Code custom commands_
 | Document                                                                      | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Document Sync Check](.claude/commands/docs-sync.md)                          | Run the automated document template-instance synchronization... | ↓0 ↑0      | 2026-01-08    |
-| [Fetch PR Feedback](.claude/commands/fetch-pr-feedback.md)                    | description: Fetch AI code review feedback from GitHub PR       | ↓0 ↑0      | 2026-01-09    |
 | [PR Code Review Processor](.claude/commands/pr-review.md)                     | You are about to process AI code review feedback. This is a ... | ↓0 ↑0      | 2026-01-09    |
 | [Session Begin Checklist](.claude/commands/session-begin.md)                  | -                                                               | ↓0 ↑5      | 2026-01-08    |
 | [Session End Checklist](.claude/commands/session-end.md)                      | Before ending the session, complete these verification steps... | ↓0 ↑0      | 2026-01-08    |
@@ -464,7 +463,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Single-Session Refactoring Audit](.claude/commands/audit-refactoring.md)
 - [Single-Session Security Audit](.claude/commands/audit-security.md)
 - [Document Sync Check](.claude/commands/docs-sync.md)
-- [Fetch PR Feedback](.claude/commands/fetch-pr-feedback.md)
 - [PR Code Review Processor](.claude/commands/pr-review.md)
 - [Session Begin Checklist](.claude/commands/session-begin.md)
 - [Session End Checklist](.claude/commands/session-end.md)
@@ -496,7 +494,7 @@ Documents with no inbound links (not referenced by any other document):
 - [MarkItDown API Reference](.claude/skills/markitdown/references/api_reference.md)
 - [File Format Support](.claude/skills/markitdown/references/file_formats.md)
 - [MCP Server Development Guide](.claude/skills/mcp-builder/SKILL.md)
-- [PR Review Processor](.claude/skills/pr-review-processor/SKILL.md)
+- [PR Review Skill](.claude/skills/pr-review/SKILL.md)
 - [Requesting Code Review](.claude/skills/requesting-code-review/SKILL.md)
 - [Code Review Agent](.claude/skills/requesting-code-review/code-reviewer.md)
 - [Senior Architect](.claude/skills/senior-architect/SKILL.md)
@@ -607,8 +605,7 @@ Documents with no inbound links (not referenced by any other document):
 | 30  | [.claude/commands/audit-refactoring.md](.claude/commands/audit-refactoring.md)                                                                                       | Single-Session Refactoring Audit                               | 3    | -                                                    |
 | 31  | [.claude/commands/audit-security.md](.claude/commands/audit-security.md)                                                                                             | Single-Session Security Audit                                  | 3    | -                                                    |
 | 32  | [.claude/commands/docs-sync.md](.claude/commands/docs-sync.md)                                                                                                       | Document Sync Check                                            | 3    | -                                                    |
-| 33  | [.claude/commands/fetch-pr-feedback.md](.claude/commands/fetch-pr-feedback.md)                                                                                       | Fetch PR Feedback                                              | 3    | -                                                    |
-| 34  | [.claude/commands/pr-review.md](.claude/commands/pr-review.md)                                                                                                       | PR Code Review Processor                                       | 3    | -                                                    |
+| 33  | [.claude/commands/pr-review.md](.claude/commands/pr-review.md)                                                                                                       | PR Code Review Processor                                       | 3    | -                                                    |
 | 35  | [.claude/commands/session-begin.md](.claude/commands/session-begin.md)                                                                                               | Session Begin Checklist                                        | 3    | -                                                    |
 | 36  | [.claude/commands/session-end.md](.claude/commands/session-end.md)                                                                                                   | Session End Checklist                                          | 3    | -                                                    |
 | 37  | [.claude/HOOKS.md](.claude/HOOKS.md)                                                                                                                                 | Claude Hooks Documentation                                     | 4    | -                                                    |
@@ -644,7 +641,7 @@ Documents with no inbound links (not referenced by any other document):
 | 67  | [.claude/skills/mcp-builder/reference/node_mcp_server.md](.claude/skills/mcp-builder/reference/node_mcp_server.md)                                                   | Node/TypeScript MCP Server Implementation Guide                | 3    | -                                                    |
 | 68  | [.claude/skills/mcp-builder/reference/python_mcp_server.md](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                               | Python MCP Server Implementation Guide                         | 3    | -                                                    |
 | 69  | [.claude/skills/mcp-builder/SKILL.md](.claude/skills/mcp-builder/SKILL.md)                                                                                           | MCP Server Development Guide                                   | 3    | -                                                    |
-| 70  | [.claude/skills/pr-review-processor/SKILL.md](.claude/skills/pr-review-processor/SKILL.md)                                                                           | PR Review Processor                                            | 3    | -                                                    |
+| 70  | [.claude/skills/pr-review/SKILL.md](.claude/skills/pr-review/SKILL.md)                                                                                               | PR Review Skill                                                | 3    | -                                                    |
 | 71  | [.claude/skills/requesting-code-review/code-reviewer.md](.claude/skills/requesting-code-review/code-reviewer.md)                                                     | Code Review Agent                                              | 3    | -                                                    |
 | 72  | [.claude/skills/requesting-code-review/SKILL.md](.claude/skills/requesting-code-review/SKILL.md)                                                                     | Requesting Code Review                                         | 3    | -                                                    |
 | 73  | [.claude/skills/senior-architect/references/architecture_patterns.md](.claude/skills/senior-architect/references/architecture_patterns.md)                           | Architecture Patterns                                          | 3    | -                                                    |

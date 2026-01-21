@@ -106,7 +106,8 @@ shows no issues with current report sizes (~300 issues). **Reviewed by**: Claude
 
 ## Related Documents
 
-- [Detailed Report](sonarcloud-issues-detailed.md) - Full issue list with code
+- **Detailed Report** - Run `node scripts/generate-detailed-sonar-report.js` to
+  generate `sonarcloud-issues-detailed.md` (not tracked in git)
 - [Sprint Plan](../archive/completed-plans/sonarcloud-cleanup-sprint.md) - 5-PR
   structure (paused)
 - [Triage Guide](../SONARCLOUD_TRIAGE.md) - Triage decision framework
