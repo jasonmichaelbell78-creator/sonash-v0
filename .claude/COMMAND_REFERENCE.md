@@ -88,7 +88,9 @@ auto-enriches SonarCloud issues via API
 **Description:** Complete verification steps before starting work session **When
 to use:** **START OF EVERY SESSION** - validates environment and dependencies
 **Example:** `/session-begin` **Parameters:** None **Output:** Validation status
-(patterns:check, review:check, lessons:surface)
+(patterns:check, review:check, lessons:surface) **Note:** Now includes automatic
+secrets decryption check - Claude will prompt for your passphrase if MCP tokens
+need decrypting
 
 ### `/session-end`
 
@@ -563,9 +565,10 @@ use:** Security review **Example:** Pre-production security check
 
 #### `session-begin`
 
-**Description:** Complete verification steps before starting any work session
-**When to use:** **START OF EVERY SESSION** **Example:** First action in new
-session **Parameters:** None
+**Description:** Complete verification steps before starting any work session.
+Includes automatic secrets decryption check - Claude will prompt for passphrase
+if MCP tokens need decrypting. **When to use:** **START OF EVERY SESSION**
+**Example:** First action in new session **Parameters:** None
 
 #### `session-end`
 
