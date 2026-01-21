@@ -1,9 +1,29 @@
-# Command Reference
+# COMMAND_REFERENCE
 
-## Overview
-This document provides an overview of the various commands available in the...
+This is the command reference document for the system.
 
-...(additional lines)...
+## Commands
 
-## Conclusion
-This concludes the command reference documentation.
+- `start`: Starts the system.
+- `stop`: Stops the system.
+- `restart`: Restarts the system.
+
+## Usage
+
+To start the system, use the command:
+
+```bash
+start
+```
+
+To stop the system, use the command:
+
+```bash
+stop
+```
+
+To restart the system, use the command:
+
+```bash
+restart
+```
