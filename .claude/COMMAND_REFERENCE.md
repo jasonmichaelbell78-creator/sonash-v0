@@ -1,12 +1,24 @@
-# COMMAND REFERENCE
+# Command Reference
 
-## Overview
-This document provides a detailed reference guide for using the commands available in the Sonash v0 project.
+This is the command reference for the program.
 
 ## Commands
-- `command_1`: Description of command 1.
-- `command_2`: Description of command 2.
-- `command_3`: Description of command 3.
 
-## Usage
-Instructions on how to use the commands in various scenarios.
+- `start`: Starts the program.
+- `stop`: Stops the program.
+- `restart`: Restarts the program.
+- `status`: Displays the current status of the program.
+
+## Options
+
+- `--help`: Displays help information.
+- `--version`: Displays the version of the program.
+
+## Examples
+
+```bash
+start
+stop
+restart
+status
+```
