@@ -1,7 +1,7 @@
 # Audit Findings Backlog
 
-**Document Version**: 3.3 **Created**: 2025-12-30 **Last Updated**: 2026-01-13
-**Status**: ACTIVE **Total Items**: 9 (8-11 hours estimated effort)
+**Document Version**: 3.4 **Created**: 2025-12-30 **Last Updated**: 2026-01-21
+**Status**: ACTIVE **Total Items**: 10 (8-11 hours estimated effort)
 
 ---
 
@@ -498,6 +498,7 @@ _(Items completed during Step 4B remediation move here)_
 
 | Version | Date       | Changes                                                                                                            | Author           |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| 3.4     | 2026-01-21 | Refreshed backlog for CI health check; updated item count to 10                                                    | Claude           |
 | 3.3     | 2026-01-13 | Added CANON-0107 (security headers) and CANON-0108 (storage.rules) from single-session security audit              | Claude           |
 | 3.0     | 2026-01-05 | Renamed from POST_PHASE_8_BACKLOG.md; updated for Step 4 audit framework; aligned categories with 6-category audit | Claude           |
 | 2.0     | 2026-01-02 | Standardized structure per Phase 4 migration                                                                       | Claude           |
