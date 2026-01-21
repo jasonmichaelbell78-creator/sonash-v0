@@ -344,6 +344,13 @@ invocation before ANY response including clarifying questions **When to use:**
 **START OF ANY CONVERSATION** - establishes skill usage patterns **Example:**
 Auto-invoked at session start **Parameters:** None
 
+#### `validate-claude-folder`
+
+**Description:** Validate .claude folder configuration consistency. Checks MCP
+servers, hooks, skills, documentation freshness, and secrets configuration.
+**When to use:** After modifying .claude folder, during maintenance, when things
+aren't working **Example:** `/validate-claude-folder` **Parameters:** None
+
 ### UI/UX Skills
 
 #### `ui-design-system`
