@@ -458,7 +458,7 @@ const ANTI_PATTERNS = [
     // - .claude/hooks/*.js: All verified 2026-01-12 (Review #134) to have `rel === '' ||` at start of condition
     // - check-pattern-compliance.js: contains pattern definitions as strings (meta-detection)
     pathExclude:
-      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|coderabbit-review|pattern-check|session-start)\.js$/,
+      /(?:^|[\\/])(?:check-pattern-compliance|phase-complete-check|check-edit-requirements|check-write-requirements|check-mcp-servers|pattern-check|session-start)\.js$/,
   },
 ];
 
@@ -587,7 +587,6 @@ function getFilesToCheck() {
     // Claude hooks that are security-critical
     ".claude/hooks/check-edit-requirements.sh",
     ".claude/hooks/check-write-requirements.sh",
-    ".claude/hooks/coderabbit-review.sh",
     ".claude/hooks/check-mcp-servers.sh",
     ".claude/hooks/pattern-check.sh",
   ].filter((f) => existsSync(join(ROOT, f)));

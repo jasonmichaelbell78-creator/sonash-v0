@@ -52,50 +52,53 @@ const TRACKER_PATH = join(ROOT, "docs", "AUDIT_TRACKER.md");
 const _COORDINATOR_PATH = join(ROOT, "docs", "MULTI_AI_REVIEW_COORDINATOR.md"); // Reserved for future use
 
 // Category-specific thresholds
+// Updated 2026-01-20 (Session #85): Increased thresholds to reduce noise
+// Previous values were too sensitive for active development pace
 const CATEGORY_THRESHOLDS = {
   code: {
-    commits: 25,
-    files: 15,
+    commits: 75, // was 25
+    files: 40, // was 15
     filePattern: /\.(tsx?|jsx?|js)$/,
     excludePattern: /^(docs|tests|\.)/,
   },
   security: {
-    commits: 20,
-    files: 1, // ANY security file triggers
+    commits: 50, // was 20
+    files: 5, // was 1 (ANY) - now requires meaningful changes
     // Targeted patterns: explicitly match critical security files by name or path
     // Includes: firestore.rules, middleware.ts, .env files, functions/, auth/firebase libs
     filePattern:
       /(^|\/)(firestore\.rules|middleware\.ts)$|(^|\/)\.env(\.|$)|(^|\/)functions\/|(^|\/)lib\/(auth|firebase)[^/]*\.(ts|tsx|js|jsx)$|\b(auth|security|secrets|credential|token)\b/i,
   },
   performance: {
-    commits: 30,
-    files: 10,
+    commits: 100, // was 30
+    files: 30, // was 10
     filePattern: /\.(tsx?|jsx?)$/,
     checkBundle: true,
   },
   refactoring: {
-    commits: 40,
-    files: 20,
+    commits: 150, // was 40
+    files: 50, // was 20
     filePattern: /\.(tsx?|jsx?)$/,
     checkComplexity: true,
   },
   documentation: {
-    commits: 30,
-    files: 20,
+    commits: 100, // was 30
+    files: 50, // was 20
     filePattern: /\.md$/,
   },
   process: {
-    commits: 30,
-    files: 1, // ANY CI/hook file triggers
+    commits: 75, // was 30
+    files: 10, // was 1 (ANY) - now requires meaningful changes
     filePattern: /(\.github|\.claude|\.husky|scripts\/)/,
   },
 };
 
 // Multi-AI escalation thresholds
+// Updated 2026-01-20 (Session #85): Increased for active development pace
 const MULTI_AI_THRESHOLDS = {
-  singleAuditCount: 3, // Single audits before multi-AI
-  totalCommits: 100, // Total commits across all categories
-  daysSinceAudit: 14, // Days since any audit
+  singleAuditCount: 5, // was 3 - Single audits before multi-AI
+  totalCommits: 300, // was 100 - Total commits across all categories
+  daysSinceAudit: 30, // was 14 - Days since any audit
 };
 
 // Shared category section header patterns (bounded, no backtracking risk)

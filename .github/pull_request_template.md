@@ -46,30 +46,10 @@ For full conventions, see: docs/PR_WORKFLOW_CHECKLIST.md
 
 Closes # Related to #
 
-## CodeRabbit Review
-
-<!-- To be filled manually after processing CodeRabbit suggestions -->
-<!-- This section is for CodeRabbit reviews. See AI_REVIEW_PROCESS.md (tool-agnostic) for categorization and triage guidelines. -->
-<!-- Categorize each suggestion as Addressed/Deferred/Rejected with reasoning -->
-
-**Total Suggestions:** **Addressed:** **Deferred:** **Rejected:**
-
-<details>
-<summary>CodeRabbit Review Summary</summary>
-
-### ✅ Addressed
-
-### 🔄 Deferred
-
-### ❌ Rejected
-
-</details>
-
 ## Pre-Merge Checklist
 
 - [ ] All tests passing
 - [ ] Lint checks passing
 - [ ] Build successful
-- [ ] CodeRabbit suggestions addressed or documented
 - [ ] Breaking changes documented (if any)
 - [ ] Documentation updated (if needed)
