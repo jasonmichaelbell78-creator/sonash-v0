@@ -183,11 +183,14 @@ Look for these patterns in pasted content:
 When SonarCloud issues detected:
 
 ```bash
+# Set project key from environment or use default
+SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY:-"jasonmichaelbell78-creator_sonash-v0"}
+
 # 1. Fetch issue details with code snippets
-curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=jasonmichaelbell78-creator_sonash-v0&rules=<rule_id>&ps=100" | jq '.issues[] | {file: .component, line: .line, message: .message, rule: .rule}'
+curl -fsSL "https://sonarcloud.io/api/issues/search?componentKeys=${SONAR_PROJECT_KEY}&rules=<rule_id>&ps=100" | jq '.issues[] | {file: .component, line: .line, message: .message, rule: .rule}'
 
 # 2. For security hotspots, fetch with status
-curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=jasonmichaelbell78-creator_sonash-v0&status=TO_REVIEW&ps=100" | jq '.hotspots[] | {file: .component, line: .line, message: .message, rule: .securityCategory}'
+curl -fsSL "https://sonarcloud.io/api/hotspots/search?projectKey=${SONAR_PROJECT_KEY}&status=TO_REVIEW&ps=100" | jq '.hotspots[] | {file: .component, line: .line, message: .message, rule: .securityCategory}'
 ```
 
 **Or use MCP tools:**
@@ -347,9 +350,14 @@ if [ -f docs/AI_REVIEW_LEARNINGS_LOG.md ]; then
 fi
 
 archived=0
-if [ -f docs/archive/REVIEWS_1-40.md ]; then
-  archived=$(grep -c "#### Review #" docs/archive/REVIEWS_1-40.md || true)
-  archived=${archived:-0}
+# Use find to handle multiple archive files and cases where none exist
+if [ -d docs/archive ]; then
+  # The find command is robust against no-match errors
+  archived_files=$(find docs/archive -type f -name "REVIEWS_*.md" 2>/dev/null)
+  if [ -n "$archived_files" ]; then
+    archived=$(grep -ch "#### Review #" $archived_files 2>/dev/null | awk '{s+=$1} END {print s+0}')
+    archived=${archived:-0}
+  fi
 fi
 
 echo "Total reviews: $((active + archived))"

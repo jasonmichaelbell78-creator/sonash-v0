@@ -1,6 +1,6 @@
 # Claude Code Command Reference
 
-**Version:** 1.2 **Last Updated:** 2026-01-20 **Purpose:** Comprehensive
+**Version:** 1.3 **Last Updated:** 2026-01-21 **Purpose:** Comprehensive
 reference for all CLI commands, agents, skills, MCP servers, and shortcuts
 available in Claude Code
 
@@ -1559,6 +1559,7 @@ a prompt **What it does:**
 
 | Version | Date       | Changes                                            |
 | ------- | ---------- | -------------------------------------------------- |
+| 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions    |
 | 1.2     | 2026-01-20 | Note custom commands migrated to skills format     |
 | 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction |
 | 1.0     | 2026-01-10 | Initial comprehensive command reference created    |
