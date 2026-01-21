@@ -932,6 +932,50 @@ claude/cherry-pick-commits-pr-review-NlFAz **Suggestions:** 10 total (Security:
 
 ---
 
+#### Review #191: Encrypted Secrets PR CI Compliance (2026-01-21)
+
+**Source:** CI Pattern Compliance + Qodo PR Suggestions **PR/Branch:**
+claude/review-cherry-pick-commits-RBG4e **Suggestions:** 10 total (Major: 3,
+Minor: 7)
+
+**Issues Fixed:**
+
+| #   | Issue                           | Severity | File                   | Fix                                                    |
+| --- | ------------------------------- | -------- | ---------------------- | ------------------------------------------------------ |
+| 1   | Passphrase echo exposure        | Major    | encrypt/decrypt-\*.js  | Use process.stdin.setRawMode for hidden input          |
+| 2   | .env.local insecure permissions | Major    | decrypt-secrets.js     | fs.chmodSync(path, 0o600) after write                  |
+| 3   | .encrypted insecure permissions | Major    | encrypt-secrets.js     | fs.chmodSync(path, 0o600) after write                  |
+| 4   | Unsafe error.message access     | Minor    | decrypt-secrets.js:59  | error instanceof Error ? error.message : String(error) |
+| 5   | Unsafe error.message access     | Minor    | decrypt-secrets.js:167 | error instanceof Error ? error.message : String(error) |
+| 6   | Unsanitized error logging       | Minor    | decrypt-secrets.js:172 | Sanitize with instanceof check                         |
+| 7   | Unsanitized error logging       | Minor    | encrypt-secrets.js:123 | Sanitize with instanceof check                         |
+| 8   | readFileSync without try/catch  | Minor    | decrypt-secrets.js:121 | Wrap in try/catch                                      |
+| 9   | readFileSync without try/catch  | Minor    | decrypt-secrets.js:132 | Wrap in try/catch                                      |
+| 10  | readFileSync without try/catch  | Minor    | encrypt-secrets.js:80  | Wrap in try/catch                                      |
+
+**Patterns Identified:**
+
+1. **Hidden passphrase input**: readline.question() echoes input - use
+   process.stdin.setRawMode(true) for secure password entry
+2. **Secure file permissions**: Secrets files should have 0600 permissions to
+   prevent other users from reading
+3. **Safe error access**: Always check `error instanceof Error` before accessing
+   `.message` property
+
+**Key Learnings:**
+
+- Node.js readline doesn't hide input by default - need raw mode for passwords
+- fs.writeFileSync doesn't set restrictive permissions - explicitly chmod after
+- Pattern compliance catches issues that linters miss
+
+**Resolution:**
+
+- Fixed: 10 items
+- Rejected: 0 items
+- Deferred: 0 items
+
+---
+
 #### Review #182: SonarCloud Sprint PR 1 - Mechanical Fixes (2026-01-19)
 
 **Source:** SonarCloud Sprint Plan + Automated Analysis **PR/Branch:**

@@ -403,6 +403,9 @@ const ANTI_PATTERNS = [
     // 2026-01-20 audit (PR #286):
     // - check-backlog-health.js: readFileSync at L250 IS in try/catch (L242-292)
     // - security-check.js: readFileSync at L358 IS in try/catch (L357-361)
+    // 2026-01-21 audit (Review #191):
+    // - encrypt-secrets.js: readFileSync at L136 IS in try/catch (L135-140)
+    // - decrypt-secrets.js: readFileSync at L178 IS in try/catch (L177-191), L197 in try/catch (L196-201)
     // S5843: Use array instead of complex regex to reduce complexity from 21 to < 20
     // (Review #184 - SonarCloud regex complexity)
     pathExcludeList: [
@@ -426,6 +429,8 @@ const ANTI_PATTERNS = [
       "verify-sonar-phase.js",
       "check-backlog-health.js",
       "security-check.js",
+      "encrypt-secrets.js",
+      "decrypt-secrets.js",
     ],
   },
   {

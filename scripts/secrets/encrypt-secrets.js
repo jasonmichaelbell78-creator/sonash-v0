@@ -16,7 +16,6 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
-const readline = require("node:readline");
 
 // Use process.cwd() - scripts should be run from project root
 const PROJECT_ROOT = process.cwd();
@@ -28,8 +27,19 @@ const ALGORITHM = "aes-256-gcm";
 const KEY_LENGTH = 32; // 256 bits
 const IV_LENGTH = 16; // 128 bits
 const SALT_LENGTH = 32;
-const TAG_LENGTH = 16;
 const ITERATIONS = 100000;
+
+// Secure file permissions (owner read/write only)
+const SECURE_FILE_MODE = 0o600;
+
+/**
+ * Safely extract error message from unknown error type
+ * @param {unknown} error - The caught error
+ * @returns {string} - Safe error message
+ */
+function getErrorMessage(error) {
+  return error instanceof Error ? error.message : String(error);
+}
 
 function deriveKey(passphrase, salt) {
   return crypto.pbkdf2Sync(passphrase, salt, ITERATIONS, KEY_LENGTH, "sha256");
@@ -48,20 +58,63 @@ function encrypt(plaintext, passphrase) {
   return Buffer.concat([salt, iv, tag, encrypted]);
 }
 
+/**
+ * Prompt for passphrase with hidden input
+ * @param {string} prompt - The prompt to display
+ * @returns {Promise<string>} - The entered passphrase
+ */
 async function promptPassphrase(prompt) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
   return new Promise((resolve) => {
-    // Hide input for passphrase
     process.stdout.write(prompt);
-    rl.question("", (answer) => {
-      rl.close();
-      console.log(""); // New line after hidden input
-      resolve(answer);
-    });
+
+    // Check if we can use raw mode (TTY required)
+    if (process.stdin.isTTY && process.stdin.setRawMode) {
+      let passphrase = "";
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      process.stdin.setEncoding("utf8");
+
+      const onData = (char) => {
+        // Handle Enter key
+        if (char === "\n" || char === "\r") {
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          process.stdin.removeListener("data", onData);
+          console.log(""); // New line after hidden input
+          resolve(passphrase);
+        }
+        // Handle Backspace
+        else if (char === "\u007F" || char === "\b") {
+          if (passphrase.length > 0) {
+            passphrase = passphrase.slice(0, -1);
+          }
+        }
+        // Handle Ctrl+C
+        else if (char === "\u0003") {
+          process.stdin.setRawMode(false);
+          process.exit(1);
+        }
+        // Regular character
+        else if (char.charCodeAt(0) >= 32) {
+          passphrase += char;
+        }
+      };
+
+      process.stdin.on("data", onData);
+    } else {
+      // Fallback for non-TTY (pipe input) - use readline
+      const readline = require("node:readline");
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      rl.question("", (answer) => {
+        rl.close();
+        console.log("");
+        resolve(answer);
+      });
+    }
   });
 }
 
@@ -76,8 +129,14 @@ async function main() {
     process.exit(1);
   }
 
-  // Read .env.local
-  const envContent = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
+  // Read .env.local with try/catch
+  let envContent;
+  try {
+    envContent = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
+  } catch (error) {
+    console.error(`❌ Error reading .env.local: ${getErrorMessage(error)}`);
+    process.exit(1);
+  }
 
   // Check if it has any actual tokens (not just placeholders)
   const hasTokens = /^(GITHUB_TOKEN|SONAR_TOKEN|CONTEXT7_API_KEY)=.+$/m.test(envContent);
@@ -108,8 +167,9 @@ async function main() {
   console.log("\n🔒 Encrypting...");
   const encrypted = encrypt(envContent, passphrase);
 
-  // Write encrypted file
+  // Write encrypted file with secure permissions
   fs.writeFileSync(ENCRYPTED_PATH, encrypted);
+  fs.chmodSync(ENCRYPTED_PATH, SECURE_FILE_MODE);
 
   console.log("✅ Encrypted successfully!");
   console.log(`   Output: .env.local.encrypted`);
@@ -120,4 +180,7 @@ async function main() {
   console.log("   3. At session start, run: node scripts/secrets/decrypt-secrets.js");
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(`❌ ${getErrorMessage(error)}`);
+  process.exit(1);
+});

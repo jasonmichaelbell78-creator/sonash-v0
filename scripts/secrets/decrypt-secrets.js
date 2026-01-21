@@ -34,6 +34,18 @@ const SALT_LENGTH = 32;
 const TAG_LENGTH = 16;
 const ITERATIONS = 100000;
 
+// Secure file permissions (owner read/write only)
+const SECURE_FILE_MODE = 0o600;
+
+/**
+ * Safely extract error message from unknown error type
+ * @param {unknown} error - The caught error
+ * @returns {string} - Safe error message
+ */
+function getErrorMessage(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
 function deriveKey(passphrase, salt) {
   return crypto.pbkdf2Sync(passphrase, salt, ITERATIONS, KEY_LENGTH, "sha256");
 }
@@ -57,7 +69,8 @@ function decrypt(encryptedBuffer, passphrase) {
     const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
     return decrypted.toString("utf8");
   } catch (error) {
-    if (error.message.includes("auth")) {
+    const message = getErrorMessage(error);
+    if (message.includes("auth")) {
       throw new Error("Invalid passphrase or corrupted file");
     }
     throw error;
@@ -81,19 +94,62 @@ async function readStdin() {
   });
 }
 
+/**
+ * Prompt for passphrase with hidden input
+ * @param {string} prompt - The prompt to display
+ * @returns {Promise<string>} - The entered passphrase
+ */
 async function promptPassphrase(prompt) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
   return new Promise((resolve) => {
     process.stdout.write(prompt);
-    rl.question("", (answer) => {
-      rl.close();
-      console.log("");
-      resolve(answer);
-    });
+
+    // Check if we can use raw mode (TTY required)
+    if (process.stdin.isTTY && process.stdin.setRawMode) {
+      let passphrase = "";
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      process.stdin.setEncoding("utf8");
+
+      const onData = (char) => {
+        // Handle Enter key
+        if (char === "\n" || char === "\r") {
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          process.stdin.removeListener("data", onData);
+          console.log(""); // New line after hidden input
+          resolve(passphrase);
+        }
+        // Handle Backspace
+        else if (char === "\u007F" || char === "\b") {
+          if (passphrase.length > 0) {
+            passphrase = passphrase.slice(0, -1);
+          }
+        }
+        // Handle Ctrl+C
+        else if (char === "\u0003") {
+          process.stdin.setRawMode(false);
+          process.exit(1);
+        }
+        // Regular character
+        else if (char.charCodeAt(0) >= 32) {
+          passphrase += char;
+        }
+      };
+
+      process.stdin.on("data", onData);
+    } else {
+      // Fallback for non-TTY (pipe input)
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      rl.question("", (answer) => {
+        rl.close();
+        console.log("");
+        resolve(answer);
+      });
+    }
   });
 }
 
@@ -118,18 +174,31 @@ async function main() {
 
   // Check if .env.local already exists and has tokens
   if (fs.existsSync(ENV_LOCAL_PATH)) {
-    const content = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
-    const hasTokens = /^(GITHUB_TOKEN|SONAR_TOKEN|CONTEXT7_API_KEY)=.+$/m.test(content);
-    if (hasTokens) {
-      if (!quiet) {
-        console.log("✅ .env.local already exists with tokens");
+    try {
+      const content = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
+      const hasTokens = /^(GITHUB_TOKEN|SONAR_TOKEN|CONTEXT7_API_KEY)=.+$/m.test(content);
+      if (hasTokens) {
+        if (!quiet) {
+          console.log("✅ .env.local already exists with tokens");
+        }
+        process.exit(0);
       }
-      process.exit(0);
+    } catch (error) {
+      // File exists but can't be read - continue to decrypt
+      if (!quiet) {
+        console.log(`⚠️  Could not read existing .env.local: ${getErrorMessage(error)}`);
+      }
     }
   }
 
   // Read encrypted file
-  const encryptedBuffer = fs.readFileSync(ENCRYPTED_PATH);
+  let encryptedBuffer;
+  try {
+    encryptedBuffer = fs.readFileSync(ENCRYPTED_PATH);
+  } catch (error) {
+    console.error(`❌ Failed to read encrypted file: ${getErrorMessage(error)}`);
+    process.exit(1);
+  }
 
   // Get passphrase
   let passphrase = process.env.SECRETS_PASSPHRASE;
@@ -154,8 +223,9 @@ async function main() {
   try {
     const decrypted = decrypt(encryptedBuffer, passphrase);
 
-    // Write .env.local
+    // Write .env.local with secure permissions
     fs.writeFileSync(ENV_LOCAL_PATH, decrypted);
+    fs.chmodSync(ENV_LOCAL_PATH, SECURE_FILE_MODE);
 
     if (!quiet) {
       console.log("✅ Decrypted successfully!");
@@ -164,9 +234,12 @@ async function main() {
       console.log("💡 MCP servers will use these tokens automatically.");
     }
   } catch (error) {
-    console.error(`❌ ${error.message}`);
+    console.error(`❌ ${getErrorMessage(error)}`);
     process.exit(1);
   }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(`❌ ${getErrorMessage(error)}`);
+  process.exit(1);
+});
