@@ -36,6 +36,37 @@ started:
 
 Before starting any work, complete these verification steps:
 
+## 0. Secrets Decryption Check (REMOTE SESSIONS)
+
+**Check if MCP tokens need decrypting:**
+
+```bash
+# Check secrets status
+if [ -f ".env.local.encrypted" ] && [ ! -f ".env.local" ]; then
+  echo "⚠️ Encrypted secrets found but not decrypted"
+fi
+```
+
+**If secrets need decrypting:**
+
+1. **Ask the user for their passphrase** - Example: "Your MCP tokens need
+   decrypting. What's your passphrase?"
+2. **Run the decrypt command** using stdin (avoids shell history exposure):
+   ```bash
+   echo "<user_passphrase>" | node scripts/secrets/decrypt-secrets.js --stdin
+   ```
+3. **Verify success** - Check that `.env.local` now exists with tokens
+4. **Never store or log the passphrase** - Only use it for the decrypt command
+
+**Security note:** Using `--stdin` with echo pipe is safer than env vars, which
+can leak to shell history and process listings.
+
+**If secrets are already decrypted or no encrypted file exists:**
+
+- Skip this step and continue to Context Loading
+
+---
+
 ## 1. Context Loading (MANDATORY)
 
 - [ ] Read [SESSION_CONTEXT.md](../../SESSION_CONTEXT.md) - Current status,

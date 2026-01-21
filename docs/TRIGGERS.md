@@ -427,7 +427,7 @@ TRIGGER: schedule (daily)
 | Attribute     | Value                            |
 | ------------- | -------------------------------- |
 | **Name**      | Claude Session Start             |
-| **Location**  | `.claude/hooks/session-start.sh` |
+| **Location**  | `.claude/hooks/session-start.js` |
 | **Trigger**   | Every new Claude Code session    |
 | **Execution** | Automatic                        |
 
@@ -480,7 +480,7 @@ Skip     npm run build
 
 ```bash
 # Run hook manually
-bash .claude/hooks/session-start.sh
+node .claude/hooks/session-start.js
 
 # Check hook configuration
 cat .claude/settings.json
@@ -844,7 +844,7 @@ npm run build
 echo "✅ Build working"
 
 # 7. Session hook
-bash .claude/hooks/session-start.sh
+node .claude/hooks/session-start.js
 echo "✅ Session hook working"
 ```
 

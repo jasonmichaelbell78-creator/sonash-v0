@@ -1,13 +1,13 @@
 # Claude Hooks Documentation
 
-**Last Updated:** 2026-01-13 **Configuration:** `.claude/settings.json`
+**Last Updated:** 2026-01-21 **Configuration:** `.claude/settings.json`
 
 ---
 
 ## Overview
 
-Claude hooks are shell scripts that run automatically in response to Claude Code
-events. They enforce project standards, run quality checks, and provide
+Claude hooks are Node.js scripts that run automatically in response to Claude
+Code events. They enforce project standards, run quality checks, and provide
 contextual guidance.
 
 ---
@@ -32,19 +32,19 @@ contextual guidance.
 
 **When:** Claude Code starts a new session (web/remote environments only)
 
-### session-start.sh
+### session-start.js
 
 **Purpose:** Prepare development environment for new session
 
 **What it does:**
 
-1. Install npm dependencies (root and functions) - uses lockfile hash caching
-2. Build Firebase Functions
-3. Compile test files
-4. Run pattern compliance check
-5. Check consolidation status (reviews/archiving thresholds)
-6. Surface relevant past learnings from AI_REVIEW_LEARNINGS_LOG.md
-7. Check document sync status (template instances)
+1. Check MCP secrets status (encrypted tokens)
+2. Install npm dependencies (root and functions) - uses lockfile hash caching
+3. Build Firebase Functions
+4. Compile test files
+5. Run pattern compliance check
+6. Check consolidation status (reviews/archiving thresholds)
+7. Check backlog health
 8. Display session checklist
 
 **Timing:** ~10-20 seconds (5-10s if dependencies cached)
@@ -55,14 +55,15 @@ contextual guidance.
 - Skips on local CLI (dependencies already exist)
 - Uses lockfile hash caching to skip npm install if unchanged
 
-### check-mcp-servers.sh
+### check-mcp-servers.js
 
 **Purpose:** Check MCP server availability
 
 **What it does:**
 
-1. Verify configured MCP servers are accessible
-2. Report available tools
+1. Read `.mcp.json` configuration
+2. Report available MCP servers by name
+3. Does NOT expose tokens or sensitive config
 
 ---
 
@@ -70,7 +71,7 @@ contextual guidance.
 
 **When:** After Write, Edit, or MultiEdit tools are used
 
-### check-write-requirements.sh
+### check-write-requirements.js
 
 **Trigger:** Write tool **Purpose:** Verify agent requirements for file creation
 
@@ -79,7 +80,7 @@ contextual guidance.
 - Whether appropriate agent/skill should have been used
 - File type-specific requirements
 
-### check-edit-requirements.sh
+### check-edit-requirements.js
 
 **Trigger:** Edit, MultiEdit tools **Purpose:** Verify agent requirements for
 file modifications
@@ -89,7 +90,7 @@ file modifications
 - Whether appropriate agent/skill should have been used
 - File type-specific requirements
 
-### pattern-check.sh
+### pattern-check.js
 
 **Trigger:** Write, Edit, MultiEdit tools **Purpose:** Check pattern compliance
 on modified files
@@ -108,7 +109,7 @@ on modified files
 
 **When:** User submits a prompt
 
-### analyze-user-request.sh
+### analyze-user-request.js
 
 **Purpose:** Check PRE-TASK triggers
 
@@ -126,12 +127,15 @@ on modified files
 
 | File                          | Event                              | Purpose            |
 | ----------------------------- | ---------------------------------- | ------------------ |
-| `session-start.sh`            | SessionStart                       | Environment setup  |
-| `check-mcp-servers.sh`        | SessionStart                       | MCP availability   |
-| `check-write-requirements.sh` | PostToolUse (Write)                | Agent requirements |
-| `check-edit-requirements.sh`  | PostToolUse (Edit/MultiEdit)       | Agent requirements |
-| `pattern-check.sh`            | PostToolUse (Write/Edit/MultiEdit) | Pattern compliance |
-| `analyze-user-request.sh`     | UserPromptSubmit                   | PRE-TASK triggers  |
+| `session-start.js`            | SessionStart                       | Environment setup  |
+| `check-mcp-servers.js`        | SessionStart                       | MCP availability   |
+| `check-write-requirements.js` | PostToolUse (Write)                | Agent requirements |
+| `check-edit-requirements.js`  | PostToolUse (Edit/MultiEdit)       | Agent requirements |
+| `pattern-check.js`            | PostToolUse (Write/Edit/MultiEdit) | Pattern compliance |
+| `analyze-user-request.js`     | UserPromptSubmit                   | PRE-TASK triggers  |
+
+**Note:** Shell script wrappers (`.sh` files) also exist for compatibility but
+the main logic is in the Node.js (`.js`) files.
 
 ---
 
@@ -159,20 +163,23 @@ All Claude hooks are **advisory** - they warn but don't block operations:
 
 ## Adding New Hooks
 
-1. Create shell script in `.claude/hooks/`
-2. Make executable: `chmod +x .claude/hooks/your-hook.sh`
-3. Add to `.claude/settings.json`
-4. Document in this file
+1. Create Node.js script in `.claude/hooks/`
+2. Add to `.claude/settings.json`
+3. Document in this file
 
 **Template:**
 
-```bash
-#!/bin/bash
-set -euo pipefail
+```javascript
+#!/usr/bin/env node
+const fs = require("node:fs");
+const path = require("node:path");
 
-# Your hook logic here
+// Use process.cwd() for project root
+const PROJECT_ROOT = process.cwd();
 
-echo "Hook result message"
+// Your hook logic here
+
+console.log("Hook result message");
 ```
 
 ---
@@ -182,14 +189,14 @@ echo "Hook result message"
 **Check if hook ran:**
 
 - Look for status message in Claude output
-- Check hook script directly: `.claude/hooks/script.sh`
+- Run hook script directly: `node .claude/hooks/script.js`
 
 **Common issues:**
 
-- Script not executable (`chmod +x`)
 - Syntax errors in script
 - Wrong path in settings.json
 - Missing dependencies in script
+- Environment variable not available
 
 ---
 
@@ -197,5 +204,4 @@ echo "Hook result message"
 
 - [AI_WORKFLOW.md](../AI_WORKFLOW.md) - Session workflows
 - [DEVELOPMENT.md](../DEVELOPMENT.md) - Git hooks
-- [docs/SLASH_COMMANDS_REFERENCE.md](../docs/SLASH_COMMANDS_REFERENCE.md) -
-  Slash commands
+- [COMMAND_REFERENCE.md](./COMMAND_REFERENCE.md) - Full command reference

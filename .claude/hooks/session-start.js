@@ -60,6 +60,92 @@ try {
 console.log("");
 
 // =============================================================================
+// Encrypted Secrets Check (for MCP tokens)
+// =============================================================================
+
+const ENV_LOCAL_PATH = path.join(projectDir, ".env.local");
+const ENCRYPTED_PATH = path.join(projectDir, ".env.local.encrypted");
+
+/**
+ * Check if a token value looks like a real token (not a placeholder)
+ * @param {string|null} value - The token value to check
+ * @returns {boolean} - True if it looks like a real token
+ */
+function looksLikeRealToken(value) {
+  if (!value) return false;
+  const lower = value.toLowerCase();
+  // Reject common placeholder patterns used in templates/docs
+  if (
+    lower.includes("your_") ||
+    lower.includes("_here") ||
+    lower.includes("placeholder") ||
+    lower.includes("example") ||
+    lower.includes("xxx") ||
+    lower === "changeme" ||
+    lower === "todo"
+  ) {
+    return false;
+  }
+  // Real tokens are typically at least 12 characters
+  return value.length >= 12;
+}
+
+/**
+ * Read a variable value from env file content
+ * @param {string} content - The env file content
+ * @param {string} name - The variable name
+ * @returns {string|null} - The variable value or null
+ */
+function readEnvVar(content, name) {
+  const lines = content
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith("#"));
+  const line = lines.find((l) => l.startsWith(`${name}=`));
+  if (!line) return null;
+  return line.slice(name.length + 1).trim();
+}
+
+function checkSecretsStatus() {
+  const hasEnvLocal = fs.existsSync(ENV_LOCAL_PATH);
+  const hasEncrypted = fs.existsSync(ENCRYPTED_PATH);
+
+  // Check if .env.local has actual tokens (not just template/placeholders)
+  let hasTokens = false;
+  if (hasEnvLocal) {
+    try {
+      const content = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
+      hasTokens =
+        looksLikeRealToken(readEnvVar(content, "GITHUB_TOKEN")) ||
+        looksLikeRealToken(readEnvVar(content, "SONAR_TOKEN")) ||
+        looksLikeRealToken(readEnvVar(content, "CONTEXT7_API_KEY"));
+    } catch {
+      // Ignore read errors
+    }
+  }
+
+  return { hasEnvLocal, hasEncrypted, hasTokens };
+}
+
+console.log("🔐 Checking MCP secrets status...");
+const secretsStatus = checkSecretsStatus();
+
+if (secretsStatus.hasTokens) {
+  console.log("   ✓ .env.local has tokens configured");
+} else if (secretsStatus.hasEncrypted) {
+  console.log("   ⚠️ Encrypted secrets found but not decrypted");
+  console.log("   → Run: node scripts/secrets/decrypt-secrets.js");
+  console.log("   → Or tell Claude: 'decrypt my secrets'");
+  warnings++;
+} else {
+  console.log("   ℹ️ No MCP tokens configured (some MCP servers may not work)");
+  console.log("   → To set up: Add tokens to .env.local");
+  console.log("   → Or encrypt: node scripts/secrets/encrypt-secrets.js");
+}
+
+console.log("");
+
+// =============================================================================
 // Dependency Cache Check
 // =============================================================================
 
@@ -302,3 +388,4 @@ console.log("💡 Tips:");
 console.log("   - Review claude.md + docs/agent_docs/CODE_PATTERNS.md for anti-patterns");
 console.log("   - Use TodoWrite for complex tasks (3+ steps)");
 console.log("   - Update SESSION_CONTEXT.md at end of session");
+console.log("   - If MCP tokens missing: node scripts/secrets/decrypt-secrets.js");
