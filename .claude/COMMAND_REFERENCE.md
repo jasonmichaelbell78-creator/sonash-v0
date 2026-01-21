@@ -318,6 +318,16 @@ knowledge, workflows, or tool integrations **When to use:** Creating or updating
 a skill **Example:** Need custom workflow for specific task **Parameters:**
 Skill requirements
 
+#### `expansion-evaluation`
+
+**Description:** Manage the SoNash expansion evaluation process for reviewing
+~240 feature and technical ideas across 21 modules. Supports commands: begin,
+evaluate, status, decide, questions, end. **When to use:** Evaluating expansion
+ideas, tracking progress, making decisions, or resuming evaluation session
+**Example:** `/expansion begin` or `/expansion evaluate F1 5` **Parameters:**
+Subcommand (begin, evaluate, status, decide, questions, end) + optional
+module/idea ID
+
 #### `using-superpowers`
 
 **Description:** Establishes how to find and use skills, requiring Skill tool
@@ -1559,6 +1569,7 @@ a prompt **What it does:**
 
 | Version | Date       | Changes                                            |
 | ------- | ---------- | -------------------------------------------------- |
+| 1.4     | 2026-01-20 | Add expansion-evaluation skill for ~240 ideas      |
 | 1.3     | 2026-01-21 | Fix pr-review skill per Qodo review suggestions    |
 | 1.2     | 2026-01-20 | Note custom commands migrated to skills format     |
 | 1.1     | 2026-01-19 | Update sonarcloud-sprint with learnings extraction |
