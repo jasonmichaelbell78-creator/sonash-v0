@@ -326,6 +326,8 @@ changes in one document affect the accuracy of another.
 | Security-related changes           | `docs/SECURITY.md`, `docs/GLOBAL_SECURITY_STANDARDS.md` | Security documentation must reflect current state |
 | Firebase config changes            | `docs/FIREBASE_CHANGE_POLICY.md`                        | Policy requires documenting all Firebase changes  |
 | Test coverage changes              | `SESSION_CONTEXT.md` (Test Status line)                 | Keep test counts current                          |
+| Planning documents added/archived  | `docs/PLAN_MAP.md`                                      | Plan map shows documentation hierarchy            | Manual   |
+| `.claude/plans/` files changed     | `docs/PLAN_MAP.md`                                      | Keep plan map current with active plans           | Manual   |
 
 ### Usage
 

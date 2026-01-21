@@ -1,0 +1,177 @@
+# SoNash Documentation Plan Map
+
+**Last Updated:** 2026-01-20 | **Version:** 1.0
+
+---
+
+## Visual Hierarchy
+
+```
+                              ┌─────────────────────────────────────┐
+                              │           ROADMAP.md                │
+                              │    (Canonical Source of Truth)      │
+                              │         v2.16 | 2026-01-20          │
+                              └─────────────────┬───────────────────┘
+                                                │
+           ┌────────────────────────────────────┼────────────────────────────────────┐
+           │                                    │                                    │
+           ▼                                    ▼                                    ▼
+┌─────────────────────┐            ┌─────────────────────┐            ┌─────────────────────┐
+│   ROADMAP_LOG.md    │            │  SESSION_CONTEXT.md │            │   AI_WORKFLOW.md    │
+│  (Completed Items)  │            │   (Current State)   │            │  (Navigation Hub)   │
+└─────────────────────┘            └──────────┬──────────┘            └──────────┬──────────┘
+                                              │                                   │
+                                              ▼                                   ▼
+                                   ┌─────────────────────┐            ┌─────────────────────┐
+                                   │     CLAUDE.md       │            │  ARCHITECTURE.md    │
+                                   │  (AI Instructions)  │            │   (System Design)   │
+                                   └─────────────────────┘            └─────────────────────┘
+```
+
+---
+
+## Tier 1: Documents Directly Referenced BY ROADMAP.md
+
+```
+ROADMAP.md
+    │
+    ├──► OPERATIONAL_VISIBILITY_SPRINT.md (Active Sprint Spec)
+    │
+    ├──► TESTING_PLAN.md ◄──────────────┐
+    │    └─ "Update when features added" │ (Bidirectional)
+    │                                    │
+    ├──► LIGHTHOUSE_INTEGRATION_PLAN.md  │
+    │                                    │
+    ├──► MONETIZATION_RESEARCH.md (M10)  │
+    │                                    │
+    └──► docs/aggregation/
+         ├── MASTER_ISSUE_LIST.md (283 findings)
+         ├── ROADMAP_INTEGRATION.md
+         └── IMPLEMENTATION_PLAN.md
+```
+
+---
+
+## Tier 2: Documents Referencing ROADMAP.md
+
+```
+These documents MUST check ROADMAP.md before work:
+
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│   CLAUDE.md         │     │   AI_WORKFLOW.md    │     │ SESSION_CONTEXT.md  │
+│ "Check ROADMAP      │     │ "Start with         │     │ "Current sprint     │
+│  before features"   │────►│  ROADMAP.md"        │────►│  from ROADMAP"      │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+         │                           │                           │
+         ▼                           ▼                           ▼
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│ DOCUMENT_           │     │   docs/README.md    │     │ SESSION_DECISIONS   │
+│ DEPENDENCIES.md     │     │  (Inventory Index)  │     │     .md             │
+│ "Sync triggers"     │     │                     │     │ (Decision Log)      │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+```
+
+---
+
+## Tier 3: Reference & Workflow Documents
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│                           REFERENCE DOCUMENTS                              │
+├─────────────────────┬─────────────────────┬─────────────────────┬──────────┤
+│ TESTING_PLAN.md     │ PR_WORKFLOW_        │ AI_REVIEW_          │ GLOBAL_  │
+│                     │ CHECKLIST.md        │ PROCESS.md          │ SECURITY │
+│ • Quick Manual      │ • Mandatory PR      │ • CodeRabbit        │ _STDS.md │
+│   Testing           │   Steps             │   Integration       │          │
+│ • Phase Testing     │ • Pre-commit        │ • Review #N         │ • 4 Rules│
+│ • Integration       │   Validation        │   Logging           │ • Strict │
+└─────────────────────┴─────────────────────┴─────────────────────┴──────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
+│ agent_docs/         │ │ MULTI_AI_REVIEW_    │ │ INCIDENT_           │
+│ CODE_PATTERNS.md    │ │ COORDINATOR.md      │ │ RESPONSE.md         │
+│ • 180+ patterns     │ │ • 6-category audit  │ │ • Security          │
+│ • Priority tiers    │ │ • Central hub       │ │   procedures        │
+└─────────────────────┘ └─────────────────────┘ └─────────────────────┘
+```
+
+---
+
+## Tier 5: Archive Structure
+
+```
+docs/archive/
+│
+├── completed-plans/           ◄── Finished implementation work
+│   ├── INTEGRATED_IMPROVEMENT_PLAN.md (9 steps, 2026-01-02)
+│   ├── EIGHT_PHASE_REFACTOR_PLAN.md (2025-12-30)
+│   ├── DOCUMENTATION_STANDARDIZATION_PLAN.md
+│   ├── sonarcloud-cleanup-sprint.md (PR 1+2 done, 3-5 deferred)
+│   └── TRACK_A_TESTING_CHECKLIST.md (131 tests, 97.7%)
+│
+├── completed-audits/          ◄── Finished audit analyses
+│   └── PHASE_5_COMPLETION_ANALYSIS.md (18/18 tasks)
+│
+├── completed-decisions/       ◄── Accepted ADRs
+│   └── ADR-001-integrated-improvement-plan-approach.md
+│
+├── superseded-plans/          ◄── Replaced by ROADMAP tracking
+│   ├── M1.6_SUPPORT_TAB_PLAN.md
+│   └── LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md
+│
+├── 2025-dec-reports/          ◄── December analysis (17 files)
+│   ├── AGGREGATED_6MODEL_REPORT.md
+│   ├── CODE_ANALYSIS_REPORT.md
+│   └── [15 more]
+│
+├── 2026-jan-deprecated/       ◄── Superseded docs
+│   └── SLASH_COMMANDS.md (→ skills format)
+│
+├── consolidated-2025-12-19/   ◄── Pre-standardization (9 files)
+│   ├── ROADMAP_V3.md (→ ROADMAP.md v2.16)
+│   └── [8 more]
+│
+├── source-data/               ◄── Raw content
+│   ├── nashville_recovery_resources_links.md
+│   └── Recovery worksheets (PDFs)
+│
+└── REVIEWS_*.md               ◄── Code review archives
+    ├── REVIEWS_1-40.md
+    ├── REVIEWS_42-60.md
+    ├── REVIEWS_61-100.md
+    └── REVIEWS_101-136.md
+```
+
+---
+
+## Cross-Document Sync Triggers
+
+| When This Changes...          | ...Update These                     |
+| ----------------------------- | ----------------------------------- |
+| ROADMAP.md milestone complete | ROADMAP_LOG.md (archive items)      |
+| ROADMAP.md new feature        | TESTING_PLAN.md (add test coverage) |
+| ROADMAP.md sprint status      | SESSION_CONTEXT.md (current state)  |
+| TESTING_PLAN.md new section   | ROADMAP.md (cross-reference)        |
+| Aggregation findings          | ROADMAP.md backlog items            |
+
+---
+
+## Quick Navigation
+
+| I Need To...              | Go To                                                 |
+| ------------------------- | ----------------------------------------------------- |
+| See current priorities    | ROADMAP.md                                            |
+| Understand current sprint | SESSION_CONTEXT.md → OPERATIONAL_VISIBILITY_SPRINT.md |
+| Find testing guidance     | docs/TESTING_PLAN.md                                  |
+| Check AI rules/patterns   | CLAUDE.md → docs/agent_docs/CODE_PATTERNS.md          |
+| Review completed work     | docs/archive/completed-plans/                         |
+| Find issue backlog        | docs/aggregation/MASTER_ISSUE_LIST.md                 |
+
+---
+
+## Version History
+
+| Version | Date       | Description                                      |
+| ------- | ---------- | ------------------------------------------------ |
+| 1.0     | 2026-01-20 | Initial plan map created after document archival |
