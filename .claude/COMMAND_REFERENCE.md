@@ -1,9 +1,12 @@
-### Expansion-Evaluation Skill
+# COMMAND REFERENCE
 
-**Description:** Manage the SoNash expansion evaluation process for reviewing ~280 feature and technical ideas across 21 modules. Supports commands: begin, evaluate, status, decide, questions, push-to-roadmap, end. Decisions are staged until explicit push to ROADMAP. 
+## Overview
+This document provides a detailed reference guide for using the commands available in the Sonash v0 project.
 
-**When to use:** Evaluating expansion ideas, tracking progress, making decisions, or resuming evaluation session 
+## Commands
+- `command_1`: Description of command 1.
+- `command_2`: Description of command 2.
+- `command_3`: Description of command 3.
 
-**Example:** `/expansion begin` or `/expansion push-to-roadmap` 
-
-**Parameters:** Subcommand (begin, evaluate, status, decide, questions, push-to-roadmap, end) + optional module/idea ID
+## Usage
+Instructions on how to use the commands in various scenarios.
