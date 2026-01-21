@@ -51,6 +51,12 @@ function deriveKey(passphrase, salt) {
 }
 
 function decrypt(encryptedBuffer, passphrase) {
+  // Validate buffer length before extracting components
+  const minimumLength = SALT_LENGTH + IV_LENGTH + TAG_LENGTH + 1; // require some ciphertext
+  if (!Buffer.isBuffer(encryptedBuffer) || encryptedBuffer.length < minimumLength) {
+    throw new Error("Encrypted secrets file is invalid or corrupted");
+  }
+
   // Extract components: salt (32) + iv (16) + tag (16) + encrypted data
   const salt = encryptedBuffer.subarray(0, SALT_LENGTH);
   const iv = encryptedBuffer.subarray(SALT_LENGTH, SALT_LENGTH + IV_LENGTH);
@@ -110,12 +116,21 @@ async function promptPassphrase(prompt) {
       process.stdin.resume();
       process.stdin.setEncoding("utf8");
 
+      // Cleanup function to restore terminal state
+      const cleanup = () => {
+        try {
+          process.stdin.setRawMode(false);
+        } catch {
+          // Ignore errors during cleanup
+        }
+        process.stdin.pause();
+        process.stdin.removeListener("data", onData);
+      };
+
       const onData = (char) => {
         // Handle Enter key
         if (char === "\n" || char === "\r") {
-          process.stdin.setRawMode(false);
-          process.stdin.pause();
-          process.stdin.removeListener("data", onData);
+          cleanup();
           console.log(""); // New line after hidden input
           resolve(passphrase);
         }
@@ -125,9 +140,15 @@ async function promptPassphrase(prompt) {
             passphrase = passphrase.slice(0, -1);
           }
         }
+        // Handle Ctrl+D (EOF)
+        else if (char === "\u0004") {
+          cleanup();
+          console.log("");
+          resolve("");
+        }
         // Handle Ctrl+C
         else if (char === "\u0003") {
-          process.stdin.setRawMode(false);
+          cleanup();
           process.exit(1);
         }
         // Regular character
@@ -223,9 +244,12 @@ async function main() {
   try {
     const decrypted = decrypt(encryptedBuffer, passphrase);
 
-    // Write .env.local with secure permissions
-    fs.writeFileSync(ENV_LOCAL_PATH, decrypted);
-    fs.chmodSync(ENV_LOCAL_PATH, SECURE_FILE_MODE);
+    // Write .env.local atomically with secure permissions
+    // Use temp file + rename to prevent race condition on permissions
+    const tmpPath = `${ENV_LOCAL_PATH}.tmp`;
+    fs.writeFileSync(tmpPath, decrypted, { mode: SECURE_FILE_MODE });
+    fs.chmodSync(tmpPath, SECURE_FILE_MODE); // Ensure permissions even if mode flag ignored
+    fs.renameSync(tmpPath, ENV_LOCAL_PATH);
 
     if (!quiet) {
       console.log("✅ Decrypted successfully!");

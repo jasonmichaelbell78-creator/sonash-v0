@@ -932,13 +932,13 @@ claude/cherry-pick-commits-pr-review-NlFAz **Suggestions:** 10 total (Security:
 
 ---
 
-#### Review #191: Encrypted Secrets PR CI Compliance (2026-01-21)
+#### Review #191: Encrypted Secrets PR CI + Qodo Compliance (2026-01-21)
 
-**Source:** CI Pattern Compliance + Qodo PR Suggestions **PR/Branch:**
-claude/review-cherry-pick-commits-RBG4e **Suggestions:** 10 total (Major: 3,
-Minor: 7)
+**Source:** CI Pattern Compliance + Qodo PR Suggestions (2 rounds)
+**PR/Branch:** claude/review-cherry-pick-commits-RBG4e **Suggestions:** 17 total
+(Round 1: 10, Round 2: 7)
 
-**Issues Fixed:**
+**Issues Fixed (Round 1 - CI Pattern Compliance):**
 
 | #   | Issue                           | Severity | File                   | Fix                                                    |
 | --- | ------------------------------- | -------- | ---------------------- | ------------------------------------------------------ |
@@ -953,24 +953,44 @@ Minor: 7)
 | 9   | readFileSync without try/catch  | Minor    | decrypt-secrets.js:132 | Wrap in try/catch                                      |
 | 10  | readFileSync without try/catch  | Minor    | encrypt-secrets.js:80  | Wrap in try/catch                                      |
 
+**Issues Fixed (Round 2 - Qodo Security Compliance):**
+
+| #   | Issue                       | Severity | File                | Fix                                              |
+| --- | --------------------------- | -------- | ------------------- | ------------------------------------------------ |
+| 11  | Buffer length validation    | Major    | decrypt-secrets.js  | Check minimum length before slicing              |
+| 12  | Atomic file write race      | Major    | decrypt-secrets.js  | Use temp file + rename for atomic write          |
+| 13  | Terminal state cleanup      | Major    | encrypt/decrypt-\*  | Add cleanup() function for raw mode handler      |
+| 14  | Passphrase in shell history | Minor    | session-begin SKILL | Use --stdin pipe instead of env var              |
+| 15  | Placeholder token detection | Minor    | session-start.js    | looksLikeRealToken() checks for common templates |
+| 16  | EOF handling (Ctrl+D)       | Minor    | encrypt/decrypt-\*  | Handle \\u0004 in raw mode                       |
+| 17  | Atomic encrypted write      | Minor    | encrypt-secrets.js  | Use temp file + rename for atomic write          |
+
 **Patterns Identified:**
 
 1. **Hidden passphrase input**: readline.question() echoes input - use
    process.stdin.setRawMode(true) for secure password entry
 2. **Secure file permissions**: Secrets files should have 0600 permissions to
    prevent other users from reading
-3. **Safe error access**: Always check `error instanceof Error` before accessing
-   `.message` property
+3. **Atomic file writes**: Use temp file + rename to prevent race conditions on
+   permissions
+4. **Buffer validation**: Always validate buffer length before slicing to
+   prevent confusing errors on corrupt files
+5. **Terminal state cleanup**: Always restore terminal state on exit, including
+   Ctrl+C and Ctrl+D
+6. **Placeholder detection**: Check for common placeholder patterns like
+   "your\_", "\_here", "example", "xxx", etc.
 
 **Key Learnings:**
 
 - Node.js readline doesn't hide input by default - need raw mode for passwords
-- fs.writeFileSync doesn't set restrictive permissions - explicitly chmod after
+- fs.writeFileSync doesn't set restrictive permissions - use temp+rename pattern
 - Pattern compliance catches issues that linters miss
+- Shell history exposure: prefer --stdin over env var for sensitive values
+- Always validate input buffers before crypto operations
 
 **Resolution:**
 
-- Fixed: 10 items
+- Fixed: 17 items (Round 1: 10, Round 2: 7)
 - Rejected: 0 items
 - Deferred: 0 items
 

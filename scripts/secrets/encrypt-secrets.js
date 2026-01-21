@@ -74,12 +74,21 @@ async function promptPassphrase(prompt) {
       process.stdin.resume();
       process.stdin.setEncoding("utf8");
 
+      // Cleanup function to restore terminal state
+      const cleanup = () => {
+        try {
+          process.stdin.setRawMode(false);
+        } catch {
+          // Ignore errors during cleanup
+        }
+        process.stdin.pause();
+        process.stdin.removeListener("data", onData);
+      };
+
       const onData = (char) => {
         // Handle Enter key
         if (char === "\n" || char === "\r") {
-          process.stdin.setRawMode(false);
-          process.stdin.pause();
-          process.stdin.removeListener("data", onData);
+          cleanup();
           console.log(""); // New line after hidden input
           resolve(passphrase);
         }
@@ -89,9 +98,15 @@ async function promptPassphrase(prompt) {
             passphrase = passphrase.slice(0, -1);
           }
         }
+        // Handle Ctrl+D (EOF)
+        else if (char === "\u0004") {
+          cleanup();
+          console.log("");
+          resolve("");
+        }
         // Handle Ctrl+C
         else if (char === "\u0003") {
-          process.stdin.setRawMode(false);
+          cleanup();
           process.exit(1);
         }
         // Regular character
@@ -167,9 +182,12 @@ async function main() {
   console.log("\n🔒 Encrypting...");
   const encrypted = encrypt(envContent, passphrase);
 
-  // Write encrypted file with secure permissions
-  fs.writeFileSync(ENCRYPTED_PATH, encrypted);
-  fs.chmodSync(ENCRYPTED_PATH, SECURE_FILE_MODE);
+  // Write encrypted file atomically with secure permissions
+  // Use temp file + rename to prevent race condition on permissions
+  const tmpPath = `${ENCRYPTED_PATH}.tmp`;
+  fs.writeFileSync(tmpPath, encrypted, { mode: SECURE_FILE_MODE });
+  fs.chmodSync(tmpPath, SECURE_FILE_MODE); // Ensure permissions even if mode flag ignored
+  fs.renameSync(tmpPath, ENCRYPTED_PATH);
 
   console.log("✅ Encrypted successfully!");
   console.log(`   Output: .env.local.encrypted`);

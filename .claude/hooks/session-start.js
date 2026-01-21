@@ -66,16 +66,59 @@ console.log("");
 const ENV_LOCAL_PATH = path.join(projectDir, ".env.local");
 const ENCRYPTED_PATH = path.join(projectDir, ".env.local.encrypted");
 
+/**
+ * Check if a token value looks like a real token (not a placeholder)
+ * @param {string|null} value - The token value to check
+ * @returns {boolean} - True if it looks like a real token
+ */
+function looksLikeRealToken(value) {
+  if (!value) return false;
+  const lower = value.toLowerCase();
+  // Reject common placeholder patterns used in templates/docs
+  if (
+    lower.includes("your_") ||
+    lower.includes("_here") ||
+    lower.includes("placeholder") ||
+    lower.includes("example") ||
+    lower.includes("xxx") ||
+    lower === "changeme" ||
+    lower === "todo"
+  ) {
+    return false;
+  }
+  // Real tokens are typically at least 12 characters
+  return value.length >= 12;
+}
+
+/**
+ * Read a variable value from env file content
+ * @param {string} content - The env file content
+ * @param {string} name - The variable name
+ * @returns {string|null} - The variable value or null
+ */
+function readEnvVar(content, name) {
+  const lines = content
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith("#"));
+  const line = lines.find((l) => l.startsWith(`${name}=`));
+  if (!line) return null;
+  return line.slice(name.length + 1).trim();
+}
+
 function checkSecretsStatus() {
   const hasEnvLocal = fs.existsSync(ENV_LOCAL_PATH);
   const hasEncrypted = fs.existsSync(ENCRYPTED_PATH);
 
-  // Check if .env.local has actual tokens (not just template)
+  // Check if .env.local has actual tokens (not just template/placeholders)
   let hasTokens = false;
   if (hasEnvLocal) {
     try {
       const content = fs.readFileSync(ENV_LOCAL_PATH, "utf8");
-      hasTokens = /^(GITHUB_TOKEN|SONAR_TOKEN|CONTEXT7_API_KEY)=.+$/m.test(content);
+      hasTokens =
+        looksLikeRealToken(readEnvVar(content, "GITHUB_TOKEN")) ||
+        looksLikeRealToken(readEnvVar(content, "SONAR_TOKEN")) ||
+        looksLikeRealToken(readEnvVar(content, "CONTEXT7_API_KEY"));
     } catch {
       // Ignore read errors
     }
