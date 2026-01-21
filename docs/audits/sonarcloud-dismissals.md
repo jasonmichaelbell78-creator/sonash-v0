@@ -107,6 +107,6 @@ shows no issues with current report sizes (~300 issues). **Reviewed by**: Claude
 ## Related Documents
 
 - [Detailed Report](sonarcloud-issues-detailed.md) - Full issue list with code
-- [Sprint Plan](../../.claude/plans/sonarcloud-cleanup-sprint.md) - 5-PR
-  structure
+- [Sprint Plan](../archive/completed-plans/sonarcloud-cleanup-sprint.md) - 5-PR
+  structure (paused)
 - [Triage Guide](../SONARCLOUD_TRIAGE.md) - Triage decision framework

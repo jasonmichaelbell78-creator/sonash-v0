@@ -56,9 +56,9 @@ See [TEMPLATE.md](./TEMPLATE.md) for the full template.
 
 ## ADR Index
 
-| ADR                                                          | Title                                | Status   | Date       |
-| ------------------------------------------------------------ | ------------------------------------ | -------- | ---------- |
-| [ADR-001](./ADR-001-integrated-improvement-plan-approach.md) | Integrated Improvement Plan Approach | Accepted | 2026-01-03 |
+| ADR                                                                                       | Title                                | Status              | Date       |
+| ----------------------------------------------------------------------------------------- | ------------------------------------ | ------------------- | ---------- |
+| [ADR-001](../archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md) | Integrated Improvement Plan Approach | Accepted (archived) | 2026-01-03 |
 
 ## Naming Convention
 

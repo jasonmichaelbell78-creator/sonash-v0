@@ -235,8 +235,8 @@ When called with `--report`:
 
 - [Detailed Report](docs/audits/sonarcloud-issues-detailed.md) - Current issues
   with code snippets
-- [Cleanup Sprint Plan](.claude/plans/sonarcloud-cleanup-sprint.md) - 5-PR
-  structure
+- [Cleanup Sprint Plan](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md) -
+  5-PR structure (paused)
 - [Cleanup Runbook](docs/SONARCLOUD_CLEANUP_RUNBOOK.md) - Detailed procedures
 - [Triage Decisions](docs/SONARCLOUD_TRIAGE.md) - Issue triage guidelines
 - [SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=jasonmichaelbell78-creator_sonash-v0)

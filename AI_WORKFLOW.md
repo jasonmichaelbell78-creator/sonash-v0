@@ -135,11 +135,10 @@ Recovery Notebook project. It provides:
 **As Needed** (Reference When Relevant):
 
 6. **Planning Documents** (when working on specific features):
-   - [INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md) -
-     ✅ **COMPLETE** - Unified improvement roadmap (archived)
-   - [M1.6_SUPPORT_TAB_PLAN.md](./docs/M1.6_SUPPORT_TAB_PLAN.md)
    - Feature-specific plans in `docs/`
-   - Archived plans: `docs/archive/completed-plans/`
+   - Archived plans: `docs/archive/completed-plans/`,
+     `docs/archive/superseded-plans/`
+   - Completed decisions: `docs/archive/completed-decisions/`
 
 7. **Foundation Documents** (when making architectural decisions):
    - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design

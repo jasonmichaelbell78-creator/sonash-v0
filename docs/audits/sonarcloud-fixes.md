@@ -147,5 +147,5 @@ to local variable before use
 
 - [Detailed Report](sonarcloud-issues-detailed.md) - Full issue list with code
 - [Dismissals](sonarcloud-dismissals.md) - Issues dismissed with justification
-- [Sprint Plan](../../.claude/plans/sonarcloud-cleanup-sprint.md) - 5-PR
-  structure
+- [Sprint Plan](../archive/completed-plans/sonarcloud-cleanup-sprint.md) - 5-PR
+  structure (paused)

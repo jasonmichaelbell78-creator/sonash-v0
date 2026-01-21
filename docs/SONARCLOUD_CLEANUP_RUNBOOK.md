@@ -120,7 +120,7 @@ The cleanup is organized into 5 PRs:
 | 5   | `cleanup/phase-5-security`        | Security hotspots           | ~97    |
 
 See full breakdown:
-[sonarcloud-cleanup-sprint.md](../.claude/plans/sonarcloud-cleanup-sprint.md)
+[sonarcloud-cleanup-sprint.md](./archive/completed-plans/sonarcloud-cleanup-sprint.md)
 
 ---
 
@@ -346,7 +346,8 @@ If a file has 100+ issues, consider:
 - **Detailed Report** (generated locally, not tracked) - Run
   `node scripts/generate-detailed-sonar-report.js` to create
   `docs/audits/sonarcloud-issues-detailed.md`
-- [Sprint Plan](../.claude/plans/sonarcloud-cleanup-sprint.md) - 5-PR structure
+- [Sprint Plan](./archive/completed-plans/sonarcloud-cleanup-sprint.md) - 5-PR
+  structure (paused)
 - [Dismissals](audits/sonarcloud-dismissals.md) - Documented dismissals
 - [Triage Guide](SONARCLOUD_TRIAGE.md) - Triage decision framework
 - [SonarCloud Dashboard](https://sonarcloud.io/project/overview?id=jasonmichaelbell78-creator_sonash-v0)

@@ -5,8 +5,8 @@
 This checklist covers all testing required for Track A: Admin Panel & Background
 Jobs.
 
-**Session:** #72 **Date:** 2026-01-16 **Branch:**
-`claude/complete-track-a-jZCcz`
+**Status:** ✅ COMPLETE (archived 2026-01-20) **Session:** #72 **Date:**
+2026-01-16 **Branch:** `claude/complete-track-a-jZCcz`
 
 **Test Execution:** Session #73 (2026-01-17) - Playwright E2E against production
 (https://sonash-app.web.app/admin)
@@ -311,6 +311,10 @@ was using `appspot.com` instead of the actual `firebasestorage.app` bucket.
 - [ ] Jobs show failure status (deferred to offline mode)
 
 ### 7.2 Invalid States
+
+> **Deferred to Track B:** These edge case tests require more complex test
+> infrastructure and are scheduled for offline mode/error handling testing in
+> Track B. See ROADMAP.md M2 → EFF-012 for tracking.
 
 - [ ] Empty logs collection handled (not tested - logs present)
 - [ ] Missing user document handled (not tested)
@@ -629,13 +633,14 @@ rounds of PR review
 
 | Version | Date       | Description                                                                                                             |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| 1.0     | 2026-01-16 | Initial checklist for Track A testing (Session #72)                                                                     |
-| 1.1     | 2026-01-16 | Added version history section per documentation standards                                                               |
-| 1.2     | 2026-01-17 | Added test results from Playwright E2E testing (Session #73). 78/79 passed                                              |
-| 1.3     | 2026-01-17 | Session #74: Fixed job visibility, re-tested all jobs. A13 working, others blocked by indexes/storage                   |
-| 1.4     | 2026-01-17 | Session #75: Added Quick Win Features section (8.1-8.4) - Password reset, Storage stats, Rate limits, Collection counts |
-| 1.5     | 2026-01-17 | Session #76: Tested Quick Win Features. Fixed Collection Stats backend (field name mismatch). 22/30 passed, 8 skipped   |
-| 1.6     | 2026-01-17 | Session #75: Updated Password Reset to reflect fix (REST API sends emails); Added Phase 2 section (A19-A22) placeholder |
-| 1.7     | 2026-01-18 | Session #77: All Firestore indexes deployed. Jobs A10, A12, A14 passing. Security validation verified. 93.1% pass rate  |
-| 1.8     | 2026-01-18 | Session #77: Fixed A11 storage bucket. **ALL Track A jobs (A10-A14) now passing.** Track A complete.                    |
+| 2.0     | 2026-01-20 | **COMPLETE**: Document archived. Section 7.2 (Invalid States) deferred to Track B (EFF-012). 97.7% pass rate achieved.  |
 | 1.9     | 2026-01-18 | Session #79: Added Section 9 for PR #277 security/reliability fixes. Phase 2 renumbered to Section 10.                  |
+| 1.8     | 2026-01-18 | Session #77: Fixed A11 storage bucket. **ALL Track A jobs (A10-A14) now passing.** Track A complete.                    |
+| 1.7     | 2026-01-18 | Session #77: All Firestore indexes deployed. Jobs A10, A12, A14 passing. Security validation verified. 93.1% pass rate  |
+| 1.6     | 2026-01-17 | Session #75: Updated Password Reset to reflect fix (REST API sends emails); Added Phase 2 section (A19-A22) placeholder |
+| 1.5     | 2026-01-17 | Session #76: Tested Quick Win Features. Fixed Collection Stats backend (field name mismatch). 22/30 passed, 8 skipped   |
+| 1.4     | 2026-01-17 | Session #75: Added Quick Win Features section (8.1-8.4) - Password reset, Storage stats, Rate limits, Collection counts |
+| 1.3     | 2026-01-17 | Session #74: Fixed job visibility, re-tested all jobs. A13 working, others blocked by indexes/storage                   |
+| 1.2     | 2026-01-17 | Added test results from Playwright E2E testing (Session #73). 78/79 passed                                              |
+| 1.1     | 2026-01-16 | Added version history section per documentation standards                                                               |
+| 1.0     | 2026-01-16 | Initial checklist for Track A testing (Session #72)                                                                     |

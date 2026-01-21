@@ -1,7 +1,7 @@
 # Testing Plan
 
 **Document Tier:** 2 (Active Reference) **Status:** Active **Last Updated:**
-2026-01-03
+2026-01-20
 
 ---
 
@@ -10,6 +10,18 @@
 Comprehensive testing guidance for the SoNash application, including manual
 testing checklists, automated test recommendations, and phase-specific testing
 for code review fixes.
+
+---
+
+## 📌 Important: Keep This Document Current
+
+> **ROADMAP REQUIREMENT**: When new features are added to this testing plan,
+> ROADMAP.md must also be updated to reflect the new testing coverage. This
+> ensures the roadmap accurately tracks what features have testing guidance.
+>
+> **Update Trigger**: Any additions to the "Quick Manual Testing" section or new
+> phase testing sections should be cross-referenced in ROADMAP.md under the
+> relevant milestone.
 
 ---
 

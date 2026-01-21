@@ -117,8 +117,9 @@ and structure requirements:
 
 **Documents**:
 
-- Feature implementation plans (M1.6_SUPPORT_TAB_PLAN.md)
-- Initiative plans (LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)
+- Feature implementation plans (see `docs/archive/superseded-plans/` for
+  examples)
+- Initiative plans (see `docs/archive/superseded-plans/` for examples)
 - Research documents (MONETIZATION_RESEARCH.md)
 - Backlog documents (AUDIT_FINDINGS_BACKLOG.md)
 

@@ -104,7 +104,8 @@ Removed:
 **Session #79 Update** - Roadmap v2.15:
 
 - **✅ SONARCLOUD CLEANUP SPRINT CREATED** (now paused):
-  - Created 5-PR cleanup plan in `.claude/plans/sonarcloud-cleanup-sprint.md`
+  - 5-PR cleanup plan archived to
+    `docs/archive/completed-plans/sonarcloud-cleanup-sprint.md`
   - Created full snapshot in `docs/audits/sonarcloud-snapshots/20260119-full.md`
   - PR 1 + PR 2 completed; PR 3-5 deferred to M2
 
@@ -153,8 +154,9 @@ Removed:
 - **📋 TRACK A-P2 PLANNED**: Firebase Console Phase 2 (A19-A22)
   - User Analytics Tab, Job Results Viewer, Sentry Correlation, GCP Log Builder
   - Re-research implementation when starting
-- **🔄 TRACK A-TEST**: Testing phase in progress
-  - See: [TRACK_A_TESTING_CHECKLIST.md](docs/TRACK_A_TESTING_CHECKLIST.md)
+- **✅ TRACK A-TEST**: Testing phase complete (archived 2026-01-20)
+  - See:
+    [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
 - **NEW**: Context preservation pattern added (SESSION_DECISIONS.md)
 
 **Previous Session #70 Update** - Roadmap v2.7:
@@ -541,8 +543,8 @@ Remaining work (PR 3-5) deferred to M2 Architecture backlog.
 **Sprint unblocked**: Feature development can proceed.
 
 **Plan**:
-[`.claude/plans/sonarcloud-cleanup-sprint.md`](.claude/plans/sonarcloud-cleanup-sprint.md)
-(Status: PAUSED)
+[`sonarcloud-cleanup-sprint.md`](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md)
+(Status: PAUSED, archived 2026-01-20)
 
 **Deferred work**: See
 [ROADMAP.md M2 section](./ROADMAP.md#sonarcloud-deferred-work-added-2026-01-20---session-85)

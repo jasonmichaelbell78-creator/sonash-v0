@@ -167,7 +167,7 @@ Planned | 🟣 Research
 > backlog as lower-priority maintenance items. Sprint unblocked.
 >
 > - **Plan:**
->   [.claude/plans/sonarcloud-cleanup-sprint.md](.claude/plans/sonarcloud-cleanup-sprint.md)
+>   [sonarcloud-cleanup-sprint.md](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md)
 > - **Completed:** ~300 issues fixed (mechanical + critical)
 > - **Deferred:** ~1,400 issues to M2 (major, minor, security hotspots)
 
@@ -187,8 +187,8 @@ creation.
 ### Track A - Admin Panel ✅ DEVELOPMENT COMPLETE
 
 > **Status:** All development items complete. Testing in progress. See
-> [TRACK_A_TESTING_CHECKLIST.md](docs/TRACK_A_TESTING_CHECKLIST.md) for
-> validation.
+> [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
+> for validation.
 
 #### Sentry Integration (Phase 4) ✅ Complete
 
@@ -282,8 +282,8 @@ creation.
 ### Track A-Test - Testing & Validation ✅ COMPLETE
 
 > **Checklist:**
-> [TRACK_A_TESTING_CHECKLIST.md](docs/TRACK_A_TESTING_CHECKLIST.md) **Total
-> Tests:** 131 | **Categories:** 8
+> [TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)
+> **Total Tests:** 131 | **Categories:** 8
 
 | Category            | Tests | Passed | Skipped | Status        |
 | ------------------- | ----- | ------ | ------- | ------------- |
@@ -929,8 +929,8 @@ been aggregated into a master list for prioritized implementation.
 ### SonarCloud Deferred Work (Added 2026-01-20 - Session #85)
 
 > **Source:**
-> [sonarcloud-cleanup-sprint.md](.claude/plans/sonarcloud-cleanup-sprint.md) PR
-> 1 (Mechanical) + PR 2 (Critical) completed; remaining work deferred here.
+> [sonarcloud-cleanup-sprint.md](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md)
+> PR 1 (Mechanical) + PR 2 (Critical) completed; remaining work deferred here.
 
 **Deferred PRs (~1,400 issues):**
 
@@ -1179,12 +1179,17 @@ These pre-existing issues were identified during PR review CI:
   - **Verification:** `npm test -- --grep offline` all pass
 
 - ⏳ **EFF-012: Network Failure Error Handling Tests** (M effort)
-  - **Deferred from:** Track A Admin Panel testing (Session #77)
+  - **Deferred from:** Track A Admin Panel testing (Session #77, archived
+    2026-01-20)
   - Test admin panel network failure scenarios:
     - [ ] Logs tab error state on network failure
     - [ ] Privilege save error handling and revert
     - [ ] Jobs failure status display
     - [ ] Password reset network failure handling
+  - Test invalid/edge case states (from Track A Section 7.2):
+    - [ ] Empty logs collection handled gracefully
+    - [ ] Missing user document handled gracefully
+    - [ ] Invalid privilege type handled gracefully
   - Test graceful degradation patterns
   - **Verification:** Simulate offline, verify error states and recovery
 
@@ -1951,6 +1956,13 @@ summary command; full dashboard is larger scope.
 - Priority or timeline changes
 - Progress percentage changes significantly (>10%)
 - Features are completed and need archiving to ROADMAP_LOG.md
+
+**Cross-document updates:**
+
+- When adding features to ROADMAP.md → Update `docs/TESTING_PLAN.md` with test
+  coverage for new features
+- When adding test sections to TESTING_PLAN.md → Reference in ROADMAP.md under
+  the relevant milestone
 
 ---
 
